@@ -1,0 +1,147 @@
+{
+  "schema": "hepta.native-local-validation-summary.v1",
+  "repository": "/workspace/scratch/aebafee84981/hepta-private-ci",
+  "branch": "work/ui-rust-scifi-audit-20261002",
+  "base": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+  "sourceState": "clean committed source ad84ac978cb9717a32d69373101eced53096d3c9 after mechanical formatting; normal test suite executed immediately before final formatting",
+  "toolchain": "Rust 1.95.0",
+  "jobs": 2,
+  "baseline": {
+    "nativeFmt": "pass",
+    "convergence": "structural-pass",
+    "convergenceSeconds": 21.921,
+    "pythonTests": 240,
+    "pythonPassed": 239,
+    "pythonSkipped": 1,
+    "pythonSeconds": 11.386
+  },
+  "latestNativeSuite": {
+    "command": "just test --manifest-path ../apps/hepta-native/Cargo.toml --locked --workspace --all-targets",
+    "passed": 278,
+    "failed": 0,
+    "ignored": 4,
+    "executionSeconds": 4.759,
+    "totalSeconds": 25.477,
+    "profile": "ordinary full-symbol test profile; sha2 test-package optimization unchanged",
+    "log": "native-tests-final-registrar.log"
+  },
+  "ignoredExplanation": [
+    "4096-active scale qualification",
+    "1000000-retired scale qualification",
+    "storage-scale child entry",
+    "explicit fixture raster capture; executed separately"
+  ],
+  "ownerSuite": {
+    "command": "just test --locked --all-targets --all-features -p codex-hepta-native-gateway -p codex-hepta-contracts -p codex-hepta-private-state -p codex-utils-private-state",
+    "passed": 214,
+    "failed": 0,
+    "skipped": 0,
+    "executionSeconds": 0.898,
+    "totalSeconds": 3.935,
+    "standardWorkspace": true,
+    "log": "owner-tests-final.log"
+  },
+  "strictClippy": {
+    "commonArgs": "--locked --workspace --all-targets --all-features -- -D warnings",
+    "linux": {
+      "passed": true,
+      "seconds": 5.537
+    },
+    "windowsGNU": {
+      "passed": true,
+      "seconds": 0.227,
+      "runtimeExecuted": false,
+      "devDebug": 0,
+      "cachedFinalRecheck": true,
+      "registrarActualCheckSeconds": 3.237
+    },
+    "macosAarch64": {
+      "passed": true,
+      "seconds": 3.03,
+      "runtimeExecuted": false
+    }
+  },
+  "ownerStrictClippy": {
+    "passed": true,
+    "seconds": 54.386,
+    "noDeps": true,
+    "log": "owner-clippy.log"
+  },
+  "raster": {
+    "output": "/workspace/scratch/aebafee84981/hepta-native-raster-final",
+    "count": 26,
+    "passed": true,
+    "totalSeconds": 17.626,
+    "nativeRenderer": "eframe-glow / Xvfb software GL",
+    "fixture": true,
+    "authenticatedRuntime": false,
+    "releaseQualification": false,
+    "matrix": "four screens \u00d7 English/Chinese \u00d7 1180\u00d7760, 800\u00d7560, 1180\u00d7760 at150%; plus two800\u00d7560 English recovery screens",
+    "sourcePhase": "final reviewed UI; before later picker-only read-drain fix",
+    "zip": "/workspace/scratch/aebafee84981/hepta-native-raster-final/hepta-native-ui-screenshots.zip"
+  },
+  "ordinaryStartupSmoke": {
+    "output": "/workspace/scratch/aebafee84981/hepta-native-ordinary-startup",
+    "passed": true,
+    "realProcess": true,
+    "phase": "before final helper race and formatting changes; exact earlier binary SHA recorded in receipt",
+    "observed": "missing temporary config; retry creates a new recovery window; normal window close exits1; config remains absent",
+    "authenticatedRuntime": false,
+    "externalEffects": false
+  },
+  "format": {
+    "justFmtExecuted": true,
+    "seconds": 14.813,
+    "nativeFmtPassed": true,
+    "restoredUnrelatedBaselineOnlyPythonFormatting": 54,
+    "retainedFormatting": "new native Rust-platform guard test",
+    "scopeAudit": "format-scope-audit-freeze.json",
+    "inScopeRustOnly": [
+      "platform-adapters/src/registrar.rs",
+      "platform-adapters/src/registrar_tests.rs",
+      "src/platform_identity_tests.rs"
+    ]
+  },
+  "bazelLock": {
+    "passed": true,
+    "seconds": 3.25,
+    "lockUnchanged": true,
+    "environmentOverrides": "scratch caches; existing system Java truststore; no certificate validation bypass"
+  },
+  "pending": [
+    "target-OS Windows/macOS execution and physical accessibility/packaged qualification",
+    "release/storage scale qualification not requested by local normal suite"
+  ],
+  "safety": {
+    "production": false,
+    "deployment": false,
+    "release": false
+  },
+  "workingFileInventory": {
+    "sha256": "b69146367693efe374086baa1f117b004f2ff2605feb33c74ac69351734e373c",
+    "entries": 8881,
+    "scope": "tracked + untracked nonignored entries; bytes, executable flag, symlink targets, deleted entries",
+    "gitTreeIdentity": false,
+    "path": "final-pass-source-after.json"
+  },
+  "registrarFollowup": {
+    "linuxMarkerTestsPassed": 5,
+    "seconds": 6.469,
+    "windowsCOMTestsTypechecked": true,
+    "windowsCOMTestsExecuted": false
+  },
+  "committedSource": "ad84ac978cb9717a32d69373101eced53096d3c9",
+  "compilerNegative": {
+    "passed": true,
+    "seconds": 3.959,
+    "sourceSha": "ad84ac978cb9717a32d69373101eced53096d3c9",
+    "cases": [
+      "journal_storage",
+      "retirement",
+      "task_supervisor"
+    ],
+    "allActualE0603": true,
+    "lockSha256": "f9eecf4571591300e1f29727c92c77f9e59cd767f723acc6f46e6f31cea63dcf",
+    "log": "compile-negative-ad84ac9.log"
+  }
+}

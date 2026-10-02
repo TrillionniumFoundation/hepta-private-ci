@@ -1,12 +1,12 @@
 {
   "schema": "hepta.ui.native.candidate.v3",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
-  "convergenceBranch": "work/ui-native-adversarial-audit-20261001",
+  "convergenceBranch": "work/ui-rust-scifi-audit-20261002",
   "baselineCommit": "6f145464d9d58233c59aafe262a1250a5ea873a8",
   "walIndexSourceCommit": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
   "productClosureSourceCommit": "bfa63c9aec5f1cdc6c3a8b554cbaaabf11676f52",
-  "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
-  "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+  "implementationSourceSha": "2b59c1c5f877432a557185efd77331ae1143ae42",
+  "implementationSourceTree": "9326a46a71a3f7aae14481d979cd3faee1935e7c",
   "status": "implementation-candidate",
   "qualificationStatus": "blocked-pending-executed-evidence",
   "releaseStatus": "not-authorized",
@@ -34,5 +34,7 @@
     "storageBuildProfile": "release",
     "combinedStorageSubjectRequired": true,
     "debugStorageMeasurements": "historical diagnostics only; never release-profile qualification"
-  }
+  },
+  "continuationBaseCommit": "978c1923eda66373e9dce4fe0efa890bc60ac404",
+  "qualificationTargetBranch": "work/ui-native-adversarial-audit-20261001"
 }

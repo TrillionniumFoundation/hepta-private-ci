@@ -1,5 +1,30 @@
 # ui.native ordinary-source review map
 
+The current continuation review base is `978c1923eda66373e9dce4fe0efa890bc60ac404`
+on `work/ui-native-adversarial-audit-20261001`; the review branch is
+`work/ui-rust-scifi-audit-20261002`. Ordinary source is
+`2b59c1c5f877432a557185efd77331ae1143ae42`, tree
+`9326a46a71a3f7aae14481d979cd3faee1935e7c`. This is a stacked native continuation,
+not a current-main integration.
+
+The new [audit](ADVERSARIAL-AUDIT-20261002.md) covers Rust native adapters,
+the explicit Rust Windows registrar and unsigned package v3, bounded helper
+protocols, input-only startup recovery, the console presentation, and authenticated
+JSON root discovery. [Retained local diagnostics](history/20261002-2b59-local/README.md)
+preserve their actual execution scope. Frozen inventory is 455 Git blobs over
+33 paths, including the platform-adapters crate, with digest
+`e9055dd142615e91f704feb5e57d64c9fd4176aa6b1145afa343154dfdcb09fd`.
+
+New six-platform head/merge, release storage and same-run aggregate execution are
+pending. Non-Linux verified Open/Reveal, separate `ui.control` Rust migration,
+physical OS/accessibility, signing and independent acceptance remain open. All
+production, deployment and release flags remain false.
+
+## Historical review map captured at candidate 978c
+
+The remaining text preserves the prior review's identities and observations.
+Its references to current source or pending execution apply to that prior scope.
+
 The current review base is `9be52d267d02a76f73e8a94fd086191c351d1c70` on
 `work/ui-native-qualified-integration-20260928`. The audit branch is
 `work/ui-native-adversarial-audit-20261001`. Read CURRENT_SOURCE.json for the

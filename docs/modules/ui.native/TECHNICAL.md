@@ -14,10 +14,12 @@ The audit records source status separately from pending execution qualification.
 **Module:** `ui.native`
 **Owner / deputy:** `ui-platform` / `accessibility`
 **Canonical branch:** `work/ui-native-qualified-integration-20260928`
-**Convergence branch:** `work/ui-native-adversarial-audit-20261001`
+**Convergence branch:** `work/ui-rust-scifi-audit-20261002`
+**Exact qualification parent:** `978c1923eda66373e9dce4fe0efa890bc60ac404`
 **Historical frozen implementation source:** `0a129b41c2a2d42ca907ea8257bf780108bc664f`
 **Historical implementation tree:** `f90313f067446c629b8da50058ee1bd2101e76e7`
-**Continuation freeze:** pending ordinary source publication
+**Continuation implementation:** `2b59c1c5f877432a557185efd77331ae1143ae42`
+**Continuation tree:** `9326a46a71a3f7aae14481d979cd3faee1935e7c`
 
 This source is an implementation candidate. It is not production-qualified,
 deployment-qualified or release-authorized. The historical source was frozen at the

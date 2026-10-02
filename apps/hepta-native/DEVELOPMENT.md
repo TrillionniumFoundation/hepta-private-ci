@@ -14,8 +14,9 @@ compatibility change and local test scope are recorded in the current audit.
 
 The historical baseline ordinary implementation source is
 `0a129b41c2a2d42ca907ea8257bf780108bc664f`, tree
-`f90313f067446c629b8da50058ee1bd2101e76e7`. The continuation freeze is pending
-ordinary source publication; these old identities do not cover its repairs.
+`f90313f067446c629b8da50058ee1bd2101e76e7`. The continuation is frozen at
+`2b59c1c5f877432a557185efd77331ae1143ae42`, tree
+`9326a46a71a3f7aae14481d979cd3faee1935e7c`; the old identities do not cover its repairs.
 
 Native update owner, handoff and runner locks now return an opaque
 `updater::UpdateLock` instead of exposing a File. Successful acquisition builds

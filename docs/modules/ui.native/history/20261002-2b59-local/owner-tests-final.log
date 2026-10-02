@@ -1,0 +1,223 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+   Compiling codex-hepta-native-gateway v0.0.0 (/workspace/scratch/aebafee84981/hepta-private-ci/codex-rs/hepta-native-gateway)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.81s
+────────────
+ Nextest run ID 3a0cc8ca-8ef7-4ce8-ba89-58df75cf39b1 with nextest profile: local
+    Starting 214 tests across 8 binaries
+        PASS [   0.006s] (  1/214) codex-hepta-contracts agent_id::tests::canonical_id_is_stable_across_display_parse_and_serde
+        PASS [   0.006s] (  2/214) codex-hepta-contracts authbus::b1::tests::b1_registration_requires_unambiguous_algorithm_and_backend_binding
+        PASS [   0.006s] (  3/214) codex-hepta-contracts authbus::b1::tests::b1_identity_rejects_same_uid_and_forwarded_unknown_claims
+        PASS [   0.005s] (  4/214) codex-hepta-contracts authbus::b1::tests::b1_profile_is_exact_default_deny_and_key_generation_forbidden
+        PASS [   0.006s] (  5/214) codex-hepta-contracts authbus::b1::tests::b1_identity_wire_is_strict_and_authority_is_default_false
+        PASS [   0.007s] (  6/214) codex-hepta-contracts authbus::b1::tests::b1_identity_requires_full_peer_binding_and_derived_subject_digest
+        PASS [   0.009s] (  7/214) codex-hepta-contracts agent_id::tests::deserialize_revalidates_untrusted_wire_value
+        PASS [   0.009s] (  8/214) codex-hepta-contracts agent_id::tests::noncanonical_or_directory_unsafe_ids_are_rejected
+        PASS [   0.004s] (  9/214) codex-hepta-contracts authbus::b2::tests::b2_attenuation_clock_and_advertisement_bounds_fail_closed
+        PASS [   0.004s] ( 10/214) codex-hepta-contracts authbus::b2::tests::b2_provider_status_cas_is_fail_closed
+        PASS [   0.005s] ( 11/214) codex-hepta-contracts authbus::b2::tests::b2_quota_reservation_cas_is_terminal_and_idempotent
+        PASS [   0.012s] ( 12/214) codex-hepta-contracts authbus::b1::tests::b1_profile_rejects_route_or_descriptor_tampering
+        PASS [   0.009s] ( 13/214) codex-hepta-contracts authbus::b2::tests::b2_contracts_validate_and_have_golden_digests
+        PASS [   0.009s] ( 14/214) codex-hepta-contracts authbus::b2::tests::b2_peer_and_resource_wire_round_trip_is_secret_free
+        PASS [   0.006s] ( 15/214) codex-hepta-contracts authbus::b2::tests::b2_quota_reservation_state_set_matches_registry_v13
+        PASS [   0.007s] ( 16/214) codex-hepta-contracts authbus::b2::tests::b2_subject_epochs_and_fences_reject_stale_values
+        PASS [   0.005s] ( 17/214) codex-hepta-contracts authbus::b3::tests::callback_events_require_current_fence_and_reject_stale_without_mutation
+        PASS [   0.008s] ( 18/214) codex-hepta-contracts authbus::b2::tests::b2_wire_shapes_are_strict_and_authority_defaults_false
+        PASS [   0.008s] ( 19/214) codex-hepta-contracts authbus::b3::tests::indeterminate_and_quarantine_forbid_new_refs
+        PASS [   0.006s] ( 20/214) codex-hepta-contracts authbus::b3::tests::mutation_binding_rejects_epoch_generation_fence_and_payload_tamper
+        PASS [   0.005s] ( 21/214) codex-hepta-contracts authbus::b3::tests::retry_budget_error_does_not_partially_mutate_record
+        PASS [   0.006s] ( 22/214) codex-hepta-contracts authbus::b3::tests::refresh_success_requires_opaque_refs_and_advancing_revision
+        PASS [   0.005s] ( 23/214) codex-hepta-contracts authbus::b3::tests::rotation_wire_shape_is_strict_and_terminal_rules_hold
+        PASS [   0.006s] ( 24/214) codex-hepta-contracts authbus::b3::tests::operation_key_and_id_are_deterministically_bound
+        PASS [   0.008s] ( 25/214) codex-hepta-contracts authbus::b3::tests::raw_secret_fields_and_unknown_fields_are_rejected
+        PASS [   0.013s] ( 26/214) codex-hepta-contracts authbus::b2::tests::b2_quota_reservation_transition_matrix_is_closed
+        PASS [   0.006s] ( 27/214) codex-hepta-contracts authbus::b3::tests::state_machine_is_fail_closed_after_response_loss
+        PASS [   0.007s] ( 28/214) codex-hepta-contracts authbus::b3::tests::status_lookup_is_binding_checked_and_lookup_only
+        PASS [   0.005s] ( 29/214) codex-hepta-contracts authbus_b4::tests::b4_authority_flags_and_resource_states_are_explicitly_non_production
+        PASS [   0.008s] ( 30/214) codex-hepta-contracts authbus_b4::tests::b4_atomic_hold_and_release_prevent_oversell
+        PASS [   0.006s] ( 31/214) codex-hepta-contracts authbus_b4::tests::b4_default_denies_unknown_quota_without_mutating_head
+        PASS [   0.006s] ( 32/214) codex-hepta-contracts authbus_b4::tests::b4_completion_and_release_overflow_are_transactional
+        PASS [   0.008s] ( 33/214) codex-hepta-contracts authbus_b4::tests::b4_cooldown_deadline_and_unavailable_states_fail_closed
+        PASS [   0.004s] ( 34/214) codex-hepta-contracts authbus_b4::tests::b4_grant_counter_overflow_is_transactional
+        PASS [   0.007s] ( 35/214) codex-hepta-contracts authbus_b4::tests::b4_duplicate_and_stale_callbacks_are_side_effect_free
+        PASS [   0.008s] ( 36/214) codex-hepta-contracts authbus_b4::tests::b4_edf_within_subject_and_jain_fairness_are_deterministic
+        PASS [   0.006s] ( 37/214) codex-hepta-contracts authbus_b4::tests::b4_safety_margin_is_counted_once_and_payload_conflict_is_non_mutating
+        PASS [   0.005s] ( 38/214) codex-hepta-contracts authbus_b5::tests::b5_fsync_before_call_and_crash_recovery_are_lookup_only
+        PASS [   0.009s] ( 39/214) codex-hepta-contracts authbus_b4::tests::b4_enqueue_counter_overflow_is_transactional
+        PASS [   0.005s] ( 40/214) codex-hepta-contracts authbus_b5::tests::b5_dispatch_responses_and_lookup_uncertainty_are_explicit
+        PASS [   0.004s] ( 41/214) codex-hepta-contracts authbus_b5::tests::b5_outbox_dedupe_and_payload_conflict_are_side_effect_free
+        PASS [   0.006s] ( 42/214) codex-hepta-contracts authbus_b5::tests::b5_recovery_snapshot_maps_unknown_intent_to_safe_stop
+        PASS [   0.006s] ( 43/214) codex-hepta-contracts authbus_b5::tests::b5_reopen_rejects_corrupt_hash_or_missing_fsync_witness
+        PASS [   0.008s] ( 44/214) codex-hepta-contracts authbus_b5::tests::b5_lookup_terminal_ack_is_bound_and_terminal_replay_is_immutable
+        PASS [   0.005s] ( 45/214) codex-hepta-contracts authbus_b5::tests::b5_unknown_lookup_remains_indeterminate_and_blocks_new_attempt
+        PASS [   0.005s] ( 46/214) codex-hepta-contracts authbus_tests::auth_request_has_stable_versioned_golden_bytes
+        PASS [   0.007s] ( 47/214) codex-hepta-contracts authbus_b5::tests::b5_unknown_intent_and_stale_fence_stop_without_dispatch
+        PASS [   0.007s] ( 48/214) codex-hepta-contracts authbus_tests::auth_request_fences_subject_generation
+        PASS [   0.007s] ( 49/214) codex-hepta-contracts authbus_tests::lease_cas_epoch_and_permit_binding_are_strict
+        PASS [   0.005s] ( 50/214) codex-hepta-contracts authbus_tests::revoke_binds_owner_revision_and_epoch
+        PASS [   0.006s] ( 51/214) codex-hepta-contracts authbus_tests::source_manifest_fixture_is_pinned_and_fail_closed
+        PASS [   0.006s] ( 52/214) codex-hepta-contracts authbus_tests::source_manifest_rejects_authority_and_unknown_fields
+        PASS [   0.004s] ( 53/214) codex-hepta-contracts authbus_tests::source_manifest_requires_exact_observed_candidate_binding
+        PASS [   0.008s] ( 54/214) codex-hepta-contracts authbus_tests::source_manifest_rejects_malformed_expected_candidate_binding
+        PASS [   0.009s] ( 55/214) codex-hepta-contracts authbus_tests::source_manifest_accepts_matching_observed_candidate_binding
+        PASS [   0.007s] ( 56/214) codex-hepta-contracts authbus_tests::usage_permit_rejects_subject_generation_mismatch
+        PASS [   0.006s] ( 57/214) codex-hepta-contracts authbus_tests::wire_round_trip_is_strict_and_secret_free
+        PASS [   0.005s] ( 58/214) codex-hepta-contracts authority_lease::lock_tests::owner_drop_releases_inherited_lock_and_preserves_successor
+        PASS [   0.006s] ( 59/214) codex-hepta-contracts authority_lease::tests::bounded_prune_reclaims_only_expired_unrevoked_leases
+        PASS [   0.008s] ( 60/214) codex-hepta-contracts authbus_tests::usage_receipt_binds_permit_and_preserves_indeterminate
+        PASS [   0.005s] ( 61/214) codex-hepta-contracts authority_lease::tests::epoch_rollover_is_the_only_revision_lineage_reset
+        PASS [   0.005s] ( 62/214) codex-hepta-contracts authority_lease::tests::external_frontier_detects_old_snapshot_and_missing_store_reset
+        PASS [   0.006s] ( 63/214) codex-hepta-contracts authority_lease::tests::external_frontier_ahead_after_local_commit_failure_fences_reopen
+        PASS [   0.007s] ( 64/214) codex-hepta-contracts authority_lease::tests::epoch_rollover_is_durable_and_clears_bounded_history
+        PASS [   0.005s] ( 65/214) codex-hepta-contracts authority_lease::tests::pruned_lease_id_preserves_monotonic_revision_lineage
+        PASS [   0.006s] ( 66/214) codex-hepta-contracts authority_lease::tests::production_frontier_cas_detects_restored_local_snapshot
+        PASS [   0.008s] ( 67/214) codex-hepta-contracts authority_lease::tests::lease_is_durable_verified_and_cas_revoked
+        PASS [   0.005s] ( 68/214) codex-hepta-contracts authority_lease::tests::stale_cas_and_binding_drift_fail_closed
+        PASS [   0.005s] ( 69/214) codex-hepta-contracts authority_lease::tests::revoke_retry_reuses_server_owned_timestamp
+        PASS [   0.007s] ( 70/214) codex-hepta-contracts authority_lease::tests::token_is_invalidated_by_lease_replacement
+        PASS [   0.005s] ( 71/214) codex-hepta-contracts authority_lease::tests::verified_use_releases_owner_lock_before_consumer_code
+        PASS [   0.006s] ( 72/214) codex-hepta-contracts authority_lease::tests::verified_use_witness_binds_current_lease_and_store_revision
+        PASS [   0.008s] ( 73/214) codex-hepta-contracts callers_manifest_tests::callers_manifest_records_the_live_product_chain
+        PASS [   0.010s] ( 74/214) codex-hepta-contracts authority_lease::unix_tests::authority_lease_fifo_read_rejects_without_waiting_for_a_writer
+        PASS [   0.006s] ( 75/214) codex-hepta-contracts callers_manifest_tests::callers_manifest_schema_and_cutoff_are_frozen
+        PASS [   0.010s] ( 76/214) codex-hepta-contracts callers_manifest_tests::callers_manifest_entries_are_unique_and_well_formed
+        PASS [   0.010s] ( 77/214) codex-hepta-contracts callers_manifest_tests::g3_intelligence_kg_truth_bounds_qualification_without_hiding_later_candidates
+        PASS [   0.009s] ( 78/214) codex-hepta-contracts callers_manifest_tests::g4_matrix_robrix_truth_matches_paired_exact_candidate_qualification
+        PASS [   0.007s] ( 79/214) codex-hepta-contracts callers_manifest_tests::g5_bounded_expansion_binds_exact_combined_head_and_stays_evidence_only
+        PASS [   0.008s] ( 80/214) codex-hepta-contracts callers_manifest_tests::g5_crash_recovery_ratchet_binds_exact_head_and_stays_fail_closed
+        PASS [   0.009s] ( 81/214) codex-hepta-contracts callers_manifest_tests::g5_fleet_automation_truth_matches_bounded_candidate_and_stays_fail_closed
+        PASS [   0.004s] ( 82/214) codex-hepta-contracts canonical::tests::length_delimited_sha256_counts_utf8_bytes
+        PASS [   0.005s] ( 83/214) codex-hepta-contracts final_use::store::tests::legacy_journal_keeps_trust_binding_and_exact_head_checks
+        PASS [   0.011s] ( 84/214) codex-hepta-contracts callers_manifest_tests::legacy_caller_zero_surfaces_are_explicitly_retired
+        PASS [   0.007s] ( 85/214) codex-hepta-contracts final_use::store::tests::legacy_single_key_and_key_ring_snapshots_preserve_nonce_claims
+        PASS [   0.007s] ( 86/214) codex-hepta-contracts final_use::store::unix_tests::final_use_fifo_read_rejects_without_waiting_for_a_writer
+        PASS [   0.008s] ( 87/214) codex-hepta-contracts final_use::store::tests::owner_drop_releases_inherited_lock_and_preserves_successor
+        PASS [   0.012s] ( 88/214) codex-hepta-contracts callers_manifest_tests::qualification_crates_are_excluded_from_product_callers
+        PASS [   0.008s] ( 89/214) codex-hepta-contracts final_use::tests::authority_rejects_shared_state_directory_and_symlinked_files
+        PASS [   0.016s] ( 90/214) codex-hepta-contracts final_use::tests::async_effect_entry_rechecks_revocation_and_consumes_the_token
+        PASS [   0.016s] ( 91/214) codex-hepta-contracts final_use::tests::async_effect_entry_is_denied_if_revoked_after_claim_before_entry
+        PASS [   0.018s] ( 92/214) codex-hepta-contracts final_use::tests::async_final_use_fence_survives_pending_and_releases_on_cancellation
+        PASS [   0.016s] ( 93/214) codex-hepta-contracts final_use::tests::capacity_snapshot_tracks_claims_revocations_and_epoch_rollover
+        PASS [   0.015s] ( 94/214) codex-hepta-contracts final_use::tests::delivery_callback_runs_without_holding_the_revocation_mutex
+        PASS [   0.027s] ( 95/214) codex-hepta-contracts final_use::tests::changing_signed_data_or_substituting_a_key_does_not_authorize
+        PASS [   0.016s] ( 96/214) codex-hepta-contracts final_use::tests::expired_grant_is_denied_using_verifier_clock
+        PASS [   0.015s] ( 97/214) codex-hepta-contracts final_use::tests::external_final_use_frontier_detects_restored_claim_snapshot
+        PASS [   0.021s] ( 98/214) codex-hepta-contracts final_use::tests::external_final_use_frontier_ahead_after_local_failure_fences_reopen
+        PASS [   0.029s] ( 99/214) codex-hepta-contracts final_use::tests::epoch_change_fences_outstanding_claims_and_old_grants
+        PASS [   0.018s] (100/214) codex-hepta-contracts final_use::tests::injected_clock_is_the_only_final_use_time_source
+        PASS [   0.022s] (101/214) codex-hepta-contracts final_use::tests::revocation_after_claim_prevents_delivery_and_cannot_be_rolled_back
+        PASS [   0.040s] (102/214) codex-hepta-contracts final_use::tests::killed_owner_releases_lock_but_keeps_claim
+        PASS [   0.028s] (103/214) codex-hepta-contracts final_use::tests::replay_state_survives_owner_restart_and_prevents_concurrent_owners
+        PASS [   0.111s] (104/214) codex-hepta-contracts authority_lease::tests::dispatch_boundary_serializes_revocation_until_local_entry_returns
+        PASS [   0.043s] (105/214) codex-hepta-contracts final_use::tests::missing_or_truncated_claim_journal_fails_closed_on_restart
+        PASS [   0.049s] (106/214) codex-hepta-contracts final_use::tests::issuer_key_ring_supports_overlap_and_epoch_retirement
+        PASS [   0.040s] (107/214) codex-hepta-contracts final_use::tests::replay_claims_use_fixed_width_journal_and_state_snapshot_stays_small
+        PASS [   0.016s] (108/214) codex-hepta-contracts final_use::tests::revocation_survives_restart_and_missing_state_is_not_reset
+        PASS [   0.019s] (109/214) codex-hepta-contracts final_use::tests::synchronous_final_use_rejects_a_concurrent_revocation_commit
+        PASS [   0.020s] (110/214) codex-hepta-contracts final_use::tests::unrelated_frontier_advance_after_claim_requires_a_fresh_claim
+        PASS [   0.027s] (111/214) codex-hepta-contracts final_use::tests::signed_claim_is_single_use_and_delivers_under_same_owner
+        PASS [   0.021s] (112/214) codex-hepta-contracts final_use::tests::verified_use_witness_binds_the_actual_consumer_entry
+        PASS [   0.030s] (113/214) codex-hepta-contracts final_use::tests::startup_trusted_head_can_advance_but_cannot_rollback_persisted_revocations
+        PASS [   0.005s] (114/214) codex-hepta-contracts final_use_control::tests::revocation_feed_freshness_fails_closed
+        PASS [   0.016s] (115/214) codex-hepta-contracts final_use_control::tests::independent_approval_binds_exact_grant_semantics
+        PASS [   0.004s] (116/214) codex-hepta-contracts identity::tests::tool_identity_is_versioned_and_length_delimited
+        PASS [   0.020s] (117/214) codex-hepta-contracts final_use_control::tests::revocation_ack_requires_receipt_for_the_exact_applied_update
+        PASS [   0.004s] (118/214) codex-hepta-contracts memory::tests::attachment_is_always_typed_as_quoted_untrusted_reference
+        PASS [   0.026s] (119/214) codex-hepta-contracts final_use_control::tests::forged_revocation_feed_never_updates_authority
+        PASS [   0.008s] (120/214) codex-hepta-contracts memory::tests::cross_thread_recall_stays_disabled_without_an_execution_witness
+        PASS [   0.006s] (121/214) codex-hepta-contracts memory::tests::inactive_and_expired_revisions_are_not_recalled
+        PASS [   0.008s] (122/214) codex-hepta-contracts memory::tests::deserialization_rejects_invalid_limits_scores_and_request_binding
+        PASS [   0.010s] (123/214) codex-hepta-contracts memory::tests::ranking_is_integer_and_has_stable_tie_breaks
+        PASS [   0.014s] (124/214) codex-hepta-contracts memory::tests::limits_reject_zero_unbounded_and_incoherent_values
+        PASS [   0.038s] (125/214) codex-hepta-contracts final_use_control::tests::signed_revocation_feed_is_authenticated_and_monotonic
+        PASS [   0.015s] (126/214) codex-hepta-contracts memory::tests::memory_ids_and_legacy_nested_bindings_have_fixed_canonical_oracles
+        PASS [   0.006s] (127/214) codex-hepta-contracts memory::tests::request_identity_is_stable_and_query_is_only_fingerprinted
+        PASS [   0.006s] (128/214) codex-hepta-contracts native_gateway::tests::invalid_headers_and_unknown_routes_are_rejected
+        PASS [   0.071s] (129/214) codex-hepta-contracts final_use_control::tests::approval_key_ring_enforces_epoch_windows_and_reports_selected_key
+        PASS [   0.005s] (130/214) codex-hepta-contracts native_gateway::tests::response_cannot_be_substituted_or_reused_for_another_request
+        PASS [   0.006s] (131/214) codex-hepta-contracts provider::tests::ephemeral_input_preserves_lineage_two_identity_and_binds_both_digests
+        PASS [   0.005s] (132/214) codex-hepta-contracts provider::tests::host_ids_are_hashed_and_bound_without_persisting_plaintext
+        PASS [   0.009s] (133/214) codex-hepta-contracts provider::tests::active_provider_wire_rejects_unknown_fields_but_keeps_legacy_optional_decode
+        PASS [   0.010s] (134/214) codex-hepta-contracts native_gateway::tests::proof_binds_nonce_path_server_incarnation_and_window
+        PASS [   0.004s] (135/214) codex-hepta-contracts provider::tests::orphaned_ephemeral_digest_cannot_alias_an_absent_binding
+        PASS [   0.004s] (136/214) codex-hepta-contracts provider::tests::request_binding_changes_for_websocket_incremental_semantics
+        PASS [   0.004s] (137/214) codex-hepta-contracts provider_effect::tests::conflict_lookup_is_not_a_success
+        PASS [   0.005s] (138/214) codex-hepta-contracts provider::tests::provider_wire_validation_fences_identity_and_terminal_bindings
+        PASS [   0.004s] (139/214) codex-hepta-contracts provider_effect::tests::coordinator_quarantines_unknown_and_never_blind_retries
+        PASS [   0.005s] (140/214) codex-hepta-contracts provider_effect::tests::coordinator_quarantines_malformed_dispatch_ack_before_returning_error
+        PASS [   0.004s] (141/214) codex-hepta-contracts provider_effect::tests::coordinator_rejects_malformed_ack_provenance_before_adapter_call
+        PASS [   0.014s] (142/214) codex-hepta-contracts provider::tests::provider_ids_are_versioned_stable_and_length_delimited
+        PASS [   0.012s] (143/214) codex-hepta-contracts provider_effect::tests::accepted_ack_does_not_prove_effect_completion
+        PASS [   0.004s] (144/214) codex-hepta-contracts provider_effect::tests::coordinator_unsupported_capability_never_calls_lookup
+        PASS [   0.005s] (145/214) codex-hepta-contracts provider_effect::tests::coordinator_restored_pending_payload_path_is_quarantined_before_dispatch
+        PASS [   0.005s] (146/214) codex-hepta-contracts provider_effect::tests::coordinator_restored_pending_is_quarantined_before_dispatch
+        PASS [   0.005s] (147/214) codex-hepta-contracts provider_effect::tests::default_capability_is_unsupported
+        PASS [   0.006s] (148/214) codex-hepta-contracts provider_effect::tests::coordinator_unsupported_capability_stays_quarantined
+        PASS [   0.079s] (149/214) codex-hepta-contracts final_use_control::tests::convergence_report_requires_every_enrolled_node_ack
+        PASS [   0.005s] (150/214) codex-hepta-contracts provider_effect::tests::journal_late_dispatch_ack_after_pending_quarantine_is_side_effect_free
+        PASS [   0.006s] (151/214) codex-hepta-contracts provider_effect::tests::journal_persists_intent_and_monotonic_ack_observations
+        PASS [   0.006s] (152/214) codex-hepta-contracts provider_effect::tests::journal_deserialization_rejects_malformed_ack_contents
+        PASS [   0.004s] (153/214) codex-hepta-contracts provider_effect::tests::journal_rejects_late_dispatch_ack_after_quarantine
+        PASS [   0.005s] (154/214) codex-hepta-contracts provider_effect::tests::journal_status_acceptance_can_close_prior_quarantine
+        PASS [   0.096s] (155/214) codex-hepta-contracts final_use_control::tests::convergence_rejects_unknown_duplicate_stale_future_and_forged_inputs
+        PASS [   0.005s] (156/214) codex-hepta-contracts provider_effect::tests::journal_unknown_lookup_cannot_turn_accepted_into_rejected
+        PASS [   0.006s] (157/214) codex-hepta-contracts provider_effect::tests::journal_unknown_lookup_persists_quarantine_until_reconciled
+        PASS [   0.008s] (158/214) codex-hepta-contracts provider_effect::tests::journal_round_trip_is_serializable_without_plain_payloads
+        PASS [   0.004s] (159/214) codex-hepta-contracts provider_effect::tests::journal_without_ack_sources_remains_compatible_when_empty
+        PASS [   0.006s] (160/214) codex-hepta-contracts provider_effect::tests::journal_with_ack_requires_exact_ack_source_provenance
+        PASS [   0.010s] (161/214) codex-hepta-contracts provider_effect::tests::journal_rejects_terminal_ack_replacement_and_unknown_lookup
+        PASS [   0.004s] (162/214) codex-hepta-contracts provider_effect::tests::logical_effect_key_is_stable_across_local_attempts_and_payload_changes
+        PASS [   0.004s] (163/214) codex-hepta-contracts provider_effect::tests::malformed_in_memory_ack_provenance_fails_closed_before_state_or_record
+        PASS [   0.004s] (164/214) codex-hepta-contracts provider_effect::tests::occurrence_key_is_stable_across_physical_retries_and_excludes_payload
+        PASS [   0.004s] (165/214) codex-hepta-contracts provider_effect::tests::payload_coordinator_quarantines_malformed_dispatch_ack_before_retry
+        PASS [   0.005s] (166/214) codex-hepta-contracts provider_effect::tests::payload_coordinator_marks_explicit_not_dispatched_without_physical_attempt
+        PASS [   0.005s] (167/214) codex-hepta-contracts provider_effect::tests::payload_coordinator_rejects_mismatch_before_adapter_call
+        PASS [   0.008s] (168/214) codex-hepta-contracts provider_effect::tests::matching_ack_binds_key_payload_and_operation
+        PASS [   0.006s] (169/214) codex-hepta-contracts provider_effect::tests::operation_effect_key_is_stable_across_payload_changes
+        PASS [   0.006s] (170/214) codex-hepta-contracts provider_effect::tests::same_key_different_payload_is_rejected
+        PASS [   0.004s] (171/214) codex-hepta-contracts provider_effect::tests::status_accepted_fences_late_dispatch_transition
+        PASS [   0.004s] (172/214) codex-hepta-contracts provider_effect::tests::status_observation_binds_exact_payload_and_requires_lookup_source
+        PASS [   0.012s] (173/214) codex-hepta-contracts provider_effect::tests::malformed_in_memory_journal_contents_fail_closed_before_state_or_append
+        PASS [   0.005s] (174/214) codex-hepta-contracts provider_effect::tests::status_observation_is_monotonic_and_rejects_late_dispatch_or_unknown
+        PASS [   0.005s] (175/214) codex-hepta-contracts provider_effect::tests::unknown_and_not_found_lookup_remain_quarantined
+        PASS [   0.005s] (176/214) codex-hepta-contracts provider_effect::tests::unsupported_capability_fails_closed_even_with_matching_ack
+        PASS [   0.004s] (177/214) codex-hepta-contracts verified_use_witness::tests::malformed_witness_fails_validation
+        PASS [   0.004s] (178/214) codex-hepta-contracts qualification_receipt::tests::rejected_receipt_can_witness_a_non_mutating_callback
+        PASS [   0.005s] (179/214) codex-hepta-contracts::authbus_b3_adapter_qualification adapter_flags_are_fail_closed_and_direct_success_is_opaque
+        PASS [   0.006s] (180/214) codex-hepta-contracts verified_use_witness::tests::witness_round_trip_is_evidence_only_and_strict
+        PASS [   0.006s] (181/214) codex-hepta-contracts::authbus_b3_adapter_qualification backend_openbao_error_matrix_is_typed_and_does_not_call_provider
+        PASS [   0.007s] (182/214) codex-hepta-contracts::authbus_b3_adapter_qualification invalid_grant_is_quarantined_once_and_terminal_replay_is_local
+        PASS [   0.005s] (183/214) codex-hepta-contracts::authbus_b3_adapter_qualification malformed_provider_success_is_quarantined_without_a_second_call
+        PASS [   0.004s] (184/214) codex-hepta-contracts::authbus_b3_adapter_qualification rotation_uses_the_same_process_bound_boundary
+        PASS [   0.011s] (185/214) codex-hepta-contracts qualification_receipt::tests::qualification_receipt_is_digest_bound_and_fail_closed
+        PASS [   0.006s] (186/214) codex-hepta-contracts::authbus_local_qualification b4_stale_permit_callback_does_not_mutate_accounting
+        PASS [   0.009s] (187/214) codex-hepta-contracts::authbus_b3_adapter_qualification response_loss_requires_status_lookup_and_never_blind_retries
+        PASS [   0.004s] (188/214) codex-hepta-contracts::authbus_local_qualification b5_crash_after_call_recovers_lookup_only_without_a_second_call
+        PASS [   0.005s] (189/214) codex-hepta-contracts::authbus_local_qualification b4_unknown_quota_and_duplicate_request_fail_closed
+        PASS [   0.008s] (190/214) codex-hepta-contracts::authbus_b3_adapter_qualification stale_status_fence_is_rejected_before_provider_lookup
+        PASS [   0.006s] (191/214) codex-hepta-contracts::authbus_local_qualification b5_payload_conflict_and_stale_fence_do_not_append_records
+        PASS [   0.006s] (192/214) codex-hepta-contracts::authbus_local_qualification b5_unknown_intent_is_a_safe_stop_without_dispatch
+        PASS [   0.005s] (193/214) codex-hepta-native-gateway native_mac::tests::response_proof_covers_status_body_and_originating_request
+        PASS [   0.005s] (194/214) codex-hepta-native-gateway native_mac::tests::restarted_server_and_substituted_target_reject_old_read_proofs
+        PASS [   0.008s] (195/214) codex-hepta-native-gateway native_mac::tests::native_proofs_are_single_use_and_do_not_expose_the_secret
+        PASS [   0.010s] (196/214) codex-hepta-contracts::authbus_local_qualification qualification_feature_keeps_b4_and_b5_authority_flags_false
+        PASS [   0.005s] (197/214) codex-hepta-native-gateway tests::connection_capacity_is_bounded_and_released
+        PASS [   0.005s] (198/214) codex-hepta-native-gateway tests::bearer_authentication_is_mandatory_exact_and_non_duplicated
+        PASS [   0.008s] (199/214) codex-hepta-native-gateway tests::authentication_account_is_required_bounded_and_unique
+        PASS [   0.006s] (200/214) codex-hepta-native-gateway tests::explicit_accept_header_returns_hpta_v2_runtime_status
+        PASS [   0.011s] (201/214) codex-hepta-native-gateway organ_request_tests::loopback_http_request_reaches_the_read_only_status_organ
+        PASS [   0.006s] (202/214) codex-hepta-native-gateway tests::exposes_authenticated_native_discovery_health_and_closed_runtime_status
+        PASS [   0.006s] (203/214) codex-hepta-native-gateway tests::live_shell_contract_is_exact_authenticated_and_all_authority_is_closed
+        PASS [   0.017s] (204/214) codex-hepta-contracts::final_use_linearization unix::callback_reentrant_revocation_is_ordered_after_final_entry_without_deadlock
+        PASS [   0.007s] (205/214) codex-hepta-native-gateway tests::ip_loopback_classification_matches_socket_policy
+        PASS [   0.004s] (206/214) codex-hepta-native-gateway tests::parses_production_default_and_isolated_canary_addresses
+        PASS [   0.005s] (207/214) codex-hepta-native-gateway tests::rejects_all_authenticated_post_requests
+        PASS [   0.009s] (208/214) codex-hepta-native-gateway tests::loopback_socket_serves_authenticated_metadata_bound_v2_status
+        PASS [   0.005s] (209/214) codex-hepta-native-gateway tests::rejects_non_loopback_or_ephemeral_address
+        PASS [   0.005s] (210/214) codex-hepta-native-gateway tests::unsupported_wire_accept_version_fails_closed
+        PASS [   0.010s] (211/214) codex-hepta-native-gateway tests::rejects_headers_larger_than_the_limit_even_with_a_terminator
+        PASS [   0.017s] (212/214) codex-hepta-native-gateway tests::truthy_values_are_explicit
+        PASS [   0.372s] (213/214) codex-hepta-contracts authbus_b5::tests::b5_fault_matrix_keeps_rpo_zero_for_one_thousand_crash_points
+        PASS [   0.845s] (214/214) codex-hepta-contracts authority_lease::tests::maximum_declared_state_shape_fits_restart_read_envelope
+────────────
+     Summary [   0.898s] 214 tests run: 214 passed, 0 skipped
+elapsed=3.935 sec

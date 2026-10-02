@@ -1,10 +1,18 @@
 # ui.native: Rust-only product and presentation audit, 2026-10-02
 
-Status: **continuation in progress; complete product closure and new-source qualification pending**.
+Status: **native source frozen; complete whole-UI closure and new-source qualification pending**.
 This is a source, product-completeness and acceptance plan for the existing Rust
 application. It does not declare production readiness, independent acceptance,
 deployment qualification or release authorization. Findings below describe the
 immutable baseline unless an explicitly identified later result says otherwise.
+
+The published continuation implementation is
+`2b59c1c5f877432a557185efd77331ae1143ae42`, tree
+`9326a46a71a3f7aae14481d979cd3faee1935e7c`, on
+`work/ui-rust-scifi-audit-20261002`. Its immutable parent is `978c1923...`.
+The [local diagnostic binding](history/20261002-2b59-local/README.md) preserves
+the original prepublication observations and their exact relationship to this
+source. Fresh hosted candidate/merge/storage qualification remains pending.
 
 ## 1. Exact candidate, evidence and integration boundary
 
@@ -218,8 +226,7 @@ handoff invocations remain noninteractive. Regressions cover retry/close, no
 state creation or trust repair during input reload, malformed machine arguments,
 bounded Unicode details and visible recovery controls.
 
-The gateway root-route repair is applied in the continuation worktree. Its final
-commit/tree is not yet frozen.
+The gateway root-route repair is included in the frozen continuation source above.
 `codex-rs/hepta-native-gateway/src/lib.rs::route_authenticated_request`
 now returns an authenticated JSON native-client discovery descriptor for
 `GET /`, with schema `hepta.native-client-discovery.v1`; the embedded HTML/CSS/
@@ -255,8 +262,8 @@ a pull-request event whose base ref or SHA differs. It also verifies the
 candidate manifest's parent and the base/implementation/candidate ancestry.
 The six platform subjects, release storage subject, strict same-run aggregate,
 read-only permissions and storage budgets are unchanged. This is qualification
-of a stacked continuation, not a merge with main. Frozen metadata remains
-pending until all product edits have been reviewed and committed.
+of a stacked continuation, not a merge with main. Frozen metadata binds the
+published source above; it does not inherit any earlier candidate's execution.
 
 Local workflow regression execution on 2026-10-02 passed 11 identity-step cases
 (`PYTHONPATH=scripts python3 -m unittest test_hepta_ui_native_identity -v`) and
