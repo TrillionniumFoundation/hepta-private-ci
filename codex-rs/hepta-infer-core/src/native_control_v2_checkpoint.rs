@@ -6,9 +6,11 @@ fn validate_checkpoint_record(record: &NativeRunRecord) -> Result<(), Error> {
     }
     let request_id = record.request.request_id.clone();
     let mut replay = NativeJournal::default();
-    replay.apply(Event::Reserve {
-        request: record.request.clone(),
-        maximum_in_flight: 1,
+    replay.apply(match &record.bound_source {
+        Some(source) => Event::ReserveBound {
+            request: record.request.clone(), maximum_in_flight: 1, source: source.clone(),
+        },
+        None => Event::Reserve { request: record.request.clone(), maximum_in_flight: 1 },
     })?;
     if let Some(binding) = &record.execution_binding {
         replay.apply(Event::BindExecution {

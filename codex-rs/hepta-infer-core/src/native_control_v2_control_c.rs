@@ -152,7 +152,11 @@ impl DurableInferenceControl {
         expired_encrypted_references.dedup();
 
         let checkpoint = NativeCheckpoint {
-            schema_version: CHECKPOINT_SCHEMA_VERSION,
+            schema_version: if checkpoint_records.values().any(|record| record.bound_source.is_some()) {
+                BOUND_CHECKPOINT_SCHEMA_VERSION
+            } else {
+                CHECKPOINT_SCHEMA_VERSION
+            },
             generation,
             maximum_in_flight: self.native.maximum_in_flight,
             records: checkpoint_records,

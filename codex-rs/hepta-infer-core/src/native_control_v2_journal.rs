@@ -29,6 +29,13 @@ impl NativeJournal {
                 &archive_chain_digest,
             );
         }
+        if let Event::ReserveBound { request, maximum_in_flight, source } = event {
+            source.validate(&request)?;
+            let request_id = request.request_id.clone();
+            self.apply(Event::Reserve { request, maximum_in_flight })?;
+            self.records.get_mut(&request_id).ok_or(Error::RequestNotFound)?.bound_source = Some(source);
+            return Ok(());
+        }
         if let Event::Reserve {
             request,
             maximum_in_flight,
@@ -40,6 +47,7 @@ impl NativeJournal {
                 request.request_id.clone(),
                 NativeRunRecord {
                     request,
+                    bound_source: None,
                     revision: 1,
                     state: NativeReservationState::Reserved,
                     dispatch: None,
@@ -57,7 +65,7 @@ impl NativeJournal {
             return Ok(());
         }
         let id = match &event {
-            Event::Reserve { .. } | Event::CheckpointReference { .. } => {
+            Event::Reserve { .. } | Event::ReserveBound { .. } | Event::CheckpointReference { .. } => {
                 return Err(Error::InvalidTransition);
             }
             Event::BindExecution { request_id, .. }
@@ -73,7 +81,7 @@ impl NativeJournal {
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
         match event {
-            Event::Reserve { .. } | Event::CheckpointReference { .. } => {
+            Event::Reserve { .. } | Event::ReserveBound { .. } | Event::CheckpointReference { .. } => {
                 return Err(Error::InvalidTransition);
             }
             Event::BindExecution { binding, .. } => {
@@ -86,7 +94,7 @@ impl NativeJournal {
                 record.execution_binding = Some(binding);
             }
             Event::Dispatch { dispatch, .. } => {
-                if record.state != NativeReservationState::Reserved {
+                if record.state != NativeReservationState::Reserved || record.bound_source.is_some() {
                     return Err(Error::InvalidTransition);
                 }
                 validate_dispatch(&dispatch)?;
@@ -333,7 +341,7 @@ impl NativeJournal {
     ) -> Result<(NativeRunRecord, Option<usize>), Error> {
         let event_id = match &event {
             Event::CheckpointReference { .. } => return Err(Error::InvalidTransition),
-            Event::Reserve { request, .. } => &request.request_id,
+            Event::Reserve { request, .. } | Event::ReserveBound { request, .. } => &request.request_id,
             Event::BindExecution { request_id, .. }
             | Event::Dispatch { request_id, .. }
             | Event::Started { request_id, .. }
@@ -348,10 +356,8 @@ impl NativeJournal {
         if event_id != request_id {
             return Err(Error::AssignmentMismatch);
         }
-        if let Event::Reserve {
-            request,
-            maximum_in_flight,
-        } = &event
+        if let Event::Reserve { request, maximum_in_flight }
+            | Event::ReserveBound { request, maximum_in_flight, .. } = &event
         {
             // A one-record projection cannot count the other occupied slots.
             self.validate_reserve(request, *maximum_in_flight)?;
@@ -426,7 +432,7 @@ impl NativeJournal {
         }
         let mut checkpoint: NativeCheckpoint = serde_json::from_slice(&bytes)
             .map_err(|_| Error::CorruptJournal("native checkpoint decode"))?;
-        if !matches!(checkpoint.schema_version, 1 | CHECKPOINT_SCHEMA_VERSION)
+        if !matches!(checkpoint.schema_version, 1 | CHECKPOINT_SCHEMA_VERSION | BOUND_CHECKPOINT_SCHEMA_VERSION)
             || checkpoint.generation != generation
             || checkpoint.archive_segment_digest != archive_segment_digest
             || checkpoint.archive_chain_digest != archive_chain_digest
@@ -437,6 +443,10 @@ impl NativeJournal {
                 .is_some_and(|limit| !(1..=256).contains(&limit))
         {
             return Err(Error::CorruptJournal("native checkpoint binding"));
+        }
+        if checkpoint.schema_version != BOUND_CHECKPOINT_SCHEMA_VERSION
+            && checkpoint.records.values().any(|record| record.bound_source.is_some()) {
+            return Err(Error::CorruptJournal("bound native checkpoint requires schema 3"));
         }
         for (id, record) in &mut checkpoint.records {
             // Version 1 reconciliations manufactured readiness without host

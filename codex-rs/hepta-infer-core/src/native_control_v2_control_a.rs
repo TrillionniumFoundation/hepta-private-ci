@@ -15,6 +15,27 @@ impl DurableInferenceControl {
         request: NativeRequest,
         maximum_in_flight: usize,
     ) -> Result<NativeRunRecord, Error> {
+        self.reserve_native_with_source(request, maximum_in_flight, None)
+    }
+
+    /// Admit the exact preimage-checked run/context relationship in the same
+    /// durable reservation event. No prompt plaintext enters the journal.
+    pub fn reserve_native_bound(
+        &mut self,
+        request: NativeRequest,
+        maximum_in_flight: usize,
+        proof: NativeBoundSourceProof,
+    ) -> Result<NativeRunRecord, Error> {
+        proof.record().validate(&request)?;
+        self.reserve_native_with_source(request, maximum_in_flight, Some(proof.record().clone()))
+    }
+
+    fn reserve_native_with_source(
+        &mut self,
+        request: NativeRequest,
+        maximum_in_flight: usize,
+        source: Option<NativeBoundSourceRecordV2>,
+    ) -> Result<NativeRunRecord, Error> {
         validate_native_request(&request)?;
         if !(1..=256).contains(&maximum_in_flight) {
             return Err(Error::CapacityExceeded);
@@ -29,7 +50,7 @@ impl DurableInferenceControl {
             return Err(Error::Conflict);
         }
         if let Some(record) = self.native.records.get(&request.request_id) {
-            return if record.request == request {
+            return if record.request == request && record.bound_source == source {
                 self.acknowledge_native_record(record.clone())
             } else {
                 Err(Error::Conflict)
@@ -42,9 +63,9 @@ impl DurableInferenceControl {
         let id = request.request_id.clone();
         self.commit_native(
             &id,
-            Event::Reserve {
-                request,
-                maximum_in_flight,
+            match source {
+                Some(source) => Event::ReserveBound { request, maximum_in_flight, source },
+                None => Event::Reserve { request, maximum_in_flight },
             },
         )
     }
@@ -117,6 +138,10 @@ impl DurableInferenceControl {
         validate_identity(request_id, "native request")?;
         validate_dispatch(&dispatch)?;
         self.ensure_native_writer_available()?;
+        if self.native.records.get(request_id).is_some_and(|record| record.bound_source.is_some()) {
+            // The additive bound profile cannot use a legacy physical-send path.
+            return Err(Error::InvalidTransition);
+        }
         self.ensure_native_dispatch_space()?;
         self.commit_native(
             request_id,
