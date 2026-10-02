@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "d5d67f3ccd36e64c199adecb5537123c716f9488",
-    "tree": "80588fa482fe84b6f94faadb8926f27d405d9cff"
+    "commit": "86eb13b802ea9b269a30d0c941edc74b8d0e4312",
+    "tree": "3a0e74488341f9447de48e6afd2ac1df969adb2f"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.operator",
@@ -370,6 +370,25 @@
       "designOperation": "freeze_terminal_cell_from_signed_owner_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "canonical_bellman_artifact_json_v1",
+      "nativeSymbol": "CanonicalBellmanArtifactV1",
+      "sourcePath": "codex-rs/hepta-bellman-operator/src/wire.rs",
+      "state": "structural_canonical_json_and_independent_pin_adapter_no_authority",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-bellman-operator/src/wire_tests.rs::canonical_roundtrip_ordering_and_independent_pin",
+        "codex-rs/hepta-bellman-operator/src/wire_tests.rs::missing_unknown_duplicate_and_wrong_type_fields_reject",
+        "codex-rs/hepta-bellman-operator/src/wire_tests.rs::bounded_ids_digest_rank_and_optional_lineage_reject_substitution",
+        "codex-rs/hepta-bellman-operator/src/wire_tests.rs::all_seven_terms_and_exact_error_limits_are_required",
+        "codex-rs/hepta-bellman-operator/src/wire_tests.rs::canonical_digest_binds_every_artifact_field",
+        "codex-rs/hepta-bellman-operator/src/wire_tests.rs::independent_python_canonical_vector_matches_bytes_and_digest"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "canonical_bellman_artifact_json_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
@@ -400,13 +419,15 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "d5d67f3ccd36e64c199adecb5537123c716f9488",
-    "tree": "80588fa482fe84b6f94faadb8926f27d405d9cff"
+    "commit": "86eb13b802ea9b269a30d0c941edc74b8d0e4312",
+    "tree": "3a0e74488341f9447de48e6afd2ac1df969adb2f"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-bellman-operator"
+    "codex-rs/hepta-bellman-operator",
+    "docs/contracts/PROTOCOL_SCHEMAS.json",
+    "docs/learning/HOLDER_BELLMAN_SPEC.md"
   ],
   "productCallers": [
     {
@@ -443,7 +464,7 @@
     },
     {
       "path": "codex-rs/hepta-bellman-operator",
-      "object": "7d2297de77dfcd83ec0391bbce70c56032771276"
+      "object": "842aea4e9f520c2dd9078d59148afc32e9bad3d3"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/authenticated.rs",
@@ -475,7 +496,7 @@
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/lib.rs",
-      "object": "d09ab88abefd93486be76c6345b1a2c31bb86b7a"
+      "object": "92371d7260bd47c30c8ce6f389c0d12791580df6"
     },
     {
       "path": "codex-rs/hepta-bellman-operator/src/lib_tests.rs",
@@ -502,6 +523,14 @@
       "object": "99031cf3763d01587472a634788319fb47d3e6be"
     },
     {
+      "path": "codex-rs/hepta-bellman-operator/src/wire.rs",
+      "object": "ef01df1778087e9835ee04efdca7fc136d5f8f4d"
+    },
+    {
+      "path": "codex-rs/hepta-bellman-operator/src/wire_tests.rs",
+      "object": "44541e747bf2a6c9bc466fd92fd74537bc9f19e2"
+    },
+    {
       "path": "codex-rs/hepta-bellman-operator/src/world_model.rs",
       "object": "2442ac1682ef58b81a4504c16ad74afbafea34e2"
     },
@@ -511,7 +540,7 @@
     },
     {
       "path": "docs/modules/learning.operator/TECHNICAL.md",
-      "object": "42af5eb6abcc3288863424f06a3585f6269c6e2f"
+      "object": "969393e9b86cce709d407ef787678eae37f44b87"
     }
   ],
   "navigationRebindProvenance": {
@@ -526,5 +555,22 @@
     "reason": "Reviewed current-source navigation after learning.operator audit; previous anchors may be outside current main ancestry. Original provenance is retained without renewing historical execution evidence.",
     "historicalExecutionRevalidated": false,
     "authorityGranted": false
-  }
+  },
+  "navigationRebindHistory": [
+    {
+      "previous": {
+        "sourceBase": {
+          "commit": "d5d67f3ccd36e64c199adecb5537123c716f9488",
+          "tree": "80588fa482fe84b6f94faadb8926f27d405d9cff"
+        },
+        "observedAtHead": {
+          "commit": "d5d67f3ccd36e64c199adecb5537123c716f9488",
+          "tree": "80588fa482fe84b6f94faadb8926f27d405d9cff"
+        }
+      },
+      "reason": "Current source navigation reviewed during 2026-10-02 scoped module audit. No historical execution is renewed.",
+      "historicalExecutionRevalidated": false,
+      "authorityGranted": false
+    }
+  ]
 }
