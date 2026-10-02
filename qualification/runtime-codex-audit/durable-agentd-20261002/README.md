@@ -50,3 +50,12 @@ required before claiming restored Windows functionality or qualification.
 This stage does not establish the typed cross-owner dispatch/abort/outbox bridge,
 an atomic cross-process generation ingress fence, current-main acceptance, or
 all hosted CI green. The draft remains stacked on the recovered inference base.
+
+The final exact hosted Python selection passes 728 tests after adding the shared
+exact-CI identity-profile adapter test. The canonical path guard passes 11
+modules, 52 operations and 76 test bindings. Aggregate Lane-B generation remains
+blocked by inherited automation.taskflow provenance: its source commit
+41b2da214f5541da09e0313e7b8576add6ed3839 is not an ancestor of this recovered
+candidate. No unrelated provenance anchor was silently replaced. Old-head hosted
+Agentd qualification also selects a nonexistent memory destination-recovery test;
+its zero-test failure remains a real gap, not an accepted or skipped test.
