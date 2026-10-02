@@ -388,3 +388,13 @@ The bootstrap source-location obligation for `knowledge.graph` is implemented by
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. The cross-owner cognitive integration additionally depends on the `codex-hepta-memory` oracle/store tests and the Agentd product qualification suite; prompt-factor composition additionally depends on prompt.registry, the prompt-factor adapter tests and prompt.optimizer graph-consumer tests. These are source/test identities until an exact-candidate run records a passing receipt. The default Agentd crate profile now selects the scoped cognitive writer and fails closed when its store is unavailable, while ordinary Codex/App Server remains default-off. This receipt grants no model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
 
 The [2026-10-01 adversarial audit](../../../qualification/module-execution-dossiers/reports/knowledge.graph-adversarial-audit-2026-10-01.md) and [second-round audit](../../../qualification/module-execution-dossiers/reports/knowledge.graph-adversarial-audit-2026-10-01-round2.md) record concrete findings, source identities, regression evidence and remaining qualification boundaries. They do not replace the canonical completion gates.
+
+### Complete-input identity repair (2026-10-02)
+
+Complete-generation admission now rejects duplicate node and edge identities
+before removing empty or tombstoned support sets. A dead duplicate cannot hide
+an ambiguous live/dead source cut. Unique unsupported records still disappear
+normally, and all resource, authority and digest contracts remain unchanged.
+Two baseline-failing regressions cover both input orders and support-pruning
+forms; all 35 KG package tests pass locally. The [continuation audit](ADVERSARIAL_AUDIT_20261002.md)
+records the scope and remaining qualification requirements.

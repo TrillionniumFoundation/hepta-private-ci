@@ -403,3 +403,57 @@ fn tombstoning_the_last_source_projects_an_empty_full_and_incremental_graph() {
         Err(KnowledgeGenerationErrorV2::UnknownEdgeNode)
     );
 }
+
+#[test]
+fn complete_ingress_rejects_duplicate_nodes_before_support_pruning() {
+    for tombstoned in [false, true] {
+        for reverse in [false, true] {
+            let live = node("node:a");
+            let mut removed = live.clone();
+            if tombstoned {
+                removed.supports[0].tombstoned = true;
+            } else {
+                removed.supports.clear();
+            }
+            let nodes = if reverse {
+                vec![removed, live]
+            } else {
+                vec![live, removed]
+            };
+            assert_eq!(
+                build_complete_generation(generation(1), input(nodes, Vec::new())),
+                Err(KnowledgeGenerationErrorV2::DuplicateNode(
+                    "node:a".to_owned()
+                ))
+            );
+        }
+    }
+}
+
+#[test]
+fn complete_ingress_rejects_duplicate_edges_before_support_pruning() {
+    for tombstoned in [false, true] {
+        for reverse in [false, true] {
+            let live = edge("node:b");
+            let identity = live.identity.clone();
+            let mut removed = live.clone();
+            if tombstoned {
+                removed.supports[0].tombstoned = true;
+            } else {
+                removed.supports.clear();
+            }
+            let edges = if reverse {
+                vec![removed, live]
+            } else {
+                vec![live, removed]
+            };
+            assert_eq!(
+                build_complete_generation(
+                    generation(1),
+                    input(vec![node("node:a"), node("node:b")], edges)
+                ),
+                Err(KnowledgeGenerationErrorV2::DuplicateEdge(identity))
+            );
+        }
+    }
+}
