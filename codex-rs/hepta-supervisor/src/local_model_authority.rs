@@ -48,6 +48,10 @@ mod relay;
 mod relay_policy;
 #[cfg(feature = "local-model-relay")]
 pub use credentials::run_credential_worker;
+#[path = "local_model_diagnostics.rs"]
+mod diagnostics;
+use diagnostics::Progress;
+use diagnostics::Stage;
 
 #[path = "local_model_executable.rs"]
 mod executable;
@@ -526,17 +530,22 @@ impl Issuer {
         Ok(SignedFinalUseGrant { grant, signature })
     }
 
-    async fn exchange(&self, mut stream: UnixStream) -> anyhow::Result<()> {
+    async fn exchange(&self, mut stream: UnixStream, progress: &Progress) -> anyhow::Result<()> {
+        progress.enter(Stage::PeerCapture);
         let peer = capture_peer(&self.config, &self.verifier, &self.executables, &stream).await?;
+        progress.enter(Stage::ReadLength);
         let mut length = [0_u8; 4];
         stream.read_exact(&mut length).await?;
+        progress.enter(Stage::RequestBound);
         let length = usize::try_from(u32::from_be_bytes(length))?;
         anyhow::ensure!(
             (1..=MODEL_ISSUER_MAX_REQUEST_BYTES).contains(&length),
             "model issuer request exceeds its bound"
         );
         let mut bytes = vec![0_u8; length];
+        progress.enter(Stage::ReadBody);
         stream.read_exact(&mut bytes).await?;
+        progress.enter(Stage::Decode);
         let request: Exchange = serde_json::from_slice(&bytes)?;
         if let Exchange::Resource(request) = request {
             let response = resources::observe(self, request, &peer).await?;
@@ -558,28 +567,42 @@ impl Issuer {
             return Ok(());
         }
         if let Exchange::Trust(request) = request {
+            progress.enter(
+                if request.operation == codex_hepta_contracts::MODEL_TRUST_LOAD {
+                    Stage::TrustLoad
+                } else {
+                    Stage::TrustMutation
+                },
+            );
             let response = self.client_trust(request, &peer)?;
+            progress.enter(Stage::PeerRecheck);
             anyhow::ensure!(
                 capture_peer(&self.config, &self.verifier, &self.executables, &stream).await?
                     == peer,
                 "model caller identity changed during trust mutation"
             );
+            progress.enter(Stage::Encode);
             let bytes = serde_json::to_vec(&response)?;
             anyhow::ensure!(
                 bytes.len() <= MODEL_ISSUER_MAX_RESPONSE_BYTES,
                 "trust response exceeds its bound"
             );
+            progress.enter(Stage::WriteLength);
             stream
                 .write_all(&u32::try_from(bytes.len())?.to_be_bytes())
                 .await?;
+            progress.enter(Stage::WriteBody);
             stream.write_all(&bytes).await?;
+            progress.enter(Stage::Flush);
             stream.flush().await?;
             return Ok(());
         }
         let Exchange::Grant(request) = request else {
             anyhow::bail!("invalid model exchange")
         };
+        progress.enter(Stage::GrantHead);
         let head = self.synchronize_head()?;
+        progress.enter(Stage::GrantBinding);
         let outcome = Self::sign(
             &self.config,
             &self.signer,
@@ -588,6 +611,7 @@ impl Issuer {
             &peer,
             &head,
         );
+        progress.enter(Stage::PeerRecheck);
         anyhow::ensure!(
             capture_peer(&self.config, &self.verifier, &self.executables, &stream).await? == peer,
             "model caller identity changed during issuance"
@@ -599,6 +623,7 @@ impl Issuer {
                 Some("ordinary model binding is not authorized".to_string()),
             ),
         };
+        progress.enter(Stage::Encode);
         let bytes = serde_json::to_vec(&ModelIssuerResponse {
             schema_version: MODEL_ISSUER_SCHEMA_VERSION,
             revocations: head,
@@ -609,10 +634,13 @@ impl Issuer {
             bytes.len() <= MODEL_ISSUER_MAX_RESPONSE_BYTES,
             "model issuer response exceeds its bound"
         );
+        progress.enter(Stage::WriteLength);
         stream
             .write_all(&u32::try_from(bytes.len())?.to_be_bytes())
             .await?;
+        progress.enter(Stage::WriteBody);
         stream.write_all(&bytes).await?;
+        progress.enter(Stage::Flush);
         stream.flush().await?;
         Ok(())
     }
@@ -679,8 +707,10 @@ pub async fn run_local_model_authority(config_path: &Path) -> anyhow::Result<()>
                 let (stream, _) = result?;
                 // Serial and bounded: no caller can create unbounded issuer tasks.
                 // A disconnect or denial never changes qualification state.
-                if tokio::time::timeout(timeout, issuer.exchange(stream)).await.is_err() {
-                    eprintln!("ordinary model issuer exchange timed out");
+                let progress = Progress::new();
+                let outcome = tokio::time::timeout(timeout, issuer.exchange(stream, &progress)).await;
+                if let Some(diagnostic) = progress.diagnostic(outcome) {
+                    eprintln!("{diagnostic}");
                 }
             }
             signal = tokio::signal::ctrl_c() => {
