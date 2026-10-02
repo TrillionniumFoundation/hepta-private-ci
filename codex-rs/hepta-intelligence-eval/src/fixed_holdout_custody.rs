@@ -139,6 +139,29 @@ pub(super) fn create_private(path: &Path, bytes: &[u8]) -> HostResult<File> {
     parent.sync_all()?;
     Ok(file)
 }
+/// Open the exact original private journal without following a replaced path.
+/// The returned descriptor is checked before any recovery or write may occur.
+pub(super) fn open_retained_private_file(path: &Path) -> HostResult<File> {
+    private_directory(path.parent().ok_or("original private file parent")?)?;
+    let before = std::fs::symlink_metadata(path)?;
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .custom_flags(rustix::fs::OFlags::NOFOLLOW.bits() as i32)
+        .open(path)?;
+    let held = file.metadata()?;
+    let after = std::fs::symlink_metadata(path)?;
+    if !held.is_file()
+        || held.uid() != 0
+        || held.mode() & 0o077 != 0
+        || held.nlink() != 1
+        || (held.dev(), held.ino(), held.mode()) != (before.dev(), before.ino(), before.mode())
+        || (held.dev(), held.ino(), held.mode()) != (after.dev(), after.ino(), after.mode())
+    {
+        return Err("original private file is not its canonical single-link descriptor".into());
+    }
+    Ok(file)
+}
 pub(super) fn source(source: &Source, maximum: u64) -> HostResult<Vec<u8>> {
     let bytes = read_root_review_input(&source.path, maximum)?;
     if Digest32::of_bytes(&bytes) != digest(&source.digest)? {

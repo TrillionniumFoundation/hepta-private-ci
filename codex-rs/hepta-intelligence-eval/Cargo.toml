@@ -32,7 +32,7 @@ codex-hepta-types = { path = "../hepta-types" }
 ed25519-dalek = { workspace = true, optional = true }
 serde = { workspace = true, features = ["derive"], optional = true }
 serde_json = { workspace = true, optional = true }
-rustix = { workspace = true, features = ["net"], optional = true }
+rustix = { workspace = true, features = ["net", "fs"], optional = true }
 
 [dev-dependencies]
 ed25519-dalek = { workspace = true }
