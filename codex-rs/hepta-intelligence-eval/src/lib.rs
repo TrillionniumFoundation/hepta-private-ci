@@ -70,9 +70,13 @@ pub(crate) use test_tempfile::NamedTempFile;
 mod ope;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod paired_observer_transport;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod paired_review_plan;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod paired_review_transport;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use paired_review_plan::PairedReviewSourcePlanV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use paired_review_transport::encode_paired_review_publication_v1;
 mod paired_supervised_estimate;
 mod paired_supervised_facade;
