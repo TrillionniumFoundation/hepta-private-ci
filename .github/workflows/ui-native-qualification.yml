@@ -261,7 +261,7 @@ jobs:
         run: |
           set -euo pipefail
           check() { python3 scripts/hepta_ui_native_qualification_evidence.py run --out "$NATIVE_OUTPUT_ROOT/native-evidence/checks" --label "$1" --timeout 3600 -- "${@:2}"; }
-          check app_format cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --all --check
+          check app_format python3 scripts/hepta_ui_native_format.py --manifest-path apps/hepta-native/Cargo.toml
           check owner_format cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-native-gateway -p codex-hepta-contracts \
             -p codex-hepta-private-state -p codex-utils-private-state -- --check

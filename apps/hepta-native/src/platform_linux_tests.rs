@@ -63,25 +63,16 @@ impl Notifications {
 #[test]
 fn native_notification_dispatch_preserves_literal_text_and_identity() {
     let root = tempfile::tempdir().unwrap();
-    let config = root.path().join("bus.conf");
-    // Test-only loopback transport for runners that prohibit AF_UNIX. It carries
-    // no product data; product session authentication remains unchanged.
-    std::fs::write(
-        &config,
-        r#"<busconfig>
-<type>session</type><listen>tcp:host=127.0.0.1,port=0,family=ipv4</listen>
-<auth>ANONYMOUS</auth><allow_anonymous/>
-<policy context="default"><allow send_destination="*"/>
-<allow receive_sender="*"/><allow own="*"/></policy>
-</busconfig>"#,
-    )
-    .unwrap();
+    // A private Unix session bus retains normal peer credentials and host
+    // mediation; anonymous TCP cannot provide the labels required on Ubuntu.
+    let listen = zbus::address::transport::Unix::new(zbus::address::transport::UnixSocket::Dir(
+        root.path().to_owned(),
+    ));
     let mut daemon = Bus(Command::new("/usr/bin/dbus-daemon")
-        .arg("--config-file")
-        .arg(&config)
+        .arg("--session")
+        .arg(format!("--address={listen}"))
         .args(["--nofork", "--print-address=1", "--nopidfile"])
         .stdout(Stdio::piped())
-        .stderr(Stdio::null())
         .spawn()
         .unwrap());
     let mut address = String::new();
@@ -92,7 +83,7 @@ fn native_notification_dispatch_preserves_literal_text_and_identity() {
     future::block_on(async {
         let _server = zbus::connection::Builder::address(address.trim())
             .unwrap()
-            .auth_mechanism(zbus::AuthMechanism::Anonymous)
+            .auth_mechanism(zbus::AuthMechanism::External)
             .name(DESTINATION)
             .unwrap()
             .serve_at(OBJECT_PATH, Notifications(Arc::clone(&received)))
@@ -103,7 +94,7 @@ fn native_notification_dispatch_preserves_literal_text_and_identity() {
         send_on(
             zbus::connection::Builder::address(address.trim())
                 .unwrap()
-                .auth_mechanism(zbus::AuthMechanism::Anonymous)
+                .auth_mechanism(zbus::AuthMechanism::External)
                 .build(),
             "标题 <title>",
             "literal <b> & café\nline two",

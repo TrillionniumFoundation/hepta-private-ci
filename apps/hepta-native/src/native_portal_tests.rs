@@ -19,25 +19,16 @@ struct Bus {
 
 impl Bus {
     fn new() -> Self {
-        // The isolated test bus owns no product identity or sensitive data.
-        // Loopback TCP also works on runners that prohibit Unix-domain sockets.
-        // Anonymous SASL is confined to this mock; product session auth is unchanged.
+        // Use the session bus's normal Unix transport and EXTERNAL authentication.
+        // TCP cannot supply the peer credentials/labels used by host mediation.
         let root = tempfile::tempdir().unwrap();
-        let config = root.path().join("bus.conf");
-        std::fs::write(
-            &config,
-            r#"<busconfig>
-<type>session</type><listen>tcp:host=127.0.0.1,port=0,family=ipv4</listen>
-<auth>ANONYMOUS</auth><allow_anonymous/>
-<policy context="default"><allow send_destination="*"/>
-<allow receive_sender="*"/><allow own="*"/></policy>
-</busconfig>"#,
-        )
-        .unwrap();
+        let listen = zbus::address::transport::Unix::new(
+            zbus::address::transport::UnixSocket::Dir(root.path().to_owned()),
+        );
         let mut child = Command::new("/usr/bin/dbus-daemon")
-            .arg("--config-file")
-            .arg(&config)
-            .args(["--nofork", "--print-address=1"])
+            .arg("--session")
+            .arg(format!("--address={listen}"))
+            .args(["--nofork", "--print-address=1", "--nopidfile"])
             .stdout(Stdio::piped())
             .spawn()
             .expect("Linux portal tests require dbus-daemon");
@@ -54,7 +45,7 @@ impl Bus {
 
     async fn connect(&self) -> zbus::Result<Connection> {
         zbus::connection::Builder::address(self.address.as_str())?
-            .auth_mechanism(zbus::AuthMechanism::Anonymous)
+            .auth_mechanism(zbus::AuthMechanism::External)
             .build()
             .await
     }
@@ -213,7 +204,7 @@ fn observed(reply: Reply) -> (Result<PortalResponse, ShellError>, usize) {
         let closed = Arc::new(AtomicUsize::new(0));
         let service = zbus::connection::Builder::address(bus.address.as_str())
             .unwrap()
-            .auth_mechanism(zbus::AuthMechanism::Anonymous)
+            .auth_mechanism(zbus::AuthMechanism::External)
             .name(DESTINATION)
             .unwrap()
             .serve_at(
