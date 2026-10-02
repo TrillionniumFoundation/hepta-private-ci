@@ -1,3 +1,5 @@
+#![allow(clippy::expect_used)]
+
 use std::io;
 
 use codex_hepta_memory_retrieval::DurableDecisionAppendErrorV1;

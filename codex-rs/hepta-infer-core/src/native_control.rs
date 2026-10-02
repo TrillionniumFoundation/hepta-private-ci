@@ -1309,7 +1309,8 @@ fn pre_effect_abort_digest(
 }
 
 fn push_abort_part(output: &mut Vec<u8>, value: &[u8]) {
-    let length = u64::try_from(value.len()).expect("bounded native abort part");
+    const { assert!(usize::BITS <= u64::BITS) };
+    let length = value.len() as u64;
     output.extend_from_slice(&length.to_be_bytes());
     output.extend_from_slice(value);
 }

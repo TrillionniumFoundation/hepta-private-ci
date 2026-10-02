@@ -1,3 +1,5 @@
+#![allow(clippy::expect_used)]
+
 use std::cell::Cell;
 use std::error::Error as StdError;
 use std::fmt;

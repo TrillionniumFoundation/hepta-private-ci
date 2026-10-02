@@ -1,3 +1,5 @@
+#![allow(clippy::expect_used)]
+
 use codex_hepta_cognitive_types::MemoryKind;
 use codex_hepta_cognitive_types::MemoryRecord;
 use codex_hepta_cognitive_types::RecordState;
