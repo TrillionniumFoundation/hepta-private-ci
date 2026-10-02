@@ -75,7 +75,10 @@
     "codex-rs/hepta-agentd/src/exact_context_delivery/storage_hardening_tests.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime_errors.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime_error_tests.rs",
-    "codex-rs/.config/nextest.toml"
+    "codex-rs/.config/nextest.toml",
+    "codex-rs/hepta-context-compiler/src/wire.rs",
+    "codex-rs/hepta-context-compiler/src/wire_tests.rs",
+    "codex-rs/hepta-context-compiler/src/lib.rs"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -224,6 +227,21 @@
       "owner-diagnostic-regressions": [
         "prompt_runtime::errors::tests::pipeline_diagnostics_redact_dynamic_owner_and_adapter_details",
         "prompt_runtime::errors::tests::public_exact_diagnostic_preserves_recovery_action_without_exposing_internal_error"
+      ],
+      "crash-recovery-regressions": [
+        "exact_context_delivery::registry_race_tests::registry_revocation_during_tokenization_refuses_the_real_owner_send_gate",
+        "exact_context_delivery::registry_race_tests::expiry_during_tokenization_refuses_the_real_owner_send_gate",
+        "exact_context_delivery::registry_race_tests::concurrent_preparation_cannot_reserve_two_attempts_for_one_turn",
+        "exact_context_delivery::registry_race_tests::crash_reopen_reconciles_indeterminate_then_final_without_redispatch",
+        "exact_context_delivery::registry_race_tests::legacy_digest_only_pre_send_remains_non_recoverable",
+        "exact_context_delivery::registry_race_tests::durable_recovery_rejects_outer_identity_drift_from_archived_proof"
+      ],
+      "v3-default-product-profile": [
+        "v2::tests::recovery_archives_reject_oversized_valid_json_before_decoding",
+        "wire::tests::context_wire_rejects_impossible_token_accounting_on_encode_and_decode",
+        "provider_closure::tests::maximum_repeated_payload_is_rejected_without_retaining_match_offsets",
+        "provider_closure::tests::repeated_prefix_search_preserves_the_unique_complete_payload",
+        "provider_closure::tests::arbitrary_byte_matching_preserves_missing_unique_and_overlapping_cases"
       ]
     },
     "targetHostQualified": false,
@@ -250,13 +268,13 @@
   ],
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "fddec950aacf03a69ccf229e73db02174b03715b285010cf95221d675789f7c1",
+    "stateSha256": "a7b2f0b8913ac367ffec27d4a2864039ddd60334cc64a733cfc2300da6b62e6e",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
   },
-  "runtimeSourceAnchor": "7e99669b76b791fda1aa7bd431a75a417e281af4",
-  "runtimeSourceTree": "31e6de7df9287d8e723ce3979cefc1952bd29d62",
+  "runtimeSourceAnchor": "a1b12d46638ed6606f3f3536c72266ea8cff52ed",
+  "runtimeSourceTree": "44f97a581e2b6cb85438354c7e8a6f0c60256b4f",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -342,7 +360,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
-      "blobSha": "3dd172e68933f3ab97a96dead2fb6ea8c23eba59"
+      "blobSha": "610dbcfe75f0694668e49b25a27381302a99fb2f"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/capacity_tests.rs",
@@ -370,7 +388,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/registry_race_tests.rs",
-      "blobSha": "c5a73257e1d5f4777475d81b67f045fbe89ffacf"
+      "blobSha": "4a9a76e4843be8725c5b0f4a81ad745f2822e4d3"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/runtime_tests.rs",
@@ -378,7 +396,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/terminal_state.rs",
-      "blobSha": "76bfa6efd7e8acd535929bb1c92cf5e3bf1f1759"
+      "blobSha": "34d9667871ffd923d52fdcea5b033e7c466baf08"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/tokenizer_io.rs",
@@ -386,7 +404,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
-      "blobSha": "8c039700c28f7314dd13e6c66e84f01539388927"
+      "blobSha": "c27c932737913ffc99b33c0d49f8bc1623e9cac2"
     },
     {
       "path": "codex-rs/hepta-agentd/src/prompt_runtime_lifecycle_tests.rs",
@@ -398,11 +416,11 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2/preparation_archive.rs",
-      "blobSha": "960f21d26a7bc92f4055cc80803026bd8aa4162c"
+      "blobSha": "e61fe9f1a5410041dadc09b79cc32d342f7b9f38"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2/recovery.rs",
-      "blobSha": "fed0853640ff083382704f3e1a17a437b22d7cb7"
+      "blobSha": "c2737b3c6ed65605a053840a6c8a22c9f05ebf62"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2/redaction.rs",
@@ -426,7 +444,7 @@
     },
     {
       "path": "scripts/context_compiler_execution.py",
-      "blobSha": "d11c33b138002d907418aa5bd57345e3145543f8"
+      "blobSha": "78c6bf84baa799988dff1e9ecb0804964d5c5d71"
     },
     {
       "path": "scripts/context_compiler_named_evidence.py",
@@ -454,11 +472,11 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "blobSha": "816f4c5f86541dcd965de779a12e380e8998b4f8"
+      "blobSha": "3b11c93c4d3f7623f4a84ac3b767e551ae32a53e"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2_tests.rs",
-      "blobSha": "0951d2135243924762b72ad07e33a4db9d905eac"
+      "blobSha": "d8591faecc1968af9bb01fd976368358730f04a1"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage.rs",
@@ -470,7 +488,7 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/provider_closure.rs",
-      "blobSha": "5d4224d1860a1734f9628e9503ca38baf0be4d7d"
+      "blobSha": "1b0ad8da0e77089d6ddc965a54e6c266c2bba7d6"
     },
     {
       "path": "codex-rs/hepta-agentd/src/prompt_runtime_errors.rs",
@@ -483,6 +501,18 @@
     {
       "path": "codex-rs/.config/nextest.toml",
       "blobSha": "5c61526c4421c840847a270b6ed788aba1e95d3c"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/wire.rs",
+      "blobSha": "d31253432fd7f378d8015651d73a2d82c547291e"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/wire_tests.rs",
+      "blobSha": "9ec529e1a36971630e37ccce7e8ff1be7a48e0ae"
+    },
+    {
+      "path": "codex-rs/hepta-context-compiler/src/lib.rs",
+      "blobSha": "b5a49d27abdb767cb24633838c0e4604c4fb912c"
     }
   ],
   "consumerExecution": [
@@ -796,6 +826,31 @@
         }
       ],
       "command": "owner-diagnostic-regressions",
+      "authenticatedProductE2E": "unverified",
+      "exactExecution": "CI_EXACT_HEAD"
+    },
+    {
+      "id": "recovery-archive-index-consistency",
+      "definition": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery/terminal_state.rs",
+        "symbol": "pub(super) fn validate"
+      },
+      "consumer": {
+        "path": "codex-rs/hepta-agentd/src/exact_context_delivery.rs",
+        "symbol": "fn validate_stored_state",
+        "call": "terminal_state::validate(state)"
+      },
+      "sourceState": "source_composed",
+      "nativeTests": [
+        "exact_context_delivery::registry_race_tests::durable_recovery_rejects_outer_identity_drift_from_archived_proof"
+      ],
+      "testSources": [
+        {
+          "path": "codex-rs/hepta-agentd/src/exact_context_delivery/registry_race_tests.rs",
+          "name": "exact_context_delivery::registry_race_tests::durable_recovery_rejects_outer_identity_drift_from_archived_proof"
+        }
+      ],
+      "command": "crash-recovery-regressions",
       "authenticatedProductE2E": "unverified",
       "exactExecution": "CI_EXACT_HEAD"
     }

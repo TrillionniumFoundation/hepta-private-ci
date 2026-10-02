@@ -1,7 +1,7 @@
 # context.compiler technical development guide
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `fddec950aacf03a69ccf229e73db02174b03715b285010cf95221d675789f7c1`. Source anchor: `7e99669b76b791fda1aa7bd431a75a417e281af4`.
+State SHA-256: `a7b2f0b8913ac367ffec27d4a2864039ddd60334cc64a733cfc2300da6b62e6e`. Source anchor: `a1b12d46638ed6606f3f3536c72266ea8cff52ed`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
@@ -55,6 +55,10 @@ The source anchor is provenance, not the final tested head. Only external execut
 - Strict compiler all-targets Clippy findings are resolved without changing the published V2 evidence-owner call shape.
 - Pipeline/runtime diagnostics redact dynamic adapter, registry and compiler errors. Public exact-delivery diagnostics expose stable reason codes through an opaque wrapper rather than a private internal error type.
 - The 257-turn full-owner fixture retains subprocesses and fsync with a bounded dedicated watchdog and disk-workload group. CI records disabled debug/incremental artifacts to reduce combined Cargo/Bazel disk pressure; no test or security gate is skipped.
+- Bound public preparation/recovery JSON before decoding at the existing owner ceiling.
+- Require archived preparation/snapshot/time/thread/turn/attempt consistency at persisted-state admission.
+- Short-circuit final byte ambiguity after the second occurrence without retaining all offsets.
+- Converge legacy wire token accounting with the reviewed V2 bridge and repair the actual opaque-diagnostic caller.
 
 ## 3. Current product call path
 
@@ -106,7 +110,7 @@ Stage publication uses exact-state -> runtime-state lock order, with no await or
 
 ## 6. Verification
 
-The final ordinary-source candidate must pass deterministic generated-truth checks, default V3 and explicit legacy profiles, V3 product regressions, typed-slot and attempt-bound terminal tests, tokenizer revocation/expiry races, process-reopen recovery, strict all-feature Clippy, dependency policy, exact source-head and deterministic synthetic-merge qualification. Read-only CI and source generation cannot self-certify independent acceptance, activation or release. The lifecycle, capacity and metrics command groups additionally require 25 exact native names (17 lifecycle/capacity/metrics, 6 Unix storage and 2 raw-free diagnostic cases); the lifecycle group retains a 257-turn owner protocol-fixture measurement. Neither source navigation nor native fixture evidence grants authenticated product E2E or target-host acceptance.
+The final ordinary-source candidate must pass deterministic generated-truth checks, default V3 and explicit legacy profiles, V3 product regressions, typed-slot and attempt-bound terminal tests, tokenizer revocation/expiry races, process-reopen recovery, strict all-feature Clippy, dependency policy, exact source-head and deterministic synthetic-merge qualification. Read-only CI and source generation cannot self-certify independent acceptance, activation or release. The lifecycle, capacity and metrics command groups additionally require 36 exact native names (17 lifecycle/capacity/metrics, 6 Unix storage, 2 raw-free diagnostics, 6 recovery and 5 compiler-boundary cases); the lifecycle group retains a 257-turn owner protocol-fixture measurement. Neither source navigation nor native fixture evidence grants authenticated product E2E or target-host acceptance.
 
 The canonical workflow uses separate source-head and deterministic synthetic-merge lanes. Both must retain passing receipts with source/base/tested commit/tree, run/attempt, command exit codes, nonempty native test counts and log digests. Candidate identity is revalidated before and after each command. Pending, skipped, cancelled and missing artifacts are not passes.
 
@@ -136,6 +140,7 @@ The complete previous technical guide, implementation map, dossier and product-p
 | `external-security-consumption` | `codex-rs/hepta-agentd/src/context_security_runtime.rs::ContextSecurityCapabilitiesV3` | Not composed | `none` | unverified |
 | `private-storage` | `codex-rs/hepta-agentd/src/exact_context_delivery/storage.rs::verify_identity` | `codex-rs/hepta-agentd/src/exact_context_delivery.rs::ensure_available` | `owner-storage-regressions` | unverified |
 | `raw-free-owner-diagnostics` | `codex-rs/hepta-agentd/src/prompt_runtime_errors.rs::reason_code` | `codex-rs/hepta-agentd/src/prompt_runtime_errors.rs::impl fmt::Display for AgentdPromptPipelineError` | `owner-diagnostic-regressions` | unverified |
+| `recovery-archive-index-consistency` | `codex-rs/hepta-agentd/src/exact_context_delivery/terminal_state.rs::pub(super) fn validate` | `codex-rs/hepta-agentd/src/exact_context_delivery.rs::fn validate_stored_state` | `crash-recovery-regressions` | unverified |
 
 These are reviewed source anchors, not compiler reachability or execution evidence. The exact-candidate receipt records each required native name and command/log identity; native fixture passes never qualify authenticated ingress, independent provider truth or a target host.
 
