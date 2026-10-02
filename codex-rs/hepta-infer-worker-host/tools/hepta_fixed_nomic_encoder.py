@@ -251,7 +251,7 @@ def encode(config, preprocessor, numpy, pair, pin):
         features.extend(numpy.rint((centered / norm) * (1 << 24)).astype(numpy.int64).tolist())
     if backend_identity(config) != before or now_ms() >= config["expires_at_ms"]:
         raise ValueError("physical backend or expiry changed")
-    return {
+    result = {
         "schema": "hepta.fixed-nomic-encoded-pair.v1",
         "encoder_config_sha256": pin,
         "normalization_sha256": config["preprocessor_source"]["sha256"],
@@ -262,6 +262,12 @@ def encode(config, preprocessor, numpy, pair, pin):
         "physical_elapsed_micros": (time.monotonic_ns() - started) // 1000,
         "features_q24": features,
     }
+    if config["schema"] == "hepta.fixed-nomic-encoder.v3":
+        manifests = [source for source in config["model_sources"] if "/manifests/" in source["path"]]
+        if len(manifests) != 1:
+            raise ValueError("fixed physical encoder manifest identity")
+        result["encoder_manifest_sha256"] = manifests[0]["sha256"]
+    return result
 
 
 def authorize(connection, config, request):
@@ -382,7 +388,7 @@ def authorize_current(connection, config, request):
 def serve(config, preprocessor, numpy, pairs, pin):
     development = None
     if config["schema"] == "hepta.fixed-nomic-encoder.v3":
-        from fixed_encoder_development import DevelopmentMeasurements
+        from fixed_encoder_development import MAX_RESPONSE_BYTES, DevelopmentMeasurements
 
         development = DevelopmentMeasurements(config, pairs)
     path = Path(config["socket_path"])
@@ -421,7 +427,7 @@ def serve(config, preprocessor, numpy, pairs, pin):
                     if development is not None and request.get("purpose") == "PublicDevelopmentMeasurementOnlyV1":
                         result = development.measure(connection, request, preprocessor, numpy, pin, encode)
                         response = json.dumps(result, separators=(",", ":")).encode() + b"\n"
-                        if len(response) > 64 * 1024:
+                        if len(response) > MAX_RESPONSE_BYTES:
                             raise ValueError("closed public response budget")
                         connection.sendall(response)
                         continue

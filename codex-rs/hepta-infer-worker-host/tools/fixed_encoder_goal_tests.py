@@ -1,12 +1,15 @@
 """Execute the actual closed normal-peer function without Root bootstrap imports."""
 
 import ast
+import http.client
 import json
 import os
 from pathlib import Path
 import re
 import socket
 import struct
+import sys
+import time
 import unittest
 from unittest.mock import patch
 
@@ -24,6 +27,11 @@ def source_function(name):
         "socket": socket,
         "struct": struct,
         "re": re,
+        "json": json,
+        "http": http,
+        "time": time,
+        "now_ms": lambda: time.time_ns() // 1_000_000,
+        "backend_identity": lambda _: ("test-only-physical-identity",),
         "verify_large_source": lambda *_: None,
         "source_bytes": lambda source, _: json.dumps(source).encode(),
         "decode_json": json.loads,
@@ -33,6 +41,75 @@ def source_function(name):
 
 
 class GoalTests(unittest.TestCase):
+    def test_v3_reports_physical_manifest_separately_from_cpu_alias_and_keeps_v2_wire(self):
+        numpy_site = Path("/opt/hepta-private-ci/encoders/fixed-nomic-20261001-v4/python-site")
+        if not numpy_site.is_dir():
+            self.skipTest("this Linux physical transform fixture needs the installed immutable NumPy snapshot")
+        sys.path.insert(0, str(numpy_site))
+        import numpy
+
+        self.assertEqual(numpy.__version__, "1.26.4")
+        self.assertEqual(Path(numpy.__file__).resolve(), numpy_site / "numpy/__init__.py")
+        vectors = [[(value - offset) / 768 for value in range(768)] for offset in (7, 19)]
+        payload = json.dumps({"embeddings": vectors}).encode()
+        calls = []
+
+        class Connection:
+            def __init__(self, host, port, timeout):
+                calls.append((host, port, timeout))
+
+            def request(self, method, path, body, headers):
+                calls.append((method, path, json.loads(body), headers))
+
+            def getresponse(self):
+                return self
+
+            @property
+            def status(self):
+                return 200
+
+            def read(self, _maximum):
+                return payload
+
+            def close(self):
+                pass
+
+        cfg = {
+            "schema": "hepta.fixed-nomic-encoder.v3",
+            "expires_at_ms": time.time_ns() // 1_000_000 + 30_000,
+            "timeout_ms": 2000,
+            "preprocessor_source": {"sha256": "1" * 64},
+            "gguf_source": {"sha256": "2" * 64},
+            "model_sources": [{"path": "/opt/physical/manifests/nomic", "sha256": "3" * 64}],
+        }
+        preprocessor = {
+            "claim_prefix": "search_query: ",
+            "document_prefix": "search_document: ",
+            "model": "nomic-embed-text:latest",
+            "tokenizer_sha256": "4" * 64,
+        }
+        pair = {
+            "claim_text": "Public claim",
+            "title": "Public title",
+            "abstract_sentences": ["Public text"],
+            "pair_id": "public.fixture",
+            "source_row_sha256": "5" * 64,
+        }
+        encode = source_function("encode")
+        with patch.object(http.client, "HTTPConnection", Connection):
+            v3 = encode(cfg, preprocessor, numpy, pair, "6" * 64)
+            v2 = encode({**cfg, "schema": "hepta.fixed-nomic-encoder.v2"}, preprocessor, numpy, pair, "7" * 64)
+        self.assertEqual(v3["encoder_manifest_sha256"], "3" * 64)
+        self.assertEqual(v3["weights_sha256"], "2" * 64)
+        self.assertEqual(v3["tokenizer_sha256"], "4" * 64)
+        self.assertNotIn("encoder_manifest_sha256", v2)
+        self.assertEqual(v3["features_q24"], v2["features_q24"])
+        self.assertEqual(len(v3["features_q24"]), 512)
+        self.assertTrue(any(v3["features_q24"]))
+        self.assertTrue(all(type(value) is int for value in v3["features_q24"]))
+        self.assertEqual(calls[0][:2], ("127.0.0.1", 11435))
+        self.assertEqual(calls[1][:2], ("POST", "/api/embed"))
+
     def setUp(self):
         self.authorize = source_function("authorize_current")
         _, uids, gids, cgroup = self.authorize.__globals__["process_identity"](os.getpid())
