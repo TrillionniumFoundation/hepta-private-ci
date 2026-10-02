@@ -116,13 +116,14 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
         needs = required["needs"]
         self.assertEqual(
             set(needs if isinstance(needs, list) else [needs]),
-            {"plan", "qualification"},
+            {"plan", "qualification", "product_process"},
         )
         refs = workflow_expression_references(required.get("steps", []))
         self.assertTrue(
             {
                 "needs.plan.result",
                 "needs.qualification.result",
+                "needs.product_process.result",
                 "needs.plan.outputs.risk",
                 "needs.plan.outputs.lanes",
             }
@@ -138,14 +139,19 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
             "timed_out",
             "action_required",
         )
-        for plan, qualification in itertools.product(states, repeat=2):
-            with self.subTest(plan=plan, qualification=qualification):
+        for plan, qualification, product_process in itertools.product(states, repeat=3):
+            with self.subTest(
+                plan=plan,
+                qualification=qualification,
+                product_process=product_process,
+            ):
                 process = subprocess.run(
                     ["bash", "--noprofile", "--norc", "-eo", "pipefail", "-c", script],
                     env={
                         **os.environ,
                         "PLAN_RESULT": plan,
                         "QUALIFICATION_RESULT": qualification,
+                        "PRODUCT_PROCESS_RESULT": product_process,
                         "RISK": "ordinary",
                         "LANES": "source-head",
                     },
@@ -154,7 +160,8 @@ class CandidateTransportWorkflowTests(unittest.TestCase):
                     timeout=10,
                 )
                 self.assertEqual(
-                    process.returncode == 0, plan == qualification == "success"
+                    process.returncode == 0,
+                    plan == qualification == product_process == "success",
                 )
 
 
