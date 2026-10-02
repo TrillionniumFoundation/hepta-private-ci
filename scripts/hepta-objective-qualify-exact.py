@@ -21,6 +21,7 @@ import time
 
 SHA = re.compile(r"[0-9a-f]{40}\Z")
 PACKAGES = ("codex-hepta-objective", "codex-hepta-learning-ledger", "codex-hepta-intelligence", "codex-hepta-agentd")
+MINIMUM_PASSED_TESTS = {"agentd-signed-product": 5}
 
 
 def git(root: Path, *args: str, env=None) -> str:
@@ -39,6 +40,23 @@ def write_report(out: Path, report: dict) -> None:
     temp = out / ".receipt.json.tmp"
     temp.write_text(json.dumps(report, indent=2, sort_keys=True) + "\n")
     temp.replace(out / "receipt.json")
+
+
+def test_execution_satisfied(name: str, output: str) -> bool:
+    minimum = MINIMUM_PASSED_TESTS.get(name)
+    if minimum is None:
+        return True
+    # This command selects one library test suite. Cargo's zero-match success,
+    # ignored regressions or multiple summaries cannot establish its coverage.
+    summaries = re.findall(r"^test result:.*$", output, re.MULTILINE)
+    if len(summaries) != 1:
+        return False
+    summary = re.fullmatch(
+        r"test result: ok\. ([0-9]+) passed; 0 failed; 0 ignored; 0 measured; "
+        r"[0-9]+ filtered out; finished in [0-9.]+s",
+        summaries[0],
+    )
+    return summary is not None and int(summary[1]) >= minimum
 
 
 def run_command(cwd: Path, out: Path, name: str, argv: list[str], timeout: int) -> dict:
@@ -62,6 +80,10 @@ def run_command(cwd: Path, out: Path, name: str, argv: list[str], timeout: int) 
         except OSError as error:
             stream.write(f"{type(error).__name__}: {error}\n".encode())
             code, status = 127, "unavailable"
+    if name in MINIMUM_PASSED_TESTS and status == "completed" and code == 0 and not test_execution_satisfied(
+        name, path.read_text(errors="replace")
+    ):
+        status = "insufficient_tests"
     return {"name": name, "argv": argv, "cwd": str(cwd), "startedUnixNs": started,
             "elapsedNs": time.monotonic_ns() - mono, "status": status, "exitCode": code,
             "log": path.name, "logSha256": digest(path)}
@@ -83,6 +105,7 @@ def commands() -> list[tuple[str, list[str]]]:
         ("durable-run-start", ["cargo", "test", "--locked", "-p", PACKAGES[1], "--lib", "run_start"]),
         ("publication", ["cargo", "test", "--locked", "-p", PACKAGES[2], "--lib", "objective_run"]),
         ("agentd-objective", ["cargo", "test", "--locked", "-p", PACKAGES[3], "--lib", "objective_runtime"]),
+        ("agentd-signed-product", ["cargo", "test", "--locked", "-p", PACKAGES[3], "--lib", "intelligence_product::tests::signed::", "--", "--nocapture"]),
         ("agentd-checkpoint", ["cargo", "test", "--locked", "-p", PACKAGES[3], "--lib", "objective_run_start_checkpoint"]),
         ("agentd-product-e2e", ["cargo", "test", "--locked", "-p", PACKAGES[3], "--test", "objective_product_e2e", "--", "--nocapture"]),
         ("agentd-shutdown-outcomes", ["cargo", "test", "--locked", "-p", PACKAGES[3], "--test", "runtime_shutdown_outcomes"]),

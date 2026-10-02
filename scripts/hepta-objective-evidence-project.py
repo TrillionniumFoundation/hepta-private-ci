@@ -145,7 +145,7 @@ def current_state_projection(path: Path) -> dict[str, Any]:
     }
 
 
-def qualification_commands() -> dict[str, list[str]]:
+def qualification_contract() -> Any:
     # The existing read-only runner owns the check inventory. Do not maintain a
     # second, weaker list of commands in the receipt consumer.
     spec = importlib.util.spec_from_file_location(
@@ -156,7 +156,11 @@ def qualification_commands() -> dict[str, list[str]]:
         raise ValueError("exact execution contract is unavailable")
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
-    return dict(module.commands())
+    return module
+
+
+def qualification_commands() -> dict[str, list[str]]:
+    return dict(qualification_contract().commands())
 
 
 def measurement_contract() -> Any:
@@ -214,7 +218,8 @@ def candidate_state(receipt: dict[str, Any], kind: str, root: Path) -> str:
             return "failed"
         if commit != synthetic_commit_identity(tree, base, receipt["sourceCommit"]):
             return "failed"
-    expected = qualification_commands()
+    contract = qualification_contract()
+    expected = dict(contract.commands())
     checks = candidate.get("checks")
     if candidate.get("clean") is not True or not isinstance(checks, list):
         return "failed"
@@ -241,6 +246,10 @@ def candidate_state(receipt: dict[str, Any], kind: str, root: Path) -> str:
             return "failed"
         log = directory / f"{name}.log"
         if log.is_symlink() or not log.is_file() or sha256(log) != check["logSha256"]:
+            return "failed"
+        if name in contract.MINIMUM_PASSED_TESTS and not contract.test_execution_satisfied(
+            name, log.read_text(errors="replace")
+        ):
             return "failed"
     return "passed"
 

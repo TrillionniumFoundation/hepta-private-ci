@@ -1,3 +1,8 @@
+#![allow(
+    clippy::unwrap_used,
+    reason = "integration assertions and fixture setup must fail the test immediately"
+)]
+
 use codex_hepta_bellman_operator::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -293,6 +298,10 @@ fn durable_owner_history_and_concurrent_training_profile() {
     for (agents, pairs) in [(1, 32), (1, 128), (1, 512), (4, 128)] {
         let started = Instant::now();
         let reports = std::thread::scope(|scope| {
+            #[allow(
+                clippy::needless_collect,
+                reason = "spawn every worker before joining so the profile remains concurrent"
+            )]
             let jobs=(0..agents).map(|agent| scope.spawn(move || {
                 let fixture=Fixture::new();let mut writer=fixture.writer_with_limit(4096);
                 let mut append_latencies=Vec::new();

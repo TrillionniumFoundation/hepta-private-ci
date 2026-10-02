@@ -43,7 +43,7 @@ class ReceiptTests(unittest.TestCase):
         self.assertFalse(MODULE.complete(value))
 
     def test_failure_timeout_absence_or_bad_digest_cannot_pass(self):
-        for changes in ({"exitCode": 1}, {"status": "timed_out"}, {"status": "unavailable"},
+        for changes in ({"exitCode": 1}, {"status": "timed_out"}, {"status": "unavailable"}, {"status": "insufficient_tests"},
                         {"logSha256": ""}, {"logSha256": "z" * 64}):
             with self.subTest(changes=changes):
                 value = self.receipt()
@@ -82,6 +82,47 @@ class ReceiptTests(unittest.TestCase):
             result = MODULE.run_command(root, root, "missing", [str(root / "absent-binary")], 1)
             self.assertEqual(result["exitCode"], 127)
             self.assertEqual(result["status"], "unavailable")
+
+    def test_signed_product_regressions_cannot_be_omitted_from_receipt(self):
+        receipt = self.receipt()
+        for candidate in receipt["candidates"]:
+            candidate["checks"] = [
+                check for check in candidate["checks"]
+                if check["name"] != "agentd-signed-product"
+            ]
+        self.assertFalse(MODULE.complete(receipt))
+
+    def test_signed_product_requires_at_least_five_executed_tests(self):
+        for passed in (0, 1, 4, 5, 6):
+            with self.subTest(passed=passed), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                output = f"test result: ok. {passed} passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"
+                result = MODULE.run_command(
+                    root, root, "agentd-signed-product",
+                    [sys.executable, "-c", f"print({output!r})"], 5,
+                )
+                self.assertEqual(result["exitCode"], 0)
+                self.assertEqual(
+                    result["status"], "completed" if passed >= 5 else "insufficient_tests"
+                )
+                self.assertEqual(result["logSha256"], MODULE.digest(root / result["log"]))
+
+    def test_signed_product_cannot_pass_with_missing_or_ambiguous_summary(self):
+        outputs = (
+            "",
+            "test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+            "test result: FAILED. 5 passed; 1 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s",
+            "test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s\n" * 2,
+        )
+        for output in outputs:
+            with self.subTest(output=output), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                result = MODULE.run_command(
+                    root, root, "agentd-signed-product",
+                    [sys.executable, "-c", f"print({output!r})"], 5,
+                )
+                self.assertEqual(result["exitCode"], 0)
+                self.assertEqual(result["status"], "insufficient_tests")
 
 
 class GitIdentityTests(unittest.TestCase):

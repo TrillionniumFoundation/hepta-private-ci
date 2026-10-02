@@ -57,6 +57,12 @@ def current_state() -> dict:
     }
 
 
+def exact_log_bytes(name: str) -> bytes:
+    if name == "agentd-signed-product":
+        return b"test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 186 filtered out; finished in 0.01s\n"
+    return LOG_BYTES
+
+
 def candidate(kind: str, exit_code: int = 0) -> dict:
     return {
         "kind": kind,
@@ -72,7 +78,7 @@ def candidate(kind: str, exit_code: int = 0) -> dict:
                 "status": "completed",
                 "exitCode": exit_code,
                 "log": f"{name}.log",
-                "logSha256": LOG,
+                "logSha256": hashlib.sha256(exact_log_bytes(name)).hexdigest(),
             }
             for name, argv in MODULE.qualification_commands().items()
         ],
@@ -319,7 +325,7 @@ class EvidenceProjectionTest(unittest.TestCase):
                     directory = root / kind
                     directory.mkdir()
                     for name in MODULE.qualification_commands():
-                        (directory / f"{name}.log").write_bytes(LOG_BYTES)
+                        (directory / f"{name}.log").write_bytes(exact_log_bytes(name))
                 (root / "exact.json").write_text(json.dumps(exact), encoding="utf-8")
                 argv += ["--exact-execution", str(root / "exact.json")]
             if target is not None:
@@ -492,7 +498,7 @@ class EvidenceProjectionTest(unittest.TestCase):
             phase = root / "source-head"
             phase.mkdir()
             for name in MODULE.qualification_commands():
-                (phase / f"{name}.log").write_bytes(LOG_BYTES)
+                (phase / f"{name}.log").write_bytes(exact_log_bytes(name))
             self.assertEqual(
                 MODULE.candidate_state(receipt, "source-head", root), "passed"
             )
@@ -511,6 +517,39 @@ class EvidenceProjectionTest(unittest.TestCase):
             self.assertEqual(
                 MODULE.candidate_state(receipt, "source-head", root), "failed"
             )
+
+    def test_signed_product_projection_rechecks_rehashed_test_counts(self) -> None:
+        receipt = {
+            "sourceCommit": SOURCE,
+            "sourceTree": TREE,
+            "sourceClean": True,
+            "mergeBase": BASE,
+            "candidates": [candidate("source-head")],
+        }
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            phase = root / "source-head"
+            phase.mkdir()
+            for name in MODULE.qualification_commands():
+                (phase / f"{name}.log").write_bytes(exact_log_bytes(name))
+            self.assertEqual(MODULE.candidate_state(receipt, "source-head", root), "passed")
+            check = next(
+                item for item in receipt["candidates"][0]["checks"]
+                if item["name"] == "agentd-signed-product"
+            )
+            for output in (
+                b"",
+                b"test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 191 filtered out; finished in 0.01s\n",
+                b"test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 187 filtered out; finished in 0.01s\n",
+                b"test result: ok. 5 passed; 0 failed; 1 ignored; 0 measured; 185 filtered out; finished in 0.01s\n",
+                exact_log_bytes("agentd-signed-product") * 2,
+            ):
+                with self.subTest(output=output):
+                    (phase / check["log"]).write_bytes(output)
+                    check["logSha256"] = hashlib.sha256(output).hexdigest()
+                    self.assertEqual(
+                        MODULE.candidate_state(receipt, "source-head", root), "failed"
+                    )
 
     def test_static_manifest_cannot_embed_dynamic_pass_fields(self) -> None:
         state = current_state()
