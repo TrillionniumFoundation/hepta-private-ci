@@ -68,7 +68,7 @@ pub(super) struct Response {
     purpose: String,
     batch_id: String,
     pair_id: String,
-    source_row_sha256: String,
+    pub(super) source_row_sha256: String,
     encoder_config_sha256: String,
     normalization_sha256: String,
     tokenizer_sha256: String,

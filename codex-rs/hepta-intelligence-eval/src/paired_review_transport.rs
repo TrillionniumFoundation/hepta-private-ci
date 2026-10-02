@@ -24,10 +24,10 @@ pub(crate) struct Publication {
     pub(crate) trust: ReviewTrustWireV1,
 }
 
-struct Registration {
-    binding: ProductRegistrationBindingV1,
-    generator: codex_hepta_learning_ledger::SignedLearningEvidenceV1,
-    observer: codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+pub(super) struct Registration {
+    pub binding: ProductRegistrationBindingV1,
+    pub generator: codex_hepta_learning_ledger::SignedLearningEvidenceV1,
+    pub observer: codex_hepta_learning_ledger::SignedLearningEvidenceV1,
 }
 structure!(Registration {
     binding,
@@ -141,12 +141,12 @@ impl Publication {
     }
 }
 
-fn encode<T: Wire>(value: &T) -> codec::Result<Vec<u8>> {
+pub(super) fn encode<T: Wire>(value: &T) -> codec::Result<Vec<u8>> {
     let mut output = Writer::default();
     value.write(&mut output)?;
     Ok(output.finish())
 }
-fn decode<T: Wire>(bytes: &[u8]) -> codec::Result<T> {
+pub(super) fn decode<T: Wire>(bytes: &[u8]) -> codec::Result<T> {
     let mut input = Reader::new(bytes)?;
     let value = T::read(&mut input)?;
     input.finish()?;

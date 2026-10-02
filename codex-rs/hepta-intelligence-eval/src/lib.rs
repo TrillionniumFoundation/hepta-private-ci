@@ -522,6 +522,8 @@ mod fixed_calibration_host;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod paired_custody_numeric;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_custody_generator;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_paired_generator_host;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_public_development_host;
