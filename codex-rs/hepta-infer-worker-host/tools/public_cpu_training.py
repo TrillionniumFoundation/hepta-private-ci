@@ -34,7 +34,17 @@ def component_cut(rows, seed, development_components):
     ]
 
 
-def train(features_q24, labels, partitions, *, seed, epochs, learning_rate, deadline):
+def train(
+    features_q24,
+    labels,
+    partitions,
+    *,
+    seed,
+    epochs,
+    learning_rate,
+    deadline,
+    maximum_rows=512,
+):
     """Train only the declared TRAIN partition, with one bounded full batch."""
     if (
         type(epochs) is not int
@@ -48,7 +58,8 @@ def train(features_q24, labels, partitions, *, seed, epochs, learning_rate, dead
     if (
         x.ndim != 2
         or x.shape != (len(y), 512)
-        or not 4 <= len(y) <= 512
+        or maximum_rows not in (512, 698)
+        or not 4 <= len(y) <= maximum_rows
         or len(partitions) != len(y)
         or not np.isfinite(x).all()
         or np.abs(x).max() > 8
