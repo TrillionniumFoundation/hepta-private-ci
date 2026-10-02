@@ -85,3 +85,33 @@ test("foreign session chat response is rejected without reflecting its private c
   await expect(page.locator("body")).not.toContainText("Private other account");
   await expect(page.locator("#send-message")).toBeDisabled();
 });
+
+test("chat remains usable when authenticated session has no console read permission", async ({ page, request }) => {
+  await request.get("/__test__/chat-enable");
+  let consoleReads = 0;
+  await page.route("**/session/connect", async route => {
+    const response = await route.fetch(); const body = await response.json(); body.permissions = ["hepta://ui.control/runtime.request"];
+    await route.fulfill({response,json:body});
+  });
+  await page.route("**/api/ui-control/v1/view", async route => { consoleReads++; await route.fulfill({status:403,json:{errorCode:"PERMISSION_DENIED"}}); });
+  await loadControlConsole(page, {openConsole:false});
+  await expect(page.locator("#chat-connection")).toHaveText("Messaging connected");
+  await page.getByRole("button", {name:/Engineering/}).click();
+  await page.locator("#message-draft").fill("Chat has its own server authorization");
+  await expect(page.locator("#send-message")).toBeEnabled();
+  await page.locator("#tab-console").click();
+  await expect(page.locator("#refresh-view")).toBeDisabled();
+  await expect(page.locator("#error-status")).toContainText("UI_CONTROL_PERMISSION_DENIED");
+  expect(consoleReads).toBe(0);
+});
+
+test("authentication denial starts neither chat nor console reads", async ({ page }) => {
+  let chatRequests = 0;
+  await page.route("**/session/connect", route => route.fulfill({status:401,json:{errorCode:"SESSION_EXPIRED"}}));
+  await page.route("**/chat/request", async route => { chatRequests++; await route.abort(); });
+  await page.goto("/");
+  await expect(page.locator("#startup-error")).toContainText("authenticated workspace session is required");
+  await expect(page.locator("#send-message")).toBeDisabled();
+  await expect(page.locator("#chat-connection")).not.toHaveText("Messaging connected");
+  expect(chatRequests).toBe(0);
+});

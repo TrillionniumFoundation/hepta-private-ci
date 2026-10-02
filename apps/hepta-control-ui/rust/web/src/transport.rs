@@ -43,6 +43,19 @@ fn encode_body(body: &Value) -> Result<String, ControlError> {
     .map_err(unsent)
 }
 
+fn encode_chat_body(body: &Value) -> Result<String, ControlError> {
+    let request: hepta_control_core::chat_transport::ChatRequest =
+        serde_json::from_value(body.clone()).map_err(|_| unsent(ControlError::invalid()))?;
+    request
+        .validate()
+        .map_err(|_| unsent(ControlError::invalid()))?;
+    let encoded = serde_json::to_string(&request).map_err(|_| unsent(ControlError::invalid()))?;
+    if encoded.len() > MAX_REQUEST_BYTES {
+        return Err(unsent(ControlError::invalid()));
+    }
+    Ok(encoded)
+}
+
 fn mutation_body(method: &str, input: &Value) -> Result<Value, ControlError> {
     assert_canonical_text(method, 64, EmptyText::Forbidden).map_err(unsent)?;
     let mut object = input

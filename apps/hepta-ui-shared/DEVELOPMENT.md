@@ -83,3 +83,17 @@ visible, connected and in the Chat tab. Pending text/operation IDs are memory-on
 closing or replacing the session loses local reconciliation context. A production
 host must compose and qualify the authenticated browser route; this repository's
 Node fixture is test-only and is not a deployed chat service.
+
+### Current bounded product limits
+
+The UI currently displays the latest bounded page (up to 50 conversations / 50
+messages); older-page browsing, attachment upload, rich rendering and docking are
+not implemented. Do not describe this as full Robrix feature parity. Drafts and
+uncertain send identities are tab/process memory, not durable offline delivery.
+
+Browser chat starts after authenticated session issuance, without waiting for the
+optional console snapshot. Missing `runtime.read` disables console reads locally;
+authentication refresh does not grant that permission. Existing `ui.control.v1`
+validation still requires at least one known runtime permission, so a principal
+with zero runtime permissions needs an explicit backend session-contract extension.
+No unknown permission or invented unauthenticated bootstrap is accepted here.

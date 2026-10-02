@@ -29,9 +29,13 @@ pub(super) async fn start_once(app: Rc<RefCell<BrowserApp>>) -> Result<(), Contr
         let _ = transport.close(&raw, None).await;
         return Err(error);
     }
+    spawn_local(chat::load(app.clone()));
     restore_recovery(&app, epoch).await;
     app.borrow().active(epoch)?;
-    effects::refresh(app.clone()).await?;
+    let console_result = effects::refresh(app.clone()).await;
+    let console_unavailable = console_result.as_ref().is_err_and(|error| {
+        error.code == ErrorCode::PermissionDenied && error.request_dispatched == Some(false)
+    });
     app.borrow().active(epoch)?;
     schedule_poll(&app)?;
     {
@@ -49,8 +53,14 @@ pub(super) async fn start_once(app: Rc<RefCell<BrowserApp>>) -> Result<(), Contr
         }
     }
     arm_session_timer(&app)?;
-    spawn_local(chat::load(app.clone()));
-    Ok(())
+    if console_unavailable {
+        app.borrow()
+            .dom
+            .show_error(&ControlError::unsent(ErrorCode::PermissionDenied));
+        Ok(())
+    } else {
+        console_result
+    }
 }
 
 async fn restore_recovery(app: &Rc<RefCell<BrowserApp>>, epoch: u64) {
@@ -205,7 +215,7 @@ async fn refresh_session(app: Rc<RefCell<BrowserApp>>) {
             return;
         }
         state.session_refreshing = true;
-        state.core.session_ticket(now()).map(|ticket| {
+        state.core.authentication_ticket(now()).map(|ticket| {
             (
                 ticket,
                 state.transport.clone(),

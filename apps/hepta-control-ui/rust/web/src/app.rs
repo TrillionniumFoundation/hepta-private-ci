@@ -156,6 +156,13 @@ pub fn start() -> Promise {
             }
             Err(error) => {
                 app.borrow().show_error(&error);
+                let authenticated = app.borrow_mut().core.view(now()).connected;
+                if !authenticated
+                    && let Ok(node) = element(&app.borrow().dom.document, "startup-error")
+                {
+                    node.set_text_content(Some("An authenticated workspace session is required. Messaging and console actions are unavailable."));
+                    let _ = node.remove_attribute("hidden");
+                }
                 lifecycle::publish_readiness(&app, "failed", Some(error.code));
                 web_sys::console::error_2(
                     &JsValue::from_str("ui.control console failed to start"),
