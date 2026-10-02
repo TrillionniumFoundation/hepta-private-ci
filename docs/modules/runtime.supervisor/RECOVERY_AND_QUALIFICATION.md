@@ -267,6 +267,17 @@ These are test identities, not target-host deployment receipts. CI must pass on 
 
 ## 8. Current claim boundary
 
+The daemon's emergency Kill admission is separate from Stop. After comparing a
+fresh live control fence, it accepts an exact retained main despite lifecycle
+generation drift, or a retained Matrix after main exit and cleanup. It requires
+at least one owned handle and keeps ordinary Stop generation checks. Failed
+main preparation or acknowledgement still yields an indeterminate outcome after
+independent containment attempts; Kill neither terminalizes signed quarantine
+nor invents a journal for an absent main. Source regression coverage must include
+the real constructor denial/failed-Kill combination and Matrix-only ownership,
+with stale-fence rejection before effects. These are repository fixtures, not
+target-host process or cleanup receipts.
+
 This source change can close repository-controlled implementation gaps only after CI passes. It does not by itself close:
 
 - deployed executable qualification;
@@ -288,7 +299,9 @@ The 5b71 checkpoint had 28 new Supervisor leaves and 84 exact common repair
 identities. Its own remote execution exposed two diagnostic failures; those
 results remain failed. The subsequent repair adds three constructor-preparation
 leaves and makes the existing process-recovery diagnostic leaf mandatory too.
-The current source therefore has 31 new Supervisor and two new Fleet leaves
-since 1f111388, 88 exact common repair identities and five Fleet identities. This is a static
+The d1ed checkpoint had 31 new Supervisor and two new Fleet leaves since
+1f111388 and 88 exact common repair identities. The subsequent ownership repair
+adds three daemon RPC leaves: the current source has 34 new Supervisor and two
+new Fleet leaves, 91 exact common repair identities and five Fleet identities. This is a static
 requirement, confirmed against the real test modules and receipt rejection
 guards; native results must come from its own final candidate head.

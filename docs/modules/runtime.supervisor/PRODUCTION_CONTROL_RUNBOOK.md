@@ -302,8 +302,8 @@ admit a new automatic replacement claim. Preserve both ownership and diagnostic
 evidence rather than interpreting a control acknowledgement as cleanup.
 The `6c6c051e` source count of 21 added Supervisor / 2 Fleet leaves and 77
 repair identities is historical. The current inventory is statically confirmed
-as 31 added Supervisor / 2 Fleet leaves, 88 common repair identities and five
-Fleet identities. Its own exact-source native evidence remains to be established;
+as 34 added Supervisor / 2 Fleet leaves, 91 common repair identities and five
+Fleet identities; d1ed had 31 / 2 / 88 / 5 before the three RPC regressions. Its own exact-source native evidence remains to be established;
 the two actual diagnostic failures at `5b71df96` remain failed historical results.
 
 ## 7. Candidate execution evidence
@@ -338,6 +338,19 @@ false. Candidate-generated CI records are diagnostics, not independently trusted
 approval signatures.
 
 ## 8. Unclosed concurrency and target-host qualification
+
+During signed recovery quarantine, ordinary mutation RPCs are denied except
+emergency Kill. Use the current complete control fence obtained from status:
+the daemon compares it with live state before advancing its owner-local revision. This counter is in-memory; the
+supervisor epoch isolates a new daemon lifetime.
+An older retained-main generation or a Matrix-only owner does not make an
+emergency Kill stale; the request must still match the current observation.
+Kill requires an already-owned handle. It can report `operation_indeterminate`
+after signaling retained handles when main preparation or acknowledgement
+fails. Refresh status and retain the recovery evidence; this response does not
+prove process exit, exact lease cleanup or terminalization of signed intent.
+Stop RPC remains blocked under quarantine and retains its normal generation
+checks outside quarantine.
 
 This change does not replace `Mutex<Supervisor<D>>` with per-agent actors. That
 migration must preserve per-agent command ordering, monotone generations,

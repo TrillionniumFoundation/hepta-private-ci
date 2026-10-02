@@ -737,3 +737,74 @@ common repair／五个 Fleet 强制 exact identities；这是静态库存，不�
 及两组 own-crate strict Clippy 均实际通过；格式器的 46 个原 clean
 无关 Python 文件已从根目录精确恢复。遵循 AGENTS.md，没有在 fix／fmt
 后本地重跑测试。新候选的六 native／两 deep 及增强锁诊断仍须独立执行。
+
+
+## d1ed 组合复审：emergency Kill 的 RPC 准入与退出观察
+
+`d1ed2a18120d8b8af7136ae9cd14208f0f9ad37a` 的完整源码为
+`2a26991bdd15d81c5ec9cbd9bae483634ae59aa7`，发布 tree 为
+`2b8fc2c0342afaae4e06472d2b6b5fc79881b290`。十份地图独立核对
+273 个对象、115 个 operation blobs 和 139 个 Supervisor test paths；
+没有把旧 CI 的执行信用转给这一候选。最新版源码与项目边界组合复审
+发现共享 Stop/Kill preflight 仍把 serving 条件误当 emergency ownership：
+
+- signed constructor denial 在首次 containment Kill 失败后保留精确
+  main owner；后续 Fleet 转 Failed，runtime 的原 generation 未变。
+  当前真实 Snapshot 的 Kill wire 合法、live fence 相等，但共享
+  preflight 因 generation 漂移拒绝，尚未到达现有安全 containment。
+- main 精确退出且清理完成后，Matrix 仍可能保留 live handle 或
+  stored-exit cleanup owner。合法 fresh Kill 因 main 不存在被拒绝。
+
+修复单独 Kill owned-handle admission：先完成 daemon 的完整 live
+fence 比较，再要求已有 main 或 Matrix 句柄；准入后先推进
+owner-local control revision 才 dispatch；该计数在内存，daemon epoch
+隔离冷重启，不能误称其为 durable journal；不以 Serving/main presence/generation equality 代替 ownership。
+Stop 保留原约束，无 owned handle 仍拒绝。已有 kill_slot 继续独立收集
+主进程准备／存储错误并尝试精确 Matrix，不生成缺失 main 的虚假 journal，
+不把 indeterminate 当成功、不通过 Kill 清除 signed quarantine。
+
+进一步 observer-cut 对抗审阅确认另一个真实问题：主进程退出已经
+保存、lease 或 lifecycle cleanup 尚未完成时，库 Kill 路径仍能重写
+journal、CAS 至 Draining 或再次发信号。stored exact main exit 应像
+既有 Matrix terminal guard 一样只保留清理重试；重复 Kill 不得再次
+信号、改 phase 或伪造 KillRequested。独立 live Matrix 仍须 containment。
+三条回归通过真实 Fleet、lease、public constructor 和 daemon
+handle_mutation；前两使用 typed signed intent denial，第三同时覆盖
+无 signed quarantine 的 ordinary cut 和 signed cut。进程行为明确
+使用 double，不冒称真实 OS child。
+
+文档同时明确：库接口保留 Stop/Kill containment，daemon signed
+quarantine 下普通 mutation RPC 只开放 emergency Kill。此前 §7 的
+Stop/Kill 同列说明有歧义，现已更正。12 implemented／2 partial／2 not
+implemented、跨 daemon witness、完整 replacement lineage、原子 recovery
+observation、per-Agent mutation/dirty Fleet I/O、target-host/独立验收及
+生产激活状态不因这一准入修复提升。
+
+该观察边界同时适用于普通控制：无 signed quarantine 的 Running owner
+在退出／lease 清理失败后，Drain／Stop 也原可重新发信号或写 journal。
+修复在 ordinary mutation、Stop preflight 与私有 signal entrypoint 的
+任何新 effect 前拒绝 stored main exit；Kill 仍能处理 live Matrix。
+Matrix stored exit 自身不封禁既有 deferred control cleanup；signed
+recovery decision 所用 blocker-only 契约保留，避免无意扩大恢复协议。
+
+三条新 RPC 测试及其 exact identity guards 已纳入源码库存，当前相对
+1f 为 34 个新增 Supervisor／两个 Fleet 叶，91 个 common repair／
+五个 Fleet mandatory。d1 的 31／2／88／5 是历史库存，它自己的实际
+两 deep PASS 不改写，也不授予这三条新叶或更改源码任何执行信用。
+
+新增 owner admission/observer 修复生产代码分阶段审阅，独立私有 helper
+42 行；867 行新文件全部为 test fixture 与三个真实控制回归，未扩大
+public crate API。源码／测试三个阶段实际改动为 89／470／400 行，
+使用 immutable index prefix 分拆首个完整回归及其后两项，最终源码
+字节与完整工作副本相同；没有通过少计 rename 或削弱断言规避行数。
+
+最终 default scoped just fix（13.87 秒）、qualification/offline fix
+（17.80 秒）、完整 just fmt、own-crate default strict Clippy
+（36.58 秒）和 qualification strict Clippy（10.99 秒）均实际通过。
+编译发现的新 fixture 括号错误已修正；锁 poison 在非 test helper／
+trait 方法中传播为 ProcessDriverError，未用 lint suppression 放行。
+完整 fmt 后从根目录恢复仅 46 个此前 clean 无关 Python 文件；
+source-derived 91／5 identities 保留原 d1 88／5 的全部名字，仅增加
+三条精确 RPC identity。原两项诊断失败测试整个文件字节未改。
+遵守 AGENTS.md，fix／fmt 后未执行本地测试；最终候选还需要自己的
+六 native／两 deep 收据，源码复核与 Clippy 均不能代替执行。

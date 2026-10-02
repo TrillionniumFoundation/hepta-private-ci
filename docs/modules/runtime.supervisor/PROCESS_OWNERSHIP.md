@@ -138,6 +138,23 @@ ownership recovery. If both fail, the main error remains primary and a bounded
 Matrix diagnostic is retained. These synchronous operations do not establish
 per-Agent latency isolation or a deadline guarantee under stuck kernel/filesystem calls.
 
+RPC Kill uses owned-handle admission after the complete live control-fence
+comparison. It can contain an exact retained main whose generation predates a
+recovery transition to Failed, or a Matrix retained after main exit and cleanup.
+It requires an existing owner; it does not adopt or signal a PID from the request.
+Stop keeps main-presence and generation admission. Main preparation failure is
+still reported after both containment attempts, without creating a main journal
+when no main remains. Stored exact Matrix exit remains cleanup-only and never
+authorizes another signal. Signed quarantine permits only emergency Kill among
+ordinary daemon mutations; process termination does not clear that quarantine.
+Stored exact main exit also makes Kill cleanup-only for that main: preserve its
+exit and removal witnesses, journal, generation and owner; do not publish another
+main Kill, transition to Draining or signal the exited process. An unresolved
+cleanup remains indeterminate while independent Matrix containment can proceed.
+Ordinary controls reject a stored main exit before new journal, CAS or signal;
+Matrix exit alone does not block the existing deferred-control cleanup path.
+Signed recovery decision admission retains its existing blocker-only contract.
+
 Agentd Health/Drain and Matrix Health exchanges now share one 200 ms monotonic
 transport deadline across nonblocking connect, exact kernel peer validation,
 partial write and bounded read. The peer is validated before request bytes;

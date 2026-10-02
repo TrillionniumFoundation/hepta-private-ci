@@ -328,9 +328,30 @@ and target, control revision, lifecycle generation, expiry, digests and current
 Fleet policy. The daemon cannot issue its own grant.
 
 Ambiguous signed transitions enter `recovery_required`. Read-only status and the
-signed recovery ceremony remain available; Start, Restart and release changes
-are denied while Stop and Kill retain their containment role. A decision may terminalize
-only an observed committed or rolled-back state and cannot move release bytes.
+signed recovery ceremony remain available; the library retains Stop/Kill
+containment, while the daemon permits only emergency Kill among ordinary
+mutation RPCs. Start, Drain, Stop, Restart and release changes are denied by
+that RPC quarantine. A decision may terminalize only an observed committed or
+rolled-back state and cannot move release bytes.
+
+Emergency Kill still compares the caller's complete control fence with the
+live observation before advancing the owner-local revision. Its separate admission
+requires an already-owned main or Matrix handle, rather than a main that is
+eligible to serve. An exact retained main can have an older generation after
+recovery changes Fleet to Failed; a Matrix can remain owned after main exit and
+cleanup. Both shapes permit containment of the retained handles. Stop keeps its
+existing main-presence and generation checks. Kill preparation or acknowledgement
+failure can produce `operation_indeterminate` after termination attempts; this
+does not fabricate a missing main journal, clear quarantine or prove exit and
+exact lease cleanup. A stale control fence still rejects before any effect.
+Once the main's exact exit is stored, Kill preserves that cleanup witness and
+does not signal it again, publish a new main Kill journal or transition it to
+Draining. Cleanup can still be unresolved, so the RPC remains indeterminate;
+an independently live Matrix still receives containment. Ordinary mutations,
+including Drain, Stop and Restart, reject that stored main exit before new
+journal, lifecycle or process effects. The signed recovery decision path keeps
+its separate existing validation and is not denied merely by this ordinary
+control guard.
 
 `apply_production_grant` completes signature, catalog and preflight validation,
 and constructs its digest-bound Prepared/Queued/RecoveryRequired records before
@@ -931,7 +952,9 @@ The 5b71 checkpoint had 28 new Supervisor leaves and 84 exact common repair
 identities. Its own remote execution exposed two diagnostic failures; those
 results remain failed. The subsequent repair adds three constructor-preparation
 leaves and makes the existing process-recovery diagnostic leaf mandatory too.
-The current source therefore has 31 new Supervisor and two new Fleet leaves
-since 1f111388, 88 exact common repair identities and five Fleet identities. This is a static
+The d1ed checkpoint had 31 new Supervisor and two new Fleet leaves since
+1f111388 and 88 exact common repair identities. The subsequent ownership repair
+adds three daemon RPC leaves: the current source has 34 new Supervisor and two
+new Fleet leaves, 91 exact common repair identities and five Fleet identities. This is a static
 requirement, confirmed against the real test modules and receipt rejection
 guards; native results must come from its own final candidate head.

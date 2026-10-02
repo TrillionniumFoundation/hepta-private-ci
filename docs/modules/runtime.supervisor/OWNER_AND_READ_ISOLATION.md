@@ -141,6 +141,18 @@ calls; it does not establish per-Agent actors or a measured latency SLO.
 
 ### Admitted owned-control continuation
 
+Emergency Kill RPC admission compares the full caller fence with fresh live
+state, then requires an already-owned main or Matrix handle. Serving eligibility
+is not its ownership authority: a retained main can predate Fleet's recovery
+generation, or main cleanup can leave only Matrix. Stop keeps its normal main
+and generation checks. Stale requests reject before the owner-local revision advances or
+signaling. The existing Kill path independently attempts both owned handles
+despite preparation faults and reports indeterminate acknowledgement; it does
+not create a journal for an absent main or clear signed recovery quarantine.
+Stored exact main exit denies ordinary mutation before effects while exact
+cleanup continues; Matrix-only stored exit keeps its existing deferred cleanup
+semantics. This guard does not add a new signed recovery decision restriction.
+
 After a driver accepts Drain or Stop, the pending request can be empty while
 the runtime remains Draining or Stopping with its original deadline. A failed
 poll must not starve expiry escalation; an unrelated corrupt Fleet manifest

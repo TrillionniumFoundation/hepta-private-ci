@@ -157,6 +157,10 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
                 "daemon::authority_tests::effect_boundary_tests",
             ),
             (
+                "daemon_emergency_kill_tests.rs",
+                "daemon::authority_tests::emergency_kill_tests",
+            ),
+            (
                 "signed_constructor_replay_tests.rs",
                 "supervisor::tests::release_retry_tests::signed_recovery::constructor_replay",
             ),
