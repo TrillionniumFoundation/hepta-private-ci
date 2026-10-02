@@ -15,11 +15,11 @@ export function chatReply(input) {
   let result;
   const room = id => ({ id, title: id === "chat-one" ? "Engineering" : "Research", preview: "Authenticated fixture conversation" });
   if (c.type === "list") result = { type: "conversations", data: [room("chat-one"), room("chat-two")], nextCursor: null };
-  else if (c.type === "create") result = { type: "conversation", data: room("chat-new") };
+  else if (c.type === "create") result = { type: "conversation", data: {id:"chat-new",title:"",preview:""} };
   else if (c.type === "timeline") {
     const roomMessages = messages.filter(m=>m.threadId === c.threadId);
     const offset=Number(c.cursor ?? 0), end=Math.max(0,roomMessages.length-offset), start=Math.max(0,end-c.limit);
-    result={type:"timeline",threadId:c.threadId,activeTurnId:sends.size ? "turn-1" : null,data:roomMessages.slice(start,end).map(({threadId,...m})=>m),nextCursor:start>0 ? String(offset+c.limit) : null};
+    result={type:"timeline",threadId:c.threadId,activeTurnId:roomMessages.some(m=>sends.has(m.id)) ? "turn-1" : null,data:roomMessages.slice(start,end).map(({threadId,...m})=>m),nextCursor:start>0 ? String(offset+c.limit) : null};
   }
   else if (c.type === "send" || c.type === "reconcile") {
     if (c.type === "send" && !sends.has(c.operationId)) {

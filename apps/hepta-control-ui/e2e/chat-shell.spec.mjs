@@ -137,3 +137,69 @@ test("bounded older pages pause latest polling and compact Back retains selectio
   await page.getByRole("button",{name:/Engineering/}).click();
   await expect(page.locator("#message-draft")).toHaveValue("Keep this draft while browsing rooms");
 });
+
+test("server-created empty-title conversation has a useful honest display label", async ({page,request}) => {
+  await request.get("/__test__/chat-enable");
+  await loadControlConsole(page,{openConsole:false});
+  await expect(page.locator("#new-conversation")).toBeEnabled();
+  await page.locator("#new-conversation").click();
+  await expect(page.locator("#conversation-title")).toHaveText("New conversation");
+  await expect(page.locator('[data-room="chat-new"]')).toContainText("Open conversation");
+  await page.locator("#message-draft").fill("First message\nWith a second line");
+  await page.locator("#send-message").click();
+  await expect(page.locator("#message-timeline")).toContainText("First message\nWith a second line");
+});
+
+test("switching conversations removes the old cancellation target before the next observation", async ({page,request}) => {
+  await request.get("/__test__/chat-enable");
+  await loadControlConsole(page,{openConsole:false});
+  await page.getByRole("button",{name:/Engineering/}).click();
+  await page.locator("#message-draft").fill("Observe active turn");
+  await page.locator("#send-message").click();
+  await expect(page.locator("#cancel-message")).toBeVisible();
+  let release;
+  const held = new Promise(resolve => {release=resolve;});
+  await page.route("**/chat/request", async route => {
+    const command=route.request().postDataJSON().command;
+    if (command.type === "timeline" && command.threadId === "chat-two") await held;
+    await route.continue();
+  });
+  try {
+    await page.getByRole("button",{name:/Research/}).click();
+    await expect(page.locator("#conversation-title")).toHaveText("Research");
+    await expect(page.locator("#cancel-message")).toBeHidden();
+  } finally { release(); }
+});
+
+test("invalid unsent draft creates no pending identity and can be corrected", async ({page,request}) => {
+  await request.get("/__test__/chat-enable");
+  await loadControlConsole(page,{openConsole:false});
+  await page.getByRole("button",{name:/Engineering/}).click();
+  await page.evaluate(() => {
+    const draft=document.querySelector("#message-draft"); draft.value="invalid\0draft";
+    draft.dispatchEvent(new Event("input",{bubbles:true}));
+  });
+  await page.locator("#send-message").click();
+  await expect(page.locator("#composer-hint")).toContainText("Message cannot be sent");
+  await expect(page.locator("#reconcile-message")).toBeHidden();
+  await page.locator("#message-draft").fill("Corrected message");
+  await page.locator("#send-message").click();
+  await expect(page.locator("#message-timeline")).toContainText("Corrected message");
+  expect((await (await request.get("/__test__/chat-state")).json()).sendCount).toBe(1);
+});
+
+test("offline draft remains editable and reconnect never sends automatically", async ({page,context,request}) => {
+  await request.get("/__test__/chat-enable");
+  await loadControlConsole(page,{openConsole:false});
+  await page.getByRole("button",{name:/Engineering/}).click();
+  await page.locator("#message-draft").fill("Draft before offline");
+  try {
+    await context.setOffline(true);
+    await expect(page.locator("#chat-connection")).toHaveText("Messaging is offline");
+    await expect(page.locator("#send-message")).toBeDisabled();
+    await page.locator("#message-draft").fill("Draft edited while offline");
+  } finally { await context.setOffline(false); }
+  await expect(page.locator("#chat-connection")).toHaveText("Messaging connected");
+  await expect(page.locator("#message-draft")).toHaveValue("Draft edited while offline");
+  expect((await (await request.get("/__test__/chat-state")).json()).sendCount).toBe(0);
+});

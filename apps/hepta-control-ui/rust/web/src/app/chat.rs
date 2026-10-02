@@ -12,6 +12,7 @@ pub(super) struct ChatHost {
     pub note: String,
     pub show_list: bool,
     busy: bool,
+    reload_requested: bool,
     pending: Option<ChatCommand>,
     turn: Option<(String, String)>,
 }
@@ -22,6 +23,7 @@ impl Default for ChatHost {
             note: String::new(),
             show_list: true,
             busy: false,
+            reload_requested: false,
             pending: None,
             turn: None,
         }
@@ -32,6 +34,24 @@ pub(super) fn attach(
     app: &Rc<RefCell<BrowserApp>>,
     document: &Document,
 ) -> Result<(), ControlError> {
+    let window = app.borrow().window.clone();
+    for event_name in ["offline", "online"] {
+        let weak = Rc::downgrade(app);
+        listen(app, window.as_ref(), event_name, move |_| {
+            if let Some(app) = weak.upgrade() {
+                if event_name == "online" {
+                    spawn_local(load(app));
+                } else {
+                    let mut state = app.borrow_mut();
+                    state.chat.availability = ChatAvailability::Offline;
+                    state.chat_host.note = if state.chat_host.pending.is_some() {
+                        "Offline. The original send still needs reconciliation; nothing will be retried automatically."
+                    } else { "Offline. You can edit this draft; messages are not queued for delivery." }.into();
+                    state.render();
+                }
+            }
+        })?;
+    }
     let weak = Rc::downgrade(app);
     listen(
         app,
@@ -163,18 +183,18 @@ pub(super) fn attach(
                     let selected = state.chat.select(&id);
                     if selected {
                         state.chat_host.show_list = false;
-                        state.chat.page.next_cursor = None;
-                        state.chat.page.cursor = None;
+                        state.chat_host.turn = None;
                     }
                     state.render();
                     selected
                 };
                 if selected {
+                    let cursor = app.borrow().chat.page.cursor.clone();
                     spawn_local(execute(
                         app,
                         ChatCommand::Timeline {
                             thread_id: id,
-                            cursor: None,
+                            cursor,
                             limit: 50,
                         },
                     ));
@@ -186,6 +206,14 @@ pub(super) fn attach(
 }
 
 pub(super) async fn load(app: Rc<RefCell<BrowserApp>>) {
+    {
+        let mut state = app.borrow_mut();
+        if state.chat_host.busy {
+            state.chat_host.reload_requested = true;
+            return;
+        }
+        state.chat_host.reload_requested = false;
+    }
     execute(
         app.clone(),
         ChatCommand::List {
@@ -209,6 +237,14 @@ pub(super) async fn load(app: Rc<RefCell<BrowserApp>>) {
 }
 
 pub(super) async fn poll(app: Rc<RefCell<BrowserApp>>) {
+    let reload = {
+        let state = app.borrow();
+        state.chat_host.reload_requested && !state.chat_host.busy
+    };
+    if reload {
+        load(app).await;
+        return;
+    }
     let selected = {
         let state = app.borrow();
         if state.chat.availability != ChatAvailability::Ready
@@ -235,7 +271,7 @@ pub(super) async fn poll(app: Rc<RefCell<BrowserApp>>) {
 
 async fn send(app: Rc<RefCell<BrowserApp>>) {
     let command = {
-        let mut state = app.borrow_mut();
+        let state = app.borrow();
         if !state.chat.can_send() || state.chat_host.pending.is_some() {
             return;
         }
@@ -245,13 +281,11 @@ async fn send(app: Rc<RefCell<BrowserApp>>) {
         let Ok(crypto) = state.window.crypto() else {
             return;
         };
-        let command = ChatCommand::Send {
+        ChatCommand::Send {
             thread_id,
             operation_id: format!("chat:{}", crypto.random_uuid()),
             text: state.chat.draft.clone(),
-        };
-        state.chat_host.pending = Some(command.clone());
-        command
+        }
     };
     execute(app, command).await;
 }
@@ -269,6 +303,7 @@ async fn execute(app: Rc<RefCell<BrowserApp>>, command: ChatCommand) {
             return;
         };
         if !view.connected {
+            state.render();
             return;
         }
         let request = ChatRequest {
@@ -277,7 +312,12 @@ async fn execute(app: Rc<RefCell<BrowserApp>>, command: ChatCommand) {
             command: command.clone(),
         };
         if request.validate().is_err() {
+            state.chat_host.note = "Message cannot be sent. Remove unsupported control characters or shorten the text.".into();
+            state.render();
             return;
+        }
+        if matches!(command, ChatCommand::Send { .. }) {
+            state.chat_host.pending = Some(command.clone());
         }
         let page_epoch = if matches!(command, ChatCommand::Timeline { .. }) {
             state.chat.page.begin()

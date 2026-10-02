@@ -70,14 +70,14 @@ pub fn render(
         .conversations
         .iter()
         .find(|r| Some(&r.id) == chat.selected.as_ref())
-        .map(|r| r.title.as_str())
+        .map(hepta_control_core::chat::Conversation::display_title)
         .unwrap_or("A place to think together");
     element(document, "conversation-title")?.set_text_content(Some(title));
     let draft: HtmlTextAreaElement = crate::dom::cast(element(document, "message-draft")?)?;
     if draft.value() != chat.draft {
         draft.set_value(&chat.draft);
     }
-    draft.set_disabled(chat.availability != ChatAvailability::Ready || chat.selected.is_none());
+    draft.set_disabled(chat.selected.is_none());
     let send: HtmlButtonElement = crate::dom::cast(element(document, "send-message")?)?;
     send.set_disabled(!chat.can_send());
     for id in ["chat-refresh", "new-conversation"] {
@@ -120,9 +120,12 @@ pub fn render(
                 )
                 .map_err(dom_error)?;
             button
-                .append_child(avatar(document, &room.title, "room-avatar")?.as_ref())
+                .append_child(avatar(document, room.display_title(), "room-avatar")?.as_ref())
                 .map_err(dom_error)?;
-            for (tag, text) in [("strong", &room.title), ("span", &room.preview)] {
+            for (tag, text) in [
+                ("strong", room.display_title()),
+                ("span", room.display_preview()),
+            ] {
                 let label = document.create_element(tag).map_err(dom_error)?;
                 label.set_text_content(Some(text));
                 button.append_child(&label).map_err(dom_error)?;

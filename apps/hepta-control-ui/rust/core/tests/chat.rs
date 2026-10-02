@@ -120,3 +120,18 @@ fn rejected_duplicate_page_changes_neither_cursor_nor_messages() {
     ));
     assert_eq!(state, before);
 }
+
+#[test]
+fn observed_untitled_room_is_searchable_by_its_display_label_without_mutating_data() {
+    let mut state = rooms();
+    state.conversations[0].title.clear();
+    state.filter = "new conversation".into();
+    assert_eq!(
+        state
+            .visible_conversations()
+            .map(|r| r.id.as_str())
+            .collect::<Vec<_>>(),
+        vec!["one"]
+    );
+    assert!(state.conversations[0].title.is_empty());
+}

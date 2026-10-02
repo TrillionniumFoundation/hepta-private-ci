@@ -38,6 +38,23 @@ pub struct Conversation {
     pub unread: u32,
 }
 
+impl Conversation {
+    pub fn display_title(&self) -> &str {
+        if self.title.trim().is_empty() {
+            "New conversation"
+        } else {
+            &self.title
+        }
+    }
+    pub fn display_preview(&self) -> &str {
+        if self.preview.trim().is_empty() {
+            "Open conversation"
+        } else {
+            &self.preview
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Message {
     pub id: String,
@@ -118,7 +135,8 @@ impl ChatState {
     pub fn visible_conversations(&self) -> impl Iterator<Item = &Conversation> {
         let filter = self.filter.trim().to_lowercase();
         self.conversations.iter().filter(move |room| {
-            room.title.to_lowercase().contains(&filter) || room.id.to_lowercase().contains(&filter)
+            room.display_title().to_lowercase().contains(&filter)
+                || room.id.to_lowercase().contains(&filter)
         })
     }
 

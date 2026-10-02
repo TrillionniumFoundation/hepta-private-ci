@@ -33,6 +33,7 @@ pub(super) fn apply(
                 }
                 ChatResult::Conversation { data } => {
                     let id = data.id.clone();
+                    state.chat.conversations.retain(|room| room.id != id);
                     state.chat.conversations.insert(
                         0,
                         Conversation {
@@ -46,8 +47,7 @@ pub(super) fn apply(
                     if state.chat.selection_epoch == selection_epoch {
                         state.chat.select(&id);
                         state.chat_host.show_list = false;
-                        state.chat.page.next_cursor = None;
-                        state.chat.page.cursor = None;
+                        state.chat_host.turn = None;
                     }
                 }
                 ChatResult::Timeline {
@@ -141,6 +141,16 @@ pub(super) fn apply(
                         "Cancellation requested. Refresh to observe the final state.".into();
                 }
             }
+            if state.chat_host.pending.is_some()
+                && !matches!(
+                    request.command,
+                    ChatCommand::Send { .. } | ChatCommand::Reconcile { .. }
+                )
+            {
+                state.chat_host.note =
+                    "The original send is unresolved. Check send before sending another message."
+                        .into();
+            }
             if approval_required {
                 state.chat_host.note = "The server requested approval. This chat surface declined it; use an approval-capable client to continue.".into();
             }
@@ -166,7 +176,9 @@ pub(super) fn apply(
                 state.chat_host.pending = None;
             }
             let status = error.details.get("status").and_then(Value::as_u64);
-            state.chat.availability = if matches!(status, Some(404 | 501)) {
+            state.chat.availability = if !state.window.navigator().on_line() {
+                ChatAvailability::Offline
+            } else if matches!(status, Some(404 | 501)) {
                 ChatAvailability::Unavailable
             } else {
                 ChatAvailability::Failed
@@ -178,5 +190,11 @@ pub(super) fn apply(
             }
             .into();
         }
+    }
+    if !state.window.navigator().on_line() {
+        state.chat.availability = ChatAvailability::Offline;
+        state.chat_host.note = if state.chat_host.pending.is_some() {
+            "Offline. The original send still needs reconciliation; nothing will be retried automatically."
+        } else { "Offline. You can edit this draft; messages are not queued for delivery." }.into();
     }
 }
