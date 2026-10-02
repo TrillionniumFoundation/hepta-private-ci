@@ -227,7 +227,7 @@ impl AutomationStore {
         )?;
         validate_fence(self, fence)?;
         ensure_step_schema(self).await?;
-        let mut tx = self.begin_step_tx().await?;
+        let mut tx = self.begin_step_write_tx().await?;
         let run = load_run(&mut tx, self, run_id).await?;
         let definition = load_definition(&mut tx, self, &run).await?;
         validate_step_node(&definition, step_id)?;
@@ -255,7 +255,9 @@ impl AutomationStore {
                 attempt,
                 &events,
             )?;
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+            tx.commit().await.map_err(|error| {
+                crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+            })?;
             return Ok(TaskFlowStepCommandResult {
                 status: TaskFlowStepCommandStatus::AlreadyApplied,
                 receipt: receipt_with_seq(receipt, existing.event_seq),
@@ -285,7 +287,9 @@ impl AutomationStore {
             now_ms,
         )
         .await?;
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        tx.commit().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         Ok(TaskFlowStepCommandResult {
             status: TaskFlowStepCommandStatus::Applied,
             receipt: reconstruct_step(
@@ -418,7 +422,7 @@ impl AutomationStore {
         validate_fence(self, fence)?;
         validate_digest(proof_digest, "provider absence proof digest")?;
         ensure_step_schema(self).await?;
-        let mut tx = self.begin_step_tx().await?;
+        let mut tx = self.begin_step_write_tx().await?;
         let run = load_run(&mut tx, self, run_id).await?;
         let definition = load_definition(&mut tx, self, &run).await?;
         validate_step_node(&definition, step_id)?;
@@ -446,7 +450,9 @@ impl AutomationStore {
                 attempt,
                 &events,
             )?;
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+            tx.commit().await.map_err(|error| {
+                crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+            })?;
             return Ok(TaskFlowStepCommandResult {
                 status: TaskFlowStepCommandStatus::AlreadyApplied,
                 receipt: receipt_with_seq(receipt, existing.event_seq),
@@ -493,7 +499,9 @@ impl AutomationStore {
             now_ms,
         )
         .await?;
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        tx.commit().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         let mut all_events = events;
         all_events.push(event);
         Ok(TaskFlowStepCommandResult {
@@ -544,13 +552,17 @@ impl AutomationStore {
             validate_fence(self, fence)?;
         }
         ensure_step_schema(self).await?;
-        let mut tx = self.begin_step_tx().await?;
+        let mut tx = self.taskflow_pool().begin().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         let run = load_run(&mut tx, self, run_id).await?;
         let definition = load_definition(&mut tx, self, &run).await?;
         validate_step_node(&definition, step_id)?;
         let events = load_step_events(&mut tx, self, run_id, step_id, attempt).await?;
         if events.is_empty() {
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+            tx.commit().await.map_err(|error| {
+                crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+            })?;
             return Ok(None);
         }
         let receipt = reconstruct_step(
@@ -600,11 +612,15 @@ impl AutomationStore {
                     TaskFlowStepState::Recorded | TaskFlowStepState::Reconciled
                 )
             {
-                tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+                tx.commit().await.map_err(|error| {
+                    crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+                })?;
                 return Ok(None);
             }
         }
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        tx.commit().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         Ok(Some(receipt))
     }
 
@@ -714,7 +730,7 @@ impl AutomationStore {
             validate_digest(receipt_digest, "step receipt digest")?;
         }
         ensure_step_schema(self).await?;
-        let mut tx = self.begin_step_tx().await?;
+        let mut tx = self.begin_step_write_tx().await?;
         let run = load_run(&mut tx, self, run_id).await?;
         let definition = load_definition(&mut tx, self, &run).await?;
         validate_step_node(&definition, step_id)?;
@@ -742,7 +758,9 @@ impl AutomationStore {
                 attempt,
                 &events,
             )?;
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+            tx.commit().await.map_err(|error| {
+                crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+            })?;
             return Ok(TaskFlowStepCommandResult {
                 status: TaskFlowStepCommandStatus::AlreadyApplied,
                 receipt: receipt_with_seq(receipt, existing.event_seq),
@@ -812,7 +830,9 @@ impl AutomationStore {
             now_ms,
         )
         .await?;
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        tx.commit().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         let mut all_events = events;
         all_events.push(event);
         Ok(TaskFlowStepCommandResult {
@@ -827,11 +847,17 @@ impl AutomationStore {
         })
     }
 
-    async fn begin_step_tx(&self) -> Result<sqlx::Transaction<'_, sqlx::Sqlite>, TaskFlowError> {
+    async fn begin_step_write_tx(
+        &self,
+    ) -> Result<sqlx::Transaction<'_, sqlx::Sqlite>, TaskFlowError> {
         self.taskflow_pool()
-            .begin()
+            // Reserve the writer before reading the run/step snapshot. A
+            // deferred read cannot upgrade after another timer writer commits.
+            .begin_with("BEGIN IMMEDIATE")
             .await
-            .map_err(|_| TaskFlowError::Unavailable)
+            .map_err(|error| {
+                crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+            })
     }
 }
 
@@ -933,7 +959,7 @@ async fn ensure_step_schema(store: &AutomationStore) -> Result<(), TaskFlowError
     )
     .execute(store.taskflow_pool())
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller()))?;
     sqlx::query(
         "CREATE TRIGGER IF NOT EXISTS taskflow_step_outbox_no_update
          BEFORE UPDATE ON taskflow_step_outbox
@@ -941,7 +967,9 @@ async fn ensure_step_schema(store: &AutomationStore) -> Result<(), TaskFlowError
     )
     .execute(store.taskflow_pool())
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| {
+        crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+    })?;
     sqlx::query(
         "CREATE TRIGGER IF NOT EXISTS taskflow_step_outbox_no_delete
          BEFORE DELETE ON taskflow_step_outbox
@@ -949,14 +977,18 @@ async fn ensure_step_schema(store: &AutomationStore) -> Result<(), TaskFlowError
     )
     .execute(store.taskflow_pool())
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| {
+        crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+    })?;
     sqlx::query(
         "CREATE INDEX IF NOT EXISTS taskflow_step_outbox_lookup
          ON taskflow_step_outbox(owner_agent_id, run_id, step_id, attempt, event_seq)",
     )
     .execute(store.taskflow_pool())
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| {
+        crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+    })?;
     Ok(())
 }
 
@@ -1007,7 +1039,9 @@ async fn load_step_events(
     .bind(i64::from(attempt))
     .fetch_all(&mut **tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| {
+        crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+    })?;
     let mut events = Vec::with_capacity(rows.len());
     for row in rows {
         let event_kind = TaskFlowStepState::parse(
@@ -1110,7 +1144,9 @@ async fn append_step_event(
     .bind(i64::from(attempt))
     .fetch_optional(&mut **tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?
+    .map_err(|error| {
+        crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+    })?
     .unwrap_or_else(|| ZERO_DIGEST.to_string());
     let previous_seq = sqlx::query_scalar::<_, Option<i64>>(
         "SELECT MAX(event_seq) FROM taskflow_step_outbox
@@ -1122,7 +1158,9 @@ async fn append_step_event(
     .bind(i64::from(attempt))
     .fetch_one(&mut **tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| {
+        crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+    })?;
     let event_seq = to_u64(previous_seq.unwrap_or(0))?
         .checked_add(1)
         .ok_or_else(|| corrupt("step event sequence overflow"))?;
@@ -1179,7 +1217,7 @@ async fn append_step_event(
         if is_constraint(&error) {
             TaskFlowError::Conflict("duplicate or conflicting step command".to_string())
         } else {
-            TaskFlowError::Unavailable
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
         }
     })?;
     Ok(StepEvent {

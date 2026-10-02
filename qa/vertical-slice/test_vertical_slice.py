@@ -73,7 +73,22 @@ class VerticalSliceTests(unittest.TestCase):
         unix_driver = (ROOT / "codex-rs/hepta-supervisor/src/unix.rs").read_text(encoding="utf-8")
         self.assertIn("probe_app_server", agent_runtime)
         self.assertIn("mark_app_server_ready", agent_runtime)
-        self.assertIn("cleanup_runtime_tasks", agent_runtime)
+        # RuntimeTasks owns cleanup now. Check the composition edge and its
+        # cancel/abort/join implementation, not the removed helper's spelling.
+        # Behavioral coverage lives in runtime_tasks_tests.rs (listener failure,
+        # required-task exit, cooperative drain and forced-abort cleanup).
+        task_host = (ROOT / "codex-rs/hepta-agentd/src/runtime_tasks.rs").read_text(encoding="utf-8")
+        self.assertIn("RuntimeTasks::new(cancellation.clone(), TASK_SHUTDOWN_GRACE)", agent_runtime)
+        self.assertRegex(agent_runtime, r"tasks\.shutdown\(\)\.await;")
+        self.assertRegex(agent_runtime, r"\.run_until\(async move \{\s*shutdown_signal\(\)\.await\?;")
+        self.assertIn("drain_runtime(state).await", agent_runtime)
+        run_until = task_host.split("pub async fn run_until", 1)[1].split("pub async fn shutdown", 1)[0]
+        self.assertIn("self.observe_next()", run_until)
+        self.assertIn("self.shutdown().await", run_until)
+        shutdown = task_host.split("pub async fn shutdown", 1)[1].split("fn lifecycle_warning", 1)[0]
+        self.assertIn("self.cancellation.cancel()", shutdown)
+        self.assertIn("timeout(grace", shutdown)
+        self.assertRegex(shutdown, r"self\.tasks\.abort_all\(\);\s*while let Some\(completion\) = self\.tasks\.join_next_with_id\(\)\.await")
         self.assertIn("exact_identity", unix_driver)
         self.assertIn("readiness_matches", unix_driver)
         self.assertIn("fenced", unix_driver)

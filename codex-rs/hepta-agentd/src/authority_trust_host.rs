@@ -376,6 +376,7 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Ag
         Access::Read => rustix::fs::OFlags::RDONLY,
         Access::Create => rustix::fs::OFlags::RDWR | rustix::fs::OFlags::CREATE,
     } | rustix::fs::OFlags::NOFOLLOW
+        | rustix::fs::OFlags::NONBLOCK
         | rustix::fs::OFlags::CLOEXEC;
     let file: File = rustix::fs::openat(
         directory,
@@ -635,3 +636,7 @@ mod tests {
         assert!(AgentdFinalUseTrustStore::open(&trust, &home, "owner").is_err());
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "authority_trust_storage_tests.rs"]
+mod storage_tests;

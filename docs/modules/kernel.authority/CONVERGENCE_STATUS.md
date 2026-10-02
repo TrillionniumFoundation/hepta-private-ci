@@ -1,10 +1,10 @@
 # kernel.authority convergence status
 
-**Status date:** 2026-10-01
+**Status date:** 2026-10-02
 
-**Immutable source anchor:** `37ac66eef820a3ac5e105ec14fe4ea30797a14de`
+**Immutable source anchor:** `d922e7819225bd0dae9387e0e79aefef0511058e`
 
-**Source tree:** `a63a48003f98ee37206ea737a1aa72de35aa0d61`
+**Source tree:** `b3c49ae8c1948920160e0b17b76d298a9a19528f`
 
 **Machine manifest:** `qualification/kernel-authority/convergence_manifest.json`  
 **Validator:** `qualification/kernel-authority/convergence_acceptance.py`

@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 fn host() -> HostObservation {
     HostObservation {
@@ -78,4 +79,81 @@ fn renewal_and_revocation_are_generation_fenced() {
         ),
         Err(Error::Revoked)
     );
+}
+
+#[test]
+fn expired_allocation_cannot_reclaim_reassigned_capacity_by_renewing() {
+    let mut ledger = LeaseLedger::new();
+    ledger.admit_host(host()).expect("host");
+    let mut expired = grant("expired", 1_000);
+    expired.expires_at_ms = 300;
+    ledger.issue(200, expired).expect("initial allocation");
+    ledger
+        .issue(300, grant("replacement", 1_000))
+        .expect("expired capacity may be reassigned");
+    let before = (ledger.hosts.clone(), ledger.grants.clone());
+
+    assert_eq!(
+        ledger.renew_or_revoke(
+            300,
+            "expired",
+            1,
+            3,
+            &"1".repeat(64),
+            LeaseDisposition::Renew { expires_at_ms: 900 },
+        ),
+        Err(Error::InvalidTime)
+    );
+    assert_eq!((ledger.hosts, ledger.grants), before);
+}
+
+#[test]
+fn renewal_requires_current_lease_before_its_expiry_boundary() {
+    for (now_ms, expected) in [
+        (799, Ok(LeaseOutcome::Renewed)),
+        (800, Err(Error::InvalidTime)),
+        (801, Err(Error::InvalidTime)),
+    ] {
+        let mut ledger = LeaseLedger::new();
+        ledger.admit_host(host()).expect("host");
+        ledger.issue(200, grant("one", 1_000)).expect("grant");
+        let before = (ledger.hosts.clone(), ledger.grants.clone());
+        let result = ledger.renew_or_revoke(
+            now_ms,
+            "one",
+            1,
+            3,
+            &"1".repeat(64),
+            LeaseDisposition::Renew { expires_at_ms: 900 },
+        );
+        assert_eq!(result.map(|receipt| receipt.outcome), expected);
+        if now_ms >= 800 {
+            assert_eq!((ledger.hosts, ledger.grants), before);
+        }
+    }
+}
+
+#[test]
+fn renewal_generation_overflow_leaves_all_state_unchanged() {
+    assert_generation_overflow_preserves_ledger(LeaseDisposition::Renew { expires_at_ms: 900 });
+}
+
+#[test]
+fn revocation_generation_overflow_leaves_all_state_unchanged() {
+    assert_generation_overflow_preserves_ledger(LeaseDisposition::Revoke);
+}
+
+fn assert_generation_overflow_preserves_ledger(disposition: LeaseDisposition) {
+    let mut ledger = LeaseLedger::new();
+    ledger.admit_host(host()).expect("host");
+    let mut current = grant("one", 1_000);
+    current.lease_generation = u64::MAX;
+    ledger.issue(200, current).expect("grant");
+    let before = (ledger.hosts.clone(), ledger.grants.clone());
+
+    assert_eq!(
+        ledger.renew_or_revoke(300, "one", u64::MAX, 3, &"1".repeat(64), disposition),
+        Err(Error::ArithmeticOverflow)
+    );
+    assert_eq!((ledger.hosts, ledger.grants), before);
 }

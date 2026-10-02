@@ -672,7 +672,13 @@ async fn two_agentd_processes_preserve_pending_nonce_attempt_witness_and_termina
 
     let reconciled = second_client
         .automation_reconcile_effect(RUN_ID.to_string(), STEP_ID.to_string(), 1)
-        .await?;
+        .await
+        .with_context(|| {
+            format!(
+                "second Agentd reconciliation failed; log:\n{}",
+                second.log()
+            )
+        })?;
     ensure!(reconciled.state == AutomationEffectReconcileState::Terminal);
     let recovered_effect = reconciled
         .effect

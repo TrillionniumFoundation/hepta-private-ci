@@ -140,6 +140,17 @@ Projection domains rebuild from declared sources and publish complete generation
 
 The [current native implementation](CURRENT_IMPLEMENTATION.md) identifies the actual state owners and lock/transaction boundaries. General V1 leases are registry-authoritative online references, with non-cloneable admin authority and a cloneable read/verify attenuation. An identical lease mutation is idempotent only with the original expected predecessor revision. Every final lease use acquires the owner lock before taking one coherent centre/radius sample from its bound clock, so possible expiry while waiting for the lock is rejected. Compatibility clocks retain their explicit zero-radius policy; production adapters retain the qualified uncertainty. FinalUse supports consumer-entry and bounded local-dispatch linearization as specified in [LINEARIZATION.md](LINEARIZATION.md). Product composition must follow [TRACEABILITY.md](TRACEABILITY.md); target contract registration alone is not runtime composition.
 
+The Fleet allocation port no longer accepts caller-supplied admission time.
+Its existing one-shot dispatch callback receives an ephemeral
+`AuthorityLeaseDispatchContext`: the unchanged V1 witness plus the earliest and
+latest possible time from the same final owner-lock-scoped sample. The Fleet
+ledger requires the host and allocation windows to contain that interval and
+retains prior capacity until definitely expired at the earliest time. The
+point-time deterministic `LeaseLedger::issue` API remains available to its owner.
+This is a Rust callback/API change inside the unpublished source workspace;
+repository callers are updated together. No serialized witness or grant schema
+changes, and context/witness values cannot themselves authorize dispatch.
+
 For guarded FinalUse effects, a revocation update that encounters an active effect first persists the exact monotonic head as pending and advances the external frontier, then returns `DispatchInProgress`. While pending, new claims and all new entry paths fail closed with `RevocationPending`. After the active effect drains, the exact head or a strictly stronger monotonic head must be retried. Pending state is durable V4 authority state, not a process-local bit. Recovery cannot replace it with an unauthenticated feed reread or weaken the external frontier.
 
 The Agentd host owns a bounded task set on its existing Tokio runtime. It does not create a new OS thread and runtime for every provider dispatch. Dropping a response receiver cancels waiting, not the admitted task or its durable attempt. Completed task handles are joined before the task table admits additional work. Explicit normal Agentd shutdown/drain integration remains a separate qualification/source task; task-table ownership alone does not prove graceful shutdown.
@@ -183,6 +194,18 @@ The 40-byte local claim journal does not eliminate complete-nonce-set frontier h
 Embed authority owners behind a trusted host boundary. Production-oriented construction binds an `AuthorityClock` plus an externally durable CAS `AuthorityFrontierStore`; the owner-only local directory remains the crash-durable state store and must not be treated as the rollback oracle. A restored local snapshot behind the external frontier fails closed. Compatibility constructors without external trust are not production qualification.
 
 `AgentdAutomationEffectHost` is a named repository-controlled source composition. Host schema V2 requires a bounded issuer key ring, a separately pinned signed revocation-feed key ring and feed file, exact provider configuration and an absolute trust root outside Agent home. `AgentdFinalUseTrustStore` supplies a single-writer persistent clock floor and exact FinalUse CAS frontier. Normal construction uses `recover_state_dir_with_issuer_keys` after authenticating the recovery head; it does not fall back to `open_state_dir`. The canonical `FinalUseFeedClock` additionally requires a current authenticated feed at each authority time sample. A head change invalidates the feed window before authority mutation and publishes a replacement window only after success. Provider entry checks the clock/feed and grant window again after witness persistence.
+
+Host configuration and signed-feed reads use one retained file descriptor with
+an actual read cap and before/after identity checks. Unix admission rejects
+symlinks, hard links, foreign ownership, nonprivate mode and nonregular inputs;
+nonblocking opens reject FIFO substitution without waiting for a writer. The
+external trust snapshot uses the same nonblocking-open rule. Atomic replacement
+between complete reads remains supported. FinalUse itself creates and validates
+its private state leaf; Agentd does not chmod an existing path before validation.
+The registered automation parent remains trusted; this does not establish
+hostile-ancestor containment. Non-Unix configuration/feed reads fail closed
+before filesystem access, matching the existing unsupported FinalUse store and
+Agentd trust-host profile. Windows handle/reparse/ACL qualification remains open.
 
 This current Agentd composition remains a local trust profile, not the complete independently attested production bundle. Normal Agentd/Fleet bootstrap still requires a selected real production provider integration before production qualification can be claimed. Directory separation alone is not proof of independent volume/backup/boot rollback domains.
 

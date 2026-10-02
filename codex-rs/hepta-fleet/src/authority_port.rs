@@ -60,16 +60,16 @@ impl FleetAuthorityPort {
     /// Issue one fleet allocation under the exact current generic authority
     /// lease. The binding is computed from the allocation rather than supplied
     /// by the caller, preventing a caller from verifying one scope and mutating
-    /// another.
+    /// another. Destination time comes from the same final owner-locked sample,
+    /// never a timestamp supplied by the caller before a queue or lock wait.
     pub fn issue(
         &self,
         ledger: &mut LeaseLedger,
         lease_id: &str,
         expected_lease_revision: u64,
-        now_ms: u64,
         grant: AllocationGrant,
     ) -> Result<LeaseReceipt, FleetAuthorityError> {
-        self.issue_with_witness(ledger, lease_id, expected_lease_revision, now_ms, grant)
+        self.issue_with_witness(ledger, lease_id, expected_lease_revision, grant)
             .map(|(receipt, _witness)| receipt)
     }
 
@@ -80,7 +80,6 @@ impl FleetAuthorityPort {
         ledger: &mut LeaseLedger,
         lease_id: &str,
         expected_lease_revision: u64,
-        now_ms: u64,
         grant: AllocationGrant,
     ) -> Result<(LeaseReceipt, VerifiedUseTokenWitnessV1), FleetAuthorityError> {
         let binding = allocation_binding(&grant)?;
@@ -89,7 +88,9 @@ impl FleetAuthorityPort {
             .bind_dispatch(lease_id, expected_lease_revision, &binding)
             .map_err(FleetAuthorityError::Authority)?;
         let (result, witness) = dispatch_binding
-            .dispatch(|_| ledger.issue(now_ms, grant))
+            .dispatch(|context| {
+                ledger.issue_in_interval(context.earliest_unix_ms, context.latest_unix_ms, grant)
+            })
             .map_err(FleetAuthorityError::Authority)?;
         let receipt = result.map_err(FleetAuthorityError::Fleet)?;
         Ok((receipt, witness))
@@ -284,7 +285,7 @@ mod tests {
         let port = FleetAuthorityPort::new(registry.verifier());
         let mut ledger = ledger().unwrap();
         let (receipt, witness) = port
-            .issue_with_witness(&mut ledger, "fleet-issue-one", 1, 2_000, grant.clone())
+            .issue_with_witness(&mut ledger, "fleet-issue-one", 1, grant.clone())
             .unwrap();
         assert_eq!(receipt.allocation_id, "allocation-one");
         assert_eq!(witness.boundary, VerifiedUseBoundaryV1::DispatchEntry);
@@ -301,7 +302,7 @@ mod tests {
 
         registry.revoke("fleet-issue-one", 1, [9; 32]).unwrap();
         assert_eq!(
-            port.issue(&mut ledger, "fleet-issue-one", 2, 2_001, grant)
+            port.issue(&mut ledger, "fleet-issue-one", 2, grant)
                 .unwrap_err(),
             FleetAuthorityError::Authority(AuthorityLeaseError::Revoked)
         );
@@ -318,3 +319,7 @@ mod tests {
         assert_eq!(first_binding.payload_sha256, changed_binding.payload_sha256);
     }
 }
+
+#[cfg(all(test, unix))]
+#[path = "authority_port_time_tests.rs"]
+mod time_tests;

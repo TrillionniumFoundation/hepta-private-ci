@@ -59,6 +59,11 @@ use crate::AgentdIdentity;
 use crate::AgentdProductionAuthorityBootstrap;
 use crate::authority_trust_host::AgentdFinalUseTrustStore;
 
+#[path = "authority_protected_file.rs"]
+mod protected_file;
+
+use protected_file::read_protected_file;
+
 #[path = "authority_effect_tasks.rs"]
 mod effect_tasks;
 #[path = "authority_feed_clock.rs"]
@@ -274,12 +279,9 @@ impl AgentdAutomationEffectHost {
             } else {
                 false
             };
-        fs::create_dir_all(&authority_root)?;
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            fs::set_permissions(&authority_root, fs::Permissions::from_mode(0o700))?;
-        }
+        // The registered automation parent already exists. The FinalUse owner
+        // creates its private leaf and validates the opened directory; never
+        // repair permissions through a possibly substituted path here.
         let (refresh_clock, admission_clock, authority) = match authority_mode {
             AutomationAuthorityMode::Compatibility => {
                 let authority_trust = Arc::new(AgentdFinalUseTrustStore::open(
@@ -944,39 +946,6 @@ fn authority_state_uninitialized(root: &Path) -> Result<bool, AgentdError> {
     Ok(!root.join("authority.lock").exists()
         && !root.join("authority.json").exists()
         && !root.join("authority.claims").exists())
-}
-
-fn read_protected_file(path: &Path, max_bytes: u64, label: &str) -> Result<Vec<u8>, AgentdError> {
-    if !path.is_absolute() {
-        return Err(AgentdError::Invalid(format!("{label} must be absolute")));
-    }
-    let canonical = path.canonicalize()?;
-    if canonical != path {
-        return Err(AgentdError::Invalid(format!(
-            "{label} must be canonical and symlink-free"
-        )));
-    }
-    let metadata = fs::symlink_metadata(path)?;
-    if metadata.file_type().is_symlink() || !metadata.is_file() {
-        return Err(AgentdError::Invalid(format!(
-            "{label} must be a regular non-symlink file"
-        )));
-    }
-    if metadata.len() == 0 || metadata.len() > max_bytes {
-        return Err(AgentdError::Invalid(format!(
-            "{label} is empty or too large"
-        )));
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o077 != 0 {
-            return Err(AgentdError::Invalid(format!(
-                "{label} must not be group/world accessible"
-            )));
-        }
-    }
-    Ok(fs::read(path)?)
 }
 
 fn validate_host_identifier(label: &str, value: &str) -> Result<(), AgentdError> {

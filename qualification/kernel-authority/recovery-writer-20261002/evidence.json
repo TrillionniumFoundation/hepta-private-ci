@@ -1,0 +1,58 @@
+{
+  "source": "1da08d55ad8db08ec8035ca41b5a243e81dce9b7",
+  "tree": "0b0efca2952b8accd902f2be6401c4a9e2d5028e",
+  "scope": "local actual-owner and full Automation package execution; not installed or independent acceptance",
+  "tests": {
+    "owner_before": {
+      "passed": 0,
+      "failed": 2
+    },
+    "owner_after": {
+      "passed": 2,
+      "failed": 0
+    },
+    "full_package": {
+      "passed": 107,
+      "skipped": 0
+    },
+    "retries": 0
+  },
+  "original_hosted_cause_proven": false,
+  "production": false,
+  "accepted": false,
+  "activated": false,
+  "released": false,
+  "logs": [
+    {
+      "path": "taskflow-owner-concurrency-both-red.log",
+      "bytes": 12382,
+      "sha256": "9353d3a9f8f884c55a99ad8970fcdf4c7cb718e3317604894814917b4c162b87"
+    },
+    {
+      "path": "taskflow-owner-concurrency-both-green.log",
+      "bytes": 10496,
+      "sha256": "5cd553e2ae1436a86aa6eb1a436bd49f3f705c89c2cfc678f4fd5dd6bb730cc5"
+    },
+    {
+      "path": "taskflow-owner-full-tests.log",
+      "bytes": 25037,
+      "sha256": "68daedd005a196848fa7fccf43d59d8e099db23ce261dec21b04f675cb5f8205"
+    },
+    {
+      "path": "taskflow-owner-strict-clippy.log",
+      "bytes": 3057,
+      "sha256": "5eae9a9df139e80bea78a1459d551ea8add7eed0a32399c40b3ba7383c27649c"
+    },
+    {
+      "path": "independent-owner-test.log",
+      "bytes": 10495,
+      "sha256": "1cb6c8b05d8d7705b98bcdefc541f972397c64efb2edfc969327b49a07057413"
+    }
+  ],
+  "independent_owner_recheck": {
+    "passed": 2,
+    "failed": 0,
+    "seconds": 0.119,
+    "retries": 0
+  }
+}

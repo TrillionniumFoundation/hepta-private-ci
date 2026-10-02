@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "37ac66eef820a3ac5e105ec14fe4ea30797a14de",
-    "tree": "a63a48003f98ee37206ea737a1aa72de35aa0d61"
+    "commit": "d66ed9dba844da12b879ea1c5ceb865e123fb4d1",
+    "tree": "eb1020e69d9dafc8436c9f20aa8c58b0b6c71c23"
   },
   "mappingSourceIdentityMode": "path_only",
   "exactSourceEvidenceMode": "lane_a_runtime_wiring_only_no_product_execution_claim",
@@ -31,7 +31,8 @@
       "authority": "security-authority",
       "tests": [
         "codex-rs/hepta-contracts/src/authority_lease.rs",
-        "codex-rs/hepta-fleet/src/authority_port.rs"
+        "codex-rs/hepta-fleet/src/authority_port.rs",
+        "codex-rs/hepta-fleet/src/authority_port_time_tests.rs"
       ],
       "designOperation": "put_verify_revoke_prune_advance_epoch_with_interval_time_and_retired_identity_lineage",
       "mappingClass": "owner_native",
@@ -47,7 +48,8 @@
       "tests": [
         "qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json",
         "qa/b4-no-bypass/test_kernel_authority_extension_api.py",
-        "codex-rs/hepta-fleet/src/authority_port.rs"
+        "codex-rs/hepta-fleet/src/authority_port.rs",
+        "codex-rs/hepta-fleet/src/authority_port_time_tests.rs"
       ],
       "designOperation": "bind_exact_lease_and_consume_at_irreversible_boundary",
       "mappingClass": "owner_native_capability",
@@ -152,14 +154,17 @@
         "codex-rs/hepta-agentd/src/authority_effect_tasks.rs",
         "codex-rs/hepta-automation/tests/authorized_effect.rs",
         "qualification/kernel-authority/owner_runtime_qualification.py",
-        "qualification/kernel-authority/test_owner_runtime_qualification.py"
+        "qualification/kernel-authority/test_owner_runtime_qualification.py",
+        "codex-rs/hepta-agentd/src/authority_protected_file_tests.rs",
+        "codex-rs/hepta-agentd/src/authority_trust_storage_tests.rs"
       ],
       "designOperation": "bounded_owned_async_tasks_fresh_feed_historical_provider_keys_reserve_shutdown_and_reconciliation",
       "mappingClass": "product_effect_owner",
       "delegatedCallees": [
         "codex-rs/hepta-agentd/src/authority_feed_clock.rs",
         "codex-rs/hepta-agentd/src/authority_effect_tasks.rs",
-        "codex-rs/hepta-automation/src/authorized_effect.rs"
+        "codex-rs/hepta-automation/src/authorized_effect.rs",
+        "codex-rs/hepta-agentd/src/authority_protected_file.rs"
       ],
       "sourcePathExists": true
     },
@@ -313,7 +318,8 @@
       "sourcePath": "codex-rs/hepta-fleet/src/authority_port.rs",
       "state": "source_composed_exact_binding_owner_reopen_not_deployed",
       "tests": [
-        "codex-rs/hepta-fleet/src/authority_port.rs"
+        "codex-rs/hepta-fleet/src/authority_port.rs",
+        "codex-rs/hepta-fleet/src/authority_port_time_tests.rs"
       ]
     },
     {
@@ -335,7 +341,9 @@
         "codex-rs/hepta-agentd/src/authority_feed_clock.rs",
         "codex-rs/hepta-agentd/src/authority_effect_tasks.rs",
         "codex-rs/hepta-automation/tests/authorized_effect.rs",
-        "qualification/kernel-authority/owner_runtime_qualification.py"
+        "qualification/kernel-authority/owner_runtime_qualification.py",
+        "codex-rs/hepta-agentd/src/authority_protected_file_tests.rs",
+        "codex-rs/hepta-agentd/src/authority_trust_storage_tests.rs"
       ]
     },
     {
@@ -377,12 +385,24 @@
       "object": "4bb054fa114d4e7569f4cda220cbcb19bfb57fb6"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/authority_protected_file.rs",
+      "object": "8fb565006cc9afdc507942bbeb7e5880d906cbb8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_protected_file_tests.rs",
+      "object": "921a9ee8cdc3356dd0ebf1f185559453e79c902b"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/authority_trust_host.rs",
-      "object": "d1d8d563230e8dd87475604585c22352c3ce93a4"
+      "object": "e399f4dba74f49394e6257ec0dbca608c68c2231"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_trust_storage_tests.rs",
+      "object": "a703fff764afdd79b9f69fbe8d8833fc55308ae7"
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-      "object": "d964a8514393e2d373ec25a5a04fe5b15cbdf3de"
+      "object": "47d6c1e8929995829744a121c34bdcbc47b841a7"
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
@@ -398,7 +418,7 @@
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
-      "object": "f68ff6f7f05e54195df149bd2f92ddffb325b314"
+      "object": "53bf522121a41dd5d859fa2fed8bdc24d7f5b40b"
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
@@ -410,11 +430,11 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "b591efc8df777b868b9f182afc3c750ef4077efc"
+      "object": "164daa82425beffae08547765c13dfae28a7f8a0"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "object": "cb8cf2839a6b9113df050a705d34ef8b38d4d541"
+      "object": "ff7a76f64f84e1a6a04503231efbeeb75d33c859"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_runtime_clock.rs",
@@ -422,7 +442,7 @@
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
-      "object": "17b1c2584086da8359cd4124c38db5ed31711c10"
+      "object": "36ccebbc531830ca2a6281d1d7e406c377f1748b"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_trust_tests.rs",
@@ -470,7 +490,11 @@
     },
     {
       "path": "codex-rs/hepta-fleet/src/authority_port.rs",
-      "object": "f52a447cc82c1b5c4679662c3edbd98dcb6a1ec7"
+      "object": "b38a2f2233a2352d1adec2e4ea075c109ecfcd45"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port_time_tests.rs",
+      "object": "59e441f1c87af849ff1aa82cabccab46768d3df3"
     },
     {
       "path": "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md",
@@ -478,7 +502,7 @@
     },
     {
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
-      "object": "58d7c58b3ef65281e73096897052d8ce6bc9ab91"
+      "object": "ff8b8a28ea5005073d2c36604d3ed026b6aa4cfa"
     },
     {
       "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json",
