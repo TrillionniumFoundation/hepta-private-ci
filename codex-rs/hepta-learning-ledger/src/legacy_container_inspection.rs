@@ -117,6 +117,9 @@ pub fn inspect_legacy_container_v1(
         }
         if size == 0 {
             let index = segment.ok_or(LegacyInspectionError::Encoding)?;
+            if result.records == 0 {
+                return Err(LegacyInspectionError::Sequence);
+            }
             if bytes.len() - cursor != 80 {
                 return Err(LegacyInspectionError::Incomplete);
             }
@@ -145,6 +148,11 @@ pub fn inspect_legacy_container_v1(
         let frame = bytes
             .get(cursor..cursor + total)
             .ok_or(LegacyInspectionError::Incomplete)?;
+        // The historical segment writer always reserves space for its seal,
+        // including while the current segment remains unsealed.
+        if segment.is_some() && (cursor + total + 80) as u64 > maximum_bytes {
+            return Err(LegacyInspectionError::Size);
+        }
         let sequence = number(frame, 8)?;
         if sequence
             != result

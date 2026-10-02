@@ -44,6 +44,22 @@ None.
 
 `existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `learning.ledger`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
 
+### Explicit persisted-format inspection and additive codec stage
+
+Two historical candidates reuse legacy tag10 for different retrieval facts.
+The [read-only inspector](../../../codex-rs/hepta-learning-ledger/LEGACY_FORMAT_INSPECTION.md)
+requires an explicit caller-selected, unauthenticated profile and preserves
+original bytes/digests. The [additive V2 codecs](../../../codex-rs/hepta-learning-ledger/PERSISTED_FORMAT_V2.md)
+separate preparation, assignment intent and host-write confirmation under new
+event/chain domains and new journal/segment magic. Actual-writer fixtures from
+both histories and independent vectors are retained.
+
+These are bounded structural codecs, not an activated migration or a new durable
+writer. Existing creation/append/recovery paths remain unchanged. Causal replay,
+independently authenticated profile provenance, witness continuity and owner
+activation remain necessary; the [migration plan](../../../codex-rs/hepta-learning-ledger/PERSISTED_MIGRATION_PLAN.md)
+keeps preparation/recovery and the post-expiry reconciliation problem separate.
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:

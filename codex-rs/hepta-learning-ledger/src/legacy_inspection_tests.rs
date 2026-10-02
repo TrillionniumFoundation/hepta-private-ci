@@ -138,3 +138,62 @@ fn legacy_event_bounds_unknown_tags_and_trailing_bytes_reject() {
         Err(LegacyInspectionError::Size)
     );
 }
+
+#[test]
+fn empty_unsealed_segment_is_valid_but_checksummed_empty_seal_rejects() {
+    let binding = Digest32::of_bytes(b"fixture-store");
+    let profile = Some(LegacyLedgerProfileV1::IntegrationPreparation);
+    let header = &INTEGRATION_SEGMENT[..136];
+    let observed =
+        inspect_legacy_container_v1(header, profile, binding).expect("empty unsealed header");
+    assert_eq!(observed.records, 0);
+    assert!(!observed.sealed);
+    let mut sealed = header.to_vec();
+    sealed.extend_from_slice(&crate::segment_codec::footer(binding, 0, observed.last));
+    assert_eq!(
+        inspect_legacy_container_v1(&sealed, profile, binding),
+        Err(LegacyInspectionError::Sequence)
+    );
+}
+
+#[test]
+fn complete_checksummed_segment_frame_must_reserve_footer_capacity() {
+    use codex_hepta_types::ProbabilityQ32;
+    use codex_hepta_types::StableId;
+    let id = |value: String| StableId::new(value).expect("id");
+    let mut actions = (0..27)
+        .map(|index| id(format!("{index:03}:{}", "a".repeat(120))))
+        .collect::<Vec<_>>();
+    let selected = actions[0].clone();
+    actions.push(id("abstain".into()));
+    let digest = Digest32::of_bytes(b"bounded-fixture");
+    let mut core = crate::LearningLedger::new();
+    core.append(crate::LedgerEvent::Decision(crate::EpisodeDecision {
+        record_id: id("record:x".into()),
+        episode_id: id("episode:x".into()),
+        objective_digest: digest,
+        policy_id: id("p".repeat(40)),
+        candidate_ids: actions,
+        selected_candidate_id: selected,
+        selected_propensity: ProbabilityQ32::ONE,
+        completeness: crate::CandidateSetCompleteness::Complete,
+        support_digest: digest,
+    }))
+    .expect("actual legacy event admission");
+    let frame = crate::durable_codec::encode_frame(&core.records()[0])
+        .expect("actual checksummed legacy frame");
+    let mut bytes = INTEGRATION_SEGMENT[..136].to_vec();
+    bytes.extend_from_slice(&frame);
+    assert!(
+        bytes.len() <= 4096 && bytes.len() + 80 > 4096,
+        "fixture must isolate footer reservation"
+    );
+    assert_eq!(
+        inspect_legacy_container_v1(
+            &bytes,
+            Some(LegacyLedgerProfileV1::IntegrationPreparation),
+            Digest32::of_bytes(b"fixture-store")
+        ),
+        Err(LegacyInspectionError::Size)
+    );
+}

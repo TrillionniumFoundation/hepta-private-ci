@@ -52,3 +52,12 @@ performance case skipped. This does not inherit the other branch's 139-test
 results or solve its distinct post-expiry one-event-lag recovery problem.
 A new checksummed discriminator still needs an independently authorized migration
 plan and an equal witnessed cut before any future writer switch.
+
+
+Independent review found two local-format acceptance mismatches: empty sealed
+segments and frames without the historical80-byte footer reservation. Both new
+regressions failed before repair; the inspector now rejects both while preserving
+empty unsealed headers and leaving journal rules unchanged. Final full ledger
+suite:148 passed, one existing opt-in skipped. Strict all-target Clippy, fix,
+format and diff checks passed. The independent read-only recheck found no further
+concrete blocker in those corrections; it did not rerun the reported tests.
