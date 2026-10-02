@@ -28,17 +28,33 @@ fn scope_owner(h: &Harness, objective_digest: Digest32) -> AgentdNeuronHandleV2 
     let (mut store_context, mut index_context) = contexts(&h.native, &h.config, &h.body);
     store_context.scope = journal_scope;
     index_context.scope = journal_scope;
-    let runtime = checked(NeuronRuntimeV2::bootstrap(
-        &h.root.path().join("generation.hptngs02"),
-        &h.root.path().join("index.hptngi02"),
-        h.native.clone(),
-        journal_scope,
-        h.config.clone(),
-        h.body.clone(),
-        store_context,
-        index_context,
-        h.witness.clone(),
-    ));
+    let store_path = h.root.path().join("generation.hptngs02");
+    let index_path = h.root.path().join("index.hptngi02");
+    let runtime = checked(if store_path.exists() {
+        NeuronRuntimeV2::recover(
+            &store_path,
+            &index_path,
+            h.native.clone(),
+            journal_scope,
+            h.config.clone(),
+            h.body.clone(),
+            store_context,
+            index_context,
+            h.witness.clone(),
+        )
+    } else {
+        NeuronRuntimeV2::bootstrap(
+            &h.root.path().join("generation.hptngs02"),
+            &h.root.path().join("index.hptngi02"),
+            h.native.clone(),
+            journal_scope,
+            h.config.clone(),
+            h.body.clone(),
+            store_context,
+            index_context,
+            h.witness.clone(),
+        )
+    });
     let model = FakeDecisionCellModel {
         calls: h.calls.clone(),
         runtime: h.cell.selected_runtime.clone(),
@@ -274,3 +290,6 @@ fn goal_scope_controller_v3_rejects_stale_cas_expired_admission_and_legacy_reloa
     checked(controller.reload_goal_scope_v3(&original, next));
     assert_eq!(checked(controller.active_generation()), 1);
 }
+
+#[path = "neuron_goal_scope_archive_v3_tests.rs"]
+mod cold_tests;

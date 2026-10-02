@@ -41,20 +41,54 @@ impl AgentdNeuronGenerationControllerV2 {
         retained: impl IntoIterator<Item = (AgentdNeuronGoalScopeV3, AgentdNeuronHandleV2)>,
         state_path: impl AsRef<Path>,
     ) -> Result<Self, AgentdNeuronControlErrorV2> {
+        Self::from_recovered_goal_scopes_with_archive_policy_v3(
+            active_scope,
+            active,
+            retained,
+            state_path,
+            AgentdNeuronArchivePolicyV1::default(),
+        )
+    }
+
+    pub fn from_recovered_goal_scopes_with_archive_policy_v3(
+        active_scope: AgentdNeuronGoalScopeV3,
+        active: AgentdNeuronHandleV2,
+        retained: impl IntoIterator<Item = (AgentdNeuronGoalScopeV3, AgentdNeuronHandleV2)>,
+        state_path: impl AsRef<Path>,
+        policy: AgentdNeuronArchivePolicyV1,
+    ) -> Result<Self, AgentdNeuronControlErrorV2> {
         let path = state_path.as_ref();
         if AgentdNeuronGoalScopeV3::capture(active_scope.ordinal, &active)? != active_scope {
             return Err(AgentdNeuronControlErrorV2::GenerationConflict);
         }
-        let archives = archive_store::GenerationArchiveStore::open(
+        let persisted = if generation_state_exists(path).map_err(poison_control_state)? {
+            Some(read_agentd_neuron_goal_scope_state_v3(path).map_err(poison_control_state)?)
+        } else {
+            None
+        };
+        let mut archives = archive_store::GenerationArchiveStore::open_goal_scopes_v3(
             path,
-            archive_store::DEFAULT_MAX_TOTAL_BYTES,
+            policy.maximum_total_bytes,
         )?;
         let mut owners = BTreeMap::new();
+        let mut cold_handles = Vec::new();
+        let mut seen = std::collections::BTreeSet::new();
         for (scope, handle) in retained {
             if scope.ordinal >= active_scope.ordinal
                 || AgentdNeuronGoalScopeV3::capture(scope.ordinal, &handle)? != scope
-                || owners.insert(scope.ordinal, handle).is_some()
+                || !seen.insert(scope.ordinal)
             {
+                return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+            }
+            if seen.len() > MAX_RETAINED_NEURON_GENERATION_OWNERS_V2 {
+                return Err(AgentdNeuronControlErrorV2::PendingRecovery);
+            }
+            if let Some(cold) = archives.archived_goal_scope_v3(scope.ordinal)? {
+                if cold != scope {
+                    return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+                }
+                cold_handles.push((scope, handle));
+            } else if owners.insert(scope.ordinal, handle).is_some() {
                 return Err(AgentdNeuronControlErrorV2::GenerationConflict);
             }
         }
@@ -67,7 +101,7 @@ impl AgentdNeuronGenerationControllerV2 {
             retained: owners,
             reload_target_generation: None,
             state_path: Some(path.to_owned()),
-            archives: Some(archives),
+            archives: None,
             goal_scope: Some(GoalScopeTopologyV3 {
                 active_ordinal: active_scope.ordinal,
                 reload_target: None,
@@ -76,9 +110,9 @@ impl AgentdNeuronGenerationControllerV2 {
         let live = state
             .goal_scope_state(AgentdNeuronLifecycleStateV2::Starting)
             .map_err(poison_control_state)?;
-        state.lifecycle = if generation_state_exists(path).map_err(poison_control_state)? {
-            let persisted =
-                read_agentd_neuron_goal_scope_state_v3(path).map_err(poison_control_state)?;
+        verify_complete_goal_scope_topology_v3(&live, &archives)?;
+        state.lifecycle = if let Some(persisted) = persisted {
+            let persisted = remove_cold_goal_scopes_v3(&persisted, &archives)?;
             resolve_recovered_goal_scope_v3(&persisted, &live)?
         } else if active_scope.ordinal == 1 && live.retained_scopes.is_empty() {
             AgentdNeuronLifecycleStateV2::Starting
@@ -91,6 +125,14 @@ impl AgentdNeuronGenerationControllerV2 {
         for handle in state.retained.values() {
             handle.close_lifecycle_gate()?;
         }
+        for (scope, handle) in cold_handles {
+            handle.close_lifecycle_gate()?;
+            let _drain = handle.try_drain_lifecycle_gate()?;
+            let archive = handle.owner.export_archive_control()?;
+            archives.commit_goal_scope_v3(&scope, &archive)?;
+            handle.owner.retire_control()?;
+        }
+        state.archives = Some(archives);
         state
             .persist_transition(state.lifecycle, None)
             .map_err(poison_control_state)?;
@@ -125,10 +167,15 @@ impl AgentdNeuronGenerationControllerV2 {
             let handle = if expected_scope.ordinal == topology.active_ordinal {
                 &state.active
             } else {
-                state
-                    .retained
-                    .get(&expected_scope.ordinal)
-                    .ok_or(AgentdNeuronControlErrorV2::UnknownGeneration)?
+                if let Some(handle) = state.retained.get(&expected_scope.ordinal) {
+                    handle
+                } else {
+                    return state
+                        .archives
+                        .as_ref()
+                        .ok_or(AgentdNeuronControlErrorV2::UnknownGeneration)?
+                        .query_goal_scope_v3(expected_scope, tick_id, input_digest);
+                }
             };
             if AgentdNeuronGoalScopeV3::capture(expected_scope.ordinal, handle)? != *expected_scope
             {
@@ -171,11 +218,13 @@ impl AgentdNeuronGenerationControllerV2 {
                 Some(next_scope.clone()),
             )
             .map_err(poison_control_state)?;
-            if state.retained.len() >= MAX_RETAINED_NEURON_GENERATION_OWNERS_V2 {
-                return Err(AgentdNeuronControlErrorV2::PendingRecovery);
-            }
         }
+        next.close_lifecycle_gate()?;
         next.validate_goal_scope_admission()?;
+        self.archive_retained_generations_to(
+            MAX_RETAINED_NEURON_GENERATION_OWNERS_V2 - 1,
+            std::time::Duration::from_secs(5),
+        )?;
         {
             let mut state = self.lock_state()?;
             if state.lifecycle != AgentdNeuronLifecycleStateV2::Sealed

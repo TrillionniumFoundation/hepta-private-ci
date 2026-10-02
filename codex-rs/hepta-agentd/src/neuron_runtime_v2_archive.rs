@@ -7,6 +7,9 @@ impl AgentdNeuronGenerationControllerV2 {
         &self,
         budget: std::time::Duration,
     ) -> Result<usize, AgentdNeuronControlErrorV2> {
+        if self.lock_state()?.goal_scope.is_some() {
+            return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+        }
         self.archive_retained_generations_to(MAX_RETAINED_NEURON_GENERATION_OWNERS_V2, budget)
     }
 
@@ -19,9 +22,6 @@ impl AgentdNeuronGenerationControllerV2 {
             .checked_add(budget)
             .ok_or(AgentdNeuronControlErrorV2::PendingRecovery)?;
         let mut state = self.lock_state()?;
-        if state.goal_scope.is_some() {
-            return Err(AgentdNeuronControlErrorV2::GenerationConflict);
-        }
         let mut archived = 0;
         while state.retained.len() > maximum {
             if Instant::now() >= deadline || state.archives.is_none() {
@@ -35,11 +35,20 @@ impl AgentdNeuronGenerationControllerV2 {
             handle.close_lifecycle_gate()?;
             let _drain = handle.try_drain_lifecycle_gate()?;
             let archive = handle.owner.export_archive_control()?;
-            state
+            let scope = if state.goal_scope.is_some() {
+                Some(AgentdNeuronGoalScopeV3::capture(generation, &handle)?)
+            } else {
+                None
+            };
+            let store = state
                 .archives
                 .as_mut()
-                .ok_or(AgentdNeuronControlErrorV2::ControllerPoisoned)?
-                .commit(&archive)?;
+                .ok_or(AgentdNeuronControlErrorV2::ControllerPoisoned)?;
+            if let Some(scope) = &scope {
+                store.commit_goal_scope_v3(scope, &archive)?;
+            } else {
+                store.commit(&archive)?;
+            }
             // Commit the archive frontier first. A crash before the following
             // hot-topology publication recovers this same archive, never a model.
             let retained = state
@@ -48,14 +57,45 @@ impl AgentdNeuronGenerationControllerV2 {
                 .copied()
                 .filter(|value| *value != generation)
                 .collect();
-            persist_generation_state(
-                state.state_path.as_deref(),
-                state.lifecycle,
-                state.active.generation()?,
-                retained,
-                state.reload_target_generation,
-            )
-            .map_err(poison_control_state)?;
+            if scope.is_some() {
+                let mut topology = state
+                    .goal_scope_state(state.lifecycle)
+                    .map_err(poison_control_state)?;
+                topology
+                    .retained_scopes
+                    .retain(|scope| scope.ordinal != generation);
+                topology = AgentdNeuronGoalScopeStateV3::new(
+                    topology.lifecycle,
+                    topology.active_scope,
+                    topology.retained_scopes,
+                    topology.reload_target_scope,
+                )
+                .map_err(poison_control_state)?;
+                verify_complete_goal_scope_topology_v3(
+                    &topology,
+                    state
+                        .archives
+                        .as_ref()
+                        .ok_or(AgentdNeuronControlErrorV2::ControllerPoisoned)?,
+                )?;
+                write_agentd_neuron_goal_scope_state_v3(
+                    state
+                        .state_path
+                        .as_deref()
+                        .ok_or(AgentdNeuronControlErrorV2::ControllerPoisoned)?,
+                    &topology,
+                )
+                .map_err(poison_control_state)?;
+            } else {
+                persist_generation_state(
+                    state.state_path.as_deref(),
+                    state.lifecycle,
+                    state.active.generation()?,
+                    retained,
+                    state.reload_target_generation,
+                )
+                .map_err(poison_control_state)?;
+            }
             handle.owner.retire_control()?;
             state.retained.remove(&generation);
             archived += 1;
