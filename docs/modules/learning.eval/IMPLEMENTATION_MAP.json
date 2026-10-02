@@ -244,6 +244,34 @@
           "symbol": "ProductQualificationReceiptV1::validate_integrity"
         }
       ]
+    },
+    {
+      "operation": "run_operational_model_lease_evaluator_v2",
+      "nativeSymbol": "run_operational_model_lease_evaluator_v2",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2.rs",
+      "state": "source_implemented",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "run_operational_model_lease_evaluator_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "inspect_operational_model_lease_v2",
+      "nativeSymbol": "inspect_operational_model_lease_v2",
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2.rs",
+      "state": "source_implemented",
+      "authority": "deny_all",
+      "tests": [
+        "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "inspect_operational_model_lease_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
@@ -293,12 +321,21 @@
       "sourcePath": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
       "nativeSymbol": "run_evaluated_shadow_v1",
       "state": "qualification_consumer_not_default_canonical_daemon"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs",
+      "nativeSymbol": "main",
+      "state": "optional_fixed_role_evaluator_and_reader_cli_normal_cpu_composition_pending"
     }
   ],
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "ae3ae97ac7f0adc55cf67603e70d1b97b921466e"
+      "object": "04b233286874d4d0fca222b1ccc9fe372dc5c9b8"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs",
+      "object": "9b163275b4d5dec5481ffa1a552f74acbcc9dad1"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
@@ -347,6 +384,22 @@
     {
       "path": "codex-rs/hepta-intelligence-eval/src/ope_tests.rs",
       "object": "d40324105416ae27c78e2f648e0683e6c328a9b0"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2.rs",
+      "object": "085cc44108988109e2b38a7fb38b41ca7822186a"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2_tests.rs",
+      "object": "7d705b0467e0b161faaac123c452a828e9f1312b"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2.rs",
+      "object": "c7f15bc325a7d53b5b6ab133533dd198e086d978"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2_tests.rs",
+      "object": "cf47cae5abf82e0b83559fd704ff7e64eaeed4e3"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
@@ -403,6 +456,7 @@
   },
   "observedSourcePaths": [
     "codex-rs/hepta-intelligence-eval",
+    "codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs",
     "codex-rs/hepta-intelligence-eval/src/closure_tests.rs",
     "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs",
     "codex-rs/hepta-intelligence-eval/src/fenced_holdout_file.rs",
@@ -415,6 +469,10 @@
     "codex-rs/hepta-intelligence-eval/src/ope_confidence.rs",
     "codex-rs/hepta-intelligence-eval/src/ope_confidence_tests.rs",
     "codex-rs/hepta-intelligence-eval/src/ope_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2.rs",
+    "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2_tests.rs",
+    "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2.rs",
+    "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2_tests.rs",
     "codex-rs/hepta-intelligence-eval/src/product_runner.rs",
     "codex-rs/hepta-intelligence-eval/src/product_runner_tests.rs",
     "codex-rs/hepta-intelligence-eval/src/sequential.rs",
@@ -427,5 +485,24 @@
     "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
     "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
     "docs/modules/learning.eval/TECHNICAL.md"
-  ]
+  ],
+  "operationalModelLeaseV2": {
+    "purpose": "ConservativeCpuAbstentionOnlyV1",
+    "qualityScope": "stable_model_material_profile_excludes_current_goal_request_and_time",
+    "sourceStageCommit": "f547b26aa4f91e608939d535d97775cee7665d58",
+    "nativeQualification": {
+      "evalLibraryCases": 311,
+      "failures": 0,
+      "ignored": 0,
+      "retries": 0,
+      "testThreads": 2
+    },
+    "normalCpuProductCaller": "not_composed",
+    "installedCaller": false,
+    "actualIndependentRoleWindowProved": false,
+    "sourceMaterialFreezeState": "same_source_worker_and_encoder_closure_pending",
+    "scientificHoldoutOrSuperiorityClaim": false,
+    "goalSevenOwnersAndFinalUseRequired": true,
+    "legacyV1DomainsUnchanged": true
+  }
 }
