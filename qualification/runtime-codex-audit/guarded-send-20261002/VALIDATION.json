@@ -94,11 +94,30 @@
     }
   ],
   "review": {
-    "independentReviewCompleted": false,
-    "blocker": "No new reviewer slot available; peer agents were in capacity-error state."
+    "independentReviewCompleted": true,
+    "scope": "Additive guarded transport and native deadline composition only; not independent product acceptance.",
+    "reviewedSourceCommits": [
+      "81d20bcd1",
+      "4c235fa99"
+    ],
+    "reviewedBoundaries": [
+      "Checks before and after preparation/entry",
+      "Caller deadline propagation and cancellation",
+      "Flush error handling",
+      "Actual remote command-writer tests"
+    ],
+    "newBlockingFindings": 0,
+    "verification": {
+      "newTestsPassed": 16,
+      "log": "logs/independent-source-review-tests.log"
+    },
+    "retainedLimits": [
+      "Generation/ingress observations are not atomic cross-process leases.",
+      "Guard failure closes the entire client connection: conservative safety with an availability effect.",
+      "Full library suite retains nine failures; product and broader durable bridge acceptance remain false."
+    ]
   },
   "remainingWork": [
-    "Independent source review of the additive transport and native composition.",
     "Ordinary Agentd exact durable dispatch/abort commitment/outbox bridge, without copying divergent construction or integration candidates.",
     "Server ingress generation fence or live owner permit; async observations are not atomic cross-process fencing.",
     "Transport-owned typed no-effect proof if future work should release safely rejected queued operations; this stage remains conservatively reconcile-only.",
