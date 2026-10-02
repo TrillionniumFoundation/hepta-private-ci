@@ -53,17 +53,17 @@
  pub struct CxOs {
      pub(crate) window_geom: WindowGeom,
 +    hepta_startup_received: bool,
- 
+
      pub from_wasm: Option<FromWasmMsg>,
- 
+
 @@ -1203,6 +1196,7 @@
      fn default() -> Self {
          Self {
              window_geom: WindowGeom::default(),
 +            hepta_startup_received: false,
- 
+
              from_wasm: Some(FromWasmMsg::new()),
- 
+
 --- a/platform/src/window.rs
 +++ b/platform/src/window.rs
 @@ -1293,3 +1293,63 @@
@@ -130,3 +130,14 @@
 +        assert_eq!(cx.hepta_web_window_geometry(native(800.0)), Err("web main window was not created"));
 +    }
 +}
+--- a/platform/src/script/res.rs
++++ b/platform/src/script/res.rs
+@@ -511,7 +511,7 @@
+                 .collect::<Vec<_>>()
+         };
+
+-        let _mp_t0 = std::time::Instant::now();
++        let _mp_t0 = crate::profile_start();
+         let _mp_n = handles.len();
+         for handle in handles {
+             self.load_script_resource_impl(

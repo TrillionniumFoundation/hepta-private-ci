@@ -201,3 +201,15 @@ it still records panic/exception diagnostics and still fails capture. Automatic
 /$report_error transmission is disabled for packages produced by this pipeline.
 The dependency web.js reporter delegates to this installed supported override.
 This does not authorize live-account qualification or production deployment.
+
+
+Run 37073101397 passed the three real framework geometry tests, 19 native app
+checks, 13 browser regressions and packaging. The next real canvas startup reached
+resource loading and panicked in std::time::Instant::now (unsupported on WASM).
+The pinned res.rs unconditionally started this profiling clock even with tracing
+disabled. The explicit framework patch now uses its existing profile_start API,
+which uses Makepad's real JS clock on WASM and Instant on native. A fourteenth
+browser regression executes that clock and elapsed across an actual browser
+executor delay; mandatory canvas capture exercises the real resource-load call.
+The prior font mapping warning is recorded separately and is not attributed as
+the cause of this time panic. No error gate or telemetry protection is relaxed.

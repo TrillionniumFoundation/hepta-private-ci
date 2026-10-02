@@ -193,7 +193,8 @@ def web_tests():
     output = run(['cargo', '+nightly-2026-10-01', 'test', '--locked', '--target',
                   'wasm32-unknown-unknown', '--features', 'ui-fixture', '--lib', '--', '--nocapture'],
                  env=env, log='browser-tests.log')
-    expected = ['session_roundtrip_is_isolated_from_layout_storage_and_cleared',
+    expected = ['browser_resource_profile_clock_runs_without_std_time',
+                'session_roundtrip_is_isolated_from_layout_storage_and_cleared',
                 'malformed_restore_clears_metadata_without_contacting_a_server',
                 'logout_removes_the_entire_session_record',
                 'stale_restore_cannot_remove_newer_account_metadata',
