@@ -167,7 +167,7 @@ class SupplyTrainingTests(unittest.TestCase):
             labels.append(index % 2)
             parts.append("development" if index < 128 else "train")
         options = {
-            "seed": 24,
+            "seed": 20261002,
             "epochs": 2,
             "learning_rate": 0.01,
             "deadline": time.monotonic() + 30,

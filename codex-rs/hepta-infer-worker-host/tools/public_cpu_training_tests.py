@@ -48,7 +48,7 @@ def fit(features, labels, partitions):
         features,
         labels,
         partitions,
-        seed=24,
+        seed=20261002,
         epochs=100,
         learning_rate=0.01,
         deadline=time.monotonic() + 30,

@@ -297,7 +297,7 @@ def run(config_path, config_digest):
         from public_cpu_training_supply import load
 
         if hyper != {
-            "seed": 24,
+            "seed": 20261002,
             "epochs": 300,
             "learning_rate": 0.01,
             "development_components": 2,

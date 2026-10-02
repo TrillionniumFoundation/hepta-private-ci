@@ -304,7 +304,8 @@ retains the original 70 development rows and all other rows in those components;
 the reviewed extension assigns 570 TRAIN and 128 development rows. These are
 public development partitions, without unseen acceptance claims.
 
-V2 uses the same seed 24, 300 epochs, learning rate 0.01 and original 180-second
+V2 uses the actual original Root run's seed 20261002, 300 epochs, learning rate
+0.01 and original 180-second
 whole training/scoring budget. It executes the original degenerate baseline
 and candidate through the actual pinned normal scorer on all 698 measured inputs.
 The deadline includes source validation, training, both scorer calls and output
