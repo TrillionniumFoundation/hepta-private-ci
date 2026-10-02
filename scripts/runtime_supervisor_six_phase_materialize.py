@@ -1957,6 +1957,18 @@ def verify_materialized_source() -> None:
 
 
 def materialize() -> None:
+    # Restore archived, unlinked prototypes only inside this explicit authoring transaction.
+    for name in ("mutation_journal", "process_exit_witness", "recovery_observation"):
+        source = SRC / f"{name}.rs"
+        try:
+            read(source)
+        except FileNotFoundError:
+            if source not in _ORIGINAL or _ORIGINAL[source].text is not None:
+                raise
+            archive = (
+                ROOT / "qualification/runtime-supervisor/history/unlinked-prototypes"
+            )
+            write(source, read(archive / f"{name}.rs.txt"))
     patch_lib()
     patch_exit_witness()
     patch_recovery_observation()
