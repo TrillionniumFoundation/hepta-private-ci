@@ -145,13 +145,17 @@ this target. [HNMF](../../hnmf/TECHNICAL.md) owns contribution/learning semantic
 consumes existing Memory, ledger and artifact owners. It binds Replay to the
 consumer/workspace/parameter scope, and binds each training decision to the exact
 owner/Memory/revision support rather than equal text. Train, load and prediction
-revalidate source use and frozen ledger. Load/prediction also check the supplied
-artifact-owner registry and exact bytes. The embedding owner must supply the
-current registry; this candidate API does not mint signed production CURRENT.
+revalidate source use and frozen ledger. Load and prediction require the host's
+`with_current_artifacts` protected owner source, reopened at the actual use time.
+The caller's registry supplies the expected complete manifest, which must match
+authenticated eligible CURRENT and the exact bytes. Missing, withdrawn, changed
+or expired CURRENT rejects even if the caller retains an old eligible snapshot.
+The authenticated use window is checked again after loading or prediction.
 
 The integration test uses separate source/receiver stores and covers no sharing,
 Recall-only, Replay-only, both, altered bytes/targets/workspaces, independent
-artifact revocation and support withdrawal after loading. This is an owner-path
+artifact revocation in a separate CURRENT source and support withdrawal after
+loading. This is an owner-path
 behavioral test, not a real-task transfer study, process-isolation proof or
 production Laya service. Selected model state and effect authority are unchanged.
 
