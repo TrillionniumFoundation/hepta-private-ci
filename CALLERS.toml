@@ -7,6 +7,7 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 
 [privileged_inventory]
 required_boundary_ids = [
+  "public_paired_generator_preregistration",
   "independent_paired_review_evaluator",
   "readonly_paired_review_execution_recompute",
   "paired_original_cas_consumption_reader",
@@ -948,3 +949,22 @@ forbidden = ["SigningKey", "LockedFileFinalHoldoutCasStore", "pub fn decode", "A
 path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_review_host.rs"
 required = ["hepta.fixed-paired-review-config.v1", "verify_actual_reviewer", "publication.recompute", "decide_independently_v2", "verify_independent_roles", "clock.sample_registered", "original_custody_verification_required", "paired_evaluation_signing_payload_v1"]
 forbidden = ["LockedFileFinalHoldoutCasStore", "holdout.consume", "AuthorityPosture::ALLOW_ALL", "payload_hex:"]
+
+[[boundary]]
+id = "public_paired_generator_preregistration"
+symbol = "run_fixed_paired_generator"
+call_pattern = '\brun_fixed_paired_generator\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_generator_host.rs"
+definition_markers = ["pub fn run_fixed_paired_generator", "boundary_in_service", "actual_limits(&cgroup)", "actual_generator", "structural.freeze()", "measured_contract", "signing.sign", "final_holdout_consumed"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-product-evaluation.rs"]
+caller_markers = ["--paired-preregister", "codex_hepta_intelligence_eval::run_fixed_paired_generator"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_development_transport.rs"
+required = ["PublicDevelopmentMeasurementOnlyV1", "socket_peercred", "remaining(deadline)", "entire-encoder-and-backend-service-conservative", "std::process::id()", "deny_unknown_fields", "64 * 1024"]
+forbidden = ["SigningKey", "FinalHoldoutCas", "AuthorityPosture::ALLOW_ALL"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_generator_host.rs"
+required = ["hepta.fixed-paired-generator-config.v1", "structural.freeze()", "source.freeze()", "config.source.read", "actual_generator", "native-unprivileged-generator", "inputs.trust.expires_at", "signing.sign", "original_source_digest"]
+forbidden = ["holdout.consume", "release_after_consumption", "AuthorityPosture::ALLOW_ALL"]

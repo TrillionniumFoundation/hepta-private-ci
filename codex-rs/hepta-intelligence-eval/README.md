@@ -156,3 +156,35 @@ This source entry does not claim an installed scientific evaluation, a current
 encoder development batch, or consumption of the 91 new Climate components.
 The after-CAS O measurement producer and real G/O/E public development run remain
 the next composition step; a genuine Rejected or Insufficient result is valid.
+
+
+The normal `hepta-fixed-product-evaluation --paired-preregister ROOT_G_CONFIG`
+entry runs as the original unprivileged Generator role, in its Root-managed
+`hepta-native-generator-*` service (one CPU, 256 MiB, 16 tasks, empty groups,
+zero capabilities and NoNewPrivileges). The independent E and Root custody
+continue to execute their two distinct normal binaries and private keys.
+The Root policy pins this G executable, the original trust scope and epoch,
+the protected source template, its own key, and five physically inaccessible
+custody/other-role paths. No arbitrary payload-signing operation is exposed.
+
+`tools/hepta_encode_paired_plan_inputs.py INPUT_JSON` prepares the original
+unsealed native inputs from the explicit declarative JSON schema. It supplies
+no default gates, clock, receipt or signature. Each fresh G template has zero
+candidate/baseline input slots. G validates the complete graph and native gates
+before it requests any physical input; only the independently registered closed
+`PublicDevelopmentMeasurementOnlyV1` batch accepts that G MainPID. G records
+actual 512 Q24 features, exact original numeric input lines and the conservative
+entire encoder/backend before/after accounting. The original G plan signature
+binds all these measurements through the typed input-contract digest.
+The new batch has one original monotonic total budget of at most 120 seconds;
+encoder requests also retain their own existing bounded server deadline.
+Original Goal deadlines, grants and final-holdout states are unchanged.
+
+This entry is preregistration, not a product qualification or final-holdout use.
+Normal G role and fresh encoder deployment remain to be verified. Original
+custody after-CAS numeric execution, real retention/source-withdrawal consumers,
+independent E review and the original FULL evidence sink are required before
+initializing or consuming a new Climate cohort. Nonzero hashes or prepared
+configuration do not satisfy those consumers. Future candidate generations use
+the existing independent E, selection and Artifact CURRENT path; the limited
+V2 generation-one abstention lease does not replace that promotion evidence.
