@@ -104,6 +104,16 @@ CURRENT_REPAIR_LIBRARY_REQUIREMENTS = (
     "supervisor::tests::matrix_admission_tests::matrix_exit_policy_denial_preserves_budget_and_readmission_charges_once",
     "supervisor::tests::matrix_admission_tests::charged_matrix_retry_policy_denial_preserves_claim_and_resumes_without_recharge",
     "supervisor::tests::matrix_admission_tests::matrix_replacement_revalidates_catalog_provenance_and_canonical_commands",
+    "matrix::tick::tests::control_deadline::failed_health_stop_escalates_at_original_deadline",
+    "matrix::tick::tests::control_deadline::due_companion_kill_precedes_failed_poll",
+    "matrix::tick::tests::control_deadline::expired_companion_health_budget_survives_persistent_poll_failure",
+    "matrix::tick::tests::control_deadline::deferred_drain_retries_companion_stop_and_keeps_first_deadline",
+    "matrix::tick::tests::control_deadline::recovered_probe_health_does_not_cancel_pending_companion_stop",
+    "supervisor::tests::tick_control_fault_tests::health_probe_deadline_tests::initial_main_health_timeout_survives_persistent_poll_failure",
+    "supervisor::tests::tick_control_fault_tests::health_probe_deadline_tests::initial_main_health_budget_contains_owner_through_unavailable_fleet",
+    "supervisor::tests::tick_control_fault_tests::health_probe_deadline_tests::failed_initial_health_stop_cannot_be_cancelled_by_recovered_health",
+    "matrix::tick::tests::control_deadline::running_companion_poll_failure_starts_one_unhealthy_budget",
+    "matrix::tick::tests::control_deadline::running_companion_recovers_before_grace_and_next_fault_gets_new_budget",
 )
 CURRENT_LIBRARY_REQUIREMENTS = (
     *base.LIBRARY_REQUIREMENTS,

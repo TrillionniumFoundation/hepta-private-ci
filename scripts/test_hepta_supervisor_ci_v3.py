@@ -202,6 +202,14 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
                 "supervisor::tests::tick_control_fault_tests::pending_deadline_tests",
             ),
             ("matrix_control_order_tests.rs", "matrix::tick::tests::control_order"),
+            (
+                "matrix_control_deadline_tests.rs",
+                "matrix::tick::tests::control_deadline",
+            ),
+            (
+                "tick_health_probe_deadline_tests.rs",
+                "supervisor::tests::tick_control_fault_tests::health_probe_deadline_tests",
+            ),
             ("daemon_startup_tests.rs", "daemon::startup_tests"),
             (
                 "constructor_recovery_probe_tests.rs",

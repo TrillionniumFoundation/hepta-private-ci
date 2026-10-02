@@ -26,6 +26,9 @@ this guide or the current capability matrix.
 The current adversarial repair record is
 [`ADVERSARIAL_AUDIT_20261001_R4.md`](../../../qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261001_R4.md).
 It records concrete failure traces, regression evidence and unresolved gates.
+The later [2026-10-02 deadline audit](../../../qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261002.md)
+records additional Matrix and startup-watchdog counterexamples and their
+separate current-source verification limits.
 
 ## 1. Mission and authority
 
@@ -246,6 +249,41 @@ continuation even when a successful signal clears pending control; a probe later
 in that tick cannot readmit it. Subsequent healthy probes cannot make an
 acknowledged Stopping or Killing phase ready. Existing Draining probe semantics
 remain unchanged.
+
+### Companion and startup-watchdog fault continuation
+
+Each retained Matrix runtime now owns an optional, monotonic pending Stop
+deadline. Both health-timeout containment and main Drain/Stop deferral admit
+this intent before attempting the companion signal. A failed Stop leaves the
+acknowledged phase unchanged, but later ticks retry that same intention and
+escalate at its first deadline. They cannot grant another grace period, erase
+the intention when a probe becomes healthy, or transfer it to a replacement
+process. Successful Stopping/Killing phases remain non-serving.
+
+Pending companion control and expired acknowledged Stopping run before the
+fallible process poll. A failed poll while Running starts the same Unhealthy grace as a negative
+readiness result. Repeated faults cannot renew that grace; a healthy observation
+before Stop admission may recover, and a later independent failure gets a new
+health budget. An expired AwaitingHealth/Unhealthy observation also admits
+bounded containment when the poll fails. Probe, control and exact
+exit-cleanup faults stay independently observable; successful signaling is not
+exit evidence. Exact stored exits still bypass all further signals and polls.
+
+The main startup watchdog now follows the same fail-closed rule: an expired
+AwaitingHealth budget admits one current-spawn Stop even when the process probe
+or Fleet observation fails. A successful current-generation Failed CAS is
+reported only when acknowledged. If Fleet is unavailable, this path performs
+owned-process containment without claiming a lifecycle update. A later
+healthy probe cannot cancel the admitted Stop, and its original grace drives
+Kill even through continued observation errors.
+
+These new intentions are owner-local. They do not introduce a Matrix journal,
+make restart-internal watchdog deadlines durable, or close the existing
+cross-daemon deadline/exit-witness gaps. Durable operator main Stop/Kill retains
+its separate journal, recovery and cancellation rules. Tests in
+`matrix_control_deadline_tests.rs` and `tick_health_probe_deadline_tests.rs`
+cover these cuts; their exact native identities are mandatory in the current
+CI receipt inventory. Source presence is not a hosted execution receipt.
 
 The 2026-10-02 combination repair preserves deferred control across a stored
 exact Matrix exit. `defer_agent_action_for_matrix` records the action against
