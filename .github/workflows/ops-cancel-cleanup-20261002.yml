@@ -14,11 +14,11 @@ jobs:
   cancel:
     runs-on: ubuntu-latest
     steps:
-      - name: Cancel superseded queued cleanup run
+      - name: Cancel superseded queued run
         env:
           GH_TOKEN: ${{ github.token }}
           REPO: ${{ github.repository }}
-          RUN_ID: "36984593919"
+          RUN_ID: "36985051282"
         run: |
           set -euo pipefail
           code=$(curl -sS -o response.json -w '%{http_code}' \
