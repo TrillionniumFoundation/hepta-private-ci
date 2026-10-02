@@ -168,7 +168,19 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
 
             let mut command = Command::new(&spec.command.program);
             command.args(&spec.command.args);
+            command.env(
+                "HEPTA_FLEET_LAUNCH_DIGEST",
+                "caller-cannot-select-this-fact",
+            );
             owner.constrain(&mut command, &execution)?;
+            assert_eq!(
+                command
+                    .get_envs()
+                    .find(|(name, _)| *name == "HEPTA_FLEET_LAUNCH_DIGEST")
+                    .and_then(|(_, value)| value)
+                    .and_then(std::ffi::OsStr::to_str),
+                Some(held.context.manifest_digest.as_str())
+            );
             let mut child = command.spawn()?;
             let reader = codex_hepta_fleet::FleetExecutionVerifier::open(
                 &owner
@@ -190,6 +202,18 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
                 "Root observer cannot admit a prepared, unbound task"
             );
             owner.bind(&execution, child.id())?;
+            let launch_facts: Vec<_> = std::fs::read(format!("/proc/{}/environ", child.id()))?
+                .split(|byte| *byte == 0)
+                .filter(|entry| entry.starts_with(b"HEPTA_FLEET_"))
+                .map(|entry| String::from_utf8(entry.to_vec()))
+                .collect::<Result<_, _>>()?;
+            assert_eq!(
+                launch_facts,
+                vec![
+                    format!("HEPTA_FLEET_EXECUTION_ID={}", execution.id),
+                    format!("HEPTA_FLEET_LAUNCH_DIGEST={}", held.context.manifest_digest),
+                ]
+            );
             assert_eq!(
                 owner.recover_execution(&spec.agent_id.to_string(), child.id())?,
                 execution.id

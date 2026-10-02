@@ -23,12 +23,43 @@ pub(super) struct Installed {
     pub model_use_pointer: Option<PathBuf>,
     pub compiled_body: Source,
     pub tick_provider: Source,
-    pub fleet_manifest_digest: String,
+    #[serde(default)]
+    pub fleet_manifest_digest: Option<String>,
+    #[serde(default)]
+    pub fleet_execution_binding: Option<FleetExecutionBindingV1>,
     pub control_state_path: PathBuf,
     pub authority_file: PathBuf,
     pub authority_signer_id: String,
     pub authority_verifying_key_hex: String,
     pub maximum_request_duration_ms: u64,
+}
+
+#[derive(Deserialize)]
+pub(super) enum FleetExecutionBindingV1 {
+    CurrentRootFleetExecutionV1,
+}
+
+impl Installed {
+    pub(super) fn launch_digest(&self, root_launch_fact: Option<&str>) -> HostResult<Digest32> {
+        match (
+            self.schema.as_str(),
+            &self.model_use_pointer,
+            &self.fleet_manifest_digest,
+            &self.fleet_execution_binding,
+        ) {
+            ("hepta.cpu-neuron.installed-owner-composition.v2", None, Some(pin), None)
+            | ("hepta.cpu-neuron.installed-owner-composition.v3", Some(_), Some(pin), None) => {
+                digest(pin)
+            }
+            (
+                "hepta.cpu-neuron.installed-owner-composition.v4",
+                Some(_),
+                None,
+                Some(FleetExecutionBindingV1::CurrentRootFleetExecutionV1),
+            ) => digest(root_launch_fact.ok_or("missing original Root Fleet launch fact")?),
+            _ => Err("installed CPU Fleet binding mode or schema".into()),
+        }
+    }
 }
 
 pub(super) fn load(
@@ -39,6 +70,7 @@ pub(super) fn load(
     Installed,
     crate::CpuNeuronGenerationPlanV1,
     crate::CpuNeuronGenerationOpenModeV1,
+    Digest32,
 )> {
     let pinned = Source {
         path: source.path.clone(),
@@ -46,12 +78,9 @@ pub(super) fn load(
     };
     let bytes = pinned.read(32 * 1024)?;
     let installed: Installed = serde_json::from_slice(&bytes)?;
-    if !matches!(
-        installed.schema.as_str(),
-        "hepta.cpu-neuron.installed-owner-composition.v2"
-            | "hepta.cpu-neuron.installed-owner-composition.v3"
-    ) || (installed.schema.ends_with(".v3") != installed.model_use_pointer.is_some())
-        || installed.agent_id != identity.agent_id.to_string()
+    let root_launch_fact = std::env::var("HEPTA_FLEET_LAUNCH_DIGEST").ok();
+    let launch_digest = installed.launch_digest(root_launch_fact.as_deref())?;
+    if installed.agent_id != identity.agent_id.to_string()
         || !(1..=60_000).contains(&installed.maximum_request_duration_ms)
     {
         return Err("installed CPU composition identity or duration".into());
@@ -159,8 +188,12 @@ pub(super) fn load(
     if pinned.read(32 * 1024)? != bytes {
         return Err("installed CPU source changed".into());
     }
-    Ok((installed, plan, mode))
+    Ok((installed, plan, mode, launch_digest))
 }
+
+#[cfg(test)]
+#[path = "initial_cpu_fleet_launch_binding_tests.rs"]
+mod tests;
 
 fn read_body(
     source: &Source,

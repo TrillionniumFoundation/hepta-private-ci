@@ -122,6 +122,16 @@ pub(super) fn constrain(command: &mut Command, prepared: &PreparedExecution, pol
     command
         .env("HEPTA_FLEET_EXECUTION_ID", &prepared.id)
         .process_group(0);
+    // This fact is derived after committing the original launch preimage.
+    // Consumers still need the owner's current kernel/row/resource proof.
+    if let Some(program) = &prepared.verified_program {
+        command.env(
+            "HEPTA_FLEET_LAUNCH_DIGEST",
+            super::hex_digest(program.digest()),
+        );
+    } else {
+        command.env_remove("HEPTA_FLEET_LAUNCH_DIGEST");
+    }
     let fd = prepared.membership.as_raw_fd();
     let uid = prepared.uid;
     let gid = policy.workload_gid;

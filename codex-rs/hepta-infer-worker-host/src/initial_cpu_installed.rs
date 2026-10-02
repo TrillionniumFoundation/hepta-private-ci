@@ -27,7 +27,8 @@ impl Composition {
         control: Arc<tokio::sync::Mutex<DurableInferenceControl>>,
     ) -> HostResult<Self> {
         let clock = Arc::new(SystemAuthorityClock);
-        let (installed, plan, mode) = installed_plan::load(source, identity, clock.clone())?;
+        let (installed, plan, mode, launch_digest) =
+            installed_plan::load(source, identity, clock.clone())?;
         // Execution identity comes from the original protected Fleet launch,
         // and is independently checked against the real kernel peer by its owner.
         let execution = std::env::var("HEPTA_FLEET_EXECUTION_ID")?;
@@ -36,7 +37,7 @@ impl Composition {
                 authority_config,
                 identity,
                 execution,
-                digest(&installed.fleet_manifest_digest)?,
+                launch_digest,
             )
             .map_err(|error| error.to_string())?,
         );
