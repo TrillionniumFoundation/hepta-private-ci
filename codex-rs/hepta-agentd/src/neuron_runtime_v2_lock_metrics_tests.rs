@@ -133,19 +133,6 @@ fn objective() -> Digest32 {
     digest("lock.metrics.objective")
 }
 
-fn scope(objective_digest: Digest32) -> JournalScope {
-    let subject = subject();
-    let raw = subject.as_str().as_bytes();
-    JournalScope {
-        scope_digest: Digest32::of_parts(&[
-            b"hepta.neuron.subject-scope.v1",
-            &(raw.len() as u32).to_be_bytes(),
-            raw,
-        ]),
-        objective_digest,
-    }
-}
-
 fn contexts(
     native: &SparseConfig,
     config: &NeuronRuntimeConfigV1,
@@ -203,6 +190,13 @@ fn input(generation: u64) -> NeuronTickInputV1 {
 struct Allow;
 
 impl NeuronAdmissionGuard for Allow {
+    fn check_scope(
+        &mut self,
+        _: &NeuronRuntimeConfigV1,
+        _: JournalScope,
+    ) -> Result<(), NeuronAdmissionError> {
+        Ok(())
+    }
     fn check(
         &mut self,
         _config: &NeuronRuntimeConfigV1,
@@ -316,12 +310,31 @@ pub(crate) fn runtime_fixture_for_objective(
     witness_delay: Duration,
     objective_digest: Digest32,
 ) -> RuntimeFixture {
+    runtime_fixture_for_subject_and_objective(
+        generation_value,
+        provider_delay,
+        witness_delay,
+        subject(),
+        objective_digest,
+    )
+}
+
+pub(crate) fn runtime_fixture_for_subject_and_objective(
+    generation_value: u64,
+    provider_delay: Duration,
+    witness_delay: Duration,
+    subject_id: StableId,
+    objective_digest: Digest32,
+) -> RuntimeFixture {
     let root = checked(TempDir::new());
     let generation = checked(Generation::new(generation_value));
     let native = native_config(generation);
     let config = runtime_config(&native);
     let body = body_bundle(generation);
-    let scope = scope(objective_digest);
+    let scope = checked(NeuronTickInputV1::journal_scope_for_subject(
+        &subject_id,
+        objective_digest,
+    ));
     let (store_context, index_context) = contexts(&native, &config, &body, scope);
     let witness_context = NeuronWitnessContextV2 {
         generation,
@@ -363,6 +376,7 @@ pub(crate) fn runtime_fixture_for_objective(
     );
     let handle = checked(owner.into_shared(Allow));
     let mut input = input(generation_value);
+    input.subject_id = subject_id;
     input.objective_digest = objective_digest;
     let body_digest = handle.body_bundle_digest().expect("body digest");
     let invocation = checked(handle.prepare(input.tick_id.clone(), body_digest, input.clone()));

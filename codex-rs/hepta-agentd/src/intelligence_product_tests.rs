@@ -380,8 +380,13 @@ pub(crate) struct Fixture {
 }
 
 pub(crate) fn fixture() -> Fixture {
+    fixture_for_request("request.agentd.001")
+}
+
+pub(crate) fn fixture_for_request(request_id: &str) -> Fixture {
     let profile = objective_profile();
-    let envelope = objective_envelope();
+    let mut envelope = objective_envelope();
+    envelope.request_id = request_id.to_owned();
     let objective_context = objective_context(&profile, &envelope);
     let objective = admit_and_compile_objective_v1(&envelope, &profile, &objective_context)
         .expect("objective admission")
