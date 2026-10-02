@@ -432,7 +432,7 @@ def codex_rust_crate(
     for binary, main in binaries.items():
         # Cargo can give a library and a binary the same name; Bazel labels
         # share one namespace. Preserve the library label and Cargo identity.
-        binary_target = binary + "-bin" if binary == name else binary
+        binary_target = binary + "-bin" if lib_srcs and binary == name else binary
         integration_binary = integration_binary_overrides.get(binary, ":" + binary_target)
         sanitized_binaries.append(integration_binary)
         cargo_env_runfiles[integration_binary] = "CARGO_BIN_EXE_" + binary

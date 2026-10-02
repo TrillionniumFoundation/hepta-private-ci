@@ -599,6 +599,8 @@ def generate_v2_all(schema_dir: Path) -> None:
     _preserve_thread_source_enum(out_path)
     _preserve_plan_type_enum(out_path)
     _normalize_generated_timestamps(out_path)
+    # Enum preservation can add imports after the generator's formatter ran.
+    run_python_module("ruff", ["check", "--fix", "--select", "I", str(out_path)], cwd=sdk_root())
 
 
 def _require_nullable_chatgpt_account_email(out_path: Path) -> None:

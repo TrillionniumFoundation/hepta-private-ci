@@ -58,7 +58,10 @@ fn validate_portfolio_inputs(
     }
     validate_identifier(&budget.portfolio_id, "portfolio")?;
     validate_nonzero_digest(interactions.candidate_set_digest, "candidate set")?;
-    validate_nonzero_digest(interactions.source_evidence_digest, "interaction source evidence")?;
+    validate_nonzero_digest(
+        interactions.source_evidence_digest,
+        "interaction source evidence",
+    )?;
     if pricing.candidate_set_digest != interactions.candidate_set_digest {
         return Err(PolicyError::CandidateSetDigestMismatch);
     }
@@ -67,10 +70,7 @@ fn validate_portfolio_inputs(
 }
 
 fn validate_factor_id_list(factor_ids: &[StableId]) -> Result<(), PolicyError> {
-    if factor_ids
-        .windows(2)
-        .any(|pair| pair[0] >= pair[1])
-    {
+    if factor_ids.windows(2).any(|pair| pair[0] >= pair[1]) {
         return Err(PolicyError::NonCanonicalFactorOrder);
     }
     let mut seen = BTreeSet::new();
@@ -103,7 +103,11 @@ fn index_prices<'a>(
 fn validate_interaction_graph(
     graph: &PromptInteractionGraphV1,
 ) -> Result<InteractionIndex, PolicyError> {
-    let known = graph.candidate_factor_ids.iter().cloned().collect::<BTreeSet<_>>();
+    let known = graph
+        .candidate_factor_ids
+        .iter()
+        .cloned()
+        .collect::<BTreeSet<_>>();
     let mut edges = BTreeMap::new();
     let mut previous: Option<(StableId, StableId)> = None;
     for edge in &graph.edges {
@@ -111,11 +115,13 @@ fn validate_interaction_graph(
             return Err(PolicyError::InvalidInteractionEndpoints);
         }
         if !known.contains(&edge.left_factor_id) || !known.contains(&edge.right_factor_id) {
-            return Err(PolicyError::UnknownFactor(if !known.contains(&edge.left_factor_id) {
-                edge.left_factor_id.to_string()
-            } else {
-                edge.right_factor_id.to_string()
-            }));
+            return Err(PolicyError::UnknownFactor(
+                if !known.contains(&edge.left_factor_id) {
+                    edge.left_factor_id.to_string()
+                } else {
+                    edge.right_factor_id.to_string()
+                },
+            ));
         }
         if edge.support_reference_digest.is_zero() {
             return Err(PolicyError::EmptyDigest("interaction support"));
@@ -125,7 +131,10 @@ fn validate_interaction_graph(
             return Err(PolicyError::NonCanonicalInteractionOrder);
         }
         previous = Some(key.clone());
-        if edges.insert(key.clone(), edge.marginal_utility_q32).is_some() {
+        if edges
+            .insert(key.clone(), edge.marginal_utility_q32)
+            .is_some()
+        {
             return Err(PolicyError::DuplicateInteraction(
                 key.0.to_string(),
                 key.1.to_string(),
@@ -188,33 +197,47 @@ fn validate_constraint_graph(
         if kind == 0 {
             conflicts.insert((left.clone(), right.clone()));
         } else {
-            requires.entry(left.clone()).or_default().push(right.clone());
+            requires
+                .entry(left.clone())
+                .or_default()
+                .push(right.clone());
         }
     }
 
     for dependencies in requires.values_mut() {
         dependencies.sort();
     }
-    let index = ConstraintIndex { requires, conflicts };
+    let index = ConstraintIndex {
+        requires,
+        conflicts,
+    };
     detect_requires_cycles(factor_ids, &index)?;
     detect_constraint_contradictions(factor_ids, &index)?;
     Ok(index)
 }
 
-fn constraint_parts(
-    constraint: &PromptHardConstraintV1,
-) -> (u8, &StableId, &StableId, Digest32) {
+fn constraint_parts(constraint: &PromptHardConstraintV1) -> (u8, &StableId, &StableId, Digest32) {
     match constraint {
         PromptHardConstraintV1::Conflict {
             left_factor_id,
             right_factor_id,
             support_reference_digest,
-        } => (0, left_factor_id, right_factor_id, *support_reference_digest),
+        } => (
+            0,
+            left_factor_id,
+            right_factor_id,
+            *support_reference_digest,
+        ),
         PromptHardConstraintV1::Requires {
             factor_id,
             prerequisite_factor_id,
             support_reference_digest,
-        } => (1, factor_id, prerequisite_factor_id, *support_reference_digest),
+        } => (
+            1,
+            factor_id,
+            prerequisite_factor_id,
+            *support_reference_digest,
+        ),
     }
 }
 
@@ -340,7 +363,13 @@ fn evaluate_package(
     context: &PortfolioEvaluationContext<'_, '_>,
     used_tokens: u32,
 ) -> Result<Option<PackageEvaluation>, PolicyError> {
-    let PortfolioEvaluationContext { price_map, constraints, interactions, missing_policy, budget } = *context;
+    let PortfolioEvaluationContext {
+        price_map,
+        constraints,
+        interactions,
+        missing_policy,
+        budget,
+    } = *context;
     let ordered_package = ordered_prerequisite_package(root, constraints, selected)?;
     if ordered_package.is_empty() {
         return Ok(None);
@@ -452,12 +481,7 @@ fn portfolio_candidate_audit(
         } else if !context.price_map.contains_key(factor_id) {
             PromptPortfolioDispositionV1::UnavailablePricing
         } else {
-            classify_unselected_factor(
-                factor_id,
-                selected,
-                context,
-                used_tokens,
-            )?
+            classify_unselected_factor(factor_id, selected, context, used_tokens)?
         };
         decisions.push(PromptPortfolioCandidateAuditV1 {
             factor_id: factor_id.clone(),
@@ -473,7 +497,12 @@ fn classify_unselected_factor(
     context: &PortfolioEvaluationContext<'_, '_>,
     used_tokens: u32,
 ) -> Result<PromptPortfolioDispositionV1, PolicyError> {
-    let PortfolioEvaluationContext { price_map, constraints, budget, .. } = *context;
+    let PortfolioEvaluationContext {
+        price_map,
+        constraints,
+        budget,
+        ..
+    } = *context;
     let package = ordered_prerequisite_package(factor_id, constraints, selected)?;
     if package_conflicts(&package, selected, constraints) {
         return Ok(PromptPortfolioDispositionV1::HardConflict);
@@ -500,12 +529,7 @@ fn classify_unselected_factor(
     {
         return Ok(PromptPortfolioDispositionV1::OverTokenBudget);
     }
-    let Some(evaluation) = evaluate_package(
-        factor_id,
-        selected,
-        context,
-        used_tokens,
-    )? else {
+    let Some(evaluation) = evaluate_package(factor_id, selected, context, used_tokens)? else {
         return Ok(PromptPortfolioDispositionV1::HeuristicExcluded);
     };
     if evaluation.marginal_utility <= FixedQ32::ZERO {

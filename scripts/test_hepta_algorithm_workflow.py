@@ -83,7 +83,8 @@ class AlgorithmWorkflowOwnershipTests(unittest.TestCase):
                     and "--" in row
                 ]
                 self.assertEqual(
-                    sum(row[:3] == ["python3", verifier, "verify"] for row in wrapped), 2
+                    sum(row[:3] == ["python3", verifier, "verify"] for row in wrapped),
+                    2,
                 )
                 self.assertFalse(
                     any(row[:3] == ["python3", verifier, "verify"] for row in commands)
