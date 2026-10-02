@@ -37,6 +37,11 @@ main 的模块目录只有 TECHNICAL、RECOVERY_AND_QUALIFICATION 和 IMPLEMENTA
 Supervisor 的少量变更没有提供新的完整模块执行证明。
 本轮吸收了不窄化整数的恢复窗口比较；没有整文件覆盖候选已有的严格读取和原子发布。
 
+main 已有详细技术开发文档：实际 TECHNICAL 为 401 行、17 个章节，
+RECOVERY_AND_QUALIFICATION 为 174 行、八个章节，覆盖模块职责、生命周期、
+持久状态、恢复和验证边界。候选新增专题指南，并修正文档与最新代码间的漂移；
+文档详细程度和能力／执行完成度分别评估。
+
 旧指南存在真实漂移：已删除的六字段 verifier 参数、错误的 main/Matrix 重启预算描述，
 以及将历史“工具链缺失、源码未执行”写成当前状态。本轮按实际 CLI、源码和具名
 观察材料修正，明确区分历史 v2 契约与当前 v3 qualification；未把旧失败或局部
@@ -683,6 +688,15 @@ immutable sourceBase 和原 identity policy，增加 exact_blob 模式与
 - `process_recovery_fault_does_not_hide_signed_recovery_required`：
   提前 signed denial 令 adopted main 在纯 catalog 检查前短路，已撤销
   release 原应保留的 fault 被吞掉，实际零而原断言为一。
+
+[完整 5b 历史执行观察](REMOTE_CI_OBSERVATION_20261002_5B71DF96.json)
+已收齐六 native 的 90 份 record log、六官方 artifact ZIP 与完整官方 raw，
+逐原字节 SHA、身份及 raw 行序核对通过。六条均失败：Linux default／
+production 为 414／412 PASS／两 FAIL，qualification 为 419／417／两；
+macOS 对应 413／411／两和 418／416／两。三库每条 mandatory 均为
+84／83 PASS／一 FAIL；Fleet 44／44、五 mandatory 和其余 12 阶段实际
+通过。两 deep 也失败；没有成功 qualification assembly，不借用任何
+未来修复、88 identities 或原型归档的执行信用。
 
 全仓 docs source 实际 803 执行、801 PASS、两 ERROR，两个 traceback
 与 Lane B source／merge 同源：新增 Matrix 测试导航把 `file.rs::leaf`
