@@ -214,6 +214,9 @@ for (const width of [533,347]) {
     await page.locator("#message-draft").fill("First line\nSecond line\nThird line");
     const timeline=await page.locator("#message-timeline").boundingBox();
     expect(timeline.height).toBeGreaterThanOrEqual(120);
+    await page.locator("#message-timeline").focus();
+    await page.keyboard.press("PageDown");
+    await expect.poll(()=>page.locator("#message-timeline").evaluate(node=>node.scrollTop)).toBeGreaterThan(0);
     await page.locator("#send-message").focus();
     const send=await page.locator("#send-message").boundingBox();
     expect(send.y+send.height).toBeLessThanOrEqual(374);
