@@ -1080,3 +1080,5 @@ async fn agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently() {
 #[path = "plasticity_runtime_normal_clock_tests.rs"]
 mod normal_clock_tests;
 
+#[path = "plasticity_runtime_clock_tests.rs"]
+mod clock_tests;
