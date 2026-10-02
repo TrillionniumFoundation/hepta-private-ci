@@ -1,0 +1,13 @@
+---
+source: src/ui/startup_recovery_tests.rs
+expression: rendered
+---
+HEPTA
+Startup needs attention
+Launch configuration
+Check the configuration path and required absolute paths. Ask your operator for the signed endpoint and trust inputs; this screen cannot create them.
+Technical details
+fixture: configured input /operator/config.json is unavailable
+Retry reloads the same configuration, signed inputs and keyring entry. No runtime session, update recovery or native operation has been admitted.
+Retry setup
+Exit
