@@ -326,9 +326,12 @@ impl SecretsRuntimeOwner {
         if self.owner.consumption_result(operation).await.is_err() {
             return self.status(operation).await;
         }
-        let mut evidence = ConsumerEvidenceClient::new(self.config.evidence.clone())?;
-        // Recovery verifies independent time and original ACK without un-fencing
-        // the effect clock or admitting any new provider/credential effect.
+        let mut evidence = RuntimeEvidence {
+            client: ConsumerEvidenceClient::new(self.config.evidence.clone())?,
+            clock: Arc::clone(&self.clock),
+        };
+        // Refresh the same independently verified clock used by recovery claims.
+        // This cannot clear a permanent fence or admit a provider/credential effect.
         evidence.trusted_time().map_err(unavailable)?;
         // This existing owner recovery only observes the original consumer and
         // settles its exact held reservation. It has no provider redispatch port.
