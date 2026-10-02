@@ -20,6 +20,9 @@ use crate::driver::SpawnedProcess;
 #[path = "signed_effect_boundary_tests.rs"]
 mod effect_boundary_tests;
 
+#[path = "daemon_emergency_kill_tests.rs"]
+mod emergency_kill_tests;
+
 struct Driver;
 
 struct Process {
