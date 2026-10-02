@@ -206,6 +206,15 @@ then the circuit records the exact receipt and route. A crash between owners res
 or reconciles the same activation; no second cell update or effect is inferred.
 The circuit owner never writes Neuron state or the learning ledger directly.
 
+Step preparation, provider-absence cancellation and step claim/record/reconcile
+reserve a SQLite immediate write transaction before loading the mutable
+run/definition/event snapshot. Run commands, including terminal reconciliation,
+do the same before fence/CAS validation. This prevents a concurrent timer-owner
+write from invalidating a deferred snapshot before its write upgrade. Read-only
+run/step verification retains deferred snapshot transactions. There is no
+external provider call or automatic retry inside the reserved transaction;
+existing busy-timeout, fencing, exact-receipt and append-only checks still apply.
+
 Not every transient activation needs a global synchronous write. A declared
 rebuildable, effect-free local region may checkpoint bounded progress and causal
 inputs under its owner. At a durable/effect-relevant boundary, commit the selected
