@@ -37,6 +37,8 @@ use crate::runtime::driver_error;
 
 #[path = "matrix_admission.rs"]
 mod admission;
+#[path = "matrix_control.rs"]
+mod control;
 #[path = "matrix_lease_removal.rs"]
 mod lease_removal;
 #[path = "matrix_recovery_admission.rs"]
@@ -292,6 +294,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             phase: MatrixRuntimePhase::AwaitingHealth {
                 deadline: health_deadline,
             },
+            pending_stop_deadline: None,
             healthy: false,
             fenced: false,
         });
@@ -411,6 +414,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     process_incarnation: lease.process_incarnation.clone(),
                     plane_epoch: lease.plane_epoch,
                     phase: MatrixRuntimePhase::Stopping { deadline: now },
+                    pending_stop_deadline: None,
                     healthy: false,
                     fenced: false,
                 });
@@ -587,23 +591,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.matrix.observed_exit.is_some() {
             return Ok(true);
         }
-        let mut event_generation = None;
-        if !matches!(
-            runtime.phase,
-            MatrixRuntimePhase::Stopping { .. } | MatrixRuntimePhase::Killing
-        ) {
-            let stop_deadline = deadline(now, self.config.stop_grace)?;
-            runtime
-                .process
-                .request_stop()
-                .map_err(|error| driver_error(agent_id, error))?;
-            runtime.phase = MatrixRuntimePhase::Stopping {
-                deadline: stop_deadline,
-            };
-            event_generation = Some(runtime.attached_agent_generation);
-        }
-        if let Some(generation) = event_generation {
-            slot.event(generation, SupervisorEventKind::MatrixStopRequested);
+        if let Some(event) = control::request_stop(agent_id, runtime, now, self.config.stop_grace)?
+        {
+            slot.events.push(event);
         }
         Ok(true)
     }

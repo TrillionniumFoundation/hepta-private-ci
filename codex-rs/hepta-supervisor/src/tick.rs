@@ -32,6 +32,9 @@ use crate::runtime::driver_error;
 #[path = "exit_finalization_tests.rs"]
 mod exit_tests;
 
+#[path = "tick_health.rs"]
+mod health;
+
 enum RuntimeTickOutcome {
     Keep,
     Exited {
@@ -421,6 +424,16 @@ impl<D: ProcessDriver> Supervisor<D> {
         let registry_generation = match self.record(agent_id) {
             Ok(record) => record.lifecycle.generation,
             Err(error) => {
+                if let Err(health) = self.expire_main_health(
+                    agent_id,
+                    slot,
+                    runtime,
+                    now,
+                    health::LifecycleObservation::Unavailable,
+                    report,
+                ) {
+                    Self::record_slot_fault(agent_id, slot, &health, report);
+                }
                 if let Some(Err(control)) = overdue_control.as_ref() {
                     Self::record_slot_fault(agent_id, slot, control, report);
                 }
@@ -513,6 +526,16 @@ impl<D: ProcessDriver> Supervisor<D> {
         {
             Ok(observation) => observation,
             Err(error) => {
+                if let Err(health) = self.expire_main_health(
+                    agent_id,
+                    slot,
+                    runtime,
+                    now,
+                    health::LifecycleObservation::Current,
+                    report,
+                ) {
+                    Self::record_slot_fault(agent_id, slot, &health, report);
+                }
                 if let Err(control) = &control_result {
                     Self::record_slot_fault(agent_id, slot, control, report);
                 }
@@ -602,30 +625,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                 self.release_became_healthy(agent_id, slot, next.generation)?;
             }
             RuntimePhase::AwaitingHealth { deadline: limit } if now >= limit => {
-                let stop_deadline = deadline(now, self.config.stop_grace)?;
-                let next = self.registry.compare_and_transition(
+                self.expire_main_health(
                     agent_id,
-                    runtime.generation,
-                    AgentLifecycle::Failed,
-                )?;
-                runtime.generation = next.generation;
-                slot.event(
-                    next.generation,
-                    SupervisorEventKind::Lifecycle(AgentLifecycle::Failed),
-                );
-                slot.pending_control = Some(pending::PendingControl::Stop {
-                    spawn_generation: runtime.spawn_generation,
-                    deadline: stop_deadline,
-                });
-                if let Some(event) = pending::apply(
-                    agent_id,
+                    slot,
                     runtime,
-                    &mut slot.pending_control,
                     now,
-                    self.config.stop_grace,
-                )? {
-                    slot.events.push(event);
-                }
+                    health::LifecycleObservation::Current,
+                    report,
+                )?;
             }
             RuntimePhase::Draining { deadline: limit } if drained => {
                 slot.pending_control = Some(pending::PendingControl::Stop {
