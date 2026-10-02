@@ -1352,84 +1352,8 @@ async fn five_running_agents_share_only_with_the_explicit_consumer() -> Result<(
     Ok(())
 }
 
-#[tokio::test(flavor = "multi_thread", worker_threads = 4)]
-#[cfg(not(feature = "qualification-cognitive-write"))]
-async fn unavailable_cognitive_store_keeps_read_tools_and_omits_write_tools() -> Result<()> {
-    const UNAVAILABLE_CALL: &str = "unavailable-recall";
-    const QUERY: &str = "unavailable runtime probe";
-
-    let mut fleet = FleetHarness::new()?;
-    let agent = fleet.register(AGENT_A, "workspace-a")?;
-    let model = responses::start_mock_server().await;
-    MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
-    let blocking_path = agent.layout.cognitive_root().join("cognitive_1.sqlite3");
-    std::fs::create_dir(&blocking_path)?;
-
-    fleet.start(&agent)?;
-    let (control, _) = fleet.wait_ready(&agent, 1).await?;
-    ensure!(control.health().await?.ready, "agentd did not stay ready");
-    let mut product = ProductClient::connect(&agent, &control).await?;
-    let thread = product.start_thread(&agent.workspace).await?;
-    let unavailable = responses::mount_sse_sequence(
-        &model,
-        vec![
-            tool_sse(
-                "unavailable-response",
-                UNAVAILABLE_CALL,
-                "recall",
-                json!({ "query": QUERY }),
-            ),
-            final_sse("unavailable-final"),
-        ],
-    )
-    .await;
-    product.run_turn(&thread, QUERY).await?;
-    assert_physical_request_count_stable(&unavailable, 2, "unavailable cognitive read").await?;
-    let requests = unavailable.requests();
-    assert_no_cognitive_reference(&requests[0])?;
-    for operation in ["remember", "correct", "forget"] {
-        ensure!(
-            requests[0]
-                .tool_by_name(COGNITIVE_NAMESPACE, operation)
-                .is_none(),
-            "unavailable runtime incorrectly advertised write tool {operation}"
-        );
-    }
-    for operation in ["recall", "explain"] {
-        ensure!(
-            requests[0]
-                .tool_by_name(COGNITIVE_NAMESPACE, operation)
-                .is_some(),
-            "unavailable runtime incorrectly removed read tool {operation}"
-        );
-    }
-    assert_no_cognitive_reference(&requests[1])?;
-    let output = unavailable
-        .function_call_output_text(UNAVAILABLE_CALL)
-        .context("unavailable tool output did not reach the model")?;
-    let typed: Value = serde_json::from_str(&output)?;
-    ensure!(typed["error"]["code"] == "hepta_cognitive_unavailable");
-    ensure!(
-        typed["error"]["message"]
-            .as_str()
-            .is_some_and(|message| message.contains("storage_unavailable")),
-        "typed error omitted the sanitized stable reason"
-    );
-    ensure!(
-        !output.contains(blocking_path.to_string_lossy().as_ref())
-            && !output.to_ascii_lowercase().contains("sqlite"),
-        "typed unavailable error leaked storage details"
-    );
-
-    product.shutdown().await?;
-    Ok(())
-}
-
-/// The named Agentd product mutation profile has a stronger startup contract
-/// than a read-only build: an unavailable cognitive store must stop before App
-/// Server can serve a turn. The qualification witness feature is deliberately
-/// irrelevant to this gate.
-#[cfg(feature = "qualification-cognitive-write")]
+/// Every profile requires the critical cognitive owner before readiness.
+/// Failure must be reported before opening a control socket or serving a turn.
 #[tokio::test(flavor = "multi_thread", worker_threads = 4)]
 async fn cognitive_store_unavailable_fails_closed_before_provider() -> Result<()> {
     let mut fleet = FleetHarness::new()?;
@@ -1464,12 +1388,20 @@ async fn cognitive_store_unavailable_fails_closed_before_provider() -> Result<()
                 .map(|log| String::from_utf8_lossy(&log.bytes))
                 .collect::<String>();
             ensure!(
-                logs.contains("cognitive write runtime unavailable"),
+                logs.contains(if cfg!(feature = "qualification-cognitive-write") {
+                    "cognitive write runtime unavailable"
+                } else {
+                    "critical cognitive owner unavailable"
+                }),
                 "cognitive-writer startup omitted the fail-closed error; logs={logs:?}"
             );
             ensure!(
                 !snapshot.healthy,
                 "cognitive-writer startup rejection was reported healthy"
+            );
+            ensure!(
+                !agent.layout.agentd_control_socket().exists(),
+                "unavailable critical owner opened the control socket before rejection"
             );
             return Ok(());
         }

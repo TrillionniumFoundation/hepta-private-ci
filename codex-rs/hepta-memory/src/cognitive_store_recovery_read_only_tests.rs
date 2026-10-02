@@ -229,23 +229,28 @@ async fn cold_recovery_audits_schema_authenticated_lane_c_witness() {
     let owner = agent_id(98);
     let (store, _, _) = seeded(&temp, &owner).await;
     let anchor = store.recovery_anchor().await.expect("clean retained cut");
+    // Keep schema capture, isolated corruption and exact restoration on one
+    // connection and in one transaction. A pool may hand these statements to
+    // different SQLite schema caches, obscuring the drift under test.
+    let mut transaction = store.pool.begin().await.expect("fixture transaction");
     let guard: String = sqlx::query_scalar(
         "SELECT sql FROM sqlite_schema WHERE name = 'lane_c_scope_witness_direct_update_guard'",
     )
-    .fetch_one(&store.pool)
+    .fetch_one(&mut *transaction)
     .await
     .expect("canonical guard");
     sqlx::query("DROP TRIGGER lane_c_scope_witness_direct_update_guard")
-        .execute(&store.pool)
+        .execute(&mut *transaction)
         .await
         .expect("isolated corruption fixture");
     sqlx::query("UPDATE lane_c_scope_witness SET source_count = source_count + 1, state_revision = state_revision + 1")
-        .execute(&store.pool).await.expect("fixture witness drift");
+        .execute(&mut *transaction).await.expect("fixture witness drift");
     // This fixture restores the exact trigger definition it read from its own schema.
     sqlx::raw_sql(sqlx::AssertSqlSafe(guard))
-        .execute(&store.pool)
+        .execute(&mut *transaction)
         .await
         .expect("restore exact schema");
+    transaction.commit().await.expect("commit fixture drift");
     assert!(matches!(
         store.recovery_anchor().await,
         Err(CognitiveStoreError::Corrupt(message)) if message.contains("Lane C witness does not match")

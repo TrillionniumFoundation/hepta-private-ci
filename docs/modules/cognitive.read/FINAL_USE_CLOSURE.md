@@ -115,10 +115,16 @@ flags. It does not mutate the read-only qualifier or issue a qualification pass.
 
 `SELECTED_OWNER_CUT.md` describes the now-materialized normal Agentd exact-ID
 path, which avoids whole-scope history materialization while preserving bounded
-selected ancestry and global currentness witnesses. Global ledger counts and
-whole-head metadata scanning remain; a transactional owner-maintained root is
-not implemented or qualified by this patch. Large-history and deep-ancestry
-Rust tests are authored, not yet observed passing.
+selected ancestry and global currentness witnesses. The ordinary selected-read
+path now uses transactional owner-maintained counters and indexed eligibility
+boundaries. Canonical same-scope counter audits still run during owner writes. Migration
+`0021` uses indexed first/last scope keys to select equivalent whole-table counts
+when possible, and otherwise retains canonical filtered counts. The unchanged
+17,000-revision case now passes locally in 5.617 seconds, within its existing
+60-second deadline. This closes the reproduced local timeout without weakening
+ancestry or integrity bounds. SQLite COUNT may traverse B-tree pages internally;
+VM-operation counts do not establish linear wall-clock complexity. Mixed-scope
+and target-host performance remain to be qualified. See `ADVERSARIAL_AUDIT_20261002.md`.
 
 The seven registered consumers retain their distinct states in
 `CONSUMER_EXECUTION.json`; no registered port, source-only canonical shadow or

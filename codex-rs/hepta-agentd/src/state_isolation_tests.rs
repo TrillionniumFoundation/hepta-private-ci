@@ -28,6 +28,18 @@ use crate::LifecycleSnapshot;
 use crate::RunPhase;
 
 fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
+    let (temp, registry, state) = starting_fixture()?;
+    registry.compare_and_transition(
+        &state.identity.agent_id,
+        /*expected_generation*/ 1,
+        AgentLifecycle::Running,
+    )?;
+    state.refresh_generation()?;
+    state.mark_app_server_ready()?;
+    Ok((temp, registry, state))
+}
+
+fn starting_fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> {
     let temp = tempfile::tempdir()?;
     let root = temp.path().canonicalize()?;
     fs::set_permissions(&root, fs::Permissions::from_mode(0o700))?;
@@ -61,14 +73,86 @@ fn fixture() -> anyhow::Result<(tempfile::TempDir, FleetRegistry, AgentdState)> 
         app_server_socket: record.layout.app_server_socket().to_path_buf(),
     };
     let state = AgentdState::new(identity, registry.clone(), /*event_capacity*/ 16)?;
+    Ok((temp, registry, state))
+}
+
+#[tokio::test]
+async fn attached_cognitive_owner_does_not_bypass_startup_prerequisites() -> anyhow::Result<()> {
+    let (_temp, _registry, state) = fixture()?;
+    let store = Arc::new(CognitiveStore::open(&state.identity.layout).await?);
+    state.attach_cognitive_store(store)?;
+    let response = state
+        .response(
+            /*request_id*/ 1,
+            /*spawn_generation*/ 1,
+            crate::AgentdMethod::Health,
+        )
+        .await?;
+    let AgentdPayload::Health(health) = response.payload else {
+        anyhow::bail!("expected health response");
+    };
+    assert_eq!((health.promotion_ready, health.ready), (false, false));
+    Ok(())
+}
+
+#[tokio::test]
+async fn startup_prerequisites_cannot_admit_a_missing_cognitive_owner() -> anyhow::Result<()> {
+    let (_temp, _registry, state) = fixture()?;
+    state.mark_runtime_prerequisites_ready()?;
+    let response = state
+        .response(
+            /*request_id*/ 1,
+            /*spawn_generation*/ 1,
+            crate::AgentdMethod::Health,
+        )
+        .await?;
+    let AgentdPayload::Health(health) = response.payload else {
+        anyhow::bail!("expected health response");
+    };
+    assert_eq!((health.promotion_ready, health.ready), (false, false));
+    Ok(())
+}
+
+#[tokio::test]
+async fn default_read_only_startup_requires_owner_and_prerequisites_before_app_server()
+-> anyhow::Result<()> {
+    let (_temp, registry, state) = starting_fixture()?;
+    let store = Arc::new(CognitiveStore::open(&state.identity.layout).await?);
+    state.attach_cognitive_store(store)?;
+    state.mark_runtime_prerequisites_ready()?;
     registry.compare_and_transition(
         &state.identity.agent_id,
         /*expected_generation*/ 1,
         AgentLifecycle::Running,
     )?;
     state.refresh_generation()?;
+    let before = state
+        .response(
+            /*request_id*/ 1,
+            /*spawn_generation*/ 1,
+            crate::AgentdMethod::Health,
+        )
+        .await?;
+    let AgentdPayload::Health(before) = before.payload else {
+        anyhow::bail!("expected health response");
+    };
+    assert_eq!((before.promotion_ready, before.ready), (false, false));
     state.mark_app_server_ready()?;
-    Ok((temp, registry, state))
+    let after = state
+        .response(
+            /*request_id*/ 2,
+            /*spawn_generation*/ 1,
+            crate::AgentdMethod::Health,
+        )
+        .await?;
+    let AgentdPayload::Health(after) = after.payload else {
+        anyhow::bail!("expected health response");
+    };
+    assert_eq!((after.promotion_ready, after.ready), (true, true));
+    // Readiness of this fixture never installs production effect owners.
+    assert!(state.production_operations.get().is_none());
+    assert!(state.automation_effect.get().is_none());
+    Ok(())
 }
 
 #[tokio::test]

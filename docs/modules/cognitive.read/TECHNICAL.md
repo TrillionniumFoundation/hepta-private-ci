@@ -32,7 +32,7 @@ Declared exclusive target root:
 
 The root is materialized. The current typed-local product port is [`read_ids_v1`](../../../codex-rs/hepta-cognitive-read/src/ids.rs) with `ReadIdsRequestV1`, `ReadIdsResultV1`, `ReadFieldV1` and `ReadProjectionRecordV1`. The compatibility `read_v2` projection remains in [`v2.rs`](../../../codex-rs/hepta-cognitive-read/src/v2.rs).
 
-The durable source owner is not this crate. Product composition acquires one authorized `DurableCognitiveSnapshot` from [`hepta-memory`](../../../codex-rs/hepta-memory/src/lane_c_snapshot.rs), validates bounded retrieval candidates by exact ID/revision/content digest, and performs capability-gated final-use revalidation in Agentd immediately before the native worker issues physical `TurnStart`. When a `PinnedCognitiveRanker` selected the ordering, that same final-use gate also requires its current authenticated registry/model witness; revocation after response publication fails closed.
+The durable source owner is not this crate. Ordinary Agentd composition acquires an authorized `DurableCognitiveSelectionSnapshot` through [`CognitiveStore::lane_c_snapshot_ids`](../../../codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs), validates bounded retrieval candidates by exact ID/revision/content digest, and performs capability-gated final-use revalidation in Agentd immediately before the native worker issues physical `TurnStart`. Its inner `DurableCognitiveSnapshot` is structural input; the outer selection binding additionally retains the owner witness and requested IDs. When a `PinnedCognitiveRanker` selected the ordering, that same final-use gate also requires its current authenticated registry/model witness; revocation after response publication fails closed.
 
 The canonical work package `MEM-READ-1-SNAPSHOT-PORT` is `source_implemented_execution_pending`. That state means source and composition exist while exact-candidate execution evidence remains pending. It does not imply independent acceptance, activation, promotion or release.
 
@@ -45,8 +45,8 @@ Mission: expose coherent, bounded, read-only cognitive projections without write
 The product path is:
 
 ```text
-CognitiveStore::lane_c_snapshot
-→ DurableCognitiveSnapshot::read_ids
+CognitiveStore::lane_c_snapshot_ids
+→ DurableCognitiveSelectionSnapshot / owner-bound read view
 → Agentd cognitive_context
 → cognitive.context.revalidate@1
 → native App Server TurnStart
@@ -126,7 +126,7 @@ The current durable schema's lack of a memory-kind column is treated as an expli
 
 ## 7. Runtime, concurrency and transaction model
 
-`CognitiveStore::lane_c_snapshot` authorizes the caller and materializes one coherent scope inside a single SQLite read transaction. The transaction is committed before the immutable `DurableCognitiveSnapshot` is returned.
+`CognitiveStore::lane_c_snapshot_ids` authorizes the caller and validates the requested IDs' complete bounded ancestry plus the global scope witness inside one SQLite read transaction. Only eligible selected heads enter the immutable structural snapshot. The transaction is committed before returning the selection. The compatibility `lane_c_snapshot` API still materializes a whole scope under its separate limits.
 
 The read crate performs no I/O and requires no lock. It validates/canonicalizes the supplied snapshot and resolves current heads into a `BTreeMap`; exact requested IDs are then keyed lookups.
 
@@ -206,6 +206,12 @@ Focused source tests include:
 In `codex-rs`, the focused invocation remains `just test -p codex-hepta-memory -p codex-hepta-cognitive-read`, with Agentd/native-worker tests required for the composed path.
 
 Test files are not pass receipts. Exact-head and deterministic synthetic-merge execution must be read from the current candidate CI. Independent semantic review, target-host qualification, operator acceptance, promotion and release are separate evidence gates.
+
+The [2026-10-02 continuation audit](ADVERSARIAL_AUDIT_20261002.md) records the
+verified failures of exact candidate `ab60cb27`, the toolchain and fixture
+repairs, fresh local execution, and the remaining same-scope write-cost and
+product-qualification blockers. A failed composite gate is not made successful
+by passing its narrower constituent cases.
 
 ## 13. Implementation sequence and work packages
 
@@ -291,3 +297,32 @@ The bootstrap source implementation for `cognitive.read` is materialized by work
 - `codex-rs/hepta-cognitive-read`
 
 The source package is now classified `source_implemented_execution_pending`. `.github/workflows/hepta-consolidated-source.yml` is the intended exact-candidate gate for closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. Until a current candidate run is observed, this document does not claim those checks passed. Even a passing source receipt grants no independent acceptance, model/provider authority, promotion or release.
+
+### Canonical witness count-path repair (2026-10-02)
+
+The SQLite owner migration `0021_lane_c_witness_count_paths.sql` preserves every
+per-write witness validation and independent reopen audit. Indexed minimum and
+maximum scope keys prove when a whole-table count equals the selected-scope
+count; mixed scopes fall back to canonical filtered counts. A covering revision
+index and partial tombstone index bound unnecessary lookup work. No witness
+counter supplies the proof, no source facts move, and no authority or ancestry
+limit changes. The unchanged 17,000-revision selected-cut case passes locally;
+287 memory tests and 105 Python tests pass. Mixed-scope history and selected-host
+latency remain separately qualified. See the continuation audit for exact scope.
+
+### Startup and recovery lifecycle correction
+
+The real cognitive owner is a critical readiness prerequisite in the current
+Agentd composition. An unavailable default owner now rejects startup with an
+explicit diagnostic before opening the control socket or starting App Server,
+rather than leaving the process indefinitely not-ready. Available-owner startup
+and qualification-writer authority checks are unchanged; no new writer grant or
+degraded-ready mode is introduced. This follows Lane B runtime composition
+sections 5 and 13 and changes the obsolete unavailable-owner startup expectation.
+
+Hosts preparing immutable recovery must stop users of every store clone, await
+`CognitiveStore::close`, then drop any remaining handles. Closing one handle shuts
+the shared pool for all clones; retained clones still retain the owner lock.
+Plain drop alone may schedule worker closure asynchronously. Recovery continues
+to validate every descriptor and sidecar identity. Owner recovery tests pass;
+the repaired Agentd product fixture requires fresh candidate execution.

@@ -96,6 +96,9 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("lane_c_head_validity_start_lookup", "index"),
     ("lane_c_head_validity_end_lookup", "index"),
     ("lane_c_scope_witness_expected", "view"),
+    ("lane_c_scope_witness_current_expected", "view"),
+    ("lane_c_scope_witness_valid", "view"),
+    ("memory_revisions_lane_c_tombstone_scope_lookup", "index"),
     ("lane_c_scope_witness_audit", "view"),
     ("lane_c_head_validity_expected", "view"),
     ("lane_c_head_validity_audit", "view"),
@@ -255,7 +258,7 @@ const REQUIRED_SCHEMA_OBJECTS: &[(&str, &str)] = &[
     ("cognitive_operation_dispatch_claims_expiry_lookup", "index"),
 ];
 const REQUIRED_SCHEMA_ORACLE_SHA256: &str =
-    "8f38b6cc1095fc6e776a8922b630fd6e34d9a34a8d94ab200bd9345b59d1cfd9";
+    "7b32453fc923029528459c438b35bc9248c6e56edf908016c6bddeeb9077b893";
 
 #[derive(Debug, thiserror::Error)]
 pub enum CognitiveStoreError {
@@ -398,6 +401,16 @@ impl CognitiveStore {
             path,
             _open_guard: Some(open_guard),
         })
+    }
+
+    /// Close the shared SQLite pool and wait for its worker connections to stop.
+    ///
+    /// Hosts must stop users of all cloned handles before calling this method.
+    /// All clones become closed; retained clones still hold the owner lock until
+    /// dropped. Await this before binding an immutable recovery-file identity,
+    /// because dropping the final pool handle alone schedules asynchronous close.
+    pub async fn close(self) {
+        self.pool.close().await;
     }
 
     pub fn path(&self) -> &Path {
