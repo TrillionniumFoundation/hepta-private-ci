@@ -465,3 +465,403 @@ async fn emergency_kill_rpc_reaches_fenced_main_after_signed_constructor_generat
     );
     Ok(())
 }
+
+#[tokio::test]
+async fn emergency_kill_rpc_reaches_matrix_only_owner_and_preserves_terminal_cleanup() -> Result<()>
+{
+    for mode in ["live", "stored_exit"] {
+        let f = Fixture::new()?;
+        f.quarantine()?;
+        {
+            let mut world = f
+                .world
+                .lock()
+                .map_err(|_| ProcessDriverError::new("shared process world lock poisoned"))?;
+            world.main.exited = true;
+            world.matrix.fail_next_kill = true;
+        }
+        let agent = f.agent.clone();
+        let world = Arc::clone(&f.world);
+        let record = f.supervisor.record(&agent)?;
+        let lease =
+            read_matrix_lease(record.layout.matrixd_process_lease())?.expect("actual Matrix lease");
+        let matrix_bytes = std::fs::read(record.layout.matrixd_process_lease())?;
+        let (_temp, state, report) = f.into_recovered_state()?;
+        assert_eq!(report.faults.len(), 1);
+        assert!(
+            report.faults[0]
+                .message
+                .contains("exact fixture kill failed after delivery")
+        );
+        assert!(read_lease(record.layout.run_root())?.is_none());
+        assert!(
+            !record
+                .layout
+                .run_root()
+                .join(crate::control_intent::CONTROL_INTENT_FILE)
+                .exists()
+        );
+        let before = agent_status(&state, &agent).await?;
+        assert!(!before.active && before.matrix.active);
+        assert_eq!(
+            world
+                .lock()
+                .map_err(|_| ProcessDriverError::new("shared process world lock poisoned"))?
+                .matrix
+                .signals,
+            [0, 0, 1]
+        );
+        assert_rejected_without_delivery(
+            &state,
+            &agent,
+            &world,
+            SupervisordMethod::Stop {
+                fence: before.control_fence,
+            },
+            "signed_intent_recovery_required",
+        )
+        .await?;
+        let expected_bytes = if mode == "stored_exit" {
+            world
+                .lock()
+                .map_err(|_| ProcessDriverError::new("shared process world lock poisoned"))?
+                .matrix
+                .exited = true;
+            let mut foreign = lease.clone();
+            foreign.identity =
+                ProcessIdentity::new(/*system_id*/ 999, "foreign Matrix lifetime")?;
+            let bytes = serde_json::to_vec(&foreign)?;
+            std::fs::write(record.layout.matrixd_process_lease(), &bytes)?;
+            assert_eq!(
+                state
+                    .supervisor
+                    .lock()
+                    .await
+                    .tick(Instant::now())
+                    .faults
+                    .len(),
+                1
+            );
+            bytes
+        } else {
+            matrix_bytes.clone()
+        };
+        let matrix_signals = world
+            .lock()
+            .map_err(|_| ProcessDriverError::new("shared process world lock poisoned"))?
+            .matrix
+            .signals;
+        assert_eq!(matrix_signals, [0, 0, if mode == "live" { 1 } else { 2 }]);
+        let current = agent_status(&state, &agent).await?;
+        let revision = state
+            .supervisor
+            .lock()
+            .await
+            .snapshot(&agent)
+            .expect("Matrix owner")
+            .control_revision;
+        let killed = handle_request(
+            Arc::clone(&state),
+            SupervisordMethod::Kill {
+                fence: current.control_fence.clone(),
+            },
+        )
+        .await;
+        assert!(
+            matches!(killed, SupervisordPayload::Error { ref code, .. } if code == "operation_indeterminate"),
+            "{mode}: {killed:?}"
+        );
+        assert_eq!(
+            state
+                .supervisor
+                .lock()
+                .await
+                .snapshot(&agent)
+                .expect("Matrix retained")
+                .control_revision,
+            revision + 1
+        );
+        // Live ownership retries termination; an already stored exit only
+        // retains cleanup, including the acknowledged pre-observation retry.
+        let expected_kills = matrix_signals[2] + usize::from(mode == "live");
+        assert_eq!(
+            world
+                .lock()
+                .map_err(|_| ProcessDriverError::new("shared process world lock poisoned"))?
+                .matrix
+                .signals,
+            [0, 0, expected_kills]
+        );
+        assert_eq!(
+            std::fs::read(record.layout.matrixd_process_lease())?,
+            expected_bytes
+        );
+        assert!(
+            !record
+                .layout
+                .run_root()
+                .join(crate::control_intent::CONTROL_INTENT_FILE)
+                .exists()
+        );
+        assert_rejected_without_delivery(
+            &state,
+            &agent,
+            &world,
+            SupervisordMethod::Kill {
+                fence: current.control_fence,
+            },
+            "stale_control_fence",
+        )
+        .await?;
+        if mode == "stored_exit" {
+            std::fs::write(record.layout.matrixd_process_lease(), matrix_bytes)?;
+            assert_eq!(
+                state.supervisor.lock().await.tick(Instant::now()),
+                TickReport::default()
+            );
+            let inactive = agent_status(&state, &agent).await?;
+            assert!(!inactive.active && !inactive.matrix.active);
+            assert_rejected_without_delivery(
+                &state,
+                &agent,
+                &world,
+                SupervisordMethod::Kill {
+                    fence: inactive.control_fence,
+                },
+                "invalid_transition",
+            )
+            .await?;
+        }
+    }
+    Ok(())
+}
+
+#[tokio::test]
+async fn emergency_kill_rpc_preserves_observed_main_exit_without_resignal_or_new_journal()
+-> Result<()> {
+    for mode in ["plain", "signed"] {
+        let f = Fixture::new()?;
+        if mode == "signed" {
+            f.quarantine()?;
+            f.world
+                .lock()
+                .map_err(|_| ProcessDriverError::new("shared process world lock poisoned"))?
+                .main
+                .fail_next_kill = true;
+        }
+        let agent = f.agent.clone();
+        let world = Arc::clone(&f.world);
+        let record = f.supervisor.record(&agent)?;
+        let main_path = record
+            .layout
+            .run_root()
+            .join(crate::lease::PROCESS_LEASE_FILE);
+        let lease = read_lease(record.layout.run_root())?.expect("exact owned main lease");
+        let main_bytes = std::fs::read(&main_path)?;
+        let (_temp, state, report) = f.into_recovered_state()?;
+        assert_eq!(report, TickReport::default());
+        world
+            .lock()
+            .map_err(|_| ProcessDriverError::new("shared process world lock poisoned"))?
+            .main
+            .exited = true;
+        let mut foreign = lease;
+        foreign.identity = ProcessIdentity::new(/*system_id*/ 998, "foreign main lifetime")?;
+        let foreign_bytes = serde_json::to_vec(&foreign)?;
+        std::fs::write(&main_path, &foreign_bytes)?;
+        assert_eq!(
+            state
+                .supervisor
+                .lock()
+                .await
+                .tick(Instant::now())
+                .faults
+                .len(),
+            1
+        );
+        let lifecycle = state.registry.load_agent(&agent)?.lifecycle;
+        let journal_path = record
+            .layout
+            .run_root()
+            .join(crate::control_intent::CONTROL_INTENT_FILE);
+        assert!(!journal_path.exists());
+        let snapshot = state
+            .supervisor
+            .lock()
+            .await
+            .snapshot(&agent)
+            .expect("observed retained exit");
+        assert!(snapshot.active && snapshot.matrix.active);
+        assert_eq!(
+            snapshot
+                .events
+                .iter()
+                .filter(|event| matches!(event.kind, SupervisorEventKind::Exited(_)))
+                .count(),
+            0,
+            "cleanup failure retains the observation without a durable Exited event"
+        );
+        let revision = snapshot.control_revision;
+        let (main_signals, matrix_signals) = {
+            let world = world
+                .lock()
+                .map_err(|_| ProcessDriverError::new("shared process world lock poisoned"))?;
+            (world.main.signals, world.matrix.signals)
+        };
+        assert_eq!(main_signals, [0, 0, 2 * usize::from(mode == "signed")]);
+        assert_eq!(matrix_signals, [0, 0, 1]);
+        let before = agent_status(&state, &agent).await?;
+        let rejection = if mode == "plain" {
+            "invalid_transition"
+        } else {
+            "signed_intent_recovery_required"
+        };
+        assert_rejected_without_delivery(
+            &state,
+            &agent,
+            &world,
+            SupervisordMethod::Stop {
+                fence: before.control_fence.clone(),
+            },
+            rejection,
+        )
+        .await?;
+        assert_rejected_without_delivery(
+            &state,
+            &agent,
+            &world,
+            SupervisordMethod::Drain {
+                fence: before.control_fence,
+            },
+            rejection,
+        )
+        .await?;
+        let before_library = agent_status(&state, &agent).await?;
+        let budget = crate::restart_journal::read_main_restart_budget(record.layout.run_root())?;
+        {
+            let mut supervisor = state.supervisor.lock().await;
+            assert!(supervisor.stop(&agent, Instant::now()).is_err());
+            assert!(supervisor.drain(&agent, Instant::now()).is_err());
+        }
+        assert_eq!(agent_status(&state, &agent).await?, before_library);
+        assert_eq!(
+            crate::restart_journal::read_main_restart_budget(record.layout.run_root())?,
+            budget
+        );
+        assert!(!journal_path.exists());
+        // Fenced recovery retries its failed Kill before polling the first exit.
+        // Once that poll stores the exit, these fresh RPCs must add no deliveries.
+        for iteration in 1..=2 {
+            let before = agent_status(&state, &agent).await?;
+            let killed = handle_request(
+                Arc::clone(&state),
+                SupervisordMethod::Kill {
+                    fence: before.control_fence.clone(),
+                },
+            )
+            .await;
+            assert!(
+                matches!(killed, SupervisordPayload::Error { ref code, .. } if code == "operation_indeterminate"),
+                "{killed:?}"
+            );
+            let snapshot = state
+                .supervisor
+                .lock()
+                .await
+                .snapshot(&agent)
+                .expect("exit witness retained");
+            assert_eq!(snapshot.control_revision, revision + iteration);
+            assert!(snapshot.active && snapshot.matrix.active);
+            assert_eq!(
+                snapshot
+                    .events
+                    .iter()
+                    .filter(|event| matches!(event.kind, SupervisorEventKind::Exited(_)))
+                    .count(),
+                0
+            );
+            assert_eq!(
+                world
+                    .lock()
+                    .map_err(|_| ProcessDriverError::new("shared process world lock poisoned"))?
+                    .main
+                    .signals,
+                main_signals
+            );
+            assert_eq!(
+                world
+                    .lock()
+                    .map_err(|_| ProcessDriverError::new("shared process world lock poisoned"))?
+                    .matrix
+                    .signals,
+                matrix_signals
+            );
+            assert_eq!(std::fs::read(&main_path)?, foreign_bytes);
+            assert_eq!(state.registry.load_agent(&agent)?.lifecycle, lifecycle);
+            assert!(
+                !journal_path.exists(),
+                "terminal observation cannot create another Kill intent"
+            );
+            if let Some(before) = &budget {
+                let after =
+                    crate::restart_journal::read_main_restart_budget(record.layout.run_root())?
+                        .expect("cancelled charge retained");
+                assert_eq!(after.attempts, before.attempts);
+                assert_eq!(after.window_started_unix_ms, before.window_started_unix_ms);
+                assert!(!after.pending);
+            }
+            assert_rejected_without_delivery(
+                &state,
+                &agent,
+                &world,
+                SupervisordMethod::Kill {
+                    fence: before.control_fence,
+                },
+                "stale_control_fence",
+            )
+            .await?;
+        }
+        std::fs::write(&main_path, main_bytes)?;
+        assert_eq!(
+            state.supervisor.lock().await.tick(Instant::now()),
+            TickReport::default()
+        );
+        assert!(
+            !state
+                .supervisor
+                .lock()
+                .await
+                .snapshot(&agent)
+                .expect("exact main cleanup")
+                .active
+        );
+        assert!(read_lease(record.layout.run_root())?.is_none());
+        assert_eq!(
+            world
+                .lock()
+                .map_err(|_| ProcessDriverError::new("shared process world lock poisoned"))?
+                .main
+                .signals,
+            main_signals
+        );
+        assert!(read_matrix_lease(record.layout.matrixd_process_lease())?.is_some());
+        assert_eq!(
+            state
+                .supervisor
+                .lock()
+                .await
+                .snapshot(&agent)
+                .expect("durable main exit")
+                .events
+                .iter()
+                .filter(|event| matches!(event.kind, SupervisorEventKind::Exited(_)))
+                .count(),
+            1
+        );
+        let world = world
+            .lock()
+            .map_err(|_| ProcessDriverError::new("shared process world lock poisoned"))?;
+        assert_eq!((world.main.spawns, world.matrix.spawns), (1, 1));
+    }
+    Ok(())
+}
