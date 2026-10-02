@@ -17,6 +17,14 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+mod wire;
+pub use wire::BellmanArtifactWireError;
+pub use wire::BellmanErrorBudgetWireV1;
+pub use wire::BellmanErrorTermWireV1;
+pub use wire::BellmanOperatorArtifactWireV1;
+pub use wire::CanonicalBellmanArtifactV1;
+pub use wire::MAX_BELLMAN_ARTIFACT_JSON_BYTES;
+
 mod authenticated;
 mod dataset_bound;
 mod owner_terminal;

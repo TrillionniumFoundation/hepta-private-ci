@@ -210,11 +210,29 @@ total and independent dominant-component approval follow Section 7. Artifact
 identity, applicability, fixed sensor core, model/runtime tuple and rollback
 lineage must agree with the artifact owner's immutable manifest.
 
-These are canonical integration requirements. The current target-builder and
-tabular Rust artifacts, including the owner-local `HEPTTB01` payload, do not
-implement this complete JSON record. Schema registration does not supply an
-adapter, demonstrate wire conformance or implement the neural architecture;
-those source and qualification obligations remain open.
+The bounded `CanonicalBellmanArtifactV1` adapter now encodes and decodes these
+fourteen outer fields. It admits the explicit nested
+`errorBudget.schema = "hepta.bellman-error-budget.q32.v1"` profile: seven required
+objects named `model`, `sensor`, `reconstruction`, `network`, `optimization`,
+`statistical` and `rollout`, each containing a lowercase nonzero `evidenceDigest`
+and signed-integer `normalizedErrorQ32`. An optional
+`dominantApprovalEvidenceDigest` is required if one term exceeds half the total.
+All objects reject unknown, duplicate and missing required fields. This is the
+first explicit nested encoding profile; another budget encoding requires a new
+profile rather than reinterpretation in place.
+
+Canonical JSON is compact UTF-8 with lexicographic field order at every level,
+integer Q32 values and omitted optional fields (explicit null rejects). The
+canonical digest is SHA-256 over all these canonical bytes. Evidence digests,
+including dominant approval, remain claims requiring independent owner
+verification. A pinned decode requires an independently admitted canonical
+manifest digest; hashing untrusted bytes first supplies no authority.
+
+This adapter does not synthesize missing model/runtime/applicability/rollback
+metadata from target-builder or tabular `HEPTTB01` payloads, and does not change
+their encoding. The applicability certificate and sensor manifest wire adapters,
+producer/consumer composition, authentication and neural architecture remain
+separate source/qualification obligations.
 
 The sensor core is create-only. Runtime observations may inform a proposal for a future core but may not mutate the selected core. All target rows bind the policy, objective, jump/hard snapshot, candidate set, propensity/support, outcome source and dataset lineage. Correction and deletion propagate through targets, model checkpoints and derived artifacts.
 

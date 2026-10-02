@@ -190,21 +190,25 @@ retains selected points but has no wire construction-algorithm or expiry fields.
 The target builder's `RegularityProfile` is diagnostic output, not the registered
 `RegularityProfileV1` wire record.
 
-This crate currently has no canonical JSON adapter or wire-schema conformance
-tests. Cross-owner publication under these contracts still requires explicit
-adapters and tests for round trips, maximum bounds, missing and unknown fields,
-invalid enums, canonical ordering and digest stability, plus preservation of the
-registered rejected, unavailable, timed out, indeterminate, quarantined and
-terminally failed outcomes. Native arithmetic, structural validation and signed
-attestation tests do not substitute for those wire-boundary checks.
+The crate now supplies a bounded canonical JSON adapter for
+`BellmanOperatorArtifactV1`, with the explicit
+`hepta.bellman-error-budget.q32.v1` nested profile. Tests cover round trips,
+maximum bounds, duplicate/missing/unknown fields, wrong numeric types,
+canonical ordering, digest stability, exact pins and seven-term budget limits.
+It is a structural/digest adapter, not an authenticated evaluator or selector.
+Applicability-certificate and sensor-manifest JSON adapters, owner-manifest
+publication/consumption, and preservation of registered failure outcomes through
+those cross-owner calls remain implementation work. Native arithmetic and
+structural tests do not replace authenticated wire-boundary integration.
 
 The canonical `BellmanOperatorArtifactV1` schema retains all fourteen design
 fields, including applicability, sensor core, branch and state/action trunks,
 rank, normalization, dataset/code/runtime identity, complete error budget and
 rollback lineage. [Section 6 of the operator specification](../../learning/HOLDER_BELLMAN_SPEC.md#6-data-protocol-and-lineage-schema)
 maps its symbolic design fields to canonical field names and bounds. Its registry
-entry defines the required shape; the current tabular payload does not implement
-that shape or establish its runtime/model and wire-conformance evidence.
+entry defines the required shape. The new JSON adapter covers that shape; the
+current tabular payload is still distinct and cannot invent its missing
+model/runtime/applicability identities or deployment evidence.
 
 ## 6. Data authority, persistence and migrations
 
