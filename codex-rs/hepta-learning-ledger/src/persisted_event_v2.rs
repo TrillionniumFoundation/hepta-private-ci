@@ -49,6 +49,7 @@ pub enum PersistedCodecErrorV2 {
     Kind,
     Body,
     Header,
+    Frame,
 }
 impl fmt::Display for PersistedCodecErrorV2 {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {

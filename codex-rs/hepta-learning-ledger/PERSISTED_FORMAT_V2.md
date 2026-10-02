@@ -59,6 +59,31 @@ substitution, corrupt headers and invalid bounded contexts.
 Full ledger tests after this codec stage:143 passed, one existing opt-in growth
 case skipped. Strict all-target Clippy and format passed. These are structural
 source tests, not target-host durability, recovery or production acceptance.
-The subsequent frame/chain codec and owner-authorized migration preparation remain
-separate work. No live migration, witness reset, post-expiry re-signing, writer
+The subsequent frame/chain substage is described below. Owner-authorized
+migration preparation remains separate work. No live migration, witness reset, post-expiry re-signing, writer
 switch, default bootstrap, activation, merge or deployment is added here.
+
+
+## Pure V2 frame and chain substage
+
+A frame is `payload_length:u32be || complement:u32be || sequence:u64be ||
+predecessor_chain:32 || event.v2_payload || chain:32 || checksum:32`, with112
+bytes overhead and the same65536-byte maximum event. The chain preimage is
+`hepta.learning-ledger.chain.v2 || predecessor_chain || sequence:u64be ||
+SHA256(event.v2_payload)`. The checksum covers the frame before its final32bytes.
+Sequence starts at1 with a zero predecessor; later sequences require a nonzero
+predecessor. Actual adjacency to an independently witnessed history is still an
+owner obligation, not something a standalone frame can authenticate.
+
+Decode requires exact frame length, complemented length, event.v2 discrimination,
+canonical recomputed chain and checksum. Legacy frames are not tried under another
+reader on failure. A body/reference digest is never rewritten to fit a new event
+identity; existing intent/confirmation links need their original historical
+identity or an explicitly produced new identity at the owner boundary.
+
+Three additional tests cover chained roundtrip, refusal by the opposite legacy
+codec, every truncation/single-byte corruption, a recomputed checksum over a forged
+chain, and an independent Python frame/chain digest vector. Full ledger suite:
+146 passed, one opt-in skipped. Strict Clippy/fix/format passed. These codecs do
+not append, fsync, replay a whole causal ledger, switch a writer, repair history,
+issue a witness, or migrate a live store.
