@@ -4,7 +4,6 @@ use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
 use codex_hepta_learning_ledger::TrustedLearningSignerV1;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
-use pretty_assertions::assert_eq;
 
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
