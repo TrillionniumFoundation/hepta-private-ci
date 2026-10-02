@@ -556,3 +556,28 @@ Canonical verifier 首次指出新增测试引用中的 signed_intent_recovery.r
 对象的哈希一致误写为完整 inventory。全项目校验同时揭示本轮 Cargo.lock
 依赖边变化造成七个其他模块的输入观察漂移，须逐项证明无其他源码变更后
 最小重绑；七个不可访问历史 provenance pin 则单列，不提升任何完成声明。
+
+
+## 6958 原生／深度观察完成封存
+
+[6958 全部八条远端观察](REMOTE_CI_OBSERVATION_20261001_6958A901.json)
+冻结六 native lanes 的 90 条原始日志与六份官方 artifact ZIP 的逐文件
+byte／SHA 验证；每 lane 15 records、九条无过滤零重试命令和 clean identity
+均具名核对。Linux 每 lane default／production 406 叶为 403 PASS、三 FAIL，
+qualification 411 叶为 408 PASS、同三 FAIL；macOS 对应 405／405／410 为
+402／402／407 PASS 加同三 FAIL。每平台只有那三个已列明的时钟／健康
+断言失败，76 个历史 repair mandatory 中 74 PASS、两个 FAIL。
+
+各 native lane Fleet 44／44、五个 required names，以及其余十二个 stage
+实际均通过，包括 products 15／26、HOL、SIGKILL parent、authority smoke、
+validator 73、两 strict lints、格式和 identity 检查。两 deep lanes 只实际
+执行 default 406 叶（403 PASS、同三 FAIL），后续步骤跳过；不能写成 deep
+完整通过。各 assembly／资格均为 false，不凭通过的步骤隐藏整体失败。
+该 compact SHA256 为
+`128ba6c979d13c15062a87cf8aa8b4ec607d3fc2da4c5a8fd6a02552f5fa2529`。
+
+全项目文档 raw 也明确保留本轮共享 Cargo.lock 输入造成的七个其他 map
+漂移，以及当时尚未重绑的 Kernel／Fleet／Supervisor 关联漂移。另一组
+七个历史 pin 的真实远端失败是 nonancestor（merge-base exit 1），不能
+等同为已证明 missing。模块源码、源码绑定、执行与资格分别判断。
+本 compact 不验证之后新增的 Matrix 终态／延迟控制与 signed 恢复修复。
