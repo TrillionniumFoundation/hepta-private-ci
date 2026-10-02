@@ -26,6 +26,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 path, pin,
             )?
         }
+        "publish-installed-model-use-continuation-v2" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::publish_installed_model_use_continuation_v2(path, pin)?
+        }
         "preview-initial-objective" => {
             codex_hepta_infer_worker_host::initial_cpu_anchor::preview_initial_cpu_objective(
                 path, pin,

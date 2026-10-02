@@ -139,6 +139,52 @@ fn fresh_operational_scope_cannot_change_model_normalization_roles_or_gates() ->
 }
 
 #[test]
+fn model_use_continuation_keeps_the_physical_installation_and_full_native_tuple() -> HostResult<()>
+{
+    let mut installed = profile()?;
+    installed.first_physical_installation = Some(Source {
+        path: "/root-original-physical-installation".into(),
+        digest: Digest32::of_bytes(b"original physical declaration").to_string(),
+    });
+    let mut fresh: Profile = serde_json::from_value(serde_json::to_value(&installed)?)?;
+    fresh.frozen_at_ms = 500;
+    fresh.expires_at_ms = 800;
+    fresh.program.path = "/new-normal-program".into();
+    fresh.original_owner_state = "/new-private-issuance".into();
+    fresh.artifact_ids = [
+        "new-model".into(),
+        "new-calibration".into(),
+        "new-ood".into(),
+    ];
+    validate_unchanged_profile(&installed, &fresh)?;
+    assert!(installed.validate(/*now*/ 500).is_err());
+    for change in 0..7 {
+        let mut changed: Profile = serde_json::from_value(serde_json::to_value(&fresh)?)?;
+        match change {
+            0 => changed.first_physical_installation = None,
+            1 => {
+                changed
+                    .first_physical_installation
+                    .as_mut()
+                    .ok_or("declaration")?
+                    .digest = Digest32::of_bytes(b"different physical generation").to_string()
+            }
+            2 => changed.registry_id = "another-owner-registry".into(),
+            3 => changed.config_id = "another-native-configuration".into(),
+            4 => changed.native.target_activity_q24 += 1,
+            5 => changed.calibration.valid_from_sequence += 1,
+            6 => changed.resources.checkpoint_bytes += 1,
+            _ => unreachable!(),
+        }
+        assert!(
+            validate_unchanged_profile(&installed, &changed).is_err(),
+            "{change}"
+        );
+    }
+    Ok(())
+}
+
+#[test]
 fn expired_original_floor_retains_its_exact_signature_and_context_only() -> HostResult<()> {
     let original = profile()?;
     let source = Source {

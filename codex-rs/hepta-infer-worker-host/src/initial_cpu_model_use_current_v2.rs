@@ -49,6 +49,24 @@ impl CurrentUse {
     }
 }
 
+pub(super) fn read_installed_inputs(
+    path: &Path,
+    clock: Arc<dyn AuthorityClock>,
+) -> HostResult<Inputs> {
+    let before = clock.now_unix_ms()?;
+    let current = CurrentUse::read(path)?;
+    current.verified.revalidate_current()?;
+    let after = clock.now_unix_ms()?;
+    if after < before
+        || after < current.verified.issued_at()
+        || after >= current.verified.expires_at()
+        || read_root_review_input(path, 32 * 1024)? != current.bytes
+    {
+        return Err("model-use clock or pointer changed during installed recovery".into());
+    }
+    Ok(current.verified.into_installed_inputs())
+}
+
 pub(super) struct Admission {
     pointer: PathBuf,
     active: CurrentUse,

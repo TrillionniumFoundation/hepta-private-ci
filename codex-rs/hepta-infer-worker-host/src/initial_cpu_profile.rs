@@ -220,7 +220,7 @@ impl Profile {
     }
     pub(super) fn runtime(
         &self,
-        evidence: &VerifiedInitialOperationalEvidenceV1,
+        evidence: &InitialEvidence,
     ) -> HostResult<(NeuronRuntimeConfigV1, SparseConfig)> {
         let model_bytes = self.model.read(64 * 1024)?;
         let descriptor: crate::local_cpu_model::CpuNeuronManifestV1 =

@@ -1,4 +1,5 @@
 use super::*;
+use codex_hepta_agent_components::intelligence_eval::OperationalModelUseV2;
 
 fn body() -> Body {
     let digest = Digest32::of_bytes(b"signature fixture only").to_string();

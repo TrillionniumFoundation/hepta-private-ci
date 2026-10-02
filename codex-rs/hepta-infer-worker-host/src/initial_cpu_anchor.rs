@@ -20,6 +20,9 @@ mod profile;
 use profile::Profile;
 use profile::Role;
 use profile::Source;
+#[path = "initial_cpu_evidence.rs"]
+mod evidence;
+use evidence::InitialEvidence;
 #[path = "initial_cpu_current.rs"]
 mod current;
 #[path = "initial_cpu_goal.rs"]
@@ -37,6 +40,8 @@ pub(crate) use installed::Composition as InstalledCpuComposition;
 mod goal_factory;
 #[path = "initial_cpu_model_use_v2.rs"]
 mod model_use;
+#[path = "initial_cpu_model_use_binding_v2.rs"]
+mod model_use_binding;
 #[path = "initial_cpu_model_use_body_v2.rs"]
 mod model_use_body;
 #[path = "initial_cpu_model_use_current_v2.rs"]
@@ -89,13 +94,15 @@ struct Deployment {
     renewal: Option<renewal::Renewal>,
     #[serde(default)]
     first_installation_successor: Option<renewal::Renewal>,
+    #[serde(default)]
+    model_use_continuation: Option<evidence::ModelUseContinuation>,
 }
 struct Inputs {
     descriptor: Source,
     descriptor_bytes: Vec<u8>,
     profile_source: Source,
     profile: Profile,
-    evidence: VerifiedInitialOperationalEvidenceV1,
+    evidence: InitialEvidence,
     runtime: codex_hepta_neuron::NeuronRuntimeConfigV1,
     native: codex_hepta_neuron::SparseConfig,
     artifacts: [LearningArtifactManifestV2; 3],
@@ -112,22 +119,32 @@ impl Inputs {
         let descriptor_bytes = descriptor.read(32 * 1024)?;
         let deployment: Deployment = serde_json::from_slice(&descriptor_bytes)?;
         let first_installation_successor = deployment.first_installation_successor.is_some();
+        let model_use_continuation = deployment.model_use_continuation.is_some();
         if !matches!(
             (
                 deployment.schema.as_str(),
                 deployment.renewal.is_some(),
-                first_installation_successor
+                first_installation_successor,
+                model_use_continuation
             ),
             (
                 "hepta.cpu-neuron.initial-product-current-inputs.v1",
+                false,
                 false,
                 false
             ) | (
                 "hepta.cpu-neuron.renewed-product-current-inputs.v1",
                 true,
+                false,
                 false
             ) | (
                 "hepta.cpu-neuron.first-installed-profile-current-inputs.v1",
+                false,
+                true,
+                false
+            ) | (
+                "hepta.cpu-neuron.continued-installed-model-current-inputs.v2",
+                true,
                 false,
                 true
             )
@@ -147,29 +164,22 @@ impl Inputs {
                     history.verify_first_installation_successor(&profile, &deployment.profile)
                 })
                 .transpose()?);
-        let evidence = inspect_initial_neuron_operational_evidence(
-            &deployment.evaluation_config.path,
-            digest(&deployment.evaluation_config.digest)?,
-            &deployment.independent_report.path,
-            digest(&deployment.independent_report.digest)?,
+        let evidence = InitialEvidence::read(
+            deployment.model_use_continuation,
+            &deployment.evaluation_config,
+            &deployment.independent_report,
+            &profile,
+            &deployment.profile,
         )?;
-        if evidence.initial_product_profile_digest() != Some(digest(&deployment.profile.digest)?)
-            || profile.frozen_at_ms
-                > evidence.measurements()["measured_at_ms"]
-                    .as_u64()
-                    .ok_or("independent measured instant")?
-        {
-            return Err("E did not independently bind this original frozen product profile".into());
-        }
         let (runtime, native) = profile.runtime(&evidence)?;
         let selector_key = Digest32::of_bytes(&public(&profile.selector.public_key_hex)?);
         let evaluator = evidence.evaluator().principal();
         if u64::from(profile.selector.uid)
-            == evidence.measurements()["evaluator_uid"]
+            == evidence.current_measurements()["evaluator_uid"]
                 .as_u64()
                 .ok_or("actual independent E uid")?
             || u64::from(profile.selector.gid)
-                == evidence.measurements()["evaluator_gid"]
+                == evidence.current_measurements()["evaluator_gid"]
                     .as_u64()
                     .ok_or("actual independent E gid")?
             || profile.selector.id == evaluator.principal_id.as_str()
@@ -218,7 +228,7 @@ impl Inputs {
         ];
         let profile_digest = runtime.execution_profile_digest_v1()?;
         let training_code_digest = Digest32::of_bytes(&profile.training_code.read(1024 * 1024)?);
-        let created = evidence.measurements()["measured_at_ms"]
+        let created = evidence.current_measurements()["measured_at_ms"]
             .as_u64()
             .ok_or("actual independent measurement instant")?;
         let expires = evidence.expires_at().min(profile.expires_at_ms);
@@ -239,13 +249,15 @@ impl Inputs {
                 .and_then(|value| digest(value).map_err(|_| "dataset digest"))
         });
         let datasets = [datasets[0]?, datasets[1]?, datasets[2]?];
-        let lineage = vec![
+        let mut lineage = vec![
             evidence.authentication_digest(),
             evidence.model_manifest_digest(),
             digest(&deployment.profile.digest)?,
         ];
+        evidence.extend_historical_lineage(&mut lineage)?;
         let producer = id(&profile.owner.id)?;
         let generation = Generation::new(1)?;
+        let artifact_subject_digest = evidence.artifact_subject_digest()?;
         let artifacts = std::array::from_fn(|index| LearningArtifactManifestV2 {
             artifact_id: artifact_ids[index].clone(),
             kind: if index == 0 {
@@ -264,7 +276,7 @@ impl Inputs {
             training_code_digest,
             runtime_tuple_digest: profile_digest,
             device_profile_digest: runtime.device_digest,
-            objective_class_digest: evidence.objective_digest(),
+            objective_class_digest: artifact_subject_digest,
             compatibility_digest: profile_digest,
             schema_profile_digest: Digest32::of_bytes(
                 b"hepta.cpu-neuron.initial-operational-artifact.v1",
@@ -290,6 +302,9 @@ impl Inputs {
             renewal,
             first_installation_successor,
         };
+        if let Some((lease, body_implementation)) = inputs.evidence.current_model_use() {
+            model_use_binding::verify(&inputs, lease, body_implementation)?;
+        }
         inputs.revalidate()?;
         Ok(inputs)
     }
@@ -299,6 +314,9 @@ impl Inputs {
             renewal::verify_first_installation(&self.profile)?;
         }
         self.evidence.revalidate_current()?;
+        if let Some((lease, body_implementation)) = self.evidence.current_model_use() {
+            model_use_binding::verify(self, lease, body_implementation)?;
+        }
         if self.descriptor.read(32 * 1024)? != self.descriptor_bytes {
             return Err("current deployment changed".into());
         }
@@ -321,6 +339,9 @@ impl Inputs {
             )
             .as_bytes(),
         )
+    }
+    fn physical_profile_source(&self) -> &Source {
+        self.evidence.physical_profile_source(&self.profile_source)
     }
     fn trust(&self) -> HostResult<ArtifactOwnerTrustV1> {
         self.profile.trust_from(
@@ -384,17 +405,39 @@ pub fn select_initial_cpu_anchor(path: &Path, pin: Digest32) -> HostResult<Value
 
 pub fn publish_renewed_cpu_operational(path: &Path, pin: Digest32) -> HostResult<Value> {
     let inputs = Inputs::read(path, pin)?;
-    if inputs.renewal.is_none() || inputs.first_installation_successor {
+    if inputs.renewal.is_none()
+        || inputs.first_installation_successor
+        || inputs.evidence.operational_lease().is_some()
+    {
         return Err("renewal requires original protected history and new evidence".into());
     }
     publication::publish(inputs)
 }
 pub fn select_renewed_cpu_operational(path: &Path, pin: Digest32) -> HostResult<Value> {
     let inputs = Inputs::read(path, pin)?;
-    if inputs.renewal.is_none() || inputs.first_installation_successor {
+    if inputs.renewal.is_none()
+        || inputs.first_installation_successor
+        || inputs.evidence.operational_lease().is_some()
+    {
         return Err("renewal selection requires original protected history".into());
     }
     selection::select(inputs)
+}
+
+pub fn publish_installed_model_use_continuation_v2(
+    path: &Path,
+    pin: Digest32,
+) -> HostResult<Value> {
+    let inputs = Inputs::read(path, pin)?;
+    if inputs.renewal.is_none()
+        || inputs.first_installation_successor
+        || inputs.evidence.operational_lease().is_none()
+    {
+        return Err(
+            "model-use continuation requires historical installation and current E2".into(),
+        );
+    }
+    publication::publish(inputs)
 }
 
 pub fn publish_first_installed_cpu_profile(path: &Path, pin: Digest32) -> HostResult<Value> {

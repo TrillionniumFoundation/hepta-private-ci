@@ -249,7 +249,7 @@ impl VerifiedRenewal {
     }
 }
 
-fn validate_unchanged_profile(original: &Profile, current: &Profile) -> HostResult<()> {
+pub(super) fn validate_unchanged_profile(original: &Profile, current: &Profile) -> HostResult<()> {
     let stable = |profile: &Profile| -> HostResult<Value> {
         let mut value = serde_json::to_value(profile)?;
         let object = value.as_object_mut().ok_or("profile object")?;

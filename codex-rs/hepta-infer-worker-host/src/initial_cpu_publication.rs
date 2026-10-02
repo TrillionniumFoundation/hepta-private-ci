@@ -180,7 +180,7 @@ pub(super) fn publish(inputs: Inputs) -> HostResult<Value> {
         return Err("initial CURRENT lacks eligible exact artifacts".into());
     }
     Ok(
-        serde_json::json!({"schema":if inputs.first_installation_successor {"hepta.cpu-neuron.first-installed-profile-publication.v1"} else if inputs.renewal.is_some() {"hepta.cpu-neuron.fresh-operational-publication.v1"} else {"hepta.cpu-neuron.initial-root-publication.v1"},"profile_digest":inputs.profile_source.digest,
+        serde_json::json!({"schema":if inputs.evidence.operational_lease().is_some() {"hepta.cpu-neuron.continued-installed-model-publication.v2"} else if inputs.first_installation_successor {"hepta.cpu-neuron.first-installed-profile-publication.v1"} else if inputs.renewal.is_some() {"hepta.cpu-neuron.fresh-operational-publication.v1"} else {"hepta.cpu-neuron.initial-root-publication.v1"},"profile_digest":inputs.profile_source.digest,
         "independent_evidence_digest":inputs.evidence.authentication_digest().to_string(),"generation":1,"qualified_predecessor":null,
         "current_head":current.receipt().head_digest.to_string(),"publications":receipts,"primary_superiority":false,"holdout_consumed":false,"production_activation":false}),
     )

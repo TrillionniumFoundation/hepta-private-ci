@@ -88,7 +88,7 @@ pub(super) fn verify_body(
         return Err("stable E body closure differs from installed normal worker".into());
     }
     for (key, expected) in [
-        ("original_profile", &inputs.profile_source),
+        ("original_profile", inputs.physical_profile_source()),
         ("model", &inputs.profile.model),
         ("weights", &inputs.profile.weights),
     ] {

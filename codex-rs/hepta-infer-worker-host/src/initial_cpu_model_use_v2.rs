@@ -2,7 +2,6 @@
 //! Goal, final use, installation and promotion authorities remain separate.
 use super::*;
 use codex_hepta_agent_components::intelligence_eval::OperationalModelLeaseBindingV2;
-use codex_hepta_agent_components::intelligence_eval::OperationalModelUseV2;
 use codex_hepta_agent_components::intelligence_eval::VerifiedOperationalModelLeaseV2;
 use codex_hepta_agent_components::intelligence_eval::inspect_operational_model_lease_v2;
 use ed25519_dalek::Signature;
@@ -90,37 +89,12 @@ impl UseInputs {
             &configuration.independent_report.path,
             digest(&configuration.independent_report.digest)?,
         )?;
-        let binding = lease.binding();
-        let profile = lease.runtime_profile();
-        let runtime = &installed.runtime;
-        if binding.purpose != OperationalModelUseV2::ConservativeCpuAbstentionOnlyV1
-            || binding.model_generation != runtime.generation.get()
-            || binding.model_generation != 1
-            || binding.model_manifest_digest != digest(&installed.profile.model.digest)?
-            || binding.weights_digest != digest(&installed.profile.weights.digest)?
-            || binding.training_code_digest != digest(&installed.profile.training_code.digest)?
-            || binding.source_training_digest
-                != digest(
-                    installed.evidence.measurements()["source_training_digest"]
-                        .as_str()
-                        .ok_or("original installed training source")?,
-                )?
-            || binding.normalization_digest != runtime.normalization_digest
-            || binding.body_implementation_digest
-                != digest(&configuration.body_implementation.digest)?
-            || profile.input_feature_dimension as usize != runtime.input_feature_dimension
-            || profile.state_width as usize != runtime.state_width
-            || profile.modulator_dimension as usize != runtime.modulator_dimension
-            || profile.p95_latency_micros != runtime.resource_envelope.p95_latency_micros
-            || profile.p99_latency_micros != runtime.resource_envelope.p99_latency_micros
-            || profile.transient_allocation_bytes
-                != runtime.resource_envelope.transient_allocation_bytes
-            || profile.checkpoint_bytes != runtime.resource_envelope.checkpoint_bytes
-            || profile.write_amplification_ppm != runtime.resource_envelope.write_amplification_ppm
-            || serde_json::to_value(&profile.calibration_gates)?
-                != installed.evidence.measurements()["initial_product_gates"]
+        super::model_use_binding::verify(&installed, &lease, &configuration.body_implementation)?;
+        if let Some(original) = installed.evidence.operational_lease()
+            && (original.authentication_digest() != lease.authentication_digest()
+                || original.binding() != lease.binding())
         {
-            return Err("stable E model use differs from the current installed CPU tuple".into());
+            return Err("S current E2 differs from original Root continuation evidence".into());
         }
         let role = &installed.profile.selector;
         let evaluator = lease.evaluator().principal();
@@ -279,6 +253,9 @@ pub struct VerifiedCpuModelUseV2 {
     original_body: Body,
 }
 impl VerifiedCpuModelUseV2 {
+    pub(super) fn into_installed_inputs(self) -> Inputs {
+        self.inputs.installed
+    }
     pub(super) fn installed_inputs(&self) -> &Inputs {
         &self.inputs.installed
     }

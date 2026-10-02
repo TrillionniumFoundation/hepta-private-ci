@@ -56,7 +56,10 @@ pub(super) fn load(
     {
         return Err("installed CPU composition identity or duration".into());
     }
-    let inputs = current::read_installed_inputs(&installed.current_pointer, clock)?;
+    let inputs = match &installed.model_use_pointer {
+        Some(pointer) => model_use_current::read_installed_inputs(pointer, clock.clone())?,
+        None => current::read_installed_inputs(&installed.current_pointer, clock.clone())?,
+    };
     let declaration = renewal::verify_first_installation(&inputs.profile)?;
     if declaration.agent_id != identity.agent_id.to_string()
         || declaration.workload_uid != rustix::process::geteuid().as_raw()
@@ -101,6 +104,19 @@ pub(super) fn load(
         3 => crate::CpuNeuronGenerationOpenModeV1::Recover,
         _ => return Err("partial original CPU generation needs owner recovery".into()),
     };
+    if matches!(mode, crate::CpuNeuronGenerationOpenModeV1::Create)
+        && installed.model_use_pointer.is_some()
+    {
+        let admission = current::read_installed_inputs(&installed.current_pointer, clock)?;
+        if &admission.profile_source != inputs.physical_profile_source()
+            || admission.runtime != inputs.runtime
+            || admission.native != inputs.native
+        {
+            return Err(
+                "first creation requires the original current installation admission".into(),
+            );
+        }
+    }
     let plan = crate::CpuNeuronGenerationPlanV1 {
         model_manifest: inputs.profile.model.path.clone(),
         model_manifest_digest: inputs.evidence.model_manifest_digest(),
@@ -239,7 +255,7 @@ fn read_body(
         return Err("Root body does not bind this actual normal WorkerHost ELF".into());
     }
     for (key, expected) in [
-        ("original_profile", &inputs.profile_source),
+        ("original_profile", inputs.physical_profile_source()),
         ("model", &inputs.profile.model),
         ("weights", &inputs.profile.weights),
     ] {

@@ -840,7 +840,7 @@ symbol = "inspect_operational_model_lease_v2"
 call_pattern = '\binspect_operational_model_lease_v2\s*\('
 definition_path = "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2.rs"
 definition_markers = ["pub struct VerifiedOperationalModelLeaseV2", "pub fn inspect_operational_model_lease_v2", "pub fn revalidate_current", "observe_clock", "verify_signed_actor_separation", "reinspect_inputs"]
-product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs", "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_v2.rs"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs", "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_v2.rs", "codex-rs/hepta-infer-worker-host/src/initial_cpu_evidence.rs"]
 caller_markers = ["inspect_operational_model_lease_v2", "revalidate_current"]
 
 [[protected_file]]
@@ -887,8 +887,13 @@ caller_markers = ["select-installed-model-use-v2", "select_cpu_model_use_v2"]
 
 [[protected_file]]
 path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_v2.rs"
-required = ["VerifiedOperationalModelLeaseV2", "ConservativeCpuAbstentionOnlyV1", "protected_current_head", "eligible_manifest(&expected.artifact_id)", "verify_first_installation", "verify_strict", "installed-abstention-model-use.v2", "selector_program", "selector_program.revalidate()?"]
+required = ["VerifiedOperationalModelLeaseV2", "super::model_use_binding::verify", "protected_current_head", "eligible_manifest(&expected.artifact_id)", "verify_first_installation", "verify_strict", "installed-abstention-model-use.v2", "selector_program", "selector_program.revalidate()?"]
 forbidden = ["SignedArtifactSelectionV1", "permit_all", "from_unverified", "SigningKey::generate"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_binding_v2.rs"
+required = ["VerifiedOperationalModelLeaseV2", "ConservativeCpuAbstentionOnlyV1", "binding.model_generation != 1", "runtime.normalization_digest", "profile.calibration_gates"]
+forbidden = ["SigningKey", "unwrap_or_default", "set_permissions"]
 
 [[protected_file]]
 path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_program_v2.rs"
