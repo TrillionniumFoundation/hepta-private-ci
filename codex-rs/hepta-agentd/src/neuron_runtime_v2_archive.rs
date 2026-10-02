@@ -19,6 +19,9 @@ impl AgentdNeuronGenerationControllerV2 {
             .checked_add(budget)
             .ok_or(AgentdNeuronControlErrorV2::PendingRecovery)?;
         let mut state = self.lock_state()?;
+        if state.goal_scope.is_some() {
+            return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+        }
         let mut archived = 0;
         while state.retained.len() > maximum {
             if Instant::now() >= deadline || state.archives.is_none() {

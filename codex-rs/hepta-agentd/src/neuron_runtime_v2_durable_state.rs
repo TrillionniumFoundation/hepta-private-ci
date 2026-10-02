@@ -290,6 +290,9 @@ impl AgentdNeuronGenerationControllerStateV2 {
         lifecycle: AgentdNeuronLifecycleStateV2,
         reload_target_generation: Option<u64>,
     ) -> Result<AgentdNeuronGenerationStateV2, AgentdNeuronControlStateErrorV2> {
+        if self.goal_scope.is_some() {
+            return Err(AgentdNeuronControlStateErrorV2::Invalid);
+        }
         AgentdNeuronGenerationStateV2::new(
             lifecycle,
             self.active
@@ -305,6 +308,13 @@ impl AgentdNeuronGenerationControllerStateV2 {
         lifecycle: AgentdNeuronLifecycleStateV2,
         reload_target_generation: Option<u64>,
     ) -> Result<(), AgentdNeuronControlStateErrorV2> {
+        if self.goal_scope.is_some() {
+            let state = self.goal_scope_state(lifecycle)?;
+            if let Some(path) = self.state_path.as_deref() {
+                write_agentd_neuron_goal_scope_state_v3(path, &state)?;
+            }
+            return Ok(());
+        }
         persist_generation_state(
             self.state_path.as_deref(),
             lifecycle,

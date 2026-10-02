@@ -278,6 +278,7 @@ struct AgentdNeuronGenerationControllerStateV2 {
     reload_target_generation: Option<u64>,
     state_path: Option<PathBuf>,
     archives: Option<archive_store::GenerationArchiveStore>,
+    goal_scope: Option<GoalScopeTopologyV3>,
 }
 
 /// Explicit daemon lifecycle and generation handoff controller. Historical

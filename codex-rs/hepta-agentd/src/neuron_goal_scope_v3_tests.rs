@@ -1,5 +1,27 @@
 use super::*;
 
+struct ScopeAdmission(Arc<AtomicBool>);
+impl NeuronAdmissionGuard for ScopeAdmission {
+    fn check_scope(
+        &mut self,
+        _: &NeuronRuntimeConfigV1,
+        _: JournalScope,
+    ) -> Result<(), NeuronAdmissionError> {
+        if self.0.load(Ordering::SeqCst) {
+            Ok(())
+        } else {
+            Err(NeuronAdmissionError::Unavailable)
+        }
+    }
+    fn check(
+        &mut self,
+        config: &NeuronRuntimeConfigV1,
+        input: &NeuronTickInputV1,
+    ) -> Result<(), NeuronAdmissionError> {
+        Admission(self.0.clone()).check(config, input)
+    }
+}
+
 fn scope_owner(h: &Harness, objective_digest: Digest32) -> AgentdNeuronHandleV2 {
     let mut journal_scope = scope();
     journal_scope.objective_digest = objective_digest;
@@ -32,7 +54,7 @@ fn scope_owner(h: &Harness, objective_digest: Digest32) -> AgentdNeuronHandleV2 
                 state: h.state.clone(),
             },
         )
-        .into_shared(Admission(h.admitted.clone())),
+        .into_shared(ScopeAdmission(h.admitted.clone())),
     )
 }
 
@@ -138,4 +160,117 @@ fn goal_scope_v3_cannot_reinterpret_a_legacy_control_file() {
         legacy
     );
     assert_eq!(checked(std::fs::read(&path)), before);
+}
+
+#[test]
+fn goal_scope_controller_v3_hands_off_two_goals_on_model_one_and_reopens_exact_topology() {
+    let first = Harness::new();
+    let second = Harness::new();
+    let first_owner = scope_owner(&first, digest("first-goal"));
+    let second_owner = scope_owner(&second, digest("second-goal"));
+    let first_scope = checked(AgentdNeuronGoalScopeV3::capture(1, &first_owner));
+    let second_scope = checked(AgentdNeuronGoalScopeV3::capture(2, &second_owner));
+    let path = first.root.path().join("scope-controller.json");
+    let controller = checked(
+        AgentdNeuronGenerationControllerV2::from_recovered_goal_scopes_v3(
+            first_scope.clone(),
+            first_owner.clone(),
+            std::iter::empty(),
+            &path,
+        ),
+    );
+    checked(controller.start());
+    checked(controller.begin_quiesce());
+    checked(controller.seal());
+    checked(controller.reload_goal_scope_v3(&first_scope, second_owner.clone()));
+    let expected = checked(AgentdNeuronGoalScopeStateV3::new(
+        AgentdNeuronLifecycleStateV2::Serving,
+        second_scope.clone(),
+        vec![first_scope.clone()],
+        None,
+    ));
+    assert_eq!(checked(controller.goal_scope_state_v3()), expected);
+    assert_eq!(checked(controller.active_generation()), 1);
+    assert!(!first_owner.lifecycle_gate_snapshot().0);
+    assert!(second_owner.lifecycle_gate_snapshot().0);
+    assert!(controller.generation_state().is_err());
+    assert!(controller.retained_generations().is_err());
+    assert!(
+        controller
+            .query_operation(1, &id("absent"), digest("absent"))
+            .is_err()
+    );
+    for scope in [&first_scope, &second_scope] {
+        assert_eq!(
+            checked(controller.query_goal_scope_operation_v3(
+                scope,
+                &id("absent"),
+                digest("absent")
+            )),
+            NeuronOperationStatusV2::NotRecorded
+        );
+    }
+    drop(controller);
+    let reopened = checked(
+        AgentdNeuronGenerationControllerV2::from_recovered_goal_scopes_v3(
+            second_scope,
+            second_owner.clone(),
+            [(first_scope, first_owner)],
+            &path,
+        ),
+    );
+    assert_eq!(
+        checked(reopened.state()),
+        AgentdNeuronLifecycleStateV2::Starting
+    );
+    assert!(!second_owner.lifecycle_gate_snapshot().0);
+    checked(reopened.start());
+    assert_eq!(checked(reopened.goal_scope_state_v3()), expected);
+    assert_eq!(first.calls.load(Ordering::SeqCst), 0);
+    assert_eq!(second.calls.load(Ordering::SeqCst), 0);
+}
+
+#[test]
+fn goal_scope_controller_v3_rejects_stale_cas_expired_admission_and_legacy_reload() {
+    let first = Harness::new();
+    let second = Harness::new();
+    let first_owner = scope_owner(&first, digest("first-goal"));
+    let next = scope_owner(&second, digest("second-goal"));
+    let original = checked(AgentdNeuronGoalScopeV3::capture(1, &first_owner));
+    let path = first.root.path().join("scope-controller.json");
+    let controller = checked(
+        AgentdNeuronGenerationControllerV2::from_recovered_goal_scopes_v3(
+            original.clone(),
+            first_owner,
+            std::iter::empty(),
+            &path,
+        ),
+    );
+    checked(controller.start());
+    checked(controller.begin_quiesce());
+    checked(controller.seal());
+    let before = checked(std::fs::read(&path));
+    let mut stale = original.clone();
+    stale.identity.objective_digest = digest("old-or-foreign-goal");
+    assert!(
+        controller
+            .reload_goal_scope_v3(&stale, next.clone())
+            .is_err()
+    );
+    second.admitted.store(false, Ordering::SeqCst);
+    assert!(
+        controller
+            .reload_goal_scope_v3(&original, next.clone())
+            .is_err()
+    );
+    assert!(controller.reload(next.clone()).is_err());
+    assert_eq!(checked(std::fs::read(&path)), before);
+    assert_eq!(
+        checked(controller.state()),
+        AgentdNeuronLifecycleStateV2::Sealed
+    );
+    assert_eq!(checked(controller.active_generation()), 1);
+    second.admitted.store(true, Ordering::SeqCst);
+    checked(controller.reload_goal_scope_v3(&original, next));
+    assert_eq!(checked(controller.active_generation()), 1);
 }

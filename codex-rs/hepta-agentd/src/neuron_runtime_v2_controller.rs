@@ -145,6 +145,7 @@ impl AgentdNeuronGenerationControllerV2 {
             reload_target_generation: None,
             state_path,
             archives,
+            goal_scope: None,
         };
         state
             .persist_transition(lifecycle, None)
@@ -193,7 +194,11 @@ impl AgentdNeuronGenerationControllerV2 {
     }
 
     pub fn retained_generations(&self) -> Result<Vec<u64>, AgentdNeuronControlErrorV2> {
-        Ok(self.lock_state()?.retained.keys().copied().collect())
+        let state = self.lock_state()?;
+        if state.goal_scope.is_some() {
+            return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+        }
+        Ok(state.retained.keys().copied().collect())
     }
 
     /// Administrative projection of the exact durable topology record. It is
@@ -208,7 +213,7 @@ impl AgentdNeuronGenerationControllerV2 {
     }
 
     pub fn start(&self) -> Result<(), AgentdNeuronControlErrorV2> {
-        let (active, retained, active_generation) = {
+        let (active, retained, active_generation, scope_ordinal) = {
             let state = self.lock_state()?;
             if state.lifecycle != AgentdNeuronLifecycleStateV2::Starting {
                 return Err(AgentdNeuronControlErrorV2::InvalidTransition);
@@ -217,6 +222,7 @@ impl AgentdNeuronGenerationControllerV2 {
                 state.active.clone(),
                 state.retained.values().cloned().collect::<Vec<_>>(),
                 state.active.generation()?,
+                state.goal_scope.as_ref().map(|scope| scope.active_ordinal),
             )
         };
 
@@ -231,10 +237,14 @@ impl AgentdNeuronGenerationControllerV2 {
             }
         }
         active.reconcile_control()?;
+        if scope_ordinal.is_some() {
+            active.validate_goal_scope_admission()?;
+        }
 
         let mut state = self.lock_state()?;
         if state.lifecycle != AgentdNeuronLifecycleStateV2::Starting
             || state.active.generation()? != active_generation
+            || state.goal_scope.as_ref().map(|scope| scope.active_ordinal) != scope_ordinal
         {
             return Err(AgentdNeuronControlErrorV2::InvalidTransition);
         }
@@ -354,12 +364,16 @@ impl AgentdNeuronGenerationControllerV2 {
     }
 
     pub fn seal(&self) -> Result<(), AgentdNeuronControlErrorV2> {
-        let (active, generation) = {
+        let (active, generation, scope_ordinal) = {
             let state = self.lock_state()?;
             if state.lifecycle != AgentdNeuronLifecycleStateV2::Quiescing {
                 return Err(AgentdNeuronControlErrorV2::InvalidTransition);
             }
-            (state.active.clone(), state.active.generation()?)
+            (
+                state.active.clone(),
+                state.active.generation()?,
+                state.goal_scope.as_ref().map(|scope| scope.active_ordinal),
+            )
         };
         // Quiesce invalidates every captured epoch. The write guard proves that
         // all invocations admitted by an earlier epoch have left the runtime.
@@ -372,6 +386,7 @@ impl AgentdNeuronGenerationControllerV2 {
         let mut state = self.lock_state()?;
         if state.lifecycle != AgentdNeuronLifecycleStateV2::Quiescing
             || state.active.generation()? != generation
+            || state.goal_scope.as_ref().map(|scope| scope.active_ordinal) != scope_ordinal
         {
             return Err(AgentdNeuronControlErrorV2::InvalidTransition);
         }
@@ -386,6 +401,9 @@ impl AgentdNeuronGenerationControllerV2 {
     pub fn reload(&self, next: AgentdNeuronHandleV2) -> Result<(), AgentdNeuronControlErrorV2> {
         {
             let state = self.lock_state()?;
+            if state.goal_scope.is_some() {
+                return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+            }
             if state.lifecycle != AgentdNeuronLifecycleStateV2::Sealed {
                 return Err(AgentdNeuronControlErrorV2::InvalidTransition);
             }
@@ -491,6 +509,9 @@ impl AgentdNeuronGenerationControllerV2 {
     ) -> Result<AgentdNeuronGenerationControllerSnapshotV2, AgentdNeuronControlErrorV2> {
         let (lifecycle, active, active_generation, retained_generations) = {
             let state = self.lock_state()?;
+            if state.goal_scope.is_some() {
+                return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+            }
             (
                 state.lifecycle,
                 state.active.clone(),
@@ -517,6 +538,9 @@ impl AgentdNeuronGenerationControllerV2 {
     ) -> Result<NeuronOperationStatusV2, AgentdNeuronControlErrorV2> {
         let handle = {
             let state = self.lock_state()?;
+            if state.goal_scope.is_some() {
+                return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+            }
             if state.active.generation()? == generation {
                 state.active.clone()
             } else {
