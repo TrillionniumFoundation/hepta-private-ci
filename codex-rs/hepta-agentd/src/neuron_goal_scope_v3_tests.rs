@@ -293,3 +293,6 @@ fn goal_scope_controller_v3_rejects_stale_cas_expired_admission_and_legacy_reloa
 
 #[path = "neuron_goal_scope_archive_v3_tests.rs"]
 mod cold_tests;
+
+#[path = "neuron_goal_scope_reload_v3_tests.rs"]
+mod reload_tests;
