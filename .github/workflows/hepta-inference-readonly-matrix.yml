@@ -106,7 +106,7 @@ jobs:
           }
           record 01-state 0 python3 scripts/hepta-inference-control-current-state.py check
           record 02-actor 0 python3 scripts/hepta-inference-control-actor-migrate.py check
-          record 03-regressions 1 python3 -m unittest -v scripts.test_hepta_inference_hardening scripts.test_hepta_ci_source_identity
+          record 03-regressions 1 python3 -m unittest -v scripts.test_hepta_inference_current_state scripts.test_hepta_inference_capacity scripts.test_hepta_inference_ownership_projection scripts.test_hepta_inference_artifact_acceptor scripts.test_hepta_ci_source_identity
           record 04-lane-b 0 python3 scripts/hepta-lane-b-truth.py verify
           record 05-maps 0 python3 scripts/hepta-implementation-maps.py verify
           record 06-metadata 0 cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1
