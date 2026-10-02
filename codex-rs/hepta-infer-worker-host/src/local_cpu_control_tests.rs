@@ -17,6 +17,9 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::time::Duration;
 
+#[path = "local_cpu_shared_control_v3_tests.rs"]
+mod shared;
+
 struct FixtureClock;
 impl AuthorityClock for FixtureClock {
     fn now_unix_ms(&self) -> Result<u64, AuthorityTrustError> {

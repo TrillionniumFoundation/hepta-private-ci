@@ -30,6 +30,9 @@ use crate::model_worker::canonical_neuron_feature_payload_digest;
 #[path = "local_cpu_control_owner.rs"]
 mod owner;
 use owner::CpuControlOwner;
+#[path = "local_cpu_shared_control_v3.rs"]
+mod shared;
+pub use shared::SharedCpuNeuronInferenceControlV3;
 #[cfg(all(target_os = "linux", feature = "agentd-host"))]
 #[path = "local_cpu_control_v2.rs"]
 mod v2;

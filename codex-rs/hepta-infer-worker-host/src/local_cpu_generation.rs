@@ -24,6 +24,7 @@ use codex_hepta_types::Digest32;
 
 use crate::CpuNeuronControlConfigV1;
 use crate::CpuNeuronInferenceControlV1;
+use crate::SharedCpuNeuronInferenceControlV3;
 
 pub enum CpuNeuronGenerationOpenModeV1 {
     Create,
@@ -121,6 +122,9 @@ where
         worker,
     )
     .map_err(|error| AgentdError::Invalid(format!("installed CPU model: {error}")))?;
+    physical.validate_runtime(&plan.runtime).map_err(|error| {
+        AgentdError::Invalid(format!("installed Neuron runtime tuple changed: {error}"))
+    })?;
     finish_generation(plan, mode, physical, admission)
 }
 
@@ -165,21 +169,61 @@ where
         worker,
     )
     .map_err(|error| AgentdError::Invalid(format!("installed V2 CPU model: {error}")))?;
+    physical.validate_runtime(&plan.runtime).map_err(|error| {
+        AgentdError::Invalid(format!("installed Neuron runtime tuple changed: {error}"))
+    })?;
     finish_generation(plan, mode, physical, admission)
 }
 
-fn finish_generation<G>(
+/// Open a new or recovered Goal scope around the same loaded CPU worker. The
+/// scope's own admission guard and durable headers still bind its actual Goal.
+pub fn open_shared_cpu_neuron_goal_scope_v3<G>(
     plan: CpuNeuronGenerationPlanV1,
     mode: CpuNeuronGenerationOpenModeV1,
-    physical: CpuNeuronInferenceControlV1,
+    physical: SharedCpuNeuronInferenceControlV3,
     admission: G,
 ) -> Result<AgentdNeuronHandleV2, AgentdError>
 where
     G: codex_hepta_neuron::NeuronAdmissionGuard + Send + 'static,
 {
+    for path in [
+        &plan.model_manifest,
+        &plan.generation_store,
+        &plan.runtime_index,
+        &plan.witness,
+    ] {
+        if !path.is_absolute() || path.file_name().is_none() {
+            return Err(AgentdError::Invalid(
+                "installed Neuron paths must be absolute files".into(),
+            ));
+        }
+    }
+    if plan.generation_store == plan.runtime_index
+        || plan.generation_store == plan.witness
+        || plan.runtime_index == plan.witness
+    {
+        return Err(AgentdError::Invalid(
+            "installed Neuron Goal scope storage identity".into(),
+        ));
+    }
     physical.validate_runtime(&plan.runtime).map_err(|error| {
-        AgentdError::Invalid(format!("installed Neuron runtime tuple changed: {error}"))
+        AgentdError::Invalid(format!(
+            "installed shared CPU runtime tuple changed: {error}"
+        ))
     })?;
+    finish_generation(plan, mode, physical, admission)
+}
+
+fn finish_generation<G, P>(
+    plan: CpuNeuronGenerationPlanV1,
+    mode: CpuNeuronGenerationOpenModeV1,
+    physical: P,
+    admission: G,
+) -> Result<AgentdNeuronHandleV2, AgentdError>
+where
+    G: codex_hepta_neuron::NeuronAdmissionGuard + Send + 'static,
+    P: codex_hepta_neuron::DurableNeuronInferenceControlPort + Send + 'static,
+{
     let witness = match mode {
         CpuNeuronGenerationOpenModeV1::Create => {
             FileNeuronWitnessStoreV2::create(&plan.witness, plan.witness_context)
