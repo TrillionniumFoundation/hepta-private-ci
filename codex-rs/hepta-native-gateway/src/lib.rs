@@ -6,6 +6,9 @@
 #![forbid(unsafe_code)]
 
 mod capability_input;
+mod chat_protocol;
+#[cfg(unix)]
+mod chat_source;
 mod lifecycle_http;
 #[cfg(unix)]
 mod lifecycle_source;
@@ -37,6 +40,7 @@ pub const CANARY_LISTEN_ADDR: &str = "127.0.0.1:17373";
 pub const LIVE_SHELL_CONTRACT_ARG: &str = "--hepta-vnext-live-shell-contract-v1";
 pub const LIVE_SHELL_CONTRACT_JSON: &str = r#"{"schema":"hepta_vnext_live_shell_contract_v1","status":"ready","protocol_version":1,"authentication":"keyring_bearer_v1","routes":["GET /","GET /api/hepta/runtime","GET /healthz"],"runtime":{"loopback_only":true,"read_only":true,"open_mode":"immutable-query-only-open-existing","schema_version":5,"requires_empty_wal":true,"keyed_integrity_required":true},"authority":{"telegram":false,"outbound":false,"model_invocation":false,"operator_mutation":false,"enforce":false,"promotion":false,"retirement":false,"automatic_transition":false}}"#;
 pub const GATEWAY_KEYRING_SERVICE: &str = "hepta.native.gateway.v1";
+pub const GATEWAY_CHAT_KEYRING_SERVICE: &str = "hepta.native.gateway.chat.v1";
 pub const GATEWAY_LIFECYCLE_KEYRING_SERVICE: &str = "hepta.native.gateway.lifecycle.v1";
 const MIN_BEARER_TOKEN_BYTES: usize = 32;
 const MAX_BEARER_TOKEN_BYTES: usize = 256;
@@ -172,6 +176,7 @@ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
         options,
         observer: None,
         controller: None,
+        chat: None,
         read_capability_file: None,
     })
     .await
@@ -182,6 +187,7 @@ async fn run_native_gateway_with_launch(launch: source_launch::LaunchConfigurati
         options,
         observer,
         controller,
+        chat,
         read_capability_file,
     } = launch;
     validate_closed_effect_environment()?;
@@ -194,7 +200,11 @@ async fn run_native_gateway_with_launch(launch: source_launch::LaunchConfigurati
     };
     let auth = Arc::new(GatewayAuth::new(bearer_token)?);
     let runtime = source::RuntimeSource::open(options.state_root, observer).await?;
-    let runtime = Arc::new(runtime.with_controller(controller, &auth)?);
+    let runtime = Arc::new(
+        runtime
+            .with_controller(controller, &auth)?
+            .with_chat(chat, &auth)?,
+    );
     let active_connections = Arc::new(AtomicUsize::new(0));
     let listener = TcpListener::bind(options.listen_addr)
         .await

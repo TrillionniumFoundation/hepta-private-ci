@@ -21,10 +21,19 @@ pub(super) struct ControllerOptions {
     pub capability_file: Option<PathBuf>,
 }
 
+#[derive(Debug)]
+pub(super) struct ChatOptions {
+    pub socket: PathBuf,
+    pub owner_uid: u32,
+    pub auth_keyring_account: String,
+    pub capability_file: Option<PathBuf>,
+}
+
 pub(super) struct LaunchConfiguration {
     pub options: NativeGatewayOptions,
     pub observer: Option<ObserverOptions>,
     pub controller: Option<ControllerOptions>,
+    pub chat: Option<ChatOptions>,
     pub read_capability_file: Option<PathBuf>,
 }
 
@@ -40,10 +49,18 @@ pub(super) fn parse(raw: &[String]) -> Result<Option<LaunchConfiguration>> {
     let mut controller_account = None;
     let mut controller_capability_file = None;
     let mut read_capability_file = None;
+    let mut chat_socket = None;
+    let mut chat_owner_uid = None;
+    let mut chat_account = None;
+    let mut chat_capability_file = None;
     let mut index = 1;
     while index < raw.len() {
         match raw[index].as_str() {
-            "--controller-socket" | "--lifecycle-capability-file" | "--auth-capability-file" => {
+            "--controller-socket"
+            | "--lifecycle-capability-file"
+            | "--auth-capability-file"
+            | "--chat-socket"
+            | "--chat-capability-file" => {
                 let name = raw[index].as_str();
                 index += 1;
                 let path = PathBuf::from(
@@ -53,10 +70,30 @@ pub(super) fn parse(raw: &[String]) -> Result<Option<LaunchConfiguration>> {
                 let selected = match name {
                     "--controller-socket" => &mut controller_socket,
                     "--lifecycle-capability-file" => &mut controller_capability_file,
+                    "--chat-socket" => &mut chat_socket,
+                    "--chat-capability-file" => &mut chat_capability_file,
                     _ => &mut read_capability_file,
                 };
                 if !path.is_absolute() || selected.replace(path).is_some() {
                     anyhow::bail!("capability path must be absolute and specified once");
+                }
+            }
+            "--chat-owner-uid" => {
+                index += 1;
+                let uid = raw
+                    .get(index)
+                    .context("chat owner UID is required")?
+                    .parse::<u32>()?;
+                if uid != 0 || chat_owner_uid.replace(uid).is_some() {
+                    anyhow::bail!("chat requires the original Root owner UID once");
+                }
+            }
+            "--chat-auth-keyring-account" => {
+                index += 1;
+                let account = raw.get(index).context("chat account is required")?.clone();
+                crate::validate_auth_account(&account)?;
+                if chat_account.replace(account).is_some() {
+                    anyhow::bail!("duplicate chat account");
                 }
             }
             "--controller-owner-uid" => {
@@ -124,10 +161,25 @@ pub(super) fn parse(raw: &[String]) -> Result<Option<LaunchConfiguration>> {
             "lifecycle control requires Fleet observer, controller socket, pinned owner UID and separate account"
         ),
     };
+    let chat = match (chat_socket, chat_owner_uid, chat_account) {
+        (Some(socket), Some(owner_uid), Some(auth_keyring_account)) if observer.is_some() => {
+            Some(ChatOptions {
+                socket,
+                owner_uid,
+                auth_keyring_account,
+                capability_file: chat_capability_file,
+            })
+        }
+        (None, None, None) if chat_capability_file.is_none() => None,
+        _ => anyhow::bail!(
+            "chat requires Fleet observation, a Root socket and a separate purpose account"
+        ),
+    };
     Ok(Some(LaunchConfiguration {
         options,
         observer,
         controller,
+        chat,
         read_capability_file,
     }))
 }

@@ -8,6 +8,7 @@ use codex_hepta_runtime::HeptaRuntime;
 use tokio::net::TcpStream;
 
 use crate::GatewayAuth;
+use crate::source_launch::ChatOptions;
 use crate::source_launch::ControllerOptions;
 use crate::source_launch::ObserverOptions;
 
@@ -40,6 +41,33 @@ impl RuntimeSource {
             }
             #[cfg(unix)]
             Self::Fleet(source) => source.serve(stream, &auth).await,
+        }
+    }
+
+    pub(super) fn with_chat(
+        self,
+        options: Option<ChatOptions>,
+        auth: &GatewayAuth,
+    ) -> Result<Self> {
+        match options {
+            None => Ok(self),
+            #[cfg(unix)]
+            Some(options) => match self {
+                Self::Fleet(mut source) => {
+                    source.chat = Some(crate::chat_source::ChatSource::new(
+                        options,
+                        auth,
+                        source.controller.as_ref(),
+                    )?);
+                    Ok(Self::Fleet(source))
+                }
+                Self::Legacy(_) => anyhow::bail!("chat requires the original Fleet source"),
+            },
+            #[cfg(not(unix))]
+            Some(_) => {
+                let _ = auth;
+                anyhow::bail!("chat requires Unix kernel credentials");
+            }
         }
     }
 

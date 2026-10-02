@@ -99,3 +99,40 @@ pub enum NativeChatRootResponse {
         outcome_unknown: bool,
     },
 }
+
+impl NativeChatRootResponse {
+    pub fn validate_for(&self, request: &NativeChatRootRequest) -> Result<(), &'static str> {
+        request.validate()?;
+        match (self, request) {
+            (
+                Self::Attached {
+                    binding,
+                    session_id,
+                    connection_generation,
+                },
+                NativeChatRootRequest::Attach {
+                    binding: expected,
+                    session_id: expected_session,
+                },
+            ) if binding == expected
+                && session_id == expected_session
+                && *connection_generation != 0 =>
+            {
+                Ok(())
+            }
+            (
+                Self::Response { binding, response },
+                NativeChatRootRequest::Dispatch {
+                    binding: expected,
+                    request,
+                },
+            ) if binding == expected => response.validate_for(request),
+            (Self::Rejected { code, .. }, _)
+                if !code.is_empty() && code.len() <= 128 && !code.chars().any(char::is_control) =>
+            {
+                Ok(())
+            }
+            _ => Err("chat response does not bind the displayed instance and original request"),
+        }
+    }
+}

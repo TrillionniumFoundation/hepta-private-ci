@@ -17,7 +17,7 @@ use crate::source_launch::ControllerOptions;
 
 pub(super) struct LifecycleSource {
     client: SupervisorControllerClient,
-    capability: Zeroizing<String>,
+    pub(super) capability: Zeroizing<String>,
 }
 
 impl LifecycleSource {

@@ -3,4 +3,14 @@ load("//:defs.bzl", "codex_rust_crate")
 codex_rust_crate(
     name = "hepta-native-gateway",
     crate_name = "codex_hepta_native_gateway",
+    crate_srcs = glob(
+        ["src/**/*.rs"],
+        exclude = [
+            "src/main.rs",
+            "src/bin/*.rs",
+        ],
+    ) + [
+        "//apps/hepta-ui-shared:chat_transport.rs",
+        "//apps/hepta-ui-shared:native_chat_bridge_wire.rs",
+    ],
 )

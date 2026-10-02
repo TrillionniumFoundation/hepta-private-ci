@@ -27,6 +27,7 @@ pub(crate) struct FleetSource {
     serial: Semaphore,
     revision: AtomicU64,
     pub(super) controller: Option<crate::lifecycle_source::LifecycleSource>,
+    pub(super) chat: Option<crate::chat_source::ChatSource>,
 }
 
 impl FleetSource {
@@ -36,6 +37,7 @@ impl FleetSource {
             serial: Semaphore::new(/*permits*/ 1),
             revision: AtomicU64::new(/*v*/ 0),
             controller: None,
+            chat: None,
         })
     }
 
@@ -100,6 +102,13 @@ impl FleetSource {
     async fn route(&self, request: &[u8], auth: &GatewayAuth) -> Result<Vec<u8>> {
         let parsed = crate::lifecycle_http::parse(request)?;
         if parsed.method == "POST" {
+            if parsed.path == codex_hepta_contracts::native_gateway::chat::NATIVE_GATEWAY_CHAT_PATH
+            {
+                return match &self.chat {
+                    Some(chat) => chat.route(parsed, auth).await,
+                    None => Ok(crate::unauthorized_response()),
+                };
+            }
             return match &self.controller {
                 Some(controller) => controller.route(parsed, auth).await,
                 None => Ok(crate::unauthorized_response()),
@@ -125,6 +134,7 @@ impl FleetSource {
                     "product": "hepta", "status": "ok", "native_auth": "keyring_mac_v2",
                     "native_protocol_version": 2,
                     "lifecycle_control": self.controller.is_some(),
+                    "chat_control": self.chat.is_some(),
                     "native_incarnation": codex_hepta_contracts::native_gateway::native_gateway_incarnation_hex(&auth.server_incarnation),
                 }))?,
             ),
