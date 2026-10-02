@@ -43,6 +43,48 @@ impl AgentChatSession {
         session_id: String,
         connection_generation: u64,
     ) -> Result<Self> {
+        Self::connect_with_peer(
+            args,
+            project_id,
+            workspace,
+            session_id,
+            connection_generation,
+            None,
+        )
+        .await
+    }
+
+    /// Root composition supplies a process obtained from the current original
+    /// owner snapshot. Both protocol handshakes independently pin that process.
+    #[cfg(unix)]
+    pub async fn connect_for_agent_process(
+        args: MatrixAgentdConnectArgs,
+        project_id: String,
+        workspace: AbsolutePathBuf,
+        session_id: String,
+        connection_generation: u64,
+        expected_uid: u32,
+        expected_pid: u32,
+    ) -> Result<Self> {
+        Self::connect_with_peer(
+            args,
+            project_id,
+            workspace,
+            session_id,
+            connection_generation,
+            Some((expected_uid, expected_pid)),
+        )
+        .await
+    }
+
+    async fn connect_with_peer(
+        args: MatrixAgentdConnectArgs,
+        project_id: String,
+        workspace: AbsolutePathBuf,
+        session_id: String,
+        connection_generation: u64,
+        expected_peer: Option<(u32, u32)>,
+    ) -> Result<Self> {
         ChatRequest {
             session_id: session_id.clone(),
             connection_generation,
@@ -53,13 +95,25 @@ impl AgentChatSession {
         if project_id.is_empty() || project_id.len() > 256 {
             return Err(invalid("invalid project"));
         }
-        let agentd = AgentdClient::new(
+        let mut agentd = AgentdClient::new(
             args.agentd_control_socket.clone(),
             args.agent_id.clone(),
             args.spawn_generation,
         )?;
+        if let Some((uid, pid)) = expected_peer {
+            #[cfg(unix)]
+            {
+                agentd = agentd.with_peer_process(uid, pid)?;
+            }
+            #[cfg(not(unix))]
+            {
+                let _ = (uid, pid);
+                return Err(invalid("pinned local process identity is unavailable"));
+            }
+        }
         let generation = connection_generation;
-        let connection = crate::connect_agent_session(args, "hepta-ui-chat").await?;
+        let connection =
+            crate::connect_agent_session_with_peer(args, "hepta-ui-chat", expected_peer).await?;
         let transport = connection.transport;
         let rejection = transport.clone();
         let connected = Arc::new(AtomicBool::new(true));

@@ -83,7 +83,7 @@ impl Fixture {
                         ready: true,
                         fenced: health_state.lock().unwrap().fenced,
                         lifecycle: AgentLifecycle::Running,
-                        process_id: 1,
+                        process_id: std::process::id(),
                         workspace: "/fixture".into(),
                         home_root: "/fixture-home".into(),
                         run_root: "/fixture-run".into(),
@@ -406,4 +406,56 @@ async fn real_uds_approval_is_explicitly_denied_and_visible() {
     })
     .await
     .unwrap();
+}
+
+#[cfg(target_os = "linux")]
+#[tokio::test]
+async fn pinned_real_uds_roundtrip_preserves_original_queue_and_physical_identity()
+-> anyhow::Result<()> {
+    use std::os::unix::fs::MetadataExt;
+    let fixture = Fixture::start().await;
+    let owner = AgentChatSession::connect_for_agent_process(
+        MatrixAgentdConnectArgs::new(fixture.socket.clone(), agent(), 7, "fixture"),
+        "project-1".into(),
+        AbsolutePathBuf::from_absolute_path("/fixture")?,
+        "frontend-pinned".into(),
+        11,
+        std::fs::metadata("/proc/self")?.uid(),
+        std::process::id(),
+    )
+    .await?;
+    let first = owner.dispatch(request("frontend-pinned", send())).await?;
+    assert!(matches!(
+        first.result,
+        ChatResult::Submission {
+            state: SubmissionState::Queued { .. },
+            ..
+        }
+    ));
+    let reconcile = owner
+        .dispatch(request(
+            "frontend-pinned",
+            ChatCommand::Reconcile {
+                thread_id: "thread-1".into(),
+                operation_id: "operation-1".into(),
+                text: "hello".into(),
+            },
+        ))
+        .await?;
+    assert!(matches!(
+        reconcile.result,
+        ChatResult::Submission {
+            state: SubmissionState::Persisted { .. },
+            ..
+        }
+    ));
+    assert_eq!(fixture.state.lock().unwrap().admissions, 1);
+    fixture.state.lock().unwrap().fenced = true;
+    assert!(
+        owner
+            .dispatch(request("frontend-pinned", send()))
+            .await
+            .is_err()
+    );
+    Ok(())
 }
