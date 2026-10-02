@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "9bbe1784a1813752bd143e5591f6d8724539882c",
+    "tree": "4454fbc3f02a37a45f5ca648c4c07c7ac55e3dca"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "context.compiler",
@@ -229,7 +229,7 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler",
-      "object": "517aa2bbba2f31ab5d4bf2ce96f5f4d8ec4fa662"
+      "object": "6d6cf86f99ebd70b1071a648a0483ffb5abead4e"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/candidate_bound.rs",
@@ -241,7 +241,7 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/lib.rs",
-      "object": "da1711e6575e0921ec4d2ae7b305fe8013f2e775"
+      "object": "cef8bc2d47e0ab0018a14a3469b2f24879ee5b26"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/lib_tests.rs",
@@ -275,5 +275,26 @@
       "path": "docs/modules/context.compiler/TECHNICAL.md",
       "object": "bba347eebcdf9a9e93afaf5ae26798dee368bd0e"
     }
+  ],
+  "observedAtHead": {
+    "commit": "9bbe1784a1813752bd143e5591f6d8724539882c",
+    "tree": "4454fbc3f02a37a45f5ca648c4c07c7ac55e3dca"
+  },
+  "navigationRebindHistory": [
+    {
+      "previous": {
+        "sourceBase": {
+          "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
+          "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+        },
+        "observedAtHead": null
+      },
+      "reason": "Current source navigation reviewed during 2026-10-02 scoped module audit. No historical execution is renewed.",
+      "historicalExecutionRevalidated": false,
+      "authorityGranted": false
+    }
+  ],
+  "observedSourcePaths": [
+    "codex-rs/hepta-context-compiler"
   ]
 }

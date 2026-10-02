@@ -349,8 +349,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "9bbe1784a1813752bd143e5591f6d8724539882c",
+    "tree": "4454fbc3f02a37a45f5ca648c4c07c7ac55e3dca"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -432,7 +432,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
-      "object": "84a4b156fa04f27665319300e241732697a0ea01"
+      "object": "5a4e94a77c529244ea48336395f5dca23c923f0a"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
@@ -444,7 +444,7 @@
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "e89450f622d12e85f516df691291e349f42cd8fc"
+      "object": "e765bfe2bb8f68d4316a388de7c23fd517320e6c"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler.rs",
@@ -492,11 +492,32 @@
     },
     {
       "path": "codex-rs/hepta-objective/src/source_envelope_validation.rs",
-      "object": "5dc5676e23de3b4a661e1520a0c5ae4a1dc2020d"
+      "object": "f3eeef89c269231516b8157362e521d6610c0c31"
     },
     {
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
       "object": "6c627878c86207f41091eb56fedf701b1e49ddd4"
     }
+  ],
+  "observedAtHead": {
+    "commit": "9bbe1784a1813752bd143e5591f6d8724539882c",
+    "tree": "4454fbc3f02a37a45f5ca648c4c07c7ac55e3dca"
+  },
+  "navigationRebindHistory": [
+    {
+      "previous": {
+        "sourceBase": {
+          "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
+          "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+        },
+        "observedAtHead": null
+      },
+      "reason": "Current source navigation reviewed during 2026-10-02 scoped module audit. No historical execution is renewed.",
+      "historicalExecutionRevalidated": false,
+      "authorityGranted": false
+    }
+  ],
+  "observedSourcePaths": [
+    "codex-rs/hepta-objective"
   ]
 }
