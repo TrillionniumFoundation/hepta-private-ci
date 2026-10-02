@@ -129,6 +129,7 @@ fn fixture() -> Fixture {
     let host = Arc::new(AgentdNeuronRuntimeV2Host {
         controller,
         tick_provider: provider.clone(),
+        goal_scope_factory: None,
         lifecycle: Mutex::new(()),
         stopped: AtomicBool::new(false),
         iteration_quarantine: AtomicBool::new(false),
@@ -242,3 +243,6 @@ fn deferred_neural_stage_preserves_final_owner_cas_when_head_changes_during_enco
         1
     );
 }
+
+#[path = "neuron_runtime_v2_goal_factory_tests.rs"]
+mod goal_factory_tests;

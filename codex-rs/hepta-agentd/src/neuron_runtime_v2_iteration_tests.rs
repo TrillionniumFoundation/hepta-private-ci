@@ -44,6 +44,7 @@ fn canary_and_forward_rollback_keep_real_durable_receipts_and_revoke_old_epochs(
     let host = AgentdNeuronRuntimeV2Host {
         controller,
         tick_provider: Arc::new(UnusedTickProvider),
+        goal_scope_factory: None,
         lifecycle: Mutex::new(()),
         stopped: AtomicBool::new(false),
         iteration_quarantine: AtomicBool::new(false),

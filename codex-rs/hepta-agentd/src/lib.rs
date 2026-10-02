@@ -383,6 +383,8 @@ pub use neuron_runtime_v2::AgentdNeuronGenerationControllerV2;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronGenerationStateV2;
 pub use neuron_runtime_v2::AgentdNeuronGoalScopeArchiveFrontierV3;
+#[cfg(feature = "server")]
+pub use neuron_runtime_v2::AgentdNeuronGoalScopeFactoryV3;
 pub use neuron_runtime_v2::AgentdNeuronGoalScopeStateV3;
 pub use neuron_runtime_v2::AgentdNeuronGoalScopeTopologyV3;
 pub use neuron_runtime_v2::AgentdNeuronGoalScopeV3;

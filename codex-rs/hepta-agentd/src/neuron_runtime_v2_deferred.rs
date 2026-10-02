@@ -67,6 +67,8 @@ impl AgentdDeferredNeuronInvocationV2 {
         self.invocation
             .validate(&self.identity, &self.record)
             .map_err(|_| denied())?;
+        self.host
+            .ensure_goal_scope_v3(&self.identity, &self.record, &self.invocation, stage)?;
         let current =
             self.host.controller.current_tick_anchor().map_err(
                 |error| match compatibility_error(error) {

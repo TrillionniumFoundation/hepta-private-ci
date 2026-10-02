@@ -35,6 +35,7 @@ pub struct AgentdNeuronRuntimeV2Config {
     control_state_path: PathBuf,
     archive_policy: AgentdNeuronArchivePolicyV1,
     tick_provider: Arc<dyn AgentdNeuronTickProviderV2>,
+    goal_scopes: Option<RecoveredGoalScopesV3>,
 }
 
 impl AgentdNeuronRuntimeV2Config {
@@ -54,6 +55,7 @@ impl AgentdNeuronRuntimeV2Config {
             control_state_path,
             archive_policy: AgentdNeuronArchivePolicyV1::default(),
             tick_provider,
+            goal_scopes: None,
         })
     }
 
@@ -82,14 +84,29 @@ impl AgentdNeuronRuntimeV2Config {
         self,
         iteration_recovery: bool,
     ) -> Result<Arc<AgentdNeuronRuntimeV2Host>, crate::AgentdError> {
-        let controller =
-            AgentdNeuronGenerationControllerV2::from_recovered_generations_with_archive_policy(
-                self.active,
-                self.retained,
-                self.control_state_path,
-                self.archive_policy,
-            )
-            .map_err(|error| neuron_product_error("recover controller", error))?;
+        let (controller, goal_scope_factory) = match self.goal_scopes {
+            Some(scopes) => {
+                if !self.retained.is_empty() {
+                    return Err(crate::AgentdError::Invalid(
+                        "legacy retained models cannot enter Goal scope mode".into(),
+                    ));
+                }
+                let controller = AgentdNeuronGenerationControllerV2::from_recovered_goal_scopes_with_archive_policy_v3(
+                    scopes.active, self.active, scopes.retained, self.control_state_path, self.archive_policy,
+                ).map_err(|error| neuron_product_error("recover Goal controller", error))?;
+                (controller, Some(scopes.factory))
+            }
+            None => (
+                AgentdNeuronGenerationControllerV2::from_recovered_generations_with_archive_policy(
+                    self.active,
+                    self.retained,
+                    self.control_state_path,
+                    self.archive_policy,
+                )
+                .map_err(|error| neuron_product_error("recover controller", error))?,
+                None,
+            ),
+        };
         let lifecycle = controller
             .state()
             .map_err(|error| neuron_product_error("read recovered lifecycle", error))?;
@@ -97,7 +114,7 @@ impl AgentdNeuronRuntimeV2Config {
             AgentdNeuronLifecycleStateV2::Starting => controller.start(),
             AgentdNeuronLifecycleStateV2::Stopped => controller.restart_stopped(),
             AgentdNeuronLifecycleStateV2::Quiescing | AgentdNeuronLifecycleStateV2::Sealed
-                if iteration_recovery =>
+                if iteration_recovery || goal_scope_factory.is_some() =>
             {
                 Ok(())
             }
@@ -111,6 +128,7 @@ impl AgentdNeuronRuntimeV2Config {
         Ok(Arc::new(AgentdNeuronRuntimeV2Host {
             controller,
             tick_provider: self.tick_provider,
+            goal_scope_factory,
             lifecycle: Mutex::new(()),
             stopped: AtomicBool::new(false),
             iteration_quarantine: AtomicBool::new(iteration_recovery),
@@ -123,6 +141,7 @@ impl AgentdNeuronRuntimeV2Config {
 pub struct AgentdNeuronRuntimeV2Host {
     controller: AgentdNeuronGenerationControllerV2,
     tick_provider: Arc<dyn AgentdNeuronTickProviderV2>,
+    goal_scope_factory: Option<Arc<dyn AgentdNeuronGoalScopeFactoryV3>>,
     lifecycle: Mutex<()>,
     stopped: AtomicBool,
     iteration_quarantine: AtomicBool,
