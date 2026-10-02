@@ -69,6 +69,9 @@ mod withdrawal;
 pub fn withdraw_initial_cpu_dataset(path: &Path, pin: Digest32) -> HostResult<Value> {
     withdrawal::run(path, pin)
 }
+pub fn inspect_initial_cpu_withdrawal(path: &Path, pin: Digest32) -> HostResult<Value> {
+    withdrawal::inspect(path, pin)
+}
 #[path = "initial_cpu_state.rs"]
 mod state;
 pub use current::open_current_cpu_neuron;

@@ -185,7 +185,7 @@ symbol = "RevalidatingCandidate::with_current"
 call_pattern = '(?:\bRevalidatingCandidate\s*::\s*|\.\s*)with_current\s*\('
 definition_path = "codex-rs/hepta-learning-artifacts/src/pinned.rs"
 definition_markers = ["pub struct VerifiedCurrentRegistryViewV1", "pub fn with_current", "with_verified_registry"]
-product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs", "codex-rs/hepta-agentd/src/cognitive_ranker_admission_v2.rs", "codex-rs/hepta-agentd/src/learning_operator_shadow_loader.rs", "codex-rs/hepta-agentd/src/neuron_artifact_admission.rs", "codex-rs/hepta-infer-worker-host/src/initial_cpu_withdrawal_delivery.rs", "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs", "codex-rs/hepta-agentd/src/cognitive_ranker_admission_v2.rs", "codex-rs/hepta-agentd/src/learning_operator_shadow_loader.rs", "codex-rs/hepta-agentd/src/neuron_artifact_admission.rs", "codex-rs/hepta-infer-worker-host/src/initial_cpu_withdrawal_delivery.rs", "codex-rs/hepta-infer-worker-host/src/initial_cpu_withdrawal_inspection.rs", "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"]
 caller_markers = []
 
 [[boundary]]

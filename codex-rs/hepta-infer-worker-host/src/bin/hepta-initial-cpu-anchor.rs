@@ -21,6 +21,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "select-installed-model-use-v2" => {
             codex_hepta_infer_worker_host::initial_cpu_anchor::select_cpu_model_use_v2(path, pin)?
         }
+        "inspect-learning-withdrawal" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::inspect_initial_cpu_withdrawal(
+                path, pin,
+            )?
+        }
         "withdraw-learning-dataset" => {
             codex_hepta_infer_worker_host::initial_cpu_anchor::withdraw_initial_cpu_dataset(
                 path, pin,

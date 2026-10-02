@@ -94,7 +94,9 @@ fn source(path: PathBuf, bytes: &[u8]) -> Source {
     }
 }
 fn fixture(root: &Path) -> Request {
-    let now = now_ms().unwrap();
+    fixture_at(root, now_ms().unwrap())
+}
+fn fixture_at(root: &Path, now: u64) -> Request {
     let keys: [SigningKey; 5] =
         std::array::from_fn(|i| SigningKey::from_bytes(&[71 + i as u8; 32]));
     let principals: [AuthenticatedPrincipalV1; 5] =
@@ -425,5 +427,154 @@ fn root_reopens_original_calibration_without_reset_and_rejects_substituted_cut()
         std::fs::read(root.join("witness/acknowledged-frontier.bin")).unwrap(),
         witness
     );
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+#[ignore = "Run original native ELF as Root; expired signed history is never current authority"]
+fn root_readonly_source_ack_keeps_expired_history_and_rejects_partial_or_substituted_facts() {
+    use super::super::inspection_source;
+    use std::io::Write;
+    let root = PathBuf::from(format!(
+        "/var/lib/hepta/native-withdrawal-inspection-tests/{}-{}",
+        std::process::id(),
+        now_ms().unwrap()
+    ));
+    std::fs::create_dir_all(&root).unwrap();
+    std::fs::set_permissions(&root, std::fs::Permissions::from_mode(0o700)).unwrap();
+    let historical_now = now_ms().unwrap() - 300_000;
+    let request = fixture_at(&root, historical_now);
+    assert!(open(&request).is_err()); // Current trust is genuinely expired.
+    let original = authenticated_archive(&request, ArchiveUse::AcknowledgedHistory).unwrap();
+    let ledger_directory = directory(&request.ledger_directory).unwrap();
+    let witness_directory = directory(&request.witness_directory).unwrap();
+    let witness = LedgerWitnessStore::recover(
+        mutable(&request.witness_directory.join("acknowledged-frontier.bin")).unwrap(),
+        original.binding,
+    )
+    .unwrap();
+    let durable = DurableLedger::recover(
+        mutable(&request.ledger_directory.join("causal-ledger.bin")).unwrap(),
+        original.binding,
+        4096,
+        LedgerRecovery::Acknowledged(witness.frontier().unwrap().anchor),
+    )
+    .unwrap();
+    let mut writer = LedgerWriter::from_durable(
+        durable,
+        witness,
+        original.trust,
+        &ledger_directory,
+        &witness_directory,
+    )
+    .unwrap();
+    let native = UnlearningLineageRequestV1 {
+        record_id: id(&request.record_id),
+        lineage_id: id(&request.lineage_id),
+        source_record_id: id(&request.source_record_id),
+        dataset_snapshot_id: original.dataset.snapshot.snapshot_id.clone(),
+        dataset_digest: original.dataset.snapshot.dataset_digest,
+        artifact_id: id(&request.artifact_id),
+        reason_digest: request.reason_digest.parse().unwrap(),
+    };
+    let publication: FixedCalibrationPublicationV1 = serde_json::from_slice(
+        &request
+            .calibration_publication
+            .read(2 * 1024 * 1024)
+            .unwrap(),
+    )
+    .unwrap();
+    let principal = publication.trust.signers[4].principal.principal().unwrap();
+    let evidence = sign(
+        &writer,
+        &SigningKey::from_bytes(&[75; 32]),
+        &principal,
+        LearningEvidenceRoleV1::UnlearningAuthority,
+        &unlearning_signing_payload_v1(&native),
+        historical_now,
+    );
+    let receipt = writer
+        .append_unlearning(
+            request.expected_ledger_head.parse().unwrap(),
+            native,
+            &original.dataset,
+            &evidence,
+            historical_now,
+        )
+        .unwrap();
+    assert!(
+        inspection_source::read(
+            &request,
+            &evidence,
+            receipt.source_event_digest,
+            receipt.append.event_digest
+        )
+        .is_err()
+    ); // Sole writer stays held.
+    drop(writer);
+    assert!(!request.unlearning_private_key_path.exists()); // Inspection must never read or create a seed.
+    let causal = request.ledger_directory.join("causal-ledger.bin");
+    let witness = request.witness_directory.join("acknowledged-frontier.bin");
+    let before_causal = std::fs::read(&causal).unwrap();
+    let before_witness = std::fs::read(&witness).unwrap();
+    let observed = inspection_source::read(
+        &request,
+        &evidence,
+        receipt.source_event_digest,
+        receipt.append.event_digest,
+    )
+    .unwrap();
+    assert_eq!(
+        observed.ack["sequence"].as_u64(),
+        Some(receipt.append.sequence.get())
+    );
+    assert_eq!(
+        observed.ack["chain_digest"].as_str(),
+        Some(receipt.append.chain_digest.to_string().as_str())
+    );
+    assert_eq!(
+        observed.notice.source_tombstone_digest,
+        receipt.append.event_digest
+    );
+    let mut substituted = evidence.clone();
+    substituted.signature[0] ^= 1;
+    assert!(
+        inspection_source::read(
+            &request,
+            &substituted,
+            receipt.source_event_digest,
+            receipt.append.event_digest
+        )
+        .is_err()
+    );
+    assert!(
+        inspection_source::read(
+            &request,
+            &evidence,
+            receipt.source_event_digest,
+            digest("substituted event")
+        )
+        .is_err()
+    );
+    assert_eq!(std::fs::read(&causal).unwrap(), before_causal);
+    assert_eq!(std::fs::read(&witness).unwrap(), before_witness);
+    OpenOptions::new()
+        .append(true)
+        .open(&witness)
+        .unwrap()
+        .write_all(&[7, 8])
+        .unwrap();
+    let partial = std::fs::read(&witness).unwrap();
+    assert!(
+        inspection_source::read(
+            &request,
+            &evidence,
+            receipt.source_event_digest,
+            receipt.append.event_digest
+        )
+        .is_err()
+    );
+    assert_eq!(std::fs::read(&witness).unwrap(), partial);
+    assert_eq!(std::fs::read(&causal).unwrap(), before_causal);
     std::fs::remove_dir_all(root).unwrap();
 }

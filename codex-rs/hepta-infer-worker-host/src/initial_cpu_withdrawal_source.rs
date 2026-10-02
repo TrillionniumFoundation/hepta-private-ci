@@ -13,6 +13,58 @@ pub(super) struct SourceOwner {
     pub dataset: ledger::DatasetSnapshotReceiptV3,
 }
 pub(super) fn open(request: &Request) -> HostResult<SourceOwner> {
+    let Archive {
+        trust,
+        binding,
+        archived,
+        dataset,
+    } = authenticated_archive(request, ArchiveUse::CurrentWithdrawal)?;
+    let ledger_directory = directory(&request.ledger_directory)?;
+    let witness_directory = directory(&request.witness_directory)?;
+    let witness = ledger::LedgerWitnessStore::recover(
+        mutable(&request.witness_directory.join("acknowledged-frontier.bin"))?,
+        binding,
+    )?;
+    let anchor = witness.frontier()?.anchor;
+    let durable = ledger::DurableLedger::recover(
+        mutable(&request.ledger_directory.join("causal-ledger.bin"))?,
+        binding,
+        4096,
+        ledger::LedgerRecovery::Acknowledged(anchor),
+    )?;
+    let writer = ledger::LedgerWriter::from_durable(
+        durable,
+        witness,
+        trust,
+        &ledger_directory,
+        &witness_directory,
+    )?;
+    let actual = writer.snapshot()?;
+    if actual.records().get(..archived.records().len()) != Some(archived.records()) {
+        return Err(
+            "original writer no longer contains the authenticated calibration prefix".into(),
+        );
+    }
+    // An archive replacement during recovery cannot change the bound dataset.
+    request.calibration_archive.read(8 * 1024 * 1024)?;
+    Ok(SourceOwner { writer, dataset })
+}
+pub(super) enum ArchiveUse {
+    CurrentWithdrawal,
+    AcknowledgedHistory,
+}
+pub(super) struct Archive {
+    pub trust: ledger::ActivatedLearningTrustV1,
+    pub binding: Digest32,
+    pub archived: ledger::LedgerSnapshot,
+    pub dataset: ledger::DatasetSnapshotReceiptV3,
+}
+/// Historical parsing supplies no writer/current capability. Only original
+/// source/cut integrity is shared with the current admitted writer path.
+pub(super) fn authenticated_archive(
+    request: &Request,
+    use_case: ArchiveUse,
+) -> HostResult<Archive> {
     let publication: ledger::FixedCalibrationPublicationV1 =
         serde_json::from_slice(&request.calibration_publication.read(2 * 1024 * 1024)?)?;
     let cut = &publication.cut;
@@ -22,7 +74,14 @@ pub(super) fn open(request: &Request) -> HostResult<SourceOwner> {
     let (root, distribution) = publication.trust.native()?;
     // Revalidate the same retained distribution. No rotation or new trust is
     // issued here; the Root configuration is also bound into the original file.
-    let trust = ledger::activate_learning_trust(&root, distribution, None, now_ms()?)?;
+    let trust_at = match use_case {
+        ArchiveUse::CurrentWithdrawal => now_ms()?,
+        ArchiveUse::AcknowledgedHistory => distribution
+            .distribution
+            .effective_at
+            .max(distribution.issued_at),
+    };
+    let trust = ledger::activate_learning_trust(&root, distribution, None, trust_at)?;
     let binding = Digest32::of_bytes(
         &[
             b"hepta.fixed-custody-calibration-ledger.v1".as_slice(),
@@ -84,35 +143,12 @@ pub(super) fn open(request: &Request) -> HostResult<SourceOwner> {
     if verified.principal() != &dataset.producer {
         return Err("dataset was not frozen by its original evaluator".into());
     }
-    let ledger_directory = directory(&request.ledger_directory)?;
-    let witness_directory = directory(&request.witness_directory)?;
-    let witness = ledger::LedgerWitnessStore::recover(
-        mutable(&request.witness_directory.join("acknowledged-frontier.bin"))?,
-        binding,
-    )?;
-    let anchor = witness.frontier()?.anchor;
-    let durable = ledger::DurableLedger::recover(
-        mutable(&request.ledger_directory.join("causal-ledger.bin"))?,
-        binding,
-        4096,
-        ledger::LedgerRecovery::Acknowledged(anchor),
-    )?;
-    let writer = ledger::LedgerWriter::from_durable(
-        durable,
-        witness,
+    Ok(Archive {
         trust,
-        &ledger_directory,
-        &witness_directory,
-    )?;
-    let actual = writer.snapshot()?;
-    if actual.records().get(..archived.records().len()) != Some(archived.records()) {
-        return Err(
-            "original writer no longer contains the authenticated calibration prefix".into(),
-        );
-    }
-    // An archive replacement during recovery cannot change the bound dataset.
-    request.calibration_archive.read(8 * 1024 * 1024)?;
-    Ok(SourceOwner { writer, dataset })
+        binding,
+        archived,
+        dataset,
+    })
 }
 pub(super) fn directory(path: &Path) -> HostResult<File> {
     if !path.is_absolute() || path.canonicalize()? != path {

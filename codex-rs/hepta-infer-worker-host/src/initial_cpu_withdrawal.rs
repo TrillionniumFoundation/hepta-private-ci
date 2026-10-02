@@ -9,6 +9,12 @@ use serde::Serialize;
 use std::path::PathBuf;
 #[path = "initial_cpu_withdrawal_delivery.rs"]
 mod delivery;
+#[path = "initial_cpu_withdrawal_inspection.rs"]
+mod inspection;
+#[path = "initial_cpu_withdrawal_inspection_source.rs"]
+mod inspection_source;
+#[path = "initial_cpu_withdrawal_inspection_targets.rs"]
+mod inspection_targets;
 #[path = "initial_cpu_withdrawal_issuance.rs"]
 mod issuance;
 #[path = "initial_cpu_withdrawal_source.rs"]
@@ -477,4 +483,8 @@ fn partial(
     serde_json::json!({"schema":"hepta.cpu-neuron.dataset-withdrawal-result.v1","request_digest":pin.to_string(),
         "phase":phase,"source_ack":source,"artifact_ack":artifact,"original_issuance":issuance,
         "detail":detail,"delivery_denials":[],"model_weight_forgetting_claimed":false})
+}
+
+pub(super) fn inspect(path: &Path, pin: Digest32) -> HostResult<Value> {
+    inspection::run(path, pin)
 }

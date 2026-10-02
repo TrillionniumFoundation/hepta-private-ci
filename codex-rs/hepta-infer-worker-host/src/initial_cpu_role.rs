@@ -14,14 +14,7 @@ pub(super) fn actual_role_for_program(
     program_source: &Source,
     role: &Role,
 ) -> HostResult<SigningKey> {
-    let status = std::fs::read_to_string("/proc/self/status")?;
-    require_actual_status(&status, role)?;
-    let program = std::env::current_exe()?;
-    if program.canonicalize()? != program_source.path
-        || program_source.read(512 * 1024 * 1024)?.is_empty()
-    {
-        return Err("actual fixed CPU composition executable".into());
-    }
+    require_actual_program(program_source, role)?;
     let path = &role.private_key_path;
     if !path.is_absolute() || path.canonicalize()? != *path {
         return Err("role key canonical path".into());
@@ -58,6 +51,18 @@ pub(super) fn actual_role_for_program(
         return Err("role owns a different Root-pinned key".into());
     }
     Ok(key)
+}
+/// Check physical process custody without opening any role seed.
+pub(super) fn require_actual_program(program_source: &Source, role: &Role) -> HostResult<()> {
+    let status = std::fs::read_to_string("/proc/self/status")?;
+    require_actual_status(&status, role)?;
+    let program = std::env::current_exe()?;
+    if program.canonicalize()? != program_source.path
+        || program_source.read(512 * 1024 * 1024)?.is_empty()
+    {
+        return Err("actual fixed CPU composition executable".into());
+    }
+    Ok(())
 }
 fn require_actual_status(status: &str, role: &Role) -> HostResult<()> {
     let field = |label: &str| {
