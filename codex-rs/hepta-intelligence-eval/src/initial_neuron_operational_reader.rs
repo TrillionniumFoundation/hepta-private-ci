@@ -1,6 +1,5 @@
-//! A current-use reader for the independent initial operational measurement.
-//! Root-protected bytes and a historical signature alone cannot mint this value:
-//! every native source, lifetime, role and numeric measurement is revalidated.
+//! Independent initial operational measurements. Current admission and original
+//! historical integrity have distinct opaque values and lifetime semantics.
 use crate::fixed_calibration_host::now_ms;
 use crate::initial_neuron_operational_host::Config;
 use crate::initial_neuron_operational_host::inspect_inputs;
@@ -22,6 +21,86 @@ use std::path::Path;
 struct Report {
     body: Value,
     evaluator_signed_evidence: ReviewEvidenceWireV1,
+}
+
+#[derive(Clone, Copy)]
+enum VerificationMoment {
+    CurrentUse,
+    OriginalMeasurement,
+}
+
+/// Original initial-installation measurements and signatures only. This type
+/// conveys no current-use admission; an installed Owner must also prove its
+/// durable ACK, and fresh E/S evidence must authorize every later use.
+pub struct VerifiedInitialOperationalHistoryV1 {
+    original: VerifiedInitialOperationalEvidenceV1,
+}
+
+impl VerifiedInitialOperationalHistoryV1 {
+    #[must_use]
+    pub fn measurements(&self) -> &Value {
+        self.original.measurements()
+    }
+    #[must_use]
+    pub fn authentication_digest(&self) -> Digest32 {
+        self.original.authentication_digest()
+    }
+    #[must_use]
+    pub fn model_manifest_digest(&self) -> Digest32 {
+        self.original.model_manifest_digest()
+    }
+    #[must_use]
+    pub fn weights_digest(&self) -> Digest32 {
+        self.original.weights_digest()
+    }
+    #[must_use]
+    pub fn objective_digest(&self) -> Digest32 {
+        self.original.objective_digest()
+    }
+    #[must_use]
+    pub fn original_expires_at(&self) -> u64 {
+        self.original.expires_at()
+    }
+    #[must_use]
+    pub fn initial_product_profile_digest(&self) -> Option<Digest32> {
+        self.original.initial_product_profile_digest()
+    }
+    pub fn revalidate_integrity(&self) -> HostResult<()> {
+        let actual = inspect_at(
+            &self.original.config,
+            &self.original.report,
+            VerificationMoment::OriginalMeasurement,
+        )?;
+        if actual.authentication_digest != self.authentication_digest()
+            || actual.body != *self.measurements()
+        {
+            return Err("original installation history changed".into());
+        }
+        Ok(())
+    }
+}
+
+/// Validate the original measurement at its signed instant, retaining all
+/// native source, role, signature and numeric checks. Expired history does not
+/// mint `VerifiedInitialOperationalEvidenceV1` for a current consumer.
+pub fn inspect_initial_neuron_operational_history(
+    config: &Path,
+    config_digest: Digest32,
+    report: &Path,
+    report_digest: Digest32,
+) -> HostResult<VerifiedInitialOperationalHistoryV1> {
+    let original = inspect_at(
+        &Source {
+            path: config.to_owned(),
+            digest: config_digest.to_string(),
+        },
+        &Source {
+            path: report.to_owned(),
+            digest: report_digest.to_string(),
+        },
+        VerificationMoment::OriginalMeasurement,
+    )?;
+    Ok(VerifiedInitialOperationalHistoryV1 { original })
 }
 
 /// Genuine initial operational measurements, restricted to generation one and
@@ -116,15 +195,30 @@ fn inspect(
     config_source: &Source,
     report_source: &Source,
 ) -> HostResult<VerifiedInitialOperationalEvidenceV1> {
+    inspect_at(config_source, report_source, VerificationMoment::CurrentUse)
+}
+
+fn inspect_at(
+    config_source: &Source,
+    report_source: &Source,
+    moment: VerificationMoment,
+) -> HostResult<VerifiedInitialOperationalEvidenceV1> {
     let config_bytes = config_source.read(32 * 1024)?;
     let config: Config = serde_json::from_slice(&config_bytes)?;
     let report_bytes = report_source.read(64 * 1024)?;
     let report: Report = serde_json::from_slice(&report_bytes)?;
-    let now = now_ms()?;
-    let inputs = inspect_inputs(&config, now)?;
+    let observed_now = now_ms()?;
     let at = report.body["measured_at_ms"]
         .as_u64()
         .ok_or("initial measured instant")?;
+    if at == 0 || at > observed_now {
+        return Err("original measurement is missing or in the future".into());
+    }
+    let now = match moment {
+        VerificationMoment::CurrentUse => observed_now,
+        VerificationMoment::OriginalMeasurement => at,
+    };
+    let inputs = inspect_inputs(&config, now)?;
     let cgroup = report.body["evaluator_cgroup"]
         .as_str()
         .ok_or("initial actual evaluator cgroup")?;
@@ -190,7 +284,14 @@ fn inspect(
     let mut authenticated = signed.signing_bytes();
     authenticated.extend_from_slice(&signed.signature);
     // Do not retain a value that crossed a source expiry while reading the cuts.
-    let final_now = now_ms()?;
+    let sampled_final = now_ms()?;
+    if sampled_final < observed_now {
+        return Err("original inspection wall clock rolled back".into());
+    }
+    let final_now = match moment {
+        VerificationMoment::CurrentUse => sampled_final,
+        VerificationMoment::OriginalMeasurement => at,
+    };
     inputs.policy.validate(final_now)?;
     inspect_inputs(&config, final_now)?;
     inputs.calibration.trust.verifier().verify(
@@ -230,3 +331,7 @@ fn inspect(
         expires_at,
     })
 }
+
+#[cfg(test)]
+#[path = "initial_neuron_operational_history_tests.rs"]
+mod tests;
