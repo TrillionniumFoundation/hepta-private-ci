@@ -224,6 +224,36 @@ class FormatterScopeTests(unittest.TestCase):
         self.assertEqual(command.cwd, self.root / "qualification/fixture")
         self.assertEqual(command.args[command.args.index("--edition") + 1], "2021")
 
+    def test_real_vendor_import_keeps_upstream_rust_and_formats_first_party_and_build(
+        self,
+    ):
+        self.write("codex-rs/Cargo.toml", '[workspace.package]\nedition="2024"\n')
+        self.write("codex-rs/rustfmt.toml", "max_width=88\n")
+        self.write(
+            "codex-rs/third_party_tasks/Cargo.toml",
+            '[package]\nname="owner"\nedition.workspace=true\n',
+        )
+        first_party = self.write(
+            "codex-rs/third_party_tasks/src/lib.rs", "pub fn entry() {}\n"
+        )
+        upstream = self.write(
+            "codex-rs/third_party/sdk/src/lib.rs", "use std::{fmt, sync::Arc};\n"
+        )
+        build = self.write(
+            "codex-rs/third_party/sdk/BUILD.bazel", 'load("//:defs.bzl", "sdk")\n'
+        )
+        original = upstream.read_bytes()
+        groups = FMT.scoped_formatter_groups(FMT.changed_paths(), check=True)
+        self.assertEqual([group.name for group in groups], ["Rust", "Bazel/Starlark"])
+        self.assertEqual(
+            [command.args[-1] for command in groups[0].commands], [str(first_party)]
+        )
+        self.assertIn(
+            "codex-rs/third_party/sdk/BUILD.bazel", groups[1].commands[0].args
+        )
+        self.assertEqual(upstream.read_bytes(), original)
+        self.assertTrue(build.is_file())
+
     def test_changed_ruff_configuration_checks_the_owning_python_tree(self):
         groups = FMT.scoped_formatter_groups(["scripts/ruff.toml"], check=True)
         self.assertEqual([group.name for group in groups], ["Python scripts"])
