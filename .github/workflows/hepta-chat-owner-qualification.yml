@@ -30,7 +30,7 @@ jobs:
       CARGO_PROFILE_TEST_DEBUG: "0"
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
       CARGO_TERM_COLOR: never
-      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-chat-owner-target
+      CARGO_TARGET_DIR: ${{ github.workspace }}/.tmp/hepta-chat-owner-target
     steps:
       - name: Checkout immutable source without credentials
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
