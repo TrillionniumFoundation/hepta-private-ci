@@ -1485,7 +1485,11 @@ mod tests {
 
     #[tokio::test]
     async fn host_blocked_subdomain_wildcards_exclude_apex() {
-        let state = network_proxy_state_for_policy(network_settings(&["*.openai.com"], &[]));
+        let mut settings = network_settings(&["*.openai.com"], &[]);
+        // Domain matching is independent of DNS. The separate lookup and IP
+        // tests retain the default local/private rejection policy.
+        settings.allow_local_binding = true;
+        let state = network_proxy_state_for_policy(settings);
 
         assert_eq!(
             state
@@ -1501,8 +1505,11 @@ mod tests {
     }
 
     #[tokio::test]
-    async fn host_blocked_global_wildcard_allowlist_allows_public_hosts_except_denylist() {
-        let state = network_proxy_state_for_policy(network_settings(&["*"], &["evil.example"]));
+    async fn host_blocked_global_wildcard_allowlist_matches_hosts_except_denylist() {
+        let mut settings = network_settings(&["*"], &["evil.example"]);
+        // Check the wildcard and explicit deny without external DNS availability.
+        settings.allow_local_binding = true;
+        let state = network_proxy_state_for_policy(settings);
 
         assert_eq!(
             state

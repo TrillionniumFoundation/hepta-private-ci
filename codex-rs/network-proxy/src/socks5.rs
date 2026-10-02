@@ -1043,6 +1043,8 @@ mod tests {
             enabled: true,
             mode: NetworkMode::Full,
             mitm: true,
+            // This routing fixture does not require a real public DNS service.
+            allow_local_binding: true,
             mitm_hooks: vec![MitmHookConfig {
                 host: "api.github.com".to_string(),
                 matcher: MitmHookMatchConfig {
@@ -1078,6 +1080,8 @@ mod tests {
             enabled: true,
             mode: NetworkMode::Full,
             mitm: true,
+            // Keep the protocol rejection independent of public DNS availability.
+            allow_local_binding: true,
             mitm_hooks: vec![MitmHookConfig {
                 host: "api.github.com".to_string(),
                 matcher: MitmHookMatchConfig {

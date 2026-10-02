@@ -14,6 +14,9 @@ mod outbound;
 #[cfg(feature = "qualification-failpoints")]
 mod qualification;
 mod sdk;
+#[cfg(test)]
+#[path = "sdk_context_tests.rs"]
+mod sdk_context_tests;
 mod sync;
 
 pub use config::MatrixSdkPaths;

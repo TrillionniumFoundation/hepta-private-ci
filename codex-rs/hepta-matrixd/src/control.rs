@@ -631,9 +631,11 @@ mod tests {
     fn layout(temp: &TempDir, agent_id: &AgentId) -> TestResult<HeptaAgentLayout> {
         let fleet_root = temp.path().join("fleet");
         fs::create_dir_all(&fleet_root)?;
-        Ok(HeptaFleetRoot::parse(fleet_root.canonicalize()?)?
-            .layout()
-            .agent(agent_id))
+        let fleet = HeptaFleetRoot::parse(fleet_root.canonicalize()?)?.layout();
+        // The Supervisor provisions this parent before Matrixd creates its
+        // private socket leaf; the durable Matrix store owns a different path.
+        fs::create_dir_all(fleet.run_root())?;
+        Ok(fleet.agent(agent_id))
     }
 
     fn fence() -> TestResult<MatrixdFence> {
