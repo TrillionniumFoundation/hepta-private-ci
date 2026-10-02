@@ -3,7 +3,8 @@ import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const root = fileURLToPath(new URL("../../dist/", import.meta.url));
+const rustCandidate = process.env.UI_CONTROL_CANDIDATE === "rust";
+const root = fileURLToPath(new URL(rustCandidate ? "../../dist-rust/" : "../../dist/", import.meta.url));
 const port = Number(process.env.PORT ?? 4173);
 const csrfToken = "csrf-fixture-token";
 const digests = {
@@ -273,6 +274,7 @@ const types = {
   ".js": "text/javascript; charset=utf-8",
   ".css": "text/css; charset=utf-8",
   ".json": "application/json; charset=utf-8",
+  ".wasm": "application/wasm",
 };
 
 async function staticFile(request, response, url) {
@@ -296,7 +298,7 @@ async function staticFile(request, response, url) {
       "content-type": types[extname(candidate)] ?? "application/octet-stream",
       "content-length": content.byteLength,
       "cache-control": "no-store",
-      "content-security-policy": "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'",
+      "content-security-policy": (rustCandidate ? "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'".replace("script-src 'self'", "script-src 'self' 'wasm-unsafe-eval'") : "default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'"),
       "cross-origin-opener-policy": "same-origin",
       "cross-origin-resource-policy": "same-origin",
       "permissions-policy": "camera=(), microphone=(), geolocation=(), payment=()",

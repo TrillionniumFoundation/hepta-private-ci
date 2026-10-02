@@ -118,7 +118,20 @@ test("one live client isolates recovery when the console changes principal", asy
   }));
   await bindTabSession(page, { identityId: "operator-first", sessionId: "session-first" });
   await page.goto("/");
-  await page.evaluate(async () => {
+  await page.evaluate(async rustCandidate => {
+    if (rustCandidate) {
+      const rust = await import("/pkg/hepta_control_web.js");
+      await rust.default();
+      globalThis.principalClient = { readView: rust.read_view };
+      globalThis.principalConsole = { destroy: rust.close_session };
+      let opened = false;
+      globalThis.openPrincipalConsole = async () => {
+        if (opened) await rust.reconnect();
+        else { await rust.start(); opened = true; }
+      };
+      await globalThis.openPrincipalConsole();
+      return;
+    }
     const { RuntimeClient, SameOriginHttpTransport, SessionProvider, createControlConsole } =
       await import("/src/index.js");
     const transport = new SameOriginHttpTransport({
@@ -135,7 +148,7 @@ test("one live client isolates recovery when the console changes principal", asy
       await app.start();
     };
     await globalThis.openPrincipalConsole();
-  });
+  }, process.env.UI_CONTROL_CANDIDATE === "rust");
   await submit(page, "Preserve this operation under its original principal.");
   await expect(page.locator("#pending-list")).toContainText("pending");
   const original = await (await request.get("/__test__/state")).json();
