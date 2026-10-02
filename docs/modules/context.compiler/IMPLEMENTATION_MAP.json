@@ -3,7 +3,7 @@
   "module": "context.compiler",
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "a3b7138f345a3e9d28aa82a259293d236adc070f8a9be0524d165b7e74e8bf7c",
+    "stateSha256": "45cc6002225ec69eaa93a75b9653bf631e8b1c1a8d7599698412f5790d41f6a1",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
@@ -76,7 +76,8 @@
     "codex-rs/hepta-context-compiler/src/wire.rs",
     "codex-rs/hepta-context-compiler/src/wire_tests.rs",
     "codex-rs/hepta-context-compiler/src/lib.rs",
-    "scripts/test_context_compiler_execution.py"
+    "scripts/test_context_compiler_execution.py",
+    "scripts/test_context_compiler_execution_boundary.py"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -271,8 +272,8 @@
   ],
   "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
   "integrationBranch": "codex/context-compiler-v3-closure-20260928",
-  "runtimeSourceAnchor": "b52644a113a6b0d6fd3cdab15cc505d242781b61",
-  "runtimeSourceTree": "476f05203b4e49896274146085f239966bdb041a",
+  "runtimeSourceAnchor": "ce91c49c86a2bcb27b0ff0de1ca48274242f6ad3",
+  "runtimeSourceTree": "09b5724509e8539565cbef26ce766d08b4c4dff5",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -442,7 +443,7 @@
     },
     {
       "path": "scripts/context_compiler_execution.py",
-      "blobSha": "41898b430191e93a828c2245d342d51dfafc58d8"
+      "blobSha": "ac17928d0090d4d27a4bfb47f698572d6dd59a3c"
     },
     {
       "path": "scripts/context_compiler_named_evidence.py",
@@ -450,7 +451,7 @@
     },
     {
       "path": "scripts/context_compiler_qualification.py",
-      "blobSha": "9d79faedaa95150ce6c5f83580c85d37e63974b8"
+      "blobSha": "cd41ca3ef445f789d3d79db4f2224f687aec9692"
     },
     {
       "path": "scripts/generate_context_compiler_module_docs.py",
@@ -515,6 +516,10 @@
     {
       "path": "scripts/test_context_compiler_execution.py",
       "blobSha": "6a571bed70975517c5e7bec0de5048e667efe1b9"
+    },
+    {
+      "path": "scripts/test_context_compiler_execution_boundary.py",
+      "blobSha": "58e32d4892936bf819258c080b86d8f30cbb3fd5"
     }
   ],
   "consumerExecution": [
@@ -888,12 +893,12 @@
     "currentHeadQualification": "absent"
   },
   "sourceBase": {
-    "commit": "b52644a113a6b0d6fd3cdab15cc505d242781b61",
-    "tree": "476f05203b4e49896274146085f239966bdb041a"
+    "commit": "ce91c49c86a2bcb27b0ff0de1ca48274242f6ad3",
+    "tree": "09b5724509e8539565cbef26ce766d08b4c4dff5"
   },
   "observedAtHead": {
-    "commit": "b52644a113a6b0d6fd3cdab15cc505d242781b61",
-    "tree": "476f05203b4e49896274146085f239966bdb041a"
+    "commit": "ce91c49c86a2bcb27b0ff0de1ca48274242f6ad3",
+    "tree": "09b5724509e8539565cbef26ce766d08b4c4dff5"
   },
   "observedSourcePaths": [
     "codex-rs/hepta-context-compiler",
@@ -1192,7 +1197,7 @@
     },
     {
       "path": "docs/modules/context.compiler/AUDIT_20261002.md",
-      "object": "d1023e37c1f9a6dfd262c14d55ac00207e568d70"
+      "object": "9a8d9f9b9192307f61ef6460a99e6e12c71fc3f2"
     },
     {
       "path": "docs/modules/context.compiler/V3_DEVELOPMENT.md",
