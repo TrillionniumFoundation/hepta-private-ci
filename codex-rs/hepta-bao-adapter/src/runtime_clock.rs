@@ -68,7 +68,8 @@ impl RuntimeProtectedClock {
             .lock()
             .map_err(|_| ConsumerPortError::Unavailable)?;
         if started.elapsed() >= self.maximum_age {
-            *sample = None;
+            // Expiration removes freshness, never the accepted rollback floor.
+            // A later sample must still advance this retained wall/revision pair.
             return Err(ConsumerPortError::Unavailable);
         }
         let wall_ms = time.claims.wall_time_ms;
@@ -148,11 +149,11 @@ impl Drop for RuntimeClockBudget {
     }
 }
 
-pub(crate) struct RuntimeEvidence {
-    pub client: ConsumerEvidenceClient,
+pub(crate) struct RuntimeEvidence<E = ConsumerEvidenceClient> {
+    pub client: E,
     pub clock: Arc<RuntimeProtectedClock>,
 }
-impl BaoAuthBusEvidenceProvider for RuntimeEvidence {
+impl<E: BaoAuthBusEvidenceProvider> BaoAuthBusEvidenceProvider for RuntimeEvidence<E> {
     fn trusted_time(&mut self) -> Result<SignedTrustedTimeAttestation, BaoAuthBusError> {
         let started = Instant::now();
         let time = match self.client.trusted_time() {
