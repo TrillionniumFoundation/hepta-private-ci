@@ -156,8 +156,10 @@ jobs:
     env:
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
-      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-desktop-target
     steps:
+      - name: Set desktop target directory after runner allocation
+        shell: bash
+        run: printf '%s\n' "CARGO_TARGET_DIR=$RUNNER_TEMP/hepta-desktop-target" >> "$GITHUB_ENV"
       - name: Checkout exact candidate
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
