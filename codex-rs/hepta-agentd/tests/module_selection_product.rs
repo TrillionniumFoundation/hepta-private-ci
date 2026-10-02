@@ -154,7 +154,9 @@ async fn exercise(
         .await
         .context("create remote product task")?;
     ensure!(product.automation_list(10).await?.len() == 1);
-    restart_same_process(client, agent).await?;
+    restart_same_process(client, agent)
+        .await
+        .context("restart selected module product")?;
     let (reopened, second) = ready(
         client,
         registry,
@@ -408,7 +410,9 @@ async fn run_product_case(case: ProfileCase) -> Result<()> {
                 product.automation_list(10).await.is_err(),
                 "absent/retired Automation must not advertise an idle owner"
             );
-            restart_same_process(&client, &agent).await?;
+            restart_same_process(&client, &agent)
+                .await
+                .context("restart absent or retired module product")?;
             let (reopened, second) = ready(
                 &client,
                 &registry,
@@ -428,6 +432,22 @@ async fn run_product_case(case: ProfileCase) -> Result<()> {
         Ok(())
     }
     .await;
+    if result.is_err() {
+        // Read the original owner record before containment and temporary
+        // directory cleanup; an ambiguous mutation must never be replayed.
+        match codex_hepta_supervisor::read_mutation_status(layout.owner_run_root()) {
+            Ok(Some(status)) => eprintln!(
+                "failed product case {case:?}: original mutation request={} operation={:?} phase={:?} record={} detail={:?}",
+                status.request_id,
+                status.operation,
+                status.phase,
+                status.record_sha256,
+                status.detail,
+            ),
+            Ok(None) => eprintln!("failed product case {case:?}: no admitted mutation record"),
+            Err(error) => eprintln!("failed product case {case:?}: journal read failed: {error}"),
+        }
+    }
     // Explicitly settle owned processes even after an assertion/operation error.
     if let Ok(status) = client.snapshot(agent.clone()).await {
         let _ = client.kill(status.control_fence).await;
