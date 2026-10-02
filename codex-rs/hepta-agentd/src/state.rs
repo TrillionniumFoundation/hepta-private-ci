@@ -511,11 +511,11 @@ impl AgentdState {
         Ok(DrainSnapshot {
             admission_closed: runtime.lifecycle == AgentLifecycle::Draining
                 && !runtime.app_server_ready
-                && !runtime.draining
+                && runtime.draining
                 && !runtime.fenced,
             running_turns,
             drained: runtime.lifecycle == AgentLifecycle::Draining
-                && !runtime.draining
+                && runtime.draining
                 && !runtime.fenced
                 && self.app_server_drain.drained()
                 && running_turns == 0
