@@ -67,9 +67,11 @@ deadline after preparatory awaits. The signed plan and original operation budget
 are not carried to that deadline. The final-use token is entered before the
 App Server client's bounded command queue and socket readiness waits.
 
-This is a source-confirmed enforcement gap; an expired physical-send reproduction
-and a complete product-path fix have not yet been delivered by this audit stage.
-The proposed additive transport API must execute in the existing command owner:
+The subsequent [guarded-send stage](GUARDED_SEND_AUDIT_20261002.md) implements
+an additive guard in the existing command owner and carries the original/signed
+ceiling through the native caller. Its source and scoped tests do not establish
+the complete Agentd durable handoff or server generation fence. The boundary
+requirements are:
 
 1. Serialize and await socket readiness with cancellation, abandonment and the
    original monotonic deadline selected concurrently.
@@ -99,8 +101,8 @@ meet a minimum-test count would not supply that owner composition.
 
 1. Complete the independent V2 retained-history repair described in the
    [inference audit](../inference.control/RETENTION_AUDIT_20261002.md).
-2. Implement and qualify the additive guarded transport seam and immutable signed
-   deadline on ordinary source, preserving unguarded legacy-call semantics.
+2. Qualify the additive guarded transport seam and immutable signed deadline
+   described in the guarded-send stage, preserving unguarded legacy semantics.
 3. Review a typed Agentd bridge for admitted absolute deadline, exact generation,
    dispatch binding, abort commitment/opening and durable outbox reconciliation.
    Port the ordinary implementation, not source-writing programs.

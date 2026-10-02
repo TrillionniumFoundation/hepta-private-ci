@@ -104,6 +104,8 @@ also failed its aggregate gates. Local scoped repair results do not replace thos
 exact-head/base-merge gates or the separately recorded 600.244-second soak timeout.
 
 Production implementation, product execution, target-host qualification,
-independent acceptance, activation and release remain false. Final-send deadline,
-transport queue cancellation and the ordinary Agentd durable handoff are the next
-coordinated stage, not implied by this retained-history patch.
+independent acceptance, activation and release remain false. The subsequent
+[guarded-send stage](../runtime.codex/GUARDED_SEND_AUDIT_20261002.md) addresses
+final-send deadline and transport queue cancellation separately. The ordinary
+Agentd durable handoff and server generation fence remain pending; none of these
+are implied by this retained-history patch.

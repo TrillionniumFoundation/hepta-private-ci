@@ -24,6 +24,7 @@ This matrix is the repository-side acceptance contract for the composed Codex Ap
 | Authority endpoint/revocation head rolls backward | reject | none | fail closed |
 | Revocation frontier advances after claim but before physical effect entry, even without revoking this grant | reject stale token before `turn/start` | obtain a fresh independently signed/verified claim only while the local pre-effect proof still exists | persisted witness remains bound to the old exact frontier; no effect is inferred |
 | Cancellation/deadline changes after durable write-ahead but before external effect and the live one-shot abort proof still exists | definitive local pre-effect stop | none | consume abort proof and release |
+| Guarded command expires, is abandoned/cancelled, or loses authority after enqueue but before physical entry | no new `start_send`; conservative transport failure | reconcile same operation | retain slot: no transport-owned no-effect receipt is issued |
 | Process dies after write-ahead so the in-memory abort proof is lost | accepted-or-unknown | reconcile same operation | recovery cannot downgrade to “unsent” |
 | Cancellation after turn admission | `NativeBoundaryStatus::Cancelled` | reconcile terminal facts | interrupt; a late Completed event remains a provider fact but does not upgrade the boundary to success |
 | Runtime deadline after turn admission | `NativeBoundaryStatus::TimedOut` | reconcile terminal facts | interrupt; late terminal facts remain observable |
@@ -44,6 +45,12 @@ Production terminal/rejection observations are created from the bounded `RemoteA
 ## Final-use boundary
 
 The worker obtains an independently signed exact-binding grant from the configured final-use authority port, synchronizes the issuer-provided monotonic revocation head, claims a non-constructible `VerifiedUseToken`, rechecks cancellation/deadline/owner ingress, consumes the token at final-use entry, and durably records the authority witness/request binding before the network await. The worker does not hold the issuer private key. The witness hashes the signed grant and the exact claim-time revocation head; the durable dispatch also records the claim-time authority epoch, revocation revision and a domain-separated digest of the complete revocation head so recovery can audit the exact frontier without treating those serializable fields as authority. `VerifiedUseToken::enter()` rechecks expiry/revocation and requires that exact head to remain current. Any frontier advance invalidates the token before physical `turn/start`. A fresher head must arrive through the independently qualified target-host authority/revocation-distribution path.
+
+The [guarded-send stage](GUARDED_SEND_AUDIT_20261002.md) moves token entry into
+the sole transport writer after queue/readiness waits. It binds the earlier
+operation/signed ceiling, refreshes cognitive and owner observations, and
+preserves a no-await entry-to-`start_send` cut. It does not mint a durable
+no-effect proof; queued failure therefore retains capacity for reconciliation.
 
 ## Required repository tests
 

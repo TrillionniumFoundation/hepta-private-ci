@@ -14,6 +14,9 @@ use std::time::UNIX_EPOCH;
 
 use crate::control_port::NativeControlPort;
 
+#[path = "native_send_guard.rs"]
+mod send_guard;
+
 #[path = "native_output_messages.rs"]
 mod output_messages;
 use codex_app_server_client::AppServerEvent;
@@ -58,7 +61,6 @@ use codex_hepta_codex_adapter::adapt_observed_thread_read_reconciliation;
 use codex_hepta_codex_adapter::adapt_request;
 use codex_hepta_codex_adapter::request_digest as codex_request_digest;
 use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::EnteredUseToken;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::VerifiedUseToken;
 pub use codex_hepta_infer_core::durable_control::native::NativeBoundaryStatus;
@@ -418,6 +420,10 @@ impl AppServerModelDriver {
 
     /// Execute once. Transport loss after turn/start remains indeterminate and
     /// must never be automatically replayed as a fresh request.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "Keep the immutable admitted deadline explicit across the execution boundary"
+    )]
     async fn run_once(
         &self,
         control: &mut dyn NativeControlPort,
@@ -426,6 +432,7 @@ impl AppServerModelDriver {
         context_query: Option<String>,
         intelligence: Option<&NativeIntelligenceRunBinding>,
         cancellation: &CancellationToken,
+        deadline: send_guard::NativeExecutionDeadline,
     ) -> Result<NativeRunOutput> {
         if prompt.is_empty() || prompt.len() > MAX_PROMPT_BYTES {
             return Err("prompt must contain 1..32768 bytes".into());
@@ -569,8 +576,6 @@ impl AppServerModelDriver {
         let payload_digest = Digest32::of_bytes(&turn_payload);
         let user_input_digest = Digest32::of_bytes(&serde_json::to_vec(&turn_params.input)?);
         let adapted_at_ms = unix_time_ms()?;
-        let execution_timeout_ms = u64::try_from(self.config.timeout.as_millis())
-            .map_err(|_| "native execution timeout does not fit u64 milliseconds")?;
         let source_admission_digest: Digest32 = control
             .native_record(request_id)
             .await?
@@ -587,9 +592,7 @@ impl AppServerModelDriver {
             method_id: StableId::new(TURN_START_METHOD_ID)?,
             payload_digest,
             lease_payload_digest: payload_digest,
-            deadline_ms: adapted_at_ms
-                .checked_add(execution_timeout_ms)
-                .ok_or("native execution deadline overflow")?,
+            deadline_ms: deadline.unix_ms,
             app_server_binding: Some(AppServerRequestBinding {
                 source_admission_digest,
                 agent_generation: Generation::new(self.config.generation)?,
@@ -798,36 +801,32 @@ impl AppServerModelDriver {
             return Err("cancelled before model dispatch".into());
         }
 
-        let send_budget = remaining_before(adapter_intent.deadline_ms)?.min(RPC_TIMEOUT);
-        let entered_use = match verified_use.enter(&authority_binding) {
-            Ok(entered) if entered.matches(&authority_binding) => entered,
-            Ok(_) => {
-                let reason = "kernel.authority final-use binding mismatch at entry".to_string();
-                control
-                    .abort_native_before_effect(pre_effect_abort, reason.clone())
-                    .await?;
-                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Err(reason.into());
-            }
-            Err(error) => {
-                let reason = format!("kernel.authority final-use entry denied: {error}");
-                control
-                    .abort_native_before_effect(pre_effect_abort, reason.clone())
-                    .await?;
-                let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
-                return Err(reason.into());
-            }
-        };
-        // From here on, a missing acknowledgement is reconcile-only. Recovery
-        // cannot recreate the local pre-effect proof that is deliberately lost.
+        let send_deadline = deadline.monotonic.min(Instant::now() + RPC_TIMEOUT);
+        let guard = send_guard::native_send_guard(
+            &self.config,
+            &ingress_socket_path,
+            context.clone(),
+            deadline,
+            cancellation.clone(),
+            verified_use,
+            authority_binding,
+        )?;
+        // From here on, a missing acknowledgement is reconcile-only. A local
+        // timeout is not a transport-owned proof that start_send was not entered.
         drop(pre_effect_abort);
-        let response = timeout(
-            send_budget,
-            send_authorized_turn_start(&mut client, entered_use, turn_params),
+        let response = timeout_at(
+            send_deadline,
+            client.request_typed_observed_response_guarded::<TurnStartResponse>(
+                ClientRequest::TurnStart {
+                    request_id: RequestId::Integer(2),
+                    params: turn_params,
+                },
+                guard,
+            ),
         )
         .await;
         let turn = match response {
-            Ok(Ok(response)) => response.turn,
+            Ok(Ok(response)) => response.into_response().turn,
             Ok(Err(RemoteObservedTypedRequestError::Server { observed })) => {
                 let receipt = adapt_observed_server_rejection(&adapter_intent, &observed)?;
                 let reason: String = observed.error().message.chars().take(1024).collect();
@@ -936,8 +935,9 @@ impl AppServerModelDriver {
             let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
             return Err(error.into());
         }
-        let deadline =
-            Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
+        let deadline = deadline.monotonic.min(
+            Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms),
+        );
         let mut messages = ObservedAgentMessages::default();
         let result = self
             .observe(
@@ -1170,19 +1170,6 @@ fn validate_post_authority_fence(
         return Err("runtime.codex deadline elapsed before final-use entry".into());
     }
     Ok(())
-}
-
-async fn send_authorized_turn_start(
-    client: &mut RemoteAppServerClient,
-    _entered: EnteredUseToken,
-    params: TurnStartParams,
-) -> std::result::Result<TurnStartResponse, RemoteObservedTypedRequestError> {
-    client
-        .request_typed_observed(ClientRequest::TurnStart {
-            request_id: RequestId::Integer(2),
-            params,
-        })
-        .await
 }
 
 struct PersistedDispatchExpectation<'a> {
