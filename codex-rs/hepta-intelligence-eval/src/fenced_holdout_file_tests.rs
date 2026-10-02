@@ -330,6 +330,30 @@ fn malformed_initial_snapshot_is_rejected_before_any_file_write() {
 
 #[test]
 fn append_rejects_every_noncanonical_record_field_without_consuming_the_plan() {
+    const ISOLATED: &str = "HEPTA_FENCED_CAS_CANONICAL_RECORD_CHILD";
+    if std::env::var_os(ISOLATED).is_none() {
+        // Other parallel tests spawn processes. A fork can briefly retain an
+        // unrelated flock descriptor until exec, even after its parent drops
+        // the store. Exercise this exact close/reopen transition in an isolated
+        // test process rather than weakening the production exclusive lock.
+        let output = Command::new(std::env::current_exe().expect("test executable"))
+            .args([
+                "--exact",
+                "fenced_holdout_file::tests::append_rejects_every_noncanonical_record_field_without_consuming_the_plan",
+                "--nocapture",
+            ])
+            .env(ISOLATED, "1")
+            .output()
+            .expect("spawn isolated canonical record test");
+        assert!(
+            output.status.success(),
+            "isolated canonical record test failed: {:?}\n{}\n{}",
+            output.status,
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr),
+        );
+        return;
+    }
     let temp = TempFile::new();
     let binding = digest("binding");
     let store =
@@ -365,6 +389,11 @@ fn append_rejects_every_noncanonical_record_field_without_consuming_the_plan() {
         .compare_and_swap(binding, Some(current.state_digest), &next)
         .expect("rejected mutations never consume the canonical plan");
     let retained = store.anchor();
+    assert_eq!(
+        LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), binding, retained).err(),
+        Some(LockedFileCasErrorV1::Busy),
+        "the original writer still holds its exclusive physical lock",
+    );
     drop(store);
     let mut recovered = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), binding, retained)
         .expect("recover exact persisted state");
