@@ -1,8 +1,8 @@
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
+use codex_hepta_authbus_p1_3_qualification::persisted_message_issuer;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -19,12 +19,9 @@ async fn enqueue(
     sequence: u64,
 ) -> (IssuerRegistration, AuthBusDeliveryStatus) {
     let key = SigningKey::from_bytes(&[49; 32]);
-    let issuer = IssuerRegistration {
-        issuer_id: StableId::new(issuer_name).unwrap(),
-        key_epoch: Generation::new(epoch).unwrap(),
-        verifying_key: key.verifying_key(),
-        revoked: false,
-    };
+    let issuer =
+        persisted_message_issuer(issuer_name, epoch, key.verifying_key().to_bytes(), false)
+            .unwrap();
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
@@ -119,10 +116,9 @@ async fn current_issuer_scan_cannot_be_starved_by_older_epochs_or_other_issuers(
         vec![foreign_status]
     );
     // Selecting a newly installed epoch does not imply revoking the old one.
-    let old = IssuerRegistration {
-        key_epoch: Generation::new(1).unwrap(),
-        ..current
-    };
+    let key = SigningKey::from_bytes(&[49; 32]);
+    let old = persisted_message_issuer("issuer:rotation", 1, key.verifying_key().to_bytes(), false)
+        .unwrap();
     let mut retained = store
         .pending_authbus_deliveries_for_issuer(subject, scope, &old, /*limit*/ 128)
         .await

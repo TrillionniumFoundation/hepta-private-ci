@@ -1,23 +1,97 @@
+use std::ops::Deref;
+
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
 
+use crate::AuthBusAuthorityError;
 use crate::Error;
+use crate::IssuerLifecycleState;
+use crate::IssuerPurpose;
+use crate::IssuerRecord;
 use crate::PreverifiedAuthEnvelope;
 use crate::ReplayWindow;
 use crate::TrustedReplayContext;
 use crate::VerificationReceipt;
 use crate::push_id;
 
-/// Registration obtained from the host's trusted identity/policy store, never
-/// from the message being admitted. Revocation must be refreshed for each call.
-pub struct IssuerRegistration {
+/// Read-only issuer attributes exposed by an opaque registration handle.
+///
+/// Constructing this view does not create a trusted registration. AuthBus APIs
+/// accept only `IssuerRegistration`, whose constructors are confined to the
+/// durable registry and private-file registry loaders.
+#[derive(Clone, Debug)]
+pub struct IssuerRegistrationView {
     pub issuer_id: StableId,
     pub key_epoch: Generation,
     pub verifying_key: VerifyingKey,
     pub revoked: bool,
+}
+
+/// Sealed registration obtained from a persisted trusted issuer registry.
+#[derive(Clone, Debug)]
+pub struct IssuerRegistration {
+    view: IssuerRegistrationView,
+    registry_digest: Digest32,
+    registry_revision: u64,
+}
+
+impl Deref for IssuerRegistration {
+    type Target = IssuerRegistrationView;
+
+    fn deref(&self) -> &Self::Target {
+        &self.view
+    }
+}
+
+impl IssuerRegistration {
+    pub fn registry_digest(&self) -> Digest32 {
+        self.registry_digest
+    }
+
+    pub fn registry_revision(&self) -> u64 {
+        self.registry_revision
+    }
+
+    pub(crate) fn from_record(record: &IssuerRecord) -> Result<Self, AuthBusAuthorityError> {
+        if record.purpose != IssuerPurpose::Message {
+            return Err(AuthBusAuthorityError::InvalidTransition);
+        }
+        let view = IssuerRegistrationView {
+            issuer_id: record.issuer_id.clone(),
+            key_epoch: record.key_epoch,
+            verifying_key: record.verifying_key,
+            revoked: record.state != IssuerLifecycleState::Active,
+        };
+        let mut bytes = b"hepta.authbus.message-issuer-registration.v1\0".to_vec();
+        push_id(&mut bytes, &view.issuer_id);
+        bytes.extend_from_slice(&view.key_epoch.get().to_be_bytes());
+        bytes.extend_from_slice(&view.verifying_key.to_bytes());
+        bytes.push(match record.state {
+            IssuerLifecycleState::Active => 1,
+            IssuerLifecycleState::Revoked => 2,
+            IssuerLifecycleState::Retired => 3,
+        });
+        bytes.extend_from_slice(&record.revision.to_be_bytes());
+        Ok(Self {
+            view,
+            registry_digest: Digest32::of_bytes(&bytes),
+            registry_revision: record.revision,
+        })
+    }
+
+    pub(crate) fn from_registry_view(
+        view: IssuerRegistrationView,
+        registry_digest: Digest32,
+    ) -> Self {
+        Self {
+            view,
+            registry_digest,
+            registry_revision: 1,
+        }
+    }
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
