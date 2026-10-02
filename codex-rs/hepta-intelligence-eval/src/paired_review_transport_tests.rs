@@ -194,7 +194,7 @@ fn root_material_encoder_matches_original_native_plan_without_inventing_a_receip
     use crate::paired_supervised_test_support::id as fixture_id;
     use crate::paired_supervised_test_support::inputs;
     use crate::*;
-    use std::path::Path;
+
     let input = inputs(6);
     let records: Vec<_> = (0..8)
         .map(|index| TaskSourceRecordV1 {
@@ -261,12 +261,9 @@ fn root_material_encoder_matches_original_native_plan_without_inventing_a_receip
     }});
     let file = crate::NamedTempFile::new().unwrap();
     std::fs::write(file.path(), serde_json::to_vec(&value).unwrap()).unwrap();
-    let helper = Path::new(env!("CARGO_MANIFEST_DIR"))
-        .parent()
-        .unwrap()
-        .parent()
-        .unwrap()
-        .join("tools/hepta_encode_paired_plan_inputs.py");
+    let helper =
+        codex_utils_cargo_bin::find_resource!("../../tools/hepta_encode_paired_plan_inputs.py")
+            .unwrap();
     let run = || {
         std::process::Command::new("python3")
             .args(["-I", "-B", "-S"])
