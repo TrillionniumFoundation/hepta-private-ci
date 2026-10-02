@@ -4,6 +4,7 @@ use hepta_control_core::confirmation::retained_target;
 pub(super) struct ModuleRow {
     node: Element,
     cells: Vec<Element>,
+    status: Element,
 }
 pub(super) struct OperationRow {
     node: Element,
@@ -59,20 +60,45 @@ impl Dom {
                     node.append_child(&cell).map_err(dom_error)?;
                     cells.push(cell);
                 }
-                self.module_rows
-                    .insert(module.id().into(), ModuleRow { node, cells });
+                let status = self.document.create_element("span").map_err(dom_error)?;
+                status
+                    .set_attribute("class", "status-chip")
+                    .map_err(dom_error)?;
+                cells[1].append_child(&status).map_err(dom_error)?;
+                self.module_rows.insert(
+                    module.id().into(),
+                    ModuleRow {
+                        node,
+                        cells,
+                        status,
+                    },
+                );
             }
             let row = self
                 .module_rows
                 .get(module.id())
                 .ok_or_else(ControlError::invalid)?;
-            for (cell, text) in row.cells.iter().zip([
-                module.id().to_owned(),
-                runtime_status(module.status()).to_owned(),
-                module.revision().to_string(),
-                redact_digest(module.semantic_digest()),
-            ]) {
-                set_text(cell, &text);
+            for (index, (cell, text)) in row
+                .cells
+                .iter()
+                .zip([
+                    module.id().to_owned(),
+                    runtime_status(module.status()).to_owned(),
+                    module.revision().to_string(),
+                    redact_digest(module.semantic_digest()),
+                ])
+                .enumerate()
+            {
+                if index == 1 {
+                    set_text(&row.status, &text);
+                    if row.status.get_attribute("data-status").as_deref() != Some(text.as_str()) {
+                        row.status
+                            .set_attribute("data-status", &text)
+                            .map_err(dom_error)?;
+                    }
+                } else {
+                    set_text(cell, &text);
+                }
             }
         }
         if self.module_order != ids || self.modules.child_element_count() == 0 {

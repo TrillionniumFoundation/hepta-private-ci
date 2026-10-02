@@ -46,7 +46,37 @@ button:focus-visible, select:focus-visible, textarea:focus-visible, .table-scrol
 #pending-list button {{ margin-left: .6rem; }}
 dialog {{ background: var(--surface); color: var(--text); border: 1px solid var(--violet); border-radius: 1rem; padding: 1.75rem; box-shadow: 0 2rem 8rem #0008; }}
 dialog::backdrop {{ background: #030711b8; }}
+/* Instrument-panel hierarchy: semantic labels and real status values remain text. */
+body {{ background: radial-gradient(ellipse at 95% 0%, #1d2c42 0, transparent 48%), var(--background); }}
+header {{ padding-top: 2rem; padding-bottom: .25rem; }}
+.eyebrow {{ color: var(--cyan); font: 600 .75rem ui-monospace, monospace; letter-spacing: .2em; margin: 0 0 .65rem; }}
+header h1 {{ font-size: clamp(1.9rem, 4vw, 2.75rem); font-weight: 650; }}
+header p {{ margin-top: .6rem; }}
+section {{ border-radius: .65rem; padding: 1.25rem; border-top: 2px solid #476174; margin-block: 1rem; }}
+h2 {{ display: flex; align-items: baseline; gap: .65rem; font-size: 1rem; letter-spacing: .035em; }}
+.section-index {{ font: 600 .7rem ui-monospace, monospace; color: var(--cyan); border: 1px solid #42606c; padding: .2rem .35rem; border-radius: .2rem; }}
+.summary-grid {{ gap: .65rem; }}
+.summary-grid div {{ padding: .75rem; border-radius: .35rem; border-top-color: #527788; }}
+.summary-grid dd {{ font-family: ui-monospace, monospace; font-size: .95rem; }}
+.table-scroll {{ border-radius: .3rem; }}
+table {{ min-width: 38rem; }}
+th, td {{ padding: .7rem; white-space: nowrap; overflow-wrap: normal; }}
+td:first-child, td:nth-child(3), td:nth-child(4) {{ font-family: ui-monospace, monospace; font-size: .85rem; }}
+.status-chip {{ display: inline-flex; align-items: center; gap: .45rem; padding: .2rem .5rem; border: 1px solid #4e6784; border-radius: .25rem; font: 500 .8rem ui-monospace, monospace; }}
+.status-chip::before {{ content: ""; width: .45rem; height: .45rem; background: currentColor; border-radius: 50%; }}
+.status-chip[data-status="ready"], .status-chip[data-status="running"] {{ color: var(--cyan); background: #12303a; border-color: #38616a; }}
+.status-chip[data-status="degraded"] {{ color: var(--warning); background: #332716; border-color: #796337; }}
+.status-chip[data-status="degraded"]::before {{ border-radius: 0; transform: rotate(45deg); }}
+.status-chip[data-status="failed"] {{ color: var(--error); background: #351e2a; border-color: #895361; }}
+button {{ font-size: .9rem; font-weight: 550; border-radius: .35rem; padding-inline: .85rem; }}
+#request-reconcile {{ border-color: #65979e; }}
+select {{ appearance: none; padding-right: 2.5rem; background-image: linear-gradient(45deg, transparent 50%, var(--muted) 50%), linear-gradient(135deg, var(--muted) 50%, transparent 50%); background-position: calc(100% - 1.15rem) 50%, calc(100% - .85rem) 50%; background-size: .3rem .3rem; background-repeat: no-repeat; }}
+textarea {{ min-height: 5rem; }}
+#confirm-summary {{ overflow-wrap: anywhere; }}
+dialog {{ max-width: min(38rem, calc(100vw - 3rem)); box-sizing: border-box; padding: 1.25rem; }}
+@media (min-width: 64rem) {{ main {{ display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); column-gap: 1.25rem; }} main > section {{ min-width: 0; }} main > section:first-child {{ grid-column: 1 / -1; }} }}
 @media (max-width: 42rem) {{ section {{ padding: 1rem; }} .summary-grid {{ grid-template-columns: 1fr; }} .button-row button {{ flex: 1 1 100%; }} }}
+@media (min-width: 23rem) and (max-width: 42rem) {{ .summary-grid {{ grid-template-columns: repeat(2, minmax(0, 1fr)); }} .summary-grid div:last-child {{ grid-column: 1 / -1; }} }}
 @media (forced-colors: active) {{ body, section, .summary-grid div, th, select, textarea, button, dialog {{ background: Canvas; color: CanvasText; border-color: CanvasText; box-shadow: none; }} .summary-grid dd, .summary-grid dt, .error, .warning, .danger {{ color: CanvasText; }} }}
 "#
     )

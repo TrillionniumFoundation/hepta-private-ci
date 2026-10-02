@@ -87,6 +87,12 @@ test("narrow console keeps controls, confirmation and error diagnostics readable
   await loadControlConsole(page);
   expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
   await page.screenshot({ path: testInfo.outputPath("narrow-console.png"), fullPage: true });
+  const table = page.getByLabel("Scrollable runtime module table", { exact: true });
+  await table.focus();
+  await expect(table).toBeFocused();
+  for (let step = 0; step < 40; step += 1) await page.keyboard.press("ArrowRight");
+  await expect.poll(() => table.evaluate(node => node.scrollWidth - node.clientWidth - node.scrollLeft)).toBeLessThanOrEqual(1);
+  await page.screenshot({ path: testInfo.outputPath("narrow-table-end.png"), fullPage: true });
   await page.getByLabel("Reason").fill("Review the narrow-window confirmation.");
   await page.getByRole("button", { name: "Request reconcile", exact: true }).click();
   await expect(page.getByRole("dialog")).toBeVisible();

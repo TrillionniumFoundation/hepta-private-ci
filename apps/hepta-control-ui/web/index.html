@@ -15,13 +15,14 @@
   <body>
     <a class="skip-link" href="#main-content">Skip to main content</a>
     <header>
+      <p class="eyebrow">HEPTA / CONTROL PLANE</p>
       <h1>Hepta Runtime Control</h1>
       <p>Authority-free request console. Runtime authority remains server-side.</p>
     </header>
 
     <main id="main-content" tabindex="-1">
       <section aria-labelledby="connection-heading">
-        <h2 id="connection-heading">Connection</h2>
+        <h2 id="connection-heading"><span class="section-index" aria-hidden="true">01</span> Connection</h2>
         <dl class="summary-grid">
           <div><dt>Status</dt><dd id="connection-state">Disconnected</dd></div>
           <div><dt>Session</dt><dd id="session-state">—</dd></div>
@@ -36,7 +37,7 @@
       </section>
 
       <section aria-labelledby="runtime-heading">
-        <h2 id="runtime-heading">Runtime modules</h2>
+        <h2 id="runtime-heading"><span class="section-index" aria-hidden="true">02</span> Runtime modules</h2>
         <div class="table-scroll" tabindex="0" aria-label="Scrollable runtime module table">
           <table>
             <thead>
@@ -48,7 +49,7 @@
       </section>
 
       <section aria-labelledby="operation-heading">
-        <h2 id="operation-heading">Control request</h2>
+        <h2 id="operation-heading"><span class="section-index" aria-hidden="true">03</span> Control request</h2>
         <p>Every request is bound to the displayed generation, revision, semantic digest, operation ID, and audit trace.</p>
         <div class="field">
           <label for="target-id">Target module</label>
@@ -66,12 +67,12 @@
       </section>
 
       <section aria-labelledby="pending-heading">
-        <h2 id="pending-heading">Pending and indeterminate operations</h2>
+        <h2 id="pending-heading"><span class="section-index" aria-hidden="true">04</span> Pending and indeterminate operations</h2>
         <ul id="pending-list"></ul>
       </section>
 
       <section aria-labelledby="completed-heading">
-        <h2 id="completed-heading">Recent terminal operations</h2>
+        <h2 id="completed-heading"><span class="section-index" aria-hidden="true">05</span> Recent terminal operations</h2>
         <p>Terminal facts shown here come from authenticated backend observations, not local acknowledgements.</p>
         <ul id="completed-list"></ul>
       </section>
