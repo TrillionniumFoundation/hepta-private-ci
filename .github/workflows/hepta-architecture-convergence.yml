@@ -309,7 +309,6 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/module-selection.json" --minimum-tests 7 -- just test --locked -p codex-hepta-agentd --lib -E 'test(module_selection::tests)' --test-threads=1
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/module-selection-wire.json" --minimum-tests 2 -- just test --locked -p codex-hepta-agent-protocol --lib -E 'test(module_selection::tests)'
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/supervisor-selection-product.json" --minimum-tests 1 -- just test --locked -p codex-hepta-supervisor --test daemon_product --test-threads=1
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/agentd-selection-product.json" --minimum-tests 6 -- just test --locked --cargo-profile hepta-product -p codex-hepta-agentd --test module_selection_product --test-threads=1 --retries=0
       - name: Objective and prompt policy convergence
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.objective == 'true'
         run: |
@@ -389,10 +388,174 @@ jobs:
           if-no-files-found: error
           retention-days: 30
 
+  product_process:
+    name: Architecture normal product process (${{ matrix.lane }})
+    needs: plan
+    runs-on: ubuntu-24.04-arm
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: ${{ fromJSON(needs.plan.outputs.lanes) }}
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 1
+          persist-credentials: false
+      - name: Fetch exact qualification history
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RISK: ${{ needs.plan.outputs.risk }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          args=(--commit "$SOURCE_SHA")
+          if [[ -n "$BASE_SHA" && ! "$BASE_SHA" =~ ^0+$ ]]; then
+            args+=(--commit "$BASE_SHA")
+          fi
+          if [ "$RISK" != ordinary ]; then
+            args+=(--full-history)
+          fi
+          python3 scripts/hepta_ci_history.py "${args[@]}"
+      - name: Verify GitHub prospective merge ref matches this exact candidate
+        if: matrix.lane == 'base-merge'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -n "$PR_NUMBER"
+          ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
+          actual_sha="$(jq -er '.object.sha' <<<"$ref_json")"
+          commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
+          mapfile -t parents < <(jq -r '.parents[].sha' <<<"$commit_json")
+          test "${#parents[@]}" -eq 2
+          test "${parents[0]}" = "$BASE_SHA"
+          test "${parents[1]}" = "$SOURCE_SHA"
+          actual_tree="$(jq -er '.tree.sha' <<<"$commit_json")"
+          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          test "$actual_tree" = "$expected_tree"
+          printf 'GITHUB_PROSPECTIVE_MERGE_SHA=%s\n' "$actual_sha" >> "$GITHUB_ENV"
+          printf 'GITHUB_PROSPECTIVE_MERGE_TREE=%s\n' "$actual_tree" >> "$GITHUB_ENV"
+      - name: Construct the canonical prospective merge
+        id: synthetic
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: Hepta Docs CI
+          author-email: hepta-docs-ci@users.noreply.github.com
+          message: Synthetic merge
+      - name: Bind tested identity
+        env:
+          CANDIDATE: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
+          LANE: ${{ matrix.lane }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE"
+          git diff --check
+          printf 'TESTED_SHA=%s\n' "$CANDIDATE" >> "$GITHUB_ENV"
+          printf 'HEPTA_CI_LANE=%s\n' "$LANE" >> "$GITHUB_ENV"
+      - name: Select exact-tree execution tier
+        id: execution
+        env:
+          LANE: ${{ matrix.lane }}
+          RISK: ${{ needs.plan.outputs.risk }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          python3 -m unittest -v scripts.tests.test_hepta_ci_candidate
+          python3 scripts/hepta_ci_candidate.py --source "$SOURCE_SHA" --tested "$TESTED_SHA" --base "$BASE_SHA" --lane "$LANE" --github-output "$GITHUB_OUTPUT" | tee "$RUNNER_TEMP/hepta-command-records/candidate-tree.json"
+          if [ "$RISK" = ordinary ]; then
+            # Blocking CI already runs affected owners and reverse consumers.
+            # Architecture CI keeps ordinary feedback structural and bounded;
+            # native/fault/recovery execution starts at stateful/effect/release.
+            printf 'run_native=false\n' >> "$GITHUB_OUTPUT"
+          fi
+      - name: Select affected architecture boundaries
+        id: scope
+        env:
+          FULL_SCOPE: ${{ github.event_name != 'pull_request' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/hepta-command-records"
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/scope-tests.json" --minimum-tests 1 -- python3 -m unittest -v scripts.tests.test_hepta_ci_scope
+          args=(--head "$SOURCE_SHA" --github-output "$GITHUB_OUTPUT")
+          if [ "$FULL_SCOPE" = "true" ]; then
+            args+=(--full)
+          else
+            args+=(--base "$BASE_SHA")
+          fi
+          python3 scripts/hepta_ci_scope.py "${args[@]}" | tee "$RUNNER_TEMP/hepta-command-records/scope.json"
+      - name: Prepare native prerequisites
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y build-essential bubblewrap libcap-dev pkg-config
+          sudo sysctl -w kernel.unprivileged_userns_clone=1
+          if sysctl kernel.apparmor_restrict_unprivileged_userns >/dev/null 2>&1; then
+            sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+          fi
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+      - name: Expose DotSlash for existing integration tests
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+        run: sudo install -m 0755 "$(command -v dotslash)" /usr/local/bin/dotslash
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Resolve verified V8 artifacts
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python3 scripts/hepta_ci_v8.py
+      - name: Cache public Cargo sources
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+        uses: actions/cache@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
+        with:
+          # Keep config.toml, credentials and native test state out of the cache.
+          path: |
+            ~/.cargo/registry/cache
+            ~/.cargo/registry/index
+            ~/.cargo/registry/src
+            ~/.cargo/git/db
+          key: architecture-cargo-sources-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('codex-rs/Cargo.lock') }}
+          restore-keys: |
+            architecture-cargo-sources-${{ runner.os }}-${{ runner.arch }}-
+      - name: Ordinary same-source module selection processes
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/agentd-selection-product.json" --minimum-tests 6 -- just test --locked --cargo-profile hepta-product -p codex-hepta-agentd --test module_selection_product --test-threads=1 --retries=0
+      - name: Verify unchanged reviewed source
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Retain process command records and bounded stdout stderr
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-architecture-process-${{ github.run_id }}-${{ github.run_attempt }}-${{ matrix.lane }}
+          path: ${{ runner.temp }}/hepta-command-records/*
+          if-no-files-found: error
+          retention-days: 30
+
   required:
     name: Architecture required
     if: ${{ always() }}
-    needs: [plan, qualification]
+    needs: [plan, qualification, product_process]
     runs-on: ubuntu-24.04
     timeout-minutes: 5
     steps:
@@ -400,9 +563,11 @@ jobs:
         env:
           PLAN_RESULT: ${{ needs.plan.result }}
           QUALIFICATION_RESULT: ${{ needs.qualification.result }}
+          PRODUCT_PROCESS_RESULT: ${{ needs.product_process.result }}
           RISK: ${{ needs.plan.outputs.risk }}
           LANES: ${{ needs.plan.outputs.lanes }}
         run: |
           test "$PLAN_RESULT" = success
           test "$QUALIFICATION_RESULT" = success
+          test "$PRODUCT_PROCESS_RESULT" = success
           echo "Architecture risk=$RISK lanes=$LANES succeeded."

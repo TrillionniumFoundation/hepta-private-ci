@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import copy
 import tomllib
 import unittest
 from pathlib import Path
@@ -135,6 +136,146 @@ class HeptaCiConsolidationTests(unittest.TestCase):
             ]
             self.assertEqual(len(matches), 1)
             self.assertTrue(matches[0].get("needs"))
+
+    def assert_process_lane(self, workflow):
+        jobs = workflow["jobs"]
+        product = jobs["product_process"]
+        library = jobs["qualification"]
+        required = jobs["required"]
+        self.assertIn("product_process", required["needs"])
+        gate = required["steps"][0]
+        self.assertEqual(
+            gate["env"]["PRODUCT_PROCESS_RESULT"], "${{ needs.product_process.result }}"
+        )
+        self.assertIn('test "$PRODUCT_PROCESS_RESULT" = success', gate["run"])
+        self.assertEqual(product["strategy"]["matrix"], library["strategy"]["matrix"])
+        self.assertEqual(int(product["timeout-minutes"]), 60)
+        # Both jobs recompute the exact same source/prospective merge and scope.
+        for name in [
+            "Check out exact candidate",
+            "Fetch exact qualification history",
+            "Verify GitHub prospective merge ref matches this exact candidate",
+            "Construct the canonical prospective merge",
+            "Bind tested identity",
+            "Select exact-tree execution tier",
+            "Select affected architecture boundaries",
+        ]:
+            self.assertEqual(
+                next(step for step in product["steps"] if step.get("name") == name),
+                next(step for step in library["steps"] if step.get("name") == name),
+            )
+        commands = [
+            step
+            for step in product["steps"]
+            if "agentd-selection-product.json" in step.get("run", "")
+        ]
+        self.assertEqual(len(commands), 1)
+        step = commands[0]
+        self.assertEqual(
+            step["if"],
+            "steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'",
+        )
+        self.assertIn(
+            "--minimum-tests 6 -- just test --locked --cargo-profile hepta-product -p codex-hepta-agentd --test module_selection_product --test-threads=1 --retries=0",
+            step["run"],
+        )
+        self.assertFalse(
+            any(
+                "module_selection_product" in step.get("run", "")
+                for step in library["steps"]
+            )
+        )
+        cache = next(
+            step
+            for step in product["steps"]
+            if step.get("name") == "Cache public Cargo sources"
+        )
+        self.assertEqual(
+            set(cache["with"]["path"].splitlines()),
+            {
+                "~/.cargo/registry/cache",
+                "~/.cargo/registry/index",
+                "~/.cargo/registry/src",
+                "~/.cargo/git/db",
+            },
+        )
+
+    def test_cold_product_profile_has_its_own_budget_without_duplicate_or_skipped_coverage(
+        self,
+    ):
+        self.assert_process_lane(
+            load_workflow(
+                (WORKFLOWS / "hepta-architecture-convergence.yml").read_text()
+            )
+        )
+
+    def test_process_lane_failure_cannot_be_omitted_from_the_required_gate(self):
+        original = load_workflow(
+            (WORKFLOWS / "hepta-architecture-convergence.yml").read_text()
+        )
+        for mutation in ("needs", "result", "shell-gate"):
+            workflow = copy.deepcopy(original)
+            required = workflow["jobs"]["required"]
+            if mutation == "needs":
+                required["needs"].remove("product_process")
+            elif mutation == "result":
+                required["steps"][0]["env"]["PRODUCT_PROCESS_RESULT"] = "success"
+            else:
+                required["steps"][0]["run"] = required["steps"][0]["run"].replace(
+                    'test "$PRODUCT_PROCESS_RESULT" = success', "true"
+                )
+            with self.subTest(mutation=mutation), self.assertRaises(AssertionError):
+                self.assert_process_lane(workflow)
+
+    def test_process_job_rejects_other_candidate_or_weakened_native_coverage(self):
+        original = load_workflow(
+            (WORKFLOWS / "hepta-architecture-convergence.yml").read_text()
+        )
+        for mutation in ("candidate", "profile", "count", "retry"):
+            workflow = copy.deepcopy(original)
+            steps = workflow["jobs"]["product_process"]["steps"]
+            if mutation == "candidate":
+                next(
+                    step
+                    for step in steps
+                    if step.get("name") == "Check out exact candidate"
+                )["with"]["ref"] = "main"
+            else:
+                step = next(
+                    step
+                    for step in steps
+                    if "module_selection_product" in step.get("run", "")
+                )
+                before, after = {
+                    "profile": (
+                        "--cargo-profile hepta-product",
+                        "--cargo-profile dev-small",
+                    ),
+                    "count": ("--minimum-tests 6", "--minimum-tests 0"),
+                    "retry": ("--retries=0", "--retries=1"),
+                }[mutation]
+                step["run"] = step["run"].replace(before, after)
+            with self.subTest(mutation=mutation), self.assertRaises(AssertionError):
+                self.assert_process_lane(workflow)
+
+    def test_source_cache_cannot_include_credentials_or_native_test_state(self):
+        original = load_workflow(
+            (WORKFLOWS / "hepta-architecture-convergence.yml").read_text()
+        )
+        for extra in (
+            "~/.cargo/config.toml",
+            "~/.cargo/credentials.toml",
+            "codex-rs/target",
+        ):
+            workflow = copy.deepcopy(original)
+            cache = next(
+                step
+                for step in workflow["jobs"]["product_process"]["steps"]
+                if step.get("name") == "Cache public Cargo sources"
+            )
+            cache["with"]["path"] += "\n" + extra
+            with self.subTest(extra=extra), self.assertRaises(AssertionError):
+                self.assert_process_lane(workflow)
 
 
 if __name__ == "__main__":
