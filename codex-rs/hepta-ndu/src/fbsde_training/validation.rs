@@ -233,7 +233,11 @@ pub(super) fn validate_policy_binding(
 ) -> Result<(), NduFbsdeTrainingError> {
     let specification = &policy.specification;
     for (field, expected, actual) in [
-        ("dataset", specification.dataset_digest, snapshot.dataset_digest),
+        (
+            "dataset",
+            specification.dataset_digest,
+            snapshot.dataset_digest,
+        ),
         (
             "objective_class",
             specification.objective_class_digest,

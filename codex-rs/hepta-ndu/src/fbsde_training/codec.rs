@@ -265,10 +265,7 @@ pub(super) fn q24_to_f64(value: i64) -> f64 {
     value as f64 / Q24_SCALE
 }
 
-pub(super) fn f64_to_q24(
-    value: f64,
-    maximum_absolute: f64,
-) -> Result<i64, NduFbsdeTrainingError> {
+pub(super) fn f64_to_q24(value: f64, maximum_absolute: f64) -> Result<i64, NduFbsdeTrainingError> {
     if !value.is_finite() || value.abs() > maximum_absolute {
         return Err(NduFbsdeTrainingError::InputBound);
     }
@@ -308,9 +305,8 @@ pub(super) fn clamp_finite(
     value: f64,
     maximum_absolute: f64,
 ) -> Result<f64, NduFbsdeTrainingError> {
-    finite(value).map(|finite_value| {
-        canonical_zero(finite_value.clamp(-maximum_absolute, maximum_absolute))
-    })
+    finite(value)
+        .map(|finite_value| canonical_zero(finite_value.clamp(-maximum_absolute, maximum_absolute)))
 }
 
 pub(super) fn finite(value: f64) -> Result<f64, NduFbsdeTrainingError> {

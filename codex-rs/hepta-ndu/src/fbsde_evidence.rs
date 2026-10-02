@@ -4,8 +4,8 @@ use std::fmt;
 use codex_hepta_types::{AuthorityPosture, Digest32};
 
 use crate::{
-    NduFbsdePublicationBindingV1, NduFbsdeReferenceReceiptV1,
-    NduFbsdeShadowGateReceiptV1, NduFbsdeTrainingCandidateV1,
+    NduFbsdePublicationBindingV1, NduFbsdeReferenceReceiptV1, NduFbsdeShadowGateReceiptV1,
+    NduFbsdeTrainingCandidateV1,
 };
 
 const ROLLBACK_HOLDOUT_RMSE: u16 = 1 << 0;
@@ -443,10 +443,7 @@ fn validate_independent_evidence(
             evidence.independent_numerical_oracle_digest,
             "independent numerical oracle",
         ),
-        (
-            evidence.convergence_envelope_digest,
-            "convergence envelope",
-        ),
+        (evidence.convergence_envelope_digest, "convergence envelope"),
         (
             evidence.calibration_acceptance_digest,
             "calibration acceptance",
@@ -598,22 +595,12 @@ mod tests {
 
     #[test]
     fn rollback_trigger_is_deterministic_and_fail_closed() {
-        let policy = NduFbsdeRollbackPolicyV1::new(100, 50, 20, 1, 100)
-            .expect("policy");
-        let observation = NduFbsdeRuntimeObservationV1::new(
-            digest("candidate"),
-            101,
-            40,
-            21,
-            0,
-            10,
-            100,
-            1,
-            2,
-        )
-        .expect("observation");
-        let receipt = evaluate_fbsde_rollback_v1(&policy, &observation)
-            .expect("rollback evaluation");
+        let policy = NduFbsdeRollbackPolicyV1::new(100, 50, 20, 1, 100).expect("policy");
+        let observation =
+            NduFbsdeRuntimeObservationV1::new(digest("candidate"), 101, 40, 21, 0, 10, 100, 1, 2)
+                .expect("observation");
+        let receipt =
+            evaluate_fbsde_rollback_v1(&policy, &observation).expect("rollback evaluation");
         assert!(receipt.triggered());
         assert_eq!(receipt.reason_mask(), ROLLBACK_HOLDOUT_RMSE);
         assert_eq!(receipt.authority(), AuthorityPosture::DENY_ALL);

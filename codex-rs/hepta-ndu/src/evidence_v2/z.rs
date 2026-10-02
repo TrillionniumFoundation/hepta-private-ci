@@ -1,11 +1,8 @@
 use codex_hepta_types::{AuthorityPosture, Digest32};
 
-use crate::{
-    convert_z_to_original_q24, AdmittedZConversionProfileV1,
-    ZQ24ConversionReceiptV1,
-};
+use crate::{AdmittedZConversionProfileV1, ZQ24ConversionReceiptV1, convert_z_to_original_q24};
 
-use super::{canonical_f64_bits, require_digest, NduEvidenceV2Error};
+use super::{NduEvidenceV2Error, canonical_f64_bits, require_digest};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct ZQ24ConversionReceiptV2 {
@@ -116,8 +113,7 @@ pub fn validate_z_q24_receipt_v1(
     require_digest(receipt.profile_digest, "profile")?;
     require_digest(receipt.source_digest, "source")?;
     require_digest(receipt.receipt_digest, "receipt")?;
-    if receipt.authority != AuthorityPosture::DENY_ALL
-        || receipt.profile_digest != profile.digest()
+    if receipt.authority != AuthorityPosture::DENY_ALL || receipt.profile_digest != profile.digest()
     {
         return Err(NduEvidenceV2Error::InvalidLegacyReceipt);
     }
@@ -210,18 +206,12 @@ fn digest_v2(
             .to_be_bytes(),
     );
     for row in q24_raw {
-        bytes.extend_from_slice(
-            &u32::try_from(row.len())
-                .unwrap_or(u32::MAX)
-                .to_be_bytes(),
-        );
+        bytes.extend_from_slice(&u32::try_from(row.len()).unwrap_or(u32::MAX).to_be_bytes());
         for raw in row {
             bytes.extend_from_slice(&raw.to_be_bytes());
         }
     }
-    bytes.extend_from_slice(
-        &canonical_f64_bits(maximum_absolute_quantization_error).to_be_bytes(),
-    );
+    bytes.extend_from_slice(&canonical_f64_bits(maximum_absolute_quantization_error).to_be_bytes());
     bytes.push(0);
     Digest32::of_bytes(&bytes)
 }
@@ -233,20 +223,13 @@ fn push_matrix_shape(bytes: &mut Vec<u8>, matrix: &[Vec<f64>]) {
             .to_be_bytes(),
     );
     for row in matrix {
-        bytes.extend_from_slice(
-            &u32::try_from(row.len())
-                .unwrap_or(u32::MAX)
-                .to_be_bytes(),
-        );
+        bytes.extend_from_slice(&u32::try_from(row.len()).unwrap_or(u32::MAX).to_be_bytes());
     }
 }
 
 #[cfg(test)]
 mod tests {
-    use crate::{
-        admit_z_conversion_profile, NduZConversionProfileV1,
-        ZCoordinateConventionV1,
-    };
+    use crate::{NduZConversionProfileV1, ZCoordinateConventionV1, admit_z_conversion_profile};
 
     use super::*;
 
@@ -267,18 +250,8 @@ mod tests {
         .expect("profile");
         let source_z = vec![vec![0.25, -0.5]];
         let source_digest = digest("source");
-        let legacy = convert_z_to_original_q24(
-            &source_z,
-            source_digest,
-            &profile,
-        )
-        .expect("legacy");
-        let migrated = migrate_z_q24_receipt_v1(
-            &legacy,
-            &source_z,
-            &profile,
-        )
-        .expect("migration");
+        let legacy = convert_z_to_original_q24(&source_z, source_digest, &profile).expect("legacy");
+        let migrated = migrate_z_q24_receipt_v1(&legacy, &source_z, &profile).expect("migration");
         migrated.validate(&profile).expect("valid v2");
 
         let mut corrupted = legacy;

@@ -487,8 +487,7 @@ impl MetricAccumulator {
         self.squared_residual += residual * residual;
         self.squared_baseline_residual += baseline_residual * baseline_residual;
         self.residual_sum += residual;
-        self.maximum_absolute_residual =
-            self.maximum_absolute_residual.max(residual.abs());
+        self.maximum_absolute_residual = self.maximum_absolute_residual.max(residual.abs());
         self.count += 1;
     }
 

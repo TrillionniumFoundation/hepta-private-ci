@@ -4,8 +4,8 @@ use std::fmt;
 use codex_hepta_types::{AuthorityPosture, Digest32};
 
 use crate::{
-    NduProjectionArtifactKindV2, NduProjectionCatalogEntryV2,
-    NduProjectionCatalogV2, NduVerifiedProjectionArtifactV3,
+    NduProjectionArtifactKindV2, NduProjectionCatalogEntryV2, NduProjectionCatalogV2,
+    NduVerifiedProjectionArtifactV3,
 };
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -39,9 +39,7 @@ pub struct NduHistoricalReplayReceiptV2 {
 }
 
 impl NduHistoricalReplayReceiptV2 {
-    pub fn from_entry(
-        entry: &NduProjectionCatalogEntryV2,
-    ) -> Result<Self, NduCurrentUseErrorV2> {
+    pub fn from_entry(entry: &NduProjectionCatalogEntryV2) -> Result<Self, NduCurrentUseErrorV2> {
         require_digest(entry.identity_digest(), "operation identity")?;
         require_digest(entry.semantic_digest(), "semantic")?;
         require_digest(entry.entry_digest(), "entry")?;
@@ -260,15 +258,13 @@ pub fn validate_current_use_v2(
         projection_digest: request.projection_digest,
         artifact_binding_digest: selected.binding_digest(),
         catalog_head_digest,
-        authenticated_artifact_receipt_digest: authenticated_artifact
-            .signed_receipt_digest(),
+        authenticated_artifact_receipt_digest: authenticated_artifact.signed_receipt_digest(),
         trust_binding_digest: authenticated_artifact.trust_binding_digest(),
         checked_at_ms: request.checked_at_ms,
         valid_until_ms,
         trusted_time_receipt_digest: request.trusted_time_receipt_digest,
         current_revocation_frontier_digest: request.current_revocation_frontier_digest,
-        artifact_availability_receipt_digest: request
-            .artifact_availability_receipt_digest,
+        artifact_availability_receipt_digest: request.artifact_availability_receipt_digest,
         final_use_grant_binding_digest: request.final_use_grant_binding_digest,
         production_policy_digest: request.production_policy_digest,
         receipt_digest: Digest32::ZERO,
@@ -296,10 +292,7 @@ fn validate_request_fields(
     require_digest(subject_digest, "subject")?;
     require_digest(projection_digest, "projection")?;
     require_digest(trusted_time_receipt_digest, "trusted time receipt")?;
-    require_digest(
-        current_revocation_frontier_digest,
-        "revocation frontier",
-    )?;
+    require_digest(current_revocation_frontier_digest, "revocation frontier")?;
     require_digest(
         artifact_availability_receipt_digest,
         "artifact availability receipt",
@@ -312,10 +305,7 @@ fn validate_request_fields(
     Ok(())
 }
 
-fn require_digest(
-    digest: Digest32,
-    field: &'static str,
-) -> Result<(), NduCurrentUseErrorV2> {
+fn require_digest(digest: Digest32, field: &'static str) -> Result<(), NduCurrentUseErrorV2> {
     if digest.is_zero() {
         Err(NduCurrentUseErrorV2::EmptyDigest(field))
     } else {
@@ -405,8 +395,8 @@ mod tests {
                 projection,
             )
             .expect("select");
-        let replay = NduHistoricalReplayReceiptV2::from_entry(&selected)
-            .expect("historical replay");
+        let replay =
+            NduHistoricalReplayReceiptV2::from_entry(&selected).expect("historical replay");
         replay.validate().expect("valid replay");
         catalog
             .revoke(
@@ -417,13 +407,11 @@ mod tests {
                 projection,
             )
             .expect("revoke");
-        assert!(catalog
-            .selected_artifact(
-                objective,
-                subject,
-                NduProjectionArtifactKindV2::Preference,
-            )
-            .is_none());
+        assert!(
+            catalog
+                .selected_artifact(objective, subject, NduProjectionArtifactKindV2::Preference,)
+                .is_none()
+        );
         assert_eq!(replay.authority(), AuthorityPosture::DENY_ALL);
     }
 }

@@ -1,6 +1,4 @@
-use codex_hepta_ndu::{
-    NduIterationReceiptV1, ZQ24ConversionReceiptV1,
-};
+use codex_hepta_ndu::{NduIterationReceiptV1, ZQ24ConversionReceiptV1};
 
 fn consume_iteration_v1(receipt: NduIterationReceiptV1) {
     let NduIterationReceiptV1 {

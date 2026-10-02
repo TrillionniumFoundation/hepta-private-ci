@@ -101,9 +101,7 @@ impl NduProductionAdapterBindingV1 {
         deployment_instance_digest: Digest32,
         capability_receipt_digest: Digest32,
     ) -> Result<Self, NduProductionCompositionErrorV1> {
-        if adapter_id.as_str().is_empty()
-            || adapter_id.as_str().len() > MAX_ADAPTER_ID_BYTES
-        {
+        if adapter_id.as_str().is_empty() || adapter_id.as_str().len() > MAX_ADAPTER_ID_BYTES {
             return Err(NduProductionCompositionErrorV1::InvalidAdapterId);
         }
         require_digest(implementation_digest, "adapter implementation")?;
@@ -237,13 +235,10 @@ impl NduProductionCompositionV1 {
     }
 
     #[must_use]
-    pub fn binding(
-        &self,
-        role: NduProductionAdapterRoleV1,
-    ) -> &NduProductionAdapterBindingV1 {
-        self.bindings
-            .get(&role)
-            .expect("admitted compositions contain every closed role")
+    pub fn binding(&self, role: NduProductionAdapterRoleV1) -> &NduProductionAdapterBindingV1 {
+        // Admission requires every closed role, and this map is private and
+        // immutable afterward. Indexing expresses that established invariant.
+        &self.bindings[&role]
     }
 
     #[must_use]
@@ -381,19 +376,15 @@ pub fn seal_production_readiness_v1(
         source_candidate_digest,
         composition_digest: composition.composition_digest,
         exact_head_qualification_digest: evidence.exact_head_qualification_digest,
-        synthetic_merge_qualification_digest: evidence
-            .synthetic_merge_qualification_digest,
+        synthetic_merge_qualification_digest: evidence.synthetic_merge_qualification_digest,
         target_host_profile_digest: evidence.target_host_profile_digest,
         target_filesystem_receipt_digest: evidence.target_filesystem_receipt_digest,
-        shared_volume_fence_receipt_digest: evidence
-            .shared_volume_fence_receipt_digest,
-        encrypted_backup_readback_receipt_digest: evidence
-            .encrypted_backup_readback_receipt_digest,
+        shared_volume_fence_receipt_digest: evidence.shared_volume_fence_receipt_digest,
+        encrypted_backup_readback_receipt_digest: evidence.encrypted_backup_readback_receipt_digest,
         restore_drill_receipt_digest: evidence.restore_drill_receipt_digest,
         metrics_delivery_receipt_digest: evidence.metrics_delivery_receipt_digest,
         product_caller_receipt_digest: evidence.product_caller_receipt_digest,
-        independent_stochastic_acceptance_digest: evidence
-            .independent_stochastic_acceptance_digest,
+        independent_stochastic_acceptance_digest: evidence.independent_stochastic_acceptance_digest,
         observed_at_ms: evidence.observed_at_ms,
         valid_until_ms: evidence.valid_until_ms,
         receipt_digest: Digest32::ZERO,
@@ -521,10 +512,7 @@ mod tests {
         StableId::new(value).expect("valid id")
     }
 
-    fn binding(
-        role: NduProductionAdapterRoleV1,
-        index: usize,
-    ) -> NduProductionAdapterBindingV1 {
+    fn binding(role: NduProductionAdapterRoleV1, index: usize) -> NduProductionAdapterBindingV1 {
         NduProductionAdapterBindingV1::new(
             role,
             id(&format!("adapter-{index}")),
@@ -545,8 +533,8 @@ mod tests {
             .enumerate()
             .map(|(index, role)| binding(role, index))
             .collect::<Vec<_>>();
-        let composition = NduProductionCompositionV1::admit(bindings.clone())
-            .expect("complete composition");
+        let composition =
+            NduProductionCompositionV1::admit(bindings.clone()).expect("complete composition");
         composition.validate().expect("valid composition");
 
         let mut incomplete = bindings;

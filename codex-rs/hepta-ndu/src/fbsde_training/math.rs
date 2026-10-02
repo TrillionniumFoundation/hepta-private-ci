@@ -308,8 +308,11 @@ pub(super) fn evaluate_fold(
             let step = &trajectory.steps[time_index];
             let slice = &candidate.time_slices[time_index];
             let dt = duration_seconds(step)?;
-            for utility in 0..snapshot.utility_dimension {
-                let predicted = predictions[position][time_index][utility];
+            for (utility, predicted) in predictions[position][time_index]
+                .iter()
+                .copied()
+                .enumerate()
+            {
                 let next = predictions[position][time_index + 1][utility];
                 let generator = policy.specification.generator_y[utility] * predicted
                     + dot_q24(
@@ -345,15 +348,15 @@ pub(super) fn reference_fold(
             .collect();
         for time_index in (0..snapshot.horizon).rev() {
             let slice = &candidate.time_slices[time_index];
-            for utility in 0..snapshot.utility_dimension {
-                values[time_index][utility] = q24_to_f64(slice.value_intercepts_q24[utility]);
+            for (utility, value) in values[time_index].iter_mut().enumerate() {
+                *value = q24_to_f64(slice.value_intercepts_q24[utility]);
                 for (weight, feature) in slice.value_weights_q24[utility]
                     .iter()
                     .zip(&trajectory.steps[time_index].features_q24)
                 {
-                    values[time_index][utility] += q24_to_f64(*weight) * q24_to_f64(*feature);
+                    *value += q24_to_f64(*weight) * q24_to_f64(*feature);
                 }
-                values[time_index][utility] = values[time_index][utility].clamp(
+                *value = value.clamp(
                     -policy.specification.maximum_absolute_value,
                     policy.specification.maximum_absolute_value,
                 );
@@ -363,13 +366,12 @@ pub(super) fn reference_fold(
             let step = &trajectory.steps[time_index];
             let slice = &candidate.time_slices[time_index];
             let dt = duration_seconds(step)?;
-            for utility in 0..snapshot.utility_dimension {
+            for (utility, predicted) in values[time_index].iter().copied().enumerate() {
                 let mut z_generator = 0.0;
                 for driver in 0..snapshot.driver_dimension {
                     z_generator += policy.specification.generator_z[utility][driver]
                         * q24_to_f64(slice.z_q24[utility][driver]);
                 }
-                let predicted = values[time_index][utility];
                 let target = clamp_finite(
                     q24_to_f64(step.running_utility_q24[utility])
                         + values[time_index + 1][utility]
@@ -402,8 +404,8 @@ pub(super) fn predict_all(
             .collect();
         for time_index in (0..snapshot.horizon).rev() {
             let slice = &candidate.time_slices[time_index];
-            for utility in 0..snapshot.utility_dimension {
-                values[time_index][utility] = clamp_finite(
+            for (utility, value) in values[time_index].iter_mut().enumerate() {
+                *value = clamp_finite(
                     predict_q24(
                         slice.value_intercepts_q24[utility],
                         &slice.value_weights_q24[utility],
