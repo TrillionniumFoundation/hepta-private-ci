@@ -37,3 +37,5 @@ There is no `continue-on-error`, fallback renderer or old DOM/egui qualification
 A failed hosted run preserves available diagnostics but does not qualify the
 application. The scripts being linted or unit-tested locally does not mean the
 hosted builds, browser tests, or screenshots have run.
+
+Generated application packages and fonts are not uploaded by this qualification workflow. Only screenshots, test logs and manifests are retained while the migrated dependency and font redistribution review remains pending. Pinned Makepad also contains automatic same-origin browser error reporting; disable that path before any real-account or production acceptance. CSP and static ABI qualification remain separate from these no-account fixture checks.

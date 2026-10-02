@@ -95,8 +95,7 @@ jobs:
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: actual-robrix-${{ matrix.platform }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
-          path: |
-            robrix-evidence/
-            apps/hepta-robrix/target/makepad-wasm-app/release/robrix/
+          # Generated packages/fonts remain local until redistribution review.
+          path: robrix-evidence/
           if-no-files-found: error
           retention-days: 14
