@@ -8,6 +8,10 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 [privileged_inventory]
 required_boundary_ids = [
   "bao_operation_consumer_registration",
+  "original_paired_custody_execution",
+  "original_consumed_custody_effect",
+  "original_paired_numeric_process",
+  "original_paired_readonly_withdrawal",
   "first_public_development_physical_measurement",
   "paired_custody_program_admission",
   "public_paired_generator_preregistration",
@@ -930,8 +934,8 @@ symbol = "protected_observer_provider"
 call_pattern = '\.protected_observer_provider\s*\('
 definition_path = "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs"
 definition_markers = ["pub(crate) fn protected_observer_provider", "self.poisoned", "ProtectedPairedObservationProviderV1::open"]
-product_callers = ["codex-rs/hepta-intelligence-eval/src/paired_supervised_facade.rs"]
-caller_markers = ["evaluate_protected_observer_transport", "clock.sample_registered", "original_witness_path", "evaluate_paired_with_clock"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/paired_supervised_facade.rs", "codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs"]
+caller_markers = ["protected_observer_provider(", "clock.sample_registered"]
 
 [[protected_file]]
 path = "codex-rs/hepta-intelligence-eval/src/protected_paired_provider.rs"
@@ -1008,3 +1012,49 @@ caller_markers = ["--public-development-measure", "codex_hepta_intelligence_eval
 path = "codex-rs/hepta-intelligence-eval/src/fixed_public_development_host.rs"
 required = ["hepta.fixed-public-development-measurement-config.v1", "PURPOSE", "deny_unknown_fields", "boundary_in_service", "PermissionDenied", "actual_generator", "expires_at()", "Vec<Response>", "learning_evidence_signed", "production_activation"]
 forbidden = ["SigningKey", "private_key_path", "FinalHoldoutCasStore", "holdout.consume", "signing.sign", "source.freeze()"]
+
+[[boundary]]
+id = "original_paired_custody_execution"
+symbol = "run_fixed_paired_custody"
+call_pattern = '\brun_fixed_paired_custody\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs"
+definition_markers = ["pub fn run_fixed_paired_custody", "root_boundary()", "inputs.verify_registration", "paired_custody_retention::preflight", "withdrawal-preflight", "evaluate_paired_with_clock"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-holdout-custody.rs"]
+caller_markers = ["--paired-execute", "codex_hepta_intelligence_eval::run_fixed_paired_custody"]
+
+[[boundary]]
+id = "original_consumed_custody_effect"
+symbol = "authorize_original_consumption"
+call_pattern = '\.authorize_original_consumption\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/protected_paired_provider.rs"
+definition_markers = ["fn authorize_original_consumption", "if self.attempted", "self.consumption", "self.attempted = true"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs"]
+caller_markers = ["authorize_original_consumption(", "clock.sample_registered"]
+
+[[boundary]]
+id = "original_paired_numeric_process"
+symbol = "paired_custody_numeric::execute"
+call_pattern = '\bpaired_custody_numeric::execute\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/paired_custody_numeric.rs"
+definition_markers = ["fn execute(", "model.verify()", "create_private(&intent_path", "JoinedChild", "child.0.wait()", "create_private(&status_path"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs", "codex-rs/hepta-intelligence-eval/src/paired_custody_retention.rs"]
+caller_markers = ["paired_custody_numeric::execute(", "clock.sample_registered"]
+
+[[boundary]]
+id = "original_paired_readonly_withdrawal"
+symbol = "paired_custody_withdrawal::inspect"
+call_pattern = '\bpaired_custody_withdrawal::inspect\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/paired_custody_withdrawal.rs"
+definition_markers = ["fn inspect(", "inspect-learning-withdrawal", "config.probe.read", "JoinedChild", "parse(&bytes", "create_private(&directory.join"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs"]
+caller_markers = ["withdrawal-preflight", "withdrawal-final", "same_original_facts", "delivery_denial_fraction"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_custody_withdrawal.rs"
+required = ["deny_unknown_fields", "withdrawal_request.read", "current_owner.read", "record.dependency_ids.contains", "targets != binding.targets", "same_original_facts", "model_weight_forgetting_claimed", "child.0.wait()"]
+forbidden = ["SigningKey", "append_unlearning", "recover_ledger", "sign_root_learning_unlearning", "AuthorityPosture::ALLOW_ALL"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_custody_numeric.rs"
+required = ["weights_filename", ".join(filename)", "self.weights.path", "intent_path.exists()", "status_path.exists()", "model.verify()", "terminal_observed", "input_line_digest", "child.0.wait()"]
+forbidden = ["SigningKey", "FinalHoldoutCas", "AuthorityPosture::ALLOW_ALL", "weights_digest ="]

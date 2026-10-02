@@ -528,6 +528,10 @@ mod paired_custody_withdrawal;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod paired_custody_retention;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_paired_custody_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_paired_custody_host::run_fixed_paired_custody;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_paired_generator_host;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_public_development_host;

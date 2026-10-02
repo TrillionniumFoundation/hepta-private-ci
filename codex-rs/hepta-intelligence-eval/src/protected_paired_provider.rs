@@ -26,6 +26,25 @@ pub(crate) struct ProtectedPairedObservationProviderV1 {
 }
 
 impl ProtectedPairedObservationProviderV1 {
+    /// One original committed consumption permits one private producer effect.
+    /// Failure after this check remains consumed and cannot obtain another use.
+    pub(crate) fn authorize_original_consumption(
+        &mut self,
+        receipt: &FinalHoldoutJournalReceiptV1,
+    ) -> Result<(), ProductProviderErrorV1> {
+        if self.attempted {
+            return Err(ProductProviderErrorV1::Indeterminate);
+        }
+        self.consumption
+            .verify(&self.registration.plan.frozen, receipt)
+            .map_err(|error| match error {
+                LockedFileCasErrorV1::Binding => ProductProviderErrorV1::Rejected,
+                _ => ProductProviderErrorV1::Indeterminate,
+            })?;
+        self.attempted = true;
+        Ok(())
+    }
+
     pub(crate) fn open(
         store: &LockedFileFinalHoldoutCasStoreV1,
         original_cas_path: &Path,
@@ -92,18 +111,9 @@ impl PairedFinalHoldoutProviderV1 for ProtectedPairedObservationProviderV1 {
         &mut self,
         receipt: &FinalHoldoutJournalReceiptV1,
     ) -> Result<SignedPairedObservationCutV1, ProductProviderErrorV1> {
-        if self.attempted {
-            return Err(ProductProviderErrorV1::Indeterminate);
-        }
-        self.consumption
-            .verify(&self.registration.plan.frozen, receipt)
-            .map_err(|error| match error {
-                LockedFileCasErrorV1::Binding => ProductProviderErrorV1::Rejected,
-                _ => ProductProviderErrorV1::Indeterminate,
-            })?;
+        self.authorize_original_consumption(receipt)?;
         // A failed transport read never means the original committed use did
         // not occur. The original runner rejects subsequent consumption replay.
-        self.attempted = true;
         let bytes = read_root_review_input(&self.cut_path, MAX_TRANSPORT_BYTES)
             .map_err(|_| ProductProviderErrorV1::Unavailable)?;
         let observations =
