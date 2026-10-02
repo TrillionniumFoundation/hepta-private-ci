@@ -66,6 +66,9 @@ pub use current::open_current_cpu_neuron_v2;
 pub fn describe_current_cpu_operational(path: &Path, pin: Digest32) -> HostResult<Value> {
     current::describe_current_operational(path, pin)
 }
+pub fn prepare_initial_cpu_objective_source(path: &Path, pin: Digest32) -> HostResult<Value> {
+    goal::prepare(path, pin)
+}
 pub fn preview_initial_cpu_objective(path: &Path, pin: Digest32) -> HostResult<Value> {
     goal::preview(path, pin)
 }
