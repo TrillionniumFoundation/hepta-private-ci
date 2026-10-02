@@ -84,6 +84,12 @@ async fn encrypted_send_sync_and_sqlite_reopen_against_isolated_synapse() -> Tes
         .await?;
     assert!(sent.encryption_info.is_some());
     let event_id = sent.response.event_id;
+    let replay = room
+        .send(RoomMessageEventContent::text_plain("before reopen"))
+        .with_transaction_id(OwnedTransactionId::from("fixture-txn-1"))
+        .await?;
+    assert!(replay.encryption_info.is_some());
+    assert_eq!(replay.response.event_id, event_id);
     assert_eq!(
         receive(&bob, &room_id, "before reopen").await?,
         event_id.as_str()
