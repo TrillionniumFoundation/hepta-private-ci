@@ -48,6 +48,7 @@ fn grant() -> AllocationGrant {
     }
 }
 
+#[allow(clippy::expect_used)] // Test fixture setup reports invalid host observations.
 fn ledger(clock: Arc<FixedClock>) -> LeaseLedger {
     let mut ledger = LeaseLedger::with_clock(clock);
     ledger
