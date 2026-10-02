@@ -1,0 +1,26 @@
+   Compiling async-stream-impl v0.3.6
+warning: associated function `new` is never used
+   --> ext/hepta-memory/src/cognitive/mod.rs:274:19
+    |
+273 | impl CognitiveExtension {
+    | ----------------------- associated function in this implementation
+274 |     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    |                   ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `api_digest` is never used
+   --> ext/hepta-memory/src/cognitive/federation.rs:864:4
+    |
+864 | fn api_digest(
+    |    ^^^^^^^^^^
+
+warning: `codex-hepta-memory-extension` (lib) generated 2 warnings
+   Compiling codex-lmstudio v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/lmstudio)
+   Compiling async-stream v0.3.6
+   Compiling codex-ollama v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ollama)
+   Compiling codex-utils-oss v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/oss)
+   Compiling codex-app-server-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/app-server-client)
+   Compiling codex-utils-sandbox-summary v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/sandbox-summary)
+   Compiling codex-exec v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/exec)
+    Finished `dev` profile [unoptimized] target(s) in 16.06s

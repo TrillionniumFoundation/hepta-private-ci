@@ -1,0 +1,369 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: associated function `new` is never used
+   --> ext/hepta-memory/src/cognitive/mod.rs:274:19
+    |
+273 | impl CognitiveExtension {
+    | ----------------------- associated function in this implementation
+274 |     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    |                   ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `api_digest` is never used
+   --> ext/hepta-memory/src/cognitive/federation.rs:864:4
+    |
+864 | fn api_digest(
+    |    ^^^^^^^^^^
+
+warning: `codex-hepta-memory-extension` (lib) generated 2 warnings
+warning: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2
+  --> hepta-ndu/src/lib.rs:50:20
+   |
+50 | pub use evaluator::evaluate_candidates;
+   |                    ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-hepta-ndu` (lib) generated 1 warning
+   Compiling codex-app-server-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/app-server-client)
+   Compiling codex-hepta-codex-adapter v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-codex-adapter)
+   Compiling codex-hepta-agentd v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-agentd)
+warning: field `sequence` is never read
+   --> hepta-agentd/src/browser_servo.rs:317:5
+    |
+316 | struct DecodedFrame {
+    |        ------------ field in this struct
+317 |     sequence: u64,
+    |     ^^^^^^^^
+    |
+    = note: `DecodedFrame` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `append` and `append_with_delivery` are never used
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19
+   |
+24 | impl CognitiveRetrievalLearningSink {
+   | ----------------------------------- methods in this implementation
+...
+32 |     pub(crate) fn append(
+   |                   ^^^^^^
+...
+52 |     pub(crate) fn append_with_delivery(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: field `handle` is never read
+  --> hepta-agentd/src/plasticity_learning_producer.rs:24:5
+   |
+23 | pub(crate) struct AgentdLearningPlasticityProducerV1 {
+   |                   ---------------------------------- field in this struct
+24 |     handle: PlasticityRuntimeHandleV1,
+   |     ^^^^^^
+   |
+   = note: `AgentdLearningPlasticityProducerV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: methods `submit_parameter` and `submit_topology` are never used
+  --> hepta-agentd/src/plasticity_learning_producer.rs:32:25
+   |
+27 | impl AgentdLearningPlasticityProducerV1 {
+   | --------------------------------------- methods in this implementation
+...
+32 |     pub(crate) async fn submit_parameter(
+   |                         ^^^^^^^^^^^^^^^^
+...
+40 |     pub(crate) async fn submit_topology(
+   |                         ^^^^^^^^^^^^^^^
+
+warning: methods `submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` are never used
+   --> hepta-agentd/src/state.rs:178:25
+    |
+ 76 | impl AgentdState {
+    | ---------------- methods in this implementation
+...
+178 |     pub(crate) async fn submit_parameter_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+195 |     pub(crate) async fn submit_topology_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib) generated 5 warnings
+   Compiling codex-hepta-infer-worker-host v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-infer-worker-host)
+    Finished `test` profile [unoptimized] target(s) in 24.23s
+────────────
+ Nextest run ID fd6fcb33-4c0b-4a7d-b19a-cd4c3e87fbee with nextest profile: local
+    Starting 107 tests across 2 binaries (2 tests skipped)
+        PASS [   0.018s] (  1/107) codex-app-server-client remote::queue_guard_tests::legacy_queued_request_preserves_abandonment_semantics
+        PASS [   0.022s] (  2/107) codex-app-server-client remote::queue_guard_tests::real_writer_drops_abandoned_queued_request
+        PASS [   0.013s] (  3/107) codex-app-server-client remote::send_guard::tests::abandoned_queued_request_never_enters_or_sends
+        PASS [   0.015s] (  4/107) codex-app-server-client remote::send_guard::tests::cancellation_during_synchronous_entry_prevents_send
+        PASS [   0.049s] (  5/107) codex-app-server-client remote::queue_guard_tests::real_writer_drops_expired_queued_request
+        PASS [   0.013s] (  6/107) codex-app-server-client remote::send_guard::tests::flush_failure_does_not_retry_physical_send
+        PASS [   0.034s] (  7/107) codex-app-server-client remote::send_guard::tests::deadline_elapsing_inside_entry_never_sends
+        PASS [   0.014s] (  8/107) codex-app-server-client remote::send_guard::tests::queued_request_expired_before_dequeue_never_enters_or_sends
+        PASS [   0.016s] (  9/107) codex-app-server-client remote::send_guard::tests::rejected_final_authority_never_sends
+        PASS [   0.015s] ( 10/107) codex-app-server-client remote::send_guard::tests::stalled_preparation_is_cancelled_without_entering
+        PASS [   0.036s] ( 11/107) codex-app-server-client remote::send_guard::tests::stalled_flush_is_bounded_without_retry_after_send
+        PASS [   0.020s] ( 12/107) codex-app-server-client remote::send_guard::tests::stalled_socket_readiness_is_bounded_by_deadline
+        PASS [   0.014s] ( 13/107) codex-app-server-client remote::send_guard::tests::successful_guard_enters_once_and_sends_once
+        PASS [   0.016s] ( 14/107) codex-app-server-client remote::tests::shutdown_tolerates_worker_exit_after_command_is_queued
+        PASS [   0.074s] ( 15/107) codex-app-server-client tests::bounded_remote_events_disconnect_and_require_resync_on_overflow
+        FAIL [   0.214s] ( 16/107) codex-app-server-client tests::caller_provided_session_source_is_applied
+  stdout ───
+
+    running 1 test
+    test tests::caller_provided_session_source_is_applied ... FAILED
+
+    failures:
+
+    failures:
+        tests::caller_provided_session_source_is_applied
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 39 filtered out; finished in 0.19s
+
+  stderr ───
+
+    thread 'tests::caller_provided_session_source_is_applied' (269) panicked at app-server-client/src/lib.rs:1134:18:
+    thread/start should succeed: Server { method: "thread/start", source: JSONRPCErrorError { code: -32603, data: None, message: "error creating thread: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `local`: sandboxed filesystem operations require configured runtime paths" } }
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        PASS [   0.015s] ( 17/107) codex-app-server-client tests::remote_auth_token_transport_policy_allows_wss_and_loopback_ws
+        PASS [   0.065s] ( 18/107) codex-app-server-client tests::remote_backpressure_preserves_transcript_notifications
+        PASS [   0.020s] ( 19/107) codex-app-server-client tests::remote_connect_includes_auth_header_when_configured
+        PASS [   0.014s] ( 20/107) codex-app-server-client tests::remote_connect_rejects_non_loopback_ws_when_auth_configured
+        PASS [   0.021s] ( 21/107) codex-app-server-client tests::remote_disconnect_surfaces_as_event
+        PASS [   0.165s] ( 22/107) codex-app-server-client tests::remote_duplicate_request_id_keeps_original_waiter
+        PASS [   0.014s] ( 23/107) codex-app-server-client tests::remote_initialize_params_forward_openai_form_capability
+        PASS [   0.017s] ( 24/107) codex-app-server-client tests::remote_notifications_arrive_over_websocket
+        PASS [   0.058s] ( 25/107) codex-app-server-client tests::remote_server_request_received_during_initialize_is_delivered
+        PASS [   0.020s] ( 26/107) codex-app-server-client tests::remote_server_request_resolution_roundtrip_works
+        PASS [   0.556s] ( 27/107) codex-app-server-client tests::remote_typed_request_accepts_large_single_frame_response
+        PASS [   0.060s] ( 28/107) codex-app-server-client tests::remote_typed_request_roundtrip_works
+        FAIL [   0.015s] ( 29/107) codex-app-server-client tests::remote_unix_socket_typed_request_roundtrip_works
+  stdout ───
+
+    running 1 test
+    test tests::remote_unix_socket_typed_request_roundtrip_works ... FAILED
+
+    failures:
+
+    failures:
+        tests::remote_unix_socket_typed_request_roundtrip_works
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 39 filtered out; finished in 0.00s
+
+  stderr ───
+
+    thread 'tests::remote_unix_socket_typed_request_roundtrip_works' (347) panicked at app-server-client/src/lib.rs:1314:14:
+    listener should bind: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        PASS [   0.019s] ( 30/107) codex-app-server-client tests::remote_unknown_server_request_is_rejected
+        PASS [   0.027s] ( 31/107) codex-app-server-client tests::runtime_start_args_forward_environment_manager_and_openai_form_capability
+        PASS [   0.121s] ( 32/107) codex-app-server-client tests::shutdown_completes_promptly_without_retained_managers
+        PASS [   0.016s] ( 33/107) codex-app-server-client tests::shutdown_waits_for_in_process_drain
+        FAIL [   0.210s] ( 34/107) codex-app-server-client tests::threads_started_via_app_server_are_visible_through_typed_requests
+  stdout ───
+
+    running 1 test
+    test tests::threads_started_via_app_server_are_visible_through_typed_requests ... FAILED
+
+    failures:
+
+    failures:
+        tests::threads_started_via_app_server_are_visible_through_typed_requests
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 39 filtered out; finished in 0.19s
+
+  stderr ───
+
+    thread 'tests::threads_started_via_app_server_are_visible_through_typed_requests' (385) panicked at app-server-client/src/lib.rs:1153:14:
+    thread/start should succeed: Server { method: "thread/start", source: JSONRPCErrorError { code: -32603, data: None, message: "error creating thread: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `local`: sandboxed filesystem operations require configured runtime paths" } }
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        PASS [   0.168s] ( 35/107) codex-app-server-client tests::tiny_channel_capacity_still_supports_request_roundtrip
+        PASS [   0.016s] ( 36/107) codex-app-server-client tests::typed_request_error_exposes_sources
+        PASS [   0.163s] ( 37/107) codex-app-server-client tests::typed_request_reports_json_rpc_errors
+        PASS [   0.172s] ( 38/107) codex-app-server-client tests::typed_request_roundtrip_works
+        FAIL [   0.204s] ( 39/107) codex-app-server-client tests::unread_lossless_notifications_do_not_block_in_process_requests
+  stdout ───
+
+    running 1 test
+    test tests::unread_lossless_notifications_do_not_block_in_process_requests ... FAILED
+
+    failures:
+
+    failures:
+        tests::unread_lossless_notifications_do_not_block_in_process_requests
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 39 filtered out; finished in 0.19s
+
+  stderr ───
+
+    thread 'tests::unread_lossless_notifications_do_not_block_in_process_requests' (530) panicked at app-server-client/src/lib.rs:1199:14:
+    thread/start should succeed: Server { method: "thread/start", source: JSONRPCErrorError { code: -32603, data: None, message: "error creating thread: Fatal error: Failed to initialize session: failed to load AGENTS.md instructions for environment `local`: sandboxed filesystem operations require configured runtime paths" } }
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        PASS [   0.018s] ( 40/107) codex-hepta-infer-worker-host actor_latency::tests::nearest_rank_percentiles_and_window_are_bounded
+        PASS [   0.019s] ( 41/107) codex-hepta-infer-worker-host actor_mailbox::boundary_tests::concurrent_producers_are_bounded_and_all_accepted_commands_precede_shutdown
+        PASS [   0.017s] ( 42/107) codex-hepta-infer-worker-host actor_mailbox::boundary_tests::terminal_reserve_preserves_fifo_and_shutdown_when_every_quota_is_full
+        PASS [   0.016s] ( 43/107) codex-hepta-infer-worker-host actor_mailbox::boundary_tests::terminal_traffic_cannot_steal_ordinary_quota_or_overtake_it
+        PASS [   0.019s] ( 44/107) codex-hepta-infer-worker-host actor_mailbox::tests::disconnected_receiver_never_looks_like_overload
+        PASS [   0.105s] ( 45/107) codex-hepta-infer-worker-host actor_mailbox::tests::more_than_one_hundred_thousand_mailbox_lifecycles_remain_bounded
+        PASS [   0.017s] ( 46/107) codex-hepta-infer-worker-host actor_mailbox::tests::saturation_rejects_before_delivery_and_recovers_capacity
+        PASS [   0.016s] ( 47/107) codex-hepta-infer-worker-host actor_mailbox::tests::shutdown_is_admitted_when_full_and_fences_every_clone
+        PASS [   0.042s] ( 48/107) codex-hepta-infer-worker-host control_actor::boundary_tests::accepted_deadline_does_not_cancel_commit_or_license_duplicate_dispatch
+        PASS [   0.021s] ( 49/107) codex-hepta-infer-worker-host control_actor::boundary_tests::caller_cancellation_after_admission_cannot_erase_the_owner_command
+        PASS [   0.019s] ( 50/107) codex-hepta-infer-worker-host control_actor::boundary_tests::dropped_accepted_sender_is_not_pre_admission_closed
+        PASS [   0.020s] ( 51/107) codex-hepta-infer-worker-host control_actor::boundary_tests::full_ordinary_queue_cannot_reject_terminal_transition_or_shutdown
+        PASS [   0.019s] ( 52/107) codex-hepta-infer-worker-host control_actor::boundary_tests::lost_terminal_reply_remains_durable_and_survives_restart
+        PASS [   0.018s] ( 53/107) codex-hepta-infer-worker-host control_actor::boundary_tests::published_metrics_are_immutable_stale_and_do_not_queue_reads
+        PASS [   0.040s] ( 54/107) codex-hepta-infer-worker-host control_actor::boundary_tests::shutdown_deadline_retains_lock_until_the_real_owner_exits
+        PASS [   0.065s] ( 55/107) codex-hepta-infer-worker-host control_actor::boundary_tests::signed_post_effect_terminal_reply_loss_keeps_exact_durable_result
+        PASS [   0.021s] ( 56/107) codex-hepta-infer-worker-host control_actor::compatibility_tests::one_writer_owns_the_journal_and_effect_capability_is_one_shot
+        PASS [   0.154s] ( 57/107) codex-hepta-infer-worker-host control_actor::recovery_tests::queued_authorized_commands_recheck_owner_clock_after_expiry
+        PASS [   0.122s] ( 58/107) codex-hepta-infer-worker-host control_actor::recovery_tests::writer_rejects_cached_terminal_capability_expired_after_verification
+        PASS [   0.018s] ( 59/107) codex-hepta-infer-worker-host final_use_authorizer::tests::connected_issuer_peer_uid_must_match_configured_owner
+        FAIL [   0.016s] ( 60/107) codex-hepta-infer-worker-host final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back
+  stdout ───
+
+    running 1 test
+    test final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back ... FAILED
+
+    failures:
+
+    failures:
+        final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 68 filtered out; finished in 0.00s
+
+  stderr ───
+    WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)
+    Error: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+
+        FAIL [   0.023s] ( 61/107) codex-hepta-infer-worker-host final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token
+  stdout ───
+
+    running 1 test
+    test final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token ... FAILED
+
+    failures:
+
+    failures:
+        final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 68 filtered out; finished in 0.00s
+
+  stderr ───
+    WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)
+    Error: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+
+        FAIL [   0.019s] ( 62/107) codex-hepta-infer-worker-host final_use_authorizer::tests::forged_grant_never_reaches_effect_entry
+  stdout ───
+
+    running 1 test
+    test final_use_authorizer::tests::forged_grant_never_reaches_effect_entry ... FAILED
+
+    failures:
+
+    failures:
+        final_use_authorizer::tests::forged_grant_never_reaches_effect_entry
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 68 filtered out; finished in 0.00s
+
+  stderr ───
+    WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)
+    Error: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+
+        PASS [   0.026s] ( 63/107) codex-hepta-infer-worker-host model_worker::tests::executes_authenticated_neuron_feature_tuple_from_loaded_manifest
+        PASS [   0.017s] ( 64/107) codex-hepta-infer-worker-host model_worker::tests::loads_runs_and_unloads_exact_model_tuple
+        PASS [   0.019s] ( 65/107) codex-hepta-infer-worker-host model_worker::tests::lost_driver_terminality_is_indeterminate
+        PASS [   0.020s] ( 66/107) codex-hepta-infer-worker-host model_worker::tests::neuron_feature_path_rejects_payload_drift_and_driver_identity_drift
+        PASS [   0.018s] ( 67/107) codex-hepta-infer-worker-host model_worker::tests::neuron_feature_worker_projects_exact_inference_control_receipt
+        PASS [   0.018s] ( 68/107) codex-hepta-infer-worker-host model_worker::tests::rejects_changed_tokenizer_model_or_payload_tuple
+        PASS [   0.159s] ( 69/107) codex-hepta-infer-worker-host native_app_server::control::authorized_settlement_tests::empty_encrypted_terminals_use_the_protector_and_release_capacity
+        PASS [   0.065s] ( 70/107) codex-hepta-infer-worker-host native_app_server::control::authorized_settlement_tests::empty_nonterminal_has_no_protection_object_or_terminal_claim
+        PASS [   0.065s] ( 71/107) codex-hepta-infer-worker-host native_app_server::control::authorized_settlement_tests::live_output_preserves_text_and_uses_durable_quota_denial
+        PASS [   0.017s] ( 72/107) codex-hepta-infer-worker-host native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity
+        PASS [   0.018s] ( 73/107) codex-hepta-infer-worker-host native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims
+        PASS [   0.018s] ( 74/107) codex-hepta-infer-worker-host native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider
+        PASS [   0.017s] ( 75/107) codex-hepta-infer-worker-host native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown
+        PASS [   0.016s] ( 76/107) codex-hepta-infer-worker-host native_app_server::output_message_tests::completed_message_supplies_text_without_streaming_deltas
+        PASS [   0.019s] ( 77/107) codex-hepta-infer-worker-host native_app_server::output_message_tests::completed_snapshot_replaces_partial_text_and_is_idempotent
+        PASS [   0.021s] ( 78/107) codex-hepta-infer-worker-host native_app_server::output_message_tests::completed_text_and_identity_limits_reject_without_mutating_output
+        PASS [   0.033s] ( 79/107) codex-hepta-infer-worker-host native_app_server::output_message_tests::empty_message_items_have_a_bounded_identity_budget
+        PASS [   0.019s] ( 80/107) codex-hepta-infer-worker-host native_app_server::output_message_tests::interleaved_messages_keep_item_order_and_completed_text_once
+        PASS [   0.019s] ( 81/107) codex-hepta-infer-worker-host native_app_server::output_message_tests::started_items_keep_order_when_messages_complete_in_reverse
+        PASS [   0.019s] ( 82/107) codex-hepta-infer-worker-host native_app_server::output_message_tests::successive_tail_deltas_and_snapshot_preserve_the_prefix_once
+        PASS [   0.018s] ( 83/107) codex-hepta-infer-worker-host native_app_server::output_message_tests::unrelated_completed_items_do_not_change_output
+        PASS [   0.016s] ( 84/107) codex-hepta-infer-worker-host native_app_server::send_guard::tests::expired_signed_ceiling_and_zero_budget_fail_closed
+        PASS [   0.016s] ( 85/107) codex-hepta-infer-worker-host native_app_server::send_guard::tests::shorter_operation_timeout_wins_over_long_signed_lease
+        PASS [   0.015s] ( 86/107) codex-hepta-infer-worker-host native_app_server::send_guard::tests::signed_ceiling_is_not_replaced_by_a_fresh_execution_timeout
+        PASS [   0.018s] ( 87/107) codex-hepta-infer-worker-host native_app_server::tests::actual_usage_is_bound_monotonic_and_survives_terminal_failure
+        PASS [   0.015s] ( 88/107) codex-hepta-infer-worker-host native_app_server::tests::disconnect_event_lag_cancel_and_deadline_have_explicit_boundary_statuses
+        PASS [   0.015s] ( 89/107) codex-hepta-infer-worker-host native_app_server::tests::final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift
+        PASS [   0.019s] ( 90/107) codex-hepta-infer-worker-host native_app_server::tests::in_progress_is_not_a_terminal_observation
+        PASS [   0.018s] ( 91/107) codex-hepta-infer-worker-host native_app_server::tests::late_completed_cannot_upgrade_cancelled_or_timed_out_boundary
+        PASS [   0.019s] ( 92/107) codex-hepta-infer-worker-host native_app_server::tests::lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread
+        PASS [   0.019s] ( 93/107) codex-hepta-infer-worker-host native_app_server::tests::only_the_bound_turn_can_complete_the_native_request
+        PASS [   0.016s] ( 94/107) codex-hepta-infer-worker-host native_app_server::tests::output_is_observed_bounded_and_never_predeclares_success
+        PASS [   0.019s] ( 95/107) codex-hepta-infer-worker-host native_app_server::tests::owner_loss_stays_denied_after_interrupt_grace_observes_completed
+        PASS [   0.021s] ( 96/107) codex-hepta-infer-worker-host native_app_server::tests::owner_timeout_and_terminal_first_selection_cannot_authorize_success
+        FAIL [   0.114s] ( 97/107) codex-hepta-infer-worker-host native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone
+  stdout ───
+
+    running 1 test
+    test native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone ... FAILED
+
+    failures:
+
+    failures:
+        native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 68 filtered out; finished in 0.10s
+
+  stderr ───
+    WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)
+    Error: Io(Custom { kind: PermissionDenied, error: AgentdIoContext { operation: "bind agentd control socket", path: "/tmp/hepta-cognitive-worker-e2e-1790922614138311536/fleet/run/aaghu64s7r56mdd2v36p3hkrmci.ctl", source: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" } } })
+
+        PASS [   0.018s] ( 98/107) codex-hepta-infer-worker-host native_app_server::tests::success_requires_both_matching_completion_and_final_ready_owner
+        PASS [   0.017s] ( 99/107) codex-hepta-infer-worker-host tests::payload_drift_is_rejected
+        PASS [   0.016s] (100/107) codex-hepta-infer-worker-host tests::revoked_lease_is_rejected
+        PASS [   0.018s] (101/107) codex-hepta-infer-worker-host tests::terminal_success_requires_exact_authority_binding
+        PASS [   0.016s] (102/107) codex-hepta-infer-worker-host tests::timeout_never_becomes_success
+        PASS [   0.017s] (103/107) codex-hepta-infer-worker-host tests::token_limit_is_enforced
+        PASS [   0.017s] (104/107) codex-hepta-infer-worker-host tests::unobserved_terminal_state_is_indeterminate
+        PASS [   0.017s] (105/107) codex-hepta-infer-worker-host unix_output_protector::boundary_tests::vault_config_rejects_symlinks_hardlinks_and_oversize_files
+        FAIL [   0.017s] (106/107) codex-hepta-infer-worker-host unix_output_protector::boundary_tests::vault_uid_socket_and_parent_permissions_fail_closed
+  stdout ───
+
+    running 1 test
+    test unix_output_protector::boundary_tests::vault_uid_socket_and_parent_permissions_fail_closed ... FAILED
+
+    failures:
+
+    failures:
+        unix_output_protector::boundary_tests::vault_uid_socket_and_parent_permissions_fail_closed
+
+    test result: FAILED. 0 passed; 1 failed; 0 ignored; 0 measured; 68 filtered out; finished in 0.00s
+
+  stderr ───
+    WARNING: proceeding, even though we could not create PATH aliases: Read-only file system (os error 30)
+
+    thread 'unix_output_protector::boundary_tests::vault_uid_socket_and_parent_permissions_fail_closed' (783) panicked at hepta-infer-worker-host/src/unix_output_protector_boundary_tests.rs:10:49:
+    called `Result::unwrap()` on an `Err` value: Os { code: 1, kind: PermissionDenied, message: "Operation not permitted" }
+    note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+        SLOW [> 30.000s] (───────) codex-app-server-client tests::next_event_surfaces_lagged_markers
+        PASS [  45.020s] (107/107) codex-app-server-client tests::next_event_surfaces_lagged_markers
+────────────
+     Summary [  45.240s] 107 tests run: 98 passed (1 slow), 9 failed, 2 skipped
+        FAIL [   0.214s] ( 16/107) codex-app-server-client tests::caller_provided_session_source_is_applied
+        FAIL [   0.015s] ( 29/107) codex-app-server-client tests::remote_unix_socket_typed_request_roundtrip_works
+        FAIL [   0.210s] ( 34/107) codex-app-server-client tests::threads_started_via_app_server_are_visible_through_typed_requests
+        FAIL [   0.204s] ( 39/107) codex-app-server-client tests::unread_lossless_notifications_do_not_block_in_process_requests
+        FAIL [   0.016s] ( 60/107) codex-hepta-infer-worker-host final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back
+        FAIL [   0.023s] ( 61/107) codex-hepta-infer-worker-host final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token
+        FAIL [   0.019s] ( 62/107) codex-hepta-infer-worker-host final_use_authorizer::tests::forged_grant_never_reaches_effect_entry
+        FAIL [   0.114s] ( 97/107) codex-hepta-infer-worker-host native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone
+        FAIL [   0.017s] (106/107) codex-hepta-infer-worker-host unix_output_protector::boundary_tests::vault_uid_socket_and_parent_permissions_fail_closed
+error: test run failed
+error: recipe `test` failed on line 88 with exit code 100
