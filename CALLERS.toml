@@ -79,7 +79,8 @@ required_boundary_ids = [
   "bao_receipt_consumer_registration",
   "secrets_root_policy_maintenance",
   "independent_operational_model_lease_evaluator_v2",
-  "verified_operational_model_lease_v2"
+  "verified_operational_model_lease_v2",
+  "independent_installed_cpu_model_use_v2"
 ]
 
 [[boundary]]
@@ -813,8 +814,8 @@ symbol = "inspect_operational_model_lease_v2"
 call_pattern = '\binspect_operational_model_lease_v2\s*\('
 definition_path = "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2.rs"
 definition_markers = ["pub struct VerifiedOperationalModelLeaseV2", "pub fn inspect_operational_model_lease_v2", "pub fn revalidate_current", "observe_clock", "verify_signed_actor_separation", "reinspect_inputs"]
-product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs"]
-caller_markers = ["--inspect-operational-model-lease-v2", "inspected.revalidate_current()?", "cpu_answer_acceptance_permitted"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs", "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_v2.rs"]
+caller_markers = ["inspect_operational_model_lease_v2", "revalidate_current"]
 
 [[protected_file]]
 path = "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2.rs"
@@ -848,3 +849,22 @@ caller_markers = ["initialize_private_holdout(", "config_digest"]
 path = "codex-rs/hepta-intelligence-eval/src/climate_holdout_custody.rs"
 required = ["hepta.fixed-climate-holdout.config.v1", "hepta.climate-fever.feature-cut.v1", "annotation_values_used", "old_gold_keys_cas_opened", "original_source_pins", "SUPPORTS", "REFUTES", "NOT_ENOUGH_INFO", "source_component_claim_ids", "inspect_private_holdout"]
 forbidden = ["SigningKey", "holdout.consume", "AuthorityPosture::ALLOW_ALL", "IdempotentReplay"]
+
+[[boundary]]
+id = "independent_installed_cpu_model_use_v2"
+symbol = "select_cpu_model_use_v2"
+call_pattern = '\bselect_cpu_model_use_v2\s*\('
+definition_path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_v2.rs"
+definition_markers = ["pub fn select_cpu_model_use_v2", "actual_role_for_program", "key.sign", "inputs.body(body.issued_at)? != body"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/bin/hepta-initial-cpu-anchor.rs"]
+caller_markers = ["select-installed-model-use-v2", "select_cpu_model_use_v2"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_v2.rs"
+required = ["VerifiedOperationalModelLeaseV2", "ConservativeCpuAbstentionOnlyV1", "protected_current_head", "eligible_manifest(&expected.artifact_id)", "verify_first_installation", "verify_strict", "installed-abstention-model-use.v2", "selector_program", "selector_program.revalidate()?"]
+forbidden = ["SignedArtifactSelectionV1", "permit_all", "from_unverified", "SigningKey::generate"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_program_v2.rs"
+required = ["open_root_review_input", "Digest32::of_reader", "self.file.metadata()", "self.original", "512 * 1024 * 1024"]
+forbidden = ["SigningKey", "set_permissions", "write_all", "pub struct Program"]

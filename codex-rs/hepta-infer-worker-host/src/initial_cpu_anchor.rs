@@ -33,6 +33,8 @@ mod installed;
 mod tick;
 pub(crate) use installed::Composition as InstalledCpuComposition;
 
+#[path = "initial_cpu_model_use_v2.rs"]
+mod model_use;
 #[path = "initial_cpu_model_use_body_v2.rs"]
 mod model_use_body;
 #[path = "initial_cpu_model_use_program_v2.rs"]
@@ -45,6 +47,9 @@ mod renewal;
 mod role;
 #[path = "initial_cpu_selection.rs"]
 mod selection;
+pub use model_use::VerifiedCpuModelUseV2;
+pub use model_use::inspect_cpu_model_use_v2;
+pub use model_use::select_cpu_model_use_v2;
 #[path = "initial_cpu_state.rs"]
 mod state;
 pub use current::open_current_cpu_neuron;

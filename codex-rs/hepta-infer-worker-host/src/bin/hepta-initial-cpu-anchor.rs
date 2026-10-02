@@ -8,6 +8,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let path = std::path::Path::new(&arguments[1]);
     let pin = arguments[2].parse()?;
     let report = match arguments[0].as_str() {
+        "select-installed-model-use-v2" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::select_cpu_model_use_v2(path, pin)?
+        }
         "preview-initial-objective" => {
             codex_hepta_infer_worker_host::initial_cpu_anchor::preview_initial_cpu_objective(
                 path, pin,
