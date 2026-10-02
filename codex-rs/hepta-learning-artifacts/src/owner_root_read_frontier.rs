@@ -175,8 +175,30 @@ impl LearningArtifactOwnerHost {
         };
         let bytes = encode(&self.root, &frontier);
         let path = self.root.join(NAME);
-        if path.exists() && read_frontier(&self.root)?.1 == bytes {
-            return Ok(());
+        if path.exists() {
+            let (previous, original_bytes) = read_frontier(&self.root)?;
+            let genesis = DatasetWithdrawalRegistry::new_scoped(
+                withdrawals
+                    .scope()
+                    .ok_or(ArtifactOwnerHostError::ProvenanceMismatch)?
+                    .clone(),
+            )
+            .head_digest();
+            // Cold reopening with an incomplete prefix must never undo an
+            // already durable delivery fence, including one before source ACK.
+            if previous.withdrawal_scope != frontier.withdrawal_scope
+                || (previous.withdrawal_head != genesis
+                    && !withdrawals
+                        .snapshot()
+                        .records()
+                        .iter()
+                        .any(|record| record.chain_digest == previous.withdrawal_head))
+            {
+                return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+            }
+            if original_bytes == bytes {
+                return Ok(());
+            }
         }
         let temporary = self.root.join(format!(
             ".READ-CURRENT-{}-{}",

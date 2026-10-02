@@ -144,7 +144,7 @@ fn root_readonly_current_preserves_the_real_writer_and_closes_on_withdrawal_and_
         dataset
     ));
     assert!(matches!(
-        LearningArtifactOwnerHost::open(&root, trust.clone(), lease, now),
+        LearningArtifactOwnerHost::open(&root, trust.clone(), lease.clone(), now),
         Err(ArtifactOwnerHostError::WriterFenceBusy)
     ));
     let mut fake = trust.clone();
@@ -172,6 +172,62 @@ fn root_readonly_current_preserves_the_real_writer_and_closes_on_withdrawal_and_
         reader.current_registry_view(now),
         Err(ArtifactOwnerHostError::CurrentHeadConflict)
     ));
+    let withdrawal_bytes = fs::read(root.join("READ-CURRENT")).fixture("durable withdrawal fence");
+    drop(owner);
+    let owner = LearningArtifactOwnerHost::open(&root, trust.clone(), lease, now)
+        .fixture("cold original writer");
+    let empty = DatasetWithdrawalRegistry::new_scoped(scope);
+    assert!(matches!(
+        owner.publish_root_read_frontier(&empty, now),
+        Err(ArtifactOwnerHostError::CurrentHeadConflict)
+    ));
+    assert_eq!(
+        fs::read(root.join("READ-CURRENT")).fixture("unchanged fence"),
+        withdrawal_bytes
+    );
+    owner
+        .publish_root_read_frontier(&withdrawals, now)
+        .fixture("same withdrawal head");
+    assert_eq!(
+        fs::read(root.join("READ-CURRENT")).fixture("same fence"),
+        withdrawal_bytes
+    );
+    let mut branch = empty;
+    branch
+        .append(DatasetWithdrawalNoticeV1 {
+            notice_id: id("foreign-branch"),
+            dataset_digest: digest("another dataset"),
+            source_tombstone_digest: digest("foreign-tombstone"),
+            authority_id: id("native-withdrawal-owner"),
+            credential_chain_digest: digest("native-credential"),
+            signing_key_digest: digest("native-withdrawal-key"),
+            authority_epoch: 1,
+            issued_at: now,
+        })
+        .fixture("divergent native prefix");
+    assert!(matches!(
+        owner.publish_root_read_frontier(&branch, now),
+        Err(ArtifactOwnerHostError::CurrentHeadConflict)
+    ));
+    assert_eq!(
+        fs::read(root.join("READ-CURRENT")).fixture("branch rejected"),
+        withdrawal_bytes
+    );
+    withdrawals
+        .append(DatasetWithdrawalNoticeV1 {
+            notice_id: id("next-withdrawal"),
+            dataset_digest: digest("another dataset"),
+            source_tombstone_digest: digest("next-tombstone"),
+            authority_id: id("native-withdrawal-owner"),
+            credential_chain_digest: digest("native-credential"),
+            signing_key_digest: digest("native-withdrawal-key"),
+            authority_epoch: 1,
+            issued_at: now,
+        })
+        .fixture("next native prefix");
+    owner
+        .publish_root_read_frontier(&withdrawals, now)
+        .fixture("descendant withdrawal head");
     let revoked = ReadOnlyArtifactCurrentOwnerV1::open(&root, trust, withdrawals, now)
         .fixture("current revoked view");
     assert!(
