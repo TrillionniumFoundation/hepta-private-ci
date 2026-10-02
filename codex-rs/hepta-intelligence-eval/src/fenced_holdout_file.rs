@@ -155,56 +155,7 @@ impl LockedFileFinalHoldoutCasStoreV1 {
         if bytes.len() as u64 != length {
             return Err(LockedFileCasErrorV1::Corrupt);
         }
-        if bytes.len() < HEADER {
-            return Err(LockedFileCasErrorV1::MissingHeader);
-        }
-        if &bytes[..8] != MAGIC
-            || &bytes[8..40] != binding.as_array()
-            || &bytes[40..HEADER] != Digest32::of_bytes(&bytes[..40]).as_array()
-        {
-            return Err(LockedFileCasErrorV1::Corrupt);
-        }
-
-        let mut state: Option<FinalHoldoutCasRecordV1> = None;
-        let mut journal = FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
-            .map_err(|_| LockedFileCasErrorV1::Capacity)?;
-        let mut minimum_witnessed = minimum.is_none();
-        let mut cursor = HEADER;
-        while cursor < bytes.len() {
-            let raw = bytes
-                .get(cursor..cursor + 4)
-                .ok_or(LockedFileCasErrorV1::Corrupt)?;
-            let count = u32::from_be_bytes([raw[0], raw[1], raw[2], raw[3]]) as usize;
-            if !(1..=MAX_FRAME).contains(&count) {
-                return Err(LockedFileCasErrorV1::Capacity);
-            }
-            cursor += 4;
-            let payload = bytes
-                .get(cursor..cursor + count)
-                .ok_or(LockedFileCasErrorV1::Corrupt)?;
-            cursor += count;
-            let checksum = bytes
-                .get(cursor..cursor + 32)
-                .ok_or(LockedFileCasErrorV1::Corrupt)?;
-            cursor += 32;
-            if checksum != Digest32::of_bytes(payload).as_array() {
-                return Err(LockedFileCasErrorV1::Corrupt);
-            }
-            state = Some(replay_event_owned(
-                binding,
-                state.take(),
-                &mut journal,
-                payload,
-            )?);
-            if minimum.is_some_and(|anchor| {
-                state
-                    .as_ref()
-                    .is_some_and(|record| record_anchor(record) == anchor)
-            }) {
-                minimum_witnessed = true;
-            }
-        }
-        validate_minimum(state.as_ref(), minimum, minimum_witnessed)?;
+        let (state, journal) = decode_locked_state(&bytes, binding, minimum)?;
         file.sync_all()
             .map_err(|_| LockedFileCasErrorV1::Indeterminate)?;
         Ok(Self {
@@ -498,6 +449,66 @@ fn acquire(file: &File, binding: Digest32) -> Result<(), LockedFileCasErrorV1> {
         TryLockError::WouldBlock => LockedFileCasErrorV1::Busy,
         TryLockError::Error(error) => LockedFileCasErrorV1::Io(error.kind()),
     })
+}
+
+/// The same canonical replay serves cold recovery and the held read-only
+/// consumption check. It never acquires a writer or alters durable bytes.
+fn decode_locked_state(
+    bytes: &[u8],
+    binding: Digest32,
+    minimum: Option<FinalHoldoutCasAnchorV1>,
+) -> Result<(Option<FinalHoldoutCasRecordV1>, FinalHoldoutJournalV1), LockedFileCasErrorV1> {
+    if bytes.len() < HEADER {
+        return Err(LockedFileCasErrorV1::MissingHeader);
+    }
+    if &bytes[..8] != MAGIC
+        || &bytes[8..40] != binding.as_array()
+        || &bytes[40..HEADER] != Digest32::of_bytes(&bytes[..40]).as_array()
+    {
+        return Err(LockedFileCasErrorV1::Corrupt);
+    }
+
+    let mut state: Option<FinalHoldoutCasRecordV1> = None;
+    let mut journal = FinalHoldoutJournalV1::with_record_limit(MAX_RECORDS)
+        .map_err(|_| LockedFileCasErrorV1::Capacity)?;
+    let mut minimum_witnessed = minimum.is_none();
+    let mut cursor = HEADER;
+    while cursor < bytes.len() {
+        let raw = bytes
+            .get(cursor..cursor + 4)
+            .ok_or(LockedFileCasErrorV1::Corrupt)?;
+        let count = u32::from_be_bytes([raw[0], raw[1], raw[2], raw[3]]) as usize;
+        if !(1..=MAX_FRAME).contains(&count) {
+            return Err(LockedFileCasErrorV1::Capacity);
+        }
+        cursor += 4;
+        let payload = bytes
+            .get(cursor..cursor + count)
+            .ok_or(LockedFileCasErrorV1::Corrupt)?;
+        cursor += count;
+        let checksum = bytes
+            .get(cursor..cursor + 32)
+            .ok_or(LockedFileCasErrorV1::Corrupt)?;
+        cursor += 32;
+        if checksum != Digest32::of_bytes(payload).as_array() {
+            return Err(LockedFileCasErrorV1::Corrupt);
+        }
+        state = Some(replay_event_owned(
+            binding,
+            state.take(),
+            &mut journal,
+            payload,
+        )?);
+        if minimum.is_some_and(|anchor| {
+            state
+                .as_ref()
+                .is_some_and(|record| record_anchor(record) == anchor)
+        }) {
+            minimum_witnessed = true;
+        }
+    }
+    validate_minimum(state.as_ref(), minimum, minimum_witnessed)?;
+    Ok((state, journal))
 }
 
 fn io_error(error: io::Error) -> LockedFileCasErrorV1 {
