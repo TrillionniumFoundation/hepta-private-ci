@@ -77,8 +77,16 @@ def fixture():
                 "batch_id": "batch.one",
                 "purpose": dev.PURPOSE,
                 "producer": producer,
-                "producer_sources": [source("/usr/bin/python3.12"), source("/opt/fixed/g.py")],
-                "pairs": [{"pair_id": pair["pair_id"], "source_row_sha256": pair["source_row_sha256"]}],
+                "producer_sources": [
+                    source("/usr/bin/python3.12"),
+                    source("/opt/fixed/g.py"),
+                ],
+                "pairs": [
+                    {
+                        "pair_id": pair["pair_id"],
+                        "source_row_sha256": pair["source_row_sha256"],
+                    }
+                ],
                 "expires_at_ms": config["expires_at_ms"],
                 "max_requests": 2,
             }
@@ -100,7 +108,9 @@ def fingerprint(_):
 def new_measurements(config, pairs):
     declaration = config["public_development"]["encoder_service"]
     encoder = {
-        **{key: value for key, value in declaration.items() if key != "process_binding"},
+        **{
+            key: value for key, value in declaration.items() if key != "process_binding"
+        },
         "main_pid": os.getpid(),
         "start_ticks": 10 + os.getpid(),
         "cgroup_device": 1,
@@ -130,14 +140,20 @@ def observation(_, service, _deadline):
 class DevelopmentTests(unittest.TestCase):
     def test_command_comparison_keeps_exact_argv_and_checks_runtime_separately(self):
         prefix = "{ path=/usr/bin/setpriv ; argv[]=/usr/bin/setpriv --reuid=1000 --clear-groups ; ignore_errors=no"
-        before = prefix + " ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }"
+        before = (
+            prefix
+            + " ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }"
+        )
         after = (
             prefix
             + " ; start_time=[Fri 2026-10-02 18:01:35 CST] ; stop_time=[n/a] ; pid=42 ; code=(null) ; status=0/0 }"
         )
-        self.assertEqual(dev.command_declaration(before), dev.command_declaration(after))
+        self.assertEqual(
+            dev.command_declaration(before), dev.command_declaration(after)
+        )
         self.assertNotEqual(
-            dev.command_declaration(before), dev.command_declaration(after.replace("--clear-groups", "--keep-groups"))
+            dev.command_declaration(before),
+            dev.command_declaration(after.replace("--clear-groups", "--keep-groups")),
         )
         for changed in [
             after + " extra",
@@ -168,7 +184,12 @@ class DevelopmentTests(unittest.TestCase):
         measurements = new_measurements(config, pairs)
         metadata = type("Metadata", (), {"st_dev": 7, "st_ino": 8})()
         path = type("Cgroup", (), {"stat": lambda _: metadata})()
-        identity = (original["start_ticks"], [os.getuid()] * 4, [os.getgid()] * 4, producer["cgroup"])
+        identity = (
+            original["start_ticks"],
+            [os.getuid()] * 4,
+            [os.getgid()] * 4,
+            producer["cgroup"],
+        )
         left, right = socket.socketpair(socket.AF_UNIX)
         with (
             left,
@@ -178,7 +199,9 @@ class DevelopmentTests(unittest.TestCase):
             patch.object(dev, "protected_path", return_value=path),
             patch.object(dev, "observe_service", observation),
         ):
-            result = measurements.measure(left, request, None, None, "pin", lambda *_: {"features_q24": [1] * 512})
+            result = measurements.measure(
+                left, request, None, None, "pin", lambda *_: {"features_q24": [1] * 512}
+            )
         self.assertEqual(result["cost_context"]["producer_before"]["pid"], os.getpid())
         self.assertFalse("main_pid" in producer)
         for cause in ("pid", "flag", "source"):
@@ -187,14 +210,18 @@ class DevelopmentTests(unittest.TestCase):
             if cause == "pid":
                 changed["producer"]["main_pid"] = os.getpid()
             elif cause == "flag":
-                changed["producer"]["exec_start"] = changed["producer"]["exec_start"].replace(
-                    "--clear-groups", "--keep-groups"
-                )
+                changed["producer"]["exec_start"] = changed["producer"][
+                    "exec_start"
+                ].replace("--clear-groups", "--keep-groups")
             else:
                 changed["producer_sources"].pop()
             with self.assertRaises(ValueError):
                 new_measurements(bad, pairs)
-        with patch.object(dev, "kernel_identity", return_value=(1, [1] * 4, [2] * 4, producer["cgroup"])):
+        with patch.object(
+            dev,
+            "kernel_identity",
+            return_value=(1, [1] * 4, [2] * 4, producer["cgroup"]),
+        ):
             with self.assertRaises(ValueError):
                 dev.resolve_registered_producer(producer, os.getpid())
 
@@ -211,11 +238,18 @@ class DevelopmentTests(unittest.TestCase):
             "Delegate": "no",
         }
         completed = type(
-            "Completed", (), {"returncode": 0, "stdout": "".join(f"{k}={v}\n" for k, v in properties.items()).encode()}
+            "Completed",
+            (),
+            {
+                "returncode": 0,
+                "stdout": "".join(f"{k}={v}\n" for k, v in properties.items()).encode(),
+            },
         )()
         with patch.object(dev.subprocess, "run", return_value=completed):
             with self.assertRaisesRegex(ValueError, "exact Root registration"):
-                dev.service_properties("/usr/bin/systemctl", producer, time.monotonic_ns() + 1_000_000_000)
+                dev.service_properties(
+                    "/usr/bin/systemctl", producer, time.monotonic_ns() + 1_000_000_000
+                )
 
     def test_root_setpriv_launcher_keeps_actual_mainpid_and_final_g_role(self):
         config, pairs, request = fixture()
@@ -243,17 +277,21 @@ class DevelopmentTests(unittest.TestCase):
             patch.object(dev, "fingerprint", fingerprint),
             patch.object(dev, "observe_service", observation),
         ):
-            result = measurements.measure(left, request, None, None, "pin", lambda *_: {"features_q24": [1] * 512})
-            self.assertEqual(result["cost_context"]["producer_before"]["uid"], os.getuid())
+            result = measurements.measure(
+                left, request, None, None, "pin", lambda *_: {"features_q24": [1] * 512}
+            )
+            self.assertEqual(
+                result["cost_context"]["producer_before"]["uid"], os.getuid()
+            )
         for cause in ("source", "flag", "account"):
             bad = copy.deepcopy(config)
             record = bad["public_development"]["batches"][0]
             if cause == "source":
                 record["producer_sources"].pop()
             elif cause == "flag":
-                record["producer"]["exec_start"] = record["producer"]["exec_start"].replace(
-                    "--clear-groups", "--keep-groups"
-                )
+                record["producer"]["exec_start"] = record["producer"][
+                    "exec_start"
+                ].replace("--clear-groups", "--keep-groups")
             else:
                 record["producer"]["user"] = str(os.getuid())
             with self.assertRaises(ValueError):
@@ -281,13 +319,19 @@ class DevelopmentTests(unittest.TestCase):
         for groups in ("", "968"):
             files["status"] = status.format(groups=groups)
             with patch.object(dev, "Path", return_value=Proc()):
-                self.assertEqual(dev.kernel_identity(123), (456, [968] * 4, [968] * 4, "/system.slice/backend.service"))
+                self.assertEqual(
+                    dev.kernel_identity(123),
+                    (456, [968] * 4, [968] * 4, "/system.slice/backend.service"),
+                )
         for changed in (
             status.format(groups="968 978"),
             status.format(groups="968").replace("CapBnd:\t0", "CapBnd:\t1"),
         ):
             files["status"] = changed
-            with patch.object(dev, "Path", return_value=Proc()), self.assertRaises(ValueError):
+            with (
+                patch.object(dev, "Path", return_value=Proc()),
+                self.assertRaises(ValueError),
+            ):
                 dev.kernel_identity(123)
 
     def test_real_socket_peer_closed_row_and_entire_service_cost(self):
@@ -319,7 +363,9 @@ class DevelopmentTests(unittest.TestCase):
                 "entire-encoder-and-backend-service-conservative",
             )
             self.assertEqual(len(result["cost_context"]["services_before"]), 2)
-            self.assertEqual(result["cost_context"]["producer_before"]["pid"], os.getpid())
+            self.assertEqual(
+                result["cost_context"]["producer_before"]["pid"], os.getpid()
+            )
             self.assertGreater(result["measurement_elapsed_micros"], 0)
             self.assertTrue(0 < calls[0][0] <= config["timeout_ms"])
             self.assertEqual(calls[0][1:], (request["source_row_sha256"], "pin"))
@@ -342,11 +388,25 @@ class DevelopmentTests(unittest.TestCase):
                 patch.object(dev, "observe_service", observation),
                 self.assertRaises(ValueError),
             ):
-                measurements.measure(left, changed, None, None, "pin", lambda *_: self.fail("must not encode"))
+                measurements.measure(
+                    left,
+                    changed,
+                    None,
+                    None,
+                    "pin",
+                    lambda *_: self.fail("must not encode"),
+                )
         measurements = new_measurements(config, pairs)
         measurements.remaining[request["batch_id"]] = 0
         with self.assertRaises(ValueError):
-            measurements.measure(None, request, None, None, "pin", lambda *_: self.fail("must not encode"))
+            measurements.measure(
+                None,
+                request,
+                None,
+                None,
+                "pin",
+                lambda *_: self.fail("must not encode"),
+            )
 
     def test_changed_sources_expired_window_or_missing_metrics_never_encode(self):
         config, pairs, request = fixture()
@@ -358,11 +418,22 @@ class DevelopmentTests(unittest.TestCase):
             with (
                 left,
                 right,
-                patch.object(dev, "fingerprint", lambda _: (9,) if cause == "source" else fingerprint(None)),
+                patch.object(
+                    dev,
+                    "fingerprint",
+                    lambda _: (9,) if cause == "source" else fingerprint(None),
+                ),
                 patch.object(dev, "observe_service", side_effect=OSError("no metric")),
                 self.assertRaises((ValueError, OSError)),
             ):
-                measurements.measure(left, request, None, None, "pin", lambda *_: self.fail("must not encode"))
+                measurements.measure(
+                    left,
+                    request,
+                    None,
+                    None,
+                    "pin",
+                    lambda *_: self.fail("must not encode"),
+                )
 
     def test_counter_or_peer_replacement_after_real_encoding_rejects_result(self):
         config, pairs, request = fixture()
@@ -381,7 +452,9 @@ class DevelopmentTests(unittest.TestCase):
             ):
                 record = observation(None, service_record, None)
                 if index == 3:
-                    record["cpu_usage_usec" if changed == "counter" else "start_ticks"] = 1
+                    record[
+                        "cpu_usage_usec" if changed == "counter" else "start_ticks"
+                    ] = 1
                 observations.append(record)
             left, right = socket.socketpair(socket.AF_UNIX)
             with (
@@ -391,7 +464,14 @@ class DevelopmentTests(unittest.TestCase):
                 patch.object(dev, "observe_service", side_effect=observations),
                 self.assertRaises(ValueError),
             ):
-                measurements.measure(left, request, None, None, "pin", lambda *_: {"features_q24": [1] * 512})
+                measurements.measure(
+                    left,
+                    request,
+                    None,
+                    None,
+                    "pin",
+                    lambda *_: {"features_q24": [1] * 512},
+                )
 
     def test_service_manager_exact_root_registration_and_timeout_fail_closed(self):
         service_record = service("generator", 1000, 123)
@@ -405,29 +485,56 @@ class DevelopmentTests(unittest.TestCase):
             "ControlGroup": service_record["cgroup"],
             "Delegate": "no",
         }
-        payload = lambda values: "".join(f"{key}={value}\n" for key, value in values.items()).encode()
+
+        def payload(values):
+            return "".join(f"{key}={value}\n" for key, value in values.items()).encode()
+
         with patch.object(
             dev.subprocess,
             "run",
             return_value=SimpleNamespace(returncode=0, stdout=payload(properties)),
         ) as run:
-            dev.service_properties("/usr/bin/systemctl", service_record, time.monotonic_ns() + 2_000_000_000)
-            self.assertEqual(run.call_args.kwargs["env"], {"PATH": "/usr/bin:/bin", "LANG": "C"})
-        for field, bad in [("MainPID", "124"), ("Delegate", "yes"), ("ExecStart", "different")]:
+            dev.service_properties(
+                "/usr/bin/systemctl",
+                service_record,
+                time.monotonic_ns() + 2_000_000_000,
+            )
+            self.assertEqual(
+                run.call_args.kwargs["env"], {"PATH": "/usr/bin:/bin", "LANG": "C"}
+            )
+        for field, bad in [
+            ("MainPID", "124"),
+            ("Delegate", "yes"),
+            ("ExecStart", "different"),
+        ]:
             with (
                 patch.object(
                     dev.subprocess,
                     "run",
-                    return_value=SimpleNamespace(returncode=0, stdout=payload({**properties, field: bad})),
+                    return_value=SimpleNamespace(
+                        returncode=0, stdout=payload({**properties, field: bad})
+                    ),
                 ),
                 self.assertRaises(ValueError),
             ):
-                dev.service_properties("/usr/bin/systemctl", service_record, time.monotonic_ns() + 2_000_000_000)
+                dev.service_properties(
+                    "/usr/bin/systemctl",
+                    service_record,
+                    time.monotonic_ns() + 2_000_000_000,
+                )
         with (
-            patch.object(dev.subprocess, "run", side_effect=subprocess.TimeoutExpired("systemctl", 1)),
+            patch.object(
+                dev.subprocess,
+                "run",
+                side_effect=subprocess.TimeoutExpired("systemctl", 1),
+            ),
             self.assertRaises(ValueError),
         ):
-            dev.service_properties("/usr/bin/systemctl", service_record, time.monotonic_ns() + 2_000_000_000)
+            dev.service_properties(
+                "/usr/bin/systemctl",
+                service_record,
+                time.monotonic_ns() + 2_000_000_000,
+            )
 
     def test_unbounded_or_misbound_root_declaration_is_rejected(self):
         config, pairs, _ = fixture()

@@ -47,7 +47,11 @@ def kernel_identity(pid):
     root = Path("/proc") / str(pid)
     raw = (root / "stat").read_text()
     start_ticks = int(raw[raw.rfind(")") + 2 :].split()[19])
-    fields = dict(line.split(":", 1) for line in (root / "status").read_text().splitlines() if ":" in line)
+    fields = dict(
+        line.split(":", 1)
+        for line in (root / "status").read_text().splitlines()
+        if ":" in line
+    )
     cgroups = (root / "cgroup").read_text().splitlines()
     if len(cgroups) != 1 or not cgroups[0].startswith("0::/"):
         raise ValueError("closed measurement requires unified cgroup")
@@ -56,7 +60,10 @@ def kernel_identity(pid):
     if (
         fields["NoNewPrivs"].split() != ["1"]
         or any(value != gids[0] for value in groups)
-        or any(int(fields[key], 16) for key in ("CapInh", "CapPrm", "CapEff", "CapBnd", "CapAmb"))
+        or any(
+            int(fields[key], 16)
+            for key in ("CapInh", "CapPrm", "CapEff", "CapBnd", "CapAmb")
+        )
     ):
         raise ValueError("closed measurement process boundary")
     return (
@@ -68,8 +75,15 @@ def kernel_identity(pid):
 
 
 def validate_service(service, allow_root=False, allow_credential_drop=False):
-    late = allow_credential_drop and service.get("process_binding") == "RegisteredServiceMainPidV2"
-    dropping = late or allow_credential_drop and service.get("process_binding") == "CredentialDroppingMainPidV1"
+    late = (
+        allow_credential_drop
+        and service.get("process_binding") == "RegisteredServiceMainPidV2"
+    )
+    dropping = (
+        late
+        or allow_credential_drop
+        and service.get("process_binding") == "CredentialDroppingMainPidV1"
+    )
     required = SERVICE_FIELDS | {"process_binding"} if dropping else SERVICE_FIELDS
     if late:
         required -= {"main_pid", "start_ticks", "cgroup_device", "cgroup_inode"}
@@ -104,8 +118,14 @@ def validate_service(service, allow_root=False, allow_credential_drop=False):
     ):
         raise ValueError("closed nondelegated service cgroup")
     user, group = service["user"], service["group"]
-    user_id = int(user or "0") if not user or user.isdecimal() else pwd.getpwnam(user).pw_uid
-    group_id = int(group or "0") if not group or group.isdecimal() else grp.getgrnam(group).gr_gid
+    user_id = (
+        int(user or "0") if not user or user.isdecimal() else pwd.getpwnam(user).pw_uid
+    )
+    group_id = (
+        int(group or "0")
+        if not group or group.isdecimal()
+        else grp.getgrnam(group).gr_gid
+    )
     expected = (0, 0) if dropping else (service["uid"], service["gid"])
     if (user_id, group_id) != expected:
         raise ValueError("service account names differ from actual registered UID/GID")
@@ -119,9 +139,9 @@ def validate_service(service, allow_root=False, allow_credential_drop=False):
             "--inh-caps=-all",
             "--ambient-caps=-all",
         )
-        if not service["exec_start"].startswith("{ path=/usr/bin/setpriv ; argv[]=/usr/bin/setpriv ") or not all(
-            flag in service["exec_start"].split() for flag in flags
-        ):
+        if not service["exec_start"].startswith(
+            "{ path=/usr/bin/setpriv ; argv[]=/usr/bin/setpriv "
+        ) or not all(flag in service["exec_start"].split() for flag in flags):
             raise ValueError("fixed Root producer credential-dropping declaration")
 
 
@@ -164,7 +184,9 @@ def service_properties(systemctl, service, deadline_ns):
             check=False,
         )
     except subprocess.TimeoutExpired as error:
-        raise ValueError("closed service observation exceeded the original deadline") from error
+        raise ValueError(
+            "closed service observation exceeded the original deadline"
+        ) from error
     if result.returncode != 0 or not 0 < len(result.stdout) <= 64 * 1024:
         raise ValueError("closed service manager observation")
     properties = {}
@@ -189,9 +211,14 @@ def service_properties(systemctl, service, deadline_ns):
 
 
 def cgroup_snapshot(service):
-    root = protected_path(Path("/sys/fs/cgroup") / service["cgroup"].lstrip("/"), directory=True)
+    root = protected_path(
+        Path("/sys/fs/cgroup") / service["cgroup"].lstrip("/"), directory=True
+    )
     info = root.stat()
-    if (info.st_dev, info.st_ino) != (service["cgroup_device"], service["cgroup_inode"]):
+    if (info.st_dev, info.st_ino) != (
+        service["cgroup_device"],
+        service["cgroup_inode"],
+    ):
         raise ValueError("original service cgroup was replaced")
     quota, period = (root / "cpu.max").read_text().split()
     if (
@@ -247,9 +274,15 @@ def resolve_registered_producer(declaration, peer_pid):
     # protected unit. Its lifetime and cgroup identity come from the kernel;
     # service_properties below compares MainPID and the full Root declaration.
     start, uids, gids, cgroup = kernel_identity(peer_pid)
-    if (uids, gids, cgroup) != ([declaration["uid"]] * 4, [declaration["gid"]] * 4, declaration["cgroup"]):
+    if (uids, gids, cgroup) != (
+        [declaration["uid"]] * 4,
+        [declaration["gid"]] * 4,
+        declaration["cgroup"],
+    ):
         raise ValueError("registered producer kernel peer differs")
-    meta = protected_path(Path("/sys/fs/cgroup") / cgroup.lstrip("/"), directory=True).stat()
+    meta = protected_path(
+        Path("/sys/fs/cgroup") / cgroup.lstrip("/"), directory=True
+    ).stat()
     return {
         **declaration,
         "process_binding": "CredentialDroppingMainPidV1",
@@ -286,9 +319,13 @@ def encoder_self_service(declaration):
     identity = kernel_identity(pid)
     if identity[1:] != ([0] * 4, [0] * 4, declaration["cgroup"]):
         raise ValueError("actual Root encoder service context")
-    cgroup = protected_path(Path("/sys/fs/cgroup") / identity[3].lstrip("/"), directory=True).stat()
+    cgroup = protected_path(
+        Path("/sys/fs/cgroup") / identity[3].lstrip("/"), directory=True
+    ).stat()
     return {
-        **{key: value for key, value in declaration.items() if key != "process_binding"},
+        **{
+            key: value for key, value in declaration.items() if key != "process_binding"
+        },
         "main_pid": pid,
         "start_ticks": identity[0],
         "cgroup_device": cgroup.st_dev,
@@ -350,18 +387,31 @@ class DevelopmentMeasurements:
                 or batch["batch_id"] in self.batches
                 or type(batch["max_requests"]) is not int
                 or not 1 <= batch["max_requests"] <= config["max_requests"]
-                or not time.time_ns() // 1_000_000 < batch["expires_at_ms"] <= config["expires_at_ms"]
+                or not time.time_ns() // 1_000_000
+                < batch["expires_at_ms"]
+                <= config["expires_at_ms"]
             ):
                 raise ValueError("closed public batch purpose/window/budget")
             validate_service(batch["producer"], allow_credential_drop=True)
-            if not isinstance(batch["producer_sources"], list) or not 1 <= len(batch["producer_sources"]) <= 32:
+            if (
+                not isinstance(batch["producer_sources"], list)
+                or not 1 <= len(batch["producer_sources"]) <= 32
+            ):
                 raise ValueError("closed producer physical source closure")
             if batch["producer"].get("process_binding") in (
                 "CredentialDroppingMainPidV1",
                 "RegisteredServiceMainPidV2",
-            ) and not any(source["path"] == "/usr/bin/setpriv" for source in batch["producer_sources"]):
-                raise ValueError("fixed credential drop outside producer physical closure")
-            if not isinstance(batch["pairs"], list) or not 1 <= len(batch["pairs"]) <= 1024:
+            ) and not any(
+                source["path"] == "/usr/bin/setpriv"
+                for source in batch["producer_sources"]
+            ):
+                raise ValueError(
+                    "fixed credential drop outside producer physical closure"
+                )
+            if (
+                not isinstance(batch["pairs"], list)
+                or not 1 <= len(batch["pairs"]) <= 1024
+            ):
                 raise ValueError("closed public pair budget")
             registered = {}
             for pair in batch["pairs"]:
@@ -369,13 +419,18 @@ class DevelopmentMeasurements:
                     set(pair) != {"pair_id", "source_row_sha256"}
                     or pair["pair_id"] in registered
                     or pair["pair_id"] not in pairs
-                    or pairs[pair["pair_id"]]["source_row_sha256"] != pair["source_row_sha256"]
+                    or pairs[pair["pair_id"]]["source_row_sha256"]
+                    != pair["source_row_sha256"]
                 ):
-                    raise ValueError("public declaration differs from actual frozen row")
+                    raise ValueError(
+                        "public declaration differs from actual frozen row"
+                    )
                 registered[pair["pair_id"]] = pair["source_row_sha256"]
             self.batches[batch["batch_id"]] = (batch, registered)
             self.remaining[batch["batch_id"]] = batch["max_requests"]
-            sources.extend([batch["producer"]["unit_source"], *batch["producer_sources"]])
+            sources.extend(
+                [batch["producer"]["unit_source"], *batch["producer_sources"]]
+            )
         self.systemctl = declaration["systemctl_source"]["path"]
         if self.systemctl != "/usr/bin/systemctl":
             raise ValueError("fixed original service manager executable")
@@ -399,7 +454,10 @@ class DevelopmentMeasurements:
             seen = fingerprint(source["path"])
             if seen[6] != source["size"]:
                 raise ValueError("physical closure identity changed")
-            if source["path"] in self.current_sources and self.current_sources[source["path"]] != seen:
+            if (
+                source["path"] in self.current_sources
+                and self.current_sources[source["path"]] != seen
+            ):
                 raise ValueError("inconsistent closed source identity")
             self.current_sources[source["path"]] = seen
 
@@ -411,24 +469,31 @@ class DevelopmentMeasurements:
     def measure(self, connection, request, preprocessor, numpy, pin, encode):
         started_ns = time.monotonic_ns()
         deadline_ns = started_ns + self.config["timeout_ms"] * 1_000_000
-        if set(request) != {"purpose", "batch_id", "pair_id", "source_row_sha256"} or request["purpose"] != PURPOSE:
+        if (
+            set(request) != {"purpose", "batch_id", "pair_id", "source_row_sha256"}
+            or request["purpose"] != PURPOSE
+        ):
             raise ValueError("closed public request fields/purpose")
         batch, pairs = self.batches[request["batch_id"]]
         if (
             pairs.get(request["pair_id"]) != request["source_row_sha256"]
             or self.remaining[request["batch_id"]] <= 0
-            or time.time_ns() // 1_000_000 >= min(batch["expires_at_ms"], self.config["expires_at_ms"])
+            or time.time_ns() // 1_000_000
+            >= min(batch["expires_at_ms"], self.config["expires_at_ms"])
         ):
             raise ValueError("closed public row/window/request budget")
         self.remaining[request["batch_id"]] -= 1
-        pid, uid, gid = struct.unpack("3i", connection.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
+        pid, uid, gid = struct.unpack(
+            "3i", connection.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12)
+        )
         producer = resolve_registered_producer(batch["producer"], pid)
         if (pid, uid, gid) != (producer["main_pid"], producer["uid"], producer["gid"]):
             raise ValueError("closed public peer must be its actual registered MainPID")
         self.revalidate_sources()
         producer_before = observe_service(self.systemctl, producer, deadline_ns)
         services_before = [
-            observe_service(self.systemctl, service, deadline_ns) for service in (self.encoder, self.backend)
+            observe_service(self.systemctl, service, deadline_ns)
+            for service in (self.encoder, self.backend)
         ]
         timeout_ms = max(1, int((deadline_ns - time.monotonic_ns()) / 1_000_000))
         result = encode(
@@ -439,21 +504,37 @@ class DevelopmentMeasurements:
             pin,
         )
         services_after = [
-            observe_service(self.systemctl, service, deadline_ns) for service in (self.encoder, self.backend)
+            observe_service(self.systemctl, service, deadline_ns)
+            for service in (self.encoder, self.backend)
         ]
         producer_after = observe_service(self.systemctl, producer, deadline_ns)
         self.revalidate_sources()
-        if time.time_ns() // 1_000_000 >= min(batch["expires_at_ms"], self.config["expires_at_ms"]):
+        if time.time_ns() // 1_000_000 >= min(
+            batch["expires_at_ms"], self.config["expires_at_ms"]
+        ):
             raise ValueError("closed public batch expired during measurement")
-        for before, after in zip([producer_before, *services_before], [producer_after, *services_after], strict=True):
+        for before, after in zip(
+            [producer_before, *services_before],
+            [producer_after, *services_after],
+            strict=True,
+        ):
             if (
                 before.keys() != after.keys()
-                or any(before[key] != after[key] for key in ("unit", "pid", "start_ticks", "uid", "cgroup"))
+                or any(
+                    before[key] != after[key]
+                    for key in ("unit", "pid", "start_ticks", "uid", "cgroup")
+                )
                 or before["cpu_usage_usec"] > after["cpu_usage_usec"]
                 or before["memory_peak_bytes"] > after["memory_peak_bytes"]
             ):
-                raise ValueError("service lifetime/accounting changed during physical measurement")
-        manifests = [source for source in self.config["model_sources"] if "/manifests/" in source["path"]]
+                raise ValueError(
+                    "service lifetime/accounting changed during physical measurement"
+                )
+        manifests = [
+            source
+            for source in self.config["model_sources"]
+            if "/manifests/" in source["path"]
+        ]
         if len(manifests) != 1:
             raise ValueError("fixed physical encoder manifest identity")
         result.update(
@@ -462,7 +543,8 @@ class DevelopmentMeasurements:
                 "purpose": PURPOSE,
                 "batch_id": request["batch_id"],
                 "encoder_manifest_sha256": manifests[0]["sha256"],
-                "measurement_elapsed_micros": (time.monotonic_ns() - started_ns) // 1000,
+                "measurement_elapsed_micros": (time.monotonic_ns() - started_ns)
+                // 1000,
                 "cost_context": {
                     "accounting": "entire-encoder-and-backend-service-conservative",
                     "producer_before": producer_before,
