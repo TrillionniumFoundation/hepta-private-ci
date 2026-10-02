@@ -997,3 +997,30 @@ ProcessLookupError。仍存活的后代继续受原 100 轮观测、SIGKILL 和�
 保留；新的成功只能来自修正后 head 的实际执行，本地不运行测试。
 现有只读 enhanced-lock push 入口同时加入这个真实 fixture 路径；其 branch、
 permissions 和其余 dispatch-only jobs 保持原值，补修后的 head 自动取得独立观察。
+
+## e00b 实际核心收据与有界全仓窗口闭合
+
+该 head 的六个 native 和两个 deep lane 已全部实际 SUCCESS，attempt1、零重试。
+Linux 三 lane 为 Supervisor default／production／qualification 423／423／428 PASS；
+macOS 三 lane 为 422／422／427 PASS，Fleet 六 lane 均 44 PASS。94 个 common
+在各 native 三库逐名一次 PASS，Fleet 五个逐名一次 PASS，三个新 Matrix admission
+叶实际执行；每 lane 的 15 stage／原 logs、官方完整 raw／32 个 ZIP members、assembly
+完整核实，共 90 records。每份 assembly 的 7,645 个源码绑定与 e00 精确 tree 相符。
+两个 deep lane 实际为 423／428 与其余 4／5／1／1 PASS，SIGKILL helper 一项 ignored。
+其第四组五个用例实际覆盖 restart_budget、restart_budget_recovery 与
+robrix_control_projection。此前概述中的 writer 字样不作为 deep writer 执行信用；
+原 22 compact 的真实 argv 与计数保持原值。native 的 writer handoff 产品另有实际记录。
+本轮原两失败叶、emergency Kill 三叶和新 Matrix 三叶均按具名原日志核实。
+
+这些 e00 成功覆盖 Matrix 补修，但不覆盖之后的 procfs fixture 补修。source docs
+仍是 803＝802 ok＋1 ERROR／whole job FAIL，独立 ERROR receipt 保留原完整 traceback、
+head／source／base blob、raw bytes／SHA；base 同 blob 只是静态继承，没有失败执行信用。
+fixture 修正后的成功必须由新 head 自身取得，不转移历史结果，不运行本地测试。
+
+全仓窗口 03:37:07.257Z 至 04:07:07.257Z 已关闭，25 runs／114 checks 实际为
+42 success／38 failure／13 skipped／21 in progress。279 份材料 bytes／SHA 独立匹配，
+pending／skipped 不作成功，初次跨 worker 24 秒采样例外如实保留。旧历史 ancestry、
+delegated-owner 和 foreign unused 等 gate 仍失败，literal 三项未闭合；Fleet Bazel
+只获得 compile STARTED，尚无 target completion／test 信用。核心后来完成的实际结果
+单独记录，不回写已关闭窗口的 pending。生产资格、目标主机、验收、activation／release
+和 current-main merge qualification 仍未建立；能力 12／2／2 与四个具体开放项不变。
