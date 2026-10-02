@@ -129,9 +129,10 @@ fn malformed_chat_selection_never_synthesizes_console_or_chat_authority() {
 #[test]
 fn only_connection_unavailability_can_open_late_chat_fallback() {
     use hepta_native::error::ShellError;
-    let unavailable = classify_console_connection_error(ShellError::Io(std::io::Error::from(
-        std::io::ErrorKind::ConnectionRefused,
-    )));
+    let unavailable =
+        classify_console_connection_error(hepta_native::ui::NativeAppStartupError::Connection(
+            ShellError::Io(std::io::Error::from(std::io::ErrorKind::ConnectionRefused)),
+        ));
     assert!(unavailable.is::<ConsoleUnavailable>());
     for fatal in [
         ShellError::Security("invalid MAC".into()),
@@ -141,9 +142,35 @@ fn only_connection_unavailability_can_open_late_chat_fallback() {
         ShellError::Backend("invalid gateway identity".into()),
         ShellError::Io(std::io::Error::from(std::io::ErrorKind::PermissionDenied)),
     ] {
-        assert!(!classify_console_connection_error(fatal).is::<ConsoleUnavailable>());
+        assert!(
+            !classify_console_connection_error(
+                hepta_native::ui::NativeAppStartupError::Connection(fatal)
+            )
+            .is::<ConsoleUnavailable>()
+        );
     }
     let rollback: Box<dyn std::error::Error> =
         "interrupted update rolled back; restart the admitted predecessor".into();
     assert!(!rollback.is::<ConsoleUnavailable>());
+}
+
+#[test]
+fn state_and_updater_timeouts_after_connect_remain_fatal() {
+    for stage in [
+        "journal recovery",
+        "session reference",
+        "operation history",
+        "pending update",
+    ] {
+        let error: hepta_native::ui::NativeAppStartupError = hepta_native::error::ShellError::Io(
+            std::io::Error::new(std::io::ErrorKind::TimedOut, stage),
+        )
+        .into();
+        let classified = classify_console_connection_error(error);
+        assert!(
+            !classified.is::<ConsoleUnavailable>(),
+            "{stage} must not admit fallback"
+        );
+        assert!(classified.to_string().contains(stage));
+    }
 }

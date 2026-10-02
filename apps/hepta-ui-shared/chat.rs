@@ -38,12 +38,64 @@ pub struct Conversation {
     pub unread: u32,
 }
 
+impl Conversation {
+    pub fn display_title(&self) -> &str {
+        if self.title.trim().is_empty() {
+            "New conversation"
+        } else {
+            &self.title
+        }
+    }
+    pub fn display_preview(&self) -> &str {
+        if self.preview.trim().is_empty() {
+            "Open conversation"
+        } else {
+            &self.preview
+        }
+    }
+}
+
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct Message {
     pub id: String,
     pub sender: String,
     pub body: String,
     pub timestamp: String,
+}
+
+#[derive(Clone, Debug, Default, PartialEq, Eq)]
+pub struct TimelinePageState {
+    pub cursor: Option<String>,
+    pub next_cursor: Option<String>,
+    pub epoch: u64,
+    pub loading: bool,
+}
+
+impl TimelinePageState {
+    pub fn begin(&mut self) -> u64 {
+        self.epoch = self.epoch.saturating_add(1);
+        self.loading = true;
+        self.epoch
+    }
+    pub fn observe(
+        &mut self,
+        epoch: u64,
+        cursor: Option<String>,
+        next_cursor: Option<String>,
+    ) -> bool {
+        if self.epoch != epoch {
+            return false;
+        }
+        self.cursor = cursor;
+        self.next_cursor = next_cursor;
+        self.loading = false;
+        true
+    }
+    pub fn failed(&mut self, epoch: u64) {
+        if self.epoch == epoch {
+            self.loading = false;
+        }
+    }
 }
 
 #[derive(Clone, Debug, Default, PartialEq, Eq)]
@@ -58,6 +110,7 @@ pub struct ChatState {
     pub sending: bool,
     pub drafts: std::collections::BTreeMap<String, String>,
     pub selection_epoch: u64,
+    pub page: TimelinePageState,
 }
 
 impl ChatState {
@@ -72,6 +125,7 @@ impl ChatState {
             self.selected = Some(id.to_owned());
             self.selection_epoch = self.selection_epoch.saturating_add(1);
             self.messages.clear();
+            self.page = TimelinePageState::default();
             self.draft = self.drafts.get(id).cloned().unwrap_or_default();
         }
         self.tab = AppTab::Chat;
@@ -81,7 +135,8 @@ impl ChatState {
     pub fn visible_conversations(&self) -> impl Iterator<Item = &Conversation> {
         let filter = self.filter.trim().to_lowercase();
         self.conversations.iter().filter(move |room| {
-            room.title.to_lowercase().contains(&filter) || room.id.to_lowercase().contains(&filter)
+            room.display_title().to_lowercase().contains(&filter)
+                || room.id.to_lowercase().contains(&filter)
         })
     }
 
@@ -90,8 +145,29 @@ impl ChatState {
         if self.selected.as_deref() != Some(room) || self.selection_epoch != epoch {
             return false;
         }
-        self.messages = messages.into_iter().take(200).collect();
+        let mut ids = std::collections::BTreeSet::new();
+        if messages.len() > 200 || messages.iter().any(|message| !ids.insert(&message.id)) {
+            return false;
+        }
+        self.messages = messages;
         true
+    }
+
+    /// Commit cursor and messages together only for the current room/page observation.
+    pub fn observe_timeline_page(
+        &mut self,
+        room: &str,
+        selection_epoch: u64,
+        page_epoch: u64,
+        cursor: Option<String>,
+        next_cursor: Option<String>,
+        messages: Vec<Message>,
+    ) -> bool {
+        if self.page.epoch != page_epoch || !self.observe_messages(room, selection_epoch, messages)
+        {
+            return false;
+        }
+        self.page.observe(page_epoch, cursor, next_cursor)
     }
 
     pub fn can_send(&self) -> bool {
@@ -121,6 +197,10 @@ pub mod design {
     pub const ROOMS_WIDTH: f32 = 280.0;
     pub const HEADER_HEIGHT: f32 = 64.0;
     pub const CONTROL_HEIGHT: f32 = 44.0;
+    pub const AVATAR_SIZE: f32 = 28.0;
+    pub const BUBBLE_RADIUS: f32 = 12.0;
+    pub const COMPOSER_RADIUS: f32 = 12.0;
+    pub const MESSAGE_SPACING: f32 = 12.0;
     pub const COMPACT_WIDTH: f32 = 760.0;
     pub const BACKGROUND: [u8; 3] = [10, 15, 24];
     pub const SURFACE: [u8; 3] = [17, 25, 38];

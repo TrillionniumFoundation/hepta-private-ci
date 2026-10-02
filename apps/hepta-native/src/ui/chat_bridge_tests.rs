@@ -39,6 +39,7 @@ fn stale_timeline_cannot_cross_room_or_selection_epoch() {
             limit: 50,
         },
         epoch,
+        0,
     );
     assert!(app.chat.messages.is_empty());
     assert_eq!(app.chat.selected.as_deref(), Some("b"));
@@ -68,6 +69,7 @@ fn queued_send_retains_draft_until_server_persistence_and_never_fakes_message() 
         },
         command.clone(),
         app.chat.selection_epoch,
+        0,
     );
     assert_eq!(app.chat.draft, "original");
     assert!(app.chat.sending);
@@ -81,6 +83,7 @@ fn queued_send_retains_draft_until_server_persistence_and_never_fakes_message() 
         },
         command,
         app.chat.selection_epoch,
+        0,
     );
     assert!(app.chat.draft.is_empty());
     assert!(!app.chat.sending);
@@ -111,6 +114,7 @@ fn persistence_cannot_erase_new_draft_or_another_room() {
             text: "original".into(),
         },
         app.chat.selection_epoch,
+        0,
     );
     assert_eq!(app.chat.draft, "other room");
     app.chat.select("a");
@@ -118,7 +122,7 @@ fn persistence_cannot_erase_new_draft_or_another_room() {
 }
 
 #[test]
-fn missing_reconciliation_is_visible_and_never_automatically_resends() {
+fn missing_reconciliation_retains_original_identity_and_blocks_new_send() {
     let root = tempfile::TempDir::new().unwrap();
     let mut native = app_fixture(root.path());
     let app = &mut native.chat_shell;
@@ -136,10 +140,17 @@ fn missing_reconciliation_is_visible_and_never_automatically_resends() {
             text: "original".into(),
         },
         0,
+        0,
     );
     assert_eq!(app.chat.draft, "original");
-    assert!(!app.chat.sending);
-    assert!(app.chat_bridge.submission.is_none());
+    assert!(app.chat.sending);
+    assert_eq!(
+        app.chat_bridge
+            .submission
+            .as_ref()
+            .map(|(_, id, _)| id.as_str()),
+        Some("op")
+    );
     assert!(app.chat_bridge.pending.is_empty());
     assert!(app.chat_bridge.error.is_some());
 }
@@ -149,8 +160,206 @@ fn repeated_create_clicks_cannot_admit_duplicate_owner_requests() {
     let root = tempfile::TempDir::new().unwrap();
     let mut native = app_fixture(root.path());
     let app = &mut native.chat_shell;
-    app.chat_bridge.pending.push_back((ChatCommand::Create, 0));
+    app.chat_bridge
+        .pending
+        .push_back((ChatCommand::Create, 0, 0));
     assert!(app.request_chat(ChatCommand::Create).is_ok());
     assert_eq!(app.chat_bridge.pending.len(), 1);
     assert!(app.chat.conversations.is_empty());
+}
+
+fn timeline(ids: &[&str], next: Option<&str>) -> ChatResult {
+    ChatResult::Timeline {
+        thread_id: "a".into(),
+        data: ids
+            .iter()
+            .map(|id| ChatMessage {
+                id: (*id).into(),
+                turn_id: "turn".into(),
+                sender: "fixture".into(),
+                body: (*id).into(),
+            })
+            .collect(),
+        next_cursor: next.map(str::to_owned),
+        active_turn_id: None,
+    }
+}
+
+#[test]
+fn older_and_latest_pages_keep_order_and_reject_stale_latest_response() {
+    let root = tempfile::TempDir::new().unwrap();
+    let mut native = app_fixture(root.path());
+    let app = &mut native.chat_shell;
+    app.chat.conversations = vec![room("a")];
+    app.chat.select("a");
+    let latest = app.chat.page.begin();
+    let older = app.chat.page.begin();
+    app.apply_chat_result(
+        timeline(&["late-new"], Some("stale")),
+        ChatCommand::Timeline {
+            thread_id: "a".into(),
+            cursor: None,
+            limit: 50,
+        },
+        app.chat.selection_epoch,
+        latest,
+    );
+    assert!(app.chat.messages.is_empty());
+    assert!(app.chat.page.loading);
+    app.apply_chat_result(
+        timeline(&["old-1", "old-2"], Some("earlier")),
+        ChatCommand::Timeline {
+            thread_id: "a".into(),
+            cursor: Some("older".into()),
+            limit: 50,
+        },
+        app.chat.selection_epoch,
+        older,
+    );
+    assert_eq!(
+        app.chat
+            .messages
+            .iter()
+            .map(|message| message.id.as_str())
+            .collect::<Vec<_>>(),
+        vec!["old-1", "old-2"]
+    );
+    assert_eq!(app.chat.page.cursor.as_deref(), Some("older"));
+    assert!(!app.chat.page.loading);
+    let back = app.chat.page.begin();
+    app.apply_chat_result(
+        timeline(&["new-1", "new-2"], Some("older")),
+        ChatCommand::Timeline {
+            thread_id: "a".into(),
+            cursor: None,
+            limit: 50,
+        },
+        app.chat.selection_epoch,
+        back,
+    );
+    assert_eq!(
+        app.chat
+            .messages
+            .iter()
+            .map(|message| message.id.as_str())
+            .collect::<Vec<_>>(),
+        vec!["new-1", "new-2"]
+    );
+    assert!(app.chat.page.cursor.is_none());
+}
+
+#[test]
+fn duplicate_page_preserves_prior_cursor_and_content_atomically() {
+    let root = tempfile::TempDir::new().unwrap();
+    let mut native = app_fixture(root.path());
+    let app = &mut native.chat_shell;
+    app.chat.conversations = vec![room("a")];
+    app.chat.select("a");
+    let initial = app.chat.page.begin();
+    app.apply_chat_result(
+        timeline(&["current"], Some("older")),
+        ChatCommand::Timeline {
+            thread_id: "a".into(),
+            cursor: None,
+            limit: 50,
+        },
+        app.chat.selection_epoch,
+        initial,
+    );
+    let before = app.chat.messages.clone();
+    let older = app.chat.page.begin();
+    app.apply_chat_result(
+        timeline(&["duplicate", "duplicate"], Some("bad")),
+        ChatCommand::Timeline {
+            thread_id: "a".into(),
+            cursor: Some("older".into()),
+            limit: 50,
+        },
+        app.chat.selection_epoch,
+        older,
+    );
+    assert_eq!(app.chat.messages, before);
+    assert!(app.chat.page.cursor.is_none());
+    assert_eq!(app.chat.page.next_cursor.as_deref(), Some("older"));
+    assert!(!app.chat.page.loading);
+    assert!(app.chat_bridge.error.is_some());
+}
+
+#[test]
+fn created_conversation_cannot_reuse_the_previous_rooms_cancellation_target() {
+    let root = tempfile::TempDir::new().unwrap();
+    let mut native = app_fixture(root.path());
+    let app = &mut native.chat_shell;
+    app.chat.conversations = vec![room("a")];
+    app.chat.select("a");
+    app.chat_bridge.active_turn = Some("old-turn".into());
+    app.apply_chat_result(
+        ChatResult::Conversation {
+            data: crate::chat_runtime::wire::ChatConversation {
+                id: "new".into(),
+                title: String::new(),
+                preview: String::new(),
+            },
+        },
+        ChatCommand::Create,
+        app.chat.selection_epoch,
+        0,
+    );
+    assert_eq!(app.chat.selected.as_deref(), Some("new"));
+    assert!(app.chat_bridge.active_turn.is_none());
+}
+
+#[test]
+fn uncertain_send_missing_then_late_persistence_keeps_one_operation_identity() {
+    let root = tempfile::TempDir::new().unwrap();
+    let mut native = app_fixture(root.path());
+    let app = &mut native.chat_shell;
+    app.chat.conversations = vec![room("a")];
+    app.chat.select("a");
+    app.chat.draft = "original".into();
+    // This is the admitted-send state retained after an acknowledgement is
+    // dropped. Reconnection must only reconcile this existing identity.
+    app.chat_bridge.submission = Some(("a".into(), "stable-op".into(), "original".into()));
+    app.chat.sending = true;
+    app.chat.availability = chat_model::ChatAvailability::Offline;
+    let reconcile = ChatCommand::Reconcile {
+        thread_id: "a".into(),
+        operation_id: "stable-op".into(),
+        text: "original".into(),
+    };
+    app.apply_chat_result(
+        ChatResult::Submission {
+            operation_id: "stable-op".into(),
+            state: SubmissionState::Missing,
+        },
+        reconcile.clone(),
+        app.chat.selection_epoch,
+        0,
+    );
+    app.chat.availability = chat_model::ChatAvailability::Ready;
+    app.send_chat(); // A repeated user click cannot allocate a fresh send ID.
+    assert_eq!(
+        app.chat_bridge
+            .submission
+            .as_ref()
+            .map(|(_, id, _)| id.as_str()),
+        Some("stable-op")
+    );
+    assert!(app.chat_bridge.pending.is_empty());
+    assert!(app.chat.sending);
+    app.apply_chat_result(
+        ChatResult::Submission {
+            operation_id: "stable-op".into(),
+            state: SubmissionState::Persisted {
+                turn_id: "late-turn".into(),
+            },
+        },
+        reconcile,
+        app.chat.selection_epoch,
+        0,
+    );
+    assert!(app.chat_bridge.submission.is_none());
+    assert!(!app.chat.sending);
+    assert!(app.chat.draft.is_empty());
+    assert!(app.chat.messages.is_empty());
 }

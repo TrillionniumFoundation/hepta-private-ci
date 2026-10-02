@@ -32,6 +32,8 @@ fn assert_navigation_galleys(shape: &egui::Shape, clip: egui::Rect, viewport: eg
                 "Operations",
                 "Updates",
                 "Accessibility",
+                "New conversation",
+                "Refresh",
             ]
             .contains(&text.galley.text()) =>
         {
@@ -233,6 +235,10 @@ fn chat_is_default_and_unavailable_never_fabricates_content() {
         render(&mut app, &ctx, size, Vec::new()).drop_without_applying_deltas();
         let output = render(&mut app, &ctx, size, Vec::new());
         let observed = text(&output);
+        let viewport = egui::Rect::from_min_size(egui::Pos2::ZERO, size);
+        for shape in &output.shapes {
+            assert_navigation_galleys(&shape.shape, shape.clip_rect, viewport);
+        }
         for expected in [
             "Chat",
             "Console",
@@ -430,4 +436,83 @@ fn keyboard_composer_input_is_a_local_draft_when_disconnected() {
     assert!(app.chat_shell.chat.messages.is_empty());
     assert!(!app.chat_shell.chat.sending);
     assert!(app.pending_runtime.is_none());
+}
+
+#[test]
+fn older_page_exposes_bounded_navigation_and_preserves_composer() {
+    let root = tempfile::TempDir::new().unwrap();
+    let mut app = app_fixture(root.path());
+    app.chat_shell.chat.tab = chat_model::AppTab::Chat;
+    app.chat_shell
+        .chat
+        .conversations
+        .push(chat_model::Conversation {
+            id: "room".into(),
+            title: "Fixture history".into(),
+            preview: String::new(),
+            unread: 0,
+        });
+    app.chat_shell.chat.select("room");
+    app.chat_shell.chat_show_list = false;
+    let selection_epoch = app.chat_shell.chat.selection_epoch;
+    let page_epoch = app.chat_shell.chat.page.begin();
+    assert!(app.chat_shell.chat.observe_timeline_page(
+        "room",
+        selection_epoch,
+        page_epoch,
+        Some("older".into()),
+        Some("earlier".into()),
+        vec![chat_model::Message {
+            id: "historical".into(),
+            sender: "Fixture".into(),
+            body: "Previously observed message".into(),
+            timestamp: String::new()
+        }]
+    ));
+    app.chat_shell.chat.draft = "Unsent thought".into();
+    let ctx = egui::Context::default();
+    theme::ensure_initialized(&ctx);
+    let size = egui::vec2(520.0, 760.0);
+    render(&mut app, &ctx, size, Vec::new()).drop_without_applying_deltas();
+    let output = render(&mut app, &ctx, size, Vec::new());
+    let observed = text(&output);
+    for expected in [
+        "Older messages",
+        "Back to latest",
+        "Previously observed message",
+        "Unsent thought",
+        "Send",
+    ] {
+        assert!(observed.contains(expected), "{observed}");
+    }
+    insta::with_settings!({prepend_module_to_snapshot => false}, { insta::assert_snapshot!("native_chat_older_page", observed); });
+    output.drop_without_applying_deltas();
+}
+
+#[test]
+fn an_observed_untitled_conversation_is_named_without_inventing_messages() {
+    let root = tempfile::TempDir::new().unwrap();
+    let mut app = app_fixture(root.path());
+    app.chat_shell.chat.tab = chat_model::AppTab::Chat;
+    app.chat_shell
+        .chat
+        .conversations
+        .push(chat_model::Conversation {
+            id: "observed-thread".into(),
+            title: String::new(),
+            preview: String::new(),
+            unread: 0,
+        });
+    app.chat_shell.chat.select("observed-thread");
+    let ctx = egui::Context::default();
+    theme::ensure_initialized(&ctx);
+    let size = egui::vec2(1180.0, 760.0);
+    render(&mut app, &ctx, size, Vec::new()).drop_without_applying_deltas();
+    let output = render(&mut app, &ctx, size, Vec::new());
+    let observed = text(&output);
+    assert!(observed.contains("New conversation"), "{observed}");
+    assert!(observed.contains("Open conversation"), "{observed}");
+    assert!(app.chat_shell.chat.messages.is_empty());
+    assert!(app.chat_shell.chat.conversations[0].title.is_empty());
+    output.drop_without_applying_deltas();
 }

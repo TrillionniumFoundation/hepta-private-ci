@@ -6,12 +6,19 @@ The application opens Chat, with the console available as a secondary in-app tab
 Rust hosts consume `apps/hepta-ui-shared/chat.rs` for navigation, conversation
 projection, send eligibility and geometry/color tokens. The eframe adapter keeps
 conversation list, timeline and composer together on wide screens and offers a
-list/back flow on narrow screens. Console authorization and update confirmation
+list/back flow on narrow screens. Older messages and Back to latest select
+bounded, ordered pages; background latest polling pauses while reading history.
+Selection and page epochs plus duplicate-ID validation reject stale page updates
+atomically, preserving the prior cursor/content. Shared avatar, bubble spacing
+and input-radius tokens keep native and web presentation aligned. Console authorization and update confirmation
 remain unchanged. An authenticated runtime snapshot is not messaging readiness.
 Disconnected/unavailable messaging has no fabricated conversations or delivered
 messages. The first-party `hepta-agent-chat-host` uses Agentd SessionIngress,
 scopes threads by agent generation, workspace, project and chat source, and
-reconciles stable message operation IDs through the existing queue owner. Native
+reconciles stable message operation IDs through the existing queue owner. A
+Missing reconciliation result is current absence, not terminal proof against
+late admission: retain the original ID/text and continue reconciliation; never
+enable a new send identity from Missing. Native
 reads its bounded responses, polls the selected timeline, and clears the exact
 submitted draft only after the owner reports persistence. Tool approvals are
 not granted by this surface; approval-required responses remain visible.

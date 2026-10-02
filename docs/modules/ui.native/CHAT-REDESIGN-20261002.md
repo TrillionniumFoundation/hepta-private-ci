@@ -5,6 +5,10 @@ The default screen is Chat. A 64 logical-pixel workspace rail exposes Chat and
 Console. Wide layouts use the same shared 280-pixel conversation column as the
 Rust web host; narrow layouts use a conversation list and selected-conversation
 Back flow. A bottom-pinned composer remains reachable at 150% scaling.
+Older messages / Back to latest use bounded pages rather than unbounded history
+merging. Reading older pages pauses latest polling; atomic page/room epochs and
+duplicate-ID rejection preserve cursor/content consistency. Identity markers are
+decorative initials from observed text, never trust or connection badges.
 
 ## Source and claim boundary
 
@@ -39,7 +43,8 @@ establish authenticated end-to-end chat.
   message. Only observed owner messages enter the timeline. An exact persisted
   submission receipt may clear only its original unchanged draft.
 - Reconnect checks the same pending operation through Reconcile; it does not
-  blindly replay an uncertain Send. Newer room selection rejects stale timeline
+  blindly replay an uncertain Send. Missing is not terminal absence proof:
+  the original identity/text remain locked until authoritative resolution. Newer room selection rejects stale timeline
   responses. Tool approvals are surfaced and never auto-approved here.
 
 ## Validation

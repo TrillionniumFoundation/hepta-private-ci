@@ -80,25 +80,27 @@ impl chat_app::ChatShell {
             .color(theme::MUTED),
         );
         ui.add_space(12.0);
-        if ui
-            .add_enabled(
-                self.chat_transport_ready(),
-                egui::Button::new(self.locale.text("New conversation", "新建对话")),
-            )
-            .clicked()
-        {
-            self.create_chat();
-        }
-
-        if ui
-            .add_enabled(
-                self.chat_transport_ready(),
-                egui::Button::new(self.locale.text("Refresh conversations", "刷新对话")),
-            )
-            .clicked()
-        {
-            self.refresh_chats(None);
-        }
+        ui.horizontal(|ui| {
+            if ui
+                .add_enabled(
+                    self.chat_transport_ready(),
+                    egui::Button::new(self.locale.text("New conversation", "新建对话")),
+                )
+                .clicked()
+            {
+                self.create_chat();
+            }
+            if ui
+                .add_enabled(
+                    self.chat_transport_ready(),
+                    egui::Button::new(self.locale.text("Refresh", "刷新")),
+                )
+                .on_hover_text(self.locale.text("Refresh conversations", "刷新对话"))
+                .clicked()
+            {
+                self.refresh_chats(None);
+            }
+        });
         if self.chat_bridge.list_cursor.is_some() {
             if ui
                 .add_enabled(
@@ -140,21 +142,40 @@ impl chat_app::ChatShell {
             .id_salt("chat-room-list")
             .show(ui, |ui| {
                 for room in rooms {
-                    let label = if room.unread > 0 {
-                        format!("{} ({})\n{}", room.title, room.unread, room.preview)
+                    let title = if self.locale == Locale::Chinese && room.title.trim().is_empty() {
+                        "新建对话"
                     } else {
-                        format!("{}\n{}", room.title, room.preview)
+                        room.display_title()
                     };
-                    if ui
-                        .add(
-                            egui::Button::new(label)
-                                .selected(self.chat.selected.as_deref() == Some(room.id.as_str()))
-                                .min_size(egui::vec2(ui.available_width(), design::CONTROL_HEIGHT)),
-                        )
-                        .clicked()
-                    {
-                        self.select_chat(&room.id);
-                    }
+                    let preview =
+                        if self.locale == Locale::Chinese && room.preview.trim().is_empty() {
+                            "打开对话"
+                        } else {
+                            room.display_preview()
+                        };
+                    let label = if room.unread > 0 {
+                        format!("{title} ({})\n{preview}", room.unread)
+                    } else {
+                        format!("{title}\n{preview}")
+                    };
+                    ui.horizontal(|ui| {
+                        theme::identity_mark(ui, &room.title);
+                        if ui
+                            .add(
+                                egui::Button::new(label)
+                                    .selected(
+                                        self.chat.selected.as_deref() == Some(room.id.as_str()),
+                                    )
+                                    .min_size(egui::vec2(
+                                        ui.available_width(),
+                                        design::CONTROL_HEIGHT,
+                                    )),
+                            )
+                            .clicked()
+                        {
+                            self.select_chat(&room.id);
+                        }
+                    });
                 }
             });
     }
@@ -168,21 +189,62 @@ impl chat_app::ChatShell {
             .conversations
             .iter()
             .find(|room| Some(&room.id) == self.chat.selected.as_ref())
-            .map(|room| room.title.as_str())
-            .unwrap_or(self.locale.text("Your next conversation", "开启下一段对话"));
+            .map(|room| {
+                if self.locale == Locale::Chinese && room.title.trim().is_empty() {
+                    "新建对话"
+                } else {
+                    room.display_title()
+                }
+            })
+            .unwrap_or(if self.chat.selected.is_some() {
+                self.locale.text("New conversation", "新建对话")
+            } else {
+                self.locale.text("Your next conversation", "开启下一段对话")
+            });
         ui.heading(title);
         ui.label(egui::RichText::new(self.chat_status_text()).color(theme::MUTED));
+        if self.chat.page.cursor.is_some() || self.chat.page.next_cursor.is_some() {
+            ui.horizontal_wrapped(|ui| {
+                if self.chat.page.next_cursor.is_some()
+                    && ui
+                        .add_enabled(
+                            self.chat_transport_ready() && !self.chat.page.loading,
+                            egui::Button::new(self.locale.text("Older messages", "更早的消息")),
+                        )
+                        .clicked()
+                {
+                    self.timeline_page(self.chat.page.next_cursor.clone());
+                }
+                if self.chat.page.cursor.is_some()
+                    && ui
+                        .add_enabled(
+                            self.chat_transport_ready() && !self.chat.page.loading,
+                            egui::Button::new(self.locale.text("Back to latest", "返回最新消息")),
+                        )
+                        .clicked()
+                {
+                    self.timeline_page(None);
+                }
+                if self.chat.page.loading && ui.available_width() >= 24.0 {
+                    ui.spinner();
+                }
+            });
+        }
         ui.separator();
         // Reserve composer space so long timelines cannot push it off-screen.
         let timeline_height = ui.available_height().max(0.0);
         egui::ScrollArea::vertical()
-            .id_salt(("chat-timeline", &self.chat.selected))
+            .id_salt(("chat-timeline", &self.chat.selected, &self.chat.page.cursor))
             .max_height(timeline_height)
             .min_scrolled_height(timeline_height)
             .stick_to_bottom(true)
             .show(ui, |ui| {
                 ui.set_min_width(ui.available_width());
-                if self.chat.messages.is_empty() {
+                if self.chat.messages.is_empty() && self.chat.page.loading {
+                    ui.spinner();
+                    ui.label(self.locale.text("Loading messages…", "正在加载消息…"));
+                }
+                if self.chat.messages.is_empty() && !self.chat.page.loading {
                     ui.add_space(24.0);
                     theme::brand_mark(ui);
                     ui.heading(self.locale.text("Space for your ideas", "让想法自由生长"));
@@ -196,14 +258,15 @@ impl chat_app::ChatShell {
                     }
                 }
                 for message in &self.chat.messages {
-                    theme::card().show(ui, |ui| {
+                    theme::card().corner_radius(design::BUBBLE_RADIUS).show(ui, |ui| {
                         ui.horizontal_wrapped(|ui| {
+                            theme::identity_mark(ui, &message.sender);
                             ui.strong(&message.sender);
                             ui.label(egui::RichText::new(&message.timestamp).small().color(theme::MUTED));
                         });
                         ui.label(&message.body);
                     });
-                    ui.add_space(8.0);
+                    ui.add_space(design::MESSAGE_SPACING);
                 }
             });
     }
@@ -211,15 +274,23 @@ impl chat_app::ChatShell {
     fn chat_composer(&mut self, ui: &mut egui::Ui) {
         ui.separator();
         let label = ui.label(self.locale.text("Message", "消息"));
-        ui.add(
-            egui::TextEdit::multiline(&mut self.chat.draft)
-                .id(egui::Id::new("chat-composer"))
-                .desired_width(f32::INFINITY)
-                .desired_rows(2)
-                .char_limit(4096)
-                .hint_text(self.locale.text("Write a message…", "输入消息…")),
-        )
-        .labelled_by(label.id);
+        egui::Frame::new()
+            .fill(theme::SURFACE)
+            .stroke(egui::Stroke::new(1.0, theme::BORDER))
+            .corner_radius(design::COMPOSER_RADIUS)
+            .inner_margin(10)
+            .show(ui, |ui| {
+                ui.add(
+                    egui::TextEdit::multiline(&mut self.chat.draft)
+                        .id(egui::Id::new("chat-composer"))
+                        .frame(egui::Frame::NONE)
+                        .desired_width(f32::INFINITY)
+                        .desired_rows(2)
+                        .char_limit(4096)
+                        .hint_text(self.locale.text("Write a message…", "输入消息…")),
+                )
+                .labelled_by(label.id);
+            });
         ui.horizontal_wrapped(|ui| {
             ui.label(
                 egui::RichText::new(self.locale.text(

@@ -121,3 +121,29 @@ pub(super) fn brand_mark(ui: &mut egui::Ui) {
     ui.painter()
         .circle_stroke(rect.center(), 5.0, egui::Stroke::new(1.0, VIOLET));
 }
+
+/// Decorative initial from observed text; never a connection or trust badge.
+pub(super) fn identity_mark(ui: &mut egui::Ui, label: &str) {
+    let initial = label
+        .trim()
+        .chars()
+        .next()
+        .map(|value| value.to_uppercase().collect::<String>())
+        .unwrap_or_else(|| "?".into());
+    let size = super::chat_model::design::AVATAR_SIZE;
+    let (rect, _) = ui.allocate_exact_size(egui::vec2(size, size), egui::Sense::hover());
+    ui.painter()
+        .circle_filled(rect.center(), size * 0.5, BACKGROUND);
+    ui.painter().circle_stroke(
+        rect.center(),
+        size * 0.5 - 0.5,
+        egui::Stroke::new(1.0, BORDER),
+    );
+    ui.painter().text(
+        rect.center(),
+        egui::Align2::CENTER_CENTER,
+        initial,
+        egui::FontId::proportional(13.0),
+        CYAN,
+    );
+}

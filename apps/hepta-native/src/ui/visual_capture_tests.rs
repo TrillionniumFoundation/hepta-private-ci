@@ -82,6 +82,8 @@ fn capture_app(
     let observed = Arc::clone(&complete);
     let options = eframe::NativeOptions {
         renderer: eframe::Renderer::Glow,
+        persist_window: false,
+        persistence_path: Some(output.with_extension("fixture-state")),
         viewport: egui::ViewportBuilder::default()
             .with_title("Hepta Native • LOCAL DISCONNECTED FIXTURE")
             .with_inner_size([size[0] as f32, size[1] as f32])

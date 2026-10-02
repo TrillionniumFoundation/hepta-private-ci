@@ -9,6 +9,7 @@ on:
       - apps/hepta-native/src/chat_runtime*.rs
       - apps/hepta-native/src/main*.rs
       - apps/hepta-native/src/launch_config.rs
+      - apps/hepta-native/src/runtime.rs
       - apps/hepta-ui-shared/**
       - .github/workflows/hepta-diagnostic-source-export.yml
   workflow_dispatch:
@@ -270,8 +271,6 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
-        with:
-          toolchain: 1.95.0
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.58.0,cargo-nextest@0.9.146
@@ -279,13 +278,14 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev libgl1-mesa-dev libssl-dev xvfb xauth python3-pil
-      - name: Verify exact source and UI-only fixtures
+      - name: Verify exact source and bounded chat/runtime fixtures
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           mkdir -p "$HEPTA_NATIVE_SCREENSHOT_DIR"
           git show --no-patch --format='commit=%H%ntree=%T%nsubject=%s' HEAD > "$HEPTA_NATIVE_SCREENSHOT_DIR/source.txt"
           just test --manifest-path ../apps/hepta-native/Cargo.toml --locked --lib --bin hepta-native -E 'test(ui::) | test(chat_runtime::) | test(main_bootstrap)' 2>&1 | tee "$HEPTA_NATIVE_SCREENSHOT_DIR/tests.log"
+          just test --manifest-path ../apps/hepta-native/Cargo.toml --locked --test runtime 2>&1 | tee -a "$HEPTA_NATIVE_SCREENSHOT_DIR/tests.log"
       - name: Render disconnected and local-fixture chat layouts
         run: |
           set -euo pipefail
@@ -300,7 +300,7 @@ jobs:
               image = Image.open(path)
               image.save(path.with_suffix(".png"))
               captures.append({"file": path.with_suffix(".png").name, "size": image.size})
-          assert captures, "No rendered native screenshots"
+          assert len(captures) == 9, "Expected nine exact-size native screenshots"
           (root / "manifest.json").write_text(json.dumps({"fixture": True, "liveAccounts": False, "nativeSecurityQualification": False, "installedAcceptance": False, "captures": captures}, indent=2))
           PYCODE
           git diff --exit-code

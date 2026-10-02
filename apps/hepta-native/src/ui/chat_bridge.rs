@@ -8,7 +8,7 @@ use std::collections::VecDeque;
 pub(super) struct ChatBridge {
     runtime: Option<ChatRuntime>,
     config: Option<ChatConfig>,
-    pending: VecDeque<(ChatCommand, u64)>,
+    pending: VecDeque<(ChatCommand, u64, u64)>,
     pub(super) error: Option<String>,
     submission: Option<(String, String, String)>,
     next_poll: Option<Instant>,
@@ -51,7 +51,7 @@ impl chat_app::ChatShell {
             .chat_bridge
             .pending
             .iter()
-            .any(|(pending, _)| pending == &command)
+            .any(|(pending, _, _)| pending == &command)
         {
             return Ok(());
         }
@@ -61,9 +61,14 @@ impl chat_app::ChatShell {
             .as_ref()
             .ok_or("Messaging is not configured")?;
         runtime.request(command.clone())?;
+        let page_epoch = if matches!(command, ChatCommand::Timeline { .. }) {
+            self.chat.page.begin()
+        } else {
+            self.chat.page.epoch
+        };
         self.chat_bridge
             .pending
-            .push_back((command, self.chat.selection_epoch));
+            .push_back((command, self.chat.selection_epoch, page_epoch));
         Ok(())
     }
 
@@ -76,6 +81,18 @@ impl chat_app::ChatShell {
             }) {
                 self.chat_bridge.error = Some(error);
             }
+        }
+    }
+
+    pub(super) fn timeline_page(&mut self, cursor: Option<String>) {
+        if let Some(thread_id) = self.chat.selected.clone()
+            && let Err(error) = self.request_chat(ChatCommand::Timeline {
+                thread_id,
+                cursor,
+                limit: MAX_CHAT_PAGE,
+            })
+        {
+            self.chat_bridge.error = Some(error);
         }
     }
 
@@ -155,7 +172,7 @@ impl chat_app::ChatShell {
             .map(ChatRuntime::poll)
             .unwrap_or_default();
         for response in responses {
-            let Some((command, epoch)) = self.chat_bridge.pending.pop_front() else {
+            let Some((command, epoch, page_epoch)) = self.chat_bridge.pending.pop_front() else {
                 continue;
             };
             match response {
@@ -164,13 +181,14 @@ impl chat_app::ChatShell {
                     if response.approval_required {
                         self.chat_bridge.error = Some("This turn requires tool approval. Open the authorized approval interface to review it; this chat surface does not grant permissions.".into());
                     }
-                    self.apply_chat_result(response.result, command, epoch);
+                    self.apply_chat_result(response.result, command, epoch, page_epoch);
                 }
                 Err(error) => {
                     self.chat.availability = chat_model::ChatAvailability::Offline;
                     self.chat_bridge.error = Some(error);
                     self.chat_bridge.runtime = None;
                     self.chat_bridge.pending.clear();
+                    self.chat.page.loading = false;
                     break;
                 }
             }
@@ -190,7 +208,7 @@ impl chat_app::ChatShell {
                         operation_id: operation.clone(),
                         text: text.clone(),
                     })
-                } else {
+                } else if self.chat.page.cursor.is_none() {
                     self.chat
                         .selected
                         .clone()
@@ -199,6 +217,8 @@ impl chat_app::ChatShell {
                             cursor: None,
                             limit: MAX_CHAT_PAGE,
                         })
+                } else {
+                    None
                 };
                 if let Some(command) = command
                     && let Err(error) = self.request_chat(command)
@@ -210,7 +230,13 @@ impl chat_app::ChatShell {
         }
     }
 
-    fn apply_chat_result(&mut self, result: ChatResult, command: ChatCommand, epoch: u64) {
+    fn apply_chat_result(
+        &mut self,
+        result: ChatResult,
+        command: ChatCommand,
+        epoch: u64,
+        page_epoch: u64,
+    ) {
         match result {
             ChatResult::Conversations { data, next_cursor } => {
                 if matches!(command, ChatCommand::List { cursor: None, .. }) {
@@ -236,7 +262,15 @@ impl chat_app::ChatShell {
             }
             ChatResult::Conversation { data } => {
                 let id = data.id.clone();
-                if !self.chat.conversations.iter().any(|room| room.id == id) {
+                if let Some(existing) = self
+                    .chat
+                    .conversations
+                    .iter_mut()
+                    .find(|room| room.id == id)
+                {
+                    existing.title = data.title;
+                    existing.preview = data.preview;
+                } else {
                     self.chat.conversations.push(chat_model::Conversation {
                         id: id.clone(),
                         title: data.title,
@@ -246,6 +280,7 @@ impl chat_app::ChatShell {
                 }
                 if matches!(command, ChatCommand::Create) {
                     self.chat.select(&id);
+                    self.chat_bridge.active_turn = None;
                     self.chat_show_list = false;
                 }
             }
@@ -253,7 +288,7 @@ impl chat_app::ChatShell {
                 thread_id,
                 data,
                 active_turn_id,
-                ..
+                next_cursor,
             } => {
                 let messages = data
                     .into_iter()
@@ -264,8 +299,24 @@ impl chat_app::ChatShell {
                         timestamp: String::new(),
                     })
                     .collect();
-                if self.chat.observe_messages(&thread_id, epoch, messages) {
-                    self.chat_bridge.active_turn = active_turn_id;
+                if let ChatCommand::Timeline { cursor, .. } = command {
+                    if self.chat.observe_timeline_page(
+                        &thread_id,
+                        epoch,
+                        page_epoch,
+                        cursor,
+                        next_cursor,
+                        messages,
+                    ) {
+                        self.chat_bridge.active_turn = active_turn_id;
+                    } else if self.chat.selected.as_deref() == Some(thread_id.as_str())
+                        && epoch == self.chat.selection_epoch
+                        && page_epoch == self.chat.page.epoch
+                    {
+                        self.chat.page.failed(page_epoch);
+                        self.chat_bridge.error =
+                            Some("Message page was invalid; the previous page is retained.".into());
+                    }
                 }
             }
             ChatResult::Submission {
@@ -289,8 +340,14 @@ impl chat_app::ChatShell {
                             self.chat.sending = false;
                         }
                         SubmissionState::Queued { .. } => {}
-                        SubmissionState::Missing | SubmissionState::Cancelled => {
-                            self.chat_bridge.error = Some("Message was not persisted. Your draft is retained; review before sending again.".into());
+                        SubmissionState::Missing => {
+                            self.chat_bridge.error = Some("Message delivery is not confirmed. The original send identity and draft are retained; checking status does not send it again.".into());
+                        }
+                        SubmissionState::Cancelled => {
+                            self.chat_bridge.error = Some(
+                                "The server cancelled this submission. Your draft is retained."
+                                    .into(),
+                            );
                             self.chat_bridge.submission = None;
                             self.chat.sending = false;
                         }

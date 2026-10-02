@@ -86,10 +86,10 @@ impl std::fmt::Display for ConsoleUnavailable {
 impl std::error::Error for ConsoleUnavailable {}
 
 pub(super) fn classify_console_connection_error(
-    error: hepta_native::error::ShellError,
+    error: hepta_native::ui::NativeAppStartupError,
 ) -> Box<dyn std::error::Error> {
     use std::io::ErrorKind;
-    if matches!(&error, hepta_native::error::ShellError::Io(io) if matches!(io.kind(), ErrorKind::ConnectionRefused | ErrorKind::ConnectionReset | ErrorKind::ConnectionAborted | ErrorKind::NotConnected | ErrorKind::TimedOut | ErrorKind::AddrNotAvailable))
+    if matches!(&error, hepta_native::ui::NativeAppStartupError::Connection(hepta_native::error::ShellError::Io(io)) if matches!(io.kind(), ErrorKind::ConnectionRefused | ErrorKind::ConnectionReset | ErrorKind::ConnectionAborted | ErrorKind::NotConnected | ErrorKind::TimedOut | ErrorKind::AddrNotAvailable))
     {
         Box::new(ConsoleUnavailable(error.to_string()))
     } else {
