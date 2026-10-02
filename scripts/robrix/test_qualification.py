@@ -241,5 +241,23 @@ class TestActualPackageResources(unittest.TestCase):
                 validate_pinned_resources(package, source, compiled)
 
 
+class TestFrameworkCompatibility(unittest.TestCase):
+    def test_changed_framework_source_cannot_be_patched(self):
+        import framework_compat
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for name in framework_compat.BEFORE:
+                path = root / name
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text('changed upstream source')
+            with self.assertRaisesRegex(ValueError, 'source hash drift'):
+                framework_compat.apply(root)
+
+    def test_unknown_reporter_shape_is_rejected(self):
+        from framework_compat import local_reporter
+        with self.assertRaisesRegex(ValueError, 'shape drift'):
+            local_reporter('altered upstream reporter')
+
+
 if __name__ == '__main__':
     unittest.main()

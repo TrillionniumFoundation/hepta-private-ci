@@ -52,6 +52,8 @@ jobs:
           "$RUNNER_TEMP/robrix-marker-tests"
       - name: Bind source, compiler and preserved license identity
         run: python scripts/robrix/qualify.py identity
+      - name: Apply exact Makepad web-startup compatibility
+        run: python scripts/robrix/qualify.py framework-compat
       - name: Execute native lifecycle, dock and read-only Console tests
         if: matrix.platform == 'native'
         run: python scripts/robrix/qualify.py native-tests

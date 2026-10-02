@@ -1,0 +1,132 @@
+--- a/platform/src/os/web/web.rs
++++ b/platform/src/os/web/web.rs
+@@ -122,19 +122,15 @@
+                     );
+                     self.os_type = tw.browser_info.into();
+                     self.xr_capabilities = tw.xr_capabilities.into();
+-                    let id_zero = CxWindowPool::id_zero();
+-                    let mut new_geom: WindowGeom = tw.window_info.into();
+-                    {
+-                        let window = &mut self.windows[id_zero];
+-                        window.os_dpi_factor = Some(new_geom.dpi_factor);
+-                        new_geom = window.native_window_geom_to_layout(new_geom);
+-                    }
+-                    self.os.window_geom = new_geom.clone();
+-                    self.windows[id_zero].window_geom = new_geom;
+-                    //self.default_inner_window_size = self.os.window_geom.inner_size;
+-
++                    assert!(!self.os.hepta_startup_received, "duplicate ToWasmInit");
++                    self.os.hepta_startup_received = true;
++                    let native_geom: WindowGeom = tw.window_info.into();
++                    // Startup creates the scripted Window. Consumers must already see
++                    // the browser dimensions, but no window may be indexed yet.
++                    self.os.window_geom = native_geom.clone();
+                     self.set_physical_keyboard_state(true);
+-                    self.call_event_handler(&Event::Startup);
++                    self.os.window_geom = self.hepta_web_startup_geometry(native_geom)
++                        .expect("web Startup must create the main window");
+                     self.redraw_all();
+                     //self.platform.from_wasm(FromWasmCreateThread{thread_id:1});
+                 }
+@@ -142,16 +138,12 @@
+                 live_id!(ToWasmResizeWindow) => {
+                     let tw = ToWasmResizeWindow::read_to_wasm(&mut to_wasm);
+                     let old_geom = self.os.window_geom.clone();
+-                    let mut new_geom: WindowGeom = tw.window_info.into();
++                    assert!(self.os.hepta_startup_received, "resize before ToWasmInit");
+                     let id_zero = CxWindowPool::id_zero();
+-                    {
+-                        let window = &mut self.windows[id_zero];
+-                        window.os_dpi_factor = Some(new_geom.dpi_factor);
+-                        new_geom = window.native_window_geom_to_layout(new_geom);
+-                    }
++                    let new_geom = self.hepta_web_window_geometry(tw.window_info.into())
++                        .expect("web resize requires the main window");
+                     if old_geom != new_geom {
+                         self.os.window_geom = new_geom.clone();
+-                        self.windows[id_zero].window_geom = new_geom.clone();
+                         self.call_event_handler(&Event::WindowGeomChange(WindowGeomChangeEvent {
+                             window_id: id_zero,
+                             old_geom: old_geom,
+@@ -1186,6 +1178,7 @@
+ // storage buffers for graphics API related platform
+ pub struct CxOs {
+     pub(crate) window_geom: WindowGeom,
++    hepta_startup_received: bool,
+ 
+     pub from_wasm: Option<FromWasmMsg>,
+ 
+@@ -1203,6 +1196,7 @@
+     fn default() -> Self {
+         Self {
+             window_geom: WindowGeom::default(),
++            hepta_startup_received: false,
+ 
+             from_wasm: Some(FromWasmMsg::new()),
+ 
+--- a/platform/src/window.rs
++++ b/platform/src/window.rs
+@@ -1293,3 +1293,63 @@
+         assert!(cx.platform_ops.is_empty());
+     }
+ }
++
++// Hepta compatibility for Makepad 493d23a: web Startup owns window creation.
++impl Cx {
++    pub fn hepta_web_startup_geometry(&mut self, native: WindowGeom) -> Result<WindowGeom, &'static str> {
++        if self.windows.is_valid(CxWindowPool::id_zero()) {
++            return Err("web startup window already exists");
++        }
++        self.call_event_handler(&crate::event::Event::Startup);
++        self.hepta_web_window_geometry(native)
++    }
++
++    pub fn hepta_web_window_geometry(&mut self, native: WindowGeom) -> Result<WindowGeom, &'static str> {
++        let id = CxWindowPool::id_zero();
++        if !self.windows.is_valid(id) { return Err("web main window was not created"); }
++        let window = &mut self.windows[id];
++        window.os_dpi_factor = Some(native.dpi_factor);
++        let layout = window.native_window_geom_to_layout(native);
++        window.window_geom = layout.clone();
++        Ok(layout)
++    }
++}
++
++#[cfg(test)]
++mod hepta_web_startup_tests {
++    use super::*;
++    use std::{cell::RefCell, rc::Rc};
++    fn native(width: f64) -> WindowGeom {
++        WindowGeom { dpi_factor: 2.0, inner_size: Vec2d { x: width, y: 600.0 }, ..Default::default() }
++    }
++    #[test]
++    fn startup_creates_real_window_before_dpi_and_repeat_is_rejected() {
++        let owner = Rc::new(RefCell::new(None));
++        let keep = owner.clone();
++        let mut cx = Cx::new(Box::new(move |cx, event| {
++            if matches!(event, crate::event::Event::Startup) {
++                let window = WindowHandle::new(cx);
++                cx.windows[window.window_id()].dpi_override = Some(1.0);
++                *keep.borrow_mut() = Some(window);
++            }
++        }));
++        let geom = cx.hepta_web_startup_geometry(native(800.0)).unwrap();
++        assert_eq!(geom.inner_size, Vec2d { x: 1600.0, y: 1200.0 });
++        assert_eq!(geom.dpi_factor, 1.0);
++        assert!(cx.hepta_web_startup_geometry(native(800.0)).is_err());
++        assert_eq!(cx.windows.id_iter().count(), 1);
++        let updated = cx.hepta_web_window_geometry(native(400.0)).unwrap();
++        assert_eq!(updated.inner_size, Vec2d { x: 800.0, y: 1200.0 });
++        assert_eq!(cx.hepta_web_window_geometry(native(400.0)).unwrap(), updated);
++    }
++    #[test]
++    fn startup_without_a_window_is_an_explicit_error() {
++        let mut cx = Cx::new(Box::new(|_, _| {}));
++        assert_eq!(cx.hepta_web_startup_geometry(native(800.0)), Err("web main window was not created"));
++    }
++    #[test]
++    fn resize_before_window_creation_is_an_explicit_error() {
++        let mut cx = Cx::new(Box::new(|_, _| {}));
++        assert_eq!(cx.hepta_web_window_geometry(native(800.0)), Err("web main window was not created"));
++    }
++}

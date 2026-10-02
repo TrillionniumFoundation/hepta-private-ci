@@ -178,3 +178,26 @@ resources remain exact raw copies. All six real transformed bootstrap modules
 are syntax-checked before the heavy app build; hashes record each transform.
 This compatibility preflight is not app execution. Package hashes are saved
 before resource validation so a failure preserves byte-level diagnostics.
+
+
+## Pinned web startup correction
+
+Run 37067849794 passed packaging and all 13 browser regressions, then the real
+canvas startup panicked at Makepad web.rs:128: window zero was indexed before
+Startup had created any window. The pinned JS contract creates Cx, sends one
+ToWasmInit, then binds resize/input; no earlier initialization message is missing.
+The explicit patch in patches/makepad-493d23a-web-startup.patch preserves raw
+browser geometry for Startup, creates the real scripted window, then applies its
+DPI override once. Duplicate init and missing-window startup/resize fail explicitly.
+Native event ordering is unchanged. Three new tests run on real Makepad Cx,
+WindowHandle, window pool and DPI conversion, in addition to the 19 application
+native tests. They cover initial creation, repeated startup, idempotent resize and
+no-window errors. Hosted WASM compilation and actual canvas remain mandatory.
+Both upstream files are SHA-checked before applying the committed patch, with
+before/after hashes and patch bytes retained alongside exact application identity.
+
+Generated HTML's existing reporter is changed to console.error before bootstrap;
+it still records panic/exception diagnostics and still fails capture. Automatic
+/$report_error transmission is disabled for packages produced by this pipeline.
+The dependency web.js reporter delegates to this installed supported override.
+This does not authorize live-account qualification or production deployment.

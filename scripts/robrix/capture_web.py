@@ -42,14 +42,17 @@ def main():
                         failures, messages, wasm, responses = [], [], [], []
                         def route(request_route):
                             url = request_route.request.url
-                            if url.startswith(origin + '/') or url.startswith(('data:', 'blob:')):
+                            if urlsplit(url).path == '/$report_error':
+                                failures.append('Automatic panic telemetry was attempted')
+                                request_route.abort()
+                            elif url.startswith(origin + '/') or url.startswith(('data:', 'blob:')):
                                 request_route.continue_()
                             else:
                                 failures.append('Forbidden external request: ' + urlsplit(url).netloc)
                                 request_route.abort()
                         context.route('**/*', route)
                         page = context.new_page()
-                        page.on('pageerror', lambda error: failures.append(str(error)))
+                        page.on('pageerror', lambda error: failures.append(getattr(error, 'stack', str(error))))
                         page.on('console', lambda message: messages.append(f'{message.type}: {message.text}'))
                         def response_received(response):
                             responses.append({'url': response.url, 'status': response.status})

@@ -67,6 +67,7 @@ def identity():
             'appTree': run(['git', 'rev-parse', 'HEAD:apps/hepta-robrix']).strip(),
             'cargoLockSha256': digest(APP / 'Cargo.lock'),
             'upstream': {k: upstream[k] for k in ('commit', 'tree', 'upstream')},
+            'makepadFrameworkPatchSha256': digest(ROOT / 'scripts/robrix/patches/makepad-493d23a-web-startup.patch'),
             'makepad': MAKEPAD, 'matrixSdk': '0.19.1', 'fixture': True,
             'liveAccounts': False, 'securityQualification': False,
             'installedAcceptance': False,
@@ -87,7 +88,21 @@ def checked_tests(args, log, minimum):
     assert all(row[1:] == ('0', '0') for row in summaries), 'Failed or ignored tests'
 
 
+def framework_compat():
+    from framework_compat import apply
+    metadata = json.loads(subprocess.check_output(['cargo', '+nightly-2026-10-01', 'metadata',
+        '--locked', '--format-version', '1', '--filter-platform', 'wasm32-unknown-unknown',
+        '--features', 'ui-fixture'], cwd=APP, text=True))
+    source = compiled_resource_root(metadata, MAKEPAD)
+    receipt = apply(source)
+    (OUT / 'makepad-framework-compat.json').write_text(json.dumps(receipt, indent=2))
+    shutil.copyfile(ROOT / 'scripts/robrix/patches/makepad-493d23a-web-startup.patch',
+                    OUT / 'makepad-framework-compat.patch')
+
+
 def native_tests():
+    checked_tests(['cargo', '+1.96.0', 'test', '--locked', '-p', 'makepad-platform', '--lib',
+                   'hepta_web_startup_tests', '--', '--nocapture'], 'makepad-web-startup-tests.log', 3)
     for module, minimum in [('hepta_console::tests', 4),
                             ('home::main_desktop_ui::hepta_dock_tests', 3),
                             ('app::ui_fixture::tests', 1),
@@ -122,6 +137,8 @@ def web_build():
     (OUT / 'makepad-resource-transform-preflight.json').write_text(json.dumps(
         {'realJs': check_real_js(transform_binary, source, OUT),
          'byteContractTests': check_resource_contract(transform_binary, source)}, indent=2))
+    from framework_compat import local_reporter
+    after = local_reporter(after)
     target.write_text(after)
     utility = source / 'tools/cargo_makepad/src/utils.rs'
     utility_before = utility.read_text()
@@ -304,7 +321,7 @@ def native_capture():
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('mode', choices=['identity', 'native-tests', 'native-capture', 'web-build', 'web-tests'])
+    parser.add_argument('mode', choices=['framework-compat', 'identity', 'native-tests', 'native-capture', 'web-build', 'web-tests'])
     mode = parser.parse_args().mode
     OUT.mkdir(parents=True, exist_ok=True)
     globals()[mode.replace('-', '_')]()
