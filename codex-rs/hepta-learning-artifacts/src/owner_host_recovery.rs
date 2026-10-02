@@ -140,3 +140,65 @@ pub(super) fn validate_checkpoint_shape(
     }
     Ok(())
 }
+
+/// Unfinished durability claims must be checked against their current bytes
+/// before recovery or any later phase can publish a further effect.
+pub(super) fn verify_transaction_effects(
+    host: &LearningArtifactOwnerHost,
+    transaction: &ArtifactPublicationTransactionV1,
+    now: u64,
+) -> Result<(), ArtifactOwnerHostError> {
+    let snapshot = transaction.snapshot();
+    if snapshot.phase == ArtifactPublicationPhaseV1::Prepared {
+        return Ok(());
+    }
+    let manifest = &snapshot.intent.admission.validated_manifest.manifest;
+    let payload_path = host.root.join("payloads").join(format!(
+        "{}-{}.bin",
+        manifest.artifact_id, manifest.bytes_digest,
+    ));
+    let bytes = crate::storage::read_bounded(
+        File::open(payload_path)?,
+        64 * 1024 * 1024,
+        manifest.encoded_size_bytes,
+        crate::ArtifactStorageError::PayloadMismatch,
+    )?;
+    if Digest32::of_bytes(&bytes) != manifest.bytes_digest {
+        return Err(ArtifactPublicationError::PayloadMismatch.into());
+    }
+    if let Some(receipt) = snapshot.registry_receipt {
+        let registry =
+            read_registry_snapshot(File::open(host.registry_snapshot_path(receipt))?, receipt)?;
+        host.load_admissions_for_registry(&registry, receipt.binding)?;
+    }
+    if let Some(receipt) = snapshot.witness_receipt {
+        let current = host
+            .discover_current_head_unanchored(now)?
+            .ok_or(ArtifactOwnerHostError::CurrentHeadConflict)?;
+        if current.witness_digest != receipt.witness_digest {
+            return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+        }
+        host.validate_recorded_publication_head(
+            &current.signed,
+            &checkpoint_from_snapshot(&snapshot, host.writer_lease_digest()),
+        )?;
+        let requirement = RegistryHeadRequirementV1 {
+            registry_id: current.signed.witness.registry_id.clone(),
+            minimum_generation: current.signed.witness.generation,
+            expected_predecessor_head_digest: snapshot.intent.expected_registry_predecessor_head,
+            minimum_authority_epoch: current.signed.witness.authority_epoch,
+            now: current.signed.witness.issued_at,
+        };
+        let path = host.root.join("witnesses").join(format!(
+            "{}-{}.witness",
+            current.signed.witness.generation.get(),
+            receipt.witness_digest,
+        ));
+        if read_registry_head_witness(File::open(path)?, receipt, &requirement)?
+            != current.signed.witness
+        {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+    }
+    Ok(())
+}

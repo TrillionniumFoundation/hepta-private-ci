@@ -113,6 +113,15 @@ impl LearningArtifactOwnerHost {
         predecessor: &DatasetWithdrawalRegistry,
         now: u64,
     ) -> Result<ArtifactWithdrawalBootstrapReceiptV1, ArtifactOwnerHostError> {
+        let _gate = self
+            .publication_gate
+            .lock()
+            .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
+        if !self.recovery_required_operations()?.is_empty()
+            || !self.state_recovery_operations()?.is_empty()
+        {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
         self.require_current_writer(now)?;
         self.verify_bootstrap_authorization(request, now, true)?;
         if self.recover_publication(&request.operation_id)?.is_some()
@@ -164,6 +173,7 @@ impl LearningArtifactOwnerHost {
         {
             return Err(ArtifactOwnerHostError::Capacity);
         }
+        capacity::reserve(self, "withdrawals", MAX_HEAD_RECORDS * 3, 1)?;
         let relative = withdrawal_path(withdrawal_receipt);
         match write_dataset_withdrawal_snapshot_beneath(
             &self.root,

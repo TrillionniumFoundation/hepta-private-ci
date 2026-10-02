@@ -9,12 +9,27 @@ impl LearningArtifactOwnerHost {
         registry: &ArtifactRegistry,
         predecessor_withdrawal: &DatasetWithdrawalRegistry,
     ) -> Result<ArtifactOwnerStatePublicationReceiptV1, ArtifactOwnerHostError> {
+        let _gate = self
+            .publication_gate
+            .lock()
+            .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
         let operation = &request.intent.operation_id;
+        if !self.recovery_required_operations()?.is_empty()
+            || self
+                .state_recovery_operations()?
+                .iter()
+                .any(|pending| pending != operation)
+        {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
         if self.recover_publication(operation)?.is_some() || self.bootstrap_record_exists(operation)
         {
             return Err(ArtifactOwnerHostError::IdentityConflict);
         }
         let existing = self.recover_state_publication(operation)?;
+        if existing.is_none() {
+            capacity::reserve_state(self)?;
+        }
         let request_digest = Self::state_request_digest(request);
         if let Some(checkpoint) = &existing {
             if checkpoint.request_digest != request_digest
