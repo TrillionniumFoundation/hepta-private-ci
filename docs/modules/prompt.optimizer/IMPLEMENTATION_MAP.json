@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "9bbe1784a1813752bd143e5591f6d8724539882c",
+    "tree": "4454fbc3f02a37a45f5ca648c4c07c7ac55e3dca"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "prompt.optimizer",
@@ -66,6 +66,27 @@
     "implementedOperationMappingComplete": true
   },
   "sourceRoot": [
+    "codex-rs/hepta-prompt-optimizer"
+  ],
+  "observedAtHead": {
+    "commit": "9bbe1784a1813752bd143e5591f6d8724539882c",
+    "tree": "4454fbc3f02a37a45f5ca648c4c07c7ac55e3dca"
+  },
+  "navigationRebindHistory": [
+    {
+      "previous": {
+        "sourceBase": {
+          "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
+          "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+        },
+        "observedAtHead": null
+      },
+      "reason": "Current source navigation reviewed during 2026-10-02 scoped module audit. No historical execution is renewed.",
+      "historicalExecutionRevalidated": false,
+      "authorityGranted": false
+    }
+  ],
+  "observedSourcePaths": [
     "codex-rs/hepta-prompt-optimizer"
   ]
 }

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "9bbe1784a1813752bd143e5591f6d8724539882c",
+    "tree": "4454fbc3f02a37a45f5ca648c4c07c7ac55e3dca"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.eval",
@@ -382,7 +382,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
-      "object": "51f32b736c9aa0bc067776b3b4ca9c80a3cb42aa"
+      "object": "c5b42c47579ec264022dad92873463cd2a8a3dbe"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/evaluated_shadow_segment_tests.rs",
@@ -396,5 +396,26 @@
       "path": "docs/modules/learning.eval/TECHNICAL.md",
       "object": "9cc96e05394f08aca263048ecdd40bfc112f7601"
     }
+  ],
+  "observedAtHead": {
+    "commit": "9bbe1784a1813752bd143e5591f6d8724539882c",
+    "tree": "4454fbc3f02a37a45f5ca648c4c07c7ac55e3dca"
+  },
+  "navigationRebindHistory": [
+    {
+      "previous": {
+        "sourceBase": {
+          "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
+          "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+        },
+        "observedAtHead": null
+      },
+      "reason": "Current source navigation reviewed during 2026-10-02 scoped module audit. No historical execution is renewed.",
+      "historicalExecutionRevalidated": false,
+      "authorityGranted": false
+    }
+  ],
+  "observedSourcePaths": [
+    "codex-rs/hepta-intelligence-eval"
   ]
 }
