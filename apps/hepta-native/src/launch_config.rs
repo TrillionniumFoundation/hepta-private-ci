@@ -9,6 +9,8 @@ use std::path::PathBuf;
 #[serde(deny_unknown_fields)]
 struct LaunchConfig {
     #[serde(default)]
+    chat_keyring_account: Option<String>,
+    #[serde(default)]
     lifecycle_keyring_account: Option<String>,
     endpoint_manifest: PathBuf,
     trusted_keys: PathBuf,
@@ -78,6 +80,10 @@ pub fn expand_launch_arguments(raw: &[String]) -> Result<Vec<String>, ShellError
     if let Some(account) = config.lifecycle_keyring_account {
         crate::model::validate_stable_id(&account, "lifecycle keyring account")?;
         args.extend(["--lifecycle-keyring-account".into(), account]);
+    }
+    if let Some(account) = config.chat_keyring_account {
+        crate::model::validate_stable_id(&account, "chat keyring account")?;
+        args.extend(["--chat-keyring-account".into(), account]);
     }
     if config.allow_clipboard {
         args.push("--allow-clipboard".into());

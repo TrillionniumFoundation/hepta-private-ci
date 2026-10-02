@@ -14,6 +14,7 @@ use zeroize::Zeroize as _;
 
 const SERVICE: &str = "hepta.native.session.v1";
 const GATEWAY_SERVICE: &str = "hepta.native.gateway.v1";
+const CHAT_SERVICE: &str = "hepta.native.gateway.chat.v1";
 const LIFECYCLE_SERVICE: &str = "hepta.native.gateway.lifecycle.v1";
 const MIN_GATEWAY_TOKEN_BYTES: usize = 32;
 const MAX_GATEWAY_TOKEN_BYTES: usize = 256;
@@ -116,6 +117,28 @@ impl<S: KeyringStore> GatewayCredentialStore<S> {
         account: &str,
     ) -> Result<GatewayCredentialProvisionReceipt, ShellError> {
         self.provision_for(GATEWAY_SERVICE, account)
+    }
+
+    pub fn provision_chat(
+        &self,
+        account: &str,
+    ) -> Result<GatewayCredentialProvisionReceipt, ShellError> {
+        self.provision_for(CHAT_SERVICE, account)
+    }
+
+    pub fn import_chat(&self, account: &str, token: &str) -> Result<(), ShellError> {
+        self.import_for(CHAT_SERVICE, account, token)
+    }
+
+    pub fn load_chat(&self, account: &str) -> Result<String, ShellError> {
+        self.load_for(CHAT_SERVICE, account)
+    }
+
+    pub fn delete_chat(&self, account: &str) -> Result<bool, ShellError> {
+        validate_stable_id(account, "chat credential account")?;
+        self.keyring
+            .delete(CHAT_SERVICE, account)
+            .map_err(|error| ShellError::Security(error.to_string()))
     }
 
     pub fn provision_lifecycle(

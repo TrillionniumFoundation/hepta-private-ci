@@ -8,6 +8,7 @@ use std::sync::atomic::Ordering;
 
 use hepta_native::backend::LoopbackGatewayBackend;
 use hepta_native::journal::OperationJournal;
+use hepta_native::launch_options::NativeLaunchOptions as AppConfig;
 use hepta_native::model::EndpointManifest;
 use hepta_native::platform::PlatformPolicy;
 use hepta_native::platform::SystemPlatformAdapter;
@@ -204,124 +205,6 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
             .spawn()?;
     }
     Ok(())
-}
-
-#[derive(Debug)]
-struct AppConfig {
-    check_connection: bool,
-    lifecycle_keyring_account: Option<String>,
-    font_file: Option<PathBuf>,
-    update_handoff: Option<String>,
-    endpoint_manifest: PathBuf,
-    trusted_keys: PathBuf,
-    final_use_authority: Option<PathBuf>,
-    updater_helper: Option<PathBuf>,
-    state_dir: PathBuf,
-    allowed_roots: Vec<PathBuf>,
-    allow_clipboard: bool,
-    allow_notifications: bool,
-}
-
-impl AppConfig {
-    fn parse(args: &[String]) -> Result<Self, Box<dyn std::error::Error>> {
-        let mut check_connection = false;
-        let mut lifecycle_keyring_account = None;
-        let mut font_file = None;
-        let mut update_handoff = None;
-        let mut endpoint_manifest = None;
-        let mut trusted_keys = None;
-        let mut final_use_authority = None;
-        let mut updater_helper = None;
-        let mut state_dir = None;
-        let mut allowed_roots = Vec::new();
-        let mut allow_clipboard = false;
-        let mut allow_notifications = false;
-        let mut index = 0;
-        while index < args.len() {
-            match args[index].as_str() {
-                "--lifecycle-keyring-account" => {
-                    index += 1;
-                    let account = args
-                        .get(index)
-                        .ok_or("--lifecycle-keyring-account requires an account")?
-                        .clone();
-                    hepta_native::model::validate_stable_id(&account, "lifecycle keyring account")?;
-                    if lifecycle_keyring_account.replace(account).is_some() {
-                        return Err("duplicate lifecycle keyring account".into());
-                    }
-                }
-                "--check-connection" => check_connection = true,
-                "--font-file" => {
-                    index += 1;
-                    font_file = Some(absolute_arg(args.get(index), "--font-file")?);
-                }
-                "--update-handoff" => {
-                    index += 1;
-                    let nonce = args
-                        .get(index)
-                        .ok_or("--update-handoff requires a nonce")?
-                        .clone();
-                    if update_handoff.replace(nonce).is_some() {
-                        return Err("duplicate --update-handoff".into());
-                    }
-                }
-                "--endpoint-manifest" => {
-                    index += 1;
-                    endpoint_manifest = Some(absolute_arg(args.get(index), "--endpoint-manifest")?);
-                }
-                "--trusted-keys" => {
-                    index += 1;
-                    trusted_keys = Some(absolute_arg(args.get(index), "--trusted-keys")?);
-                }
-                "--final-use-authority" => {
-                    index += 1;
-                    final_use_authority =
-                        Some(absolute_arg(args.get(index), "--final-use-authority")?);
-                }
-                "--updater-helper" => {
-                    index += 1;
-                    updater_helper = Some(absolute_arg(args.get(index), "--updater-helper")?);
-                }
-                "--state-dir" => {
-                    index += 1;
-                    state_dir = Some(absolute_arg(args.get(index), "--state-dir")?);
-                }
-                "--allow-root" => {
-                    index += 1;
-                    allowed_roots.push(absolute_arg(args.get(index), "--allow-root")?);
-                }
-                "--allow-clipboard" => allow_clipboard = true,
-                "--allow-notifications" => allow_notifications = true,
-                value => return Err(format!("unexpected argument {value}").into()),
-            }
-            index += 1;
-        }
-        Ok(Self {
-            check_connection,
-            lifecycle_keyring_account,
-            font_file,
-            update_handoff,
-            endpoint_manifest: endpoint_manifest.ok_or("missing --endpoint-manifest")?,
-            trusted_keys: trusted_keys.ok_or("missing --trusted-keys")?,
-            final_use_authority,
-            updater_helper,
-            state_dir: state_dir.ok_or("missing --state-dir")?,
-            allowed_roots,
-            allow_clipboard,
-            allow_notifications,
-        })
-    }
-}
-
-fn absolute_arg(
-    value: Option<&String>,
-    option: &'static str,
-) -> Result<PathBuf, Box<dyn std::error::Error>> {
-    let path = PathBuf::from(value.ok_or_else(|| format!("{option} requires a path"))?);
-    if !path.is_absolute() {
-        return Err(format!("{option} path must be absolute").into());
-    }
-    Ok(path)
 }
 
 fn default_updater_helper(current_exe: &Path) -> Result<PathBuf, Box<dyn std::error::Error>> {

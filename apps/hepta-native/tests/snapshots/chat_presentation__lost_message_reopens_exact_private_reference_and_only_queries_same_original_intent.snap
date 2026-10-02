@@ -1,0 +1,20 @@
+---
+source: tests/chat_presentation.rs
+expression: chat.presentation()
+---
+ChatPresentation {
+    agent_id: Some(
+        "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
+    ),
+    conversations: [],
+    messages: [],
+    selected_thread: None,
+    active_turn: None,
+    previous_action_pending: false,
+    approval_required: false,
+    last_submission: Some(
+        Persisted {
+            turn_id: "turn-1",
+        },
+    ),
+}

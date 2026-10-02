@@ -4,6 +4,8 @@ use crate::error::ShellError;
 use crate::model::sha256_hex;
 use crate::security::now_unix_ms;
 use codex_hepta_contracts::native_gateway::NativeGatewayRequestV2;
+use codex_hepta_contracts::native_gateway::chat::NativeGatewayChatOperationV2;
+use codex_hepta_contracts::native_gateway::chat::NativeGatewayChatRequestV2;
 use codex_hepta_contracts::native_gateway::lifecycle::NativeGatewayLifecycleRequestV2;
 use std::io::Read as _;
 use std::io::Write as _;
@@ -61,9 +63,36 @@ pub(crate) fn post_lifecycle(
     exchange(address, key, &request, ResponseProof::Lifecycle(proof))
 }
 
+pub(crate) fn post_chat(
+    address: SocketAddr,
+    key: &[u8],
+    operation: NativeGatewayChatOperationV2,
+    body: &[u8],
+    incarnation: [u8; 32],
+) -> Result<AuthenticatedRuntimeStatus, ShellError> {
+    let mut nonce = [0; 32];
+    getrandom::fill(&mut nonce).map_err(|e| ShellError::Security(format!("chat nonce: {e}")))?;
+    let path = codex_hepta_contracts::native_gateway::chat::NATIVE_GATEWAY_CHAT_PATH;
+    let proof = NativeGatewayChatRequestV2::sign(
+        key,
+        "POST",
+        path,
+        operation,
+        body,
+        nonce,
+        now_unix_ms()?,
+        incarnation,
+    )
+    .map_err(|e| ShellError::Security(e.to_string()))?;
+    let mut request = format!("POST {path} HTTP/1.1\r\nHost: {address}\r\nAccept: application/json\r\nContent-Type: application/json\r\nContent-Length: {}\r\nAuthorization: {}\r\nConnection: close\r\n\r\n", body.len(), proof.header_value()).into_bytes();
+    request.extend_from_slice(body);
+    exchange(address, key, &request, ResponseProof::Chat(proof))
+}
+
 enum ResponseProof {
     Read(NativeGatewayRequestV2),
     Lifecycle(NativeGatewayLifecycleRequestV2),
+    Chat(NativeGatewayChatRequestV2),
 }
 
 fn exchange(
@@ -129,12 +158,16 @@ fn exchange(
                     ResponseProof::Lifecycle(proof) => {
                         proof.verify_response(key, headers.status, body, &headers.mac)
                     }
+                    ResponseProof::Chat(proof) => {
+                        proof.verify_response(key, headers.status, body, &headers.mac)
+                    }
                 }
                 .map_err(|e| {
                     ShellError::Security(format!("gateway response authentication failed: {e}"))
                 })?;
                 if headers.status != 200
-                    && !(matches!(proof, ResponseProof::Lifecycle(_)) && headers.status == 503)
+                    && !(matches!(proof, ResponseProof::Lifecycle(_) | ResponseProof::Chat(_))
+                        && headers.status == 503)
                 {
                     return Err(ShellError::Backend(format!(
                         "authenticated gateway returned HTTP {}",

@@ -1,6 +1,9 @@
 #![forbid(unsafe_code)]
 
 pub mod backend;
+pub mod chat_presentation;
+pub mod chat_protocol;
+mod chat_reference;
 pub mod error;
 pub mod journal;
 mod journal_storage;
@@ -11,6 +14,7 @@ pub mod qualification;
 pub mod runtime;
 pub mod security;
 pub mod session_store;
+#[cfg(feature = "legacy-renderer")]
 pub mod ui;
 pub mod updater;
 
@@ -23,8 +27,11 @@ mod native_http;
 pub mod update_handoff;
 mod update_storage;
 
+#[cfg(feature = "legacy-renderer")]
 pub mod fonts;
 pub mod launch_config;
+pub mod launch_options;
+pub mod native_host;
 pub mod startup;
 
 // Snapshot research tests are not a production capability handoff.

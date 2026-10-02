@@ -19,8 +19,10 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     }
     let store = GatewayCredentialStore::default();
     match command.as_str() {
-        "provision" | "provision-lifecycle" => {
-            let receipt = if command == "provision-lifecycle" {
+        "provision" | "provision-lifecycle" | "provision-chat" => {
+            let receipt = if command == "provision-chat" {
+                store.provision_chat(&account)?
+            } else if command == "provision-lifecycle" {
                 store.provision_lifecycle(&account)?
             } else {
                 store.provision_random(&account)?
@@ -31,8 +33,10 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 serde_json::to_string(&receipt.token_digest)?
             );
         }
-        "delete" | "delete-lifecycle" => {
-            let deleted = if command == "delete-lifecycle" {
+        "delete" | "delete-lifecycle" | "delete-chat" => {
+            let deleted = if command == "delete-chat" {
+                store.delete_chat(&account)?
+            } else if command == "delete-lifecycle" {
                 store.delete_lifecycle(&account)?
             } else {
                 store.delete(&account)?
@@ -42,10 +46,12 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
                 serde_json::to_string(&account)?
             );
         }
-        "import" | "import-lifecycle" => {
+        "import" | "import-lifecycle" | "import-chat" => {
             let mut token = Zeroizing::new(String::new());
             std::io::stdin().take(257).read_to_string(&mut token)?;
-            if command == "import-lifecycle" {
+            if command == "import-chat" {
+                store.import_chat(&account, &token)?;
+            } else if command == "import-lifecycle" {
                 store.import_lifecycle(&account, &token)?;
             } else {
                 store.import_read(&account, &token)?;

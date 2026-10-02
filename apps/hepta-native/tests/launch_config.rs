@@ -48,3 +48,35 @@ fn optional_lifecycle_keyring_account_remains_explicit_and_is_not_a_secret() {
     std::fs::write(path, serde_json::to_vec(&config).unwrap()).unwrap();
     assert!(expand_launch_arguments(&args).is_err());
 }
+
+#[test]
+fn chat_config_selects_an_independent_account_without_policy_overrides() {
+    let root = private_tempdir();
+    let path = root.path().join("launch.json");
+    let mut config = serde_json::json!({"endpoint_manifest":root.path().join("endpoint.json"),"trusted_keys":root.path().join("keys.json"),"state_dir":root.path().join("state"),"lifecycle_keyring_account":"desktop.lifecycle","chat_keyring_account":"desktop.chat"});
+    std::fs::write(&path, serde_json::to_vec(&config).unwrap()).unwrap();
+    let args = vec!["--config".into(), path.to_str().unwrap().into()];
+    let expanded = expand_launch_arguments(&args).unwrap();
+    assert!(
+        expanded
+            .windows(2)
+            .any(|pair| pair == ["--chat-keyring-account", "desktop.chat"])
+    );
+    assert!(
+        expanded
+            .windows(2)
+            .any(|pair| pair == ["--lifecycle-keyring-account", "desktop.lifecycle"])
+    );
+    assert!(
+        expand_launch_arguments(&[
+            args[0].clone(),
+            args[1].clone(),
+            "--chat-keyring-account".into(),
+            "other".into()
+        ])
+        .is_err()
+    );
+    config["chat_keyring_account"] = "contains control\n".into();
+    std::fs::write(&path, serde_json::to_vec(&config).unwrap()).unwrap();
+    assert!(expand_launch_arguments(&args).is_err());
+}

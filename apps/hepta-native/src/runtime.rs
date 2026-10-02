@@ -25,6 +25,7 @@ use crate::security::PlatformConfirmationContext;
 use crate::security::platform_final_use_binding;
 
 const MAX_OPERATION_HISTORY_PAGE_SIZE: usize = 256;
+mod chat;
 mod fleet_lifecycle;
 
 #[derive(Debug, Clone)]
@@ -52,6 +53,7 @@ pub struct NativeShellRuntime {
     manifest: Option<EndpointManifest>,
     fleet_current: Option<fleet_lifecycle::FleetLifecycleView>,
     fleet_pending: Option<crate::fleet_lifecycle::PendingLifecycleStore>,
+    chat_observation: Option<serde_json::Value>,
 }
 
 impl NativeShellRuntime {
@@ -75,6 +77,7 @@ impl NativeShellRuntime {
             manifest: None,
             fleet_current: None,
             fleet_pending: None,
+            chat_observation: None,
         }
     }
 
@@ -159,6 +162,7 @@ impl NativeShellRuntime {
         // presentation. Every error below leaves the runtime non-actionable.
         self.view = None;
         self.fleet_current = None;
+        self.chat_observation = None;
         let observed = self.backend.runtime_status()?;
         validate_digest(&observed.body_digest, "backend.runtime_status_digest")?;
         let metadata = crate::fleet_observation::view_metadata(&observed.value)?;
@@ -221,6 +225,10 @@ impl NativeShellRuntime {
         self.fleet_current = fleet_current;
         self.last_snapshot_generation = Some(observed_generation);
         self.last_observation_source = Some(metadata.source);
+        self.chat_observation = self
+            .backend
+            .chat_available()
+            .then(|| observed.value.clone());
         Ok((presentation, observed.value))
     }
 

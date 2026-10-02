@@ -18,6 +18,15 @@ pub trait BackendAdapter: Send {
     fn connect(&mut self, manifest: &EndpointManifest) -> Result<SessionIncarnation, ShellError>;
     fn runtime_status(&mut self) -> Result<AuthenticatedRuntimeStatus, ShellError>;
     fn close(&mut self, session: &SessionIncarnation) -> Result<(), ShellError>;
+    fn chat_available(&self) -> bool {
+        false
+    }
+    fn chat(
+        &mut self,
+        _request: &crate::chat_protocol::root::NativeChatRootRequest,
+    ) -> Result<crate::chat_protocol::root::NativeChatRootResponse, ShellError> {
+        Err(ShellError::State("Agent chat is not configured".into()))
+    }
     fn fleet_lifecycle_available(&self) -> bool {
         false
     }
@@ -39,6 +48,8 @@ pub struct LoopbackGatewayBackend {
     session: Option<SessionIncarnation>,
     lifecycle_capability: Option<zeroize::Zeroizing<String>>,
     server_lifecycle: bool,
+    chat_capability: Option<zeroize::Zeroizing<String>>,
+    server_chat: bool,
 }
 
 impl LoopbackGatewayBackend {
@@ -56,6 +67,8 @@ impl LoopbackGatewayBackend {
             session: None,
             lifecycle_capability: None,
             server_lifecycle: false,
+            chat_capability: None,
+            server_chat: false,
         })
     }
 
@@ -73,12 +86,33 @@ impl LoopbackGatewayBackend {
         capability: String,
     ) -> Result<Self, ShellError> {
         validate_bearer_token(&capability)?;
-        if capability.as_bytes() == self.bearer_token.as_bytes() {
+        if capability.as_bytes() == self.bearer_token.as_bytes()
+            || self
+                .chat_capability
+                .as_ref()
+                .is_some_and(|chat| chat.as_bytes() == capability.as_bytes())
+        {
             return Err(ShellError::Security(
                 "Agent lifecycle capability must differ from the read capability".into(),
             ));
         }
         self.lifecycle_capability = Some(zeroize::Zeroizing::new(capability));
+        Ok(self)
+    }
+
+    pub fn with_chat_capability(mut self, capability: String) -> Result<Self, ShellError> {
+        validate_bearer_token(&capability)?;
+        if capability.as_bytes() == self.bearer_token.as_bytes()
+            || self
+                .lifecycle_capability
+                .as_ref()
+                .is_some_and(|key| key.as_bytes() == capability.as_bytes())
+        {
+            return Err(ShellError::Security(
+                "Chat capability must differ from read and lifecycle capabilities".into(),
+            ));
+        }
+        self.chat_capability = Some(zeroize::Zeroizing::new(capability));
         Ok(self)
     }
 }
@@ -107,6 +141,7 @@ impl BackendAdapter for LoopbackGatewayBackend {
         }
         self.server_incarnation = [0; 32];
         self.server_lifecycle = false;
+        self.server_chat = false;
         manifest.validate()?;
         if manifest.protocol_version
             != codex_hepta_contracts::native_gateway::NATIVE_GATEWAY_PROTOCOL_V2
@@ -176,6 +211,7 @@ impl BackendAdapter for LoopbackGatewayBackend {
             .get("lifecycle_control")
             .and_then(Value::as_bool)
             == Some(true);
+        self.server_chat = health.value.get("chat_control").and_then(Value::as_bool) == Some(true);
         self.session = Some(session.clone());
         Ok(session)
     }
@@ -202,6 +238,7 @@ impl BackendAdapter for LoopbackGatewayBackend {
         }
         self.server_incarnation = [0; 32];
         self.server_lifecycle = false;
+        self.server_chat = false;
         self.session = None;
         Ok(())
     }
@@ -210,6 +247,39 @@ impl BackendAdapter for LoopbackGatewayBackend {
         self.server_incarnation != [0; 32]
             && self.server_lifecycle
             && self.lifecycle_capability.is_some()
+    }
+
+    fn chat_available(&self) -> bool {
+        self.server_incarnation != [0; 32] && self.server_chat && self.chat_capability.is_some()
+    }
+
+    fn chat(
+        &mut self,
+        request: &crate::chat_protocol::root::NativeChatRootRequest,
+    ) -> Result<crate::chat_protocol::root::NativeChatRootResponse, ShellError> {
+        request
+            .validate()
+            .map_err(|e| ShellError::State(e.into()))?;
+        if !self.chat_available() {
+            return Err(ShellError::State("Agent chat is not enabled".into()));
+        }
+        let capability = self
+            .chat_capability
+            .as_ref()
+            .ok_or_else(|| ShellError::State("chat capability missing".into()))?;
+        let result = crate::native_http::post_chat(
+            self.address,
+            capability.as_bytes(),
+            crate::chat_presentation::operation(request),
+            &serde_json::to_vec(request)?,
+            self.server_incarnation,
+        )?;
+        let response: crate::chat_protocol::root::NativeChatRootResponse =
+            serde_json::from_value(result.value)?;
+        response
+            .validate_for(request)
+            .map_err(|e| ShellError::Security(e.into()))?;
+        Ok(response)
     }
 
     fn fleet_lifecycle(
