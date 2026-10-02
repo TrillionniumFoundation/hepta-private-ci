@@ -66,6 +66,13 @@ jobs:
             printf 'sha=%s\n' "$(git rev-parse HEAD)"
             printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
           } > ui-control-evidence/source.txt
+      - name: Install pinned Rust browser compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --target wasm32-unknown-unknown
+          rustup default 1.95.0
+          cargo install wasm-bindgen-cli --locked --version 0.2.128
       - name: Setup Node.js 22
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
@@ -257,6 +264,13 @@ jobs:
             printf 'source_sha=%s\n' "${{ github.event.pull_request.head.sha }}"
             printf 'base_sha=%s\n' "${{ steps.base.outputs.sha }}"
           } > ui-control-evidence/source.txt
+      - name: Install pinned Rust browser compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --target wasm32-unknown-unknown
+          rustup default 1.95.0
+          cargo install wasm-bindgen-cli --locked --version 0.2.128
       - name: Setup Node.js 22
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:

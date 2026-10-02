@@ -6,14 +6,14 @@
 
 `ui.control` is an authority-free runtime-control client and browser console. It owns presentation state, authenticated session metadata, bounded local recovery records, and user interaction. Runtime owners retain authorization, durable operation identity, mutation authority, and terminal facts.
 
-The active convergence branch is `work/ui-control-authoritative-closure-20260927`. The repository baseline used to start this convergence is `a126987b84737dbc2ee2592442a314117bddb4a2` / tree `a22fd0074c45ae6f3cef2092cd6e273bf9c26c30`. Tracked documentation never self-certifies its own final commit; exact-head identity and outcomes are emitted by CI in `hepta.ui-control.qualification-receipt.v2`.
+The active convergence branch is `work/ui-control-rust-20261002`. The repository baseline used to start this convergence is `a126987b84737dbc2ee2592442a314117bddb4a2` / tree `a22fd0074c45ae6f3cef2092cd6e273bf9c26c30`. Tracked documentation never self-certifies its own final commit; exact-head identity and outcomes are emitted by CI in `hepta.ui-control.qualification-receipt.v2`.
 
 | Dimension | Current state |
 |---|---|
-| `clientCore` | `substantially_implemented` |
-| `browserComposition` | `repository_shell_implemented` |
+| `clientCore` | `rust_controller_with_legacy_node_reference_api` |
+| `browserComposition` | `rust_wasm_semantic_dom_default_browser` |
 | `browserCorrelationPrivacy` | `identifiers_redacted_in_dom_exact_in_client_state` |
-| `dependencyLock` | `exact_npm_lock_committed_qualification_pending` |
+| `dependencyLock` | `locked_cargo_and_npm_inputs_exact_bindgen_version` |
 | `sessionLifecycle` | `identity_permission_revision_and_shutdown_fenced` |
 | `terminalEvidence` | `authenticated_backend_observation_projection_implemented` |
 | `localRecovery` | `crash_consistent_scoped_directory_fail_closed_without_authority_claim` |
@@ -26,7 +26,8 @@ The active convergence branch is `work/ui-control-authoritative-closure-20260927
 
 ## 2. Repository layout
 
-- `apps/hepta-control-ui/src/`: framework-free ESM client core, HTTP transport, session provider, and browser controller.
+- `apps/hepta-control-ui/rust/`: canonical Rust controller, same-origin HTTP/recovery adapters and semantic DOM browser host.
+- `apps/hepta-control-ui/src/`: legacy Node compatibility and differential-reference APIs, excluded from the browser artifact.
 - `apps/hepta-control-ui/web/`: semantic HTML/CSS browser shell.
 - `apps/hepta-control-ui/test/`: unit, hostile-input, concurrency, recovery, package, and transport tests.
 - `apps/hepta-control-ui/e2e/`: Chromium, Firefox, and WebKit product-path tests with axe-core.
@@ -36,18 +37,14 @@ The active convergence branch is `work/ui-control-authoritative-closure-20260927
 
 ## 3. Public boundaries
 
-- `RuntimeClient`
-- `SameOriginHttpTransport`
-- `SessionProvider`
-- `createControlConsole`
-- `projectRuntime`
-- `buildOperationIntent`
-- `digestOperationIntent`
-- `normalizeSnapshot`
-- `validateSnapshotTransition`
-- `UiControlError`
+- `hepta_control_web::start`
+- `hepta_control_web::close_session`
+- `hepta_control_web::reconnect`
+- `hepta_control_web::destroy`
+- `hepta_control_web::read_view`
+- `hepta_control_core::controller::Controller`
 
-The package exposes explicit `exports` for the root/core, browser controller, and HTTP transport. Imports under `@hepta/control-ui/src/*` are deliberately blocked. The browser build uses the same source modules as Node tests and does not need a framework runtime or unsafe HTML injection.
+The package exposes explicit `exports` for the root/core, browser controller, and HTTP transport. Imports under `@hepta/control-ui/src/*` are deliberately blocked. The default browser build contains Rust/WASM with only generated ABI and minimal loader diagnostics in JavaScript. Legacy Node API exports remain compatibility/reference boundaries and are excluded from the six-asset browser artifact. No second frontend framework or unsafe HTML injection is used.
 
 ## 4. State model
 

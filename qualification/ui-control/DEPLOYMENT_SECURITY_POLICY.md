@@ -35,7 +35,19 @@ Cookie values, authentication material, and CSRF tokens are never written to qua
 Both passing and failing deployment observations identify the enforced profile as:
 
 ```text
-hepta.ui-control.deployment-security-policy.v1
+hepta.ui-control.deployment-security-policy.v2
 ```
 
 They also retain the minimum HSTS age and certificate runway. A passing receipt still proves only the exact candidate, deployment digest, build assets, and observed endpoint at the recorded time. It does not imply real Agentd durability, independent accessibility acceptance, independent security review, production approval, activation, or release authorization.
+
+## Rust browser profile
+
+The candidate build manifest declares `browserRuntime: rust-wasm-v1`. For this
+runtime only, `script-src` must be exactly `'self' 'wasm-unsafe-eval'`. All other
+source directives remain unchanged and exact. JavaScript reference artifacts
+still require the original `'self'` script policy. Generic `'unsafe-eval'`, inline
+scripts, external or blob script origins, and wildcard sources remain forbidden.
+This narrow compilation permission is not a substitute for per-asset SHA-256 and
+exact-byte deployment verification. Serve WASM as `application/wasm`; keep no-store,
+cookie/CSRF/TLS/isolation requirements and immutable candidate binding unchanged.
+Changing this source policy does not change a deployed proxy or authorize release.

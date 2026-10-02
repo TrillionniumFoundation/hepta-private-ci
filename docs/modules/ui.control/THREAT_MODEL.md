@@ -58,7 +58,7 @@
 The deployed host must send at least:
 
 ```text
-Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
+Content-Security-Policy: default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self'; img-src 'self' data:; object-src 'none'; base-uri 'none'; form-action 'self'; frame-ancestors 'none'
 Strict-Transport-Security: max-age=<positive deployment policy value>
 Cross-Origin-Opener-Policy: same-origin
 Cross-Origin-Resource-Policy: same-origin
@@ -96,3 +96,8 @@ The browser shell displays correlation identifiers only in redacted form. Full i
 - manual screen-reader and operator usability acceptance;
 - browser-extension or endpoint-compromise risk outside the application trust model;
 - authenticity and governance of independently produced security, operational, and approval evidence before those receipts are placed in protected workflow secrets.
+
+The active Rust browser requires only the narrowly scoped WASM compilation source
+above. Generic JavaScript eval, inline scripts and new origins remain prohibited.
+The legacy reference build uses the original script-src self policy. The candidate
+manifest and exact-byte deployment verification bind the applicable runtime profile.

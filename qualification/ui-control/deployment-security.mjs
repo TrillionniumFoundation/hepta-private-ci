@@ -145,7 +145,7 @@ try {
   stage = "root-security-headers";
   const root = await request(rootUrl, { headers: { accept: "text/html" } });
   assertEvidence(root.ok, "UI_CONTROL_ROOT_HTTP", `root: expected 2xx, got ${root.status}`);
-  assertContentSecurityPolicy(root.headers.get("content-security-policy") || "");
+  assertContentSecurityPolicy(root.headers.get("content-security-policy") || "", { browserRuntime: buildManifest.browserRuntime ?? "javascript-v1" });
   assertHstsPolicy(root.headers.get("strict-transport-security") || "");
   assertEvidence((root.headers.get("x-content-type-options") || "").toLowerCase() === "nosniff", "UI_CONTROL_NOSNIFF", "root: nosniff is required");
   assertEvidence((root.headers.get("x-frame-options") || "").toUpperCase() === "DENY", "UI_CONTROL_FRAME_OPTIONS", "root: X-Frame-Options DENY is required");
