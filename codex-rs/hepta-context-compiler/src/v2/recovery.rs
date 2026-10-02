@@ -115,6 +115,11 @@ impl ContextDeliveryRecoveryBindingV2 {
     /// does not return dispatch authority and is accepted only by
     /// `observe_recovered_final_provider_delivery_v2`.
     pub fn reopen_canonical_archive(bytes: &[u8]) -> Result<Self, ContextCompilerV2Error> {
+        // Bound both allocation and parser work before inspecting attacker- or
+        // storage-controlled JSON. The runtime owner uses this same ceiling.
+        if bytes.len() > super::MAX_CONTEXT_ARCHIVE_BYTES_V2 {
+            return Err(ContextCompilerV2Error::RecoveryEvidenceInvalid);
+        }
         let archive: RecoveryArchiveV2 = serde_json::from_slice(bytes)
             .map_err(|_| ContextCompilerV2Error::RecoveryEvidenceInvalid)?;
         if archive.schema != RECOVERY_ARCHIVE_SCHEMA {

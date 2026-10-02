@@ -684,3 +684,47 @@ async fn legacy_digest_only_pre_send_remains_non_recoverable() {
 
 #[path = "lifecycle_tests.rs"]
 mod lifecycle_tests;
+
+#[tokio::test]
+async fn durable_recovery_rejects_outer_identity_drift_from_archived_proof() {
+    let fixture = Fixture::new();
+    std::fs::write(&fixture.release, b"release").expect("release tokenizer");
+    Arc::clone(&fixture.owner)
+        .observe_final_request(fixture.request.clone())
+        .await
+        .expect("record real pre-send");
+    let original = fixture.owner.state.lock().expect("state").durable.clone();
+    validate_stored_state(&original).expect("original coherent archive");
+    let mut accepted = Vec::new();
+    for field in [
+        "preparation",
+        "snapshot",
+        "time",
+        "thread",
+        "turn",
+        "attempt",
+    ] {
+        let mut state = original.clone();
+        let record = state.pre_sends.values_mut().next().expect("pre-send");
+        match field {
+            "preparation" => record.preparation_digest = digest("foreign-preparation").into_array(),
+            "snapshot" => {
+                record.authority_snapshot_digest = digest("foreign-snapshot").into_array()
+            }
+            "time" => record.recorded_unix_ms += 1,
+            "thread" => record.thread_id = "foreign-thread".into(),
+            "turn" => record.turn_id = "foreign-turn".into(),
+            "attempt" => {
+                let key = state.pre_sends.keys().next().expect("key").clone();
+                let mut record = state.pre_sends.remove(&key).expect("record");
+                record.attempt_id = "foreign-attempt".into();
+                state.pre_sends.insert(record.attempt_id.clone(), record);
+            }
+            _ => unreachable!("test cases are fixed"),
+        }
+        if validate_stored_state(&state).is_ok() {
+            accepted.push(field);
+        }
+    }
+    assert_eq!(accepted, Vec::<&str>::new());
+}

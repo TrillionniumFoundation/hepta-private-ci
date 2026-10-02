@@ -103,7 +103,15 @@ def specs(legacy):
                 "codex-hepta-agentd",
                 "registry_race_tests",
             ],
-            "minimumTests": 5,
+            "minimumTests": 6,
+            "requiredNativeTests": [
+                "exact_context_delivery::registry_race_tests::registry_revocation_during_tokenization_refuses_the_real_owner_send_gate",
+                "exact_context_delivery::registry_race_tests::expiry_during_tokenization_refuses_the_real_owner_send_gate",
+                "exact_context_delivery::registry_race_tests::concurrent_preparation_cannot_reserve_two_attempts_for_one_turn",
+                "exact_context_delivery::registry_race_tests::crash_reopen_reconciles_indeterminate_then_final_without_redispatch",
+                "exact_context_delivery::registry_race_tests::legacy_digest_only_pre_send_remains_non_recoverable",
+                "exact_context_delivery::registry_race_tests::durable_recovery_rejects_outer_identity_drift_from_archived_proof",
+            ],
         },
         {
             "name": "v3-default-product-profile",
@@ -121,7 +129,14 @@ def specs(legacy):
                 "-p",
                 "codex-hepta-agentd",
             ],
-            "minimumTests": 1,
+            "minimumTests": 5,
+            "requiredNativeTests": [
+                "v2::tests::recovery_archives_reject_oversized_valid_json_before_decoding",
+                "wire::tests::context_wire_rejects_impossible_token_accounting_on_encode_and_decode",
+                "provider_closure::tests::maximum_repeated_payload_is_rejected_without_retaining_match_offsets",
+                "provider_closure::tests::repeated_prefix_search_preserves_the_unique_complete_payload",
+                "provider_closure::tests::arbitrary_byte_matching_preserves_missing_unique_and_overlapping_cases",
+            ],
         },
         {
             "name": "legacy-intelligence-profile",

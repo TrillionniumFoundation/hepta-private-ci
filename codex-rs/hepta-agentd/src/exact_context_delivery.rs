@@ -83,7 +83,8 @@ const STATE_FILE: &str = "context-delivery-v2.json";
 const NEXT_FILE: &str = "context-delivery-v2.next";
 const LOCK_FILE: &str = "context-delivery-v2.lock";
 const MAX_DURABLE_STATE_BYTES: u64 = 16 * 1024 * 1024;
-const MAX_RECOVERY_ARCHIVE_BYTES: usize = 64 * 1024;
+const MAX_RECOVERY_ARCHIVE_BYTES: usize =
+    codex_hepta_context_compiler::MAX_CONTEXT_ARCHIVE_BYTES_V2;
 const MAX_STAGED_CONTEXTS: usize = 256;
 const MAX_ACTIVE_ATTEMPTS: usize = 64;
 const MAX_PRE_SEND_RECORDS: usize = 4096;

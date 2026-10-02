@@ -67,6 +67,11 @@ impl ContextDeliveryPreparationV2 {
         serialization: &SerializedContextV2,
         profile: &ContextModelProfileV2,
     ) -> Result<Self, ContextCompilerV2Error> {
+        // Bound both allocation and parser work before inspecting attacker- or
+        // storage-controlled JSON. The runtime owner uses this same ceiling.
+        if bytes.len() > super::MAX_CONTEXT_ARCHIVE_BYTES_V2 {
+            return Err(ContextCompilerV2Error::DeliveryEvidenceEncodingFailed);
+        }
         let archive: PreparationArchiveV2 = serde_json::from_slice(bytes)
             .map_err(|_| ContextCompilerV2Error::DeliveryEvidenceEncodingFailed)?;
         if archive.schema != PREPARATION_ARCHIVE_SCHEMA {

@@ -44,6 +44,9 @@ pub use recovery::ContextDeliveryRecoveryBindingV2;
 pub use recovery::build_delivery_recovery_binding_v2;
 pub use recovery::observe_recovered_final_provider_delivery_v2;
 
+/// Maximum raw-context-free preparation or recovery archive admitted to decoding.
+pub const MAX_CONTEXT_ARCHIVE_BYTES_V2: usize = 64 * 1024;
+
 pub const MAX_CONTEXT_CANDIDATES_V2: usize = 4_096;
 pub const MAX_CONTEXT_GROUPS_V2: usize = 256;
 pub const MAX_MANDATORY_REFERENCES_V2: usize = 4_096;

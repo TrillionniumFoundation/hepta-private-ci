@@ -1620,3 +1620,152 @@ fn preparation_preserves_the_attachment_revocation_frontier_with_empty_context()
         .is_ok()
     );
 }
+
+#[test]
+fn recovery_archives_reject_oversized_valid_json_before_decoding() {
+    // Maximum provider text fields with worst-case JSON escaping remain
+    // round-trippable; the byte ceiling does not strand a valid native archive.
+    let provider_id = "\u{0001}".repeat(512);
+    let provider_model = "\u{0002}".repeat(512);
+    let model_profile = ContextModelProfileV2 {
+        provider_id_digest: digest(&provider_id),
+        provider_model_digest: digest(&provider_model),
+        ..profile()
+    };
+    let snapshot = verified_snapshot("snapshot:archive", 10, 1, Vec::new());
+    let mut compile_request = request(Vec::new(), 100);
+    compile_request.model_profile = model_profile.clone();
+    let compiled = compile_v2(compile_request).expect("empty compilation");
+    let serialization = record_serialization(
+        &compiled,
+        &model_profile,
+        id("serialization:archive"),
+        Vec::new(),
+        &FramingSerializer { overhead: 1 },
+        &ByteTokenizer,
+    )
+    .expect("serialization");
+    let attachment = build_attachment(
+        &compiled,
+        &serialization,
+        &model_profile,
+        &snapshot,
+        id("attachment:archive"),
+    )
+    .expect("attachment");
+    let preparation = prepare_delivery_v2(
+        &compiled,
+        &serialization,
+        &attachment,
+        &model_profile,
+        &snapshot,
+        id(&"p".repeat(128)),
+    )
+    .expect("preparation");
+    struct FinalTokenizer(crate::FinalRequestTokenizerIdentityV2);
+    impl crate::ExactFinalRequestTokenizerV2 for FinalTokenizer {
+        fn identity(&self) -> &crate::FinalRequestTokenizerIdentityV2 {
+            &self.0
+        }
+        fn count_final_request_tokens(&self, bytes: &[u8]) -> Result<u64, String> {
+            Ok(bytes.len() as u64)
+        }
+    }
+    struct FixtureFraming;
+    impl crate::FinalRequestFramingVerifierV2 for FixtureFraming {
+        fn verifier_digest(&self) -> Digest32 {
+            digest("fixture-framing")
+        }
+        fn verify_final_request(&self, request: &[u8], payload: &[u8]) -> Result<(), String> {
+            if request == payload {
+                Ok(())
+            } else {
+                Err("fixture mismatch".into())
+            }
+        }
+    }
+    let tokenizer = FinalTokenizer(
+        crate::FinalRequestTokenizerIdentityV2::new(
+            model_profile.provider_id_digest,
+            model_profile.provider_model_digest,
+            model_profile.tokenizer_digest,
+            digest("binary"),
+            digest("version"),
+            digest("vocabulary"),
+            digest("normalization"),
+        )
+        .expect("tokenizer identity"),
+    );
+    let proof = crate::prove_final_provider_request_v2(
+        &preparation,
+        &attachment,
+        &serialization,
+        &model_profile,
+        digest("wire-semantics"),
+        serialization.payload(),
+        &FixtureFraming,
+        &tokenizer,
+    )
+    .expect("final request proof");
+    let mut provider = provider_receipt(
+        &serialization,
+        &preparation,
+        &provider_id,
+        &provider_model,
+        None,
+        None,
+        completed_terminal(),
+    );
+    provider.intent.binding.thread_id = "\u{0003}".repeat(512);
+    provider.intent.binding.turn_id = "\u{0004}".repeat(512);
+    provider.intent =
+        ProviderInvocationIntent::for_host_attempt_id("host-attempt-1", provider.intent.binding);
+    let recovery = build_delivery_recovery_binding_v2(
+        &preparation,
+        &attachment,
+        &serialization,
+        &model_profile,
+        &proof,
+        &provider.intent,
+    )
+    .expect("recovery binding");
+    let mut recovery_archive = recovery
+        .canonical_archive_bytes()
+        .expect("recovery archive");
+    assert!(recovery_archive.len() < 64 * 1024);
+    assert_eq!(
+        ContextDeliveryRecoveryBindingV2::reopen_canonical_archive(&recovery_archive),
+        Ok(recovery.clone()),
+    );
+    recovery_archive.resize(64 * 1024, b' ');
+    assert_eq!(
+        ContextDeliveryRecoveryBindingV2::reopen_canonical_archive(&recovery_archive),
+        Ok(recovery)
+    );
+    recovery_archive.push(b' ');
+    assert_eq!(
+        ContextDeliveryRecoveryBindingV2::reopen_canonical_archive(&recovery_archive),
+        Err(ContextCompilerV2Error::RecoveryEvidenceInvalid),
+    );
+    let mut archive = preparation.canonical_archive_bytes().expect("archive");
+    archive.resize(64 * 1024, b' ');
+    assert_eq!(
+        ContextDeliveryPreparationV2::reopen_canonical_archive(
+            &archive,
+            &attachment,
+            &serialization,
+            &model_profile
+        ),
+        Ok(preparation),
+    );
+    archive.push(b' ');
+    assert_eq!(
+        ContextDeliveryPreparationV2::reopen_canonical_archive(
+            &archive,
+            &attachment,
+            &serialization,
+            &model_profile
+        ),
+        Err(ContextCompilerV2Error::DeliveryEvidenceEncodingFailed),
+    );
+}

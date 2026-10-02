@@ -33,6 +33,11 @@ uncertain publication or root/lock identity loss requires reopen. Owned director
 initialization tightens permissions through its descriptor, while unsafe state
 file permissions are rejected without chmod through a replaceable path.
 
+The [2026-10-02 bounded audit](AUDIT_20261002.md) adds archive parser limits,
+outer/archive recovery consistency, bounded ambiguity matching, legacy wire
+accounting and the actual opaque-diagnostic caller repair. It preserves the
+existing owner and all unfinished integration/acceptance boundaries.
+
 ## Project position and completion assessment
 
 The registry issues context authority, intelligence composes the V3 compiler,

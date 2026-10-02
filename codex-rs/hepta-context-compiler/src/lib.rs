@@ -64,6 +64,7 @@ pub use v2::ContextRoleV2;
 pub use v2::ContextSerializationReceiptV2;
 pub use v2::ContextSerializerV2;
 pub use v2::ExactTokenizerV2;
+pub use v2::MAX_CONTEXT_ARCHIVE_BYTES_V2;
 pub use v2::MAX_CONTEXT_CANDIDATES_V2;
 pub use v2::MAX_CONTEXT_GROUPS_V2;
 pub use v2::MAX_CONTEXT_ITEM_BYTES_V2;

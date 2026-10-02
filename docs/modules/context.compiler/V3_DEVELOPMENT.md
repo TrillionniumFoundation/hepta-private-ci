@@ -75,6 +75,26 @@ Responses profile accepts exactly one complete developer/input_text context
 string, rejects duplicate JSON keys, wrong roles, metadata-only placement and
 concatenation, and binds provider/model/template/tool-schema identity.
 
+## Reuse and invalidation
+
+The pure compiler owns no persistent source cache or mutable registry. Its
+candidate, compilation and serialization receipts bind the admitted source and
+content digests, generation vector, selected portfolio, mandatory-group policy,
+model/tokenizer/template/tool-schema profile and exact serialized bytes. The
+candidate-set digest covers the supplied candidates; it does not prove that a
+caller supplied every eligible source.
+
+A staged compiled value is an immutable input to the existing runtime owner,
+not permission to reuse old currentness. The final owner rereads the registry
+following tokenizer work and prepares against its monotone successor while
+holding that owner through durable authorization. Changed source/profile or
+selection requires a newly validated compilation; withdrawal, expiry and
+revocation are checked on later use rather than cleared by cache eviction.
+Recovery archives reconcile only the original attempt and cannot serve as a
+fresh compilation, current-source snapshot or resend permit. Cross-process cache
+coherence and external protected generation/rollback services are not implicitly
+provided by these local proofs.
+
 ## Durable delivery and recovery
 
 Schema 3 archives preparation identity, final-request proof and exact provider
@@ -144,3 +164,34 @@ provider truth, real tokenizer qualification, transport cancellation, additional
 provider roles, cross-holder redaction, selected-host capacity/durability and
 operator acceptance remain explicit integration tasks. Repository source changes
 cannot grant independent acceptance, activation or release.
+
+## Recovery and bounded-input follow-up
+
+The public preparation and terminal-recovery archive decoders enforce the same
+64 KiB ceiling as the existing Agentd owner **before** JSON decoding. This bounds
+parser work and string allocation even for otherwise valid JSON with padding.
+Canonical archive schema and digest preimages are unchanged. A successful decode
+checks shape and internal consistency; it does not authenticate an externally
+supplied archive or establish rollback resistance.
+
+Schema-3 pre-send indexes must agree with their retained recovery archive on
+preparation, authority snapshot, observation time, thread, turn and host attempt
+identity. The current producer records the preparation observation time, not a
+separate post-fsync timestamp. Reopen rejects a mismatch before returning an
+owner. Historical records
+without a recovery archive retain their existing non-recoverable semantics; they
+are not upgraded to stronger evidence. Normal settlement still requires the
+exact provider intent and independent provider-evidence boundary.
+
+The final-request byte-segment search uses the existing workspace memmem matcher
+with its documented linear-time, constant-space search bound and stops at the
+second matching occurrence,
+including overlapping occurrences. It does not retain an attacker-sized vector
+of every offset. The byte ceilings, ambiguity rejection and segment/digest format
+are unchanged; the second search starts one byte after the first start so
+overlaps cannot disappear. This algorithmic bound is not a product latency SLO. The legacy wire receipt rejects impossible token accounting on both
+encode and decode; the V1 wire still conveys no admission or delivery authority.
+
+The named diagnostic consumer must convert its internal exact-owner error via
+the existing opaque public error conversion. Compiling a standalone diagnostic
+module is insufficient to validate the actual Agentd method that returns it.

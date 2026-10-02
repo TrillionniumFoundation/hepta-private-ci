@@ -694,7 +694,7 @@ impl AgentdPromptPipelineOwner {
     pub fn context_diagnostics(&self) -> Result<serde_json::Value, AgentdPromptPipelineError> {
         self.exact
             .diagnostics()
-            .map_err(AgentdPromptPipelineError::ExactStage)
+            .map_err(AgentdPromptPipelineError::from)
     }
 
     /// Enumerate candidates from this owner's exact current durable registry.

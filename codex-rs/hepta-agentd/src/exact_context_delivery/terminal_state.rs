@@ -217,7 +217,23 @@ pub(super) fn validate(state: &StoredExactDeliveryState) -> Result<(), ExactCont
                 }
                 let recovery = ContextDeliveryRecoveryBindingV2::reopen_canonical_archive(archive)
                     .map_err(|_| ExactContextDeliveryError::CorruptState)?;
-                if recovery.binding_digest().into_array() != pre_send.recovery_binding_digest
+                // Outer indexes and the raw-free archive describe the same
+                // admitted attempt. Never let restart index one owner/turn
+                // while terminal reconciliation consumes another proof.
+                let preparation = recovery.preparation();
+                let intent = recovery.provider_intent();
+                if preparation.preparation_digest().into_array() != pre_send.preparation_digest
+                    || preparation.admission_snapshot_digest().into_array()
+                        != pre_send.authority_snapshot_digest
+                    || preparation.admission_snapshot_observed_unix_ms()
+                        != pre_send.recorded_unix_ms
+                    || intent.binding.thread_id != pre_send.thread_id
+                    || intent.binding.turn_id != pre_send.turn_id
+                    || ProviderInvocationIntent::for_host_attempt_id(
+                        &pre_send.attempt_id,
+                        intent.binding.clone(),
+                    ) != *intent
+                    || recovery.binding_digest().into_array() != pre_send.recovery_binding_digest
                     || recovery.final_request_proof_digest().into_array()
                         != pre_send.final_request_proof_digest
                     || recovery.provider_request_digest().into_array()

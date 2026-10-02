@@ -761,19 +761,16 @@ fn build_segment_map(
     if encoded_payload.is_empty() {
         return Err(ProviderClosureErrorV2::ContextPayloadMissing);
     }
-    let matches = request
-        .windows(encoded_payload.len())
-        .enumerate()
-        .filter_map(|(offset, window)| (window == encoded_payload).then_some(offset))
-        .collect::<Vec<_>>();
-    let [start] = matches.as_slice() else {
-        return if matches.is_empty() {
-            Err(ProviderClosureErrorV2::ContextPayloadMissing)
-        } else {
-            Err(ProviderClosureErrorV2::ContextPayloadAmbiguous)
-        };
-    };
-    let start = *start;
+    // The workspace matcher bounds adversarial repeated-prefix work to linear
+    // time and constant space. A second search begins one byte after the first
+    // start (not its end), so overlapping occurrences still fail closed.
+    let finder = memchr::memmem::Finder::new(encoded_payload);
+    let start = finder
+        .find(request)
+        .ok_or(ProviderClosureErrorV2::ContextPayloadMissing)?;
+    if finder.find(&request[start + 1..]).is_some() {
+        return Err(ProviderClosureErrorV2::ContextPayloadAmbiguous);
+    }
     let end = start
         .checked_add(encoded_payload.len())
         .ok_or(ProviderClosureErrorV2::Arithmetic)?;
@@ -940,6 +937,37 @@ mod tests {
     }
 
     #[test]
+    fn maximum_repeated_payload_is_rejected_without_retaining_match_offsets() {
+        let request = vec![b'x'; MAX_FINAL_PROVIDER_REQUEST_BYTES_V2];
+        assert_eq!(
+            build_segment_map(&request, b"x", digest("payload")),
+            Err(ProviderClosureErrorV2::ContextPayloadAmbiguous)
+        );
+        assert_eq!(
+            build_segment_map(b"aaaa", b"aaa", digest("overlap")),
+            Err(ProviderClosureErrorV2::ContextPayloadAmbiguous)
+        );
+    }
+
+    #[test]
+    fn repeated_prefix_search_preserves_the_unique_complete_payload() {
+        let mut payload = vec![b'a'; 64 * 1024];
+        *payload.last_mut().expect("payload") = b'b';
+        let mut request = vec![b'a'; 256 * 1024];
+        *request.last_mut().expect("request") = b'b';
+        let segments = build_segment_map(&request, &payload, digest("repeated-prefix"))
+            .expect("one complete payload at the end");
+        assert_eq!(segments.len(), 2);
+        assert_eq!(segments[1].start_offset(), 192 * 1024);
+        assert_eq!(segments[1].end_offset(), 256 * 1024);
+        *request.last_mut().expect("request") = b'a';
+        assert_eq!(
+            build_segment_map(&request, &payload, digest("absent-suffix")),
+            Err(ProviderClosureErrorV2::ContextPayloadMissing),
+        );
+    }
+
+    #[test]
     fn large_request_has_bounded_three_segment_proof() {
         let payload = b"context-bundle";
         let mut request = vec![b'a'; 1024 * 1024];
@@ -951,6 +979,31 @@ mod tests {
     }
 
     proptest! {
+        #[test]
+        fn arbitrary_byte_matching_preserves_missing_unique_and_overlapping_cases(
+            request in proptest::collection::vec(any::<u8>(), 0..256),
+            payload in proptest::collection::vec(any::<u8>(), 1..32),
+        ) {
+            let expected = request.windows(payload.len())
+                .enumerate()
+                .filter_map(|(offset, bytes)| (bytes == payload).then_some(offset))
+                .take(2)
+                .collect::<Vec<_>>();
+            let actual = build_segment_map(&request, &payload, digest("byte-pattern"));
+            match expected.as_slice() {
+                [] => prop_assert_eq!(actual, Err(ProviderClosureErrorV2::ContextPayloadMissing)),
+                [start] => {
+                    let segments = actual.expect("unique byte pattern");
+                    let context = segments.iter().find(|segment| {
+                        segment.kind() == FinalRequestSegmentKindV2::CanonicalContextBundle
+                    }).expect("context segment");
+                    prop_assert_eq!(context.start_offset(), *start as u64);
+                    prop_assert_eq!(context.end_offset(), (*start + payload.len()) as u64);
+                }
+                [_, _] => prop_assert_eq!(actual, Err(ProviderClosureErrorV2::ContextPayloadAmbiguous)),
+                _ => unreachable!("bounded reference matcher"),
+            }
+        }
         #[test]
         fn generated_segment_maps_are_total_deterministic_and_single_context(
             prefix_len in 0_usize..2048,
