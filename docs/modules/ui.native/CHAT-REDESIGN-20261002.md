@@ -9,6 +9,10 @@ Older messages / Back to latest use bounded pages rather than unbounded history
 merging. Reading older pages pauses latest polling; atomic page/room epochs and
 duplicate-ID rejection preserve cursor/content consistency. Identity markers are
 decorative initials from observed text, never trust or connection badges.
+Short-height mode preserves multiline editing, labels and keyboard controls
+while compacting header/composer spacing. A red/green regression covers both
+800×560 and 520×560 at 150% zoom, normal/history pages and 1/80-line drafts, with
+a 120-logical-pixel minimum readable timeline in those cases.
 
 ## Source and claim boundary
 

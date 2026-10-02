@@ -516,3 +516,88 @@ fn an_observed_untitled_conversation_is_named_without_inventing_messages() {
     assert!(app.chat_shell.chat.conversations[0].title.is_empty());
     output.drop_without_applying_deltas();
 }
+
+#[test]
+fn short_zoomed_chat_reserves_readable_timeline_with_multiline_composer() {
+    fn clips(shape: &egui::Shape, clip: egui::Rect, body: &str, heights: &mut Vec<f32>) {
+        match shape {
+            egui::Shape::Vec(shapes) => {
+                for shape in shapes {
+                    clips(shape, clip, body, heights);
+                }
+            }
+            egui::Shape::Text(text) if text.galley.text() == body => heights.push(clip.height()),
+            _ => {}
+        }
+    }
+    let body = "Timeline reading fixture. This paragraph remains in a usable scrollable message region even with a long multiline draft and history controls.\nSecond line of the observed message.\nLast line of the observed message.";
+    for (width, history, draft_rows) in [
+        (800.0, false, 1),
+        (520.0, false, 1),
+        (800.0, true, 1),
+        (520.0, true, 1),
+        (800.0, false, 80),
+        (520.0, false, 80),
+        (800.0, true, 80),
+        (520.0, true, 80),
+    ] {
+        let root = tempfile::TempDir::new().unwrap();
+        let mut app = app_fixture(root.path());
+        app.chat_shell.chat.tab = chat_model::AppTab::Chat;
+        app.chat_shell
+            .chat
+            .conversations
+            .push(chat_model::Conversation {
+                id: "room".into(),
+                title: "Fixture conversation with a longer title".into(),
+                preview: String::new(),
+                unread: 0,
+            });
+        app.chat_shell.chat.select("room");
+        app.chat_shell.chat_show_list = false;
+        app.chat_shell.chat.messages.push(chat_model::Message {
+            id: "message".into(),
+            sender: "Fixture sender".into(),
+            body: body.into(),
+            timestamp: "12:00".into(),
+        });
+        app.chat_shell.chat.draft = "draft line\n".repeat(draft_rows);
+        app.chat_shell.chat.sending = true;
+        app.chat_shell.chat_bridge.active_turn = Some("fixture-turn".into());
+        if history {
+            app.chat_shell.chat.page.cursor = Some("older".into());
+            app.chat_shell.chat.page.next_cursor = Some("earlier".into());
+        }
+        let ctx = egui::Context::default();
+        ctx.enable_accesskit();
+        theme::ensure_initialized(&ctx);
+        let size = egui::vec2(width / 1.5, 560.0 / 1.5);
+        render(&mut app, &ctx, size, Vec::new()).drop_without_applying_deltas();
+        let output = render(&mut app, &ctx, size, Vec::new());
+        let mut heights = Vec::new();
+        for shape in &output.shapes {
+            clips(&shape.shape, shape.clip_rect, body, &mut heights);
+        }
+        assert!(!heights.is_empty(), "message must remain rendered");
+        assert!(
+            heights
+                .iter()
+                .all(|height| *height >= chat_model::design::MIN_TIMELINE_HEIGHT),
+            "width={width}, history={history}, draft_rows={draft_rows}, timeline={heights:?}"
+        );
+        let visible = text(&output);
+        for label in ["Message", "Send", "Stop", "Waiting…"] {
+            assert!(visible.contains(label), "{label} absent: {visible}");
+        }
+        let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+        let composer = &tree
+            .nodes
+            .iter()
+            .find(|(id, _)| *id == egui::Id::new("chat-composer").accesskit_id())
+            .unwrap()
+            .1;
+        assert!(!composer.labelled_by().is_empty());
+        assert_eq!(app.chat_shell.chat.draft.lines().count(), draft_rows);
+        output.drop_without_applying_deltas();
+    }
+}

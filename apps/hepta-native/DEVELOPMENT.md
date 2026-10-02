@@ -10,7 +10,10 @@ list/back flow on narrow screens. Older messages and Back to latest select
 bounded, ordered pages; background latest polling pauses while reading history.
 Selection and page epochs plus duplicate-ID validation reject stale page updates
 atomically, preserving the prior cursor/content. Shared avatar, bubble spacing
-and input-radius tokens keep native and web presentation aligned. Console authorization and update confirmation
+and input-radius tokens keep native and web presentation aligned. Short viewports
+use a compact header and bounded, internally scrolling multiline composer. The
+800×560 and 520×560 layouts at 150% zoom retain at least 120 logical pixels of
+timeline in the normal/history cases, including long drafts and active controls. Console authorization and update confirmation
 remain unchanged. An authenticated runtime snapshot is not messaging readiness.
 Disconnected/unavailable messaging has no fabricated conversations or delivered
 messages. The first-party `hepta-agent-chat-host` uses Agentd SessionIngress,
