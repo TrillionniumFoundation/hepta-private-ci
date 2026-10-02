@@ -97,3 +97,14 @@ test("narrow console keeps controls, confirmation and error diagnostics readable
   await expect(page.locator("#error-status")).toContainText("UI_CONTROL_STALE_REVISION");
   await page.screenshot({ path: testInfo.outputPath("narrow-error.png"), fullPage: true });
 });
+
+
+test("failed WASM loading exposes fixed diagnostics without starting a session", async ({ page, request }) => {
+  await page.route("**/pkg/hepta_control_web_bg.wasm", route => route.abort());
+  await page.goto("/");
+  await expect(page.locator("#error-status")).toContainText("UI_CONTROL_STARTUP");
+  await expect(page.getByRole("button", { name: "Request start", exact: true })).toBeDisabled();
+  await expect(page.getByRole("button", { name: "Refresh runtime view", exact: true })).toBeDisabled();
+  expect(await page.evaluate(() => globalThis.__heptaUiControlReadiness.phase)).toBe("failed");
+  expect((await (await request.get("/__test__/state")).json()).requestCount).toBe(0);
+});

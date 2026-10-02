@@ -112,3 +112,12 @@ Follow the existing operations runbook for real-backend uniqueness, cross-princi
 - [`RECOVERY_STORAGE.md`](../../docs/modules/ui.control/RECOVERY_STORAGE.md)
 
 `projectRuntimeFromLocalCanonicalJson` and `buildLocalOperationProposalFromCanonicalJson` remain strict local qualification helpers. They are not production configuration loaders and accept only exact bounded canonical JSON.
+
+
+## Rust default browser
+
+`npm run build` now builds the Rust/WASM semantic DOM application into `dist`.
+Install Rust 1.95.0 with `wasm32-unknown-unknown` and wasm-bindgen-cli 0.2.128.
+The stable Node package exports remain legacy compatibility/reference APIs; the
+shipped browser contains no legacy application modules. See `rust/README.md` for
+parity evidence boundaries, deployment requirements and the exact rollback source.

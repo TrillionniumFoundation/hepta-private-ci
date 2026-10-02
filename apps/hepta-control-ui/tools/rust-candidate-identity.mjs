@@ -34,7 +34,7 @@ async function run() {
   const hashes = {};
   for (const path of paths) hashes[path] = createHash("sha256").update(await readFile(resolve(root,path))).digest("hex");
   const receipt = { schema: "hepta.ui-control.rust-parity-subject.v1", ...identity,
-    javascriptBaseline: JAVASCRIPT_BASELINE, inputSha256: hashes, productCallerSwitched: false, productionQualified: false };
+    javascriptBaseline: JAVASCRIPT_BASELINE, inputSha256: hashes, productCallerSwitched: true, productionQualified: false };
   const destination = resolve(root, output);
   await mkdir(dirname(destination), { recursive: true });
   await writeFile(destination, JSON.stringify(receipt,null,2)+"\n");

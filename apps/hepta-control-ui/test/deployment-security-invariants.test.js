@@ -121,3 +121,18 @@ test("TLS policy requires modern ciphers and certificate runway", () => {
     error => error.code === "UI_CONTROL_TLS_CERTIFICATE_EXPIRY",
   );
 });
+
+
+test("Rust CSP permits only explicit first-party WASM compilation", () => {
+  const runtime = { browserRuntime: "rust-wasm-v1" };
+  const wasm = csp.replace("script-src 'self'", "script-src 'self' 'wasm-unsafe-eval'");
+  assert.doesNotThrow(() => assertContentSecurityPolicy(wasm, runtime));
+  assert.throws(() => assertContentSecurityPolicy(wasm));
+  assert.throws(() => assertContentSecurityPolicy(csp, runtime));
+  assert.throws(() => assertContentSecurityPolicy(wasm, { browserRuntime: "unknown" }));
+  for (const source of ["'unsafe-eval'", "'unsafe-inline'", "https://cdn.invalid", "blob:", "*"]) {
+    assert.throws(() => assertContentSecurityPolicy(wasm.replace("'wasm-unsafe-eval'", source), runtime));
+    assert.throws(() => assertContentSecurityPolicy(`${wasm} ${source}`, runtime));
+  }
+  assert.throws(() => assertContentSecurityPolicy(wasm.replace("style-src 'self'", "style-src 'self' 'wasm-unsafe-eval'"), runtime));
+});

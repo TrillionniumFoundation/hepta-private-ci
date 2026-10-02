@@ -3,8 +3,9 @@ import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
 import { fileURLToPath } from "node:url";
 
-const rustCandidate = process.env.UI_CONTROL_CANDIDATE === "rust";
-const root = fileURLToPath(new URL(rustCandidate ? "../../dist-rust/" : "../../dist/", import.meta.url));
+const isolatedCandidate = process.env.UI_CONTROL_CANDIDATE === "rust";
+const rustCandidate = process.env.UI_CONTROL_CANDIDATE !== "javascript";
+const root = fileURLToPath(new URL(isolatedCandidate ? "../../dist-rust/" : "../../dist/", import.meta.url));
 const port = Number(process.env.PORT ?? 4173);
 const csrfToken = "csrf-fixture-token";
 const digests = {

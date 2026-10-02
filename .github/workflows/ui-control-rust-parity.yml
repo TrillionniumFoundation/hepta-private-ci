@@ -116,6 +116,9 @@ jobs:
           set -euo pipefail
           npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
           node apps/hepta-control-ui/tools/build-rust.mjs
+          npm run build --prefix apps/hepta-control-ui
+          node apps/hepta-control-ui/tools/verify-rust-artifacts.mjs
+          node --test apps/hepta-control-ui/test/deployment-security-invariants.test.js
           cd apps/hepta-control-ui
           npx playwright install --with-deps chromium firefox webkit
       - name: Execute real Rust browser parity

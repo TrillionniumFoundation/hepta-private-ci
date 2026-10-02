@@ -25,7 +25,7 @@ test("workflow resolves one integration base and uses explicit Rust browser asse
   assert.match(workflow,/branches: \["work\/ui-control-rust-20261002"\]/u);
   assert.match(workflow,/contents: read/u);
   assert.match(workflow,/pull_request:\n    paths: \["apps\/hepta-control-ui\/\*\*"/u);
-  assert.doesNotMatch(workflow,/pull-requests: write|secrets\.|gh pr |deploy/iu);
+  assert.doesNotMatch(workflow,/pull-requests: write|secrets\.|gh pr |\bdeploy\b/iu);
   assert.match(workflow,/playwright\.rust\.config\.mjs/u);
   assert.match(workflow,/identity-final\.json/u);
   assert.match(workflow,/cmp \.tmp\/ui-control-rust-evidence\/identity\.json \.tmp\/ui-control-rust-evidence\/identity-final\.json/u);
@@ -42,4 +42,15 @@ test("identity capture refuses dirty tracked and untracked source", async () => 
   assert.match(source, /git\("diff", "--exit-code", "HEAD"/u);
   assert.match(source, /"ls-files", "--others", "--exclude-standard"/u);
   assert.match(source, /javascriptBaseline: JAVASCRIPT_BASELINE/u);
+});
+
+
+test("default browser build selects Rust without copying legacy application code", async () => {
+  const entry = await readFile(new URL("../tools/build.mjs", import.meta.url), "utf8");
+  assert.match(entry, /build-rust\.mjs/u);
+  assert.match(entry, /--active/u);
+  assert.doesNotMatch(entry, /cp\(|src\//u);
+  const bootstrap = await readFile(new URL("../web/main.js", import.meta.url), "utf8");
+  assert.match(bootstrap, /pkg\/hepta_control_web\.js/u);
+  assert.doesNotMatch(bootstrap, /RuntimeClient|createControlConsole|SessionProvider/u);
 });

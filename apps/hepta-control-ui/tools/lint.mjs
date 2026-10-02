@@ -10,7 +10,7 @@ async function collect(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
     const path = join(directory, entry.name);
     if (entry.isDirectory()) {
-      if (!["dist", "node_modules", "test-results", "playwright-report"].includes(entry.name)) {
+      if (!["dist", "dist-rust", "target", "pkg", "node_modules", "test-results", "playwright-report"].includes(entry.name)) {
         await collect(path);
       }
     } else if ([".js", ".mjs"].includes(extname(entry.name))) {

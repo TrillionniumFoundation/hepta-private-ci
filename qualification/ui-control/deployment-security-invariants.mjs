@@ -1,6 +1,6 @@
 import { assertEvidence, boundedText } from "./external-evidence-primitives.mjs";
 
-export const UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE = "hepta.ui-control.deployment-security-policy.v1";
+export const UI_CONTROL_DEPLOYMENT_SECURITY_PROFILE = "hepta.ui-control.deployment-security-policy.v2";
 export const UI_CONTROL_MINIMUM_HSTS_MAX_AGE_SECONDS = 31_536_000;
 export const UI_CONTROL_MINIMUM_CERTIFICATE_LIFETIME_SECONDS = 7 * 24 * 60 * 60;
 
@@ -41,7 +41,11 @@ function exactTokens(actual, expected, code, label) {
   );
 }
 
-export function assertContentSecurityPolicy(value) {
+export function assertContentSecurityPolicy(value, { browserRuntime = "javascript-v1" } = {}) {
+  assertEvidence(["javascript-v1", "rust-wasm-v1"].includes(browserRuntime), "UI_CONTROL_CSP_RUNTIME", "unknown browser runtime");
+  const required = browserRuntime === "rust-wasm-v1"
+    ? { ...REQUIRED_CSP, "script-src": ["'self'", "'wasm-unsafe-eval'"] }
+    : REQUIRED_CSP;
   assertEvidence(typeof value === "string" && value.trim().length > 0, "UI_CONTROL_CSP_MISSING", "Content-Security-Policy is required");
   const directives = new Map();
   for (const rawDirective of value.split(";")) {
@@ -57,7 +61,7 @@ export function assertContentSecurityPolicy(value) {
       assertEvidence(sources.length === 0, "UI_CONTROL_CSP_DIRECTIVE", `${name} must not carry source values`);
     }
     for (const source of sources) {
-      assertEvidence(!FORBIDDEN_CSP_SOURCES.has(source), "UI_CONTROL_CSP_UNSAFE_SOURCE", `${name} contains forbidden source ${source}`);
+      assertEvidence((!FORBIDDEN_CSP_SOURCES.has(source) || (source === "'wasm-unsafe-eval'" && name === "script-src" && browserRuntime === "rust-wasm-v1")), "UI_CONTROL_CSP_UNSAFE_SOURCE", `${name} contains forbidden source ${source}`);
       assertEvidence(!source.includes("*"), "UI_CONTROL_CSP_UNSAFE_SOURCE", `${name} contains a wildcard source`);
       assertEvidence(
         !/^(?:https?|wss?|blob):/iu.test(source),
@@ -68,7 +72,7 @@ export function assertContentSecurityPolicy(value) {
     }
     directives.set(name, sources);
   }
-  for (const [name, sources] of Object.entries(REQUIRED_CSP)) {
+  for (const [name, sources] of Object.entries(required)) {
     assertEvidence(directives.has(name), "UI_CONTROL_CSP_DIRECTIVE", `CSP missing ${name}`);
     exactTokens(directives.get(name), sources, "UI_CONTROL_CSP_DIRECTIVE", `CSP ${name}`);
   }

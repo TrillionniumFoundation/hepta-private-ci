@@ -121,7 +121,7 @@ impl BrowserApp {
     }
 }
 
-/// Explicit staged Rust entry. The existing JavaScript product caller is unchanged until parity qualifies.
+/// Canonical Rust browser entry, invoked by the minimal fail-closed WASM loader.
 #[wasm_bindgen]
 pub fn start() -> Promise {
     if let Some(existing) = START.with(|value| value.borrow().clone()) {

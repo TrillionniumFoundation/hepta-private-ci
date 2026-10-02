@@ -1,9 +1,10 @@
 # Rust control UI migration candidate
 
 This additive candidate starts from ui.control PR #1069 head
-`5c0bbe30e4a5d408c430e8ab1fcc25638042d82a`. The existing JavaScript product
-entrypoint and package API remain active until the Rust browser and caller
-parity gates pass. An additive candidate is not production activation.
+`5c0bbe30e4a5d408c430e8ab1fcc25638042d82a`. The default browser build now selects the Rust/WASM semantic-DOM host after
+three-engine head and merge parity. The legacy Node package API remains as a
+compatibility/reference boundary, and is not copied into the browser artifact.
+A source entry cutover is not production activation.
 
 ## Architecture decision
 
@@ -75,5 +76,27 @@ from handwritten product logic. CSS, HTML and fonts are static presentation
 assets. The candidate fixture server adds only `wasm-unsafe-eval`, not broad
 `unsafe-eval`, and serves WASM with `application/wasm`.
 
-The isolated build creates `dist-rust`; it does not replace `dist`. Production
-CSP deployment and public package ABI cutover remain a separate review gate.
+The isolated command creates `dist-rust`; `npm run build` creates the default
+Rust browser in `dist`. Neither artifact includes legacy `src/` application code.
+Both use pinned wasm-bindgen 0.2.128, locked Cargo inputs, and exact per-asset
+SHA-256 inventories. The existing Node-facing public API is compatibility/reference
+code and remains available without implying that it is the active browser UI.
+
+## Deployment boundary and rollback
+
+Deployment is not performed or authorized by this source change. The reverse proxy
+must serve the exact same-origin artifact with `application/wasm` for `.wasm`,
+`no-store`, existing CSRF substitution and authentication/isolation headers intact.
+The v2 security profile permits `wasm-unsafe-eval` only in `script-src` and only when
+the bound build manifest identifies `rust-wasm-v1`. It still rejects generic
+`unsafe-eval`, inline code, blob/external script origins and broader connections.
+CSP cannot restrict compilation to one WASM hash by itself: exact candidate asset
+verification, same-origin serving and immutable versioned deployment are required.
+Do not relax CSP to work around a mismatched artifact or browser incompatibility.
+
+For a source/build rollback, use a separate clean worktree at the frozen JS parent
+`5c0bbe30e4a5d408c430e8ab1fcc25638042d82a`, install its locked npm dependencies and
+run its original `npm run build`. Requalify that exact artifact and the matching
+JavaScript CSP before any authorized redeployment. Do not mix HTML/glue/WASM
+versions, erase durable recovery records, or replay mutations during rollback.
+Public package ABI migration and production activation require separate evidence.
