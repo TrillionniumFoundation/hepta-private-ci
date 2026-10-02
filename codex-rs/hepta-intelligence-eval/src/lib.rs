@@ -483,6 +483,13 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[path = "lib_tests.rs"]
 mod tests;
 
+mod operational_model_lease_v2;
+pub use operational_model_lease_v2::ConservativeCpuRuntimeProfileV2;
+pub use operational_model_lease_v2::OperationalCalibrationGatesV2;
+pub use operational_model_lease_v2::OperationalModelLeaseBindingV2;
+pub use operational_model_lease_v2::OperationalModelLeaseErrorV2;
+pub use operational_model_lease_v2::OperationalModelUseV2;
+
 mod longitudinal_time;
 pub use longitudinal_time::LongitudinalTimeEvidenceV1;
 pub use longitudinal_time::ObservedFutureWindowV1;
