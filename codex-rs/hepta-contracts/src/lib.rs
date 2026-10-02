@@ -24,6 +24,7 @@ mod provider;
 mod provider_effect;
 mod qualification_receipt;
 mod receipt;
+mod run_bridge;
 mod stable_id;
 mod verified_use_witness;
 
@@ -313,3 +314,15 @@ pub use receipt::PolicyStamp;
 pub use receipt::Sha256Digest;
 pub use receipt::ToolAction;
 pub use receipt::ToolActionSource;
+
+pub use run_bridge::RUN_BRIDGE_SCHEMA_VERSION;
+pub use run_bridge::RunBridgeAbortProofV1;
+pub use run_bridge::RunBridgeAcknowledgementV1;
+pub use run_bridge::RunBridgeBindingV1;
+pub use run_bridge::RunBridgeError;
+pub use run_bridge::RunBridgeIdentityV1;
+pub use run_bridge::RunBridgeLogicalOutcomeV1;
+pub use run_bridge::RunBridgePrimaryV1;
+pub use run_bridge::RunBridgeProviderOutcomeV1;
+pub use run_bridge::RunBridgePublicationKindV1;
+pub use run_bridge::RunBridgeQualificationConflictV1;
