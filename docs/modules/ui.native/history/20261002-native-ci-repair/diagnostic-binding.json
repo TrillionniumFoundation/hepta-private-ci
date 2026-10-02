@@ -1,0 +1,166 @@
+{
+  "schema": "hepta.ui-native-local-diagnostic-binding.v1",
+  "implementationSourceSha": "d07b6de08d6f3bcab1b7367f695be8b439ddb732",
+  "implementationSourceTree": "848365cf8a3ed6781c4942805044c550e6b842a7",
+  "scope": "Prepublication repair diagnostics; Rust and focused Python tests ran before final mechanical formatting. Full candidate/merge/storage qualification has not executed for this source.",
+  "acceptedQualification": false,
+  "candidateWorkflowExecuted": false,
+  "localPublishedTreeComparison": {
+    "localCommit": "3d3dbe0c21fc898f0195918886bb6f6c0e1ee81b",
+    "publishedCommit": "d07b6de08d6f3bcab1b7367f695be8b439ddb732",
+    "identicalCompleteGitTree": "848365cf8a3ed6781c4942805044c550e6b842a7",
+    "executionClaim": false
+  },
+  "nativeLibraryTests": {
+    "command": "just test --manifest-path ../apps/hepta-native/Cargo.toml --locked --lib -E <explicit four-D-Bus-test exclusion>",
+    "passed": 160,
+    "failed": 0,
+    "excludedForUnavailableUnixSockets": [
+      "portal_cancel_is_distinct_from_rejection_and_malformed_results",
+      "response_before_method_reply_is_observed_and_wrong_owner_is_ignored",
+      "stalled_request_times_out_and_closes_the_owned_request",
+      "native_notification_dispatch_preserves_literal_text_and_identity"
+    ],
+    "preExistingIgnoredEntries": 4,
+    "testProfileDebugSymbols": 0,
+    "changedDbusFixturesCompiled": true,
+    "changedDbusFixturesExecuted": false,
+    "countsDoNotIncludeRepeatedTwoTestSubset": true
+  },
+  "strictClippy": {
+    "command": "just clippy --manifest-path ../apps/hepta-native/Cargo.toml --locked -p hepta-native --lib -- -D warnings",
+    "recipeAddsTests": true,
+    "passed": true,
+    "allFeatures": false,
+    "devProfileDebugSymbols": 0
+  },
+  "focusedPythonChecks": {
+    "formatRegressionTests": 5,
+    "workflowTests": 16,
+    "nativePlatformGuardTests": 10,
+    "passed": true
+  },
+  "formatting": {
+    "cargoFmtOriginalAndBatchedTargetMapsEqual": true,
+    "targets": 443,
+    "batches": 3,
+    "maximumCommandUtf16Units": 16000,
+    "finalBatchedCheckPassed": true,
+    "justFmtPassed": true,
+    "unrelatedBaselineFilesRestored": 54,
+    "initialJustFmtBlockedByReadOnlyDefaultCaches": true,
+    "initialCompileOnlyInvocationRejectedByNextestFlagConflict": true
+  },
+  "limits": [
+    "AF_UNIX creation is denied in this environment even for authorized escalated execution; no local runtime result is claimed for the four changed D-Bus tests.",
+    "Windows process launch/runtime validation awaits the native runner.",
+    "No fresh owner bundle, release storage, packaging, installed lifecycle, physical acceptance, or same-run aggregate is claimed.",
+    "The initial formatter cache failure was resolved with writable scratch caches.",
+    "Historical run 36971395569 is failed and remains bound to its old candidate and implementation."
+  ],
+  "retainedLogs": {
+    "path": "docs/modules/ui.native/history/20261002-native-ci-repair/retained-logs.zip",
+    "sha256": "35e895bbc557442360789c2e25b971017370d77be984f8ba8b0c38475b641c9e",
+    "entries": {
+      "hosted/linux-head/app_format.json": {
+        "bytes": 700,
+        "sha256": "9677b4ec465acbf7ca76d99c8619cd72673b3f651f920101d65ba8d12865bdc7"
+      },
+      "hosted/linux-head/app_format.log": {
+        "bytes": 44520,
+        "sha256": "0c8d31d5800c1739eb77e2d2fedab3fbcd81dbba8b4ebc8040c45ed4083a8c03"
+      },
+      "hosted/linux-head/app_tests.json": {
+        "bytes": 729,
+        "sha256": "24a8238ce3be2c227e735930c3341cb0849ce5fb6bbc1ddac2ddc518c61fa60a"
+      },
+      "hosted/linux-head/app_tests.log": {
+        "bytes": 40490,
+        "sha256": "059ac093160c0c1f28b7fba76def210f970f620489b4ff3862d3682f54927ce7"
+      },
+      "hosted/linux-head/source.txt": {
+        "bytes": 231,
+        "sha256": "22f91b3898d1093a68bf1f5b4cafa95dc65b9224247e3573f426364fa1c0f5dd"
+      },
+      "hosted/run-jobs.json": {
+        "bytes": 22330,
+        "sha256": "41356aad583e36fc2747d26206b34f8caa5de7dd507443c35c5a7046a16bb200"
+      },
+      "hosted/windows-head/app_format.json": {
+        "bytes": 725,
+        "sha256": "60bb1020e1c3d5ec349985a438b74a00d597fa9cc9fe898d78bb00c6bf5c6504"
+      },
+      "hosted/windows-head/app_format.log": {
+        "bytes": 817,
+        "sha256": "a3c64adc493a218a5a8332dfc60b9e9fd0cf455d8215931a5888f9bc84a29c70"
+      },
+      "hosted/windows-head/source.txt": {
+        "bytes": 231,
+        "sha256": "22f91b3898d1093a68bf1f5b4cafa95dc65b9224247e3573f426364fa1c0f5dd"
+      },
+      "local/native-ci-clippy.log": {
+        "bytes": 7776,
+        "sha256": "c426e2c5521623f2d84ee5bce0868b9b1185afbf2e74cc98c60a66d3f5ad32d8"
+      },
+      "local/native-ci-compile.log": {
+        "bytes": 383,
+        "sha256": "ff2815dad4d65654d99813ab7a9d4d7ed876cc50df282bec67bacc68dc3e456b"
+      },
+      "local/native-ci-final-format-check.log": {
+        "bytes": 44560,
+        "sha256": "fe28c6c802c13391e03d6b7fd8bd3bd6c1bf7d9954d221511852109ebfe35653"
+      },
+      "local/native-ci-format-scope.json": {
+        "bytes": 2852,
+        "sha256": "b992072ac25f8225762c3825c539b3fda2ec7acc97948f73390183402712fad0"
+      },
+      "local/native-ci-just-fmt-retry.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "local/native-ci-just-fmt.log": {
+        "bytes": 9258,
+        "sha256": "8a784c56a66ed0426170d129ed3166e2eb0c55c5e3ab9c96c26fb23d8fb571e2"
+      },
+      "local/native-ci-library-tests.log": {
+        "bytes": 21589,
+        "sha256": "374695b273b658a043768d87ecfea3f1dc84834b95d1baf21d27a3001e12f1e3"
+      },
+      "local/native-ci-rust-platform-tests.log": {
+        "bytes": 2001,
+        "sha256": "dcd15addd12433377cf685611e2d72e07475c709cf7aa8283cb9c713bb808598"
+      },
+      "local/native-ci-scoped-tests.log": {
+        "bytes": 9853,
+        "sha256": "18c6a0f7f2f380ef4c8e3ce9084bb169e911d412146eb606fb77707f36310029"
+      },
+      "local/native-ci-workflow-tests.log": {
+        "bytes": 2809,
+        "sha256": "6a88d94bd0949169a6335b962dbc01187168c86784e1ef4bded8a160135285d8"
+      },
+      "metadata/native-ci-refreeze-map-adapter.log": {
+        "bytes": 6127,
+        "sha256": "966019b0e07ed766c8620399e9f7e7ed0048d763f286c15db04715972bb70156"
+      },
+      "metadata/native-ci-refreeze-projection-tests.log": {
+        "bytes": 730,
+        "sha256": "0a2e6b49992f795fa2426f6c973eb2e3a5f9ed3a2d7efe41d1c56009d5952b87"
+      },
+      "metadata/native-ci-refreeze-python.log": {
+        "bytes": 45051,
+        "sha256": "9e37941b950854d883e72ab4a75cab07635e3c70bc01a0be5583a83c06502d54"
+      },
+      "metadata/native-ci-refreeze-registry.log": {
+        "bytes": 102,
+        "sha256": "b891b3d13a03328283fb957c6a880ae0f4585aa52723fcbf61638dcaf67d2c47"
+      },
+      "metadata/native-ci-refreeze-source.json": {
+        "bytes": 1543,
+        "sha256": "23c52e32c3a2f87c6c2ac664c3981e19525a5f84e1301474bd9e76336ec3a5c3"
+      }
+    }
+  },
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
+}

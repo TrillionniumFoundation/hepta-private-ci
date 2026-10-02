@@ -1,0 +1,61 @@
+{
+  "schema": "hepta.ui-native-metadata-local-checks.v1",
+  "implementationSourceSha": "d07b6de08d6f3bcab1b7367f695be8b439ddb732",
+  "implementationSourceTree": "848365cf8a3ed6781c4942805044c550e6b842a7",
+  "executionScope": "Local uncommitted metadata continuation on the published implementation; no new native runtime or hosted candidate execution.",
+  "pythonTests": {
+    "total": 268,
+    "passed": 267,
+    "skipped": 1,
+    "seconds": 13.076,
+    "skip": "Windows-only NTFS junction fixture on Linux"
+  },
+  "projections": {
+    "passed": 7,
+    "failed": 0,
+    "reproducibilityVerified": true,
+    "generatedFilesChanged": false
+  },
+  "moduleRegistry": {
+    "passed": 4,
+    "failed": 0
+  },
+  "nativeMapAdapter": {
+    "status": "passed",
+    "globalMapVerificationClaim": false
+  },
+  "sourceIdentity": "structural-pass",
+  "historicalRecordsPreservedExactly": true,
+  "storageBudgetSemanticsUnchanged": true,
+  "logs": {
+    "native-ci-refreeze-python.log": {
+      "archiveEntry": "metadata/native-ci-refreeze-python.log",
+      "bytes": 45051,
+      "sha256": "9e37941b950854d883e72ab4a75cab07635e3c70bc01a0be5583a83c06502d54"
+    },
+    "native-ci-refreeze-projection-tests.log": {
+      "archiveEntry": "metadata/native-ci-refreeze-projection-tests.log",
+      "bytes": 730,
+      "sha256": "0a2e6b49992f795fa2426f6c973eb2e3a5f9ed3a2d7efe41d1c56009d5952b87"
+    },
+    "native-ci-refreeze-registry.log": {
+      "archiveEntry": "metadata/native-ci-refreeze-registry.log",
+      "bytes": 102,
+      "sha256": "b891b3d13a03328283fb957c6a880ae0f4585aa52723fcbf61638dcaf67d2c47"
+    },
+    "native-ci-refreeze-map-adapter.log": {
+      "archiveEntry": "metadata/native-ci-refreeze-map-adapter.log",
+      "bytes": 6127,
+      "sha256": "966019b0e07ed766c8620399e9f7e7ed0048d763f286c15db04715972bb70156"
+    },
+    "native-ci-refreeze-source.json": {
+      "archiveEntry": "metadata/native-ci-refreeze-source.json",
+      "bytes": 1543,
+      "sha256": "23c52e32c3a2f87c6c2ac664c3981e19525a5f84e1301474bd9e76336ec3a5c3"
+    }
+  },
+  "acceptedQualification": false,
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
+}

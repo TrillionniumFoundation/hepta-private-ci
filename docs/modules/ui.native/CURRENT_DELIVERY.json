@@ -2,8 +2,8 @@
   "schema": "hepta.ui.native.delivery.v4",
   "canonicalBranch": "work/ui-native-qualified-integration-20260928",
   "convergenceBranch": "work/ui-rust-scifi-audit-20261002",
-  "implementationSourceSha": "2b59c1c5f877432a557185efd77331ae1143ae42",
-  "implementationSourceTree": "9326a46a71a3f7aae14481d979cd3faee1935e7c",
+  "implementationSourceSha": "d07b6de08d6f3bcab1b7367f695be8b439ddb732",
+  "implementationSourceTree": "848365cf8a3ed6781c4942805044c550e6b842a7",
   "ordinarySourceHistory": {
     "baseline": "6f145464d9d58233c59aafe262a1250a5ea873a8",
     "walIndex": "4bc29cf124dc5532d04349e478bc82f5d4959fd9",
@@ -25,7 +25,8 @@
     "cancelledAckPipeFixtureRepair": "ee6a155661ad7e051a25d90eb5cc37ca1ce5d5b4",
     "deterministicMergeLfRepair": "d5445993e9ac96626bf9314053df77eeedb90e4d",
     "explicitUpdateAndAuthorityLockReleaseRepair": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
-    "rustNativeContinuation": "2b59c1c5f877432a557185efd77331ae1143ae42"
+    "rustNativeContinuation": "2b59c1c5f877432a557185efd77331ae1143ae42",
+    "nativeLinuxAndWindowsCiHarnessRepair": "d07b6de08d6f3bcab1b7367f695be8b439ddb732"
   },
   "implemented": {
     "exactActiveOperationIndex": true,
@@ -137,12 +138,12 @@
   "releaseAuthorized": false,
   "auditReport": "docs/modules/ui.native/ADVERSARIAL-AUDIT-20261002.md",
   "localAuditVerification": {
-    "scope": "Current published implementation; fresh exact-source six-platform and storage qualification pending. Historical/prepublication diagnostics remain separately scoped.",
-    "implementationSourceSha": "2b59c1c5f877432a557185efd77331ae1143ae42",
-    "implementationSourceTree": "9326a46a71a3f7aae14481d979cd3faee1935e7c",
+    "scope": "Current published CI-repair source; new exact-source platform, storage and aggregate execution pending. Prepublication diagnostics and the prior failed hosted run remain separately scoped.",
+    "implementationSourceSha": "d07b6de08d6f3bcab1b7367f695be8b439ddb732",
+    "implementationSourceTree": "848365cf8a3ed6781c4942805044c550e6b842a7",
     "acceptedQualification": false,
     "status": "pending-executed-candidate-evidence",
-    "localDiagnosticRecord": "docs/modules/ui.native/history/20261002-2b59-local/diagnostic-binding.json",
+    "localDiagnosticRecord": "docs/modules/ui.native/history/20261002-native-ci-repair/diagnostic-binding.json",
     "qualificationRunIds": [],
     "allPlatformSubjectsPassed": false,
     "physicalAcceptanceComplete": false
@@ -388,6 +389,17 @@
       },
       "ciQualificationPassed": false,
       "physicalPlatformAcceptanceComplete": false
+    },
+    {
+      "scope": "Current published implementation; fresh exact-source six-platform and storage qualification pending. Historical/prepublication diagnostics remain separately scoped.",
+      "implementationSourceSha": "2b59c1c5f877432a557185efd77331ae1143ae42",
+      "implementationSourceTree": "9326a46a71a3f7aae14481d979cd3faee1935e7c",
+      "acceptedQualification": false,
+      "status": "pending-executed-candidate-evidence",
+      "localDiagnosticRecord": "docs/modules/ui.native/history/20261002-2b59-local/diagnostic-binding.json",
+      "qualificationRunIds": [],
+      "allPlatformSubjectsPassed": false,
+      "physicalAcceptanceComplete": false
     }
   ],
   "historicalLocalAuditDiagnostics": [
@@ -900,6 +912,13 @@
       "implementationSourceSha": "d5445993e9ac96626bf9314053df77eeedb90e4d",
       "implementationSourceTree": "4f56b2375ff2a24a07a9edff0fee4135b785581d",
       "evidenceRole": "historical-only; does not qualify current implementation source"
+    },
+    {
+      "path": "docs/modules/ui.native/history/20261002-native-ci-repair/historical-run.json",
+      "sha256": "6edef1f8911b363084eee51fb3356f3ee823274cd07761458e1699f49d95a48c",
+      "implementationSourceSha": "2b59c1c5f877432a557185efd77331ae1143ae42",
+      "implementationSourceTree": "9326a46a71a3f7aae14481d979cd3faee1935e7c",
+      "evidenceRole": "historical failed run; successful macOS/storage subjects do not qualify the current source"
     }
   ],
   "historicalQualificationReviewRecords": [

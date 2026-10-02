@@ -6,13 +6,19 @@ application. It does not declare production readiness, independent acceptance,
 deployment qualification or release authorization. Findings below describe the
 immutable baseline unless an explicitly identified later result says otherwise.
 
-The published continuation implementation is
-`2b59c1c5f877432a557185efd77331ae1143ae42`, tree
-`9326a46a71a3f7aae14481d979cd3faee1935e7c`, on
-`work/ui-rust-scifi-audit-20261002`. Its immutable parent is `978c1923...`.
-The [local diagnostic binding](history/20261002-2b59-local/README.md) preserves
-the original prepublication observations and their exact relationship to this
-source. Fresh hosted candidate/merge/storage qualification remains pending.
+The current published CI-repair source is
+`d07b6de08d6f3bcab1b7367f695be8b439ddb732`, tree
+`848365cf8a3ed6781c4942805044c550e6b842a7`, on
+`work/ui-rust-scifi-audit-20261002`, with exact qualification parent `978c1923...`.
+The prior `2b59c1c5f...` implementation and its
+[original local diagnostics](history/20261002-2b59-local/README.md) retain their
+historical scope. Hosted run 36971395569 for candidate `2e0b6557e...` failed:
+Linux's anonymous TCP fixture could not provide AppArmor peer labels, while
+Windows exceeded the formatting process's command-line limit before Clippy.
+The [CI-repair record](history/20261002-native-ci-repair/README.md) describes
+both repairs, the exact unchanged formatting target set, local Unix-socket
+restrictions and retained logs. New exact-source hosted qualification remains
+pending; no old platform or storage pass transfers to the new source.
 
 ## 1. Exact candidate, evidence and integration boundary
 

@@ -3,8 +3,8 @@
 The current continuation review base is `978c1923eda66373e9dce4fe0efa890bc60ac404`
 on `work/ui-native-adversarial-audit-20261001`; the review branch is
 `work/ui-rust-scifi-audit-20261002`. Ordinary source is
-`2b59c1c5f877432a557185efd77331ae1143ae42`, tree
-`9326a46a71a3f7aae14481d979cd3faee1935e7c`. This is a stacked native continuation,
+`d07b6de08d6f3bcab1b7367f695be8b439ddb732`, tree
+`848365cf8a3ed6781c4942805044c550e6b842a7`. This is a stacked native continuation,
 not a current-main integration.
 
 The new [audit](ADVERSARIAL-AUDIT-20261002.md) covers Rust native adapters,
@@ -13,7 +13,15 @@ protocols, input-only startup recovery, the console presentation, and authentica
 JSON root discovery. [Retained local diagnostics](history/20261002-2b59-local/README.md)
 preserve their actual execution scope. Frozen inventory is 455 Git blobs over
 33 paths, including the platform-adapters crate, with digest
-`e9055dd142615e91f704feb5e57d64c9fd4176aa6b1145afa343154dfdcb09fd`.
+`2ecc6b41c827d247c241a92d562b7964d2231bc372a607083d224938e2ef47d6`.
+
+The [CI-repair record](history/20261002-native-ci-repair/README.md) preserves
+failed run 36971395569 on candidate 2e0b6557e and the new local limits.
+Linux's anonymous TCP test bus could not provide AppArmor peer labels; the
+private Unix/EXTERNAL fixture retains mediation and all protocol assertions.
+Windows formatting now checks the same 443 Cargo targets in bounded batches.
+The current frozen source is d07b6de08; previous diagnostic executions
+remain tied to their original source and are not transferred to it.
 
 New six-platform head/merge, release storage and same-run aggregate execution are
 pending. Non-Linux verified Open/Reveal, separate `ui.control` Rust migration,
