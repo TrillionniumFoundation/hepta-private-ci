@@ -147,7 +147,10 @@ impl AutomationStore {
                 }
                 Ok(EffectDispatchStart::Existing(existing))
             }
-            Err(_) => Err(TaskFlowError::Unavailable),
+            Err(error) => Err(crate::taskflow_diagnostics::unavailable(
+                &error,
+                std::panic::Location::caller(),
+            )),
         }
     }
 
@@ -182,7 +185,9 @@ impl AutomationStore {
         .bind(i64::from(attempt))
         .fetch_optional(self.taskflow_pool())
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
+        .map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         row.map(effect_attempt_from_row).transpose()
     }
 
@@ -224,7 +229,9 @@ impl AutomationStore {
         )
         .fetch_all(self.taskflow_pool())
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
+        .map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         rows.into_iter().map(effect_attempt_from_row).collect()
     }
 
@@ -296,7 +303,10 @@ impl AutomationStore {
                     }
                     Ok(refreshed)
                 }
-                Err(_) => Err(TaskFlowError::Unavailable),
+                Err(error) => Err(crate::taskflow_diagnostics::unavailable(
+                    &error,
+                    std::panic::Location::caller(),
+                )),
             };
         }
 
@@ -339,7 +349,10 @@ impl AutomationStore {
                 }
                 Ok(refreshed)
             }
-            Err(_) => Err(TaskFlowError::Unavailable),
+            Err(error) => Err(crate::taskflow_diagnostics::unavailable(
+                &error,
+                std::panic::Location::caller(),
+            )),
         }
     }
 
@@ -382,7 +395,10 @@ impl AutomationStore {
         if let Err(error) = &inserted
             && !is_constraint(error)
         {
-            return Err(TaskFlowError::Unavailable);
+            return Err(crate::taskflow_diagnostics::unavailable(
+                error,
+                std::panic::Location::caller(),
+            ));
         }
         let stored = self
             .effect_dispatch_authority_witness(run_id, step_id, attempt)
@@ -396,7 +412,10 @@ impl AutomationStore {
             Err(error) if is_constraint(&error) => Err(TaskFlowError::Conflict(
                 "effect dispatch already has a different authority witness".to_string(),
             )),
-            Err(_) => Err(TaskFlowError::Unavailable),
+            Err(error) => Err(crate::taskflow_diagnostics::unavailable(
+                &error,
+                std::panic::Location::caller(),
+            )),
         }
     }
 
@@ -417,7 +436,9 @@ impl AutomationStore {
         .bind(i64::from(attempt))
         .fetch_optional(self.taskflow_pool())
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
+        .map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         row.map(|row| {
             let bytes: Vec<u8> = row.try_get("witness_json").map_err(|_| {
                 TaskFlowError::Corrupt("effect authority witness bytes".to_string())

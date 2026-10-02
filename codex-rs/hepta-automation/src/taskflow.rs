@@ -689,11 +689,9 @@ impl AutomationStore {
         definition.validate()?;
         self.validate_taskflow_fence(fence)?;
         let json = definition.canonical_json()?;
-        let mut tx = self
-            .taskflow_pool()
-            .begin()
-            .await
-            .map_err(|_| TaskFlowError::Unavailable)?;
+        let mut tx = self.taskflow_pool().begin().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         let existing = sqlx::query(
             "SELECT definition_digest, definition_json, registered_generation
              FROM taskflow_definitions
@@ -704,7 +702,9 @@ impl AutomationStore {
         .bind(i64::from(definition.version))
         .fetch_optional(&mut *tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
+        .map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         if let Some(row) = existing {
             let digest: String = row
                 .try_get("definition_digest")
@@ -720,7 +720,9 @@ impl AutomationStore {
                     "workflow version is already bound to another definition".to_string(),
                 ));
             }
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+            tx.commit().await.map_err(|error| {
+                crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+            })?;
             return Ok(TaskFlowDefinitionReceipt {
                 workflow_id: definition.workflow_id.clone(),
                 version: definition.version,
@@ -735,7 +737,9 @@ impl AutomationStore {
         .bind(self.taskflow_owner_agent_id().as_str())
         .fetch_one(&mut *tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
+        .map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         if max_generation.is_some_and(|value| fence.generation < to_u64(value).unwrap_or(u64::MAX))
         {
             return Err(TaskFlowError::StaleFence);
@@ -759,10 +763,12 @@ impl AutomationStore {
             if is_constraint(&error) {
                 TaskFlowError::Conflict("definition registration raced or duplicated".to_string())
             } else {
-                TaskFlowError::Unavailable
+                crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
             }
         })?;
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        tx.commit().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         Ok(TaskFlowDefinitionReceipt {
             workflow_id: definition.workflow_id.clone(),
             version: definition.version,
@@ -788,7 +794,9 @@ impl AutomationStore {
         .bind(i64::from(version))
         .fetch_optional(self.taskflow_pool())
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
+        .map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         let Some(row) = row else { return Ok(None) };
         let json: String = row
             .try_get("definition_json")
@@ -820,11 +828,9 @@ impl AutomationStore {
         validate_text(workflow_id, "workflow_id", MAX_ID_BYTES)?;
         validate_text(&thread_id, "thread_id", MAX_ID_BYTES)?;
         validate_digest(definition_digest, "definition digest")?;
-        let mut tx = self
-            .taskflow_pool()
-            .begin()
-            .await
-            .map_err(|_| TaskFlowError::Unavailable)?;
+        let mut tx = self.taskflow_pool().begin().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         let definition_row = sqlx::query(
             "SELECT definition_json, definition_digest FROM taskflow_definitions
              WHERE owner_agent_id = ? AND workflow_id = ? AND version = ?
@@ -836,7 +842,9 @@ impl AutomationStore {
         .bind(definition_digest.as_str())
         .fetch_optional(&mut *tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?
+        .map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?
         .ok_or_else(|| {
             TaskFlowError::Conflict("definition is not registered for this Agent".to_string())
         })?;
@@ -857,7 +865,9 @@ impl AutomationStore {
                 .bind(&run_id)
                 .fetch_optional(&mut *tx)
                 .await
-                .map_err(|_| TaskFlowError::Unavailable)?;
+                .map_err(|error| {
+                    crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+                })?;
         if let Some(row) = existing {
             let current = taskflow_run_from_row(&row, self.taskflow_owner_agent_id())?;
             if current.workflow_id != workflow_id
@@ -873,7 +883,9 @@ impl AutomationStore {
             // return a writable/replayable projection when its immutable
             // event history has been damaged since the opener verified it.
             verify_taskflow_event_chain_tx(&mut tx, &current).await?;
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+            tx.commit().await.map_err(|error| {
+                crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+            })?;
             return Ok(current);
         }
         let mut run = TaskFlowRun {
@@ -923,7 +935,7 @@ impl AutomationStore {
         .bind(to_i64(run.updated_at_ms)?)
         .execute(&mut *tx)
         .await
-        .map_err(|error| if is_constraint(&error) { TaskFlowError::Conflict("run id raced or duplicated".to_string()) } else { TaskFlowError::Unavailable })?;
+        .map_err(|error| if is_constraint(&error) { TaskFlowError::Conflict("run id raced or duplicated".to_string()) } else { crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller()) })?;
         append_taskflow_event(
             &mut tx,
             &run,
@@ -934,7 +946,9 @@ impl AutomationStore {
             ZERO_DIGEST,
         )
         .await?;
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        tx.commit().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         Ok(run)
     }
 
@@ -945,17 +959,14 @@ impl AutomationStore {
         // pair that never existed durably when a writer commits between the
         // two reads.  The transaction is read-only and grants no scheduler or
         // effect authority.
-        let mut transaction = self
-            .taskflow_pool()
-            .begin()
-            .await
-            .map_err(|_| TaskFlowError::Unavailable)?;
+        let mut transaction = self.taskflow_pool().begin().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         let run =
             load_taskflow_run_tx(&mut transaction, self.taskflow_owner_agent_id(), run_id).await?;
-        transaction
-            .commit()
-            .await
-            .map_err(|_| TaskFlowError::Unavailable)?;
+        transaction.commit().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         Ok(run)
     }
 
@@ -976,18 +987,18 @@ impl AutomationStore {
         let expires = now_ms
             .checked_add(lease_duration_ms)
             .ok_or_else(|| invalid("lease duration overflows timestamp"))?;
-        let mut tx = self
-            .taskflow_pool()
-            .begin()
-            .await
-            .map_err(|_| TaskFlowError::Unavailable)?;
+        let mut tx = self.taskflow_pool().begin().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         let row =
             sqlx::query("SELECT * FROM taskflow_runs WHERE owner_agent_id = ? AND run_id = ?")
                 .bind(self.taskflow_owner_agent_id().as_str())
                 .bind(run_id)
                 .fetch_optional(&mut *tx)
                 .await
-                .map_err(|_| TaskFlowError::Unavailable)?
+                .map_err(|error| {
+                    crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+                })?
                 .ok_or_else(|| {
                     TaskFlowError::Conflict("TaskFlow run does not exist".to_string())
                 })?;
@@ -1027,7 +1038,9 @@ impl AutomationStore {
         .bind(run_id)
         .fetch_one(&mut *tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
+        .map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         let unresolved_effects: i64 = sqlx::query_scalar(
             "SELECT COUNT(*)
              FROM taskflow_effect_dispatch_attempts a
@@ -1043,7 +1056,9 @@ impl AutomationStore {
         .bind(run_id)
         .fetch_one(&mut *tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
+        .map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         if unresolved_effects != 0 {
             return Err(TaskFlowError::Conflict(
                 "TaskFlow run has unresolved provider-contact evidence".to_string(),
@@ -1094,7 +1109,9 @@ impl AutomationStore {
             &previous,
         )
         .await?;
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        tx.commit().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         Ok(run)
     }
 
@@ -1176,16 +1193,22 @@ impl AutomationStore {
         let command_digest = command.digest()?;
         let mut tx = self
             .taskflow_pool()
-            .begin()
+            // Fence/CAS validation and event publication must share the writer
+            // snapshot, including while the timer owner writes this database.
+            .begin_with("BEGIN IMMEDIATE")
             .await
-            .map_err(|_| TaskFlowError::Unavailable)?;
+            .map_err(|error| {
+                crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+            })?;
         let row =
             sqlx::query("SELECT * FROM taskflow_runs WHERE owner_agent_id = ? AND run_id = ?")
                 .bind(self.taskflow_owner_agent_id().as_str())
                 .bind(&command.run_id)
                 .fetch_optional(&mut *tx)
                 .await
-                .map_err(|_| TaskFlowError::Unavailable)?
+                .map_err(|error| {
+                    crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+                })?
                 .ok_or_else(|| {
                     TaskFlowError::Conflict("TaskFlow run does not exist".to_string())
                 })?;
@@ -1216,8 +1239,9 @@ impl AutomationStore {
         .bind(&command.command_id)
         .fetch_optional(&mut *tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?
-        {
+        .map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })? {
             let digest: String = previous
                 .try_get("command_digest")
                 .map_err(|_| TaskFlowError::Corrupt("command digest column".to_string()))?;
@@ -1236,7 +1260,9 @@ impl AutomationStore {
                     .try_get("event_seq")
                     .map_err(|_| TaskFlowError::Corrupt("event sequence column".to_string()))?,
             )?;
-            tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+            tx.commit().await.map_err(|error| {
+                crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+            })?;
             return Ok(TaskFlowCommandResult {
                 status: TaskFlowCommandStatus::AlreadyApplied,
                 revision,
@@ -1303,7 +1329,9 @@ impl AutomationStore {
             &previous,
         )
         .await?;
-        tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+        tx.commit().await.map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
         Ok(TaskFlowCommandResult {
             status: TaskFlowCommandStatus::Applied,
             revision: run.revision,
@@ -1662,7 +1690,7 @@ async fn update_taskflow_run(
         .bind(&fence.fencing_token)
         .execute(&mut **tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?
+        .map_err(|error| crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller()))?
     } else {
         sqlx::query(
             "UPDATE taskflow_runs SET state = ?, revision = ?, current_node = ?, state_digest = ?,
@@ -1688,7 +1716,7 @@ async fn update_taskflow_run(
         .bind(&run.run_id)
         .execute(&mut **tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?
+        .map_err(|error| crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller()))?
     };
     if result.rows_affected() != 1 {
         return Err(TaskFlowError::StaleFence);
@@ -1708,7 +1736,9 @@ async fn previous_event_digest(
     .bind(&run.run_id)
     .fetch_optional(&mut **tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)
+    .map_err(|error| {
+        crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+    })
     .map(|value| value.unwrap_or_else(|| ZERO_DIGEST.to_string()))
 }
 
@@ -1728,7 +1758,9 @@ async fn append_taskflow_event(
     .bind(&run.run_id)
     .fetch_one(&mut **tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| {
+        crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+    })?;
     let event_seq = to_u64(previous_seq.unwrap_or(0))?
         .checked_add(1)
         .ok_or_else(|| corrupt("event sequence overflow"))?;
@@ -1772,7 +1804,7 @@ async fn append_taskflow_event(
         if is_constraint(&error) {
             TaskFlowError::Conflict("duplicate TaskFlow event".to_string())
         } else {
-            TaskFlowError::Unavailable
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
         }
     })?;
     Ok(event_seq)
@@ -1925,7 +1957,9 @@ pub(crate) async fn verify_taskflow_event_chain_tx(
         .bind(&run.run_id)
         .fetch_all(&mut **tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
+        .map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
     verify_taskflow_event_rows(run, &rows)
 }
 
@@ -1954,7 +1988,9 @@ pub(crate) async fn load_taskflow_definition_tx(
     .bind(i64::from(version))
     .fetch_optional(&mut **tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| {
+        crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+    })?;
     let Some(row) = row else { return Ok(None) };
     let json: String = row
         .try_get("definition_json")
@@ -1983,7 +2019,9 @@ pub(crate) async fn load_taskflow_run_tx(
         .bind(run_id)
         .fetch_optional(&mut **tx)
         .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
+        .map_err(|error| {
+            crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+        })?;
     let Some(row) = row else { return Ok(None) };
     let run = taskflow_run_from_row(&row, owner)?;
     verify_taskflow_event_chain_tx(tx, &run).await?;
@@ -2209,26 +2247,34 @@ pub(crate) async fn verify_taskflow_store(
     pool: &sqlx::SqlitePool,
     expected_owner: &AgentId,
 ) -> Result<(), TaskFlowError> {
-    let mut tx = pool.begin().await.map_err(|_| TaskFlowError::Unavailable)?;
+    let mut tx = pool.begin().await.map_err(|error| {
+        crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+    })?;
 
     let foreign_definitions: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM taskflow_definitions WHERE owner_agent_id != ?")
             .bind(expected_owner.as_str())
             .fetch_one(&mut *tx)
             .await
-            .map_err(|_| TaskFlowError::Unavailable)?;
+            .map_err(|error| {
+                crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+            })?;
     let foreign_runs: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM taskflow_runs WHERE owner_agent_id != ?")
             .bind(expected_owner.as_str())
             .fetch_one(&mut *tx)
             .await
-            .map_err(|_| TaskFlowError::Unavailable)?;
+            .map_err(|error| {
+                crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+            })?;
     let foreign_events: i64 =
         sqlx::query_scalar("SELECT COUNT(*) FROM taskflow_events WHERE owner_agent_id != ?")
             .bind(expected_owner.as_str())
             .fetch_one(&mut *tx)
             .await
-            .map_err(|_| TaskFlowError::Unavailable)?;
+            .map_err(|error| {
+                crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+            })?;
     if foreign_definitions != 0 || foreign_runs != 0 || foreign_events != 0 {
         return Err(TaskFlowError::StaleFence);
     }
@@ -2242,7 +2288,9 @@ pub(crate) async fn verify_taskflow_store(
     .bind(expected_owner.as_str())
     .fetch_all(&mut *tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| {
+        crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+    })?;
     let mut definitions = BTreeMap::new();
     for row in definition_rows {
         let workflow_id: String = row
@@ -2295,7 +2343,9 @@ pub(crate) async fn verify_taskflow_store(
     .bind(expected_owner.as_str())
     .fetch_all(&mut *tx)
     .await
-    .map_err(|_| TaskFlowError::Unavailable)?;
+    .map_err(|error| {
+        crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+    })?;
     for row in run_rows {
         let run = taskflow_run_from_row(&row, expected_owner)?;
         let definition_digest = definitions
@@ -2308,7 +2358,9 @@ pub(crate) async fn verify_taskflow_store(
         }
         verify_taskflow_event_chain_tx(&mut tx, &run).await?;
     }
-    tx.commit().await.map_err(|_| TaskFlowError::Unavailable)?;
+    tx.commit().await.map_err(|error| {
+        crate::taskflow_diagnostics::unavailable(&error, std::panic::Location::caller())
+    })?;
     Ok(())
 }
 
