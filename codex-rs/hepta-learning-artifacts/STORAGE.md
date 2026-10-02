@@ -221,3 +221,18 @@ This specification alone does not claim source implementation, execution,
 independent acceptance or release. It adds no production caller,
 selection, promotion, merge, filesystem credential or runtime authority. All
 external evidence and release gates remain unchanged.
+
+## Admission/recovery hardening
+
+A host-local admission mutex complements the OS lifetime fence. New publications
+must name actual CURRENT, and no second unfinished artifact/state operation is
+accepted. Every resumed durability claim revalidates payload bytes and, for later
+phases, exact registry/admission and witness bytes before another effect. The
+protocol also binds every projected manifest field, canonical operation event ID,
+and complete registry/witness byte receipts. Terminal service retries remain
+historical acknowledgements, not evidence that retained payload bytes still exist.
+
+Namespace reservations, orphan counting, supported limits and the distinction
+between count budgets and real free space are documented in the technical guide,
+Section 10. The early checkpoint still requires the externally retained exact
+request. A partial immutable final file is not silently overwritten or repaired.

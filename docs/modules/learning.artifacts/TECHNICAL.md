@@ -99,6 +99,28 @@ Adapters translate one registered contract, verify final payload and grant immed
 
 Configuration is immutable for one process generation. Changes affecting authority, schema, compatibility, model identity, objective semantics or resource policy create a new revision or generation. Hidden mutable singletons, unbounded queues and implicit store fallback are prohibited.
 
+### Reviewed implementation limits
+
+The owner is a Rust service composition, not an executable deployment or signing
+service. A caller must retain the exact publication request across interruption;
+the early checkpoint does not contain the complete admission/payload. Recovery
+never invents that request from a V1 projection. Partial final-path files remain
+fail-closed and require separately authorized reconciliation. CURRENT expiry
+renewal and host-protected independent frontier distribution are not supplied by
+this crate. These are open composition/operating requirements, not implied passes.
+
+The built-in `PlasticityCurrentArtifactFilesV1` adapter authenticates a frozen V1
+snapshot and CURRENT head. It does not load V3 admission sidecars or authenticate
+a live dataset-withdrawal frontier, so it cannot establish complete provenance or
+manifest/ancestor expiry. A strict provider is still required for that product
+profile. When a provider does return a strict view, the frozen-generation guard
+checks its exact use time, the eligibility of every initially eligible frozen
+artifact, and forbids later downgrade to V1. This conservative generation-wide
+check may require rebootstrap when an otherwise unused frozen candidate expires.
+Ranker providers also remain responsible for obtaining current evidence at each
+use; an opaque previously issued view is not an independent live clock or latest-
+frontier oracle. Production/acceptance/release states remain unchanged.
+
 ### Multiscale DecisionCell integration target
 
 Persist immutable base/organ/cell parameter bundles with complete tensor inventories and compatibility/deletion lineage. Preserve scalar ParameterProposalV2 semantics; larger updates require a versioned artifact-reference adapter. Reference-aware GC must retain shared bases still in use; the registry neither trains nor selects its own artifacts.
@@ -233,6 +255,24 @@ Create-only file writers hold an exclusive advisory file lock through the empty-
 
 `LearningArtifactOwnerHost` owns the local OS writer fence, signed writer-lease verification, authenticated CURRENT discovery and publication checkpoints. `LearningArtifactOwnerService` composes that host as the one registered product writer. The host synchronizes files and, on Unix, their parent directories before advancing a checkpoint, including exact retries. Other platforms still require target-host directory-durability composition and qualification. The deployment host also owns trusted ancestor protection, independent restart anchors, key provisioning, external newest-head distribution, publication/use serialization, the product process and final route changes.
 
+New artifact admission is serialized by a host-local mutex as well as the OS
+writer fence. It rejects another unfinished artifact/state operation and requires
+the actual CURRENT predecessor before creating `Prepared`. Exact-operation
+recovery remains permitted after its CURRENT side effect. Every resumed phase
+re-reads the claimed payload bytes; registry/admission and witness bytes are also
+checked once their phases claim durability. An unfinished missing or corrupted
+payload therefore cannot advance a signed CURRENT or acknowledgement. Terminal
+service retries return historical receipts and are not claims of current payload
+availability.
+
+The transaction validates the complete V1 projection, including objective,
+manifest support digest and predecessor, and the canonical registration event ID
+`artifact-publication:{intent_digest}`. Registry and witness receipts must match
+canonical byte digest and length, not merely semantic heads. The signed-head
+retry check independently derives the complete witness receipt from the signed
+canonical witness. Correct historical encodings are unchanged; fabricated or
+incompletely bound receipts now fail closed.
+
 Each publication phase validates a cloned transaction before creating its durable effect. A bad signed head or changed withdrawal frontier therefore cannot publish a rejected CURRENT. Recovery accepts only canonical checkpoint paths and encodings, complete ordered phases and consistent operation, admission, original lease and receipt identities. A renewed valid lease can finish the exact original transaction without rewriting its historical lease binding. Startup scans are bounded to 4,096 operations and five checkpoints per operation.
 
 Restrictions use a separate additive owner-state saga in `owner_state.rs` and
@@ -306,6 +346,18 @@ Source-enforced ceilings relevant to this module include:
 - iteration ledger events: 384.
 
 These bounds are safety/resource limits, not benchmark claims. Measure payload write + fsync, snapshot encode/write/reopen, withdrawal and lifecycle replay, current-head witness publication, pinned cold read/hash, current-view revalidation, crash recovery, parent-directory synchronization and orphan reconciliation on the selected target host.
+
+Owner admission additionally counts every existing namespace entry, including
+orphans and unrelated files. A new artifact operation reserves its five checkpoint
+names, one payload/admission/snapshot/witness/head before `Prepared`. Limits are
+4,096 payloads, admissions and heads; 8,192 registry and witness files; 12,288
+withdrawal snapshots; 20,480 artifact checkpoints; and 16,384 state checkpoints.
+State publication reserves its four phases and snapshot/head needs; unchanged
+CURRENT reuses its head at the head limit. Exact existing-operation retries do
+not reserve new names. These are conservative entry budgets, not a free-space
+reservation or a claim that filling the theoretical byte maximum is operationally
+safe. Disk-full and failed synchronization remain indeterminate and require exact
+reconciliation. The deployment must enforce its tighter disk and retention policy.
 
 The V1 compatibility registry remains intentionally bounded. A product that needs a larger history must introduce a new durable format or compaction/checkpoint design; it must not silently raise the in-memory limit beyond what the supported durable representation can carry.
 
@@ -434,8 +486,8 @@ Legacy V1 inspection remains available as an explicit compatibility mode. It can
 stand in for a strict V2/V3 consumer or reconstruct missing provenance. The
 remaining external facts are target-host execution, signing-authority enrollment,
 newest-head and withdrawal-frontier distribution, independent rollback domains,
-operator acceptance and release. They are deployment inputs/evidence, not absent
-native store algorithms.
+operator acceptance and release. They include deployment inputs/evidence and the explicit consumer/recovery
+composition limits listed in Section 4; no source-completion claim hides them.
 
 For `learning.artifacts`, this document grants no runtime, production, model, provider, tool, network, filesystem, secret, Matrix, fleet, acceptance, promotion or release authority.
 

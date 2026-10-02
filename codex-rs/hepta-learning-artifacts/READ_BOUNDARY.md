@@ -87,3 +87,13 @@ V1 registry and authenticated scoped withdrawal frontier. Legacy V1-only reads
 retain their narrower compatibility contract and cannot replace a strict view
 after that mode has been established. See `PINNED_LOAD.md` and
 `DATASET_REVOCATION.md` for exact backfill and use-time eligibility.
+
+## Plasticity compatibility limit
+
+The built-in file CURRENT adapter proves only the signed V1 frozen projection.
+It does not supply sidecars or a live authenticated withdrawal frontier. A strict
+provider remains necessary for full-provenance consumption. Once a strict view is
+supplied, frozen plasticity verifies the exact use time and every initially
+eligible frozen artifact, and refuses a later V1 downgrade. A failed refresh is
+latched by the runtime until explicit generation rebootstrap. This guard does not
+make the V1 file adapter a strict provider or create installation authority.
