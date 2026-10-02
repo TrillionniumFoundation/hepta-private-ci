@@ -59,6 +59,8 @@ pub use model_use::select_cpu_model_use_v2;
 pub fn preview_operational_model_use_v2(path: &Path, pin: Digest32) -> HostResult<Value> {
     model_use_preview::preview(path, pin)
 }
+#[path = "initial_cpu_withdrawal.rs"]
+mod withdrawal;
 #[path = "initial_cpu_state.rs"]
 mod state;
 pub use current::open_current_cpu_neuron;
