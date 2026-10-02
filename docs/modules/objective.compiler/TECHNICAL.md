@@ -100,6 +100,20 @@ None.
 
 The ordinary source path identified in [DELIVERY_EVIDENCE.md](DELIVERY_EVIDENCE.md) keeps the existing Agentd/intelligence/destination-journal ownership chain. Agentd now freezes one `ValidatedAdmissionProfileV1` at host open and reuses only its static validation, indexes, exact digest, revision and compiler-contract identity. Every request still rechecks authenticated source identity, principal scope, intent/schema/normalization digests, freshness and deadline; final use still rechecks trust, generation and fence. The Rust regression tests and measurement harnesses are source artifacts, not execution receipts. Versioned durable admission-proof recovery is implemented on the existing RunStart owner path (see the lifecycle contract below). Exact-candidate execution, selected deployment-host acceptance and independent acceptance remain receipt-bound gates. Canonical accepted/activated/released state is not changed by this guide.
 
+### Shipped daemon versus optional canonical composition
+
+The CLI constructs the canonical preparation runner when its explicit authority
+arguments are present, but this repository does not yet implement or install
+`AgentdIntelligenceInvocationProviderV1`. Both components are required for the
+seven-owner handoff and its capability advertisement. Consequently ordinary CLI
+ObjectiveStart currently reaches the compatibility run coordinator after the
+same authenticated compiler and durable RunStart publication; runner-only
+configuration does not demonstrate canonical preparation. External embedding
+can install both components through `AgentdConfig`. Supplying the missing
+provider from authenticated owner inputs, and retaining recoverable seven-owner
+handoff evidence, remain integration work. See the [normative product-path
+boundary](../../readiness/OBJECTIVE_COMPILER_EXECUTION.md#2-canonical-product-path).
+
 ## 3. Boundary, responsibilities and non-goals
 
 Direct dependencies:

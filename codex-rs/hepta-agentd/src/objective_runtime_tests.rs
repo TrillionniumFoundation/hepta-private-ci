@@ -7,7 +7,6 @@ use codex_hepta_learning_ledger::RunStartCheckpointV1;
 use codex_hepta_learning_ledger::RunStartJournal;
 use codex_hepta_learning_ledger::RunStartSnapshotV1;
 use codex_hepta_learning_ledger::RunStartStoreError;
-use pretty_assertions::assert_eq;
 use tempfile::TempDir;
 
 use super::*;

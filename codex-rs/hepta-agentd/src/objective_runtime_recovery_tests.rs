@@ -53,6 +53,29 @@ fn host_profile_json(revision: u64) -> Vec<u8> {
             "evidenceSource": "profile.resource"
         })
     };
+    let risk = serde_json::json!({
+            "evidenceSource": "profile.risk",
+            "class": "principal",
+            "riskConstraintId": "risk.class",
+            "riskAxis": "risk.class.value",
+            "lowValueQ32": 0,
+            "mediumValueQ32": 1,
+            "highValueQ32": 2,
+            "criticalValueQ32": 3,
+            "rollbackConstraintId": "risk.rollback",
+            "rollbackAxis": "risk.rollback.value",
+            "rollbackNoneValueQ32": 0,
+            "rollbackReversibleValueQ32": 1,
+            "rollbackCompensatableValueQ32": 2,
+            "rollbackIrreversibleValueQ32": 3,
+            "compensationConstraintId": "risk.compensation",
+            "compensationAxis": "risk.compensation.value",
+            "compensationFalseValueQ32": 0,
+            "compensationTrueValueQ32": 1,
+            "abstentionConstraintId": "risk.abstention",
+            "abstentionAxis": "risk.abstention.value",
+            "abstentionRules": [{"sourceRule": "ask", "valueQ32": 1}]
+    });
     serde_json::to_vec(&serde_json::json!({
         "profileId": "objective.profile.recovery.v1",
         "profileRevision": revision,
@@ -78,29 +101,7 @@ fn host_profile_json(revision: u64) -> Vec<u8> {
             "networkBytes": resource("network"),
             "externalEffectCount": resource("effects")
         },
-        "risk": {
-            "evidenceSource": "profile.risk",
-            "class": "principal",
-            "riskConstraintId": "risk.class",
-            "riskAxis": "risk.class.value",
-            "lowValueQ32": 0,
-            "mediumValueQ32": 1,
-            "highValueQ32": 2,
-            "criticalValueQ32": 3,
-            "rollbackConstraintId": "risk.rollback",
-            "rollbackAxis": "risk.rollback.value",
-            "rollbackNoneValueQ32": 0,
-            "rollbackReversibleValueQ32": 1,
-            "rollbackCompensatableValueQ32": 2,
-            "rollbackIrreversibleValueQ32": 3,
-            "compensationConstraintId": "risk.compensation",
-            "compensationAxis": "risk.compensation.value",
-            "compensationFalseValueQ32": 0,
-            "compensationTrueValueQ32": 1,
-            "abstentionConstraintId": "risk.abstention",
-            "abstentionAxis": "risk.abstention.value",
-            "abstentionRules": [{"sourceRule": "ask", "valueQ32": 1}]
-        }
+        "risk": risk
     }))
     .expect("strict host profile JSON")
 }

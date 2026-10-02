@@ -1,7 +1,6 @@
 use super::*;
 use crate::intelligence_product::evaluation_tests::evidence_fixture;
 use codex_hepta_intelligence::build_legal_candidates;
-use pretty_assertions::assert_eq;
 
 fn signed_fixture() -> (
     Fixture,
@@ -58,7 +57,6 @@ fn published_fixture_record(
     use codex_hepta_intelligence::compile_and_publish_objective_run_v1;
     use codex_hepta_learning_ledger::DurableRunStartJournal;
     use codex_hepta_learning_ledger::RunStartAuthenticationV1;
-    use codex_hepta_learning_ledger::RunStartJournal;
 
     let mut journal = DurableRunStartJournal::create(
         tempfile::tempfile().expect("RunStart file"),

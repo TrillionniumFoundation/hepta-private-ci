@@ -52,7 +52,9 @@ Agentd ObjectiveRuntimeHost::submit
       -> objective-conflict record V2
 -> external monotonic checkpoint acknowledgement
 -> current trust/deadline/generation/fence recheck
--> canonical intelligence handoff or explicit abstain
+-> explicit abstain, or
+-> configured canonical intelligence handoff, or
+-> compatibility run admission (when canonical composition is absent)
 ```
 
 <!-- END NORMATIVE OBJECTIVE PRODUCT PATH -->
@@ -61,6 +63,23 @@ The canonical Agentd product façade is
 `compile_and_publish_validated_objective_run_v1`. The raw-profile façade and
 lower-level admission functions are compatibility or owner-internal surfaces;
 they are not alternate production entrypoints.
+
+The canonical seven-owner handoff is a conditional composition seam, not the
+shipped CLI's default execution path. `AgentdState::canonical_intelligence_enabled`
+requires both `AgentdIntelligenceProductRunnerV1` and a host-owned
+`AgentdIntelligenceInvocationProviderV1`. The in-repository CLI constructs only
+the runner from its explicit authority arguments; no in-repository implementation
+or installation of the invocation provider currently supplies the seven owners'
+authenticated inputs. A runner alone does not advertise canonical intelligence.
+Without both components, compiled ObjectiveStart uses the existing compatibility
+run coordinator and exposes its exact execution binding. This is deliberate
+compatibility behavior, not evidence that seven-owner composition ran.
+
+An external embedding may install both through `AgentdConfig`; the compiler must
+not synthesize owner state, trust or artifacts to fill the missing provider.
+Shipping that provider and proving its authenticated recovery/retry behavior
+remain integration gates. The diagram names conditional source paths, not an
+end-to-end execution or deployment receipt.
 
 One request performs one authoritative admission and one native compile.
 Protocol projection must consume the proof-bearing result and must not solve the
