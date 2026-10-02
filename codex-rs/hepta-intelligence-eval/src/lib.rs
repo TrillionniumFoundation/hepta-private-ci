@@ -520,7 +520,13 @@ mod fixed_calibration_cycle_evaluator;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_calibration_host;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_paired_generator_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_paired_review_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_development_transport;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_paired_generator_host::run_fixed_paired_generator;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_paired_review_host::run_fixed_paired_review_evaluator;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]

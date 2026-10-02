@@ -15,7 +15,7 @@ default = []
 # Explicit compatibility escape hatch for trusted in-process fixtures only.
 # Production and qualification consumers must use signed admission APIs.
 trusted-inprocess-eval = []
-fixed-eval-host = ["dep:ed25519-dalek", "dep:serde", "dep:serde_json", "codex-hepta-learning-ledger/review-host"]
+fixed-eval-host = ["dep:ed25519-dalek", "dep:serde", "dep:serde_json", "dep:rustix", "codex-hepta-learning-ledger/review-host"]
 
 [[test]]
 name = "operator_claim"
@@ -32,6 +32,7 @@ codex-hepta-types = { path = "../hepta-types" }
 ed25519-dalek = { workspace = true, optional = true }
 serde = { workspace = true, features = ["derive"], optional = true }
 serde_json = { workspace = true, optional = true }
+rustix = { workspace = true, features = ["net"], optional = true }
 
 [dev-dependencies]
 ed25519-dalek = { workspace = true }

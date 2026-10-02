@@ -1,8 +1,13 @@
-//! Existing-custody preflight, with no signing key or gold release operation.
+//! Existing-custody preflight and the separately deployed unprivileged G entry.
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(target_os = "linux")]
     {
         let args = std::env::args_os().skip(1).collect::<Vec<_>>();
+        if args.len() == 2 && args[0] == "--paired-preregister" {
+            return codex_hepta_intelligence_eval::run_fixed_paired_generator(
+                std::path::Path::new(&args[1]),
+            );
+        }
         if args.len() == 4 && args[0] == "--inspect-rejected-cycle" {
             let historical =
                 codex_hepta_intelligence_eval::inspect_completed_calibration_rejection(
@@ -29,5 +34,5 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             );
         }
     }
-    Err("usage: hepta-fixed-product-evaluation --inspect ROOT_CONFIG | --run-calibration-cycle ROOT_CONFIG | --resume-calibration-evaluation ROOT_RESUME_CONFIG | --inspect-rejected-cycle ROOT_CONFIG CONFIG_DIGEST COMPLETION_DIGEST".into())
+    Err("usage: hepta-fixed-product-evaluation --inspect ROOT_CONFIG | --paired-preregister ROOT_G_CONFIG | --run-calibration-cycle ROOT_CONFIG | --resume-calibration-evaluation ROOT_RESUME_CONFIG | --inspect-rejected-cycle ROOT_CONFIG CONFIG_DIGEST COMPLETION_DIGEST".into())
 }

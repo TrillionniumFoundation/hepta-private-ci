@@ -62,6 +62,9 @@ fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|b| format!("{b:02x}")).collect()
 }
 pub(crate) fn boundary(uid: u32, gid: u32) -> HostResult<String> {
+    boundary_in_service(uid, gid, "hepta-fixed-calibration-eval-")
+}
+pub(crate) fn boundary_in_service(uid: u32, gid: u32, service_prefix: &str) -> HostResult<String> {
     let status = std::fs::read_to_string("/proc/self/status")?;
     let field = |n: &str| {
         status
@@ -88,7 +91,7 @@ pub(crate) fn boundary(uid: u32, gid: u32) -> HostResult<String> {
         return Err("fixed evaluator requires actual non-root UID/GID, empty groups, zero capabilities and NoNewPrivileges".into());
     }
     let cgroup = std::fs::read_to_string("/proc/self/cgroup")?;
-    if !cgroup.contains("hepta-fixed-calibration-eval-") {
+    if !cgroup.contains(service_prefix) {
         return Err("fixed evaluator requires its bounded service cgroup".into());
     }
     Ok(cgroup)
