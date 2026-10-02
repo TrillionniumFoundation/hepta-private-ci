@@ -167,6 +167,25 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
             command.args(&spec.command.args);
             owner.constrain(&mut command, &execution)?;
             let mut child = command.spawn()?;
+            let reader = codex_hepta_fleet::FleetExecutionVerifier::open(
+                &owner
+                    .registry
+                    .layout()
+                    .state_root()
+                    .join("fleet-resources.sqlite3"),
+            )
+            .await?;
+            assert!(
+                reader
+                    .observe_bound_root_local_resources(
+                        &spec.agent_id.to_string(),
+                        child.id(),
+                        1000,
+                    )
+                    .await
+                    .is_err(),
+                "Root observer cannot admit a prepared, unbound task"
+            );
             owner.bind(&execution, child.id())?;
             assert_eq!(
                 owner.recover_execution(&spec.agent_id.to_string(), child.id())?,
@@ -191,14 +210,6 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
                 (bound.state.as_str(), bound.process_id),
                 ("running", Some(u64::from(child.id())))
             );
-            let reader = codex_hepta_fleet::FleetExecutionVerifier::open(
-                &owner
-                    .registry
-                    .layout()
-                    .state_root()
-                    .join("fleet-resources.sqlite3"),
-            )
-            .await?;
             let observed = reader
                 .observe_bound_local_resources(&spec.agent_id.to_string(), child.id())
                 .await?;
@@ -207,6 +218,28 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
             assert_eq!(observed.context, bound.context);
             assert_eq!(observed.process_id, child.id());
             assert!(observed.process_start_ticks > 0);
+            let root_observed = reader
+                .observe_bound_root_local_resources(&spec.agent_id.to_string(), child.id(), 1000)
+                .await?;
+            assert_eq!(root_observed, observed);
+            for denied_uid in [0, 1001] {
+                assert!(
+                    reader
+                        .observe_bound_root_local_resources(
+                            &spec.agent_id.to_string(),
+                            child.id(),
+                            denied_uid,
+                        )
+                        .await
+                        .is_err()
+                );
+            }
+            assert!(
+                reader
+                    .observe_bound_root_local_resources("different-principal", child.id(), 1000,)
+                    .await
+                    .is_err()
+            );
             assert!(
                 reader
                     .observe_bound_local_resources("different-principal", child.id())
@@ -244,6 +277,16 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
                         .lease_generation
             );
             owner.request_stop(&execution.id)?;
+            assert!(
+                reader
+                    .observe_bound_root_local_resources(
+                        &spec.agent_id.to_string(),
+                        child.id(),
+                        1000,
+                    )
+                    .await
+                    .is_err()
+            );
             assert!(
                 reader
                     .observe_bound_local_resources(&spec.agent_id.to_string(), child.id())

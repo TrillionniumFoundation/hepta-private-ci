@@ -90,6 +90,29 @@ impl FleetExecutionVerifier {
         principal_id: &str,
         peer_pid: u32,
     ) -> Result<FleetExecutionResourceObservationV1, DurableFleetError> {
+        self.observe_resources(principal_id, peer_pid, None).await
+    }
+
+    /// Root-local observation of an already bound main task. The Root-owned,
+    /// nondelegated cgroup and persisted PID/start/boot binding replace the
+    /// private environment marker only for this route. This never admits a
+    /// prepared task or supplies process authority to a non-Root issuer.
+    pub async fn observe_bound_root_local_resources(
+        &self,
+        principal_id: &str,
+        peer_pid: u32,
+        workload_uid: u32,
+    ) -> Result<FleetExecutionResourceObservationV1, DurableFleetError> {
+        self.observe_resources(principal_id, peer_pid, Some(workload_uid))
+            .await
+    }
+
+    async fn observe_resources(
+        &self,
+        principal_id: &str,
+        peer_pid: u32,
+        root_workload_uid: Option<u32>,
+    ) -> Result<FleetExecutionResourceObservationV1, DurableFleetError> {
         validate_identity(principal_id, "principal")?;
         let mut tx = self.pool.begin().await.map_err(sqlx_error)?;
         // The protected native cgroup supplies the original execution key.
@@ -110,7 +133,7 @@ impl FleetExecutionVerifier {
             .await
             .map_err(sqlx_error)?
             .ok_or_else(|| DurableFleetError::Missing(execution_id.into()))?;
-        let context = verify_record(&row, execution_id, peer_pid)?.bound_context()?;
+        let context = verify_observation_record(&row, execution_id, peer_pid, root_workload_uid)?;
         let state: String = row.try_get("state").map_err(sqlx_error)?;
         if context.principal_id != principal_id || state != "running" {
             return Err(DurableFleetError::Stale);
@@ -132,7 +155,7 @@ impl FleetExecutionVerifier {
         let ticks: i64 = row.try_get("process_start_ticks").map_err(sqlx_error)?;
         // SQLite provides one durable snapshot; procfs is observed twice and
         // never represented as atomic with either SQL or a later consumer.
-        let after = verify_record(&row, execution_id, peer_pid)?.bound_context()?;
+        let after = verify_observation_record(&row, execution_id, peer_pid, root_workload_uid)?;
         if after != context {
             return Err(DurableFleetError::Stale);
         }
@@ -173,6 +196,20 @@ impl FleetExecutionVerifier {
             return Err(DurableFleetError::Stale);
         }
         verify_record(&row, execution_id, peer_pid)
+    }
+}
+
+fn verify_observation_record(
+    row: &SqliteRow,
+    execution_id: &str,
+    pid: u32,
+    root_workload_uid: Option<u32>,
+) -> Result<FleetExecutionContextV1, DurableFleetError> {
+    match root_workload_uid {
+        Some(uid) => {
+            crate::durable_root_process_proof::verify_root_record(row, execution_id, pid, uid)
+        }
+        None => verify_record(row, execution_id, pid)?.bound_context(),
     }
 }
 

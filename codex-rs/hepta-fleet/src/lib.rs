@@ -39,6 +39,8 @@ mod durable_receipt;
 #[cfg(feature = "durable-store")]
 mod durable_revocation;
 #[cfg(feature = "durable-store")]
+mod durable_root_process_proof;
+#[cfg(feature = "durable-store")]
 mod durable_rows;
 #[cfg(feature = "durable-store")]
 mod durable_schema;

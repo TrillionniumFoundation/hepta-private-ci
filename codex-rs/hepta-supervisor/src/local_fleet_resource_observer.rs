@@ -94,7 +94,7 @@ async fn observe(
         .verify_owner_clock_floor(clock.now_unix_ms()?)
         .await?;
     let observation = verifier
-        .observe_bound_local_resources(agent.as_str(), process_id)
+        .observe_bound_root_local_resources(agent.as_str(), process_id, expected_uid)
         .await?;
     let now = clock.now_unix_ms()?;
     verifier.verify_owner_clock_floor(now).await?;
