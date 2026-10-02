@@ -40,6 +40,8 @@ use crate::runtime::driver_error;
 
 #[path = "matrix_lease_removal.rs"]
 mod lease_removal;
+#[path = "matrix_recovery_admission.rs"]
+mod recovery_admission;
 #[path = "matrix_tick.rs"]
 mod tick;
 pub(crate) use lease_removal::MatrixProcessLeaseRemoval;
@@ -392,7 +394,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     fenced: false,
                 });
                 if slot.has_recovery_denial() {
-                    return self.kill_matrix_now(agent_id, slot);
+                    // Quarantine intentionally does not hydrate active_release
+                    // or grant main serving eligibility. Validate the companion's
+                    // actual lease/catalog/binding without requiring either.
+                    return self.contain_denied_matrix_owner(agent_id, slot, record, &lease);
                 }
                 let admission =
                     match slot.matrix.runtime.as_ref().and_then(|runtime| {
@@ -502,23 +507,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         lease: &MatrixProcessLease,
         now: Instant,
     ) -> Result<Option<Instant>, SupervisorError> {
-        let binding = load_binding(record, agent_id)?.ok_or_else(|| {
-            SupervisorError::CorruptLease(
-                "Matrix lease exists without a public binding".to_string(),
-            )
-        })?;
-        if binding.revision != lease.binding_revision {
-            return Err(SupervisorError::CorruptLease(
-                "Matrix lease binding revision is stale".to_string(),
-            ));
-        }
-        let binding_digest = matrix_binding_digest(&binding)
-            .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
-        if binding_digest != lease.binding_digest {
-            return Err(SupervisorError::CorruptLease(
-                "Matrix lease binding digest is stale".to_string(),
-            ));
-        }
+        recovery_admission::validate_binding(record, agent_id, lease)?;
         let Some(release) = slot.active_release.as_ref() else {
             return Err(SupervisorError::CorruptLease(
                 "Matrix lease exists without an active release".to_string(),

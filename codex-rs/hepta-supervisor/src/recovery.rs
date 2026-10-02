@@ -77,6 +77,21 @@ impl<D: ProcessDriver> Supervisor<D> {
         {
             return Ok(());
         }
+        if slot.has_recovery_denial() {
+            // A denied idle slot still exposes corrupt persisted catalog
+            // evidence. Resolving it grants no metadata or restart admission;
+            // in particular, do not normalize a future/expired Matrix window.
+            for release_id in [
+                record.release_state.current.as_ref(),
+                record.release_state.previous.as_ref(),
+            ]
+            .into_iter()
+            .flatten()
+            {
+                self.resolve_persisted_release(agent_id, release_id)?;
+            }
+            return Ok(());
+        }
         self.hydrate_release_state(agent_id, slot, record)
     }
 
@@ -606,11 +621,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     healthy: false,
                     fenced: true,
                 });
-                if slot.has_recovery_denial() {
-                    admission::reject_owned(agent_id, slot, now);
-                    return Ok(());
-                }
-                let admitted = admission.and_then(|admitted| {
+                let initialization =
                     match slot.runtime.as_ref().and_then(|runtime| {
                         runtime.process.initialization_failure().map(str::to_owned)
                     }) {
@@ -618,9 +629,42 @@ impl<D: ProcessDriver> Supervisor<D> {
                             agent_id,
                             crate::ProcessDriverError::new(error),
                         )),
-                        None => Ok(admitted),
+                        None => Ok(()),
+                    };
+                if slot.has_recovery_denial() {
+                    // Denial cannot hide independent admission/setup/catalog
+                    // faults. Check them without binding metadata or admitting
+                    // a phase, staged control, lifecycle CAS or replacement.
+                    let catalog = if lease.release_id.as_str() == "unversioned" {
+                        Ok(())
+                    } else {
+                        self.registry
+                            .resolve_release(agent_id, &lease.release_id)
+                            .map_err(SupervisorError::from)
+                            .and_then(|release| {
+                                if release.release_id != lease.release_id {
+                                    return Err(SupervisorError::CorruptLease(
+                                        "resolved release differs from the adopted process lease"
+                                            .to_string(),
+                                    ));
+                                }
+                                AgentRelease::try_from(release).map(|_| ())
+                            })
+                    };
+                    let mut faults = [admission.map(|_| ()), initialization, catalog]
+                        .into_iter()
+                        .filter_map(Result::err);
+                    let fault = faults.next();
+                    for error in faults {
+                        slot.event(
+                            record.lifecycle.generation,
+                            SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
+                        );
                     }
-                });
+                    admission::reject_owned(agent_id, slot, now);
+                    return fault.map_or(Ok(()), Err);
+                }
+                let admitted = admission.and_then(|admitted| initialization.map(|()| admitted));
                 let admitted = match admitted {
                     Ok(admitted) => admitted,
                     Err(error) => {

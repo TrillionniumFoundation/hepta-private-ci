@@ -12,10 +12,18 @@ use crate::ProcessDriver;
 use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEventKind;
+use crate::release_transaction::DurableReleaseTransaction;
 use crate::runtime::AgentSlot;
 use crate::runtime::RuntimePhase;
 use crate::runtime::bounded_message;
 use crate::signed_intent::SignedIntentStatus;
+use crate::signed_intent::SignedSupervisorIntent;
+
+pub(super) struct DurableRecoveryValidation {
+    pub(super) faults: Vec<SupervisorError>,
+    pub(super) transaction: Option<DurableReleaseTransaction>,
+    pub(super) intent: Option<SignedSupervisorIntent>,
+}
 
 impl<D: ProcessDriver> Supervisor<D> {
     pub(crate) fn recovery_control_fault_is_retryable(
@@ -67,11 +75,11 @@ impl<D: ProcessDriver> Supervisor<D> {
         &self,
         agent_id: &AgentId,
         record: &AgentRecord,
-    ) -> Vec<SupervisorError> {
+    ) -> DurableRecoveryValidation {
         let root = record.layout.run_root();
         // Read every safety-critical codec before effectful restoration. A
         // broken restart record must not conceal a broken signed/release record.
-        [
+        let mut faults: Vec<_> = [
             crate::restart_budget::pending_restart(root, self.config.restart_max_attempts)
                 .map(|_| ())
                 .map_err(|error| SupervisorError::Invalid(error.to_string())),
@@ -85,32 +93,55 @@ impl<D: ProcessDriver> Supervisor<D> {
             }),
             crate::restart_lineage::validate_recovery(root, agent_id)
                 .map_err(|error| SupervisorError::Invalid(error.to_string())),
-            crate::release_transaction::read_release_transaction(root)
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))
-                .and_then(|transaction| {
-                    if transaction
-                        .is_some_and(|transaction| transaction.agent_id != agent_id.to_string())
-                    {
-                        return Err(SupervisorError::Invalid(
-                            "release transaction agent binding mismatch".to_string(),
-                        ));
-                    }
-                    Ok(())
-                }),
-            crate::signed_intent::read_intent(root)
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))
-                .and_then(|intent| {
-                    if intent.is_some_and(|intent| intent.agent_id != agent_id.to_string()) {
-                        return Err(SupervisorError::Invalid(
-                            "signed supervisor intent agent binding mismatch".to_string(),
-                        ));
-                    }
-                    Ok(())
-                }),
         ]
         .into_iter()
         .filter_map(Result::err)
-        .collect()
+        .collect();
+        let transaction = crate::release_transaction::read_release_transaction(root)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))
+            .and_then(|transaction| {
+                if transaction
+                    .as_ref()
+                    .is_some_and(|transaction| transaction.agent_id != agent_id.to_string())
+                {
+                    return Err(SupervisorError::Invalid(
+                        "release transaction agent binding mismatch".to_string(),
+                    ));
+                }
+                Ok(transaction)
+            });
+        let transaction = match transaction {
+            Ok(transaction) => transaction,
+            Err(error) => {
+                faults.push(error);
+                None
+            }
+        };
+        let intent = crate::signed_intent::read_intent(root)
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))
+            .and_then(|intent| {
+                if intent
+                    .as_ref()
+                    .is_some_and(|intent| intent.agent_id != agent_id.to_string())
+                {
+                    return Err(SupervisorError::Invalid(
+                        "signed supervisor intent agent binding mismatch".to_string(),
+                    ));
+                }
+                Ok(intent)
+            });
+        let intent = match intent {
+            Ok(intent) => intent,
+            Err(error) => {
+                faults.push(error);
+                None
+            }
+        };
+        DurableRecoveryValidation {
+            faults,
+            transaction,
+            intent,
+        }
     }
 
     pub(super) fn deny_failed_recovery(

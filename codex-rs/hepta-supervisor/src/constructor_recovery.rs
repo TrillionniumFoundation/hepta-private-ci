@@ -27,14 +27,29 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
         hydration: ConstructorHydration<'_>,
     ) -> Vec<SupervisorError> {
-        let mut faults = self.validate_durable_recovery(agent_id, record);
-        if let Err(error) = self.restore_release_state(agent_id, slot, record) {
-            faults.push(error);
+        let validation = self.validate_durable_recovery(agent_id, record);
+        let mut faults = validation.faults;
+        if let Some(error) = faults.first() {
+            slot.recovery_blocker = Some(bounded_message(error.to_string()));
         }
         // Decode and bind signed denial before adoption can replay a control
         // or an unsigned transaction/restart can drive another process effect.
-        // This read performs no CAS, journal publication or process operation.
-        if let Err(error) = self.prime_signed_recovery_denial(agent_id, slot, record) {
+        // Consume the same pure validation observations, without another read,
+        // CAS, journal publication or process operation.
+        if let Err(error) = self.prime_signed_recovery_denial(
+            slot,
+            record,
+            validation.intent,
+            validation.transaction.as_ref(),
+        ) {
+            faults.push(error);
+        }
+        if let Some(error) = faults.first() {
+            slot.recovery_blocker = Some(bounded_message(error.to_string()));
+        }
+        // Denied idle slots still receive pure persisted-catalog checks, while
+        // journal normalization and metadata hydration remain behind denial.
+        if let Err(error) = self.restore_release_state(agent_id, slot, record) {
             faults.push(error);
         }
         if let Some(error) = faults.first() {
