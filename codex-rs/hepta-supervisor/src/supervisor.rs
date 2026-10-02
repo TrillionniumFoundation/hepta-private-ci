@@ -75,6 +75,11 @@ mod signed_effect;
 #[path = "signed_constructor_recovery.rs"]
 mod signed_constructor_recovery;
 
+#[path = "control_admission.rs"]
+mod control_admission;
+
+pub(crate) use control_admission::ensure_main_exit_unobserved;
+
 impl<D: ProcessDriver> Supervisor<D> {
     pub fn recover(
         registry: FleetRegistry,
@@ -366,12 +371,13 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     #[cfg(unix)]
-    pub(crate) fn preflight_stop_or_kill(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
+    pub(crate) fn preflight_stop(&self, agent_id: &AgentId) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
         let slot = self
             .slots
             .get(agent_id)
             .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+        ensure_main_exit_unobserved(agent_id, slot)?;
         let runtime = slot
             .runtime
             .as_ref()

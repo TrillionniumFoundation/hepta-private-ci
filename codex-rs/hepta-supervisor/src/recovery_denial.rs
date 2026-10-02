@@ -52,7 +52,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 agent_id.clone(),
             ));
         }
-        Ok(())
+        let slot = self
+            .slots
+            .get(agent_id)
+            .ok_or_else(|| SupervisorError::UnknownAgent(agent_id.clone()))?;
+        super::ensure_main_exit_unobserved(agent_id, slot)
     }
 
     pub(super) fn ensure_recovery_unblocked(

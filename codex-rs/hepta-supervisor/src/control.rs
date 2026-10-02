@@ -39,6 +39,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        crate::supervisor::ensure_main_exit_unobserved(agent_id, slot)?;
         // Prove both phases before deferral, fencing, lifecycle CAS or signals.
         let drain_deadline = deadline(now, self.config.drain_timeout)?;
         let _ = deadline(drain_deadline, self.config.stop_grace)?;
@@ -87,6 +88,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        crate::supervisor::ensure_main_exit_unobserved(agent_id, slot)?;
         if slot.runtime.is_none() && self.cancel_idle_restart(agent_id, slot)? {
             return Ok(());
         }
@@ -145,6 +147,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        crate::supervisor::ensure_main_exit_unobserved(agent_id, slot)?;
         let record = self.record(agent_id)?;
         let runtime = slot
             .runtime
@@ -317,7 +320,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         // Registry/intent faults are collected, never propagated before the
         // already-owned main and companion termination attempts below.
+        let terminal_main = slot.observed_exit.is_some();
         let intent = self.record(agent_id).and_then(|record| {
+            if terminal_main {
+                // The exact exit already owns cleanup. Another Kill cannot
+                // replace its journal/witness or claim a new delivery.
+                return Err(SupervisorError::Invalid(format!(
+                    "agent {agent_id} has an observed main exit awaiting durable cleanup"
+                )));
+            }
             let runtime = slot.runtime.as_ref().ok_or_else(|| {
                 SupervisorError::Invalid(format!("agent {agent_id} is not active"))
             })?;
@@ -339,6 +350,9 @@ impl<D: ProcessDriver> Supervisor<D> {
         // companion driver must not delay the already-owned main's emergency
         // termination.
         let preparation = (|| {
+            if terminal_main {
+                return Ok(());
+            }
             let lifecycle = self.record(agent_id)?.lifecycle;
             let generation = active_runtime(agent_id, slot)?.generation;
             if generation != lifecycle.generation {
@@ -362,7 +376,9 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             Ok(())
         })();
-        let main = if intent.is_err()
+        let main = if terminal_main {
+            Ok(())
+        } else if intent.is_err()
             || cancellation.is_err()
             || preparation.is_err()
             || slot.runtime.as_ref().is_some_and(|runtime| runtime.fenced)
@@ -590,6 +606,11 @@ fn kill_retained_main<P: ManagedProcess>(
     agent_id: &AgentId,
     slot: &mut AgentSlot<P>,
 ) -> Result<(), SupervisorError> {
+    // All callers, including generation fencing, preserve the immutable exit
+    // observation. The only remaining operation belongs to exact cleanup.
+    if slot.observed_exit.is_some() {
+        return Ok(());
+    }
     let runtime = active_runtime(agent_id, slot)?;
     runtime.healthy = false;
     if !matches!(runtime.phase, RuntimePhase::Killing) {

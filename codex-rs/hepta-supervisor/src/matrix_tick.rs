@@ -245,7 +245,10 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         }
 
-        if slot.has_recovery_denial() {
+        if slot.has_recovery_denial() || slot.observed_exit.is_some() {
+            // Independent companion containment/cleanup ran above. The stored
+            // main exit now owns continuation; retain any deferred marker while
+            // its exact lease/lifecycle cleanup is still awaiting durability.
             return Ok(());
         }
         if slot.matrix.runtime.is_none() {
