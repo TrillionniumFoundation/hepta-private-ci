@@ -33,8 +33,14 @@ fn rejects_project_workspace_source_and_ephemeral_scope_drift() {
 fn bounds_unicode_without_splitting_codepoints() {
     let value = "你".repeat(MAX_CHAT_TEXT_BYTES);
     let result = bounded(value);
-    assert_eq!(result.len(), MAX_CHAT_TEXT_BYTES / 3 * 3);
-    assert!(result.chars().all(|character| character == '你'));
+    assert!(result.len() <= MAX_CHAT_TEXT_BYTES);
+    assert!(result.ends_with(TRUNCATION_MARKER));
+    assert!(
+        result
+            .trim_end_matches(TRUNCATION_MARKER)
+            .chars()
+            .all(|character| character == '你')
+    );
 }
 #[test]
 fn projects_only_user_facing_message_content() {

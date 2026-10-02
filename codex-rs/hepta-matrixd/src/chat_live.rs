@@ -1,7 +1,7 @@
 //! Bounded, connection-local observations; never a durable history owner.
 use super::{
     message,
-    wire::{ChatMessage, MAX_CHAT_PAGE, MAX_CHAT_TEXT_BYTES},
+    wire::{ChatMessage, MAX_CHAT_PAGE},
 };
 use codex_app_server_protocol::{ServerNotification, ThreadItemEntry};
 use std::collections::VecDeque;
@@ -29,12 +29,7 @@ impl LiveTimeline {
                     if message.turn_id != value.turn_id {
                         return;
                     }
-                    let remaining = MAX_CHAT_TEXT_BYTES.saturating_sub(message.body.len());
-                    let mut end = remaining.min(value.delta.len());
-                    while !value.delta.is_char_boundary(end) {
-                        end -= 1;
-                    }
-                    message.body.push_str(&value.delta[..end]);
+                    super::append_display(&mut message.body, &value.delta);
                 } else {
                     self.upsert(
                         value.thread_id,

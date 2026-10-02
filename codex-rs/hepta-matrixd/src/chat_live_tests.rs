@@ -1,3 +1,4 @@
+use super::super::wire::MAX_CHAT_TEXT_BYTES;
 use super::*;
 use codex_app_server_protocol::AgentMessageDeltaNotification;
 fn delta(thread: &str, item: &str, text: &str) -> ServerNotification {
@@ -40,7 +41,14 @@ fn cache_and_unicode_delta_growth_remain_bounded() {
     live.merge("a", &mut rows, 1, &mut active);
     assert_eq!(rows.len(), 1);
     assert!(rows[0].body.len() <= MAX_CHAT_TEXT_BYTES);
-    assert!(rows[0].body.chars().all(|c| c == '你'));
+    assert!(rows[0].body.ends_with(super::super::TRUNCATION_MARKER));
+    assert!(
+        rows[0]
+            .body
+            .trim_end_matches(super::super::TRUNCATION_MARKER)
+            .chars()
+            .all(|c| c == '你')
+    );
 }
 #[test]
 fn completion_observation_overrides_stale_active_snapshot() {
@@ -49,4 +57,33 @@ fn completion_observation_overrides_stale_active_snapshot() {
     let mut active = Some("stale".into());
     live.merge("a", &mut vec![], 1, &mut active);
     assert_eq!(active, None);
+}
+
+#[test]
+fn completed_message_replaces_marked_streaming_prefix() {
+    use codex_app_server_protocol::{ItemCompletedNotification, ThreadItem};
+    let mut live = LiveTimeline::default();
+    live.observe(delta("a", "m", &"🙂".repeat(MAX_CHAT_TEXT_BYTES)));
+    live.observe(delta("a", "m", "must not erase the truncation marker"));
+    let mut rows = vec![];
+    let mut active = Some("turn".into());
+    live.merge("a", &mut rows, 10, &mut active);
+    assert!(rows[0].body.ends_with(super::super::TRUNCATION_MARKER));
+    assert!(rows[0].body.len() <= MAX_CHAT_TEXT_BYTES);
+    live.observe(ServerNotification::ItemCompleted(
+        ItemCompletedNotification {
+            thread_id: "a".into(),
+            turn_id: "turn".into(),
+            completed_at_ms: 1,
+            item: ThreadItem::AgentMessage {
+                id: "m".into(),
+                text: "complete authoritative text".into(),
+                phase: None,
+                memory_citation: None,
+                delivery: None,
+            },
+        },
+    ));
+    live.merge("a", &mut rows, 10, &mut active);
+    assert_eq!(rows[0].body, "complete authoritative text");
 }

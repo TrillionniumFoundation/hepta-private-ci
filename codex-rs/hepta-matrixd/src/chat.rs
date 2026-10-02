@@ -382,13 +382,43 @@ impl Drop for AgentChatSession {
 fn invalid(message: &str) -> MatrixBridgeError {
     MatrixBridgeError::Invalid(message.into())
 }
+const TRUNCATION_MARKER: &str = "\n[Display truncated: additional message content omitted]";
 fn bounded(text: String) -> String {
-    let mut end = text.len().min(MAX_CHAT_TEXT_BYTES);
+    if text.len() <= MAX_CHAT_TEXT_BYTES {
+        return text;
+    }
+    let mut end = MAX_CHAT_TEXT_BYTES - TRUNCATION_MARKER.len();
     while !text.is_char_boundary(end) {
         end -= 1;
     }
-    text[..end].to_owned()
+    format!("{}{}", &text[..end], TRUNCATION_MARKER)
 }
+fn append_display(body: &mut String, delta: &str) {
+    // A bounded display marker is retained across subsequent streaming chunks.
+    if body.len() >= MAX_CHAT_TEXT_BYTES - 3 && body.ends_with(TRUNCATION_MARKER) {
+        return;
+    }
+    if body.len().saturating_add(delta.len()) <= MAX_CHAT_TEXT_BYTES {
+        body.push_str(delta);
+        return;
+    }
+    let prefix_limit = MAX_CHAT_TEXT_BYTES - TRUNCATION_MARKER.len();
+    if body.len() > prefix_limit {
+        let mut end = prefix_limit;
+        while !body.is_char_boundary(end) {
+            end -= 1;
+        }
+        body.truncate(end);
+    } else {
+        let mut end = (prefix_limit - body.len()).min(delta.len());
+        while !delta.is_char_boundary(end) {
+            end -= 1;
+        }
+        body.push_str(&delta[..end]);
+    }
+    body.push_str(TRUNCATION_MARKER);
+}
+
 fn conversation(thread: Thread) -> ChatConversation {
     ChatConversation {
         id: thread.id,

@@ -28,7 +28,7 @@ Create is intentionally not automatically retried after an unknown response.
 
 Timeline reads bounded item pages and the latest turn metadata. Messages are
 returned chronological within the page, with `activeTurnId` only for an observed
-InProgress turn. The owner retains at most 50 connection-local live message observations (16 KiB each) from actual agent-message delta/item lifecycle notifications. Latest-page polling merges those observations for the scoped active turn; it does not wait for final persistence or invent text. Completed observations replace deltas. Older history pages never receive live inserts. Polling is the browser/native delivery mechanism, not a claim of SSE. Tool approval requests
+InProgress turn. The owner retains at most 50 connection-local live message observations (16 KiB each) from actual agent-message delta/item lifecycle notifications. Latest-page polling merges those observations for the scoped active turn; it does not wait for final persistence or invent text. Completed observations replace deltas. Any omitted display content ends with the explicit text `[Display truncated: additional message content omitted]`; the marker is included within the 16 KiB cap and survives later delta chunks. Both hosts render it as ordinary accessible message text. There is no false full-text claim or invented continuation cursor for one oversized item. Older history pages never receive live inserts. Polling is the browser/native delivery mechanism, not a claim of SSE. Tool approval requests
 are rejected, never auto-approved; responses expose `approvalRequired` so the UI
 can direct the user to an authorized approval surface. Disconnect/lag fences the
 connection; reconnect must create a fresh host session and resume the conversation.
