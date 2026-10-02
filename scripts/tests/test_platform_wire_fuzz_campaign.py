@@ -53,7 +53,9 @@ class CampaignTests(unittest.TestCase):
         result = campaign.initialize(self.root, self.receipt)
         for target in campaign.TARGETS:
             log = self.root / (target + ".log")
-            log.write_text("#2\tINITED cov: 1\n#5\tDONE cov: 2\nstat::number_of_executed_units: 5\n")
+            log.write_text(
+                "#2\tINITED cov: 1\n#5\tDONE cov: 2\nstat::number_of_executed_units: 5\n"
+            )
             result["targets"][target] = {
                 "status": "passed",
                 "exit_code": 0,
@@ -136,7 +138,9 @@ class CampaignTests(unittest.TestCase):
 
         def fake_run(argv, **kwargs):
             calls.append(argv[4])
-            kwargs["stdout"].write("#2\tINITED cov: 1\n#7\tDONE cov: 2\nstat::number_of_executed_units: 7\n")
+            kwargs["stdout"].write(
+                "#2\tINITED cov: 1\n#7\tDONE cov: 2\nstat::number_of_executed_units: 7\n"
+            )
             return 1 if len(calls) == 1 else 0
 
         with patch.object(campaign, "run_bounded", side_effect=fake_run):
@@ -235,7 +239,9 @@ class CampaignTests(unittest.TestCase):
                 result = self.passing()
                 log = self.root / "managed_records.log"
                 log.write_text(text)
-                result["targets"]["managed_records"]["log_sha256"] = campaign.digest(log)
+                result["targets"]["managed_records"]["log_sha256"] = campaign.digest(
+                    log
+                )
                 campaign.save(self.receipt, result)
                 self.assertFalse(campaign.finalize(self.root, self.receipt))
 
