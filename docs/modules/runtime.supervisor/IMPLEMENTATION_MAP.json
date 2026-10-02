@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "2d03ac52d3255aa9b021441197043c612ecabc2e",
-    "tree": "ba0c4d1fc58fca31f0fd2343a7dd38f04b6a1c8c"
+    "commit": "abbc6af16b4e8f3adc7a893748f0f10f5fa80094",
+    "tree": "f0693a1ec24b3c5c35cb7a11367b0e34b0e54e72"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -372,9 +372,26 @@
     "codex-rs/hepta-supervisor"
   ],
   "observedAtHead": {
-    "commit": "2d03ac52d3255aa9b021441197043c612ecabc2e",
-    "tree": "ba0c4d1fc58fca31f0fd2343a7dd38f04b6a1c8c",
-    "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
+    "commit": "abbc6af16b4e8f3adc7a893748f0f10f5fa80094",
+    "tree": "f0693a1ec24b3c5c35cb7a11367b0e34b0e54e72"
   },
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "navigationRebindHistory": [
+    {
+      "previous": {
+        "sourceBase": {
+          "commit": "2d03ac52d3255aa9b021441197043c612ecabc2e",
+          "tree": "ba0c4d1fc58fca31f0fd2343a7dd38f04b6a1c8c"
+        },
+        "observedAtHead": {
+          "commit": "2d03ac52d3255aa9b021441197043c612ecabc2e",
+          "tree": "ba0c4d1fc58fca31f0fd2343a7dd38f04b6a1c8c",
+          "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
+        }
+      },
+      "reason": "Current source navigation reviewed during 2026-10-02 scoped module audit. No historical execution is renewed.",
+      "historicalExecutionRevalidated": false,
+      "authorityGranted": false
+    }
+  ]
 }

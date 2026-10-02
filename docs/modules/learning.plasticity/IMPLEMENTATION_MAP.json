@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "2d03ac52d3255aa9b021441197043c612ecabc2e",
-    "tree": "ba0c4d1fc58fca31f0fd2343a7dd38f04b6a1c8c"
+    "commit": "abbc6af16b4e8f3adc7a893748f0f10f5fa80094",
+    "tree": "f0693a1ec24b3c5c35cb7a11367b0e34b0e54e72"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "learning.plasticity",
@@ -678,6 +678,29 @@
           "role": "declared_module_dependency_not_callsite_proof"
         }
       ]
+    },
+    {
+      "operation": "iteration_envelope_submission",
+      "nativeSymbol": "verify_generator_submission",
+      "sourcePath": "codex-rs/hepta-agentd/src/iteration_envelope_wire.rs",
+      "state": "source_implemented_exact_module_harness_qualified_full_agentd_execution_pending_no_production_caller",
+      "authority": "generator_submission_evidence_only_host_policy_pin_required_no_activation",
+      "tests": [
+        "codex-rs/hepta-agentd/src/iteration_envelope_wire_tests.rs::authenticates_exact_generator_submission_with_separate_host_pin",
+        "codex-rs/hepta-agentd/src/iteration_envelope_wire_tests.rs::rejects_positional_top_level_envelope",
+        "codex-rs/hepta-agentd/src/iteration_envelope_wire_tests.rs::rejects_positional_compute_budget",
+        "codex-rs/hepta-agentd/src/iteration_envelope_wire_tests.rs::rejects_seconds_evidence_in_the_millisecond_submission_profile"
+      ],
+      "mappingClass": "delegated_composition",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+          "module": "learning.ledger",
+          "role": "existing_generator_signature_context_time_and_revocation_verifier"
+        }
+      ],
+      "designOperation": "iteration_envelope_submission",
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
@@ -718,6 +741,14 @@
     }
   ],
   "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/iteration_envelope_wire.rs",
+      "object": "a59c12cb5708ee6c706b05293944f9832aba8cb9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/iteration_envelope_wire_tests.rs",
+      "object": "0498de681d79612ae9ac133f28c3587e69303968"
+    },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs",
       "object": "16e79468c8f09f92c10ba36f28bc1ee6d31af5ae"
@@ -823,6 +854,10 @@
       "object": "a895efbe7bc10e348b9f3ba1a9ef1a75fd5c46a0"
     },
     {
+      "path": "codex-rs/hepta-learning-ledger/src/signed_evidence.rs",
+      "object": "70e23b5ad1de1dba9d3f6f1d6b05a9390e6986a4"
+    },
+    {
       "path": "codex-rs/hepta-learning-ledger/src/signed_evidence_tests.rs",
       "object": "0032e732b73bed881f8aebbaf0bd17299fe33848"
     },
@@ -914,5 +949,25 @@
       "path": "qualification/lane-f-shadow/tests/plasticity_structural_canary.rs",
       "object": "0ba0c909396cfdee1a315e889f7708b785594dc6"
     }
+  ],
+  "observedAtHead": {
+    "commit": "abbc6af16b4e8f3adc7a893748f0f10f5fa80094",
+    "tree": "f0693a1ec24b3c5c35cb7a11367b0e34b0e54e72"
+  },
+  "navigationRebindHistory": [
+    {
+      "previous": {
+        "sourceBase": {
+          "commit": "2d03ac52d3255aa9b021441197043c612ecabc2e",
+          "tree": "ba0c4d1fc58fca31f0fd2343a7dd38f04b6a1c8c"
+        }
+      },
+      "reason": "Add canonical iteration submission adapter navigation; historical execution not renewed.",
+      "historicalExecutionRevalidated": false,
+      "authorityGranted": false
+    }
+  ],
+  "observedSourcePaths": [
+    "codex-rs/hepta-plasticity"
   ]
 }
