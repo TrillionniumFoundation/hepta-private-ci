@@ -1,0 +1,47 @@
+{
+  "after": {
+    "commit": "2357d58ca2ae30baf452abe25dff71c2f020467f",
+    "dirty": false,
+    "parents": [
+      "b73445ecc703153bdcf7f505beafb9b25f84b89f"
+    ],
+    "tree": "31dc912975f5d2f6056131fcf0a25ea3125bf9ea"
+  },
+  "base_sha": "c6f90d48c40f7b5267db587bb3c3f4934f1414a8",
+  "before": {
+    "commit": "2357d58ca2ae30baf452abe25dff71c2f020467f",
+    "dirty": false,
+    "parents": [
+      "b73445ecc703153bdcf7f505beafb9b25f84b89f"
+    ],
+    "tree": "31dc912975f5d2f6056131fcf0a25ea3125bf9ea"
+  },
+  "command": [
+    "python3",
+    "scripts/hepta-lane-b-truth.py",
+    "verify"
+  ],
+  "command_exit_code": 1,
+  "elapsed_seconds": 0.2862328209999987,
+  "exit_code": 1,
+  "finished_at": "2026-10-02T23:00:34.646651+00:00",
+  "job": "qualify",
+  "lane": "source-head",
+  "log_bytes": 460,
+  "log_file": "04-lane-b.json.ce6137f76b9d471c8d1b08332e757364.log",
+  "log_sha256": "9b364cdb33f4d723214c5ed45f6a42edf9119444b5ef2fe426c66179c34cb2fa",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 1,
+  "run_attempt": "1",
+  "run_id": "37075372401",
+  "schema_version": 1,
+  "source_sha": "2357d58ca2ae30baf452abe25dff71c2f020467f",
+  "started_at": "2026-10-02T23:00:34.359751+00:00",
+  "status": "failed",
+  "tested_sha": "2357d58ca2ae30baf452abe25dff71c2f020467f",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

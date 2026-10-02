@@ -1,0 +1,26 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+[33;1mwarning[0m: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 0.66s
+────────────
+[32;1m Nextest run[0m ID [1ma7ad4e99-3071-4244-b259-40b55355e1da[0m with nextest profile: [1mlocal[0m
+[32;1m    Starting[0m [1m18[0m tests across [1m1[0m binary ([1m261[0m tests [33;1mskipped[0m)
+[32;1m        PASS[0m [   0.120s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::final_use_dispatch_tests[0m[36m::[0m[34;1mdurable_dispatch_claim_is_idempotent_and_renewable_before_entry[0m
+[32;1m        PASS[0m [   0.159s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::final_use_dispatch_tests[0m[36m::[0m[34;1mfinal_use_is_consumed_at_target_entry_and_binding_mismatch_never_calls_target[0m
+[32;1m        PASS[0m [   0.205s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::final_use_dispatch_tests[0m[36m::[0m[34;1mqueued_identity_survives_owner_handoff_and_dispatches_once_under_new_final_use[0m
+[32;1m        PASS[0m [   2.244s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::takeover_regression_tests[0m[36m::[0m[34;1mexpired_active_writer_is_terminalized_and_successor_reconciles_unknown_effect[0m
+[32;1m        PASS[0m [   0.110s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1mactive_lease_cannot_reopen_under_a_different_grant_with_same_token[0m
+[32;1m        PASS[0m [   0.216s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1mconcurrent_dispatchers_have_one_durable_claim_and_one_target_call[0m
+[32;1m        PASS[0m [   0.172s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1mcrash_after_target_send_reopens_as_indeterminate_and_cannot_redispatch[0m
+[32;1m        PASS[0m [   0.121s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1mdispatch_claim_rejects_unbound_or_malformed_operation_digest[0m
+[32;1m        PASS[0m [   0.104s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1mexpired_or_rebound_authority_cannot_open_a_writer[0m
+[32;1m        PASS[0m [   0.108s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1mforged_queue_receipt_cannot_substitute_provider_payload_or_topic[0m
+[32;1m        PASS[0m [   0.112s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1mpost_open_revocation_blocks_semantic_use_dispatch_and_reconcile[0m
+[32;1m        PASS[0m [   0.113s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1mproduction_writer_requires_verifier_and_records_commit[0m
+[32;1m        PASS[0m [   0.137s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1mrecovery_does_not_release_production_lease_with_peer_pending[0m
+[32;1m        PASS[0m [   0.122s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1mrestart_reopens_exact_bound_lease_and_replays_queue[0m
+[32;1m        PASS[0m [   0.171s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1msecond_writer_open_is_rejected_until_first_owner_drops[0m
+[32;1m        PASS[0m [   0.107s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1msemantic_capability_requires_retained_live_verifier[0m
+[32;1m        PASS[0m [   0.300s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1msemantic_response_loss_restart_rejects_duplicate_and_preserves_committed_cut[0m
+[32;1m        PASS[0m [   0.116s] [35;1mcodex-hepta-memory[0m [36mproduction_writer::tests[0m[36m::[0m[34;1munknown_target_outcome_is_indeterminate_and_replay_is_durable[0m
+────────────
+[32;1m     Summary[0m [   4.740s] [1m18[0m tests run: [1m18[0m [32;1mpassed[0m, [1m261[0m [33;1mskipped[0m

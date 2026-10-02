@@ -1,5 +1,10 @@
 # Additive memory execution diagnostics
 
+Update: [exact source 2357d58c has now executed all three affected groups and
+standalone strict library lint successfully](HOSTED_2357_VERIFICATION.md).
+The earlier pending statements below describe the pre-execution checkpoint;
+the protected aggregate and current-main merge acceptance remain failed.
+
 At exact source b73445ecc703153bdcf7f505beafb9b25f84b89f, run37069929674 artifact11254762475 has verified ZIP SHA-256 08a356a096c905881fc3fe181cd405071fd7868d00e22e0cefd59a31a49b65a4. All twelve command records and raw log hashes were checked. The source remained clean;233 inference/worker/types tests,59 Python tests,two crash tests and one soak passed. These commands did not select memory tests.
 
 Both that matrix and x64smoke37069929740 progressed past the two repaired memory argument-count diagnostics, then failed five AuthBus diagnostics in paused paths. This is not a standalone successful memory-library lint receipt. Knowledge.graph37069929684 stopped at its global map verifier and skipped memory tests/lint. No old-head test result qualifies the new memory refactor.
