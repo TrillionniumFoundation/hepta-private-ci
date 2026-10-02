@@ -1,0 +1,66 @@
+{
+  "schema": "hepta.ui-native-metadata-local-checks.v1",
+  "implementationSourceSha": "2b59c1c5f877432a557185efd77331ae1143ae42",
+  "implementationSourceTree": "9326a46a71a3f7aae14481d979cd3faee1935e7c",
+  "executionScope": "Local uncommitted metadata and qualification-tooling continuation on the published implementation; no hosted candidate or platform execution",
+  "initialPythonRun": {
+    "tests": 263,
+    "failureReports": 34,
+    "errors": 1,
+    "skipped": 1,
+    "cause": "isolated map-adapter fixture omitted newly required native Rust modules and platform dependency"
+  },
+  "fixtureRepair": "Copy current native modules and add the real local platform dependency to fixture repos; no production or convergence-guard rule changed",
+  "finalPythonRun": {
+    "tests": 263,
+    "passed": 262,
+    "skipped": 1,
+    "seconds": 11.659,
+    "skip": "Windows-only NTFS junction fixture on Linux"
+  },
+  "mapAdapterFocused": {
+    "passed": 18
+  },
+  "moduleRegistry": {
+    "passed": 4
+  },
+  "projections": {
+    "passed": 7,
+    "reproducible": true
+  },
+  "sourceIdentity": "structural-pass",
+  "ruff": "scoped check and format-check passed for repaired fixture",
+  "artifacts": {
+    "metadata-python-after-fixture-repair.log": {
+      "bytes": 44202,
+      "sha256": "9ff2e0d9ad50b328be7297be92373ccf55b329f59e72e5418c7e07bc194b3540"
+    },
+    "metadata-map-adapter.log": {
+      "bytes": 3261,
+      "sha256": "bf1b682a86661b9b1ebb39f9921e904c76631f83da88433ed30e4f6b9fe8c696"
+    },
+    "metadata-module-registry.log": {
+      "bytes": 102,
+      "sha256": "8dc7c03cabe82d416fbad5daa63afa03f1bc054e42e67fe37e9754e3741d4cc2"
+    },
+    "metadata-projections.log": {
+      "bytes": 732,
+      "sha256": "718d95dbb5ca5201abd910f7a5ca93225b2f279f2f5a5da88d9e2a943fef128c"
+    },
+    "metadata-source-identity.json": {
+      "bytes": 1543,
+      "sha256": "55c6a4ace19faba3b3405f9b90a38169da273ad739545d4ec7634c7f8721fe34"
+    },
+    "metadata-python-before-fixture-repair.log.gz": {
+      "encoding": "gzip",
+      "bytes": 9013,
+      "sha256": "6cdc5b53fea2cb7b6a738eca9b3e503cc57e464193b10eae170e9ada0339ad4c",
+      "decodedBytes": 94774,
+      "decodedSha256": "db2c3bf775e7e696dc5f4ea5ba650c51b214324303cfdb373bebd35aeb332d70"
+    }
+  },
+  "acceptedQualification": false,
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
+}

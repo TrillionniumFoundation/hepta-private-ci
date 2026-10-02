@@ -20,6 +20,9 @@ pub mod file_input;
 
 mod native_http;
 
+#[cfg(target_os = "linux")]
+mod native_portal;
+
 pub mod update_handoff;
 mod update_lock;
 mod update_storage;
@@ -39,3 +42,6 @@ mod storage_qualification_tests;
 
 #[cfg(test)]
 mod private_state_test_support;
+
+#[cfg(any(target_os = "macos", target_os = "windows", test))]
+mod native_pipe;

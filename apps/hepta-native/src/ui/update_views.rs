@@ -221,18 +221,26 @@ impl HeptaNativeApp {
 
     pub(super) fn updates_view(&mut self, ui: &mut egui::Ui) {
         let focus_target = self.file_input_focus.take();
-        ui.heading(self.locale.text("Signed updates", "签名更新"));
+        theme::section(
+            ui,
+            self.locale.text("Signed updates", "签名更新"),
+            self.locale.text(
+                "Verify the package before staging a controlled restart",
+                "先验证更新包，再暂存受控重启",
+            ),
+        );
         ui.label(self.locale.text(
             "Only a signed stable-channel manifest can be staged. Activation closes this GUI first; the independent helper re-verifies the manifest, predecessor and staged package.",
             "只有签名的 stable-channel 清单才能暂存。激活先关闭 GUI；独立助手重新验证清单、前任版本和暂存包。",
         ));
         ui.separator();
-        ui.label(self.locale.text("Signed manifest path", "签名清单路径"));
+        let manifest_label = ui.label(self.locale.text("Signed manifest path", "签名清单路径"));
         let response = ui
-            .horizontal(|ui| {
+            .horizontal_wrapped(|ui| {
                 let response = ui.add(
                     egui::TextEdit::singleline(&mut self.update_manifest_path)
                         .id(egui::Id::new("native-update-manifest"))
+                        .desired_width(ui.available_width())
                         .char_limit(crate::model::MAX_NATIVE_PATH_BYTES),
                 );
                 if ui
@@ -256,18 +264,19 @@ impl HeptaNativeApp {
                 {
                     self.arm_file_input_target(ui.ctx(), FileInputTarget::UpdateManifest);
                 }
-                response
+                response.labelled_by(manifest_label.id)
             })
             .inner;
         if focus_target == Some(FileInputTarget::UpdateManifest) {
             response.request_focus();
         }
-        ui.label(self.locale.text("Package path", "更新包路径"));
+        let package_label = ui.label(self.locale.text("Package path", "更新包路径"));
         let response = ui
-            .horizontal(|ui| {
+            .horizontal_wrapped(|ui| {
                 let response = ui.add(
                     egui::TextEdit::singleline(&mut self.update_package_path)
                         .id(egui::Id::new("native-update-package"))
+                        .desired_width(ui.available_width())
                         .char_limit(crate::model::MAX_NATIVE_PATH_BYTES),
                 );
                 if ui
@@ -291,7 +300,7 @@ impl HeptaNativeApp {
                 {
                     self.arm_file_input_target(ui.ctx(), FileInputTarget::UpdatePackage);
                 }
-                response
+                response.labelled_by(package_label.id)
             })
             .inner;
         if focus_target == Some(FileInputTarget::UpdatePackage) {
@@ -397,7 +406,57 @@ impl HeptaNativeApp {
     }
 
     pub(super) fn accessibility_view(&self, ui: &mut egui::Ui) {
-        ui.heading(self.locale.text("Accessibility & input", "无障碍与输入"));
+        theme::section(
+            ui,
+            self.locale.text("Accessibility & input", "无障碍与输入"),
+            self.locale.text(
+                "Adjust this session's display and review native input support",
+                "调整本次会话的显示并查看原生输入支持",
+            ),
+        );
+        theme::card().show(ui, |ui| {
+            ui.label(
+                egui::RichText::new(self.locale.text("Display preferences", "显示偏好")).strong(),
+            );
+            let mut zoom_percent = ui.ctx().zoom_factor() * 100.0;
+            if ui
+                .add(
+                    egui::Slider::new(&mut zoom_percent, 80.0..=160.0)
+                        .step_by(10.0)
+                        .suffix("%")
+                        .trailing_fill(true)
+                        .text(self.locale.text("Text scale", "文字缩放")),
+                )
+                .changed()
+            {
+                ui.ctx().set_zoom_factor(zoom_percent / 100.0);
+            }
+            if ui
+                .button(self.locale.text("Reset text scale", "重置文字缩放"))
+                .clicked()
+            {
+                ui.ctx().set_zoom_factor(1.0);
+            }
+            let previous = theme::current_contrast(ui.ctx());
+            let mut contrast = previous;
+            ui.horizontal_wrapped(|ui| {
+                ui.label(self.locale.text("Control outlines", "控件轮廓"));
+                ui.selectable_value(
+                    &mut contrast,
+                    theme::Contrast::Standard,
+                    self.locale.text("Standard", "标准"),
+                );
+                ui.selectable_value(
+                    &mut contrast,
+                    theme::Contrast::High,
+                    self.locale.text("High contrast", "高对比度"),
+                );
+            });
+            if contrast != previous {
+                theme::install(ui.ctx(), contrast);
+            }
+        });
+        ui.add_space(12.0);
         ui.label(self.locale.text(
             "eframe/egui with AccessKit is selected for Windows, macOS and Linux. DPI scaling is delegated to winit/eframe.",
             "Windows、macOS、Linux 使用启用 AccessKit 的 eframe/egui，DPI 缩放由 winit/eframe 处理。",

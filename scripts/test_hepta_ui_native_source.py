@@ -24,6 +24,12 @@ class CurrentSourceTests(unittest.TestCase):
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name).resolve()
         subprocess.run(["git", "init", "-q"], cwd=self.root, check=True)
+        # Each fixture owns a disposable repository. No detached Git maintenance
+        # may write back into it after the final foreground command has exited.
+        for key, value in (("maintenance.auto", "false"), ("gc.auto", "0")):
+            subprocess.run(
+                ["git", "config", "--local", key, value], cwd=self.root, check=True
+            )
         subprocess.run(
             ["git", "config", "core.autocrlf", "false"], cwd=self.root, check=True
         )

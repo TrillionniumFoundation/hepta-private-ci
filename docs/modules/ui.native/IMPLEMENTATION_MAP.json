@@ -4,8 +4,8 @@
   "module": "ui.native",
   "owner": "ui-platform",
   "deputy": "accessibility",
-  "implementationSourceSha": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
-  "implementationSourceTree": "f90313f067446c629b8da50058ee1bd2101e76e7",
+  "implementationSourceSha": "6e76bb778b58abe557dca516fe66da020da84ae6",
+  "implementationSourceTree": "5f3b98aecf7c3fa688f8093a275fe8fba855ffef",
   "sourceMaturity": "implementation-candidate-incomplete-qualification-blocked",
   "declaredRoots": [
     "apps/hepta-native",
@@ -73,10 +73,16 @@
     "startupRetirementMembership": "prefix-grouped fallible membership batch with one validated result per active identity"
   },
   "nativeAdapters": {
-    "linuxPicker": "XDG Desktop Portal primary; Zenity explicit compatibility",
-    "linuxOpenReveal": "NOFOLLOW open, device/inode/metadata binding, final handle revalidation, XDG OpenURI FD handoff",
-    "windowsNotification": "packaged AppUserModelID registrar and WinRT toast adapter; physical qualification pending",
-    "macosNotification": "absolute /usr/bin/osascript with cleared environment; physical qualification pending"
+    "linuxPicker": "Rust zbus XDG FileChooser with pinned unique owner/request path and bounded application response; Zenity setting explicitly retired",
+    "linuxOpenReveal": "Rust NOFOLLOW retained File, final handle revalidation and SCM_RIGHTS descriptor handoff to XDG OpenURI",
+    "linuxNotification": "Rust zbus notification submission; accepted handoff remains indeterminate",
+    "macosPicker": "same-executable bounded typed helper; Rust AppKit SDK adapter",
+    "windowsPicker": "same-executable bounded typed helper; Rust native Windows file-dialog SDK adapter",
+    "macosNotification": "same-executable unprivileged Rust UserNotifications facade with installed bundle identity gate; no delivery success receipt",
+    "windowsNotification": "same-executable unprivileged Rust WinRT facade with registered AUMID gate; no delivery success receipt",
+    "windowsIdentityRegistrar": "explicit hepta-native.exe --register-notification-identity; current executable retained across save/readback; exact AUMID and complete volume/128-bit file-ID comparison; default-stream ordinary paths only; final reparse targets rejected; unsigned package v3",
+    "helperBoundary": "parent-owned nonblocking pipe polling; 8/130-second active protocol limits exclude hashing and OS kill/reap/scheduling; nonce/digest does not replace parent final-use authority",
+    "portalMemoryBoundary": "64 KiB application response checked after zbus decoding; 128 MiB raw-frame limit remains separate"
   },
   "qualificationSubjects": [
     "linux-exact-head",
@@ -104,7 +110,9 @@
     "apps/hepta-native/src/ui/*_tests.rs",
     "apps/hepta-native/tools/tests/test_portal_lifecycle.py",
     "apps/hepta-native/src/storage_qualification_tests/process_samples.rs",
-    "codex-rs/utils/private-state/src/windows.rs"
+    "codex-rs/utils/private-state/src/windows.rs",
+    "apps/hepta-native/platform-adapters/src/*_tests.rs",
+    "scripts/hepta_ui_native_format.py"
   ],
   "repositoryControlledEvidence": {
     "perPlatform": [
@@ -149,7 +157,10 @@
     "successful execution of the final seven-subject workflow",
     "measured source coverage",
     "sustained soak",
-    "physical execution of packaged Windows identity/WinRT notification"
+    "physical execution of packaged Windows identity/WinRT notification",
+    "separate ui.control Rust migration and registered domain-owner integration",
+    "current-main integration if selected",
+    "measured UI frame/input responsiveness"
   ],
   "externalEvidenceGates": [
     "physical platform, accessibility and IME acceptance",
@@ -173,8 +184,25 @@
   "productionQualified": false,
   "deploymentQualified": false,
   "releaseAuthorized": false,
-  "auditReport": "docs/modules/ui.native/ADVERSARIAL-AUDIT-20261001.md",
+  "auditReport": "docs/modules/ui.native/ADVERSARIAL-AUDIT-20261002.md",
   "sharedUtilityDependencies": [
     "codex-rs/utils/private-state"
-  ]
+  ],
+  "presentation": {
+    "renderer": "Rust eframe/egui 0.36.2 Glow with AccessKit",
+    "shell": "apps/hepta-native/src/ui/shell_view.rs",
+    "tokens": "apps/hepta-native/src/ui/theme.rs",
+    "startupRecovery": "apps/hepta-native/src/ui/startup_recovery.rs",
+    "bootstrap": "apps/hepta-native/src/main_bootstrap.rs",
+    "startupRetryBoundary": "input reload only; no durable state, updater recovery or session admission in retry closure",
+    "physicalAcceptanceComplete": false
+  },
+  "qualificationHarness": {
+    "linuxTestTransport": "private Unix session bus with EXTERNAL authentication and normal host mediation",
+    "applicationFormatCheck": "scripts/hepta_ui_native_format.py preserves the full cargo fmt --all target/edition set in bounded Windows-safe batches",
+    "runtimeVerification": "pending exact-source hosted Linux/Windows execution; no assertion or required CI subject removed",
+    "windowsRegistrarDiagnostics": "bounded COM operation labels and preserved HRESULT without source path or identity values",
+    "windowsRegistrarTargetVerification": "retained read-only file handles; full FILE_ID_INFO comparison; ADS/device namespace rejection before filesystem calls; mandatory alias, wrong-target, reparse and hard-linked destination regressions; native runtime pending",
+    "earlyWindowsPlatformTests": "supplemental same-source adapter tests before full application build; separate retained evidence; failures propagate; original full matrix and aggregate remain mandatory"
+  }
 }

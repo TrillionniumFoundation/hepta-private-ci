@@ -63,13 +63,24 @@ class NativeMapAdapterTests(unittest.TestCase):
             "platform",
             "runtime",
             "updater",
+            "main",
+            "native_pipe",
+            "native_portal",
+            "platform_linux",
+            "platform_notification_helper",
+            "platform_notify_macos",
+            "platform_notify_windows",
         ):
             relative = f"apps/hepta-native/src/{name}.rs"
             self.write(relative, (REPOSITORY / relative).read_text(encoding="utf-8"))
         self.crate(
             "apps/hepta-native",
-            'gateway = { path = "../../codex-rs/hepta-native-gateway" }',
+            'gateway = { path = "../../codex-rs/hepta-native-gateway" }\n'
+            'platform = { path = "platform-adapters" }',
         )
+        self.crate("apps/hepta-native/platform-adapters")
+        native_pipe = "apps/hepta-native/platform-adapters/src/pipe.rs"
+        self.write(native_pipe, (REPOSITORY / native_pipe).read_text(encoding="utf-8"))
         self.crate(
             "codex-rs/hepta-native-gateway",
             'contracts = { path = "../hepta-contracts" }\nprivate = { path = "../hepta-private-state" }',

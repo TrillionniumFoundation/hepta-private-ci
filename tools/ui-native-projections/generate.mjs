@@ -56,7 +56,7 @@ const TEST_PROFILES = [
   },
   {
     id: "native_application",
-    command: "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets",
+    command: "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --workspace --all-targets",
     workingDirectory: ".",
   },
   {
@@ -75,6 +75,7 @@ const TEST_PROFILES = [
 const TEST_SOURCE_ROOTS = [
   { path: "apps/hepta-native/tests", package: "hepta-native", role: "integration_test" },
   { path: "apps/hepta-native/src", package: "hepta-native", role: "unit_test" },
+  { path: "apps/hepta-native/platform-adapters/src", package: "hepta-native-platform", role: "unit_test" },
   { path: "codex-rs/hepta-native-gateway/src", package: "codex-hepta-native-gateway", role: "unit_test" },
   { path: "codex-rs/hepta-contracts/tests", package: "codex-hepta-contracts", role: "integration_test" },
   { path: "codex-rs/hepta-contracts/src", package: "codex-hepta-contracts", role: "unit_test" },

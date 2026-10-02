@@ -1,0 +1,288 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+   Compiling hepta-native v0.1.0 (/workspace/scratch/aebafee84981/hepta-private-ci/apps/hepta-native)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 20.32s
+────────────
+ Nextest run ID 096d0d1f-5d62-4a35-ba7c-971f39f16a4c with nextest profile: local
+    Starting 278 tests across 22 binaries (4 tests skipped)
+        PASS [   0.005s] (  1/278) hepta-native file_input::tests::oversized_reader_consumes_only_one_sentinel_byte
+        PASS [   0.007s] (  2/278) hepta-native file_input::tests::final_symlink_is_rejected
+        PASS [   0.007s] (  3/278) hepta-native file_input::tests::real_file_has_identical_exact_and_oversized_boundaries
+        PASS [   0.008s] (  4/278) hepta-native file_input::tests::file_growth_after_metadata_is_still_rejected
+        PASS [   0.008s] (  5/278) hepta-native file_input::tests::path_replacement_does_not_change_the_validated_open_handle
+        PASS [   0.012s] (  6/278) hepta-native file_input::tests::read_error_does_not_return_partial_success
+        PASS [   0.012s] (  7/278) hepta-native file_input::tests::malformed_and_trailing_json_are_rejected
+        PASS [   0.012s] (  8/278) hepta-native file_input::tests::relative_path_and_directory_are_rejected
+        PASS [   0.006s] (  9/278) hepta-native file_input::tests::socket_input_is_rejected_when_the_host_allows_a_socket_fixture
+        PASS [   0.013s] ( 10/278) hepta-native file_input::tests::exact_limit_and_empty_input_are_accepted
+        PASS [   0.006s] ( 11/278) hepta-native file_input::tests::zero_limit_rejects_nonempty_input
+        PASS [   0.007s] ( 12/278) hepta-native file_input::tests::unrepresentable_limit_fails_without_reading
+        PASS [   0.015s] ( 13/278) hepta-native journal::replay::wal_tests::journal_recovery_rejects_a_hardlinked_wal_without_truncating_either_name
+        PASS [   0.011s] ( 14/278) hepta-native journal::replay::wal_tests::wal_recovers_prepared_and_invoking_without_blind_replay
+        PASS [   0.010s] ( 15/278) hepta-native journal_storage::tests::mutable_lock_and_write_reject_hardlinks_without_changing_either_name
+        PASS [   0.009s] ( 16/278) hepta-native journal_storage::tests::readonly_hardlinks_preserve_private_permissions_and_bytes
+        PASS [   0.010s] ( 17/278) hepta-native journal_storage::tests::mutable_wal_hardlinks_reject_recovery_and_append_without_changing_either_name
+        PASS [   0.011s] ( 18/278) hepta-native journal_storage::tests::every_snapshot_failure_boundary_leaves_an_entire_old_or_new_file
+        PASS [   0.011s] ( 19/278) hepta-native journal_storage::tests::first_snapshot_failure_never_exposes_partially_written_bytes
+        PASS [   0.012s] ( 20/278) hepta-native journal_storage::tests::snapshot_and_wal_are_private_before_publication
+        PASS [   0.005s] ( 21/278) hepta-native native_http::tests::ambiguous_or_oversized_framing_is_rejected
+        PASS [   0.005s] ( 22/278) hepta-native journal_storage::tests::snapshot_parent_replacement_cannot_redirect_committed_bytes
+        PASS [   0.007s] ( 23/278) hepta-native native_http::tests::content_length_is_nonempty_unsigned_decimal
+        PASS [   0.007s] ( 24/278) hepta-native journal_storage::tests::wal_rejects_dangling_links_without_creating_their_targets
+        PASS [   0.007s] ( 25/278) hepta-native journal_storage::tests::wal_discards_only_an_incomplete_final_frame
+        PASS [   0.007s] ( 26/278) hepta-native journal_storage::tests::wal_rejects_a_complete_corrupt_frame
+        PASS [   0.008s] ( 27/278) hepta-native journal_storage::tests::wal_rejects_links_without_mutating_their_targets
+        PASS [   0.006s] ( 28/278) hepta-native native_http::tests::declared_body_start_must_match_header_bytes
+        PASS [   0.005s] ( 29/278) hepta-native native_http::tests::status_line_has_one_unambiguous_grammar
+        PASS [   0.006s] ( 30/278) hepta-native native_http::tests::unknown_header_cannot_smuggle_controls
+        PASS [   0.011s] ( 31/278) hepta-native native_http::tests::total_deadline_is_not_reset_by_progress
+        PASS [   0.007s] ( 32/278) hepta-native platform::identity_tests::notification_marker_rejects_a_final_symlink
+        PASS [   0.011s] ( 33/278) hepta-native native_portal::tests::method_reply_identity_and_size_are_checked_before_deserialization
+        PASS [   0.006s] ( 34/278) hepta-native platform::identity_tests::registration_publishes_exact_marker_only_after_native_readback_success
+        PASS [   0.009s] ( 35/278) hepta-native platform::identity_tests::notification_marker_requires_a_bounded_valid_identity
+        PASS [   0.006s] ( 36/278) hepta-native platform::identity_tests::registration_does_not_invoke_native_adapter_when_stale_marker_cannot_be_removed
+        PASS [   0.017s] ( 37/278) hepta-native native_portal::tests::connecting_consumes_the_same_observation_budget
+        PASS [   0.006s] ( 38/278) hepta-native platform::identity_tests::registration_removes_stale_marker_before_native_call_and_keeps_failure_unregistered
+        PASS [   0.007s] ( 39/278) hepta-native platform::notification_helper::tests::notification_handoff_binds_nonce_binary_and_literal_payload
+        PASS [   0.007s] ( 40/278) hepta-native platform::notification_helper::tests::notification_handoff_rejects_unbounded_incomplete_and_invalid_ready
+        PASS [   0.008s] ( 41/278) hepta-native platform::notification_helper::tests::notification_handoff_rejects_wrong_image_before_sending_data
+        PASS [   0.007s] ( 42/278) hepta-native platform::notification_helper::tests::notification_helper_rejects_nonce_mismatch_oversized_text_and_unknown_fields
+        PASS [   0.053s] ( 43/278) hepta-native journal::replay::wal_tests::bounded_wal_checkpoints_and_reopens_with_exact_index
+        PASS [   0.019s] ( 44/278) hepta-native platform::notification_helper::tests::inherited_notification_stdout_cannot_extend_readiness_deadline
+        PASS [   0.009s] ( 45/278) hepta-native platform::resource_handoff_tests::rust_open_uri_transfers_original_verified_descriptor_after_name_replacement
+        PASS [   0.019s] ( 46/278) hepta-native platform::linux::tests::native_notification_dispatch_preserves_literal_text_and_identity
+        PASS [   0.005s] ( 47/278) hepta-native platform::tests::clipboard_mismatch_or_read_failure_stays_indeterminate
+        PASS [   0.005s] ( 48/278) hepta-native platform::tests::launcher_capacity_is_bounded_and_released
+        PASS [   0.005s] ( 49/278) hepta-native platform::tests::clipboard_exact_readback_is_the_only_terminal_success
+        PASS [   0.005s] ( 50/278) hepta-native platform::tests::path_outside_allowlist_is_denied
+        PASS [   0.005s] ( 51/278) hepta-native platform::tests::verified_resource_identity_changes_when_the_name_is_replaced
+        PASS [   0.005s] ( 52/278) hepta-native platform::tests::local_policy_denies_unapproved_effect_classes
+        PASS [   0.018s] ( 53/278) hepta-native platform::terminality_tests::launcher_failure_after_side_effect_stays_indeterminate
+        PASS [   0.018s] ( 54/278) hepta-native platform::terminality_tests::launcher_success_without_queryable_receipt_stays_indeterminate
+        PASS [   0.005s] ( 55/278) hepta-native private_state::child_tests::child_capability_rejects_parent_or_child_replacement
+        PASS [   0.005s] ( 56/278) hepta-native private_state::child_tests::child_create_tightens_owned_legacy_permissions_without_following_links
+        PASS [   0.007s] ( 57/278) hepta-native platform::tests::verified_resource_rejects_final_symlinks
+        PASS [   0.006s] ( 58/278) hepta-native private_state::child_tests::private_children_require_one_normal_component_and_existing_state
+        PASS [   0.005s] ( 59/278) hepta-native resource::tests::unchanged_opened_resource_has_a_stable_confirmation
+        PASS [   0.006s] ( 60/278) hepta-native resource::tests::parent_redirect_during_snapshot_is_rejected_even_for_same_object
+        PASS [   0.007s] ( 61/278) hepta-native resource::tests::substitution_between_open_and_identity_check_is_rejected
+        PASS [   0.006s] ( 62/278) hepta-native retirement::claim_tests::exact_archived_duplicate_still_returns_the_same_receipt_after_restart
+        PASS [   0.007s] ( 63/278) hepta-native retirement::claim_tests::legacy_tombstone_cannot_acquire_an_uncommitted_receipt_in_a_mixed_batch
+        PASS [   0.006s] ( 64/278) hepta-native retirement::membership::tests::a_warm_lookup_cache_cannot_hide_a_corrupt_or_missing_batch_bucket
+        PASS [   0.006s] ( 65/278) hepta-native retirement::membership::tests::batch_archive_corruption_never_drops_the_closed_journal_observation
+        PASS [   0.006s] ( 66/278) hepta-native retirement::membership::tests::mixed_membership_preserves_query_order_and_receipt_evidence_after_restart
+        PASS [   0.007s] ( 67/278) hepta-native retirement::membership::tests::malformed_and_oversized_queries_are_rejected_before_membership_resolution
+        PASS [   0.006s] ( 68/278) hepta-native retirement::rebuild::tests::duplicate_identity_across_valid_segments_prevents_promotion_and_cleans_spools
+        PASS [   0.044s] ( 69/278) hepta-native platform::notification_helper::tests::notification_writer_cannot_block_when_descendant_holds_unread_stdin
+        PASS [   0.007s] ( 70/278) hepta-native retirement::rebuild::tests::missing_corrupt_or_falsely_bound_archives_cannot_promote_a_legacy_head
+        PASS [   0.007s] ( 71/278) hepta-native retirement::tests::an_ahead_head_is_accepted_but_a_regressed_or_missing_head_is_not
+        PASS [   0.006s] ( 72/278) hepta-native retirement::tests::corrupt_or_missing_segments_are_never_treated_as_empty_history
+        PASS [   0.007s] ( 73/278) hepta-native retirement::tests::orphan_segment_does_not_hide_new_active_work_or_fabricate_a_head
+        PASS [   0.140s] ( 74/278) hepta-native native_portal::tests::response_before_method_reply_is_observed_and_wrong_owner_is_ignored
+        PASS [   0.078s] ( 75/278) hepta-native retirement::rebuild::tests::repeated_orphan_collision_preserves_foreign_file_and_does_not_grow_scratch
+        PASS [   0.006s] ( 76/278) hepta-native startup::tests::startup_record_rejects_private_parent_replacement_after_construction
+        PASS [   0.005s] ( 77/278) hepta-native startup::tests::startup_recorder_does_not_create_an_unprovisioned_parent
+        PASS [   0.006s] ( 78/278) hepta-native startup::tests::startup_recorder_pins_an_existing_parent_and_retains_exact_view_identity
+        PASS [   0.095s] ( 79/278) hepta-native retirement::rebuild::tests::changed_spool_bytes_are_rejected_before_promotion_and_exact_owned_files_cleaned
+        PASS [   0.007s] ( 80/278) hepta-native ui::binding_prepare::tests::cancelled_binding_lock_waiter_never_calls_the_confirmation_owner
+        PASS [   0.008s] ( 81/278) hepta-native ui::binding_prepare::tests::changed_runtime_view_is_rejected_before_os_confirmation
+        PASS [   0.119s] ( 82/278) hepta-native retirement::rebuild::tests::replaced_root_fails_before_publication_and_cleanup_stays_in_original_directory
+        PASS [   0.010s] ( 83/278) hepta-native ui::binding_prepare::tests::completed_binding_never_attaches_to_a_different_screen_or_view_identity
+        PASS [   0.008s] ( 84/278) hepta-native ui::binding_prepare::tests::prepare_returns_while_os_confirmation_is_blocked_and_discards_edited_input
+        PASS [   0.053s] ( 85/278) hepta-native ui::binding_prepare::tests::admitted_binding_is_drained_before_shutdown_closes_the_runtime
+        PASS [   0.006s] ( 86/278) hepta-native ui::history_page::tests::history_last_page_covers_empty_boundaries_and_large_totals
+        PASS [   0.232s] ( 87/278) hepta-native native_portal::tests::portal_cancel_is_distinct_from_rejection_and_malformed_results
+        PASS [   0.006s] ( 88/278) hepta-native ui::input_event_tests::diagnostic_render_failure_invalidates_presentation_binding_and_readiness
+        PASS [   0.195s] ( 89/278) hepta-native retirement::rebuild::tests::error_after_a_bucket_write_keeps_legacy_head_and_retry_has_exact_membership
+        PASS [   0.005s] ( 90/278) hepta-native ui::native_picker::linux::tests::ambiguous_remote_malformed_and_oversized_uri_results_fail_closed
+        PASS [   0.007s] ( 91/278) hepta-native ui::native_picker::linux::tests::local_uri_decoding_preserves_the_exact_filename
+        PASS [   0.102s] ( 92/278) hepta-native ui::binding_prepare::tests::completed_binding_is_invalidated_by_later_widget_input_changes
+        PASS [   0.005s] ( 93/278) hepta-native ui::native_picker::tests::cancellation_is_explicit_and_protocol_failures_are_errors
+        PASS [   0.006s] ( 94/278) hepta-native ui::native_picker::tests::helper_environment_does_not_inherit_unrelated_values
+        PASS [   0.226s] ( 95/278) hepta-native retirement::rebuild::tests::mixed_history_builds_only_final_buckets_and_restarts_with_every_identity
+        PASS [   0.006s] ( 96/278) hepta-native ui::native_picker::tests::picker_drains_bytes_written_between_empty_read_and_exit_observation
+        PASS [   0.004s] ( 97/278) hepta-native ui::native_picker::tests::portal_is_explicit_and_retired_backend_never_silently_falls_back
+        PASS [   0.006s] ( 98/278) hepta-native ui::native_picker::tests::selected_name_is_never_trimmed_or_lossily_replaced
+        PASS [   0.005s] ( 99/278) hepta-native ui::native_picker::tests::typed_selection_preserves_spaces_unicode_and_backslashes
+        PASS [   0.007s] (100/278) hepta-native ui::operations_view::projection_tests::operation_projection_has_one_unambiguous_state
+        PASS [   0.004s] (101/278) hepta-native ui::path_input::tests::path_input_rejects_relative_names_nul_and_unbounded_text
+        PASS [   0.052s] (102/278) hepta-native ui::native_picker::tests::descendant_held_stdout_does_not_extend_picker_deadline
+        PASS [   0.005s] (103/278) hepta-native ui::path_input::tests::selected_paths_preserve_whitespace_in_the_filename
+        PASS [   0.006s] (104/278) hepta-native ui::readiness::tests::readiness_binds_every_view_axis
+        PASS [   0.012s] (105/278) hepta-native ui::readiness::tests::readiness_requires_later_callback_and_resets
+        PASS [   0.134s] (106/278) hepta-native ui::binding_prepare::tests::snapshots::pending_and_stale_binding_rendered_output
+        PASS [   0.127s] (107/278) hepta-native ui::input_event_tests::actual_notification_fields_bound_paste_and_keep_byte_validation
+        PASS [   0.101s] (108/278) hepta-native ui::input_event_tests::switching_action_does_not_redirect_the_previous_fields_keyboard_focus
+        PASS [   0.058s] (109/278) hepta-native ui::native_picker::tests::owned_process_distinguishes_cancel_success_failure_and_timeout
+        PASS [   0.008s] (110/278) hepta-native ui::shell_view::tests::diagnostics_preview_is_bounded_without_splitting_unicode_or_changing_source
+        PASS [   0.012s] (111/278) hepta-native ui::runtime_status::tests::presentation_writer_rejects_the_first_byte_over_the_limit
+        PASS [   0.007s] (112/278) hepta-native ui::shutdown::tests::activation_requires_successful_close_and_no_shutdown_failure
+        PASS [   0.006s] (113/278) hepta-native ui::shutdown::tests::repeat_close_cannot_extend_the_deadline_or_authorize_an_update
+        PASS [   0.007s] (114/278) hepta-native ui::startup_recovery::tests::recovery_details_bound_untrusted_unicode
+        PASS [   0.077s] (115/278) hepta-native ui::startup_recovery::tests::long_failure_keeps_recovery_controls_visible
+        PASS [   0.097s] (116/278) hepta-native ui::shell_view::tests::editable_fields_expose_accessible_label_relationships
+        PASS [   0.006s] (117/278) hepta-native ui::task_supervisor::tests::a_task_cannot_enter_its_runtime_owner_twice
+        PASS [   0.005s] (118/278) hepta-native ui::task_supervisor::tests::admitted_task_is_not_interrupted_or_detached_by_cancellation
+        PASS [   0.007s] (119/278) hepta-native ui::task_supervisor::tests::acquiring_the_runtime_lock_does_not_consume_admission
+        PASS [   0.005s] (120/278) hepta-native ui::task_supervisor::tests::callback_results_are_bound_to_the_exact_context_ticket
+        PASS [   0.009s] (121/278) hepta-native ui::task_supervisor::tests::cancellation_and_admission_have_one_winner_under_race
+        PASS [   0.007s] (122/278) hepta-native ui::task_supervisor::tests::cancelled_or_replaced_file_input_rejects_stale_results
+        PASS [   0.008s] (123/278) hepta-native ui::task_supervisor::tests::cancelled_waiting_task_never_enters_the_runtime
+        PASS [   0.011s] (124/278) hepta-native ui::task_supervisor::tests::cancelled_runtime_lock_waiter_exits_without_owner_entry
+        PASS [   0.005s] (125/278) hepta-native ui::task_supervisor::tests::dropped_path_bound_is_checked_before_consuming_the_target
+        PASS [   0.006s] (126/278) hepta-native ui::task_supervisor::tests::drop_rejects_lossy_path_conversion_without_consuming_the_exact_intent
+        PASS [   0.006s] (127/278) hepta-native ui::task_supervisor::tests::file_input_success_is_single_use_and_requires_an_absolute_path
+        PASS [   0.008s] (128/278) hepta-native ui::task_supervisor::tests::panic_is_joined_and_wakes_the_ui_without_manufacturing_success
+        PASS [   0.142s] (129/278) hepta-native ui::shell_view::tests::minimum_operations_can_scroll_to_authorization_and_receipts
+        PASS [   0.005s] (130/278) hepta-native ui::task_supervisor::tests::wrong_target_and_invalid_drop_do_not_consume_the_active_intent
+        PASS [   0.005s] (131/278) hepta-native ui::tests::runtime_status_rendering_is_stable_pretty_json
+        PASS [   0.006s] (132/278) hepta-native ui::tests::locale_selection_covers_chinese_and_safe_english_fallback
+        PASS [   0.005s] (133/278) hepta-native update_lock::tests::drop_releases_fork_equivalent_description_without_unlocking_successor
+        PASS [   0.007s] (134/278) hepta-native ui::tests::worker_slot_returns_before_the_bounded_task_completes
+        PASS [   0.006s] (135/278) hepta-native update_lock::tests::owner_and_runner_guards_hold_ownership_across_failed_acquisition
+        PASS [   0.005s] (136/278) hepta-native update_storage::root_tests::legacy_staged_permissions_are_tightened_without_following_a_link_or_changing_an_alias
+        PASS [   0.005s] (137/278) hepta-native update_storage::root_tests::owner_and_runner_locks_cannot_open_or_chmod_a_replacement_directory
+        PASS [   0.017s] (138/278) hepta-native update_storage::root_tests::handoff_contention_cannot_switch_to_a_fresh_owner_lock
+        PASS [   0.005s] (139/278) hepta-native update_storage::root_tests::private_json_read_and_delete_do_not_consume_or_remove_a_replacement_record
+        PASS [   0.039s] (140/278) hepta-native ui::task_supervisor::tests::runtime_lock_wait_has_a_bounded_pre_admission_deadline
+        PASS [   0.006s] (141/278) hepta-native update_storage::root_tests::root_json_publication_rejects_directory_replacement_and_preserves_both_records
+        PASS [   0.005s] (142/278) hepta-native update_storage::root_tests::staged_destination_parent_replacement_never_publishes_to_either_directory
+        PASS [   0.007s] (143/278) hepta-native update_storage::root_tests::staged_source_root_replacement_before_commit_preserves_installed_binary
+        PASS [   0.007s] (144/278) hepta-native update_storage::tests::failed_copy_does_not_publish_a_new_backup
+        PASS [   0.008s] (145/278) hepta-native update_storage::tests::owner_locks_reject_links_and_special_files_without_mutating_targets
+        PASS [   0.528s] (146/278) hepta-native native_portal::tests::stalled_request_times_out_and_closes_the_owned_request
+        PASS [   0.007s] (147/278) hepta-native update_storage::tests::source_replacement_after_digest_check_cannot_replace_destination
+        PASS [   0.171s] (148/278) hepta-native ui::startup_recovery::tests::startup_recovery_distinguishes_input_retry_from_exit_only
+        PASS [   0.386s] (149/278) hepta-native storage_qualification_tests::process_samples::storage_process_observations_smoke_real_persisted_fixtures
+        PASS [   0.006s] (150/278) hepta-native updater::backup_policy::tests::matching_nonregular_and_oversized_backups_deny_admission
+        PASS [   0.007s] (151/278) hepta-native update_storage::tests::verified_copy_preserves_installed_executable_mode
+        PASS [   0.005s] (152/278) hepta-native updater::backup_policy::tests::retention_ceiling_rejects_new_backup_but_reuses_an_admitted_identity
+        PASS [   0.005s] (153/278) hepta-native updater::backup_policy::tests::unrelated_operator_files_do_not_consume_retention_admission
+        PASS [   0.029s] (154/278) hepta-native update_storage::tests::handoff_lock_waits_for_readiness_publication_to_release_ownership
+        PASS [   0.008s] (155/278) hepta-native updater::tests::failed_candidate_copy_cannot_rollback_over_an_unrelated_newer_binary
+        PASS [   0.223s] (156/278) hepta-native ui::shell_view::tests::native_shell_normal_and_minimum_viewports
+        PASS [   0.005s] (157/278) hepta-native::backend authenticated_gateway_health_is_required
+        PASS [   0.004s] (158/278) hepta-native::backend each_authenticated_connection_gets_a_fresh_session_identity
+        PASS [   0.041s] (159/278) hepta-native updater::root_tests::a_helper_manager_cannot_activate_a_new_namespace_while_owning_the_original_runner
+        PASS [   0.004s] (160/278) hepta-native::backend gateway_protocol_identity_is_required
+        PASS [   0.043s] (161/278) hepta-native updater::root_tests::staging_migrates_owned_legacy_modes_and_activation_requires_the_owned_package
+        PASS [   0.005s] (162/278) hepta-native::backend stale_close_cannot_invalidate_a_reconnected_gateway
+        PASS [   0.043s] (163/278) hepta-native updater::root_tests::unknown_and_crash_remnant_staging_entries_are_preserved_and_block_admission
+        PASS [   0.006s] (164/278) hepta-native::backend gateway_protocol_must_match_the_signed_manifest
+        PASS [   0.006s] (165/278) hepta-native::backend unauthenticated_legacy_gateway_is_rejected_by_product_shell
+        PASS [   0.004s] (166/278) hepta-native::file_input bounded_json_rejects_oversize_unknown_type_and_truncation
+        PASS [   0.005s] (167/278) hepta-native::backend_security rogue_loopback_listener_gets_no_secret_and_cannot_authenticate_health
+        PASS [   0.005s] (168/278) hepta-native::file_input symlinks_and_fifos_do_not_cross_the_input_boundary
+        PASS [   0.004s] (169/278) hepta-native::journal group_or_world_readable_operation_journal_fails_closed
+        PASS [   0.005s] (170/278) hepta-native::journal second_operation_journal_owner_is_rejected
+        PASS [   0.006s] (171/278) hepta-native::journal_regressions cleanup_moves_terminal_identity_to_durable_retirement_frontier
+        PASS [   0.016s] (172/278) hepta-native::journal killed_operation_journal_owner_releases_lock
+        PASS [   0.010s] (173/278) hepta-native::journal_regressions closing_observation_is_unknown_immutable_and_retired_without_replay
+        PASS [   0.005s] (174/278) hepta-native::journal_regressions different_session_generations_do_not_share_operation_records
+        PASS [   0.006s] (175/278) hepta-native::journal_regressions duplicate_or_overlapping_retirement_frontier_is_rejected_on_reopen
+        PASS [   0.005s] (176/278) hepta-native::journal_regressions exact_duplicate_does_not_append_a_new_wal_entry
+        PASS [   0.005s] (177/278) hepta-native::journal_regressions failed_persistence_fences_owner_until_reopen
+        PASS [   0.079s] (178/278) hepta-native updater::root_tests::a_failed_pending_publication_bounds_orphans_and_allows_only_the_exact_retry
+        PASS [   0.006s] (179/278) hepta-native::journal_regressions invoking_cannot_regress_to_prepared
+        PASS [   0.004s] (180/278) hepta-native::journal_regressions journal_rejects_a_replaced_root_before_writing_under_another_owner
+        PASS [   0.005s] (181/278) hepta-native::journal_regressions journal_rejects_a_dangling_lock_without_creating_its_target
+        PASS [   0.004s] (182/278) hepta-native::journal_regressions live_invocation_and_prepared_intent_cannot_be_archived
+        PASS [   0.004s] (183/278) hepta-native::journal_regressions operation_identity_cannot_move_between_endpoints
+        PASS [   0.003s] (184/278) hepta-native::journal_regressions receipt_exposes_only_legal_observation_closure
+        PASS [   0.006s] (185/278) hepta-native::journal_regressions reopened_snapshot_rejects_duplicate_operation_keys
+        PASS [   0.046s] (186/278) hepta-native::journal_regressions legacy_v2_journal_recovers_wal_and_migrates_at_the_next_checkpoint
+        PASS [   0.077s] (187/278) hepta-native::journal_regressions closed_unknown_batches_survive_restart_without_accumulating_pending_records
+        PASS [   0.010s] (188/278) hepta-native::journal_regressions retirement_keeps_requested_latest_terminal_records
+        PASS [   0.007s] (189/278) hepta-native::journal_regressions terminal_observation_cannot_be_rewritten_even_with_same_operation_binding
+        PASS [   0.038s] (190/278) hepta-native::journal_regressions reopened_snapshot_rejects_unknown_critical_fields
+        PASS [   0.005s] (191/278) hepta-native::launch_config config_and_inline_policy_cannot_be_ambiguously_combined
+        PASS [   0.086s] (192/278) hepta-native::journal_regressions corruption_while_owned_is_not_overwritten_by_a_new_checkpoint
+        PASS [   0.005s] (193/278) hepta-native::private_state private_state_root_and_clones_reject_an_equally_private_replacement
+        PASS [   0.006s] (194/278) hepta-native::launch_config file_configuration_freezes_explicit_options_and_rejects_unknown_fields
+        PASS [   0.006s] (195/278) hepta-native::private_state private_state_root_rejects_a_symlink
+        PASS [   0.007s] (196/278) hepta-native::private_state private_state_root_is_mode_0700_and_rejects_permission_drift
+        PASS [   0.005s] (197/278) hepta-native::private_state private_state_root_requires_an_absolute_path
+        PASS [   0.006s] (198/278) hepta-native::private_state private_state_root_rejects_missing_existing_state
+        PASS [   0.078s] (199/278) hepta-native::journal_regressions missing_primary_never_replays_the_older_prepared_checkpoint
+        PASS [   0.005s] (200/278) hepta-native::remediation_regressions failed_reconnect_close_does_not_retain_previous_view
+        PASS [   0.008s] (201/278) hepta-native::remediation_regressions failed_close_retains_only_cleanup_identity_and_invalidates_view
+        PASS [   0.008s] (202/278) hepta-native::remediation_regressions exact_terminal_duplicate_returns_receipt_after_view_advance
+        PASS [   0.006s] (203/278) hepta-native::remediation_regressions failed_refresh_invalidates_authority_without_reusing_display_revision
+        PASS [   0.005s] (204/278) hepta-native::remediation_regressions invalid_digest_clears_view_but_retains_owner_generation_fence
+        PASS [   0.007s] (205/278) hepta-native::remediation_regressions genesis_zero_remains_compatible_without_revision_aliasing
+        PASS [   0.005s] (206/278) hepta-native::remediation_regressions old_view_cannot_authorize_new_generation_before_permission
+        PASS [   0.387s] (207/278) hepta-native ui::runtime_status::tests::bounded_wire_json_cannot_expand_into_unbounded_gui_diagnostics
+        PASS [   0.007s] (208/278) hepta-native::remediation_regressions malformed_permission_observation_is_terminal_without_dispatch
+        PASS [   0.044s] (209/278) hepta-native::journal_regressions v4_cannot_smuggle_v5_observation_closure
+        PASS [   0.006s] (210/278) hepta-native::remediation_regressions permission_error_has_durable_immutable_no_dispatch_outcome
+        PASS [   0.004s] (211/278) hepta-native::remediation_regressions raw_generation_regression_is_not_hidden_by_genesis_projection
+        PASS [   0.004s] (212/278) hepta-native::remediation_regressions rejected_backend_session_is_closed_before_connect_returns
+        PASS [   0.007s] (213/278) hepta-native::remediation_regressions read_terminal_receipt_does_not_require_an_actionable_view
+        PASS [   0.006s] (214/278) hepta-native::remediation_regressions revision_never_aliases_across_upstream_generations
+        PASS [   0.006s] (215/278) hepta-native::retirement_recovery a_closed_checkpoint_cannot_replace_a_committed_archive_with_changed_evidence
+        PASS [   0.008s] (216/278) hepta-native::resource_identity linux_path_policy_never_authorizes_mutable_path_string_entry
+        PASS [   0.010s] (217/278) hepta-native::retirement_recovery archive_retains_unknown_receipt_across_restart_without_replay
+        PASS [   0.008s] (218/278) hepta-native::retirement_recovery crash_after_retirement_head_before_journal_replacement_preserves_no_replay
+        PASS [   0.006s] (219/278) hepta-native::retirement_recovery missing_or_modified_archive_never_becomes_a_new_operation
+        PASS [   0.006s] (220/278) hepta-native::retirement_recovery old_live_backup_cannot_override_newer_retirement_evidence
+        PASS [   0.007s] (221/278) hepta-native::runtime authenticated_backend_status_owns_view_identity
+        PASS [   0.008s] (222/278) hepta-native::retirement_recovery retirement_failure_keeps_active_evidence_and_fences_the_owner
+        PASS [   0.012s] (223/278) hepta-native::retirement_recovery referenced_retirement_directory_cannot_be_deleted_to_reset_capacity
+        PASS [   0.073s] (224/278) hepta-native::journal_regressions valid_json_content_corruption_is_detected_without_falling_back
+        PASS [   0.007s] (225/278) hepta-native::runtime crash_after_dispatch_before_ack_reconciles_invoking_without_reinvoke
+        PASS [   0.024s] (226/278) hepta-native::runtime close_does_not_erase_unobserved_effects
+        PASS [   0.027s] (227/278) hepta-native::runtime closed_unknown_operation_never_dispatches_again_even_after_retirement
+        PASS [   0.011s] (228/278) hepta-native::runtime missing_kernel_authority_fails_closed_before_adapter_entry
+        PASS [   0.052s] (229/278) hepta-native::retirement_recovery repeated_restart_compaction_keeps_old_receipts_and_reclaims_capacity
+        PASS [   0.009s] (230/278) hepta-native::runtime permission_denial_is_terminal_and_never_claims_or_invokes
+        PASS [   0.038s] (231/278) hepta-native::runtime effect_return_then_receipt_write_failure_fences_and_recovers_without_replay
+        PASS [   0.036s] (232/278) hepta-native::runtime indeterminate_retry_reconciles_instead_of_replaying_or_reclaiming
+        PASS [   0.031s] (233/278) hepta-native::runtime operation_identity_is_fenced_by_session_incarnation
+        PASS [   0.019s] (234/278) hepta-native::runtime repeated_indeterminate_reconciliation_never_reinvokes
+        PASS [   0.018s] (235/278) hepta-native::runtime restart_reconciles_old_indeterminate_without_reinvoke
+        PASS [   0.019s] (236/278) hepta-native::runtime retired_receipt_is_returned_without_permission_or_dispatch
+        PASS [   0.019s] (237/278) hepta-native::runtime reused_operation_rejects_principal_or_grant_identity_drift
+        PASS [   0.008s] (238/278) hepta-native::runtime stale_backend_view_is_rejected_before_authority_or_platform_entry
+        PASS [   0.019s] (239/278) hepta-native::runtime reused_operation_with_changed_resource_payload_fails_closed
+        PASS [   0.006s] (240/278) hepta-native::security_updater confirmation_binding_commits_every_runtime_context_axis
+        PASS [   0.031s] (241/278) hepta-native::security_updater activation_rejects_wrong_installed_predecessor
+        PASS [   0.041s] (242/278) hepta-native::security_updater backup_ceiling_denies_activation_before_copy_or_state_transition
+        PASS [   0.040s] (243/278) hepta-native::security_updater cancelled_stage_removes_only_its_exact_owned_package
+        PASS [   0.036s] (244/278) hepta-native::security_updater kernel_final_use_binding_rejects_session_drift
+        PASS [   0.066s] (245/278) hepta-native::security_updater failed_rollback_is_durable_recovery_required
+        PASS [   0.081s] (246/278) hepta-native::security_updater clearing_pending_preserves_replaced_or_foreign_staging_files
+        PASS [   0.045s] (247/278) hepta-native::security_updater kernel_final_use_reloads_revocation_before_os_entry
+        PASS [   0.020s] (248/278) hepta-native::security_updater signed_endpoint_manifest_binds_gateway_address_and_keyring_account
+        PASS [   0.081s] (249/278) hepta-native::security_updater interrupted_activation_is_reconciled_to_predecessor_before_restart
+        PASS [   0.006s] (250/278) hepta-native::security_updater unsigned_update_is_rejected_before_staging
+        PASS [   0.005s] (251/278) hepta-native::security_updater update_rejects_self_selection_before_activation
+        PASS [   0.005s] (252/278) hepta-native::security_updater update_rejects_unadmitted_channel
+        PASS [   0.005s] (253/278) hepta-native::session_store gateway_capability_is_generated_stored_and_not_returned_in_receipt
+        PASS [   0.005s] (254/278) hepta-native::session_store opaque_session_reference_round_trips_through_keyring_store
+        PASS [   0.054s] (255/278) hepta-native::security_updater stale_recovery_refuses_to_overwrite_an_unrelated_newer_binary
+        PASS [   0.006s] (256/278) hepta-native::shutdown_recovery failed_close_keeps_identity_without_usable_view_and_retries_same_owner
+        PASS [   0.016s] (257/278) hepta-native::shutdown_recovery reconnect_cannot_acquire_replacement_before_old_owner_is_closed
+        PASS [   0.015s] (258/278) hepta-native::shutdown_recovery rejected_session_cleanup_is_retained_but_never_exposed_as_active
+        PASS [   0.075s] (259/278) hepta-native::security_updater signed_update_stages_activates_but_arbitrary_path_cannot_confirm
+        PASS [   0.006s] (260/278) hepta-native::trusted_key_regressions duplicate_json_key_identity_is_not_last_writer_wins
+        PASS [   0.006s] (261/278) hepta-native::trusted_key_regressions revoked_key_cannot_be_reintroduced_under_an_alias
+        PASS [   0.062s] (262/278) hepta-native::security_updater unconfirmed_activation_rolls_back_to_predecessor
+        PASS [   0.007s] (263/278) hepta-native::trusted_key_regressions revoked_key_is_refused_even_with_a_valid_signature
+        PASS [   0.005s] (264/278) hepta-native::trusted_key_regressions weak_identity_key_is_rejected_at_import
+        PASS [   0.093s] (265/278) hepta-native::security_updater replacing_a_terminal_lifecycle_cleans_stage_and_retains_predecessor_evidence
+        PASS [   0.008s] (266/278) hepta-native::bin/hepta-native main_bootstrap::tests::closing_recovery_never_reloads_or_admits_initialization
+        PASS [   0.013s] (267/278) hepta-native::update_handoff restart_binding_rejects_smoke_profiles_and_detects_argument_changes
+        PASS [   0.005s] (268/278) hepta-native::bin/hepta-native main_bootstrap::tests::explicit_retry_rereads_inputs_and_success_consumes_retry_loop
+        PASS [   0.005s] (269/278) hepta-native::bin/hepta-native main_bootstrap::tests::machine_and_update_handoff_failures_remain_noninteractive
+        PASS [   0.004s] (270/278) hepta-native::bin/hepta-native main_bootstrap::tests::malformed_machine_invocations_never_open_recovery_ui
+        PASS [   0.005s] (271/278) hepta-native::bin/hepta-native main_bootstrap::tests::real_input_retry_never_creates_state_or_repairs_untrusted_inputs
+        PASS [   0.035s] (272/278) hepta-native::trusted_key_regressions strict_verification_accepts_valid_signatures_and_rejects_tampering
+        PASS [   0.067s] (273/278) hepta-native::update_product pending_read_is_bounded_and_unreadable_backup_is_not_success
+        PASS [   0.135s] (274/278) hepta-native::update_product updater_does_not_accept_exit_zero_as_product_startup
+        PASS [   0.704s] (275/278) hepta-native updater::root_tests::cancellation_and_ack_cannot_commit_after_the_pending_root_is_replaced
+        PASS [   1.093s] (276/278) hepta-native::retirement_recovery full_legacy_frontier_migrates_without_deleting_any_identity
+        PASS [   1.888s] (277/278) hepta-native retirement::tests::segmented_frontier_survives_restart_beyond_legacy_lifetime_limit
+        PASS [   4.171s] (278/278) hepta-native updater::tests::helper_acknowledgement_is_durable_before_success
+────────────
+     Summary [   4.759s] 278 tests run: 278 passed, 4 skipped
+elapsed=25.477 sec
+exit=0

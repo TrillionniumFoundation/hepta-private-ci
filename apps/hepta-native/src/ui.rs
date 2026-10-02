@@ -5,9 +5,16 @@ mod operations_view;
 mod path_input;
 mod readiness;
 mod runtime_status;
+mod shell_view;
 mod shutdown;
+mod startup_recovery;
 mod task_supervisor;
+mod theme;
 mod update_views;
+
+pub use self::startup_recovery::{
+    StartupDecision, StartupFailure, StartupRetry, StartupStage, show_startup_recovery,
+};
 
 use self::binding_prepare::PreparedBinding;
 use self::history_page::HISTORY_PAGE_SIZE;
@@ -42,6 +49,13 @@ use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
 use std::time::Instant;
+
+/// Run only the bounded, unprivileged native picker helper protocol.
+/// The dialog result remains untrusted input and never grants effect authority.
+#[cfg(any(target_os = "macos", target_os = "windows"))]
+pub fn run_picker_helper() -> Result<(), ShellError> {
+    native_picker::run_helper()
+}
 
 const RUNTIME_LOCK_WAIT: Duration = Duration::from_secs(30);
 
@@ -657,120 +671,11 @@ impl HeptaNativeApp {
             })
         });
     }
-
-    fn top_bar(&mut self, ui: &mut egui::Ui) {
-        let busy = self.runtime_busy();
-        ui.horizontal(|ui| {
-            ui.heading("Hepta Native");
-            ui.separator();
-            if self
-                .pending_runtime
-                .as_ref()
-                .is_some_and(|task| task.kind == UiTaskKind::Refresh)
-            {
-                ui.label(
-                    self.locale
-                        .text("Verifying runtime view", "正在验证运行时视图"),
-                );
-            } else if self.connected && self.view_revision.is_some() {
-                ui.label(
-                    self.locale
-                        .text("Authenticated view available", "已验证视图可用"),
-                );
-            } else {
-                ui.label(
-                    self.locale
-                        .text("No current authenticated view", "当前没有有效的已验证视图"),
-                );
-            }
-            if ui
-                .add_enabled(
-                    !busy,
-                    egui::Button::new(self.locale.text("Refresh", "刷新")),
-                )
-                .clicked()
-            {
-                self.refresh();
-            }
-            if ui
-                .add_enabled(
-                    !busy,
-                    egui::Button::new(self.locale.text("Reconcile", "对账")),
-                )
-                .clicked()
-            {
-                self.reconcile();
-            }
-            for task in [
-                self.pending_runtime.as_ref(),
-                self.pending_read.as_ref(),
-                self.pending_picker.as_ref(),
-            ]
-            .into_iter()
-            .flatten()
-            {
-                ui.spinner();
-                ui.label(task.kind.label(self.locale));
-            }
-        });
-        if let Some(error) = &self.last_error {
-            ui.separator();
-            ui.label(egui::RichText::new(error).strong());
-        }
-    }
-
-    fn navigation(&mut self, ui: &mut egui::Ui) {
-        ui.heading(self.locale.text("Navigation", "导航"));
-        for (screen, en, zh) in [
-            (Screen::Runtime, "Runtime", "运行时"),
-            (Screen::Operations, "Operations", "操作"),
-            (Screen::Updates, "Updates", "更新"),
-            (Screen::Accessibility, "Accessibility", "无障碍"),
-        ] {
-            if ui
-                .selectable_label(self.screen == screen, self.locale.text(en, zh))
-                .clicked()
-                && self.screen != screen
-            {
-                task_supervisor::cancel_file_input(ui.ctx());
-                self.file_input_focus = None;
-                self.screen = screen;
-            }
-        }
-        ui.separator();
-        ui.label(format!(
-            "{}: {}",
-            self.locale.text("Endpoint", "端点"),
-            self.manifest.address
-        ));
-        ui.label(format!(
-            "{}: {}/{}",
-            self.locale.text("Platform", "平台"),
-            std::env::consts::OS,
-            std::env::consts::ARCH
-        ));
-    }
-
-    fn runtime_view(&mut self, ui: &mut egui::Ui) {
-        ui.heading(self.locale.text("Runtime status", "运行时状态"));
-        match self.status_rendered.as_mut() {
-            Some(pretty) => {
-                ui.add(
-                    egui::TextEdit::multiline(pretty)
-                        .font(egui::TextStyle::Monospace)
-                        .desired_rows(24)
-                        .interactive(false),
-                );
-            }
-            None => {
-                ui.label(self.locale.text("No runtime snapshot.", "暂无运行时快照。"));
-            }
-        }
-    }
 }
 
 impl eframe::App for HeptaNativeApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
+        theme::ensure_initialized(ui.ctx());
         if let Ok(mut repaint) = self.repaint.lock()
             && repaint.is_none()
         {
@@ -790,17 +695,7 @@ impl eframe::App for HeptaNativeApp {
         if self.any_task_active() || self.shutdown.requested() {
             ui.ctx().request_repaint_after(Duration::from_millis(250));
         }
-        egui::Panel::top("hepta-native-top").show(ui, |ui| self.top_bar(ui));
-        egui::Panel::left("hepta-native-navigation")
-            .resizable(false)
-            .default_size(210.0)
-            .show(ui, |ui| self.navigation(ui));
-        egui::CentralPanel::default().show(ui, |ui| match self.screen {
-            Screen::Runtime => self.runtime_view(ui),
-            Screen::Operations => self.operations_view(ui),
-            Screen::Updates => self.updates_view(ui),
-            Screen::Accessibility => self.accessibility_view(ui),
-        });
+        self.shell_view(ui);
         self.confirm_rendered_update(ui);
     }
 

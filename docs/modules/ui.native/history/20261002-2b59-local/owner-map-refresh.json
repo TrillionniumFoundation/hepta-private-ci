@@ -1,0 +1,103 @@
+{
+  "schema": "hepta.ui-native-owner-navigation-refresh.v1",
+  "observationSource": {
+    "commit": "2b59c1c5f877432a557185efd77331ae1143ae42",
+    "tree": "9326a46a71a3f7aae14481d979cd3faee1935e7c"
+  },
+  "scope": "Only the two source observations made stale by native gateway/main changes; no owner implementation, operation, caller, raw historical evidence or qualification flag changed",
+  "maps": [
+    {
+      "module": "platform.wire",
+      "map": "docs/modules/platform.wire/IMPLEMENTATION_MAP.json",
+      "originalMapAt": {
+        "commit": "2b59c1c5f877432a557185efd77331ae1143ae42",
+        "tree": "9326a46a71a3f7aae14481d979cd3faee1935e7c"
+      },
+      "originalMapSha256": "f838ccba94ca34fd57f87a736a0bcf607675ecf23c22c14699ab61ce1fd3ebaf",
+      "changedTopLevelFields": [
+        "sourceBase",
+        "sourceObjects"
+      ],
+      "previousNavigation": {
+        "sourceBase": {
+          "commit": "082f89f44ed0577320cca304061b96425ecb657e",
+          "tree": "032d03150bb62f5ad6883cb0c1d1f8cfc4955565"
+        }
+      },
+      "currentNavigation": {
+        "sourceBase": {
+          "commit": "2b59c1c5f877432a557185efd77331ae1143ae42",
+          "tree": "9326a46a71a3f7aae14481d979cd3faee1935e7c"
+        }
+      },
+      "changedSourceObjects": {
+        "codex-rs/hepta-native-gateway/src/lib.rs": {
+          "before": "6f3b544a984351c9cffb23d44a6f2249a04ef5da",
+          "after": "7afd05a31bb94ef6c83f743ef748e01e2807e668"
+        }
+      },
+      "allOtherTopLevelFieldsDeepEqual": true,
+      "operationsUnchanged": true,
+      "productCallersUnchanged": true,
+      "historicalEvidenceUnchanged": true,
+      "qualificationFlagsUnchanged": true,
+      "executionQualificationTransferred": false
+    },
+    {
+      "module": "kernel.authority",
+      "map": "docs/modules/kernel.authority/IMPLEMENTATION_MAP.json",
+      "originalMapAt": {
+        "commit": "2b59c1c5f877432a557185efd77331ae1143ae42",
+        "tree": "9326a46a71a3f7aae14481d979cd3faee1935e7c"
+      },
+      "originalMapSha256": "04e42729663ddbac60d67bd46436cc6c72358ef05208d3d0727b2701c3152976",
+      "changedTopLevelFields": [
+        "observedAtHead",
+        "sourceObjects"
+      ],
+      "previousNavigation": {
+        "observedAtHead": {
+          "commit": "0a129b41c2a2d42ca907ea8257bf780108bc664f",
+          "tree": "f90313f067446c629b8da50058ee1bd2101e76e7"
+        }
+      },
+      "currentNavigation": {
+        "observedAtHead": {
+          "commit": "2b59c1c5f877432a557185efd77331ae1143ae42",
+          "tree": "9326a46a71a3f7aae14481d979cd3faee1935e7c"
+        }
+      },
+      "changedSourceObjects": {
+        "apps/hepta-native/src/main.rs": {
+          "before": "6a9f5435a6ebd2479fd385c212cf95bfc8883f12",
+          "after": "0b0d22e07e3a6a469176dede57a420fdb0203434"
+        }
+      },
+      "allOtherTopLevelFieldsDeepEqual": true,
+      "operationsUnchanged": true,
+      "productCallersUnchanged": true,
+      "historicalEvidenceUnchanged": true,
+      "qualificationFlagsUnchanged": true,
+      "executionQualificationTransferred": false
+    }
+  ],
+  "globalVerification": "blocked: retained baseline Git-source identity failures remain; strict full committed verification follows this metadata commit",
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false,
+  "observedRemainingSourceIdentityFailures": {
+    "utility.ndu": "mapped source/evidence changed after source observation: codex-rs/hepta-ndu/src/lib.rs",
+    "intelligence.control": "mapped source/evidence changed after source observation: codex-rs/hepta-ndu/src/lib.rs"
+  },
+  "otherModuleMapsModified": false,
+  "relatedRegressionTests": {
+    "passed": 152,
+    "failed": 0,
+    "seconds": 20.419,
+    "log": "docs/modules/ui.native/history/20261002-2b59-local/owner-map-regressions.log",
+    "bytes": 25141,
+    "sha256": "51d8a506c3d39a96327048dc3637351c8b34e7fe33cffa20ce4295e14a5d6ce8"
+  },
+  "nativeFreezeCheck": "structural-pass",
+  "generatedProjections": "exact-reproduction-pass"
+}

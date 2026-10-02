@@ -4,16 +4,27 @@
     "roots": [
       "apps/hepta-native/tests",
       "apps/hepta-native/src",
+      "apps/hepta-native/platform-adapters/src",
       "codex-rs/hepta-native-gateway/src",
       "codex-rs/hepta-contracts/tests",
       "codex-rs/hepta-contracts/src",
       "codex-rs/hepta-private-state/src",
       "codex-rs/utils/private-state/src"
     ],
-    "fileCount": 96,
-    "manifestDigest": "c732d9329fdd5b1283847edce1bd470506185eb337c70a46761e16621a778d8e"
+    "fileCount": 106,
+    "manifestDigest": "4919d3f26997262f841561a7ed43249227dfecde3711ac199b967a58ba11c9b1"
   },
   "files": [
+    {
+      "path": "apps/hepta-native/platform-adapters/src/pipe_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native-platform"
+    },
+    {
+      "path": "apps/hepta-native/platform-adapters/src/registrar_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native-platform"
+    },
     {
       "path": "apps/hepta-native/src/file_input.rs",
       "role": "unit_test",
@@ -40,7 +51,17 @@
       "ownerPackage": "hepta-native"
     },
     {
+      "path": "apps/hepta-native/src/main_bootstrap_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
       "path": "apps/hepta-native/src/native_http_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/native_portal_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
     },
@@ -51,6 +72,21 @@
     },
     {
       "path": "apps/hepta-native/src/platform_identity_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/platform_linux_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/platform_notification_helper_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/platform_resource_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
     },
@@ -130,7 +166,12 @@
       "ownerPackage": "hepta-native"
     },
     {
-      "path": "apps/hepta-native/src/ui/native_picker.rs",
+      "path": "apps/hepta-native/src/ui/native_picker_framing_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/native_picker_linux_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
     },
@@ -155,12 +196,27 @@
       "ownerPackage": "hepta-native"
     },
     {
+      "path": "apps/hepta-native/src/ui/shell_view_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
       "path": "apps/hepta-native/src/ui/shutdown_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
     },
     {
+      "path": "apps/hepta-native/src/ui/startup_recovery_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
       "path": "apps/hepta-native/src/ui/task_supervisor_tests.rs",
+      "role": "unit_test",
+      "ownerPackage": "hepta-native"
+    },
+    {
+      "path": "apps/hepta-native/src/ui/visual_capture_tests.rs",
       "role": "unit_test",
       "ownerPackage": "hepta-native"
     },
@@ -301,11 +357,6 @@
     },
     {
       "path": "apps/hepta-native/tests/update_product.rs",
-      "role": "integration_test",
-      "ownerPackage": "hepta-native"
-    },
-    {
-      "path": "apps/hepta-native/tests/windows_registrar.rs",
       "role": "integration_test",
       "ownerPackage": "hepta-native"
     },
@@ -503,7 +554,7 @@
     },
     {
       "id": "native_application",
-      "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --all-targets",
+      "command": "cargo test --manifest-path apps/hepta-native/Cargo.toml --locked --workspace --all-targets",
       "workingDirectory": "."
     },
     {

@@ -1,0 +1,9 @@
+bazel mod deps --lockfile_mode=update
+Starting local Bazel server (9.0.0) and connecting to it...
+INFO: Invocation ID: 14a01792-8ae3-494f-b2f5-22e9b1735db8
+WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+ no actions running
+<root> (codex@_)
+
+elapsed=3.250 sec

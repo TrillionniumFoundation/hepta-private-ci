@@ -3,7 +3,7 @@ name: ui.native immutable exact-source qualification
 on:
   pull_request:
     branches:
-      - work/ui-native-qualified-integration-20260928
+      - work/ui-native-adversarial-audit-20261001
     paths:
       - .gitattributes
       - apps/hepta-native/**
@@ -46,7 +46,8 @@ env:
   CARGO_INCREMENTAL: "0"
   CARGO_TERM_COLOR: always
   RUST_BACKTRACE: "1"
-  BASE_SHA: 9be52d267d02a76f73e8a94fd086191c351d1c70
+  BASE_SHA: 978c1923eda66373e9dce4fe0efa890bc60ac404
+  BASE_REF: work/ui-native-adversarial-audit-20261001
 
 jobs:
   subject:
@@ -62,17 +63,35 @@ jobs:
         with:
           fetch-depth: 0
           persist-credentials: false
-      - id: identity
-        name: Bind exact head, fixed ordered-parent merge and implementation
+      - name: Bind exact head, fixed ordered-parent merge and implementation
+        id: identity
         shell: bash
         run: |
           set -euo pipefail
           candidate="$(python3 - <<'PYTHON'
           import json
           import os
+          import re
           from pathlib import Path
           event = json.loads(Path(os.environ["GITHUB_EVENT_PATH"]).read_text(encoding="utf-8"))
-          print(event.get("pull_request", {}).get("head", {}).get("sha") or os.environ["GITHUB_SHA"])
+          event_name = os.environ["GITHUB_EVENT_NAME"]
+          if event_name == "pull_request":
+              pull_request = event.get("pull_request")
+              if not isinstance(pull_request, dict):
+                  raise SystemExit("qualification requires a pull-request identity")
+              base = pull_request.get("base", {})
+              if base.get("ref") != os.environ["BASE_REF"]:
+                  raise SystemExit("qualification pull-request base ref differs from the frozen target")
+              if base.get("sha") != os.environ["BASE_SHA"]:
+                  raise SystemExit("qualification pull-request base SHA differs from the frozen parent")
+              candidate = pull_request.get("head", {}).get("sha")
+          elif event_name == "workflow_dispatch":
+              candidate = os.environ["GITHUB_SHA"]
+          else:
+              raise SystemExit("qualification event is not pull_request or workflow_dispatch")
+          if not isinstance(candidate, str) or re.fullmatch(r"[0-9a-f]{40}", candidate) is None:
+              raise SystemExit("qualification candidate is not an immutable commit SHA")
+          print(candidate)
           PYTHON
           )"
           git checkout --detach "$candidate"
@@ -80,12 +99,22 @@ jobs:
           git cat-file -e "$BASE_SHA^{commit}"
           implementation="$(python3 - <<'PYTHON'
           import json
+          import os
+          import re
           from pathlib import Path
+          manifest = json.loads(Path("docs/modules/ui.native/QUALIFICATION_MANIFEST.json").read_text(encoding="utf-8"))
+          if manifest.get("orderedParents", {}).get("base") != os.environ["BASE_SHA"]:
+              raise SystemExit("qualification manifest base differs from the frozen parent")
           value = json.loads(Path("apps/hepta-native/CANDIDATE.json").read_text(encoding="utf-8"))
-          print(value["implementationSourceSha"])
+          implementation = value.get("implementationSourceSha")
+          if not isinstance(implementation, str) or re.fullmatch(r"[0-9a-f]{40}", implementation) is None:
+              raise SystemExit("qualification implementation is not an immutable commit SHA")
+          print(implementation)
           PYTHON
           )"
           git cat-file -e "$implementation^{commit}"
+          git merge-base --is-ancestor "$BASE_SHA" "$implementation"
+          git merge-base --is-ancestor "$implementation" "$candidate"
           echo "candidate=$candidate" >> "$GITHUB_OUTPUT"
           echo "base=$BASE_SHA" >> "$GITHUB_OUTPUT"
           echo "implementation=$implementation" >> "$GITHUB_OUTPUT"
@@ -227,17 +256,27 @@ jobs:
           check python_tests python3 -m unittest discover -s scripts -p 'test_hepta_ui_native_*.py' -v
           python3 scripts/hepta_ui_native_qualification_evidence.py inventory \
             --out "$NATIVE_OUTPUT_ROOT/native-evidence/inventory.json"
+      - name: Early Windows platform-adapter tests
+        if: runner.os == 'Windows'
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ui_native_qualification_evidence.py run \
+            --out "$NATIVE_OUTPUT_ROOT/native-evidence/early-windows-platform" \
+            --label app_tests --timeout 3600 -- \
+            cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml \
+            --locked -p hepta-native-platform --all-targets -- --nocapture
       - name: Strict application and owner formatting and Clippy
         shell: bash
         run: |
           set -euo pipefail
           check() { python3 scripts/hepta_ui_native_qualification_evidence.py run --out "$NATIVE_OUTPUT_ROOT/native-evidence/checks" --label "$1" --timeout 3600 -- "${@:2}"; }
-          check app_format cargo +1.95.0 fmt --manifest-path apps/hepta-native/Cargo.toml --check
+          check app_format python3 scripts/hepta_ui_native_format.py --manifest-path apps/hepta-native/Cargo.toml
           check owner_format cargo +1.95.0 fmt --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-native-gateway -p codex-hepta-contracts \
             -p codex-hepta-private-state -p codex-utils-private-state -- --check
           check app_lint cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml \
-            --locked --all-targets --all-features -- -D warnings
+            --locked --workspace --all-targets --all-features -- -D warnings
           check owner_lint cargo +1.95.0 clippy --manifest-path codex-rs/Cargo.toml \
             --locked -p codex-hepta-native-gateway -p codex-hepta-contracts \
             -p codex-hepta-private-state -p codex-utils-private-state --all-targets --all-features --no-deps -- -D warnings
@@ -247,7 +286,7 @@ jobs:
           set -euo pipefail
           check() { python3 scripts/hepta_ui_native_qualification_evidence.py run --out "$NATIVE_OUTPUT_ROOT/native-evidence/checks" --label "$1" --timeout 3600 -- "${@:2}"; }
           check app_tests cargo +1.95.0 test --manifest-path apps/hepta-native/Cargo.toml \
-            --locked --all-targets
+            --locked --workspace --all-targets
           check owner_tests cargo +1.95.0 test --manifest-path codex-rs/Cargo.toml \
             --locked -p codex-hepta-native-gateway -p codex-hepta-contracts \
             -p codex-hepta-private-state -p codex-utils-private-state --all-targets --all-features

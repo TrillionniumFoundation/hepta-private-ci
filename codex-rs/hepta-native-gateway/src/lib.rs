@@ -1,4 +1,4 @@
-//! Minimal loopback-only Hepta live shell.
+//! Authenticated loopback-only Hepta native-client gateway.
 //!
 //! The gateway has no outbound, model, Telegram, operator-mutation, Enforce,
 //! promotion, or retirement path. Those remain separate gates.
@@ -549,8 +549,8 @@ fn route_authenticated_request(
         },
         "/" => Ok(response(
             "200 OK",
-            "text/html; charset=utf-8",
-            CONTROL_SHELL.as_bytes(),
+            "application/json; charset=utf-8",
+            NATIVE_CLIENT_DESCRIPTOR.as_bytes(),
         )),
         _ => Ok(response(
             "404 Not Found",
@@ -583,18 +583,9 @@ fn response(status: &str, content_type: &str, body: &[u8]) -> Vec<u8> {
     response
 }
 
-const CONTROL_SHELL: &str = r#"<!doctype html>
-<html lang="en">
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
-<title>Hepta vNext</title>
-<style>body{font:16px system-ui;margin:3rem;max-width:58rem}pre{padding:1rem;background:#111;color:#eee;overflow:auto}</style>
-<h1>Hepta vNext live shell</h1>
-<p>Loopback-only, read-only internal canary surface.</p>
-<pre id="status">loading…</pre>
-<script>fetch('/api/hepta/runtime').then(r=>r.json()).then(v=>status.textContent=JSON.stringify(v,null,2)).catch(e=>status.textContent=String(e))</script>
-</html>
-"#;
+// Presentation belongs to the Rust native application; gateway discovery is
+// authenticated data and grants no additional runtime or effect authority.
+const NATIVE_CLIENT_DESCRIPTOR: &str = r#"{"schema":"hepta.native-client-discovery.v1","client":"hepta-native","presentation":"rust-egui","runtime_status":"/api/hepta/runtime","health":"/healthz","native_authentication":"keyring_mac_v2","legacy_discovery_authentication":"keyring_bearer_v1"}"#;
 
 #[cfg(test)]
 #[path = "organ_request_tests.rs"]
@@ -763,9 +754,73 @@ mod tests {
     }
 
     #[test]
-    fn exposes_only_authenticated_health_shell_and_closed_runtime_status() -> Result<()> {
+    fn exposes_authenticated_native_discovery_health_and_closed_runtime_status() -> Result<()> {
         let runtime = fixture_runtime()?;
         let auth = fixture_gateway_auth();
+        let denied = route_request(
+            b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n",
+            &runtime,
+            &auth,
+        )?;
+        assert!(denied.starts_with(b"HTTP/1.1 401 Unauthorized"));
+        let discovery = route_request(
+            &authorized_test_request("GET / HTTP/1.1", ""),
+            &runtime,
+            &auth,
+        )?;
+        let start = discovery
+            .windows(4)
+            .position(|window| window == b"\r\n\r\n")
+            .context("discovery response headers")?
+            + 4;
+        let headers = std::str::from_utf8(&discovery[..start])?;
+        assert!(headers.starts_with("HTTP/1.1 200 OK"));
+        assert!(headers.contains("Content-Type: application/json; charset=utf-8"));
+        let value: serde_json::Value = serde_json::from_slice(&discovery[start..])?;
+        assert_eq!(
+            value,
+            serde_json::json!({
+                "schema": "hepta.native-client-discovery.v1",
+                "client": "hepta-native", "presentation": "rust-egui",
+                "runtime_status": "/api/hepta/runtime", "health": "/healthz",
+                "native_authentication": "keyring_mac_v2",
+                "legacy_discovery_authentication": "keyring_bearer_v1"
+            })
+        );
+        let mut nonce = [0_u8; 32];
+        getrandom::fill(&mut nonce).map_err(|error| anyhow::anyhow!("test nonce: {error}"))?;
+        let now = u64::try_from(
+            std::time::SystemTime::now()
+                .duration_since(std::time::UNIX_EPOCH)?
+                .as_millis(),
+        )?;
+        let proof = codex_hepta_contracts::native_gateway::NativeGatewayRequestV2::sign(
+            auth.bearer_token.as_bytes(),
+            "/healthz",
+            nonce,
+            now,
+            auth.server_incarnation,
+        )?;
+        let request = format!(
+            "GET /healthz HTTP/1.1\r\nHost: localhost\r\nAuthorization: {}\r\n\r\n",
+            proof.header_value()
+        );
+        let signed = route_request(request.as_bytes(), &runtime, &auth)?;
+        let split = signed
+            .windows(4)
+            .position(|bytes| bytes == b"\r\n\r\n")
+            .context("signed native health headers")?;
+        let signed_headers = std::str::from_utf8(&signed[..split])?;
+        let tag = signed_headers
+            .lines()
+            .find_map(|line| line.strip_prefix("X-Hepta-Response-MAC: "))
+            .context("signed native health response MAC")?;
+        proof.verify_response(auth.bearer_token.as_bytes(), 200, &signed[split + 4..], tag)?;
+        let native_health: serde_json::Value = serde_json::from_slice(&signed[split + 4..])?;
+        assert_eq!(native_health["native_auth"], value["native_authentication"]);
+        assert_eq!(native_health["native_protocol_version"], 2);
+        let replay = route_request(request.as_bytes(), &runtime, &auth)?;
+        assert!(replay.starts_with(b"HTTP/1.1 401 Unauthorized"));
         let health = route_request(
             &authorized_test_request("GET /healthz HTTP/1.1", ""),
             &runtime,

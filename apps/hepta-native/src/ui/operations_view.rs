@@ -27,13 +27,29 @@ fn project_operation_presentation(
     }
 }
 
+fn action_name(action: PlatformAction, locale: Locale) -> &'static str {
+    match action {
+        PlatformAction::OpenPath => locale.text("Open path", "打开路径"),
+        PlatformAction::RevealPath => locale.text("Reveal path", "显示路径"),
+        PlatformAction::CopyText => locale.text("Copy text", "复制文本"),
+        PlatformAction::Notify => locale.text("Send notification", "发送通知"),
+    }
+}
+
 impl HeptaNativeApp {
     pub(super) fn operations_view(&mut self, ui: &mut egui::Ui) {
         let focus_target = self.file_input_focus.take();
-        ui.heading(self.locale.text("Native operations", "原生操作"));
+        theme::section(
+            ui,
+            self.locale.text("Native operations", "原生操作"),
+            self.locale.text(
+                "Prepare, authorize, then observe one bounded action",
+                "准备、授权，然后观察一次受限操作",
+            ),
+        );
         if let Ok(runtime) = self.runtime.try_lock() {
             let capacity = runtime.journal_capacity();
-            ui.label(format!(
+            ui.small(format!(
                 "active={}/{} pending={} closed={} retired={} segments={} wal_entries={} wal_bytes={}",
                 capacity.active_records,
                 capacity.active_limit,
@@ -56,20 +72,30 @@ impl HeptaNativeApp {
             "壳层绝不会自行签发权限。先生成精确 binding，由独立 authority owner 签发 SignedFinalUseGrant，再选择该 grant 文件执行一次 final-use 操作。",
         ));
         ui.separator();
-        ui.label(self.locale.text("Authority subject", "权限主体"));
+        ui.label(
+            egui::RichText::new(self.locale.text("01 / Action details", "01 / 操作详情"))
+                .strong()
+                .color(theme::VIOLET),
+        );
+        let subject_label = ui.label(self.locale.text("Authority subject", "权限主体"));
         ui.add(
             egui::TextEdit::singleline(&mut self.operation_subject_id)
                 .id(egui::Id::new("native-operation-subject"))
+                .desired_width(f32::INFINITY)
                 .char_limit(crate::model::MAX_STABLE_ID_BYTES),
-        );
-        ui.label(self.locale.text("Operation ID", "操作 ID"));
+        )
+        .labelled_by(subject_label.id);
+        let operation_label = ui.label(self.locale.text("Operation ID", "操作 ID"));
         ui.add(
             egui::TextEdit::singleline(&mut self.operation_id)
                 .id(egui::Id::new("native-operation-id"))
+                .desired_width(f32::INFINITY)
                 .char_limit(crate::model::MAX_STABLE_ID_BYTES),
-        );
+        )
+        .labelled_by(operation_label.id);
+        let action_label = ui.label(self.locale.text("Action", "操作类型"));
         egui::ComboBox::from_id_salt("native-operation-action")
-            .selected_text(self.operation_action.to_string())
+            .selected_text(action_name(self.operation_action, self.locale))
             .show_ui(ui, |ui| {
                 for action in [
                     PlatformAction::OpenPath,
@@ -77,9 +103,15 @@ impl HeptaNativeApp {
                     PlatformAction::CopyText,
                     PlatformAction::Notify,
                 ] {
-                    ui.selectable_value(&mut self.operation_action, action, action.to_string());
+                    ui.selectable_value(
+                        &mut self.operation_action,
+                        action,
+                        action_name(action, self.locale),
+                    );
                 }
-            });
+            })
+            .response
+            .labelled_by(action_label.id);
         match self.operation_action {
             PlatformAction::OpenPath | PlatformAction::RevealPath => {
                 if cfg!(target_os = "linux") {
@@ -93,42 +125,60 @@ impl HeptaNativeApp {
                         "当前平台尚未通过已验证 OS 资源能力适配器资格；可变路径字符串启动仍被禁用。",
                     ));
                 }
-                ui.label(self.locale.text("Absolute path", "绝对路径"));
+                let path_label = ui.label(self.locale.text("Absolute path", "绝对路径"));
                 ui.add(
                     egui::TextEdit::singleline(&mut self.operation_path)
                         .id(egui::Id::new("native-operation-path"))
+                        .desired_width(f32::INFINITY)
                         .char_limit(crate::model::MAX_NATIVE_PATH_BYTES),
-                );
+                )
+                .labelled_by(path_label.id);
             }
             PlatformAction::CopyText => {
-                ui.label(self.locale.text("Clipboard text", "剪贴板文本"));
+                let text_label = ui.label(self.locale.text("Clipboard text", "剪贴板文本"));
                 ui.add(
                     egui::TextEdit::multiline(&mut self.operation_text)
                         .id(egui::Id::new("native-operation-text"))
+                        .desired_width(f32::INFINITY)
                         .char_limit(crate::model::MAX_COPY_TEXT_BYTES),
-                );
+                )
+                .labelled_by(text_label.id);
             }
             PlatformAction::Notify => {
-                ui.label(self.locale.text("Notification title", "通知标题"));
+                let title_label = ui.label(self.locale.text("Notification title", "通知标题"));
                 ui.add(
                     egui::TextEdit::singleline(&mut self.notification_title)
                         .id(egui::Id::new("native-notification-title"))
+                        .desired_width(f32::INFINITY)
                         .char_limit(crate::model::MAX_NOTIFICATION_TITLE_BYTES),
-                );
-                ui.label(self.locale.text("Notification body", "通知正文"));
+                )
+                .labelled_by(title_label.id);
+                let body_label = ui.label(self.locale.text("Notification body", "通知正文"));
                 ui.add(
                     egui::TextEdit::multiline(&mut self.notification_body)
                         .id(egui::Id::new("native-notification-body"))
+                        .desired_width(f32::INFINITY)
                         .char_limit(crate::model::MAX_NOTIFICATION_BODY_BYTES),
-                );
+                )
+                .labelled_by(body_label.id);
             }
         }
-        ui.label(self.locale.text("Signed grant path", "签名 grant 路径"));
+        ui.add_space(8.0);
+        ui.label(
+            egui::RichText::new(
+                self.locale
+                    .text("02 / Independent authorization", "02 / 独立授权"),
+            )
+            .strong()
+            .color(theme::VIOLET),
+        );
+        let grant_label = ui.label(self.locale.text("Signed grant path", "签名 grant 路径"));
         let grant_response = ui
-            .horizontal(|ui| {
+            .horizontal_wrapped(|ui| {
                 let response = ui.add(
                     egui::TextEdit::singleline(&mut self.operation_grant_path)
                         .id(egui::Id::new("native-operation-grant"))
+                        .desired_width(ui.available_width())
                         .char_limit(crate::model::MAX_NATIVE_PATH_BYTES),
                 );
                 if ui
@@ -152,7 +202,7 @@ impl HeptaNativeApp {
                 {
                     self.arm_file_input_target(ui.ctx(), FileInputTarget::OperationGrant);
                 }
-                response
+                response.labelled_by(grant_label.id)
             })
             .inner;
         if focus_target == Some(FileInputTarget::OperationGrant) {
@@ -161,7 +211,7 @@ impl HeptaNativeApp {
         self.render_file_input_intent_status(ui);
         self.invalidate_edited_binding();
         let busy = self.is_busy();
-        ui.horizontal(|ui| {
+        ui.horizontal_wrapped(|ui| {
             if ui
                 .add_enabled(
                     !busy && self.view_revision.is_some(),
@@ -187,6 +237,15 @@ impl HeptaNativeApp {
                 self.execute_operation();
             }
         });
+        if self.view_revision.is_none() {
+            ui.label(
+                egui::RichText::new(self.locale.text(
+                    "Refresh to obtain an authenticated view before preparing or executing.",
+                    "请先刷新获取已验证视图，再准备或执行操作。",
+                ))
+                .color(theme::WARNING),
+            );
+        }
         if let Some(binding) = &mut self.operation_binding {
             ui.label(self.locale.text(
                 "Binding for the independent issuer:",
@@ -203,6 +262,11 @@ impl HeptaNativeApp {
             ui.label(message);
         }
         ui.separator();
+        ui.label(
+            egui::RichText::new(self.locale.text("03 / Operation receipts", "03 / 操作回执"))
+                .strong()
+                .color(theme::VIOLET),
+        );
         ui.label(self.locale.text(
             "Indeterminate operations are never automatically replayed. Reconcile asks the platform adapter for a trustworthy terminal observation.",
             "不确定操作绝不会自动重放。对账只接受平台适配器提供的可信终态观察。",
@@ -237,7 +301,7 @@ impl HeptaNativeApp {
         }
         let last_page = history_last_page(self.history_total);
         let page_busy = self.history_read_busy() || busy;
-        ui.horizontal(|ui| {
+        ui.horizontal_wrapped(|ui| {
             if ui
                 .add_enabled(
                     !page_busy && self.history_page > 0,
@@ -264,7 +328,7 @@ impl HeptaNativeApp {
             }
         });
         let mut close_observation = None;
-        egui::ScrollArea::vertical().show(ui, |ui| {
+        ui.scope(|ui| {
             for receipt in &self.operations {
                 ui.push_id(
                     (

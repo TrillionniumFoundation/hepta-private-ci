@@ -1,5 +1,47 @@
 # ui.native ordinary-source review map
 
+The current continuation review base is `978c1923eda66373e9dce4fe0efa890bc60ac404`
+on `work/ui-native-adversarial-audit-20261001`; the review branch is
+`work/ui-rust-scifi-audit-20261002`. Ordinary source is
+`6e76bb778b58abe557dca516fe66da020da84ae6`, tree
+`5f3b98aecf7c3fa688f8093a275fe8fba855ffef`. This is a stacked native continuation,
+not a current-main integration.
+
+The new [audit](ADVERSARIAL-AUDIT-20261002.md) covers Rust native adapters,
+the explicit Rust Windows registrar and unsigned package v3, bounded helper
+protocols, input-only startup recovery, the console presentation, and authenticated
+JSON root discovery. [Retained local diagnostics](history/20261002-2b59-local/README.md)
+preserve their actual execution scope. Frozen inventory is 455 Git blobs over
+33 paths, including the platform-adapters crate, with digest
+`f5fe232dc844bd843bbdb85ca1e7bbb8e16ae905442c87b62deaa00b5a01f6d4`.
+
+The [CI-repair record](history/20261002-native-ci-repair/README.md) preserves
+failed run 36971395569 on candidate 2e0b6557e and the new local limits.
+Linux's anonymous TCP test bus could not provide AppArmor peer labels; the
+private Unix/EXTERNAL fixture retains mediation and all protocol assertions.
+Windows formatting now checks the same 443 Cargo targets in bounded batches.
+The current frozen source is 6e76bb778; previous diagnostic executions
+remain tied to their original source and are not transferred to it.
+
+The [prior registrar diagnostics](history/20261002-registrar-diagnostics/README.md)
+were executed on candidate 931f096be in run 36983477130. Their bounded-error test
+passed and identified the three failures as persisted target spelling mismatch,
+not a COM operation failure. The [file-identity repair record](history/20261002-registrar-file-identity/README.md)
+preserves that evidence and the separate macOS merge cleanup error. Current source
+compares retained volume/full 128-bit file identity, rejects ADS/device namespaces,
+and adds mandatory alias/reparse/destination-hard-link regressions. New Windows
+execution and the actual shortcut-save audit outcome remain pending.
+
+New six-platform head/merge, release storage and same-run aggregate execution are
+pending. Non-Linux verified Open/Reveal, separate `ui.control` Rust migration,
+physical OS/accessibility, signing and independent acceptance remain open. All
+production, deployment and release flags remain false.
+
+## Historical review map captured at candidate 978c
+
+The remaining text preserves the prior review's identities and observations.
+Its references to current source or pending execution apply to that prior scope.
+
 The current review base is `9be52d267d02a76f73e8a94fd086191c351d1c70` on
 `work/ui-native-qualified-integration-20260928`. The audit branch is
 `work/ui-native-adversarial-audit-20261001`. Read CURRENT_SOURCE.json for the

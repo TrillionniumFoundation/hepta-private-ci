@@ -1,0 +1,126 @@
+{
+  "schema": "hepta.ui-native-local-diagnostic-binding.v1",
+  "implementationSourceSha": "2b59c1c5f877432a557185efd77331ae1143ae42",
+  "implementationSourceTree": "9326a46a71a3f7aae14481d979cd3faee1935e7c",
+  "actualCompilerNegativeSourceSha": "ad84ac978cb9717a32d69373101eced53096d3c9",
+  "scope": "Prepublication local diagnostics; ordinary tests ran before final mechanical formatting. Compiler-negative ran on local commit ad84. Exact source equivalence below is not hosted candidate execution.",
+  "acceptedQualification": false,
+  "candidateWorkflowExecuted": false,
+  "sourceEquivalence": {
+    "comparison": "git diff --quiet ad84ac978cb9717a32d69373101eced53096d3c9 2b59c1c5f877432a557185efd77331ae1143ae42 -- <selectionPaths>",
+    "identicalSelectedGitBlobs": true,
+    "selectionPaths": [
+      ".cargo",
+      ".gitattributes",
+      "apps/hepta-native/.cargo",
+      "apps/hepta-native/.gitattributes",
+      "apps/hepta-native/Cargo.lock",
+      "apps/hepta-native/Cargo.toml",
+      "apps/hepta-native/STORAGE_BUDGETS.json",
+      "apps/hepta-native/build.rs",
+      "apps/hepta-native/packaging",
+      "apps/hepta-native/platform-adapters",
+      "apps/hepta-native/portal",
+      "apps/hepta-native/rust-toolchain.toml",
+      "apps/hepta-native/src",
+      "apps/hepta-native/tests",
+      "apps/hepta-native/tools/archive_safety.py",
+      "apps/hepta-native/tools/package_unsigned.py",
+      "codex-rs/.cargo",
+      "codex-rs/Cargo.lock",
+      "codex-rs/Cargo.toml",
+      "codex-rs/hepta-contracts",
+      "codex-rs/hepta-control-plane",
+      "codex-rs/hepta-native-gateway",
+      "codex-rs/hepta-ndu",
+      "codex-rs/hepta-paths",
+      "codex-rs/hepta-plasticity",
+      "codex-rs/hepta-private-state",
+      "codex-rs/hepta-runtime",
+      "codex-rs/hepta-types",
+      "codex-rs/hepta-wire",
+      "codex-rs/keyring-store",
+      "codex-rs/third_party/matrix-sdk-sqlite-0.18.0",
+      "codex-rs/utils/cargo-bin",
+      "codex-rs/utils/private-state"
+    ],
+    "fileCount": 455,
+    "inventorySha256": "e9055dd142615e91f704feb5e57d64c9fd4176aa6b1145afa343154dfdcb09fd"
+  },
+  "observedSummary": {
+    "nativeTestsPassed": 278,
+    "nativeTestsSkipped": 4,
+    "ownerTestsPassed": 214,
+    "ownerTestsSkipped": 0,
+    "compilerNegativeE0603CasesPassed": 3,
+    "strictNativeClippyTargets": [
+      "Linux host",
+      "Windows GNU x86_64 cross-target",
+      "macOS ARM64 cross-target"
+    ],
+    "windowsRuntimeExecuted": false,
+    "macosRuntimeExecuted": false,
+    "formatAfterTests": true,
+    "storageScaleExecuted": false
+  },
+  "retainedArtifacts": {
+    "validation-summary.json": {
+      "path": "docs/modules/ui.native/history/20261002-2b59-local/validation-summary.json",
+      "bytes": 5212,
+      "sha256": "01e135ed0159f3d0881c8785e07907885a537d4bad54c802c1cec747d3be8297"
+    },
+    "native-tests-final-registrar.log": {
+      "path": "docs/modules/ui.native/history/20261002-2b59-local/native-tests-final-registrar.log",
+      "bytes": 36453,
+      "sha256": "5ca686ec160eb9072154764d0508a5d6aa392c737f03e7e6a3d5278419752d2e"
+    },
+    "owner-tests-final.log": {
+      "path": "docs/modules/ui.native/history/20261002-2b59-local/owner-tests-final.log",
+      "bytes": 29331,
+      "sha256": "70033e7956645027bb275044b9b62f3c7537cfe9412ca38a6bbfc3c3f811fc2b"
+    },
+    "native-linux-clippy-freeze.log": {
+      "path": "docs/modules/ui.native/history/20261002-2b59-local/native-linux-clippy-freeze.log",
+      "bytes": 199,
+      "sha256": "2c92186de1f9affc1fbde49e8251d0cd75e1df897a4ce4a5923545d0ca4cb099"
+    },
+    "native-windows-clippy-freeze.log": {
+      "path": "docs/modules/ui.native/history/20261002-2b59-local/native-windows-clippy-freeze.log",
+      "bytes": 85,
+      "sha256": "9e4f50d59ec98637a07518fffe95732add0e2ddd8375472deda9d59dcbbfacd1"
+    },
+    "native-macos-clippy-freeze.log": {
+      "path": "docs/modules/ui.native/history/20261002-2b59-local/native-macos-clippy-freeze.log",
+      "bytes": 199,
+      "sha256": "d45dcc7c15cff576a3697e689812f95a508686af51b50e3d2a4535460f4f8fab"
+    },
+    "owner-clippy.log": {
+      "path": "docs/modules/ui.native/history/20261002-2b59-local/owner-clippy.log",
+      "bytes": 7756,
+      "sha256": "0a27df57f31ab0b133e92bc9205d1e6eb2d67082273a4a1e7b799aec94036caa"
+    },
+    "compile-negative-ad84ac9.log": {
+      "path": "docs/modules/ui.native/history/20261002-2b59-local/compile-negative-ad84ac9.log",
+      "bytes": 1779,
+      "sha256": "4dcd2a70806c1bf30d35e785e7747f071d39e9a90cc60c9e74d4d9c4d9d24a82"
+    },
+    "just-fmt-freeze.log": {
+      "path": "docs/modules/ui.native/history/20261002-2b59-local/just-fmt-freeze.log",
+      "bytes": 19,
+      "sha256": "cf1ba93c63565203f695b0eedfdc606c2d5358549def8861b84199dabb9346b1"
+    },
+    "native-fmt-freeze.log": {
+      "path": "docs/modules/ui.native/history/20261002-2b59-local/native-fmt-freeze.log",
+      "bytes": 44520,
+      "sha256": "0c8d31d5800c1739eb77e2d2fedab3fbcd81dbba8b4ebc8040c45ed4083a8c03"
+    },
+    "just-bazel-lock-update-freeze.log": {
+      "path": "docs/modules/ui.native/history/20261002-2b59-local/just-bazel-lock-update-freeze.log",
+      "bytes": 687,
+      "sha256": "09aeca79cbc6c4adf2bffcc2c31ee041106a6a0f24647dc62c1a8f1ab45759d9"
+    }
+  },
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
+}
