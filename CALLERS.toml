@@ -7,6 +7,8 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 
 [privileged_inventory]
 required_boundary_ids = [
+  "independent_paired_review_evaluator",
+  "readonly_paired_review_execution_recompute",
   "paired_original_cas_consumption_reader",
   "paired_protected_observer_provider",
   "climate_source_custody_prepare",
@@ -898,3 +900,36 @@ forbidden = ["SigningKey", "AuthorityPosture::ALLOW_ALL", "Command::new", "new_g
 path = "codex-rs/hepta-intelligence-eval/src/paired_observer_transport.rs"
 required = ["deny_unknown_fields", "hepta.eval.paired-supervised.observer-cut.v1", "signature_hex.len() != 128", "paired_observation_cut_signing_payload_v1(&cut)? != bytes", "original_elapsed_micros"]
 forbidden = ["SigningKey", "AuthorityPosture::ALLOW_ALL"]
+
+[[boundary]]
+id = "independent_paired_review_evaluator"
+symbol = "run_fixed_paired_review_evaluator"
+call_pattern = '\brun_fixed_paired_review_evaluator\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_review_host.rs"
+definition_markers = ["pub fn run_fixed_paired_review_evaluator", "boundary(config.uid, config.gid)", "verify_actual_reviewer", "Publication::read", "publication.recompute", "key(&config.private_key_path, config.uid)", "clock.sample_registered", "original_custody_verification_required"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs"]
+caller_markers = ["--paired-review", "codex_hepta_intelligence_eval::run_fixed_paired_review_evaluator"]
+
+[[boundary]]
+id = "readonly_paired_review_execution_recompute"
+symbol = "review_execution"
+call_pattern = '\breview_execution\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/paired_supervised_runner.rs"
+definition_markers = ["pub(crate) fn review_execution", "registration.verify_current", "verify_cut", "estimate_paired_cut", "holdout.record_digest != holdout.head_digest"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/paired_review_transport.rs"]
+caller_markers = ["review_execution("]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_review_plan.rs"
+required = ["review-plan-inputs.v1", "FrozenTaskSourceLineageV1::freeze", "freeze_paired_supervised_plan_v1", "self.base_plan.folds.is_empty()", "input.finish()"]
+forbidden = ["SigningKey", "LockedFileFinalHoldoutCasStore", "AuthorityPosture::ALLOW_ALL"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_review_transport.rs"
+required = ["review-publication.v1", "source.freeze()? != execution.registration.plan", "trust.revalidate_at(now)", "AuthenticatedPairedRegistrationV1::verify", "execution.execution_digest", "deny_unknown_fields"]
+forbidden = ["SigningKey", "LockedFileFinalHoldoutCasStore", "pub fn decode", "AuthorityPosture::ALLOW_ALL"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_review_host.rs"
+required = ["hepta.fixed-paired-review-config.v1", "verify_actual_reviewer", "publication.recompute", "decide_independently_v2", "verify_independent_roles", "clock.sample_registered", "original_custody_verification_required", "paired_evaluation_signing_payload_v1"]
+forbidden = ["LockedFileFinalHoldoutCasStore", "holdout.consume", "AuthorityPosture::ALLOW_ALL", "payload_hex:"]

@@ -127,3 +127,32 @@ and independent E normal-role entry remain required before the new Climate
 cohort is initialized or consumed. No scalar receipt or hash establishes a
 passed metric. Rejected and Insufficient results must preserve the same original
 costs, profile thresholds, consumption history and terminal evidence.
+
+The normal independent evaluator now exposes `--paired-review ROOT_CONFIG`.
+Root publishes the original already-sealed execution together with feature-only
+source records and prespecified fold inputs. Transfer is bounded to 128 MiB
+and 16,384 items per native input list; larger sources are rejected. E derives dependency components,
+freezes the existing paired plan, verifies the original G/O registration and O
+observation signatures, and recomputes the existing estimator and metric gates.
+It signs only the original `hepta.eval.paired-supervised.independent-review.v1`
+preimage. The shared decoder is crate-private and never returns a public sealed
+receipt constructor. Original V1 signing domains and byte encodings are unchanged.
+
+`hepta.fixed-paired-review-config.v1` pins the actual immutable E executable,
+UID/GID, E private key path, Root public key, publication path/SHA, scope,
+objective, original distribution generation and authority epoch. Its five denied
+paths cover original gold/CAS and the other role keys. The existing E launcher
+requires an empty supplementary group list, all capability sets zero,
+NoNewPrivileges and its bounded `hepta-fixed-calibration-eval-*` service cgroup.
+Only E holds the E seed. Public publication/config ancestors are Root protected;
+E receives no Root CAS descriptor, gold permission or O key. Root keeps CAS0600
+and the original locked file description through final publication.
+
+The result remains an independent review with `qualified=false`. The final
+original custody runner must compare its actual original execution and G/O/E
+current bindings before persisting the original FULL evidence sink. Root metadata
+or a transferred consumption receipt does not establish physical custody for E.
+This source entry does not claim an installed scientific evaluation, a current
+encoder development batch, or consumption of the 91 new Climate components.
+The after-CAS O measurement producer and real G/O/E public development run remain
+the next composition step; a genuine Rejected or Insufficient result is valid.
