@@ -203,6 +203,7 @@ impl Fixture {
             process_incarnation: "companion-test".to_string(),
             plane_epoch: 1,
             phase: MatrixRuntimePhase::Running,
+            pending_stop_deadline: None,
             healthy: true,
             fenced: false,
         });
@@ -448,3 +449,6 @@ mod containment;
 
 #[path = "matrix_control_order_tests.rs"]
 mod control_order;
+
+#[path = "matrix_control_deadline_tests.rs"]
+mod control_deadline;

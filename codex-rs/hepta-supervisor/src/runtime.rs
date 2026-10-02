@@ -61,6 +61,9 @@ pub(crate) struct MatrixRuntime<P> {
     pub process_incarnation: String,
     pub plane_epoch: u64,
     pub phase: MatrixRuntimePhase,
+    /// An unacknowledged Stop belongs to this exact retained lifetime. Failed
+    /// signals/probes cannot renew it or transfer it to a replacement runtime.
+    pub pending_stop_deadline: Option<Instant>,
     pub healthy: bool,
     pub fenced: bool,
 }

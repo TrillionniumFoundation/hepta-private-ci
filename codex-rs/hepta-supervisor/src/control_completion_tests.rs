@@ -479,6 +479,7 @@ fn expired_stop_kills_main_before_a_failing_companion_without_more_grace() -> Re
         process_incarnation: "matrix-fixture".to_string(),
         plane_epoch: 1,
         phase: MatrixRuntimePhase::Running,
+        pending_stop_deadline: None,
         healthy: true,
         fenced: false,
     });

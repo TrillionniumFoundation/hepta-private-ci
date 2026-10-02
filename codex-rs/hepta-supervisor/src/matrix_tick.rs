@@ -8,6 +8,7 @@ use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 
 use super::MatrixProcessLeaseRemoval;
+use super::control;
 use crate::ManagedProcess;
 use crate::ProcessDriver;
 use crate::ProcessObservation;
@@ -22,7 +23,6 @@ use crate::lease::MatrixProcessLease;
 use crate::runtime::AgentSlot;
 use crate::runtime::DeferredAgentActionKind;
 use crate::runtime::MatrixRuntimePhase;
-use crate::runtime::deadline;
 use crate::runtime::driver_error;
 
 impl<D: ProcessDriver> Supervisor<D> {
@@ -59,6 +59,12 @@ impl<D: ProcessDriver> Supervisor<D> {
                             kind: SupervisorEventKind::MatrixKillRequested,
                         });
                     })
+            } else if terminal.is_none() {
+                control::apply(agent_id, runtime, now).map(|event| {
+                    if let Some(event) = event {
+                        slot.events.push(event);
+                    }
+                })
             } else {
                 Ok(())
             };
@@ -76,6 +82,29 @@ impl<D: ProcessDriver> Supervisor<D> {
                 {
                     Ok(observation) => observation,
                     Err(error) => {
+                        // A failed observation is not an unlimited readiness
+                        // extension. Preserve both probe and control faults.
+                        match control::observe_unhealthy(
+                            &mut slot.matrix,
+                            now,
+                            self.config.health_timeout,
+                        ) {
+                            Ok(Some(event)) => slot.events.push(event),
+                            Ok(None) => {}
+                            Err(health) => Self::record_slot_fault(agent_id, slot, &health, report),
+                        }
+                        match control::expire_health(
+                            agent_id,
+                            &mut slot.matrix,
+                            now,
+                            self.config.stop_grace,
+                        ) {
+                            Ok(Some(event)) => slot.events.push(event),
+                            Ok(None) => {}
+                            Err(control) => {
+                                Self::record_slot_fault(agent_id, slot, &control, report)
+                            }
+                        }
                         if let Err(control) = &control_result {
                             Self::record_slot_fault(agent_id, slot, control, report);
                         }
@@ -153,7 +182,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 let ProcessState::Running { healthy, .. } = observation.state else {
                     unreachable!("Matrix exited state returned above")
                 };
-                runtime.healthy = healthy;
+                runtime.healthy = healthy
+                    && !matches!(
+                        runtime.phase,
+                        MatrixRuntimePhase::Stopping { .. } | MatrixRuntimePhase::Killing
+                    );
                 match runtime.phase {
                     MatrixRuntimePhase::AwaitingHealth { .. } if healthy => {
                         runtime.phase = MatrixRuntimePhase::Running;
@@ -167,18 +200,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                         });
                     }
                     MatrixRuntimePhase::Running if !healthy => {
-                        runtime.phase = MatrixRuntimePhase::Unhealthy {
-                            deadline: deadline(now, self.config.health_timeout)?,
-                        };
-                        slot.matrix.degraded = true;
-                        slot.matrix.last_error =
-                            Some("Matrix health probe lost readiness".to_string());
-                        slot.events.push(SupervisorEvent {
-                            generation: runtime.attached_agent_generation,
-                            kind: SupervisorEventKind::MatrixDegraded(
-                                "Matrix health probe lost readiness".to_string(),
-                            ),
-                        });
+                        if let Some(event) = control::observe_unhealthy(
+                            &mut slot.matrix,
+                            now,
+                            self.config.health_timeout,
+                        )? {
+                            slot.events.push(event);
+                        }
                     }
                     MatrixRuntimePhase::Unhealthy { .. } if healthy => {
                         runtime.phase = MatrixRuntimePhase::Running;
@@ -191,50 +219,18 @@ impl<D: ProcessDriver> Supervisor<D> {
                             kind: SupervisorEventKind::MatrixHealthy,
                         });
                     }
-                    MatrixRuntimePhase::AwaitingHealth { deadline: limit } if now >= limit => {
-                        let stop_deadline = deadline(now, self.config.stop_grace)?;
-                        runtime
-                            .process
-                            .request_stop()
-                            .map_err(|error| driver_error(agent_id, error))?;
-                        runtime.phase = MatrixRuntimePhase::Stopping {
-                            deadline: stop_deadline,
-                        };
-                        slot.matrix.restart_after_exit = true;
-                        slot.matrix.degraded = true;
-                        slot.matrix.last_error = Some("Matrix health deadline expired".to_string());
-                        slot.events.push(SupervisorEvent {
-                            generation: runtime.attached_agent_generation,
-                            kind: SupervisorEventKind::MatrixStopRequested,
-                        });
-                    }
-                    MatrixRuntimePhase::Unhealthy { deadline: limit } if now >= limit => {
-                        let stop_deadline = deadline(now, self.config.stop_grace)?;
-                        runtime
-                            .process
-                            .request_stop()
-                            .map_err(|error| driver_error(agent_id, error))?;
-                        runtime.phase = MatrixRuntimePhase::Stopping {
-                            deadline: stop_deadline,
-                        };
-                        slot.matrix.restart_after_exit = true;
-                        slot.matrix.degraded = true;
-                        slot.matrix.last_error = Some("Matrix unhealthy grace expired".to_string());
-                        slot.events.push(SupervisorEvent {
-                            generation: runtime.attached_agent_generation,
-                            kind: SupervisorEventKind::MatrixStopRequested,
-                        });
-                    }
-                    MatrixRuntimePhase::Stopping { deadline: limit } if now >= limit => {
-                        runtime
-                            .process
-                            .kill()
-                            .map_err(|error| driver_error(agent_id, error))?;
-                        runtime.phase = MatrixRuntimePhase::Killing;
-                        slot.events.push(SupervisorEvent {
-                            generation: runtime.attached_agent_generation,
-                            kind: SupervisorEventKind::MatrixKillRequested,
-                        });
+                    MatrixRuntimePhase::AwaitingHealth { deadline: limit }
+                    | MatrixRuntimePhase::Unhealthy { deadline: limit }
+                        if now >= limit =>
+                    {
+                        if let Some(event) = control::expire_health(
+                            agent_id,
+                            &mut slot.matrix,
+                            now,
+                            self.config.stop_grace,
+                        )? {
+                            slot.events.push(event);
+                        }
                     }
                     MatrixRuntimePhase::AwaitingHealth { .. }
                     | MatrixRuntimePhase::Running
