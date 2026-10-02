@@ -54,6 +54,7 @@ override these machine status facts.
 | `runtime_topology_execution` | `source_implemented_external_final_use_exact_handoff_migration_owner_and_live_cns_replacement_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 3 |
 | `runtime_topology_recovery` | `source_implemented_external_recovery_final_use_exact_handoff_migration_owner_and_stopped_quarantined_forward_recovery_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 2 |
 | `runtime_structural_canary_fault_rollback` | `qualification_composed_live_apply_with_migration_forced_stopped_host_fault_distinct_recovery_final_use_with_migration_rollforward_and_authenticated_observer_receipt_not_target_host_qualified` | `codex-rs/hepta-runtime/src/lib.rs` | 1 |
+| `iteration_envelope_submission` | `source_implemented_exact_module_harness_qualified_full_agentd_execution_pending_no_production_caller` | `codex-rs/hepta-agentd/src/iteration_envelope_wire.rs` | 4 |
 
 ### Repository-controlled gaps
 

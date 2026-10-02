@@ -4,8 +4,8 @@
   "module": "learning.plasticity",
   "generatedFrom": "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
   "sourceBase": {
-    "commit": "2d03ac52d3255aa9b021441197043c612ecabc2e",
-    "tree": "ba0c4d1fc58fca31f0fd2343a7dd38f04b6a1c8c"
+    "commit": "6eb61a67f654ceef858f39ce88dcfc3d9ab9d052",
+    "tree": "0f18215ee707c21ab4ccbb6dea467f853e25a606"
   },
   "current": {
     "sourceRootPresent": true,
@@ -311,6 +311,17 @@
       "sourcePath": "codex-rs/hepta-runtime/src/lib.rs",
       "tests": [
         "codex-rs/hepta-runtime/src/organs_tests.rs::authenticated_canary_forces_live_fault_then_rolls_forward_to_reconciled_predecessor_semantics"
+      ]
+    },
+    {
+      "operation": "iteration_envelope_submission",
+      "state": "source_implemented_exact_module_harness_qualified_full_agentd_execution_pending_no_production_caller",
+      "sourcePath": "codex-rs/hepta-agentd/src/iteration_envelope_wire.rs",
+      "tests": [
+        "codex-rs/hepta-agentd/src/iteration_envelope_wire_tests.rs::authenticates_exact_generator_submission_with_separate_host_pin",
+        "codex-rs/hepta-agentd/src/iteration_envelope_wire_tests.rs::rejects_positional_top_level_envelope",
+        "codex-rs/hepta-agentd/src/iteration_envelope_wire_tests.rs::rejects_positional_compute_budget",
+        "codex-rs/hepta-agentd/src/iteration_envelope_wire_tests.rs::rejects_seconds_evidence_in_the_millisecond_submission_profile"
       ]
     }
   ],
