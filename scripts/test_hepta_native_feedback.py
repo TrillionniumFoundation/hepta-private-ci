@@ -445,7 +445,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                     "--all-targets",
                     "--",
                     "-D",
-                    "warnings",
+                    "clippy::correctness",
                 ],
             ],
         )

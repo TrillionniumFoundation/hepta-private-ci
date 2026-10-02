@@ -175,7 +175,7 @@
   "productionCallerBindings": [
     {
       "role": "production_caller",
-      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "path": "codex-rs/hepta-infer-worker-host/src/native_execution.rs",
       "symbol": "async fn run_once(",
       "buildTarget": "codex-hepta-infer-worker-host",
       "semantics": "Named native caller sends the real App Server v2 thread/start and turn/start path. It requires independently signed final-use authority for the exact TurnStartParams binding, rechecks cancellation/deadline/Agent readiness/ingress after authority acquisition, commits the authority/request witness durably before the network await, maps typed App Server outcomes through hepta-codex-adapter, and never blindly replays an unknown acknowledgement."

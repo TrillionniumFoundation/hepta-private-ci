@@ -34,6 +34,12 @@ class ModuleCatalogTests(unittest.TestCase):
             ]
         ]
         self.cns = load_script("hepta-cns")
+        self.cns_modules = [
+            row["module"]
+            for row in json.loads((ROOT / "docs/readiness/READINESS.json").read_text())[
+                "moduleBindings"
+            ]
+        ]
         self.architecture = json.loads(
             (ROOT / "docs/cns/CNS_ARCHITECTURE.json").read_text()
         )
@@ -85,24 +91,23 @@ class ModuleCatalogTests(unittest.TestCase):
         self.assertFalse(has_module_count(2, ["a.b"]))
 
     def test_actual_cns_binding_consumer_accepts_added_then_retired_module(self):
+        modules = self.cns_modules
         architecture = copy.deepcopy(self.architecture)
         organs, refs = architecture["organs"], architecture["qualificationReferences"]
         organs[0]["moduleBindings"].append("extension.optional")
         registered, _ = self.cns.validate_module_bindings(
-            organs, self.modules + ["extension.optional"], refs
+            organs, modules + ["extension.optional"], refs
         )
         self.assertIn("extension.optional", registered)
         organs[0]["moduleBindings"].remove("extension.optional")
-        registered, _ = self.cns.validate_module_bindings(organs, self.modules, refs)
-        self.assertEqual(registered, set(self.modules))
-        removed = self.modules[-1]
+        registered, _ = self.cns.validate_module_bindings(organs, modules, refs)
+        self.assertEqual(registered, set(modules))
+        removed = modules[-1]
         for organ in organs:
             organ["moduleBindings"] = [
                 mid for mid in organ["moduleBindings"] if mid != removed
             ]
-        registered, _ = self.cns.validate_module_bindings(
-            organs, self.modules[:-1], refs
-        )
+        registered, _ = self.cns.validate_module_bindings(organs, modules[:-1], refs)
         self.assertNotIn(removed, registered)
 
     def test_cns_verifier_accepts_reordered_objects_not_unknown_fields(self):
@@ -151,28 +156,25 @@ class ModuleCatalogTests(unittest.TestCase):
         refs[0]["scope"] = "production"
         with self.assertRaisesRegex(SystemExit, "qualification reference posture"):
             self.cns.validate_module_bindings(
-                self.architecture["organs"], self.modules, refs
+                self.architecture["organs"], self.cns_modules, refs
             )
 
     def test_actual_cns_consumer_rejects_dangling_and_unbound_changes(self):
+        modules = self.cns_modules
         organs, refs = (
             self.architecture["organs"],
             self.architecture["qualificationReferences"],
         )
         with self.assertRaises(SystemExit):
             self.cns.validate_module_bindings(
-                organs, self.modules + ["extension.optional"], refs
+                organs, modules + ["extension.optional"], refs
             )
         with self.assertRaises(SystemExit):
-            self.cns.validate_module_bindings(organs, self.modules[:-1], refs)
+            self.cns.validate_module_bindings(organs, modules[:-1], refs)
         with self.assertRaises(SystemExit):
-            self.cns.validate_module_bindings(
-                organs, self.modules + [self.modules[0]], refs
-            )
+            self.cns.validate_module_bindings(organs, modules + [modules[0]], refs)
         with self.assertRaises(SystemExit):
-            self.cns.validate_module_bindings(
-                organs, self.modules + [refs[0]["id"]], refs
-            )
+            self.cns.validate_module_bindings(organs, modules + [refs[0]["id"]], refs)
 
 
 if __name__ == "__main__":

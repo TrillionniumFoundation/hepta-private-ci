@@ -43,7 +43,7 @@ class ModuleNavigationTests(unittest.TestCase):
             mock.patch.object(Path, "read_text", read),
             contextlib.redirect_stdout(io.StringIO()),
         ):
-            return DOCS.verify()
+            return DOCS.verify("development")
 
     def test_prose_layout_and_cached_metrics_are_not_acceptance_evidence(self):
         self.assertEqual(

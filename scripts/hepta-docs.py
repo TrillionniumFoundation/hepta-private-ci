@@ -506,7 +506,7 @@ def validate_path_leases(
     lease_paths = set()
     for lease in leases:
         need(isinstance(lease, dict), "lease object")
-        need(list(lease) == LEASE_KEYS, "lease key closure/order")
+        need(set(lease) == set(LEASE_KEYS), "lease key closure")
         lease_id = lease.get("leaseId")
         need(
             isinstance(lease_id, str)
@@ -550,8 +550,8 @@ def validate_path_leases(
         )
         review = lease.get("reviewBinding")
         need(
-            isinstance(review, dict) and list(review) == LEASE_REVIEW_KEYS,
-            lease_id + " review binding key closure/order",
+            isinstance(review, dict) and set(review) == set(LEASE_REVIEW_KEYS),
+            lease_id + " review binding key closure",
         )
         need(
             {
@@ -577,6 +577,18 @@ def validate_path_leases(
             and type(review.get("maximumAttestationAgeSeconds")) is int
             and 0 < review["maximumAttestationAgeSeconds"] <= 604800,
             lease_id + " exact-head external review policy",
+        )
+        need(
+            all(
+                type(review[key]) is bool
+                for key in (
+                    "reviewCommitMustEqualHead",
+                    "reviewerMustDifferFromAuthor",
+                    "invalidateOnHeadChange",
+                    "reusable",
+                )
+            ),
+            lease_id + " exact-head external review policy boolean types",
         )
         need(
             lease.get("lifecycle") == LEASE_LIFECYCLE,
@@ -1079,7 +1091,7 @@ def verify(profile="qualification") -> int:
         )
         f = v.get("authorityFlags")
         need(
-            isinstance(f, dict) and list(f) == AUTHORITY_KEYS,
+            isinstance(f, dict) and set(f) == set(AUTHORITY_KEYS),
             k + " authority key closure",
         )
         need(

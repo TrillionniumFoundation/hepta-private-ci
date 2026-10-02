@@ -31,6 +31,7 @@ class PathLeaseScopeTests(unittest.TestCase):
         self.path = self.registry["activeLeases"][0]["normalizedExactPaths"][0]
 
     def validate(self, **options):
+        options.setdefault("profile", "development")
         return DOCS.validate_path_leases(
             self.registry, self.packages, *self.graphs, {self.path}, **options
         )
@@ -45,7 +46,7 @@ class PathLeaseScopeTests(unittest.TestCase):
         with self.assertRaisesRegex(
             SystemExit, "external path lease attestation required"
         ):
-            self.validate(require_attestation=True)
+            self.validate(profile="qualification")
 
     def test_lease_key_order_does_not_change_review_policy(self):
         lease = self.registry["activeLeases"][0]
@@ -60,21 +61,21 @@ class PathLeaseScopeTests(unittest.TestCase):
             ("invalidateOnHeadChange", 1),
             ("reusable", 0),
         ]:
-            for strict in (False, True):
-                with self.subTest(field=field, strict=strict):
+            for profile in ("development", "qualification"):
+                with self.subTest(field=field, profile=profile):
                     self.registry = copy.deepcopy(baseline)
                     self.registry["activeLeases"][0]["reviewBinding"][field] = value
                     with self.assertRaisesRegex(SystemExit, "external review policy"):
-                        self.validate(require_attestation=strict)
-        for strict in (False, True):
+                        self.validate(profile=profile)
+        for profile in ("development", "qualification"):
             self.registry = copy.deepcopy(baseline)
             self.registry["activeLeases"][0]["authorityGranted"] = True
             with self.assertRaisesRegex(SystemExit, "authority posture"):
-                self.validate(require_attestation=strict)
+                self.validate(profile=profile)
             self.registry = copy.deepcopy(baseline)
             self.registry["activeLeases"][0]["packageA"] = "UNREGISTERED-OWNER"
             with self.assertRaisesRegex(SystemExit, "canonical package pair"):
-                self.validate(require_attestation=strict)
+                self.validate(profile=profile)
 
 
 if __name__ == "__main__":

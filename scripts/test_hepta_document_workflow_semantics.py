@@ -151,7 +151,7 @@ class AlgorithmCatalogEvolutionTests(unittest.TestCase):
             value["criticalModules"].append("memory.retrieval")
             value["closureGates"].append(
                 {
-                    "id": "ACG-EXTRA",
+                    "id": "ACG-999",
                     "name": "New owner-specific check",
                     "required": True,
                 }
