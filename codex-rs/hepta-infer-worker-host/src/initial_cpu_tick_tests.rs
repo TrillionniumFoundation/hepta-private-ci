@@ -46,7 +46,12 @@ fn fixed_physical_transport_checks_root_peer_and_rejects_mutated_source() -> Hos
     let server = std::thread::spawn(move || -> std::io::Result<()> {
         let (mut stream, _) = listener.accept()?;
         let mut request = [0_u8; 128];
-        stream.read(&mut request)?;
+        if stream.read(&mut request)? == 0 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::UnexpectedEof,
+                "physical request absent",
+            ));
+        }
         stream.write_all(b"{\"physical_transport\":true}\n")
     });
     assert_eq!(
@@ -77,7 +82,12 @@ fn fixed_physical_transport_enforces_one_total_deadline_during_slow_frames() -> 
     let server = std::thread::spawn(move || -> std::io::Result<()> {
         let (mut stream, _) = listener.accept()?;
         let mut request = [0_u8; 128];
-        stream.read(&mut request)?;
+        if stream.read(&mut request)? == 0 {
+            return Err(std::io::Error::new(
+                std::io::ErrorKind::UnexpectedEof,
+                "physical request absent",
+            ));
+        }
         for _ in 0..20 {
             if stream.write_all(b" ").is_err() {
                 break;
