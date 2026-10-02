@@ -144,6 +144,7 @@ struct StoredOperation {
 
 enum PreparedEffect {
     Navigate(Url),
+    DownloadUnavailable(Url),
     Script(String),
     Wait(Duration),
     Failed(&'static str),
@@ -262,20 +263,24 @@ impl Browser {
             .and_then(Value::as_str)
             .ok_or_else(|| "typedAction.kind must be a string".to_string())?;
         let effect = match kind {
-            "navigate" => {
+            "navigate" | "download" => {
                 let target = action
                     .get("url")
                     .and_then(Value::as_str)
-                    .ok_or_else(|| "navigate.url must be a string".to_string())?;
+                    .ok_or_else(|| format!("{kind}.url must be a string"))?;
                 if target.len() > MAX_NAVIGATION_URL_BYTES {
-                    return Err("navigate URL exceeds byte limit".to_string());
+                    return Err(format!("{kind} URL exceeds byte limit"));
                 }
                 let target =
-                    Url::parse(target).map_err(|error| format!("navigate URL invalid: {error}"))?;
+                    Url::parse(target).map_err(|error| format!("{kind} URL invalid: {error}"))?;
                 if target.as_str().len() > MAX_NAVIGATION_URL_BYTES {
-                    return Err("canonical navigate URL exceeds byte limit".to_string());
+                    return Err(format!("canonical {kind} URL exceeds byte limit"));
                 }
-                PreparedEffect::Navigate(target)
+                if kind == "navigate" {
+                    PreparedEffect::Navigate(target)
+                } else {
+                    PreparedEffect::DownloadUnavailable(target)
+                }
             }
             "click" => PreparedEffect::Script(fixed_click(action)?),
             "type" => PreparedEffect::Script(fixed_type(action)?),
@@ -293,9 +298,7 @@ impl Browser {
                     PreparedEffect::Wait(Duration::from_millis(timeout_ms))
                 }
             }
-            "credential" | "upload" | "download" => {
-                PreparedEffect::Failed("capability_not_connected")
-            }
+            "credential" | "upload" => PreparedEffect::Failed("capability_not_connected"),
             _ => return Err("typedAction.kind is not registered by worker".to_string()),
         };
         self.pump();
@@ -311,7 +314,9 @@ impl Browser {
             .ok_or_else(|| "pageGeneration must be a safe nonnegative integer".to_string())?;
         let destination_origin = string_field(&frame.payload, "destinationOrigin")?;
         let expected_origin = match &effect {
-            PreparedEffect::Navigate(target) => origin(target),
+            PreparedEffect::Navigate(target) | PreparedEffect::DownloadUnavailable(target) => {
+                origin(target)
+            }
             PreparedEffect::Script(_) | PreparedEffect::Wait(_) | PreparedEffect::Failed(_) => {
                 origin(&current_url)
             }
@@ -387,6 +392,7 @@ impl Browser {
                 self.fixed_script(script, kind, document_epoch, deadline_ms)?
             }
             PreparedEffect::Wait(timeout) => self.wait(timeout, document_epoch, deadline_ms)?,
+            PreparedEffect::DownloadUnavailable(_) => failed(kind, "capability_not_connected"),
             PreparedEffect::Failed(reason) => failed(kind, reason),
         };
         let terminal = receipt
