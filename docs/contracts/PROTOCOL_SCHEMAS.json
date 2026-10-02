@@ -2787,7 +2787,33 @@
           "name": "computeBudget",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 8192
+          "maxBytes": 8192,
+          "encodingProfiles": [
+            {
+              "id": "hepta.iteration-compute-budget.v1",
+              "denyUnknownFields": true,
+              "fields": {
+                "profile": {
+                  "type": "utf8",
+                  "constant": "hepta.iteration-compute-budget.v1"
+                },
+                "maximumParallelSandboxes": {
+                  "type": "u8",
+                  "minimum": 1,
+                  "maximum": 8
+                },
+                "maximumMemoryBytes": {
+                  "type": "u64",
+                  "minimum": 1
+                },
+                "maximumProcesses": {
+                  "type": "u32",
+                  "minimum": 1
+                }
+              },
+              "meaning": "Declared upper bounds only; authentication does not execute or establish OS enforcement"
+            }
+          ]
         },
         {
           "name": "mandatoryChecks",
@@ -2808,6 +2834,22 @@
         "unknown_critical_fields_rejected",
         "current_run_artifact_immutable",
         "correction_deletion_and_revocation_lineage_preserved"
+      ],
+      "implementationProfiles": [
+        {
+          "id": "hepta.agentd.iteration-envelope.v1",
+          "signingPayload": "ASCII hepta.agentd.iteration-envelope.v1 followed by NUL followed by canonical JSON UTF-8",
+          "signatureProtocol": "SignedLearningEvidenceV1 Generator role; authenticates submission only",
+          "hostPolicyBinding": "Exact envelope digest independently pinned by host-owned configuration; remote payload cannot replace the pin",
+          "gitObjectIds": "Nonzero lowercase 40- or 64-character Git object IDs; retained as text",
+          "policyArrays": "Nonempty unique strings, maximum 256 entries and 4096 UTF-8 bytes per entry, existing encoded field byte limits apply; array order is semantic",
+          "allowedPaths": "Exact relative slash-separated paths or directory prefixes; no empty/dot/parent components, backslashes, colons, wildcards or absolute paths",
+          "maximumFiles": 100,
+          "maximumBytes": 1048576,
+          "maximumCandidates": 32,
+          "expiry": "Unix milliseconds; reject now >= expiresUnixMs",
+          "authorityGranted": false
+        }
       ]
     },
     {
