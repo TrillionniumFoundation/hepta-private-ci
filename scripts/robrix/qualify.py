@@ -10,6 +10,7 @@ import subprocess
 import shutil
 import tomllib
 import time
+import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 APP = ROOT / 'apps/hepta-robrix'
@@ -133,7 +134,7 @@ def web_build():
 
 
 def web_tests():
-    env = dict(os.environ, CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUNNER='wasm-bindgen-test-runner',
+    env = dict(os.environ, CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUNNER=f'{sys.executable} {ROOT / "scripts/robrix/browser_test_runner.py"}',
                WASM_BINDGEN_USE_BROWSER='1', CHROMEDRIVER=shutil.which('chromedriver') or 'chromedriver',
                WASM_BINDGEN_TEST_TIMEOUT='120')
     # Ordinary wasm target is intentionally for wasm-bindgen tests only, not UI packaging.
@@ -159,15 +160,58 @@ def web_tests():
     assert not re.search(r'; [1-9]\d* ignored', output)
 
 
+FIXTURE_TITLE = 'Hepta · UI fixture · no live accounts'
+
+
+def select_fixture_window(process, resource_name):
+    """Identify Makepad's supported WM_CLASS instance, never unsupported WM_PID."""
+    deadline = time.monotonic() + 60
+    while time.monotonic() < deadline:
+        if process.poll() is not None:
+            raise RuntimeError(f'Fixture exited before a mapped window: {process.returncode}')
+        result = subprocess.run(['xdotool', 'search', '--onlyvisible', '--classname',
+                                 '^' + re.escape(resource_name) + '$'], text=True,
+                                stdout=subprocess.PIPE, stderr=subprocess.PIPE, timeout=5)
+        if result.returncode not in (0, 1):
+            raise RuntimeError(result.stderr)
+        windows = result.stdout.split()
+        if len(windows) > 1:
+            raise RuntimeError('Multiple mapped windows have the unique fixture identity')
+        if len(windows) == 1:
+            window = windows[0]
+            title = run(['xdotool', 'getwindowname', window], cwd=ROOT, timeout=5).strip()
+            if title == FIXTURE_TITLE:
+                return window
+        time.sleep(0.25)
+    raise RuntimeError('No unique mapped window with the exact fixture title within 60 seconds')
+
+
+def native_window_diagnostics(scene, process):
+    for label, args in [('window-tree', ['xwininfo', '-root', '-tree']),
+                        ('process', ['ps', '-p', str(process.pid), '-o', 'pid,ppid,stat,comm'])]:
+        try:
+            result = subprocess.run(args, text=True, stdout=subprocess.PIPE,
+                                    stderr=subprocess.STDOUT, timeout=5)
+            output = result.stdout
+        except (OSError, subprocess.TimeoutExpired) as error:
+            output = str(error)
+        (OUT / f'native-{scene}-{label}.log').write_text(output)
+
+
 def native_capture():
     from PIL import Image
     binary = APP / 'target/debug/robrix'
     run(['cargo', '+1.96.0', 'build', '--locked', '--features', 'ui-fixture', '--bin', 'robrix'], log='native-build.log')
     for scene in ('login', 'console'):
         with (OUT / f'native-{scene}.log').open('w') as log:
-            process = subprocess.Popen([str(binary), '--hepta-ui-fixture', scene], cwd=APP, stdout=log, stderr=subprocess.STDOUT)
+            resource_name = f'hepta-fixture-{os.getpid()}-{scene}'
+            process = subprocess.Popen([str(binary), '--hepta-ui-fixture', scene], cwd=APP,
+                                       env=dict(os.environ, RESOURCE_NAME=resource_name),
+                                       stdout=log, stderr=subprocess.STDOUT)
             try:
-                window = run(['xdotool', 'search', '--sync', '--onlyvisible', '--pid', str(process.pid)], cwd=ROOT, timeout=60).splitlines()[0]
+                window = select_fixture_window(process, resource_name)
+                run(['xprop', '-id', window, 'WM_CLASS', 'WM_NAME', '_NET_WM_PID'],
+                    cwd=ROOT, log=f'native-{scene}-window-identity.log')
                 for label, width, height in [('wide', 1180, 760), ('narrow', 520, 760), ('short', 800, 560)]:
                     run(['xdotool', 'windowsize', window, str(width), str(height)], cwd=ROOT)
                     time.sleep(3)
@@ -178,6 +222,7 @@ def native_capture():
                         assert image.size == (width, height), image.size
                         assert len(image.convert('RGB').getcolors(width * height)) > 32, 'Blank fixture image'
             finally:
+                native_window_diagnostics(scene, process)
                 process.terminate()
                 try:
                     process.wait(timeout=10)

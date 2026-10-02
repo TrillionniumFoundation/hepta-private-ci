@@ -39,3 +39,28 @@ application. The scripts being linted or unit-tested locally does not mean the
 hosted builds, browser tests, or screenshots have run.
 
 Generated application packages and fonts are not uploaded by this qualification workflow. Only screenshots, test logs and manifests are retained while the migrated dependency and font redistribution review remains pending. Pinned Makepad also contains automatic same-origin browser error reporting; disable that path before any real-account or production acceptance. CSP and static ABI qualification remain separate from these no-account fixture checks.
+
+## Failed hosted checkpoint and bootstrap diagnostics
+
+Run 37028292769 at source 9456604a2d04a977d4e0919c63ee99937a7ea7fd did
+not qualify either rendered platform. Native tests/linking passed, but the old
+`xdotool --pid` selector timed out. Pinned Makepad sets WM_CLASS and supports a
+`RESOURCE_NAME` instance override; its X11 implementation does not set
+_NET_WM_PID. Capture now uses a unique per-launch resource instance, a live
+process, and the exact account-free fixture title. Ambiguous matches fail. Each
+hosted capture has its own fresh Xvfb session; process and window-tree diagnostics
+are retained even on failure. The original 60-second selection bound is unchanged.
+
+The browser receipt stopped at `Loading scripts...`, before test output. The
+plain runner's timeout did not expose the underlying JavaScript error. The test
+adapter now runs the official wasm-bindgen interactive server and observes its
+unchanged generated test page with Playwright, retaining page errors, console,
+requests, and actual DOM test results. It keeps the 120-second execution budget
+and all thirteen required application tests. It does not mock Makepad imports,
+replace application modules, or imply that the plain runner supplies Makepad's
+production host bridge. A bootstrap failure remains a failure, with a precise
+receipt for the next repair. Test WASM/generated JS stay outside uploaded evidence.
+
+Failed artifact SHA-256 receipts:
+- Native artifact 11236788344: 768736086cb55e367aef9c92d61165a871b9d24a6622308a87369655855a3635
+- Browser artifact 11236886903: f05d2af69ec0cbc280139eeb24d36b1d1d7c09a06e8b8936934d566a9adb9437
