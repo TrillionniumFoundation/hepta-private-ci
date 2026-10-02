@@ -25,8 +25,15 @@ fn assert_navigation_galleys(shape: &egui::Shape, clip: egui::Rect, viewport: eg
             }
         }
         egui::Shape::Text(text)
-            if ["Runtime", "Operations", "Updates", "Accessibility"]
-                .contains(&text.galley.text()) =>
+            if [
+                "Chat",
+                "Console",
+                "Runtime",
+                "Operations",
+                "Updates",
+                "Accessibility",
+            ]
+            .contains(&text.galley.text()) =>
         {
             assert_eq!(
                 text.galley.rows.len(),
@@ -208,4 +215,219 @@ fn diagnostics_preview_is_bounded_without_splitting_unicode_or_changing_source()
         diagnostic_preview("{\"ready\":true}"),
         ("{\"ready\":true}", false)
     );
+}
+
+#[test]
+fn chat_is_default_and_unavailable_never_fabricates_content() {
+    use chat_model::{AppTab, ChatState};
+    let root = tempfile::TempDir::new().unwrap();
+    let mut app = app_fixture(root.path());
+    app.chat_shell.chat = ChatState::default();
+    assert_eq!(app.chat_shell.chat.tab, AppTab::Chat);
+    for (name, size) in [
+        ("wide", egui::vec2(1180.0, 760.0)),
+        ("narrow", egui::vec2(520.0, 560.0)),
+    ] {
+        let ctx = egui::Context::default();
+        theme::ensure_initialized(&ctx);
+        render(&mut app, &ctx, size, Vec::new()).drop_without_applying_deltas();
+        let output = render(&mut app, &ctx, size, Vec::new());
+        let observed = text(&output);
+        for expected in [
+            "Chat",
+            "Console",
+            "Conversations",
+            "No conversations to show",
+            "Messaging is not connected",
+        ] {
+            assert!(observed.contains(expected), "{name}: {observed}");
+        }
+        assert!(!observed.contains("Runtime overview"));
+        assert!(!observed.contains("Execute with signed grant"));
+        assert!(app.chat_shell.chat.messages.is_empty());
+        assert!(!app.chat_shell.chat.can_send());
+        insta::with_settings!({prepend_module_to_snapshot => false}, {
+            insta::assert_snapshot!(format!("native_chat_{name}"), observed);
+        });
+        output.drop_without_applying_deltas();
+    }
+}
+
+#[test]
+fn selected_chat_exposes_composer_and_observed_timeline_at_narrow_width() {
+    use chat_model::{AppTab, ChatAvailability, ChatState, Conversation, Message};
+    let root = tempfile::TempDir::new().unwrap();
+    let mut app = app_fixture(root.path());
+    app.chat_shell.chat = ChatState {
+        tab: AppTab::Chat,
+        availability: ChatAvailability::Offline,
+        conversations: vec![Conversation {
+            id: "fixture".into(),
+            title: "Local fixture".into(),
+            preview: String::new(),
+            unread: 0,
+        }],
+        selected: Some("fixture".into()),
+        messages: vec![Message {
+            id: "m1".into(),
+            sender: "Fixture sender".into(),
+            body: "Observed fixture message".into(),
+            timestamp: "12:00".into(),
+        }],
+        draft: "Unsent draft".into(),
+        ..Default::default()
+    };
+    app.chat_shell.chat_show_list = false;
+    let ctx = egui::Context::default();
+    theme::ensure_initialized(&ctx);
+    ctx.enable_accesskit();
+    let size = egui::vec2(520.0, 560.0);
+    render(&mut app, &ctx, size, Vec::new()).drop_without_applying_deltas();
+    let output = render(&mut app, &ctx, size, Vec::new());
+    let observed = text(&output);
+    for expected in [
+        "Back to conversations",
+        "Local fixture",
+        "Messaging is offline",
+        "Observed fixture message",
+        "Unsent draft",
+        "Send",
+    ] {
+        assert!(observed.contains(expected), "{observed}");
+    }
+    assert!(!app.chat_shell.chat.can_send());
+    let tree = output.platform_output.accesskit_update.as_ref().unwrap();
+    let node = &tree
+        .nodes
+        .iter()
+        .find(|(id, _)| *id == egui::Id::new("chat-composer").accesskit_id())
+        .unwrap()
+        .1;
+    assert!(!node.labelled_by().is_empty());
+    insta::with_settings!({prepend_module_to_snapshot => false}, {
+        insta::assert_snapshot!("native_chat_selected_offline", observed);
+    });
+    output.drop_without_applying_deltas();
+}
+
+#[test]
+fn console_switch_and_back_preserve_unsent_draft_without_runtime_effects() {
+    fn target(shape: &egui::Shape, label: &str) -> Option<egui::Pos2> {
+        match shape {
+            egui::Shape::Vec(shapes) => shapes.iter().find_map(|shape| target(shape, label)),
+            egui::Shape::Text(text) if text.galley.text() == label => {
+                Some(text.visual_bounding_rect().center())
+            }
+            _ => None,
+        }
+    }
+    let root = tempfile::TempDir::new().unwrap();
+    let mut app = app_fixture(root.path());
+    app.chat_shell.chat.tab = chat_model::AppTab::Chat;
+    app.chat_shell.chat.draft = "Keep my unsent thought".into();
+    let ctx = egui::Context::default();
+    theme::ensure_initialized(&ctx);
+    let size = egui::vec2(1180.0, 760.0);
+    for (label, expected_tab) in [
+        ("Console", chat_model::AppTab::Console),
+        ("Chat", chat_model::AppTab::Chat),
+    ] {
+        render(&mut app, &ctx, size, Vec::new()).drop_without_applying_deltas();
+        let output = render(&mut app, &ctx, size, Vec::new());
+        let pos = output
+            .shapes
+            .iter()
+            .find_map(|shape| target(&shape.shape, label))
+            .unwrap();
+        output.drop_without_applying_deltas();
+        render(
+            &mut app,
+            &ctx,
+            size,
+            vec![
+                egui::Event::PointerMoved(pos),
+                egui::Event::PointerButton {
+                    pos,
+                    button: egui::PointerButton::Primary,
+                    pressed: true,
+                    modifiers: egui::Modifiers::NONE,
+                },
+                egui::Event::PointerButton {
+                    pos,
+                    button: egui::PointerButton::Primary,
+                    pressed: false,
+                    modifiers: egui::Modifiers::NONE,
+                },
+            ],
+        )
+        .drop_without_applying_deltas();
+        assert_eq!(app.chat_shell.chat.tab, expected_tab);
+        assert_eq!(app.chat_shell.chat.draft, "Keep my unsent thought");
+        assert!(app.pending_runtime.is_none());
+    }
+}
+
+#[test]
+fn selected_chat_large_text_keeps_send_visible_without_activating_it() {
+    let root = tempfile::TempDir::new().unwrap();
+    let mut app = app_fixture(root.path());
+    app.chat_shell.chat.tab = chat_model::AppTab::Chat;
+    app.chat_shell
+        .chat
+        .conversations
+        .push(chat_model::Conversation {
+            id: "fixture".into(),
+            title: "Local fixture".into(),
+            preview: String::new(),
+            unread: 0,
+        });
+    app.chat_shell.chat.selected = Some("fixture".into());
+    app.chat_shell.chat_show_list = false;
+    let ctx = egui::Context::default();
+    theme::ensure_initialized(&ctx);
+    let size = egui::vec2(800.0 / 1.5, 560.0 / 1.5);
+    render(&mut app, &ctx, size, Vec::new()).drop_without_applying_deltas();
+    let output = render(&mut app, &ctx, size, Vec::new());
+    let observed = text(&output);
+    assert!(observed.contains("Send"), "{observed}");
+    assert!(observed.contains("Write a message…"), "{observed}");
+    assert!(app.pending_runtime.is_none());
+    insta::with_settings!({prepend_module_to_snapshot => false}, { insta::assert_snapshot!("native_chat_large_text", observed); });
+    output.drop_without_applying_deltas();
+}
+
+#[test]
+fn keyboard_composer_input_is_a_local_draft_when_disconnected() {
+    let root = tempfile::TempDir::new().unwrap();
+    let mut app = app_fixture(root.path());
+    app.chat_shell.chat.tab = chat_model::AppTab::Chat;
+    let ctx = egui::Context::default();
+    theme::ensure_initialized(&ctx);
+    let size = egui::vec2(1180.0, 760.0);
+    render(&mut app, &ctx, size, Vec::new()).drop_without_applying_deltas();
+    ctx.memory_mut(|memory| memory.request_focus(egui::Id::new("chat-composer")));
+    render(
+        &mut app,
+        &ctx,
+        size,
+        vec![egui::Event::Text("Local thought".into())],
+    )
+    .drop_without_applying_deltas();
+    render(
+        &mut app,
+        &ctx,
+        size,
+        vec![egui::Event::Key {
+            key: egui::Key::Enter,
+            physical_key: None,
+            pressed: true,
+            repeat: false,
+            modifiers: egui::Modifiers::NONE,
+        }],
+    )
+    .drop_without_applying_deltas();
+    assert!(app.chat_shell.chat.draft.starts_with("Local thought"));
+    assert!(app.chat_shell.chat.messages.is_empty());
+    assert!(!app.chat_shell.chat.sending);
+    assert!(app.pending_runtime.is_none());
 }

@@ -1,12 +1,17 @@
 //! Native presentation tokens. Color never substitutes for an observed state.
+use super::chat_model::design;
 use super::egui;
 
-pub(super) const BACKGROUND: egui::Color32 = egui::Color32::from_rgb(10, 15, 24);
-pub(super) const SURFACE: egui::Color32 = egui::Color32::from_rgb(17, 25, 38);
-pub(super) const BORDER: egui::Color32 = egui::Color32::from_rgb(53, 72, 96);
-pub(super) const TEXT: egui::Color32 = egui::Color32::from_rgb(230, 237, 247);
-pub(super) const MUTED: egui::Color32 = egui::Color32::from_rgb(166, 183, 205);
-pub(super) const CYAN: egui::Color32 = egui::Color32::from_rgb(105, 224, 232);
+const fn color(rgb: [u8; 3]) -> egui::Color32 {
+    egui::Color32::from_rgb(rgb[0], rgb[1], rgb[2])
+}
+
+pub(super) const BACKGROUND: egui::Color32 = color(design::BACKGROUND);
+pub(super) const SURFACE: egui::Color32 = color(design::SURFACE);
+pub(super) const BORDER: egui::Color32 = color(design::BORDER);
+pub(super) const TEXT: egui::Color32 = color(design::TEXT);
+pub(super) const MUTED: egui::Color32 = color(design::MUTED);
+pub(super) const CYAN: egui::Color32 = color(design::ACCENT);
 pub(super) const VIOLET: egui::Color32 = egui::Color32::from_rgb(184, 166, 255);
 pub(super) const WARNING: egui::Color32 = egui::Color32::from_rgb(255, 207, 128);
 pub(super) const ERROR: egui::Color32 = egui::Color32::from_rgb(255, 164, 174);
@@ -60,7 +65,7 @@ pub(super) fn install(ctx: &egui::Context, contrast: Contrast) {
     }
     style.spacing.item_spacing = egui::vec2(10.0, 8.0);
     style.spacing.button_padding = egui::vec2(12.0, 7.0);
-    style.spacing.interact_size.y = 32.0;
+    style.spacing.interact_size.y = design::CONTROL_HEIGHT;
     style.spacing.text_edit_width = 320.0;
     for (kind, size) in [
         (egui::TextStyle::Heading, 25.0),

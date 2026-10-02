@@ -1,5 +1,14 @@
 # ui.native technical development guide
 
+## Current chat-first presentation continuation
+
+[Chat-first redesign](CHAT-REDESIGN-20261002.md) defines the current application
+hierarchy: Chat is primary and Console is secondary. The new candidate preserves
+independent owner authentication and fatal updater/integrity behavior. Its exact
+source is bound separately in `apps/hepta-native/CHAT_REDESIGN_CANDIDATE.json`;
+the frozen sources and qualification records below remain historical and cannot
+qualify the redesign. No registrar or AuthBus repair is part of this candidate.
+
 For the 2026-10-02 continuation, see the [Rust-only product and presentation
 audit](ADVERSARIAL-AUDIT-20261002.md). It separates the accepted `978c1923...`
 baseline, current-main integration, new-source work and remaining acceptance

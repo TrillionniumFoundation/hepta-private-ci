@@ -1,5 +1,13 @@
 # Hepta Native
 
+The current product is a Rust chat application. Chat opens first; the runtime
+console is a secondary in-app tab. Desktop and web consume the same Rust
+navigation, conversation projection and design tokens. Chat connects through
+its explicitly configured Agentd/App Server owner, independently of the console
+read-only gateway. See [the chat-first continuation](../../docs/modules/ui.native/CHAT-REDESIGN-20261002.md)
+for current behavior and its unqualified source manifest. Historical native
+security and installed-acceptance evidence below is not reused for this source.
+
 Long-running refresh, reconciliation, final-use execution and update staging run
 through one serialized worker slot so the native event loop never performs those
 I/O operations directly.

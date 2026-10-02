@@ -206,3 +206,49 @@ fn capture_fixture_native_screens() {
     )
     .unwrap();
 }
+
+#[test]
+#[ignore = "requires an explicitly provisioned Linux display and HEPTA_NATIVE_SCREENSHOT_DIR"]
+fn capture_chat_first_screens() {
+    let output = PathBuf::from(
+        std::env::var_os("HEPTA_NATIVE_SCREENSHOT_DIR").expect("set fixture screenshot directory"),
+    );
+    assert!(output.is_absolute());
+    std::fs::create_dir_all(&output).unwrap();
+    for (width, height, zoom) in [(1180, 760, 1.0), (520, 760, 1.0), (800, 560, 1.5)] {
+        for mode in ["disconnected", "timeline", "console"] {
+            let fixture = tempfile::TempDir::new().unwrap();
+            let mut app = super::super::input_event_tests::app_fixture(fixture.path());
+            app.chat_shell.chat = chat_model::ChatState::default();
+            if mode == "console" {
+                app.chat_shell.chat.tab = chat_model::AppTab::Console;
+                app.screen = Screen::Runtime;
+            } else if mode == "timeline" {
+                app.chat_shell.chat.availability = chat_model::ChatAvailability::Offline;
+                app.chat_shell
+                    .chat
+                    .conversations
+                    .push(chat_model::Conversation {
+                        id: "fixture-room".into(),
+                        title: "Local fixture conversation".into(),
+                        preview: "Fixture only; no live account".into(),
+                        unread: 0,
+                    });
+                app.chat_shell.chat.select("fixture-room");
+                app.chat_shell.chat_show_list = false;
+                app.chat_shell.chat.messages = vec![
+                    chat_model::Message { id: "fixture-user".into(), sender: "Fixture user".into(), body: "How do we keep conversation and console readiness independent?".into(), timestamp: "12:00".into() },
+                    chat_model::Message { id: "fixture-assistant".into(), sender: "Fixture assistant".into(), body: "Each connection reports its own state. An unavailable console does not imply that chat is connected. This message is a rendering fixture.".into(), timestamp: "12:01".into() },
+                ];
+                app.chat_shell.chat.draft = "Unsent local fixture draft".into();
+            }
+            capture_app(
+                Box::new(app),
+                output.join(format!("chat-{mode}-{width}x{height}-zoom{zoom}.ppm")),
+                egui::FontDefinitions::default(),
+                [width, height],
+                zoom,
+            );
+        }
+    }
+}

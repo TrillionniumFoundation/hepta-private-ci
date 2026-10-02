@@ -14,20 +14,8 @@ pub(super) fn diagnostic_preview(text: &str) -> (&str, bool) {
 impl HeptaNativeApp {
     pub(super) fn top_bar(&mut self, ui: &mut egui::Ui) {
         let busy = self.runtime_busy();
+        let console = self.chat_shell.chat.tab == chat_model::AppTab::Console;
         ui.horizontal_wrapped(|ui| {
-            theme::brand_mark(ui);
-            ui.label(
-                egui::RichText::new("HEPTA")
-                    .size(23.0)
-                    .strong()
-                    .color(theme::CYAN),
-            );
-            ui.label(
-                egui::RichText::new("NATIVE / CONTROL")
-                    .small()
-                    .color(theme::MUTED),
-            );
-            ui.separator();
             let (status, color) = if self
                 .pending_runtime
                 .as_ref()
@@ -53,6 +41,9 @@ impl HeptaNativeApp {
             };
             ui.label(egui::RichText::new(status).color(color));
         });
+        if !console {
+            return;
+        }
         ui.horizontal_wrapped(|ui| {
             if ui
                 .add_enabled(
@@ -194,7 +185,19 @@ impl HeptaNativeApp {
     }
 
     pub(super) fn shell_view(&mut self, ui: &mut egui::Ui) {
+        self.chat_shell.locale = self.locale;
+        self.chat_shell.poll_chat(ui.ctx());
         let compact = ui.available_width() < 980.0;
+        let old_tab = self.chat_shell.chat.tab;
+        self.chat_shell.navigation(ui);
+        if old_tab != self.chat_shell.chat.tab {
+            task_supervisor::cancel_file_input(ui.ctx());
+            self.file_input_focus = None;
+        }
+        if self.chat_shell.chat.tab == chat_model::AppTab::Chat {
+            self.chat_shell.chat_view(ui);
+            return;
+        }
         egui::Panel::top("hepta-native-top")
             .frame(theme::card())
             .show(ui, |ui| self.top_bar(ui));

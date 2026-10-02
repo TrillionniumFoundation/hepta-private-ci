@@ -45,3 +45,5 @@ mod private_state_test_support;
 
 #[cfg(any(target_os = "macos", target_os = "windows", test))]
 mod native_pipe;
+
+pub mod chat_runtime;

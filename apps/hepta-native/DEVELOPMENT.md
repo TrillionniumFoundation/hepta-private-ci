@@ -1,5 +1,48 @@
 # hepta-native developer guide
 
+## Chat-first application contract
+
+The application opens Chat, with the console available as a secondary in-app tab.
+Rust hosts consume `apps/hepta-ui-shared/chat.rs` for navigation, conversation
+projection, send eligibility and geometry/color tokens. The eframe adapter keeps
+conversation list, timeline and composer together on wide screens and offers a
+list/back flow on narrow screens. Console authorization and update confirmation
+remain unchanged. An authenticated runtime snapshot is not messaging readiness.
+Disconnected/unavailable messaging has no fabricated conversations or delivered
+messages. The first-party `hepta-agent-chat-host` uses Agentd SessionIngress,
+scopes threads by agent generation, workspace, project and chat source, and
+reconciles stable message operation IDs through the existing queue owner. Native
+reads its bounded responses, polls the selected timeline, and clears the exact
+submitted draft only after the owner reports persistence. Tool approvals are
+not granted by this surface; approval-required responses remain visible.
+
+Every interactive launch opens Chat or its unavailable/setup shell when console
+configuration is absent. An explicit `--chat-config /absolute/chat.json` can
+start authenticated Chat independently of console preflight failure or
+connection-level I/O unavailability. Late authentication, integrity, update,
+rollback, state and indeterminate errors remain fatal and cannot reopen Chat. The Console tab then explains its own unavailable
+signed configuration/runtime. This fallback does not construct a replacement
+console runtime, update manager or privileged adapter. Chat and Console retain
+independent authentication and readiness. A chat-only start does not establish
+native update-readiness evidence.
+
+The chat configuration contains `host_sha256`, `agentd_socket`, `agent_id`,
+`generation`, `project_id`, and `workspace`. The socket, workspace and config
+paths are absolute. Provision the first-party host as a sibling of the native
+executable and pin its SHA-256 in this operator-owned configuration; no arbitrary
+executable path, credential creation or environment-derived chat authority is
+accepted. `chat_config` may also be specified in the existing native launch
+JSON. Hash verification, process startup and reconnect happen off the render
+thread. Owner admission, per-request generation health checks, frame bounds,
+watchdog cancellation and stale-response validation remain required.
+
+Local fixture snapshots and mocked stdio tests are not live-chat or production
+qualification. Native raster screenshots require supported hosted UI/Xvfb
+execution. The historical frozen `CURRENT_SOURCE.json` does not cover this
+continuation: new qualification must include `apps/hepta-ui-shared` and the
+first-party host closure as well as the native renderer.
+
+
 The [2026-10-02 Rust-only product and presentation audit](../../docs/modules/ui.native/ADVERSARIAL-AUDIT-20261002.md)
 maps current entrypoints and tests to the new acceptance matrix. It links final
 evidence for the historical `978c1923...` candidate without treating that result
