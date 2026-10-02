@@ -1,0 +1,104 @@
+name: Hepta chat owner qualification
+
+on:
+  push:
+    branches: ["work/shared-chat-transport-20261002"]
+  pull_request:
+    paths:
+      - "codex-rs/hepta-matrixd/**"
+      - "apps/hepta-ui-shared/**"
+      - ".github/workflows/hepta-chat-owner-qualification.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-chat-owner-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  owner-uds-fixtures:
+    name: Exact source / real local UDS / fixture provider
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '0063323c884d4ac0abb0605dce9c8ca914fbd86a' }}
+      CARGO_BUILD_JOBS: "1"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_NET_GIT_FETCH_WITH_CLI: "true"
+      CARGO_TERM_COLOR: never
+      CARGO_TARGET_DIR: ${{ runner.temp }}/hepta-chat-owner-target
+    steps:
+      - name: Checkout immutable source without credentials
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+          fetch-depth: 0
+
+      - name: Bind exact source, schema and base identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          mkdir -p .hepta-chat-evidence
+          {
+            printf 'source_sha=%s\n' "$SOURCE_SHA"
+            printf 'source_tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'stacked_base=%s\n' "$BASE_SHA"
+            printf 'schema_blob=%s\n' "$(git rev-parse HEAD:apps/hepta-ui-shared/chat_transport.rs)"
+            printf 'scope=ordinary Agentd App Server chat; fake provider; no production admission\n'
+          } > .hepta-chat-evidence/identity.txt
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: "1.95.0"
+          components: rustfmt, clippy
+
+      - name: Install repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Compile the production owner and stdio composition
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-matrixd --lib --bin hepta-agent-chat-host 2>&1 | tee .hepta-chat-evidence/owner-check.log
+
+      - name: Exercise actual UDS and initialized WebSocket owner without live services
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked -p codex-hepta-matrixd --lib --test-threads=2 2>&1 | tee .hepta-chat-evidence/owner-tests.log
+
+      - name: Validate shared wire contract
+        shell: bash
+        run: |
+          set -euo pipefail
+          just test --locked --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core --test chat_transport 2>&1 | tee .hepta-chat-evidence/wire-tests.log
+
+      - name: Check formatting and exact source immutability
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-matrixd -- --check
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"
+
+      - name: Retain qualification evidence, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-chat-owner-${{ github.run_id }}-${{ github.run_attempt }}
+          path: .hepta-chat-evidence/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 7
