@@ -3,7 +3,7 @@
   "module": "context.compiler",
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "a7b2f0b8913ac367ffec27d4a2864039ddd60334cc64a733cfc2300da6b62e6e",
+    "stateSha256": "a3b7138f345a3e9d28aa82a259293d236adc070f8a9be0524d165b7e74e8bf7c",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
@@ -75,7 +75,8 @@
     "codex-rs/.config/nextest.toml",
     "codex-rs/hepta-context-compiler/src/wire.rs",
     "codex-rs/hepta-context-compiler/src/wire_tests.rs",
-    "codex-rs/hepta-context-compiler/src/lib.rs"
+    "codex-rs/hepta-context-compiler/src/lib.rs",
+    "scripts/test_context_compiler_execution.py"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -270,8 +271,8 @@
   ],
   "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
   "integrationBranch": "codex/context-compiler-v3-closure-20260928",
-  "runtimeSourceAnchor": "a1b12d46638ed6606f3f3536c72266ea8cff52ed",
-  "runtimeSourceTree": "44f97a581e2b6cb85438354c7e8a6f0c60256b4f",
+  "runtimeSourceAnchor": "b52644a113a6b0d6fd3cdab15cc505d242781b61",
+  "runtimeSourceTree": "476f05203b4e49896274146085f239966bdb041a",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -441,7 +442,7 @@
     },
     {
       "path": "scripts/context_compiler_execution.py",
-      "blobSha": "78c6bf84baa799988dff1e9ecb0804964d5c5d71"
+      "blobSha": "41898b430191e93a828c2245d342d51dfafc58d8"
     },
     {
       "path": "scripts/context_compiler_named_evidence.py",
@@ -510,6 +511,10 @@
     {
       "path": "codex-rs/hepta-context-compiler/src/lib.rs",
       "blobSha": "b5a49d27abdb767cb24633838c0e4604c4fb912c"
+    },
+    {
+      "path": "scripts/test_context_compiler_execution.py",
+      "blobSha": "6a571bed70975517c5e7bec0de5048e667efe1b9"
     }
   ],
   "consumerExecution": [
@@ -883,12 +888,12 @@
     "currentHeadQualification": "absent"
   },
   "sourceBase": {
-    "commit": "a1b12d46638ed6606f3f3536c72266ea8cff52ed",
-    "tree": "44f97a581e2b6cb85438354c7e8a6f0c60256b4f"
+    "commit": "b52644a113a6b0d6fd3cdab15cc505d242781b61",
+    "tree": "476f05203b4e49896274146085f239966bdb041a"
   },
   "observedAtHead": {
-    "commit": "a1b12d46638ed6606f3f3536c72266ea8cff52ed",
-    "tree": "44f97a581e2b6cb85438354c7e8a6f0c60256b4f"
+    "commit": "b52644a113a6b0d6fd3cdab15cc505d242781b61",
+    "tree": "476f05203b4e49896274146085f239966bdb041a"
   },
   "observedSourcePaths": [
     "codex-rs/hepta-context-compiler",
@@ -1187,7 +1192,7 @@
     },
     {
       "path": "docs/modules/context.compiler/AUDIT_20261002.md",
-      "object": "d1003fb2c43fbdea7ce8896ea217abaf7009a8e5"
+      "object": "d1023e37c1f9a6dfd262c14d55ac00207e568d70"
     },
     {
       "path": "docs/modules/context.compiler/V3_DEVELOPMENT.md",
