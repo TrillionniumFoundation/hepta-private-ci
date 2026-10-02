@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "module": "inference.control",
   "generatedFrom": "docs/modules/inference.control/CURRENT_STATE_SOURCE.json",
-  "sourceManifestSha256": "10b32fc0170fa700c4fc2dd196ea29ce70b2986b91340c23f76802f7c85eaa59",
+  "sourceManifestSha256": "e09eef22fad4da7acebb96fa9bf1422783431970c3aa936e113db6c263c43b40",
   "provenance": {
     "baselineCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "baselineTree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30",
@@ -34,7 +34,9 @@
     ],
     "productionEffectOwner": "codex-hepta-infer-worker-host::native_app_server::AppServerModelDriver",
     "durableWriterOwner": "codex-hepta-infer-core::durable_control::DurableInferenceControl",
-    "actorPort": "codex-hepta-infer-worker-host::control_actor::NativeJournalWriterActor"
+    "actorPort": "codex-hepta-infer-worker-host::control_actor::NativeJournalWriterActor",
+    "stateOwnerDisposition": "DurableInferenceControl remains the sole request, reservation and receipt writer; NativeJournalWriterActor serializes its production mutations. Provider execution remains outside that owner.",
+    "terminalObserverDisposition": "The named App Server caller supplies exact correlated observations to protected signed-plan settlement. Unknown execution retains capacity. Repository observations do not prove billing, selected-host execution or independent acceptance."
   },
   "status": {
     "sourceImplementation": "implemented_with_unique_writer_actor_exact_head_qualification_pending",

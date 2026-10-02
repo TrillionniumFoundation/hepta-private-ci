@@ -11,6 +11,8 @@
   "module": "inference.control",
   "owner": "inference-platform",
   "deputy": "runtime-control",
+  "stateOwnerDisposition": "DurableInferenceControl remains the sole request, reservation and receipt writer; NativeJournalWriterActor serializes its production mutations. Provider execution remains outside that owner.",
+  "terminalObserverDisposition": "The named App Server caller supplies exact correlated observations to protected signed-plan settlement. Unknown execution retains capacity. Repository observations do not prove billing, selected-host execution or independent acceptance.",
   "technicalGuide": "docs/modules/inference.control/TECHNICAL.md",
   "generatedStatus": "docs/modules/inference.control/TECHNICAL_STATUS.generated.md",
   "currentState": "docs/modules/inference.control/CURRENT_STATE.json",
@@ -72,6 +74,100 @@
     }
   ],
   "operations": [
+    {
+      "operation": "reserve_request",
+      "designOperation": "reserve_request",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+        "symbol": "pub fn reserve_native(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+          "kind": "durable_exact_plan_and_recovery",
+          "command": "just test -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Pins exact request identity and bounded local capacity under the single durable owner before provider contact.",
+      "nativeSymbol": "pub fn reserve_native(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "schedule",
+      "designOperation": "schedule",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+        "symbol": "pub fn dispatch_native_authorized_with_pre_effect_abort(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+          "kind": "durable_exact_plan_and_recovery",
+          "command": "just test -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Validates the exact signed plan and syncs dispatch intent before provider entry; this is local dispatch, not an enrolled-worker scheduler.",
+      "nativeSymbol": "pub fn dispatch_native_authorized_with_pre_effect_abort(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "cancel",
+      "designOperation": "cancel",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+        "symbol": "pub fn cancel_native(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+          "kind": "durable_exact_plan_and_recovery",
+          "command": "just test -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Persists cancellation intent without equating acknowledgement with terminality or releasing uncertain capacity.",
+      "nativeSymbol": "pub fn cancel_native(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "settle",
+      "designOperation": "settle",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+        "symbol": "pub fn settle_native_authorized(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+          "kind": "durable_exact_plan_and_recovery",
+          "command": "just test -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Settles exact observations against the signed plan and output policy; uncertain effects retain capacity and cannot be replayed.",
+      "nativeSymbol": "pub fn settle_native_authorized(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+      "sourcePathExists": true
+    }
+  ],
+  "implementationDetails": [
     {
       "operation": "verify_execution_plan",
       "state": "source_implemented",
@@ -286,7 +382,7 @@
         "scripts/test_hepta_inference_current_state.py"
       ],
       "designOperation": "operator_slo_alert_policy",
-      "mappingClass": "owner_native",
+      "mappingClass": "documentation_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
