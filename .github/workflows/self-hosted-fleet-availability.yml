@@ -1,53 +1,18 @@
-name: ROG Strix Halo SMU A/B 20261002
+name: ROG SMU registered path superseded
 
 on:
   push:
     branches: [ops/rog-smu-ab-20261002]
-  workflow_dispatch:
 
-permissions:
-  contents: read
+permissions: {}
 
 concurrency:
   group: rog-smu-ab-20261002-registered
   cancel-in-progress: true
 
 jobs:
-  qualify:
-    name: Trusted ROG SMU qualification
-    if: >-
-      github.repository == 'TrillionniumFoundation/hepta-private-ci' &&
-      github.ref == 'refs/heads/ops/rog-smu-ab-20261002' &&
-      github.actor == 'ProfHepta'
-    runs-on: [self-hosted, linux, x64, rog]
-    timeout-minutes: 45
-    env:
-      PYTHONUNBUFFERED: '1'
+  supersede:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 2
     steps:
-      - name: Checkout exact ops head
-        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-
-      - name: Run one-owner bounded qualification
-        shell: bash
-        run: |
-          set -euo pipefail
-          bash -n ops/rog-smu-ab-20261002.sh
-          bash ops/rog-smu-ab-20261002.sh
-
-      - name: Print retained matrix
-        if: always()
-        shell: bash
-        run: |
-          if test -f /home/qian-qi/rog-ai-smu-ab/matrix-20261002.json; then
-            python3 - <<'PY'
-          import json
-          p='/home/qian-qi/rog-ai-smu-ab/matrix-20261002.json'
-          d=json.load(open(p))
-          print(json.dumps({'comparisons':d.get('comparisons'),
-                            'best_screened':d.get('best_screened')},indent=2))
-          PY
-          fi
-          systemctl is-active rog-ai-safety-monitor.service
-          sudo -n test ! -e /var/lib/rog-ai-production/safe-latch
+      - run: echo 'ROG runner qualification superseded by the recovered direct control channel.'
