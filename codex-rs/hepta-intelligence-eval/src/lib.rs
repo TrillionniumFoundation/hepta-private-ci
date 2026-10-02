@@ -610,9 +610,15 @@ pub use fixed_product_host::inspect_fixed_product_evaluation;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod climate_holdout_custody;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod public_development_custody;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use climate_holdout_custody::inspect_climate_source_holdout;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use climate_holdout_custody::prepare_climate_source_holdout;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use public_development_custody::inspect_public_development_custody;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use public_development_custody::prepare_public_development_custody;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_holdout_custody;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]

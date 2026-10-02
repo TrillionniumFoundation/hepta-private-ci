@@ -8,6 +8,7 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 [privileged_inventory]
 required_boundary_ids = [
   "bao_operation_consumer_registration",
+  "public_development_source_custody_prepare",
   "original_paired_custody_execution",
   "original_paired_custody_finish",
   "original_consumed_custody_effect",
@@ -873,7 +874,7 @@ symbol = "initialize_private_holdout"
 call_pattern = '\binitialize_private_holdout\s*\('
 definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_holdout_custody.rs"
 definition_markers = ["pub(super) fn initialize_private_holdout", "LockedFileFinalHoldoutCasStoreV1::create", "FencedFinalHoldoutOwnerV1::initialize", "create_private(witness_path"]
-product_callers = ["codex-rs/hepta-intelligence-eval/src/climate_holdout_custody.rs"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/climate_holdout_custody.rs", "codex-rs/hepta-intelligence-eval/src/public_development_custody.rs"]
 caller_markers = ["initialize_private_holdout(", "config_digest"]
 
 [[protected_file]]
@@ -1068,3 +1069,17 @@ forbidden = ["SigningKey", "append_unlearning", "recover_ledger", "sign_root_lea
 path = "codex-rs/hepta-intelligence-eval/src/paired_custody_numeric.rs"
 required = ["weights_filename", ".join(filename)", "self.weights.path", "intent_path.exists()", "status_path.exists()", "model.verify()", "terminal_observed", "input_line_digest", "child.0.wait()"]
 forbidden = ["SigningKey", "FinalHoldoutCas", "AuthorityPosture::ALLOW_ALL", "weights_digest ="]
+
+[[boundary]]
+id = "public_development_source_custody_prepare"
+symbol = "prepare_public_development_custody"
+call_pattern = '\bprepare_public_development_custody\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/public_development_custody.rs"
+definition_markers = ["pub fn prepare_public_development_custody", "boundary()?", "complete_feature_graph.digest != GRAPH", "feature_membership.digest != MEMBERSHIP", "initialize_private_holdout"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-holdout-custody.rs"]
+caller_markers = ["--prepare-public-development", "codex_hepta_intelligence_eval::prepare_public_development_custody"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/public_development_custody.rs"
+required = ["deny_unknown_fields", "row.feature.digest()", "label.component_sha256", "partitions", ".get(&member.component_digest)", "p != &member.partition", "complete_features", "unscored_component_feature_rows", "Repeated public HealthVer train task subset"]
+forbidden = ["SigningKey", "holdout.consume", "signing.sign", "source.freeze", "FinalHoldoutCasStoreV1::create"]
