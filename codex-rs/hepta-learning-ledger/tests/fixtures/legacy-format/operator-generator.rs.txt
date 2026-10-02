@@ -1,0 +1,13 @@
+use crate::*;
+use codex_hepta_types::Digest32;
+use std::fs::{self,OpenOptions};
+#[test]
+fn emit_actual_operator_legacy_fixtures() {
+ let root=std::path::Path::new("/tmp/legacy-ledger-fixtures-operator");fs::create_dir_all(root).unwrap();
+ let event=LedgerEvent::RetrievalAssignmentIntentV2(crate::retrieval_publication::tests::intent(1));
+ fs::write(root.join("event.bin"),crate::ledger::encode_event(&event)).unwrap();
+ let file=|name|OpenOptions::new().create_new(true).read(true).write(true).open(root.join(name)).unwrap();
+ let binding=Digest32::of_bytes(b"fixture-store");
+ let mut journal=DurableLedger::create(file("journal.bin"),binding,16).unwrap();journal.append(Digest32::ZERO,event.clone()).unwrap();
+ let mut segments=SegmentedLedger::create(file("owner.lock"),file("segment.bin"),binding,LedgerSegmentLimits {records:16,bytes:4096}).unwrap();segments.append(Digest32::ZERO,event).unwrap();segments.seal(segments.anchor().unwrap()).unwrap();
+}

@@ -110,77 +110,7 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
             authority_id: reader.id()?,
             reason_digest: reader.digest()?,
         }),
-        9 => LedgerEvent::RetrievalAssignment(RetrievalAssignmentFact {
-            record_id: reader.id()?,
-            episode_id: reader.id()?,
-            cue_digest: reader.digest()?,
-            policy_digest: reader.digest()?,
-            source_completeness_digest: reader.digest()?,
-            candidate_union_digest: reader.digest()?,
-            recall_packet_digest: reader.digest()?,
-            enumerated_candidate_digests: {
-                let count = u32::from_be_bytes(reader.take()?) as usize;
-                if count > 512 {
-                    return Err(DurableLedgerError::Corrupt);
-                }
-                (0..count)
-                    .map(|_| reader.digest())
-                    .collect::<Result<Vec<_>, _>>()?
-            },
-            legal_candidate_indices: {
-                let count = u32::from_be_bytes(reader.take()?) as usize;
-                if count > 512 {
-                    return Err(DurableLedgerError::Corrupt);
-                }
-                (0..count)
-                    .map(|_| Ok(u32::from_be_bytes(reader.take()?)))
-                    .collect::<Result<Vec<_>, DurableLedgerError>>()?
-            },
-            selected_candidate_indices: {
-                let count = u32::from_be_bytes(reader.take()?) as usize;
-                if count > 16 {
-                    return Err(DurableLedgerError::Corrupt);
-                }
-                (0..count)
-                    .map(|_| Ok(u32::from_be_bytes(reader.take()?)))
-                    .collect::<Result<Vec<_>, DurableLedgerError>>()?
-            },
-            delivered_candidate_indices: {
-                let count = u32::from_be_bytes(reader.take()?) as usize;
-                if count > 16 {
-                    return Err(DurableLedgerError::Corrupt);
-                }
-                (0..count)
-                    .map(|_| Ok(u32::from_be_bytes(reader.take()?)))
-                    .collect::<Result<Vec<_>, DurableLedgerError>>()?
-            },
-            context_exposed: match reader.byte()? {
-                0 => false,
-                1 => true,
-                _ => return Err(DurableLedgerError::Corrupt),
-            },
-            published_context_digest: match reader.byte()? {
-                0 => None,
-                1 => Some(reader.digest()?),
-                _ => return Err(DurableLedgerError::Corrupt),
-            },
-            omitted_by_policy_limits: u32::from_be_bytes(reader.take()?),
-            assignment_propensity: ProbabilityQ32::from_raw(u64::from_be_bytes(reader.take()?))
-                .map_err(|_| DurableLedgerError::Corrupt)?,
-            downstream_policy_digest: match reader.byte()? {
-                0 => None,
-                1 => Some(reader.digest()?),
-                _ => return Err(DurableLedgerError::Corrupt),
-            },
-            delivery_propensity: ProbabilityQ32::from_raw(u64::from_be_bytes(reader.take()?))
-                .map_err(|_| DurableLedgerError::Corrupt)?,
-            completeness: match reader.byte()? {
-                0 => CandidateSetCompleteness::Complete,
-                1 => CandidateSetCompleteness::Incomplete,
-                _ => return Err(DurableLedgerError::Corrupt),
-            },
-            support_digest: reader.digest()?,
-        }),
+        9 => LedgerEvent::RetrievalAssignment(decode_assignment_body(&mut reader)?),
         4 => LedgerEvent::AuthenticatedOutcomeV2(AuthenticatedOutcomeRecordV2 {
             record_id: reader.id()?,
             outcome_id: reader.id()?,
@@ -300,7 +230,83 @@ pub(crate) fn decode_event(mut input: &[u8]) -> Result<LedgerEvent, DurableLedge
     Ok(event)
 }
 
-pub(crate) struct Reader<'a>(&'a [u8]);
+pub(crate) fn decode_assignment_body(
+    reader: &mut Reader<'_>,
+) -> Result<RetrievalAssignmentFact, DurableLedgerError> {
+    Ok(RetrievalAssignmentFact {
+        record_id: reader.id()?,
+        episode_id: reader.id()?,
+        cue_digest: reader.digest()?,
+        policy_digest: reader.digest()?,
+        source_completeness_digest: reader.digest()?,
+        candidate_union_digest: reader.digest()?,
+        recall_packet_digest: reader.digest()?,
+        enumerated_candidate_digests: {
+            let count = u32::from_be_bytes(reader.take()?) as usize;
+            if count > 512 {
+                return Err(DurableLedgerError::Corrupt);
+            }
+            (0..count)
+                .map(|_| reader.digest())
+                .collect::<Result<Vec<_>, _>>()?
+        },
+        legal_candidate_indices: {
+            let count = u32::from_be_bytes(reader.take()?) as usize;
+            if count > 512 {
+                return Err(DurableLedgerError::Corrupt);
+            }
+            (0..count)
+                .map(|_| Ok(u32::from_be_bytes(reader.take()?)))
+                .collect::<Result<Vec<_>, DurableLedgerError>>()?
+        },
+        selected_candidate_indices: {
+            let count = u32::from_be_bytes(reader.take()?) as usize;
+            if count > 16 {
+                return Err(DurableLedgerError::Corrupt);
+            }
+            (0..count)
+                .map(|_| Ok(u32::from_be_bytes(reader.take()?)))
+                .collect::<Result<Vec<_>, DurableLedgerError>>()?
+        },
+        delivered_candidate_indices: {
+            let count = u32::from_be_bytes(reader.take()?) as usize;
+            if count > 16 {
+                return Err(DurableLedgerError::Corrupt);
+            }
+            (0..count)
+                .map(|_| Ok(u32::from_be_bytes(reader.take()?)))
+                .collect::<Result<Vec<_>, DurableLedgerError>>()?
+        },
+        context_exposed: match reader.byte()? {
+            0 => false,
+            1 => true,
+            _ => return Err(DurableLedgerError::Corrupt),
+        },
+        published_context_digest: match reader.byte()? {
+            0 => None,
+            1 => Some(reader.digest()?),
+            _ => return Err(DurableLedgerError::Corrupt),
+        },
+        omitted_by_policy_limits: u32::from_be_bytes(reader.take()?),
+        assignment_propensity: ProbabilityQ32::from_raw(u64::from_be_bytes(reader.take()?))
+            .map_err(|_| DurableLedgerError::Corrupt)?,
+        downstream_policy_digest: match reader.byte()? {
+            0 => None,
+            1 => Some(reader.digest()?),
+            _ => return Err(DurableLedgerError::Corrupt),
+        },
+        delivery_propensity: ProbabilityQ32::from_raw(u64::from_be_bytes(reader.take()?))
+            .map_err(|_| DurableLedgerError::Corrupt)?,
+        completeness: match reader.byte()? {
+            0 => CandidateSetCompleteness::Complete,
+            1 => CandidateSetCompleteness::Incomplete,
+            _ => return Err(DurableLedgerError::Corrupt),
+        },
+        support_digest: reader.digest()?,
+    })
+}
+
+pub(crate) struct Reader<'a>(pub(crate) &'a [u8]);
 
 impl Reader<'_> {
     pub(crate) fn take<const N: usize>(&mut self) -> Result<[u8; N], DurableLedgerError> {

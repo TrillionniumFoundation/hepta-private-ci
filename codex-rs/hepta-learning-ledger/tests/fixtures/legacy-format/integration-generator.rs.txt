@@ -1,0 +1,15 @@
+use crate::*;
+use codex_hepta_types::{Digest32,StableId,ProbabilityQ32};
+use std::fs::{self,OpenOptions};
+fn id(s:&str)->StableId { StableId::new(s).unwrap() }
+fn d(s:&str)->Digest32 { Digest32::of_bytes(s.as_bytes()) }
+#[test]
+fn emit_actual_integration_legacy_fixtures() {
+ let root=std::path::Path::new("/tmp/legacy-ledger-fixtures-6000");fs::create_dir_all(root).unwrap();
+ let event=LedgerEvent::RetrievalPrepared(RetrievalPreparationFactV1 {
+ assignment:RetrievalAssignmentFact { record_id:id("prepared:fixture"),episode_id:id("episode:fixture"),cue_digest:d("cue"),policy_digest:d("policy"),source_completeness_digest:d("complete"),candidate_union_digest:d("union"),recall_packet_digest:d("packet"),enumerated_candidate_digests:vec![d("candidate")],legal_candidate_indices:vec![0],selected_candidate_indices:vec![0],delivered_candidate_indices:vec![],context_exposed:false,published_context_digest:None,omitted_by_policy_limits:0,assignment_propensity:ProbabilityQ32::ONE,downstream_policy_digest:None,delivery_propensity:ProbabilityQ32::ONE,completeness:CandidateSetCompleteness::Complete,support_digest:d("support") },prepared_candidate_indices:vec![0],prepared_context_digest:Some(d("context")) });
+ fs::write(root.join("event.bin"),crate::ledger::encode_event(&event)).unwrap();
+ let file=|name|OpenOptions::new().create_new(true).read(true).write(true).open(root.join(name)).unwrap();
+ let mut journal=DurableLedger::create(file("journal.bin"),d("fixture-store"),16).unwrap();journal.append(Digest32::ZERO,event.clone()).unwrap();
+ let mut segments=SegmentedLedger::create(file("owner.lock"),file("segment.bin"),d("fixture-store"),LedgerSegmentLimits {records:16,bytes:4096}).unwrap();segments.append(Digest32::ZERO,event).unwrap();segments.seal(segments.anchor().unwrap()).unwrap();
+}
