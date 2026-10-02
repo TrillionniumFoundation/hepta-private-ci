@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "d845831f2c753b4a3bf3ada5bbd0a09eb8fbe054",
-    "tree": "966e18278aff2193bf18210b20971d6ea5738153"
+    "commit": "df93a69a7bdc43bad21a5264bf04e9cccf596688",
+    "tree": "0bb25073a8eba4ace777541827036f2ef7542ca5"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.ledger",
@@ -310,6 +310,85 @@
       "authority": "none",
       "sourcePathExists": true,
       "sourceBlob": "4460df7dd872fd4cbc28cb20eb955e0dc627cdaa"
+    },
+    {
+      "operation": "inspect_explicit_legacy_event",
+      "nativeSymbol": "InspectedLegacyEventV1",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/legacy_inspection.rs",
+      "state": "bounded_structural_codec_not_activated_or_witness_authenticated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/legacy_inspection_tests.rs::actual_legacy_writers_have_distinct_tag_ten_meanings_and_preserved_bytes",
+        "codex-rs/hepta-learning-ledger/src/legacy_inspection_tests.rs::legacy_event_bounds_unknown_tags_and_trailing_bytes_reject"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "inspect_explicit_legacy_event",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "inspect_explicit_legacy_container",
+      "nativeSymbol": "inspect_legacy_container_v1",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/legacy_container_inspection.rs",
+      "state": "bounded_structural_codec_not_activated_or_witness_authenticated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/legacy_inspection_tests.rs::real_journals_and_sealed_segments_inspect_without_history_conversion",
+        "codex-rs/hepta-learning-ledger/src/legacy_inspection_tests.rs::no_tail_repair_or_checksum_only_acceptance_in_read_only_inspection",
+        "codex-rs/hepta-learning-ledger/src/legacy_inspection_tests.rs::empty_unsealed_segment_is_valid_but_checksummed_empty_seal_rejects",
+        "codex-rs/hepta-learning-ledger/src/legacy_inspection_tests.rs::complete_checksummed_segment_frame_must_reserve_footer_capacity"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "inspect_explicit_legacy_container",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "discriminated_event_v2",
+      "nativeSymbol": "DiscriminatedLedgerEventV2",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/persisted_event_v2.rs",
+      "state": "bounded_structural_codec_not_activated_or_witness_authenticated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/persisted_codec_v2_tests.rs::explicit_v2_kinds_preserve_body_and_bind_semantic_discriminator",
+        "codex-rs/hepta-learning-ledger/src/persisted_codec_v2_tests.rs::event_kind_version_length_and_bounded_body_cannot_be_substituted",
+        "codex-rs/hepta-learning-ledger/src/persisted_codec_v2_tests.rs::independent_python_header_and_event_vectors_match"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "discriminated_event_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "discriminated_header_v2",
+      "nativeSymbol": "LedgerContainerHeaderV2",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/persisted_header_v2.rs",
+      "state": "bounded_structural_codec_not_activated_or_witness_authenticated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/persisted_codec_v2_tests.rs::header_roundtrip_separates_new_history_and_legacy_manifest_continuation",
+        "codex-rs/hepta-learning-ledger/src/persisted_codec_v2_tests.rs::header_corruption_unknown_versions_and_invalid_context_fail_closed"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "discriminated_header_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "discriminated_frame_v2",
+      "nativeSymbol": "DiscriminatedLedgerFrameV2",
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/persisted_frame_v2.rs",
+      "state": "bounded_structural_codec_not_activated_or_witness_authenticated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-ledger/src/persisted_frame_v2_tests.rs::discriminated_frames_chain_without_reinterpreting_legacy_frames",
+        "codex-rs/hepta-learning-ledger/src/persisted_frame_v2_tests.rs::frame_truncation_corruption_and_rehashed_chain_substitution_reject",
+        "codex-rs/hepta-learning-ledger/src/persisted_frame_v2_tests.rs::independent_python_frame_vector_matches"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "discriminated_frame_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
@@ -420,7 +499,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger",
-      "object": "622814d5be320d079d95ea2d4b7b8e68db3daf1f"
+      "object": "587b0b30deabe2fc0037afddab4241d4ab456aab"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/causal_v2.rs",
@@ -445,6 +524,38 @@
     {
       "path": "codex-rs/hepta-learning-ledger/src/ledger_tests.rs",
       "object": "97847c20549507227cfc8400ca1b2a0d6b17aaf1"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/legacy_container_inspection.rs",
+      "object": "0346efbb0535fd8f137c77cbca1d8672d0f971a3"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/legacy_inspection.rs",
+      "object": "ab334989d7c9efca3bf02c06673d5ddd4a1ba92b"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/legacy_inspection_tests.rs",
+      "object": "43b2a710f042eb772f9214332a0f74506c49f293"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/persisted_codec_v2_tests.rs",
+      "object": "dcea0bec2d272a5137bfc082c6c3994a6de60a21"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/persisted_event_v2.rs",
+      "object": "7ff78638d8f44bc57023f16bd2de0e02603ec300"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/persisted_frame_v2.rs",
+      "object": "a0e70c86620d64ce382354c5a9dd440a9f728ff4"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/persisted_frame_v2_tests.rs",
+      "object": "d059a97feac3083076f781ebb99ef92584e27008"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/persisted_header_v2.rs",
+      "object": "75b2ce002cad3f8f656a871e663a54b900595cfb"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/production.rs",
@@ -500,7 +611,7 @@
     },
     {
       "path": "docs/modules/learning.ledger/TECHNICAL.md",
-      "object": "597ec993ad2c1bba55b352652167bbc9c2e5ced8"
+      "object": "f559e7438c63bac102a7e5c379e235e86a6dfca9"
     }
   ],
   "navigationRebindProvenance": {
@@ -512,5 +623,26 @@
     "reason": "Reviewed current-source navigation after learning.operator audit; previous anchors may be outside current main ancestry. Original provenance is retained without renewing historical execution evidence.",
     "historicalExecutionRevalidated": false,
     "authorityGranted": false
-  }
+  },
+  "observedAtHead": {
+    "commit": "df93a69a7bdc43bad21a5264bf04e9cccf596688",
+    "tree": "0bb25073a8eba4ace777541827036f2ef7542ca5"
+  },
+  "navigationRebindHistory": [
+    {
+      "previous": {
+        "sourceBase": {
+          "commit": "d845831f2c753b4a3bf3ada5bbd0a09eb8fbe054",
+          "tree": "966e18278aff2193bf18210b20971d6ea5738153"
+        },
+        "observedAtHead": null
+      },
+      "reason": "Current source navigation reviewed during 2026-10-02 scoped module audit. No historical execution is renewed.",
+      "historicalExecutionRevalidated": false,
+      "authorityGranted": false
+    }
+  ],
+  "observedSourcePaths": [
+    "codex-rs/hepta-learning-ledger"
+  ]
 }
