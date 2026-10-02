@@ -7,6 +7,7 @@ on:
       - codex/runtime-supervisor-adversarial-audit-20261001
     paths:
       - codex-rs/hepta-fleet/Cargo.toml
+      - codex-rs/hepta-fleet/src/module_catalog.rs
       - "codex-rs/hepta-supervisor/**"
       - codex-rs/Cargo.lock
       - scripts/test_hepta_ci_exec_deadline.py

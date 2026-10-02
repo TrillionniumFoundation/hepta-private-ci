@@ -1024,3 +1024,22 @@ delegated-owner 和 foreign unused 等 gate 仍失败，literal 三项未闭合�
 只获得 compile STARTED，尚无 target completion／test 信用。核心后来完成的实际结果
 单独记录，不回写已关闭窗口的 pending。生产资格、目标主机、验收、activation／release
 和 current-main merge qualification 仍未建立；能力 12／2／2 与四个具体开放项不变。
+
+
+### Fleet 依赖的参数注释检查继续闭合
+
+ca7 的 Windows argument-comment 检查真实发现两个 Fleet-owned 错误：
+`module_catalog.rs` 的 `canonical_ids` 调用缺少布尔参数 `dependencies`
+的命名注释。完整原始日志 job `110705886186` 保留失败；head ca7、
+完整源 52 和固定 base e8 的该文件同为 blob `78c61c6197ee9eaa2f46972b4137466c9896537e`。
+这只证明原源码静态继承，不能推断 base 曾执行同样失败。Supervisor 无该检查错误。
+
+补修仅给原有 `true`／`false` 添加正确的 `/*dependencies*/` 注释，保留私有
+函数、全部实参、行为和错误分类。现有只读 enhanced-lock push 入口增加这个
+真实源文件路径；分支、权限、命令、dispatch-only 作业和诊断范围均不扩大。
+本轮不为固定值增加镜像测试，不改参数类型或模块权属。源码／格式／token
+等价复核不能代替新候选自己的 native、deep、803 和锁诊断执行。
+
+ca7 的 Mac Bazel release job `110705776189` 另保留内部 NPE／退出 37；
+诱因、模块归属和 base 同失败继承仍未知，没有 Fleet 编译或测试完成证明。
+不会通过注释修复或锁诊断把该门禁提升为通过，12／2／2 及四个功能缺口保持。
