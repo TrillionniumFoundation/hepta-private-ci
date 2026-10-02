@@ -1,15 +1,27 @@
 # ui.native technical development guide
 
+For the 2026-10-02 continuation, see the [Rust-only product and presentation
+audit](ADVERSARIAL-AUDIT-20261002.md). It separates the accepted `978c1923...`
+baseline, current-main integration, new-source work and remaining acceptance
+gates. Historical source/evidence observations below retain their original scope;
+the adapter sections describe the current continuation.
+
+The continuation replaces the gateway's HTML/JavaScript `GET /` canary with
+authenticated JSON native-client discovery. This is a breaking presentation
+change; `/api/hepta/runtime` and `/healthz` remain authenticated machine routes.
+The audit records source status separately from pending execution qualification.
+
 **Module:** `ui.native`
 **Owner / deputy:** `ui-platform` / `accessibility`
 **Canonical branch:** `work/ui-native-qualified-integration-20260928`
 **Convergence branch:** `work/ui-native-adversarial-audit-20261001`
-**Immutable implementation source:** `0a129b41c2a2d42ca907ea8257bf780108bc664f`
-**Implementation tree:** `f90313f067446c629b8da50058ee1bd2101e76e7`
+**Historical frozen implementation source:** `0a129b41c2a2d42ca907ea8257bf780108bc664f`
+**Historical implementation tree:** `f90313f067446c629b8da50058ee1bd2101e76e7`
+**Continuation freeze:** pending ordinary source publication
 
 This source is an implementation candidate. It is not production-qualified,
-deployment-qualified or release-authorized. The product source is frozen at the
-commit and tree above; later commits may change only qualification code,
+deployment-qualified or release-authorized. The historical source was frozen at the
+commit and tree above; metadata continuations may change only qualification code,
 evidence metadata and review navigation. A formatter output is source and must
 be committed before the candidate is re-frozen.
 
@@ -367,42 +379,58 @@ replacement cannot populate another field. Drag/drop uses the same target
 binding. A selected path is untrusted input and is reopened through the bounded
 regular-file reader.
 
-Linux is XDG Desktop Portal-first. The static adapter subscribes to the expected
-request object before `OpenFile`, uses a bounded handle token, accepts one local
-`file://` URI, requires strict UTF-8 and an absolute path, and closes on timeout.
-`HEPTA_NATIVE_PICKER_BACKEND=zenity` selects the explicit compatibility backend;
-there is no ambient automatic fallback. macOS uses absolute
-`/usr/bin/osascript`; Windows uses an absolute system PowerShell/OpenFileDialog
-adapter. Child environments are cleared and only required desktop/session values
-are reintroduced.
+Linux uses XDG Desktop Portal through Rust D-Bus calls. The adapter binds the
+unique portal owner and expected request path before `OpenFile`, checks the
+returned handle, bounds its queue/application response, accepts one local file
+URI with strict UTF-8 and absolute-path validation, and closes on timeout.
+The 64 KiB application response check follows zbus frame decoding; its 128 MiB
+raw-frame ceiling is a separate residual bound. The retired
+`HEPTA_NATIVE_PICKER_BACKEND=zenity` setting reports an actionable error. Leave
+the setting unset or select `portal`; there is no automatic external fallback.
+
+macOS and Windows use Rust native SDK wrappers in the workspace's
+`platform-adapters` crate. Their same-executable picker helper has a closed typed
+response, binary digest binding, cleared desktop environment, bounded output and
+parent-owned nonblocking pipe polling. No reader/writer thread can survive a
+timeout. The active picker protocol has a 130-second limit; hashing and OS
+kill/reap or scheduler latency are not a hard wall-clock guarantee. A dialog
+selection remains untrusted input, not a resource capability or final-use grant.
 
 ## 9. Windows packaged identity and notification
 
-The deterministic unsigned Windows package contains
-`Register-HeptaNativeIdentity.ps1`. It creates a per-user Start Menu shortcut,
-commits `Trillionnium.Hepta.Native` through `IPropertyStore`, and writes the local
-identity marker only after shortcut and property-store commits succeed.
+The deterministic unsigned Windows v3 package declares
+`hepta-native.exe --register-notification-identity`. This explicit Rust command
+registers only the current executable, commits the fixed
+`Trillionnium.Hepta.Native` AUMID through native `IPropertyStore`, then reopens
+the shortcut and verifies target/AUMID before atomic marker publication. No
+PowerShell registrar is installed, and no startup or notification auto-registers.
 
 The WinRT toast adapter requires that marker and uses the exact registered AUMID.
 Marker input is a bounded regular-file read of at most 128 bytes, with strict
 UTF-8 and an exact AUMID after trimming. Missing, malformed, oversized or final
 symlink/reparse markers reject support. The reader does not sandbox parent
-directories. The registrar copies its static readonly property key to a local
-variable before passing it by `ref`. `tests/windows_registrar.rs` compiles the
-actual packaged C# source in system PowerShell. The PROPVARIANT union contains
-a sequential count/pointer array, matching the SDK's 24-byte x64 and 16-byte x86
-layout instead of the old 16/12-byte pointer-only layout. The Windows-only test
-checks `Marshal.SizeOf` and offsets on its actual host architecture and exercises
-packaged property-store `SetValue` plus COM `GetValue` on an owned temporary
-shortcut, with `PropVariantClear` cleanup. The
+directories. The registrar uses SDK-owned `PROPERTYKEY` and `PROPVARIANT` with
+native conversion and cleanup, rather than maintaining a handwritten union ABI.
+Native workspace tests cover the SDK variant, Unicode/NUL path conversion and
+production COM commit/persist/readback in an owned temporary shortcut, including
+wrong-target and wrong-AUMID negative controls. They do not create an installed
+Start Menu identity; target-OS execution remains required. The
 [SDK union definition](https://learn.microsoft.com/en-us/windows/win32/api/propidlbase/ns-propidlbase-propvariant)
-is the ABI reference. This test has not executed on Linux and does not establish
+is the ABI reference. Cross-compilation does not execute those Windows tests or establish
 physical Windows registration or toast delivery.
 
 The source and package inventory are implemented, but successful registration,
 shortcut property verification and visible toast behavior require a packaged
 physical Windows qualification run. Their presence in source is not execution,
 signing or release evidence.
+
+The notification helper's inherited-pipe nonce and binary digest identify the
+intended child, not independent final-use authority. The parent remains the
+authority/journal owner. The same-principal native OS facade issues no capability
+or delivery-success receipt. Accepted OS submissions, timeouts and unknown
+completion retain indeterminate semantics. Parent pipe polling has an 8-second
+active deadline and kills/reaps the direct child before releasing its slot;
+initial binary hashing and kernel scheduling are outside that timer.
 
 ## 10. Persistent history and UI concurrency
 

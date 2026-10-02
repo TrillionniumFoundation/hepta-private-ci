@@ -1,7 +1,21 @@
 # hepta-native developer guide
 
-The current ordinary implementation source is `0a129b41c2a2d42ca907ea8257bf780108bc664f`, tree
-`f90313f067446c629b8da50058ee1bd2101e76e7`.
+The [2026-10-02 Rust-only product and presentation audit](../../docs/modules/ui.native/ADVERSARIAL-AUDIT-20261002.md)
+maps current entrypoints and tests to the new acceptance matrix. It links final
+evidence for the historical `978c1923...` candidate without treating that result
+as qualification of this continuation or current main. Earlier execution
+observations below are preserved; adapter and developer-command guidance describes
+the current continuation.
+
+In this continuation, authenticated gateway `GET /` returns JSON discovery,
+not a browser UI. Use the Rust desktop client for presentation and the existing
+authenticated runtime/health routes for machine access. This presentation
+compatibility change and local test scope are recorded in the current audit.
+
+The historical baseline ordinary implementation source is
+`0a129b41c2a2d42ca907ea8257bf780108bc664f`, tree
+`f90313f067446c629b8da50058ee1bd2101e76e7`. The continuation freeze is pending
+ordinary source publication; these old identities do not cover its repairs.
 
 Native update owner, handoff and runner locks now return an opaque
 `updater::UpdateLock` instead of exposing a File. Successful acquisition builds
@@ -224,19 +238,23 @@ checkout-to-supply-chain-to-Git-inventory regression preserves exact lock digest
 
 ```bash
 cargo +1.95.0 fmt \
-  --manifest-path apps/hepta-native/Cargo.toml --check
+  --manifest-path apps/hepta-native/Cargo.toml --all --check
 cargo +1.95.0 check \
   --manifest-path apps/hepta-native/Cargo.toml \
-  --locked --all-targets --all-features
+  --locked --workspace --all-targets --all-features
 cargo +1.95.0 clippy \
   --manifest-path apps/hepta-native/Cargo.toml \
-  --locked --all-targets --all-features -- -D warnings
+  --locked --workspace --all-targets --all-features -- -D warnings
 just test --manifest-path ../apps/hepta-native/Cargo.toml \
-  --locked --all-targets
+  --locked --workspace --all-targets
 just test --locked --all-targets --all-features \
   -p codex-hepta-native-gateway -p codex-hepta-contracts \
   -p codex-hepta-private-state -p codex-utils-private-state
 ```
+
+The standalone native workspace includes `platform-adapters`. Keep `--workspace`
+on check, lint and test commands, and `--all` on rustfmt, so the native SDK wrapper
+and its tests are covered. Run the `just test` commands from `codex-rs`.
 
 A formatting change is source. Commit and review it before freezing a new
 implementation SHA. Preserve tests for final-use linearization, duplicate
@@ -411,18 +429,23 @@ to make qualification pass.
 
 ## Linux picker and verified resource handoff
 
-Linux file selection defaults to XDG Desktop Portal. The selected URI is bounded
-to one local absolute path and remains untrusted. Use Zenity only when explicitly
-requested:
+Linux file selection uses Rust `zbus` calls to XDG Desktop Portal. The selected
+URI is bounded to one local absolute path and remains untrusted. Leave
+`HEPTA_NATIVE_PICKER_BACKEND` unset or set it to `portal`. The former `zenity`
+option now fails with an explicit migration message; install an XDG FileChooser
+portal backend. The unique portal owner, exact request handle, response queue,
+application payload and cleanup are checked. The 64 KiB application response
+bound applies after D-Bus frame decoding; zbus's 128 MiB raw-frame ceiling is a
+separate residual resource limit, not a 64 KiB transport guarantee.
 
-```bash
-HEPTA_NATIVE_PICKER_BACKEND=zenity cargo +1.95.0 run \
-  --manifest-path apps/hepta-native/Cargo.toml --locked --bin hepta-native -- \
-  <launch arguments>
-```
-
-There is no silent fallback. Portal and compatibility adapters use owned child
-processes, bounded observation and cleared environments.
+macOS and Windows pickers call AppKit and the native Windows file-dialog API
+through `platform-adapters`. A same-executable helper keeps modal OS work off the
+main application loop. Its typed response is bounded and digest-checked, and the
+parent polls owned nonblocking pipes without reader/writer threads. The 130-second
+picker and 8-second notification deadlines bound the active protocol, excluding
+initial executable hashing and OS kill/reap or scheduler latency. Timeout kills
+and reaps the direct child before the operation releases its slot; a selected
+path remains input, never an authority grant or verified-resource handle.
 
 Linux Open/Reveal opens with `NOFOLLOW`, binds the open descriptor's
 resource identity into final-use confirmation, revalidates the final handle and
@@ -432,31 +455,39 @@ fail-closed until they have an equivalent capability adapter.
 
 ## Windows identity and notification
 
-The unsigned package includes:
+The unsigned v3 package exposes this explicit command from the installed location:
 
 ```text
-HeptaNative/Register-HeptaNativeIdentity.ps1
+HeptaNative/hepta-native.exe --register-notification-identity
 ```
 
 On a physical Windows qualification host, run the registrar against the exact
 packaged executable, inspect the Start Menu shortcut's AppUserModelID, launch the
 packaged process and exercise a WinRT toast. Preserve the shortcut identity,
-script digest, package digest, logs and screenshots/automation evidence. The
+executable digest, package digest, logs and screenshots/automation evidence. The
 marker must never be pre-created to bypass registration.
 
 Notification support reads that marker as a bounded regular file: 128 bytes,
 valid UTF-8 and the registered AUMID after trimming. Read failure denies support.
-`tests/windows_registrar.rs` compiles the C# embedded in the actual packaged
-PowerShell registrar using system PowerShell; the readonly property key is copied
-to a local value before a `ref` call. Its PROPVARIANT union includes a sequential
-count/pointer array, giving the SDK size of 24 bytes on x64 and 16 on x86; the
-former pointer-only union incorrectly occupied 16/12 bytes. The Windows-only
-test checks actual `Marshal.SizeOf` and field offsets, then creates an owned
-temporary `.lnk` and exercises packaged `SetValue` plus COM `GetValue` AUMID
-roundtrip with `PropVariantClear` cleanup. See the
+The Rust registrar uses SDK-owned `PROPERTYKEY` and `PROPVARIANT`, commits the
+fixed AUMID, persists the shortcut and reopens it to verify both target and AUMID
+before atomic marker publication. Workspace adapter tests cover native string
+variant conversion, Unicode/NUL path handling, and the production registrar's COM
+commit/persist/readback against an owned temporary shortcut. Negative controls
+reject a wrong persisted target or AUMID; no test registers installed identity.
+The old PowerShell source is
+retained for historical review but is not installed or invoked by the product.
+Application startup and notification delivery never auto-register. See the
 [Windows SDK PROPVARIANT layout](https://learn.microsoft.com/en-us/windows/win32/api/propidlbase/ns-propidlbase-propvariant).
 Linux test totals do not establish Windows execution; this fixture also does not
 prove installed Start Menu identity or visible toast delivery.
+
+macOS/Windows notifications use native UserNotifications/WinRT APIs. The helper's
+inherited-pipe nonce and binary digest identify the intended child; they are not
+independent proof of the parent's final-use authority. This is an unprivileged,
+same-principal OS notification facade. The parent retains final-use and journal
+authority. Helper exit and OS acceptance remain indeterminate external effects,
+not delivery success or an execution-capability receipt.
 
 ## UI lanes and persistent history
 
@@ -525,7 +556,8 @@ Common failures:
 - **journal already owned:** do not delete lock or state;
 - **persistence indeterminate:** stop effects, reopen and reconcile;
 - **index failure:** reject or rebuild from verified segments;
-- **portal unavailable:** report it; use Zenity only through explicit policy;
+- **portal unavailable:** install/configure an XDG FileChooser backend; the retired
+  Zenity option now reports an error;
 - **UNKNOWN effect:** reconcile with an operation-bound observer or close
   observation without replay;
 - **Windows toast unavailable:** run and verify the packaged identity registrar;
