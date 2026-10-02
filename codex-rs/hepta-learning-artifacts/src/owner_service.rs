@@ -182,6 +182,18 @@ impl LearningArtifactOwnerService {
             .host
             .publish_root_read_frontier(&self.withdrawal_registry, now)?)
     }
+    /// Revalidate the original Root-persisted withdrawal fence before an exact
+    /// recovery. An unresolved checkpoint stays unresolved until `publish` ACK.
+    #[cfg(target_os = "linux")]
+    pub fn require_root_withdrawal_frontier(
+        &self,
+        now: u64,
+    ) -> Result<(), LearningArtifactOwnerServiceError> {
+        Ok(self
+            .host
+            .require_root_withdrawal_frontier(&self.withdrawal_registry, now)?)
+    }
+
     pub fn open(
         config: LearningArtifactOwnerServiceConfigV1,
     ) -> Result<Self, LearningArtifactOwnerServiceError> {

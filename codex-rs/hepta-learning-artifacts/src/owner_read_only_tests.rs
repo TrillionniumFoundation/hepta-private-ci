@@ -26,6 +26,11 @@ fn a_valid_writer_dto_in_unprotected_storage_never_becomes_root_read_authority()
         Err(ArtifactOwnerHostError::PathBoundary)
     ));
     assert!(matches!(
+        owner.require_root_withdrawal_frontier(&withdrawals, 20),
+        Err(ArtifactOwnerHostError::PathBoundary)
+    ));
+
+    assert!(matches!(
         ReadOnlyArtifactCurrentOwnerV1::open(&directory.0, trust.clone(), withdrawals, 20),
         Err(ArtifactOwnerHostError::PathBoundary)
     ));
@@ -174,7 +179,7 @@ fn root_readonly_current_preserves_the_real_writer_and_closes_on_withdrawal_and_
     ));
     let withdrawal_bytes = fs::read(root.join("READ-CURRENT")).fixture("durable withdrawal fence");
     drop(owner);
-    let owner = LearningArtifactOwnerHost::open(&root, trust.clone(), lease, now)
+    let owner = LearningArtifactOwnerHost::open(&root, trust.clone(), lease.clone(), now)
         .fixture("cold original writer");
     let empty = DatasetWithdrawalRegistry::new_scoped(scope);
     assert!(matches!(
@@ -228,6 +233,107 @@ fn root_readonly_current_preserves_the_real_writer_and_closes_on_withdrawal_and_
     owner
         .publish_root_read_frontier(&withdrawals, now)
         .fixture("descendant withdrawal head");
+    owner
+        .require_root_withdrawal_frontier(&withdrawals, now)
+        .fixture("durable exact fence");
+    assert!(
+        owner
+            .require_root_withdrawal_frontier(&branch, now)
+            .is_err()
+    );
+    let mut clean = manifest();
+    clean.artifact_id = id("clean-replacement");
+    clean.source_dataset_digests = vec![digest("genuine native clean dataset")];
+    clean.created_at = now;
+    clean.expires_at = now + 60000;
+    let clean =
+        admit_manifest_at_withdrawal_head_v3(&withdrawals, withdrawals.head_digest(), clean, now)
+            .fixture("original clean native admission");
+    let pending = owner
+        .begin_publication(
+            id("recover-original-withdrawal"),
+            clean.clone(),
+            &withdrawals,
+            &registry,
+            registry.head_digest(),
+            now,
+        )
+        .fixture("original Prepared checkpoint");
+    assert_eq!(pending.phase(), ArtifactPublicationPhaseV1::Prepared);
+    drop(owner);
+    let mut service =
+        crate::LearningArtifactOwnerService::open(crate::LearningArtifactOwnerServiceConfigV1 {
+            root: root.clone(),
+            trust: trust.clone(),
+            writer_lease: lease,
+            required_current_head: Some(head.clone()),
+            withdrawal_registry: withdrawals.clone(),
+            storage_binding: binding,
+            now,
+        })
+        .fixture("cold original Prepared service");
+    assert_eq!(
+        service.recovery_required(),
+        Some(&id("recover-original-withdrawal"))
+    );
+    assert!(service.publish_root_read_frontier(now).is_err());
+    let before_probe = fs::read(root.join("READ-CURRENT")).fixture("original fenced bytes");
+    service
+        .require_root_withdrawal_frontier(now)
+        .fixture("verify only prior durable fence");
+    assert!(
+        service
+            .require_root_withdrawal_frontier(now + 60001)
+            .is_err()
+    );
+    assert_eq!(
+        fs::read(root.join("READ-CURRENT")).fixture("probe is read-only"),
+        before_probe
+    );
+    assert_eq!(
+        service.recovery_required(),
+        Some(&id("recover-original-withdrawal"))
+    );
+    let changes = vec![crate::ArtifactEvent::Revoke(crate::StateChange {
+        event_id: id("original-withdrawal-revoke"),
+        artifact_id: id("candidate"),
+        evaluator_id: id("native-withdrawal-owner"),
+        reason_digest: digest("actual-native-tombstone"),
+    })];
+    let target = service
+        .preview_publication_with_state_changes(
+            id("recover-original-withdrawal"),
+            clean.clone(),
+            &changes,
+            now,
+        )
+        .fixture("original complete suffix preview");
+    let mut next = head;
+    next.witness.generation = target.generation;
+    next.witness.predecessor_head_digest = target.predecessor;
+    next.witness.head_digest = target.head_digest;
+    next.signature = key.sign(&next.signing_bytes()).to_bytes();
+    let request = crate::LearningArtifactPublishRequestV1 {
+        operation_id: id("recover-original-withdrawal"),
+        admission: clean,
+        payload: b"payload".to_vec(),
+        signed_current_head: next,
+        expected_registry_predecessor_head: registry.head_digest(),
+        now,
+    };
+    let ack = service
+        .publish_with_state_changes(request.clone(), &changes)
+        .fixture("same original checkpoint ACK");
+    assert_eq!(service.recovery_required(), None);
+    assert_eq!(
+        service
+            .publish_with_state_changes(request, &changes)
+            .fixture("exact ACK retry"),
+        ack
+    );
+    service
+        .publish_root_read_frontier(now)
+        .fixture("publish only after actual ACK");
     let revoked = ReadOnlyArtifactCurrentOwnerV1::open(&root, trust, withdrawals, now)
         .fixture("current revoked view");
     assert!(
@@ -249,6 +355,6 @@ fn root_readonly_current_preserves_the_real_writer_and_closes_on_withdrawal_and_
     fs::remove_file(&sidecar).fixture("isolated native corruption");
     assert!(revoked.current_registry_view(now).is_err());
     assert!(!sidecar.exists());
-    drop(owner);
+    drop(service);
     fs::remove_dir_all(root).fixture("isolated native fixture cleanup");
 }

@@ -126,6 +126,28 @@ pub(super) fn protected_inventory(root: &Path) -> Result<(), ArtifactOwnerHostEr
     Ok(())
 }
 impl LearningArtifactOwnerHost {
+    /// Check an already durable delivery fence while the original publication
+    /// is recovering. This grants no result eligibility and writes no state.
+    pub fn require_root_withdrawal_frontier(
+        &self,
+        withdrawals: &DatasetWithdrawalRegistry,
+        now: u64,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        require_root_process()?;
+        self.require_current_writer(now)?;
+        protected_inventory(&self.root)?;
+        let (frontier, _) = read_frontier(&self.root)?;
+        if frontier.trust != self.trust_digest()
+            || withdrawals.scope_digest() != Some(frontier.withdrawal_scope)
+            || frontier.withdrawal_scope != self.verifier.trust.withdrawal_scope_digest
+            || frontier.withdrawal_head != withdrawals.head_digest()
+        {
+            return Err(ArtifactOwnerHostError::ProvenanceMismatch);
+        }
+        let current = self.discover_publication_predecessor(now)?;
+        self.read_context()
+            .enforce_required_current_head(&frontier.current, current.as_ref())
+    }
     /// Publish the exact public read frontier from this Root-owned writer after
     /// its real fsync/CURRENT/ACK chain. A caller DTO cannot create this record.
     pub fn publish_root_read_frontier(
@@ -133,14 +155,7 @@ impl LearningArtifactOwnerHost {
         withdrawals: &DatasetWithdrawalRegistry,
         now: u64,
     ) -> Result<(), ArtifactOwnerHostError> {
-        let status = fs::read_to_string("/proc/self/status")?;
-        let uid = status
-            .lines()
-            .find_map(|line| line.strip_prefix("Uid:"))
-            .ok_or(ArtifactOwnerHostError::PathBoundary)?;
-        if uid.split_whitespace().count() != 4 || uid.split_whitespace().any(|value| value != "0") {
-            return Err(ArtifactOwnerHostError::PathBoundary);
-        }
+        require_root_process()?;
         self.require_current_writer(now)?;
         protected_inventory(&self.root)?;
         if withdrawals.scope_digest() != Some(self.verifier.trust.withdrawal_scope_digest) {
@@ -219,4 +234,16 @@ impl LearningArtifactOwnerHost {
             .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
         Ok(())
     }
+}
+
+fn require_root_process() -> Result<(), ArtifactOwnerHostError> {
+    let status = fs::read_to_string("/proc/self/status")?;
+    let uid = status
+        .lines()
+        .find_map(|line| line.strip_prefix("Uid:"))
+        .ok_or(ArtifactOwnerHostError::PathBoundary)?;
+    if uid.split_whitespace().count() != 4 || uid.split_whitespace().any(|value| value != "0") {
+        return Err(ArtifactOwnerHostError::PathBoundary);
+    }
+    Ok(())
 }
