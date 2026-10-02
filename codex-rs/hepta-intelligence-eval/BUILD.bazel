@@ -4,6 +4,13 @@ codex_rust_crate(
     name = "hepta-intelligence-eval",
     crate_features = ["fixed-eval-host"],
     crate_name = "codex_hepta_intelligence_eval",
+    # Enabling a feature here does not add its optional Cargo externs to Bazel.
+    deps_extra = [
+        "@crates//:ed25519-dalek",
+        "@crates//:rustix",
+        "@crates//:serde",
+        "@crates//:serde_json",
+    ],
     integration_compile_data_extra = [
         "fixtures/trusted-inprocess/tests/operator_claim.rs",
     ],
