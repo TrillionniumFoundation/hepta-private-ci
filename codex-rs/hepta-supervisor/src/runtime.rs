@@ -77,6 +77,14 @@ pub(crate) struct DeferredAgentAction {
     pub spawn_generation: u64,
 }
 
+/// A failed companion lifetime still needs admission for its next retry charge.
+/// This is owner-local bookkeeping, not a durable claim or process authority.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct MatrixRetryAdmission {
+    pub spawn_generation: u64,
+    pub release_id: ReleaseId,
+}
+
 pub(crate) struct MatrixCompanionSlot<P> {
     pub runtime: Option<MatrixRuntime<P>>,
     pub exit_lease_removal: Option<crate::matrix::MatrixProcessLeaseRemoval>,
@@ -87,6 +95,7 @@ pub(crate) struct MatrixCompanionSlot<P> {
     pub restart_window_started_at: Option<Instant>,
     pub restart_window_started_unix_millis: Option<u64>,
     pub retry_at: Option<Instant>,
+    pub retry_admission: Option<MatrixRetryAdmission>,
     pub restart_after_exit: bool,
     pub restart_exhausted: bool,
     pub last_error: Option<String>,
@@ -105,6 +114,7 @@ impl<P> MatrixCompanionSlot<P> {
             restart_window_started_at: None,
             restart_window_started_unix_millis: None,
             retry_at: None,
+            retry_admission: None,
             restart_after_exit: false,
             restart_exhausted: false,
             last_error: None,

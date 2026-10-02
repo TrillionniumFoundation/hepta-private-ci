@@ -25,10 +25,7 @@ use crate::lease::MatrixProcessLease;
 use crate::lease::read_matrix_lease;
 use crate::lease::remove_matrix_lease;
 use crate::lease::write_matrix_lease;
-use crate::restart_journal::unix_millis_now;
-use crate::restart_policy::RestartSchedule;
 use crate::restart_policy::clear_restart_budget;
-use crate::restart_policy::schedule_restart;
 use crate::runtime::AgentSlot;
 use crate::runtime::DeferredAgentAction;
 use crate::runtime::DeferredAgentActionKind;
@@ -38,6 +35,8 @@ use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 
+#[path = "matrix_admission.rs"]
+mod admission;
 #[path = "matrix_lease_removal.rs"]
 mod lease_removal;
 #[path = "matrix_recovery_admission.rs"]
@@ -72,6 +71,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.matrix.restart_window_started_at,
                 slot.matrix.restart_window_started_unix_millis,
                 slot.matrix.retry_at,
+                slot.matrix.retry_admission.clone(),
                 slot.matrix.restart_after_exit,
                 slot.matrix.restart_exhausted,
             );
@@ -86,6 +86,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     slot.matrix.restart_window_started_at,
                     slot.matrix.restart_window_started_unix_millis,
                     slot.matrix.retry_at,
+                    slot.matrix.retry_admission,
                     slot.matrix.restart_after_exit,
                     slot.matrix.restart_exhausted,
                 ) = previous;
@@ -118,6 +119,18 @@ impl<D: ProcessDriver> Supervisor<D> {
         // process. The registry's Running lifecycle generation is the next
         // value and must not be passed as the agentd protocol fence.
         let attached_agent_generation = agent_runtime.spawn_generation;
+        if let Some(pending) = slot.matrix.retry_admission.take()
+            && pending.spawn_generation == attached_agent_generation
+            && pending.release_id == *release.release_id()
+        {
+            slot.matrix.retry_admission = Some(pending);
+            self.schedule_matrix_retry(agent_id, slot, attached_agent_generation, now);
+            // Newly admitted retries obey their own backoff. A final launch
+            // denial of an already charged retry never enters this branch.
+            return;
+        }
+        // A different main lifetime/bundle cannot inherit the old failure.
+        // Its durable window stays intact; only transient bookkeeping ends.
         let record = match self.record(agent_id) {
             Ok(record) => record,
             Err(error) => {
@@ -204,7 +217,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 return;
             }
         }
-        let spec = MatrixSpawnSpec {
+        let mut spec = MatrixSpawnSpec {
             agent_id: agent_id.clone(),
             agent_generation: attached_agent_generation,
             binding_revision: binding.revision,
@@ -234,6 +247,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                 return;
             }
         };
+        let Some(command) =
+            self.admit_matrix_replacement(agent_id, slot, attached_agent_generation)
+        else {
+            return;
+        };
+        // The final launch uses the freshly admitted canonical companion,
+        // while the already-owned main keeps its exact bundle and authority.
+        spec.command = command;
         let spawned = match self.driver.spawn_matrixd(&spec) {
             Ok(spawned) => spawned,
             Err(error) => {
@@ -636,49 +657,15 @@ impl<D: ProcessDriver> Supervisor<D> {
             slot.matrix.restart_after_exit = false;
             return;
         }
-        let wall_now = match unix_millis_now() {
-            Ok(wall_now) => wall_now,
-            Err(error) => {
-                let message = bounded_message(format!(
-                    "Matrix restart budget could not read wall clock: {error}"
-                ));
-                slot.matrix.retry_at = None;
-                slot.matrix.restart_exhausted = true;
-                slot.matrix.last_error = Some(message.clone());
-                slot.event(generation, SupervisorEventKind::MatrixDegraded(message));
-                return;
-            }
-        };
-        match schedule_restart(
-            &mut slot.matrix.restart_attempt,
-            &mut slot.matrix.restart_window_started_at,
-            now,
-        ) {
-            RestartSchedule::Retry { attempt, retry_at } => {
-                if attempt == 1 || slot.matrix.restart_window_started_unix_millis.is_none() {
-                    slot.matrix.restart_window_started_unix_millis = Some(wall_now);
-                }
-                slot.matrix.retry_at = Some(retry_at);
-                slot.matrix.restart_exhausted = false;
-            }
-            RestartSchedule::Exhausted { attempts } => {
-                slot.matrix.retry_at = None;
-                slot.matrix.restart_exhausted = true;
-                slot.event(
-                    generation,
-                    SupervisorEventKind::MatrixRestartBudgetExhausted { attempts },
-                );
-            }
-        }
-        if let Err(error) = self.persist_restart_budget(agent_id, slot) {
-            let message = bounded_message(format!(
-                "Matrix restart budget could not be persisted: {error}"
-            ));
-            slot.matrix.retry_at = None;
-            slot.matrix.restart_exhausted = true;
-            slot.matrix.last_error = Some(message.clone());
-            slot.event(generation, SupervisorEventKind::MatrixDegraded(message));
-        }
+        slot.matrix.retry_admission = slot.runtime.as_ref().and_then(|runtime| {
+            slot.active_release
+                .as_ref()
+                .map(|release| crate::runtime::MatrixRetryAdmission {
+                    spawn_generation: runtime.spawn_generation,
+                    release_id: release.release_id().clone(),
+                })
+        });
+        self.schedule_matrix_retry(agent_id, slot, generation, now);
     }
 }
 
@@ -689,6 +676,7 @@ fn reset_matrix_restart_budget<P>(slot: &mut AgentSlot<P>) {
     );
     slot.matrix.restart_window_started_unix_millis = None;
     slot.matrix.retry_at = None;
+    slot.matrix.retry_admission = None;
     slot.matrix.restart_after_exit = false;
     slot.matrix.restart_exhausted = false;
 }
