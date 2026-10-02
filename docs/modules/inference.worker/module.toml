@@ -7,7 +7,7 @@ lifecycle = "target"
 state = "ephemeral_isolated"
 architectureRole = "checked_adapter"
 writes = []
-uses = ["inference.control", "kernel.authority"]
+uses = ["inference.control", "kernel.authority", "channel.matrix", "runtime.supervisor"]
 owner = "inference-platform"
 deputy = "security-authority"
 denies = ["grant_issuance", "fleet_mutation"]
@@ -37,5 +37,7 @@ mode = "exclusive"
 
 [[cargoPackages]]
 path = "codex-rs/hepta-infer-worker-host"
-compileLayer = 8
+# Product composition consumes the layer-8 chat transport; adapter owners
+# and all authority/store packages remain strictly below this host.
+compileLayer = 9
 ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

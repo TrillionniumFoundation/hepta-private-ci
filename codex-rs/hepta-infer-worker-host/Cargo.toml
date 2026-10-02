@@ -9,6 +9,7 @@ publish = false
 default = []
 agentd-host = ["codex-hepta-agentd/server", "codex-hepta-agentd/production-cognitive-write", "dep:anyhow", "dep:codex-hepta-neuron", "dep:codex-hepta-agent-components"]
 test-support = []
+native-chat-bridge = ["dep:anyhow", "dep:codex-hepta-fleet", "dep:codex-hepta-matrixd", "dep:codex-hepta-paths", "dep:codex-hepta-supervisor", "codex-hepta-supervisor/local-host"]
 fixed-initial-cpu-host = ["agentd-host", "codex-hepta-agent-components/fixed-eval-host"]
 
 [lib]
@@ -70,4 +71,16 @@ test = false
 name = "hepta-initial-cpu-anchor"
 path = "src/bin/hepta-initial-cpu-anchor.rs"
 required-features = ["fixed-initial-cpu-host"]
+test = false
+
+[target.'cfg(target_os = "linux")'.dependencies]
+codex-hepta-fleet = { workspace = true, optional = true }
+codex-hepta-matrixd = { path = "../hepta-matrixd", optional = true }
+codex-hepta-paths = { workspace = true, optional = true }
+codex-hepta-supervisor = { workspace = true, optional = true }
+
+[[bin]]
+name = "hepta-native-chat-bridge"
+path = "src/bin/hepta-native-chat-bridge.rs"
+required-features = ["native-chat-bridge"]
 test = false

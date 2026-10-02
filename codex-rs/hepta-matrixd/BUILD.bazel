@@ -9,7 +9,10 @@ codex_rust_crate(
             "src/main.rs",
             "src/bin/*.rs",
         ],
-    ) + ["//apps/hepta-ui-shared:chat_transport.rs"],
+    ) + [
+        "//apps/hepta-ui-shared:chat_transport.rs",
+        "//apps/hepta-ui-shared:native_chat_bridge_wire.rs",
+    ],
 )
 
 # Caller evidence inspected by the Hepta contracts tests.

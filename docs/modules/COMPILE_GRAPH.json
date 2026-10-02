@@ -366,7 +366,7 @@
       "fromLayer": 7,
       "fromModule": "runtime.agentd",
       "fromPackage": "codex-hepta-agentd",
-      "toLayer": 8,
+      "toLayer": 9,
       "toModule": "inference.worker",
       "toPackage": "codex-hepta-infer-worker-host"
     },
@@ -390,7 +390,7 @@
     },
     {
       "dependencyKind": "dev",
-      "fromLayer": 8,
+      "fromLayer": 9,
       "fromModule": "inference.worker",
       "fromPackage": "codex-hepta-infer-worker-host",
       "toLayer": 7,
@@ -547,11 +547,19 @@
     },
     {
       "fromModule": "inference.worker",
+      "toModule": "channel.matrix"
+    },
+    {
+      "fromModule": "inference.worker",
       "toModule": "inference.control"
     },
     {
       "fromModule": "inference.worker",
       "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "runtime.supervisor"
     },
     {
       "fromModule": "intelligence.control",
@@ -1180,7 +1188,7 @@
       "packagePath": "codex-rs/hepta-infer-core"
     },
     {
-      "compileLayer": 8,
+      "compileLayer": 9,
       "module": "inference.worker",
       "packageName": "codex-hepta-infer-worker-host",
       "packagePath": "codex-rs/hepta-infer-worker-host"
@@ -1478,6 +1486,10 @@
     {
       "fromModule": "inference.worker",
       "toModule": "runtime.codex"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "runtime.fleet"
     },
     {
       "fromModule": "intelligence.control",
@@ -1863,6 +1875,10 @@
     },
     {
       "fromModule": "inference.worker",
+      "toModule": "channel.matrix"
+    },
+    {
+      "fromModule": "inference.worker",
       "toModule": "inference.control"
     },
     {
@@ -1884,6 +1900,14 @@
     {
       "fromModule": "inference.worker",
       "toModule": "runtime.codex"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "runtime.fleet"
+    },
+    {
+      "fromModule": "inference.worker",
+      "toModule": "runtime.supervisor"
     },
     {
       "fromModule": "intelligence.control",
@@ -3852,7 +3876,7 @@
     },
     {
       "dependencyKind": "normal",
-      "fromLayer": 8,
+      "fromLayer": 9,
       "fromModule": "inference.worker",
       "fromPackage": "codex-hepta-infer-worker-host",
       "toLayer": 0,
@@ -3861,7 +3885,7 @@
     },
     {
       "dependencyKind": "normal",
-      "fromLayer": 8,
+      "fromLayer": 9,
       "fromModule": "inference.worker",
       "fromPackage": "codex-hepta-infer-worker-host",
       "toLayer": 0,
@@ -3870,7 +3894,7 @@
     },
     {
       "dependencyKind": "normal",
-      "fromLayer": 8,
+      "fromLayer": 9,
       "fromModule": "inference.worker",
       "fromPackage": "codex-hepta-infer-worker-host",
       "toLayer": 1,
@@ -3879,7 +3903,16 @@
     },
     {
       "dependencyKind": "normal",
-      "fromLayer": 8,
+      "fromLayer": 9,
+      "fromModule": "inference.worker",
+      "fromPackage": "codex-hepta-infer-worker-host",
+      "toLayer": 1,
+      "toModule": "platform.types",
+      "toPackage": "codex-hepta-paths"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 9,
       "fromModule": "inference.worker",
       "fromPackage": "codex-hepta-infer-worker-host",
       "toLayer": 2,
@@ -3888,7 +3921,7 @@
     },
     {
       "dependencyKind": "normal",
-      "fromLayer": 8,
+      "fromLayer": 9,
       "fromModule": "inference.worker",
       "fromPackage": "codex-hepta-infer-worker-host",
       "toLayer": 2,
@@ -3897,7 +3930,25 @@
     },
     {
       "dependencyKind": "normal",
-      "fromLayer": 8,
+      "fromLayer": 9,
+      "fromModule": "inference.worker",
+      "fromPackage": "codex-hepta-infer-worker-host",
+      "toLayer": 2,
+      "toModule": "runtime.fleet",
+      "toPackage": "codex-hepta-fleet"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 9,
+      "fromModule": "inference.worker",
+      "fromPackage": "codex-hepta-infer-worker-host",
+      "toLayer": 5,
+      "toModule": "runtime.supervisor",
+      "toPackage": "codex-hepta-supervisor"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 9,
       "fromModule": "inference.worker",
       "fromPackage": "codex-hepta-infer-worker-host",
       "toLayer": 6,
@@ -3906,12 +3957,21 @@
     },
     {
       "dependencyKind": "normal",
-      "fromLayer": 8,
+      "fromLayer": 9,
       "fromModule": "inference.worker",
       "fromPackage": "codex-hepta-infer-worker-host",
       "toLayer": 7,
       "toModule": "runtime.agentd",
       "toPackage": "codex-hepta-agentd"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 9,
+      "fromModule": "inference.worker",
+      "fromPackage": "codex-hepta-infer-worker-host",
+      "toLayer": 8,
+      "toModule": "channel.matrix",
+      "toPackage": "codex-hepta-matrixd"
     }
   ],
   "schema": "hepta.compile-architecture-graph.v1",

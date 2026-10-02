@@ -1,4 +1,7 @@
 exports_files(
-    ["chat_transport.rs"],
+    [
+        "chat_transport.rs",
+        "native_chat_bridge_wire.rs",
+    ],
     visibility = ["//visibility:public"],
 )

@@ -14,6 +14,8 @@ mod live;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
+#[path = "../../../apps/hepta-ui-shared/native_chat_bridge_wire.rs"]
+pub mod native_wire;
 #[path = "../../../apps/hepta-ui-shared/chat_transport.rs"]
 pub mod wire;
 use wire::*;
