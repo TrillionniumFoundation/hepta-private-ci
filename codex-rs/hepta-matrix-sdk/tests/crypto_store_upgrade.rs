@@ -58,7 +58,11 @@ async fn real_018_crypto_state_migrates_without_rotating_keys_or_hepta_cursor()
         .await?
         .checkpoint;
     for _ in 0..2 {
-        let store = SqliteCryptoStore::open(&crypto, Some("isolated-fixture-passphrase")).await?;
+        let store = SqliteCryptoStore::open(
+            &crypto,
+            /*passphrase*/ Some("isolated-fixture-passphrase"),
+        )
+        .await?;
         let machine = OlmMachineBuilder::new(&user, &device)
             .with_crypto_store(store.clone())
             .build()

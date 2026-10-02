@@ -32,6 +32,8 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          components: clippy
       - name: Install pinned official test runners
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
@@ -42,6 +44,10 @@ jobs:
       - name: Real isolated encrypted send, sync and store reopen
         if: matrix.qualification == 'synapse-protocol'
         run: codex-rs/hepta-matrix-sdk/tests/support/run-synapse-sdk.sh
+      - name: Strict final-source Matrix lint
+        if: matrix.qualification == 'synapse-protocol'
+        working-directory: codex-rs
+        run: just clippy -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrix-protocol --features crypto-migration-qualification,synapse-sdk-qualification --no-deps -- -D warnings
       - name: Preserve protocol evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

@@ -18,10 +18,10 @@ use std::time::Duration;
 type TestResult<T = ()> = Result<T, Box<dyn std::error::Error>>;
 
 async fn receive(client: &Client, room: &OwnedRoomId, body: &str) -> TestResult<String> {
-    let result = tokio::time::timeout(Duration::from_secs(30), async {
+    let result = tokio::time::timeout(Duration::from_secs(/*secs*/ 30), async {
         loop {
             let sync = client
-                .sync_once(SyncSettings::new().timeout(Duration::from_millis(100)))
+                .sync_once(SyncSettings::new().timeout(Duration::from_millis(/*millis*/ 100)))
                 .await?;
             if let Some(joined) = sync.rooms.joined.get(room) {
                 for event in &joined.timeline.events {
@@ -77,10 +77,10 @@ async fn encrypted_send_sync_and_sqlite_reopen_against_isolated_synapse() -> Tes
     let room_id = room.room_id().to_owned();
     bob.join_room_by_id(&room_id).await?;
     // Publish the recipient's keys before the sender resolves the room devices.
-    bob.sync_once(SyncSettings::new().timeout(Duration::from_millis(100)))
+    bob.sync_once(SyncSettings::new().timeout(Duration::from_millis(/*millis*/ 100)))
         .await?;
     alice
-        .sync_once(SyncSettings::new().timeout(Duration::from_millis(100)))
+        .sync_once(SyncSettings::new().timeout(Duration::from_millis(/*millis*/ 100)))
         .await?;
     let bob_user = bob.user_id().ok_or("missing Bob identity")?;
     // This public API refreshes device keys even when cross-signing is absent.
