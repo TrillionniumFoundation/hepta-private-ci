@@ -3,6 +3,8 @@ use std::collections::BTreeMap;
 use serde::Deserialize;
 use serde::Serialize;
 
+#[path = "run_bridge_admission.rs"]
+pub(crate) mod bridge_admission;
 #[path = "durable_agent_runs.rs"]
 mod durable;
 pub(crate) use durable::DurableAgentRunCoordinator;

@@ -312,3 +312,23 @@ mod state_image {
         })
     }
 }
+
+impl super::bridge_admission::sealed::Sealed for DurableAgentRunCoordinator {}
+impl super::bridge_admission::RunBridgeRetainedOwner for DurableAgentRunCoordinator {
+    fn bridge_snapshot(
+        &mut self,
+        run_id: &str,
+    ) -> Result<super::bridge_admission::RunBridgeRetainedView, AgentRunError> {
+        self.file.verify()?;
+        let record = self
+            .image
+            .state
+            .runs
+            .get(run_id)
+            .ok_or(AgentRunError::RunNotFound)?;
+        Ok(super::bridge_admission::RunBridgeRetainedView::new(
+            &self.image.state,
+            record,
+        ))
+    }
+}

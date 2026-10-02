@@ -182,6 +182,11 @@ pub use lane_b_runtime::RunReceipt;
 pub use lane_b_runtime::RunRecovery;
 pub use lane_b_runtime::RunSnapshot;
 pub use lane_b_runtime::RuntimeComposition;
+pub use lane_b_runtime::bridge_admission::{
+    RunBridgeAdmissionError, RunBridgeAdmissionHost, RunBridgeDestinationAdmission,
+    RunBridgeHostCurrentness, RunBridgeHostObservation, RunBridgeRetainedOwner,
+    RunBridgeRetainedView,
+};
 pub use neuron_runtime::AgentdNeuronOwner;
 pub use plasticity_host::AgentdPlasticityAdmissionInputV1;
 pub use plasticity_host::AgentdPlasticityAnchorStoreV1;
