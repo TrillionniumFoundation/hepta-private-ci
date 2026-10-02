@@ -1,0 +1,55 @@
+{
+  "after": {
+    "commit": "50a4678beef74f9d65b996e5dffa2c68681b7dd5",
+    "dirty": false,
+    "parents": [
+      "c15884e527746ad633728c442415ab73af7188b6"
+    ],
+    "tree": "eb4277211e0cab544133dbb4b10d52b41043d7b3"
+  },
+  "base_sha": "c6f90d48c40f7b5267db587bb3c3f4934f1414a8",
+  "before": {
+    "commit": "50a4678beef74f9d65b996e5dffa2c68681b7dd5",
+    "dirty": false,
+    "parents": [
+      "c15884e527746ad633728c442415ab73af7188b6"
+    ],
+    "tree": "eb4277211e0cab544133dbb4b10d52b41043d7b3"
+  },
+  "command": [
+    "cargo",
+    "test",
+    "--locked",
+    "--manifest-path",
+    "codex-rs/Cargo.toml",
+    "-p",
+    "codex-hepta-infer-core",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "-p",
+    "codex-hepta-types"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 51.131183686999975,
+  "exit_code": 0,
+  "finished_at": "2026-10-02T20:34:51.924798+00:00",
+  "job": "qualify",
+  "lane": "source-head",
+  "log_bytes": 36252,
+  "log_file": "07-tests.json.1f5a92c854814fc9946fdc7dee128c56.log",
+  "log_sha256": "a9f1ff500d6fc4947ef044907642c7bf57f86306d22de615564c74b37b1d9b4c",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 233,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": "1",
+  "run_id": "37060482113",
+  "schema_version": 1,
+  "source_sha": "50a4678beef74f9d65b996e5dffa2c68681b7dd5",
+  "started_at": "2026-10-02T20:34:00.793070+00:00",
+  "status": "passed",
+  "tested_sha": "50a4678beef74f9d65b996e5dffa2c68681b7dd5",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}
