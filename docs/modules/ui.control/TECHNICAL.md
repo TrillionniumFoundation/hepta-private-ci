@@ -136,7 +136,8 @@ The client requires an authenticated session with an exact protocol version, exp
 
 ## 8. Browser interaction and accessibility
 
-The browser shell provides:
+The retained legacy semantic-DOM shell provides the following interaction and
+test surfaces. They do not describe or qualify the new Makepad canvas host:
 
 - visible stale, disconnected, pending, terminal, failure, and indeterminate states;
 - full runtime generation and revision display plus deterministic redaction of session, operation, audit-trace, snapshot, semantic, and outcome correlation identifiers; exact full identifiers remain in typed client state and transport objects and are not copied into DOM text or attributes;
@@ -145,7 +146,9 @@ The browser shell provides:
 - semantic tables, labels, alerts, live regions, skip navigation, visible focus, reduced-motion support, and focus restoration;
 - axe-core scans and keyboard assertions in real Chromium, Firefox, and WebKit engines.
 
-Automated checks do not replace manual screen-reader/operator acceptance; that remains an external signed gate.
+Makepad keyboard, IME and accessibility behavior still require host-specific
+verification. Legacy automated checks do not replace manual screen-reader/operator
+acceptance; that remains an external signed gate.
 
 ## 9. Typed failures
 
@@ -182,9 +185,8 @@ Repository checks:
 - `npm run build --prefix apps/hepta-control-ui`
 - `npm run test:e2e --prefix apps/hepta-control-ui`
 - `node scripts/ui-control-artifacts.mjs --check`
-- `node scripts/ui-control-truth.mjs`
+- `python3 scripts/ui-control-source-map.py`
 - `python3 scripts/hepta-lane-b-path-guard.py self-test`
-- `python3 -m unittest scripts/test_hepta_lane_b_path_guard.py`
 - `python3 scripts/hepta-lane-b-path-guard.py verify`
 
 The dedicated workflow retains explicit legacy controller/DOM parity checks and separately builds the actual Makepad host. The new host job checks exact source, native presentation tests, WASM, strict-CSP/static ABI packaging and actual browser startup/screenshots. Startup smoke does not establish keyboard/IME/scroll, screen-reader, mobile input or visual acceptance. Old DOM axe results do not qualify a canvas host; deployment requires independent evidence.
@@ -201,3 +203,11 @@ The dedicated workflow retains explicit legacy controller/DOM parity checks and 
 ## 13. Definition of done
 
 The new UI remains incomplete until actual Robrix host interactions, responsive scroll/draft preservation, real CJK IME, accessibility, visual quality and Console composition pass on the target hosts. Compilation, bridge extraction and historical controller receipts are insufficient. Production completion also requires qualified owner/signer/bridge integration, platform packaging, all external gates and independent acceptance; no merge or release authorization is implied.
+
+## 16. V8.2 pre-coding implementation-readiness overlay
+
+Use the [parallel development plan](../../readiness/PARALLEL_DEVELOPMENT.md) and
+[module execution dossier](../../../qualification/module-execution-dossiers/MODULE_DOSSIERS.json)
+for lane ownership, execution-receipt fields and external evidence requirements.
+These are specification and navigation references. They do not qualify the new
+Makepad host, close the remaining integration gates or grant release authority.

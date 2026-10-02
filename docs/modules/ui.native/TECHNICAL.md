@@ -802,3 +802,12 @@ Exact filenames, input caps, stable focus IDs and a 4 MiB worker-rendered
 diagnostic cache keep
 presentation bounded without changing final-use authority. Explicit staged
 package cleanup preserves unrelated files and predecessor recovery evidence.
+
+## 16. V8.2 pre-coding implementation-readiness overlay
+
+Use the [parallel development plan](../../readiness/PARALLEL_DEVELOPMENT.md) and
+[module execution dossier](../../../qualification/module-execution-dossiers/MODULE_DOSSIERS.json)
+for lane ownership, execution-receipt fields and external evidence requirements.
+These references preserve the native owner/platform boundaries and incomplete
+qualification status. They do not qualify the new Makepad host or grant release
+authority; historical native receipts remain limited to their recorded subjects.

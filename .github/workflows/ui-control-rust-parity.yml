@@ -28,7 +28,7 @@ jobs:
         name: Resolve one immutable integration base for both subjects
         env:
           SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-          BASE_REF: ${{ github.event.pull_request.base.ref || 'main' }}
+          BASE_REF: ${{ github.event.pull_request.base.ref || (github.ref_name == 'work/ui-chat-convergence-20261002' && 'work/ui-rust-scifi-audit-20261002') || 'main' }}
         shell: bash
         run: |
           set -euo pipefail

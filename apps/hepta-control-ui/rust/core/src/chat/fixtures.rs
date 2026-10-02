@@ -22,16 +22,56 @@ pub fn owner_conversation_fixture() -> ChatWorkspace {
     workspace
 }
 
-pub fn extend_scroll_fixture(workspace:&mut ChatWorkspace) {
-    let mut history=workspace.timeline().and_then(|timeline|timeline.history()).cloned().expect("installed owner fixture");
-    let original=history.messages.clone();history.messages.clear();
-    for index in 0..16 {for mut message in original.clone(){message.id=format!("{}-{index}",message.id);history.messages.push(message);}}
-    history.revision+=1;
-    let ticket=workspace.begin_history(workspace.active_id(),"fixture-thread",ViewFence{owner_session:"fixture-owner-session".into(),generation:4}).unwrap();
-    workspace.receive_history(&ticket,history).unwrap();
+pub fn extend_scroll_fixture(workspace: &mut ChatWorkspace) {
+    let mut history = workspace
+        .timeline()
+        .and_then(|timeline| timeline.history())
+        .cloned()
+        .expect("installed owner fixture");
+    let original = history.messages.clone();
+    history.messages.clear();
+    for index in 0..16 {
+        for mut message in original.clone() {
+            message.id = format!("{}-{index}", message.id);
+            history.messages.push(message);
+        }
+    }
+    history.revision += 1;
+    let ticket = workspace
+        .begin_history(
+            workspace.active_id(),
+            "fixture-thread",
+            ViewFence {
+                owner_session: "fixture-owner-session".into(),
+                generation: 4,
+            },
+        )
+        .unwrap();
+    workspace.receive_history(&ticket, history).unwrap();
 }
-pub fn append_scroll_fixture(workspace:&mut ChatWorkspace) {
-    let sequence=workspace.timeline().and_then(|timeline|timeline.history()).unwrap().event_sequence+1;
-    let ticket=workspace.begin_history(workspace.active_id(),"fixture-thread",ViewFence{owner_session:"fixture-owner-session".into(),generation:4}).unwrap();
-    workspace.receive_delta(&ticket,"fixture-assistant-2-15",sequence," New deterministic fixture activity.").unwrap();
+pub fn append_scroll_fixture(workspace: &mut ChatWorkspace) {
+    let sequence = workspace
+        .timeline()
+        .and_then(|timeline| timeline.history())
+        .unwrap()
+        .event_sequence
+        + 1;
+    let ticket = workspace
+        .begin_history(
+            workspace.active_id(),
+            "fixture-thread",
+            ViewFence {
+                owner_session: "fixture-owner-session".into(),
+                generation: 4,
+            },
+        )
+        .unwrap();
+    workspace
+        .receive_delta(
+            &ticket,
+            "fixture-assistant-2-15",
+            sequence,
+            " New deterministic fixture activity.",
+        )
+        .unwrap();
 }

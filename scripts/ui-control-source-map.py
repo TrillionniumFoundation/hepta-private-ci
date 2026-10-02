@@ -25,7 +25,7 @@ paths = maps["verify_source_identity"](row, roots, candidate, check_checkout=Fal
 outputs = tuple(
     f"{root}/{directory}/"
     for root in roots
-    for directory in ("dist", "dist-rust", "rust/target", "rust/pkg", "node_modules", "test-results", "playwright-report")
+    for directory in ("dist", "dist-rust", "dist-robrix-fixtures", "rust/target", "rust/pkg", "node_modules", "test-results", "playwright-report")
 )
 untracked = maps["git"]("ls-files", "--others", "-z", "--", *paths).split("\0")
 unexpected = [

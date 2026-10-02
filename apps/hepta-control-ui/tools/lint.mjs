@@ -10,7 +10,7 @@ async function collect(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
     const path = join(directory, entry.name);
     if (entry.isDirectory()) {
-      if (!["dist", "dist-rust", "target", "pkg", "node_modules", "test-results", "playwright-report"].includes(entry.name)) {
+      if (!["dist", "dist-rust", "dist-robrix-fixtures", "target", "pkg", "node_modules", "test-results", "playwright-report"].includes(entry.name)) {
         await collect(path);
       }
     } else if ([".js", ".mjs"].includes(extname(entry.name))) {
@@ -34,8 +34,15 @@ for (const path of sources.filter(path => path.includes(`${join("src", "")}`))) 
 }
 
 const packageJson = JSON.parse(await readFile(join(root, "package.json"), "utf8"));
-if (!packageJson.exports?.["."] || packageJson.main !== "./src/index.js") {
-  throw new Error("package root export must be explicit and stable");
+if (
+  !packageJson.exports ||
+  typeof packageJson.exports !== "object" ||
+  Array.isArray(packageJson.exports) ||
+  Object.keys(packageJson.exports).length !== 0 ||
+  packageJson.main !== undefined ||
+  packageJson.types !== undefined
+) {
+  throw new Error("historical JavaScript oracles must remain outside product exports");
 }
 
 const packageLock = JSON.parse(await readFile(join(root, "package-lock.json"), "utf8"));
