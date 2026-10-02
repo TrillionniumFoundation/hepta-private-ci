@@ -10,7 +10,7 @@
  "pr_base_sha": "e8f8f2d0ca399b0a68abba4da90a3be5114d0735",
  "push_base_sha": "6958a901d1318f01fe836aa679f501d4b610637b",
  "artifact_api_template": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/{artifact_id}/zip",
- "record_log_manifest_format": "SHA256 UTF8 compact JSON of sorted [stage,log_file,log_bytes,log_sha256] rows, comma/colon separators",
+ "record_log_manifest_format": "SHA256 UTF8 compact JSON [stage,log_file,log_bytes,log_sha256] rows ordered by sorted full record filenames (stage+'.json'), comma/colon separators",
  "counts_format": ["nextest tests run (excludes skipped helpers)","passed","failed","skipped"],
  "required_counts_format": ["required","passed","failed"],
  "failure_leaves": [{"name":"supervisor::tests::constructor_hydration_recovery_tests::new_corrupt_signed_witness_runs_fresh_validation_and_denies_recovery","location":"hepta-supervisor/src/constructor_hydration_recovery_tests.rs:222:5","assertion":"left 2, expected 1"},{"name":"supervisor::tests::process_recovery_fault_does_not_hide_signed_recovery_required","location":"hepta-supervisor/src/supervisor_tests.rs:1110:5","assertion":"TickReport { faults: [] }; left 0, expected 1"}],
