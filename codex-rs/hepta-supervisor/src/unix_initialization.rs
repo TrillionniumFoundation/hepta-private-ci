@@ -18,9 +18,7 @@ use crate::ProcessStream;
 use crate::SpawnedProcess;
 use crate::runtime::bounded_message;
 
-fn retain_probe(
-    probe: Result<HealthProbe, ProcessDriverError>,
-) -> (HealthProbe, Option<String>) {
+fn retain_probe(probe: Result<HealthProbe, ProcessDriverError>) -> (HealthProbe, Option<String>) {
     match probe {
         Ok(probe) => (probe, None),
         Err(error) => (
@@ -51,22 +49,33 @@ pub(super) fn finish_child(
     // have at most 79 bytes even at the u32/u64 maxima. No request text enters
     // this constructor, so ProcessIdentity's fallible validation cannot fail.
     let incarnation = if companion {
-        format!("unix-matrix-pid-{}-agent-generation-{generation}", child.id())
+        format!(
+            "unix-matrix-pid-{}-agent-generation-{generation}",
+            child.id()
+        )
     } else {
         format!("unix-pid-{}-generation-{generation}", child.id())
     };
+    #[expect(
+        clippy::expect_used,
+        reason = "the OS child PID is positive and the generated ASCII incarnation is below 128 bytes; preserve the acquired child owner"
+    )]
     let identity = ProcessIdentity::new(u64::from(child.id()), incarnation)
         .expect("OS child PID and bounded generated incarnation satisfy ProcessIdentity");
     let (health_probe, mut failure) = retain_probe(probe);
     let (sender, logs) = std::sync::mpsc::sync_channel(capacity);
     let stdout = match child.stdout.take() {
         Some(stdout) => spawn_log_reader(stdout, ProcessStream::Stdout, sender.clone()),
-        None => Err(ProcessDriverError::new("acquired child stdout pipe is missing")),
+        None => Err(ProcessDriverError::new(
+            "acquired child stdout pipe is missing",
+        )),
     };
     remember_fault(&mut failure, stdout);
     let stderr = match child.stderr.take() {
         Some(stderr) => spawn_log_reader(stderr, ProcessStream::Stderr, sender),
-        None => Err(ProcessDriverError::new("acquired child stderr pipe is missing")),
+        None => Err(ProcessDriverError::new(
+            "acquired child stderr pipe is missing",
+        )),
     };
     remember_fault(&mut failure, stderr);
     if failure.is_some() {

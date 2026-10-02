@@ -5,6 +5,15 @@ release acceptance receipt. The native Rust tests named below must execute on
 the exact source and deterministic merge candidates before this change is
 qualified. Existing production authority and writer boundaries are unchanged.
 
+Original source-only checkpoints below are historical observations. Later native
+outcomes are recorded in the
+[R3 local observation](../../../qualification/runtime-supervisor/LOCAL_EXECUTION_OBSERVATION_20261001_R3.json)
+and [R4 local observation](../../../qualification/runtime-supervisor/LOCAL_EXECUTION_OBSERVATION_20261001_R4.json),
+with candidate scope and remaining gates in the
+[R4 audit](../../../qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261001_R4.md).
+They apply only to their bound source and selected commands, not to a later
+candidate, an unfiltered suite or target-host acceptance.
+
 ## Acquisition and final use
 
 Both Agentd and Matrix adoption acquire an operating-system lifetime reference
@@ -17,6 +26,14 @@ The adopted variant of `UnixProcessHandle` no longer stores a signalable numeric
 PID. It retains only `ProcessRef`; `request_stop`, `kill`, and terminal polling
 use that reference. There is no fallback from reference acquisition failure to
 `kill(pid, signal)` or from exit observation failure to `kill(pid, 0)`.
+
+Before sending an Agentd health or Drain frame, or a Matrix health frame, the
+Unix connection must also prove the acquired process's peer PID through Linux
+`SO_PEERCRED` or macOS `LOCAL_PEERPID`. `unix_peer_identity.rs` performs this check;
+`unix_peer_identity_tests.rs` covers genuine and forged peers. This kernel check
+supplements the lifetime reference and nonce/generation/root handshake. The
+current Agentd/Matrixd contract requires the owned process to serve its listener;
+transferring the listener to another process is not supported.
 
 ### Linux
 
@@ -38,8 +55,9 @@ point. Its kernel implementation revalidates pidversion and obtains the matching
 process reference before signaling. The function is resolved from the fixed
 system libproc path; unsupported systems fail explicitly rather than silently
 using a numeric PID. Both library availability and host permissions are
-qualification prerequisites. This implementation has not been executed on macOS
-in the editing environment.
+qualification prerequisites. The original lifetime repair checkpoint recorded
+no macOS execution in its editing environment; named macOS target-host
+qualification remains a separate gate from later repository observations.
 
 Native implementation references are Apple's XNU `bsd/kern/proc_info.c`
 (`psignal_by_audit_token`) and `tests/signal_exit_reason.c`, plus Linux
@@ -56,8 +74,9 @@ exit code. The existing ProcessExit representation therefore retains
 Freshly spawned Child handles remain exclusively owned. Before numeric signaling
 that branch checks the owned Child's cached/wait status and refuses a signal
 once it has been reaped. The product must not introduce a competing waitpid(-1)
-reaper. Spawn-before-publication containment and daemon-death during that window
-are separate ownership requirements, not established by this lifetime patch.
+reaper. Failed lease-publication containment is implemented separately in
+`PROCESS_OWNERSHIP.md`; daemon death before a recoverable launch record remains
+a separate ownership gap.
 
 ## Regression source and evidence boundary
 
@@ -74,17 +93,22 @@ cd codex-rs
 just test --locked -p codex-hepta-supervisor --lib unix::process_ref::tests
 ```
 
-The local editing environment ran a separate six-check Python probe of the Linux
-pidfd kernel primitives. That probe is not execution of these Rust sources,
+The original lifetime repair's editing environment ran a separate six-check
+Python probe of the Linux pidfd kernel primitives. That probe was not execution
+of these Rust sources,
 Agentd/Matrix product qualification, macOS evidence, a daemon-crash experiment,
-or an exact-candidate CI receipt. Rust compilation, rustfmt, strict Clippy and
-both default/production-authority profiles remain to be established by native
-execution. No workflow policy or required-check list is weakened by this change.
+or an exact-candidate CI receipt. Subsequent compilation, formatting, strict lint
+and selected native-profile outcomes are recorded in the observations above;
+they do not establish every final-source or merge gate. No workflow policy or
+required-check list is weakened by this change.
 
 ## Remaining program gates
 
-Continue launch lease-publication containment, Matrix cleanup and independent
-main termination, durable Stop/Kill supersession, restart predecessor/replacement
-identity, cross-daemon deadline and exit-finalization recovery, directory
-identity, source-map synchronization and target-host faults. This amendment does
-not mark stages A-D complete or assert independent security/operator acceptance.
+Launch publication containment, same-owner cleanup, main-before-Matrix emergency
+termination and durable operator Stop/Kill intent are current source mechanisms;
+their qualification must follow the bound candidate. Remaining work includes
+daemon-death launch/cleanup witnesses, complete release/control supersession and
+predecessor/replacement crash coverage, restart-internal cross-daemon deadlines,
+directory identity, source-map synchronization and target-host faults. This
+amendment does not mark stages A-D complete or assert independent
+security/operator acceptance.

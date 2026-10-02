@@ -22,7 +22,7 @@ use crate::restart_policy::RESTART_RECOVERY_WINDOW;
 
 pub(crate) const RESTART_JOURNAL_SCHEMA_VERSION: u32 = 1;
 pub(crate) const RESTART_JOURNAL_FILE: &str = "supervisor-restart-budget.json";
-const MAX_RESTART_JOURNAL_BYTES: u64 = 4_096;
+const MAX_RESTART_JOURNAL_BYTES: usize = 4_096;
 const RESTART_JOURNAL_DOMAIN: &[u8] = b"hepta-supervisor:restart-budget:v1";
 static RESTART_JOURNAL_SEQUENCE: AtomicU64 = AtomicU64::new(1);
 
@@ -191,30 +191,23 @@ fn legacy_main(
 }
 
 fn read_record(run_root: &Path) -> Result<Option<RestartRecord>, SupervisorError> {
-    use std::io::Read;
     let path = run_root.join(RESTART_JOURNAL_FILE);
-    let metadata = match std::fs::symlink_metadata(&path) {
-        Ok(metadata) => metadata,
-        Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
-        Err(error) => return Err(error.into()),
+    let Some(bytes) =
+        crate::durable_publish::read_regular_bounded(&path, MAX_RESTART_JOURNAL_BYTES).map_err(
+            |error| {
+                if matches!(
+                    error.kind(),
+                    ErrorKind::InvalidData | ErrorKind::InvalidInput
+                ) {
+                    SupervisorError::CorruptLease(error.to_string())
+                } else {
+                    error.into()
+                }
+            },
+        )?
+    else {
+        return Ok(None);
     };
-    if !metadata.file_type().is_file()
-        || metadata.file_type().is_symlink()
-        || metadata.len() > MAX_RESTART_JOURNAL_BYTES
-    {
-        return Err(SupervisorError::CorruptLease(
-            "restart record is not a bounded regular file".to_string(),
-        ));
-    }
-    let mut bytes = Vec::new();
-    std::fs::File::open(path)?
-        .take(MAX_RESTART_JOURNAL_BYTES + 1)
-        .read_to_end(&mut bytes)?;
-    if bytes.len() as u64 > MAX_RESTART_JOURNAL_BYTES {
-        return Err(SupervisorError::CorruptLease(
-            "restart record grew beyond its bound".to_string(),
-        ));
-    }
     let value: serde_json::Value = serde_json::from_slice(&bytes)
         .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
     let mut record = if value
@@ -270,17 +263,12 @@ fn write_record(run_root: &Path, mut record: RestartRecord) -> Result<(), Superv
     let mut bytes = serde_json::to_vec(&record)
         .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
     bytes.push(b'\n');
-    if bytes.len() as u64 > MAX_RESTART_JOURNAL_BYTES {
+    if bytes.len() > MAX_RESTART_JOURNAL_BYTES {
         return Err(SupervisorError::CorruptLease(
             "restart record exceeds bound".to_string(),
         ));
     }
-    crate::durable_publish::write_atomic(
-        &temp_path,
-        &final_path,
-        &bytes,
-        "restart_journal",
-    )?;
+    crate::durable_publish::write_atomic(&temp_path, &final_path, &bytes, "restart_journal")?;
     Ok(())
 }
 
@@ -358,8 +346,6 @@ pub(crate) fn restore_window(
             true,
         );
     };
-    let recovery_window_millis = u64::try_from(RESTART_RECOVERY_WINDOW.as_millis())
-        .expect("bounded recovery window milliseconds");
     let Some(elapsed_millis) = now_unix_millis.checked_sub(started_unix_millis) else {
         // Wall-clock rollback is not allowed to buy extra restart attempts.
         return (
@@ -369,7 +355,7 @@ pub(crate) fn restore_window(
             true,
         );
     };
-    if elapsed_millis >= recovery_window_millis {
+    if u128::from(elapsed_millis) >= RESTART_RECOVERY_WINDOW.as_millis() {
         return (0, None, None, false);
     }
     let elapsed = Duration::from_millis(elapsed_millis);
@@ -387,6 +373,10 @@ fn valid_window(window: &DurableRestartWindow) -> bool {
         && ((window.attempts == 0 && window.window_started_unix_millis.is_none())
             || (window.attempts > 0 && window.window_started_unix_millis.is_some()))
 }
+
+#[cfg(test)]
+#[path = "restart_journal_read_tests.rs"]
+mod read_tests;
 
 #[cfg(test)]
 mod tests {

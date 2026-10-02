@@ -166,13 +166,7 @@ fn failed_matrix_publication_retains_partial_lease_until_observed_exit() -> Resu
     assert!(
         fixture
             .supervisor
-            .publish_owned_matrix_launch(
-                &fixture.agent,
-                &mut fixture.slot,
-                path,
-                &lease,
-                now,
-            )
+            .publish_owned_matrix_launch(&fixture.agent, &mut fixture.slot, path, &lease, now,)
             .is_err()
     );
     fixture.assert_retained();
@@ -206,13 +200,7 @@ fn unpublished_matrix_absence_is_reconciled_only_by_retained_launch_owner() -> R
     assert!(
         fixture
             .supervisor
-            .publish_owned_matrix_launch(
-                &fixture.agent,
-                &mut fixture.slot,
-                path,
-                &lease,
-                now,
-            )
+            .publish_owned_matrix_launch(&fixture.agent, &mut fixture.slot, path, &lease, now,)
             .is_err()
     );
     fixture.assert_retained();

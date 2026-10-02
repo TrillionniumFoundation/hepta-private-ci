@@ -35,7 +35,11 @@ fn failed_sync_after_unlink_is_retryable_only_with_the_same_witness() -> Result<
     let expected = lease()?;
     write_lease(root.path(), &expected)?;
     let mut removal = ProcessLeaseRemoval::new(root.path(), &expected);
-    assert!(removal.finish_with(root.path(), &expected, failed_sync).is_err());
+    assert!(
+        removal
+            .finish_with(root.path(), &expected, failed_sync)
+            .is_err()
+    );
     assert!(read_lease(root.path())?.is_none());
     assert!(remove_lease(root.path(), &expected).is_err());
     removal.finish(root.path(), &expected)?;
@@ -88,7 +92,11 @@ fn a_fresh_witness_cannot_infer_an_old_unlink_from_absence() -> Result<()> {
     let expected = lease()?;
     write_lease(root.path(), &expected)?;
     let mut removal = ProcessLeaseRemoval::new(root.path(), &expected);
-    assert!(removal.finish_with(root.path(), &expected, failed_sync).is_err());
+    assert!(
+        removal
+            .finish_with(root.path(), &expected, failed_sync)
+            .is_err()
+    );
     drop(removal);
     let mut fresh = ProcessLeaseRemoval::new(root.path(), &expected);
     assert!(fresh.finish(root.path(), &expected).is_err());
@@ -114,7 +122,11 @@ fn removed_lease_reappearing_with_the_same_identity_is_not_deleted_again() -> Re
     let expected = lease()?;
     write_lease(root.path(), &expected)?;
     let mut removal = ProcessLeaseRemoval::new(root.path(), &expected);
-    assert!(removal.finish_with(root.path(), &expected, failed_sync).is_err());
+    assert!(
+        removal
+            .finish_with(root.path(), &expected, failed_sync)
+            .is_err()
+    );
     write_lease(root.path(), &expected)?;
     assert!(removal.finish(root.path(), &expected).is_err());
     assert_eq!(read_lease(root.path())?, Some(expected));
@@ -146,7 +158,11 @@ fn malformed_recreated_lease_is_preserved_and_rejected() -> Result<()> {
     let expected = lease()?;
     write_lease(root.path(), &expected)?;
     let mut removal = ProcessLeaseRemoval::new(root.path(), &expected);
-    assert!(removal.finish_with(root.path(), &expected, failed_sync).is_err());
+    assert!(
+        removal
+            .finish_with(root.path(), &expected, failed_sync)
+            .is_err()
+    );
     let path = lease_path(root.path());
     std::fs::write(&path, b"{torn")?;
     assert!(removal.finish(root.path(), &expected).is_err());

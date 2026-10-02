@@ -40,7 +40,8 @@
           "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
           "symbol": "canonical_generation_from_projection"
         }
-      ]
+      ],
+      "sourceBlob": "ee013b4cf115c3efd75ce3d67a6d042bbdb36142"
     },
     {
       "operation": "apply_incremental_delta",
@@ -55,7 +56,8 @@
       "sourcePathExists": true,
       "designOperation": "apply_incremental_delta",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "ee013b4cf115c3efd75ce3d67a6d042bbdb36142"
     },
     {
       "operation": "publish_generation",
@@ -84,7 +86,8 @@
           "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
           "symbol": "refresh_scope_projection_tx"
         }
-      ]
+      ],
+      "sourceBlob": "ee013b4cf115c3efd75ce3d67a6d042bbdb36142"
     },
     {
       "operation": "query_relations",
@@ -115,7 +118,8 @@
           "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
           "symbol": "optimize_with_factor_graph"
         }
-      ]
+      ],
+      "sourceBlob": "ee013b4cf115c3efd75ce3d67a6d042bbdb36142"
     },
     {
       "operation": "build_prompt_factor_projection_v1",
@@ -143,7 +147,8 @@
           "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
           "symbol": "optimize_with_factor_graph"
         }
-      ]
+      ],
+      "sourceBlob": "7b2b4468dc1095a257d2d910569d12c9d282d420"
     }
   ],
   "repositoryControlledGaps": [
@@ -204,8 +209,9 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "f6e959c0466e5c8a35afddee24dfafee82625140",
+    "tree": "b7b7bc739d4fef77ef5be59516802c9d024b0e4c",
+    "interpretation": "Exact current source observation after the shared Cargo.lock input gained the already locked libc dependency edge for codex-hepta-fleet. The complete historical evidence/root/observed-path closure differs from this source only at codex-rs/Cargo.lock; all original operation entrypoints and existing explicit source objects remain unchanged. Immutable sourceBase remains integration provenance. Exact operation sourceBlob bindings and this observation independently prove current source navigation, without transferring historical execution, composition, acceptance, activation or release credit. Existing source identity policy, owners, gaps, state fields and all qualification claims are preserved. This is source-only shared-input integration, not new operation execution or product qualification."
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
@@ -318,5 +324,7 @@
       "path": "docs/modules/knowledge.graph/TECHNICAL.md",
       "object": "2e65ace60cd8f19c28b3b77605d7d5cbf7c75fbd"
     }
-  ]
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation"
 }

@@ -1,0 +1,5 @@
+filegroup(
+    name = "module_catalog",
+    srcs = ["MODULES.json"],
+    visibility = ["//codex-rs/hepta-fleet:__pkg__"],
+)

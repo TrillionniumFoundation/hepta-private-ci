@@ -42,14 +42,21 @@ fn audit_token(pid: i32) -> io::Result<AuditToken> {
     // SAFETY: the output is initialized writable storage and PID is positive.
     let result = unsafe { task_name_for_pid(mach_task_self_, pid, &mut name) };
     if result != 0 {
-        return Err(io::Error::other(format!("task name acquisition failed: {result}")));
+        return Err(io::Error::other(format!(
+            "task name acquisition failed: {result}"
+        )));
     }
     let name = TaskName(name);
     let mut token = AuditToken { values: [0; 8] };
     let mut count = TASK_AUDIT_TOKEN_COUNT;
     // SAFETY: AuditToken is exactly eight 32-bit words with C representation.
     let result = unsafe {
-        task_info(name.0, TASK_AUDIT_TOKEN, token.values.as_mut_ptr().cast(), &mut count)
+        task_info(
+            name.0,
+            TASK_AUDIT_TOKEN,
+            token.values.as_mut_ptr().cast(),
+            &mut count,
+        )
     };
     if result != 0 || count != TASK_AUDIT_TOKEN_COUNT || token.values[5] != pid as u32 {
         return Err(io::Error::other("kernel audit-token acquisition failed"));
@@ -72,16 +79,20 @@ fn with_signal_api<T>(call: impl FnOnce(SignalFn) -> io::Result<T>) -> io::Resul
     // Use the OS library, not a request-controlled search path or environment.
     // SAFETY: both C strings are static and NUL terminated.
     let library = unsafe {
-        libc::dlopen(c"/usr/lib/libproc.dylib".as_ptr(), libc::RTLD_NOW | libc::RTLD_LOCAL)
+        libc::dlopen(
+            c"/usr/lib/libproc.dylib".as_ptr(),
+            libc::RTLD_NOW | libc::RTLD_LOCAL,
+        )
     };
     if library.is_null() {
-        return Err(io::Error::new(io::ErrorKind::Unsupported, "libproc is unavailable"));
+        return Err(io::Error::new(
+            io::ErrorKind::Unsupported,
+            "libproc is unavailable",
+        ));
     }
     let library = Library(library);
     // SAFETY: library stays loaded through the entire synchronous call below.
-    let symbol = unsafe {
-        libc::dlsym(library.0, c"proc_signal_with_audittoken".as_ptr())
-    };
+    let symbol = unsafe { libc::dlsym(library.0, c"proc_signal_with_audittoken".as_ptr()) };
     if symbol.is_null() {
         return Err(io::Error::new(
             io::ErrorKind::Unsupported,
@@ -126,20 +137,38 @@ impl ProcessRef {
         };
         // SAFETY: one initialized change; no result buffer; no blocking wait.
         let result = unsafe {
-            libc::kevent(queue.as_raw_fd(), &change, 1, std::ptr::null_mut(), 0, std::ptr::null())
+            libc::kevent(
+                queue.as_raw_fd(),
+                &change,
+                1,
+                std::ptr::null_mut(),
+                0,
+                std::ptr::null(),
+            )
         };
         if result < 0 {
             let error = io::Error::last_os_error();
-            return if error.raw_os_error() == Some(libc::ESRCH) { Ok(None) } else { Err(error) };
+            return if error.raw_os_error() == Some(libc::ESRCH) {
+                Ok(None)
+            } else {
+                Err(error)
+            };
         }
-        let reference = Self { queue, pid, token, observed_exit: AtomicBool::new(false) };
+        let reference = Self {
+            queue,
+            pid,
+            token,
+            observed_exit: AtomicBool::new(false),
+        };
         if reference.exited()? {
             return Ok(None);
         }
         // Registering by PID must not bind a replacement between token capture
         // and EVFILT_PROC registration. The kernel-issued pidversion must agree.
         if audit_token(native_pid)? != token {
-            return Err(io::Error::other("process changed during lifetime acquisition"));
+            return Err(io::Error::other(
+                "process changed during lifetime acquisition",
+            ));
         }
         Ok(Some(reference))
     }
@@ -156,10 +185,20 @@ impl ProcessRef {
             data: 0,
             udata: std::ptr::null_mut(),
         };
-        let timeout = libc::timespec { tv_sec: 0, tv_nsec: 0 };
+        let timeout = libc::timespec {
+            tv_sec: 0,
+            tv_nsec: 0,
+        };
         // SAFETY: one initialized event slot; zero timeout is nonblocking.
         let result = unsafe {
-            libc::kevent(self.queue.as_raw_fd(), std::ptr::null(), 0, &mut event, 1, &timeout)
+            libc::kevent(
+                self.queue.as_raw_fd(),
+                std::ptr::null(),
+                0,
+                &mut event,
+                1,
+                &timeout,
+            )
         };
         if result < 0 {
             return Err(io::Error::last_os_error());
@@ -182,7 +221,10 @@ impl ProcessRef {
 
     pub(in crate::unix) fn signal(&self, signal: i32) -> io::Result<()> {
         if !matches!(signal, libc::SIGTERM | libc::SIGKILL) {
-            return Err(io::Error::new(io::ErrorKind::InvalidInput, "unsupported control signal"));
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidInput,
+                "unsupported control signal",
+            ));
         }
         let mut token = self.token;
         with_signal_api(|send| {

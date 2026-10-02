@@ -53,7 +53,9 @@ impl ManagedProcess for Process {
         let mut calls = self.0.lock().expect("calls");
         calls.polls += 1;
         if calls.poll_fails {
-            return Err(ProcessDriverError::new("terminal process must not be polled again"));
+            return Err(ProcessDriverError::new(
+                "terminal process must not be polled again",
+            ));
         }
         Ok(ProcessObservation {
             state: ProcessState::Exited(ProcessExit {
@@ -74,7 +76,9 @@ impl ManagedProcess for Process {
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
         self.0.lock().expect("calls").signals += 1;
-        Err(ProcessDriverError::new("terminal process must not be signalled again"))
+        Err(ProcessDriverError::new(
+            "terminal process must not be signalled again",
+        ))
     }
 }
 
@@ -119,7 +123,8 @@ fn exact_exit_survives_cleanup_failure_without_repolling_or_resignalling() -> Re
             Supervisor::recover(registry.clone(), Driver, config.clone(), now)?;
         assert!(report.faults.is_empty());
         let stopped = registry.load()?.agents[&agent].lifecycle.generation;
-        let starting = registry.compare_and_transition(&agent, stopped, AgentLifecycle::Starting)?;
+        let starting =
+            registry.compare_and_transition(&agent, stopped, AgentLifecycle::Starting)?;
         let running = registry.compare_and_transition(
             &agent,
             starting.generation,

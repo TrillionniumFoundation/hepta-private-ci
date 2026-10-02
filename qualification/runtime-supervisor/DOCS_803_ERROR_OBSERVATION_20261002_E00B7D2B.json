@@ -1,0 +1,238 @@
+{
+  "schema_version": 1,
+  "scope": "Immutable historical observation of fresh e00 source docs actual ERROR; no qualification transfer or future-fix execution credit",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "PR": 1306,
+  "observed_at": "2026-10-02T03:50:20.217895+00:00",
+  "run_id": 36960866390,
+  "job_id": 110694024239,
+  "run_attempt": 1,
+  "job_name": "Verify exact source head",
+  "official_job_status": "completed",
+  "official_job_conclusion": "failure",
+  "head": "e00b7d2b6acccf6a35683a595cf88e1f23673642",
+  "tested_sha": "e00b7d2b6acccf6a35683a595cf88e1f23673642",
+  "tested_tree": "79a1810d36bc6217595c0f31129eb9812c729d1a",
+  "source_parent": "75886ae97f2deb6c1da6b921f80ffaa0696d9ea3",
+  "source_parent_tree": "e389ba2f45efadf1b43acf1914ea4333f015f08f",
+  "tested_parents": [
+    "75886ae97f2deb6c1da6b921f80ffaa0696d9ea3"
+  ],
+  "base_sha": "e8f8f2d0ca399b0a68abba4da90a3be5114d0735",
+  "base_tree": "78e8bc135001c8517cf29ef0d791bfa6b5f5a0e8",
+  "identity_evidence": {
+    "official_job_metadata_exact_head_attempt": true,
+    "source_to_head_sole_parent_exact_API": true,
+    "actual_checkout_full_sha_output": [
+      {
+        "raw_line": 3044,
+        "raw": "2026-10-02T03:36:15.6925964Z e00b7d2b6acccf6a35683a595cf88e1f23673642"
+      },
+      {
+        "raw_line": 3072,
+        "raw": "2026-10-02T03:36:16.2426531Z e00b7d2b6acccf6a35683a595cf88e1f23673642"
+      }
+    ],
+    "raw_expected_sha_environment_line": 3181,
+    "raw_unittest_invocation_line": 3165,
+    "source_final_clean_commands_are_printed_but_not_executed_due_to_ERROR": true,
+    "tree_binding_scope": "Tested tree/parents derive from immutable commit/tree API binding and actual exact source checkout; no receipt tree or final-clean execution is asserted after unittest ERROR."
+  },
+  "fixture_source_path": "scripts/test_hepta_ci_exec_deadline.py",
+  "fixture_exact_git_blob": "221b0535de670c8248898460af51fb719fb14f36",
+  "fixture_failure_source_line": 73,
+  "execution_helper_path": "scripts/hepta_ci_exec.py",
+  "execution_helper_exact_git_blob": "c9434b3a4afb31f80e323d543936386a2fa738de",
+  "static_source_head_base_helper_blob_bindings": [
+    {
+      "path": "scripts/test_hepta_ci_exec_deadline.py",
+      "head-tree": "221b0535de670c8248898460af51fb719fb14f36",
+      "source-tree": "221b0535de670c8248898460af51fb719fb14f36",
+      "base-tree": "221b0535de670c8248898460af51fb719fb14f36",
+      "same_head_source_base": true
+    },
+    {
+      "path": "scripts/hepta_ci_exec.py",
+      "head-tree": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "source-tree": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "base-tree": "c9434b3a4afb31f80e323d543936386a2fa738de",
+      "same_head_source_base": true
+    }
+  ],
+  "static_inherited_base_blob_only": true,
+  "base_failure_execution_credit": false,
+  "whole_raw_absolute_path": "/workspace/scratch/89fe97a34325/round4-final-ci/e00b7d2b/global/docs-binding/job-110694024239.log",
+  "whole_raw_bytes": 845243,
+  "whole_raw_sha256": "946d79943404d66dbb21b3b8abdf34c8bc812fb35e231ad24ba57aed6f1b2dc9",
+  "actual_unittest_counts": {
+    "total": 803,
+    "unique_test_identities": 803,
+    "ok": 802,
+    "ERROR": 1,
+    "FAIL": 0,
+    "suite_OK": false,
+    "suite_terminal": "FAILED (errors=1)",
+    "summary_raw_line": 4004,
+    "failure_summary_raw_line": 4006
+  },
+  "actual_error_test": "test_hepta_ci_exec_deadline.CommandDeadlineTests.test_exited_parent_cannot_leave_a_running_pipe_holder",
+  "first_ERROR_raw_line": 3992,
+  "actual_error": "ProcessLookupError: [Errno 3] No such process",
+  "complete_traceback_with_summary_normalized": [
+    {
+      "raw_line": 3992,
+      "raw": "ERROR: test_exited_parent_cannot_leave_a_running_pipe_holder (test_hepta_ci_exec_deadline.CommandDeadlineTests.test_exited_parent_cannot_leave_a_running_pipe_holder)"
+    },
+    {
+      "raw_line": 3993,
+      "raw": "----------------------------------------------------------------------"
+    },
+    {
+      "raw_line": 3994,
+      "raw": "Traceback (most recent call last):"
+    },
+    {
+      "raw_line": 3995,
+      "raw": "  File \"/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/test_hepta_ci_exec_deadline.py\", line 73, in test_exited_parent_cannot_leave_a_running_pipe_holder"
+    },
+    {
+      "raw_line": 3996,
+      "raw": "    state = stat.read_text().rsplit(\")\", 1)[1].split()[0]"
+    },
+    {
+      "raw_line": 3997,
+      "raw": "            ^^^^^^^^^^^^^^^^"
+    },
+    {
+      "raw_line": 3998,
+      "raw": "  File \"/usr/lib/python3.12/pathlib.py\", line 1030, in read_text"
+    },
+    {
+      "raw_line": 3999,
+      "raw": "    return f.read()"
+    },
+    {
+      "raw_line": 4000,
+      "raw": "           ^^^^^^^^"
+    },
+    {
+      "raw_line": 4001,
+      "raw": "ProcessLookupError: [Errno 3] No such process"
+    },
+    {
+      "raw_line": 4002,
+      "raw": ""
+    },
+    {
+      "raw_line": 4003,
+      "raw": "----------------------------------------------------------------------"
+    },
+    {
+      "raw_line": 4004,
+      "raw": "Ran 803 tests in 41.933s"
+    },
+    {
+      "raw_line": 4005,
+      "raw": ""
+    },
+    {
+      "raw_line": 4006,
+      "raw": "FAILED (errors=1)"
+    }
+  ],
+  "complete_traceback_with_summary_original_raw": [
+    {
+      "raw_line": 3992,
+      "raw": "2026-10-02T03:37:01.2896842Z ERROR: test_exited_parent_cannot_leave_a_running_pipe_holder (test_hepta_ci_exec_deadline.CommandDeadlineTests.test_exited_parent_cannot_leave_a_running_pipe_holder)"
+    },
+    {
+      "raw_line": 3993,
+      "raw": "2026-10-02T03:37:01.2897577Z ----------------------------------------------------------------------"
+    },
+    {
+      "raw_line": 3994,
+      "raw": "2026-10-02T03:37:01.2897940Z Traceback (most recent call last):"
+    },
+    {
+      "raw_line": 3995,
+      "raw": "2026-10-02T03:37:01.2898632Z   File \"/home/runner/work/hepta-private-ci/hepta-private-ci/scripts/test_hepta_ci_exec_deadline.py\", line 73, in test_exited_parent_cannot_leave_a_running_pipe_holder"
+    },
+    {
+      "raw_line": 3996,
+      "raw": "2026-10-02T03:37:01.2899350Z     state = stat.read_text().rsplit(\")\", 1)[1].split()[0]"
+    },
+    {
+      "raw_line": 3997,
+      "raw": "2026-10-02T03:37:01.2899684Z             ^^^^^^^^^^^^^^^^"
+    },
+    {
+      "raw_line": 3998,
+      "raw": "2026-10-02T03:37:01.2899994Z   File \"/usr/lib/python3.12/pathlib.py\", line 1030, in read_text"
+    },
+    {
+      "raw_line": 3999,
+      "raw": "2026-10-02T03:37:01.2900324Z     return f.read()"
+    },
+    {
+      "raw_line": 4000,
+      "raw": "2026-10-02T03:37:01.2900525Z            ^^^^^^^^"
+    },
+    {
+      "raw_line": 4001,
+      "raw": "2026-10-02T03:37:01.2900762Z ProcessLookupError: [Errno 3] No such process"
+    },
+    {
+      "raw_line": 4002,
+      "raw": "2026-10-02T03:37:01.2900967Z "
+    },
+    {
+      "raw_line": 4003,
+      "raw": "2026-10-02T03:37:01.2901124Z ----------------------------------------------------------------------"
+    },
+    {
+      "raw_line": 4004,
+      "raw": "2026-10-02T03:37:01.2901452Z Ran 803 tests in 41.933s"
+    },
+    {
+      "raw_line": 4005,
+      "raw": "2026-10-02T03:37:01.2901600Z "
+    },
+    {
+      "raw_line": 4006,
+      "raw": "2026-10-02T03:37:01.2901683Z FAILED (errors=1)"
+    }
+  ],
+  "attribution": {
+    "test": "CommandDeadlineTests.test_exited_parent_cannot_leave_a_running_pipe_holder",
+    "source_line": 73,
+    "actual_error": "ProcessLookupError: [Errno 3] No such process",
+    "actual_operation": "Path(/proc/<child_pid>/stat).read_text()",
+    "actual_existing_except": "FileNotFoundError only",
+    "static_helper_bindings": [
+      {
+        "path": "scripts/test_hepta_ci_exec_deadline.py",
+        "head-tree": "221b0535de670c8248898460af51fb719fb14f36",
+        "source-tree": "221b0535de670c8248898460af51fb719fb14f36",
+        "base-tree": "221b0535de670c8248898460af51fb719fb14f36",
+        "same_head_source_base": true
+      },
+      {
+        "path": "scripts/hepta_ci_exec.py",
+        "head-tree": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "source-tree": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "base-tree": "c9434b3a4afb31f80e323d543936386a2fa738de",
+        "same_head_source_base": true
+      }
+    ],
+    "classification": "INHERITED_CI_PROCESS_STATE_OBSERVATION_RACE",
+    "base_failure_execution_proof": false,
+    "Supervisor_or_Fleet_Rust_leaf_failure": false,
+    "whole_source_docs_job_pass": false
+  },
+  "native_Supervisor_or_Fleet_Rust_leaf_failure": false,
+  "whole_docs_source_job_pass_credit": false,
+  "qualification_transfer_to_other_heads": false,
+  "future_fix_execution_credit": false,
+  "source_execution_by_auditor": false,
+  "repository_mutation_by_auditor": false
+}

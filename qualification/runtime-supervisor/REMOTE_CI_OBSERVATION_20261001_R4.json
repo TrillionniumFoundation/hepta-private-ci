@@ -1,0 +1,509 @@
+{
+  "schema": "hepta.runtime-supervisor.remote-ci-observation.v1",
+  "observation_date": "2026-10-01",
+  "source_head": "e78095abf8df069d5dc9496f6e362f9ed27e3978",
+  "base_at_run": "e8f8f2d0ca399b0a68abba4da90a3be5114d0735",
+  "current_main_reported_by_root": "c6f90d48c40f7b5267db587bb3c3f4934f1414a8",
+  "authorityGranted": false,
+  "claims": {
+    "full_native_source_head_passed": false,
+    "full_native_current_merge_passed": false,
+    "target_host_acceptance": false,
+    "production_activated": false,
+    "independent_acceptance": false
+  },
+  "runs": [
+    {
+      "id": 36825701272,
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "path": ".github/workflows/runtime-supervisor-deep-qualification.yml",
+      "head_sha": "e78095abf8df069d5dc9496f6e362f9ed27e3978",
+      "run_attempt": 1,
+      "jobs": [
+        {
+          "id": 110250785501,
+          "name": "deep-qualification (source-head)",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36825701272/job/110250785501",
+          "failed_steps": []
+        },
+        {
+          "id": 110250785743,
+          "name": "deep-qualification (base-merge)",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36825701272/job/110250785743",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "id": 36825701334,
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "head_sha": "e78095abf8df069d5dc9496f6e362f9ed27e3978",
+      "run_attempt": 1,
+      "jobs": [
+        {
+          "id": 110250785735,
+          "name": "Verify ordinary read-only candidate source",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36825701334/job/110250785735",
+          "failed_steps": []
+        },
+        {
+          "id": 110250786021,
+          "name": "Cargo workspace preflight",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36825701334/job/110250786021",
+          "failed_steps": []
+        }
+      ]
+    },
+    {
+      "id": 36825697366,
+      "event": "push",
+      "status": "completed",
+      "conclusion": "failure",
+      "path": ".github/workflows/hepta-supervisor-recovery-check.yml",
+      "head_sha": "e78095abf8df069d5dc9496f6e362f9ed27e3978",
+      "run_attempt": 1,
+      "jobs": [
+        {
+          "id": 110250772964,
+          "name": "native / scope",
+          "conclusion": "success",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36825697366/job/110250772964",
+          "failed_steps": []
+        },
+        {
+          "id": 110253729078,
+          "name": "native / Supervisor (macos-15, source-head)",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36825697366/job/110253729078",
+          "failed_steps": [
+            "Exercise default library lifecycle fixtures",
+            "Prove default library and daemon refuse production authority",
+            "Exercise production-authority library",
+            "Exercise qualification-only durability matrix",
+            "Exercise authority distribution and product pinning",
+            "Exercise real signer daemon pairs and durable writer handoff",
+            "Require all records on the same exact candidate"
+          ]
+        },
+        {
+          "id": 110253729153,
+          "name": "native / Supervisor (ubuntu-24.04, source-head)",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36825697366/job/110253729153",
+          "failed_steps": [
+            "Prove default library and daemon refuse production authority",
+            "Exercise real signer daemon pairs and durable writer handoff",
+            "Require all records on the same exact candidate"
+          ]
+        },
+        {
+          "id": 110263433404,
+          "name": "native / Supervisor qualification required",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36825697366/job/110263433404",
+          "failed_steps": [
+            "Reject every failed cancelled missing or applicable skipped lane"
+          ]
+        }
+      ]
+    },
+    {
+      "id": 36825701101,
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "path": ".github/workflows/hepta-supervisor-derived-diagnostics.yml",
+      "head_sha": "e78095abf8df069d5dc9496f6e362f9ed27e3978",
+      "run_attempt": 1,
+      "jobs": [
+        {
+          "id": 110250785255,
+          "name": "Verify exact-head derived parity",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36825701101/job/110250785255",
+          "failed_steps": [
+            "Regenerate projections without publishing"
+          ]
+        }
+      ]
+    }
+  ],
+  "deep_lanes": [
+    {
+      "job": 110250785501,
+      "lane": "source-head",
+      "tested_sha": "e78095abf8df069d5dc9496f6e362f9ed27e3978",
+      "default_library": {
+        "passed": 348,
+        "failed": 0,
+        "skipped": 0
+      },
+      "qualification_library": {
+        "passed": 353,
+        "failed": 0,
+        "skipped": 0
+      },
+      "distribution": {
+        "passed": 4,
+        "failed": 0
+      },
+      "restart_robrix": {
+        "passed": 5,
+        "failed": 0,
+        "binaries": 3
+      },
+      "hol": {
+        "passed": 1,
+        "seconds": 325.351
+      },
+      "sigkill": {
+        "parent_passed": 1,
+        "ignored_child_helpers": 1
+      },
+      "strict_supervisor_clippy": "passed"
+    },
+    {
+      "job": 110250785743,
+      "lane": "base-merge",
+      "tested_sha": "6690465dd20927b422bc3d697a132dd2cac4601e",
+      "default_library": {
+        "passed": 348,
+        "failed": 0,
+        "skipped": 0
+      },
+      "qualification_library": {
+        "passed": 353,
+        "failed": 0,
+        "skipped": 0
+      },
+      "distribution": {
+        "passed": 4,
+        "failed": 0
+      },
+      "restart_robrix": {
+        "passed": 5,
+        "failed": 0,
+        "binaries": 3
+      },
+      "hol": {
+        "passed": 1,
+        "seconds": 220.546
+      },
+      "sigkill": {
+        "parent_passed": 1,
+        "ignored_child_helpers": 1
+      },
+      "strict_supervisor_clippy": "passed"
+    }
+  ],
+  "deep_limits": {
+    "default_profile_retries": 1,
+    "observed_retry_or_flaky_lines": 0,
+    "not_executed_binaries": [
+      "daemon_product",
+      "paired_process_product",
+      "authority_recovery",
+      "writer_handoff_production"
+    ],
+    "covers_current_main_merge": false
+  },
+  "native_lanes": [
+    {
+      "job": 110253729153,
+      "os": "ubuntu-24.04",
+      "lane": "source-head",
+      "default_library": {
+        "passed": 348,
+        "failed": 0
+      },
+      "production_library": {
+        "passed": 348,
+        "failed": 0
+      },
+      "qualification_library": {
+        "passed": 353,
+        "failed": 0
+      },
+      "default_products": {
+        "passed": 14,
+        "failed": 1
+      },
+      "products": {
+        "passed": 22,
+        "failed": 2,
+        "timed_out": 1,
+        "ignored_child_helpers": 1
+      },
+      "distribution": {
+        "passed": 4,
+        "failed": 0
+      },
+      "hol": {
+        "passed": 1,
+        "seconds": 316.036
+      },
+      "sigkill": {
+        "parent_passed": 1,
+        "ignored_child_helpers": 1
+      },
+      "validators_passed": 70,
+      "strict_clippy": [
+        "default passed",
+        "qualification+offline passed"
+      ]
+    },
+    {
+      "job": 110253729078,
+      "os": "macos-15",
+      "lane": "source-head",
+      "default_library": {
+        "passed": 293,
+        "failed": 55
+      },
+      "production_library": {
+        "passed": 293,
+        "failed": 55
+      },
+      "qualification_library": {
+        "passed": 298,
+        "failed": 55
+      },
+      "default_products": {
+        "passed": 13,
+        "failed": 2
+      },
+      "products": {
+        "passed": 21,
+        "failed": 4,
+        "ignored_child_helpers": 1
+      },
+      "distribution": {
+        "passed": 3,
+        "failed": 1
+      },
+      "hol": {
+        "passed": 1,
+        "seconds": 486.617
+      },
+      "sigkill": {
+        "parent_passed": 1,
+        "ignored_child_helpers": 1
+      },
+      "validators_passed": 70,
+      "strict_clippy": [
+        "default passed",
+        "qualification+offline passed"
+      ]
+    }
+  ],
+  "native_limits": {
+    "event": "push",
+    "base_merge_lanes_executed": false,
+    "retries": 0,
+    "exact_source_and_tree_unchanged": true,
+    "excluded_environment_cases": 0
+  },
+  "findings": [
+    {
+      "id": "R4-CI-1",
+      "status": "observed failure; runtime root cause pending",
+      "case": "product_binary_serves_the_complete_256_agent_roster",
+      "linux": "two failures:17.001s/16.806s; readiness endpoint ENOENT",
+      "macos": "same readiness ENOENT",
+      "fixture_deadline_seconds": 10,
+      "daemon_stderr": "no reported early exit failure",
+      "evidence": "daemon wait_for_daemon does not check child.try_wait; cannot infer early exit vs still starting",
+      "runtime_hotspot": "daemon audit independently found repeated full Fleet loads for every recovery slot; O(N^2) candidate"
+    },
+    {
+      "id": "R4-CI-2",
+      "status": "fixture protocol defect identified by source and matching remote failure",
+      "case": "two_real_pairs_restart_one_without_peer_pid_churn",
+      "error": "Agentd drain request did not return a drain acknowledgement",
+      "source": "tests/paired_process_product.rs:run_agent_child always returns AgentdPayload::Health, ignores request.method",
+      "matrix_fixture": "run_matrix_child also always returns MatrixdPayload::Health",
+      "production_defect_claim": false
+    },
+    {
+      "id": "R4-CI-3",
+      "status": "observed timeout; full root cause pending",
+      "case": "five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash",
+      "timeout_seconds": 60.008,
+      "stages": {
+        "warm_pair_complete_seconds": 5.619583286,
+        "ten_children_ready_seconds": 33.304572364,
+        "adoption_complete_observed": false
+      },
+      "harness_mismatch": "case contains several independently bounded 60-second phases; nextest default whole-case watchdog 60 seconds",
+      "environment_exclusion_claim": false
+    },
+    {
+      "id": "R4-CI-4",
+      "status": "source defect confirmed by Darwin rename contract; repaired macOS CI pending",
+      "os": "macos-15",
+      "affected_lib_cases_per_lane": 55,
+      "error": "Permission denied (os error 13)",
+      "shared_boundary": "Fixture::start invokes FleetRegistry::install_release; distribution install_release panic at authority_distribution.rs203 also EACCES",
+      "exact_syscall_claim": false,
+      "source_defect": "release installer sets staging directory 0555 before std::fs::rename; Darwin requires write permission on directory being renamed, including same-parent rename",
+      "primary_contract": "https://developer.apple.com/library/archive/documentation/System/Conceptual/ManPages_iPhoneOS/man2/rename.2.html"
+    },
+    {
+      "id": "R4-CI-5",
+      "status": "inherited unrelated identity blocker",
+      "workflow": "derived diagnostics",
+      "error": "automation.taskflow source41b2da214f5541da09e0313e7b8576add6ed3839 is not ancestor of e780",
+      "supervisor_refresh": "updatedDerived [] completed before unrelated lane-B failure",
+      "supervisor_parity_reached": false
+    },
+    {
+      "id": "R4-CI-6",
+      "status": "current merge evidence gap",
+      "deep_merge_tested": "6690465dd20927b422bc3d697a132dd2cac4601e",
+      "deep_base": "e8f8f2d0ca399b0a68abba4da90a3be5114d0735",
+      "full_product_base_merge_tested": false,
+      "current_main": "c6f90d48c40f7b5267db587bb3c3f4934f1414a8"
+    }
+  ],
+  "integrity": {
+    "run": 36825701334,
+    "status": "PASS_HEPTA_REPOSITORY_INTEGRITY",
+    "head": "e78095abf8df069d5dc9496f6e362f9ed27e3978",
+    "base": "e8f8f2d0ca399b0a68abba4da90a3be5114d0735",
+    "changedPathCount": 141,
+    "scannedPathCount": 23,
+    "violations": [],
+    "authorityGranted": false
+  },
+  "all_head_runs": [
+    {
+      "id": 36825701034,
+      "path": ".github/workflows/hepta-consolidated-source.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "attempt": 1
+    },
+    {
+      "id": 36825701449,
+      "path": ".github/workflows/blocking-ci.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "attempt": 1
+    },
+    {
+      "id": 36825701199,
+      "path": ".github/workflows/v8-canary.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "attempt": 1
+    },
+    {
+      "id": 36825701190,
+      "path": ".github/workflows/hepta-architecture-convergence.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "attempt": 1
+    },
+    {
+      "id": 36825701160,
+      "path": ".github/workflows/hepta-lane-b-truth.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "attempt": 1
+    },
+    {
+      "id": 36825701272,
+      "path": ".github/workflows/runtime-supervisor-deep-qualification.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "attempt": 1
+    },
+    {
+      "id": 36825701101,
+      "path": ".github/workflows/hepta-supervisor-derived-diagnostics.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "attempt": 1
+    },
+    {
+      "id": 36825701368,
+      "path": ".github/workflows/hepta-algorithm-docs.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "attempt": 1
+    },
+    {
+      "id": 36825701175,
+      "path": ".github/workflows/hepta-development-docs.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "attempt": 1
+    },
+    {
+      "id": 36825701054,
+      "path": ".github/workflows/hepta-lane-e-gap-closure.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "attempt": 1
+    },
+    {
+      "id": 36825701334,
+      "path": ".github/workflows/hepta-repository-integrity.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "attempt": 1
+    },
+    {
+      "id": 36825701223,
+      "path": ".github/workflows/lane-a-foundation.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "attempt": 1
+    },
+    {
+      "id": 36825701152,
+      "path": ".github/workflows/hepta-gap-agentd-process.yml",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "attempt": 1
+    },
+    {
+      "id": 36825698475,
+      "path": ".github/workflows/cla.yml",
+      "event": "pull_request_target",
+      "status": "completed",
+      "conclusion": "skipped",
+      "attempt": 1
+    },
+    {
+      "id": 36825697366,
+      "path": ".github/workflows/hepta-supervisor-recovery-check.yml",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "failure",
+      "attempt": 1
+    }
+  ]
+}

@@ -1,0 +1,470 @@
+{
+  "observation_kind": "unsigned_remote_ci_and_source_observation_not_qualification_receipt",
+  "schema_version": 1,
+  "observation_date_utc": "2026-10-01",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "scope": "Immutable candidate and actual downloaded workflow logs; observations do not qualify subsequent local edits or a later published head.",
+  "signature": null,
+  "authority_granted": false,
+  "candidate": {
+    "commit": "6012fc54edd67a8b19dcd8055bc01bbe9fc9a128",
+    "tree": "873473ee81f3e5c1f2b6d62b5e5d484191c344ed",
+    "pr_number": 1306,
+    "pr_url": "https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1306",
+    "branch": "codex/runtime-supervisor-adversarial-audit-20261001",
+    "pr_base_commit": "e8f8f2d0ca399b0a68abba4da90a3be5114d0735",
+    "pr_base_branch": "codex/runtime-supervisor-six-phase-closure-20260930-r4",
+    "draft_observed": true
+  },
+  "source_provenance": {
+    "default_branch_observed": {
+      "commit": "997e7beef8151160065df36b024bc8da5c989e93",
+      "tree": "22f350ac7e3884403b00c4b69caeec158c130aa4",
+      "previous_commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
+      "delta_commits": 1,
+      "delta_files": 184,
+      "merge_pr": 1279,
+      "supervisor_native_source_changed": false,
+      "supervisor_technical_guide_changed": false,
+      "supervisor_map_changes": {
+        "sourceBase_commit": {
+          "before": "aa68a23f99d8ddf0521c732fed288d9287c30ac4",
+          "after": "8914a46dfc5984532f03dd2d559bf547ca4f1e69"
+        },
+        "sourceBase_tree": {
+          "before": "8d7b7fd2dd8e41652f97a1ab2cd938e1cfbed03b",
+          "after": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+        },
+        "observedAtHead_commit": {
+          "before": "aa68a23f99d8ddf0521c732fed288d9287c30ac4",
+          "after": "8914a46dfc5984532f03dd2d559bf547ca4f1e69"
+        },
+        "observedAtHead_tree": {
+          "before": "8d7b7fd2dd8e41652f97a1ab2cd938e1cfbed03b",
+          "after": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+        }
+      },
+      "map_observation_commit_is_not_main_ancestor": true,
+      "shared_workspace_changes": [
+        "Matrix imbl 6.1.0 security backport and imbl-sized-chunks 0.2.0",
+        "rustls 0.23.45, rustls-webpki 0.103.15, aws-lc updates",
+        "Development and dependency-scoped qualification profiles"
+      ],
+      "relationship_from_main_to_candidate": {
+        "status": "diverged",
+        "ahead_by": 206,
+        "behind_by": 1,
+        "merge_base": "a126987b84737dbc2ee2592442a314117bddb4a2"
+      }
+    },
+    "parallel_product_pr": {
+      "pr_number": 1303,
+      "commit": "98ab5559e7a61a7960756a6336e16e82167698a5",
+      "tree": "d1352b1cb2d032b89e41e6c7f868a717d52c95a0",
+      "previously_observed_commit": "3491447b9856763514998360c077d71368a5498f",
+      "additional_commits": 50,
+      "additional_files": 182,
+      "relationship_from_candidate": {
+        "status": "diverged",
+        "ahead_by": 280,
+        "behind_by": 206,
+        "merge_base": "a126987b84737dbc2ee2592442a314117bddb4a2"
+      },
+      "supervisor_source_and_document_path_differences": 157,
+      "supervisor_source_path_differences": 132,
+      "supervisor_document_path_differences": 25,
+      "guide_changed_since_previously_observed_commit": false,
+      "new_source_developments": [
+        "Synchronous Fleet callback isolation from nested Tokio entry",
+        "Native before-spawn proof, NoEffect and bounded terminal mutation history",
+        "Private mutation-history containment permissions",
+        "Executable digest prewarming and exact inode binding for the local model issuer"
+      ],
+      "normative_authority_contract_changed": false,
+      "authority_contract_gap": "local-model-authority reads a signing key and issues grants under the exclusive supervisor root, while the latest module registry still denies secret_read/model_call/tool_execution and grants only four lifecycle write domains.",
+      "adopted_into_candidate": false
+    },
+    "technical_guides": [
+      {"candidate":"main@997e7beef8151160065df36b024bc8da5c989e93","path":"docs/modules/runtime.supervisor/TECHNICAL.md","blob":"d94806d04f81f8ebc52b5ce7226b3f95a198bf7e"},
+      {"candidate":"PR1306@6012fc54edd67a8b19dcd8055bc01bbe9fc9a128","path":"docs/modules/runtime.supervisor/TECHNICAL.md","blob":"f241d7903646a0a5cba585a3d85ed6b6f07abd5b"},
+      {"candidate":"PR1303@98ab5559e7a61a7960756a6336e16e82167698a5","path":"docs/modules/runtime.supervisor/TECHNICAL.md","blob":"e853c830c1bb7069479648b6ed70d5625ea7f0cf"}
+    ],
+    "supervisor_branch_search": {
+      "query": "runtime-supervisor",
+      "returned_branches": 24,
+      "identical": 1,
+      "behind": 8,
+      "diverged": 15,
+      "ahead_descendants": 0,
+      "interpretation": "No searched supervisor branch is a new descendant of the immutable audited candidate.",
+      "branches": [
+        {"branch":"codex/runtime-supervisor-adversarial-audit-20261001","commit":"6012fc54edd67a8b19dcd8055bc01bbe9fc9a128","status_from_candidate":"identical","ahead_by":0,"behind_by":0,"merge_base":"6012fc54edd67a8b19dcd8055bc01bbe9fc9a128"},
+        {"branch":"codex/runtime-supervisor-agent-concurrency-closure-20260929","commit":"d75cfce27b51e12cd80eb8c72d89709fa3d8df46","status_from_candidate":"diverged","ahead_by":49,"behind_by":173,"merge_base":"16ce4d32969486ddd995fcd3521748c015d27f79"},
+        {"branch":"codex/runtime-supervisor-evidence-integration-20260930","commit":"9dce7a95214ac6d114a81724d195d1d0cffaafd4","status_from_candidate":"behind","ahead_by":0,"behind_by":46,"merge_base":"9dce7a95214ac6d114a81724d195d1d0cffaafd4"},
+        {"branch":"codex/runtime-supervisor-final-convergence-20260928","commit":"9dc892603d57a2c2fb064d6568e7aaee253aa9c3","status_from_candidate":"diverged","ahead_by":31,"behind_by":173,"merge_base":"16ce4d32969486ddd995fcd3521748c015d27f79"},
+        {"branch":"codex/runtime-supervisor-final-convergence-20260929","commit":"ab4d6875557e3444930024258465f0949a4f8584","status_from_candidate":"diverged","ahead_by":44,"behind_by":173,"merge_base":"16ce4d32969486ddd995fcd3521748c015d27f79"},
+        {"branch":"codex/runtime-supervisor-final-hardening-20260928","commit":"dae1cdbe9732ecea29eb5a8e7042ef4611e904a2","status_from_candidate":"diverged","ahead_by":43,"behind_by":173,"merge_base":"16ce4d32969486ddd995fcd3521748c015d27f79"},
+        {"branch":"codex/runtime-supervisor-full-closure-20260929","commit":"e109e43d6063ef796090a3253fb76ed9d097bfc9","status_from_candidate":"diverged","ahead_by":45,"behind_by":173,"merge_base":"16ce4d32969486ddd995fcd3521748c015d27f79"},
+        {"branch":"codex/runtime-supervisor-full-qualification-20260930","commit":"e9fc6e53d58753670ba1360f261f43dbf973c450","status_from_candidate":"behind","ahead_by":0,"behind_by":45,"merge_base":"e9fc6e53d58753670ba1360f261f43dbf973c450"},
+        {"branch":"codex/runtime-supervisor-lifecycle-evidence-20260930","commit":"2482fc6178f36dfe721f26bca9daa19d9cc15035","status_from_candidate":"behind","ahead_by":0,"behind_by":48,"merge_base":"2482fc6178f36dfe721f26bca9daa19d9cc15035"},
+        {"branch":"codex/runtime-supervisor-production-closure-20260928","commit":"0bcc41eb7f2b98ead4cbd74b35f90d3838ded1a9","status_from_candidate":"diverged","ahead_by":39,"behind_by":173,"merge_base":"16ce4d32969486ddd995fcd3521748c015d27f79"},
+        {"branch":"codex/runtime-supervisor-qualification-20260930","commit":"7678d111cccedc306bfb5ce5e0340ae44fb6824e","status_from_candidate":"diverged","ahead_by":22,"behind_by":206,"merge_base":"a126987b84737dbc2ee2592442a314117bddb4a2"},
+        {"branch":"codex/runtime-supervisor-qualification-closure-20260929","commit":"f8b593fe6bd8102183840950dbccce48d461e2d7","status_from_candidate":"diverged","ahead_by":18,"behind_by":206,"merge_base":"a126987b84737dbc2ee2592442a314117bddb4a2"},
+        {"branch":"codex/runtime-supervisor-remaining-six-20260930","commit":"66ba6529ff13ee01fb76258296606c08153628d1","status_from_candidate":"diverged","ahead_by":10,"behind_by":60,"merge_base":"07204463f01d04539c5940ce6b76dc4b6455c393"},
+        {"branch":"codex/runtime-supervisor-six-phase-closure-20260930-r2","commit":"1aa6430cce73218138cc22144bb42968763c96cb","status_from_candidate":"behind","ahead_by":0,"behind_by":55,"merge_base":"1aa6430cce73218138cc22144bb42968763c96cb"},
+        {"branch":"codex/runtime-supervisor-six-phase-closure-20260930-r3","commit":"8ef291c8ed3b0eaa8e0660eadc8d110ae8ed610d","status_from_candidate":"behind","ahead_by":0,"behind_by":52,"merge_base":"8ef291c8ed3b0eaa8e0660eadc8d110ae8ed610d"},
+        {"branch":"codex/runtime-supervisor-six-phase-closure-20260930-r4","commit":"e8f8f2d0ca399b0a68abba4da90a3be5114d0735","status_from_candidate":"behind","ahead_by":0,"behind_by":35,"merge_base":"e8f8f2d0ca399b0a68abba4da90a3be5114d0735"},
+        {"branch":"codex/runtime-supervisor-six-phase-closure-20260930","commit":"fc1d42bb57c015fcdb62b52ee67d6e2bc1a5b438","status_from_candidate":"behind","ahead_by":0,"behind_by":56,"merge_base":"fc1d42bb57c015fcdb62b52ee67d6e2bc1a5b438"},
+        {"branch":"fix/runtime-supervisor-control-recovery-20260928","commit":"933f35cfaa240d1365e561e0ea4519fe3e227edc","status_from_candidate":"diverged","ahead_by":12,"behind_by":173,"merge_base":"16ce4d32969486ddd995fcd3521748c015d27f79"},
+        {"branch":"fix/runtime-supervisor-remediation-20260927","commit":"4e81a1a072082209c3d749d17da375902e4a586f","status_from_candidate":"behind","ahead_by":0,"behind_by":138,"merge_base":"4e81a1a072082209c3d749d17da375902e4a586f"},
+        {"branch":"fix/runtime-supervisor-stage-bcd-20260927","commit":"e4f22243d65e1bcd6bb6788e2127afe7fcd4003e","status_from_candidate":"diverged","ahead_by":9,"behind_by":173,"merge_base":"16ce4d32969486ddd995fcd3521748c015d27f79"},
+        {"branch":"ops/runtime-supervisor-phase2-materialize-clean-20260930","commit":"e99ac7a1694ec6554375c6c8e46dc19f97186a0f","status_from_candidate":"diverged","ahead_by":1,"behind_by":56,"merge_base":"fc1d42bb57c015fcdb62b52ee67d6e2bc1a5b438"},
+        {"branch":"ops/runtime-supervisor-phase2-patch-inspect-20260930","commit":"df2c42a04c20cf3d9ba741a97cfbf0a5d92e48e4","status_from_candidate":"diverged","ahead_by":1,"behind_by":59,"merge_base":"67f8c21b8b687d4e3ed1876dd782f2fde98ce7fd"},
+        {"branch":"ops/runtime-supervisor-phase2-source-validate-20260930","commit":"9b8be51d96adb331c695a62b351c179e90798434","status_from_candidate":"diverged","ahead_by":1,"behind_by":56,"merge_base":"fc1d42bb57c015fcdb62b52ee67d6e2bc1a5b438"},
+        {"branch":"work/runtime-supervisor-qualification-20260929","commit":"806e90388370ae930c8b372324d8ebb8b1aac9d3","status_from_candidate":"diverged","ahead_by":17,"behind_by":206,"merge_base":"a126987b84737dbc2ee2592442a314117bddb4a2"}
+      ]
+    }
+  },
+  "remote_ci": {
+    "deep_qualification": {
+      "run_id": 36795837426,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36795837426",
+      "head_sha": "6012fc54edd67a8b19dcd8055bc01bbe9fc9a128",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "updated_at_utc": "2026-10-01T00:58:03Z",
+      "source_head": {
+        "job_id": 110158941075,
+        "name": "deep-qualification (source-head)",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36795837426/job/110158941075",
+        "tested_sha": "6012fc54edd67a8b19dcd8055bc01bbe9fc9a128",
+        "default_library": {
+          "passed": 331,
+          "failed": 0,
+          "ignored": 0,
+          "summary_log_line": 4726
+        },
+        "qualification_library": {
+          "passed": 335,
+          "failed": 1,
+          "ignored": 0,
+          "total": 336,
+          "summary_log_line": 5120
+        },
+        "failed_case": {
+          "name": "supervisor::tests::stop_supersedes_inflight_paired_restart_after_matrix_exits",
+          "source": "codex-rs/hepta-supervisor/src/supervisor_tests.rs:1712",
+          "expected_signal_counts": [
+            0,
+            1,
+            0
+          ],
+          "actual_signal_counts": [
+            0,
+            0,
+            1
+          ],
+          "panic_log_line": 5096
+        },
+        "later_distribution_hol_sigkill_lint_and_final_clean_steps": "skipped_after_qualification_failure"
+      },
+      "base_merge": {
+        "job_id": 110158940865,
+        "name": "deep-qualification (base-merge)",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36795837426/job/110158940865",
+        "tested_sha": "49b0a14798949dc96d389afab2c2bc8903b2e193",
+        "base_sha": "e8f8f2d0ca399b0a68abba4da90a3be5114d0735",
+        "tested_tree": null,
+        "tree_note": "The synthetic merge SHA is recorded in the actual runner log; no separately retrievable tree identity is asserted.",
+        "test_results": [
+          {"suite":"default-library","passed":331,"failed":0,"ignored":0,"summary_log_line":4784},
+          {"suite":"qualification-library","passed":336,"failed":0,"ignored":0,"summary_log_line":5150},
+          {"suite":"authority-distribution","passed":4,"failed":0,"ignored":0,"summary_log_line":5184},
+          {"suite":"HOL","passed":1,"failed":0,"ignored":0,"summary_log_line":5614},
+          {"suite":"actual-SIGKILL-parent","passed":1,"failed":0,"ignored":1,"summary_log_line":5652}
+        ],
+        "strict_lint": {
+          "scope": "Dependency-inclusive cargo clippy; workflow omitted --no-deps.",
+          "exit_code": 101,
+          "failure_owner": "codex-hepta-operations",
+          "errors": [
+            {"path":"codex-rs/hepta-operations/src/destination_dedupe.rs","line":49,"lint":"disallowed_methods","method":"sqlx::pool::PoolOptions::connect_with","log_line":6209},
+            {"path":"codex-rs/hepta-operations/src/durable_store.rs","line":93,"lint":"disallowed_methods","method":"sqlx::pool::PoolOptions::connect_with","log_line":6219},
+            {"path":"codex-rs/hepta-operations/src/durable_store.rs","line":905,"lint":"collapsible_if","log_line":6228}
+          ],
+          "interpretation": "This job failed despite its preceding tests passing; scoped lint success in other jobs does not erase the dependency-inclusive failure."
+        },
+        "final_clean_step": "skipped_after_lint_failure"
+      }
+    },
+    "native_push_qualification": {
+      "run_id": 36795831262,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36795831262",
+      "head_sha": "6012fc54edd67a8b19dcd8055bc01bbe9fc9a128",
+      "event": "push",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "updated_at_utc": "2026-10-01T02:26:12Z",
+      "pr_base_is_not_this_push_lane_comparison_base": true,
+      "hosts": [
+        {
+          "job_id": 110167666689,
+          "name": "native / Supervisor (macos-15, source-head)",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36795831262/job/110167666689",
+          "host": "macos-15",
+          "source_sha": "6012fc54edd67a8b19dcd8055bc01bbe9fc9a128",
+          "tested_sha": "6012fc54edd67a8b19dcd8055bc01bbe9fc9a128",
+          "tested_tree": "873473ee81f3e5c1f2b6d62b5e5d484191c344ed",
+          "comparison_base_sha": "6ac309b73e8a196d7f4905e8e336b4cf5f682627",
+          "native_suite_execution": "none_started_argument_parser_rejected_duplicate_no_fail_fast",
+          "failure": "the argument '--no-fail-fast' cannot be used multiple times",
+          "suite_command_exit_code": 2,
+          "observed_passed_native_tests": 0,
+          "observed_failed_native_tests": 0,
+          "halted_plans": [
+            {"name":"default","record_line":4814,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"default-products","record_line":4844,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"production","record_line":4874,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"qualification-lib","record_line":4904,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"hol-256","record_line":4934,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"sigkill","record_line":4964,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"authority-distribution","record_line":4994,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"products","record_line":5024,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"}
+          ],
+          "validator_tests": {
+            "observed_passed": 65,
+            "observed_failed": 0,
+            "record_line": 3563
+          },
+          "strict_lint": [
+            {
+              "name": "lint-default",
+              "status": "passed",
+              "exit_code": 0,
+              "uses_no_deps": true,
+              "record_line": 5652
+            },
+            {
+              "name": "lint",
+              "status": "passed",
+              "exit_code": 0,
+              "uses_no_deps": true,
+              "record_line": 5685
+            }
+          ],
+          "all_retained_command_records_before_after_candidate_clean": true,
+          "assembled_qualification": "rejected_default_not_passed"
+        },
+        {
+          "job_id": 110167666727,
+          "name": "native / Supervisor (ubuntu-24.04, source-head)",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36795831262/job/110167666727",
+          "host": "ubuntu-24.04",
+          "source_sha": "6012fc54edd67a8b19dcd8055bc01bbe9fc9a128",
+          "tested_sha": "6012fc54edd67a8b19dcd8055bc01bbe9fc9a128",
+          "tested_tree": "873473ee81f3e5c1f2b6d62b5e5d484191c344ed",
+          "comparison_base_sha": "6ac309b73e8a196d7f4905e8e336b4cf5f682627",
+          "native_suite_execution": "none_started_argument_parser_rejected_duplicate_no_fail_fast",
+          "failure": "the argument '--no-fail-fast' cannot be used multiple times",
+          "suite_command_exit_code": 2,
+          "observed_passed_native_tests": 0,
+          "observed_failed_native_tests": 0,
+          "halted_plans": [
+            {"name":"default","record_line":4957,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"default-products","record_line":4987,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"production","record_line":5017,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"qualification-lib","record_line":5047,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"hol-256","record_line":5077,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"sigkill","record_line":5107,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"authority-distribution","record_line":5137,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"},
+            {"name":"products","record_line":5167,"log_sha256":"e440d9ba0dc8f2ac447e76547a089bd2112bd005a156f8ab783fe2c7ae2ec28c"}
+          ],
+          "validator_tests": {
+            "observed_passed": 65,
+            "observed_failed": 0,
+            "record_line": 3696
+          },
+          "strict_lint": [
+            {
+              "name": "lint-default",
+              "status": "passed",
+              "exit_code": 0,
+              "uses_no_deps": true,
+              "record_line": 5800
+            },
+            {
+              "name": "lint",
+              "status": "passed",
+              "exit_code": 0,
+              "uses_no_deps": true,
+              "record_line": 5833
+            }
+          ],
+          "all_retained_command_records_before_after_candidate_clean": true,
+          "assembled_qualification": "rejected_default_not_passed"
+        }
+      ],
+      "required_gate_job": {
+        "job_id": 110181628153,
+        "name": "native / Supervisor qualification required",
+        "status": "completed",
+        "conclusion": "failure",
+        "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36795831262/job/110181628153",
+        "interpretation": "Rejected failed lanes; no complete native qualification receipt."
+      }
+    },
+    "development_documents": {
+      "run_id": 36795837486,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36795837486",
+      "head_sha": "6012fc54edd67a8b19dcd8055bc01bbe9fc9a128",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "updated_at_utc": "2026-10-01T00:54:17Z",
+      "jobs": [
+        {
+          "job_id": 110158940619,
+          "name": "Verify exact source head",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36795837486/job/110158940619",
+          "tested_sha": "6012fc54edd67a8b19dcd8055bc01bbe9fc9a128",
+          "failure_log_line": 3905
+        },
+        {
+          "job_id": 110158940421,
+          "name": "Verify exact merge candidate",
+          "status": "completed",
+          "conclusion": "failure",
+          "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36795837486/job/110158940421",
+          "tested_sha": "ea7c1a5a7d022fe6b226be497ddc9fde83eb1d6f",
+          "base_sha": "e8f8f2d0ca399b0a68abba4da90a3be5114d0735",
+          "failure_log_line": 3152
+        }
+      ],
+      "failure_chain": [
+        "FAIL_HEPTA_DEVELOPMENT_DOCS_V8",
+        "FAIL_HEPTA_MODULE_DOCS",
+        "FAIL_HEPTA_IMPLEMENTATION_MAPS"
+      ],
+      "nonancestor_observation_bindings": [
+        {
+          "modules": [
+            "objective.compiler",
+            "cognitive.read",
+            "learning.ledger",
+            "automation.taskflow"
+          ],
+          "observation_commit": "41b2da214f5541da09e0313e7b8576add6ed3839"
+        },
+        {
+          "modules": [
+            "utility.ndu",
+            "learning.artifacts"
+          ],
+          "observation_commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb"
+        },
+        {
+          "modules": [
+            "control.engineering"
+          ],
+          "observation_commit": "1133f7e5a5afd348e6fbed5694144572dda59a9a"
+        }
+      ],
+      "runtime_supervisor_named_in_failure_list": false,
+      "those_seven_module_documents_changed_in_pr": false,
+      "interpretation": "Inherited other-owner observation bindings fail the whole-document gate; no automatic qualification or authority is inferred for supervisor."
+    },
+    "derived_diagnostics": {
+      "run_id": 36795837410,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36795837410/job/110158940290",
+      "head_sha": "6012fc54edd67a8b19dcd8055bc01bbe9fc9a128",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "updated_at_utc": "2026-10-01T00:53:36Z",
+      "job_id": 110158940290,
+      "name": "Verify exact-head derived parity",
+      "truth_validator_step": "success",
+      "regenerate_step": "failure",
+      "updatedDerived": [],
+      "checkOnly": false,
+      "regeneration_log_line": 3134,
+      "failure_log_line": 3135,
+      "failure": "FAIL_HEPTA_LANE_B_SOURCE_CLOSURE: automation.taskflow canonical source identity 41b2da214f5541da09e0313e7b8576add6ed3839 is not a candidate ancestor.",
+      "final_parity_step": "skipped"
+    },
+    "repository_integrity": {
+      "run_id": 36795837405,
+      "url": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36795837405/job/110158940065",
+      "head_sha": "6012fc54edd67a8b19dcd8055bc01bbe9fc9a128",
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "run_attempt": 1,
+      "updated_at_utc": "2026-10-01T00:53:09Z",
+      "job_id": 110158940065,
+      "name": "Verify ordinary read-only candidate source",
+      "status_token": "FAIL_HEPTA_REPOSITORY_INTEGRITY",
+      "changed_path_count": 122,
+      "base_sha": "e8f8f2d0ca399b0a68abba4da90a3be5114d0735",
+      "failure_log_line": 3287,
+      "violations": [
+        {
+          "path": ".github/workflows/hepta-supervisor-recovery-check.yml",
+          "rule": "missing-safe-workflow-token",
+          "excerpt": "persist-credentials: false",
+          "line": 1
+        }
+      ],
+      "review_classification": "false_positive_for_local_reusable_workflow_delegation",
+      "review_evidence": {
+        "caller_checkout_steps": 0,
+        "delegated_workflow": ".github/workflows/hepta-supervisor-qualification.yml",
+        "delegated_checkout_steps": 2,
+        "both_checkout_steps_set_persist_credentials_false": true,
+        "caller_blob": "c1cf7048e894730fa2917b15d60ba644d8954eb0",
+        "delegated_workflow_blob": "b921c096e6dbc79436c5659884333ccfae36e6ef"
+      },
+      "interpretation": "The remote check genuinely failed. Source review identifies a scanner false positive; a later scanner repair is not asserted as remotely passed."
+    },
+    "downloaded_job_log_inventory": [
+      {"job_id":110158941075,"decoded_line_count":5174,"evidence_lines":[4726,5096,5120]},
+      {"job_id":110158940865,"decoded_line_count":6305,"evidence_lines":[4784,5150,5184,5614,5652,6209,6219,6228,6254]},
+      {"job_id":110167666689,"decoded_line_count":5768,"evidence_lines":[4808,4814,5024,5652,5685]},
+      {"job_id":110167666727,"decoded_line_count":5915,"evidence_lines":[4951,4957,5167,5800,5833]},
+      {"job_id":110158940619,"decoded_line_count":3923,"evidence_lines":[3905]},
+      {"job_id":110158940421,"decoded_line_count":3170,"evidence_lines":[3152]},
+      {"job_id":110158940290,"decoded_line_count":3178,"evidence_lines":[3134,3135]},
+      {"job_id":110158940065,"decoded_line_count":3305,"evidence_lines":[3287]}
+    ]
+  },
+  "limitations_and_nonclaims": {
+    "retrieval": "Metadata, job lists and eight complete decoded job logs were fetched through GitHub tools on the observation date. SHA and tree bindings were additionally read from Git commit objects; branch relationships were checked with GitHub compare responses.",
+    "subsequent_local_edits": "Not covered by these remote runs. No publication or check status of any subsequent head is asserted.",
+    "synthetic_merge_identity": "Runner-local source and merge SHA observations remain separate; no missing merge tree value is invented.",
+    "all_current_required_ci_green": false,
+    "complete_native_qualification": false,
+    "target_host_execution": "not_run_in_this_observation",
+    "independent_attestation": "not_obtained_in_this_observation",
+    "operator_acceptance": "not_established",
+    "activation": false,
+    "promotion": false,
+    "release": false,
+    "signature_verification": "not_applicable_unsigned_observation",
+    "qualification_authority": false
+  }
+}

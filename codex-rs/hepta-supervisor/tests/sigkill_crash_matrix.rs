@@ -13,7 +13,8 @@ const CHILD_TEST: &str = "sigkill_child_publishes_actual_supervisor_journals";
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
 #[test]
-fn actual_sigkill_preserves_lease_restart_intent_and_transaction() -> Result<(), Box<dyn std::error::Error>> {
+fn actual_sigkill_preserves_lease_restart_intent_and_transaction()
+-> Result<(), Box<dyn std::error::Error>> {
     let temp = tempfile::tempdir()?;
     let run_root = temp.path().join("agent-run");
     let ready = temp.path().join("ready");

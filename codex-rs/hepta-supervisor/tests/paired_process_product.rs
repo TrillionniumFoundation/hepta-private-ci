@@ -13,9 +13,11 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+use codex_hepta_agent_protocol::AgentdMethod;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -29,6 +31,7 @@ use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_matrix_protocol::MATRIXD_CONTROL_SCHEMA_VERSION;
 use codex_hepta_matrix_protocol::MatrixdHealth;
 use codex_hepta_matrix_protocol::MatrixdLifecycle;
+use codex_hepta_matrix_protocol::MatrixdMethod;
 use codex_hepta_matrix_protocol::MatrixdPayload;
 use codex_hepta_matrix_protocol::MatrixdRequest;
 use codex_hepta_matrix_protocol::MatrixdResponse;
@@ -153,6 +156,10 @@ fn five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash() -> Resu
 
     let old = fixture.supervisor.take().context("supervisor")?;
     drop(old);
+    eprintln!(
+        "paired-stage adoption_started elapsed={:?}",
+        started.elapsed()
+    );
     let (recovered, report) = Supervisor::recover(
         fixture.registry.clone(),
         UnixProcessDriver::new(64).map_err(anyhow::Error::msg)?,
@@ -192,6 +199,10 @@ fn five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash() -> Resu
         assert_eq!(fixture.pids(agent_id)?, *expected, "peer pair changed");
     }
     fixture.shutdown()?;
+    eprintln!(
+        "paired-stage shutdown_complete elapsed={:?}",
+        started.elapsed()
+    );
     Ok(())
 }
 
@@ -545,22 +556,57 @@ fn run_agent_child() -> Result<()> {
         let workspace = std::env::current_dir()?;
         let lifecycle = latest_lifecycle(&run_root)?;
         let running = lifecycle.lifecycle == AgentLifecycle::Running;
+        let payload = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION
+            || request.request_id == 0
+            || request.spawn_generation != spawn_generation
+        {
+            AgentdPayload::Error {
+                code: "fixture_fenced".to_string(),
+                message: "request does not bind this child generation".to_string(),
+            }
+        } else {
+            match request.method {
+                AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
+                    promotion_ready: true,
+                    ready: running,
+                    fenced: false,
+                    lifecycle: lifecycle.lifecycle,
+                    process_id: std::process::id(),
+                    workspace,
+                    home_root,
+                    run_root,
+                }),
+                AgentdMethod::Drain
+                    if lifecycle.lifecycle == AgentLifecycle::Draining
+                        && spawn_generation.checked_add(2) == Some(lifecycle.generation) =>
+                {
+                    // This fixture admits no assistant turns. Acknowledge only
+                    // after the real supervisor persisted this exact drain CAS.
+                    AgentdPayload::Drain(DrainSnapshot {
+                        admission_closed: true,
+                        running_turns: 0,
+                        drained: true,
+                        lifecycle: lifecycle.lifecycle,
+                        fenced: false,
+                    })
+                }
+                AgentdMethod::Drain => AgentdPayload::Error {
+                    code: "fixture_not_draining".to_string(),
+                    message: "child has not entered the exact draining generation".to_string(),
+                },
+                _ => AgentdPayload::Error {
+                    code: "unsupported_method".to_string(),
+                    message: "paired fixture supports only health and drain".to_string(),
+                },
+            }
+        };
         let response = AgentdResponse {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id: request.request_id,
             agent_id: agent_id.clone(),
             spawn_generation,
             current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
-                promotion_ready: true,
-                ready: running,
-                fenced: false,
-                lifecycle: lifecycle.lifecycle,
-                process_id: std::process::id(),
-                workspace,
-                home_root,
-                run_root,
-            }),
+            payload,
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;
@@ -615,6 +661,29 @@ fn run_matrix_child() -> Result<()> {
         let mut bytes = Vec::new();
         reader.read_until(b'\n', &mut bytes)?;
         let request: MatrixdRequest = serde_json::from_slice(&bytes)?;
+        let payload = if request.validate().is_err() || request.agent_id != agent_id {
+            MatrixdPayload::Error {
+                code: "invalid_request".to_string(),
+                message: "request does not bind this Matrix fixture".to_string(),
+            }
+        } else {
+            match request.method {
+                MatrixdMethod::Health => MatrixdPayload::Health(MatrixdHealth {
+                    lifecycle: MatrixdLifecycle::Ready,
+                    process_id: std::process::id(),
+                    agentd_connected: true,
+                    matrix_sync_connected: true,
+                    fenced: false,
+                }),
+                MatrixdMethod::Snapshot
+                | MatrixdMethod::Events { .. }
+                | MatrixdMethod::CancelTurn { .. }
+                | MatrixdMethod::ResolveApproval { .. } => MatrixdPayload::Error {
+                    code: "unsupported_method".to_string(),
+                    message: "paired Matrix fixture supports only health".to_string(),
+                },
+            }
+        };
         let response = MatrixdResponse {
             schema_version: MATRIXD_CONTROL_SCHEMA_VERSION,
             request_id: request.request_id,
@@ -625,13 +694,7 @@ fn run_matrix_child() -> Result<()> {
             attached_agent_generation: agent_generation,
             process_incarnation: process_incarnation.clone(),
             plane_epoch,
-            payload: MatrixdPayload::Health(MatrixdHealth {
-                lifecycle: MatrixdLifecycle::Ready,
-                process_id: std::process::id(),
-                agentd_connected: true,
-                matrix_sync_connected: true,
-                fenced: false,
-            }),
+            payload,
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;
@@ -651,3 +714,6 @@ fn prepare_fixture_socket(path: &Path) -> Result<()> {
     }
     Ok(())
 }
+
+#[path = "paired_process_product/protocol_tests.rs"]
+mod protocol_tests;

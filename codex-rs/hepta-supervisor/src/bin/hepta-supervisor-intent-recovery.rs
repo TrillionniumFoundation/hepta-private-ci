@@ -71,7 +71,7 @@ async fn main() -> Result<()> {
                 intent.intent_sha256.as_str() == expected_digest,
                 "intent digest changed; inspect again before issuing an abort directive"
             );
-            let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())?;
+            let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)?;
             write_signed_intent_recovery_directive(&root_or_socket, &directive)?;
             println!("{}", serde_json::to_string_pretty(&directive)?);
         }
@@ -158,7 +158,8 @@ fn read_production_method(path: &Path) -> Result<SupervisordMethod> {
         );
     }
     let mut bytes = Vec::new();
-    file.take(MAX_SUBMISSION_BYTES + 1).read_to_end(&mut bytes)?;
+    file.take(MAX_SUBMISSION_BYTES + 1)
+        .read_to_end(&mut bytes)?;
     ensure!(
         bytes.len() as u64 <= MAX_SUBMISSION_BYTES,
         "submission exceeds frame budget"
@@ -174,7 +175,7 @@ fn read_production_method(path: &Path) -> Result<SupervisordMethod> {
         ),
         "production submission accepts only signed_upgrade, signed_rollback, or resolve_production_recovery"
     );
-    SupervisordRequest::new(1, method.clone())
+    SupervisordRequest::new(/*request_id*/ 1, method.clone())
         .validate()
         .map_err(|_| anyhow::anyhow!("invalid supervisor CAS fence"))?;
     Ok(method)
@@ -190,7 +191,10 @@ fn accepted(response: SupervisordMutationAccepted) -> Result<serde_json::Value> 
     serde_json::to_value(payload).context("serialize canonical mutation acceptance")
 }
 
-async fn submit(client: &SupervisordClient, method: SupervisordMethod) -> Result<serde_json::Value> {
+async fn submit(
+    client: &SupervisordClient,
+    method: SupervisordMethod,
+) -> Result<serde_json::Value> {
     match method {
         SupervisordMethod::SignedUpgrade {
             fence,

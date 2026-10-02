@@ -1,0 +1,122 @@
+{
+  "schema_version": 1,
+  "scope": "historical exact-head Actions: supplemental recovery PR4/push2 plus narrower Linux deep2; excludes extra blocking4 and Agentd suites",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "source_sha": "1f1113884a5af82a6153fc694f2d290224f1f07a",
+  "source_tree": "b8a1a214a526a5cc23ff85f404e5badd7475de4e",
+  "parent_source_commit": "4b6b5afbe80cc8e25963dcd18ef72a54a6496d8b",
+  "pr_number": 1306,
+  "pr_base_sha": "e8f8f2d0ca399b0a68abba4da90a3be5114d0735",
+  "push_base_sha": "d0169ba323b39f06dfb1bdc9984b7bf0c7400dde",
+  "artifact_api_template": "https://api.github.com/repos/TrillionniumFoundation/hepta-private-ci/actions/artifacts/{artifact_id}/zip",
+  "record_log_manifest_format": "SHA256 of UTF-8 compact JSON sorted [stage,log_file,log_bytes,log_sha256] entries with comma/colon separators",
+  "counts_format": ["passed","failed","skipped"],
+  "native": [
+    {
+      "run": {"id":36936444311,"job_id":110617875996,"attempt":1,"event":"pull_request","os":"ubuntu-24.04","lane":"source-head","conclusion":"success"},
+      "identity": {"source":"1f1113884a5af82a6153fc694f2d290224f1f07a","base":"e8f8f2d0ca399b0a68abba4da90a3be5114d0735","tested":"1f1113884a5af82a6153fc694f2d290224f1f07a","tree":"b8a1a214a526a5cc23ff85f404e5badd7475de4e","parents":["4b6b5afbe80cc8e25963dcd18ef72a54a6496d8b"]},
+      "artifact": {"id":11198997595,"zip_bytes":373872,"zip_sha256":"5f0e5eac554a13359e9c1069e6248d5783851c8e94b1d5478e8cb366f09ff1dd","job_log_bytes":1203722,"job_log_sha256":"e81d6a9ecf5f47cf8f70656868d972855d950b7b5f6483420599f766a6b9e5d7","record_log_manifest_sha256":"4f1b33b0f6996df88059080ac93dd9d47dc9e2750d101d3825b7ca5d4834bae7"},
+      "proof": {"records":15,"before_after_equal_clean":true,"zero_retry_no_fail_fast_test_commands":9,"record_logs_byte_sha_verified":15},
+      "counts_passed_failed_skipped": {"authority-distribution":[4,0,0],"default-products":[15,0,0],"default":[386,0,0],"fleet-library":[42,0,0],"hol-256":[1,0,0],"production":[386,0,0],"products":[26,0,1],"qualification-lib":[391,0,0],"sigkill":[1,0,1]},
+      "required_leaf_proof": {"each_library_repair_count":55,"all55_three_libraries_pass":true,"peer3_and_control_io4_three_libraries_pass":true,"fleet3_exact_codex_hepta_fleet_binary_pass":true,"linux_backlog_three_libraries":{"default":"PASS","production":"PASS","qualification-lib":"PASS"}},
+      "core_full_test_seconds": {"default-products:daemon256":7.334,"products:daemon256":7.327,"products:five_pairs":67.317,"products:real_protocol":14.014},
+      "all15_stages_pass": true,
+      "qualification_assembled": true,
+      "native_full_suite_pass": true
+    },
+    {
+      "run": {"id":36936444311,"job_id":110617875954,"attempt":1,"event":"pull_request","os":"ubuntu-24.04","lane":"base-merge","conclusion":"success"},
+      "identity": {"source":"1f1113884a5af82a6153fc694f2d290224f1f07a","base":"e8f8f2d0ca399b0a68abba4da90a3be5114d0735","tested":"a0694043346a72039fecc36ee6138eb2b94e0095","tree":"b8a1a214a526a5cc23ff85f404e5badd7475de4e","parents":["e8f8f2d0ca399b0a68abba4da90a3be5114d0735","1f1113884a5af82a6153fc694f2d290224f1f07a"]},
+      "artifact": {"id":11198927810,"zip_bytes":374218,"zip_sha256":"7793c433d57788c9cec4f70a208744f56531654d4d9ced0db0bec3272aba0a7c","job_log_bytes":1210666,"job_log_sha256":"7e3d29c176973af867166ae4dfe88b7c410e63a7c6bc76688d361e3b6196bcd2","record_log_manifest_sha256":"7caf331706fd1fc8da7b063b5f14bdec88477a66a1f7ba231b25d9e23c68f330"},
+      "proof": {"records":15,"before_after_equal_clean":true,"zero_retry_no_fail_fast_test_commands":9,"record_logs_byte_sha_verified":15},
+      "counts_passed_failed_skipped": {"authority-distribution":[4,0,0],"default-products":[15,0,0],"default":[386,0,0],"fleet-library":[42,0,0],"hol-256":[1,0,0],"production":[386,0,0],"products":[26,0,1],"qualification-lib":[391,0,0],"sigkill":[1,0,1]},
+      "required_leaf_proof": {"each_library_repair_count":55,"all55_three_libraries_pass":true,"peer3_and_control_io4_three_libraries_pass":true,"fleet3_exact_codex_hepta_fleet_binary_pass":true,"linux_backlog_three_libraries":{"default":"PASS","production":"PASS","qualification-lib":"PASS"}},
+      "core_full_test_seconds": {"default-products:daemon256":7.225,"products:daemon256":7.223,"products:five_pairs":67.376,"products:real_protocol":14.013},
+      "all15_stages_pass": true,
+      "qualification_assembled": true,
+      "native_full_suite_pass": true
+    },
+    {
+      "run": {"id":36936444311,"job_id":110617876012,"attempt":1,"event":"pull_request","os":"macos-15","lane":"source-head","conclusion":"success"},
+      "identity": {"source":"1f1113884a5af82a6153fc694f2d290224f1f07a","base":"e8f8f2d0ca399b0a68abba4da90a3be5114d0735","tested":"1f1113884a5af82a6153fc694f2d290224f1f07a","tree":"b8a1a214a526a5cc23ff85f404e5badd7475de4e","parents":["4b6b5afbe80cc8e25963dcd18ef72a54a6496d8b"]},
+      "artifact": {"id":11199382405,"zip_bytes":374077,"zip_sha256":"2e49ae4251475738b2526c0b7538ee75a304ff63d03c34ea9c836f4223c25ced","job_log_bytes":1190373,"job_log_sha256":"364d04ee7d00019e7140aa7b93aebc9375507dcdf375d265e2f6535fbfc2c9b5","record_log_manifest_sha256":"238e8281e46defd416f12af38e5e7b64b0e6e10cc54133ac1cf543c87cda051d"},
+      "proof": {"records":15,"before_after_equal_clean":true,"zero_retry_no_fail_fast_test_commands":9,"record_logs_byte_sha_verified":15},
+      "counts_passed_failed_skipped": {"authority-distribution":[4,0,0],"default-products":[15,0,0],"default":[385,0,0],"fleet-library":[42,0,0],"hol-256":[1,0,0],"production":[385,0,0],"products":[26,0,1],"qualification-lib":[390,0,0],"sigkill":[1,0,1]},
+      "required_leaf_proof": {"each_library_repair_count":55,"all55_three_libraries_pass":true,"peer3_and_control_io4_three_libraries_pass":true,"fleet3_exact_codex_hepta_fleet_binary_pass":true,"linux_backlog_three_libraries":"cfg-Linux only; no Mac credit"},
+      "core_full_test_seconds": {"default-products:daemon256":9.852,"products:daemon256":9.375,"products:five_pairs":82.997,"products:real_protocol":18.601},
+      "all15_stages_pass": true,
+      "qualification_assembled": true,
+      "native_full_suite_pass": true
+    },
+    {
+      "run": {"id":36936444311,"job_id":110617876020,"attempt":1,"event":"pull_request","os":"macos-15","lane":"base-merge","conclusion":"success"},
+      "identity": {"source":"1f1113884a5af82a6153fc694f2d290224f1f07a","base":"e8f8f2d0ca399b0a68abba4da90a3be5114d0735","tested":"a0694043346a72039fecc36ee6138eb2b94e0095","tree":"b8a1a214a526a5cc23ff85f404e5badd7475de4e","parents":["e8f8f2d0ca399b0a68abba4da90a3be5114d0735","1f1113884a5af82a6153fc694f2d290224f1f07a"]},
+      "artifact": {"id":11199063615,"zip_bytes":374347,"zip_sha256":"f6323a78ede8c5ca6ac6277667d1519a5ddc4621d7692e4ebb7a9733444990b1","job_log_bytes":1197750,"job_log_sha256":"d85fe7ad69a7a468e2511563c7e67e0b93542443e26e5f20c3e0fbf27e31b207","record_log_manifest_sha256":"0a7cbf4407638d8b03e2d8547788f2b3333e8cb55074f509b90ae028e92b99bf"},
+      "proof": {"records":15,"before_after_equal_clean":true,"zero_retry_no_fail_fast_test_commands":9,"record_logs_byte_sha_verified":15},
+      "counts_passed_failed_skipped": {"authority-distribution":[4,0,0],"default-products":[15,0,0],"default":[385,0,0],"fleet-library":[42,0,0],"hol-256":[1,0,0],"production":[385,0,0],"products":[26,0,1],"qualification-lib":[390,0,0],"sigkill":[1,0,1]},
+      "required_leaf_proof": {"each_library_repair_count":55,"all55_three_libraries_pass":true,"peer3_and_control_io4_three_libraries_pass":true,"fleet3_exact_codex_hepta_fleet_binary_pass":true,"linux_backlog_three_libraries":"cfg-Linux only; no Mac credit"},
+      "core_full_test_seconds": {"default-products:daemon256":8.637,"products:daemon256":8.299,"products:five_pairs":88.529,"products:real_protocol":17.73},
+      "all15_stages_pass": true,
+      "qualification_assembled": true,
+      "native_full_suite_pass": true
+    },
+    {
+      "run": {"id":36936436976,"job_id":110617874538,"attempt":1,"event":"push","os":"ubuntu-24.04","lane":"source-head","conclusion":"success"},
+      "identity": {"source":"1f1113884a5af82a6153fc694f2d290224f1f07a","base":"d0169ba323b39f06dfb1bdc9984b7bf0c7400dde","tested":"1f1113884a5af82a6153fc694f2d290224f1f07a","tree":"b8a1a214a526a5cc23ff85f404e5badd7475de4e","parents":["4b6b5afbe80cc8e25963dcd18ef72a54a6496d8b"]},
+      "artifact": {"id":11199905013,"zip_bytes":373941,"zip_sha256":"872a7ef33ef238b03df62ad31fbad7fbe32d75f8cae665df8334f89c6277e902","job_log_bytes":1203770,"job_log_sha256":"161e54c3d4dfb0706cbb677ef75d37d06451e4f1e328306a58fa712dc6439a1e","record_log_manifest_sha256":"d75aa16a0565a73b81aebf42ce61dacc4fb8c69a3d1f4fb9c82632251cae2e5a"},
+      "proof": {"records":15,"before_after_equal_clean":true,"zero_retry_no_fail_fast_test_commands":9,"record_logs_byte_sha_verified":15},
+      "counts_passed_failed_skipped": {"authority-distribution":[4,0,0],"default-products":[15,0,0],"default":[386,0,0],"fleet-library":[42,0,0],"hol-256":[1,0,0],"production":[386,0,0],"products":[26,0,1],"qualification-lib":[391,0,0],"sigkill":[1,0,1]},
+      "required_leaf_proof": {"each_library_repair_count":55,"all55_three_libraries_pass":true,"peer3_and_control_io4_three_libraries_pass":true,"fleet3_exact_codex_hepta_fleet_binary_pass":true,"linux_backlog_three_libraries":{"default":"PASS","production":"PASS","qualification-lib":"PASS"}},
+      "core_full_test_seconds": {"default-products:daemon256":7.517,"products:daemon256":7.257,"products:five_pairs":67.225,"products:real_protocol":14.009},
+      "all15_stages_pass": true,
+      "qualification_assembled": true,
+      "native_full_suite_pass": true
+    },
+    {
+      "run": {"id":36936436976,"job_id":110617874625,"attempt":1,"event":"push","os":"macos-15","lane":"source-head","conclusion":"success"},
+      "identity": {"source":"1f1113884a5af82a6153fc694f2d290224f1f07a","base":"d0169ba323b39f06dfb1bdc9984b7bf0c7400dde","tested":"1f1113884a5af82a6153fc694f2d290224f1f07a","tree":"b8a1a214a526a5cc23ff85f404e5badd7475de4e","parents":["4b6b5afbe80cc8e25963dcd18ef72a54a6496d8b"]},
+      "artifact": {"id":11199446868,"zip_bytes":374157,"zip_sha256":"c7e71ba6f8f554f1fa64e854f3043e332d479f9235e54e2589a0abd35b5fbeab","job_log_bytes":1190906,"job_log_sha256":"d6347587deeb902ab659388bf2144866ca2b11fe03939eb85ead8fd0babc2868","record_log_manifest_sha256":"f6a9ffcfe7df541e87300f325e658d04ba5f5525df7b0b690e28ac7454726808"},
+      "proof": {"records":15,"before_after_equal_clean":true,"zero_retry_no_fail_fast_test_commands":9,"record_logs_byte_sha_verified":15},
+      "counts_passed_failed_skipped": {"authority-distribution":[4,0,0],"default-products":[15,0,0],"default":[385,0,0],"fleet-library":[42,0,0],"hol-256":[1,0,0],"production":[385,0,0],"products":[26,0,1],"qualification-lib":[390,0,0],"sigkill":[1,0,1]},
+      "required_leaf_proof": {"each_library_repair_count":55,"all55_three_libraries_pass":true,"peer3_and_control_io4_three_libraries_pass":true,"fleet3_exact_codex_hepta_fleet_binary_pass":true,"linux_backlog_three_libraries":"cfg-Linux only; no Mac credit"},
+      "core_full_test_seconds": {"default-products:daemon256":14.353,"products:daemon256":9.211,"products:five_pairs":94.956,"products:real_protocol":20.36},
+      "all15_stages_pass": true,
+      "qualification_assembled": true,
+      "native_full_suite_pass": true
+    }
+  ],
+  "deep": [
+    {
+      "run": {"id":36936443906,"job_id":110617712007,"attempt":1,"lane":"source-head","conclusion":"success"},
+      "identity": {"source_sha":"1f1113884a5af82a6153fc694f2d290224f1f07a","base_sha":"e8f8f2d0ca399b0a68abba4da90a3be5114d0735","tested_sha":"1f1113884a5af82a6153fc694f2d290224f1f07a","tested_tree":"b8a1a214a526a5cc23ff85f404e5badd7475de4e","parents":"4b6b5afbe80cc8e25963dcd18ef72a54a6496d8b","lane":"source-head"},
+      "artifact": {"id":11198925665,"zip_bytes":4361,"zip_sha256":"05c50bad373e2ff046a82c277770bdbe1c4841e6fcd450a7d5c923cad3654a8e","job_log_bytes":1044461,"job_log_sha256":"0f6aae9731dacf02f26a2f92ed3e6dbbb3e044a48f07d93f30d0abc049e874f4","artifact_log_byte_sha_and_official_raw_sequence_verified":2},
+      "zero_retry_no_fail_fast_test_commands_verified": 6,
+      "counts_default_qualification_authority_restartRobrix_HOL_SIGKILL": [[386,0,0],[391,0,0],[4,0,0],[5,0,0],[1,0,0],[1,0,1]],
+      "each_library55_exact_names_and_linux_backlog_passed": true,
+      "full_native_qualification": false
+    },
+    {
+      "run": {"id":36936443906,"job_id":110617711597,"attempt":1,"lane":"base-merge","conclusion":"success"},
+      "identity": {"source_sha":"1f1113884a5af82a6153fc694f2d290224f1f07a","base_sha":"e8f8f2d0ca399b0a68abba4da90a3be5114d0735","tested_sha":"6164e4d5c41d44fb2df27e384482a546cac3e876","tested_tree":"b8a1a214a526a5cc23ff85f404e5badd7475de4e","parents":"e8f8f2d0ca399b0a68abba4da90a3be5114d0735 1f1113884a5af82a6153fc694f2d290224f1f07a","lane":"base-merge"},
+      "artifact": {"id":11197909148,"zip_bytes":4349,"zip_sha256":"6f30a3ac770e5bcfc96a5dd83c2dddd10180c50dad44947f383f537199fd1a0a","job_log_bytes":1048796,"job_log_sha256":"d12508776048d9581c0cedcdd567121a9ce3a0c1125b7f18388f82980117189c","artifact_log_byte_sha_and_official_raw_sequence_verified":2},
+      "zero_retry_no_fail_fast_test_commands_verified": 6,
+      "counts_default_qualification_authority_restartRobrix_HOL_SIGKILL": [[386,0,0],[391,0,0],[4,0,0],[5,0,0],[1,0,0],[1,0,1]],
+      "each_library55_exact_names_and_linux_backlog_passed": true,
+      "full_native_qualification": false
+    }
+  ],
+  "deep_omits": ["independent Fleet library","daemon_product","paired_process_product","authority_recovery","writer_handoff_production"],
+  "totals": {"native_zips_verified":6,"native_record_logs_verified":90,"deep_zips_verified":2,"native_success":6,"native_failed":0},
+  "ignored_helpers": "One SIGKILL child helper and one product child helper remain separately skipped; all mandatory executed cases pass; no library or Fleet skip",
+  "paired_budget_source": "Exact 1f nextest config declares360s only for the five-pair fixture in the selected hepta-supervisor-qualification profile; ordinary budgets unchanged",
+  "timing_limit": "Core seconds include full test setup and are not daemon startup timings",
+  "historical_only": true,
+  "later_source_requires_separate_exact_head_execution": true,
+  "later_deadline_control_error_signature_and_regular_file_repairs_are_not_covered": true,
+  "qualified": false,
+  "native_module_qualified": false,
+  "current_main_merge_qualified": false,
+  "independent_acceptance_complete": false,
+  "deployment_qualification_complete": false,
+  "production_activation": false
+}

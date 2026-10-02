@@ -1,11 +1,34 @@
 name: Supervisor recovery native check
 
 on:
-  push:
-    branches: [fix/runtime-supervisor-remediation-20260927]
+  pull_request:
     paths:
       - codex-rs/hepta-supervisor/**
+      - codex-rs/hepta-fleet/**
+      - codex-rs/.config/nextest.toml
       - docs/modules/runtime.supervisor/**
+      - scripts/hepta_supervisor_*.py
+      - scripts/test_hepta_supervisor_*.py
+      - scripts/runtime_supervisor_six_phase_*.py
+      - scripts/test_runtime_supervisor_materialize.py
+      - qualification/runtime-supervisor/**
+      - .github/workflows/hepta-supervisor-qualification.yml
+      - .github/workflows/hepta-supervisor-recovery-check.yml
+  push:
+    branches:
+      - fix/runtime-supervisor-remediation-20260927
+      - codex/runtime-supervisor-adversarial-audit-20261001
+    paths:
+      - codex-rs/hepta-supervisor/**
+      - codex-rs/hepta-fleet/**
+      - codex-rs/.config/nextest.toml
+      - docs/modules/runtime.supervisor/**
+      - scripts/hepta_supervisor_*.py
+      - scripts/test_hepta_supervisor_*.py
+      - scripts/runtime_supervisor_six_phase_*.py
+      - scripts/test_runtime_supervisor_materialize.py
+      - qualification/runtime-supervisor/**
+      - .github/workflows/hepta-supervisor-qualification.yml
       - .github/workflows/hepta-supervisor-recovery-check.yml
   workflow_dispatch:
 

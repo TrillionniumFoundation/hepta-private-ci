@@ -23,6 +23,10 @@ notes are retained and classified by
 [`HISTORICAL_DOCUMENTS.json`](HISTORICAL_DOCUMENTS.json); they do not override
 this guide or the current capability matrix.
 
+The current adversarial repair record is
+[`ADVERSARIAL_AUDIT_20261001_R4.md`](../../../qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261001_R4.md).
+It records concrete failure traces, regression evidence and unresolved gates.
+
 ## 1. Mission and authority
 
 The module owns process and Agent lifecycle state while remaining unable to call
@@ -51,6 +55,15 @@ The exclusive native root is `codex-rs/hepta-supervisor`. The registered primary
 implementation remains `src/supervisor.rs`; daemon composition lives in
 `src/daemon.rs`, `src/main.rs` and the bounded daemon submodules. Source
 presence is navigation evidence only.
+
+Three unlinked lifecycle prototypes are preserved byte-for-byte under
+`qualification/runtime-supervisor/history/unlinked-prototypes/`: ordinary
+mutation journaling, cross-daemon exit witnesses and atomic recovery
+observations. They previously sat under `src/` without module declarations or
+Cargo targets; the native library did not compile their embedded tests. They
+are historical source-authoring inputs, with restoration confined to the
+explicit authoring CLI's existing transaction. Their archive does not provide
+a supported runtime codec or close the corresponding capability gaps.
 
 Three tracked files have different roles:
 
@@ -126,6 +139,30 @@ Lifetime identity is acquired before the child identity handshake and checked
 again afterward. Unsupported hosts and failed acquisition reject; there is no
 adopted bare-PID signal fallback.
 
+Every Agentd health/drain and Matrix health connection also checks the kernel
+socket peer PID before sending a request: Linux uses `SO_PEERCRED`, macOS uses
+`LOCAL_PEERPID`. The listener must belong to the exact process being owned or
+adopted; a JSON response's self-reported PID cannot substitute for that binding.
+This retains the lifetime reference and all generation, nonce and root checks.
+
+Agentd Health, Agentd Drain and Matrix Health use the private
+`unix_control_io.rs` transport with one monotonic 200 ms elapsed-time budget per
+exchange. Nonblocking connection, kernel peer validation before any request
+byte, partial writes, write-side shutdown and bounded first-line reads share
+the same deadline. Successful partial progress and interrupted I/O cannot renew
+it; a late complete response is rejected. Linux accept-backlog EAGAIN is a
+failed connection, not evidence that a writable descriptor is connected.
+Existing protocol byte limits, identity/generation validation and Drain
+acknowledgement checks remain in their callers.
+
+On probe error or timeout, the health worker publishes false rather than
+retaining its last true value indefinitely while a peer drips response bytes.
+A Drain timeout is neither a drain acknowledgement nor process-exit evidence;
+the existing durable deadline and escalation path continue. This is a socket
+exchange budget, not a total adoption/Stop deadline, an immediate daemon-view
+update, per-Agent isolation or a target-host latency result. Intrinsically stuck
+kernel/path lookup, filesystem I/O and scheduling are not made preemptible.
+
 Main and Matrix processes whose lease publication fails remain retained and
 fenced until exact exit is observed and same-owner cleanup is durable. A failed
 first signal does not discard the handle. Local failed-publication cleanup
@@ -158,6 +195,79 @@ reconciliation may mark the control complete, so a stale restart claim cannot
 resurrect the journaled generation. Record identity conflicts, generation drift
 and uncertain persistence fail closed.
 
+For a live operator Stop, `stop_slot` checks the caller's monotonic
+`now + stop_grace` before durable publication. Private preparation reports Fresh
+or Retained without changing the journal schema or digest. A Fresh request is
+staged with that exact monotonic deadline only after durable restart cancellation
+succeeds, before Matrix deferral. Cancellation failure retains the durable
+intent but stages no new pending control, StopRequested marker or signal.
+Live retries combine the earlier pending/acknowledged Stop deadlines and retain
+a stronger Kill. They still reread the bound journal, validate its digest and
+exact current target, and reject Stop wall-clock rollback; they do not translate
+wall-clock remaining time onto a caller-supplied Instant again. Only restoration
+without an in-process Stop/Kill continuation reconstructs that remaining time.
+
+A successful driver Drain or Stop request clears `pending_control`, but the
+acknowledged Draining or Stopping phase still retains its original deadline.
+If the initial signal fails, the already admitted request instead remains
+pending for the same spawn. Previously, repeatedly failing process polls could
+prevent the later phase escalation from running. Complete Fleet validation
+could also fail first because of an unrelated Agent's damaged manifest,
+blocking an admitted due request or pending Kill. Neither failure cancels the
+already admitted containment operation or makes its deadline fresh again.
+
+The combined Drain/Stop deadline must first be representable.
+`Supervisor::recover` checks the supplied `now + drain_timeout + stop_grace`
+before acquiring process owners. `drain_slot` repeats the checked calculation
+at its actual invocation time before Matrix deferral, fencing, lifecycle CAS
+or a driver signal. Overflow rejects rather than interpreting an unrepresentable
+budget such as `Duration::MAX` as an expired deadline or Kill authority.
+
+For an exact retained, unfenced main-process handle, tick attempts containment
+before fallible registry observation and process polling when its acknowledged
+Draining/Stopping phase has expired, an already admitted current-spawn pending
+Drain/Stop is due, or its current-spawn pending request is Kill. This includes
+initial Drain/Stop signals that never succeeded. Stale or fenced pending
+requests do not grant this continuation; a Drain/Stop request before its
+deadline still follows complete Fleet validation. An expired Drain uses its
+original deadline plus `stop_grace`, rather than granting another grace from
+the delayed tick; if that entire budget has elapsed, containment can proceed
+directly to Kill. Merging cannot downgrade an existing same-incarnation pending
+Kill, and the same tick reuses its control result without a second signal for
+the unchanged generation. A previously observed exact exit remains the first
+branch and retries durable finalization without another signal or poll.
+
+An unexpired current-spawn Stop deferred behind an owned Matrix companion does
+not signal the main process early. Its otherwise eligible startup/Running
+health observation remains available, preventing the mere deferred request from
+causing emergency companion termination. The original Stop deadline still
+triggers main containment before Fleet reads when due. Tick captures the
+continuation even when a successful signal clears pending control; a probe later
+in that tick cannot readmit it. Subsequent healthy probes cannot make an
+acknowledged Stopping or Killing phase ready. Existing Draining probe semantics
+remain unchanged.
+
+The 2026-10-02 combination repair preserves deferred control across a stored
+exact Matrix exit. `defer_agent_action_for_matrix` records the action against
+the current main spawn, then returns without another Matrix signal, phase
+transition or event while the retained companion awaits exact lease cleanup.
+A foreign or reappearing lease remains a cleanup barrier. After cleanup
+succeeds, an already acknowledged main Killing phase clears the same-spawn
+deferred action without repeating main control or its lifecycle CAS; a failed
+Kill is still retryable. An exact main exit while its same-spawn DeferredDrain
+or DeferredStop is retained cannot admit a new automatic restart claim or
+replacement. A stale action does not suppress another spawn's policy.
+
+The continuation grants no new admission authority and retains independently
+observed signal, registry and poll faults once on unresolved paths. Signal
+acceptance does not manufacture a Drain acknowledgement, exit or cleanup
+completion. The owner and lease remain until exact exit and the existing
+durable finalization succeed.
+Ordinary admission and not-yet-due Drain/Stop work retain complete Fleet
+validation. This ordering does not make kernel/filesystem calls preemptible,
+establish a Stop latency SLO or close the separate Matrix deadline and
+cross-daemon cleanup gaps.
+
 This closes the previously documented control-kind, deadline and restart
 supersession gap for the journaled generation. It does not yet make the local
 failed-publication exit-cleanup witness durable, nor does it prove complete
@@ -167,6 +277,17 @@ adoption cut. Those remaining boundaries stay explicit in the capability matrix.
 See `src/control_intent.rs`, `src/control.rs`,
 `src/control_durable_restart_tests.rs` and
 [`RESTART_CANCELLATION.md`](RESTART_CANCELLATION.md).
+
+The source-only regression
+`supervisor::tests::tick_control_fault_tests::pending_deadline_tests::fresh_stop_retains_monotonic_deadline_while_matrix_defers_main_control`
+uses two exact owners and real leases to exercise deferral/retry, no early main
+signal, original-deadline containment and readiness after Stop/Kill. The
+`6c6c051e` source checkpoint recorded 21 added Supervisor and 2 Fleet leaves,
+with 77 repair identities. Those are historical source counts, not the final
+inventory after the 2026-10-02 combination repairs. Historical `6958a901` had the
+prior 20/76 inventory and a default-library run with three failures; it is not
+relabelled as proof of later bytes. The final inventory needs a new static
+count, and new native execution remains required.
 
 ## 7. Release transactions and signed authority
 
@@ -178,10 +299,44 @@ release generation, lifecycle generation, rollback predecessor and optional
 production grant/authority epoch. Each process boundary is preceded by a durable
 phase transition.
 
+For a signed transition, the first Prepared release-transaction publication
+already includes the exact grant digest, authority epoch, both catalog admission
+bindings and their compatibility binding. Missing bindings reject before that
+transaction write; there is no temporarily unsigned Prepared publication on
+this path. Pure unsigned transitions retain their existing transaction semantics.
+Their existing automatic Aborted reconciliation is separate and cannot run
+through trusted signed recovery denial. Signed recovery supports only
+Committed/RolledBack outcomes; the signed codec's Aborted shape has no
+authorized production terminalization producer.
+
 Immediately before process start or rollback, the supervisor re-resolves the
 release through Fleet and compares immutable bytes plus the admission frontier
 to the journal. Revoked releases and policy drift reject even when the predecessor
 was previously valid.
+
+Every main launch, including automatic restart from a cached descriptor, repeats
+current catalog admission before lease checks, lifecycle mutation or spawn.
+Catalog-derived descriptors retain their origin after a catalog entry is removed;
+removal cannot turn them into an unregistered local command. Explicit direct
+`AgentRelease` constructors remain catalog-free, nonproduction in-process plant
+fixtures. They cannot bypass an existing, denied or revoked catalog entry, and
+signed mutation admission still requires canonical source and target bindings.
+
+Matrix repeats the same release admission before both a new retry charge and
+the eventual companion spawn. A revoked, disallowed, removed or damaged catalog
+entry cannot authorize a cached companion command. The final gate consumes the
+fresh canonical Matrix command. For a cached Running main, admission also reads
+the current Fleet record and requires its exact generation and Running lifecycle;
+the retained main must be unfenced and match the cached active bundle. This rejects an already observed
+lifecycle change; it does not make concurrent Fleet CAS and process spawn atomic.
+
+Policy denial preserves the main and peer owners, exact exit cleanup and prior
+Matrix charges. An uncharged failure is retained in a private transient marker
+bound to the main spawn generation and active release. Re-admission schedules
+one durable attempt with its full backoff before launch; an already charged
+retry resumes its existing claim without charging again. Initial companion
+setup remains uncharged. This marker is not a durable eligibility witness and
+does not complete cross-daemon replacement lineage.
 
 A production mutation requires a detached external grant and H7 envelope. The
 daemon validates signer identity and epoch, authority epoch, operation, source
@@ -189,9 +344,101 @@ and target, control revision, lifecycle generation, expiry, digests and current
 Fleet policy. The daemon cannot issue its own grant.
 
 Ambiguous signed transitions enter `recovery_required`. Read-only status and the
-signed recovery ceremony remain available, but ordinary mutation of that Agent
-is denied except the bounded emergency-kill path. A decision may terminalize
-only an observed committed or rolled-back state and cannot move release bytes.
+signed recovery ceremony remain available; the library retains Stop/Kill
+containment, while the daemon permits only emergency Kill among ordinary
+mutation RPCs. Start, Drain, Stop, Restart and release changes are denied by
+that RPC quarantine. A decision may terminalize only an observed committed or
+rolled-back state and cannot move release bytes.
+
+Emergency Kill still compares the caller's complete control fence with the
+live observation before advancing the owner-local revision. Its separate admission
+requires an already-owned main or Matrix handle, rather than a main that is
+eligible to serve. An exact retained main can have an older generation after
+recovery changes Fleet to Failed; a Matrix can remain owned after main exit and
+cleanup. Both shapes permit containment of the retained handles. Stop keeps its
+existing main-presence and generation checks. Kill preparation or acknowledgement
+failure can produce `operation_indeterminate` after termination attempts; this
+does not fabricate a missing main journal, clear quarantine or prove exit and
+exact lease cleanup. A stale control fence still rejects before any effect.
+Once the main's exact exit is stored, Kill preserves that cleanup witness and
+does not signal it again, publish a new main Kill journal or transition it to
+Draining. Cleanup can still be unresolved, so the RPC remains indeterminate;
+an independently live Matrix still receives containment. Ordinary mutations,
+including Drain, Stop and Restart, reject that stored main exit before new
+journal, lifecycle or process effects. The signed recovery decision path keeps
+its separate existing validation and is not denied merely by this ordinary
+control guard.
+
+`apply_production_grant` completes signature, catalog and preflight validation,
+and constructs its digest-bound Prepared/Queued/RecoveryRequired records before
+the first durable Prepared publication attempt. From that attempt onward, a
+failed publication, revision update or release-state-machine step returns
+`SignedMutationIndeterminate`; both signed RPC paths map that variant to
+`operation_indeterminate`. The owner retains a trusted RecoveryRequired intent
+and the original bounded fault diagnostic, with a best-effort durable recovery
+marker. Even a Prepared directory-sync failure before confirmed process
+delivery is indeterminate: an attempted publication is not proof of absence.
+Signature, catalog and preflight rejections before this boundary retain their
+safe rejection semantics and publish or deliver nothing through this operation.
+
+`resolve_production_recovery` likewise performs decision, frontier, outcome and
+replay checks before attempting terminal transaction publication. Failure after
+that boundary retains the trusted recovery preimage and possibly published
+terminal bytes for the same signed decision's retry; it does not overwrite
+those bytes with a rollback marker. Both terminal records and the control
+revision must acknowledge before this owner releases quarantine. Failure does
+not advance its revision; an exact successful retry advances it once. These
+outcomes claim neither physical execution nor independent authority acceptance,
+and do not release a retained process owner or lease.
+
+Recovery support remains narrower than quarantine. A Prepared intent can exist
+without a release transaction after a crash or failed first publication
+acknowledgement. `resolve_production_recovery` requires that exact transaction
+and a signed decision binding its digest; it cannot terminalize the no-journal
+case. A legacy unsigned Prepared transaction paired with a signed
+RecoveryRequired intent is also quarantined: its missing authority binding
+cannot authorize unsigned automatic Drain, process dispatch or signed
+terminalization. This crash boundary already existed before the
+indeterminate-error repair.
+The legacy offline `abort` command writes a digest-only directive, with no
+production consumer, and therefore cannot clear this quarantine or manufacture
+Aborted. Missing-transaction and missing-authority cases remain blocked pending
+a separately versioned and authorized recovery protocol; exact process exit
+alone is insufficient.
+
+Three source regressions in `src/signed_effect_boundary_tests.rs` cover pure
+signature/preflight rejection, Queued publication failure after Drain delivery,
+and Prepared directory-sync failure without claimed delivery. The existing
+`signed_explicit_rollback_source_restoration_can_recover_without_new_dispatch`
+case in `src/release_signed_recovery_tests.rs` also exercises terminal
+transaction/intent write, sync, rename and directory-sync cuts and exact retry.
+These use real durable files and explicit process-driver doubles; their presence
+does not establish current-head or target-host execution.
+
+For an explicit rollback, `rolled_back` may mean either a healthy rollback target
+or restoration of the source after the target failed. Recovery distinguishes
+these through the exact prepared transaction, signed intent and Fleet frontier:
+source restoration retains the prepared generation and previous release; target
+success advances exactly one generation and sets the source as previous.
+Matching current-release text alone is insufficient. Production status omits a
+transaction digest when that transaction does not belong to the reported intent.
+If a recovery terminal write is published but its durability acknowledgement
+fails, the same owner can resume only that exact decision. It reconstructs the
+original signed journal bindings, repeats signature/expiry/epoch and current
+admission checks, acknowledges both terminal records, and advances control
+revision once. Replaying an acknowledged decision has no additional process or
+revision effect. A replaced daemon uses a new authority epoch; an old decision
+cannot authorize recovery against that new epoch.
+
+Production Start may restart the durable currently selected release. Selecting
+a different release requires the signed transition path, even after Stop or
+revocation. Signed transitions require a catalog-admitted source whose main and
+Matrix commands match the canonical release. A local fixture cannot gain
+production authority through a release identifier alone.
+
+Ordinary Start cannot take over a pending release transition or charged restart
+operation. The internal continuation retains dispatch ownership until its
+durable completion or cancellation is acknowledged.
 
 ## 8. Production verifier and offline signer build boundary
 
@@ -219,9 +466,23 @@ and is checked for forbidden signer artifacts.
 ```
 
 The bundle contains public material, has a versioned namespace and canonical
-digest, rejects relative paths, links, unsafe permissions, oversized or changing
-files, and is pinned before Fleet state is opened. The old six-argument
-key/signer/epoch tuple has been removed from the daemon parser.
+digest, and is pinned before Fleet state is opened. Its Unix reader rejects
+relative paths, links, nonregular or oversized files, ownership other than the
+effective user and any group/other permissions. After the initial path metadata
+check, `O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC` prevents a final-component FIFO
+substitution from blocking before descriptor validation. The opened descriptor
+must still be a bounded regular file with the same device/inode and safe
+owner/link/mode. Reading is bounded to 8193 bytes for the 8192-byte maximum;
+there is no after-read metadata recheck. Canonical self-digest, external pinned
+digest and verifier construction remain separate validations. The old
+six-argument key/signer/epoch tuple has been removed from the daemon parser.
+
+`authority_bundle::open_tests::fifo_swap_after_regular_metadata_is_rejected_before_watchdog_release`
+in `src/authority_bundle_open_tests.rs` uses a real regular-file metadata capture
+followed by FIFO replacement at the same open helper. Its watchdog releases the
+old blocking path to make that regression fail in bounded time; the repaired
+path must reject without that release. Source presence does not certify native
+execution, protected parent directories or external key provisioning.
 
 Detailed deployment requirements are in
 [`PRODUCTION_BOUNDARY.md`](PRODUCTION_BOUNDARY.md).
@@ -239,29 +500,236 @@ Agents. Encoding happens outside the projection lock; a view older than two
 seconds, future-dated or invalidated fails closed. Mutations, release selection
 and production status always consult the live owner state.
 
+Requests are bounded to 64 KiB and replies to 1 MiB; the separate reply ceiling
+supports the complete roster. Diagnostic display text is bounded and strips
+control and bidirectional formatting characters; the underlying state digest
+still binds the original error. Fleet resolution runs inside the existing
+blocking owner task, avoiding a second blocking-pool dependency.
+
+The client verifies the kernel peer user before sending a frame. It validates
+reply type, selected Agent, operation, pre-dispatch digest, supervisor epoch and
+signed receipt association against the outstanding request. Roster identities
+must be unique and counts remain within the request and fleet limits. Unexpected
+payloads and malformed frames produce bounded diagnostics without echoing their
+contents. An active Matrix flag represents retained process ownership, including
+while the main is draining or has exited; it does not imply serving readiness.
+Observation validation also permits quarantined retained main owners and a
+registry generation with no adopted runtime. General mutation fences keep their
+eligibility constraints; emergency Kill accepts the observation shape while
+retaining live CAS comparison and exact-handle containment checks. Display health
+is masked by the live lifecycle/generation, while raw snapshot facts remain in
+the CAS digest, so a stale runtime cannot claim serving eligibility.
+
+Recovery replies contain terminal journal digests, which differ from the
+pre-resolution digests signed in the decision. The client checks the Agent,
+grant, terminal outcome and observed release but cannot reconstruct that hash
+transition from this reply alone. Exact signature, journal and admission checks
+remain under the owner; this protocol does not supply an atomic recovery envelope.
+
 The authoritative lifecycle tick remains 25 ms. Tick-only whole-fleet projection
-rebuilds are coalesced to a 100 ms interval, while a live owner request publishes
+refreshes are coalesced to a 100 ms interval, while a live owner request publishes
 immediately after it executes. This removes the unconditional 40-Hz full Fleet
 reload/projection loop without changing lifecycle authority or read freshness.
 Projection refreshes and skips are exposed in scheduler diagnostics.
 
-This is not yet a dirty-Agent incremental projection. A true incremental
-projection and any collect-effect-apply or per-Agent actor refactor are gated by
+Projection publication obtains a metadata-only snapshot that shares the full
+snapshot's lifecycle and hidden CAS fields. It avoids cloning diagnostic rings
+that the projection does not consume; the public full snapshot still returns
+those rings. At the configured maxima, cloning 256 log entries of 4096 bytes for
+each of 256 Agents could copy up to 256 MiB of log payload per refresh. This is a
+capacity upper bound, not a measured latency or allocation result.
+
+`daemon_read_projection.rs` reuses an Agent's immutable status `Arc` only after
+a fresh capture compares the complete supervisor epoch, Fleet record and runtime
+metadata with the previous input. A changed health or Matrix field, hidden CAS
+field, external Fleet write or epoch rebuilds that Agent's status even when its
+control revision did not change. Diagnostic-ring changes alone do not change
+the metadata input. Removed Agents leave both status and input maps; invalidation
+or a poisoned view prevents reuse of the old observation.
+
+Every refresh still loads the complete Fleet registry, captures metadata for
+every Agent and rereads process-ownership readiness. Lease readiness can change
+without changing a cached status, so readiness is never reused with the status
+`Arc`. A new observation gets a timestamp taken before this fresh work. This
+reduces repeated status derivation for equal inputs; it does not remove Fleet
+I/O or metadata scans and supplies no measured performance evidence.
+
+Constructor recovery retains its initial full Fleet load and independent
+process-owner recovery. It omits restart/release recovery only when every
+corresponding durable witness is explicitly absent under a physical run
+directory. Present files, symlinks, FIFOs and I/O errors retain the original
+fresh full-Fleet and bounded-codec recovery path. This removes two redundant
+full Fleet reads for an empty Agent; it neither caches admission nor narrows
+global validation and supplies no target-host performance result.
+
+For releases without a Matrix command, an already empty companion restart
+budget causes no journal publication on idle ticks. A nonempty budget is cleared
+independently of the old companion's backoff or exhaustion state; publication
+failure retains its fields for retry and records a bounded fault.
+
+The per-Agent reuse path makes `incremental_per_agent_projection` partial, with
+test source present. Dirty propagation and a refresh that reads only changed
+Agents remain unimplemented. That further optimization and any
+collect-effect-apply or per-Agent actor refactor are gated by
 the frozen target-host SLOs rather than assumed necessary from synthetic source
 fixtures.
 
 ## 10. Failure and recovery semantics
 
 Unexpected exits use a durable bounded restart window with exponential backoff
-and a fixed attempt ceiling. Restart state is generation-bound; clock rollback
-is normalized durably rather than minting a fresh budget. Matrix restart state
+and a fixed attempt ceiling. Restart state is generation-bound; main clock
+rollback fails closed, while Matrix rollback is durably normalized to an
+exhausted budget rather than minting fresh attempts. Matrix restart state
 cannot overwrite the main process budget.
+
+`AutomaticRestartQueued` records the charged attempt only after durable budget,
+lineage and deadline admission; exact-exit cleanup retries cannot publish it
+twice. `AutomaticRestartBudgetExhausted` records the fixed attempt ceiling and
+stops further automatic dispatch as a normal policy outcome. It does not suppress
+journal/admission errors. A tick preserves those errors alongside simultaneous
+main or Matrix cleanup faults in bounded fault events and the same `TickReport`,
+without replacing the retained process owner or creating new authority state.
+Earlier signal faults are also preserved when a later process probe, cleanup or
+main control failure leaves the tick unresolved, including a Matrix failure
+followed by a successful retry. Exact observed exit with successful cleanup
+still tolerates a failed main signal; this established cleanup contract remains
+unchanged.
+
+The initial Matrix fencing/kill result also survives a later poll, complete
+Fleet read or exact lease-cleanup failure. All owning tick branches pass the
+same `TickReport`; an unresolved later error retains the original signal fault
+once alongside that observation or cleanup fault. A direct signal error returned
+as the primary failure is not recorded twice. Exact observed exit followed by
+successful cleanup retains the existing terminal-success contract. Once exit is
+stored, only cleanup is retried, with no additional kill or poll and no early
+release of the retained owner. The shared Matrix containment helper also honors
+this stored exit, including callers that precede cleanup after a main-generation
+fence: it marks the companion unhealthy and fenced without signaling, changing
+its phase to Killing or emitting another MatrixKillRequested event.
 
 Durability failures at write, fsync, publish/link, rename and directory sync are
 classified according to whether the outcome is known absent, known present or
 ambiguous. Ambiguity quarantines rather than reporting success. Truncated or
 identity-conflicting process leases, restart records, control intents and release
 transactions fail closed.
+
+Main and Matrix leases, restart state, and release/signed journals use a common
+bounded descriptor reader. On Unix it rejects links, special files, unsafe owner
+or write permissions, excessive size, and changed named/opened identity before
+and after reading. `O_NOFOLLOW` and `O_NONBLOCK` protect the final component;
+supervisor-owned parent directories remain a deployment requirement. Lease files
+are published with mode 0600, and staging hard links are removed before the
+directory durability acknowledgement so acknowledged leases have one link.
+
+The private `regular_file_io.rs` helper also validates regular-file type and
+the existing byte limit on the opened descriptor before bounded maximum-plus-one
+reads. Unix opens use NOFOLLOW/NONBLOCK/CLOEXEC. Its callers retain their own
+identity, permission and protocol checks:
+
+| Input | Existing bound and retained checks |
+| --- | --- |
+| Matrix public binding | 64 KiB; prior/opened device and inode must agree |
+| External signer request path | 8 MiB; strict request parsing and buffer zeroization |
+| Three final-use signer/approver seed paths | exactly 32 bytes; effective UID, private mode, one link and Zeroizing storage |
+| Authority-bundle constructor public key path | 8 KiB input; absolute path and exactly 32 raw bytes or 64 trimmed hex characters |
+
+Stdin and explicit key-descriptor stream protocols retain their original
+semantics. The helper does not introduce a path-based signing-key source or
+relax any authority check. Source regressions cover real FIFO key/request paths,
+an opened file growing beyond its bound, and a Matrix binding swapped to a FIFO
+after its metadata check.
+
+The Fleet dependency has its own private descriptor reader. Registry/lifecycle
+text uses its captured metadata length as the bound, while release JSON and
+admission-frontier markers retain 32 KiB bounds. Source copying and program
+hashing read at most captured length plus one and require the final byte count
+to equal that original length; no new executable-size ceiling is invented.
+Opened regular type, size and prior/opened inode checks precede consumption.
+Complete Fleet/catalog validation, immutable modes, canonical workspace checks,
+digests, seals and lifecycle/release CAS remain required. Fleet adds only a Unix
+direct edge to the existing workspace `libc`, without a version change. Its two
+Unix source regressions exercise actual registry/catalog FIFO substitutions;
+they are not Fleet platform execution receipts.
+
+Four Supervisor directory-sync uses—durable journal publication, main lease
+sync, Matrix lease cleanup and the bundle-construction CLI—share a Unix
+O_DIRECTORY/NOFOLLOW/NONBLOCK/CLOEXEC open followed by descriptor directory
+validation and `sync_all`. Fleet uses the same directory-open pattern in its
+own private helper. Existing durability fault-hook ordering and error propagation
+remain; Windows branches retain their existing behavior. The real directory-to-
+FIFO regression must reject without its old blocking-path watchdog release.
+These checks prevent final-component special-file waits; they neither preempt
+blocked regular storage nor prove ancestor integrity or durable parent-inode
+binding, and establish no filesystem or owner-callback latency SLO.
+
+Constructor recovery isolates damaged evidence per Agent. It retains any exact
+main and Matrix process owners, fences serving, and retries containment until
+observed exit permits lease cleanup. Other Agents retain their owners. Damaged
+restart, release or signed evidence denies mutation and signed recovery while
+emergency Kill remains available. There is no in-place corrupt-codec repair API.
+Do not edit or delete journals to make readiness pass; restoration of independently
+validated durable evidence requires operational recovery, followed by a fresh
+Supervisor recovery. No ordinary API clears this denial.
+
+Before independent main and Matrix ownership acquisition, constructor pure
+validation decodes each signed intent and release transaction once and checks
+its Agent binding. `prime_signed_recovery_denial` consumes those same typed
+observations, preserving independent codec faults without reporting a second
+decode failure. It establishes trusted in-memory
+RecoveryRequired denial for unresolved evidence before control, release or
+restart replay can run. A Committed/RolledBack intent or an exact matching
+terminal transaction plus release-state witness follows the existing terminal path;
+the pure read does not falsely quarantine that proved outcome. The primer
+performs no CAS, journal publication or process operation. Full late recovery,
+including fresh lifecycle CAS and terminal durability acknowledgement, remains
+after acquisition. Both independent lease-bound adoption attempts still run;
+denial permits containment of acquired exact handles, diagnostics, observed
+exit and exact cleanup, while suppressing new main and Matrix restart claims
+and replacement dispatch. It neither erases prior durable charges nor supplies
+missing transaction or authority evidence.
+
+The primer also precedes idle release hydration and Matrix budget normalization.
+Denied slots preserve future and expired budget bytes. An ownerless slot still
+validates current and previous catalog releases without assigning serving
+metadata. Acquired main and Matrix owners retain independent admission, driver,
+catalog and public-binding diagnostics; those checks neither replay control nor
+perform release CAS. Each exact owner receives at most one constructor
+containment attempt. Denial itself is not a catalog or Matrix binding failure.
+
+Constructor hydration has a narrow deferred observation for a newly registered,
+Stopped generation-zero Agent whose release state is also generation zero with
+no current or previous release. It requires an empty owner/scheduling slot,
+physical main and Matrix run directories, and confirmed absence of both process
+leases, control intent, restart budget/lineage, release transaction and signed
+intent/recovery records. Identity-bearing lease reads, independent main/Matrix
+ownership acquisition and the original durable codecs still run.
+
+Only the duplicate pure release-metadata hydration may be deferred. Before
+returning, a nonempty observation is settled with one fresh complete Fleet read,
+comparison of each complete Agent record, and fresh physical witness checks.
+Changed records or new evidence enter the original fresh recovery path only
+while the slot remains empty. A slot that acquired an owner or pending/denied
+state is denied and retains its exact handles; ownership acquisition is never
+replayed over an existing owner. A failed complete Fleet read denies the
+observed slots and is reported without discarding independently acquired main
+or Matrix owners. The observation is bounded to 256 Agents, constructor-local,
+and unavailable to control admission, tick or release selection. It is neither
+a mutation cache nor an atomic multiwriter snapshot.
+
+A transient driver failure retrying an exact durable control is distinct from
+damaged evidence: recovery retains its control kind, process binding and original
+deadline. Independent signed-intent recovery still runs when a release Drain
+retry fails. Recovery containment does not issue the same initial signal twice.
+
+Healthy restart and release completion retains its continuation until the
+lineage, budget, release CAS and terminal signed receipt are durable. Recovery
+retries from the exact replacement generation, preserves historical predecessor
+identities even when executable admission is revoked, and rejects external CAS
+drift. Absence alone does not substitute for an exact process-exit witness.
+Replacement dispatch waits for exact Matrix exit and lease cleanup while
+continuing to poll that companion. A known spawn rejection before acquiring any
+process cancels its charged claim; cancellation write failures retry that
+acknowledgement rather than dispatching again under the same attempt.
 
 Recovery diagnostics classify process ambiguity, release-state ambiguity,
 intent mismatch, admission-frontier drift, authority-epoch change and durability
@@ -312,12 +780,22 @@ Repository `supervisor_hol_qualification` remains useful source-level evidence
 for lock telemetry and fault-wave mechanics, but its simulated driver is not a
 substitute for 256 real target-host processes.
 
+For a fresh, unchanged 256-Agent Fleet with the empty state described above,
+the deferred constructor hydration reduces source-counted complete Fleet loads
+before socket binding from 260 to 5. The count includes Fleet open/migration,
+roster-limit validation, the initial recovery snapshot, final consistency check
+and first read projection. Changed, active or evidence-bearing Agents retain
+fresh validation and may require additional reads. This is a source operation
+count, not measured startup latency or a target-host SLO result. Existing
+directory durability acknowledgements and complete Fleet validation remain in
+place.
+
 ## 13. Observability and overload behavior
 
 Scheduler diagnostics record completed owner work, pre-admission busy rejection,
 maximum tick delay, read-projection refreshes and coalesced skips. Lifecycle lock
-telemetry records acquisition, contention, wait and hold distributions in the
-qualification path. Production receipts additionally bind raw logs and durable
+telemetry records acquisition and contention counts and cumulative/maximum wait
+and hold times. Qualification separately samples wait latency. Production receipts additionally bind raw logs and durable
 snapshots before and after each injected fault cut.
 
 Connection capacity, writer admission, tick cadence and projection freshness are
@@ -354,6 +832,36 @@ Git commit/tree/parents, log length and digest, clean source before and after,
 and complete source blob bindings. Applicable failed, cancelled, missing or
 skipped lanes reject the aggregate job.
 
+The current mandatory named library inventory includes all constructor
+observation regressions, cached-release re-admission, all five kernel socket
+peer-identity tests, the four common exchange-deadline tests and the Fleet
+workspace-isolation sweep oracle. Their
+filesystem fixtures use canonical workspace roots, short Unix socket paths and
+an explicitly writable rename phase before restoring the sealed release mode.
+Those fixture changes preserve the original assertions and production peer,
+catalog and workspace checks. Short socket paths remove a Darwin pathname-length
+risk; the earlier EINVAL log lacked path context and does not prove that risk
+was its sole cause. Default and production product lanes retain the
+256-Agent roster test and the ten-second startup bound; startup success requires
+ready health and the expected registered count, with an exited child reported
+as failure. The R4 audit binds the observed failures of the earlier source to
+their actual CI receipts. New source must acquire its own receipts.
+
+The negative peer and common transport socket fixtures use private bounded
+nonblocking I/O after accept, with the original fixture budgets and complete
+connection, zero-request-byte and live-child assertions. Darwin can reject
+socket timeout options with EINVAL once a correctly rejected peer has already
+closed the connection, and accepted sockets inherit the listener's nonblocking
+state. The fixtures therefore avoid timeout setsockopt after accept, explicitly
+set nonblocking mode and use an absolute I/O deadline. This test-only transport
+does not relax the production protocol, peer check or readiness deadline.
+
+Python validator execution has its own positive, source-bound unittest inventory
+and strict verbose transcript grammar. Every named case must pass exactly once
+in discovery order, with one consistent terminal count and `OK`; skipped,
+partial, substituted or extra results reject. These receipts cannot satisfy a
+nextest binary requirement and cannot be classified as a zero-test command.
+
 The workflow also runs on pushes to `main`, so the real merge SHA receives new
 evidence instead of inheriting PR-head results. Source-head, deterministic merge
 and real merge receipts remain different artifacts.
@@ -384,16 +892,23 @@ The following is source navigation, not a pass receipt:
 
 | Operation | Native symbol or component | Primary source | Test source |
 | --- | --- | --- | --- |
-| Start | `Supervisor::start` | `src/supervisor.rs` | `src/supervisor_tests.rs` |
+| Start | `Supervisor::start` | `src/supervisor.rs`, `src/recovery.rs` | `src/supervisor_tests.rs`, `src/release_admission_tests.rs` |
 | Drain | `Supervisor::drain` | `src/supervisor.rs` | `src/supervisor_tests.rs`, `src/unix_tests.rs` |
 | Stop/Kill | durable control intent | `src/control.rs`, `src/control_intent.rs` | `src/control_durable_restart_tests.rs`, `src/control_completion_tests.rs` |
-| Restart | restart budget/lineage | `src/supervisor.rs`, `src/restart_*` | `tests/restart_budget*.rs` |
+| Control deadline continuation | checked budget, expired owned phase and admitted due/Kill request | `src/control_pending.rs`, `src/tick.rs`, `src/control.rs` | `src/tick_control_deadline_tests.rs`, `src/tick_control_budget_tests.rs`, `src/tick_pending_deadline_tests.rs` |
+| Matrix fault reporting | preserve unresolved faults and terminal cleanup-only containment | `src/matrix_tick.rs`, `src/matrix.rs`, `src/tick.rs` | `src/tick_matrix_fault_tests.rs` |
+| Restart | restart budget/lineage and bounded fault reporting | `src/supervisor.rs`, `src/tick.rs`, `src/restart_*` | `tests/restart_budget*.rs`, `src/automatic_restart_event_tests.rs`, `src/tick_control_fault_tests.rs` |
 | Upgrade/Rollback | release transaction | `src/release_transaction.rs`, `src/supervisor.rs` | `src/supervisor_tests.rs` |
-| Signed mutation | external grant verifier | `src/signed_authority.rs`, `src/authority_bundle.rs` | `tests/authority_distribution.rs` |
-| Signed recovery | decision verification | `src/signed_authority.rs`, `src/supervisor.rs` | `tests/authority_recovery.rs` |
+| Signed mutation | verifier and publication-effect boundary | `src/signed_authority.rs`, `src/supervisor.rs`, `src/signed_effect.rs`, `src/authority_bundle.rs` | `tests/authority_distribution.rs`, `src/signed_effect_boundary_tests.rs`, `src/authority_bundle_open_tests.rs` |
+| Signed recovery | decision verification, indeterminate acknowledgement and exact durable retry | `src/signed_authority.rs`, `src/supervisor.rs`, `src/signed_effect.rs`, `src/release.rs` | `tests/authority_recovery.rs`, `src/release_signed_recovery_tests.rs` |
 | Daemon ownership | lock/socket owner | `src/daemon_owner.rs`, `src/daemon.rs` | `tests/daemon_product.rs` |
-| Read projection | immutable bounded view | `src/daemon_read_view.rs` | `src/daemon_read_view_tests.rs` |
+| Constructor recovery | single-read signed preparation, independent diagnostics, retained ownership and final whole-Fleet consistency | `src/constructor_recovery.rs`, `src/signed_constructor_recovery.rs`, `src/recovery_denial.rs`, `src/constructor_hydration.rs`, `src/recovery.rs`, `src/matrix_recovery_admission.rs` | `src/constructor_recovery_tests.rs`, `src/constructor_hydration_tests.rs`, `src/constructor_hydration_recovery_tests.rs`, `src/signed_constructor_preparation_tests.rs` |
+| Read projection | immutable bounded metadata view | `src/daemon_read_view.rs`, `src/supervisor.rs` | `src/daemon_read_view_tests.rs`, `src/supervisor_snapshot_tests.rs` |
+| Per-Agent status reuse | fresh complete epoch/record/runtime comparison | `src/daemon_read_projection.rs`, `src/daemon_read_view.rs` | `src/daemon_read_projection_tests.rs` |
 | Tick projection coalescing | 100 ms projection interval | `src/daemon_execution.rs` | `src/daemon_execution_tests.rs` |
+| Local control client | request/reply association | `src/daemon_client.rs`, `src/daemon_client_validation.rs` | `src/daemon_client_validation_tests.rs` |
+| Durable file input | bounded regular-descriptor read and directory sync | `src/durable_publish.rs`, `src/regular_file_io.rs`, `src/directory_io.rs`, `src/lease.rs`, `src/restart_journal.rs` | `src/durable_read_tests.rs`, `src/regular_file_io_tests.rs`, `src/directory_io_tests.rs`, `src/matrix_binding_io_tests.rs`, `src/lease_read_tests.rs`, `src/restart_journal_read_tests.rs` |
+| Managed-process control I/O | exact-peer exchange with one elapsed-time budget | `src/unix.rs`, `src/unix_control_io.rs` | `src/unix_control_io_tests.rs`, `src/unix_control_io_linux_tests.rs`, `src/unix_peer_identity_tests.rs` |
 
 `IMPLEMENTATION_MAP.sourceBase` is historical provenance. The tested SHA is
 derived from Git and execution context, not hard-coded into a self-referential
@@ -426,6 +941,10 @@ qualification requires current exact-head and merge receipts. Target-host
 qualification, independent acceptance, selection, promotion, activation and
 release are later, separately governed states.
 
+The 16 declared source capabilities comprise 12 implemented, 2 partial and 2
+not implemented. These categories do not establish an execution or production
+completion percentage.
+
 For the current candidate:
 
 - durable Stop/Kill identity, original deadline and restart cancellation are
@@ -434,8 +953,9 @@ For the current candidate:
   lineage remain incomplete;
 - verifier/offline signer build separation and pinned-bundle-only daemon input
   are source-implemented;
-- tick-only whole-fleet projections are coalesced, but dirty-Agent incremental
-  projection and per-Agent mutation ownership are not implemented;
+- tick-only whole-fleet refreshes are coalesced and complete-input per-Agent
+  status reuse is present; dirty-Agent propagation, selective Fleet reads and
+  per-Agent mutation ownership remain unimplemented;
 - the atomic recovery-observation envelope is not implemented;
 - exact-head, deterministic merge, target-host and independent acceptance states
   must be populated only by their actual receipts;
@@ -443,3 +963,16 @@ For the current candidate:
 
 This document grants no model, provider, tool, network, filesystem, secret,
 operator-acceptance, promotion, activation or release authority.
+
+The 5b71 checkpoint had 28 new Supervisor leaves and 84 exact common repair
+identities. Its own remote execution exposed two diagnostic failures; those
+results remain failed. The subsequent repair adds three constructor-preparation
+leaves and makes the existing process-recovery diagnostic leaf mandatory too.
+The d1ed checkpoint had 31 new Supervisor and two new Fleet leaves since
+1f111388 and 88 exact common repair identities. The subsequent ownership repair
+adds three daemon RPC leaves, reaching 34 new Supervisor leaves and 91 exact
+common repair identities. Matrix admission adds three further leaves: the current
+source has 37 new Supervisor and two new Fleet leaves, 94 exact common repair
+identities and five Fleet identities. This is a static
+requirement, confirmed against the real test modules and receipt rejection
+guards; native results must come from its own final candidate head.

@@ -10,11 +10,13 @@ mod control_intent;
 mod daemon;
 mod daemon_client;
 mod daemon_protocol;
+#[cfg(unix)]
+mod directory_io;
 mod driver;
 mod durability;
-mod durable_publish;
 #[cfg(all(test, feature = "qualification"))]
 mod durability_qualification_tests;
+mod durable_publish;
 mod error;
 mod lease;
 mod matrix;
@@ -25,6 +27,7 @@ mod process_deadline;
 mod qualification_faults;
 mod recovery;
 mod recovery_diagnostics;
+mod regular_file_io;
 mod release;
 mod release_transaction;
 mod restart_budget;

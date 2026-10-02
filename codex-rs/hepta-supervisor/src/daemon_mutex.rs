@@ -38,6 +38,7 @@ pub struct LockTelemetrySnapshot {
 }
 
 impl LockTelemetrySnapshot {
+    #[cfg(any(test, feature = "qualification"))]
     pub fn delta(self, earlier: Self) -> Self {
         Self {
             acquisitions: self.acquisitions.saturating_sub(earlier.acquisitions),
@@ -47,14 +48,18 @@ impl LockTelemetrySnapshot {
             wait_us: self.wait_us.saturating_sub(earlier.wait_us),
             // Maxima are cumulative counters. Do not attribute an older
             // scenario's record to the current measurement window.
-            wait_max_us: (self.wait_max_us > earlier.wait_max_us)
-                .then_some(self.wait_max_us)
-                .unwrap_or(0),
+            wait_max_us: if self.wait_max_us > earlier.wait_max_us {
+                self.wait_max_us
+            } else {
+                0
+            },
             slow_waits: self.slow_waits.saturating_sub(earlier.slow_waits),
             hold_us: self.hold_us.saturating_sub(earlier.hold_us),
-            hold_max_us: (self.hold_max_us > earlier.hold_max_us)
-                .then_some(self.hold_max_us)
-                .unwrap_or(0),
+            hold_max_us: if self.hold_max_us > earlier.hold_max_us {
+                self.hold_max_us
+            } else {
+                0
+            },
             slow_holds: self.slow_holds.saturating_sub(earlier.slow_holds),
         }
     }
@@ -122,9 +127,7 @@ impl<T> MeasuredMutex<T> {
         self.timings.wait_max_us.fetch_max(wait, Ordering::Relaxed);
         if wait >= SLOW_WAIT_US {
             self.timings.slow_waits.fetch_add(1, Ordering::Relaxed);
-            eprintln!(
-                "hepta_supervisord_mutex_slow_wait wait_us={wait} contended={contended}"
-            );
+            eprintln!("hepta_supervisord_mutex_slow_wait wait_us={wait} contended={contended}");
         }
         MeasuredGuard {
             inner,

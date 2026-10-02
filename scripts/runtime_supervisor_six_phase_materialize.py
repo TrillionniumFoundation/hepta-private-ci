@@ -8,8 +8,13 @@ reviewed source shape changes instead of silently applying a partial patch.
 from __future__ import annotations
 
 import json
+import os
 import re
+import stat
+import tempfile
+from dataclasses import dataclass
 from pathlib import Path
+from collections.abc import Callable
 from textwrap import dedent
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -17,15 +22,178 @@ SRC = ROOT / "codex-rs" / "hepta-supervisor" / "src"
 DOCS = ROOT / "docs" / "modules" / "runtime.supervisor"
 WORKFLOWS = ROOT / ".github" / "workflows"
 BRANCH = "codex/runtime-supervisor-six-phase-closure-20260930-r4"
+_PENDING: dict[Path, str] | None = None
+
+
+@dataclass(frozen=True)
+class SourceSnapshot:
+    text: str | None
+    identity: tuple[int, ...] | None
+
+
+_ORIGINAL: dict[Path, SourceSnapshot] = {}
+
+
+class SourceRollbackError(RuntimeError):
+    def __init__(
+        self, publication_error: BaseException, failures: dict[Path, BaseException]
+    ):
+        self.publication_error = publication_error
+        self.rollback_failures = failures
+        details = "; ".join(f"{path}: {error}" for path, error in failures.items())
+        super().__init__(
+            f"source publication failed: {publication_error}; rollback incomplete: {details}"
+        )
+
+
+def source_identity(metadata: os.stat_result) -> tuple[int, ...]:
+    return tuple(
+        getattr(metadata, name)
+        for name in (
+            "st_dev",
+            "st_ino",
+            "st_mode",
+            "st_nlink",
+            "st_uid",
+            "st_gid",
+            "st_size",
+            "st_mtime_ns",
+            "st_ctime_ns",
+        )
+    )
+
+
+def capture(path: Path) -> SourceSnapshot:
+    try:
+        before = path.lstat()
+    except FileNotFoundError:
+        return SourceSnapshot(None, None)
+    if not stat.S_ISREG(before.st_mode) or before.st_nlink != 1:
+        raise SystemExit(f"source is not a single-link regular file: {path}")
+    flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_CLOEXEC", 0)
+    if os.name == "posix":
+        flags |= os.O_NOFOLLOW
+    descriptor = os.open(path, flags)
+    with os.fdopen(descriptor, "rb") as stream:
+        opened = os.fstat(stream.fileno())
+        if source_identity(opened) != source_identity(before):
+            raise SystemExit(f"source changed while materializing: {path}")
+        raw = stream.read(16 * 1024 * 1024 + 1)
+        after = os.fstat(stream.fileno())
+        if (
+            source_identity(opened) != source_identity(after)
+            or len(raw) != opened.st_size
+            or len(raw) > 16 * 1024 * 1024
+        ):
+            raise SystemExit(f"source changed or exceeds authoring limit: {path}")
+        return SourceSnapshot(raw.decode("utf-8"), source_identity(after))
+
+
+def publish(path: Path, text: str, expected: SourceSnapshot) -> SourceSnapshot:
+    """Replace a leaf atomically after a last identity check; never follow it."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    temporary: Path | None = None
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="wb",
+            dir=path.parent,
+            prefix=f".{path.name}.materialize-",
+            delete=False,
+        ) as stream:
+            temporary = Path(stream.name)
+            mode = (
+                stat.S_IMODE(expected.identity[2])
+                if expected.identity is not None
+                else 0o644
+            )
+            if os.name == "posix":
+                os.fchmod(stream.fileno(), mode)
+            else:
+                os.chmod(temporary, mode)
+            stream.write(text.encode("utf-8"))
+            stream.flush()
+            if capture(path) != expected:
+                raise SystemExit(f"source changed while materializing: {path}")
+            os.replace(temporary, path)
+            temporary = None
+            return SourceSnapshot(text, source_identity(os.fstat(stream.fileno())))
+    except BaseException as error:
+        if temporary is not None:
+            try:
+                temporary.unlink(missing_ok=True)
+            except OSError as cleanup_error:
+                error.add_note(
+                    f"temporary cleanup failed for {temporary}: {cleanup_error}"
+                )
+        raise
 
 
 def read(path: Path) -> str:
-    return path.read_text(encoding="utf-8")
+    if _PENDING is not None:
+        if path in _PENDING:
+            return _PENDING[path]
+        if path not in _ORIGINAL:
+            _ORIGINAL[path] = capture(path)
+        original = _ORIGINAL[path].text
+        if original is None:
+            raise FileNotFoundError(path)
+        return original
+    original = capture(path).text
+    if original is None:
+        raise FileNotFoundError(path)
+    return original
 
 
 def write(path: Path, text: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(text, encoding="utf-8")
+    if _PENDING is None:
+        raise RuntimeError("source edits require a transaction")
+    if path not in _ORIGINAL:
+        _ORIGINAL[path] = capture(path)
+    _PENDING[path] = text
+
+
+def transact(operation: Callable[[], None]) -> None:
+    """Validate every staged marker before publishing any source edit.
+
+    Marker/verification failures publish nothing. Identity checks before each
+    atomic leaf replacement detect observed concurrent edits and substitutions.
+    On publication failure every published file is considered for restoration;
+    concurrent changes are preserved and failed restorations are reported.
+    Parent directories and exclusive authoring remain the operator's duty: this
+    is neither a filesystem-wide concurrency lock nor a crash-durable protocol.
+    """
+    global _PENDING, _ORIGINAL
+    if _PENDING is not None:
+        raise RuntimeError("nested source edit transaction")
+    _PENDING, _ORIGINAL = {}, {}
+    published: dict[Path, SourceSnapshot] = {}
+    try:
+        operation()
+        for path, original in _ORIGINAL.items():
+            if capture(path) != original:
+                raise SystemExit(f"source changed while materializing: {path}")
+        for path, text in _PENDING.items():
+            if text == _ORIGINAL[path].text:
+                continue
+            published[path] = publish(path, text, _ORIGINAL[path])
+    except BaseException as error:
+        failures: dict[Path, BaseException] = {}
+        for path, snapshot in reversed(published.items()):
+            try:
+                original = _ORIGINAL[path]
+                if original.text is None:
+                    if capture(path) != snapshot:
+                        raise SystemExit(f"source changed before rollback: {path}")
+                    path.unlink()
+                else:
+                    publish(path, original.text, snapshot)
+            except BaseException as rollback_error:
+                failures[path] = rollback_error
+        if failures:
+            raise SourceRollbackError(error, failures) from error
+        raise
+    finally:
+        _PENDING, _ORIGINAL = None, {}
 
 
 def replace_once(path: Path, old: str, new: str, *, already: str | None = None) -> None:
@@ -35,7 +203,6 @@ def replace_once(path: Path, old: str, new: str, *, already: str | None = None) 
     if old not in text:
         raise SystemExit(f"marker changed in {path}: {old[:120]!r}")
     write(path, text.replace(old, new, 1))
-
 
 
 def replace_block(
@@ -65,10 +232,7 @@ def replace_block(
                 break
         if not matched:
             continue
-        replacement = [
-            (prefix + line if line else "") + "\n"
-            for line in new_lines
-        ]
+        replacement = [(prefix + line if line else "") + "\n" for line in new_lines]
         source_lines[start : start + len(old_lines)] = replacement
         write(path, "".join(source_lines))
         return
@@ -144,8 +308,14 @@ def patch_exit_witness() -> None:
     path = SRC / "process_exit_witness.rs"
     for old, new in [
         ("    fn same_target(\n", "    pub(crate) fn same_target(\n"),
-        ("    fn compute_witness_id(&self)", "    pub(crate) fn compute_witness_id(&self)"),
-        ("    fn compute_record_digest(&self)", "    pub(crate) fn compute_record_digest(&self)"),
+        (
+            "    fn compute_witness_id(&self)",
+            "    pub(crate) fn compute_witness_id(&self)",
+        ),
+        (
+            "    fn compute_record_digest(&self)",
+            "    pub(crate) fn compute_record_digest(&self)",
+        ),
     ]:
         text = read(path)
         if new in text:
@@ -287,7 +457,7 @@ def patch_recovery() -> None:
                             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
             """
         ),
-        sentinel="let pending_exit =\n            process_exit_witness::read_process_exit_witness",
+        sentinel="let pending_exit =",
     )
     replace_block(
         path,
@@ -619,7 +789,12 @@ def patch_protocol() -> None:
     )
     # Place before the status fixture helper near the end of the test module.
     marker = "    fn status() -> SupervisordAgentStatus {\n"
-    insert_before(path, marker, test, sentinel="ordinary_mutation_status_and_reconcile_requests_are_validated")
+    insert_before(
+        path,
+        marker,
+        test,
+        sentinel="ordinary_mutation_status_and_reconcile_requests_are_validated",
+    )
 
 
 def patch_read_view() -> None:
@@ -701,7 +876,9 @@ def patch_execution() -> None:
         ) -> SupervisordPayload {
         """
     )
-    replace_once(path, old_sig, new_sig, already="pub(super) async fn handle_with_request_id(")
+    replace_once(
+        path, old_sig, new_sig, already="pub(super) async fn handle_with_request_id("
+    )
     replace_once(
         path,
         "        let reply = runtime.block_on(super::handle_request(Arc::clone(state), method));\n",
@@ -714,7 +891,7 @@ def patch_execution() -> None:
                     ));
             """
         ),
-        already="request_id,\n            method,",
+        already="let reply = runtime.block_on(super::handle_request(\n",
     )
     replace_block(
         path,
@@ -930,9 +1107,12 @@ def patch_daemon() -> None:
         "handle_mutation(\n                state,\n                request_id,\n                SupervisordMutation::",
     )
     if "handle_mutation(state, SupervisordMutation::" in text or (
-        "handle_mutation(\n                state,\n                SupervisordMutation::" in text
+        "handle_mutation(\n                state,\n                SupervisordMutation::"
+        in text
     ):
-        raise SystemExit("an ordinary mutation call did not receive the wire request identity")
+        raise SystemExit(
+            "an ordinary mutation call did not receive the wire request identity"
+        )
     write(path, text)
 
     replace_block(
@@ -1507,12 +1687,13 @@ def patch_status_and_docs() -> None:
         *,
         source_paths: list[str],
         summary: str | None = None,
+        source: str = "implemented",
     ) -> None:
         entry = by_id[capability_id]
         entry.update(
             {
-                "source": "implemented",
-                "test_source": "present",
+                "source": source,
+                "test_source": "present" if source == "implemented" else "partial",
                 "exact_head": "pending",
                 "merge_candidate": "pending",
                 "target_host": "not_run",
@@ -1536,25 +1717,27 @@ def patch_status_and_docs() -> None:
     )
     mark(
         "predecessor_replacement_lineage",
+        source="partial",
         source_paths=[
             "codex-rs/hepta-supervisor/src/restart_lineage.rs",
             "codex-rs/hepta-supervisor/src/recovery.rs",
             "docs/modules/runtime.supervisor/RESTART_LINEAGE_REPAIR_20260928.md",
         ],
         summary=(
-            "Predecessor and replacement identities are generation-bound and recovery rejects "
-            "ambiguous live/terminal combinations"
+            "Generation-bound lineage rejects ambiguous live/terminal combinations; complete "
+            "launch-before-lease and rejected-adoption closure remains unproven"
         ),
     )
     mark(
         "atomic_recovery_observation_envelope",
+        source="partial",
         source_paths=[
             "codex-rs/hepta-supervisor/src/recovery_observation.rs",
             "codex-rs/hepta-supervisor/src/daemon.rs",
         ],
         summary=(
-            "One owner-bound digest-validated observation captures lifecycle, exact process, "
-            "lease, exit witness and recovery blockers for deterministic replay"
+            "Owner-bound lifecycle observations are wired; Matrix identity, release/admission, "
+            "journal and authority-bundle bindings plus expiry remain required for production"
         ),
     )
     if "durable_ordinary_mutation_protocol" not in by_id:
@@ -1580,14 +1763,20 @@ def patch_status_and_docs() -> None:
             "test_source": "present",
         }
         data["capabilities"].append(entry)
-    data["current"]["source"] = "implemented"
+    data["current"]["source"] = "partial"
     data["current"]["claim"] = (
-        "source implementation candidate; exact-head, merge, target-host, independent acceptance "
+        "partial source candidate; complete recovery bindings, lineage and exact-head, merge, "
+        "target-host, independent acceptance "
         "and release authorization remain separate fail-closed gates"
     )
     data["current"]["release"] = False
     data["current"]["activated"] = False
     write(path, json.dumps(data, indent=2, ensure_ascii=False) + "\n")
+    if __package__:
+        from .hepta_supervisor_status import render
+    else:
+        from hepta_supervisor_status import render
+    write(DOCS / "CURRENT_STATUS.md", render(data))
 
     write(
         DOCS / "MUTATION_RETRY_PROTOCOL.md",
@@ -1640,17 +1829,18 @@ def patch_status_and_docs() -> None:
             """
             # runtime.supervisor six-phase closure
 
-            This source revision closes the repository-side implementation portions of
-            the six-phase plan without promoting external evidence.
+            This source revision wires lifecycle evidence into a partial implementation
+            candidate without promoting external evidence.
 
-            ## Source closure
+            ## Source candidate
 
             - exact-process exit evidence is persisted before finalization and consumed
               only after lease and lifecycle cleanup;
-            - restart lineage remains bound to exact predecessor and replacement
-              incarnations;
+            - restart lineage checks exact predecessor and replacement incarnations;
+              complete launch-before-lease/rejected-adoption closure remains unproven;
             - startup publishes one owner-bound recovery observation per Agent and
-              deterministically replays it before serving mutations;
+              deterministically replays it before serving mutations; the production
+              Matrix/release/admission/journal/bundle bindings and expiry remain incomplete;
             - ordinary lifecycle mutations persist request identity before effect and
               expose durable status and fail-closed reconciliation;
             - attempt, intent, applied-state, and read-snapshot sequences are represented
@@ -1715,7 +1905,6 @@ def patch_workflows() -> None:
         write(path, text.replace(old, new, 1))
 
 
-
 def verify_materialized_source() -> None:
     required = {
         SRC / "lib.rs": [
@@ -1757,14 +1946,29 @@ def verify_materialized_source() -> None:
             raise SystemExit(f"materialized source is missing {missing!r} in {path}")
     daemon = read(SRC / "daemon.rs")
     if "handle_mutation(state, SupervisordMutation::" in daemon:
-        raise SystemExit("ordinary mutation call remains detached from request identity")
+        raise SystemExit(
+            "ordinary mutation call remains detached from request identity"
+        )
     status = json.loads(read(DOCS / "CAPABILITY_STATUS.json"))
     if status["current"]["release"] or status["current"]["activated"]:
-        raise SystemExit("repository source materialization cannot authorize release or activation")
+        raise SystemExit(
+            "repository source materialization cannot authorize release or activation"
+        )
 
 
-
-def main() -> None:
+def materialize() -> None:
+    # Restore archived, unlinked prototypes only inside this explicit authoring transaction.
+    for name in ("mutation_journal", "process_exit_witness", "recovery_observation"):
+        source = SRC / f"{name}.rs"
+        try:
+            read(source)
+        except FileNotFoundError:
+            if source not in _ORIGINAL or _ORIGINAL[source].text is not None:
+                raise
+            archive = (
+                ROOT / "qualification/runtime-supervisor/history/unlinked-prototypes"
+            )
+            write(source, read(archive / f"{name}.rs.txt"))
     patch_lib()
     patch_exit_witness()
     patch_recovery_observation()
@@ -1778,7 +1982,16 @@ def main() -> None:
     patch_client()
     patch_status_and_docs()
     patch_workflows()
+    if __package__:
+        from .runtime_supervisor_six_phase_followup import apply
+    else:
+        from runtime_supervisor_six_phase_followup import apply
+    apply(ROOT, read, write)
     verify_materialized_source()
+
+
+def main() -> None:
+    transact(materialize)
 
 
 if __name__ == "__main__":

@@ -279,7 +279,7 @@ fn write_observation(
     if let Err(error) = (|| -> std::io::Result<()> {
         file.write_all(&bytes)?;
         file.sync_all()?;
-        crate::durable_publish::publish(&staging, &destination)
+        crate::durable_publish::publish_at(&staging, &destination, "durable_publish")
     })() {
         let _ = std::fs::remove_file(&staging);
         return Err(error.into());

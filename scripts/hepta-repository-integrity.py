@@ -12,6 +12,21 @@ import sys
 from dataclasses import dataclass
 from typing import Iterable
 
+if __package__:
+    from .hepta_workflow_integrity import (
+        _candidate_blob,
+        _read_workflow,
+        git_environment,
+        workflow_violations,
+    )
+else:
+    from hepta_workflow_integrity import (
+        _candidate_blob,
+        _read_workflow,
+        git_environment,
+        workflow_violations,
+    )
+
 ROOT = pathlib.Path(__file__).resolve().parents[1]
 
 SCANNED_SUFFIXES = {".yml", ".yaml", ".py", ".sh", ".bash", ".zsh", ".ps1"}
@@ -61,11 +76,6 @@ EXECUTABLE_TEXT_PATTERNS = (
         re.compile(r"(?mi)(?:curl|wget)\b[^\n]{0,400}\|\s*(?:sh|bash|python(?:3)?)\b"),
     ),
 )
-REQUIRED_SAFE_WORKFLOW_TOKENS = (
-    "permissions:",
-    "contents: read",
-    "persist-credentials: false",
-)
 
 
 @dataclass(frozen=True)
@@ -84,26 +94,54 @@ class Violation:
         }
 
 
-def run_git(*args: str) -> str:
+def run_git_raw(*args: str) -> bytes:
     proc = subprocess.run(
-        ["git", "-C", str(ROOT), *args],
+        [
+            "git",
+            "-C",
+            str(ROOT),
+            "--literal-pathspecs",
+            "-c",
+            "core.fsmonitor=false",
+            *args,
+        ],
         check=False,
-        text=True,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,
+        env=git_environment(),
     )
     if proc.returncode:
-        raise SystemExit(f"git {' '.join(args)} failed: {proc.stderr.strip()}")
-    return proc.stdout.strip()
+        error = proc.stderr.decode("utf-8", errors="replace").strip()
+        raise SystemExit(f"git {' '.join(args)} failed: {error}")
+    return proc.stdout
+
+
+def run_git(*args: str) -> str:
+    return run_git_raw(*args).decode("utf-8").strip()
+
+
+def resolve_commit(reference: str) -> str:
+    commit = run_git(
+        "rev-parse", "--verify", "--end-of-options", f"{reference}^{{commit}}"
+    )
+    if not re.fullmatch(r"[a-f0-9]{40}", commit):
+        raise SystemExit("immutable Git commit required")
+    return commit
 
 
 def changed_paths(base: str, head: str) -> list[str]:
     if not base or not head:
         raise SystemExit("both --base and --head are required")
-    run_git("cat-file", "-e", f"{base}^{{commit}}")
-    run_git("cat-file", "-e", f"{head}^{{commit}}")
-    raw = run_git("diff", "--name-only", "--diff-filter=ACMR", f"{base}...{head}", "--")
-    return sorted({line.strip() for line in raw.splitlines() if line.strip()})
+    base, head = resolve_commit(base), resolve_commit(head)
+    raw = run_git_raw(
+        "diff", "--name-only", "-z", "--diff-filter=ACMR", f"{base}...{head}", "--"
+    )
+    try:
+        return sorted({path.decode("utf-8") for path in raw.split(b"\0") if path})
+    except UnicodeDecodeError as error:
+        raise SystemExit(
+            "candidate filename is not valid UTF-8; integrity verification refused"
+        ) from error
 
 
 def is_scanned(path: str) -> bool:
@@ -130,7 +168,7 @@ def excerpt_for(text: str, line: int) -> str:
     return value[:240]
 
 
-def scan_path(path: str, text: str) -> list[Violation]:
+def scan_text(path: str, text: str) -> list[Violation]:
     violations: list[Violation] = []
     for pattern in DENIED_PATH_PATTERNS:
         if pattern.search(path):
@@ -146,35 +184,56 @@ def scan_path(path: str, text: str) -> list[Violation]:
             line = line_for_offset(text, match.start())
             violations.append(Violation(path, name, line, excerpt_for(text, line)))
 
+    return violations
+
+
+def scan_path(path: str, text: str, candidate: str | None = None) -> list[Violation]:
+    violations = scan_text(path, text)
     if path.startswith(".github/workflows/"):
-        for token in REQUIRED_SAFE_WORKFLOW_TOKENS:
-            if token not in text:
-                violations.append(
-                    Violation(path, "missing-safe-workflow-token", 1, token)
-                )
+
+        def inspect_text(child: str, content: str):
+            return [
+                (item.path, item.rule, item.line, item.excerpt)
+                for item in scan_text(child, content)
+            ]
+
+        violations.extend(
+            Violation(*item)
+            for item in workflow_violations(path, text, ROOT, inspect_text, candidate)
+        )
     return violations
 
 
 def verify(base: str, head: str, output: str | None) -> int:
-    paths = changed_paths(base, head)
+    base, candidate = resolve_commit(base), resolve_commit(head)
+    paths = changed_paths(base, candidate)
     violations: list[Violation] = []
     scanned: list[str] = []
+    captured: dict[str, str] = {}
     for path in paths:
         if any(pattern.search(path) for pattern in DENIED_PATH_PATTERNS):
             violations.append(Violation(path, "denied-candidate-path", 1, path))
         if not is_scanned(path):
             continue
-        target = ROOT / path
-        if not target.is_file():
-            continue
         scanned.append(path)
-        text = target.read_text(encoding="utf-8", errors="strict")
+        try:
+            text = _read_workflow(ROOT, path)
+            _candidate_blob(ROOT, path, text, candidate)
+        except (
+            OSError,
+            UnicodeError,
+            ValueError,
+            subprocess.CalledProcessError,
+        ) as error:
+            violations.append(Violation(path, "invalid-candidate-file", 1, str(error)))
+            continue
+        captured[path] = text
         if path != "scripts/hepta-repository-integrity.py":
-            violations.extend(scan_path(path, text))
+            violations.extend(scan_path(path, text, candidate))
 
     own_path = "scripts/hepta-repository-integrity.py"
-    if own_path in paths:
-        own_text = (ROOT / own_path).read_text(encoding="utf-8")
+    if own_path in captured:
+        own_text = captured[own_path]
         forbidden_fragments = (
             ("subprocess.run([", '"git", "push"'),
             ("os.system(", '"git push'),
@@ -187,7 +246,7 @@ def verify(base: str, head: str, output: str | None) -> int:
     payload = {
         "schema": "hepta.repository-integrity-receipt.v1",
         "base": base,
-        "head": head,
+        "head": candidate,
         "changedPathCount": len(paths),
         "scannedPaths": scanned,
         "violations": [item.as_dict() for item in violations],

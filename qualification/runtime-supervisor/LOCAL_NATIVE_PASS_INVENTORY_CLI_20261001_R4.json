@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.runtime.supervisor.local-native-pass-inventory.v1",
+  "stage": "cli-offline-authority",
+  "head_at_execution": "e78095abf8df069d5dc9496f6e362f9ed27e3978",
+  "native_sha256": "654372b45dec46b067f5623f45fe024ff2f0f75d907bf1a514ae2afda0d26c87",
+  "external_sha256": "a2ac27aa78641d42ff1bf3e2715ae31bf4bab3367cce3f2fe77d4f99b836cdf1",
+  "counts": {
+    "PASS": 6,
+    "FAIL": 0,
+    "TIMEOUT": 0,
+    "SKIP": 0,
+    "LEAK": 0
+  },
+  "skipped_names": [],
+  "columns": [
+    "binary_and_exact_case_name",
+    "duration"
+  ],
+  "parse_policy": "Terminal status names are unique. Identical nextest live/final repeats are deduplicated; zero-retry conflicts are rejected.",
+  "raw_log": {
+    "path": "round4-verification/cli-offline-authority.log",
+    "bytes": 2599,
+    "sha256": "b724520df628ebb42075d0c1d753c915a537a2edb0022f6746fdfe106c8ad631"
+  },
+  "passed": [
+    ["codex-hepta-supervisor::bin/hepta-supervisord key_tests::duplicate_and_unknown_flags_are_rejected","0.005s"],
+    ["codex-hepta-supervisor::bin/hepta-supervisord key_tests::relative_fleet_root_is_rejected_before_daemon_start","0.005s"],
+    ["codex-hepta-supervisor::bin/hepta-supervisord key_tests::pinned_bundle_options_load_verifier_without_mutating_material","0.005s"],
+    ["codex-hepta-supervisor::bin/hepta-supervisord key_tests::lifecycle_only_options_require_exact_absolute_fleet_root","0.005s"],
+    ["codex-hepta-supervisor::bin/hepta-supervisord key_tests::authority_bundle_and_digest_are_an_atomic_pair","0.005s"],
+    ["codex-hepta-supervisor::bin/hepta-supervisord key_tests::legacy_six_field_verifier_tuple_is_rejected","0.006s"]
+  ]
+}

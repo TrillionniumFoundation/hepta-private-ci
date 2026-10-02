@@ -1,10 +1,20 @@
 # Durable cancellation of pending main restarts
 
-Status: bounded source repair; native execution and stages A-D remain open.
+Status: bounded cancellation source mechanism; final-candidate qualification
+and the wider stages A-D remain open.
 
 This document amends the pending-restart cancellation item in the supervisor
 ownership and recovery documents. It does not replace the full control intent,
 process identity, release transaction, or independent acceptance requirements.
+
+The original repair's source-only checkpoint is distinguished below from later
+native outcomes in the
+[R3 local observation](../../../qualification/runtime-supervisor/LOCAL_EXECUTION_OBSERVATION_20261001_R3.json)
+and [R4 local observation](../../../qualification/runtime-supervisor/LOCAL_EXECUTION_OBSERVATION_20261001_R4.json).
+The [R4 audit](../../../qualification/runtime-supervisor/ADVERSARIAL_AUDIT_20261001_R4.md)
+records candidate scope and remaining gates. These observations record only
+their bound source and selected commands; they do not certify a later candidate,
+an unfiltered suite or target-host acceptance.
 
 ## Existing owner and format
 
@@ -22,13 +32,17 @@ has exited or that a release transaction completed.
 
 ## Control ordering
 
-`control::stop_slot` cancels the durable pending restart before companion
-deferral, lifecycle CAS and process signaling. A persistence failure is returned
-without an acknowledged Stop or a stop signal. The in-process queued restart is
-also disabled; this alone is not a durable cancellation receipt.
+For an owned active process, `control::stop_slot` first publishes the
+Agent/process/generation-bound Stop intent and original stop deadline, then
+cancels the durable pending restart
+before companion deferral, lifecycle CAS and process signaling. A persistence
+failure is returned without an acknowledged Stop or a stop signal. The
+in-process queued restart is also disabled; this alone is not a durable
+cancellation receipt.
 
-`control::kill_slot` attempts the same durable cancellation, then attempts the
-main emergency signal before the companion signal even if cancellation failed.
+`control::kill_slot` attempts a bound Kill intent and the same durable
+cancellation, then attempts the main emergency signal before the companion
+signal even if preparation or cancellation failed.
 A failed cancellation fences the retained main handle. Cancellation, lifecycle
 and process failures still make the operation fail; successful emergency
 signaling cannot be described as successful persistence or observed exit.
@@ -49,9 +63,12 @@ for schema, attempt bounds, pending-state consistency and wall-clock rollback
 before the recorded window origin. Deterministic clock parameters are private
 implementation/test seams; callers do not gain a clock-authority parameter.
 
-This protects the existing restart budget's identity and remaining backoff. It
-does NOT solve binding a restart to its predecessor and replacement process.
-It also does NOT serialize drain/stop deadlines across daemon generations.
+This budget component protects claim identity and remaining backoff. The
+separate `restart_lineage.rs` binds predecessor/replacement progress but remains
+partial; cancellation alone does not close its crash boundaries. Operator Stop
+reuses the original deadline from `control_intent.rs` across continuation and
+recovery. Restart-internal drain deadlines and durable Matrix quarantine across
+daemon generations remain separate gaps.
 
 ## Regression sources
 
@@ -77,26 +94,32 @@ just test --locked -p codex-hepta-supervisor --lib control::durable_restart_test
 
 The complete default and production-authority library/product, format, strict
 lint, source-head and deterministic merge suites remain required. These eighteen
-functions are written regression sources, not passing test receipts. The editing
-environment has no Rust/Cargo/rustfmt toolchain and cannot resolve the GitHub or
-Rust distribution hosts directly. Existing GitHub checks must establish their
-own native outcomes. No tests, scripts or workflow requirements are disabled.
+functions were the original repair's source inventory at a checkpoint without
+Rust/Cargo/rustfmt or direct GitHub/Rust-host access, not passing receipts from
+that checkpoint. Later native outcomes are recorded in the observations above.
+Existing GitHub checks must establish their own exact-candidate outcomes. No
+tests, scripts or workflow requirements are disabled.
 
 ## Scope limits and remaining gates
 
-This repair establishes the source ordering for cancellation of an existing
-pending restart on admitted Stop/Kill. It is not a durable Stop/Kill operation
-record. A crash after cancellation but before lifecycle/signal publication can
-still lose the requested termination while retaining the restart cancellation.
-A failed or uncertain publication remains an error, not an acknowledged cancel.
+The budget cancellation component is not itself the termination record. Active
+Stop and normal Kill admission use the separate durable `control_intent.rs`
+record before cancellation and process effects. Emergency Kill still attempts
+termination of already-owned handles after failed preparation, while reporting
+the failure. Recovery cancels a pending restart
+from an unresolved termination intent before restoring a claim, and terminal
+completion cannot hide a still-pending restart. Failed or uncertain persistence
+remains an error rather than an acknowledged durable operation.
 
-The daemon preflight still requires an active runtime for Stop/Kill; a queued
-restart with no runtime needs an explicitly reconciled cancellation admission
-path. Release-change continuation is not superseded by this budget-only repair.
-Neither gap is converted into an overall "stop never resurrects" claim.
+A Stopped/Failed Agent with no owned or leased main/Matrix process and no pending
+release transition may cancel a queued restart without inventing an active
+process identity. Foreign or unproven leases and unresolved owners still fence
+replacement and cannot use that idle shortcut. Complete release/control
+supersession and restart-lineage crash closure remain wider requirements; these
+bounded paths do not establish an overall "stop never resurrects" claim.
 
-Still required: predecessor/replacement identity; durable non-resetting control
-deadlines; exit/lease/lifecycle recovery across daemon death; every relevant
+Still required: complete predecessor/replacement crash coverage; restart-internal
+cross-daemon deadlines; exit/lease/lifecycle recovery across daemon death; every relevant
 fsync/rename/kill-9 boundary; source and merge native qualification; final main
 verification; real caller/verifier/process/audit execution; selected Linux/macOS
 host faults and 256-instance mixed load; independently issued security/operator

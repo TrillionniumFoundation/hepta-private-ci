@@ -38,7 +38,8 @@
       "operation": "admit_host",
       "nativeSymbol": "pub fn admit_host(",
       "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "2b70c835242e817fd51ba6eba9d3f1b812483254"
     },
     {
       "designOperation": "allocate",
@@ -61,7 +62,8 @@
       "operation": "allocate",
       "nativeSymbol": "pub fn issue(",
       "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "2b70c835242e817fd51ba6eba9d3f1b812483254"
     },
     {
       "designOperation": "renew_or_revoke",
@@ -84,7 +86,8 @@
       "operation": "renew_or_revoke",
       "nativeSymbol": "pub fn renew_or_revoke(",
       "sourcePath": "codex-rs/hepta-fleet/src/lease_ledger.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "2b70c835242e817fd51ba6eba9d3f1b812483254"
     }
   ],
   "repositoryControlledGaps": [
@@ -120,5 +123,27 @@
   "technicalGuide": "docs/modules/runtime.fleet/TECHNICAL.md",
   "sourceRoot": [
     "codex-rs/hepta-fleet"
+  ],
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation",
+  "observedAtHead": {
+    "commit": "f6e959c0466e5c8a35afddee24dfafee82625140",
+    "tree": "b7b7bc739d4fef77ef5be59516802c9d024b0e4c",
+    "interpretation": "Exact source-only observation after adding the two required dependencies argument-name comments to existing boolean literal calls in the Fleet module catalog, with formatting only. The third parameter is dependencies; removing the two exact comments preserves every original Rust token and comment. The existing diagnostic workflow push trigger includes the real Fleet source path without changing permissions, jobs or commands. Supervisor source, all94 ordered repair identities, all five Fleet identities, existing test navigation and operation semantics are unchanged. Existing historical receipts retain their exact source identities and bytes, without transferring execution credit to this source. The new complete source pin binds the Fleet tree, catalog source and appended audit report; existing explicit source-object coverage is preserved. Owners, sourceBase, sourceIdentityPolicy, capabilities and open gaps are unchanged. Current-main merge qualification, target-host/operator acceptance, deployment, activation and release remain unclaimed."
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-fleet",
+    "codex-rs/hepta-fleet/src/authority_port.rs",
+    "codex-rs/hepta-fleet/src/lease_ledger.rs",
+    "codex-rs/hepta-fleet/src/lease_ledger_tests.rs",
+    "codex-rs/hepta-fleet/src/release.rs",
+    "codex-rs/hepta-fleet/src/release_copy_tests.rs",
+    "codex-rs/hepta-fleet/src/release_publish_tests.rs",
+    "docs/modules/BUILD.bazel",
+    "docs/modules/MODULES.json",
+    "docs/modules/runtime.fleet/TECHNICAL.md"
   ]
 }

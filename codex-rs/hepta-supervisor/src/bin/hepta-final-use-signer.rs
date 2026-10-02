@@ -10,6 +10,10 @@ use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use zeroize::Zeroizing;
 
+#[cfg(unix)]
+#[path = "../regular_file_io.rs"]
+mod regular_file_io;
+
 fn main() -> ExitCode {
     match run() {
         Ok(()) => ExitCode::SUCCESS,
@@ -36,6 +40,9 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
     let signing_bytes = grant.signing_bytes()?;
     let mut file = private_key_file(&args[2])?;
     let mut seed = Zeroizing::new(Vec::new());
+    #[cfg(unix)]
+    regular_file_io::read_bounded(&mut file, &mut seed, /*maximum*/ 32)?;
+    #[cfg(not(unix))]
     file.by_ref().take(33).read_to_end(&mut seed)?;
     if seed.len() != 32 {
         return Err("private seed must be exactly 32 raw bytes".into());
@@ -52,11 +59,7 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
 #[cfg(unix)]
 fn private_key_file(path: &str) -> Result<std::fs::File, Box<dyn std::error::Error>> {
     use std::os::unix::fs::MetadataExt;
-    use std::os::unix::fs::OpenOptionsExt;
-    let file = std::fs::OpenOptions::new()
-        .read(true)
-        .custom_flags(libc::O_NOFOLLOW)
-        .open(path)?;
+    let file = regular_file_io::open_regular_file(std::path::Path::new(path), /*maximum*/ 32)?;
     let metadata = file.metadata()?;
     if !metadata.is_file()
         || metadata.mode() & 0o077 != 0

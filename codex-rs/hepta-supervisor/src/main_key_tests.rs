@@ -11,6 +11,10 @@ fn absolute_fleet(temp: &tempfile::TempDir) -> OsString {
     temp.path().join("fleet").into_os_string()
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "A valid deterministic authority bundle must be created before CLI admission is tested."
+)]
 fn authority_bundle(temp: &tempfile::TempDir) -> (OsString, OsString, Vec<u8>) {
     let grant = SigningKey::from_bytes(&[3; 32]);
     let h7 = SigningKey::from_bytes(&[7; 32]);
@@ -26,8 +30,7 @@ fn authority_bundle(temp: &tempfile::TempDir) -> (OsString, OsString, Vec<u8>) {
     let bytes = bundle.to_json_bytes().expect("bundle JSON");
     let path = temp.path().join("authority-bundle.json");
     std::fs::write(&path, &bytes).expect("write bundle");
-    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))
-        .expect("bundle mode");
+    std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600)).expect("bundle mode");
     (
         path.into_os_string(),
         OsString::from(bundle.bundle_sha256.as_str()),
@@ -38,11 +41,8 @@ fn authority_bundle(temp: &tempfile::TempDir) -> (OsString, OsString, Vec<u8>) {
 #[test]
 fn lifecycle_only_options_require_exact_absolute_fleet_root() {
     let temp = tempfile::tempdir().expect("directory");
-    let options = parse_options_from([
-        OsString::from("--fleet-root"),
-        absolute_fleet(&temp),
-    ])
-    .expect("lifecycle-only options");
+    let options = parse_options_from([OsString::from("--fleet-root"), absolute_fleet(&temp)])
+        .expect("lifecycle-only options");
     assert_eq!(options.fleet_root.as_path(), temp.path().join("fleet"));
     assert!(options.grant_verifier.is_none());
 }
@@ -88,13 +88,13 @@ fn authority_bundle_and_digest_are_an_atomic_pair() {
             OsString::from("--fleet-root"),
             absolute_fleet(&temp),
             OsString::from("--authority-bundle"),
-            path.clone(),
+            path,
         ],
         vec![
             OsString::from("--fleet-root"),
             absolute_fleet(&temp),
             OsString::from("--authority-bundle-sha256"),
-            digest.clone(),
+            digest,
         ],
     ] {
         let error = parse_options_from(arguments)
@@ -127,11 +127,28 @@ fn duplicate_and_unknown_flags_are_rejected() {
 
 #[test]
 fn relative_fleet_root_is_rejected_before_daemon_start() {
+    let cwd = std::env::current_dir().expect("working directory");
+    let temp = tempfile::tempdir_in(&cwd).expect("directory");
+    let fleet_root = temp.path().join("fleet");
+    let relative = fleet_root.strip_prefix(&cwd).expect("relative test root");
+    assert!(!relative.is_absolute());
     let error = parse_options_from([
         OsString::from("--fleet-root"),
-        OsString::from("relative/fleet"),
+        relative.as_os_str().to_os_string(),
     ])
     .err()
     .expect("relative fleet rejected");
-    assert!(error.to_string().contains("absolute"));
+    assert_eq!(error.to_string(), "validate HEPTA_FLEET_ROOT");
+    assert!(
+        error
+            .chain()
+            .any(|cause| cause.to_string().contains("absolute"))
+    );
+    assert!(!fleet_root.exists());
+    assert_eq!(
+        std::fs::read_dir(temp.path())
+            .expect("unchanged directory")
+            .count(),
+        0
+    );
 }

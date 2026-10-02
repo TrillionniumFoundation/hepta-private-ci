@@ -80,6 +80,8 @@ use crate::daemon_protocol::ControlStateDigest;
 #[cfg(unix)]
 use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
 #[cfg(unix)]
+use crate::daemon_protocol::MAX_SUPERVISORD_CONTROL_REQUEST_BYTES;
+#[cfg(unix)]
 use crate::daemon_protocol::MAX_SUPERVISORD_ROSTER;
 #[cfg(unix)]
 use crate::daemon_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
@@ -111,9 +113,11 @@ use crate::signed_authority::authority_epoch_for_supervisor_epoch;
 #[cfg(unix)]
 #[path = "daemon_execution.rs"]
 mod execution;
-#[cfg(unix)]
+#[cfg(all(unix, not(feature = "qualification")))]
 #[path = "daemon_mutex.rs"]
 mod mutex;
+#[cfg(all(unix, feature = "qualification"))]
+use crate::qualification_mutex as mutex;
 #[cfg(unix)]
 #[path = "daemon_owner.rs"]
 mod owner;
@@ -195,6 +199,9 @@ async fn run_supervisord_inner(
 ) -> Result<(), SupervisorError> {
     // Cancelling/dropping the outer future must also stop the ticker and server.
     let _shutdown = cancellation.clone().drop_guard();
+    // Opening an existing registry may migrate legacy Matrix directories. The
+    // exact kernel owner must therefore precede opening, not only recovery.
+    let instance = SingleInstanceLock::acquire_for_fleet(&fleet_root)?;
     let registry = FleetRegistry::open_existing(fleet_root)?;
     let snapshot = registry.load()?;
     if snapshot.agents.len() > usize::from(MAX_SUPERVISORD_ROSTER) {
@@ -204,7 +211,6 @@ async fn run_supervisord_inner(
         )));
     }
     let layout = registry.layout().clone();
-    let instance = SingleInstanceLock::acquire(layout.supervisor_lock())?;
     let driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     let (supervisor, recovery) = Supervisor::recover(
@@ -367,10 +373,11 @@ async fn serve_connection(
 ) -> Result<(), SupervisorError> {
     codex_uds::ensure_current_user_peer(&stream)?;
     let (reader, mut writer) = tokio::io::split(stream);
-    let mut reader = BufReader::new(reader).take(MAX_SUPERVISORD_CONTROL_FRAME_BYTES + 1);
+    let mut reader = BufReader::new(reader).take(MAX_SUPERVISORD_CONTROL_REQUEST_BYTES + 1);
     let mut frame = Vec::new();
     let count = reader.read_until(b'\n', &mut frame).await?;
-    if count == 0 || count as u64 > MAX_SUPERVISORD_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
+    if count == 0 || count as u64 > MAX_SUPERVISORD_CONTROL_REQUEST_BYTES || !frame.ends_with(b"\n")
+    {
         return Ok(());
     }
     let request: SupervisordRequest = match serde_json::from_slice(&frame) {
@@ -538,9 +545,7 @@ async fn handle_request<D: ProcessDriver>(
                 Arc::clone(&state),
                 fence.agent_id.clone(),
                 release_id,
-            )
-            .await
-            {
+            ) {
                 Ok(target) => target,
                 Err(error) => {
                     let actual = agent_status(&state, &fence.agent_id).await.ok();
@@ -590,9 +595,7 @@ async fn handle_request<D: ProcessDriver>(
                 Arc::clone(&state),
                 fence.agent_id.clone(),
                 release_id,
-            )
-            .await
-            {
+            ) {
                 Ok(target) => target,
                 Err(error) => {
                     let actual = agent_status(&state, &fence.agent_id).await.ok();
@@ -885,12 +888,44 @@ async fn handle_mutation<D: ProcessDriver>(
         }
     };
 
+    if state.production_grant_verifier.is_some()
+        && let PreparedMutation::Start(target) = &prepared
+    {
+        // A failed hydration (for example a revoked selected artifact) can
+        // leave the runtime projection without an active release. It does not
+        // erase the durable selection or authorize a new unsigned selection.
+        let records = match state.registry.load() {
+            Ok(records) => records,
+            Err(error) => {
+                return safe_rejection(error.into(), Some(actual), /*mutation_started*/ false);
+            }
+        };
+        let Some(record) = records.agent(&agent_id) else {
+            return safe_rejection(
+                SupervisorError::UnknownAgent(agent_id),
+                Some(actual),
+                /*mutation_started*/ false,
+            );
+        };
+        if record
+            .release_state
+            .current
+            .as_ref()
+            .is_some_and(|selected| selected != target.release_id())
+        {
+            return error_payload(
+                "signed_release_authority_required",
+                "production Start must use the selected release; a different release requires signed transition authority",
+                Some(actual),
+            );
+        }
+    }
+
     let preflight = match &prepared {
         PreparedMutation::Start(_) => supervisor.preflight_start(&agent_id),
         PreparedMutation::Drain => supervisor.preflight_drain(&agent_id),
-        PreparedMutation::Stop | PreparedMutation::Kill => {
-            supervisor.preflight_stop_or_kill(&agent_id)
-        }
+        PreparedMutation::Stop => supervisor.preflight_stop(&agent_id),
+        PreparedMutation::Kill => supervisor.preflight_kill(&agent_id),
         PreparedMutation::Restart => supervisor.preflight_restart(&agent_id),
         PreparedMutation::Upgrade(target) => supervisor.preflight_upgrade(&agent_id, target),
         PreparedMutation::Rollback => supervisor.preflight_rollback(&agent_id),
@@ -958,16 +993,16 @@ enum PreparedMutation {
 }
 
 #[cfg(unix)]
-async fn resolve_release_outside_lock<D: ProcessDriver>(
+fn resolve_release_outside_lock<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     agent_id: AgentId,
     release_id: ReleaseId,
 ) -> Result<AgentRelease, SupervisorError> {
-    let registry = state.registry.clone();
-    let release =
-        tokio::task::spawn_blocking(move || registry.resolve_release(&agent_id, &release_id))
-            .await
-            .map_err(|_| SupervisorError::Invalid("release resolver task failed".to_string()))??;
+    // Dispatch already runs on the blocking owner worker. A second blocking
+    // job could be queued behind that worker when the pool has no free thread,
+    // preventing Start/Upgrade, ticks and shutdown from ever completing.
+    // This read remains outside the lifecycle mutex and creates no new writer.
+    let release = state.registry.resolve_release(&agent_id, &release_id)?;
     AgentRelease::try_from(release)
 }
 
@@ -1000,7 +1035,7 @@ fn agent_status_locked<D: ProcessDriver>(
 }
 
 #[cfg(any(unix, test))]
-fn status_from(
+pub(crate) fn status_from(
     supervisor_epoch: &SupervisorEpoch,
     record: &codex_hepta_fleet::AgentRecord,
     snapshot: Option<AgentSupervisorSnapshot>,
@@ -1017,12 +1052,15 @@ fn status_from(
         .clone()
         .map(ReleaseId::parse)
         .transpose()?;
+    let serving_eligible = record.lifecycle.lifecycle == AgentLifecycle::Running
+        && snapshot.runtime_generation == Some(record.lifecycle.generation)
+        && !snapshot.runtime_fenced;
     let mut status = SupervisordAgentStatus {
         agent_id: agent_id.clone(),
         lifecycle: record.lifecycle.lifecycle,
         lifecycle_generation: record.lifecycle.generation,
         active: snapshot.active,
-        healthy: snapshot.healthy && record.lifecycle.lifecycle == AgentLifecycle::Running,
+        healthy: snapshot.healthy && serving_eligible,
         process_id: snapshot.process_system_id,
         spawn_generation: snapshot.spawn_generation,
         runtime_generation: snapshot.runtime_generation,
@@ -1044,13 +1082,39 @@ fn status_from(
         matrix: SupervisordMatrixStatus {
             configured: snapshot.matrix.configured,
             active: snapshot.matrix.active,
-            healthy: snapshot.matrix.healthy,
+            healthy: snapshot.matrix.healthy
+                && serving_eligible
+                && snapshot.active
+                && snapshot.matrix.attached_agent_generation == snapshot.spawn_generation,
             degraded: snapshot.matrix.degraded,
             process_id: snapshot.matrix.process_system_id,
             attached_agent_generation: snapshot.matrix.attached_agent_generation,
             binding_revision: snapshot.matrix.binding_revision,
             restart_attempt: snapshot.matrix.restart_attempt,
-            last_error: snapshot.matrix.last_error.clone(),
+            // Driver errors can contain hostile path text. Retain the exact
+            // error in the live CAS material, but bound and clean its display.
+            last_error: snapshot.matrix.last_error.as_deref().map(|message| {
+                crate::runtime::bounded_message(
+                    message
+                        .chars()
+                        .map(|character| {
+                            if character.is_control()
+                                || matches!(
+                                    character,
+                                    '\u{061c}'
+                                        | '\u{200e}'..='\u{200f}'
+                                        | '\u{202a}'..='\u{202e}'
+                                        | '\u{2066}'..='\u{2069}'
+                                )
+                            {
+                                ' '
+                            } else {
+                                character
+                            }
+                        })
+                        .collect(),
+                )
+            }),
         },
     };
     status.control_fence.state_digest =
@@ -1127,6 +1191,8 @@ struct HiddenControlState<'a> {
     release_change: &'a Option<crate::ControlReleaseChange>,
     has_last_command: bool,
     matrix: &'a SupervisordMatrixStatus,
+    matrix_runtime_healthy: bool,
+    matrix_last_error: &'a Option<String>,
 }
 
 #[derive(Serialize)]
@@ -1148,7 +1214,7 @@ fn control_state_digest(
         hidden: HiddenControlState {
             control_revision: snapshot.control_revision,
             active: status.active,
-            healthy: status.healthy,
+            healthy: snapshot.healthy,
             process_id: status.process_id,
             release_state_generation: snapshot.release_state_generation,
             registry_current_release: &record.release_state.current,
@@ -1162,6 +1228,8 @@ fn control_state_digest(
             release_change: &snapshot.release_change,
             has_last_command: snapshot.has_last_command,
             matrix: &status.matrix,
+            matrix_runtime_healthy: snapshot.matrix.healthy,
+            matrix_last_error: &snapshot.matrix.last_error,
         },
     };
     let encoded = serde_json::to_vec(&material)
@@ -1503,6 +1571,46 @@ mod tests {
     }
 
     fn matrix_control_digest(matrix: MatrixSupervisorSnapshot) -> ControlStateDigest {
+        matrix_control_status(matrix).control_fence.state_digest
+    }
+
+    #[test]
+    fn matrix_diagnostics_are_bounded_safe_and_keep_exact_live_cas_identity() {
+        let baseline = MatrixSupervisorSnapshot {
+            configured: true,
+            active: false,
+            healthy: false,
+            degraded: true,
+            process_system_id: None,
+            attached_agent_generation: None,
+            binding_revision: None,
+            restart_attempt: 1,
+            last_error: Some(format!("hostile\n\u{202e}{}", "多".repeat(512))),
+        };
+        let status = matrix_control_status(baseline.clone());
+        let message = status.matrix.last_error.as_deref().expect("diagnostic");
+        assert!(message.len() <= crate::runtime::MAX_FAULT_BYTES);
+        assert!(!message.contains('\n') && !message.contains('\u{202e}'));
+        let response =
+            crate::robrix_protocol::RobrixSupervisordResponse::try_from(SupervisordResponse {
+                schema_version: SUPERVISORD_CONTROL_SCHEMA_VERSION,
+                request_id: 1,
+                payload: SupervisordPayload::Agent(status.clone()),
+            })
+            .expect("read-only projection");
+        response.validate(1).expect("safe bounded diagnostic");
+
+        let mut changed = baseline;
+        changed.last_error.as_mut().expect("diagnostic").push('x');
+        let changed = matrix_control_status(changed);
+        assert_eq!(changed.matrix, status.matrix);
+        assert_ne!(
+            changed.control_fence.state_digest,
+            status.control_fence.state_digest
+        );
+    }
+
+    fn matrix_control_status(matrix: MatrixSupervisorSnapshot) -> SupervisordAgentStatus {
         let temp = tempfile::tempdir().expect("create temporary fleet");
         let fleet_root =
             HeptaFleetRoot::parse(temp.path().join("fleet")).expect("parse temporary fleet root");
@@ -1553,8 +1661,6 @@ mod tests {
             Some(snapshot),
         )
         .expect("derive status")
-        .control_fence
-        .state_digest
     }
 
     #[test]
@@ -1763,3 +1869,11 @@ mod platform_tests;
 #[cfg(all(test, unix))]
 #[path = "daemon_shutdown_tests.rs"]
 mod shutdown_tests;
+
+#[cfg(all(test, unix))]
+#[path = "daemon_startup_tests.rs"]
+mod startup_tests;
+
+#[cfg(all(test, unix))]
+#[path = "daemon_authority_tests.rs"]
+mod authority_tests;

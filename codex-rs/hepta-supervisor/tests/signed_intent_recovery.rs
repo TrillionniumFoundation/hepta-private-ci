@@ -12,6 +12,7 @@ use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::AdoptSpec;
 use codex_hepta_supervisor::Adoption;
+use codex_hepta_supervisor::AgentCommand;
 use codex_hepta_supervisor::H7H89ProductionTransition;
 use codex_hepta_supervisor::ManagedProcess;
 use codex_hepta_supervisor::ProcessDriver;
@@ -122,7 +123,8 @@ fn write_intent_raw(
 }
 
 #[test]
-fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorError> {
+fn digest_only_abort_directive_cannot_terminalize_an_unresolved_signed_intent()
+-> Result<(), SupervisorError> {
     let fleet = fleet()?;
     let starting =
         fleet
@@ -153,30 +155,69 @@ fn exact_digest_abort_terminalizes_unresolved_intent() -> Result<(), SupervisorE
     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_intent_raw(record.layout.run_root(), &intent)?;
 
-    let first = Supervisor::recover(
+    let (first, report) = Supervisor::recover(
         fleet.registry.clone(),
         NoProcessDriver,
         config(),
         Instant::now(),
-    );
-    assert!(matches!(
-        first,
-        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id))
-            if agent_id == fleet.agent_id
-    ));
+    )?;
+    assert!(report.faults.is_empty());
+    assert!(first.production_recovery_required(&fleet.agent_id)?);
 
-    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256)
+    let directive = SignedIntentRecoveryDirective::abort(intent.intent_sha256.clone())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     write_signed_intent_recovery_directive(record.layout.run_root(), &directive)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
 
-    let (_recovered, report) =
-        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+    let (mut recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        NoProcessDriver,
+        config(),
+        Instant::now(),
+    )?;
     assert!(report.faults.is_empty());
     let terminal = read_signed_intent(record.layout.run_root())
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?
         .expect("terminal intent");
-    assert_eq!(terminal.status, SignedIntentStatus::Aborted);
-    assert_eq!(terminal.target_release, "target-release");
+    assert_eq!(terminal, intent);
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    assert!(matches!(
+        recovered.start(&fleet.agent_id,
+            AgentCommand::new(std::env::current_exe()?, Vec::new())?, Instant::now()),
+        Err(SupervisorError::SignedIntentRecoveryRequired(agent_id)) if agent_id == fleet.agent_id
+    ));
+
+    // Neither a mismatched digest nor a malformed legacy directive can grant
+    // recovery authority. The pinned, independently signed decision remains
+    // required and the existing intent is preserved for that ceremony.
+    let wrong = SignedIntentRecoveryDirective::abort(Sha256Digest::for_bytes(b"wrong-intent"))
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    write_signed_intent_recovery_directive(record.layout.run_root(), &wrong)
+        .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    let (recovered, report) = Supervisor::recover(
+        fleet.registry.clone(),
+        NoProcessDriver,
+        config(),
+        Instant::now(),
+    )?;
+    assert!(report.faults.is_empty());
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    std::fs::write(
+        record
+            .layout
+            .run_root()
+            .join(codex_hepta_supervisor::SIGNED_INTENT_RECOVERY_FILE),
+        b"{\"truncated\":",
+    )?;
+    let (recovered, report) =
+        Supervisor::recover(fleet.registry, NoProcessDriver, config(), Instant::now())?;
+    assert!(report.faults.is_empty());
+    assert!(recovered.production_recovery_required(&fleet.agent_id)?);
+    assert_eq!(
+        read_signed_intent(record.layout.run_root())
+            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+            .expect("intent"),
+        intent
+    );
     Ok(())
 }

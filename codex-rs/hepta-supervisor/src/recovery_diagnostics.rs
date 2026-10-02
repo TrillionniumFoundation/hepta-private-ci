@@ -271,7 +271,11 @@ fn push_blocker(
     detail: &str,
     operator_action: RecoveryOperatorAction,
 ) {
-    if diagnostic.blockers.iter().any(|blocker| blocker.kind == kind) {
+    if diagnostic
+        .blockers
+        .iter()
+        .any(|blocker| blocker.kind == kind)
+    {
         return;
     }
     diagnostic.blockers.push(RecoveryBlockerDiagnostic {
@@ -306,7 +310,6 @@ mod tests {
                     == RecoveryOperatorAction::PreserveBytesAndRepairDurableStorage
         }));
     }
-
 
     #[test]
     fn contextual_blockers_are_actionable_and_distinct() {

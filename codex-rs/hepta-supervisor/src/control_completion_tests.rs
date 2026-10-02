@@ -53,7 +53,12 @@ fn identity() -> ProcessIdentity {
 }
 
 fn pending(root: &Path) -> Result<()> {
-    claim_restart(root, 3, Duration::from_secs(300), Duration::from_millis(250))?;
+    claim_restart(
+        root,
+        3,
+        Duration::from_secs(300),
+        Duration::from_millis(250),
+    )?;
     Ok(())
 }
 
@@ -93,7 +98,9 @@ fn terminal_control_preserves_the_companion_restart_domain() -> Result<()> {
     let dir = tempfile::tempdir()?;
     pending(dir.path())?;
     let companion = RestartBudgetJournal::new(
-        agent(), ReleaseId::parse("release-a")?, DurableRestartWindow::empty(),
+        agent(),
+        ReleaseId::parse("release-a")?,
+        DurableRestartWindow::empty(),
         DurableRestartWindow {
             attempts: 1,
             window_started_unix_millis: Some(crate::restart_journal::unix_millis_now()?),
@@ -118,7 +125,10 @@ fn failed_restart_cancellation_does_not_publish_control_completion() -> Result<(
     std::fs::remove_file(&path)?;
     std::fs::create_dir(&path)?;
     assert!(reconcile_absent(dir.path(), &agent(), AgentLifecycle::Stopped).is_err());
-    assert_eq!(read_control_intent(dir.path())?.expect("still prepared"), control);
+    assert_eq!(
+        read_control_intent(dir.path())?.expect("still prepared"),
+        control
+    );
     std::fs::remove_dir(&path)?;
     std::fs::write(path, saved)?;
     reconcile_absent(dir.path(), &agent(), AgentLifecycle::Stopped)?;
@@ -136,10 +146,16 @@ fn cancellation_to_terminal_publication_cut_replays_idempotently() -> Result<()>
     let cancelled = std::fs::read(dir.path().join(RESTART_JOURNAL_FILE))?;
     assert!(has_unresolved(dir.path())?);
     reconcile_absent(dir.path(), &agent(), AgentLifecycle::Stopped)?;
-    assert_eq!(std::fs::read(dir.path().join(RESTART_JOURNAL_FILE))?, cancelled);
+    assert_eq!(
+        std::fs::read(dir.path().join(RESTART_JOURNAL_FILE))?,
+        cancelled
+    );
     let terminal = std::fs::read(dir.path().join(CONTROL_INTENT_FILE))?;
     reconcile_absent(dir.path(), &agent(), AgentLifecycle::Stopped)?;
-    assert_eq!(std::fs::read(dir.path().join(CONTROL_INTENT_FILE))?, terminal);
+    assert_eq!(
+        std::fs::read(dir.path().join(CONTROL_INTENT_FILE))?,
+        terminal
+    );
     Ok(())
 }
 
@@ -163,16 +179,22 @@ fn a_present_lease_prevents_terminal_completion_and_budget_mutation() -> Result<
     let dir = tempfile::tempdir()?;
     pending(dir.path())?;
     prepare_override(dir.path(), DurableControlKind::Stop)?;
-    write_lease(dir.path(), &ProcessLease {
-        schema_version: PROCESS_LEASE_SCHEMA_VERSION,
-        agent_id: agent(),
-        spawn_generation: 7,
-        release_id: ReleaseId::parse("release-a")?,
-        identity: identity(),
-    })?;
+    write_lease(
+        dir.path(),
+        &ProcessLease {
+            schema_version: PROCESS_LEASE_SCHEMA_VERSION,
+            agent_id: agent(),
+            spawn_generation: 7,
+            release_id: ReleaseId::parse("release-a")?,
+            identity: identity(),
+        },
+    )?;
     let before = std::fs::read(dir.path().join(RESTART_JOURNAL_FILE))?;
     assert!(reconcile_absent(dir.path(), &agent(), AgentLifecycle::Stopped).is_err());
-    assert_eq!(std::fs::read(dir.path().join(RESTART_JOURNAL_FILE))?, before);
+    assert_eq!(
+        std::fs::read(dir.path().join(RESTART_JOURNAL_FILE))?,
+        before
+    );
     assert!(has_unresolved(dir.path())?);
     Ok(())
 }
@@ -186,7 +208,10 @@ fn another_agent_cannot_use_a_control_override_to_cancel_this_budget() -> Result
     let before = std::fs::read(dir.path().join(RESTART_JOURNAL_FILE))?;
     assert!(cancel_restart_if_unresolved(dir.path(), &other).is_err());
     assert!(reconcile_absent(dir.path(), &other, AgentLifecycle::Stopped).is_err());
-    assert_eq!(std::fs::read(dir.path().join(RESTART_JOURNAL_FILE))?, before);
+    assert_eq!(
+        std::fs::read(dir.path().join(RESTART_JOURNAL_FILE))?,
+        before
+    );
     Ok(())
 }
 
@@ -244,7 +269,10 @@ struct Process {
 impl ManagedProcess for Process {
     fn poll(&mut self, _max_logs: usize) -> Result<ProcessObservation, ProcessDriverError> {
         Ok(ProcessObservation {
-            state: ProcessState::Running { healthy: true, drained: false },
+            state: ProcessState::Running {
+                healthy: true,
+                drained: false,
+            },
             logs: Vec::new(),
         })
     }
@@ -300,25 +328,32 @@ impl Fixture {
         let workspace = temp.path().join("workspace");
         std::fs::create_dir(&workspace)?;
         registry.register(AgentManifest::new(
-            agent(), WorkspaceBinding::new(workspace.canonicalize()?, &root)?,
+            agent(),
+            WorkspaceBinding::new(workspace.canonicalize()?, &root)?,
             ResourceBudget::local_default(),
         )?)?;
         let config = SupervisorConfig::local_default();
         let now = Instant::now();
-        let (supervisor, report) = Supervisor::recover(registry.clone(), Driver, config.clone(), now)?;
+        let (supervisor, report) =
+            Supervisor::recover(registry.clone(), Driver, config.clone(), now)?;
         assert!(report.faults.is_empty());
         let calls = Arc::new(Mutex::new(Vec::new()));
         let mut slot = AgentSlot::new(&config);
         if active {
             let record = registry.load_agent(&agent())?;
             let starting = registry.compare_and_transition(
-                &agent(), record.lifecycle.generation, AgentLifecycle::Starting,
+                &agent(),
+                record.lifecycle.generation,
+                AgentLifecycle::Starting,
             )?;
             let running = registry.compare_and_transition(
-                &agent(), starting.generation, AgentLifecycle::Running,
+                &agent(),
+                starting.generation,
+                AgentLifecycle::Running,
             )?;
             let release = AgentRelease::new(
-                "unversioned", AgentCommand::new(temp.path().join("mock-program"), Vec::new())?,
+                "unversioned",
+                AgentCommand::new(temp.path().join("mock-program"), Vec::new())?,
             )?;
             let lease = ProcessLease {
                 schema_version: PROCESS_LEASE_SCHEMA_VERSION,
@@ -329,7 +364,11 @@ impl Fixture {
             };
             write_lease(record.layout.run_root(), &lease)?;
             slot.runtime = Some(AgentRuntime {
-                process: Process { label: "main.kill", fail: false, calls: Arc::clone(&calls) },
+                process: Process {
+                    label: "main.kill",
+                    fail: false,
+                    calls: Arc::clone(&calls),
+                },
                 identity: identity(),
                 spawn_generation: starting.generation,
                 release_id: lease.release_id,
@@ -340,7 +379,14 @@ impl Fixture {
             });
             slot.active_release = Some(release);
         }
-        Ok(Self { _temp: temp, registry, supervisor, slot, now, calls })
+        Ok(Self {
+            _temp: temp,
+            registry,
+            supervisor,
+            slot,
+            now,
+            calls,
+        })
     }
 
     fn record(&self) -> Result<AgentRecord> {
@@ -352,8 +398,13 @@ impl Fixture {
         let runtime = self.slot.runtime.as_ref().expect("active");
         let requested = if expired { 1 } else { unix_ms_now()? };
         let intent = DurableControlIntent::new(
-            agent(), DurableControlKind::Stop, runtime.spawn_generation, identity(),
-            record.lifecycle.generation, requested, Some(requested + 5_000),
+            agent(),
+            DurableControlKind::Stop,
+            runtime.spawn_generation,
+            identity(),
+            record.lifecycle.generation,
+            requested,
+            Some(requested + 5_000),
         )?;
         write_control_intent(record.layout.run_root(), &intent)?;
         Ok(())
@@ -370,11 +421,18 @@ fn idle_stop_and_kill_cancel_the_persisted_restart_without_a_fake_process() -> R
         if kill {
             fixture.supervisor.kill_slot(&agent(), &mut fixture.slot)?;
         } else {
-            fixture.supervisor.stop_slot(&agent(), &mut fixture.slot, fixture.now)?;
+            fixture
+                .supervisor
+                .stop_slot(&agent(), &mut fixture.slot, fixture.now)?;
         }
         assert!(!fixture.slot.restart_pending);
         assert!(pending_restart(record.layout.run_root(), 3)?.is_none());
-        assert_eq!(read_main_restart_budget(record.layout.run_root())?.expect("history").attempts, 1);
+        assert_eq!(
+            read_main_restart_budget(record.layout.run_root())?
+                .expect("history")
+                .attempts,
+            1
+        );
         assert!(fixture.calls.lock().expect("calls").is_empty());
     }
     Ok(())
@@ -385,9 +443,13 @@ fn live_stop_continuation_uses_original_deadline_not_the_current_grace() -> Resu
     let mut fixture = Fixture::new(true)?;
     fixture.stop_intent(false)?;
     fixture.supervisor.config.stop_grace = Duration::from_secs(3_600);
-    fixture.supervisor.stop_runtime_slot(&agent(), &mut fixture.slot, fixture.now)?;
+    fixture
+        .supervisor
+        .stop_runtime_slot(&agent(), &mut fixture.slot, fixture.now)?;
     let phase = fixture.slot.runtime.as_ref().expect("owner").phase;
-    let RuntimePhase::Stopping { deadline } = phase else { panic!("expected Stop"); };
+    let RuntimePhase::Stopping { deadline } = phase else {
+        panic!("expected Stop");
+    };
     assert!(deadline.saturating_duration_since(fixture.now) <= Duration::from_secs(5));
     assert_eq!(*fixture.calls.lock().expect("calls"), vec!["stop"]);
     Ok(())
@@ -397,9 +459,18 @@ fn live_stop_continuation_uses_original_deadline_not_the_current_grace() -> Resu
 fn expired_stop_kills_main_before_a_failing_companion_without_more_grace() -> Result<()> {
     let mut fixture = Fixture::new(true)?;
     fixture.stop_intent(true)?;
-    let generation = fixture.slot.runtime.as_ref().expect("owner").spawn_generation;
+    let generation = fixture
+        .slot
+        .runtime
+        .as_ref()
+        .expect("owner")
+        .spawn_generation;
     fixture.slot.matrix.runtime = Some(MatrixRuntime {
-        process: Process { label: "matrix.kill", fail: true, calls: Arc::clone(&fixture.calls) },
+        process: Process {
+            label: "matrix.kill",
+            fail: true,
+            calls: Arc::clone(&fixture.calls),
+        },
         identity: ProcessIdentity::new(42, "matrix-lifetime")?,
         attached_agent_generation: generation,
         release_id: ReleaseId::parse("unversioned")?,
@@ -411,9 +482,20 @@ fn expired_stop_kills_main_before_a_failing_companion_without_more_grace() -> Re
         healthy: true,
         fenced: false,
     });
-    assert!(fixture.supervisor.stop_runtime_slot(&agent(), &mut fixture.slot, fixture.now).is_err());
-    assert_eq!(*fixture.calls.lock().expect("calls"), vec!["main.kill", "matrix.kill"]);
-    assert!(matches!(fixture.slot.runtime.as_ref().expect("main owner").phase, RuntimePhase::Killing));
+    assert!(
+        fixture
+            .supervisor
+            .stop_runtime_slot(&agent(), &mut fixture.slot, fixture.now)
+            .is_err()
+    );
+    assert_eq!(
+        *fixture.calls.lock().expect("calls"),
+        vec!["main.kill", "matrix.kill"]
+    );
+    assert!(matches!(
+        fixture.slot.runtime.as_ref().expect("main owner").phase,
+        RuntimePhase::Killing
+    ));
     assert!(fixture.slot.matrix.runtime.is_some());
     Ok(())
 }
@@ -423,7 +505,12 @@ fn pending_termination_blocks_a_new_restart_claim() -> Result<()> {
     let mut fixture = Fixture::new(true)?;
     fixture.stop_intent(false)?;
     let record = fixture.record()?;
-    assert!(fixture.supervisor.restart_slot(&agent(), &mut fixture.slot, fixture.now).is_err());
+    assert!(
+        fixture
+            .supervisor
+            .restart_slot(&agent(), &mut fixture.slot, fixture.now)
+            .is_err()
+    );
     assert!(read_main_restart_budget(record.layout.run_root())?.is_none());
     assert!(fixture.calls.lock().expect("calls").is_empty());
     Ok(())
@@ -436,7 +523,9 @@ fn live_recovery_cancels_restart_before_restoring_the_pending_claim() -> Result<
     pending(record.layout.run_root())?;
     fixture.stop_intent(false)?;
     fixture.slot.restart_pending = true;
-    fixture.supervisor.recover_restart_budget(&agent(), &mut fixture.slot, fixture.now)?;
+    fixture
+        .supervisor
+        .recover_restart_budget(&agent(), &mut fixture.slot, fixture.now)?;
     assert!(!fixture.slot.restart_pending);
     assert!(fixture.slot.restart_not_before.is_none());
     assert!(pending_restart(record.layout.run_root(), 3)?.is_none());

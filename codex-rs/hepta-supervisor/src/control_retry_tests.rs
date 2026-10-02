@@ -142,10 +142,12 @@ impl Fixture {
         let mut config = SupervisorConfig::local_default();
         config.drain_timeout = Duration::from_secs(2);
         config.stop_grace = Duration::from_secs(1);
-        let (supervisor, report) = Supervisor::recover(registry.clone(), Driver, config.clone(), now)?;
+        let (supervisor, report) =
+            Supervisor::recover(registry.clone(), Driver, config.clone(), now)?;
         assert!(report.faults.is_empty());
         let stopped = registry.load()?.agents[&agent].lifecycle.generation;
-        let starting = registry.compare_and_transition(&agent, stopped, AgentLifecycle::Starting)?;
+        let starting =
+            registry.compare_and_transition(&agent, stopped, AgentLifecycle::Starting)?;
         let (generation, phase) = match lifecycle {
             AgentLifecycle::Starting => (
                 starting.generation,
@@ -207,8 +209,7 @@ impl Fixture {
     }
 
     fn tick(&mut self, now: Instant) -> Result<(), SupervisorError> {
-        self.supervisor
-            .tick_slot(&self.agent, &mut self.slot, now)
+        self.supervisor.tick_slot(&self.agent, &mut self.slot, now)
     }
 
     fn failure(&self, failure: Failure) {
@@ -265,7 +266,11 @@ fn failed_kill_is_retried_by_tick_without_false_acknowledgement() -> Result<()> 
 fn failed_stop_is_retried_without_publishing_stopping() -> Result<()> {
     let mut f = Fixture::new(AgentLifecycle::Running)?;
     f.failure(Failure::Stop);
-    assert!(f.supervisor.stop_slot(&f.agent, &mut f.slot, f.now).is_err());
+    assert!(
+        f.supervisor
+            .stop_slot(&f.agent, &mut f.slot, f.now)
+            .is_err()
+    );
     f.assert_retained();
     assert!(matches!(
         f.slot.runtime.as_ref().expect("runtime").phase,
@@ -282,7 +287,11 @@ fn failed_stop_is_retried_without_publishing_stopping() -> Result<()> {
 fn failed_drain_is_retried_without_publishing_draining() -> Result<()> {
     let mut f = Fixture::new(AgentLifecycle::Running)?;
     f.failure(Failure::Drain);
-    assert!(f.supervisor.drain_slot(&f.agent, &mut f.slot, f.now).is_err());
+    assert!(
+        f.supervisor
+            .drain_slot(&f.agent, &mut f.slot, f.now)
+            .is_err()
+    );
     f.assert_retained();
     assert!(matches!(
         f.slot.runtime.as_ref().expect("runtime").phase,
@@ -291,7 +300,10 @@ fn failed_drain_is_retried_without_publishing_draining() -> Result<()> {
     f.failure(Failure::None);
     f.tick(f.now)?;
     assert_eq!(f.process.lock().expect("process").calls, [2, 0, 0]);
-    assert_eq!(f.control_events(), vec![SupervisorEventKind::DrainRequested]);
+    assert_eq!(
+        f.control_events(),
+        vec![SupervisorEventKind::DrainRequested]
+    );
     Ok(())
 }
 
@@ -299,9 +311,17 @@ fn failed_drain_is_retried_without_publishing_draining() -> Result<()> {
 fn repeated_stop_preserves_the_first_deadline() -> Result<()> {
     let mut f = Fixture::new(AgentLifecycle::Running)?;
     f.failure(Failure::Stop);
-    assert!(f.supervisor.stop_slot(&f.agent, &mut f.slot, f.now).is_err());
+    assert!(
+        f.supervisor
+            .stop_slot(&f.agent, &mut f.slot, f.now)
+            .is_err()
+    );
     let later = f.now + Duration::from_millis(500);
-    assert!(f.supervisor.stop_slot(&f.agent, &mut f.slot, later).is_err());
+    assert!(
+        f.supervisor
+            .stop_slot(&f.agent, &mut f.slot, later)
+            .is_err()
+    );
     f.tick(f.now + Duration::from_secs(1))?;
     assert_eq!(f.process.lock().expect("process").calls, [0, 2, 1]);
     assert_eq!(f.control_events(), vec![SupervisorEventKind::KillRequested]);
@@ -312,7 +332,11 @@ fn repeated_stop_preserves_the_first_deadline() -> Result<()> {
 fn delayed_drain_retry_cannot_replenish_termination_budget() -> Result<()> {
     let mut f = Fixture::new(AgentLifecycle::Running)?;
     f.failure(Failure::Drain);
-    assert!(f.supervisor.drain_slot(&f.agent, &mut f.slot, f.now).is_err());
+    assert!(
+        f.supervisor
+            .drain_slot(&f.agent, &mut f.slot, f.now)
+            .is_err()
+    );
     f.tick(f.now + Duration::from_secs(3))?;
     assert_eq!(f.process.lock().expect("process").calls, [1, 0, 1]);
     assert_eq!(f.control_events(), vec![SupervisorEventKind::KillRequested]);
@@ -324,7 +348,11 @@ fn pending_kill_cannot_be_downgraded_by_a_later_drain() -> Result<()> {
     let mut f = Fixture::new(AgentLifecycle::Running)?;
     f.failure(Failure::Kill);
     assert!(f.supervisor.kill_slot(&f.agent, &mut f.slot).is_err());
-    assert!(f.supervisor.drain_slot(&f.agent, &mut f.slot, f.now).is_err());
+    assert!(
+        f.supervisor
+            .drain_slot(&f.agent, &mut f.slot, f.now)
+            .is_err()
+    );
     assert_eq!(f.process.lock().expect("process").calls, [0, 0, 2]);
     f.failure(Failure::None);
     f.tick(f.now)?;
@@ -428,7 +456,11 @@ fn restart_retains_its_claim_when_the_first_drain_signal_fails() -> Result<()> {
         args: Vec::new(),
     });
     f.failure(Failure::Drain);
-    assert!(f.supervisor.restart_slot(&f.agent, &mut f.slot, f.now).is_err());
+    assert!(
+        f.supervisor
+            .restart_slot(&f.agent, &mut f.slot, f.now)
+            .is_err()
+    );
     assert!(f.slot.restart_pending);
     assert_eq!(f.slot.restart_attempt, 1);
     f.failure(Failure::None);
@@ -438,11 +470,9 @@ fn restart_retains_its_claim_when_the_first_drain_signal_fails() -> Result<()> {
         .layout
         .run_root()
         .to_path_buf();
-    let claim = crate::restart_budget::pending_restart(
-        &root,
-        f.supervisor.config.restart_max_attempts,
-    )?
-    .expect("same durable claim remains pending");
+    let claim =
+        crate::restart_budget::pending_restart(&root, f.supervisor.config.restart_max_attempts)?
+            .expect("same durable claim remains pending");
     assert_eq!(claim.attempt, 1);
     Ok(())
 }

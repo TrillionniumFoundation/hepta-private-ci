@@ -1,0 +1,773 @@
+{
+  "schema": "hepta.runtime.supervisor.local-execution-observation.v1",
+  "artifact_root": "qualification/runtime-supervisor",
+  "scope": "Unsigned local source/behavior observations. Final passing commands share one frozen dirty source image. Filtered local execution does not establish unfiltered source-head/merge CI, target-host qualification, independent acceptance, activation or production performance.",
+  "claims": {
+    "authority_granted": false,
+    "activated": false,
+    "independent_acceptance_obtained": false,
+    "target_host_qualification_pass": false,
+    "exact_head_ci_pass": false,
+    "merge_ci_pass": false,
+    "unfiltered_package_pass": false,
+    "production_performance_acceptance": false
+  },
+  "native_inputs": {
+    "head_at_capture": "e78095abf8df069d5dc9496f6e362f9ed27e3978",
+    "head_tree_at_capture": "cb774285a095e382c25de3e1ea4a366c85c7610c",
+    "candidate_dirty_at_capture": true,
+    "captured_at": "2026-10-01T20:29:42.489171+00:00",
+    "capture_context": "Root confirmed the final R4 passing-stage source freeze after constructor-absence terminal-CAS fixture and trait/import repairs, final nextest/CI changes, R4 technical-document navigation, removal of the unused durable-publish wrapper, and alignment of the original emergency-Kill event-order oracle with the already documented main-before-companion contract. Event presence, exact counts, no replacement and peer isolation assertions remain. Captured before all four final passing native stages. Earlier targeted, initial Fleet, paired-protocol EPERM and pre-oracle-alignment default FAIL checkpoints retain separate snapshots and receive no retroactive credit. Every final command compares this manifest before and after execution.",
+    "native_count": 169,
+    "native_sha256": "654372b45dec46b067f5623f45fe024ff2f0f75d907bf1a514ae2afda0d26c87",
+    "external_count": 1034,
+    "external_sha256": "a2ac27aa78641d42ff1bf3e2715ae31bf4bab3367cce3f2fe77d4f99b836cdf1",
+    "local_dependency_package_count": 47,
+    "complete_input_artifacts": [
+      {
+        "path": "qualification/runtime-supervisor/LOCAL_NATIVE_SOURCE_MANIFEST_20261001_R4.json",
+        "bytes": 26670,
+        "sha256": "e84b1b949f3ef0224e2e3b764808b9ebace2958a8e3c742fb0455d7424c449d7"
+      },
+      {
+        "path": "qualification/runtime-supervisor/LOCAL_EXTERNAL_BUILD_INPUTS_20261001_R4_PART1.json",
+        "bytes": 73669,
+        "sha256": "f81bbb9084f1a0fa7aaf73ccee6479cc107733d7dca98222f4a76aba2ec2381e"
+      },
+      {
+        "path": "qualification/runtime-supervisor/LOCAL_EXTERNAL_BUILD_INPUTS_20261001_R4_PART2.json",
+        "bytes": 71545,
+        "sha256": "b13bf15f7281e2a4c1709c2a5c6cf5df569c217ef4c2bca01044c858a5405e51"
+      }
+    ],
+    "original_full_snapshot": {
+      "path": "round4-verification/native-source-manifest.json",
+      "bytes": 248267,
+      "sha256": "de2c315e2445d1cd6930f27827c9e24975ce6aad9696f452fb47562bbddc1c10"
+    },
+    "all_four_stages_source_and_inventory_and_head_drift_empty": true,
+    "final_source_pin": {
+      "commit": "5489fb84cee5a51e4baa30ecfc665302e68742e7",
+      "tree": "b0813e63eddf49863fd49f38d9383ca4c60299f2"
+    },
+    "final_api_pin": {
+      "commit": "5489fb84cee5a51e4baa30ecfc665302e68742e7",
+      "tree": "b0813e63eddf49863fd49f38d9383ca4c60299f2"
+    },
+    "local_tree_equivalent_pin": {
+      "commit": "4825dd2ebdba4bd0b65ac619bf943f3644e4666d",
+      "tree": "b0813e63eddf49863fd49f38d9383ca4c60299f2"
+    }
+  },
+  "native_stages": [
+    {
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-supervisor",
+        "--lib",
+        "--retries",
+        "0",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all",
+        "-E",
+        "not (test(=daemon::shutdown_tests::dropping_server_future_aborts_and_reaps_idle_connections) | test(=daemon::shutdown_tests::shutdown_drains_accepted_connection_before_owner_can_be_replaced) | test(=daemon::tests::unresolved_signed_intent_keeps_daemon_reachable_but_not_ready) | test(=unix::drain_tests::malformed_or_wrong_generation_drain_frames_still_reject) | test(=unix::drain_tests::missing_or_closed_socket_never_becomes_a_drain_acknowledgement) | test(=unix::drain_tests::only_exact_closed_admission_with_no_running_turns_is_drained) | test(=unix::tests::health_probe_requires_exact_agent_generation_pid_and_roots) | test(=unix::tests::matrix_health_transport_rejects_response_larger_than_one_mib) | test(=unix::peer_identity_tests::forged_agentd_health_cannot_adopt_or_signal_an_unrelated_child) | test(=unix::peer_identity_tests::forged_matrix_health_cannot_adopt_or_signal_an_unrelated_child) | test(=unix::peer_identity_tests::drain_never_sends_a_frame_to_a_socket_owned_by_another_process))"
+      ],
+      "cwd": "/workspace/scratch/89fe97a34325/hepta-private-ci/codex-rs",
+      "started_at": "2026-10-01T20:29:42.738269+00:00",
+      "head": "e78095abf8df069d5dc9496f6e362f9ed27e3978",
+      "native_sha256": "654372b45dec46b067f5623f45fe024ff2f0f75d907bf1a514ae2afda0d26c87",
+      "external_sha256": "a2ac27aa78641d42ff1bf3e2715ae31bf4bab3367cce3f2fe77d4f99b836cdf1",
+      "finished_at": "2026-10-01T20:29:59.925517+00:00",
+      "exit_code": 0,
+      "duration_seconds": 17.078952615999697,
+      "counts": {
+        "PASS": 358,
+        "FAIL": 0,
+        "TIMEOUT": 0,
+        "SKIP": 11,
+        "LEAK": 0
+      },
+      "repeated_status_lines": 369,
+      "summary": [
+        "Starting 358 tests across 1 binary (11 tests skipped)",
+        "Summary [   2.140s] 358 tests run: 358 passed, 11 skipped"
+      ],
+      "source_drift": {
+        "native": [],
+        "external": [],
+        "head": false
+      },
+      "test_retries_requested": 0,
+      "id": "default-selected-lib",
+      "log": {
+        "path": "round4-verification/default-selected-lib.log",
+        "bytes": 102548,
+        "sha256": "e2da9d9f0a41500b9875c33d078b4eee35522df9e5db57e47f2df4cf962b1f2a"
+      },
+      "command_record": {
+        "path": "round4-verification/default-selected-lib.command.json",
+        "bytes": 1599,
+        "sha256": "64e3c1259d9901cd9be59376baa607f9e51a3e6aca58d41c8f3490f7adeb44fa"
+      },
+      "result_record": {
+        "path": "round4-verification/default-selected-lib.results.json",
+        "bytes": 73707,
+        "sha256": "2cc65733b1fdb8db78fe19797ecb3b9329c9212d3d7857393487803b26c56d32"
+      },
+      "named_inventory": {
+        "path": "qualification/runtime-supervisor/LOCAL_NATIVE_PASS_INVENTORY_DEFAULT_20261001_R4.json",
+        "bytes": 48942,
+        "sha256": "0a0c6dfc7fb0f90e538ac280ef0bbe2387eca70777454405cf6a523a11410d93"
+      }
+    },
+    {
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-supervisor",
+        "--features",
+        "qualification,offline-authority-tools",
+        "--profile",
+        "hepta-supervisor-qualification",
+        "--success-output",
+        "final",
+        "--retries",
+        "0",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all",
+        "-E",
+        "not (test(=daemon::shutdown_tests::dropping_server_future_aborts_and_reaps_idle_connections) | test(=daemon::shutdown_tests::shutdown_drains_accepted_connection_before_owner_can_be_replaced) | test(=daemon::tests::unresolved_signed_intent_keeps_daemon_reachable_but_not_ready) | test(=unix::drain_tests::malformed_or_wrong_generation_drain_frames_still_reject) | test(=unix::drain_tests::missing_or_closed_socket_never_becomes_a_drain_acknowledgement) | test(=unix::drain_tests::only_exact_closed_admission_with_no_running_turns_is_drained) | test(=unix::tests::health_probe_requires_exact_agent_generation_pid_and_roots) | test(=unix::tests::matrix_health_transport_rejects_response_larger_than_one_mib) | test(=unix::peer_identity_tests::forged_agentd_health_cannot_adopt_or_signal_an_unrelated_child) | test(=unix::peer_identity_tests::forged_matrix_health_cannot_adopt_or_signal_an_unrelated_child) | test(=unix::peer_identity_tests::drain_never_sends_a_frame_to_a_socket_owned_by_another_process) | test(=product_binary_is_single_instance_owner_only_and_bad_frames_are_isolated) | test(=product_binary_serves_the_complete_256_agent_roster) | test(=five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash) | test(=two_real_pairs_restart_one_without_peer_pid_churn) | test(=protocol_tests::paired_child_methods_and_exact_drain_use_real_protocol_validation))"
+      ],
+      "cwd": "/workspace/scratch/89fe97a34325/hepta-private-ci/codex-rs",
+      "started_at": "2026-10-01T20:30:12.453376+00:00",
+      "head": "e78095abf8df069d5dc9496f6e362f9ed27e3978",
+      "native_sha256": "654372b45dec46b067f5623f45fe024ff2f0f75d907bf1a514ae2afda0d26c87",
+      "external_sha256": "a2ac27aa78641d42ff1bf3e2715ae31bf4bab3367cce3f2fe77d4f99b836cdf1",
+      "finished_at": "2026-10-01T20:33:41.398688+00:00",
+      "exit_code": 0,
+      "duration_seconds": 208.81706575999942,
+      "counts": {
+        "PASS": 387,
+        "FAIL": 0,
+        "TIMEOUT": 0,
+        "SKIP": 18,
+        "LEAK": 0
+      },
+      "repeated_status_lines": 404,
+      "summary": [
+        "Starting 387 tests across 15 binaries (18 tests skipped)",
+        "Summary [ 180.072s] 387 tests run: 387 passed (1 slow), 18 skipped"
+      ],
+      "source_drift": {
+        "native": [],
+        "external": [],
+        "head": false
+      },
+      "test_retries_requested": 0,
+      "id": "offline-authority-selected-package",
+      "log": {
+        "path": "round4-verification/offline-authority-selected-package.log",
+        "bytes": 239049,
+        "sha256": "10e432585745e5776872e02b0c1dc17facb81f3b0f7056eb08c2f333f8b5e5db"
+      },
+      "command_record": {
+        "path": "round4-verification/offline-authority-selected-package.command.json",
+        "bytes": 2111,
+        "sha256": "f6894fc5298165ba96b24284ff4465822616ed5583e69461157828f429518fb1"
+      },
+      "result_record": {
+        "path": "round4-verification/offline-authority-selected-package.results.json",
+        "bytes": 81115,
+        "sha256": "7a2937928ec30622e29565c330da89246932b9f6c330c72351ca35423a1a76c9"
+      },
+      "named_inventory": {
+        "path": "qualification/runtime-supervisor/LOCAL_NATIVE_PASS_INVENTORY_QUALIFIED_20261001_R4.json",
+        "bytes": 53537,
+        "sha256": "e8832d767b70c9fcd6d760bb383e1737d902ded8f2cc6fa855b45fcaba293de0"
+      }
+    },
+    {
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-supervisor",
+        "--features",
+        "qualification,offline-authority-tools",
+        "--bin",
+        "hepta-supervisord",
+        "--retries",
+        "0",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all"
+      ],
+      "cwd": "/workspace/scratch/89fe97a34325/hepta-private-ci/codex-rs",
+      "started_at": "2026-10-01T20:34:20.254742+00:00",
+      "head": "e78095abf8df069d5dc9496f6e362f9ed27e3978",
+      "native_sha256": "654372b45dec46b067f5623f45fe024ff2f0f75d907bf1a514ae2afda0d26c87",
+      "external_sha256": "a2ac27aa78641d42ff1bf3e2715ae31bf4bab3367cce3f2fe77d4f99b836cdf1",
+      "finished_at": "2026-10-01T20:34:23.998105+00:00",
+      "exit_code": 0,
+      "duration_seconds": 3.634734156000377,
+      "counts": {
+        "PASS": 6,
+        "FAIL": 0,
+        "TIMEOUT": 0,
+        "SKIP": 0,
+        "LEAK": 0
+      },
+      "repeated_status_lines": 6,
+      "summary": [
+        "Starting 6 tests across 1 binary",
+        "Summary [   0.006s] 6 tests run: 6 passed, 0 skipped"
+      ],
+      "source_drift": {
+        "native": [],
+        "external": [],
+        "head": false
+      },
+      "test_retries_requested": 0,
+      "id": "cli-offline-authority",
+      "log": {
+        "path": "round4-verification/cli-offline-authority.log",
+        "bytes": 2599,
+        "sha256": "b724520df628ebb42075d0c1d753c915a537a2edb0022f6746fdfe106c8ad631"
+      },
+      "command_record": {
+        "path": "round4-verification/cli-offline-authority.command.json",
+        "bytes": 667,
+        "sha256": "5affaddd906c08a6cce0219753d6e3f47d6a08720c2f7b45860b0cc8daf65748"
+      },
+      "result_record": {
+        "path": "round4-verification/cli-offline-authority.results.json",
+        "bytes": 2519,
+        "sha256": "bd390d4e75f04dccad1809aad49b0048e9a53d9126c2dfdb7259ca1a541b49de"
+      },
+      "named_inventory": {
+        "path": "qualification/runtime-supervisor/LOCAL_NATIVE_PASS_INVENTORY_CLI_20261001_R4.json",
+        "bytes": 1638,
+        "sha256": "27c5fa340fba07d58503f62a7f5cc46c5deb36f0ce8016eefb6c3cc4780dcbf3"
+      }
+    },
+    {
+      "argv": [
+        "just",
+        "test",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-fleet",
+        "--retries",
+        "0",
+        "--status-level",
+        "all",
+        "--final-status-level",
+        "all"
+      ],
+      "cwd": "/workspace/scratch/89fe97a34325/hepta-private-ci/codex-rs",
+      "started_at": "2026-10-01T20:34:45.249401+00:00",
+      "head": "e78095abf8df069d5dc9496f6e362f9ed27e3978",
+      "native_sha256": "654372b45dec46b067f5623f45fe024ff2f0f75d907bf1a514ae2afda0d26c87",
+      "external_sha256": "a2ac27aa78641d42ff1bf3e2715ae31bf4bab3367cce3f2fe77d4f99b836cdf1",
+      "finished_at": "2026-10-01T20:34:46.938674+00:00",
+      "exit_code": 0,
+      "duration_seconds": 1.5940833589993417,
+      "counts": {
+        "PASS": 42,
+        "FAIL": 0,
+        "TIMEOUT": 0,
+        "SKIP": 0,
+        "LEAK": 0
+      },
+      "repeated_status_lines": 42,
+      "summary": [
+        "Starting 42 tests across 2 binaries",
+        "Summary [   0.145s] 42 tests run: 42 passed, 0 skipped"
+      ],
+      "source_drift": {
+        "native": [],
+        "external": [],
+        "head": false
+      },
+      "test_retries_requested": 0,
+      "id": "fleet-package-final",
+      "log": {
+        "path": "round4-verification/fleet-package-final.log",
+        "bytes": 10612,
+        "sha256": "623adc2d73675e8103d2fcc27d90e4b970e5dbe6cafa530a3964b19b8f3e1a99"
+      },
+      "command_record": {
+        "path": "round4-verification/fleet-package-final.command.json",
+        "bytes": 561,
+        "sha256": "1f6b0d39f7be157a96613df3e93a155ca1840203040432588bb63447e8398325"
+      },
+      "result_record": {
+        "path": "round4-verification/fleet-package-final.results.json",
+        "bytes": 8694,
+        "sha256": "759d4150e94e3f54ab9ab1ff208c8fc8bbeca14a2df016c59e8106a58cebd0f2"
+      },
+      "named_inventory": {
+        "path": "qualification/runtime-supervisor/LOCAL_NATIVE_PASS_INVENTORY_FLEET_20261001_R4.json",
+        "bytes": 5642,
+        "sha256": "759bc721bc495fbeef860f3e0e9290ca62e870a23d3ef101e2b7228b765d8e13"
+      }
+    }
+  ],
+  "default_qualified_inventory_relationship": {
+    "default_pass_count": 358,
+    "qualified_pass_count": 387,
+    "intersection": 357,
+    "default_only_count": 1,
+    "default_only_names": [
+      "codex-hepta-supervisor daemon::mutex::tests::records_contention_and_preserves_serialization"
+    ],
+    "qualified_only_count": 30,
+    "default_is_literal_subset": false,
+    "interpretation": "Qualification changes the mutex module path; counts cannot substitute for exact binary/case inventory."
+  },
+  "environment_exclusion_basis": {
+    "fresh_constructor_probe": {
+      "path": "round4-verification/socket-probe.json",
+      "bytes": 656,
+      "sha256": "a1acb16a28dcdff39f707b3c9e1e2e6c6ebc82321ce0c9b6bf243cf2a3b48da7"
+    },
+    "actual_constructor_errno": 1,
+    "library_environment_excluded_count": 11,
+    "full_package_environment_excluded_count": 16,
+    "full_package_ignored_helper_count": 2,
+    "source_skips_added": false,
+    "three_new_listener_actual_failure_history": {
+      "path": "round4-verification/targeted-new-regressions-import-fix.log",
+      "bytes": 105024,
+      "sha256": "778db600ab0b61afdd356970d7020bd6614fc57288eb1e87837cd59885d0042c"
+    },
+    "paired_protocol_actual_failure": {
+      "path": "round4-verification/paired-protocol-environment-interpretation.json",
+      "bytes": 1253,
+      "sha256": "3658c82a7cd92297e5f7866eb2713da1d4ac4aeb44cb1bac084ae88ae29ef927"
+    },
+    "macos_cause_not_inferred_from_local_eperm": true
+  },
+  "environment_excluded_names": [
+    "codex-hepta-supervisor daemon::shutdown_tests::dropping_server_future_aborts_and_reaps_idle_connections",
+    "codex-hepta-supervisor daemon::shutdown_tests::shutdown_drains_accepted_connection_before_owner_can_be_replaced",
+    "codex-hepta-supervisor daemon::tests::unresolved_signed_intent_keeps_daemon_reachable_but_not_ready",
+    "codex-hepta-supervisor unix::drain_tests::malformed_or_wrong_generation_drain_frames_still_reject",
+    "codex-hepta-supervisor unix::drain_tests::missing_or_closed_socket_never_becomes_a_drain_acknowledgement",
+    "codex-hepta-supervisor unix::drain_tests::only_exact_closed_admission_with_no_running_turns_is_drained",
+    "codex-hepta-supervisor unix::peer_identity_tests::drain_never_sends_a_frame_to_a_socket_owned_by_another_process",
+    "codex-hepta-supervisor unix::peer_identity_tests::forged_agentd_health_cannot_adopt_or_signal_an_unrelated_child",
+    "codex-hepta-supervisor unix::peer_identity_tests::forged_matrix_health_cannot_adopt_or_signal_an_unrelated_child",
+    "codex-hepta-supervisor unix::tests::health_probe_requires_exact_agent_generation_pid_and_roots",
+    "codex-hepta-supervisor unix::tests::matrix_health_transport_rejects_response_larger_than_one_mib",
+    "codex-hepta-supervisor::daemon_product product_binary_is_single_instance_owner_only_and_bad_frames_are_isolated",
+    "codex-hepta-supervisor::daemon_product product_binary_serves_the_complete_256_agent_roster",
+    "codex-hepta-supervisor::paired_process_product five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash",
+    "codex-hepta-supervisor::paired_process_product protocol_tests::paired_child_methods_and_exact_drain_use_real_protocol_validation",
+    "codex-hepta-supervisor::paired_process_product two_real_pairs_restart_one_without_peer_pid_churn"
+  ],
+  "existing_ignored_helper_names": [
+    "codex-hepta-supervisor::paired_process_product paired_child_process",
+    "codex-hepta-supervisor::sigkill_crash_matrix sigkill_child_publishes_actual_supervisor_journals"
+  ],
+  "actual_socketpair_proof": [
+    {
+      "status": "PASS",
+      "duration": "0.006s",
+      "name": "codex-hepta-supervisor unix::peer_identity_tests::kernel_peer_identity_accepts_the_actual_socket_pair_process"
+    },
+    {
+      "status": "PASS",
+      "duration": "0.008s",
+      "name": "codex-hepta-supervisor unix::peer_identity_tests::kernel_peer_identity_rejects_a_different_live_process_and_invalid_pid"
+    }
+  ],
+  "qualified_parent_proof": [
+    {
+      "status": "PASS",
+      "duration": "0.018s",
+      "name": "codex-hepta-supervisor::sigkill_crash_matrix actual_sigkill_preserves_lease_restart_intent_and_transaction"
+    },
+    {
+      "status": "PASS",
+      "duration": "179.057s",
+      "name": "codex-hepta-supervisor::supervisor_hol_qualification qualifies_256_instances_fault_waves_and_owner_lock_hol"
+    }
+  ],
+  "hol": {
+    "instances": 256,
+    "actual_parent_seconds": 179.057,
+    "raw_receipt": {
+      "path": "qualification/runtime-supervisor/LOCAL_HOL_RAW_RECEIPT_20261001_R4.json",
+      "bytes": 4930,
+      "sha256": "aec2724451379ce0eb4475085319215000c64424d98db4a3ce3b5da454e0d42d"
+    },
+    "target_host_measurement": false,
+    "product_latency_slo_credit": false,
+    "ignored_sigkill_child_is_not_parent_credit": true
+  },
+  "python_stages": [
+    {
+      "id": "hosted-six-validators",
+      "passed": 73,
+      "skipped": 0,
+      "reported_seconds": 1.793,
+      "exit_code": 0,
+      "exit_basis": "Root actual exec_command process completed with exit 0; retained raw transcript has all unique named cases ending ok and terminal OK.",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.test_hepta_supervisor_status",
+        "scripts.test_hepta_supervisor_external_receipt",
+        "scripts.test_hepta_supervisor_ci",
+        "scripts.test_hepta_supervisor_ci_v3",
+        "scripts.test_hepta_supervisor_workflow",
+        "scripts.test_runtime_supervisor_materialize"
+      ],
+      "observed_modules_in_order": [
+        "scripts.test_hepta_supervisor_status",
+        "scripts.test_hepta_supervisor_external_receipt",
+        "scripts.test_hepta_supervisor_ci",
+        "scripts.test_hepta_supervisor_ci_v3",
+        "scripts.test_hepta_supervisor_workflow",
+        "scripts.test_runtime_supervisor_materialize"
+      ],
+      "command_metadata_pending_owner_confirmation": false,
+      "log": {
+        "path": "round4-ci/python-hosted-fleet-final-preformat.log",
+        "bytes": 13114,
+        "sha256": "67f7afed8efedebbd664015d3dc281672eb0387a7f63d4cd6c1ecb34324143bd"
+      },
+      "cwd": "/workspace/scratch/89fe97a34325/hepta-private-ci"
+    },
+    {
+      "id": "evidence-and-integrity",
+      "passed": 54,
+      "skipped": 0,
+      "reported_seconds": 0.5,
+      "exit_code": 0,
+      "exit_basis": "Root actual exec_command process completed with exit 0; retained raw transcript has all unique named cases ending ok and terminal OK.",
+      "argv": [
+        "python3",
+        "-m",
+        "unittest",
+        "-v",
+        "scripts.test_hepta_supervisor_evidence",
+        "scripts.test_hepta_repository_integrity"
+      ],
+      "observed_modules_in_order": [
+        "scripts.test_hepta_supervisor_evidence",
+        "scripts.test_hepta_repository_integrity"
+      ],
+      "command_metadata_pending_owner_confirmation": false,
+      "log": {
+        "path": "round4-ci/python-evidence-integrity-final-preformat.log",
+        "bytes": 9185,
+        "sha256": "697d601883b5d936040b33c2145ff4553d98a37ddb0f005f5ff8eeda26839b73"
+      },
+      "cwd": "/workspace/scratch/89fe97a34325/hepta-private-ci"
+    }
+  ],
+  "python_passed_total": 127,
+  "python_named_inventory": {
+    "path": "qualification/runtime-supervisor/LOCAL_PYTHON_PASS_INVENTORY_20261001_R4.json",
+    "bytes": 18897,
+    "sha256": "6d2c875f286f5209a85508bcd9cf21b9bf403041c0ad099a49e82e89990b4c6d"
+  },
+  "transparent_nonpass_history": [
+    {
+      "id": "initial-native-import-macro-compilation-failure",
+      "phase": "nextest compile, before test execution",
+      "exit_code": 101,
+      "compile_errors": 13,
+      "error_class": "Ambiguous pretty_assertions assert_eq imports",
+      "argv": null,
+      "test_pass_credit": false,
+      "log": {
+        "path": "round4-verification/targeted-new-regressions.log",
+        "bytes": 31101,
+        "sha256": "4786486a298a1389c7295eb4a1f90fdf0fbe73114329906345475a58fa7c89c9"
+      }
+    },
+    {
+      "id": "initial-native-terminal-transaction-fixture-and-listener-failures",
+      "exit_code": 100,
+      "run": 21,
+      "passed": 17,
+      "failed": 4,
+      "filtered_out": 348,
+      "fixture_error": "terminal release transaction used invalid generation; repaired by real Fleet CAS generation 2",
+      "actual_new_listener_failed_names": [
+        "codex-hepta-supervisor unix::peer_identity_tests::forged_agentd_health_cannot_adopt_or_signal_an_unrelated_child",
+        "codex-hepta-supervisor unix::peer_identity_tests::forged_matrix_health_cannot_adopt_or_signal_an_unrelated_child",
+        "codex-hepta-supervisor unix::peer_identity_tests::drain_never_sends_a_frame_to_a_socket_owned_by_another_process"
+      ],
+      "actual_socketpair_pass_names": [
+        "codex-hepta-supervisor unix::peer_identity_tests::kernel_peer_identity_accepts_the_actual_socket_pair_process",
+        "codex-hepta-supervisor unix::peer_identity_tests::kernel_peer_identity_rejects_a_different_live_process_and_invalid_pid"
+      ],
+      "argv": null,
+      "entire_stage_pass_credit": false,
+      "log": {
+        "path": "round4-verification/targeted-new-regressions-import-fix.log",
+        "bytes": 105024,
+        "sha256": "778db600ab0b61afdd356970d7020bd6614fc57288eb1e87837cd59885d0042c"
+      }
+    },
+    {
+      "id": "original-emergency-kill-order-oracle",
+      "exit_code": 100,
+      "passed": 357,
+      "failed": 1,
+      "environment_skipped": 11,
+      "failed_case": "codex-hepta-supervisor supervisor::tests::kill_supersedes_inflight_paired_restart_without_replacement",
+      "repair": "Aligned original event-order inequality with existing main-first emergency Kill contract. Event presence, exact main/Matrix call counts, no replacement, peer isolation and exit checks retained; no timeout, skip or production change to evade it.",
+      "entire_stage_pass_credit": false,
+      "log": {
+        "path": "round4-verification/history/legacy-order-default/default-selected-lib.log",
+        "bytes": 103302,
+        "sha256": "481eb5504320fdf536c44154a579e6d79544adf902329aa29ecf8267f2dd21be"
+      },
+      "results": {
+        "path": "round4-verification/history/legacy-order-default/default-selected-lib.results.json",
+        "bytes": 73719,
+        "sha256": "004feda97f3c740d0bbe4e913425391186abe35367e2c46e199eda46f3ee1fa9"
+      },
+      "input_snapshot": {
+        "path": "round4-verification/history/legacy-order-default/native-source-manifest.json",
+        "bytes": 248126,
+        "sha256": "a8e89e6ab1feb017c7daf84a6823d284ec57aef94faf7edacfed01b2faa9788c"
+      }
+    },
+    {
+      "id": "actual-paired-product-protocol-environment-failure",
+      "exit_code": 100,
+      "passed": 0,
+      "failed": 1,
+      "timed_out": 0,
+      "actual_seconds": 56.61830378400009,
+      "reason": "Actual controlled child reached UnixListener construction and failed with os error 1 EPERM. Parent preserved exit101 and embedded child stderr, then reported not-ready. This is local environment evidence, not remote macOS evidence or protocol-success evidence.",
+      "decoded_child_stderr": [
+        "\nthread 'paired_child_process' (335) panicked at hepta-supervisor/tests/paired_process_product.rs:534:9:\npaired child failed: Operation not permitted (os error 1)\nnote: run with `RUST_BACKTRACE=1` environment variable to display a backtrace\n"
+      ],
+      "entire_stage_pass_credit": false,
+      "log": {
+        "path": "round4-verification/paired-protocol-environment.log",
+        "bytes": 6261,
+        "sha256": "3b18f3e93ea62ccb8bd0d624f68e44de724d5c8843b83a70857d6d44a4b2b5e5"
+      },
+      "command": {
+        "path": "round4-verification/paired-protocol-environment.command.json",
+        "bytes": 779,
+        "sha256": "e58d97bd9cd6d610d53a2fea5cde04d3a38faa300a2fa662204801e0ceb86d90"
+      },
+      "results": {
+        "path": "round4-verification/paired-protocol-environment.results.json",
+        "bytes": 2250,
+        "sha256": "024827b2a93d4b470a721490275bc60d550e3b91ee21ce75b799b59de71e2984"
+      },
+      "input_snapshot": {
+        "path": "round4-verification/native-source-manifest-protocol-environment-history.json",
+        "bytes": 247972,
+        "sha256": "e6a14deebb92fdb6defd097b9b3d3cae7968a95a086978200d445e57f7ddd798"
+      }
+    }
+  ],
+  "prior_initial_fleet_checkpoint": {
+    "passed": 42,
+    "final_manifest_credit": false,
+    "results": {
+      "path": "round4-verification/fleet-package.results.json",
+      "bytes": 8930,
+      "sha256": "97f6a69747b9b326f8c765c01052f2671c336a71fa0ccb1e0a8f8265c8c55a83"
+    },
+    "input_snapshot": {
+      "path": "round4-verification/native-source-manifest-initial-fleet-history.json",
+      "bytes": 247777,
+      "sha256": "a2bf7d8ed44fba4724a762c8f51109398319b926e981026b9985a23ac6c05e51"
+    }
+  },
+  "toolchain_and_locked_dependencies": {
+    "path": "round4-verification/toolchain-observation.json",
+    "bytes": 8647,
+    "sha256": "41a1a79fc3c09a8985df9e6143f77cd21afacffba8d5cda625df054040007cf5"
+  },
+  "test_order": {
+    "all_native_tests_completed_before_root_final_fix_and_fmt": true,
+    "native_tests_repeated_after_final_fix_or_fmt": false
+  },
+  "root_completion": {
+    "all_requested_chores_passed": true,
+    "all_requested_strict_checks_passed": true,
+    "tests_after_fix_or_fmt": false,
+    "source_tree_equivalence": {
+      "local": {
+        "commit": "4825dd2ebdba4bd0b65ac619bf943f3644e4666d",
+        "tree": "b0813e63eddf49863fd49f38d9383ca4c60299f2"
+      },
+      "github": {
+        "commit": "5489fb84cee5a51e4baa30ecfc665302e68742e7",
+        "tree": "b0813e63eddf49863fd49f38d9383ca4c60299f2"
+      },
+      "all_nine_stage_trees_identical": true
+    },
+    "scope_restore": {
+      "unrelated_format_only_paths_restored": 46
+    },
+    "post_format_production_rust_equivalent": true,
+    "python_ast_equivalent_count": 5,
+    "test_only_change": "Existing Fleet authority_port ledger helper propagates admit_host error to its existing #[test] caller; production prefix is unchanged and default all-target strict check passed. Not re-executed after fix/fmt."
+  },
+  "chores": [
+    {
+      "stage": "fix-default",
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-supervisor",
+        "-p",
+        "codex-hepta-fleet",
+        "--no-deps"
+      ],
+      "cwd": "/workspace/scratch/89fe97a34325/hepta-private-ci/codex-rs",
+      "started_at": "2026-10-01T20:35:19.346550+00:00",
+      "finished_at": "2026-10-01T20:36:13.068196+00:00",
+      "duration_seconds": 53.72165321900047,
+      "exit_code": 0,
+      "log": {
+        "path": "fix-default.log",
+        "bytes": 7055,
+        "sha256": "3eac5d7a33406d77db432ec840b5d68733b42f16044f5ed72b6b0a526c15fc00"
+      }
+    },
+    {
+      "stage": "fix-qualified",
+      "argv": [
+        "just",
+        "fix",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-supervisor",
+        "--features",
+        "qualification,offline-authority-tools",
+        "--no-deps"
+      ],
+      "cwd": "/workspace/scratch/89fe97a34325/hepta-private-ci/codex-rs",
+      "started_at": "2026-10-01T20:36:51.329734+00:00",
+      "finished_at": "2026-10-01T20:37:09.660184+00:00",
+      "duration_seconds": 18.33045760100049,
+      "exit_code": 0,
+      "log": {
+        "path": "fix-qualified.log",
+        "bytes": 855,
+        "sha256": "24191f93dcb2ad13d3a9a12ff898f66d03cd002031e69f6e2dc138dc4f5ab2cb"
+      }
+    },
+    {
+      "stage": "full-format",
+      "argv": [
+        "just",
+        "fmt"
+      ],
+      "cwd": "/workspace/scratch/89fe97a34325/hepta-private-ci/codex-rs",
+      "started_at": "2026-10-01T20:37:19.890587+00:00",
+      "finished_at": "2026-10-01T20:37:35.733938+00:00",
+      "duration_seconds": 15.843358229999467,
+      "exit_code": 0,
+      "log": {
+        "path": "full-format.log",
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      }
+    },
+    {
+      "stage": "strict-default",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-supervisor",
+        "-p",
+        "codex-hepta-fleet",
+        "--no-deps",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/workspace/scratch/89fe97a34325/hepta-private-ci/codex-rs",
+      "started_at": "2026-10-01T20:37:52.886569+00:00",
+      "finished_at": "2026-10-01T20:38:26.337149+00:00",
+      "duration_seconds": 33.45058807900023,
+      "exit_code": 0,
+      "log": {
+        "path": "strict-default.log",
+        "bytes": 5223,
+        "sha256": "2f32d69b062487d70e367effaf375b5b5b1b5afa61ee631cca3a94761ad0d658"
+      }
+    },
+    {
+      "stage": "strict-qualified",
+      "argv": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "-p",
+        "codex-hepta-supervisor",
+        "--features",
+        "qualification,offline-authority-tools",
+        "--no-deps",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/workspace/scratch/89fe97a34325/hepta-private-ci/codex-rs",
+      "started_at": "2026-10-01T20:39:40.192856+00:00",
+      "finished_at": "2026-10-01T20:39:49.740326+00:00",
+      "duration_seconds": 9.547488002000136,
+      "exit_code": 0,
+      "log": {
+        "path": "strict-qualified.log",
+        "bytes": 568,
+        "sha256": "f3554b53f1231c1ad85fad3b4a170eb40edfdb759bd36b124b19f3b89cc07f70"
+      }
+    }
+  ],
+  "raw_evidence_archive": {
+    "path": "qualification/runtime-supervisor/LOCAL_RAW_EVIDENCE_20261001_R4.tar.gz",
+    "bytes": 2367887,
+    "sha256": "4a8a78c80f1cb1f57932774198a750731d6fee0235ae54ecacdc5b50e43da1bf",
+    "files": 455,
+    "interpretation": "Exact raw transcripts, original command/result records, failure checkpoints, tool observations and pre-format native source copies. Paths inside retain original round4-verification or round4-ci prefix. This archive grants no independent acceptance."
+  },
+  "post_format_equivalence": {
+    "path": "qualification/runtime-supervisor/LOCAL_POST_FORMAT_EQUIVALENCE_20261001_R4.json",
+    "bytes": 43964,
+    "sha256": "134d607319fbbb6d2a43fabc04d377277bb804611951c51ed001ab60bc31c068"
+  }
+}

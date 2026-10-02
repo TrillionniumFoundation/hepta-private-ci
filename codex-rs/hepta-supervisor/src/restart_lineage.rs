@@ -171,8 +171,7 @@ impl DurableRestartLineage {
             RestartLineagePhase::ReplacementPending => {
                 self.predecessor_exit_observed && self.replacement.is_none()
             }
-            RestartLineagePhase::ReplacementStarted
-            | RestartLineagePhase::Completed => {
+            RestartLineagePhase::ReplacementStarted | RestartLineagePhase::Completed => {
                 self.predecessor_exit_observed && self.replacement.is_some()
             }
             RestartLineagePhase::Cancelled => true,
@@ -186,18 +185,14 @@ impl DurableRestartLineage {
                 "restart operation identity or phase is outside its bounds".to_string(),
             ));
         }
-        if let (Some(predecessor), Some(replacement)) =
-            (&self.predecessor, &self.replacement)
-        {
-            if predecessor == replacement
+        if let (Some(predecessor), Some(replacement)) = (&self.predecessor, &self.replacement)
+            && (predecessor == replacement
                 || replacement.spawn_generation <= predecessor.spawn_generation
-                || replacement.release_id != predecessor.release_id
-            {
-                return Err(RestartLineageError::Invalid(
-                    "restart replacement does not prove a fresh same-release generation"
-                        .to_string(),
-                ));
-            }
+                || replacement.release_id != predecessor.release_id)
+        {
+            return Err(RestartLineageError::Invalid(
+                "restart replacement does not prove a fresh same-release generation".to_string(),
+            ));
         }
         if self.record_sha256 != self.compute_digest()? {
             return Err(RestartLineageError::DigestMismatch);
@@ -302,8 +297,8 @@ pub(crate) fn reconcile_pending(
             }
             None if !process_lease_present => {
                 lineage = lineage.with_state(
-                    true,
-                    None,
+                    /*predecessor_exit_observed*/ true,
+                    /*replacement*/ None,
                     RestartLineagePhase::ReplacementPending,
                 )?;
                 write(run_root, &lineage)?;
@@ -325,7 +320,7 @@ pub(crate) fn reconcile_pending(
                     ));
                 }
                 lineage = lineage.with_state(
-                    true,
+                    /*predecessor_exit_observed*/ true,
                     Some(current.clone()),
                     RestartLineagePhase::ReplacementStarted,
                 )?;
@@ -356,12 +351,9 @@ pub(crate) fn bind_replacement(
     attempt: u32,
     replacement: RestartProcessWitness,
 ) -> Result<(), RestartLineageError> {
-    let lineage = read(run_root)?.ok_or_else(|| {
-        RestartLineageError::Invalid("restart lineage is absent".to_string())
-    })?;
-    if lineage.agent_id != *agent_id
-        || !lineage.same_operation(window_started_unix_ms, attempt)
-    {
+    let lineage = read(run_root)?
+        .ok_or_else(|| RestartLineageError::Invalid("restart lineage is absent".to_string()))?;
+    if lineage.agent_id != *agent_id || !lineage.same_operation(window_started_unix_ms, attempt) {
         return Err(RestartLineageError::Invalid(
             "restart lineage operation identity changed".to_string(),
         ));
@@ -379,7 +371,7 @@ pub(crate) fn bind_replacement(
         ));
     }
     let next = lineage.with_state(
-        true,
+        /*predecessor_exit_observed*/ true,
         Some(replacement),
         RestartLineagePhase::ReplacementStarted,
     )?;
@@ -391,9 +383,8 @@ pub(crate) fn mark_predecessor_exited(
     agent_id: &AgentId,
     predecessor: &RestartProcessWitness,
 ) -> Result<(), RestartLineageError> {
-    let lineage = read(run_root)?.ok_or_else(|| {
-        RestartLineageError::Invalid("restart lineage is absent".to_string())
-    })?;
+    let lineage = read(run_root)?
+        .ok_or_else(|| RestartLineageError::Invalid("restart lineage is absent".to_string()))?;
     if lineage.agent_id != *agent_id || lineage.predecessor.as_ref() != Some(predecessor) {
         return Err(RestartLineageError::Invalid(
             "exit does not match the durable restart predecessor".to_string(),
@@ -415,7 +406,11 @@ pub(crate) fn mark_predecessor_exited(
     }
     write(
         run_root,
-        &lineage.with_state(true, None, RestartLineagePhase::ReplacementPending)?,
+        &lineage.with_state(
+            /*predecessor_exit_observed*/ true,
+            /*replacement*/ None,
+            RestartLineagePhase::ReplacementPending,
+        )?,
     )
 }
 
@@ -424,9 +419,8 @@ pub(crate) fn complete(
     agent_id: &AgentId,
     replacement: &RestartProcessWitness,
 ) -> Result<(), RestartLineageError> {
-    let lineage = read(run_root)?.ok_or_else(|| {
-        RestartLineageError::Invalid("restart lineage is absent".to_string())
-    })?;
+    let lineage = read(run_root)?
+        .ok_or_else(|| RestartLineageError::Invalid("restart lineage is absent".to_string()))?;
     if lineage.agent_id != *agent_id || lineage.replacement.as_ref() != Some(replacement) {
         return Err(RestartLineageError::Invalid(
             "healthy process is not the durable restart replacement".to_string(),
@@ -443,17 +437,51 @@ pub(crate) fn complete(
     write(
         run_root,
         &lineage.with_state(
-            true,
+            /*predecessor_exit_observed*/ true,
             Some(replacement.clone()),
             RestartLineagePhase::Completed,
         )?,
     )
 }
 
-pub(crate) fn cancel(
+/// Failed startup is terminal for this exact replacement attempt. Preserve the
+/// consumed budget, and never let an unrelated process cancel its owner record.
+pub(crate) fn cancel_exited_replacement(
     run_root: &Path,
     agent_id: &AgentId,
-) -> Result<(), RestartLineageError> {
+    replacement: &RestartProcessWitness,
+) -> Result<bool, RestartLineageError> {
+    let Some(lineage) = read(run_root)? else {
+        return Ok(false);
+    };
+    if lineage.agent_id != *agent_id {
+        return Err(RestartLineageError::Invalid(
+            "restart lineage belongs to another Agent".to_string(),
+        ));
+    }
+    if lineage.replacement.as_ref() != Some(replacement) {
+        return Ok(false);
+    }
+    match lineage.phase {
+        RestartLineagePhase::ReplacementStarted => {
+            write(
+                run_root,
+                &lineage.with_state(
+                    lineage.predecessor_exit_observed,
+                    lineage.replacement.clone(),
+                    RestartLineagePhase::Cancelled,
+                )?,
+            )?;
+            Ok(true)
+        }
+        RestartLineagePhase::Cancelled => Ok(true),
+        RestartLineagePhase::PredecessorOwned
+        | RestartLineagePhase::ReplacementPending
+        | RestartLineagePhase::Completed => Ok(false),
+    }
+}
+
+pub(crate) fn cancel(run_root: &Path, agent_id: &AgentId) -> Result<(), RestartLineageError> {
     let Some(lineage) = read(run_root)? else {
         return Ok(());
     };
@@ -475,11 +503,61 @@ pub(crate) fn cancel(
     )
 }
 
+/// Cancel only the charged replacement operation whose dispatch failed before
+/// acquiring a process. A later operation or an owned replacement is ineligible.
+pub(crate) fn cancel_failed_spawn(
+    run_root: &Path,
+    agent_id: &AgentId,
+    window_started_unix_ms: u64,
+    attempt: u32,
+) -> Result<(), RestartLineageError> {
+    let lineage = read(run_root)?.ok_or_else(|| {
+        RestartLineageError::Invalid("failed restart dispatch has no lineage".to_string())
+    })?;
+    if lineage.agent_id != *agent_id
+        || !lineage.same_operation(window_started_unix_ms, attempt)
+        || lineage.replacement.is_some()
+        || !matches!(
+            lineage.phase,
+            RestartLineagePhase::ReplacementPending | RestartLineagePhase::Cancelled
+        )
+    {
+        return Err(RestartLineageError::Invalid(
+            "failed dispatch does not match an unowned replacement operation".to_string(),
+        ));
+    }
+    // A previous rename may have published Cancelled before directory sync
+    // failed. Republish the exact terminal witness so every successful retry
+    // obtains a fresh same-parent durability receipt before forgetting it.
+    write(
+        run_root,
+        &lineage.with_state(
+            lineage.predecessor_exit_observed,
+            /*replacement*/ None,
+            RestartLineagePhase::Cancelled,
+        )?,
+    )
+}
+
 pub(crate) fn cancel_if_budget_absent(
     run_root: &Path,
     agent_id: &AgentId,
 ) -> Result<(), RestartLineageError> {
     cancel(run_root, agent_id)
+}
+
+pub(crate) fn validate_recovery(
+    run_root: &Path,
+    agent_id: &AgentId,
+) -> Result<(), RestartLineageError> {
+    if let Some(lineage) = read(run_root)?
+        && lineage.agent_id != *agent_id
+    {
+        return Err(RestartLineageError::Invalid(
+            "restart lineage belongs to another Agent".to_string(),
+        ));
+    }
+    Ok(())
 }
 
 fn read(run_root: &Path) -> Result<Option<DurableRestartLineage>, RestartLineageError> {
@@ -526,29 +604,24 @@ fn read(run_root: &Path) -> Result<Option<DurableRestartLineage>, RestartLineage
     Ok(Some(lineage))
 }
 
-fn write(
-    run_root: &Path,
-    lineage: &DurableRestartLineage,
-) -> Result<(), RestartLineageError> {
+fn write(run_root: &Path, lineage: &DurableRestartLineage) -> Result<(), RestartLineageError> {
     lineage.validate()?;
     std::fs::create_dir_all(run_root)?;
     let destination = run_root.join(RESTART_LINEAGE_FILE);
     let sequence = TEMP_SEQUENCE.fetch_add(1, Ordering::Relaxed);
     let nanos = SystemTime::now()
         .duration_since(SystemTime::UNIX_EPOCH)
-        .map_err(|_| {
-            RestartLineageError::Invalid("system clock is before Unix epoch".to_string())
-        })?
+        .map_err(|_| RestartLineageError::Invalid("system clock is before Unix epoch".to_string()))?
         .as_nanos();
-    let staging = run_root.join(format!(
-        ".{RESTART_LINEAGE_FILE}.{nanos}.{sequence}.tmp"
-    ));
+    let staging = run_root.join(format!(".{RESTART_LINEAGE_FILE}.{nanos}.{sequence}.tmp"));
     let mut options = OpenOptions::new();
     options.write(true).create_new(true);
     #[cfg(unix)]
     {
         use std::os::unix::fs::OpenOptionsExt;
-        options.mode(0o600).custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
+        options
+            .mode(0o600)
+            .custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC);
     }
     let mut file = options.open(&staging)?;
     let bytes = serde_json::to_vec(lineage)?;
@@ -561,7 +634,7 @@ fn write(
     if let Err(error) = (|| -> std::io::Result<()> {
         file.write_all(&bytes)?;
         file.sync_all()?;
-        crate::durable_publish::publish(&staging, &destination)
+        crate::durable_publish::publish_at(&staging, &destination, "restart_lineage")
     })() {
         let _ = std::fs::remove_file(&staging);
         return Err(error.into());
@@ -637,18 +710,17 @@ mod tests {
     fn predecessor_cannot_be_completed_as_the_replacement() {
         let directory = tempfile::tempdir().expect("tempdir");
         let predecessor = witness(11, "predecessor");
-        begin(directory.path(), &agent(), 100, 1, Some(predecessor.clone()))
-            .expect("begin");
+        begin(
+            directory.path(),
+            &agent(),
+            100,
+            1,
+            Some(predecessor.clone()),
+        )
+        .expect("begin");
         assert_eq!(
-            reconcile_pending(
-                directory.path(),
-                &agent(),
-                100,
-                1,
-                Some(&predecessor),
-                true,
-            )
-            .expect("recover"),
+            reconcile_pending(directory.path(), &agent(), 100, 1, Some(&predecessor), true,)
+                .expect("recover"),
             RestartRecoveryRole::PredecessorOwned
         );
         assert!(complete(directory.path(), &agent(), &predecessor).is_err());
@@ -659,40 +731,27 @@ mod tests {
         let directory = tempfile::tempdir().expect("tempdir");
         let predecessor = witness(11, "predecessor");
         let replacement = witness(12, "replacement");
-        begin(directory.path(), &agent(), 100, 1, Some(predecessor.clone()))
-            .expect("begin");
+        begin(
+            directory.path(),
+            &agent(),
+            100,
+            1,
+            Some(predecessor.clone()),
+        )
+        .expect("begin");
         mark_predecessor_exited(directory.path(), &agent(), &predecessor)
             .expect("predecessor exit");
         mark_predecessor_exited(directory.path(), &agent(), &predecessor)
             .expect("replayed predecessor exit");
-        bind_replacement(
-            directory.path(),
-            &agent(),
-            100,
-            1,
-            replacement.clone(),
-        )
-        .expect("replacement");
-        bind_replacement(
-            directory.path(),
-            &agent(),
-            100,
-            1,
-            replacement.clone(),
-        )
-        .expect("replayed replacement");
+        bind_replacement(directory.path(), &agent(), 100, 1, replacement.clone())
+            .expect("replacement");
+        bind_replacement(directory.path(), &agent(), 100, 1, replacement.clone())
+            .expect("replayed replacement");
         complete(directory.path(), &agent(), &replacement).expect("complete");
         complete(directory.path(), &agent(), &replacement).expect("replayed complete");
         assert_eq!(
-            reconcile_pending(
-                directory.path(),
-                &agent(),
-                100,
-                1,
-                Some(&replacement),
-                true,
-            )
-            .expect("recover"),
+            reconcile_pending(directory.path(), &agent(), 100, 1, Some(&replacement), true,)
+                .expect("recover"),
             RestartRecoveryRole::Completed
         );
     }
@@ -702,15 +761,8 @@ mod tests {
         let directory = tempfile::tempdir().expect("tempdir");
         let predecessor = witness(11, "predecessor");
         assert_eq!(
-            reconcile_pending(
-                directory.path(),
-                &agent(),
-                100,
-                1,
-                Some(&predecessor),
-                true,
-            )
-            .expect("reconstruct"),
+            reconcile_pending(directory.path(), &agent(), 100, 1, Some(&predecessor), true,)
+                .expect("reconstruct"),
             RestartRecoveryRole::PredecessorOwned
         );
     }
@@ -719,8 +771,7 @@ mod tests {
     fn changed_live_identity_is_rejected() {
         let directory = tempfile::tempdir().expect("tempdir");
         let predecessor = witness(11, "predecessor");
-        begin(directory.path(), &agent(), 100, 1, Some(predecessor))
-            .expect("begin");
+        begin(directory.path(), &agent(), 100, 1, Some(predecessor)).expect("begin");
         assert!(
             reconcile_pending(
                 directory.path(),
@@ -731,6 +782,41 @@ mod tests {
                 true,
             )
             .is_err()
+        );
+    }
+
+    #[test]
+    fn only_the_exact_unhealthy_replacement_can_cancel_its_attempt_after_exit() {
+        let directory = tempfile::tempdir().expect("tempdir");
+        let predecessor = witness(11, "predecessor");
+        let replacement = witness(12, "replacement");
+        begin(
+            directory.path(),
+            &agent(),
+            100,
+            1,
+            Some(predecessor.clone()),
+        )
+        .expect("begin");
+        mark_predecessor_exited(directory.path(), &agent(), &predecessor)
+            .expect("predecessor exit");
+        bind_replacement(directory.path(), &agent(), 100, 1, replacement.clone())
+            .expect("replacement");
+        assert!(
+            !cancel_exited_replacement(directory.path(), &agent(), &predecessor)
+                .expect("unrelated exit")
+        );
+        assert!(
+            cancel_exited_replacement(directory.path(), &agent(), &replacement)
+                .expect("exact exit")
+        );
+        assert!(
+            cancel_exited_replacement(directory.path(), &agent(), &replacement)
+                .expect("replayed exact exit")
+        );
+        assert_eq!(
+            reconcile_pending(directory.path(), &agent(), 100, 1, None, false).expect("recover"),
+            RestartRecoveryRole::Cancelled
         );
     }
 }

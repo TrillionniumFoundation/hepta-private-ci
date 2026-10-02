@@ -29,12 +29,12 @@ use crate::restart_lineage::RestartProcessWitness;
 use crate::restart_lineage::RestartRecoveryRole;
 use crate::runtime::AgentRuntime;
 use crate::runtime::AgentSlot;
-use crate::runtime::MatrixRuntimePhase;
 use crate::runtime::RuntimePhase;
 use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 use crate::runtime::is_live_lifecycle;
+use crate::supervisor::ConstructorHydration;
 
 #[path = "adopted_release.rs"]
 mod adopted_release;
@@ -77,6 +77,21 @@ impl<D: ProcessDriver> Supervisor<D> {
         {
             return Ok(());
         }
+        if slot.has_recovery_denial() {
+            // A denied idle slot still exposes corrupt persisted catalog
+            // evidence. Resolving it grants no metadata or restart admission;
+            // in particular, do not normalize a future/expired Matrix window.
+            for release_id in [
+                record.release_state.current.as_ref(),
+                record.release_state.previous.as_ref(),
+            ]
+            .into_iter()
+            .flatten()
+            {
+                self.resolve_persisted_release(agent_id, release_id)?;
+            }
+            return Ok(());
+        }
         self.hydrate_release_state(agent_id, slot, record)
     }
 
@@ -86,15 +101,25 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
     ) -> Result<(), SupervisorError> {
+        // A lease-bound adopted release may already be the healthy target of
+        // an unfinished transition while the committed release state still
+        // names its source. Preserve that exact admitted selection; only the
+        // transition owner may publish its new current/previous pair.
+        let active_release = if slot.runtime.is_some() {
+            slot.active_release.clone()
+        } else {
+            match record.release_state.current.as_ref() {
+                Some(release_id) => self.resolve_persisted_release(agent_id, release_id)?,
+                None => None,
+            }
+        };
+        let previous_release = match record.release_state.previous.as_ref() {
+            Some(release_id) => self.resolve_persisted_release(agent_id, release_id)?,
+            None => None,
+        };
         slot.release_state_generation = record.release_state.generation;
-        slot.active_release = match record.release_state.current.as_ref() {
-            Some(release_id) => self.resolve_persisted_release(agent_id, release_id)?,
-            None => None,
-        };
-        slot.previous_release = match record.release_state.previous.as_ref() {
-            Some(release_id) => self.resolve_persisted_release(agent_id, release_id)?,
-            None => None,
-        };
+        slot.active_release = active_release;
+        slot.previous_release = previous_release;
         slot.last_command = slot
             .active_release
             .as_ref()
@@ -102,7 +127,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         self.prepare_matrix_restart_recovery(agent_id, slot, record)
     }
 
-    fn resolve_persisted_release(
+    pub(crate) fn resolve_persisted_release(
         &self,
         agent_id: &AgentId,
         release_id: &codex_hepta_fleet::ReleaseId,
@@ -123,6 +148,11 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        if slot.has_recovery_denial() {
+            // Quarantine retains existing claims without reconciling or
+            // admitting automatic predecessor/replacement work.
+            return Ok(());
+        }
         let record = self.record(agent_id)?;
         if control_intent::cancel_restart_if_unresolved(record.layout.run_root(), agent_id)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
@@ -181,13 +211,44 @@ impl<D: ProcessDriver> Supervisor<D> {
                     record.lifecycle.generation,
                     SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
                 );
-                return Ok(());
+                return Err(SupervisorError::Invalid(error.to_string()));
             }
         };
         match role {
             RestartRecoveryRole::PredecessorOwned => {
                 slot.restart_pending = true;
                 slot.restart_not_before = Some(deadline(now, claim.backoff)?);
+                // A crash may occur after publishing the budget and lineage,
+                // before the original Drain/Stop was staged. The exact owned
+                // predecessor must resume that control; health alone cannot
+                // turn it into a replacement or leave it serving indefinitely.
+                if slot.pending_control.is_none()
+                    && slot.runtime.as_ref().is_some_and(|runtime| {
+                        !runtime.fenced
+                            && matches!(
+                                runtime.phase,
+                                RuntimePhase::AwaitingHealth { .. } | RuntimePhase::Running
+                            )
+                    })
+                {
+                    let control = if matches!(
+                        record.lifecycle.lifecycle,
+                        AgentLifecycle::Running | AgentLifecycle::Draining
+                    ) {
+                        self.drain_slot(agent_id, slot, now)
+                    } else {
+                        self.stop_runtime_slot(agent_id, slot, now)
+                    };
+                    if let Err(error) = control {
+                        // A retryable signal retains its staged control and
+                        // exact process. Do not abort recovery and drop the
+                        // owner solely because that signal was unacknowledged.
+                        slot.event(
+                            record.lifecycle.generation,
+                            SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
+                        );
+                    }
+                }
             }
             RestartRecoveryRole::ReplacementPending => {
                 slot.restart_pending = true;
@@ -233,6 +294,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        if slot.has_recovery_denial() {
+            return Err(SupervisorError::Invalid(format!(
+                "agent {agent_id} requires durable recovery before starting a process"
+            )));
+        }
+        let release = self.refresh_release_for_transition(agent_id, &release)?;
         let health_deadline = deadline(now, self.config.health_timeout)?;
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));
@@ -326,12 +393,16 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.event(starting.generation, SupervisorEventKind::Spawned);
         let publication = write_lease(record.layout.run_root(), &lease);
         let publication_failed = publication.is_err();
-        let initialized = slot.runtime.as_ref().and_then(|runtime| {
-            runtime.process.initialization_failure().map(str::to_owned)
-        });
+        let initialized = slot
+            .runtime
+            .as_ref()
+            .and_then(|runtime| runtime.process.initialization_failure().map(str::to_owned));
         let launch = publication
             .and_then(|()| match initialized {
-                Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
+                Some(error) => Err(driver_error(
+                    agent_id,
+                    crate::ProcessDriverError::new(error),
+                )),
                 None => Ok(()),
             })
             .and_then(|()| {
@@ -425,15 +496,29 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         record: &AgentRecord,
         now: Instant,
+        hydration: ConstructorHydration<'_>,
     ) -> Result<(), SupervisorError> {
         // Acquire the main owner first. Then attempt semantic hydration, but do
         // not propagate its failure before the independent Matrix acquisition.
         let main = self.recover_main_slot(agent_id, slot, record, now);
-        let hydration = self
-            .record(agent_id)
-            .and_then(|fresh| self.hydrate_release_state(agent_id, slot, &fresh));
+        if let Err(error) = &main
+            && !Self::recovery_control_fault_is_retryable(slot, error)
+        {
+            slot.recovery_blocker = Some(bounded_message(error.to_string()));
+        }
+        let hydration =
+            if slot.has_recovery_denial() || hydration.observes_idle(agent_id, slot, record) {
+                Ok(())
+            } else {
+                self.record(agent_id)
+                    .and_then(|fresh| self.hydrate_release_state(agent_id, slot, &fresh))
+            };
+        if let Err(error) = &hydration {
+            slot.recovery_blocker = Some(bounded_message(error.to_string()));
+        }
         let companion = self.recover_matrix_companion(agent_id, slot, record, now);
         if let Err(error) = &companion {
+            slot.recovery_blocker = Some(bounded_message(error.to_string()));
             slot.event(
                 record.lifecycle.generation,
                 SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
@@ -454,22 +539,23 @@ impl<D: ProcessDriver> Supervisor<D> {
         now: Instant,
         error: &SupervisorError,
     ) {
-        admission::reject_owned(agent_id, slot, now);
-        if let Some(runtime) = slot.matrix.runtime.as_mut() {
-            runtime.healthy = false;
-            runtime.fenced = true;
-            if !matches!(runtime.phase, MatrixRuntimePhase::Killing) {
-                runtime.phase = MatrixRuntimePhase::Stopping { deadline: now };
-            }
+        if slot.runtime.as_ref().is_some_and(|runtime| !runtime.fenced) {
+            admission::reject_owned(agent_id, slot, now);
         }
-        if let Err(signal) = self.kill_matrix_now(agent_id, slot) {
+        if slot
+            .matrix
+            .runtime
+            .as_ref()
+            .is_some_and(|runtime| !runtime.fenced)
+            && let Err(signal) = self.kill_matrix_now(agent_id, slot)
+        {
             slot.event(
-                0,
+                /*generation*/ 0,
                 SupervisorEventKind::DriverFault(bounded_message(signal.to_string())),
             );
         }
         slot.event(
-            0,
+            /*generation*/ 0,
             SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
         );
     }
@@ -535,14 +621,50 @@ impl<D: ProcessDriver> Supervisor<D> {
                     healthy: false,
                     fenced: true,
                 });
-                let admitted = admission.and_then(|admitted| {
+                let initialization =
                     match slot.runtime.as_ref().and_then(|runtime| {
                         runtime.process.initialization_failure().map(str::to_owned)
                     }) {
-                        Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
-                        None => Ok(admitted),
+                        Some(error) => Err(driver_error(
+                            agent_id,
+                            crate::ProcessDriverError::new(error),
+                        )),
+                        None => Ok(()),
+                    };
+                if slot.has_recovery_denial() {
+                    // Denial cannot hide independent admission/setup/catalog
+                    // faults. Check them without binding metadata or admitting
+                    // a phase, staged control, lifecycle CAS or replacement.
+                    let catalog = if lease.release_id.as_str() == "unversioned" {
+                        Ok(())
+                    } else {
+                        self.registry
+                            .resolve_release(agent_id, &lease.release_id)
+                            .map_err(SupervisorError::from)
+                            .and_then(|release| {
+                                if release.release_id != lease.release_id {
+                                    return Err(SupervisorError::CorruptLease(
+                                        "resolved release differs from the adopted process lease"
+                                            .to_string(),
+                                    ));
+                                }
+                                AgentRelease::try_from(release).map(|_| ())
+                            })
+                    };
+                    let mut faults = [admission.map(|_| ()), initialization, catalog]
+                        .into_iter()
+                        .filter_map(Result::err);
+                    let fault = faults.next();
+                    for error in faults {
+                        slot.event(
+                            record.lifecycle.generation,
+                            SupervisorEventKind::DriverFault(bounded_message(error.to_string())),
+                        );
                     }
-                });
+                    admission::reject_owned(agent_id, slot, now);
+                    return fault.map_or(Ok(()), Err);
+                }
+                let admitted = admission.and_then(|admitted| initialization.map(|()| admitted));
                 let admitted = match admitted {
                     Ok(admitted) => admitted,
                     Err(error) => {
@@ -573,12 +695,8 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.pending_control = admitted.control;
                 control_fault =
                     pending::apply_to_slot(agent_id, slot, now, self.config.stop_grace).err();
-                if record.lifecycle.lifecycle == AgentLifecycle::Running {
-                    // A daemon can die after committing the Running lifecycle but before
-                    // appending the matching release-state revision. The lease and exact
-                    // agentd handshake prove the live release; close that crash window now.
-                    self.persist_release_state(agent_id, slot)?;
-                }
+                // Metadata publication follows full transaction/intent
+                // recovery and a fresh healthy tick, never bare adoption.
             }
             Adoption::Missing => {
                 // An absent process does not make malformed control evidence
@@ -602,7 +720,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     terminal_lifecycle,
                 )
                 .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                slot.event(record.lifecycle.generation, SupervisorEventKind::OrphanMissing);
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::OrphanMissing,
+                );
             }
             Adoption::Rejected => {
                 admission?;
@@ -617,7 +738,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                         AgentLifecycle::Failed,
                     )?;
                 }
-                slot.event(record.lifecycle.generation, SupervisorEventKind::OrphanRejected);
+                slot.event(
+                    record.lifecycle.generation,
+                    SupervisorEventKind::OrphanRejected,
+                );
             }
         }
         if let Some(error) = control_fault {

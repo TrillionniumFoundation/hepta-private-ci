@@ -26,7 +26,10 @@ impl MatrixProcessLeaseRemoval {
 
     /// Construct only while retaining the child whose publication just failed.
     pub(crate) fn for_failed_publication(path: &Path, expected: &MatrixProcessLease) -> Self {
-        Self { unpublished_launch: true, ..Self::new(path, expected) }
+        Self {
+            unpublished_launch: true,
+            ..Self::new(path, expected)
+        }
     }
 
     pub(crate) fn finish(
@@ -36,7 +39,7 @@ impl MatrixProcessLeaseRemoval {
     ) -> Result<(), SupervisorError> {
         self.finish_with(path, expected, |parent| {
             #[cfg(unix)]
-            std::fs::File::open(parent)?.sync_all()?;
+            crate::directory_io::sync_directory(parent)?;
             #[cfg(not(unix))]
             let _ = parent;
             Ok(())

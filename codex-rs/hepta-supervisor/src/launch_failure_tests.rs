@@ -71,9 +71,15 @@ impl ManagedProcess for Process {
         }
         Ok(ProcessObservation {
             state: if state.exited {
-                ProcessState::Exited(ProcessExit { success: false, code: None })
+                ProcessState::Exited(ProcessExit {
+                    success: false,
+                    code: None,
+                })
             } else {
-                ProcessState::Running { healthy: true, drained: false }
+                ProcessState::Running {
+                    healthy: true,
+                    drained: false,
+                }
             },
             logs: Vec::new(),
         })
@@ -84,7 +90,9 @@ impl ManagedProcess for Process {
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
-        Err(ProcessDriverError::new("failed launch must not downgrade to stop"))
+        Err(ProcessDriverError::new(
+            "failed launch must not downgrade to stop",
+        ))
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
@@ -115,31 +123,41 @@ impl ProcessDriver for Driver {
                 std::fs::create_dir(spec.run_root.join("supervisor-process.json"))?;
             }
             PublicationFault::ExactPublishedLease | PublicationFault::ForeignPublishedLease => {
-                let lease_identity = if matches!(self.fault, PublicationFault::ForeignPublishedLease) {
-                    ProcessIdentity::new(43, "foreign-launch")
-                        .map_err(|error| ProcessDriverError::new(error.to_string()))?
-                } else {
-                    identity.clone()
-                };
-                write_lease(&spec.run_root, &ProcessLease {
-                    schema_version: PROCESS_LEASE_SCHEMA_VERSION,
-                    agent_id: spec.agent_id.clone(),
-                    spawn_generation: spec.generation,
-                    release_id: ReleaseId::parse("candidate")
-                        .map_err(|error| ProcessDriverError::new(error.to_string()))?,
-                    identity: lease_identity,
-                }).map_err(|error| ProcessDriverError::new(error.to_string()))?;
+                let lease_identity =
+                    if matches!(self.fault, PublicationFault::ForeignPublishedLease) {
+                        ProcessIdentity::new(43, "foreign-launch")
+                            .map_err(|error| ProcessDriverError::new(error.to_string()))?
+                    } else {
+                        identity.clone()
+                    };
+                write_lease(
+                    &spec.run_root,
+                    &ProcessLease {
+                        schema_version: PROCESS_LEASE_SCHEMA_VERSION,
+                        agent_id: spec.agent_id.clone(),
+                        spawn_generation: spec.generation,
+                        release_id: ReleaseId::parse("candidate")
+                            .map_err(|error| ProcessDriverError::new(error.to_string()))?,
+                        identity: lease_identity,
+                    },
+                )
+                .map_err(|error| ProcessDriverError::new(error.to_string()))?;
             }
         }
         if self.hide_manifest {
             let root = spec.run_root.parent().expect("Agent run root");
             std::fs::rename(root.join("agent.toml"), root.join("agent.saved"))?;
         }
-        Ok(SpawnedProcess { identity, process: Process(Arc::clone(&self.state)) })
+        Ok(SpawnedProcess {
+            identity,
+            process: Process(Arc::clone(&self.state)),
+        })
     }
 
     fn adopt(&mut self, _spec: &AdoptSpec) -> Result<Adoption<Process>, ProcessDriverError> {
-        Err(ProcessDriverError::new("unexpected adoption in launch fixture"))
+        Err(ProcessDriverError::new(
+            "unexpected adoption in launch fixture",
+        ))
     }
 }
 
@@ -168,50 +186,82 @@ impl Fixture {
             ResourceBudget::local_default(),
         )?)?;
         let state = Arc::new(Mutex::new(State {
-            kills: 0, drops: 0, spawns: 0, kill_fails: true, poll_fails: false, exited: false,
+            kills: 0,
+            drops: 0,
+            spawns: 0,
+            kill_fails: true,
+            poll_fails: false,
+            exited: false,
         }));
         let config = SupervisorConfig::local_default();
         let now = Instant::now();
         let (supervisor, report) = Supervisor::recover(
             registry.clone(),
-            Driver { state: Arc::clone(&state), fault, hide_manifest },
+            Driver {
+                state: Arc::clone(&state),
+                fault,
+                hide_manifest,
+            },
             config.clone(),
             now,
         )?;
         assert!(report.faults.is_empty());
         let mut slot = AgentSlot::new(&config);
         slot.active_release = Some(AgentRelease::new(
-            "origin", AgentCommand::new("/bin/true", Vec::new())?,
+            "origin",
+            AgentCommand::new("/bin/true", Vec::new())?,
         )?);
         Ok(Self {
-            _temp: temp, agent, registry,
+            _temp: temp,
+            agent,
+            registry,
             run_root: record.layout.run_root().to_path_buf(),
-            supervisor, slot, state, now,
+            supervisor,
+            slot,
+            state,
+            now,
         })
     }
 
     fn failed_start(&mut self) -> Result<()> {
-        let release = AgentRelease::new(
-            "candidate", AgentCommand::new("/bin/true", Vec::new())?,
-        )?;
-        assert!(self.supervisor.start_release_slot(
-            &self.agent, &mut self.slot, release, self.now,
-        ).is_err());
-        let runtime = self.slot.runtime.as_ref().expect("exact acquired child retained");
+        let release = AgentRelease::new("candidate", AgentCommand::new("/bin/true", Vec::new())?)?;
+        assert!(
+            self.supervisor
+                .start_release_slot(&self.agent, &mut self.slot, release, self.now,)
+                .is_err()
+        );
+        let runtime = self
+            .slot
+            .runtime
+            .as_ref()
+            .expect("exact acquired child retained");
         assert_eq!(runtime.identity.system_id(), 42);
         assert!(runtime.fenced && !runtime.healthy);
         assert!(matches!(runtime.phase, RuntimePhase::Stopping { .. }));
-        assert_eq!(self.slot.active_release.as_ref().expect("origin metadata").identity(), "origin");
+        assert_eq!(
+            self.slot
+                .active_release
+                .as_ref()
+                .expect("origin metadata")
+                .identity(),
+            "origin"
+        );
         assert_eq!(self.state.lock().expect("state").drops, 0);
         assert_eq!(self.state.lock().expect("state").kills, 1);
-        assert!(!self.slot.events.items.iter().any(|event| {
-            matches!(event.kind, SupervisorEventKind::KillRequested)
-        }));
+        assert!(
+            !self
+                .slot
+                .events
+                .items
+                .iter()
+                .any(|event| { matches!(event.kind, SupervisorEventKind::KillRequested) })
+        );
         Ok(())
     }
 
     fn tick(&mut self) -> Result<(), crate::SupervisorError> {
-        self.supervisor.tick_slot(&self.agent, &mut self.slot, self.now)
+        self.supervisor
+            .tick_slot(&self.agent, &mut self.slot, self.now)
     }
 }
 
@@ -230,7 +280,10 @@ fn launch_publication_and_kill_failure_retain_until_observed_exit() -> Result<()
         state.kill_fails = false;
     }
     fixture.tick()?;
-    assert!(fixture.slot.runtime.is_some(), "kill acknowledgement is not exit");
+    assert!(
+        fixture.slot.runtime.is_some(),
+        "kill acknowledgement is not exit"
+    );
     assert!(!fixture.slot.runtime.as_ref().expect("runtime").healthy);
     fixture.state.lock().expect("state").exited = true;
     fixture.tick()?;
@@ -245,7 +298,13 @@ fn launch_publication_and_kill_failure_retain_until_observed_exit() -> Result<()
 fn launch_cleanup_removes_only_its_exact_partially_published_lease() -> Result<()> {
     let mut fixture = Fixture::new(PublicationFault::ExactPublishedLease, false)?;
     fixture.failed_start()?;
-    assert_eq!(read_lease(&fixture.run_root)?.expect("partial lease").identity.system_id(), 42);
+    assert_eq!(
+        read_lease(&fixture.run_root)?
+            .expect("partial lease")
+            .identity
+            .system_id(),
+        42
+    );
     fixture.state.lock().expect("state").exited = true;
     // An exact exit must reconcile even when the kill syscall still fails.
     fixture.tick()?;
@@ -260,7 +319,13 @@ fn launch_cleanup_rejects_foreign_lease_after_exact_exit() -> Result<()> {
     fixture.failed_start()?;
     fixture.state.lock().expect("state").exited = true;
     assert!(fixture.tick().is_err());
-    assert_eq!(read_lease(&fixture.run_root)?.expect("foreign lease retained").identity.system_id(), 43);
+    assert_eq!(
+        read_lease(&fixture.run_root)?
+            .expect("foreign lease retained")
+            .identity
+            .system_id(),
+        43
+    );
     assert!(fixture.slot.runtime.is_some());
     assert!(fixture.slot.observed_exit.is_some());
     assert_eq!(fixture.state.lock().expect("state").drops, 0);
@@ -280,11 +345,19 @@ fn launch_cleanup_kill_precedes_broken_registry_and_failed_initial_cas() -> Resu
     assert_eq!(fixture.state.lock().expect("state").kills, 2);
     assert_eq!(fixture.state.lock().expect("state").drops, 0);
     let agent_root = fixture.run_root.parent().expect("Agent root");
-    std::fs::rename(agent_root.join("agent.saved"), agent_root.join("agent.toml"))?;
+    std::fs::rename(
+        agent_root.join("agent.saved"),
+        agent_root.join("agent.toml"),
+    )?;
     std::fs::remove_dir(fixture.run_root.join("supervisor-process.json"))?;
     fixture.state.lock().expect("state").exited = true;
     fixture.tick()?;
     assert!(fixture.slot.runtime.is_none());
-    assert_eq!(fixture.registry.load()?.agents[&fixture.agent].lifecycle.lifecycle, AgentLifecycle::Failed);
+    assert_eq!(
+        fixture.registry.load()?.agents[&fixture.agent]
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Failed
+    );
     Ok(())
 }

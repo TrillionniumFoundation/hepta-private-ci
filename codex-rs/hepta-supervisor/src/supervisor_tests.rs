@@ -136,13 +136,6 @@ fn command() -> Result<AgentCommand, SupervisorError> {
     AgentCommand::new(fake_program("hepta-agentd"), Vec::new())
 }
 
-fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorError> {
-    AgentRelease::new(
-        identity,
-        AgentCommand::new(fake_program(program), Vec::new())?,
-    )
-}
-
 fn config() -> SupervisorConfig {
     SupervisorConfig {
         health_timeout: Duration::from_millis(10),
@@ -732,15 +725,29 @@ fn flapping_running_agent_stops_after_restart_budget_is_exhausted() -> Result<()
 
     control.set_exit(&fleet.first);
     let exhausted = supervisor.tick(now);
-    assert_eq!(exhausted.faults.len(), 1);
-    assert_eq!(exhausted.faults[0].agent_id, fleet.first);
-    assert!(exhausted.faults[0].message.contains("restart budget"));
+    assert_eq!(exhausted, TickReport::default());
     let stopped = supervisor
         .snapshot(&fleet.first)
         .expect("exhausted snapshot");
     assert!(!stopped.active);
     assert!(!stopped.restart_pending);
     assert_eq!(stopped.restart_attempt, 3);
+    assert_eq!(
+        stopped
+            .events
+            .iter()
+            .filter(|event| {
+                event.kind == SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
+            })
+            .count(),
+        1
+    );
+    assert_eq!(
+        fleet.registry.load()?.agents[&fleet.first]
+            .lifecycle
+            .lifecycle,
+        AgentLifecycle::Failed
+    );
     assert_eq!(control.spawn_count(&fleet.first), 4);
 
     assert_eq!(
@@ -767,20 +774,38 @@ fn recovered_running_restart_settles_pending_budget_before_next_claim()
     control.set_healthy(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
 
-    let record = fleet
-        .registry
-        .load()?
-        .agent(&fleet.first)
-        .expect("registered agent")
-        .clone();
-    let first_claim = crate::restart_budget::claim_restart(
+    let predecessor_generation = supervisor
+        .snapshot(&fleet.first)
+        .expect("predecessor")
+        .spawn_generation
+        .expect("predecessor generation");
+    // A pending budget alone cannot turn a healthy predecessor into its own
+    // replacement. Produce the exact replacement lineage before the crash.
+    supervisor.restart(&fleet.first, now)?;
+    control.set_drained(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    control.set_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    let now = now + config().restart_backoff_base;
+    assert_eq!(supervisor.tick(now), TickReport::default());
+    assert_eq!(control.spawn_count(&fleet.first), 2);
+    control.set_healthy(&fleet.first);
+    let record = supervisor.record(&fleet.first)?;
+    assert_eq!(record.lifecycle.lifecycle, AgentLifecycle::Starting);
+    let first_claim = crate::restart_budget::pending_restart(
         record.layout.run_root(),
         config().restart_max_attempts,
-        config().restart_window,
-        config().restart_backoff_base,
     )
-    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
+    .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+    .expect("charged replacement");
     assert_eq!(first_claim.attempt, 1);
+    // Model the crash cut after lifecycle publication but before the exact
+    // replacement's healthy budget-completion receipt.
+    fleet.registry.compare_and_transition(
+        &fleet.first,
+        record.lifecycle.generation,
+        AgentLifecycle::Running,
+    )?;
     drop(supervisor);
 
     let (mut recovered, report) =
@@ -791,6 +816,8 @@ fn recovered_running_restart_settles_pending_budget_before_next_claim()
         .expect("adopted replacement");
     assert!(adopted.active);
     assert_eq!(adopted.restart_attempt, 1);
+    assert!(adopted.spawn_generation.expect("replacement generation") > predecessor_generation);
+    assert_eq!(control.spawn_count(&fleet.first), 2);
 
     // Exact adoption is not enough to settle the attempt; a fresh ready
     // observation of the running replacement is required.
@@ -803,6 +830,7 @@ fn recovered_running_restart_settles_pending_budget_before_next_claim()
             .restart_attempt,
         2
     );
+    assert_eq!(control.spawn_count(&fleet.first), 2);
     Ok(())
 }
 
@@ -945,7 +973,7 @@ fn recovery_closes_running_release_state_crash_window() -> Result<(), Supervisor
     )?;
     drop(first_supervisor);
 
-    let (recovered, report) =
+    let (mut recovered, report) =
         Supervisor::recover(fleet.registry.clone(), control.driver(), config(), now)?;
     assert_eq!(report, TickReport::default());
     let snapshot = recovered.snapshot(&fleet.first).expect("recovered slot");
@@ -954,6 +982,7 @@ fn recovery_closes_running_release_state_crash_window() -> Result<(), Supervisor
         snapshot.active_release.as_deref(),
         Some(release_id.as_str())
     );
+    assert_eq!(recovered.tick(now), TickReport::default());
     let durable = fleet.registry.load()?;
     let release_state = &durable
         .agent(&fleet.first)
@@ -1607,6 +1636,9 @@ fn paired_companions_stop_before_agent_restart_and_fail_independently()
     assert_eq!(control.counts(&fleet.first), (1, 1, 0));
     control.set_exit(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
+    // The charged replacement becomes eligible only after its backoff.
+    let now = now + config().restart_backoff_base;
+    assert_eq!(supervisor.tick(now), TickReport::default());
     control.set_healthy(&fleet.first);
     assert_eq!(supervisor.tick(now), TickReport::default());
     assert_eq!(control.matrix_spawn_count(&fleet.first), 2);
@@ -1677,6 +1709,10 @@ fn ready_paired_supervisor(
 fn stop_supersedes_inflight_paired_restart_after_matrix_exits() -> Result<(), SupervisorError> {
     let (fleet, control, mut supervisor, now) =
         ready_paired_supervisor("paired-stop-supersedes-restart")?;
+    // Durable Stop deadlines use wall time even while this fixture holds its
+    // Instant fixed. This test exercises supersession, not deadline expiry;
+    // fsync and concurrent qualification work must not consume its grace.
+    supervisor.config.stop_grace = Duration::from_secs(5);
     let peer_before = supervisor.snapshot(&fleet.second).expect("peer snapshot");
 
     supervisor.restart(&fleet.first, now)?;
@@ -1741,8 +1777,8 @@ fn kill_supersedes_inflight_paired_restart_without_replacement() -> Result<(), S
         .position(|event| event.kind == SupervisorEventKind::KillRequested)
         .expect("agent kill event");
     assert!(
-        matrix_kill < agent_kill,
-        "Matrix must be killed before agentd"
+        agent_kill < matrix_kill,
+        "emergency Kill must signal agentd before entering the Matrix driver"
     );
 
     control.set_exit(&fleet.first);
@@ -1790,6 +1826,17 @@ fn stale_deferred_drain_is_generation_fenced_from_replacement_starting()
     );
     let now = now + config().restart_backoff_base;
     assert_eq!(supervisor.tick(now), TickReport::default());
+    // The old companion is still owned: backoff expiry alone cannot admit
+    // a replacement over its live lease. Its tick must still make progress.
+    assert_eq!(control.spawn_count(&fleet.first), 1);
+    assert!(
+        !supervisor
+            .snapshot(&fleet.first)
+            .expect("waiting owner")
+            .active
+    );
+    control.set_matrix_exit(&fleet.first);
+    assert_eq!(supervisor.tick(now), TickReport::default());
     let replacement = supervisor
         .snapshot(&fleet.first)
         .expect("replacement snapshot");
@@ -1799,7 +1846,16 @@ fn stale_deferred_drain_is_generation_fenced_from_replacement_starting()
     assert!(!replacement.restart_pending);
     assert_eq!(control.spawn_count(&fleet.first), 2);
 
-    control.set_matrix_exit(&fleet.first);
+    // Simulate a late callback carrying the predecessor's cached action.
+    // Normal dispatch now waits for exact companion cleanup; the generation
+    // fence must also reject a stale action delivered after replacement start.
+    supervisor.with_slot(&fleet.first, |_supervisor, slot| {
+        slot.deferred_agent_action = Some(crate::runtime::DeferredAgentAction {
+            kind: crate::runtime::DeferredAgentActionKind::Drain,
+            spawn_generation: original_spawn_generation,
+        });
+        Ok(())
+    })?;
     assert_eq!(supervisor.tick(now), TickReport::default());
     let still_starting = supervisor
         .snapshot(&fleet.first)
@@ -1971,9 +2027,15 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent()
             .install_release(release_id.clone(), &source_program, Vec::new())?;
         fleet.registry.allow_release(&fleet.first, release_id)?;
     }
-    fleet.registry.compare_and_set_release_state(
+    let prepared = fleet.registry.compare_and_set_release_state(
         &fleet.first,
         0,
+        Some(source.clone()),
+        None,
+    )?;
+    let committed = fleet.registry.compare_and_set_release_state(
+        &fleet.first,
+        prepared.generation,
         Some(target.clone()),
         Some(source.clone()),
     )?;
@@ -1992,6 +2054,7 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent()
         .agent(&fleet.first)
         .cloned()
         .expect("registered agent");
+    assert_eq!(record.release_state, committed);
     let grant = Sha256Digest::for_bytes(b"terminal-transaction-grant");
     let intent = crate::signed_intent::SignedSupervisorIntent::new(
         grant.clone(),
@@ -2024,7 +2087,7 @@ fn recovery_reconciles_terminal_release_transaction_into_signed_intent()
                 .registry
                 .resolve_release_binding(&fleet.first, &target)?,
         ),
-        record.release_state.generation,
+        prepared.generation,
         record.lifecycle.generation,
     )
     .expect("release transaction")
@@ -2300,3 +2363,27 @@ fn finish_release_drain(
     control.set_exit(agent_id);
     assert_eq!(supervisor.tick(now), TickReport::default());
 }
+
+#[path = "release_retry_tests.rs"]
+mod release_retry_tests;
+
+#[path = "matrix_budget_tests.rs"]
+mod matrix_budget_tests;
+
+#[path = "matrix_admission_tests.rs"]
+mod matrix_admission_tests;
+
+#[path = "supervisor_snapshot_tests.rs"]
+mod snapshot_tests;
+
+#[path = "automatic_restart_event_tests.rs"]
+mod automatic_restart_event_tests;
+
+#[path = "tick_control_fault_tests.rs"]
+mod tick_control_fault_tests;
+
+#[path = "constructor_absence_recovery_tests.rs"]
+mod constructor_absence_recovery_tests;
+
+#[path = "constructor_hydration_recovery_tests.rs"]
+mod constructor_hydration_recovery_tests;

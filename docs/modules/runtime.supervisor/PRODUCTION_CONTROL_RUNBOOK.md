@@ -3,9 +3,10 @@
 Status: implementation candidate; not a deployment approval.
 
 This runbook is the operator-facing companion to `TECHNICAL.md` and
-`RECOVERY_AND_QUALIFICATION.md`. For the choice between legacy abort and signed
-terminal recovery, use the decision procedure below rather than interpreting
-legacy abort as proof that a rollback completed. Source integration, execution
+`RECOVERY_AND_QUALIFICATION.md`. Use the supported signed recovery procedure
+below only when its exact durable journal witnesses exist. The legacy abort
+command writes a directive with no production consumer and cannot terminalize
+quarantine or prove rollback. Source integration, execution
 qualification, target-host qualification, independent acceptance, activation,
 and release are separate facts.
 
@@ -44,11 +45,25 @@ introduced by this change.
 ## 2. Build and trust-anchor prerequisites
 
 Use the repository's approved build wrapper and exact candidate toolchain. The
-production-authority feature must be deliberately enabled for the supervisor
-binary. The default build remains authority-denied. A production build alone is
-not a production activation.
+daemon artifact enables `production-verifier` and excludes `qualification` and
+`offline-authority-tools`. The compatibility feature `production-authority` is
+implied by the verifier feature; new product manifests must not request it
+directly. Build `hepta-authority-signer` separately with `offline-authority-tools`
+and keep its private-key loader and binaries outside the daemon artifact. The
+default build remains authority-denied. These build identities do not establish
+production activation.
 
-The preferred production verifier configuration is one externally distributed,
+Fleet release revocation or allowance removal also denies a new Matrix retry
+charge and its eventual companion launch, including cached descriptors. Existing
+main and companion owners retain containment and exact exit cleanup. A pending
+uncharged retry acquires one charge and full backoff only after lawful current
+admission; an already charged retry keeps its previous claim. A Running main
+must still match the fresh Fleet lifecycle and generation and remain unfenced.
+An allowance restoration cannot reverse an append-only release revocation.
+This behavior grants no operator authority, durable cross-daemon witness or
+atomicity between a concurrent Fleet change and process creation.
+
+The supported production verifier configuration is one externally distributed,
 public-only authority bundle pinned by its exact digest:
 
 ```text
@@ -61,29 +76,22 @@ versioned object. The daemon validates the bundle's internal digest and requires
 the operator-supplied exact bundle digest before constructing either verifier.
 The bundle contains no private signing material and does not select a release.
 
-The direct six-option verifier tuple remains a compatibility path:
-
-```text
---grant-verifier-key ABSOLUTE_PUBLIC_KEY_FILE
---grant-signer-id APPROVED_GRANT_SIGNER_ID
---grant-signer-epoch APPROVED_GRANT_SIGNER_EPOCH
---h7-verifier-key ABSOLUTE_PUBLIC_KEY_FILE
---h7-signer-id APPROVED_H7_SIGNER_ID
---h7-signer-epoch APPROVED_H7_SIGNER_EPOCH
-```
-
-Use exactly one configuration form together with `--fleet-root`. The public
+The legacy six-option key/signer/epoch tuple is rejected by `hepta-supervisord`.
+Supply both bundle options together with an absolute `--fleet-root`. The public
 verifier material must come from an independently authenticated external custody
 process, not from a request field, fixture seed, repository-generated key, or
-self-approved receipt. Neither form establishes a key-distribution service by
-itself.
+self-approved receipt. This interface does not establish a key-distribution
+service by itself. The source contracts are
+[Cargo.toml](../../../codex-rs/hepta-supervisor/Cargo.toml),
+[main.rs](../../../codex-rs/hepta-supervisor/src/main.rs) and
+[PRODUCTION_BOUNDARY.md](PRODUCTION_BOUNDARY.md).
 
 Before deployment, the external custodian must provide a versioned manifest
 binding signer ID, signer epoch, key fingerprint, purpose, approved environment,
 activation/revocation dates and approver identity. The installer must verify this
-manifest out of band, stage immutable public-key files, validate file and parent
-directory ownership, and record the installed fingerprints and daemon artifact
-digest. No such external custody receipt is claimed in this branch.
+manifest out of band, stage the immutable public-only bundle, validate file and
+parent directory ownership, and record the installed fingerprints and daemon
+artifact digest. No such external custody receipt is claimed in this branch.
 
 For rotation or revocation, close admission and preserve unresolved intents,
 install the independently approved successor key/epoch bundle, restart under the
@@ -120,10 +128,28 @@ Retain the original observation and the current control fence. Do not invent
 control revisions, epochs, lifecycle generations or SHA-256 values. Do not
 substitute a release name for immutable release-byte identity.
 
+On constructor recovery, pure validation decodes and binds signed intent and
+release transaction once. The primer consumes those observations before idle
+hydration, Matrix budget normalization, independent main/Matrix adoption and
+automatic replay. Unresolved evidence establishes
+trusted RecoveryRequired denial; an exact proved terminal transaction/release
+witness or Committed/RolledBack intent follows the existing terminal path without
+false quarantine. This primer performs no CAS, durable publication or process action.
+The later full recovery and terminal acknowledgements still follow acquisition.
+Denial prevents new main/Matrix restart claims and dispatch, while retaining
+status diagnostics, actual exit observation, exact cleanup and prior charges.
+Independent admission, driver and catalog/public-binding faults remain visible
+without serving metadata, release CAS or control replay. Ownerless slots still
+validate current/previous catalog releases. Future and expired budget bytes
+remain unchanged; each exact owner receives one constructor containment attempt.
+
 ## 4. Recovery decision procedure
 
 Use signed terminal recovery only when the current durable release outcome is
-independently observable and agrees with a terminal release transaction. The
+independently observable and agrees with the exact durable release transaction
+and signed intent. The authority-bound transaction must support the quarantined
+outcome or the same decision's exact terminal retry; a release name or process exit alone
+is insufficient. The
 signer request operation is `production_recovery`. It contains every field:
 
 ```text
@@ -145,6 +171,16 @@ shorter approved ceremony window. Times are explicit Unix seconds. The verifier
 rejects future-issued and expired decisions, wrong signer/key epoch, wrong agent,
 authority epoch or lifecycle generation, and every mismatched intent,
 transaction, manifest or executable digest.
+
+If a Prepared/RecoveryRequired intent exists but its release transaction is
+absent or lacks the intent's exact grant/authority binding, stop this procedure:
+the current API requires that transaction and a decision binding its digest.
+This includes a legacy unsigned Prepared transaction beside signed
+RecoveryRequired intent; it cannot fall back to unsigned automatic Drain or
+spawn. These pre-existing cuts have no authorized terminalization path. Preserve
+the evidence and quarantine pending a separately versioned and authorized
+recovery protocol. Do not create a dummy transaction,
+remove journals or use the legacy abort directive to bypass the requirement.
 
 The offline invocation is:
 
@@ -204,7 +240,26 @@ Retain the original request, signed response, submission result and subsequent
 observation together. A caller's stdout is not a substitute for daemon-owned
 durable evidence or an independent audit receipt.
 
-## 6. Legacy inspect and abort are not signed success recovery
+After the first durable publication attempt, a failed signed mutation or
+recovery acknowledgement reports `operation_indeterminate`, not proof of
+rejection or execution. The lifecycle owner retains trusted recovery intent
+and bounded fault diagnostics. For recovery, possibly published terminal bytes
+remain bound to the same decision; quarantine is released only after both
+terminal publications and the revision update acknowledge. Reinspect before an
+exact retry; a failed recovery does not advance the revision, and a successful
+exact retry advances once. The grant path makes a best-effort durable quarantine
+marker, whose failure still leaves in-memory quarantine.
+
+For a signed release transition, its first Prepared transaction publication is
+already complete with the grant digest, authority epoch, source/target catalog
+admission and compatibility binding. Missing bindings reject before that write.
+This source ordering does not establish physical delivery or independent
+authority acceptance, and does not alter pure unsigned transitions.
+Unsigned automatic Aborted reconciliation remains separate and cannot cross
+trusted signed denial. The signed protocol supports Committed/RolledBack only;
+an Aborted codec/projection value does not authorize production terminalization.
+
+## 6. Legacy inspect and abort do not terminalize production quarantine
 
 The existing offline commands remain available:
 
@@ -213,17 +268,53 @@ hepta-supervisor-intent-recovery inspect "$RUN_ROOT"
 hepta-supervisor-intent-recovery abort "$RUN_ROOT" "$EXACT_INTENT_SHA256"
 ```
 
-Use this conservative path when the effect is ambiguous and cannot be proved to
-have committed or rolled back. First close admission and fence the ambiguous
-work under the established operator procedure. Abort writes the existing
-exact-intent-bound directive; it does not assert that a predecessor is active,
-roll back external effects, authorize a new release, or convert uncertainty into
-success. Do not manually edit or delete intent/restart/transaction files to make
-the daemon ready. A failed or conflicting abort requires re-inspection.
+Inspect is read-only. Abort validates the unresolved intent's digest and writes
+`supervisor-signed-intent-recovery.json`; it does not mutate the signed intent,
+and current production recovery never consumes that directive. Successful CLI
+output does not produce Aborted, clear quarantine, restore a predecessor, roll
+back effects or authorize a new release. It is not a fallback terminalization
+procedure when a release transaction is missing.
 
-Online signed recovery and offline abort must not be run concurrently. They are
-different terminalization procedures with different evidence requirements, not
-fallback implementations of the same successful operation.
+The existing source regression
+`signed_intent_recovery::digest_only_abort_directive_cannot_terminalize_an_unresolved_signed_intent`
+proves that an exact directive leaves the intent retained and Start blocked.
+Use the supported independently signed decision only with its exact transaction
+and release witnesses. If that transaction is absent or lacks its exact signed
+authority binding, preserve the blocked state until a separately versioned and
+authorized recovery protocol exists. Do not edit or
+delete intent/restart/transaction files to make the daemon ready. An offline
+inspection or directive is not a physical-effect or deployment-acceptance receipt.
+
+Live Stop validates its caller-supplied monotonic `now + stop_grace` before
+publishing the durable request. Private Fresh/Retained preparation preserves
+the journal format; Fresh control is staged only after durable restart
+cancellation succeeds. Failed cancellation retains the intent without newly
+staging control, publishing StopRequested or signaling. Retry retains an earlier
+pending/acknowledged Stop deadline or stronger Kill, with journal target/digest
+and Stop wall-clock rollback validation. Only restoration without an in-process
+Stop/Kill continuation reconstructs the remaining deadline from durable wall time.
+
+An unexpired Stop deferred behind an owned Matrix does not signal the main early.
+Otherwise eligible startup/Running health remains observable during that grace;
+the deferred request alone must not force companion emergency Kill. Original-
+deadline containment still runs first when due. A tick retains its control
+continuation after pending clears, and acknowledged Stopping/Killing cannot
+regain readiness from a later healthy probe; Draining behavior is unchanged.
+The new two-owner source regression requires its own native receipt and does
+not relabel `6958a901`'s three default-library failures as passed.
+
+A true Matrix exit does not complete cleanup while a foreign lease blocks the
+exact lease-removal witness. New Stop/Drain retains its same-main-spawn deferred
+marker and makes no new Matrix signal, phase or event. Once cleanup succeeds,
+already acknowledged main Killing is not signaled or CASed again; failed Kill
+remains retryable. A main exit under that same-spawn deferred Stop/Drain cannot
+admit a new automatic replacement claim. Preserve both ownership and diagnostic
+evidence rather than interpreting a control acknowledgement as cleanup.
+The `6c6c051e` source count of 21 added Supervisor / 2 Fleet leaves and 77
+repair identities is historical. The current inventory is statically confirmed
+as 34 added Supervisor / 2 Fleet leaves, 91 common repair identities and five
+Fleet identities; d1ed had 31 / 2 / 88 / 5 before the three RPC regressions. Its own exact-source native evidence remains to be established;
+the two actual diagnostic failures at `5b71df96` remain failed historical results.
 
 ## 7. Candidate execution evidence
 
@@ -257,6 +348,19 @@ false. Candidate-generated CI records are diagnostics, not independently trusted
 approval signatures.
 
 ## 8. Unclosed concurrency and target-host qualification
+
+During signed recovery quarantine, ordinary mutation RPCs are denied except
+emergency Kill. Use the current complete control fence obtained from status:
+the daemon compares it with live state before advancing its owner-local revision. This counter is in-memory; the
+supervisor epoch isolates a new daemon lifetime.
+An older retained-main generation or a Matrix-only owner does not make an
+emergency Kill stale; the request must still match the current observation.
+Kill requires an already-owned handle. It can report `operation_indeterminate`
+after signaling retained handles when main preparation or acknowledgement
+fails. Refresh status and retain the recovery evidence; this response does not
+prove process exit, exact lease cleanup or terminalization of signed intent.
+Stop RPC remains blocked under quarantine and retains its normal generation
+checks outside quarantine.
 
 This change does not replace `Mutex<Supervisor<D>>` with per-agent actors. That
 migration must preserve per-agent command ordering, monotone generations,

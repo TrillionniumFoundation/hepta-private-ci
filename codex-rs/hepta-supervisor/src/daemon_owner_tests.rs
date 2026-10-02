@@ -17,7 +17,10 @@ fn contender_does_not_rewrite_or_chmod_live_owner_file() {
         .permissions()
         .mode();
     assert!(SingleInstanceLock::acquire(&path).is_err());
-    assert_eq!(std::fs::read(&path).expect("read unchanged receipt"), before);
+    assert_eq!(
+        std::fs::read(&path).expect("read unchanged receipt"),
+        before
+    );
     assert_eq!(
         std::fs::metadata(&path)
             .expect("metadata")

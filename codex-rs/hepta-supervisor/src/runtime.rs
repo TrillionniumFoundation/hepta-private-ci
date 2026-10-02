@@ -77,6 +77,14 @@ pub(crate) struct DeferredAgentAction {
     pub spawn_generation: u64,
 }
 
+/// A failed companion lifetime still needs admission for its next retry charge.
+/// This is owner-local bookkeeping, not a durable claim or process authority.
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub(crate) struct MatrixRetryAdmission {
+    pub spawn_generation: u64,
+    pub release_id: ReleaseId,
+}
+
 pub(crate) struct MatrixCompanionSlot<P> {
     pub runtime: Option<MatrixRuntime<P>>,
     pub exit_lease_removal: Option<crate::matrix::MatrixProcessLeaseRemoval>,
@@ -87,6 +95,7 @@ pub(crate) struct MatrixCompanionSlot<P> {
     pub restart_window_started_at: Option<Instant>,
     pub restart_window_started_unix_millis: Option<u64>,
     pub retry_at: Option<Instant>,
+    pub retry_admission: Option<MatrixRetryAdmission>,
     pub restart_after_exit: bool,
     pub restart_exhausted: bool,
     pub last_error: Option<String>,
@@ -105,6 +114,7 @@ impl<P> MatrixCompanionSlot<P> {
             restart_window_started_at: None,
             restart_window_started_unix_millis: None,
             retry_at: None,
+            retry_admission: None,
             restart_after_exit: false,
             restart_exhausted: false,
             last_error: None,
@@ -126,6 +136,10 @@ pub(crate) struct ReleaseChange {
     pub prior_previous: Option<AgentRelease>,
     pub phase: ReleaseChangePhase,
     pub explicit_rollback: bool,
+    /// Same-owner proof of the exact healthy lifecycle boundary. Outcome
+    /// publication may fail after this observation; a later process exit
+    /// must retry publication instead of treating the target as never healthy.
+    pub healthy_generation: Option<u64>,
 }
 
 pub(crate) struct BoundedQueue<T> {
@@ -150,6 +164,10 @@ impl<T> BoundedQueue<T> {
 }
 
 pub(crate) struct AgentSlot<P> {
+    /// Safety denial rebuilt from unreadable or inconsistent durable evidence.
+    /// This is not another durable owner; it retains existing exact handles
+    /// until containment and requires a fresh recovery before ordinary work.
+    pub recovery_blocker: Option<String>,
     pub runtime: Option<AgentRuntime<P>>,
     /// At most one unacknowledged signal, bound to the current spawn generation.
     pub pending_control: Option<crate::control::pending::PendingControl>,
@@ -161,6 +179,9 @@ pub(crate) struct AgentSlot<P> {
     pub deferred_agent_action: Option<DeferredAgentAction>,
     pub last_command: Option<AgentCommand>,
     pub restart_pending: bool,
+    /// Same-owner failed dispatch with no acquired process. Keep its exact
+    /// charged operation while durable cancellation is retried.
+    pub failed_restart_spawn: Option<crate::restart_budget::RestartClaim>,
     pub restart_not_before: Option<Instant>,
     pub restart_attempt: u32,
     pub active_release: Option<AgentRelease>,
@@ -181,6 +202,7 @@ pub(crate) struct AgentSlot<P> {
 impl<P> AgentSlot<P> {
     pub fn new(config: &SupervisorConfig) -> Self {
         Self {
+            recovery_blocker: None,
             runtime: None,
             pending_control: None,
             exit_lease_removal: None,
@@ -189,6 +211,7 @@ impl<P> AgentSlot<P> {
             deferred_agent_action: None,
             last_command: None,
             restart_pending: false,
+            failed_restart_spawn: None,
             restart_not_before: None,
             restart_attempt: 0,
             active_release: None,
@@ -205,6 +228,13 @@ impl<P> AgentSlot<P> {
 
     pub fn event(&mut self, generation: u64, kind: SupervisorEventKind) {
         self.events.push(SupervisorEvent { generation, kind });
+    }
+
+    pub(crate) fn has_recovery_denial(&self) -> bool {
+        self.recovery_blocker.is_some()
+            || self.signed_intent.as_ref().is_some_and(|intent| {
+                intent.status == crate::signed_intent::SignedIntentStatus::RecoveryRequired
+            })
     }
 }
 

@@ -1,4 +1,4 @@
-#![cfg(unix)]
+#![cfg(all(unix, feature = "offline-authority-tools"))]
 
 use std::os::unix::fs::PermissionsExt;
 use std::process::Command;
@@ -45,16 +45,24 @@ fn request_json() -> Value {
     })
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "Test requests are deliberately valid and must sign before contextual rejection is tested."
+)]
 fn sign(value: Value) -> ProductionRecoveryDecision {
     let request: SignRequest = serde_json::from_value(value).expect("typed request");
-    let response = sign_request(&request, &SigningKey::from_bytes(&TEST_SEED))
-        .expect("sign recovery request");
+    let response =
+        sign_request(&request, &SigningKey::from_bytes(&TEST_SEED)).expect("sign recovery request");
     let SignResponse::ProductionRecovery { decision } = response else {
         panic!("wrong signing response variant");
     };
     decision
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "Deterministic test key material must create a verifier."
+)]
 fn verifier(seed: &[u8; 32]) -> H7H89ProductionGrantVerifier {
     H7H89ProductionGrantVerifier::from_bytes(
         "external-recovery",
@@ -64,6 +72,10 @@ fn verifier(seed: &[u8; 32]) -> H7H89ProductionGrantVerifier {
     .expect("pinned verifier")
 }
 
+#[expect(
+    clippy::expect_used,
+    reason = "The fixed test AgentId must parse before verification is exercised."
+)]
 fn verifies(
     verifier: &H7H89ProductionGrantVerifier,
     decision: &ProductionRecoveryDecision,
@@ -112,7 +124,10 @@ fn correctly_signed_substitutions_do_not_match_the_observed_recovery_context() {
         ("agent_id", json!("00000000-0000-4000-8000-000000000002")),
         ("grant_sha256", json!(digest("other-grant"))),
         ("intent_sha256", json!(digest("other-intent"))),
-        ("release_transaction_sha256", json!(digest("other-transaction"))),
+        (
+            "release_transaction_sha256",
+            json!(digest("other-transaction")),
+        ),
         ("observed_release", json!("release-c")),
         ("observed_manifest_sha256", json!(digest("other-manifest"))),
         ("observed_agentd_sha256", json!(digest("other-agentd"))),
@@ -167,7 +182,10 @@ fn recovery_json_rejects_missing_bindings_unknown_fields_and_operation_confusion
     ] {
         let mut value = request_json();
         value.as_object_mut().expect("object").remove(field);
-        assert!(serde_json::from_value::<SignRequest>(value).is_err(), "missing {field}");
+        assert!(
+            serde_json::from_value::<SignRequest>(value).is_err(),
+            "missing {field}"
+        );
     }
     let mut value = request_json();
     value["governance_bypass"] = json!(true);
@@ -240,11 +258,9 @@ fn key_file_boundary_rejects_symlinks_permissions_and_non_regular_inputs() {
     let key = temp.path().join("fixture.key");
     let link = temp.path().join("linked.key");
     std::fs::write(&key, TEST_SEED).expect("fixture key");
-    std::fs::set_permissions(&key, std::fs::Permissions::from_mode(0o644))
-        .expect("public mode");
+    std::fs::set_permissions(&key, std::fs::Permissions::from_mode(0o644)).expect("public mode");
     assert!(load_signing_key_from_path(&key).is_err());
-    std::fs::set_permissions(&key, std::fs::Permissions::from_mode(0o600))
-        .expect("private mode");
+    std::fs::set_permissions(&key, std::fs::Permissions::from_mode(0o600)).expect("private mode");
     std::os::unix::fs::symlink(&key, &link).expect("symlink fixture");
     assert!(load_signing_key_from_path(&link).is_err());
     assert!(load_signing_key_from_path(temp.path()).is_err());

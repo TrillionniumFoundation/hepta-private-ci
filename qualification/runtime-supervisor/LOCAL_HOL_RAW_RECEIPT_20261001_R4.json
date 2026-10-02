@@ -1,0 +1,214 @@
+{
+  "concurrent_drain_status_mutation": {
+    "accepted_drains": 8,
+    "fault_count": 0,
+    "lock_delta": {
+      "acquisitions": 2,
+      "contended_acquisitions": 1,
+      "hold_max_us": 0,
+      "hold_us": 17593431,
+      "slow_holds": 2,
+      "slow_waits": 1,
+      "wait_max_us": 0,
+      "wait_us": 539284
+    },
+    "mutation_elapsed_us": 539293,
+    "status_read_latency": {
+      "count": 64,
+      "max_us": 2,
+      "p50_us": 0,
+      "p95_us": 0,
+      "p99_us": 2
+    },
+    "tick_elapsed_us": 17593473
+  },
+  "fault_waves": [
+    {
+      "metrics": {
+        "fault_count": 0,
+        "lock_delta": {
+          "acquisitions": 65,
+          "contended_acquisitions": 64,
+          "hold_max_us": 18634193,
+          "hold_us": 18634466,
+          "slow_holds": 1,
+          "slow_waits": 64,
+          "wait_max_us": 18635246,
+          "wait_us": 1192616851
+        },
+        "owner_wait_latency": {
+          "count": 64,
+          "max_us": 18635262,
+          "p50_us": 18634625,
+          "p95_us": 18635181,
+          "p99_us": 18635262
+        },
+        "status_read_latency": {
+          "count": 64,
+          "max_us": 2,
+          "p50_us": 0,
+          "p95_us": 0,
+          "p99_us": 2
+        },
+        "tick_elapsed_us": 18634247
+      },
+      "wave": "10_percent"
+    },
+    {
+      "metrics": {
+        "fault_count": 0,
+        "lock_delta": {
+          "acquisitions": 65,
+          "contended_acquisitions": 64,
+          "hold_max_us": 26573671,
+          "hold_us": 26573888,
+          "slow_holds": 1,
+          "slow_waits": 64,
+          "wait_max_us": 26574279,
+          "wait_us": 1700722378
+        },
+        "owner_wait_latency": {
+          "count": 64,
+          "max_us": 26574288,
+          "p50_us": 26573780,
+          "p95_us": 26574248,
+          "p99_us": 26574288
+        },
+        "status_read_latency": {
+          "count": 64,
+          "max_us": 84,
+          "p50_us": 0,
+          "p95_us": 2,
+          "p99_us": 84
+        },
+        "tick_elapsed_us": 26573724
+      },
+      "wave": "50_percent"
+    },
+    {
+      "metrics": {
+        "fault_count": 0,
+        "lock_delta": {
+          "acquisitions": 65,
+          "contended_acquisitions": 64,
+          "hold_max_us": 35536439,
+          "hold_us": 35536699,
+          "slow_holds": 1,
+          "slow_waits": 64,
+          "wait_max_us": 35537233,
+          "wait_us": 2274355659
+        },
+        "owner_wait_latency": {
+          "count": 64,
+          "max_us": 35537248,
+          "p50_us": 35536875,
+          "p95_us": 35537237,
+          "p99_us": 35537248
+        },
+        "status_read_latency": {
+          "count": 64,
+          "max_us": 2,
+          "p50_us": 0,
+          "p95_us": 0,
+          "p99_us": 2
+        },
+        "tick_elapsed_us": 35536490
+      },
+      "wave": "100_percent"
+    }
+  ],
+  "healthy": {
+    "fault_count": 0,
+    "lock_delta": {
+      "acquisitions": 65,
+      "contended_acquisitions": 64,
+      "hold_max_us": 17796077,
+      "hold_us": 17796727,
+      "slow_holds": 1,
+      "slow_waits": 64,
+      "wait_max_us": 17794543,
+      "wait_us": 1138806957
+    },
+    "owner_wait_latency": {
+      "count": 64,
+      "max_us": 17794548,
+      "p50_us": 17793828,
+      "p95_us": 17794506,
+      "p99_us": 17794548
+    },
+    "status_read_latency": {
+      "count": 64,
+      "max_us": 21,
+      "p50_us": 0,
+      "p95_us": 0,
+      "p99_us": 21
+    },
+    "tick_elapsed_us": 17796174
+  },
+  "instances": 256,
+  "lock": {
+    "acquisitions": 392,
+    "contended_acquisitions": 385,
+    "hold_max_us": 35536439,
+    "hold_us": 134214354,
+    "slow_holds": 8,
+    "slow_waits": 385,
+    "wait_max_us": 35537233,
+    "wait_us": 7463900289
+  },
+  "schema": "hepta.runtime-supervisor.hol-qualification.v1",
+  "slow_driver": {
+    "fault_count": 0,
+    "lock_delta": {
+      "acquisitions": 65,
+      "contended_acquisitions": 64,
+      "hold_max_us": 18048513,
+      "hold_us": 18048745,
+      "slow_holds": 1,
+      "slow_waits": 64,
+      "wait_max_us": 18048016,
+      "wait_us": 1155039277
+    },
+    "owner_wait_latency": {
+      "count": 64,
+      "max_us": 18048033,
+      "p50_us": 18047534,
+      "p95_us": 18047995,
+      "p99_us": 18048033
+    },
+    "status_read_latency": {
+      "count": 64,
+      "max_us": 3,
+      "p50_us": 0,
+      "p95_us": 0,
+      "p99_us": 3
+    },
+    "tick_elapsed_us": 18048564
+  },
+  "slow_filesystem": {
+    "lock_delta": {
+      "acquisitions": 65,
+      "contended_acquisitions": 64,
+      "hold_max_us": 0,
+      "hold_us": 30398,
+      "slow_holds": 1,
+      "slow_waits": 64,
+      "wait_max_us": 0,
+      "wait_us": 1819883
+    },
+    "owner_wait_latency": {
+      "count": 64,
+      "max_us": 28866,
+      "p50_us": 28459,
+      "p95_us": 28836,
+      "p99_us": 28866
+    },
+    "status_read_latency": {
+      "count": 64,
+      "max_us": 2,
+      "p50_us": 0,
+      "p95_us": 0,
+      "p99_us": 2
+    }
+  }
+}

@@ -39,6 +39,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        crate::supervisor::ensure_main_exit_unobserved(agent_id, slot)?;
+        // Prove both phases before deferral, fencing, lifecycle CAS or signals.
+        let drain_deadline = deadline(now, self.config.drain_timeout)?;
+        let _ = deadline(drain_deadline, self.config.stop_grace)?;
         if self.defer_agent_action_for_matrix(
             agent_id,
             slot,
@@ -48,7 +52,6 @@ impl<D: ProcessDriver> Supervisor<D> {
             return Ok(());
         }
         self.fence_runtime(agent_id, slot)?;
-        let drain_deadline = deadline(now, self.config.drain_timeout)?;
         let lifecycle = self.record(agent_id)?.lifecycle;
         if lifecycle.lifecycle == AgentLifecycle::Running {
             let next = self.registry.compare_and_transition(
@@ -85,6 +88,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        crate::supervisor::ensure_main_exit_unobserved(agent_id, slot)?;
         if slot.runtime.is_none() && self.cancel_idle_restart(agent_id, slot)? {
             return Ok(());
         }
@@ -93,7 +97,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             .runtime
             .as_ref()
             .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
-        control_intent::prepare_stop(
+        // A fresh request uses the caller's monotonic budget. Durable journal
+        // publication must not deduct wall time from that same supplied Instant.
+        let stop_deadline = deadline(now, self.config.stop_grace)?;
+        let spawn_generation = runtime.spawn_generation;
+        let preparation = control_intent::prepare_stop(
             record.layout.run_root(),
             agent_id,
             runtime.spawn_generation,
@@ -105,10 +113,23 @@ impl<D: ProcessDriver> Supervisor<D> {
         // Cancel durably after the overriding Stop itself is durable, but before
         // companion deferral, lifecycle CAS or signaling.
         self.cancel_pending_restart(agent_id, slot)?;
+        if preparation == control_intent::Preparation::Fresh {
+            pending::stage(
+                agent_id,
+                slot,
+                pending::PendingControl::Stop {
+                    spawn_generation,
+                    deadline: stop_deadline,
+                },
+            )?;
+        }
         let result = self.stop_runtime_slot(agent_id, slot, now);
         if result.is_ok()
             && slot.runtime.as_ref().is_some_and(|runtime| {
-                matches!(runtime.phase, RuntimePhase::Stopping { .. } | RuntimePhase::Killing)
+                matches!(
+                    runtime.phase,
+                    RuntimePhase::Stopping { .. } | RuntimePhase::Killing
+                )
             })
         {
             control_intent::mark_stop_requested(record.layout.run_root())
@@ -126,18 +147,58 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        crate::supervisor::ensure_main_exit_unobserved(agent_id, slot)?;
         let record = self.record(agent_id)?;
-        let runtime = active_runtime(agent_id, slot)?;
+        let runtime = slot
+            .runtime
+            .as_ref()
+            .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
         let spawn_generation = runtime.spawn_generation;
-        let durable = control_intent::recover_pending(
-            record.layout.run_root(),
-            agent_id,
-            spawn_generation,
-            &runtime.identity,
-            now,
-        )
+        // Live retries retain the earlier acknowledged/pending deadline and
+        // never downgrade Kill. A pending Drain is not a Stop continuation.
+        let current = slot
+            .pending_control
+            .filter(|control| control.applies_to(runtime));
+        let retained = match (runtime.phase, current) {
+            (_, Some(control @ pending::PendingControl::Kill { .. })) => Some(control),
+            (RuntimePhase::Killing, _) => Some(pending::PendingControl::Kill { spawn_generation }),
+            (
+                RuntimePhase::Stopping {
+                    deadline: phase_deadline,
+                },
+                Some(pending::PendingControl::Stop {
+                    deadline: pending_deadline,
+                    ..
+                }),
+            ) => Some(pending::PendingControl::Stop {
+                spawn_generation,
+                deadline: phase_deadline.min(pending_deadline),
+            }),
+            (_, Some(control @ pending::PendingControl::Stop { .. })) => Some(control),
+            (RuntimePhase::Stopping { deadline }, _) => Some(pending::PendingControl::Stop {
+                spawn_generation,
+                deadline,
+            }),
+            _ => None,
+        };
+        let durable = match retained {
+            Some(control) => control_intent::continue_pending(
+                record.layout.run_root(),
+                agent_id,
+                spawn_generation,
+                &runtime.identity,
+                control,
+            ),
+            None => control_intent::recover_pending(
+                record.layout.run_root(),
+                agent_id,
+                spawn_generation,
+                &runtime.identity,
+                now,
+            ),
+        }
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let control = match durable {
+        let control = match durable.or(retained) {
             Some(control) => control,
             None => pending::PendingControl::Stop {
                 spawn_generation,
@@ -154,7 +215,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         // independently pressure the companion, collecting both outcomes.
         if !urgent
             && self.defer_agent_action_for_matrix(
-                agent_id, slot, DeferredAgentActionKind::Stop, now,
+                agent_id,
+                slot,
+                DeferredAgentActionKind::Stop,
+                now,
             )?
         {
             return Ok(());
@@ -189,15 +253,23 @@ impl<D: ProcessDriver> Supervisor<D> {
         if slot.runtime.is_some()
             || slot.matrix.runtime.is_some()
             || slot.release_change.is_some()
-            || slot.release_transaction.as_ref().is_some_and(|transaction| !transaction.phase.terminal())
-            || !matches!(record.lifecycle.lifecycle, AgentLifecycle::Stopped | AgentLifecycle::Failed)
+            || slot
+                .release_transaction
+                .as_ref()
+                .is_some_and(|transaction| !transaction.phase.terminal())
+            || !matches!(
+                record.lifecycle.lifecycle,
+                AgentLifecycle::Stopped | AgentLifecycle::Failed
+            )
             || crate::lease::read_lease(record.layout.run_root())?.is_some()
             || crate::lease::read_matrix_lease(record.layout.matrixd_process_lease())?.is_some()
         {
             return Ok(false);
         }
         control_intent::reconcile_absent(
-            record.layout.run_root(), agent_id, record.lifecycle.lifecycle,
+            record.layout.run_root(),
+            agent_id,
+            record.lifecycle.lifecycle,
         )
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         self.cancel_pending_restart(agent_id, slot)?;
@@ -214,11 +286,23 @@ impl<D: ProcessDriver> Supervisor<D> {
         let record = self.record(agent_id)?;
         // Attempt both durable cancellations. A sidecar failure must not hide
         // the budget cancellation, and vice versa.
-        let lineage = restart_lineage::cancel(record.layout.run_root(), agent_id)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()));
+        let lineage = match slot.failed_restart_spawn.as_ref() {
+            Some(failed) => restart_lineage::cancel_failed_spawn(
+                record.layout.run_root(),
+                agent_id,
+                failed.window_started_unix_ms,
+                failed.attempt,
+            ),
+            None => restart_lineage::cancel(record.layout.run_root(), agent_id),
+        }
+        .map_err(|error| SupervisorError::Invalid(error.to_string()));
         let budget = crate::restart_budget::cancel_restart(record.layout.run_root())
             .map_err(|error| SupervisorError::Invalid(error.to_string()));
-        lineage.and(budget)
+        let result = lineage.and(budget);
+        if result.is_ok() {
+            slot.failed_restart_spawn = None;
+        }
+        result
     }
 
     pub(crate) fn kill_slot(
@@ -236,7 +320,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         // Registry/intent faults are collected, never propagated before the
         // already-owned main and companion termination attempts below.
+        let terminal_main = slot.observed_exit.is_some();
         let intent = self.record(agent_id).and_then(|record| {
+            if terminal_main {
+                // The exact exit already owns cleanup. Another Kill cannot
+                // replace its journal/witness or claim a new delivery.
+                return Err(SupervisorError::Invalid(format!(
+                    "agent {agent_id} has an observed main exit awaiting durable cleanup"
+                )));
+            }
             let runtime = slot.runtime.as_ref().ok_or_else(|| {
                 SupervisorError::Invalid(format!("agent {agent_id} is not active"))
             })?;
@@ -254,26 +346,39 @@ impl<D: ProcessDriver> Supervisor<D> {
         // owned main or companion process.
         let cancellation = self.cancel_pending_restart(agent_id, slot);
         slot.deferred_agent_action = None;
-        // Prepare only the main lifecycle here. Do not enter a potentially
-        // failing companion driver before attempting the main emergency signal.
+        // Prepare and signal the main independently of companion work. A slow
+        // companion driver must not delay the already-owned main's emergency
+        // termination.
         let preparation = (|| {
+            if terminal_main {
+                return Ok(());
+            }
             let lifecycle = self.record(agent_id)?.lifecycle;
             let generation = active_runtime(agent_id, slot)?.generation;
             if generation != lifecycle.generation {
                 return Err(SupervisorError::GenerationFence {
-                    agent_id: agent_id.clone(), runtime: generation, registry: lifecycle.generation,
+                    agent_id: agent_id.clone(),
+                    runtime: generation,
+                    registry: lifecycle.generation,
                 });
             }
             if lifecycle.lifecycle == AgentLifecycle::Running {
                 let next = self.registry.compare_and_transition(
-                    agent_id, generation, AgentLifecycle::Draining,
+                    agent_id,
+                    generation,
+                    AgentLifecycle::Draining,
                 )?;
                 active_runtime(agent_id, slot)?.generation = next.generation;
-                slot.event(next.generation, SupervisorEventKind::Lifecycle(AgentLifecycle::Draining));
+                slot.event(
+                    next.generation,
+                    SupervisorEventKind::Lifecycle(AgentLifecycle::Draining),
+                );
             }
             Ok(())
         })();
-        let main = if intent.is_err()
+        let main = if terminal_main {
+            Ok(())
+        } else if intent.is_err()
             || cancellation.is_err()
             || preparation.is_err()
             || slot.runtime.as_ref().is_some_and(|runtime| runtime.fenced)
@@ -289,11 +394,18 @@ impl<D: ProcessDriver> Supervisor<D> {
             kill_retained_main(agent_id, slot)
         } else {
             let spawn_generation = active_runtime(agent_id, slot)?.spawn_generation;
-            pending::stage(agent_id, slot, pending::PendingControl::Kill { spawn_generation })
-                .and_then(|()| pending::apply_to_slot(
-                    agent_id, slot, Instant::now(), self.config.stop_grace,
-                ))
+            pending::stage(
+                agent_id,
+                slot,
+                pending::PendingControl::Kill { spawn_generation },
+            )
+            .and_then(|()| {
+                pending::apply_to_slot(agent_id, slot, Instant::now(), self.config.stop_grace)
+            })
         };
+        // Both results are collected: a main signal or preparation failure
+        // still cannot suppress containment of an already-owned companion.
+        let companion = self.kill_matrix_now(agent_id, slot);
         let acknowledgement = if intent.is_ok() && main.is_ok() {
             self.record(agent_id).and_then(|record| {
                 control_intent::mark_kill_requested(record.layout.run_root())
@@ -302,9 +414,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         } else {
             Ok(())
         };
-        // Both outcomes are collected; neither an error nor a delayed companion
-        // call can prevent the main signal that was attempted above.
-        let companion = self.kill_matrix_now(agent_id, slot);
+        // Both termination attempts ran independently before errors propagate.
         for fault in [
             intent.as_ref().err(),
             cancellation.as_ref().err(),
@@ -312,8 +422,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             main.as_ref().err(),
             acknowledgement.as_ref().err(),
             companion.as_ref().err(),
-        ].into_iter().flatten() {
-            slot.event(0, SupervisorEventKind::DriverFault(bounded_message(fault.to_string())));
+        ]
+        .into_iter()
+        .flatten()
+        {
+            slot.event(
+                /*generation*/ 0,
+                SupervisorEventKind::DriverFault(bounded_message(fault.to_string())),
+            );
         }
         intent
             .and(cancellation)
@@ -331,6 +447,11 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         if slot.release_change.is_some() {
             return Err(SupervisorError::ReleaseChangePending(agent_id.clone()));
+        }
+        if slot.failed_restart_spawn.is_some() {
+            return Err(SupervisorError::Invalid(format!(
+                "agent {agent_id} has an unacknowledged failed restart cancellation"
+            )));
         }
         let record = self.record(agent_id)?;
         if control_intent::has_unresolved(record.layout.run_root())
@@ -457,8 +578,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         let main = kill_retained_main(agent_id, slot);
         let companion = self.kill_matrix_now(agent_id, slot);
         if let Err(fault) = &companion {
-            slot.event(runtime_generation,
-                SupervisorEventKind::DriverFault(bounded_message(fault.to_string())));
+            slot.event(
+                runtime_generation,
+                SupervisorEventKind::DriverFault(bounded_message(fault.to_string())),
+            );
         }
         main?;
         companion?;
@@ -483,10 +606,18 @@ fn kill_retained_main<P: ManagedProcess>(
     agent_id: &AgentId,
     slot: &mut AgentSlot<P>,
 ) -> Result<(), SupervisorError> {
+    // All callers, including generation fencing, preserve the immutable exit
+    // observation. The only remaining operation belongs to exact cleanup.
+    if slot.observed_exit.is_some() {
+        return Ok(());
+    }
     let runtime = active_runtime(agent_id, slot)?;
     runtime.healthy = false;
     if !matches!(runtime.phase, RuntimePhase::Killing) {
-        runtime.process.kill().map_err(|error| driver_error(agent_id, error))?;
+        runtime
+            .process
+            .kill()
+            .map_err(|error| driver_error(agent_id, error))?;
         runtime.phase = RuntimePhase::Killing;
         let generation = runtime.generation;
         slot.event(generation, SupervisorEventKind::KillRequested);

@@ -18,15 +18,26 @@ pub struct AgentCommand {
     pub args: Vec<OsString>,
 }
 
-/// Immutable process command resolved from the fleet-owned release catalog.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum ReleaseProvenance {
+    Catalog,
+    QualificationPlant,
+}
+
+/// Immutable catalog command or explicit catalog-free qualification plant.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentRelease {
     identity: ReleaseId,
     command: AgentCommand,
     matrixd_command: Option<AgentCommand>,
+    provenance: ReleaseProvenance,
 }
 
 impl AgentRelease {
+    /// Construct a catalog-free process plant for nonproduction, in-process
+    /// qualification. If this identity exists in the fleet catalog, launch
+    /// re-admits its canonical commands and current policy instead.
+    /// Production callers must resolve a registered release from the catalog.
     pub fn new(
         identity: impl Into<String>,
         command: AgentCommand,
@@ -36,9 +47,14 @@ impl AgentRelease {
             identity,
             command,
             matrixd_command: None,
+            provenance: ReleaseProvenance::QualificationPlant,
         })
     }
 
+    /// Construct a catalog-free agent and Matrix companion plant for
+    /// nonproduction, in-process qualification. Existing catalog identities
+    /// still require current admission and use their canonical commands.
+    /// Production callers must resolve a registered release from the catalog.
     pub fn with_matrixd(
         identity: impl Into<String>,
         command: AgentCommand,
@@ -49,6 +65,7 @@ impl AgentRelease {
             identity,
             command,
             matrixd_command: Some(matrixd_command),
+            provenance: ReleaseProvenance::QualificationPlant,
         })
     }
 
@@ -64,6 +81,7 @@ impl AgentRelease {
         self.matrixd_command.as_ref()
     }
 
+    /// Adapt the legacy nonproduction command API to a catalog-free plant.
     pub(crate) fn unversioned(command: AgentCommand) -> Result<Self, SupervisorError> {
         Self::new("unversioned", command)
     }
@@ -71,11 +89,17 @@ impl AgentRelease {
     pub(crate) fn release_id(&self) -> &ReleaseId {
         &self.identity
     }
+
+    pub(crate) fn is_catalog_free_qualification(&self) -> bool {
+        self.provenance == ReleaseProvenance::QualificationPlant
+    }
 }
 
 impl TryFrom<RegisteredRelease> for AgentRelease {
     type Error = SupervisorError;
 
+    /// Preserve catalog admission provenance so deleting an entry cannot
+    /// downgrade a cached descriptor to a catalog-free qualification plant.
     fn try_from(release: RegisteredRelease) -> Result<Self, Self::Error> {
         let command = AgentCommand::new(
             release.program,
@@ -94,6 +118,7 @@ impl TryFrom<RegisteredRelease> for AgentRelease {
             identity: release.release_id,
             command,
             matrixd_command,
+            provenance: ReleaseProvenance::Catalog,
         })
     }
 }

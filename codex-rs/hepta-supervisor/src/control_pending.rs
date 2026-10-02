@@ -38,8 +38,12 @@ impl PendingControl {
 
     fn spawn_generation(self) -> u64 {
         match self {
-            Self::Drain { spawn_generation, .. }
-            | Self::Stop { spawn_generation, .. }
+            Self::Drain {
+                spawn_generation, ..
+            }
+            | Self::Stop {
+                spawn_generation, ..
+            }
             | Self::Kill { spawn_generation } => spawn_generation,
         }
     }
@@ -96,9 +100,7 @@ impl PendingControl {
             Self::Stop {
                 spawn_generation,
                 deadline: limit,
-            } if now >= limit => {
-                Self::Kill { spawn_generation }
-            }
+            } if now >= limit => Self::Kill { spawn_generation },
             value => value,
         })
     }
@@ -150,7 +152,13 @@ pub(crate) fn apply_to_slot<P: ManagedProcess>(
         .runtime
         .as_mut()
         .ok_or_else(|| SupervisorError::Invalid(format!("agent {agent_id} is not active")))?;
-    if let Some(event) = apply(agent_id, runtime, &mut slot.pending_control, now, stop_grace)? {
+    if let Some(event) = apply(
+        agent_id,
+        runtime,
+        &mut slot.pending_control,
+        now,
+        stop_grace,
+    )? {
         slot.events.push(event);
     }
     Ok(())
@@ -165,6 +173,28 @@ pub(crate) fn apply<P: ManagedProcess>(
     now: Instant,
     stop_grace: Duration,
 ) -> Result<Option<SupervisorEvent>, SupervisorError> {
+    if !runtime.fenced {
+        let expired = match runtime.phase {
+            RuntimePhase::Draining { deadline } if now >= deadline => Some(PendingControl::Drain {
+                spawn_generation: runtime.spawn_generation,
+                deadline,
+            }),
+            RuntimePhase::Stopping { deadline } if now >= deadline => Some(PendingControl::Stop {
+                spawn_generation: runtime.spawn_generation,
+                deadline,
+            }),
+            RuntimePhase::AwaitingHealth { .. }
+            | RuntimePhase::Running
+            | RuntimePhase::Draining { .. }
+            | RuntimePhase::Stopping { .. }
+            | RuntimePhase::Killing => None,
+        };
+        if let Some(expired) = expired {
+            // An acknowledged signal clears pending, but its original phase
+            // deadline remains authority to contain this exact owned process.
+            *pending = Some(pending.map_or(expired, |current| current.merge(expired)));
+        }
+    }
     let Some(request) = *pending else {
         return Ok(None);
     };

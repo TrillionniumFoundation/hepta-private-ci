@@ -71,7 +71,9 @@ class CommandDeadlineTests(unittest.TestCase):
             stat = Path(f"/proc/{child_pid}/stat")
             try:
                 state = stat.read_text().rsplit(")", 1)[1].split()[0]
-            except FileNotFoundError:
+            except (FileNotFoundError, ProcessLookupError):
+                # Reaping during an opened proc read can report ESRCH instead
+                # of the ENOENT seen when the process disappears before open.
                 break
             if state == "Z":
                 break

@@ -138,17 +138,21 @@
     },
     {
       "activated": false,
-      "exact_head": "not_applicable",
+      "exact_head": "pending",
       "id": "incremental_per_agent_projection",
       "independent_acceptance": "not_obtained",
-      "merge_candidate": "not_applicable",
-      "source": "not_implemented",
+      "merge_candidate": "pending",
+      "source": "partial",
       "source_paths": [
+        "codex-rs/hepta-supervisor/src/daemon_read_projection.rs",
+        "codex-rs/hepta-supervisor/src/daemon_read_view.rs",
+        "codex-rs/hepta-supervisor/src/daemon_read_projection_tests.rs",
+        "docs/modules/runtime.supervisor/OWNER_AND_READ_ISOLATION.md",
         "docs/modules/runtime.supervisor/TARGET_HOST_PROFILE.json"
       ],
-      "summary": "Incremental dirty-Agent projection rather than a periodic whole-fleet rebuild",
-      "target_host": "not_applicable",
-      "test_source": "absent"
+      "summary": "Incremental dirty-Agent projection rather than a periodic whole-fleet rebuild; currently only equal-input per-Agent status Arc reuse, with whole-fleet I/O, metadata and readiness checks remaining",
+      "target_host": "not_run",
+      "test_source": "present"
     },
     {
       "activated": false,

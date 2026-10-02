@@ -17,6 +17,7 @@ mod error;
 mod model;
 mod module_catalog;
 mod registry;
+mod regular_file;
 mod release;
 
 pub use allocation::calculate_local_allocation_v1;

@@ -36,7 +36,9 @@ async fn default_library_refuses_runtime_verifier_before_opening_fleet() -> Resu
     let verifier = H7H89ProductionGrantVerifier::from_bytes(
         "default-denial-fixture",
         1,
-        SigningKey::from_bytes(&TEST_SEED).verifying_key().to_bytes(),
+        SigningKey::from_bytes(&TEST_SEED)
+            .verifying_key()
+            .to_bytes(),
     )?;
     let result = codex_hepta_supervisor::run_supervisord_with_grant_verifier(
         root,

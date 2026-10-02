@@ -1,4 +1,8 @@
 #![cfg(target_os = "linux")]
+#![expect(
+    clippy::expect_used,
+    reason = "fixture setup and isolated child handoff failures must fail this integration test immediately"
+)]
 
 use std::ffi::OsString;
 use std::thread;

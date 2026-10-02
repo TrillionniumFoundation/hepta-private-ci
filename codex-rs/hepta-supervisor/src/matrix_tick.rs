@@ -7,6 +7,7 @@ use std::time::Instant;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
 
+use super::MatrixProcessLeaseRemoval;
 use crate::ManagedProcess;
 use crate::ProcessDriver;
 use crate::ProcessObservation;
@@ -15,9 +16,9 @@ use crate::Supervisor;
 use crate::SupervisorError;
 use crate::SupervisorEvent;
 use crate::SupervisorEventKind;
+use crate::TickReport;
 use crate::lease::MATRIX_PROCESS_LEASE_SCHEMA_VERSION;
 use crate::lease::MatrixProcessLease;
-use super::MatrixProcessLeaseRemoval;
 use crate::runtime::AgentSlot;
 use crate::runtime::DeferredAgentActionKind;
 use crate::runtime::MatrixRuntimePhase;
@@ -30,6 +31,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
+        report: &mut TickReport,
     ) -> Result<(), SupervisorError> {
         if let Some(runtime) = slot.matrix.runtime.as_mut() {
             runtime.healthy = false;
@@ -46,22 +48,40 @@ impl<D: ProcessDriver> Supervisor<D> {
                 && runtime.fenced
                 && !matches!(runtime.phase, MatrixRuntimePhase::Killing)
             {
-                runtime.process.kill().map_err(|error| driver_error(agent_id, error)).map(|()| {
-                    runtime.phase = MatrixRuntimePhase::Killing;
-                    slot.events.push(SupervisorEvent {
-                        generation: runtime.attached_agent_generation,
-                        kind: SupervisorEventKind::MatrixKillRequested,
-                    });
-                })
+                runtime
+                    .process
+                    .kill()
+                    .map_err(|error| driver_error(agent_id, error))
+                    .map(|()| {
+                        runtime.phase = MatrixRuntimePhase::Killing;
+                        slot.events.push(SupervisorEvent {
+                            generation: runtime.attached_agent_generation,
+                            kind: SupervisorEventKind::MatrixKillRequested,
+                        });
+                    })
             } else {
                 Ok(())
             };
             // A failed kill cannot hide an observed exit. After that exact
             // observation, neither signal nor probe is repeated during cleanup.
             let observation = match terminal {
-                Some(exit) => ProcessObservation { state: ProcessState::Exited(exit), logs: Vec::new() },
-                None => runtime.process.poll(self.config.driver_poll_batch)
-                    .map_err(|error| driver_error(agent_id, error))?,
+                Some(exit) => ProcessObservation {
+                    state: ProcessState::Exited(exit),
+                    logs: Vec::new(),
+                },
+                None => match runtime
+                    .process
+                    .poll(self.config.driver_poll_batch)
+                    .map_err(|error| driver_error(agent_id, error))
+                {
+                    Ok(observation) => observation,
+                    Err(error) => {
+                        if let Err(control) = &control_result {
+                            Self::record_slot_fault(agent_id, slot, control, report);
+                        }
+                        return Err(error);
+                    }
+                },
             };
             for mut log in observation
                 .logs
@@ -73,7 +93,15 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             if let ProcessState::Exited(exit) = observation.state {
                 slot.matrix.observed_exit = Some(exit);
-                let record = self.record(agent_id)?;
+                let record = match self.record(agent_id) {
+                    Ok(record) => record,
+                    Err(error) => {
+                        if let Err(control) = &control_result {
+                            Self::record_slot_fault(agent_id, slot, control, report);
+                        }
+                        return Err(error);
+                    }
+                };
                 let lease = MatrixProcessLease {
                     schema_version: MATRIX_PROCESS_LEASE_SCHEMA_VERSION,
                     agent_id: agent_id.clone(),
@@ -86,10 +114,16 @@ impl<D: ProcessDriver> Supervisor<D> {
                     identity: runtime.identity.clone(),
                 };
                 let path = record.layout.matrixd_process_lease();
-                let removal = slot.matrix.exit_lease_removal.get_or_insert_with(|| {
-                    MatrixProcessLeaseRemoval::new(path, &lease)
-                });
-                removal.finish(path, &lease)?;
+                let removal = slot
+                    .matrix
+                    .exit_lease_removal
+                    .get_or_insert_with(|| MatrixProcessLeaseRemoval::new(path, &lease));
+                if let Err(error) = removal.finish(path, &lease) {
+                    if let Err(control) = &control_result {
+                        Self::record_slot_fault(agent_id, slot, control, report);
+                    }
+                    return Err(error);
+                }
                 let was_fenced = runtime.fenced;
                 let generation = runtime.attached_agent_generation;
                 // Both exit and durable lease cleanup succeeded. Only now may
@@ -211,8 +245,23 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
         }
 
+        if slot.has_recovery_denial() || slot.observed_exit.is_some() {
+            // Independent companion containment/cleanup ran above. The stored
+            // main exit now owns continuation; retain any deferred marker while
+            // its exact lease/lifecycle cleanup is still awaiting durability.
+            return Ok(());
+        }
         if slot.matrix.runtime.is_none() {
             if let Some(action) = slot.deferred_agent_action {
+                if slot.runtime.as_ref().is_some_and(|runtime| {
+                    runtime.spawn_generation == action.spawn_generation
+                        && matches!(runtime.phase, crate::runtime::RuntimePhase::Killing)
+                }) {
+                    // The original main deadline already acknowledged Kill.
+                    // Late companion cleanup cannot repeat control or its CAS.
+                    slot.deferred_agent_action = None;
+                    return Ok(());
+                }
                 let applies_to_runtime = slot
                     .runtime
                     .as_ref()
@@ -229,7 +278,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                         DeferredAgentActionKind::Drain => self.drain_slot(agent_id, slot, now),
                         // This resumes the already-admitted owner intent; it is
                         // not a new operator Stop that cancels a restart claim.
-                        DeferredAgentActionKind::Stop => self.stop_runtime_slot(agent_id, slot, now),
+                        DeferredAgentActionKind::Stop => {
+                            self.stop_runtime_slot(agent_id, slot, now)
+                        }
                     };
                     if let Err(error) = result {
                         // A callee may clear its transient action before its
@@ -244,7 +295,14 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             let retry_due = !slot.matrix.restart_exhausted
                 && slot.matrix.retry_at.is_none_or(|retry_at| now >= retry_at);
-            if retry_due {
+            // Removing the companion clears its old budget independently of
+            // that companion's exhausted/backoff schedule. Failed durable
+            // clears therefore remain retryable even after an exhausted run.
+            let without_companion = slot
+                .active_release
+                .as_ref()
+                .is_some_and(|release| release.matrixd_command().is_none());
+            if without_companion || retry_due {
                 self.start_matrix_companion(agent_id, slot, now);
             }
         }

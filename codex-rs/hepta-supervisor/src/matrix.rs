@@ -25,10 +25,7 @@ use crate::lease::MatrixProcessLease;
 use crate::lease::read_matrix_lease;
 use crate::lease::remove_matrix_lease;
 use crate::lease::write_matrix_lease;
-use crate::restart_journal::unix_millis_now;
-use crate::restart_policy::RestartSchedule;
 use crate::restart_policy::clear_restart_budget;
-use crate::restart_policy::schedule_restart;
 use crate::runtime::AgentSlot;
 use crate::runtime::DeferredAgentAction;
 use crate::runtime::DeferredAgentActionKind;
@@ -38,10 +35,14 @@ use crate::runtime::bounded_message;
 use crate::runtime::deadline;
 use crate::runtime::driver_error;
 
-#[path = "matrix_tick.rs"]
-mod tick;
+#[path = "matrix_admission.rs"]
+mod admission;
 #[path = "matrix_lease_removal.rs"]
 mod lease_removal;
+#[path = "matrix_recovery_admission.rs"]
+mod recovery_admission;
+#[path = "matrix_tick.rs"]
+mod tick;
 pub(crate) use lease_removal::MatrixProcessLeaseRemoval;
 
 const MAX_MATRIX_BINDING_BYTES: u64 = 65_536;
@@ -63,8 +64,43 @@ impl<D: ProcessDriver> Supervisor<D> {
             slot.matrix.configured = false;
             slot.matrix.degraded = false;
             slot.matrix.last_error = None;
+            let durable_reset_needed = slot.matrix.restart_attempt != 0
+                || slot.matrix.restart_window_started_unix_millis.is_some();
+            let previous = (
+                slot.matrix.restart_attempt,
+                slot.matrix.restart_window_started_at,
+                slot.matrix.restart_window_started_unix_millis,
+                slot.matrix.retry_at,
+                slot.matrix.retry_admission.clone(),
+                slot.matrix.restart_after_exit,
+                slot.matrix.restart_exhausted,
+            );
             reset_matrix_restart_budget(slot);
-            let _ = self.persist_restart_budget(agent_id, slot);
+            if durable_reset_needed && let Err(error) = self.persist_restart_budget(agent_id, slot)
+            {
+                // Keep the outstanding clear dirty until its publication is
+                // acknowledged. The next tick retries the same Matrix domain
+                // without touching the independently owned main restart claim.
+                (
+                    slot.matrix.restart_attempt,
+                    slot.matrix.restart_window_started_at,
+                    slot.matrix.restart_window_started_unix_millis,
+                    slot.matrix.retry_at,
+                    slot.matrix.retry_admission,
+                    slot.matrix.restart_after_exit,
+                    slot.matrix.restart_exhausted,
+                ) = previous;
+                let generation = slot
+                    .runtime
+                    .as_ref()
+                    .map_or(0, |runtime| runtime.generation);
+                slot.event(
+                    generation,
+                    SupervisorEventKind::DriverFault(bounded_message(format!(
+                        "Matrix restart budget reset could not be persisted: {error}"
+                    ))),
+                );
+            }
             return;
         };
         slot.matrix.configured = true;
@@ -83,6 +119,18 @@ impl<D: ProcessDriver> Supervisor<D> {
         // process. The registry's Running lifecycle generation is the next
         // value and must not be passed as the agentd protocol fence.
         let attached_agent_generation = agent_runtime.spawn_generation;
+        if let Some(pending) = slot.matrix.retry_admission.take()
+            && pending.spawn_generation == attached_agent_generation
+            && pending.release_id == *release.release_id()
+        {
+            slot.matrix.retry_admission = Some(pending);
+            self.schedule_matrix_retry(agent_id, slot, attached_agent_generation, now);
+            // Newly admitted retries obey their own backoff. A final launch
+            // denial of an already charged retry never enters this branch.
+            return;
+        }
+        // A different main lifetime/bundle cannot inherit the old failure.
+        // Its durable window stays intact; only transient bookkeeping ends.
         let record = match self.record(agent_id) {
             Ok(record) => record,
             Err(error) => {
@@ -169,7 +217,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 return;
             }
         }
-        let spec = MatrixSpawnSpec {
+        let mut spec = MatrixSpawnSpec {
             agent_id: agent_id.clone(),
             agent_generation: attached_agent_generation,
             binding_revision: binding.revision,
@@ -189,10 +237,24 @@ impl<D: ProcessDriver> Supervisor<D> {
         let health_deadline = match deadline(now, self.config.health_timeout) {
             Ok(value) => value,
             Err(error) => {
-                self.degrade_matrix(agent_id, slot, attached_agent_generation, error.to_string(), now);
+                self.degrade_matrix(
+                    agent_id,
+                    slot,
+                    attached_agent_generation,
+                    error.to_string(),
+                    now,
+                );
                 return;
             }
         };
+        let Some(command) =
+            self.admit_matrix_replacement(agent_id, slot, attached_agent_generation)
+        else {
+            return;
+        };
+        // The final launch uses the freshly admitted canonical companion,
+        // while the already-owned main keeps its exact bundle and authority.
+        spec.command = command;
         let spawned = match self.driver.spawn_matrixd(&spec) {
             Ok(spawned) => spawned,
             Err(error) => {
@@ -233,9 +295,16 @@ impl<D: ProcessDriver> Supervisor<D> {
             healthy: false,
             fenced: false,
         });
-        slot.event(attached_agent_generation, SupervisorEventKind::MatrixSpawned);
+        slot.event(
+            attached_agent_generation,
+            SupervisorEventKind::MatrixSpawned,
+        );
         let _ = self.publish_owned_matrix_launch(
-            agent_id, slot, record.layout.matrixd_process_lease(), &lease, now,
+            agent_id,
+            slot,
+            record.layout.matrixd_process_lease(),
+            &lease,
+            now,
         );
     }
 
@@ -249,11 +318,16 @@ impl<D: ProcessDriver> Supervisor<D> {
     ) -> Result<(), SupervisorError> {
         let publication = write_matrix_lease(path, lease);
         let publication_failed = publication.is_err();
-        let initialized = slot.matrix.runtime.as_ref().and_then(|runtime| {
-            runtime.process.initialization_failure().map(str::to_owned)
-        });
+        let initialized = slot
+            .matrix
+            .runtime
+            .as_ref()
+            .and_then(|runtime| runtime.process.initialization_failure().map(str::to_owned));
         let launch = publication.and_then(|()| match initialized {
-            Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
+            Some(error) => Err(driver_error(
+                agent_id,
+                crate::ProcessDriverError::new(error),
+            )),
             None => Ok(()),
         });
         if let Err(error) = launch {
@@ -269,10 +343,18 @@ impl<D: ProcessDriver> Supervisor<D> {
             }
             // Attempt termination before any fallible restart-budget I/O.
             if let Err(signal) = self.kill_matrix_now(agent_id, slot) {
-                slot.event(lease.attached_agent_generation,
-                    SupervisorEventKind::DriverFault(bounded_message(signal.to_string())));
+                slot.event(
+                    lease.attached_agent_generation,
+                    SupervisorEventKind::DriverFault(bounded_message(signal.to_string())),
+                );
             }
-            self.degrade_matrix(agent_id, slot, lease.attached_agent_generation, error.to_string(), now);
+            self.degrade_matrix(
+                agent_id,
+                slot,
+                lease.attached_agent_generation,
+                error.to_string(),
+                now,
+            );
             return Err(error);
         }
         slot.matrix.retry_at = None;
@@ -332,12 +414,22 @@ impl<D: ProcessDriver> Supervisor<D> {
                     healthy: false,
                     fenced: false,
                 });
-                let admission = match slot.matrix.runtime.as_ref().and_then(|runtime| {
-                    runtime.process.initialization_failure().map(str::to_owned)
-                }) {
-                    Some(error) => Err(driver_error(agent_id, crate::ProcessDriverError::new(error))),
-                    None => self.validate_adopted_matrix(slot, record, agent_id, &lease, now),
-                };
+                if slot.has_recovery_denial() {
+                    // Quarantine intentionally does not hydrate active_release
+                    // or grant main serving eligibility. Validate the companion's
+                    // actual lease/catalog/binding without requiring either.
+                    return self.contain_denied_matrix_owner(agent_id, slot, record, &lease);
+                }
+                let admission =
+                    match slot.matrix.runtime.as_ref().and_then(|runtime| {
+                        runtime.process.initialization_failure().map(str::to_owned)
+                    }) {
+                        Some(error) => Err(driver_error(
+                            agent_id,
+                            crate::ProcessDriverError::new(error),
+                        )),
+                        None => self.validate_adopted_matrix(slot, record, agent_id, &lease, now),
+                    };
                 match admission {
                     Ok(Some(health_deadline)) => {
                         let runtime = slot.matrix.runtime.as_mut().ok_or_else(|| {
@@ -356,7 +448,10 @@ impl<D: ProcessDriver> Supervisor<D> {
                     outcome => {
                         let fault = outcome.err();
                         let message = fault.as_ref().map_or_else(
-                            || "Matrix orphan is attached to a non-running main generation".to_string(),
+                            || {
+                                "Matrix orphan is attached to a non-running main generation"
+                                    .to_string()
+                            },
                             ToString::to_string,
                         );
                         // Rejected serving eligibility never discards ownership.
@@ -380,7 +475,9 @@ impl<D: ProcessDriver> Supervisor<D> {
                         if let Err(signal) = &termination {
                             slot.event(
                                 record.lifecycle.generation,
-                                SupervisorEventKind::DriverFault(bounded_message(signal.to_string())),
+                                SupervisorEventKind::DriverFault(bounded_message(
+                                    signal.to_string(),
+                                )),
                             );
                         }
                         return match fault {
@@ -431,23 +528,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         lease: &MatrixProcessLease,
         now: Instant,
     ) -> Result<Option<Instant>, SupervisorError> {
-        let binding = load_binding(record, agent_id)?.ok_or_else(|| {
-            SupervisorError::CorruptLease(
-                "Matrix lease exists without a public binding".to_string(),
-            )
-        })?;
-        if binding.revision != lease.binding_revision {
-            return Err(SupervisorError::CorruptLease(
-                "Matrix lease binding revision is stale".to_string(),
-            ));
-        }
-        let binding_digest = matrix_binding_digest(&binding)
-            .map_err(|error| SupervisorError::CorruptLease(error.to_string()))?;
-        if binding_digest != lease.binding_digest {
-            return Err(SupervisorError::CorruptLease(
-                "Matrix lease binding digest is stale".to_string(),
-            ));
-        }
+        recovery_admission::validate_binding(record, agent_id, lease)?;
         let Some(release) = slot.active_release.as_ref() else {
             return Err(SupervisorError::CorruptLease(
                 "Matrix lease exists without an active release".to_string(),
@@ -501,6 +582,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             kind,
             spawn_generation,
         });
+        // The retained terminal owner is only awaiting exact lease cleanup.
+        // Keep the main deferred, without another signal, phase or event.
+        if slot.matrix.observed_exit.is_some() {
+            return Ok(true);
+        }
         let mut event_generation = None;
         if !matches!(
             runtime.phase,
@@ -532,6 +618,11 @@ impl<D: ProcessDriver> Supervisor<D> {
         };
         runtime.healthy = false;
         runtime.fenced = true;
+        // An exact terminal observation leaves only same-owner cleanup. Other
+        // containment callers must not resignal while that cleanup is pending.
+        if slot.matrix.observed_exit.is_some() {
+            return Ok(());
+        }
         let mut event_generation = None;
         if !matches!(runtime.phase, MatrixRuntimePhase::Killing) {
             runtime
@@ -559,49 +650,22 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.matrix.degraded = true;
         slot.matrix.last_error = Some(message.clone());
         slot.event(generation, SupervisorEventKind::MatrixDegraded(message));
-        let wall_now = match unix_millis_now() {
-            Ok(wall_now) => wall_now,
-            Err(error) => {
-                let message = bounded_message(format!(
-                    "Matrix restart budget could not read wall clock: {error}"
-                ));
-                slot.matrix.retry_at = None;
-                slot.matrix.restart_exhausted = true;
-                slot.matrix.last_error = Some(message.clone());
-                slot.event(generation, SupervisorEventKind::MatrixDegraded(message));
-                return;
-            }
-        };
-        match schedule_restart(
-            &mut slot.matrix.restart_attempt,
-            &mut slot.matrix.restart_window_started_at,
-            now,
-        ) {
-            RestartSchedule::Retry { attempt, retry_at } => {
-                if attempt == 1 || slot.matrix.restart_window_started_unix_millis.is_none() {
-                    slot.matrix.restart_window_started_unix_millis = Some(wall_now);
-                }
-                slot.matrix.retry_at = Some(retry_at);
-                slot.matrix.restart_exhausted = false;
-            }
-            RestartSchedule::Exhausted { attempts } => {
-                slot.matrix.retry_at = None;
-                slot.matrix.restart_exhausted = true;
-                slot.event(
-                    generation,
-                    SupervisorEventKind::MatrixRestartBudgetExhausted { attempts },
-                );
-            }
-        }
-        if let Err(error) = self.persist_restart_budget(agent_id, slot) {
-            let message = bounded_message(format!(
-                "Matrix restart budget could not be persisted: {error}"
-            ));
+        if slot.has_recovery_denial() {
+            // Retain diagnostics and prior durable claims, but denial cannot
+            // admit a new companion retry while observing absence or exit.
             slot.matrix.retry_at = None;
-            slot.matrix.restart_exhausted = true;
-            slot.matrix.last_error = Some(message.clone());
-            slot.event(generation, SupervisorEventKind::MatrixDegraded(message));
+            slot.matrix.restart_after_exit = false;
+            return;
         }
+        slot.matrix.retry_admission = slot.runtime.as_ref().and_then(|runtime| {
+            slot.active_release
+                .as_ref()
+                .map(|release| crate::runtime::MatrixRetryAdmission {
+                    spawn_generation: runtime.spawn_generation,
+                    release_id: release.release_id().clone(),
+                })
+        });
+        self.schedule_matrix_retry(agent_id, slot, generation, now);
     }
 }
 
@@ -612,6 +676,7 @@ fn reset_matrix_restart_budget<P>(slot: &mut AgentSlot<P>) {
     );
     slot.matrix.restart_window_started_unix_millis = None;
     slot.matrix.retry_at = None;
+    slot.matrix.retry_admission = None;
     slot.matrix.restart_after_exit = false;
     slot.matrix.restart_exhausted = false;
 }
@@ -626,16 +691,8 @@ fn load_binding(
         Err(error) if error.kind() == ErrorKind::NotFound => return Ok(None),
         Err(error) => return Err(error.into()),
     };
-    if !metadata.file_type().is_file()
-        || metadata.file_type().is_symlink()
-        || metadata.len() > MAX_MATRIX_BINDING_BYTES
-    {
-        return Err(SupervisorError::Invalid(format!(
-            "Matrix public binding is not a bounded regular file: {}",
-            path.display()
-        )));
-    }
-    let binding: MatrixBindingV1 = serde_json::from_slice(&std::fs::read(path)?)
+    let bytes = read_binding_after_metadata(path, &metadata)?;
+    let binding: MatrixBindingV1 = serde_json::from_slice(&bytes)
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
     binding
         .validate()
@@ -648,6 +705,39 @@ fn load_binding(
     }
     Ok(Some(binding))
 }
+
+fn read_binding_after_metadata(
+    path: &std::path::Path,
+    metadata: &std::fs::Metadata,
+) -> Result<Vec<u8>, SupervisorError> {
+    if !metadata.file_type().is_file()
+        || metadata.file_type().is_symlink()
+        || metadata.len() > MAX_MATRIX_BINDING_BYTES
+    {
+        return Err(SupervisorError::Invalid(format!(
+            "Matrix public binding is not a bounded regular file: {}",
+            path.display()
+        )));
+    }
+    let mut file = crate::regular_file_io::open_regular_file(path, MAX_MATRIX_BINDING_BYTES)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+        let opened = file.metadata()?;
+        if opened.dev() != metadata.dev() || opened.ino() != metadata.ino() {
+            return Err(SupervisorError::Invalid(
+                "Matrix binding identity changed while opening".to_string(),
+            ));
+        }
+    }
+    let mut bytes = Vec::new();
+    crate::regular_file_io::read_bounded(&mut file, &mut bytes, MAX_MATRIX_BINDING_BYTES)?;
+    Ok(bytes)
+}
+
+#[cfg(all(test, unix))]
+#[path = "matrix_binding_io_tests.rs"]
+mod binding_io_tests;
 
 fn next_matrix_incarnation(
     agent_id: &AgentId,

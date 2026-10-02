@@ -22,28 +22,59 @@ class SupervisorStatusTests(unittest.TestCase):
                 "test_source": ["present", "partial", "absent"],
                 "exact_head": ["pending", "passed", "failed", "not_applicable"],
                 "merge_candidate": ["pending", "passed", "failed", "not_applicable"],
-                "target_host": ["not_run", "pending", "passed", "failed", "not_applicable"],
-                "independent_acceptance": ["not_obtained", "pending", "accepted", "rejected", "not_applicable"],
+                "target_host": [
+                    "not_run",
+                    "pending",
+                    "passed",
+                    "failed",
+                    "not_applicable",
+                ],
+                "independent_acceptance": [
+                    "not_obtained",
+                    "pending",
+                    "accepted",
+                    "rejected",
+                    "not_applicable",
+                ],
             },
             "current": {
-                "source": "partial", "test_source": "present", "exact_head": "pending",
-                "merge_candidate": "pending", "target_host": "not_run",
-                "independent_acceptance": "not_obtained", "activated": False,
-                "release": False, "claim": "candidate",
+                "source": "partial",
+                "test_source": "present",
+                "exact_head": "pending",
+                "merge_candidate": "pending",
+                "target_host": "not_run",
+                "independent_acceptance": "not_obtained",
+                "activated": False,
+                "release": False,
+                "claim": "candidate",
             },
-            "capabilities": [{
-                "id": "one", "summary": "one", "source": "implemented",
-                "test_source": "present", "exact_head": "pending",
-                "merge_candidate": "pending", "target_host": "not_run",
-                "independent_acceptance": "not_obtained", "activated": False,
-                "source_paths": ["source.txt"],
-            }],
+            "capabilities": [
+                {
+                    "id": "one",
+                    "summary": "one",
+                    "source": "implemented",
+                    "test_source": "present",
+                    "exact_head": "pending",
+                    "merge_candidate": "pending",
+                    "target_host": "not_run",
+                    "independent_acceptance": "not_obtained",
+                    "activated": False,
+                    "source_paths": ["source.txt"],
+                }
+            ],
         }
 
     def test_render_keeps_every_evidence_dimension_distinct(self):
         text = render(self.matrix())
-        for heading in ("Source", "Test source", "Exact head", "Merge candidate",
-                        "Target host", "Independent acceptance", "Activated"):
+        for heading in (
+            "Source",
+            "Test source",
+            "Exact head",
+            "Merge candidate",
+            "Target host",
+            "Independent acceptance",
+            "Activated",
+        ):
             self.assertIn(heading, text)
         self.assertNotIn("`passed`", text)
 
@@ -51,9 +82,12 @@ class SupervisorStatusTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             (root / "source.txt").write_text("source")
-            for field, value in (("target_host", "passed"),
-                                 ("independent_acceptance", "accepted"),
-                                 ("activated", True), ("release", True)):
+            for field, value in (
+                ("target_host", "passed"),
+                ("independent_acceptance", "accepted"),
+                ("activated", True),
+                ("release", True),
+            ):
                 data = copy.deepcopy(self.matrix())
                 data["current"][field] = value
                 with self.subTest(field=field), self.assertRaises(ValueError):
@@ -69,6 +103,44 @@ class SupervisorStatusTests(unittest.TestCase):
             with self.assertRaises(ValueError):
                 validate_matrix(root, data)
 
+    def test_capability_external_pass_and_aggregate_source_overclaim_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "source.txt").write_text("source")
+            for field, value in (
+                ("target_host", "passed"),
+                ("independent_acceptance", "accepted"),
+            ):
+                data = self.matrix()
+                data["capabilities"][0][field] = value
+                with self.subTest(field=field), self.assertRaises(ValueError):
+                    validate_matrix(root, data)
+            data = self.matrix()
+            data["current"]["source"] = "implemented"
+            data["capabilities"][0]["source"] = "partial"
+            with self.assertRaises(ValueError):
+                validate_matrix(root, data)
+
+    def test_dormant_module_and_escaping_paths_cannot_support_source_claims(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root / "source.txt").write_text("source")
+            library = root / "codex-rs/hepta-supervisor/src/lib.rs"
+            library.parent.mkdir(parents=True)
+            library.write_text("mod supervisor;\n")
+            data = self.matrix()
+            data["capabilities"][0]["id"] = "atomic_recovery_observation_envelope"
+            with self.assertRaisesRegex(ValueError, "library build graph"):
+                validate_matrix(root, data)
+            data = self.matrix()
+            data["capabilities"][0]["source_paths"] = ["../source.txt"]
+            with self.assertRaisesRegex(ValueError, "escapes checkout"):
+                validate_matrix(root, data)
+            data = self.matrix()
+            data["generated_status_path"] = "../external.md"
+            with self.assertRaisesRegex(ValueError, "destination"):
+                validate_matrix(root, data)
+
     def test_history_inventory_is_closed_world(self):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -79,10 +151,14 @@ class SupervisorStatusTests(unittest.TestCase):
             history = {
                 "schema_version": 1,
                 "module": "runtime.supervisor",
-                "documents": [{
-                    "path": "ONE_REPAIR_20260930.md", "status": "historical",
-                    "normative": False, "superseded_by": ["TECHNICAL.md"],
-                }],
+                "documents": [
+                    {
+                        "path": "ONE_REPAIR_20260930.md",
+                        "status": "historical",
+                        "normative": False,
+                        "superseded_by": ["TECHNICAL.md"],
+                    }
+                ],
             }
             validate_history(root, history)
             (docs / "TWO_REPAIR_20260930.md").write_text("unclassified")

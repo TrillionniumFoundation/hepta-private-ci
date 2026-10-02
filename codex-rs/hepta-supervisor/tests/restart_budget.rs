@@ -1,3 +1,8 @@
+#![expect(
+    clippy::expect_used,
+    reason = "fixture state and bounded restart observations must fail the test immediately when invariants fail"
+)]
+
 use std::collections::BTreeMap;
 use std::path::PathBuf;
 use std::sync::Arc;

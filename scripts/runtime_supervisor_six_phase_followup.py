@@ -4,23 +4,45 @@
 from __future__ import annotations
 
 from pathlib import Path
+from collections.abc import Callable
+from textwrap import dedent
 
 ROOT = Path(__file__).resolve().parents[1]
-SRC = ROOT / "codex-rs" / "hepta-supervisor" / "src"
-DOCS = ROOT / "docs" / "modules" / "runtime.supervisor"
 
 
-def replace_once(path: Path, old: str, new: str, *, sentinel: str) -> None:
-    text = path.read_text(encoding="utf-8")
-    if sentinel in text:
-        return
-    if old not in text:
-        raise SystemExit(f"follow-up marker changed in {path}: {old[:120]!r}")
-    path.write_text(text.replace(old, new, 1), encoding="utf-8")
+def apply(
+    root: Path,
+    read: Callable[[Path], str],
+    write: Callable[[Path, str], None],
+) -> None:
+    """Apply reviewed follow-ups using the caller's staged edit transaction."""
+    src = root / "codex-rs" / "hepta-supervisor" / "src"
+    docs = root / "docs" / "modules" / "runtime.supervisor"
 
+    def replace_once(path: Path, old: str, new: str, *, sentinel: str) -> None:
+        text = read(path)
+        if sentinel in text:
+            return
+        # Match exact relative indentation at either source indentation level.
+        # Main materialization inserts dedented methods; rustfmt indents them.
+        old_lines = dedent(old).strip("\n").splitlines()
+        new_lines = dedent(new).strip("\n").splitlines()
+        lines = text.splitlines(keepends=True)
+        for start in range(len(lines) - len(old_lines) + 1):
+            first = lines[start].rstrip("\n")
+            prefix = first[: len(first) - len(first.lstrip())]
+            if all(
+                lines[start + offset].rstrip("\n") == (prefix + line if line else "")
+                for offset, line in enumerate(old_lines)
+            ):
+                lines[start : start + len(old_lines)] = [
+                    (prefix + line if line else "") + "\n" for line in new_lines
+                ]
+                write(path, "".join(lines))
+                return
+        raise SystemExit(f"follow-up marker changed in {path}: {old_lines[0]!r}")
 
-def main() -> None:
-    execution = SRC / "daemon_execution.rs"
+    execution = src / "daemon_execution.rs"
     replace_once(
         execution,
         """pub(super) async fn handle(
@@ -47,7 +69,7 @@ def main() -> None:
         sentinel="UUID prefix is exactly eight bytes",
     )
 
-    robrix = SRC / "robrix_protocol.rs"
+    robrix = src / "robrix_protocol.rs"
     replace_once(
         robrix,
         """            SupervisordPayload::MutationAccepted { .. }
@@ -62,7 +84,7 @@ def main() -> None:
         sentinel="| SupervisordPayload::OrdinaryMutationStatus { .. }",
     )
 
-    client = SRC / "daemon_client.rs"
+    client = src / "daemon_client.rs"
     replace_once(
         client,
         """    pub async fn execute_mutation_with_request_id(
@@ -87,7 +109,7 @@ def main() -> None:
         sentinel="ordinary mutation request identity must be non-zero",
     )
 
-    retry_doc = DOCS / "MUTATION_RETRY_PROTOCOL.md"
+    retry_doc = docs / "MUTATION_RETRY_PROTOCOL.md"
     replace_once(
         retry_doc,
         """               - `prepared`: the side effect was not entered; retrying the exact same
@@ -105,8 +127,16 @@ def main() -> None:
         (robrix, "SupervisordPayload::OrdinaryMutationStatus"),
         (client, "ordinary mutation request identity must be non-zero"),
     ):
-        if marker not in path.read_text(encoding="utf-8"):
+        if marker not in read(path):
             raise SystemExit(f"follow-up verification failed for {path}: {marker}")
+
+
+def main() -> None:
+    if __package__:
+        from . import runtime_supervisor_six_phase_materialize as materializer
+    else:
+        import runtime_supervisor_six_phase_materialize as materializer
+    materializer.transact(lambda: apply(ROOT, materializer.read, materializer.write))
 
 
 if __name__ == "__main__":
