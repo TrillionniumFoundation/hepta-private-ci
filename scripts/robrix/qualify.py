@@ -113,6 +113,15 @@ def web_build():
     flags = 'let mut env = vec![("RUSTFLAGS", rustflags)];'
     assert after.count(flags) == 1
     after = after.replace(flags, 'let rustflags = format!(r#"{rustflags} --cfg ruma_identifiers_storage=\"Arc\""#);\n    let mut env = vec![("RUSTFLAGS", rustflags.as_str())];')
+    from resource_transform import minifier_source, check_real_js, check_resource_contract
+    transform_source = OUT / 'makepad-resource-transform.rs'
+    transform_source.write_text(minifier_source(before))
+    transform_binary = OUT / 'makepad-resource-transform'
+    run(['rustc', '+1.96.0', '--edition', '2024', str(transform_source), '-o', str(transform_binary)],
+        log='makepad-resource-transform-compile.log')
+    (OUT / 'makepad-resource-transform-preflight.json').write_text(json.dumps(
+        {'realJs': check_real_js(transform_binary, source, OUT),
+         'byteContractTests': check_resource_contract(transform_binary, source)}, indent=2))
     target.write_text(after)
     utility = source / 'tools/cargo_makepad/src/utils.rs'
     utility_before = utility.read_text()
@@ -150,7 +159,11 @@ def web_build():
     assert (package / 'index.html').is_file()
     assert (package / 'robrix.wasm').stat().st_size > 8
     assert (package / 'bindgen.js').is_file()
-    resources = validate_pinned_resources(package, source, resource_root)
+    (OUT / 'web-package-sha256.json').write_text(json.dumps(package_inventory(package), indent=2))
+    try:
+        resources = validate_pinned_resources(package, source, resource_root, transform_binary)
+    finally:
+        transform_binary.unlink(missing_ok=True)
     (OUT / 'web-package-resource-identity.json').write_text(json.dumps(resources, indent=2))
     (OUT / 'web-package-sha256.json').write_text(json.dumps(package_inventory(package), indent=2))
 

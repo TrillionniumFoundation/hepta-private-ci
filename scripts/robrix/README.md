@@ -167,3 +167,14 @@ rows and duplicate-package warnings), rejects the old concatenated output, and
 executes a real missing-package error. No dependency graph build is required.
 Current native screenshots were inspected at all three sizes; short-login wheel
 scrolling reveals the lower controls. Browser app rendering remains pending.
+
+Run 37063912800 created the real release package successfully; the verifier then
+incorrectly required raw JS bytes. Pinned cp_brotli minifies bootstrap JS and may
+fall back to a raw copy when a destination parent does not yet exist. Validation
+now accepts only the exact raw source or exact output of that pinned Rust
+minify_js function, extracted under the full upstream source SHA guard. The
+bindgen worker prefix is included before transformation. CSS and dependency
+resources remain exact raw copies. All six real transformed bootstrap modules
+are syntax-checked before the heavy app build; hashes record each transform.
+This compatibility preflight is not app execution. Package hashes are saved
+before resource validation so a failure preserves byte-level diagnostics.

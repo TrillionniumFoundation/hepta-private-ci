@@ -88,7 +88,7 @@ def package_inventory(package):
             for path in sorted(package.rglob('*')) if path.is_file()}
 
 
-def validate_pinned_resources(package, source, compiled_source):
+def validate_pinned_resources(package, source, compiled_source, js_minifier=None):
     """Verify packaged bytes against both pinned tool checkout and built dependency."""
     package, source, compiled_source = map(Path, (package, source, compiled_source))
     expected = {'makepad_wasm_bridge/wasm_bridge.js': ('libs/wasm_bridge/src/wasm_bridge.js', b'')}
@@ -101,16 +101,34 @@ def validate_pinned_resources(package, source, compiled_source):
             for path in root.rglob('*'):
                 if path.is_file() and path.name not in SMALL_FONT_OMISSIONS:
                     expected[f'{crate}/resources/{path.relative_to(root)}'] = (str(path.relative_to(source)), b'')
+    transforms = {}
+    failures = []
     for destination, (relative, prefix) in expected.items():
         original = (source / relative).read_bytes()
         if (compiled_source / relative).read_bytes() != original:
             raise ValueError('Compiled Makepad resource differs from pinned source: ' + relative)
         target = package / destination
-        if not target.is_file() or target.read_bytes() != prefix + original:
-            raise ValueError('Packaged Makepad resource missing or changed: ' + destination)
+        raw = prefix + original
+        forms = {'raw-copy': raw}
+        # Only special bootstrap JS goes through upstream cp_brotli. Resource files
+        # (including any .js under resources/) are copied byte-for-byte.
+        if js_minifier is not None and destination.endswith('.js') and '/resources/' not in destination:
+            from resource_transform import minify
+            forms['pinned-minify-js'] = minify(js_minifier, raw)
+        if target.exists() and not target.resolve().is_relative_to(package.resolve()):
+            raise ValueError('Packaged resource escapes package: ' + destination)
+        actual = target.read_bytes() if target.is_file() else None
+        matched = [name for name, data in forms.items() if actual == data]
+        if not matched:
+            failures.append({'path': destination, 'actual': sha(actual) if actual is not None else None,
+                             'expected': {name: sha(data) for name, data in forms.items()}})
+        else:
+            transforms[destination] = matched[0]
+    if failures:
+        raise ValueError('Packaged Makepad resource missing or changed: ' + str(failures))
     inventory = package_inventory(package)
     return {'verifiedResources': {name: inventory[name] for name in expected},
-            'verifiedUrls': verify_relative_urls(package),
+            'verifiedUrls': verify_relative_urls(package), 'resourceTransforms': transforms,
             'smallFonts': True, 'uploadsPermitted': False}
 
 

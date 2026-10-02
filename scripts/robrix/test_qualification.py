@@ -175,6 +175,11 @@ export { initSync, __wbg_init as default };
 
 
 class TestActualPackageResources(unittest.TestCase):
+    def test_unpinned_minifier_source_is_rejected(self):
+        from resource_transform import minifier_source
+        with self.assertRaisesRegex(ValueError, 'source hash drift'):
+            minifier_source('fn minify_js(input: &str) -> String { input.into() }')
+
     def populate(self, root):
         for name in ['index.html', 'bindgen.js', 'robrix.wasm', *CORE_ASSETS]:
             path = root / name
