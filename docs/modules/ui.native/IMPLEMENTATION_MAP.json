@@ -2,17 +2,19 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "331b81d385a88837e252bd80fda8b8ac35ea4191",
-    "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
+    "commit": "949848aa547aed69ee391f393638660a0e1ebe8d",
+    "tree": "3dd1fa9e8b72274179a11dd0ff3bb36134eda7ed"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.native",
   "sourceMaturity": "native_shell_boundary",
   "declaredRoots": [
-    "apps/hepta-native"
+    "apps/hepta-native",
+    "apps/hepta-robrix"
   ],
   "resolvedRoots": [
-    "apps/hepta-native"
+    "apps/hepta-native",
+    "apps/hepta-robrix"
   ],
   "stateOwnerDisposition": "Owns shell/window/session state and opaque platform references; domain facts and secrets remain with their owners.",
   "terminalObserverDisposition": "The backend, platform permission adapter, and updater each supply their own observations; the shell cannot self-issue success.",
@@ -140,6 +142,7 @@
   "deputy": "accessibility",
   "technicalGuide": "docs/modules/ui.native/TECHNICAL.md",
   "sourceRoot": [
-    "apps/hepta-native"
+    "apps/hepta-native",
+    "apps/hepta-robrix"
   ]
 }
