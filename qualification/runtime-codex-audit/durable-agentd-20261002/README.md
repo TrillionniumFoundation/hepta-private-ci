@@ -59,3 +59,14 @@ blocked by inherited automation.taskflow provenance: its source commit
 candidate. No unrelated provenance anchor was silently replaced. Old-head hosted
 Agentd qualification also selects a nonexistent memory destination-recovery test;
 its zero-test failure remains a real gap, not an accepted or skipped test.
+
+Follow-up review tightened source identity shape: candidate profiles accept only
+commit/tree; the exact-CI profile additionally requires the known provenance
+kind and rejects all other keys. Hosted docs revealed inherited dual exclusive
+ownership of the worker root. The canonical registry now leaves that root solely
+with inference.worker; inference.control retains its caller/evidence references.
+The generator checks the exact registered exclusive-root set, and detailed
+cross-owner records are labeled delegated evidence. Final local Python selection:
+730 passed. Clean aggregate docs verification passes the ownership boundary but
+still fails unrelated source drift, non-ancestor provenance and unavailable
+source objects; its complete failure log is retained.
