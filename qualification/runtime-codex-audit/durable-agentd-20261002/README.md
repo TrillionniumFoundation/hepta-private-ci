@@ -70,3 +70,8 @@ cross-owner records are labeled delegated evidence. Final local Python selection
 730 passed. Clean aggregate docs verification passes the ownership boundary but
 still fails unrelated source drift, non-ancestor provenance and unavailable
 source objects; its complete failure log is retained.
+
+Independent metadata re-review passed 12 truth, three path-guard and 12
+current-state tests after the profile-shape correction. No further blocking
+finding was reported within this ownership/projection scope. This is not broad
+independent product acceptance and does not close the preserved integration gaps.
