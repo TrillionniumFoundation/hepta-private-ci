@@ -1,5 +1,41 @@
 use super::*;
 
+#[tokio::test]
+#[ignore = "requires independent protected fixture and explicitly restricted Root capabilities"]
+async fn root_gateway_peer_restricted_capability_probe() -> anyhow::Result<()> {
+    use std::os::unix::fs::PermissionsExt;
+    use tokio::io::AsyncWriteExt;
+    use tokio::net::UnixListener;
+    let directory = std::path::PathBuf::from(std::env::var("HEPTA_CHAT_CAPABILITY_FIXTURE")?);
+    anyhow::ensure!(
+        directory.parent() == Some(Path::new("/run"))
+            && directory
+                .file_name()
+                .and_then(|name| name.to_str())
+                .is_some_and(|name| name.starts_with("hepta-chat-capability-")),
+        "independent fixture only"
+    );
+    let admitted = std::env::var("HEPTA_CHAT_CAPABILITY_ADMITTED")? == "1";
+    let private_access = std::env::var("HEPTA_CHAT_CAPABILITY_PRIVATE_ACCESS")? == "1";
+    let gate = RootGatewayPeerV1::open(&directory.join("policy.json"))?;
+    let listener = UnixListener::bind(directory.join("ctl"))?;
+    std::fs::set_permissions(
+        directory.join("ctl"),
+        std::fs::Permissions::from_mode(0o666),
+    )?;
+    std::fs::write(directory.join("ready"), b"ready")?;
+    let (mut stream, _) =
+        tokio::time::timeout(std::time::Duration::from_secs(3), listener.accept()).await??;
+    assert_eq!(gate.verify(&stream).is_ok(), admitted);
+    // Metadata only: exercise Agent-style 0700 traversal without reading data.
+    assert_eq!(
+        std::fs::metadata(directory.join("agent-private/ctl")).is_ok(),
+        private_access
+    );
+    stream.write_all(b"checked").await?;
+    Ok(())
+}
+
 #[test]
 fn non_root_gateway_composition_cannot_open_owner_policy() {
     assert_ne!(

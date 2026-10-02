@@ -34,6 +34,7 @@ pub struct SupervisordClient {
     socket_path: PathBuf,
     next_request_id: AtomicU64,
     timeout: Duration,
+    expected_owner_uid: Option<u32>,
 }
 
 impl SupervisordClient {
@@ -47,7 +48,15 @@ impl SupervisordClient {
             socket_path,
             next_request_id: AtomicU64::new(random_request_seed()),
             timeout: Duration::from_secs(2),
+            expected_owner_uid: None,
         })
+    }
+
+    /// Installation policy supplies the original owner's UID. Verify it before
+    /// writing any protocol bytes; the default client remains compatible.
+    pub fn with_owner_uid(mut self, owner_uid: u32) -> Self {
+        self.expected_owner_uid = Some(owner_uid);
+        self
     }
 
     /// Read one selected module from the existing durable Supervisor owner.
@@ -451,6 +460,9 @@ impl SupervisordClient {
         let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
             .await
             .map_err(|_| SupervisorError::Invalid("supervisord connect timed out".to_string()))??;
+        if let Some(uid) = self.expected_owner_uid {
+            stream.ensure_peer_user(uid)?;
+        }
         let (reader, mut writer) = tokio::io::split(stream);
         let mut bytes = serde_json::to_vec(&request)
             .map_err(|error| SupervisorError::Invalid(format!("encode request: {error}")))?;
@@ -534,3 +546,7 @@ fn unexpected<T>(payload: SupervisordPayload) -> Result<T, SupervisorError> {
         "supervisord returned unexpected payload {payload:?}"
     )))
 }
+
+#[cfg(all(test, unix))]
+#[path = "daemon_client_peer_tests.rs"]
+mod peer_tests;

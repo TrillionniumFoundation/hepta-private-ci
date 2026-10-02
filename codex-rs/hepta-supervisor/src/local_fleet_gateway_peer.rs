@@ -18,6 +18,15 @@ pub struct RootGatewayPeerV1 {
 }
 
 impl RootGatewayPeerV1 {
+    /// Read only the bounded protected configuration of the Root chat host.
+    /// It neither opens Fleet state nor grants permission to a request.
+    pub fn read_chat_configuration(path: &Path) -> Result<Vec<u8>, ProcessDriverError> {
+        if unsafe { libc::geteuid() } != 0 {
+            return Err(ProcessDriverError::new("chat configuration requires Root"));
+        }
+        trust::read_root_file(path, 64 * 1024)
+    }
+
     pub fn open(policy_path: &Path) -> Result<Self, ProcessDriverError> {
         if unsafe { libc::geteuid() } != 0 {
             return Err(ProcessDriverError::new("gateway composition requires Root"));
