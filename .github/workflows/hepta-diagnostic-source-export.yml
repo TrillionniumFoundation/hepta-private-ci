@@ -9,6 +9,7 @@ on:
       - codex-rs/hepta-fleet/Cargo.toml
       - "codex-rs/hepta-supervisor/**"
       - codex-rs/Cargo.lock
+      - scripts/test_hepta_ci_exec_deadline.py
       - .github/workflows/hepta-diagnostic-source-export.yml
 
 permissions:

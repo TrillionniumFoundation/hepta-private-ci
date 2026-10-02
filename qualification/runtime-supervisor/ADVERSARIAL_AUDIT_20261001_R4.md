@@ -977,3 +977,23 @@ mandatory 在三库逐名通过，Fleet 五个逐名通过；每 native lane 的
 其外部包与固定 base 整包 tree 相同；cargo-deny 终态失败根因仍 UNKNOWN。
 Supervisor 空 doctest 和三个 orphan 警告已在完整 raw 中消失。311 份窗口材料的
 bytes／SHA 独立复核通过，窗口不延长，也不把 pending／skipped 计为执行。
+
+## e00b CI 复审：子进程退出观测的既有测试竞态
+
+Matrix 修复最终发布为 `e00b7d2b6acccf6a35683a595cf88e1f23673642`，tree
+`79a1810d36bc6217595c0f31129eb9812c729d1a`，唯一父、完整源为
+`75886ae97f2deb6c1da6b921f80ffaa0696d9ea3`。该 head 的 docs source job
+110694024239 实际运行 803 tests，802 成功、一个 ERROR，不能记录为 803 PASS。
+Traceback 在 `test_exited_parent_cannot_leave_a_running_pipe_holder` 第 73 行：
+读取 `/proc/<pid>/stat` 时子进程被回收，得到 ProcessLookupError（errno 3）。
+前面的真实 timed_out／parent returncode=0 断言已经通过；这不是 Supervisor
+或 Fleet Rust 测试叶失败。测试和 executor 文件在该 head、完整源及固定 base
+e8 的 Git blob 完全相同，静态归为既有观测竞态；没有声称 base 实际同样失败。
+
+原测试只捕获 FileNotFoundError；补修同时捕获明确表示进程不存在的
+ProcessLookupError。仍存活的后代继续受原 100 轮观测、SIGKILL 和失败断言约束，
+权限／其他 I/O 错误仍会报错。原超时、正常父退出、日志字节和 digest 检查保留。
+此修改没有改变 executor、Supervisor Rust 或生产进程控制语义。原 ERROR 结果
+保留；新的成功只能来自修正后 head 的实际执行，本地不运行测试。
+现有只读 enhanced-lock push 入口同时加入这个真实 fixture 路径；其 branch、
+permissions 和其余 dispatch-only jobs 保持原值，补修后的 head 自动取得独立观察。
