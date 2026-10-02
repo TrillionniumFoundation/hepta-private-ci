@@ -33,7 +33,8 @@
       "sourcePathExists": true,
       "designOperation": "retrieve_v2",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "69e7c773f9ebaa777783a4965749a0051edf37eb"
     },
     {
       "operation": "compile_cue",
@@ -47,7 +48,8 @@
       "sourcePathExists": true,
       "designOperation": "compile_cue",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "dc5ccaee3ffa5fae36a62594627c293e9d7fbfec"
     },
     {
       "operation": "build_candidate_union_from_generated",
@@ -62,7 +64,8 @@
       "sourcePathExists": true,
       "designOperation": "retrieve",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "dc5ccaee3ffa5fae36a62594627c293e9d7fbfec"
     },
     {
       "operation": "settle_engram",
@@ -76,7 +79,8 @@
       "sourcePathExists": true,
       "designOperation": "engram_settle",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "2d2df3efb3cfcfe0c785c4e1369a68a8712258b0"
     },
     {
       "operation": "recall_generated_with_engram",
@@ -91,7 +95,8 @@
       "sourcePathExists": true,
       "designOperation": "recall",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "dc5ccaee3ffa5fae36a62594627c293e9d7fbfec"
     },
     {
       "operation": "observe_retrieval_assignment",
@@ -105,7 +110,8 @@
       "sourcePathExists": true,
       "designOperation": "assignment_observation",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "7d701b3a4db8820a962cd9174ffd6ce9e41f12e1"
     },
     {
       "operation": "build_candidate_union",
@@ -117,7 +123,8 @@
       "sourcePathExists": true,
       "designOperation": "build_candidate_union",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "79402db4a16e3b1255f7b926a879de34b28e42e4"
     },
     {
       "operation": "recall",
@@ -129,7 +136,8 @@
       "sourcePathExists": true,
       "designOperation": "recall",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "79402db4a16e3b1255f7b926a879de34b28e42e4"
     },
     {
       "operation": "adapt_generation_bound_recall_to_canonical_shadow_v1",
@@ -143,7 +151,8 @@
       "sourcePathExists": true,
       "designOperation": "canonical_recall_shadow_adapter",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "79402db4a16e3b1255f7b926a879de34b28e42e4"
     }
   ],
   "repositoryControlledGaps": [
@@ -191,8 +200,9 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "90ef2d19255502306488ef9009eed916a6d004bb",
+    "tree": "ac043ce60a390b7515989f11ed580b4e83f12bff",
+    "interpretation": "Exact current source observation after the shared Cargo.lock input gained the already locked libc dependency edge for codex-hepta-fleet. The complete historical evidence/root/observed-path closure differs from this source only at codex-rs/Cargo.lock; all original operation entrypoints and existing explicit source objects remain unchanged. Immutable sourceBase remains integration provenance. Exact operation sourceBlob bindings and this observation independently prove current source navigation, without transferring historical execution, composition, acceptance, activation or release credit. Existing source identity policy, owners, gaps, state fields and all qualification claims are preserved. This is source-only shared-input integration, not new operation execution or product qualification."
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-memory-retrieval-qualification-host.yml",
@@ -298,5 +308,7 @@
       "path": "docs/modules/memory.retrieval/TECHNICAL.md",
       "object": "5b04a2e04f9a20d3337cc460b17cc0814a7e9bc4"
     }
-  ]
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation"
 }

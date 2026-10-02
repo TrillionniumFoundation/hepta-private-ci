@@ -36,7 +36,8 @@
       "sourcePathExists": true,
       "designOperation": "prepare_intent",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "d952060c81eca0d64d7091ebca928c8740c00ed7"
     },
     {
       "operation": "prepare_operation",
@@ -57,7 +58,8 @@
           "module": "cognitive.store",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
     },
     {
       "operation": "claim_outbox",
@@ -77,7 +79,8 @@
           "module": "cognitive.store",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "c5c6f0aa8ee3a630857e1232b5b054817dd715f7"
     },
     {
       "operation": "authorized_dispatch",
@@ -103,7 +106,8 @@
           "module": "cognitive.store",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
     },
     {
       "operation": "observe_cognitive_terminal",
@@ -123,7 +127,8 @@
           "module": "cognitive.store",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "d32961e6bddbd020658f3b60fb1d66d15c0f2e37"
     },
     {
       "operation": "agentd_final_use_host",
@@ -143,7 +148,8 @@
           "module": "runtime.agentd",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "dbf3f0729e336ed0a4d4ce3ce1ec90eced4f5c91"
     },
     {
       "operation": "agentd_runtime_composition",
@@ -163,7 +169,8 @@
           "module": "runtime.agentd",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
     },
     {
       "operation": "automation_operation_consumer",
@@ -183,7 +190,8 @@
           "module": "automation.taskflow",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
     },
     {
       "operation": "reference_operationledger",
@@ -197,7 +205,8 @@
       "sourcePathExists": true,
       "designOperation": "reference_operationledger",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "e6ed053a86608f30e63c703a6ed6e3cdb049abfd"
     },
     {
       "operation": "reference_outbox",
@@ -211,7 +220,8 @@
       "sourcePathExists": true,
       "designOperation": "reference_outbox",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "1f172748e56e2fdffa403b485ec0145af66a99f8"
     }
   ],
   "repositoryControlledGaps": [
@@ -320,8 +330,9 @@
     ]
   },
   "observedAtHead": {
-    "commit": "aa68a23f99d8ddf0521c732fed288d9287c30ac4",
-    "tree": "8d7b7fd2dd8e41652f97a1ab2cd938e1cfbed03b"
+    "commit": "90ef2d19255502306488ef9009eed916a6d004bb",
+    "tree": "ac043ce60a390b7515989f11ed580b4e83f12bff",
+    "interpretation": "Exact current source observation after the shared Cargo.lock input gained the already locked libc dependency edge for codex-hepta-fleet. The complete historical evidence/root/observed-path closure differs from this source only at codex-rs/Cargo.lock; all original operation entrypoints and existing explicit source objects remain unchanged. Immutable sourceBase remains integration provenance. Exact operation sourceBlob bindings and this observation independently prove current source navigation, without transferring historical execution, composition, acceptance, activation or release credit. Existing source identity policy, owners, gaps, state fields and all qualification claims are preserved. This is source-only shared-input integration, not new operation execution or product qualification."
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -424,5 +435,7 @@
       "path": "docs/modules/kernel.operations/TECHNICAL.md",
       "object": "744afc7479736a81e075a6bce83cb0323f1e8f45"
     }
-  ]
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceBaseSemantics": "provenance_anchor_plus_exact_head_blobs_and_current_observation"
 }
