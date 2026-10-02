@@ -114,6 +114,41 @@ class SelectionTests(unittest.TestCase):
     def test_empty_exact_diff_runs_no_native_tests(self):
         self.assertEqual(ci.select_packages([], self.graph, self.graph)["packages"], [])
 
+    def test_browser_process_dependency_selects_exact_agentd_reverse_consumers(self):
+        graph = ci.Graph(
+            {
+                "codex-rs/hepta-agentd": "codex-hepta-agentd",
+                "codex-rs/host": "host",
+                "codex-rs/unrelated": "unrelated",
+            },
+            frozenset({("codex-hepta-agentd", "host", False)}),
+        )
+        result = ci.select_packages(["apps/hepta-browser/src/journal.js"], graph, graph)
+        self.assertEqual(result["packages"], ["codex-hepta-agentd", "host"])
+        self.assertFalse(result["full_workspace"])
+        missing = ci.select_packages(
+            ["apps/hepta-browser/src/journal.js"], self.graph, self.graph
+        )
+        self.assertTrue(missing["full_workspace"])
+
+    def test_removed_browser_caller_keeps_old_consumers_and_embedded_inputs(self):
+        before = ci.Graph(
+            {"codex-rs/hepta-agentd": "codex-hepta-agentd", "codex-rs/host": "host"},
+            frozenset({("codex-hepta-agentd", "host", False)}),
+        )
+        after = ci.Graph(
+            {"codex-rs/host": "host", "codex-rs/embedded": "embedded"},
+            frozenset(),
+            external_inputs=frozenset(
+                {("apps/hepta-browser/src/journal.js", "embedded")}
+            ),
+        )
+        result = ci.select_packages(
+            ["apps/hepta-browser/src/journal.js"], before, after
+        )
+        self.assertEqual(result["packages"], ["embedded", "host"])
+        self.assertFalse(result["full_workspace"])
+
 
 class GitGraphTests(unittest.TestCase):
     def setUp(self):

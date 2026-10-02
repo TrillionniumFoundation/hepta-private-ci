@@ -10,13 +10,8 @@
     "servoshellBuildRoot": false,
     "webdriverServerDependency": false,
     "servoDefaultFeatures": false,
-    "requiredServoFeatures": [
-      "background_hang_monitor",
-      "bundled"
-    ],
-    "conditionallyPermittedServoFeatures": [
-      "js_jit"
-    ],
+    "requiredServoFeatures": ["background_hang_monitor", "bundled"],
+    "conditionallyPermittedServoFeatures": ["js_jit"],
     "initiallyForbiddenServoFeatures": [
       "bluetooth",
       "clipboard",
@@ -58,7 +53,17 @@
     "publicBrowserListener": false,
     "verifiedUseTokenSerialized": false,
     "finalUseFenceEndsAt": "durable_intent_plus_local_worker_pipe_write",
-    "remoteEffectTerminalitySeparate": true
+    "remoteEffectTerminalitySeparate": true,
+    "serviceBundleRecipe": "apps/hepta-browser/scripts/build-service.mjs",
+    "serviceArtifactForm": "single_standalone_mjs_with_reviewed_static_import_closure",
+    "serviceDigestField": "service_sha256",
+    "serviceDigestScope": "complete_javascript_bundle_bytes_excludes_node_bubblewrap_os_runtime",
+    "nativeServiceSnapshot": "codex-rs/hepta-agentd/src/browser_servo_artifact.rs",
+    "workerArtifactDirectory": "private_sibling_of_writable_profile_without_rw_alias",
+    "replayObservationSchema": "hepta.browser.replay-observation.v1",
+    "replayRequiresMatchingCallerService": true,
+    "canonicalJson": "utf8_byte_lexical_keys_and_finite_javascript_safe_integers_not_rfc_jcs",
+    "arbitraryReflectiveJavaScriptSandbox": false
   },
   "linuxHostIsolation": {
     "launcher": "apps/hepta-browser/src/worker-driver.js::LinuxBubblewrapLauncher",
@@ -100,7 +105,14 @@
     "requiresAllBrowserNodeTests": true,
     "requiresRealSandboxProbe": true,
     "requiresRealWorkerSmoke": true,
-    "sourcePresenceIsPassEvidence": false
+    "sourcePresenceIsPassEvidence": false,
+    "nodeTarget": "node24",
+    "serviceBuilder": "esbuild-0.28.1",
+    "serviceParser": "acorn-8.15.0",
+    "requiresLockedNpmDependencies": true,
+    "independentServiceBuildCount": 2,
+    "requiresByteIdenticalServiceAndReceipts": true,
+    "requiresServiceSourceInputRecipeAndPackageLockDigests": true
   },
   "deploymentEvidenceGate": {
     "workflow": ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
@@ -110,14 +122,36 @@
     "requiresReviewedWorkerDigest": true,
     "selfIssuesOperatorAcceptance": false,
     "selfIssuesPromotion": false,
-    "selfIssuesRelease": false
+    "selfIssuesRelease": false,
+    "manualAdmissionInheritedByReusableCaller": true,
+    "requiresExactSourceTree": true,
+    "requiresCommittedSourceLockMatch": true,
+    "requiresServiceArtifactAndReceiptDigests": true,
+    "requiresServiceRebuildAndCompleteReceiptComparison": true,
+    "recordsNodeAndBubblewrapExecutableIdentity": true,
+    "serviceExecutionQualified": false
   },
   "crossOwnerComposition": {
     "browserSidePrivateHandoffImplemented": true,
-    "agentdCallerStack": "PR #611 / codex/browser-servo-agentd-composition-20260917",
+    "agentdCallerStack": "historical PR #611 provenance; current named source is codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
     "liveFinalUseChallengeRequired": true,
     "dispatchBoundaryAcknowledgementRequired": true,
-    "longRunningAuthorityOwnerActivated": false
+    "longRunningAuthorityOwnerActivated": false,
+    "nativeSnapshotReplayIsolatedSourceVerifiedThisRound": true,
+    "nativeSourceVerification": {
+      "scope": "isolated_actual_browser_servo_source_and_actual_contracts_path",
+      "dependencyNameVersionSourceMatchesRepositoryLock": true,
+      "offlineTestBuildPassed": true,
+      "defaultTestsPassed": 27,
+      "defaultTestsIgnored": 1,
+      "explicitActualRustToNodeFixtureTestsPassed": 1,
+      "fixtureAuthorityEntries": 1,
+      "fixtureDispatches": 1,
+      "scopedOfflineClippyRustVersion": "1.95.0",
+      "scopedOfflineClippyPassed": true,
+      "completeAgentdAllTargetsQualified": false,
+      "realServoOrBubblewrapQualified": false
+    }
   },
   "evidencePaths": [
     "third_party/servo-patches/MANIFEST.json",
@@ -134,7 +168,17 @@
     "apps/hepta-browser/scripts/real-worker-smoke.js",
     "apps/hepta-browser/scripts/spdx-sbom.py",
     ".github/workflows/hepta-browser-servo-worker-dev.yml",
-    ".github/workflows/hepta-browser-servo-deployment-qualification.yml"
+    ".github/workflows/hepta-browser-servo-deployment-qualification.yml",
+    "apps/hepta-browser/package-lock.json",
+    "apps/hepta-browser/scripts/build-service.mjs",
+    "apps/hepta-browser/src/replay-evidence.js",
+    "apps/hepta-browser/src/worker-artifact.js",
+    "apps/hepta-browser/test/service-build.test.js",
+    "apps/hepta-browser/test/worker-evidence.test.js",
+    "apps/hepta-browser/scripts/verify-worker-evidence.py",
+    "codex-rs/hepta-agentd/src/browser_servo_artifact.rs",
+    "codex-rs/hepta-agentd/src/browser_servo_config.rs",
+    "codex-rs/hepta-agentd/src/browser_servo_replay.rs"
   ],
   "openEvidence": [
     "terminal-success exact-SHA current-pin compile and locked dependency receipt",
@@ -147,6 +191,10 @@
     "terminal-success stacked Agentd final-use composition qualification",
     "trusted live authority and revocation owner for long-running Agentd activation",
     "real remote effect terminal reconciliation",
-    "independent deployment operator promotion and release acceptance"
+    "independent deployment operator promotion and release acceptance",
+    "complete Agentd all-target native checks and real product composition beyond passing locked isolated source and Rust-to-Node fixture tests",
+    "atomic renderer pipeline document admission and execution-time deadline enforcement",
+    "reviewed trusted Node Bubblewrap and OS/runtime installation; observed executable hashes are not qualification",
+    "external trusted history anchor against erasure before first journal admission"
   ]
 }

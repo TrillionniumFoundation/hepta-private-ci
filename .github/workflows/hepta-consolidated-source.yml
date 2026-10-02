@@ -491,6 +491,14 @@ jobs:
           set -euo pipefail
           # Global source/merge document and script checks run once in hepta-development-docs.
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/source-owner.json" -- python3 scripts/hepta-gap-closure.py verify
+      - name: Select Browser Node runtime
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 24
+      - name: Install locked Browser service build dependencies
+        if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
+        run: npm ci --prefix apps/hepta-browser --ignore-scripts
       - name: UI owner tests independently of document outcome
         if: ${{ !cancelled() && steps.candidate.outcome == 'success' }}
         env:

@@ -59,6 +59,14 @@ jobs:
           python3 scripts/hepta-lane-b-truth.py verify
           git diff --check
 
+      - name: Select Browser Node runtime
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 24
+
+      - name: Install locked Browser service build dependencies
+        run: npm ci --prefix apps/hepta-browser --ignore-scripts
+
       - name: Verify JavaScript runtime boundaries
         shell: bash
         run: |

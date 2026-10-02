@@ -24,6 +24,14 @@ jobs:
           fetch-depth: 1
           persist-credentials: false
 
+      - name: Select Browser Node runtime
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 24
+
+      - name: Install locked Browser service build dependencies
+        run: npm ci --prefix apps/hepta-browser --ignore-scripts
+
       - name: Bind exact source
         shell: bash
         run: |
@@ -35,7 +43,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          node --test apps/hepta-browser/test/agentd-service.test.js apps/hepta-browser/test/worker-driver.test.js
+          node --test apps/hepta-browser/test/*.test.js
 
       - name: Verify Agentd Browser formatting
         shell: bash
