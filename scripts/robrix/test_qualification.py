@@ -9,6 +9,7 @@ import qualify
 from browser_test_runner import passing_summary
 from x11_title import decode_title
 from makepad_test_bridge import patch_test_glue, load_pinned_bridge, glue_shape
+from package_resources import CORE_ASSETS, package_inventory, validate_pinned_resources, verify_relative_urls, patch_packager
 
 
 class TestExecutionGate(unittest.TestCase):
@@ -171,6 +172,68 @@ export { initSync, __wbg_init as default };
                 path.write_text('untrusted drift')
             with self.assertRaisesRegex(ValueError, 'hash mismatch'):
                 load_pinned_bridge(root)
+
+
+class TestActualPackageResources(unittest.TestCase):
+    def populate(self, root):
+        for name in ['index.html', 'bindgen.js', 'robrix.wasm', *CORE_ASSETS]:
+            path = root / name
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text('fixture')
+
+    def test_missing_makepad_bootstrap_assets_are_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.populate(root)
+            (root / CORE_ASSETS[0]).unlink()
+            with self.assertRaisesRegex(ValueError, 'Missing'):
+                package_inventory(root)
+
+    def test_actual_relative_resource_urls_are_checked(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.populate(root)
+            (root / 'index.html').write_text("import('./makepad_platform/web_gl.js');")
+            (root / 'makepad_platform/web_gl.js').write_text('import { WasmWebBrowser } from "./web.js";')
+            (root / 'makepad_platform/web.js').write_text('import { WasmBridge } from "../makepad_wasm_bridge/wasm_bridge.js";')
+            self.assertEqual(len(verify_relative_urls(root)), 3)
+            (root / 'makepad_platform/web.js').write_text('import { Missing } from "./wrong-root.js";')
+            with self.assertRaisesRegex(ValueError, 'packaged URL'):
+                verify_relative_urls(root)
+
+    def test_escaping_resource_url_is_rejected(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            self.populate(root)
+            (root / 'index.html').write_text("import('../outside.js');")
+            with self.assertRaisesRegex(ValueError, 'escaping'):
+                verify_relative_urls(root)
+
+    def test_packager_source_hash_drift_is_rejected(self):
+        with self.assertRaisesRegex(ValueError, 'hash drift'):
+            patch_packager('altered upstream source')
+
+    def test_resource_bytes_must_match_both_pinned_and_compiled_source(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            package, source, compiled = root / 'package', root / 'source', root / 'compiled'
+            self.populate(package)
+            names = ['audio_worklet.js', 'web_gl.js', 'web_worker.js', 'web.js', 'auto_reload.js', 'full_canvas.css']
+            pairs = [('makepad_wasm_bridge/wasm_bridge.js', 'libs/wasm_bridge/src/wasm_bridge.js', b'')]
+            pairs += [('makepad_platform/' + name, 'platform/src/os/web/' + name,
+                       b"import init from '../bindgen.js';\n" if name == 'web_worker.js' else b'') for name in names]
+            for destination, original, prefix in pairs:
+                for base in [source, compiled]:
+                    path = base / original
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_bytes(b'exact dependency asset')
+                target = package / destination
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(prefix + b'exact dependency asset')
+            self.assertEqual(len(validate_pinned_resources(package, source, compiled)['verifiedResources']), 7)
+            (compiled / 'platform/src/os/web/web_gl.js').write_bytes(b'changed compiled source')
+            with self.assertRaisesRegex(ValueError, 'differs'):
+                validate_pinned_resources(package, source, compiled)
 
 
 if __name__ == '__main__':

@@ -121,3 +121,28 @@ verified fixture window after six wheel-down ticks, then PageDown and six Tabs.
 No Enter, credential input, login click, or SSO submission is issued. The input
 exercise is recorded separately; lower-control reachability stays pending pixel
 review of the before/after images. No application layout change is made.
+
+## Dependency resource packaging compatibility
+
+Run37046992519 passed all13 original browser regressions and linked the release
+WASM, but its91-file package omitted every Makepad dependency resource. Serving
+that package root was correct; the files were missing. Pinned Makepad's build
+scripts write .path markers three parents above OUT_DIR. With the pinned Cargo
+layout that is release/build/, while its packager reads release/. The tool-only,
+SHA-guarded compatibility helper supports both locations and rejects ambiguous,
+relative, or escaping marker/source paths. The permitted source root comes from
+exact-revision Cargo metadata, not an arbitrary directory. Missing markers never
+count as resolved dependencies; required package assets then fail qualification.
+
+The unchanged packager copies the real dependency JS/CSS/resources. Qualification
+checks their bytes against both the compiled dependency checkout and the pinned
+Makepad tool checkout (including the original bindgen worker prefix and original
+small-font omissions). Relative bootstrap URLs must resolve inside the package;
+asset hashes are checked again before serving. Missing resources fail before
+browser startup, and runtime HTTP/page failures retain diagnostics immediately.
+No full package or font files are uploaded; their paths and hashes are evidence.
+
+Native run37046992519 succeeded. Pixel inspection of its800×560 login before/after
+wheel captures confirms all six SSO icons and the signup button become visible.
+The keyboard capture is visually unchanged; keyboard-focus reachability is not
+claimed. No account or message action was taken and no layout/theme change made.

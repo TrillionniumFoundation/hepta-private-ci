@@ -12,6 +12,7 @@ import tomllib
 import time
 import sys
 from x11_title import read_title
+from package_resources import patch_packager, compiled_resource_root, package_inventory, validate_pinned_resources
 
 ROOT = Path(__file__).resolve().parents[2]
 APP = ROOT / 'apps/hepta-robrix'
@@ -113,13 +114,25 @@ def web_build():
     assert after.count(flags) == 1
     after = after.replace(flags, 'let rustflags = format!(r#"{rustflags} --cfg ruma_identifiers_storage=\"Arc\""#);\n    let mut env = vec![("RUSTFLAGS", rustflags.as_str())];')
     target.write_text(after)
-    run(['git', 'diff', '--', str(target)], cwd=source, log='makepad-tool-only.patch')
+    utility = source / 'tools/cargo_makepad/src/utils.rs'
+    utility_before = utility.read_text()
+    utility.write_text(patch_packager(utility_before))
+    run(['git', 'diff', '--', str(target), str(utility)], cwd=source, log='makepad-tool-only.patch')
     (OUT / 'makepad-tool-patch.json').write_text(json.dumps({
         'revision': MAKEPAD, 'beforeSha256': hashlib.sha256(before.encode()).hexdigest(),
-        'afterSha256': digest(target), 'toolchain': 'nightly-2026-10-01'}, indent=2))
+        'afterSha256': digest(target), 'toolchain': 'nightly-2026-10-01',
+        'dependencyResolverBeforeSha256': hashlib.sha256(utility_before.encode()).hexdigest(),
+        'dependencyResolverAfterSha256': digest(utility)}, indent=2))
     run(['cargo', '+1.96.0', 'install', '--locked', '--path',
          str(source / 'tools/cargo_makepad'), '--root', str(OUT / 'makepad-tool')], log='makepad-tool-build.log')
-    env = dict(os.environ, MAKEPAD_WASM_TOOLCHAIN='nightly-2026-10-01')
+    metadata = json.loads(subprocess.check_output(['cargo', '+nightly-2026-10-01', 'metadata',
+        '--locked', '--format-version', '1', '--filter-platform', 'wasm32-unknown-unknown',
+        '--features', 'ui-fixture'], cwd=APP, text=True))
+    resource_root = compiled_resource_root(metadata, MAKEPAD)
+    (OUT / 'makepad-resource-source.json').write_text(json.dumps({'revision': MAKEPAD,
+        'compiledSource': str(resource_root), 'pinnedToolSource': str(source)}, indent=2))
+    env = dict(os.environ, MAKEPAD_WASM_TOOLCHAIN='nightly-2026-10-01',
+               MAKEPAD_RESOURCE_ROOT=str(resource_root))
     # Makepad owns the custom target specification, build-std, flags, JS and resources.
     # Do not replace this with cargo build --target wasm32-unknown-unknown.
     run([str(OUT / 'makepad-tool/bin/cargo-makepad'), 'wasm', '--bindgen', '--no-threads',
@@ -129,9 +142,9 @@ def web_build():
     assert (package / 'index.html').is_file()
     assert (package / 'robrix.wasm').stat().st_size > 8
     assert (package / 'bindgen.js').is_file()
-    (OUT / 'web-package-sha256.json').write_text(json.dumps({
-        str(p.relative_to(package)): digest(p) for p in sorted(package.rglob('*')) if p.is_file()
-    }, indent=2))
+    resources = validate_pinned_resources(package, source, resource_root)
+    (OUT / 'web-package-resource-identity.json').write_text(json.dumps(resources, indent=2))
+    (OUT / 'web-package-sha256.json').write_text(json.dumps(package_inventory(package), indent=2))
 
 
 def web_tests():

@@ -46,6 +46,10 @@ jobs:
           echo "$RUNNER_TEMP/robrix-python/bin" >> "$GITHUB_PATH"
       - name: Test fail-closed execution evidence gates
         run: python -m unittest discover -s scripts/robrix -p test_qualification.py -v
+      - name: Test exact Makepad marker resolver
+        run: |
+          rustc +1.96.0 --edition 2024 --test scripts/robrix/makepad_marker.rs -o "$RUNNER_TEMP/robrix-marker-tests"
+          "$RUNNER_TEMP/robrix-marker-tests"
       - name: Bind source, compiler and preserved license identity
         run: python scripts/robrix/qualify.py identity
       - name: Execute native lifecycle, dock and read-only Console tests
