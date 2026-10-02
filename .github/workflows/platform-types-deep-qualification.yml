@@ -86,6 +86,9 @@ jobs:
     needs: resolve
     runs-on: ubuntu-24.04
     timeout-minutes: 180
+    env:
+      SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
+      BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -175,6 +178,9 @@ jobs:
     if: github.event_name == 'pull_request'
     runs-on: ubuntu-24.04
     timeout-minutes: 180
+    env:
+      SOURCE_SHA: ${{ needs.resolve.outputs.source_sha }}
+      BASE_SHA: ${{ needs.resolve.outputs.base_sha }}
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
@@ -243,6 +249,8 @@ jobs:
               synthetic-merge "$MERGE_SHA" "$SOURCE_SHA" "$BASE_SHA" "$PR_NUMBER"
       - name: Materialize merge qualification summary
         if: ${{ always() }}
+        env:
+          MERGE_SHA: ${{ steps.merge.outputs.sha }}
         shell: bash
         run: |
           python3 scripts/platform_types_ci_gate.py summary \
@@ -264,6 +272,8 @@ jobs:
           retention-days: 90
       - name: Enforce merge summary after evidence upload
         if: ${{ always() }}
+        env:
+          MERGE_SHA: ${{ steps.merge.outputs.sha }}
         shell: bash
         run: |
           test "${{ steps.artifacts.outcome }}" = success

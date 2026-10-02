@@ -148,3 +148,21 @@ These artifacts are derived from source and CI and must remain reproducible:
 - Lane-A truth matrices, attestations, and qualification evidence
 
 CI must regenerate applicable artifacts and fail when the worktree changes. Qualification is determined only by the exact-source evidence chain described in [`IMPLEMENTATION_STATUS.md`](./IMPLEMENTATION_STATUS.md), never by the presence of a closure document.
+
+## Same-candidate aggregate verdicts
+
+The diagnostic gate runner records the checkout and frozen source/base/merge
+identity both before and after each command. Aggregation requires those identities
+to equal the current checkout/context and requires the same runner, workflow run,
+and run attempt. The final assertion revalidates the embedded records instead of
+trusting only the aggregate `status` string. The workflow preserves its frozen
+identity environment through aggregation and final assertion in both lanes.
+
+An explicit workflow `--required` gate cannot be downgraded by a record marked
+optional. Duplicate gate names, nonzero or non-integer exit codes hidden behind a
+passed label, missing required gates, and stale or changed identities fail closed.
+These checks preserve failed diagnostics; they do not turn diagnostics into an
+authoritative qualification receipt or substitute for exact-head independent review.
+Stderr excerpts read only the bounded suffix, avoiding a full-file allocation for
+large failed-build logs. Regression coverage is in
+`scripts/test_platform_types_ci_gate.py`.

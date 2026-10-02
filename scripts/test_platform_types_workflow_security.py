@@ -45,6 +45,35 @@ class PlatformTypesWorkflowSecurityTests(unittest.TestCase):
         self.assertGreaterEqual(text.count("persist-credentials: false"), 3)
         self.assertIn("permissions:\n  contents: read", text)
 
+    def test_aggregate_and_assertion_keep_frozen_candidate_identity(self) -> None:
+        import yaml
+
+        workflow = yaml.safe_load(DEEP.read_text(encoding="utf-8"))
+        for lane in ("source", "merge"):
+            job = workflow["jobs"][lane]
+            commands = []
+            for step in job["steps"]:
+                run = step.get("run", "")
+                if "platform_types_ci_gate.py" not in run:
+                    continue
+                commands.append(run)
+                environment = {**job.get("env", {}), **step.get("env", {})}
+                self.assertEqual(
+                    environment["SOURCE_SHA"], "${{ needs.resolve.outputs.source_sha }}"
+                )
+                self.assertEqual(
+                    environment["BASE_SHA"], "${{ needs.resolve.outputs.base_sha }}"
+                )
+                if lane == "merge":
+                    self.assertEqual(
+                        environment["MERGE_SHA"], "${{ steps.merge.outputs.sha }}"
+                    )
+            self.assertEqual(len(commands), 4)
+            self.assertTrue(
+                any("ci_gate.py summary" in command for command in commands)
+            )
+            self.assertTrue(any("ci_gate.py assert" in command for command in commands))
+
     def test_legacy_verifier_uses_event_bound_sha_only(self) -> None:
         text = LEGACY.read_text(encoding="utf-8")
         for forbidden in (

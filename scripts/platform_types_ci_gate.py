@@ -29,7 +29,11 @@ def _utc_now() -> str:
 
 
 def _safe_name(value: str) -> str:
-    if not value or any(character not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-" for character in value):
+    if not value or any(
+        character
+        not in "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789._-"
+        for character in value
+    ):
         raise ValueError(f"unsafe gate name: {value!r}")
     return value
 
@@ -58,9 +62,10 @@ def _sha256(path: Path) -> str:
 def _tail(path: Path, maximum_lines: int = 80, maximum_bytes: int = 16_384) -> str:
     if not path.exists():
         return ""
-    data = path.read_bytes()
-    if len(data) > maximum_bytes:
-        data = data[-maximum_bytes:]
+    with path.open("rb") as stream:
+        stream.seek(0, os.SEEK_END)
+        stream.seek(max(0, stream.tell() - maximum_bytes))
+        data = stream.read(maximum_bytes)
     text = data.decode("utf-8", errors="replace")
     return "\n".join(text.splitlines()[-maximum_lines:])
 
@@ -154,8 +159,13 @@ def run_gate(arguments: argparse.Namespace) -> int:
     return_code = 127
     launch_error: str | None = None
     try:
-        with stdout_path.open("wb") as stdout_file, stderr_path.open("wb") as stderr_file:
-            process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        with (
+            stdout_path.open("wb") as stdout_file,
+            stderr_path.open("wb") as stderr_file,
+        ):
+            process = subprocess.Popen(
+                command, stdout=subprocess.PIPE, stderr=subprocess.PIPE
+            )
             assert process.stdout is not None
             assert process.stderr is not None
             stdout_thread = threading.Thread(
@@ -202,7 +212,9 @@ def run_gate(arguments: argparse.Namespace) -> int:
         "gitStatus": status.splitlines(),
         "launchError": launch_error,
     }
-    result_path.write_text(json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    result_path.write_text(
+        json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(f"platform.types gate {gate_name}: {result['status']} (exit {return_code})")
     return return_code if arguments.propagate else 0
 
@@ -214,34 +226,76 @@ def _load_gate(path: Path) -> dict[str, object]:
     return value
 
 
+def _gate_failures(
+    gates: list[dict[str, object]],
+    required: list[str],
+    candidate: dict[str, object],
+    runner: dict[str, object],
+) -> list[str]:
+    failures: list[str] = []
+    seen: set[str] = set()
+    for gate in gates:
+        name = _safe_name(str(gate.get("gate", "")))
+        if name in seen:
+            failures.append(f"duplicate:{name}")
+        seen.add(name)
+        # The workflow's required set cannot be downgraded by a record.
+        if name in required or gate.get("required", True) is not False:
+            if (
+                gate.get("status") != "passed"
+                or type(gate.get("exitCode")) is not int
+                or gate["exitCode"] != 0
+                or gate.get("launchError") is not None
+            ):
+                failures.append(name)
+        if gate.get("schema") != GATE_SCHEMA:
+            failures.append(f"schema:{name}")
+        if (
+            gate.get("candidateAtStart") != candidate
+            or gate.get("candidateAtCompletion") != candidate
+        ):
+            failures.append(f"candidate_mismatch:{name}")
+        if gate.get("runner") != runner:
+            failures.append(f"runner_mismatch:{name}")
+    failures.extend(f"missing:{name}" for name in required if name not in seen)
+    return failures
+
+
 def build_summary(arguments: argparse.Namespace) -> int:
     root = Path(arguments.evidence_root).resolve()
     gates_dir = root / "gates"
-    gates = [_load_gate(path) for path in sorted(gates_dir.glob("*.json"))] if gates_dir.exists() else []
-    by_name = {str(gate["gate"]): gate for gate in gates}
-    required = list(dict.fromkeys(arguments.required or []))
-    missing = [name for name in required if name not in by_name]
-    failed = [
-        str(gate["gate"])
-        for gate in gates
-        if bool(gate.get("required", True)) and gate.get("status") != "passed"
-    ]
-    failed.extend(f"missing:{name}" for name in missing)
+    gates = (
+        [_load_gate(path) for path in sorted(gates_dir.glob("*.json"))]
+        if gates_dir.exists()
+        else []
+    )
+    required = list(
+        dict.fromkeys(_safe_name(name) for name in arguments.required or [])
+    )
+    candidate = _candidate_identity()
+    runner = _runner_identity()
+    failed = _gate_failures(gates, required, candidate, runner)
     status = "passed" if not failed else "failed"
     summary = {
         "schema": SCHEMA,
         "candidateKind": arguments.candidate_kind,
         "status": status,
         "failureReasons": failed,
-        "candidate": _candidate_identity(),
-        "runner": _runner_identity(),
+        "candidate": candidate,
+        "runner": runner,
         "generatedAt": _utc_now(),
         "requiredGates": required,
         "gates": gates,
     }
-    output = Path(arguments.output) if arguments.output else root / "qualification-summary.json"
+    output = (
+        Path(arguments.output)
+        if arguments.output
+        else root / "qualification-summary.json"
+    )
     output.parent.mkdir(parents=True, exist_ok=True)
-    output.write_text(json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    output.write_text(
+        json.dumps(summary, indent=2, sort_keys=True) + "\n", encoding="utf-8"
+    )
     print(f"platform.types qualification summary: {status}")
     for failure in failed:
         print(f"required gate failure: {failure}", file=sys.stderr)
@@ -253,8 +307,17 @@ def assert_summary(arguments: argparse.Namespace) -> int:
     summary = json.loads(path.read_text(encoding="utf-8"))
     if summary.get("schema") != SCHEMA:
         raise ValueError(f"unsupported summary schema in {path}")
-    if summary.get("status") != "passed":
-        for failure in summary.get("failureReasons", []):
+    candidate = _candidate_identity()
+    runner = _runner_identity()
+    failures = _gate_failures(
+        summary["gates"], summary["requiredGates"], candidate, runner
+    )
+    if summary.get("candidate") != candidate:
+        failures.append("summary_candidate_mismatch")
+    if summary.get("runner") != runner:
+        failures.append("summary_runner_mismatch")
+    if summary.get("status") != "passed" or summary.get("failureReasons") or failures:
+        for failure in [*summary.get("failureReasons", []), *failures]:
             print(f"required gate failure: {failure}", file=sys.stderr)
         return 1
     return 0
@@ -272,14 +335,18 @@ def parser() -> argparse.ArgumentParser:
     run.add_argument("command", nargs=argparse.REMAINDER)
     run.set_defaults(handler=run_gate)
 
-    summary = subparsers.add_parser("summary", help="write the aggregate qualification summary")
+    summary = subparsers.add_parser(
+        "summary", help="write the aggregate qualification summary"
+    )
     summary.add_argument("--evidence-root", required=True)
     summary.add_argument("--candidate-kind", required=True)
     summary.add_argument("--required", action="append", default=[])
     summary.add_argument("--output")
     summary.set_defaults(handler=build_summary)
 
-    assertion = subparsers.add_parser("assert", help="fail if the aggregate summary failed")
+    assertion = subparsers.add_parser(
+        "assert", help="fail if the aggregate summary failed"
+    )
     assertion.add_argument("--summary", required=True)
     assertion.set_defaults(handler=assert_summary)
     return root
