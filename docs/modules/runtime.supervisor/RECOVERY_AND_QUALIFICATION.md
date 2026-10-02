@@ -18,6 +18,17 @@ Current main-process dispatch rules are:
 
 Matrix faults use their separate release-bound window. `MatrixRestartBudgetExhausted` leaves the companion degraded. `start_matrix_companion` clears that companion budget only when there is no active release or the selected release has no Matrix command. A new Matrix-enabled release does not refund charges. Recovery does not erase charges merely because the committed release differs from an in-flight adopted release; a healthy readiness observation does not zero the flap counter or reset the main budget.
 
+New Matrix retry charging and eventual dispatch independently revalidate current
+Fleet catalog admission, allowance and revocation. A cached Running main must
+also match the freshly read Running lifecycle and generation; the retained main
+must be unfenced and match the cached active bundle. Denial preserves prior durable budget, existing retry deadlines,
+owners and exact cleanup. An uncharged failure uses a transient same-main-spawn
+and release marker: renewed admission first charges once and schedules backoff;
+an already charged retry resumes without another charge. Initial setup remains
+uncharged. A different main spawn invalidates only the transient marker. Cold
+restore retains its existing conservative budget behavior; no new durable
+eligibility witness, atomic Fleet/spawn contract or lineage completion is claimed.
+
 These rules describe `tick.rs`, `control.rs`, `recovery.rs`, `restart_budget.rs` and `matrix.rs`; they do not promise automatic retries for every startup or adoption failure.
 
 Trusted recovery denial also prevents new Matrix retry claims and replacement
@@ -301,7 +312,9 @@ results remain failed. The subsequent repair adds three constructor-preparation
 leaves and makes the existing process-recovery diagnostic leaf mandatory too.
 The d1ed checkpoint had 31 new Supervisor and two new Fleet leaves since
 1f111388 and 88 exact common repair identities. The subsequent ownership repair
-adds three daemon RPC leaves: the current source has 34 new Supervisor and two
-new Fleet leaves, 91 exact common repair identities and five Fleet identities. This is a static
+adds three daemon RPC leaves, reaching 34 new Supervisor leaves and 91 exact
+common repair identities. Matrix admission adds three further leaves: the current
+source has 37 new Supervisor and two new Fleet leaves, 94 exact common repair
+identities and five Fleet identities. This is a static
 requirement, confirmed against the real test modules and receipt rejection
 guards; native results must come from its own final candidate head.

@@ -476,6 +476,16 @@ pinned digests still validate the read bytes before verifier construction;
 protected parent directories and external provisioning remain requirements.
 This reader changes no process, lease, grant or recovery ownership.
 
+Matrix replacement admission reuses Fleet release validation before a new retry
+charge and again before spawn. A cached Running main must match the freshly read
+Fleet generation and Running lifecycle, remain unfenced and match the cached active bundle. Denied
+admission preserves acquired process handles, leases, terminal cleanup and prior
+restart charges. The private pending marker identifies an uncharged failure by
+main spawn generation and release; it grants no ownership. Renewed admission
+charges that retry once before backoff, while an existing charged retry keeps
+its claim. This is an in-memory continuation guard, not a durable cross-daemon
+exit or replacement witness and not an atomic Fleet CAS/spawn transaction.
+
 The Unix `authority_bundle::open_tests` regression in
 `authority_bundle_open_tests.rs` uses real regular-file-to-FIFO replacement and
 must reject before its old-path watchdog releases a blocked open. It is source

@@ -101,6 +101,9 @@ CURRENT_REPAIR_LIBRARY_REQUIREMENTS = (
     "unix::peer_identity_tests::drain_never_sends_a_frame_to_a_socket_owned_by_another_process",
     "control_intent::write_tests::repeated_real_control_rename_failures_leave_no_new_staging_files",
     "control_intent::write_tests::control_publication_fault_cuts_clean_staging_and_preserve_acknowledgement_errors",
+    "supervisor::tests::matrix_admission_tests::matrix_exit_policy_denial_preserves_budget_and_readmission_charges_once",
+    "supervisor::tests::matrix_admission_tests::charged_matrix_retry_policy_denial_preserves_claim_and_resumes_without_recharge",
+    "supervisor::tests::matrix_admission_tests::matrix_replacement_revalidates_catalog_provenance_and_canonical_commands",
 )
 CURRENT_LIBRARY_REQUIREMENTS = (
     *base.LIBRARY_REQUIREMENTS,

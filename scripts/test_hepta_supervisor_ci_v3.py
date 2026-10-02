@@ -161,6 +161,10 @@ class SupervisorCurrentPlanTests(unittest.TestCase):
                 "daemon::authority_tests::emergency_kill_tests",
             ),
             (
+                "matrix_admission_tests.rs",
+                "supervisor::tests::matrix_admission_tests",
+            ),
+            (
                 "signed_constructor_replay_tests.rs",
                 "supervisor::tests::release_retry_tests::signed_recovery::constructor_replay",
             ),

@@ -322,6 +322,22 @@ removal cannot turn them into an unregistered local command. Explicit direct
 fixtures. They cannot bypass an existing, denied or revoked catalog entry, and
 signed mutation admission still requires canonical source and target bindings.
 
+Matrix repeats the same release admission before both a new retry charge and
+the eventual companion spawn. A revoked, disallowed, removed or damaged catalog
+entry cannot authorize a cached companion command. The final gate consumes the
+fresh canonical Matrix command. For a cached Running main, admission also reads
+the current Fleet record and requires its exact generation and Running lifecycle;
+the retained main must be unfenced and match the cached active bundle. This rejects an already observed
+lifecycle change; it does not make concurrent Fleet CAS and process spawn atomic.
+
+Policy denial preserves the main and peer owners, exact exit cleanup and prior
+Matrix charges. An uncharged failure is retained in a private transient marker
+bound to the main spawn generation and active release. Re-admission schedules
+one durable attempt with its full backoff before launch; an already charged
+retry resumes its existing claim without charging again. Initial companion
+setup remains uncharged. This marker is not a durable eligibility witness and
+does not complete cross-daemon replacement lineage.
+
 A production mutation requires a detached external grant and H7 envelope. The
 daemon validates signer identity and epoch, authority epoch, operation, source
 and target, control revision, lifecycle generation, expiry, digests and current
@@ -954,7 +970,9 @@ results remain failed. The subsequent repair adds three constructor-preparation
 leaves and makes the existing process-recovery diagnostic leaf mandatory too.
 The d1ed checkpoint had 31 new Supervisor and two new Fleet leaves since
 1f111388 and 88 exact common repair identities. The subsequent ownership repair
-adds three daemon RPC leaves: the current source has 34 new Supervisor and two
-new Fleet leaves, 91 exact common repair identities and five Fleet identities. This is a static
+adds three daemon RPC leaves, reaching 34 new Supervisor leaves and 91 exact
+common repair identities. Matrix admission adds three further leaves: the current
+source has 37 new Supervisor and two new Fleet leaves, 94 exact common repair
+identities and five Fleet identities. This is a static
 requirement, confirmed against the real test modules and receipt rejection
 guards; native results must come from its own final candidate head.

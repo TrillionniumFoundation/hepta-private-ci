@@ -113,6 +113,15 @@ are not made cancellable by a timeout.
 may hold ownership beyond the connection deadline; host-level termination
 and subsequent durable recovery remain separate operational actions.
 
+Matrix retry charging and eventual spawn each use the current Fleet release
+admission contract. For a cached Running main, each gate also checks fresh Fleet
+lifecycle and generation; the retained main must be unfenced and match the cached
+active bundle. Denial preserves existing owners and charged retry timing. A
+transient marker for an uncharged same-spawn/release failure causes one new charge
+and backoff after re-admission; it supplies no durable recovery or ownership
+authority. These synchronous reads retain the existing writer and full-Fleet
+cost. They do not make a later concurrent Fleet CAS atomic with process spawn.
+
 Startup registry loading/recovery is still synchronous. Mutations and tick
 still share one lifecycle mutex. Tick-only full-fleet captures are coalesced to
 100 ms; a live owner request refreshes immediately. Equal-input per-Agent status

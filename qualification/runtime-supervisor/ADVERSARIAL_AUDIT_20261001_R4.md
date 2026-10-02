@@ -898,3 +898,62 @@ manifest parsed fields 全等（仅 lib.doctest 不同），源码 guard 91／5 
 检查 receipt SHA-256 为
 `721b2000bf0ab062a6ef6433b6ba9201ca4e3aa974291a89e1f05949f4d483ea`。
 fix/fmt 后没有本地测试，仍不代替新 head 的原生或深度执行。
+
+## 22beb 组合复审：Matrix 重试与启动的 Fleet 准入
+
+后续发布观察为 `22bebc8ed8ea87d9f79d99c0ea1aae4f39e1832e`，tree
+`348340f7fbcbaeb11796974dd712f4ec7f54a3a0`，唯一父提交、完整源为
+`97240ae33ca7385bfd7eeaa3c70a9946e0bb89b1`。该提交的 91／5 是自己的
+历史测试计划；其 actual CI 结果与本节之后的修复源码分别记录，不相互转移。
+
+独立 source-only 对抗复审确认两个效果边界仍使用缓存 Matrix descriptor：
+合法 Fleet revoke 后，健康 main 保留，但 companion 退出后仍可能新增一次
+持久化 retry charge，并在到期时再次启动已经撤销的 Matrix 命令。
+`load_binding` 只验证公共 Matrix binding，不能代替 Fleet allowance/revocation。
+31 个不可变源码对象的反例证明 SHA-256 为
+`a5c8f7445f942f2708107413c4e26faf9eab5cb906d353b40dc728ed9544e131`；
+这是代码审查证明，没有把 fixture 当作已执行测试。
+
+补修复用现有 `refresh_release_for_transition`，在新增 Matrix retry charge 前
+和实际 companion spawn 前各自重新准入。Catalog provenance 继续防止删除条目
+后降级为资格用 plant；最终启动使用新解析的 canonical Matrix command。
+拒绝仅写入 bounded Matrix degraded 诊断，保留 main／其他 Agent、精确 lease
+清理、旧 budget/window/retry deadline 和所有已取得的 process owner。
+
+只在策略拒绝后再次直接启动仍会漏记新失败，因此新增私有、owner-local 的
+uncharged retry marker，绑定 exact main spawn generation 与 active ReleaseId。
+合法恢复 allowance 后先收费一次并等待完整 backoff；原本已收费的 retry 恢复
+其原 claim，不能再收费。新 main incarnation 丢弃旧 transient marker，初次
+companion setup 不收费。Fleet 的 append-only revoke 不通过删除 marker 或
+重新 allow 来伪造撤销恢复。该标记没有新增 durable witness、协议或权限。
+
+相邻独审又确认 main poll 后合法 Fleet CAS Running→Draining 的观察切点：
+旧 cached healthy main 不再足以准入 Matrix。两道 gate 对 cached Running main
+消费新 Fleet record，要求 current Running、exact generation、active bundle
+和 unfenced owner。拒绝不执行 Kill/CAS，不扩展 nonRunning／ownerless constructor
+旧预算语义；现有 tick containment 继续负责旧 owner。检查没有承诺消除读取之后
+并发 CAS 的 TOCTOU，也没有实现跨 daemon 原子 spawn 协议。
+
+三个真实新叶在真实 Fleet／lease 和明确标注的 process double 中覆盖：
+初次 setup、已有健康 attempt、合法 allowance 恢复的一次收费／backoff、旧已收费
+claim 零重收费、新 main generation、撤销／删除／损坏 catalog、晚到 canonical
+catalog 命令，以及上述两个 Running→Draining continuation cut。当前相对 1f
+为 37 个新增 Supervisor／两个 Fleet 叶；mandatory 完整保留原 91 个并仅追加
+这三个实际身份，成为 94／5。原 `supervisor_tests.rs` 只增加三行 child wiring，
+剔除这三行后全部旧测试字节与 22beb 相同，原 constructor diagnostic 文件不改。
+这些是 source inventory，仍须新最终 head 的独立执行证明。
+
+详细开发文档继续包含职责、接口、所有权、失败恢复、权限、构建和资格门槛。
+Fleet 是 release catalog 与 lifecycle CAS 的事实来源，Supervisor 消费其准入
+并执行 generation-fenced 生命周期；Agentd 与 Kernel 的 RPC／任务／权限事实
+不能由 companion 健康或进程退出代替。当前 12／2／2 能力和独立验收、目标主机、
+activation/release 状态保持原值；cross-daemon exit cleanup witness、atomic
+recovery observation、完整 replacement lineage 和 per-Agent selective projection
+继续是具体未完成项，不能用这次局部反例闭合声称全部完成。
+
+本轮实际 default／qualification scoped fix 通过（1m06s／37.85s），完整 fmt
+通过，default／qualification strict all-target Clippy 通过（41.48／12.46s）。
+46 个此前 clean 的无关 Python 文件在 repo root 精确恢复，Rust 最终源保留。
+私有 admission 模块为 148 行，Matrix 编排从 781 行缩至 769 行；新测试文件
+545 行，按完整 fixtures／第一叶与余下两叶分阶段审查，不改变最终编译源码。
+fix/fmt 后没有执行本地测试；这些检查不能代替新发布 head 的实际测试或资格收据。

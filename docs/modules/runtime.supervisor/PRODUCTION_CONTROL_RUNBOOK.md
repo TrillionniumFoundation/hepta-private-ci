@@ -53,6 +53,16 @@ and keep its private-key loader and binaries outside the daemon artifact. The
 default build remains authority-denied. These build identities do not establish
 production activation.
 
+Fleet release revocation or allowance removal also denies a new Matrix retry
+charge and its eventual companion launch, including cached descriptors. Existing
+main and companion owners retain containment and exact exit cleanup. A pending
+uncharged retry acquires one charge and full backoff only after lawful current
+admission; an already charged retry keeps its previous claim. A Running main
+must still match the fresh Fleet lifecycle and generation and remain unfenced.
+An allowance restoration cannot reverse an append-only release revocation.
+This behavior grants no operator authority, durable cross-daemon witness or
+atomicity between a concurrent Fleet change and process creation.
+
 The supported production verifier configuration is one externally distributed,
 public-only authority bundle pinned by its exact digest:
 
