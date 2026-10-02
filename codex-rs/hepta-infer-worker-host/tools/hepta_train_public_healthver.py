@@ -1,4 +1,4 @@
-"""Train an unqualified development candidate from the original public 147.
+"""Train an unqualified development candidate from pinned public TRAIN measurements.
 
 Usage: python3 hepta_train_public_healthver.py ROOT_CONFIG SHA256
 The input pins identify actual public TRAIN measurements. They grant no model
@@ -11,13 +11,13 @@ import os
 from pathlib import Path
 import resource
 import stat
-import subprocess
 import sys
 import time
 
 # The immutable sibling closure remains available with Python's isolated mode.
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from fixed_encoder_sources import decode_json, protected_path, source_bytes
+from public_cpu_training_execution import score, write_original
 
 
 PUBLIC_PINS = {
@@ -140,20 +140,6 @@ def attach_train_labels(rows, label_bytes):
     return result
 
 
-def write_original(directory, name, payload):
-    path = directory / name
-    with path.open("xb", buffering=0) as stream:
-        os.chmod(path, 0o600)
-        stream.write(payload)
-        os.fsync(stream.fileno())
-    fd = os.open(directory, os.O_RDONLY | os.O_DIRECTORY)
-    try:
-        os.fsync(fd)
-    finally:
-        os.close(fd)
-    return hashlib.sha256(payload).hexdigest()
-
-
 def prediction_rows(payload, expected, manifest):
     result = {}
     if len(payload) > 4 * 1024 * 1024:
@@ -250,6 +236,9 @@ def run(config_path, config_digest):
     started = time.monotonic()
     protected_path(Path(__file__).resolve())
     protected_path(Path(__file__).with_name("public_cpu_training.py").resolve())
+    protected_path(
+        Path(__file__).with_name("public_cpu_training_execution.py").resolve()
+    )
     protected_path(Path(__file__).with_name("fixed_encoder_sources.py").resolve())
     process = finite_training_process()
     for name in ("OPENBLAS_NUM_THREADS", "OMP_NUM_THREADS", "MKL_NUM_THREADS"):
@@ -269,10 +258,15 @@ def run(config_path, config_digest):
             64 * 1024,
         )
     )
-    if (
-        set(config)
-        != {"schema", "sources", "hyperparameters", "output_directory", "model_id"}
-        or config["schema"] != "hepta.healthver-public-train-candidate-config.v1"
+    if set(config) != {
+        "schema",
+        "sources",
+        "hyperparameters",
+        "output_directory",
+        "model_id",
+    } or config["schema"] not in (
+        "hepta.healthver-public-train-candidate-config.v1",
+        "hepta.healthver-public-train-candidate-config.v2",
     ):
         raise ValueError("closed development training config")
     hyper = config["hyperparameters"]
@@ -295,9 +289,27 @@ def run(config_path, config_digest):
     deadline = started + hyper["timeout_seconds"]
     resource.setrlimit(resource.RLIMIT_CPU, (180, 180))
     resource.setrlimit(resource.RLIMIT_FSIZE, (8 * 1024 * 1024, 8 * 1024 * 1024))
-    data = read_sources(config)
-    rows = feature_rows(data)
-    partitions = component_cut(rows, hyper["seed"], hyper["development_components"])
+    extended = config["schema"] == "hepta.healthver-public-train-candidate-config.v2"
+    if extended:
+        protected_path(
+            Path(__file__).with_name("public_cpu_training_supply.py").resolve()
+        )
+        from public_cpu_training_supply import load
+
+        if hyper != {
+            "seed": 24,
+            "epochs": 300,
+            "learning_rate": 0.01,
+            "development_components": 2,
+            "timeout_seconds": 180,
+        }:
+            raise ValueError("fixed original optimizer, no development-feedback search")
+        data, rows, partitions, label_source = load(config)
+    else:
+        data = read_sources(config)
+        rows = feature_rows(data)
+        partitions = component_cut(rows, hyper["seed"], hyper["development_components"])
+        label_source = config["sources"]["public_train_labels"]
     cut = [
         {key: row[key] for key in ("pair_id", "feature_digest", "component_digest")}
         | {"partition": partition}
@@ -318,9 +330,7 @@ def run(config_path, config_digest):
         output, "original-component-cut.json", canonical(cut) + b"\n"
     )
     # This is a public TRAIN-only source; no calibration, holdout or private gold is opened.
-    labels = attach_train_labels(
-        rows, source_bytes(config["sources"]["public_train_labels"], 2 * 1024 * 1024)
-    )
+    labels = attach_train_labels(rows, source_bytes(label_source, 2 * 1024 * 1024))
     parameters, optimization = train(
         [row["features_q24"] for row in rows],
         labels,
@@ -329,6 +339,7 @@ def run(config_path, config_digest):
         epochs=hyper["epochs"],
         learning_rate=hyper["learning_rate"],
         deadline=deadline,
+        maximum_rows=698 if extended else 512,
     )
     payload = quantized_payload(parameters)
     template = decode_json(data["baseline_manifest"])
@@ -349,31 +360,36 @@ def run(config_path, config_digest):
         for row in rows
     )
     input_digest = write_original(output, "original-numeric-inputs.jsonl", inputs)
-    remaining = deadline - time.monotonic()
-    if remaining <= 0:
-        raise TimeoutError("original training budget exhausted before scorer")
-    observed = subprocess.run(
+    observed, numeric_digest = score(
         [
             config["sources"]["scorer"]["path"],
             str(output / "cpu-manifest.json"),
             manifest_digest,
         ],
-        input=inputs,
-        capture_output=True,
-        timeout=remaining,
-        check=False,
+        inputs,
+        deadline,
+        output,
+        "original-numeric-observations.jsonl",
+        "original-numeric-stderr.txt",
     )
-    numeric_digest = write_original(
-        output, "original-numeric-observations.jsonl", observed.stdout
-    )
-    write_original(output, "original-numeric-stderr.txt", observed.stderr)
-    if observed.returncode != 0:
-        raise RuntimeError("original scorer rejected candidate; raw output retained")
     prefix = "public-train-candidate."
     predictions = prediction_rows(
-        observed.stdout, {prefix + row["feature_digest"] for row in rows}, manifest
+        observed, {prefix + row["feature_digest"] for row in rows}, manifest
     )
-    baseline_prefix = "public-dev-before."
+    baseline_prefix = prefix if extended else "public-dev-before."
+    if extended:
+        data["baseline_observations"], _ = score(
+            [
+                config["sources"]["scorer"]["path"],
+                config["sources"]["baseline_manifest"]["path"],
+                config["sources"]["baseline_manifest"]["sha256"],
+            ],
+            inputs,
+            deadline,
+            output,
+            "original-full-baseline-observations.jsonl",
+            "original-full-baseline-stderr.txt",
+        )
     baseline = prediction_rows(
         data["baseline_observations"],
         {baseline_prefix + row["feature_digest"] for row in rows},
@@ -382,7 +398,9 @@ def run(config_path, config_digest):
     if time.monotonic() >= deadline:
         raise TimeoutError("original deadline after numeric execution")
     result = {
-        "schema": "hepta.healthver-public-train-candidate-result.v1",
+        "schema": "hepta.healthver-public-train-candidate-result.v2"
+        if extended
+        else "hepta.healthver-public-train-candidate-result.v1",
         "config_digest": config_digest,
         "sources": config["sources"],
         "component_cut_digest": cut_digest,
@@ -413,6 +431,7 @@ def run(config_path, config_digest):
         ],
         "frozen_tensors": ["eight_unused_drive_rows", "eight_unused_prediction_rows"],
         "development_is_public_reused": True,
+        "original_70_development_preserved": extended,
         "unseen_evaluation_performed": False,
         "dataset_v3_verified": False,
         "independent_evaluator_signed": False,

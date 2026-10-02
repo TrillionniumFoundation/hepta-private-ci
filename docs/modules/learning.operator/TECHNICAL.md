@@ -294,11 +294,29 @@ It only creates exclusive fsynced feature files and pending pair lists using
 the existing G codec. It preserves the original 147 physical observations and
 splits 551 pending rows into four batches of at most 147 rows. Actual G uses
 fresh Root registration and trust with the original 120-second, 1 CPU/256 MiB
-budget per batch; the old public window grants no new work. The 147-row trainer
-does not yet accept this larger supply. A larger adapter must consume the actual
-completed measurement sources and preserve the fixed split and original
-degenerate baseline before running the unchanged bounded optimizer. This
-preparer does not issue DatasetV3, sign learning evidence or touch holdout.
+budget per batch; the old public window grants no new work. The trainer's explicit
+`hepta.healthver-public-train-candidate-config.v2` consumes the original supply
+plan and five exact physical observation Sources (the preserved 147 and four
+new batches). Its closed source roster is `supply`, `observations`,
+`baseline_manifest`, `baseline_weights`, and `scorer`. Missing, duplicated,
+mismatched or unmeasured rows are refused before training. The component cut
+retains the original 70 development rows and all other rows in those components;
+the reviewed extension assigns 570 TRAIN and 128 development rows. These are
+public development partitions, without unseen acceptance claims.
+
+V2 uses the same seed 24, 300 epochs, learning rate 0.01 and original 180-second
+whole training/scoring budget. It executes the original degenerate baseline
+and candidate through the actual pinned normal scorer on all 698 measured inputs.
+The deadline includes source validation, training, both scorer calls and output
+verification. Encoder measurement has its separate declared per-batch budget.
+`public_cpu_training_supply.py` owns the complete source/component join;
+`public_cpu_training_execution.py` joins the actual child and fsyncs original
+stdout/stderr, including partial timeout/refusal bytes. Freeze these siblings,
+the existing supply preparer and source checker with the trainer and numerical
+core. The preserved V1 adapter keeps its original fixed 147-row Sources.
+Neither adapter issues DatasetV3, signs learning evidence or touches holdout;
+new candidate generations still enter through independent evaluation, selection
+and Artifact CURRENT, rather than the generation-1 abstention-only lease.
 
 Current operating and state-format references:
 
