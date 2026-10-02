@@ -5,11 +5,20 @@ use std::io::Read;
 use std::os::unix::fs::MetadataExt;
 
 pub(super) fn actual_role(inputs: &Inputs, role: &Role) -> HostResult<SigningKey> {
+    let key = actual_role_for_program(&inputs.profile.program, role)?;
+    inputs.revalidate()?;
+    Ok(key)
+}
+
+pub(super) fn actual_role_for_program(
+    program_source: &Source,
+    role: &Role,
+) -> HostResult<SigningKey> {
     let status = std::fs::read_to_string("/proc/self/status")?;
     require_actual_status(&status, role)?;
     let program = std::env::current_exe()?;
-    if program.canonicalize()? != inputs.profile.program.path
-        || inputs.profile.program.read(512 * 1024 * 1024)?.is_empty()
+    if program.canonicalize()? != program_source.path
+        || program_source.read(512 * 1024 * 1024)?.is_empty()
     {
         return Err("actual fixed CPU composition executable".into());
     }
@@ -48,7 +57,6 @@ pub(super) fn actual_role(inputs: &Inputs, role: &Role) -> HostResult<SigningKey
     if key.verifying_key().to_bytes() != public(&role.public_key_hex)? {
         return Err("role owns a different Root-pinned key".into());
     }
-    inputs.revalidate()?;
     Ok(key)
 }
 fn require_actual_status(status: &str, role: &Role) -> HostResult<()> {

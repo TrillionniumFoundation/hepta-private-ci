@@ -33,6 +33,10 @@ mod installed;
 mod tick;
 pub(crate) use installed::Composition as InstalledCpuComposition;
 
+#[path = "initial_cpu_model_use_body_v2.rs"]
+mod model_use_body;
+#[path = "initial_cpu_model_use_program_v2.rs"]
+mod model_use_program;
 #[path = "initial_cpu_publication.rs"]
 mod publication;
 #[path = "initial_cpu_renewal.rs"]
