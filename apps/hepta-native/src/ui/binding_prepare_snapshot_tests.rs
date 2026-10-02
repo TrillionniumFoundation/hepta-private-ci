@@ -62,7 +62,7 @@ fn pending_and_stale_binding_rendered_output() {
     // Exercise the real widgets and painter without a native window, GPU,
     // compositor or OS effect. The owned worker is still blocked in its adapter.
     let context = egui::Context::default();
-    context.set_visuals(egui::Visuals::dark());
+    theme::ensure_initialized(&context);
     let pending = render_operations(&context, &mut fixture.app);
     fixture.app.operation_text = "edited clipboard payload".to_owned();
     fixture.release.send(()).unwrap();
