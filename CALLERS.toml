@@ -873,6 +873,16 @@ path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_program_v2.rs
 required = ["open_root_review_input", "Digest32::of_reader", "self.file.metadata()", "self.original", "512 * 1024 * 1024"]
 forbidden = ["SigningKey", "set_permissions", "write_all", "pub struct Program"]
 
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_goal_factory_v3.rs"
+required = ["impl AgentdNeuronGoalScopeFactoryV3 for Factory", "read_agentd_neuron_live_goal_scope_state_v3", "StoreRequirement::Existing", "state.reload_target_scope", "retained.push(state.active_scope)", "self.physical.clone()", "model_use_current::Admission::open", "AgentdNeuronGoalScopeV3::capture", "scope.identity.runtime_configuration_digest", "scope.identity.body_bundle_digest", "open_shared_v2", "with_goal_scope_factory_v3", "with_retained_goal_scope_v3"]
+forbidden = ["SigningKey", "SignedArtifactSelectionV1", "DurableInferenceControl::open", "remove_file", "set_permissions", "AuthorityPosture::ALLOW_ALL"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_current_v2.rs"
+required = ["current-installed-model-use-pointer.v2", "inspect_cpu_model_use_v2", "revalidate_current", "verify_first_installation", "declared.workload_uid", "before.storage_binding()", "frontier_extends", "fresh.verified.binding() != self.active.verified.binding()", "NeuronAdmissionError::BindingMismatch", "NeuronAdmissionError::Unavailable", "after >= self.active.verified.expires_at()"]
+forbidden = ["SigningKey", "SignedArtifactSelectionV1", "submit_current_selections", "AuthorityPosture::ALLOW_ALL", "unwrap_or_default"]
+
 [[boundary]]
 id = "paired_original_cas_consumption_reader"
 symbol = "paired_consumption_reader"

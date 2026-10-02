@@ -40,9 +40,15 @@ impl Composition {
             )
             .map_err(|error| error.to_string())?,
         );
-        let tick = Arc::new(tick::TickProvider::open(
+        let goal_mode = installed.model_use_pointer.is_some();
+        let tick = Arc::new(tick::TickProvider::open_mode(
             installed.tick_provider.clone(),
             &plan,
+            if goal_mode {
+                tick::GoalMode::ActualCompiledGoal
+            } else {
+                tick::GoalMode::FixedObjective
+            },
         )?);
         let runtime_digest = plan.runtime.semantic_digest()?;
         let body_digest = plan.body.semantic_digest()?;
@@ -64,26 +70,31 @@ impl Composition {
             body_digest,
         )?);
         let model_generation = plan.runtime.generation;
-        let handle = open_current_cpu_neuron_v2(
-            installed.current_pointer,
-            plan,
-            mode,
-            control,
-            clock,
-            crate::CpuNeuronControlConfigV2 {
-                resources,
-                model_generation,
-                maximum_request_duration: Duration::from_millis(
-                    installed.maximum_request_duration_ms,
-                ),
-            },
-        )?;
-        if handle.configuration_digest() != runtime_digest
-            || handle.body_bundle_digest() != Some(body_digest)
-        {
-            return Err("actual CPU handle differs from verified composition".into());
-        }
-        let runtime = AgentdNeuronRuntimeV2Config::new(handle, installed.control_state_path, tick)?;
+        let worker = crate::CpuNeuronControlConfigV2 {
+            resources,
+            model_generation,
+            maximum_request_duration: Duration::from_millis(installed.maximum_request_duration_ms),
+        };
+        let runtime = if goal_mode {
+            goal_factory::prepare(
+                source, &installed, identity, plan, control, clock, worker, tick,
+            )?
+        } else {
+            let handle = open_current_cpu_neuron_v2(
+                installed.current_pointer,
+                plan,
+                mode,
+                control,
+                clock,
+                worker,
+            )?;
+            if handle.configuration_digest() != runtime_digest
+                || handle.body_bundle_digest() != Some(body_digest)
+            {
+                return Err("actual CPU handle differs from verified composition".into());
+            }
+            AgentdNeuronRuntimeV2Config::new(handle, installed.control_state_path, tick)?
+        };
         Ok(Self {
             runtime,
             runner,

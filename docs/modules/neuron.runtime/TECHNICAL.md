@@ -515,3 +515,37 @@ structure. It holds a Generator credential and no Selector credential. Tensor
 training and independent model qualification remain separate operations. A
 failed calibration candidate supplies rejection evidence and cannot bootstrap
 or refresh a selected model.
+
+## 19. Installed Goal scopes on one physical CPU owner
+
+The explicit `hepta.cpu-neuron.installed-owner-composition.v3` descriptor adds
+`model_use_pointer`; V2 retains its original fixed objective. The Root-protected
+pointer uses `hepta.cpu-neuron.current-installed-model-use-pointer.v2` and pins
+the model-use configuration and independent S selection. Each scope operation
+checks the original model/body, actual Agent principal, E/S windows, CURRENT,
+withdrawals and clock. A new pointer may refresh the same physical identity and
+extend its authenticated frontier; it cannot restore an older or forked head.
+Expiry or unavailable current inputs fences CPU use through the existing
+admission path. This descriptor does not grant a Goal or final-use authority.
+
+The ordinary installed WorkerHost supplies the existing sole Agentd host's
+Goal factory. The factory opens objective-bound journals while sharing one
+loaded CPU model and the model owner's original inference-control writer. Goal
+ordinals change independently of model generation. The late canonical neural
+stage supplies the actual objective, RunStart and predecessor; the original
+controller validates admission before its quiesce/seal/reload CAS.
+
+Scope one retains the declared first-installation paths. Later paths append
+`.goal-{ordinal}` inside the same private Agent home. Startup authenticates all
+persisted active and retained native headers. A durable Reloading target is
+recovered with its exact target identity and the original active owner retained;
+the original controller validates that complete topology. Missing or partial
+persisted stores require reconciliation and cannot become empty replacements.
+The controller retains its existing bounded hot owners and cold archive limits;
+this change introduces neither an archive owner nor an expiry exemption.
+
+V3 uses `hepta.cpu-neuron.fixed-pair-tick-provider.v3`; it preserves the pinned
+public pair, model, body and preprocessing while binding the actual stage's
+objective and predecessor in the original seven-field encoder request. Existing
+V2 requests remain bound to their initial objective. The encoder supplies
+features only; all seven canonical owners and final-use checks remain required.

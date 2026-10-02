@@ -19,6 +19,8 @@ pub(super) struct Installed {
     pub schema: String,
     pub agent_id: String,
     pub current_pointer: PathBuf,
+    #[serde(default)]
+    pub model_use_pointer: Option<PathBuf>,
     pub compiled_body: Source,
     pub tick_provider: Source,
     pub fleet_manifest_digest: String,
@@ -44,7 +46,11 @@ pub(super) fn load(
     };
     let bytes = pinned.read(32 * 1024)?;
     let installed: Installed = serde_json::from_slice(&bytes)?;
-    if installed.schema != "hepta.cpu-neuron.installed-owner-composition.v2"
+    if !matches!(
+        installed.schema.as_str(),
+        "hepta.cpu-neuron.installed-owner-composition.v2"
+            | "hepta.cpu-neuron.installed-owner-composition.v3"
+    ) || (installed.schema.ends_with(".v3") != installed.model_use_pointer.is_some())
         || installed.agent_id != identity.agent_id.to_string()
         || !(1..=60_000).contains(&installed.maximum_request_duration_ms)
     {

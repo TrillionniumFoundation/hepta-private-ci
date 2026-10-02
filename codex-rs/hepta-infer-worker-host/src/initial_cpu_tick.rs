@@ -34,15 +34,27 @@ struct Configuration {
 pub(super) struct TickProvider {
     source: Source,
     configuration: Configuration,
+    goal_mode: GoalMode,
+}
+
+#[derive(Clone, Copy, PartialEq)]
+pub(super) enum GoalMode {
+    FixedObjective,
+    ActualCompiledGoal,
 }
 
 impl TickProvider {
-    pub(super) fn open(
+    pub(super) fn open_mode(
         source: Source,
         plan: &crate::CpuNeuronGenerationPlanV1,
+        goal_mode: GoalMode,
     ) -> HostResult<Self> {
         let configuration: Configuration = serde_json::from_slice(&source.read(16 * 1024)?)?;
-        if configuration.schema != "hepta.cpu-neuron.fixed-pair-tick-provider.v2"
+        let schema = match goal_mode {
+            GoalMode::FixedObjective => "hepta.cpu-neuron.fixed-pair-tick-provider.v2",
+            GoalMode::ActualCompiledGoal => "hepta.cpu-neuron.fixed-pair-tick-provider.v3",
+        };
+        if configuration.schema != schema
             || configuration.pair_id.is_empty()
             || configuration.pair_id.len() > 256
             || digest(&configuration.objective_digest)? != plan.scope.objective_digest
@@ -59,6 +71,7 @@ impl TickProvider {
         Ok(Self {
             source,
             configuration,
+            goal_mode,
         })
     }
 
@@ -175,7 +188,8 @@ impl AgentdNeuronTickProviderV2 for TickProvider {
             let cfg = &self.configuration;
             if current.0.get() != cfg.model_generation
                 || stage.run_id != record.snapshot.run_id
-                || stage.objective_digest != digest(&cfg.objective_digest)?
+                || (self.goal_mode == GoalMode::FixedObjective
+                    && stage.objective_digest != digest(&cfg.objective_digest)?)
                 || stage.snapshot_digest != invocation.request.snapshot.digest()
                 || record.runtime_body_digest != digest(&cfg.runtime_body_digest)?
                 || stage.predecessor_digest.is_zero()
@@ -184,7 +198,7 @@ impl AgentdNeuronTickProviderV2 for TickProvider {
             }
             let request = serde_json::json!({
                 "pair_id":cfg.pair_id, "source_row_sha256":cfg.source_row_sha256,
-                "body_digest":cfg.runtime_body_digest, "objective_digest":cfg.objective_digest,
+                "body_digest":cfg.runtime_body_digest, "objective_digest":stage.objective_digest.to_string(),
                 "model_generation":cfg.model_generation, "run_id":stage.run_id.to_string(),
                 "ndu_digest":stage.predecessor_digest.to_string(),
             });

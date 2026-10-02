@@ -279,6 +279,24 @@ pub struct VerifiedCpuModelUseV2 {
     original_body: Body,
 }
 impl VerifiedCpuModelUseV2 {
+    pub(super) fn installed_inputs(&self) -> &Inputs {
+        &self.inputs.installed
+    }
+    pub(super) fn issued_at(&self) -> u64 {
+        self.original_body.issued_at
+    }
+    pub(super) fn current_frontier(&self) -> HostResult<(usize, Digest32, u64)> {
+        let current = self
+            .inputs
+            .installed
+            .current()?
+            .current_registry_view(now_ms()?)?;
+        Ok((
+            current.receipt().records,
+            current.receipt().head_digest,
+            self.original_body.authority_epoch,
+        ))
+    }
     pub fn binding(&self) -> &OperationalModelLeaseBindingV2 {
         self.inputs.lease.binding()
     }

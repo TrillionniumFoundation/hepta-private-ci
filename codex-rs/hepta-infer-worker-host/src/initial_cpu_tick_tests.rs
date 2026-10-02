@@ -21,6 +21,7 @@ fn protected_transport() -> HostResult<(tempfile::TempDir, TickProvider, UnixLis
     let listener = UnixListener::bind(&socket)?;
     std::fs::set_permissions(&socket, std::fs::Permissions::from_mode(0o660))?;
     let provider = TickProvider {
+        goal_mode: GoalMode::FixedObjective,
         source: source.clone(),
         configuration: Configuration {
             schema: "hepta.cpu-neuron.fixed-pair-tick-provider.v2".into(),
