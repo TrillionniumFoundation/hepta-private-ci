@@ -1,0 +1,23 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-contracts)
+    Finished `test` profile [unoptimized] target(s) in 10.20s
+────────────
+ Nextest run ID da4703b4-c5a1-4a47-aa98-4e9660b2633e with nextest profile: local
+    Starting 15 tests across 1 binary (174 tests skipped)
+        PASS [   0.005s] ( 1/15) codex-hepta-contracts run_bridge::tests::abort_proof_cannot_cross_nonce_or_bound_identity
+        PASS [   0.004s] ( 2/15) codex-hepta-contracts run_bridge::tests::complete_binding_round_trip_is_strict_and_bounded
+        PASS [   0.005s] ( 3/15) codex-hepta-contracts run_bridge::tests::identity_drift_changes_commitment_and_binding_digest
+        PASS [   0.004s] ( 4/15) codex-hepta-contracts run_bridge::tests::primary_cannot_mix_not_sent_and_provider_terminal_evidence
+        PASS [   0.005s] ( 5/15) codex-hepta-contracts run_bridge::tests::provider_completion_and_logical_denial_are_distinct
+        PASS [   0.005s] ( 6/15) codex-hepta-contracts run_bridge::tests::qualification_conflict_binds_the_immutable_primary_and_later_revision
+        PASS [   0.004s] ( 7/15) codex-hepta-contracts run_bridge::tests::stable_acknowledgement_round_trip_requires_exact_kind_binding_and_revision
+        PASS [   0.006s] ( 8/15) codex-hepta-contracts run_bridge_outbox::tests::conflicting_ack_notice_or_owner_order_is_atomic
+        PASS [   0.005s] ( 9/15) codex-hepta-contracts run_bridge_outbox::tests::downgrade_and_primary_ack_commute_without_rewriting_history
+        PASS [   0.005s] (10/15) codex-hepta-contracts run_bridge_outbox::tests::early_notice_ack_rejects_without_losing_retry_obligation
+        PASS [   0.005s] (11/15) codex-hepta-contracts run_bridge_outbox::tests::failed_primary_cannot_acquire_a_success_downgrade
+        PASS [   0.006s] (12/15) codex-hepta-contracts run_bridge_outbox::tests::hydration_rejects_duplicate_and_unknown_keys_at_every_object_depth
+        PASS [   0.006s] (13/15) codex-hepta-contracts run_bridge_outbox::tests::hydration_rejects_missing_relationships_and_positional_objects
+        PASS [   0.008s] (14/15) codex-hepta-contracts run_bridge_outbox::tests::snapshot_reconstruction_retains_stable_ack_and_duplicate_delivery
+        PASS [   0.006s] (15/15) codex-hepta-contracts run_bridge_outbox::tests::untrusted_snapshot_decode_bounds_bytes_objects_keys_strings_and_depth
+────────────
+     Summary [   0.085s] 15 tests run: 15 passed, 174 skipped
