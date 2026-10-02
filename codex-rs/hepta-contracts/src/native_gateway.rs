@@ -16,6 +16,9 @@ const SCHEME: &str = "Hepta-MAC-V2 ";
 #[path = "native_gateway_lifecycle.rs"]
 pub mod lifecycle;
 
+#[path = "native_gateway_chat.rs"]
+pub mod chat;
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum NativeGatewayProofError {
     Invalid,
