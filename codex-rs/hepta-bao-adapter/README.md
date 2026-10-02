@@ -87,6 +87,20 @@ join and pool close. A timed-out transaction fences new authentication while
 original Status remains available. The admission guard only bounds in-flight
 ports; durable operation identity remains owned by the SQLite runtime.
 
+The service budget starts when a connection is accepted, before its task is
+scheduled. An absolute timer and an immediate pre-handler check prevent queue
+delay or same-poll frame readiness from renewing that budget. A timeout before
+handler entry closes only that connection. Cancellation or panic during the
+handler fences the owner; backpressure after the handler returns cannot poison
+an already completed owner operation. A lost reply still requires original-ID
+Status/Recover, never redispatch. A ready handler that completes after expiry
+keeps its original terminal state but cannot emit a late response.
+
+Recovery refreshes the same independently verified clock used by SQLite claims.
+An expired sample can become fresh again through a newer verified sample, but
+slow-response rejection retains the accepted wall-time/revision floor. Neither
+recovery nor freshness renewal clears a permanent clock fence.
+
 ## Qualification boundary
 
 Native tests exercise an independent consumer process, real credential
