@@ -7,77 +7,8 @@ use ed25519_dalek::Signer;
 
 pub(super) fn publish(inputs: Inputs) -> HostResult<Value> {
     let key = role::actual_role(&inputs, &inputs.profile.owner)?;
-    state::directory(&inputs)?;
+    let mut service = open_original(&inputs, &key, inputs.profile.withdrawals()?)?;
     let binding = inputs.storage_binding();
-    if let Some(renewal) = &inputs.renewal {
-        renewal.validate_original_root_floor()?;
-    }
-    let lease_time = match state::read::<OriginalTimeSignature>(&inputs, "lease.json")? {
-        Some(time) => time,
-        None => {
-            if std::fs::read_dir(&inputs.profile.original_owner_state)?
-                .next()
-                .is_some()
-            {
-                return Err("missing original writer lease".into());
-            }
-            let mut time = OriginalTimeSignature::new(
-                &inputs,
-                now_ms()?,
-                inputs
-                    .evidence
-                    .expires_at()
-                    .min(inputs.profile.expires_at_ms),
-                [0; 64],
-            );
-            let lease = lease(&inputs, &time)?;
-            time.signature_hex = state::hex(&key.sign(&lease.signing_bytes()).to_bytes());
-            state::retain(&inputs, "lease.json", &time)?;
-            time
-        }
-    };
-    lease_time.validate(&inputs)?;
-    let mut required = inputs
-        .renewal
-        .as_ref()
-        .map(|renewal| renewal.retained.clone());
-    for index in 0..3 {
-        let original = state::read::<OriginalHead>(&inputs, &format!("head-{index}.json"))?;
-        let done = state::read::<String>(&inputs, &format!("done-{index}"))?;
-        if let Some(original) = original {
-            let signed = original.native(&inputs, binding)?;
-            let preimage = Digest32::of_bytes(&signed.signing_bytes());
-            if done
-                .as_ref()
-                .is_some_and(|digest| digest != &preimage.to_string())
-            {
-                return Err("Root original ACK conflict".into());
-            }
-            let actual = inputs.profile.owner_root.join("heads").join(format!(
-                "{}-{preimage}.head",
-                signed.witness.generation.get()
-            ));
-            if done.is_some() || actual.try_exists()? {
-                required = Some(signed);
-            }
-        } else if done.is_some() {
-            return Err("original acknowledged head missing".into());
-        }
-    }
-    let config = LearningArtifactOwnerServiceConfigV1 {
-        root: inputs.profile.owner_root.clone(),
-        trust: inputs.trust()?,
-        writer_lease: lease(&inputs, &lease_time)?,
-        required_current_head: required,
-        withdrawal_registry: inputs.profile.withdrawals()?,
-        storage_binding: binding,
-        now: now_ms()?,
-    };
-    let mut service = if inputs.renewal.is_some() {
-        LearningArtifactOwnerService::open_for_fresh_evidence_publication(config)?
-    } else {
-        LearningArtifactOwnerService::open(config)?
-    };
     let mut receipts = Vec::new();
     for index in 0..3 {
         inputs.revalidate()?;
@@ -276,4 +207,85 @@ fn lease(inputs: &Inputs, time: &OriginalTimeSignature) -> HostResult<SignedArti
         expires_at: time.expires_at,
         signature: time.signature()?,
     })
+}
+
+/// Reopen the same exclusive owner/lease/restart floor. The caller supplies the
+/// full monotonic withdrawal frontier; this never initializes another owner.
+pub(super) fn open_original(
+    inputs: &Inputs,
+    key: &SigningKey,
+    withdrawals: DatasetWithdrawalRegistry,
+) -> HostResult<LearningArtifactOwnerService> {
+    state::directory(inputs)?;
+    let binding = inputs.storage_binding();
+    if let Some(renewal) = &inputs.renewal {
+        renewal.validate_original_root_floor()?;
+    }
+    let lease_time = match state::read::<OriginalTimeSignature>(inputs, "lease.json")? {
+        Some(time) => time,
+        None => {
+            if std::fs::read_dir(&inputs.profile.original_owner_state)?
+                .next()
+                .is_some()
+            {
+                return Err("missing original writer lease".into());
+            }
+            let mut time = OriginalTimeSignature::new(
+                inputs,
+                now_ms()?,
+                inputs
+                    .evidence
+                    .expires_at()
+                    .min(inputs.profile.expires_at_ms),
+                [0; 64],
+            );
+            let lease = lease(inputs, &time)?;
+            time.signature_hex = state::hex(&key.sign(&lease.signing_bytes()).to_bytes());
+            state::retain(inputs, "lease.json", &time)?;
+            time
+        }
+    };
+    lease_time.validate(inputs)?;
+    let mut required = inputs
+        .renewal
+        .as_ref()
+        .map(|renewal| renewal.retained.clone());
+    for index in 0..3 {
+        let original = state::read::<OriginalHead>(inputs, &format!("head-{index}.json"))?;
+        let done = state::read::<String>(inputs, &format!("done-{index}"))?;
+        if let Some(original) = original {
+            let signed = original.native(inputs, binding)?;
+            let preimage = Digest32::of_bytes(&signed.signing_bytes());
+            if done
+                .as_ref()
+                .is_some_and(|digest| digest != &preimage.to_string())
+            {
+                return Err("Root original ACK conflict".into());
+            }
+            let actual = inputs.profile.owner_root.join("heads").join(format!(
+                "{}-{preimage}.head",
+                signed.witness.generation.get()
+            ));
+            if done.is_some() || actual.try_exists()? {
+                required = Some(signed);
+            }
+        } else if done.is_some() {
+            return Err("original acknowledged head missing".into());
+        }
+    }
+    let config = LearningArtifactOwnerServiceConfigV1 {
+        root: inputs.profile.owner_root.clone(),
+        trust: inputs.trust()?,
+        writer_lease: lease(inputs, &lease_time)?,
+        required_current_head: required,
+        withdrawal_registry: withdrawals,
+        storage_binding: binding,
+        now: now_ms()?,
+    };
+    let service = if inputs.renewal.is_some() {
+        LearningArtifactOwnerService::open_for_fresh_evidence_publication(config)?
+    } else {
+        LearningArtifactOwnerService::open(config)?
+    };
+    Ok(service)
 }

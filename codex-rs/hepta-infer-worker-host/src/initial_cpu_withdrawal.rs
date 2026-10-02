@@ -3,6 +3,8 @@
 use super::*;
 use serde::Serialize;
 use std::path::PathBuf;
+#[path = "initial_cpu_withdrawal_issuance.rs"]
+mod issuance;
 #[path = "initial_cpu_withdrawal_source.rs"]
 mod source;
 
