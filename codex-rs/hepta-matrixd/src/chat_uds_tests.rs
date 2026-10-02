@@ -29,6 +29,8 @@ struct State {
     fenced: bool,
     wrong_home: bool,
     wrong_scope: bool,
+    wrong_project: bool,
+    projects: Vec<Value>,
     lose_ack: bool,
     ask_approval: bool,
     approval_denied: bool,
@@ -133,6 +135,12 @@ impl Fixture {
                         let result = match method {
                             "initialize" => {
                                 json!({"userAgent":"fixture/1.0","codexHome":if state.wrong_home {"/wrong-home"} else {"/fixture-home"}})
+                            }
+                            "project/create" => {
+                                state.projects.push(params.clone());
+                                json!({"project":{"id":"project-1","name":params["name"],
+                                    "roots":if state.wrong_project {json!([{"path":"/other"}])} else {params["roots"].clone()},
+                                    "metadata":params["metadata"],"position":0,"createdAt":1,"updatedAt":1}})
                             }
                             "thread/list" => {
                                 if state.ask_approval {
@@ -457,5 +465,65 @@ async fn pinned_real_uds_roundtrip_preserves_original_queue_and_physical_identit
             .await
             .is_err()
     );
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[tokio::test]
+async fn managed_project_uses_original_owner_rpc_with_stable_root_key_and_real_returned_id()
+-> anyhow::Result<()> {
+    use std::os::unix::fs::MetadataExt;
+    let fixture = Fixture::start().await;
+    let project = ManagedChatProject {
+        name: "Hepta desktop".into(),
+        idempotency_key: "hepta-desktop-agent-1".into(),
+    };
+    for _ in 0..2 {
+        let owner = AgentChatSession::connect_managed_for_agent_process(
+            MatrixAgentdConnectArgs::new(fixture.socket.clone(), agent(), 7, "fixture"),
+            project.clone(),
+            AbsolutePathBuf::from_absolute_path("/fixture")?,
+            "frontend-managed".into(),
+            9,
+            std::fs::metadata("/proc/self")?.uid(),
+            std::process::id(),
+        )
+        .await?;
+        assert_eq!(owner.project_id, "project-1");
+        drop(owner);
+    }
+    let state = fixture.state.lock().unwrap();
+    assert_eq!(state.projects.len(), 2);
+    assert_eq!(state.projects[0], state.projects[1]);
+    assert_eq!(state.projects[0]["idempotencyKey"], "hepta-desktop-agent-1");
+    assert_eq!(state.projects[0]["roots"], json!([{"path":"/fixture"}]));
+    assert_eq!(state.admissions, 0);
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[tokio::test]
+async fn managed_project_scope_substitution_rejects_before_any_conversation_effect()
+-> anyhow::Result<()> {
+    use std::os::unix::fs::MetadataExt;
+    let fixture = Fixture::start().await;
+    fixture.state.lock().unwrap().wrong_project = true;
+    let owner = AgentChatSession::connect_managed_for_agent_process(
+        MatrixAgentdConnectArgs::new(fixture.socket.clone(), agent(), 7, "fixture"),
+        ManagedChatProject {
+            name: "Hepta desktop".into(),
+            idempotency_key: "hepta-desktop-agent-1".into(),
+        },
+        AbsolutePathBuf::from_absolute_path("/fixture")?,
+        "frontend-managed".into(),
+        9,
+        std::fs::metadata("/proc/self")?.uid(),
+        std::process::id(),
+    )
+    .await;
+    assert!(owner.is_err());
+    let state = fixture.state.lock().unwrap();
+    assert_eq!(state.methods, vec!["initialize", "project/create"]);
+    assert_eq!(state.admissions, 0);
     Ok(())
 }

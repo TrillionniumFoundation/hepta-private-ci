@@ -3,7 +3,6 @@
 use crate::MatrixAgentdConnectArgs;
 use crate::MatrixBridgeError;
 use crate::RemoteMatrixAppServerTransport;
-use codex_app_server_client::AppServerEvent;
 use codex_app_server_protocol::*;
 use codex_hepta_agentd::AgentdClient;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -19,6 +18,10 @@ pub mod native_wire;
 #[path = "../../../apps/hepta-ui-shared/chat_transport.rs"]
 pub mod wire;
 use wire::*;
+
+#[path = "chat_connection.rs"]
+mod connection;
+pub use connection::ManagedChatProject;
 
 const SOURCE: &str = "hepta-ui-chat";
 type Result<T> = std::result::Result<T, MatrixBridgeError>;
@@ -38,132 +41,6 @@ pub struct AgentChatSession {
     live: Arc<Mutex<live::LiveTimeline>>,
 }
 impl AgentChatSession {
-    pub async fn connect(
-        args: MatrixAgentdConnectArgs,
-        project_id: String,
-        workspace: AbsolutePathBuf,
-        session_id: String,
-        connection_generation: u64,
-    ) -> Result<Self> {
-        Self::connect_with_peer(
-            args,
-            project_id,
-            workspace,
-            session_id,
-            connection_generation,
-            None,
-        )
-        .await
-    }
-
-    /// Root composition supplies a process obtained from the current original
-    /// owner snapshot. Both protocol handshakes independently pin that process.
-    #[cfg(unix)]
-    pub async fn connect_for_agent_process(
-        args: MatrixAgentdConnectArgs,
-        project_id: String,
-        workspace: AbsolutePathBuf,
-        session_id: String,
-        connection_generation: u64,
-        expected_uid: u32,
-        expected_pid: u32,
-    ) -> Result<Self> {
-        Self::connect_with_peer(
-            args,
-            project_id,
-            workspace,
-            session_id,
-            connection_generation,
-            Some((expected_uid, expected_pid)),
-        )
-        .await
-    }
-
-    async fn connect_with_peer(
-        args: MatrixAgentdConnectArgs,
-        project_id: String,
-        workspace: AbsolutePathBuf,
-        session_id: String,
-        connection_generation: u64,
-        expected_peer: Option<(u32, u32)>,
-    ) -> Result<Self> {
-        ChatRequest {
-            session_id: session_id.clone(),
-            connection_generation,
-            command: ChatCommand::Create,
-        }
-        .validate()
-        .map_err(invalid)?;
-        if project_id.is_empty() || project_id.len() > 256 {
-            return Err(invalid("invalid project"));
-        }
-        let mut agentd = AgentdClient::new(
-            args.agentd_control_socket.clone(),
-            args.agent_id.clone(),
-            args.spawn_generation,
-        )?;
-        if let Some((uid, pid)) = expected_peer {
-            #[cfg(unix)]
-            {
-                agentd = agentd.with_peer_process(uid, pid)?;
-            }
-            #[cfg(not(unix))]
-            {
-                let _ = (uid, pid);
-                return Err(invalid("pinned local process identity is unavailable"));
-            }
-        }
-        let generation = connection_generation;
-        let connection =
-            crate::connect_agent_session_with_peer(args, "hepta-ui-chat", expected_peer).await?;
-        let transport = connection.transport;
-        let rejection = transport.clone();
-        let connected = Arc::new(AtomicBool::new(true));
-        let alive = connected.clone();
-        let approval_required = Arc::new(AtomicBool::new(false));
-        let approvals = approval_required.clone();
-        let live = Arc::new(Mutex::new(live::LiveTimeline::default()));
-        let observations = live.clone();
-        let mut events = connection.events;
-        let task = tokio::spawn(async move {
-            while let Some(event) = events.next_event().await {
-                match event {
-                    AppServerEvent::ServerRequest(request) => {
-                        approvals.store(true, Ordering::Release);
-                        // Chat is not a tool-approval UI. Never auto-approve a request.
-                        let _ = rejection
-                            .reject_server_request(
-                                request.id().clone(),
-                                -32603,
-                                "Use an authorized approval surface".into(),
-                            )
-                            .await;
-                    }
-                    AppServerEvent::ServerNotification(notification) => {
-                        let Ok(mut live) = observations.lock() else {
-                            break;
-                        };
-                        live.observe(*notification);
-                    }
-                    AppServerEvent::Lagged { .. } | AppServerEvent::Disconnected { .. } => break,
-                }
-            }
-            alive.store(false, Ordering::Release);
-            let _ = events.shutdown().await;
-        });
-        Ok(Self {
-            transport,
-            agentd,
-            project_id,
-            workspace,
-            session_id,
-            generation,
-            connected,
-            approval_required,
-            events: task,
-            live,
-        })
-    }
     /// A deadline/error after a mutation is an unknown outcome. Reconcile the
     /// same operation identity; never manufacture a replacement send identity.
     pub async fn dispatch(&self, request: ChatRequest) -> Result<ChatResponse> {

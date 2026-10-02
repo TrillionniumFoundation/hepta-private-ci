@@ -5,6 +5,7 @@ use std::path::PathBuf;
 
 use anyhow::ensure;
 use codex_hepta_contracts::AgentId;
+use codex_hepta_matrixd::chat::ManagedChatProject;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::RootGatewayPeerV1;
 use codex_utils_absolute_path::AbsolutePathBuf;
@@ -14,7 +15,8 @@ use serde::Deserialize;
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub(super) struct AgentScope {
     pub agent_id: AgentId,
-    pub project_id: String,
+    pub project_id: Option<String>,
+    pub managed_project: Option<ManagedChatProject>,
     pub workspace: AbsolutePathBuf,
 }
 
@@ -55,12 +57,12 @@ impl Configuration {
                 unique.insert(agent.agent_id.clone()),
                 "duplicate chat scope"
             );
-            ensure!(
-                !agent.project_id.is_empty()
-                    && agent.project_id.len() <= 256
-                    && !agent.project_id.chars().any(char::is_control),
-                "invalid project scope"
-            );
+            match (&agent.project_id, &agent.managed_project) {
+                (Some(id), None)
+                    if !id.is_empty() && id.len() <= 256 && !id.chars().any(char::is_control) => {}
+                (None, Some(project)) => project.validate()?,
+                _ => anyhow::bail!("exactly one existing or managed project scope is required"),
+            }
             ensure!(
                 agent.workspace.as_path().is_dir()
                     && agent.workspace.as_path().canonicalize()? == agent.workspace.as_path(),

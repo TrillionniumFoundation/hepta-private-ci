@@ -109,6 +109,8 @@ impl RootChatHost {
         let result = async {
             match request {
                 NativeChatRootRequest::Attach { session_id, .. } => {
+                    // Project admission uses its fixed original idempotency key.
+                    outcome_unknown = scope.managed_project.is_some();
                     let slot = {
                         let mut sessions = self.sessions.lock().await;
                         // A new explicit attach can release stale connection state,
@@ -143,26 +145,45 @@ impl RootChatHost {
                                     value.checked_add(1)
                                 })
                                 .map_err(|_| anyhow::anyhow!("connection identity exhausted"))?;
-                            let owner = AgentChatSession::connect_for_agent_process(
-                                MatrixAgentdConnectArgs::new(
-                                    self.layout
-                                        .agent(&agent_id)
-                                        .agentd_control_socket()
-                                        .to_owned(),
-                                    agent_id.clone(),
-                                    current.spawn_generation.ok_or_else(|| {
-                                        anyhow::anyhow!("missing spawn generation")
-                                    })?,
-                                    env!("CARGO_PKG_VERSION"),
-                                ),
-                                scope.project_id.clone(),
-                                scope.workspace.clone(),
-                                session_id.clone(),
-                                generation,
-                                self.gateway.agent_workload_uid(&agent_id)?,
-                                binding.agent_process_id,
-                            )
-                            .await?;
+                            let args = MatrixAgentdConnectArgs::new(
+                                self.layout
+                                    .agent(&agent_id)
+                                    .agentd_control_socket()
+                                    .to_owned(),
+                                agent_id.clone(),
+                                current
+                                    .spawn_generation
+                                    .ok_or_else(|| anyhow::anyhow!("missing spawn generation"))?,
+                                env!("CARGO_PKG_VERSION"),
+                            );
+                            let uid = self.gateway.agent_workload_uid(&agent_id)?;
+                            let owner = match (&scope.project_id, &scope.managed_project) {
+                                (Some(id), None) => {
+                                    AgentChatSession::connect_for_agent_process(
+                                        args,
+                                        id.clone(),
+                                        scope.workspace.clone(),
+                                        session_id.clone(),
+                                        generation,
+                                        uid,
+                                        binding.agent_process_id,
+                                    )
+                                    .await?
+                                }
+                                (None, Some(project)) => {
+                                    AgentChatSession::connect_managed_for_agent_process(
+                                        args,
+                                        project.clone(),
+                                        scope.workspace.clone(),
+                                        session_id.clone(),
+                                        generation,
+                                        uid,
+                                        binding.agent_process_id,
+                                    )
+                                    .await?
+                                }
+                                _ => anyhow::bail!("invalid fixed project scope"),
+                            };
                             Ok::<Session, anyhow::Error>(Session { generation, owner })
                         })
                         .await?;
