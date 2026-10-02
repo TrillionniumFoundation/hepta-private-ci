@@ -18,7 +18,6 @@ use codex_hepta_agent_components::intelligence::ParameterPlasticityProductReceip
 use codex_hepta_agent_components::intelligence::ParameterPlasticityProductRequestV1;
 use codex_hepta_agent_components::intelligence::PlasticityAdmissionEvidenceV1;
 use codex_hepta_agent_components::intelligence::PlasticityAnchorCommitterV1;
-use codex_hepta_agent_components::intelligence::propose_authenticated_parameter_plasticity_v1;
 use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
 use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
 use codex_hepta_agent_components::learning_ledger::DurableLedger;
@@ -703,7 +702,7 @@ pub fn resolve_agentd_plasticity_admission_v1(
 /// before the product adapter runs, so a stale Observer signature cannot be
 /// transplanted across artifact/ledger changes.
 pub fn propose_agentd_plasticity_v1(
-    mut request: ParameterPlasticityProductRequestV1,
+    request: ParameterPlasticityProductRequestV1,
     artifacts: &ArtifactRegistry,
     ledger: &DurableLedger,
     owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
@@ -713,32 +712,18 @@ pub fn propose_agentd_plasticity_v1(
     anchor_store: &mut AgentdPlasticityAnchorStoreV1,
     now: u64,
 ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
-    let resolved = resolve_agentd_plasticity_admission_v1(
-        &AgentdPlasticityAdmissionInputV1 {
-            baseline_id: request.admission.baseline_id.clone(),
-            objective_digest: request.admission.objective_digest,
-            generator_profile: request.generator_profile.clone(),
-            generated: request.generated.clone(),
-            baseline_generation: request.admission.baseline_generation,
-            candidate_generation: request.admission.candidate_generation,
-            dataset_digest: request.admission.dataset_digest,
-            update_rule_digest: request.admission.update_rule_digest,
-            modulator_digest: request.admission.modulator_digest,
-            modulator_broadcast_digest: request.admission.modulator_broadcast_digest,
-            eligibility_digest: request.admission.eligibility_digest,
-        },
+    propose_agentd_plasticity_with_clock_v1(
+        request,
         artifacts,
         ledger,
         owner_evidence_resolver,
         owner_evidence_policy,
+        verifier,
+        writer,
+        anchor_store,
         now,
-    )?;
-    if resolved != request.admission {
-        return Err(AgentdPlasticityHostErrorV1::AdmissionDrift);
-    }
-    request.admission = resolved;
-    propose_authenticated_parameter_plasticity_v1(request, verifier, writer, anchor_store, now)
-        .map_err(Into::into)
+        &mut || Ok(now),
+    )
 }
 
 pub fn bootstrap_agentd_plasticity_writer_v1(
@@ -1256,3 +1241,7 @@ mod tests {
         assert_eq!(reopened.anchor(), Some(expected));
     }
 }
+
+#[path = "plasticity_host_final_time.rs"]
+mod final_time;
+pub(crate) use final_time::propose_agentd_plasticity_with_clock_v1;

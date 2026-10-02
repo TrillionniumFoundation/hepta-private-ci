@@ -12,7 +12,6 @@ use codex_hepta_agent_components::intelligence::TopologyAdmissionEvidenceV1;
 use codex_hepta_agent_components::intelligence::TopologyPlasticityProductErrorV1;
 use codex_hepta_agent_components::intelligence::TopologyPlasticityProductReceiptV1;
 use codex_hepta_agent_components::intelligence::TopologyPlasticityProductRequestV1;
-use codex_hepta_agent_components::intelligence::propose_authenticated_topology_plasticity_v1;
 use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
 use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
 use codex_hepta_agent_components::learning_ledger::DurableLedger;
@@ -231,7 +230,7 @@ pub fn resolve_agentd_topology_admission_v1(
 }
 
 pub fn propose_agentd_topology_plasticity_v1(
-    mut request: TopologyPlasticityProductRequestV1,
+    request: TopologyPlasticityProductRequestV1,
     artifacts: &ArtifactRegistry,
     ledger: &DurableLedger,
     verifier: &LearningEvidenceVerifierV1,
@@ -239,62 +238,16 @@ pub fn propose_agentd_topology_plasticity_v1(
     anchor_store: &mut AgentdTopologyAnchorStoreV1,
     now: u64,
 ) -> Result<TopologyPlasticityProductReceiptV1, AgentdTopologyHostErrorV1> {
-    if writer.state != AgentdTopologyWriterStateV1::Healthy {
-        return Err(AgentdTopologyHostErrorV1::Poisoned);
-    }
-    let resolved = resolve_agentd_topology_admission_v1(
-        &AgentdTopologyAdmissionInputV1 {
-            baseline_id: request.admission.baseline_id.clone(),
-            objective_digest: request.admission.objective_digest,
-            selected_artifact_digest: request.selected_artifact_digest,
-            window: request.window.clone(),
-            baseline_generation: request.baseline_generation,
-            candidate_generation: request.candidate_generation,
-            generation_digest: request.admission.generation_digest,
-            evaluation_receipt_digest: request.admission.evaluation_receipt_digest,
-        },
+    propose_agentd_topology_plasticity_with_clock_v1(
+        request,
         artifacts,
         ledger,
-    )?;
-    if resolved != request.admission {
-        return Err(AgentdTopologyHostErrorV1::AdmissionDrift);
-    }
-    request.admission = resolved;
-
-    writer.state = AgentdTopologyWriterStateV1::AppendPendingAnchor;
-    let receipt = match propose_authenticated_topology_plasticity_v1(
-        request,
         verifier,
-        &mut writer.registry,
+        writer,
+        anchor_store,
         now,
-    ) {
-        Ok(receipt) => receipt,
-        Err(error) => {
-            writer.state = if matches!(
-                error,
-                TopologyPlasticityProductErrorV1::Registry(
-                    DurableTopologyRegistryErrorV1::Corrupt
-                        | DurableTopologyRegistryErrorV1::Indeterminate
-                        | DurableTopologyRegistryErrorV1::Poisoned
-                        | DurableTopologyRegistryErrorV1::Io(_)
-                ) | TopologyPlasticityProductErrorV1::MissingAnchor
-            ) {
-                AgentdTopologyWriterStateV1::Poisoned
-            } else {
-                AgentdTopologyWriterStateV1::Healthy
-            };
-            return Err(AgentdTopologyHostErrorV1::Product(error));
-        }
-    };
-    if anchor_store
-        .persist_anchor(writer.scope, writer.fence, receipt.next_registry_anchor)
-        .is_err()
-    {
-        writer.state = AgentdTopologyWriterStateV1::Poisoned;
-        return Err(AgentdTopologyHostErrorV1::AnchorPersistenceFailed);
-    }
-    writer.state = AgentdTopologyWriterStateV1::Healthy;
-    Ok(receipt)
+        &mut || Ok(now),
+    )
 }
 
 pub fn bootstrap_agentd_topology_writer_v1(
@@ -575,3 +528,7 @@ mod tests {
         assert_eq!(reopened.anchor(), Some(anchor));
     }
 }
+
+#[path = "topology_plasticity_host_final_time.rs"]
+mod final_time;
+pub(crate) use final_time::propose_agentd_topology_plasticity_with_clock_v1;
