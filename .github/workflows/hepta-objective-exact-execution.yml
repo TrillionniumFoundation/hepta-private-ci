@@ -1,29 +1,12 @@
 name: Hepta objective exact execution
 
 on:
+  # The receipt identifies the exact final commit, including source bindings.
+  # Workspace lint/build configuration and transitive dependencies also affect
+  # these checks, so a partial path allowlist can leave this branch unqualified.
   push:
     branches:
       - work/objective-compiler-production-convergence-20260927
-    paths:
-      - codex-rs/hepta-objective/**
-      - codex-rs/hepta-intelligence/**
-      - codex-rs/hepta-agentd/**
-      - codex-rs/hepta-learning-ledger/**
-      - codex-rs/Cargo.lock
-      - codex-rs/rust-toolchain.toml
-      - docs/modules/objective.compiler/**
-      - qualification/module-execution-dossiers/detail/objective.compiler.md
-      - scripts/hepta-objective-current-state.py
-      - scripts/hepta-objective-qualify-exact.py
-      - scripts/test_hepta_objective_qualify_exact.py
-      - scripts/hepta-objective-target-measure.py
-      - scripts/test_hepta_objective_target_measure.py
-      - scripts/hepta-objective-evidence-project.py
-      - scripts/hepta-objective-release-gate.py
-      - scripts/test_hepta_objective_release_gate.py
-      - scripts/test_hepta_objective_evidence_project.py
-      - .github/workflows/hepta-objective-exact-execution.yml
-      - .github/workflows/hepta-objective-target-measurement.yml
   workflow_dispatch:
     inputs:
       source_commit:

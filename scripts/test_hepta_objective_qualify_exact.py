@@ -2,8 +2,10 @@
 from __future__ import annotations
 
 import copy
+import fnmatch
 import importlib.util
 from pathlib import Path
+import re
 import subprocess
 import sys
 import tempfile
@@ -123,6 +125,80 @@ class ReceiptTests(unittest.TestCase):
                 )
                 self.assertEqual(result["exitCode"], 0)
                 self.assertEqual(result["status"], "insufficient_tests")
+
+
+class PushQualificationTests(unittest.TestCase):
+    """Exercise enqueue behavior against the real workflow's supported filters."""
+
+    branch = "work/objective-compiler-production-convergence-20260927"
+    workflow = Path(__file__).resolve().parents[1] / ".github/workflows/hepta-objective-exact-execution.yml"
+
+    def push_enqueues(self, branch, changed_paths):
+        # Keep this dependency-free like the recorder tests. Read only the block
+        # push filters used here; unknown YAML/filter syntax must fail the test,
+        # rather than quietly treating a newly narrowed workflow as unfiltered.
+        text = self.workflow.read_text()
+        events = re.findall(r"(?m)^on:\n((?:[ \t].*\n|\n)+)", text)
+        self.assertEqual(len(events), 1, "one block event mapping is required")
+        pushes = re.findall(r"(?m)^  push:\n((?:    .*\n|\n)+)", events[0])
+        self.assertEqual(len(pushes), 1, "one block push mapping is required")
+        filters = {}
+        current = None
+        for line in pushes[0].splitlines():
+            if not line.strip() or line.lstrip().startswith("#"):
+                continue
+            key = re.fullmatch(r"    (branches|paths):", line)
+            item = re.fullmatch(r"      - ([A-Za-z0-9_./*?-]+)", line)
+            if key:
+                current = key[1]
+                self.assertNotIn(current, filters, "duplicate push filter")
+                filters[current] = []
+            elif item and current is not None:
+                filters[current].append(item[1])
+            else:
+                self.fail(f"unsupported push filter syntax: {line!r}")
+        self.assertIn("branches", filters, "qualification must remain branch-scoped")
+        self.assertTrue(all(filters.values()), "empty filters are ambiguous")
+        return any(fnmatch.fnmatchcase(branch, pattern) for pattern in filters["branches"]) and (
+            "paths" not in filters or any(
+                fnmatch.fnmatchcase(path, pattern)
+                for path in changed_paths for pattern in filters["paths"]
+            )
+        )
+
+    def test_final_binding_only_push_enqueues_exact_head(self):
+        paths = (
+            "docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json",
+            "docs/modules/kernel.operations/IMPLEMENTATION_MAP.json",
+            "docs/modules/learning.plasticity/CURRENT_STATE.json",
+            "docs/modules/learning.plasticity/IMPLEMENTATION_MAP.json",
+            "docs/modules/runtime.agentd/IMPLEMENTATION_MAP.json",
+            "docs/modules/runtime.supervisor/IMPLEMENTATION_MAP.json",
+        )
+        self.assertTrue(self.push_enqueues(self.branch, paths))
+
+    def test_shared_build_and_lint_inputs_enqueue_exact_head(self):
+        for path in (
+            "codex-rs/Cargo.toml", "codex-rs/Cargo.lock",
+            "codex-rs/clippy.toml", "codex-rs/rustfmt.toml",
+            "codex-rs/.cargo/config.toml", "codex-rs/rust-toolchain.toml",
+        ):
+            with self.subTest(path=path):
+                self.assertTrue(self.push_enqueues(self.branch, [path]))
+
+    def test_dependency_and_owned_fixture_changes_enqueue_exact_head(self):
+        for path in (
+            "codex-rs/hepta-types/src/lib.rs",
+            "codex-rs/hepta-agentd/tests/plasticity_process_e2e.rs",
+            "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+        ):
+            with self.subTest(path=path):
+                self.assertTrue(self.push_enqueues(self.branch, [path]))
+
+    def test_unrelated_branches_do_not_enqueue_objective_qualification(self):
+        for branch in ("main", "feature/unrelated", self.branch + "-other"):
+            with self.subTest(branch=branch):
+                self.assertFalse(self.push_enqueues(branch, ["codex-rs/hepta-objective/src/lib.rs"]))
 
 
 class GitIdentityTests(unittest.TestCase):
