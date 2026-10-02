@@ -24,9 +24,22 @@ execFileSync('git',['-C',makepadRoot,'diff','--quiet','HEAD','--']);
 const nightly=execFileSync('rustup',['run','nightly','rustc','--version'],{encoding:'utf8'}).trim();
 if(nightly!=='rustc 1.101.0-nightly (c36f14571 2026-10-01)') throw new Error('Unqualified nightly: '+nightly);
 const toolTarget=join(workspace,'target/robrix-tools');
+// Upstream intentionally has no tracked lockfile. Build its tool in an isolated
+// exact Git archive with our reviewed lock; never depend on or modify cache state.
+const toolSource=join(workspace,'target/robrix-tool-source');
+const toolArchive=join(workspace,'target/robrix-tool-source.tar');
+await mkdir(dirname(toolSource),{recursive:true});
+await rm(toolSource,{recursive:true,force:true});
+await mkdir(toolSource,{recursive:true});
+execFileSync('git',['-C',makepadRoot,'archive','--format=tar','--output='+toolArchive,provenance.makepad.revision]);
+try {execFileSync('tar',['-xf',toolArchive,'-C',toolSource]);}
+finally {await rm(toolArchive,{force:true});}
+const packagerLock=await readFile(join(workspace,'robrix-ui/patches/cargo-makepad.Cargo.lock'));
+await writeFile(join(toolSource,'Cargo.lock'),packagerLock);
 const toolEnv={...process.env,CARGO_BUILD_JOBS:'1',CARGO_INCREMENTAL:'0',CARGO_PROFILE_DEV_DEBUG:'0'};
 for(const name of ['CARGO_BUILD_TARGET','CARGO_ENCODED_RUSTFLAGS','RUSTFLAGS']) delete toolEnv[name];
-execFileSync('cargo',['+1.95.0','build','--locked','--manifest-path',join(makepadRoot,'tools/cargo_makepad/Cargo.toml'),'--bin','cargo-makepad','--target-dir',toolTarget],{stdio:'inherit',env:toolEnv});
+execFileSync('cargo',['+1.95.0','build','--locked','--manifest-path',join(toolSource,'tools/cargo_makepad/Cargo.toml'),'--bin','cargo-makepad','--target-dir',toolTarget],{stdio:'inherit',env:toolEnv});
+if(sha(await readFile(join(toolSource,'Cargo.lock')))!==sha(packagerLock)) throw new Error('Packager lock changed');
 const packager=join(toolTarget,'debug',process.platform==='win32'?'cargo-makepad.exe':'cargo-makepad');
 const overlay=await preparePlatform(workspace,makepadRoot,provenance.makepad.revision);
 source=join(overlay.workspace,'target/makepad-wasm-app/release/hepta-robrix-ui');
@@ -89,5 +102,5 @@ async function inventory(dir) {
  }
 }
 await inventory(output);
-await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,nightly,platformPatch:overlay.identity,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerSha256:sha(await readFile(packager)),threads:false,automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
+await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,nightly,platformPatch:overlay.identity,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
 console.log(`Packaged Robrix-derived Rust UI (${Object.keys(files).length} assets); rendering still requires host acceptance`);
