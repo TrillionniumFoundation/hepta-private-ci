@@ -66,6 +66,9 @@ use crate::resume_agentd_topology_writer_v1;
 const DESCRIPTOR_SCHEMA: &str = "hepta.agentd.plasticity-bootstrap.v1";
 const MAX_DESCRIPTOR_BYTES: u64 = 1_048_576;
 const MAX_NDU_JOURNAL_BYTES: u64 = 2 * 1_048_576;
+#[path = "plasticity_current_descriptor.rs"]
+mod current_descriptor;
+use current_descriptor::CurrentArtifactOwnerDescriptorV1;
 
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -97,6 +100,8 @@ struct ArtifactSnapshotDescriptorV1 {
     update_rule_artifact_id: String,
     mutation_policy_artifact_id: String,
     broadcast_artifact_id: String,
+    #[serde(default)]
+    current_owner: Option<CurrentArtifactOwnerDescriptorV1>,
 }
 
 #[derive(Debug, Deserialize)]
@@ -292,6 +297,14 @@ pub fn load_plasticity_process_bootstrap_v1(
 
     let objective_digest = digest(&descriptor.objective_digest, "objective digest")?;
     let artifacts = load_artifacts(&descriptor.artifacts)?;
+    // A legacy descriptor may reopen its original histories, but without a
+    // current owner every proposal is refused before either writer appends.
+    let current_artifacts = descriptor
+        .artifacts
+        .current_owner
+        .as_ref()
+        .map(CurrentArtifactOwnerDescriptorV1::source)
+        .transpose()?;
     let ledger = load_ledger(&descriptor.ledger)?;
     let dataset = build_dataset_receipt(&descriptor.dataset)?;
     if dataset.snapshot.objective_digest != objective_digest {
@@ -409,7 +422,7 @@ pub fn load_plasticity_process_bootstrap_v1(
     let (topology_writer, topology_anchor_store) =
         open_topology_writer(&descriptor.topology_registry)?;
 
-    PlasticityRuntimeBootstrapV1::new(
+    let bootstrap = PlasticityRuntimeBootstrapV1::new(
         descriptor.queue_capacity,
         artifacts,
         ledger,
@@ -420,7 +433,27 @@ pub fn load_plasticity_process_bootstrap_v1(
         parameter_anchor_store,
         topology_writer,
         topology_anchor_store,
-    )
+    )?;
+    match current_artifacts {
+        Some(source) => bootstrap.with_current_artifacts(
+            source,
+            [
+                stable_id(
+                    &descriptor.artifacts.update_rule_artifact_id,
+                    "update rule artifact",
+                )?,
+                stable_id(
+                    &descriptor.artifacts.mutation_policy_artifact_id,
+                    "mutation policy artifact",
+                )?,
+                stable_id(
+                    &descriptor.artifacts.broadcast_artifact_id,
+                    "broadcast artifact",
+                )?,
+            ],
+        ),
+        None => Ok(bootstrap),
+    }
 }
 
 fn load_artifacts(

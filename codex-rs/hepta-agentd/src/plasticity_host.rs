@@ -167,7 +167,7 @@ impl PlasticityOwnerEvidencePolicyV1 {
         Ok(Self { allowed_owners })
     }
 
-    fn allows(&self, kind: PlasticityOwnerEvidenceKindV1, owner_id: &StableId) -> bool {
+    pub(crate) fn allows(&self, kind: PlasticityOwnerEvidenceKindV1, owner_id: &StableId) -> bool {
         self.allowed_owners
             .get(&kind)
             .is_some_and(|owners| owners.contains(owner_id))

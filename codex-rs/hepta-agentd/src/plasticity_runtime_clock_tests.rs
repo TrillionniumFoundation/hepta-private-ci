@@ -76,6 +76,9 @@ fn clock_fixture(clock: fn() -> Result<u64, AgentdError>) -> ClockFixture {
     .expect("runtime bootstrap");
     let state = daemon.state();
     let (handle, mut owner) = bootstrap.into_channel().expect("compose owner");
+    owner.current_artifacts = Some(
+        crate::plasticity_runtime::current_artifacts::fixture_current_artifacts(&sources.artifacts),
+    );
     state
         .attach_plasticity_runtime(handle.clone())
         .expect("attach owner");
@@ -424,3 +427,6 @@ async fn real_monotonic_guard_interval_expires_evidence_before_the_first_write()
     ));
     assert_eq!(persistent_bytes(&fixture.files), before);
 }
+
+#[path = "plasticity_runtime_current_tests.rs"]
+mod current_tests;

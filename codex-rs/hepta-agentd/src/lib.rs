@@ -39,6 +39,8 @@ mod cognitive_retrieval_provider;
 mod config;
 #[cfg(feature = "server")]
 mod control;
+#[cfg(feature = "server")]
+mod current_artifact_registry;
 mod error;
 #[cfg(feature = "server")]
 mod event_buffer;
@@ -82,6 +84,8 @@ mod plasticity_owner_evidence;
 mod plasticity_process_bootstrap;
 #[cfg(feature = "server")]
 mod plasticity_runtime;
+#[cfg(feature = "server")]
+pub use current_artifact_registry::CurrentArtifactRegistrySourceV1;
 #[cfg(feature = "server")]
 mod production_writer_host;
 #[cfg(feature = "server")]

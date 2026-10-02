@@ -36,6 +36,12 @@ use crate::plasticity_host::propose_agentd_plasticity_with_clock_v1;
 use crate::topology_plasticity_host::propose_agentd_topology_plasticity_with_clock_v1;
 
 const MAX_PLASTICITY_RUNTIME_QUEUE: usize = 64;
+#[path = "plasticity_current_artifacts.rs"]
+mod current_artifacts;
+use current_artifacts::PlasticityCurrentArtifactsV1;
+#[path = "plasticity_runtime_final_admission.rs"]
+mod final_admission;
+use final_admission::FinalPlasticityAdmissionV1;
 
 #[derive(Debug)]
 pub enum PlasticityRuntimeCallErrorV1 {
@@ -127,6 +133,7 @@ impl PlasticityRuntimeHandleV1 {
 pub struct PlasticityRuntimeBootstrapV1 {
     capacity: usize,
     artifacts: ArtifactRegistry,
+    current_artifacts: Option<PlasticityCurrentArtifactsV1>,
     ledger: DurableLedger,
     owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
     owner_evidence_policy: PlasticityOwnerEvidencePolicyV1,
@@ -155,6 +162,7 @@ impl PlasticityRuntimeBootstrapV1 {
         Ok(Self {
             capacity,
             artifacts,
+            current_artifacts: None,
             ledger,
             owner_evidence_resolver,
             owner_evidence_policy,
@@ -169,7 +177,7 @@ impl PlasticityRuntimeBootstrapV1 {
     pub(crate) fn into_channel(
         self,
     ) -> Result<(PlasticityRuntimeHandleV1, PlasticityRuntimeOwnerV1), AgentdError> {
-        plasticity_runtime_channel_v1(
+        let (handle, mut owner) = plasticity_runtime_channel_v1(
             self.capacity,
             self.artifacts,
             self.ledger,
@@ -180,7 +188,9 @@ impl PlasticityRuntimeBootstrapV1 {
             self.parameter_anchor_store,
             self.topology_writer,
             self.topology_anchor_store,
-        )
+        )?;
+        owner.current_artifacts = self.current_artifacts;
+        Ok((handle, owner))
     }
 }
 
@@ -196,6 +206,7 @@ pub struct PlasticityRuntimeOwnerV1 {
     // The private real host monotonic reader never invokes external callbacks.
     guard_elapsed_ms: fn(&Instant) -> u128,
     artifacts: ArtifactRegistry,
+    current_artifacts: Option<PlasticityCurrentArtifactsV1>,
     ledger: DurableLedger,
     owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
     owner_evidence_policy: PlasticityOwnerEvidencePolicyV1,
@@ -229,6 +240,7 @@ pub fn plasticity_runtime_channel_v1(
             last_observed_unix_ms: None,
             guard_elapsed_ms: monotonic_elapsed_ms,
             artifacts,
+            current_artifacts: None,
             ledger,
             owner_evidence_resolver,
             owner_evidence_policy,
@@ -266,59 +278,6 @@ fn observe_plasticity_clock_v1(
 
 fn monotonic_elapsed_ms(start: &Instant) -> u128 {
     start.elapsed().as_millis()
-}
-
-struct FinalPlasticityAdmissionV1<'a> {
-    state: &'a AgentdState,
-    cancellation: &'a CancellationToken,
-    generation: u64,
-    guard: Option<crate::state::PlasticityFinalAdmissionGuardV1<'a>>,
-    unavailable: bool,
-}
-
-impl FinalPlasticityAdmissionV1<'_> {
-    fn observe(
-        &mut self,
-        clock: &mut dyn FnMut() -> Result<u64, AgentdError>,
-        last_observed_unix_ms: &mut Option<u64>,
-        guard_elapsed_ms: fn(&Instant) -> u128,
-    ) -> Result<u64, AgentdError> {
-        // Clock callbacks can expose fencing, draining or cancellation. Sample
-        // before acquiring the runtime mutex, then retain the admission guard
-        // through the synchronous registry append and external anchor update.
-        let sampled_at = Instant::now();
-        let now = observe_plasticity_clock_v1(clock, last_observed_unix_ms)?;
-        if self.cancellation.is_cancelled() {
-            self.unavailable = true;
-            return Err(AgentdError::GenerationFenced(
-                "plasticity owner cancelled before final admission".to_string(),
-            ));
-        }
-        let guard = self
-            .state
-            .plasticity_final_admission_guard(self.generation)
-            .inspect_err(|_| self.unavailable = true)?;
-        // Fleet refresh may block. Advance the sampled host time by the real
-        // monotonic interval rather than reuse a now that was valid before I/O.
-        // No clock callback or other state operation runs under the guard.
-        let elapsed_ms = u64::try_from(guard_elapsed_ms(&sampled_at))
-            .map_err(|_| AgentdError::Protocol("plasticity clock interval overflow".to_string()))?;
-        let now = now.checked_add(elapsed_ms).ok_or_else(|| {
-            AgentdError::Protocol("plasticity clock interval overflow".to_string())
-        })?;
-        *last_observed_unix_ms = Some(now);
-        if self.cancellation.is_cancelled() {
-            self.unavailable = true;
-            return Err(AgentdError::GenerationFenced(
-                "plasticity owner cancelled before final admission".to_string(),
-            ));
-        }
-        // This is the admission linearization point. Later cancellation lets
-        // this already admitted synchronous transaction finish; it cannot undo
-        // durable work. Local lifecycle changes serialize on the retained lock.
-        self.guard = Some(guard);
-        Ok(now)
-    }
 }
 
 pub(crate) fn compose_plasticity_runtime_v1(
@@ -404,6 +363,9 @@ impl PlasticityRuntimeOwnerV1 {
                             generation: owner_generation,
                             guard: None,
                             unavailable: false,
+                            current_artifacts: self.current_artifacts.as_ref(),
+                            artifacts: &self.artifacts,
+                            baseline: request.admission.baseline_id.clone(),
                         };
                         let result = {
                             let mut final_clock = || {
@@ -455,6 +417,9 @@ impl PlasticityRuntimeOwnerV1 {
                             generation: owner_generation,
                             guard: None,
                             unavailable: false,
+                            current_artifacts: self.current_artifacts.as_ref(),
+                            artifacts: &self.artifacts,
+                            baseline: request.admission.baseline_id.clone(),
                         };
                         let result = {
                             let mut final_clock = || {

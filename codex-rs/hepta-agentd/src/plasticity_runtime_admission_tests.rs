@@ -253,6 +253,9 @@ fn cancellation_during_guard_interval_remains_before_final_admission() {
         generation: 2,
         guard: None,
         unavailable: false,
+        current_artifacts: fixture.owner.current_artifacts.as_ref(),
+        artifacts: &fixture.owner.artifacts,
+        baseline: fixture.parameter.admission.baseline_id.clone(),
     };
     let mut floor = None;
     assert!(

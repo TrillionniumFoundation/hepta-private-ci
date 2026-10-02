@@ -71,7 +71,10 @@ fn normal_clock_fixture() -> ClockFixture {
     )
     .expect("runtime bootstrap");
     let state = daemon.state();
-    let (handle, owner) = bootstrap.into_channel().expect("compose owner");
+    let (handle, mut owner) = bootstrap.into_channel().expect("compose owner");
+    owner.current_artifacts = Some(
+        crate::plasticity_runtime::current_artifacts::fixture_current_artifacts(&sources.artifacts),
+    );
     state
         .attach_plasticity_runtime(handle)
         .expect("attach owner");
