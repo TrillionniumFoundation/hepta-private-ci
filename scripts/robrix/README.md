@@ -89,3 +89,35 @@ remain mandatory; the linked full-app Makepad package/canvas gate is still separ
 Second failed artifact SHA-256 receipts:
 - Native 11240541155: c1c61519cbb69915aa887cde945691a01f2013c27487e0d56ec05ec5500d2269
 - Browser 11239920537: cb24a98b57517da76c8ab974de6efc3ebf15ea21db4486ac4569572bcc26ecf4
+
+## Multi-import generator correction
+
+Run 37042402947 established the actual native pass: nineteen scoped application
+and read-only Console tests plus six real-widget screenshots. Preserve that
+receipt; subsequent browser adapter work changes no native/application source.
+The browser adapter rejected generated glue before executing tests because it
+incorrectly required exactly one raw `env` namespace/mapping pair. The pinned
+wasm-bindgen generator enumerates raw imports individually, including repeated
+module names. Official CLI0.2.129 reproduction with two distinct `env` functions
+and a non-env module confirmed two env pairs and preserved the other module.
+The guard now requires a bounded, complete, unique alias-to-mapping bijection,
+matching the pinned Makepad packager's removal of all raw env entries. It still
+rejects missing, unmatched, duplicate aliases or changed initializer syntax.
+Actual application glue hashes and bounded import/initializer excerpts are now
+recorded before transformation, including on rejection; full generated assets
+remain unuploaded. Adapter errors abort the request and are preserved directly.
+The earlier failed artifact did not contain generated glue bytes, so the hosted
+rerun remains necessary to qualify the full application test harness.
+
+Browser failed artifact11243835391 SHA-256:
+b3cbbbad8008ac318ee9816f9a685f31bae8bbbc56f4ef0d72ca068af53189b6.
+Native successful artifact11243007240 SHA-256:
+274726db5c62a5727417729f134aac157b133171072f4d405375011d3a365bf0.
+
+The existing real login widget is a ScrollYView with vertical scrolling enabled
+and its scrollbar intentionally hidden. Clipping in the initial 800×560 capture
+alone is not a reachability defect. Qualification additionally captures that
+verified fixture window after six wheel-down ticks, then PageDown and six Tabs.
+No Enter, credential input, login click, or SSO submission is issued. The input
+exercise is recorded separately; lower-control reachability stays pending pixel
+review of the before/after images. No application layout change is made.

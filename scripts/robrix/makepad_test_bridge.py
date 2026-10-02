@@ -1,6 +1,7 @@
 """Use the pinned Makepad --bindgen adapter and real WasmBridge for app tests."""
 import hashlib
 import re
+from collections import Counter
 from pathlib import Path
 
 BRIDGE_SHA256 = '209f816c9ddf10ac364ee4a5ca73942104b4d31660c4b9ba799d9408462b3442'
@@ -18,6 +19,21 @@ def load_pinned_bridge(source):
     return bridge
 
 
+ENV_IMPORT = re.compile(r'^import \* as (?P<alias>\w+) from [\'\"]env[\'\"];?$')
+ENV_MAPPINGS = [re.compile(r'^\s*[\'\"]env[\'\"]:\s*(?P<alias>\w+),?$'),
+                re.compile(r'^\s*imports\[[\'\"]env[\'\"]\]\s*=\s*(?P<alias>\w+);$')]
+
+
+def glue_shape(source):
+    """Keep only bounded bootstrap syntax, never full generated assets or fonts."""
+    relevant = [line.strip() for line in source.splitlines()
+                if re.search(r'''["']env["']''', line) and ('import' in line or ':' in line)]
+    return {'sha256': hashlib.sha256(source.encode()).hexdigest(), 'bytes': len(source.encode()),
+            'envSyntax': [line[:300] for line in relevant[:256]], 'envSyntaxCount': len(relevant),
+            'initShape': [line.strip()[:300] for line in source.splitlines()
+                          if line.startswith('async function __wbg_init(')][:2]}
+
+
 def patch_test_glue(source):
     """Apply the same env/instance adaptation as Makepad493 --bindgen, fail closed.
 
@@ -25,15 +41,16 @@ def patch_test_glue(source):
     the real upstream bridge, then returns its real WASM exports to the unchanged
     official wasm-bindgen test runner. No replacement env functions or test code.
     """
-    patterns = [r'^import \* as \w+ from [\'\"]env[\'\"];?$',
-                r'^\s*[\'\"]env[\'\"]:\s*\w+,?$',
-                r'^\s*imports\[[\'\"]env[\'\"]\]\s*=\s*\w+;$']
     lines = source.splitlines()
-    imports = [line for line in lines if re.match(patterns[0], line)]
-    mappings = [line for line in lines if any(re.match(p, line) for p in patterns[1:])]
-    if len(imports) != 1 or len(mappings) != 1:
-        raise ValueError('Unexpected Makepad env import/mapping shape')
-    source = '\n'.join(line for line in lines if line not in imports + mappings) + '\n'
+    imports = [(line, ENV_IMPORT.match(line)) for line in lines if ENV_IMPORT.match(line)]
+    mappings = [(line, pattern.match(line)) for line in lines for pattern in ENV_MAPPINGS if pattern.match(line)]
+    import_aliases = Counter(match['alias'] for _, match in imports)
+    mapping_aliases = Counter(match['alias'] for _, match in mappings)
+    if (not imports or len(imports) > 128 or import_aliases != mapping_aliases
+            or any(count != 1 for count in import_aliases.values())):
+        raise ValueError('Unexpected Makepad env import/mapping bijection')
+    removed_lines = {line for line, _ in imports + mappings}
+    source = '\n'.join(line for line in lines if line not in removed_lines) + '\n'
     replacements = [
         ('return wasm;\n}', 'return instance;\n}', 1),
         ('async function __wbg_init(module_or_path) {',

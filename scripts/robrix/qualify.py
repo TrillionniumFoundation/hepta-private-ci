@@ -200,6 +200,35 @@ def native_window_diagnostics(scene, process):
         (OUT / f'native-{scene}-{label}.log').write_text(output)
 
 
+def capture_short_login_scroll(window, process):
+    """Exercise only scroll/focus inputs; control reachability needs pixel review."""
+    from PIL import Image
+    for label, commands in [
+        ('wheel', [['xdotool', 'windowfocus', window],
+                   ['xdotool', 'mousemove', '--window', window, '200', '450'],
+                   ['xdotool', 'click', '--window', window, '--repeat', '6', '--delay', '80', '5']]),
+        ('keyboard', [['xdotool', 'key', '--window', window, '--clearmodifiers', 'Page_Down'],
+                      ['xdotool', 'key', '--window', window, '--clearmodifiers', 'Tab', 'Tab', 'Tab', 'Tab', 'Tab', 'Tab']]),
+    ]:
+        assert process.poll() is None, 'Fixture exited before scroll exercise'
+        assert read_title(window)['title'] == FIXTURE_TITLE, 'Fixture title changed before input'
+        for command in commands:
+            run(command, cwd=ROOT, timeout=5)
+        time.sleep(1)
+        png = OUT / f'native-login-short-after-{label}.png'
+        run(['import', '-window', window, str(png)], cwd=ROOT, timeout=10)
+        with Image.open(png) as image:
+            assert image.size == (800, 560)
+        assert process.poll() is None, 'Fixture exited during scroll exercise'
+    (OUT / 'native-login-short-input-exercise.json').write_text(json.dumps({
+        'viewport': [800, 560], 'fixture': True, 'liveAccounts': False,
+        'before': 'native-login-short.png',
+        'after': ['native-login-short-after-wheel.png', 'native-login-short-after-keyboard.png'],
+        'inputs': ['six wheel-down ticks', 'PageDown', 'six Tabs'],
+        'submissionKeysSent': False, 'controlReachability': 'pending pixel review',
+    }, indent=2) + '\n')
+
+
 def native_capture():
     from PIL import Image
     binary = APP / 'target/debug/robrix'
@@ -225,6 +254,8 @@ def native_capture():
                     with Image.open(png) as image:
                         assert image.size == (width, height), image.size
                         assert len(image.convert('RGB').getcolors(width * height)) > 32, 'Blank fixture image'
+                if scene == 'login':
+                    capture_short_login_scroll(window, process)
             finally:
                 native_window_diagnostics(scene, process)
                 process.terminate()

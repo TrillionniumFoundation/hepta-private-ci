@@ -8,7 +8,7 @@ from unittest.mock import patch, Mock
 import qualify
 from browser_test_runner import passing_summary
 from x11_title import decode_title
-from makepad_test_bridge import patch_test_glue, load_pinned_bridge
+from makepad_test_bridge import patch_test_glue, load_pinned_bridge, glue_shape
 
 
 class TestExecutionGate(unittest.TestCase):
@@ -137,6 +137,22 @@ export { initSync, __wbg_init as default };
         self.assertIn('return instance.exports', patched)
         self.assertNotIn('from "env"', patched)
         self.assertEqual(patch_test_glue(self.GLUE.replace('from "env";', 'from "env"')), patched)
+
+    def test_multiple_real_env_imports_have_a_complete_bijection(self):
+        source = self.GLUE.replace('import * as import0 from "env";',
+                                  'import * as import0 from "env"\nimport * as import1 from "env"')
+        source = source.replace('"env": import0,', '"env": import0,\n    "env": import1,')
+        source = 'import * as other from "other_module";\n' + source
+        source = source.replace('"env": import0,', '"other_module": other,\n    "env": import0,')
+        patched = patch_test_glue(source)
+        self.assertIn('import * as other from "other_module";', patched)
+        self.assertIn('"other_module": other,', patched)
+        self.assertNotIn('from "env"', patched)
+        self.assertEqual(glue_shape(source)['envSyntaxCount'], 4)
+        with self.assertRaises(ValueError):
+            patch_test_glue(source.replace('"env": import1,', '"env": wrong_alias,'))
+        with self.assertRaises(ValueError):
+            patch_test_glue(source.replace('import1', 'import0'))
 
     def test_glue_drift_fails_closed(self):
         for changed in [self.GLUE.replace('"env": import0,', ''),

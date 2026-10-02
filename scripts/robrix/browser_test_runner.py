@@ -18,7 +18,7 @@ import time
 from urllib.parse import urlsplit
 
 from qualify import OUT
-from makepad_test_bridge import load_pinned_bridge, patch_test_glue, BRIDGE_SHA256, PACKAGER_SHA256
+from makepad_test_bridge import load_pinned_bridge, patch_test_glue, glue_shape, BRIDGE_SHA256, PACKAGER_SHA256
 
 
 def passing_summary(output):
@@ -47,7 +47,7 @@ def main():
                'runner': 'official wasm-bindgen 0.2.129 interactive server',
                'pageErrors': [], 'console': [], 'requestFailures': [], 'responses': [],
                'passed': False, 'output': '', 'bridge': {'sourceSha256': BRIDGE_SHA256,
-               'packagerSha256': PACKAGER_SHA256, 'initialized': False}, 'glue': []}
+               'packagerSha256': PACKAGER_SHA256, 'initialized': False}, 'glue': [], 'adapterErrors': []}
     try:
         # This is server/bootstrap setup, not a longer allowance for test execution.
         deadline = time.monotonic() + 60
@@ -77,9 +77,15 @@ def main():
                         if response.status != 200:
                             raise RuntimeError('Official generated test glue was not served')
                         original = response.text()
-                        patched = patch_test_glue(original)
-                        receipt['glue'].append({'beforeSha256': hashlib.sha256(original.encode()).hexdigest(),
-                                                'afterSha256': hashlib.sha256(patched.encode()).hexdigest()})
+                        shape = glue_shape(original)
+                        receipt['glue'].append(shape)
+                        try:
+                            patched = patch_test_glue(original)
+                        except ValueError as error:
+                            receipt['adapterErrors'].append(str(error))
+                            request_route.abort('failed')
+                            return
+                        shape['afterSha256'] = hashlib.sha256(patched.encode()).hexdigest()
                         request_route.fulfill(response=response, body=patched, content_type='text/javascript')
                     elif url.startswith(origin + '/') or url.startswith(('blob:', 'data:')):
                         request_route.continue_()
@@ -98,7 +104,7 @@ def main():
                 page.goto(origin, wait_until='domcontentloaded', timeout=30000)
                 while time.monotonic() < deadline:
                     receipt['output'] = page.locator('#output').inner_text()
-                    if receipt['pageErrors'] or receipt['requestFailures']:
+                    if receipt['adapterErrors'] or receipt['pageErrors'] or receipt['requestFailures']:
                         raise RuntimeError('Browser test bootstrap failed; see browser-test-bootstrap.json')
                     if 'test result:' in receipt['output']:
                         print(receipt['output'], flush=True)
