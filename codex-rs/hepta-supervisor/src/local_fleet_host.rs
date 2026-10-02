@@ -29,10 +29,14 @@ use crate::SpawnSpec;
 mod containment;
 #[path = "local_fleet_environment.rs"]
 mod environment;
+#[path = "local_fleet_gateway_peer.rs"]
+mod gateway_peer;
 #[path = "local_fleet_maintenance.rs"]
 mod maintenance;
 #[path = "local_fleet_no_effect.rs"]
 mod no_effect;
+pub use gateway_peer::RootGatewayPeerV1;
+
 #[path = "local_fleet_resource_observer.rs"]
 mod resource_observer;
 #[path = "local_fleet_runtime.rs"]
