@@ -426,6 +426,15 @@ def authorize_current(connection, config, request):
         )
         if goal_mode:
             expected = expected - {"objective_digest", "run_id"} | {"goal_scope_mode"}
+        current_execution = (
+            goal_mode
+            and principal.get("fleet_execution_binding")
+            == "CurrentRootFleetExecutionV1"
+        )
+        if current_execution:
+            expected = expected - {"cgroup", "fleet_manifest_digest"} | {
+                "fleet_execution_binding"
+            }
         if set(principal) != expected:
             raise ValueError("current principal configuration fields")
         if (
@@ -433,7 +442,7 @@ def authorize_current(connection, config, request):
             or principal["gid"] != gid
             or identity[1] != [uid] * 4
             or identity[2] != [gid] * 4
-            or identity[3] != principal["cgroup"]
+            or (not current_execution and identity[3] != principal["cgroup"])
         ):
             continue
         fixed = fields - {"ndu_digest"}

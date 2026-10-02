@@ -208,6 +208,52 @@ class GoalTests(unittest.TestCase):
         )
         self.assertEqual(first, second)
 
+    def test_current_execution_uses_actual_peer_and_program_pinned_owner_route(self):
+        principal = {
+            key: value
+            for key, value in self.principal.items()
+            if key
+            not in ("objective_digest", "run_id", "cgroup", "fleet_manifest_digest")
+        }
+        principal["goal_scope_mode"] = "ActualCompiledGoalScopeV3"
+        principal["fleet_execution_binding"] = "CurrentRootFleetExecutionV1"
+        left, right = socket.socketpair(socket.AF_UNIX)
+        with (
+            left,
+            right,
+            patch.object(
+                fixed_encoder_resources, "observe", return_value=("current",)
+            ) as observe,
+        ):
+            result = self.authorize(
+                left,
+                {"schema": "hepta.fixed-nomic-encoder.v3", "principals": [principal]},
+                self.request,
+            )
+        self.assertEqual(result[0], os.getpid())
+        self.assertEqual(observe.call_args.args[1], principal)
+        self.assertEqual(observe.call_args.args[2], os.getpid())
+        for field, value in [
+            ("fleet_manifest_digest", "e" * 64),
+            ("cgroup", "/old/execution"),
+        ]:
+            left, right = socket.socketpair(socket.AF_UNIX)
+            with (
+                left,
+                right,
+                patch.object(fixed_encoder_resources, "observe") as observe,
+                self.assertRaises(ValueError),
+            ):
+                self.authorize(
+                    left,
+                    {
+                        "schema": "hepta.fixed-nomic-encoder.v3",
+                        "principals": [{**principal, field: value}],
+                    },
+                    self.request,
+                )
+            observe.assert_not_called()
+
     def test_original_v2_still_rejects_another_goal_and_cannot_opt_into_v3(self):
         self.call("hepta.fixed-nomic-encoder.v2", self.principal, self.request)
         with self.assertRaises(ValueError):

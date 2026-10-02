@@ -2,6 +2,7 @@
 
 import subprocess
 import time
+import re
 
 from fixed_encoder_sources import (
     decode_json,
@@ -34,6 +35,20 @@ def validate_observation(principal, pid, kernel_identity, value, now_ms):
     observation = value["observation"]
     context = observation["context"]
     grant = observation["allocation"]
+    current_execution = (
+        principal.get("fleet_execution_binding") == "CurrentRootFleetExecutionV1"
+    )
+    if current_execution:
+        manifest = context["manifest_digest"]
+        if (
+            not isinstance(manifest, str)
+            or not re.fullmatch(r"[0-9a-f]{64}", manifest)
+            or manifest == "0" * 64
+            or context["containment"] != kernel_identity[3].removeprefix("/")
+        ):
+            raise ValueError("original current launch/kernel containment binding")
+    elif context["manifest_digest"] != principal["fleet_manifest_digest"]:
+        raise ValueError("original fixed launch binding")
     if (
         not isinstance(grant, dict)
         or grant["revoked"] is not False
@@ -43,7 +58,6 @@ def validate_observation(principal, pid, kernel_identity, value, now_ms):
         or observation["process_id"] != pid
         or str(observation["process_start_ticks"]) != kernel_identity[0]
         or context["principal_id"] != principal["agent_id"]
-        or context["manifest_digest"] != principal["fleet_manifest_digest"]
     ):
         raise ValueError("actual kernel peer/current allocation binding")
     for field in (
@@ -76,17 +90,21 @@ def observe(config, principal, pid, kernel_identity):
     verify_large_source(reader["program"], 128 * 1024 * 1024)
     source_bytes(reader["local_host_policy"], 64 * 1024)
     protected_path(reader["fleet_root"], directory=True)
+    arguments = [
+        reader["program"]["path"],
+        "--fleet-root",
+        reader["fleet_root"],
+        "resource-observe",
+        "--local-host-policy",
+        reader["local_host_policy"]["path"],
+    ]
+    if principal.get("fleet_execution_binding") == "CurrentRootFleetExecutionV1":
+        arguments.extend(
+            ["--require-program-sha256", principal["program_source"]["sha256"]]
+        )
+    arguments.extend([principal["agent_id"], str(pid)])
     result = subprocess.run(
-        [
-            reader["program"]["path"],
-            "--fleet-root",
-            reader["fleet_root"],
-            "resource-observe",
-            "--local-host-policy",
-            reader["local_host_policy"]["path"],
-            principal["agent_id"],
-            str(pid),
-        ],
+        arguments,
         stdin=subprocess.DEVNULL,
         stdout=subprocess.PIPE,
         stderr=subprocess.PIPE,

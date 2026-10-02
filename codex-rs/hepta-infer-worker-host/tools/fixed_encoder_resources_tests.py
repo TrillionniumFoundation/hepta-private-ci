@@ -1,6 +1,10 @@
 import copy
+import json
 import unittest
+from types import SimpleNamespace
+from unittest.mock import patch
 
+import fixed_encoder_resources
 from fixed_encoder_resources import validate_observation
 
 
@@ -46,6 +50,107 @@ def fixture():
 
 
 class ResourceObservationTests(unittest.TestCase):
+    def test_current_execution_requires_the_pinned_program_in_the_same_owner_probe(
+        self,
+    ):
+        principal, _, value = fixture()
+        principal.pop("fleet_manifest_digest")
+        principal["fleet_execution_binding"] = "CurrentRootFleetExecutionV1"
+        principal["program_source"] = {
+            "path": "/opt/original/worker",
+            "sha256": "b" * 64,
+        }
+        kernel = (
+            "456",
+            [986] * 4,
+            [975] * 4,
+            "/hepta-test/agent-original-agent/main-current-execution",
+        )
+        value["observation"]["context"]["containment"] = kernel[3][1:]
+        cfg = {
+            "resource_observer": {
+                "program": {"path": "/opt/original/fleetctl", "sha256": "c" * 64},
+                "local_host_policy": {
+                    "path": "/etc/original/host.json",
+                    "sha256": "d" * 64,
+                },
+                "fleet_root": "/var/lib/original/fleet",
+            }
+        }
+        with (
+            patch.object(fixed_encoder_resources, "verify_large_source"),
+            patch.object(fixed_encoder_resources, "source_bytes"),
+            patch.object(fixed_encoder_resources, "protected_path"),
+            patch.object(
+                fixed_encoder_resources.time, "time_ns", return_value=10_010_000_000
+            ),
+            patch.object(
+                fixed_encoder_resources.subprocess,
+                "run",
+                return_value=SimpleNamespace(
+                    returncode=0, stdout=json.dumps(value).encode()
+                ),
+            ) as run,
+        ):
+            fixed_encoder_resources.observe(cfg, principal, 123, kernel)
+            self.assertEqual(
+                run.call_args.args[0],
+                [
+                    "/opt/original/fleetctl",
+                    "--fleet-root",
+                    "/var/lib/original/fleet",
+                    "resource-observe",
+                    "--local-host-policy",
+                    "/etc/original/host.json",
+                    "--require-program-sha256",
+                    "b" * 64,
+                    "original-agent",
+                    "123",
+                ],
+            )
+            run.return_value = SimpleNamespace(returncode=1, stdout=b"")
+            with self.assertRaises(ValueError):
+                fixed_encoder_resources.observe(cfg, principal, 123, kernel)
+
+    def test_current_root_execution_binds_the_live_context_without_a_future_launch_guess(
+        self,
+    ):
+        principal, _, value = fixture()
+        principal.pop("fleet_manifest_digest")
+        principal["fleet_execution_binding"] = "CurrentRootFleetExecutionV1"
+        kernel = (
+            "456",
+            [986] * 4,
+            [975] * 4,
+            "/hepta-test/agent-original-agent/main-current-execution",
+        )
+        value["observation"]["context"]["containment"] = kernel[3][1:]
+        first = validate_observation(principal, 123, kernel, value, 10_010)
+        changed = copy.deepcopy(value)
+        changed["observation"]["context"]["manifest_digest"] = "b" * 64
+        changed["observation"]["allocation"]["semantic_digest"] = "b" * 64
+        self.assertNotEqual(
+            first, validate_observation(principal, 123, kernel, changed, 10_010)
+        )
+        for key, replacement in [
+            ("context.manifest_digest", "0" * 64),
+            ("context.containment", "hepta-other/main-foreign"),
+            ("context.principal_id", "foreign-agent"),
+            ("process_id", 124),
+            ("process_start_ticks", 457),
+            ("allocation.revoked", True),
+            ("allocation.authority_epoch", 4),
+        ]:
+            with self.subTest(field=key):
+                changed = copy.deepcopy(value)
+                target = changed["observation"]
+                parts = key.split(".")
+                for part in parts[:-1]:
+                    target = target[part]
+                target[parts[-1]] = replacement
+                with self.assertRaises(ValueError):
+                    validate_observation(principal, 123, kernel, changed, 10_010)
+
     def test_live_lease_renewal_preserves_operation_fence_without_using_spawn_lease(
         self,
     ):
