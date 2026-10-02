@@ -41,6 +41,8 @@ mod model_use;
 mod model_use_body;
 #[path = "initial_cpu_model_use_current_v2.rs"]
 mod model_use_current;
+#[path = "initial_cpu_model_use_preview_v2.rs"]
+mod model_use_preview;
 #[path = "initial_cpu_model_use_program_v2.rs"]
 mod model_use_program;
 #[path = "initial_cpu_publication.rs"]
@@ -54,6 +56,9 @@ mod selection;
 pub use model_use::VerifiedCpuModelUseV2;
 pub use model_use::inspect_cpu_model_use_v2;
 pub use model_use::select_cpu_model_use_v2;
+pub fn preview_operational_model_use_v2(path: &Path, pin: Digest32) -> HostResult<Value> {
+    model_use_preview::preview(path, pin)
+}
 #[path = "initial_cpu_state.rs"]
 mod state;
 pub use current::open_current_cpu_neuron;
