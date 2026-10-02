@@ -235,6 +235,47 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 Offline/reference learning library. Qualification training first verifies a self-describing `DatasetSnapshotReceiptV3` and exact source-record evidence set, then fits through opaque verified inputs. Applicability and regularity qualification reuse the ledger-owned signed-evidence verifier with generator/evaluator role separation. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence. A real Agentd `PinnedCognitiveRanker` consumes an externally selected pinned tabular artifact at the cognitive read boundary, but the default training/evaluation/selection loop remains uncomposed.
 
+The bounded public-development adapter is
+[`hepta_train_public_healthver.py`](../../../codex-rs/hepta-infer-worker-host/tools/hepta_train_public_healthver.py)
+with numerical core
+[`public_cpu_training.py`](../../../codex-rs/hepta-infer-worker-host/tools/public_cpu_training.py).
+It consumes the checksum-pinned original 147 physical Nomic measurements and
+public HealthVer TRAIN annotations. It fixes whole feature components before
+opening the annotations, fits a deterministic 512 × 96 × 10 Q24 candidate,
+then invokes the checksum-pinned ordinary `hepta-cpu-neuron-score` on its actual
+serialized weights. Development labels cannot choose optimizer parameters,
+epochs, tensor masks or weights. The two binary heads share the declared
+supervision target; their eight unused outputs are frozen.
+
+Its closed `hepta.healthver-public-train-candidate-config.v1` has `sources`
+(`observations`, `membership`, `feature_graph`, `public_train_labels`,
+`baseline_observations`, `baseline_manifest`, `scorer`), each using the physical
+`{path, sha256, size}` source contract. The remaining fields are
+`hyperparameters` (`seed`, `epochs`, `learning_rate`, `development_components`,
+`timeout_seconds`), `output_directory`, and `model_id`. The normal entry is
+`python3 -I -B hepta_train_public_healthver.py ROOT_CONFIG SHA256`. Installation
+freezes the script, numerical core and existing `fixed_encoder_sources.py`
+together under Root-owned immutable ancestors; isolated Python imports only
+this explicit sibling closure and its installed numeric runtime.
+
+The actual G process must have UID/GID 1000, no additional role groups, NNP,
+all five capability sets empty, and its own finite cgroup at most 1 CPU and
+256 MiB. The single 180-second deadline covers source validation, fitting,
+physical scoring and output verification; the service deadline includes
+interpreter startup. Failure preserves partial output in the original private
+output directory. A new run cannot overwrite it. The original component cut,
+weights, model manifest, scorer input, complete stdout/stderr, and result are
+fsynced. The original degenerate baseline remains a separately pinned source.
+
+This adapter emits unqualified material and public reused-development metrics.
+It never signs, appends to a learning ledger, consumes holdout, selects an
+artifact, or activates a model. Its currently reviewed 147-row source adapter
+does not reopen the old private 99/72 or the new 91-component cohort. A trained
+candidate still requires the existing verified DatasetV3, independent evaluator,
+selection and Artifact CURRENT path, including measured resource admission.
+The qualified generation-1 abstention-only operational lease cannot authorize
+that candidate or turn development accuracy into scientific acceptance.
+
 Current operating and state-format references:
 
 - [codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md](../../../codex-rs/hepta-bellman-operator/NATIVE_MAPPING.md).
