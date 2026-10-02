@@ -6,19 +6,20 @@ application. It does not declare production readiness, independent acceptance,
 deployment qualification or release authorization. Findings below describe the
 immutable baseline unless an explicitly identified later result says otherwise.
 
-The current published CI-repair source is
-`d07b6de08d6f3bcab1b7367f695be8b439ddb732`, tree
-`848365cf8a3ed6781c4942805044c550e6b842a7`, on
+The current published registrar-diagnostic source is
+`bdedf9e7cd3ddb0bb6457704940910cadb4cef1a`, tree
+`645f0284b37f58f5efff49f4edb459f6876a486e`, on
 `work/ui-rust-scifi-audit-20261002`, with exact qualification parent `978c1923...`.
-The prior `2b59c1c5f...` implementation and its
-[original local diagnostics](history/20261002-2b59-local/README.md) retain their
-historical scope. Hosted run 36971395569 for candidate `2e0b6557e...` failed:
-Linux's anonymous TCP fixture could not provide AppArmor peer labels, while
-Windows exceeded the formatting process's command-line limit before Clippy.
-The [CI-repair record](history/20261002-native-ci-repair/README.md) describes
-both repairs, the exact unchanged formatting target set, local Unix-socket
-restrictions and retained logs. New exact-source hosted qualification remains
-pending; no old platform or storage pass transfers to the new source.
+The previous source `d07b6de08d6f3bcab1b7367f695be8b439ddb732` retains its historical hosted results.
+Run 36979217316 passed Linux head/merge, macOS head/merge and storage, while the
+Windows fixtures failed with unqualified E_FAIL errors after formatting and lint
+passed. The [registrar diagnostic record](history/20261002-registrar-diagnostics/README.md)
+retains the Windows artifact and local compile-only limits. Current source adds
+bounded COM operation labels before any semantic repair; identity, target,
+Unicode and reparse-point checks are unchanged. New Windows execution is needed
+to identify the failing operation. No old platform or storage pass transfers.
+The [earlier CI repairs](history/20261002-native-ci-repair/README.md) and
+[original local diagnostics](history/20261002-2b59-local/README.md) remain historical.
 
 ## 1. Exact candidate, evidence and integration boundary
 

@@ -1,0 +1,158 @@
+{
+  "schema": "hepta.ui-native-local-diagnostic-binding.v1",
+  "implementationSourceSha": "bdedf9e7cd3ddb0bb6457704940910cadb4cef1a",
+  "implementationSourceTree": "645f0284b37f58f5efff49f4edb459f6876a486e",
+  "scope": "Diagnostic-only registrar error context. Registration, persisted identity/target comparisons, Unicode bounds and reparse-point admission are unchanged. Local cross-compilation does not execute Windows COM or establish the cause of the existing Windows failures.",
+  "acceptedQualification": false,
+  "candidateWorkflowExecuted": false,
+  "localPublishedTreeComparison": {
+    "localCommit": "04510d857e54191adb87a36af55e9c5b25a91053",
+    "publishedCommit": "bdedf9e7cd3ddb0bb6457704940910cadb4cef1a",
+    "identicalCompleteGitTree": "645f0284b37f58f5efff49f4edb459f6876a486e",
+    "executionClaim": false
+  },
+  "windowsCrossTargetStrictClippy": {
+    "command": "cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml --locked --offline --target x86_64-pc-windows-gnu -p hepta-native-platform --all-targets -- -D warnings",
+    "passed": true,
+    "devProfileDebugSymbols": 0,
+    "nativeWindowsRuntimeExecuted": false
+  },
+  "diagnosticRegression": {
+    "name": "registrar_diagnostic_preserves_hresult_without_source_details",
+    "compiled": true,
+    "executed": false,
+    "purpose": "Preserve E_FAIL and E_ACCESSDENIED while replacing a long path/identity-bearing source message with exact bounded stage text."
+  },
+  "formatting": {
+    "finalBatchedCheckPassed": true,
+    "targets": 443,
+    "batches": 3,
+    "justFmtPassed": false,
+    "justFmtBlocker": "Unrelated Bazel and Python formatters could not create default caches under read-only /home/agent/.cache. Rust formatting and the complete native batched check passed.",
+    "unrelatedWorkingTreeChanges": false
+  },
+  "historicalHostedWindowsFailure": {
+    "runId": 36979217316,
+    "attempt": 1,
+    "runUrl": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36979217316",
+    "candidateSha": "a21960e9fe2f2a9dc8cc465d2936098b0a86a307",
+    "candidateTree": "851811e71f54ccfaea055cb805982cf45cba8e5c",
+    "implementationSourceSha": "d07b6de08d6f3bcab1b7367f695be8b439ddb732",
+    "implementationSourceTree": "848365cf8a3ed6781c4942805044c550e6b842a7",
+    "artifactId": 11215581672,
+    "artifactUrl": "https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/36979217316/artifacts/11215581672",
+    "artifactSha256": "eb3655821ac0cc3db867891798da1d7ff0ecc5d8b181489c1ce5f7f4425ab174",
+    "artifactBytes": 57668,
+    "applicationFormatExitCode": 0,
+    "applicationStrictLintExitCode": 0,
+    "applicationTestExitCode": 101,
+    "platformAdapterTests": {
+      "passed": 5,
+      "failed": 3,
+      "failureStage": "fixture registration before persisted-mismatch assertions",
+      "error": "native notification identity registration: Unspecified error (0x80004005)",
+      "operationCause": "unknown; this source adds bounded per-operation diagnostics before any semantic repair"
+    },
+    "qualifiesCurrentSource": false,
+    "completedRunJobs": {
+      "path": "docs/modules/ui.native/history/20261002-registrar-diagnostics/historical-run-jobs.json",
+      "sha256": "fd38e865487bf91edc6d0840c4284ec9c6a66a8bd9415ac5b5317a531856deca",
+      "summary": {
+        "ui.native / immutable source identity": "success",
+        "ui.native / Linux / exact implementation storage scale": "success",
+        "ui.native / Linux / head": "success",
+        "ui.native / Linux / merge": "success",
+        "ui.native / Windows / head": "failure",
+        "ui.native / macOS / merge": "success",
+        "ui.native / macOS / head": "success",
+        "ui.native / Windows / merge": "failure",
+        "ui.native / qualification result": "failure"
+      },
+      "aggregateConclusion": "failure",
+      "qualifiesCurrentSource": false
+    }
+  },
+  "limits": [
+    "No Windows runtime is available locally; the new diagnostic regression is compiled but not executed.",
+    "Hosted Linux, macOS and storage successes on candidate a21960e9 retain their old source identity and are not current-source qualification.",
+    "No final candidate, ordered-parent merge, release storage, package, physical platform, or same-run aggregate pass is claimed.",
+    "No path-comparison relaxation, property-store bypass, assertion removal, test skip or security-policy change is included."
+  ],
+  "retainedLogs": {
+    "path": "docs/modules/ui.native/history/20261002-registrar-diagnostics/retained-logs.zip",
+    "sha256": "10f94d57602e27412d8429ff17c68023a0c7eb433734aa853236155a9d213d02",
+    "entries": {
+      "hosted/run-jobs.json": {
+        "bytes": 22330,
+        "sha256": "fd38e865487bf91edc6d0840c4284ec9c6a66a8bd9415ac5b5317a531856deca"
+      },
+      "hosted/windows-head/app_format.json": {
+        "bytes": 710,
+        "sha256": "eb85fdc5676d9f3ce2c7140384d98e0f21be6a8608b2040ed5d96ce15df9b265"
+      },
+      "hosted/windows-head/app_format.log": {
+        "bytes": 44561,
+        "sha256": "94518c36c33419b58e309fef742cef78dc85df3a4930a87c42174f7058a4f75a"
+      },
+      "hosted/windows-head/app_lint.json": {
+        "bytes": 814,
+        "sha256": "0f39e76eb2e9305e0b19cdcc09d4da8edd9c3fda2733c1624c9a6ba28a104a7d"
+      },
+      "hosted/windows-head/app_lint.log": {
+        "bytes": 17373,
+        "sha256": "bcf21ba8d7df96f6b0b200999a305169a4a7134358007093d67488a1411a6a6d"
+      },
+      "hosted/windows-head/app_tests.json": {
+        "bytes": 755,
+        "sha256": "1a5bce1799a620046f9db943f4142dedfb3d39e98aa893e6eed9bb1f3ef8d9db"
+      },
+      "hosted/windows-head/app_tests.log": {
+        "bytes": 40174,
+        "sha256": "25392104cd27cd435c6a250c42955bf9133e55685ced574e6df55fea3c2e6c75"
+      },
+      "hosted/windows-head/source.txt": {
+        "bytes": 218,
+        "sha256": "b9e5360a1a35ae70bc965fb985d93455124c5a5630edb8b5b42d9a0dea9357b5"
+      },
+      "local/hepta-registrar-clippy.log": {
+        "bytes": 60,
+        "sha256": "0c27bed0ddbb48eea172769617d880c7f83b7e6a6ba04e5bc4679bea741f1fb2"
+      },
+      "local/hepta-registrar-format-check.log": {
+        "bytes": 44560,
+        "sha256": "fe28c6c802c13391e03d6b7fd8bd3bd6c1bf7d9954d221511852109ebfe35653"
+      },
+      "local/hepta-registrar-just-fmt.log": {
+        "bytes": 9258,
+        "sha256": "8a784c56a66ed0426170d129ed3166e2eb0c55c5e3ab9c96c26fb23d8fb571e2"
+      },
+      "metadata/hepta-registrar-map-adapter.log": {
+        "bytes": 6127,
+        "sha256": "111ba9ffa2d9aa3a007325d5c4eff185a0ad6765a487a95a09d4a0dc0def1846"
+      },
+      "metadata/hepta-registrar-metadata-python.log": {
+        "bytes": 45051,
+        "sha256": "4ee9eb3019dbbf515ea4b4cbfe22b90d8e8d4e1e241522de5748bb244f243a96"
+      },
+      "metadata/hepta-registrar-projection-tests.log": {
+        "bytes": 732,
+        "sha256": "53bbb848ce6a82180a17d391b852c5d48aa09068304ccf3d7237700b9888d244"
+      },
+      "metadata/hepta-registrar-projection-verify.log": {
+        "bytes": 0,
+        "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+      },
+      "metadata/hepta-registrar-registry.log": {
+        "bytes": 102,
+        "sha256": "e94a3e69b16b3b508c4367edcdaacee41b1ffb1125e70a9ec95c0001f3dffa05"
+      },
+      "metadata/hepta-registrar-source.json": {
+        "bytes": 1543,
+        "sha256": "c38ff398d958b538866626e6f1c5b03d1810f99c9452dac0175cedb02021436d"
+      }
+    }
+  },
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false
+}

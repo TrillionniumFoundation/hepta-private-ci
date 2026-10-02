@@ -3,8 +3,8 @@
 The current continuation review base is `978c1923eda66373e9dce4fe0efa890bc60ac404`
 on `work/ui-native-adversarial-audit-20261001`; the review branch is
 `work/ui-rust-scifi-audit-20261002`. Ordinary source is
-`d07b6de08d6f3bcab1b7367f695be8b439ddb732`, tree
-`848365cf8a3ed6781c4942805044c550e6b842a7`. This is a stacked native continuation,
+`bdedf9e7cd3ddb0bb6457704940910cadb4cef1a`, tree
+`645f0284b37f58f5efff49f4edb459f6876a486e`. This is a stacked native continuation,
 not a current-main integration.
 
 The new [audit](ADVERSARIAL-AUDIT-20261002.md) covers Rust native adapters,
@@ -13,15 +13,20 @@ protocols, input-only startup recovery, the console presentation, and authentica
 JSON root discovery. [Retained local diagnostics](history/20261002-2b59-local/README.md)
 preserve their actual execution scope. Frozen inventory is 455 Git blobs over
 33 paths, including the platform-adapters crate, with digest
-`2ecc6b41c827d247c241a92d562b7964d2231bc372a607083d224938e2ef47d6`.
+`16892416cf63bf5102d1f401dd54d2f1b409ef9a149a835f5be99f56c76bc767`.
 
 The [CI-repair record](history/20261002-native-ci-repair/README.md) preserves
 failed run 36971395569 on candidate 2e0b6557e and the new local limits.
 Linux's anonymous TCP test bus could not provide AppArmor peer labels; the
 private Unix/EXTERNAL fixture retains mediation and all protocol assertions.
 Windows formatting now checks the same 443 Cargo targets in bounded batches.
-The current frozen source is d07b6de08; previous diagnostic executions
+The current frozen source is bdedf9e7c; previous diagnostic executions
 remain tied to their original source and are not transferred to it.
+
+The [registrar diagnostic record](history/20261002-registrar-diagnostics/README.md)
+retains the later Windows E_FAIL fixture failure from run 36979217316. The current
+source adds bounded stage labels and a cross-compiled regression, without changing
+identity, target or reparse-point checks. Its Windows runtime remains pending.
 
 New six-platform head/merge, release storage and same-run aggregate execution are
 pending. Non-Linux verified Open/Reveal, separate `ui.control` Rust migration,
