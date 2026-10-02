@@ -161,14 +161,24 @@ impl LeaseLedger {
         Ok(())
     }
 
-    pub fn issue(
+    pub fn issue(&mut self, now_ms: u64, grant: AllocationGrant) -> Result<LeaseReceipt, Error> {
+        self.issue_in_interval(now_ms, now_ms, grant)
+    }
+
+    /// Same owner mutation with a coherent protected-clock uncertainty interval.
+    /// Capacity remains committed until an allocation is definitely expired.
+    pub(crate) fn issue_in_interval(
         &mut self,
-        now_ms: u64,
+        earliest_ms: u64,
+        latest_ms: u64,
         mut grant: AllocationGrant,
     ) -> Result<LeaseReceipt, Error> {
+        if earliest_ms > latest_ms {
+            return Err(Error::InvalidTime);
+        }
         validate_grant(&grant)?;
         let host = self.hosts.get(&grant.host_id).ok_or(Error::HostNotFound)?;
-        if now_ms < host.observed_at_ms || now_ms >= host.valid_until_ms {
+        if earliest_ms < host.observed_at_ms || latest_ms >= host.valid_until_ms {
             return Err(Error::StaleHost);
         }
         if grant.host_generation != host.generation
@@ -176,7 +186,7 @@ impl LeaseLedger {
         {
             return Err(Error::StaleHost);
         }
-        if grant.expires_at_ms <= now_ms || grant.expires_at_ms > host.valid_until_ms {
+        if grant.expires_at_ms <= latest_ms || grant.expires_at_ms > host.valid_until_ms {
             return Err(Error::InvalidTime);
         }
         if let Some(current) = self.grants.get(&grant.allocation_id) {
@@ -188,7 +198,7 @@ impl LeaseLedger {
         if self.grants.len() >= MAX_ACTIVE_GRANTS {
             return Err(Error::GrantCapacityExceeded);
         }
-        let committed = self.committed_resources(&grant.host_id, now_ms)?;
+        let committed = self.committed_resources(&grant.host_id, earliest_ms)?;
         if !committed.checked_add(grant.resources)?.fits(host.capacity) {
             return Err(Error::CapacityExceeded);
         }
@@ -226,15 +236,16 @@ impl LeaseLedger {
                 Ok(receipt(&current, LeaseOutcome::Unchanged))
             }
             LeaseDisposition::Revoke => {
+                let next_generation = current
+                    .lease_generation
+                    .checked_add(1)
+                    .ok_or(Error::ArithmeticOverflow)?;
                 let grant = self
                     .grants
                     .get_mut(allocation_id)
                     .ok_or(Error::AllocationNotFound)?;
                 grant.revoked = true;
-                grant.lease_generation = grant
-                    .lease_generation
-                    .checked_add(1)
-                    .ok_or(Error::ArithmeticOverflow)?;
+                grant.lease_generation = next_generation;
                 Ok(receipt(grant, LeaseOutcome::Revoked))
             }
             LeaseDisposition::Renew { .. } if current.revoked => Err(Error::Revoked),
@@ -246,21 +257,27 @@ impl LeaseLedger {
                 if now_ms >= host.valid_until_ms || host.generation != current.host_generation {
                     return Err(Error::StaleHost);
                 }
-                if expires_at_ms <= now_ms || expires_at_ms > host.valid_until_ms {
+                // Expired capacity may already belong to another allocation.
+                // Renewal cannot resurrect that old reservation.
+                if current.expires_at_ms <= now_ms
+                    || expires_at_ms <= now_ms
+                    || expires_at_ms > host.valid_until_ms
+                {
                     return Err(Error::InvalidTime);
                 }
                 if expires_at_ms == current.expires_at_ms {
                     return Ok(receipt(&current, LeaseOutcome::Unchanged));
                 }
+                let next_generation = current
+                    .lease_generation
+                    .checked_add(1)
+                    .ok_or(Error::ArithmeticOverflow)?;
                 let grant = self
                     .grants
                     .get_mut(allocation_id)
                     .ok_or(Error::AllocationNotFound)?;
                 grant.expires_at_ms = expires_at_ms;
-                grant.lease_generation = grant
-                    .lease_generation
-                    .checked_add(1)
-                    .ok_or(Error::ArithmeticOverflow)?;
+                grant.lease_generation = next_generation;
                 Ok(receipt(grant, LeaseOutcome::Renewed))
             }
         }

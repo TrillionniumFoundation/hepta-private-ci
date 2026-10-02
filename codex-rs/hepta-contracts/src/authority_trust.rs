@@ -7,6 +7,7 @@
 
 use crate::VerifiedUseTokenWitnessV1;
 use crate::authority_lease::AuthorityLeaseBinding;
+use crate::authority_lease::AuthorityLeaseDispatchContext;
 use crate::authority_lease::AuthorityLeaseError;
 use crate::authority_lease::AuthorityLeaseFrontier;
 use crate::authority_lease::AuthorityLeaseRegistry;
@@ -615,7 +616,7 @@ impl fmt::Debug for AuthorityDispatchBinding {
 impl AuthorityDispatchBinding {
     pub fn dispatch<T>(
         self,
-        dispatch_boundary: impl FnOnce(&VerifiedUseTokenWitnessV1) -> T,
+        dispatch_boundary: impl FnOnce(&AuthorityLeaseDispatchContext<'_>) -> T,
     ) -> Result<(T, VerifiedUseTokenWitnessV1), AuthorityLeaseError> {
         dispatch_authority_lease_with_witness(
             &self.verifier,

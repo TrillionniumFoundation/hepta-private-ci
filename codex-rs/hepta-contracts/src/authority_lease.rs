@@ -220,6 +220,15 @@ pub struct LeaseVerifiedUseToken {
     lease: AuthorityLease,
 }
 
+/// Ephemeral observation passed only inside the live owner-locked dispatch cut.
+/// The whole possible time interval is retained for destination-specific expiry
+/// and capacity checks. Like its witness, this value is not bearer authority.
+pub struct AuthorityLeaseDispatchContext<'a> {
+    pub witness: &'a VerifiedUseTokenWitnessV1,
+    pub earliest_unix_ms: u64,
+    pub latest_unix_ms: u64,
+}
+
 impl fmt::Debug for LeaseVerifiedUseToken {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         f.write_str("LeaseVerifiedUseToken([REDACTED])")
@@ -740,7 +749,7 @@ impl AuthorityLeaseVerifier {
         &self,
         token: LeaseVerifiedUseToken,
         expected: &AuthorityLeaseBinding,
-        dispatch_boundary: impl FnOnce(&VerifiedUseTokenWitnessV1) -> T,
+        dispatch_boundary: impl FnOnce(&AuthorityLeaseDispatchContext<'_>) -> T,
     ) -> Result<(T, VerifiedUseTokenWitnessV1), AuthorityLeaseError> {
         if !Arc::ptr_eq(&self.0, &token.owner) || &token.lease.binding != expected {
             return Err(AuthorityLeaseError::BindingMismatch);
@@ -767,7 +776,12 @@ impl AuthorityLeaseVerifier {
                 binding_sha256: authority_lease_binding_witness_sha256(expected)?,
             },
         );
-        let result = dispatch_boundary(&witness);
+        let context = AuthorityLeaseDispatchContext {
+            witness: &witness,
+            earliest_unix_ms: now_unix_ms - uncertainty_ms,
+            latest_unix_ms: now_unix_ms + uncertainty_ms,
+        };
+        let result = dispatch_boundary(&context);
         drop(state);
         Ok((result, witness))
     }
@@ -838,7 +852,7 @@ pub fn dispatch_authority_lease_with_witness<T>(
     verifier: &AuthorityLeaseVerifier,
     token: LeaseVerifiedUseToken,
     expected: &AuthorityLeaseBinding,
-    dispatch_boundary: impl FnOnce(&VerifiedUseTokenWitnessV1) -> T,
+    dispatch_boundary: impl FnOnce(&AuthorityLeaseDispatchContext<'_>) -> T,
 ) -> Result<(T, VerifiedUseTokenWitnessV1), AuthorityLeaseError> {
     verifier.with_dispatch_boundary_witness(token, expected, dispatch_boundary)
 }
