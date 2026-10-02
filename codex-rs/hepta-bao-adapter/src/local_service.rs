@@ -7,12 +7,15 @@ use std::time::Instant;
 
 use serde::Deserialize;
 use serde::Serialize;
+use tokio::io::AsyncRead;
 use tokio::io::AsyncReadExt;
+use tokio::io::AsyncWrite;
 use tokio::io::AsyncWriteExt;
 use tokio::net::UnixStream;
 use tokio::sync::Semaphore;
 use tokio::task::JoinSet;
 use tokio::time::timeout;
+use tokio::time::timeout_at;
 
 use crate::ConsumerPortError;
 use crate::local_endpoint::BoundSocket;
@@ -84,9 +87,9 @@ pub(crate) async fn serve<O: LocalServiceOwner>(
                 let original_deadline = Instant::now() + Duration::from_millis(config.request_timeout_ms);
                 tasks.spawn(async move {
                     let _permit = permit;
-                    if timeout(Duration::from_millis(config.request_timeout_ms), exchange(
-                        stream, &config, &*owner, original_deadline,
-                    )).await.is_err() { owner.fence_unknown(); }
+                    serve_connection(stream, &config, &*owner, original_deadline,
+                        |stream: &UnixStream| Ok(stream.peer_cred().map_err(unavailable)?.uid()),
+                    ).await;
                 });
             }
         }
@@ -115,13 +118,55 @@ pub(crate) async fn serve<O: LocalServiceOwner>(
     failure.map_or(Ok(()), Err)
 }
 
-async fn exchange<O: LocalServiceOwner>(
-    mut stream: UnixStream,
+async fn serve_connection<O, S, P>(
+    stream: S,
     config: &LocalServiceConfig,
     owner: &O,
     original_deadline: Instant,
-) -> Result<(), ConsumerPortError> {
-    let peer_uid = stream.peer_cred().map_err(unavailable)?.uid();
+    peer: P,
+) where
+    O: LocalServiceOwner,
+    S: AsyncRead + AsyncWrite + Unpin + Send,
+    P: Fn(&S) -> Result<u32, ConsumerPortError> + Send,
+{
+    if Instant::now() >= original_deadline {
+        return;
+    }
+    let _result = timeout_at(
+        tokio::time::Instant::from_std(original_deadline),
+        exchange(stream, config, owner, original_deadline, peer),
+    )
+    .await;
+}
+
+/// Cancellation is uncertain only while the owner is executing. An incomplete
+/// frame has not entered the owner; a lost response cannot undo a finished call.
+struct RequestExecutionFence<'a, O: LocalServiceOwner> {
+    owner: &'a O,
+    armed: bool,
+}
+
+impl<O: LocalServiceOwner> Drop for RequestExecutionFence<'_, O> {
+    fn drop(&mut self) {
+        if self.armed {
+            self.owner.fence_unknown();
+        }
+    }
+}
+
+async fn exchange<O, S, P>(
+    mut stream: S,
+    config: &LocalServiceConfig,
+    owner: &O,
+    original_deadline: Instant,
+    peer: P,
+) -> Result<(), ConsumerPortError>
+where
+    O: LocalServiceOwner,
+    S: AsyncRead + AsyncWrite + Unpin + Send,
+    P: Fn(&S) -> Result<u32, ConsumerPortError> + Send,
+{
+    let peer_uid = peer(&stream)?;
     if !config.allowed_peer_uids.contains(&peer_uid) {
         return Err(ConsumerPortError::Rejected);
     }
@@ -131,11 +176,22 @@ async fn exchange<O: LocalServiceOwner>(
     }
     let mut body = vec![0; length];
     stream.read_exact(&mut body).await.map_err(unavailable)?;
-    if stream.peer_cred().map_err(unavailable)?.uid() != peer_uid {
+    if peer(&stream)? != peer_uid {
         return Err(ConsumerPortError::Rejected);
     }
-    let response = owner.handle(peer_uid, &body, original_deadline).await?;
-    if response.is_empty() || response.len() > MAX_FRAME_BYTES {
+    // A ready framing/peer future can finish in the same poll as expiry.
+    // Recheck the accept-time budget immediately before owner entry.
+    if Instant::now() >= original_deadline {
+        return Err(ConsumerPortError::Unavailable);
+    }
+    let mut execution = RequestExecutionFence { owner, armed: true };
+    let result = owner.handle(peer_uid, &body, original_deadline).await;
+    execution.armed = false;
+    let response = result?;
+    if Instant::now() >= original_deadline
+        || response.is_empty()
+        || response.len() > MAX_FRAME_BYTES
+    {
         return Err(ConsumerPortError::Unavailable);
     }
     stream
@@ -149,3 +205,7 @@ async fn exchange<O: LocalServiceOwner>(
 fn unavailable(_error: impl std::fmt::Display) -> ConsumerPortError {
     ConsumerPortError::Unavailable
 }
+
+#[cfg(test)]
+#[path = "local_service_tests.rs"]
+mod tests;

@@ -285,7 +285,7 @@ fn kernel_peer_and_expired_original_budget_reject_before_first_effect() -> TestR
 }
 
 #[test]
-fn timed_out_partial_request_fences_new_effects_but_keeps_original_status() -> TestResult {
+fn timed_out_partial_request_preserves_new_effects_and_original_status() -> TestResult {
     let fixture = Fixture::new()?;
     let mut process = fixture.spawn()?;
     let client = fixture.client()?;
@@ -303,9 +303,9 @@ fn timed_out_partial_request_fences_new_effects_but_keeps_original_status() -> T
     assert!(
         fixture
             .authenticate(&client, "after-timeout", [8; 32])
-            .is_err()
+            .is_ok()
     );
-    assert!(!client.observe("after-timeout", [8; 32])?);
+    assert!(client.observe("after-timeout", [8; 32])?);
     assert!(process.terminate()?.success());
     Ok(())
 }
