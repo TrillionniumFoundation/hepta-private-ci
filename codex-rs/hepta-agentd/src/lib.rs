@@ -636,3 +636,16 @@ pub use learning_operator_context::PersistedOperatorCandidateV1;
 pub use learning_operator_shadow_loader::EvaluatedTabularLoadBindingV4;
 #[cfg(feature = "server")]
 pub use learning_operator_shadow_loader::EvaluatedTabularShadowConsumerV4;
+
+#[cfg(all(feature = "server", target_os = "linux"))]
+mod learning_withdrawal;
+#[cfg(all(feature = "server", target_os = "linux"))]
+pub use learning_withdrawal::HostLearningWithdrawalErrorV1;
+#[cfg(all(feature = "server", target_os = "linux"))]
+pub use learning_withdrawal::HostLearningWithdrawalIntentV1;
+#[cfg(all(feature = "server", target_os = "linux"))]
+pub use learning_withdrawal::HostLearningWithdrawalPhaseV1;
+#[cfg(all(feature = "server", target_os = "linux"))]
+pub use learning_withdrawal::HostLearningWithdrawalReceiptV1;
+#[cfg(all(feature = "server", target_os = "linux"))]
+pub use learning_withdrawal::withdraw_learning_dataset_v1;

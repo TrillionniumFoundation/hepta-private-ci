@@ -207,6 +207,21 @@ impl VerifiedCurrentRegistryViewV1 {
             )
     }
 
+    /// Owner-local historical membership for an irreversible withdrawal. This
+    /// does not make a withdrawn artifact eligible for delivery or publication.
+    pub(crate) fn has_complete_dataset_binding(
+        &self,
+        manifest: &ArtifactManifest,
+        dataset: Digest32,
+    ) -> bool {
+        !dataset.is_zero()
+            && self.registry.manifest(&manifest.artifact_id) == Some(manifest)
+            && self
+                .source_datasets
+                .get(&manifest.artifact_id)
+                .is_some_and(|datasets| datasets.contains(&dataset))
+    }
+
     pub(crate) fn bind_source_datasets(
         &mut self,
         datasets: BTreeMap<StableId, BTreeSet<Digest32>>,

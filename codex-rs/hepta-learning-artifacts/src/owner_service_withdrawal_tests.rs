@@ -119,7 +119,7 @@ fn v2_membership_full_suffix_preview_and_partial_withdrawal_keep_delivery_closed
             notice_id: notice.operation_id.clone(),
             dataset_digest: notice.dataset_digest,
             source_tombstone_digest: notice.source_revocation_digest,
-            authority_id: notice.evaluator_id,
+            authority_id: notice.evaluator_id.clone(),
             credential_chain_digest: digest("fixture-admitted-independent-credential"),
             signing_key_digest: digest("fixture-admitted-independent-key"),
             authority_epoch: 1,
@@ -184,6 +184,13 @@ fn v2_membership_full_suffix_preview_and_partial_withdrawal_keep_delivery_closed
         .fixture("cold partial delivery fence");
     assert!(!partial.is_eligible(&id("candidate")));
     assert!(!partial.is_eligible(&id("derived")));
+    let resumed_plan = service
+        .prepare_dataset_revocation_from_current(&notice, 20)
+        .fixture("cold withdrawn membership remains provenance, never delivery");
+    assert_eq!(
+        resumed_plan.registry().records(),
+        prepared.registry().records()
+    );
     let receipt = service
         .publish_with_state_changes(request.clone(), &changes)
         .fixture("original full suffix ACK");

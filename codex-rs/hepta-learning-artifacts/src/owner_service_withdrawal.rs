@@ -21,7 +21,7 @@ impl LearningArtifactOwnerService {
             .iter()
             .filter_map(|record| match &record.event {
                 ArtifactEvent::Register { manifest, .. } => current
-                    .supports_dataset(manifest, request.dataset_digest)
+                    .has_complete_dataset_binding(manifest, request.dataset_digest)
                     .then(|| manifest.artifact_id.clone()),
                 ArtifactEvent::Quarantine(_) | ArtifactEvent::Revoke(_) => None,
             })
