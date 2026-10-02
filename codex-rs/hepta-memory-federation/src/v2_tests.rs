@@ -1,6 +1,7 @@
 use std::future;
 use std::future::Future;
 use std::sync::Arc;
+use std::sync::atomic::AtomicBool;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::task::Context;
@@ -871,5 +872,238 @@ fn block_on<F: Future>(future: F) -> F::Output {
             Poll::Ready(output) => return output,
             Poll::Pending => thread::park(),
         }
+    }
+}
+
+struct PanicAuthority;
+impl FederationAuthorityV2 for PanicAuthority {
+    fn revalidate<'a>(
+        &'a self,
+        _query: &'a FederatedQueryV2,
+        _lease: &'a FederatedLeaseV2,
+    ) -> FederationAuthorityFuture<'a> {
+        panic!("stopped attempt constructed authority future")
+    }
+}
+
+struct SignalledControl {
+    stopped: Arc<AtomicBool>,
+    reason: FederationStopReasonV2,
+}
+impl FederationAttemptControlV2 for SignalledControl {
+    fn wait_for_stop<'a>(
+        &'a self,
+        _query: &'a FederatedQueryV2,
+        _lease: &'a FederatedLeaseV2,
+    ) -> FederationStopFuture<'a> {
+        Box::pin(poll_fn(|_| {
+            if self.stopped.load(Ordering::SeqCst) {
+                Poll::Ready(self.reason)
+            } else {
+                Poll::Pending
+            }
+        }))
+    }
+}
+
+struct StoppingTransport {
+    stopped: Arc<AtomicBool>,
+}
+impl FederationTransportV2 for StoppingTransport {
+    fn send_once<'a>(&'a self, _query: &'a FederatedQueryV2) -> FederationTransportFuture<'a> {
+        Box::pin(async move {
+            self.stopped.store(true, Ordering::SeqCst);
+            Ok(FederationTransportResultV2::NonTerminal(
+                FederationTransportOutcomeV2::Unavailable,
+            ))
+        })
+    }
+}
+
+struct StoppingAuthority {
+    stopped: Arc<AtomicBool>,
+    stop_on_call: usize,
+    calls: AtomicUsize,
+}
+impl FederationAuthorityV2 for StoppingAuthority {
+    fn revalidate<'a>(
+        &'a self,
+        query: &'a FederatedQueryV2,
+        lease: &'a FederatedLeaseV2,
+    ) -> FederationAuthorityFuture<'a> {
+        let call = self.calls.fetch_add(1, Ordering::SeqCst) + 1;
+        Box::pin(async move {
+            let observation = current_authority().revalidate(query, lease).await?;
+            if call == self.stop_on_call {
+                self.stopped.store(true, Ordering::SeqCst);
+            }
+            Ok(observation)
+        })
+    }
+}
+
+#[test]
+fn stopped_preflight_does_not_construct_authority_future() {
+    for reason in [
+        FederationStopReasonV2::Cancelled,
+        FederationStopReasonV2::DeadlineExpired,
+    ] {
+        let query = query();
+        assert_eq!(
+            block_on(execute_once(
+                &PanicTransport,
+                &PanicAuthority,
+                &FixtureControl::Stop(reason),
+                10,
+                query.clone(),
+                &lease(&query)
+            )),
+            Err(stop_reason_error(reason))
+        );
+    }
+}
+
+#[test]
+fn stopped_dispatch_does_not_construct_transport_future() {
+    for reason in [
+        FederationStopReasonV2::Cancelled,
+        FederationStopReasonV2::DeadlineExpired,
+    ] {
+        let query = query();
+        let control = SequencedControl::new(FixtureControl::Pending, FixtureControl::Stop(reason));
+        assert_eq!(
+            block_on(execute_once(
+                &PanicTransport,
+                &current_authority(),
+                &control,
+                10,
+                query.clone(),
+                &lease(&query)
+            )),
+            Err(stop_reason_error(reason))
+        );
+    }
+}
+
+#[test]
+fn stop_during_ready_transport_poll_wins_over_nonterminal_result() {
+    for reason in [
+        FederationStopReasonV2::Cancelled,
+        FederationStopReasonV2::DeadlineExpired,
+    ] {
+        let query = query();
+        let stopped = Arc::new(AtomicBool::new(false));
+        let control = SignalledControl {
+            stopped: Arc::clone(&stopped),
+            reason,
+        };
+        assert_eq!(
+            block_on(execute_once(
+                &StoppingTransport { stopped },
+                &current_authority(),
+                &control,
+                10,
+                query.clone(),
+                &lease(&query)
+            )),
+            Err(stop_reason_error(reason))
+        );
+    }
+}
+
+#[test]
+fn stop_during_ready_authority_poll_wins_at_preflight_and_post_io() {
+    for stop_on_call in [1, 2] {
+        for reason in [
+            FederationStopReasonV2::Cancelled,
+            FederationStopReasonV2::DeadlineExpired,
+        ] {
+            let query = query();
+            let stopped = Arc::new(AtomicBool::new(false));
+            let control = SignalledControl {
+                stopped: Arc::clone(&stopped),
+                reason,
+            };
+            let authority = StoppingAuthority {
+                stopped,
+                stop_on_call,
+                calls: AtomicUsize::new(0),
+            };
+            let transport = FixtureTransport {
+                result: Ok(FederationTransportResultV2::Terminal(terminal_response(
+                    &query,
+                ))),
+            };
+            assert_eq!(
+                block_on(execute_once(
+                    &transport,
+                    &authority,
+                    &control,
+                    10,
+                    query.clone(),
+                    &lease(&query)
+                )),
+                Err(stop_reason_error(reason))
+            );
+            assert_eq!(authority.calls.load(Ordering::SeqCst), stop_on_call);
+        }
+    }
+}
+
+struct StoppedPendingTransport {
+    stopped: Arc<AtomicBool>,
+    dropped: Arc<AtomicUsize>,
+}
+struct StoppedPendingFuture {
+    stopped: Arc<AtomicBool>,
+    dropped: Arc<AtomicUsize>,
+}
+impl Future for StoppedPendingFuture {
+    type Output = Result<FederationTransportResultV2, FederationV2Error>;
+    fn poll(self: Pin<&mut Self>, context: &mut Context<'_>) -> Poll<Self::Output> {
+        self.stopped.store(true, Ordering::SeqCst);
+        context.waker().wake_by_ref();
+        Poll::Pending
+    }
+}
+impl Drop for StoppedPendingFuture {
+    fn drop(&mut self) {
+        self.dropped.fetch_add(1, Ordering::SeqCst);
+    }
+}
+impl FederationTransportV2 for StoppedPendingTransport {
+    fn send_once<'a>(&'a self, _query: &'a FederatedQueryV2) -> FederationTransportFuture<'a> {
+        Box::pin(StoppedPendingFuture {
+            stopped: Arc::clone(&self.stopped),
+            dropped: Arc::clone(&self.dropped),
+        })
+    }
+}
+#[test]
+fn stop_drops_an_already_polled_pending_transport_once() {
+    for reason in [
+        FederationStopReasonV2::Cancelled,
+        FederationStopReasonV2::DeadlineExpired,
+    ] {
+        let query = query();
+        let stopped = Arc::new(AtomicBool::new(false));
+        let dropped = Arc::new(AtomicUsize::new(0));
+        let transport = StoppedPendingTransport {
+            stopped: Arc::clone(&stopped),
+            dropped: Arc::clone(&dropped),
+        };
+        let control = SignalledControl { stopped, reason };
+        assert_eq!(
+            block_on(execute_once(
+                &transport,
+                &current_authority(),
+                &control,
+                10,
+                query.clone(),
+                &lease(&query)
+            )),
+            Err(stop_reason_error(reason))
+        );
+        assert_eq!(dropped.load(Ordering::SeqCst), 1);
     }
 }

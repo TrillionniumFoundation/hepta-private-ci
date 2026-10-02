@@ -29,10 +29,12 @@ Plane `adapter`, kind `service`, state model `read_only_remote` and architecture
 Declared exclusive target roots:
 
 - `codex-rs/hepta-memory-federation`
+- `codex-rs/hepta-memory-federation-wire`
 
 Existing declared roots at this exact source snapshot:
 
 - `codex-rs/hepta-memory-federation`
+- `codex-rs/hepta-memory-federation-wire`
 
 Non-authoritative implementation evidence roots:
 
@@ -131,9 +133,21 @@ Native in-process V2 contract surface:
 - `RemoteFederatedResponseV2`, `FederatedResultV2`;
 - `FederationCancellationRequestV2`, `FederationCancellationReceiptV2`.
 
-Registered cross-host wire protocol schemas:
+Selected production cross-host wire protocol schemas:
 
-None.
+None. The current source candidate separately registers
+`hepta-memory-federation-authenticated-frame-v1` through
+`hepta-memory-federation-wire/src/codec.rs::registered_codec_v1`. This source
+registration is not channel selection, Agentd network composition or deployment.
+
+The development layers are documented in [WIRE_CORE_LAYER.md](WIRE_CORE_LAYER.md),
+[WIRE_RECOVERY_LAYER.md](WIRE_RECOVERY_LAYER.md) and
+[WIRE_PRODUCT_LAYER.md](WIRE_PRODUCT_LAYER.md). They provide authenticated frames,
+durable replay/attempt recovery and a canonical V2 packet adapter respectively.
+The product layer still carries record identities/digests rather than a complete
+model-attachable remote memory payload. It requires that payload contract,
+selected transport/credential operations, Agentd composition and two-host
+qualification before cross-host product recall can be claimed.
 
 The V2 Rust structs are an in-process checked-adapter contract, not a registered remote wire format. A future cross-process or multi-host transport must register an authenticated versioned schema and peer-identity/credential binding before these semantics may be carried across a host boundary. It may not serialize the Rust structs by convention and treat transport integrity as remote identity authentication.
 
@@ -267,6 +281,7 @@ For `memory.federation`, this document grants no runtime, production, model, pro
 - Owner/deputy: `cognitive-platform` / `security-authority`.
 - Allowed write paths:
 - `codex-rs/hepta-memory-federation/**`
+- `codex-rs/hepta-memory-federation-wire/**` (authenticated protocol and product-adapter source; candidate only).
 - Development predecessors:
 - `MEM-0-TYPES`
 - Activation predecessors:
@@ -318,5 +333,6 @@ The following additional work packages are source-planning envelopes introduced 
 The bootstrap source-location obligation for `memory.federation` is implemented by work package `MEM-3-FEDERATION` in:
 
 - `codex-rs/hepta-memory-federation`
+- `codex-rs/hepta-memory-federation-wire`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.

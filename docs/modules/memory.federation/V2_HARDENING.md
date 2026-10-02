@@ -70,6 +70,14 @@ The product-host contract is:
 
 This removes the old synchronous trait limitation where a blocked `send_once` could outlive the engine deadline, and prevents an earlier lease expiry from being treated as a later query deadline.
 
+The engine polls the stop future before invoking either adapter factory.
+Transport and authority construction are lazy and pinned on the stack, avoiding
+additional heap allocation for the stop fence. After an adapter poll returns
+ready, stop is polled again before that result is admitted. Cancellation or
+deadline becoming observable during synchronous poll work therefore wins,
+including nonterminal transport results and post-I/O authority observations.
+This does not preempt blocking work or undo an already admitted external effect.
+
 ## 5. Product caller composition
 
 Production Agentd composition uses `CognitiveRuntime::AvailableFederatedV2`. The runtime stores the consumer Agent identity and bounded owner-layout candidates, not an inherited credential or writable peer handle.

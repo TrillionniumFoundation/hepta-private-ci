@@ -92,3 +92,182 @@ fn transport_profile_mismatch_fails_before_wire_admission() {
         FederationProductHostAdmissionV1::Query(_)
     ));
 }
+
+#[test]
+fn expired_owner_response_does_not_commit_terminal_state() {
+    let mut client = client();
+    let mut server = server();
+    let query = query();
+    let request = client.begin_query(&query, NOW + 1).expect("request");
+    let FederationProductHostAdmissionV1::Query(admitted) = server
+        .admit(
+            &transport("peer-b", "peer-a", b"server-channel"),
+            &request,
+            NOW + 2,
+        )
+        .expect("admitted query")
+    else {
+        panic!("query admission");
+    };
+    let wire = server.into_wire_host();
+    let before = wire.recovery_snapshot().expect("pending snapshot");
+    let mut server = FederationProductHostV1::new(wire, profile(), transport_verifier("peer-b"))
+        .expect("same host wrapper");
+    let mut expired = response(&query);
+    expired.expires_unix_ms = NOW + 3;
+    let expired = expired.seal().expect("sealed expired response");
+    assert!(matches!(
+        server.complete_query(admitted, expired, frontier(), NOW + 4),
+        Err(FederationProductErrorV1::V2(
+            codex_hepta_memory_federation::FederationV2Error::ResponseExpired
+        ))
+    ));
+    assert_eq!(
+        server
+            .into_wire_host()
+            .recovery_snapshot()
+            .expect("snapshot"),
+        before
+    );
+}
+
+#[test]
+fn outgoing_query_profile_rejection_does_not_commit_pending_state() {
+    let store = client().into_wire_client().into_recovery_store();
+    let before = store.snapshot().expect("initial snapshot").to_vec();
+    let mut wire =
+        FederationWireClientV1::open(id("peer-a"), credentials(), 32, 8, limits(), store, NOW)
+            .expect("reopened client");
+    wire.bind_outbound_credential(
+        id("peer-b"),
+        FederationOutboundCredentialV1::new(id("key-a-b"), 1).expect("selector"),
+    )
+    .expect("credential");
+    let bounded = FederationProductProfileV1::new(
+        id("memory-federation-product-v1"),
+        id("authenticated-channel-v1"),
+        64,
+    )
+    .expect("bounded profile");
+    let mut client = FederationProductClientV1::new(wire, bounded, transport_verifier("peer-a"))
+        .expect("bounded client");
+    assert!(matches!(
+        client.begin_query(&query(), NOW + 1),
+        Err(FederationProductErrorV1::Client(
+            FederationClientError::OutboundFrameRejected
+        ))
+    ));
+    let store = client.into_wire_client().into_recovery_store();
+    assert_eq!(store.snapshot().expect("snapshot"), before);
+}
+
+#[test]
+fn outgoing_response_profile_rejection_does_not_commit_terminal_state() {
+    let mut client = client();
+    let mut server = server();
+    let query = query();
+    let request = client.begin_query(&query, NOW + 1).expect("request");
+    let FederationProductHostAdmissionV1::Query(admitted) = server
+        .admit(
+            &transport("peer-b", "peer-a", b"server-channel"),
+            &request,
+            NOW + 2,
+        )
+        .expect("admitted query")
+    else {
+        panic!("query admission");
+    };
+    let wire = server.into_wire_host();
+    let before = wire.recovery_snapshot().expect("pending snapshot");
+    let bounded = FederationProductProfileV1::new(
+        id("memory-federation-product-v1"),
+        id("authenticated-channel-v1"),
+        64,
+    )
+    .expect("bounded profile");
+    let mut server = FederationProductHostV1::new(wire, bounded, transport_verifier("peer-b"))
+        .expect("bounded host wrapper");
+    assert!(matches!(
+        server.complete_query(admitted, response(&query), frontier(), NOW + 4),
+        Err(FederationProductErrorV1::Host(
+            FederationHostError::OutboundFrameRejected
+        ))
+    ));
+    assert_eq!(
+        server
+            .into_wire_host()
+            .recovery_snapshot()
+            .expect("snapshot"),
+        before
+    );
+}
+
+#[test]
+fn oversized_cancel_reply_preserves_replay_and_cancellation_state() {
+    let mut client = client();
+    let mut server = server();
+    let query = query();
+    let request = client.begin_query(&query, NOW + 1).expect("request");
+    assert!(matches!(
+        server
+            .admit(
+                &transport("peer-b", "peer-a", b"server-channel"),
+                &request,
+                NOW + 2
+            )
+            .expect("query admission"),
+        FederationProductHostAdmissionV1::Query(_)
+    ));
+    let cancel_frame = client
+        .into_wire_client()
+        .cancel_query(
+            &query.peer_id,
+            FederationCancelMessageV1 {
+                query_id: query.query_id.clone(),
+                query_binding_digest: query.binding_digest(),
+                cancellation_id: id("cancel-profile"),
+                reason: FederationCancellationReasonV1::CallerCancelled,
+            },
+            NOW + 3,
+            query.deadline_unix_ms,
+        )
+        .expect("cancel frame");
+    let cancel = FederationProductPacketV1::new(cancel_frame, Vec::new())
+        .expect("cancel packet")
+        .encode()
+        .expect("encoded cancel");
+    let wire = server.into_wire_host();
+    let before = wire.recovery_snapshot().expect("pending snapshot");
+    let bounded = FederationProductProfileV1::new(
+        id("memory-federation-product-v1"),
+        id("authenticated-channel-v1"),
+        cancel.len(),
+    )
+    .expect("profile admits request but not its larger acknowledgement");
+    let mut server = FederationProductHostV1::new(wire, bounded, transport_verifier("peer-b"))
+        .expect("bounded host");
+    assert!(matches!(
+        server.admit(
+            &transport("peer-b", "peer-a", b"server-channel"),
+            &cancel,
+            NOW + 4
+        ),
+        Err(FederationProductErrorV1::Host(
+            FederationHostError::OutboundFrameRejected
+        ))
+    ));
+    let wire = server.into_wire_host();
+    assert_eq!(wire.recovery_snapshot().expect("snapshot"), before);
+    let mut server = FederationProductHostV1::new(wire, profile(), transport_verifier("peer-b"))
+        .expect("same host with sufficient reply capacity");
+    assert!(matches!(
+        server
+            .admit(
+                &transport("peer-b", "peer-a", b"server-channel"),
+                &cancel,
+                NOW + 5
+            )
+            .expect("original cancel still admissible"),
+        FederationProductHostAdmissionV1::Reply(_)
+    ));
+}

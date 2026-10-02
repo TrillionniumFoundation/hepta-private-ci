@@ -6,9 +6,8 @@ use std::time::{Duration, Instant};
 
 use codex_hepta_memory_federation_wire::{
     DurableFederationStateV1, FEDERATION_NONCE_BYTES, FEDERATION_RECOVERY_CLEANUP_BATCH,
-    FEDERATION_REPLAY_CLEANUP_BATCH, FederationCancelMessageV1,
-    FederationCancellationReasonV1, FederationRecoveryError, FederationRecoveryLimitsV1,
-    ReplayCacheV1, ReplayError,
+    FEDERATION_REPLAY_CLEANUP_BATCH, FederationCancelMessageV1, FederationCancellationReasonV1,
+    FederationRecoveryError, FederationRecoveryLimitsV1, ReplayCacheV1, ReplayError,
 };
 use codex_hepta_types::{Digest32, StableId};
 use serde::Serialize;
@@ -102,8 +101,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut live_cleanup_batches = 0;
     let mut live_cleanup_maximum_batch = 0;
     loop {
-        let removed =
-            live.purge_expired_bounded(EXPIRES, FEDERATION_REPLAY_CLEANUP_BATCH)?;
+        let removed = live.purge_expired_bounded(EXPIRES, FEDERATION_REPLAY_CLEANUP_BATCH)?;
         if removed == 0 {
             break;
         }
@@ -202,8 +200,8 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut durable_cleanup_batches = 0;
     let mut durable_cleanup_maximum_batch = 0;
     loop {
-        let removed = durable_cleanup
-            .purge_expired_bounded(EXPIRES, FEDERATION_RECOVERY_CLEANUP_BATCH)?;
+        let removed =
+            durable_cleanup.purge_expired_bounded(EXPIRES, FEDERATION_RECOVERY_CLEANUP_BATCH)?;
         if removed == 0 {
             break;
         }

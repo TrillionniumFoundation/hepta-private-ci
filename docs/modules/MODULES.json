@@ -1280,6 +1280,10 @@
         {
           "path": "codex-rs/hepta-memory-federation",
           "mode": "exclusive"
+        },
+        {
+          "path": "codex-rs/hepta-memory-federation-wire",
+          "mode": "exclusive"
         }
       ],
       "hotPathPolicy": {
@@ -1296,7 +1300,8 @@
       "source_root_present": true,
       "production_implementation": false,
       "sourceEvidenceRoots": [
-        "codex-rs/hepta-memory-federation"
+        "codex-rs/hepta-memory-federation",
+        "codex-rs/hepta-memory-federation-wire"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "MEM-3-FEDERATION",
