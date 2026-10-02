@@ -156,3 +156,14 @@ checks remain. Before the heavy build, a standalone integration test compiles th
 actual patched parser with the marker helper and tests the real Makepad v2.0.0
 Git dependency row, `makepad-platform.path`, both marker layouts, and rejection
 cases. Rejected names receive bounded escaped diagnostics.
+
+Run 37061391402 exposed a second upstream contract issue: shell_env_cap appends
+stderr to stdout, so real duplicate-package warnings were parsed as dependencies.
+The exact guarded Cargo-tree call now uses Makepad's real shell_env_cap_split;
+stderr is retained in logs, nonzero exit and malformed stdout fail explicitly.
+It uses the pinned nightly Cargo with --locked --offline. The prebuild integration
+executes this actual helper against the full Robrix graph (Git/repeated/build/dev
+rows and duplicate-package warnings), rejects the old concatenated output, and
+executes a real missing-package error. No dependency graph build is required.
+Current native screenshots were inspected at all three sizes; short-login wheel
+scrolling reveals the lower controls. Browser app rendering remains pending.

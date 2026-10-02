@@ -119,10 +119,11 @@ def web_build():
     utility.write_text(patch_packager(utility_before))
     from package_resources import parser_regression_source
     parser_test = OUT / 'makepad-parser-regression.rs'
-    parser_test.write_text(parser_regression_source(utility.read_text()))
+    parser_test.write_text(parser_regression_source(utility.read_text(), (source / 'libs/shell/src/shell.rs').read_text()))
     parser_binary = OUT / 'makepad-parser-regression'
     run(['rustc', '+1.96.0', '--edition', '2024', '--test', str(parser_test), '-o', str(parser_binary)], log='makepad-parser-compile.log')
-    run([str(parser_binary)], log='makepad-parser-tests.log')
+    run([str(parser_binary), '--nocapture'], log='makepad-parser-tests.log',
+        env=dict(os.environ, MAKEPAD_WASM_TOOLCHAIN='nightly-2026-10-01'))
     parser_binary.unlink()
     run(['git', 'diff', '--', str(target), str(utility)], cwd=source, log='makepad-tool-only.patch')
     (OUT / 'makepad-tool-patch.json').write_text(json.dumps({

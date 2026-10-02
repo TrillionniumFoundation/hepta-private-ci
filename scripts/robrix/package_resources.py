@@ -35,11 +35,27 @@ def patch_packager(source):
     if source.count(parser) != 1:
         raise ValueError('Pinned cargo-makepad dependency parser shape drift')
     source = source.replace(parser, parser + '\n    if hepta_dependency_heading(line) { return None; }')
-    return source.replace(old, new) + '\n' + Path(__file__).with_name('makepad_marker.rs').read_text()
+    invocation = '''    if let Ok(cargo_tree_output) = shell_env_cap(
+        &[],
+        &cwd,
+        "cargo",
+        &["tree", "--color", "never", "-p", build_crate, &target],
+    ) {'''
+    if source.count(invocation) != 1:
+        raise ValueError('Pinned cargo-makepad Cargo tree invocation drift')
+    source = source.replace(invocation, '''    {
+        let cargo_tree_output = hepta_cargo_tree(&cwd, build_crate, &target)
+            .expect("exact Cargo dependency tree required");''')
+    return (source.replace(old, new) + '\n' + Path(__file__).with_name('makepad_marker.rs').read_text()
+            + '\n' + Path(__file__).with_name('makepad_cargo_tree.rs').read_text())
 
 
-def parser_regression_source(patched):
+def parser_regression_source(patched, shell_source):
     """Exercise the real pinned parser together with actual Cargo tree row syntax."""
+    if sha(shell_source.encode()) != '9a8899fc0e1db4cffd07fd4c65e423d11ae0b1cb42d61abee92b012ba0c303e1':
+        raise ValueError('Pinned Makepad split-output shell source hash drift')
+    split = shell_source[shell_source.index('pub fn shell_env_cap_split('):shell_source.index('pub fn shell_env_filter(')]
+    adapter = Path(__file__).with_name('makepad_cargo_tree.rs').read_text()
     start = patched.index('pub fn extract_dependency_paths(')
     end = patched.index('pub fn get_crate_dir(', start)
     helper = Path(__file__).with_name('makepad_marker.rs').read_text()
@@ -57,8 +73,9 @@ def parser_regression_source(patched):
     assert!(!hepta_dependency_heading("[build-dependencies]/../"));
 }
 '''
+    regression += Path(__file__).with_name('makepad_cargo_tree_tests.rs').read_text()
     prefix, closing = helper.rsplit('}', 1)
-    return 'use std::path::{Path, PathBuf};\n' + patched[start:end] + prefix + regression + '}' + closing
+    return 'use std::path::{Path, PathBuf}; use std::process::{Command, Stdio};\n' + split + adapter + patched[start:end] + prefix + regression + '}' + closing
 
 
 def package_inventory(package):
