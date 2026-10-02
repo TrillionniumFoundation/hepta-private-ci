@@ -125,7 +125,9 @@ impl NduDurableProjectionArtifactV2 {
         if immutable_locator.is_empty()
             || immutable_locator.len() > MAX_LOCATOR_BYTES
             || !immutable_locator.contains("://")
-            || !immutable_locator.bytes().all(|byte| byte.is_ascii_graphic())
+            || !immutable_locator
+                .bytes()
+                .all(|byte| byte.is_ascii_graphic())
         {
             return Err(NduHardeningError::InvalidImmutableLocator);
         }
@@ -524,12 +526,7 @@ impl NduProjectionCatalogEntryV2 {
     }
 }
 
-type ProjectionKey = (
-    Digest32,
-    Digest32,
-    NduProjectionArtifactKindV2,
-    Digest32,
-);
+type ProjectionKey = (Digest32, Digest32, NduProjectionArtifactKindV2, Digest32);
 type SelectionKey = (Digest32, Digest32, NduProjectionArtifactKindV2);
 
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
@@ -578,10 +575,10 @@ impl NduProjectionCatalogV2 {
             artifact.projection_kind,
             artifact.projection_digest,
         );
-        if let Some(existing) = self.artifacts.get(&key) {
-            if existing != &artifact {
-                return Err(NduHardeningError::LegacyArtifactMismatch);
-            }
+        if let Some(existing) = self.artifacts.get(&key)
+            && existing != &artifact
+        {
+            return Err(NduHardeningError::LegacyArtifactMismatch);
         }
         let entry = self.append_entry(
             NduProjectionCatalogActionV2::Publish,
@@ -605,7 +602,12 @@ impl NduProjectionCatalogV2 {
         projection_kind: NduProjectionArtifactKindV2,
         projection_digest: Digest32,
     ) -> Result<NduProjectionCatalogEntryV2, NduHardeningError> {
-        let key = (objective_digest, subject_digest, projection_kind, projection_digest);
+        let key = (
+            objective_digest,
+            subject_digest,
+            projection_kind,
+            projection_digest,
+        );
         let binding_digest = self
             .artifacts
             .get(&key)
@@ -655,7 +657,12 @@ impl NduProjectionCatalogV2 {
         projection_kind: NduProjectionArtifactKindV2,
         projection_digest: Digest32,
     ) -> Result<NduProjectionCatalogEntryV2, NduHardeningError> {
-        let key = (objective_digest, subject_digest, projection_kind, projection_digest);
+        let key = (
+            objective_digest,
+            subject_digest,
+            projection_kind,
+            projection_digest,
+        );
         let binding_digest = self
             .artifacts
             .get(&key)
@@ -732,9 +739,7 @@ impl NduProjectionCatalogV2 {
                         entry.payload_digest,
                     )?;
                     let expected_kind = match entry.kind {
-                        NduProjectionKindV1::Preference => {
-                            NduProjectionArtifactKindV2::Preference
-                        }
+                        NduProjectionKindV1::Preference => NduProjectionArtifactKindV2::Preference,
                         NduProjectionKindV1::Utility => NduProjectionArtifactKindV2::Utility,
                         NduProjectionKindV1::SelectedProjection
                         | NduProjectionKindV1::Revocation => unreachable!(),
@@ -969,17 +974,15 @@ impl NduAuditMetricsV1 {
     }
 
     pub fn observe_pending_age(&mut self, age_ms: u64) {
-        self.oldest_pending_operation_age_ms =
-            self.oldest_pending_operation_age_ms.max(age_ms);
+        self.oldest_pending_operation_age_ms = self.oldest_pending_operation_age_ms.max(age_ms);
     }
 
     pub fn observe_journal_utilization(&mut self, used: usize, capacity: usize) {
-        self.journal_utilization_per_mille = if capacity == 0 {
-            1_000
-        } else {
-            let scaled = used.saturating_mul(1_000) / capacity;
-            u16::try_from(scaled.min(1_000)).unwrap_or(1_000)
-        };
+        let scaled = used
+            .saturating_mul(1_000)
+            .checked_div(capacity)
+            .unwrap_or(1_000);
+        self.journal_utilization_per_mille = u16::try_from(scaled.min(1_000)).unwrap_or(1_000);
     }
 
     pub fn observe_compaction_duration(&mut self, duration_ms: u64) {
@@ -1011,9 +1014,8 @@ impl NduAuditMetricsV1 {
     }
 
     pub fn increment_restore_monotonicity_failure(&mut self) {
-        self.restore_monotonicity_failure_count = self
-            .restore_monotonicity_failure_count
-            .saturating_add(1);
+        self.restore_monotonicity_failure_count =
+            self.restore_monotonicity_failure_count.saturating_add(1);
     }
 }
 
@@ -1310,11 +1312,7 @@ fn digest_catalog_entry(
 }
 
 fn push_string(bytes: &mut Vec<u8>, value: &str) {
-    bytes.extend_from_slice(
-        &u32::try_from(value.len())
-            .unwrap_or(u32::MAX)
-            .to_be_bytes(),
-    );
+    bytes.extend_from_slice(&u32::try_from(value.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(value.as_bytes());
 }
 
@@ -1334,10 +1332,7 @@ mod tests {
         StableId::new(value).expect("valid stable id")
     }
 
-    fn artifact(
-        kind: NduProjectionArtifactKindV2,
-        name: &str,
-    ) -> NduDurableProjectionArtifactV2 {
+    fn artifact(kind: NduProjectionArtifactKindV2, name: &str) -> NduDurableProjectionArtifactV2 {
         NduDurableProjectionArtifactV2::new(
             kind,
             digest(name),
@@ -1482,24 +1477,18 @@ mod tests {
 
         assert_eq!(
             catalog
-                .selected_artifact(
-                    objective,
-                    subject,
-                    NduProjectionArtifactKindV2::Preference,
-                )
+                .selected_artifact(objective, subject, NduProjectionArtifactKindV2::Preference,)
                 .map(NduDurableProjectionArtifactV2::projection_digest),
             Some(preference.projection_digest())
         );
-        assert!(catalog
-            .selected_artifact(objective, subject, NduProjectionArtifactKindV2::Utility)
-            .is_none());
+        assert!(
+            catalog
+                .selected_artifact(objective, subject, NduProjectionArtifactKindV2::Utility)
+                .is_none()
+        );
         assert_eq!(
             catalog
-                .selected_artifact(
-                    objective,
-                    subject,
-                    NduProjectionArtifactKindV2::Coefficient,
-                )
+                .selected_artifact(objective, subject, NduProjectionArtifactKindV2::Coefficient,)
                 .map(NduDurableProjectionArtifactV2::projection_digest),
             Some(coefficient.projection_digest())
         );
@@ -1512,12 +1501,7 @@ mod tests {
         let artifact = artifact(NduProjectionArtifactKindV2::Preference, "projection");
         let mut catalog = NduProjectionCatalogV2::new();
         catalog
-            .publish(
-                digest("publish"),
-                objective,
-                subject,
-                artifact.clone(),
-            )
+            .publish(digest("publish"), objective, subject, artifact.clone())
             .expect("publish");
         let selected = catalog
             .select(
@@ -1599,11 +1583,7 @@ mod tests {
         .expect("migration");
         assert_eq!(
             catalog
-                .selected_artifact(
-                    objective,
-                    subject,
-                    NduProjectionArtifactKindV2::Preference,
-                )
+                .selected_artifact(objective, subject, NduProjectionArtifactKindV2::Preference,)
                 .map(NduDurableProjectionArtifactV2::projection_digest),
             Some(projection)
         );

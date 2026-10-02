@@ -8,9 +8,8 @@ use codex_hepta_types::{Digest32, StableId};
 
 pub use locator::{NduImmutableLocatorKindV2, NduImmutableLocatorV2};
 pub use signature::{
-    NduAuthenticatedProjectionArtifactV3, NduAuthorityTrustBindingV2,
-    NduSignedHierarchyProofV2, NduVerifiedHierarchyProofV2,
-    NduVerifiedProjectionArtifactV3,
+    NduAuthenticatedProjectionArtifactV3, NduAuthorityTrustBindingV2, NduSignedHierarchyProofV2,
+    NduVerifiedHierarchyProofV2, NduVerifiedProjectionArtifactV3,
 };
 
 pub(crate) const MAX_AUTH_LOCATOR_BYTES: usize = 1_024;
@@ -67,11 +66,7 @@ pub(crate) fn validate_window(
 }
 
 pub(crate) fn push_string(bytes: &mut Vec<u8>, value: &str) {
-    bytes.extend_from_slice(
-        &u32::try_from(value.len())
-            .unwrap_or(u32::MAX)
-            .to_be_bytes(),
-    );
+    bytes.extend_from_slice(&u32::try_from(value.len()).unwrap_or(u32::MAX).to_be_bytes());
     bytes.extend_from_slice(value.as_bytes());
 }
 

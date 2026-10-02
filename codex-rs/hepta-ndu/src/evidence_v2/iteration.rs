@@ -1,13 +1,11 @@
-use codex_hepta_types::{
-    AuthorityPosture, Digest32, Generation, Revision, StableId,
-};
+use codex_hepta_types::{AuthorityPosture, Digest32, Generation, Revision, StableId};
 
 use crate::{
-    bind_solver_iteration_receipt_v1, NduIterationContextV1,
-    NduIterationReceiptV1, NduSolverIterationReceipt, SubjectClass,
+    NduIterationContextV1, NduIterationReceiptV1, NduSolverIterationReceipt, SubjectClass,
+    bind_solver_iteration_receipt_v1,
 };
 
-use super::{push_id, require_digest, NduEvidenceV2Error};
+use super::{NduEvidenceV2Error, push_id, require_digest};
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct NduIterationReceiptV2 {
@@ -325,9 +323,7 @@ const fn subject_class_tag(subject_class: SubjectClass) -> u8 {
 mod tests {
     use codex_hepta_types::FixedQ32;
 
-    use crate::{
-        solve_preference_target_with_context_v1, AxisValue, PreferenceState,
-    };
+    use crate::{AxisValue, PreferenceState, solve_preference_target_with_context_v1};
 
     use super::*;
 
@@ -368,11 +364,8 @@ mod tests {
             &context,
         )
         .expect("solve");
-        let legacy = bind_solver_iteration_receipt_v1(
-            &context,
-            receipts.first().expect("receipt"),
-        )
-        .expect("legacy binding");
+        let legacy = bind_solver_iteration_receipt_v1(&context, receipts.first().expect("receipt"))
+            .expect("legacy binding");
         validate_iteration_receipt_v1(&legacy).expect("valid legacy");
         let migrated = migrate_iteration_receipt_v1(&legacy).expect("migration");
         migrated.validate().expect("valid v2");

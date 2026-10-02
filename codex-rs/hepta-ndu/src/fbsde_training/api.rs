@@ -57,8 +57,7 @@ pub fn train_discrete_ndu_fbsde_v1(
     let trajectory_count = snapshot.trajectories.len();
     let horizon = snapshot.horizon;
     let utility_dimension = snapshot.utility_dimension;
-    let mut previous =
-        vec![vec![vec![0.0; utility_dimension]; horizon + 1]; trajectory_count];
+    let mut previous = vec![vec![vec![0.0; utility_dimension]; horizon + 1]; trajectory_count];
     for (index, trajectory) in snapshot.trajectories.iter().enumerate() {
         previous[index][horizon] = trajectory
             .terminal_utility_q24
@@ -71,8 +70,7 @@ pub fn train_discrete_ndu_fbsde_v1(
     let mut maximum_update = f64::INFINITY;
     let mut epochs = 0_u32;
     for epoch in 0..policy.specification.maximum_epochs {
-        let mut current =
-            vec![vec![vec![0.0; utility_dimension]; horizon + 1]; trajectory_count];
+        let mut current = vec![vec![vec![0.0; utility_dimension]; horizon + 1]; trajectory_count];
         for (index, trajectory) in snapshot.trajectories.iter().enumerate() {
             current[index][horizon] = trajectory
                 .terminal_utility_q24
@@ -83,14 +81,8 @@ pub fn train_discrete_ndu_fbsde_v1(
 
         let mut reverse_slices = Vec::with_capacity(horizon);
         for time_index in (0..horizon).rev() {
-            let source_digest = time_slice_source_digest(
-                snapshot,
-                policy,
-                &train,
-                &current,
-                time_index,
-                epoch,
-            );
+            let source_digest =
+                time_slice_source_digest(snapshot, policy, &train, &current, time_index, epoch);
             let samples: Vec<ConditionalMomentSampleV1> = train
                 .iter()
                 .map(|index| {
@@ -107,12 +99,8 @@ pub fn train_discrete_ndu_fbsde_v1(
                     })
                 })
                 .collect::<Result<_, NduFbsdeTrainingError>>()?;
-            let moments = estimate_conditional_moments(
-                &samples,
-                source_digest,
-                covariance_profile,
-            )
-            .map_err(map_covariance)?;
+            let moments = estimate_conditional_moments(&samples, source_digest, covariance_profile)
+                .map_err(map_covariance)?;
             let z_estimate =
                 solve_backward_regression(&moments, covariance_profile).map_err(map_covariance)?;
 
@@ -162,8 +150,7 @@ pub fn train_discrete_ndu_fbsde_v1(
                 baseline_intercepts,
                 z: z_estimate.z,
                 condition_estimate: z_estimate.condition_estimate,
-                increment_eigenvalue_lower_estimate:
-                    z_estimate.increment_eigenvalue_lower_estimate,
+                increment_eigenvalue_lower_estimate: z_estimate.increment_eigenvalue_lower_estimate,
                 maximum_relative_residual: z_estimate.maximum_relative_residual,
                 source_evidence_digest: z_estimate.evidence_digest,
             });
@@ -282,10 +269,7 @@ pub fn bind_ndu_fbsde_publication_v1(
     coefficient_profile: &AdmittedNduCoefficientProfileV1,
     z_conversion_profile: &AdmittedZConversionProfileV1,
     now_unix_ms: u64,
-) -> Result<
-    (NduFbsdePublicationBindingV1, NduCoefficientProjectionV1),
-    NduFbsdeTrainingError,
-> {
+) -> Result<(NduFbsdePublicationBindingV1, NduCoefficientProjectionV1), NduFbsdeTrainingError> {
     require_digest(registered_artifact_bytes_digest, "registered_artifact")?;
     if candidate.authority.grants_any() {
         return Err(NduFbsdeTrainingError::Authority);
@@ -299,13 +283,11 @@ pub fn bind_ndu_fbsde_publication_v1(
     }
     if candidate.normalization_digest != coefficient_profile.normalization_digest()
         || candidate.runtime_tuple_digest != coefficient_profile.runtime_tuple_digest()
-        || candidate.covariance_profile_digest
-            != coefficient_profile.covariance_profile_digest()
+        || candidate.covariance_profile_digest != coefficient_profile.covariance_profile_digest()
         || candidate.units_digest != coefficient_profile.units_digest()
         || candidate.driver_dimension != coefficient_profile.driver_dimension()
         || candidate.utility_dimension != coefficient_profile.utility_dimension()
-        || coefficient_profile.z_conversion_profile_digest()
-            != z_conversion_profile.digest()
+        || coefficient_profile.z_conversion_profile_digest() != z_conversion_profile.digest()
     {
         return Err(NduFbsdeTrainingError::ProfileMismatch);
     }

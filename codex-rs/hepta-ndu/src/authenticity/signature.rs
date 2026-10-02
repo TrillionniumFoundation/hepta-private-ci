@@ -2,13 +2,13 @@ use codex_hepta_types::{AuthorityPosture, Digest32, Generation, StableId};
 use ed25519_dalek::{Signature, VerifyingKey};
 
 use crate::{
-    NduDurableProjectionArtifactV2, NduHierarchySnapshotProofV1,
-    NduProjectionArtifactKindV2, SubjectClass,
+    NduDurableProjectionArtifactV2, NduHierarchySnapshotProofV1, NduProjectionArtifactKindV2,
+    SubjectClass,
 };
 
 use super::{
-    push_id, push_string, require_digest, validate_window,
-    NduAuthenticityError, NduImmutableLocatorV2,
+    NduAuthenticityError, NduImmutableLocatorV2, push_id, push_string, require_digest,
+    validate_window,
 };
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -593,8 +593,7 @@ fn verify_payload_and_receipt(
     receipt_domain: &[u8],
 ) -> Result<(), NduAuthenticityError> {
     if Digest32::of_bytes(payload) != payload_digest
-        || digest_signed_receipt(receipt_domain, payload_digest, signature_bytes)
-            != receipt_digest
+        || digest_signed_receipt(receipt_domain, payload_digest, signature_bytes) != receipt_digest
     {
         return Err(NduAuthenticityError::ReceiptDigestMismatch);
     }
@@ -666,10 +665,7 @@ mod tests {
         StableId::new(value).expect("valid id")
     }
 
-    fn trust(
-        signing: &SigningKey,
-        policy: Digest32,
-    ) -> NduAuthorityTrustBindingV2 {
+    fn trust(signing: &SigningKey, policy: Digest32) -> NduAuthorityTrustBindingV2 {
         NduAuthorityTrustBindingV2::new(
             id("ndu-authority-key-1"),
             signing.verifying_key().to_bytes(),
@@ -739,16 +735,9 @@ mod tests {
         let policy = digest("artifact-policy");
         let trust = trust(&signing, policy);
         let content = digest("projection-bytes");
-        let locator_text = format!(
-            "artifact://sha256/{}",
-            super::super::digest_hex(content)
-        );
-        let locator = NduImmutableLocatorV2::new(
-            locator_text.clone(),
-            content,
-            None,
-        )
-        .expect("locator");
+        let locator_text = format!("artifact://sha256/{}", super::super::digest_hex(content));
+        let locator =
+            NduImmutableLocatorV2::new(locator_text.clone(), content, None).expect("locator");
         let artifact = NduDurableProjectionArtifactV2::new(
             NduProjectionArtifactKindV2::Preference,
             content,

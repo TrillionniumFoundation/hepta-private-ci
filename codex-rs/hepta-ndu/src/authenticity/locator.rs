@@ -1,8 +1,8 @@
 use codex_hepta_types::Digest32;
 
 use super::{
-    digest_hex, push_string, require_digest, NduAuthenticityError, MAX_AUTH_LOCATOR_BYTES,
-    MAX_AUTH_VERSION_BYTES,
+    MAX_AUTH_LOCATOR_BYTES, MAX_AUTH_VERSION_BYTES, NduAuthenticityError, digest_hex, push_string,
+    require_digest,
 };
 
 #[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
@@ -194,12 +194,9 @@ mod tests {
     fn content_addressed_and_versioned_locators_are_canonical() {
         let content = digest("artifact");
         let hex = digest_hex(content);
-        let artifact = NduImmutableLocatorV2::new(
-            format!("artifact://sha256/{hex}"),
-            content,
-            None,
-        )
-        .expect("content-addressed locator");
+        let artifact =
+            NduImmutableLocatorV2::new(format!("artifact://sha256/{hex}"), content, None)
+                .expect("content-addressed locator");
         artifact.validate().expect("valid binding");
 
         let s3 = NduImmutableLocatorV2::new(
@@ -215,11 +212,7 @@ mod tests {
     fn mutable_or_digest_drifting_locators_fail_closed() {
         let content = digest("artifact");
         assert_eq!(
-            NduImmutableLocatorV2::new(
-                "https://example.invalid/object".to_string(),
-                content,
-                None,
-            ),
+            NduImmutableLocatorV2::new("https://example.invalid/object".to_string(), content, None,),
             Err(NduAuthenticityError::InvalidLocator)
         );
         assert_eq!(
