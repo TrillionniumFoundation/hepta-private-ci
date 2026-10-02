@@ -122,9 +122,24 @@
           "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
           "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
           "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::ownerless_signed_denial_reports_corrupt_persisted_catalog_without_budget_normalization --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_admission_tests.rs",
+          "kind": "current_fleet_admission_before_matrix_retry_charge_and_companion_dispatch",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::matrix_admission_tests::matrix_exit_policy_denial_preserves_budget_and_readmission_charges_once --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_admission_tests.rs",
+          "kind": "current_fleet_admission_before_matrix_retry_charge_and_companion_dispatch",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::matrix_admission_tests::charged_matrix_retry_policy_denial_preserves_claim_and_resumes_without_recharge --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_admission_tests.rs",
+          "kind": "current_fleet_admission_before_matrix_retry_charge_and_companion_dispatch",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::matrix_admission_tests::matrix_replacement_revalidates_catalog_provenance_and_canonical_commands --retries 0"
         }
       ],
-      "sourceSemantics": "Creates a generation-fenced managed process. Unix post-spawn setup faults travel with the acquired process owner; failed initialization or lease publication retains an exact fenced main or Matrix handle until observed exit and same-owner cleanup. Constructor recovery prevalidates durable evidence, independently acquires exact main and Matrix owners, and isolates damaged Agent evidence without dropping unrelated owners. Adopted signals use kernel lifetime references on supported Linux/macOS hosts, never a bare-PID fallback. Daemon death before a recoverable lease and complete cross-daemon exit-cleanup reconciliation remain open. Every main launch repeats current canonical catalog admission before lifecycle or process effects; catalog-derived descriptors never downgrade to catalog-free plants after entry removal. Constructor-only pure idle hydration is observed at most 256 times and settled by a final complete Fleet read, complete AgentRecord equality and fresh absence of all eight durable witnesses; changed idle records use original fresh recovery, while acquired owners are retained and denied rather than re-adopted. No observation authorizes admission or mutation. Recovery proves supplied now plus Drain and Stop grace is representable before registry loading or any ownership acquisition. Matrix public binding is read from a bounded regular descriptor with prior/opened inode equality; Fleet registry/catalog inputs retain full global validation through descriptor-safe reads. Directory-sync failure retains existing exact-owner finalization requirements. Constructor typed signed denial is primed before independent main/Matrix acquisition and automatic replay; exact matching Committed/RolledBack terminal evidence is recognized without false quarantine. The primer writes no journal and performs no CAS or process operation; full later recovery and terminal acknowledgement remain after acquisition. Trusted denial blocks new main/Matrix restart claims and dispatch while retaining diagnostics, actual exit, exact cleanup and prior durable charges. Pure durable recovery preparation decodes and binds signed intent and release transaction once during pure validation, independently validates the other critical durable codecs, and reuses typed transaction/intent observations to prime trusted signed denial before idle hydration or budget normalization. Denial preserves pure current/previous catalog and independent main/Matrix binding diagnostics without restoring serving metadata, creating restart claims, changing budget bytes or replaying unsigned work. Genuine exact owners remain available for single containment, observed exit and exact cleanup; corrupt signed intent or release transaction validation contributes its bounded diagnostic once during preparation.",
+      "sourceSemantics": "Creates a generation-fenced managed process. Unix post-spawn setup faults travel with the acquired process owner; failed initialization or lease publication retains an exact fenced main or Matrix handle until observed exit and same-owner cleanup. Constructor recovery prevalidates durable evidence, independently acquires exact main and Matrix owners, and isolates damaged Agent evidence without dropping unrelated owners. Adopted signals use kernel lifetime references on supported Linux/macOS hosts, never a bare-PID fallback. Daemon death before a recoverable lease and complete cross-daemon exit-cleanup reconciliation remain open. Every main launch repeats current canonical catalog admission before lifecycle or process effects; catalog-derived descriptors never downgrade to catalog-free plants after entry removal. Constructor-only pure idle hydration is observed at most 256 times and settled by a final complete Fleet read, complete AgentRecord equality and fresh absence of all eight durable witnesses; changed idle records use original fresh recovery, while acquired owners are retained and denied rather than re-adopted. No observation authorizes admission or mutation. Recovery proves supplied now plus Drain and Stop grace is representable before registry loading or any ownership acquisition. Matrix public binding is read from a bounded regular descriptor with prior/opened inode equality; Fleet registry/catalog inputs retain full global validation through descriptor-safe reads. Directory-sync failure retains existing exact-owner finalization requirements. Constructor typed signed denial is primed before independent main/Matrix acquisition and automatic replay; exact matching Committed/RolledBack terminal evidence is recognized without false quarantine. The primer writes no journal and performs no CAS or process operation; full later recovery and terminal acknowledgement remain after acquisition. Trusted denial blocks new main/Matrix restart claims and dispatch while retaining diagnostics, actual exit, exact cleanup and prior durable charges. Pure durable recovery preparation decodes and binds signed intent and release transaction once during pure validation, independently validates the other critical durable codecs, and reuses typed transaction/intent observations to prime trusted signed denial before idle hydration or budget normalization. Denial preserves pure current/previous catalog and independent main/Matrix binding diagnostics without restoring serving metadata, creating restart claims, changing budget bytes or replaying unsigned work. Genuine exact owners remain available for single containment, observed exit and exact cleanup; corrupt signed intent or release transaction validation contributes its bounded diagnostic once during preparation. Every eligible new Matrix retry admission and companion dispatch revalidates current Fleet catalog and Agent allowance/revocation using the existing release re-admission contract. Cached catalog descriptors cannot downgrade to qualification plants after entry removal. Denial retains bounded Matrix degradation diagnostics, already acquired owners, cleanup and prior durable restart charges without claiming main authority. A same-main-spawn/release owner-local pending admission records an uncharged retry; renewed policy admission schedules one new durable charge and its backoff before dispatch, while an already charged retry resumes without another charge. A freshly read Fleet lifecycle/generation mismatch rejects a cached Running main before both effects; its retained owner must also be unfenced and match the cached active bundle, without asserting atomicity against a later Fleet CAS. This transient marker does not supply a new durable next-eligibility witness or complete cross-daemon lineage. Existing main and peer owners, stored exit cleanup, graceful deferral and no-companion budget clear stay independent.",
       "operation": "start_instance",
       "nativeSymbol": "pub fn start(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -281,9 +296,24 @@
           "path": "codex-rs/hepta-supervisor/src/daemon_emergency_kill_tests.rs",
           "kind": "emergency_rpc_kill_preserves_exact_ownership_and_terminal_cleanup",
           "command": "just test --locked -p codex-hepta-supervisor --lib daemon::authority_tests::emergency_kill_tests::emergency_kill_rpc_preserves_observed_main_exit_without_resignal_or_new_journal --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_admission_tests.rs",
+          "kind": "current_fleet_admission_before_matrix_retry_charge_and_companion_dispatch",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::matrix_admission_tests::matrix_exit_policy_denial_preserves_budget_and_readmission_charges_once --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_admission_tests.rs",
+          "kind": "current_fleet_admission_before_matrix_retry_charge_and_companion_dispatch",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::matrix_admission_tests::charged_matrix_retry_policy_denial_preserves_claim_and_resumes_without_recharge --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_admission_tests.rs",
+          "kind": "current_fleet_admission_before_matrix_retry_charge_and_companion_dispatch",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::matrix_admission_tests::matrix_replacement_revalidates_catalog_provenance_and_canonical_commands --retries 0"
         }
       ],
-      "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success. Emit automatic restart attempts only after durable charge and exact lineage/deadline admission; exhaustion is a normal bounded policy outcome. Preserve independently observed concurrent admission, signal, probe and cleanup faults once in the bounded tick report. Fresh complete read metadata and physical lease readiness remain mandatory when unchanged per-Agent status projections are reused. Agentd and Matrix Health use one existing 200 ms monotonic budget for each Unix control exchange, including nonblocking connect, kernel peer-PID validation before any request byte, partial writes, half-close and bounded response reads. Successful partial progress and interrupted I/O cannot renew the absolute deadline; a probe error or timeout publishes false through the existing health worker. The four common transport regressions are exact mandatory library identities; the full-accept-queue regression is Linux-only and is not a macOS requirement. This is not an entire adoption or lifecycle SLO, an immediate read-projection refresh, per-Agent scheduling isolation or preemption of intrinsically stuck kernel/path/filesystem calls. Expired acknowledged Draining/Stopping phases and already admitted current-unfenced-spawn pending due Drain/Stop or immediate Kill are contained before fallible Fleet observation and polling, preserving the original budget and stronger Kill. An unexpired exact Matrix-deferred Stop skips the main signal while retaining eligible startup/Running health observation. The same-tick control result cannot be readmitted after pending clears; Stopping/Killing remains unready on later healthy probes, with Draining semantics unchanged. Matrix direct signal errors survive later unresolved poll/Fleet/cleanup errors once, and stored exact exit makes every preceding containment helper cleanup-only without a new signal, Killing transition or MatrixKillRequested event. No acknowledgement or timeout creates exit or lease-cleanup evidence. A same-spawn DeferredDrain/Stop marker excludes fresh automatic restart admission on true main exit; a stale marker does not suppress another spawn. Trusted recovery denial blocks new main and Matrix retry claims without suppressing actual exit observation, exact lease cleanup or degradation diagnostics. Stored exact Matrix exit also makes graceful deferral signal/phase/event-free while its marker waits for exact cleanup; late cleanup cannot repeat main control or lifecycle CAS after acknowledged Killing. Pure durable recovery preparation decodes and binds signed intent and release transaction once during pure validation, independently validates the other critical durable codecs, and reuses typed transaction/intent observations to prime trusted signed denial before idle hydration or budget normalization. Denial preserves pure current/previous catalog and independent main/Matrix binding diagnostics without restoring serving metadata, creating restart claims, changing budget bytes or replaying unsigned work. Genuine exact owners remain available for single containment, observed exit and exact cleanup; corrupt signed intent or release transaction validation contributes its bounded diagnostic once during preparation. Emergency Kill RPC compares the complete live caller fence before owned-handle admission, then advances owner-local control revision before dispatch; retained-main generation drift or Matrix-only ownership does not become serving authority. Stop retains main-presence and generation checks. Independent Kill containment attempts still report preparation or acknowledgement faults as indeterminate, without a false absent-main journal or signed quarantine terminalization. Stored exact main exit preserves cleanup-only ownership and cannot be signaled, CASed to Draining or replaced by a new main Kill journal; ordinary controls reject it before effects, while independently live Matrix remains eligible for containment. Actual daemon regressions cover stale caller rejection before effects, signed constructor denial with failed first containment, Matrix-only owners and stored main exit cleanup cuts.",
+      "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success. Emit automatic restart attempts only after durable charge and exact lineage/deadline admission; exhaustion is a normal bounded policy outcome. Preserve independently observed concurrent admission, signal, probe and cleanup faults once in the bounded tick report. Fresh complete read metadata and physical lease readiness remain mandatory when unchanged per-Agent status projections are reused. Agentd and Matrix Health use one existing 200 ms monotonic budget for each Unix control exchange, including nonblocking connect, kernel peer-PID validation before any request byte, partial writes, half-close and bounded response reads. Successful partial progress and interrupted I/O cannot renew the absolute deadline; a probe error or timeout publishes false through the existing health worker. The four common transport regressions are exact mandatory library identities; the full-accept-queue regression is Linux-only and is not a macOS requirement. This is not an entire adoption or lifecycle SLO, an immediate read-projection refresh, per-Agent scheduling isolation or preemption of intrinsically stuck kernel/path/filesystem calls. Expired acknowledged Draining/Stopping phases and already admitted current-unfenced-spawn pending due Drain/Stop or immediate Kill are contained before fallible Fleet observation and polling, preserving the original budget and stronger Kill. An unexpired exact Matrix-deferred Stop skips the main signal while retaining eligible startup/Running health observation. The same-tick control result cannot be readmitted after pending clears; Stopping/Killing remains unready on later healthy probes, with Draining semantics unchanged. Matrix direct signal errors survive later unresolved poll/Fleet/cleanup errors once, and stored exact exit makes every preceding containment helper cleanup-only without a new signal, Killing transition or MatrixKillRequested event. No acknowledgement or timeout creates exit or lease-cleanup evidence. A same-spawn DeferredDrain/Stop marker excludes fresh automatic restart admission on true main exit; a stale marker does not suppress another spawn. Trusted recovery denial blocks new main and Matrix retry claims without suppressing actual exit observation, exact lease cleanup or degradation diagnostics. Stored exact Matrix exit also makes graceful deferral signal/phase/event-free while its marker waits for exact cleanup; late cleanup cannot repeat main control or lifecycle CAS after acknowledged Killing. Pure durable recovery preparation decodes and binds signed intent and release transaction once during pure validation, independently validates the other critical durable codecs, and reuses typed transaction/intent observations to prime trusted signed denial before idle hydration or budget normalization. Denial preserves pure current/previous catalog and independent main/Matrix binding diagnostics without restoring serving metadata, creating restart claims, changing budget bytes or replaying unsigned work. Genuine exact owners remain available for single containment, observed exit and exact cleanup; corrupt signed intent or release transaction validation contributes its bounded diagnostic once during preparation. Emergency Kill RPC compares the complete live caller fence before owned-handle admission, then advances owner-local control revision before dispatch; retained-main generation drift or Matrix-only ownership does not become serving authority. Stop retains main-presence and generation checks. Independent Kill containment attempts still report preparation or acknowledgement faults as indeterminate, without a false absent-main journal or signed quarantine terminalization. Stored exact main exit preserves cleanup-only ownership and cannot be signaled, CASed to Draining or replaced by a new main Kill journal; ordinary controls reject it before effects, while independently live Matrix remains eligible for containment. Actual daemon regressions cover stale caller rejection before effects, signed constructor denial with failed first containment, Matrix-only owners and stored main exit cleanup cuts. Every eligible new Matrix retry admission and companion dispatch revalidates current Fleet catalog and Agent allowance/revocation using the existing release re-admission contract. Cached catalog descriptors cannot downgrade to qualification plants after entry removal. Denial retains bounded Matrix degradation diagnostics, already acquired owners, cleanup and prior durable restart charges without claiming main authority. A same-main-spawn/release owner-local pending admission records an uncharged retry; renewed policy admission schedules one new durable charge and its backoff before dispatch, while an already charged retry resumes without another charge. A freshly read Fleet lifecycle/generation mismatch rejects a cached Running main before both effects; its retained owner must also be unfenced and match the cached active bundle, without asserting atomicity against a later Fleet CAS. This transient marker does not supply a new durable next-eligibility witness or complete cross-daemon lineage. Existing main and peer owners, stored exit cleanup, graceful deferral and no-companion budget clear stay independent.",
       "operation": "observe_health",
       "nativeSymbol": "pub fn tick(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -617,9 +647,24 @@
           "path": "codex-rs/hepta-supervisor/src/signed_constructor_preparation_tests.rs",
           "kind": "pure_signed_constructor_preparation_preserves_diagnostics_and_budget_bytes",
           "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::preparation::ownerless_signed_denial_reports_corrupt_persisted_catalog_without_budget_normalization --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_admission_tests.rs",
+          "kind": "current_fleet_admission_before_matrix_retry_charge_and_companion_dispatch",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::matrix_admission_tests::matrix_exit_policy_denial_preserves_budget_and_readmission_charges_once --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_admission_tests.rs",
+          "kind": "current_fleet_admission_before_matrix_retry_charge_and_companion_dispatch",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::matrix_admission_tests::charged_matrix_retry_policy_denial_preserves_claim_and_resumes_without_recharge --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_admission_tests.rs",
+          "kind": "current_fleet_admission_before_matrix_retry_charge_and_companion_dispatch",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::matrix_admission_tests::matrix_replacement_revalidates_catalog_provenance_and_canonical_commands --retries 0"
         }
       ],
-      "sourceSemantics": "Keeps an unresolved restart claim across budget-window rollover without resetting charged attempts or original eligibility. Admission, preflight and recovery reject wall-clock rollback before the window origin; internal/deferred Stop preserves the pending claim. Exact lineage binds the predecessor and any acquired replacement, and healthy completion retains its continuation until lineage and budget acknowledgement are durable. Replacement dispatch waits for exact Matrix exit and lease cleanup. A known driver spawn failure before acquiring a process cancels its exact charged claim; failed cancellation retains its witness, blocks competing dispatch and retries fresh durable acknowledgement without redispatch. Complete predecessor/replacement lineage across every launch-before-lease or rejected-adoption crash cut remains open. Shared live Stop continuation preserves its existing earlier monotonic deadline or stronger Kill while validating any existing journal and rejecting Stop wall rollback; Matrix deferral grants no renewed grace. This does not make restart-internal drain deadlines or exit-cleanup witnesses cross-daemon durable. Trusted signed recovery denial blocks new main and Matrix retry claims and replacement dispatch, retaining diagnostics, actual exit cleanup and existing durable charges. True main exit under a same-spawn DeferredDrain/Stop marker does not grant a new automatic claim; stale-spawn markers do not alter another incarnation policy. Pure durable recovery preparation decodes and binds signed intent and release transaction once during pure validation, independently validates the other critical durable codecs, and reuses typed transaction/intent observations to prime trusted signed denial before idle hydration or budget normalization. Denial preserves pure current/previous catalog and independent main/Matrix binding diagnostics without restoring serving metadata, creating restart claims, changing budget bytes or replaying unsigned work. Genuine exact owners remain available for single containment, observed exit and exact cleanup; corrupt signed intent or release transaction validation contributes its bounded diagnostic once during preparation.",
+      "sourceSemantics": "Keeps an unresolved restart claim across budget-window rollover without resetting charged attempts or original eligibility. Admission, preflight and recovery reject wall-clock rollback before the window origin; internal/deferred Stop preserves the pending claim. Exact lineage binds the predecessor and any acquired replacement, and healthy completion retains its continuation until lineage and budget acknowledgement are durable. Replacement dispatch waits for exact Matrix exit and lease cleanup. A known driver spawn failure before acquiring a process cancels its exact charged claim; failed cancellation retains its witness, blocks competing dispatch and retries fresh durable acknowledgement without redispatch. Complete predecessor/replacement lineage across every launch-before-lease or rejected-adoption crash cut remains open. Shared live Stop continuation preserves its existing earlier monotonic deadline or stronger Kill while validating any existing journal and rejecting Stop wall rollback; Matrix deferral grants no renewed grace. This does not make restart-internal drain deadlines or exit-cleanup witnesses cross-daemon durable. Trusted signed recovery denial blocks new main and Matrix retry claims and replacement dispatch, retaining diagnostics, actual exit cleanup and existing durable charges. True main exit under a same-spawn DeferredDrain/Stop marker does not grant a new automatic claim; stale-spawn markers do not alter another incarnation policy. Pure durable recovery preparation decodes and binds signed intent and release transaction once during pure validation, independently validates the other critical durable codecs, and reuses typed transaction/intent observations to prime trusted signed denial before idle hydration or budget normalization. Denial preserves pure current/previous catalog and independent main/Matrix binding diagnostics without restoring serving metadata, creating restart claims, changing budget bytes or replaying unsigned work. Genuine exact owners remain available for single containment, observed exit and exact cleanup; corrupt signed intent or release transaction validation contributes its bounded diagnostic once during preparation. Every eligible new Matrix retry admission and companion dispatch revalidates current Fleet catalog and Agent allowance/revocation using the existing release re-admission contract. Cached catalog descriptors cannot downgrade to qualification plants after entry removal. Denial retains bounded Matrix degradation diagnostics, already acquired owners, cleanup and prior durable restart charges without claiming main authority. A same-main-spawn/release owner-local pending admission records an uncharged retry; renewed policy admission schedules one new durable charge and its backoff before dispatch, while an already charged retry resumes without another charge. A freshly read Fleet lifecycle/generation mismatch rejects a cached Running main before both effects; its retained owner must also be unfenced and match the cached active bundle, without asserting atomicity against a later Fleet CAS. This transient marker does not supply a new durable next-eligibility witness or complete cross-daemon lineage. Existing main and peer owners, stored exit cleanup, graceful deferral and no-companion budget clear stay independent.",
       "operation": "restart_instance",
       "nativeSymbol": "pub fn restart(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
@@ -1081,9 +1126,9 @@
     "scripts/just-shell.py"
   ],
   "observedAtHead": {
-    "commit": "97240ae33ca7385bfd7eeaa3c70a9946e0bb89b1",
-    "tree": "d2a50c765aa4455c165829c3d2294236af81d027",
-    "interpretation": "Exact source-only observation after the d1ed2a18 emergency Kill RPC ownership and stored-main-exit counterexamples were repaired. Kill has distinct owned-handle admission after complete live fence comparison, followed by owner-local control revision before dispatch. Generation drift, Matrix-only retained handles and stored exact main exit have meaningful daemon regressions; Stop and stale-caller fences remain intact. Source guards require 91 unique repair identities and five Fleet identities, with three added RPC leaves beyond the d1 checkpoint. The detailed native/deep and enhanced Bazel d1 receipts retain their actual execution outcomes, original bytes, head and scope; those older passing tests did not cover the fresh emergency RPC defects. Their execution credit is not transferred. All mapped objects and operation blobs bind this complete source ancestor. Existing owners, immutable sourceBase/sourceIdentityPolicy, capability statuses, gaps, independent acceptance, activation and release claims remain unchanged. Exact final candidate and platform execution require fresh receipts; no current-main merge, target-host qualification, acceptance, activation or release credit is inferred."
+    "commit": "75886ae97f2deb6c1da6b921f80ffaa0696d9ea3",
+    "tree": "e389ba2f45efadf1b43acf1914ea4333f015f08f",
+    "interpretation": "Exact source-only observation after the 22bebc8e cached Matrix admission counterexample was repaired at both new retry charging and actual companion dispatch. Current Fleet admission is reused; no new grant, signer, protocol, public authority or terminalization rule is introduced. The transient owner-local pending retry binds exact main spawn and active release, preserving prior charges and the distinction between a new uncharged retry, an existing charged retry and initial companion setup. Source guards require 94 unique repair identities and five Fleet identities, adding only three actual Matrix admission leaves beyond the 22 checkpoint. The detailed 22 native/deep and enhanced lock receipts retain their actual head, bytes, conclusions and scope. Their old 91-identity test plan did not cover the newly found Matrix admission cuts, and no execution credit transfers to this source. All objects and operation blobs bind this complete source ancestor. Existing owners, sourceBase/sourceIdentityPolicy, capability status and open gaps are unchanged. Fresh final candidate/platform execution remains required; current-main merge qualification, target-host/operator acceptance, deployment, activation and release remain unclaimed."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "productCallers": [
@@ -1194,7 +1239,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor",
-      "object": "761ee965f0e2bad9b66da86a888dcb7bdba70957"
+      "object": "8e778f8e3591e5e972f6b5ed35d6fff9c1595cfb"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/authority_bundle.rs",
@@ -1370,7 +1415,15 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/matrix.rs",
-      "object": "5c3a09c845b71a4a8845d6f290e23cd527133d54"
+      "object": "ab4df461868d31389bc6d9cc918c021994ceb522"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix_admission.rs",
+      "object": "56b3930b3831fa29eb046214312343deba18eee7"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix_admission_tests.rs",
+      "object": "837c31dc5a9d95304cc1f7c221f8aa461a41c447"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/matrix_binding_io_tests.rs",
@@ -1494,7 +1547,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
-      "object": "01b3e37b7eb8d9c00d1b9a164ae73ea2f6f58454"
+      "object": "f5da0ce593e5a44ca168bf96a8b4be5c3fb67981"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/tick.rs",
@@ -1590,7 +1643,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/OWNER_AND_READ_ISOLATION.md",
-      "object": "f954aae7d2d79c8b2723bc4f1dc5b15265e605a5"
+      "object": "b42745e49edc412a4aa4087ca586b99dacd0a38a"
     },
     {
       "path": "docs/modules/runtime.supervisor/PROCESS_LIFETIME.md",
@@ -1598,7 +1651,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/PROCESS_OWNERSHIP.md",
-      "object": "a8574d16f6cb0441c15d305e6bddbd427f12b4ca"
+      "object": "42536a3a41b70b8c78f03c3d34c18200ec29b094"
     },
     {
       "path": "docs/modules/runtime.supervisor/PRODUCTION_BOUNDARY.md",
@@ -1606,7 +1659,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/PRODUCTION_CONTROL_RUNBOOK.md",
-      "object": "e193f7066232246bf3967f0834aaee2a91c771be"
+      "object": "2109d960fc985209be651fe606677e04013fa63a"
     },
     {
       "path": "docs/modules/runtime.supervisor/PRODUCTION_QUALIFICATION_PROFILE.json",
@@ -1618,7 +1671,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md",
-      "object": "a3b0fdd798e85dec3c38539ebb01ca6acbf06f15"
+      "object": "9bc6751d2375c97b3ec5a4a27f05be8cf5d662af"
     },
     {
       "path": "docs/modules/runtime.supervisor/RESTART_CANCELLATION.md",
@@ -1634,7 +1687,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
-      "object": "453a8c3808f98de869ffc7d28432059a62e3cc07"
+      "object": "7d474d0118ad447a384fd08b969f9d61f7c1146a"
     },
     {
       "path": "justfile",
@@ -1643,6 +1696,10 @@
     {
       "path": "qualification/runtime-supervisor/BAZEL_LOCK_DIAGNOSTIC_OBSERVATION_20261001_6958A901.json",
       "object": "c684aaf50ba2b3f260a0c917781eac1be89cd059"
+    },
+    {
+      "path": "qualification/runtime-supervisor/BAZEL_LOCK_DIAGNOSTIC_OBSERVATION_20261002_22BEBC8E.json",
+      "object": "32629149b4f0445bb21010a7bbbc1e7e197bf52f"
     },
     {
       "path": "qualification/runtime-supervisor/BAZEL_LOCK_DIAGNOSTIC_OBSERVATION_20261002_5B71DF96.json",
@@ -1659,6 +1716,10 @@
     {
       "path": "qualification/runtime-supervisor/REMOTE_CI_OBSERVATION_20261001_7C4E.json",
       "object": "3d35c0aaf896805655bdd2c8c1629d3580810798"
+    },
+    {
+      "path": "qualification/runtime-supervisor/REMOTE_CI_OBSERVATION_20261002_22BEBC8E.json",
+      "object": "4125cff79289821f4b2024981884789044f4d58f"
     },
     {
       "path": "qualification/runtime-supervisor/REMOTE_CI_OBSERVATION_20261002_5B71DF96.json",
@@ -1698,7 +1759,7 @@
     },
     {
       "path": "scripts/hepta_supervisor_ci_v3.py",
-      "object": "3cfbacf4317c67473530b5a3536fb4c465eb476d"
+      "object": "ea44e76607f5e76272b7aeb0f78536a3cbf5f802"
     },
     {
       "path": "scripts/hepta_workflow_integrity.py",
@@ -1722,7 +1783,7 @@
     },
     {
       "path": "scripts/test_hepta_supervisor_ci_v3.py",
-      "object": "1e007794ba531dd065f2a3fbfbca31749a9da30d"
+      "object": "259791f41adc403cbdca953cd8728bcf6fb6c1d4"
     },
     {
       "path": "scripts/test_hepta_supervisor_workflow.py",
