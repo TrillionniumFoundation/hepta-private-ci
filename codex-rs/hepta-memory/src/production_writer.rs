@@ -12,6 +12,7 @@ use std::fmt;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::future::Future;
+use std::path::Path;
 use std::path::PathBuf;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -463,28 +464,68 @@ impl DurableWriterLock {
             ".hepta-production-writer-{}.lock",
             lock_digest.as_str()
         ));
-        let file = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .create(true)
-            .truncate(false)
-            .open(&path)
-            .map_err(|error| {
-                ProductionWriterError::Durability(format!(
-                    "cannot open writer lock {}: {error}",
-                    path.display()
-                ))
-            })?;
+        let mut options = OpenOptions::new();
+        options.read(true).write(true).create(true).truncate(false);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_NONBLOCK);
+        }
+        let file = options.open(&path).map_err(|error| {
+            ProductionWriterError::Durability(format!(
+                "cannot open writer lock {}: {error}",
+                path.display()
+            ))
+        })?;
+        Self::verify_file(&file, &path)?;
         match file.try_lock() {
-            Ok(()) => Ok(Arc::new(Self {
-                _file: file,
-                _path: path,
-            })),
+            Ok(()) => {
+                Self::verify_file(&file, &path)?;
+                Ok(Arc::new(Self {
+                    _file: file,
+                    _path: path,
+                }))
+            }
             Err(std::fs::TryLockError::WouldBlock) => Err(ProductionWriterError::WriterBusy),
             Err(std::fs::TryLockError::Error(error)) => Err(ProductionWriterError::Durability(
                 format!("cannot acquire writer lock {}: {error}", path.display()),
             )),
         }
+    }
+
+    fn verify_file(file: &File, path: &Path) -> Result<(), ProductionWriterError> {
+        let retained = file.metadata().map_err(|error| {
+            ProductionWriterError::Durability(format!("cannot inspect writer lock: {error}"))
+        })?;
+        let named = std::fs::symlink_metadata(path).map_err(|error| {
+            ProductionWriterError::Durability(format!("cannot inspect writer-lock path: {error}"))
+        })?;
+        if !retained.is_file() || !named.is_file() {
+            return Err(ProductionWriterError::Durability(
+                "writer lock must be a regular file without redirection".to_string(),
+            ));
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            // Older writers created 0644 locks under the ordinary umask. Read
+            // bits disclose no contents or capability; preserve that format
+            // without chmodding existing files. Extra writers, executable or
+            // special modes and aliases cannot identify a private lock owner.
+            let permissions = retained.mode() & 0o7777;
+            if retained.nlink() != 1
+                || permissions & !0o044 != 0o600
+                || retained.dev() != named.dev()
+                || retained.ino() != named.ino()
+            {
+                return Err(ProductionWriterError::Durability(
+                    "writer lock must retain one nonredirected owner-writable file".to_string(),
+                ));
+            }
+        }
+        Ok(())
     }
 }
 
@@ -2577,6 +2618,10 @@ fn now_unix_seconds() -> Result<u64, ProductionWriterError> {
         .map(|duration| duration.as_secs())
         .map_err(|error| ProductionWriterError::Invalid(format!("system clock failed: {error}")))
 }
+
+#[cfg(all(test, unix))]
+#[path = "production_writer_lock_tests.rs"]
+mod lock_tests;
 
 #[cfg(test)]
 mod tests {
