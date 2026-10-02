@@ -11,6 +11,8 @@ use std::path::PathBuf;
 mod delivery;
 #[path = "initial_cpu_withdrawal_inspection.rs"]
 mod inspection;
+#[path = "initial_cpu_withdrawal_inspection_dependencies.rs"]
+mod inspection_dependencies;
 #[path = "initial_cpu_withdrawal_inspection_source.rs"]
 mod inspection_source;
 #[path = "initial_cpu_withdrawal_inspection_targets.rs"]

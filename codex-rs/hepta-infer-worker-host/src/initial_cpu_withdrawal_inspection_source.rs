@@ -10,6 +10,7 @@ use std::os::unix::fs::MetadataExt;
 pub(super) struct SourceInspection {
     pub ack: Value,
     pub notice: DatasetWithdrawalNoticeV1,
+    pub snapshot: ledger::LedgerSnapshot,
 }
 
 pub(super) fn read(
@@ -120,5 +121,6 @@ pub(super) fn read(
             authority_epoch: principal.authority_epoch,
             issued_at: evidence.issued_at,
         },
+        snapshot: actual,
     })
 }

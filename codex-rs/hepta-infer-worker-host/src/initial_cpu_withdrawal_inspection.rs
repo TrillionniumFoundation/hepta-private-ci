@@ -9,11 +9,19 @@ use std::cell::Cell;
 use std::collections::BTreeSet;
 
 #[derive(Deserialize)]
-#[serde(deny_unknown_fields)]
-struct Probe {
-    schema: String,
-    withdrawal_request: Source,
-    current_owner: Source,
+#[serde(tag = "schema", deny_unknown_fields)]
+enum Probe {
+    #[serde(rename = "hepta.cpu-neuron.dataset-withdrawal-current-probe.v1")]
+    Original {
+        withdrawal_request: Source,
+        current_owner: Source,
+    },
+    #[serde(rename = "hepta.cpu-neuron.dataset-withdrawal-current-probe.v2")]
+    CurrentPrefix {
+        withdrawal_request: Source,
+        current_owner: Source,
+        current_withdrawals: Vec<super::Notice>,
+    },
 }
 
 pub(super) fn run(path: &Path, pin: Digest32) -> HostResult<Value> {
@@ -22,18 +30,23 @@ pub(super) fn run(path: &Path, pin: Digest32) -> HostResult<Value> {
         digest: pin.to_string(),
     };
     let probe: Probe = serde_json::from_slice(&original_probe.read(32 * 1024)?)?;
-    if probe.schema != "hepta.cpu-neuron.dataset-withdrawal-current-probe.v1" {
-        return Err("withdrawal current probe schema".into());
-    }
-    let current = Inputs::read(
-        &probe.current_owner.path,
-        digest(&probe.current_owner.digest)?,
-    )?;
+    let (withdrawal_request, current_owner, current_notices) = match &probe {
+        Probe::Original {
+            withdrawal_request,
+            current_owner,
+        } => (withdrawal_request, current_owner, None),
+        Probe::CurrentPrefix {
+            withdrawal_request,
+            current_owner,
+            current_withdrawals,
+        } => (withdrawal_request, current_owner, Some(current_withdrawals)),
+    };
+    let current = Inputs::read(&current_owner.path, digest(&current_owner.digest)?)?;
     if current.profile.owner.uid != 0 || current.profile.owner.gid != 0 {
         return Err("withdrawal inspection requires the original Root owner".into());
     }
     role::require_actual_program(&current.profile.program, &current.profile.owner)?;
-    let request: Request = serde_json::from_slice(&probe.withdrawal_request.read(32 * 1024)?)?;
+    let request: Request = serde_json::from_slice(&withdrawal_request.read(32 * 1024)?)?;
     if request.schema != "hepta.cpu-neuron.dataset-withdrawal-request.v1"
         || request.previous_withdrawals.len() > 64
         || request.delivery_targets.is_empty()
@@ -57,13 +70,12 @@ pub(super) fn run(path: &Path, pin: Digest32) -> HostResult<Value> {
     {
         return Err("current Root owner is not this original withdrawal history".into());
     }
-    let retained_path = probe
-        .withdrawal_request
+    let retained_path = withdrawal_request
         .path
         .parent()
         .ok_or("original request parent")?
         .join("withdrawal-issuance.json");
-    let original = issuance::read(&retained_path, digest(&probe.withdrawal_request.digest)?)?
+    let original = issuance::read(&retained_path, digest(&withdrawal_request.digest)?)?
         .ok_or("original withdrawal issuance is absent")?;
     if original.delivery_targets != request.delivery_targets
         || original.before.native()?.head_digest != digest(&request.expected_artifact_head)?
@@ -81,6 +93,12 @@ pub(super) fn run(path: &Path, pin: Digest32) -> HostResult<Value> {
         withdrawals.append(notice.native()?)?;
     }
     withdrawals.append(witnessed.notice.clone())?;
+    let historical_withdrawal_head = withdrawals.head_digest();
+    let withdrawals = super::inspection_dependencies::current_prefix(
+        current.profile.withdrawals()?,
+        withdrawals,
+        current_notices,
+    )?;
     let frontier = current.profile.owner_root.join("READ-CURRENT");
     let before = read_root_review_input(&frontier, 16 * 1024)?;
     let owner = ReadOnlyArtifactCurrentOwnerV1::open(
@@ -96,7 +114,7 @@ pub(super) fn run(path: &Path, pin: Digest32) -> HostResult<Value> {
     let ack = owner
         .acknowledged_publication(&id(&request.lineage_id)?, &historical_head, now_ms()?)?
         .ok_or("original artifact ACK is absent")?;
-    if ack.withdrawal_head_digest != withdrawals.head_digest() {
+    if ack.withdrawal_head_digest != historical_withdrawal_head {
         return Err("original artifact ACK does not bind this withdrawal frontier".into());
     }
     let receipt = original.before.native()?;
@@ -187,7 +205,7 @@ pub(super) fn run(path: &Path, pin: Digest32) -> HostResult<Value> {
     }
     current.revalidate()?;
     original_probe.read(32 * 1024)?;
-    probe.withdrawal_request.read(32 * 1024)?;
+    withdrawal_request.read(32 * 1024)?;
     request.owner.read(32 * 1024)?;
     old_deployment.profile.read(64 * 1024)?;
     if read_root_review_input(&frontier, 16 * 1024)? != before {
@@ -196,10 +214,9 @@ pub(super) fn run(path: &Path, pin: Digest32) -> HostResult<Value> {
     source::directory(&current.profile.owner_root)?;
     let observed = now_ms()?;
     let current_head = owner.protected_current_head(observed)?;
-    Ok(
-        serde_json::json!({"schema":"hepta.cpu-neuron.dataset-withdrawal-inspection.v1",
-        "request_digest":digest(&probe.withdrawal_request.digest)?.to_string(),
-        "current_owner_digest":digest(&probe.current_owner.digest)?.to_string(),
+    let facts = serde_json::json!({"schema":"hepta.cpu-neuron.dataset-withdrawal-inspection.v1",
+        "request_digest":digest(&withdrawal_request.digest)?.to_string(),
+        "current_owner_digest":digest(&current_owner.digest)?.to_string(),
         "observed_at_ms":observed,"current_read_digest":Digest32::of_bytes(&before).to_string(),
         "current_head_digest":current_head.witness.head_digest.to_string(),"withdrawal_head":withdrawals.head_digest().to_string(),
         "source_ack":witnessed.ack,"artifact_ack":{"operation_id":ack.operation_id.as_str(),"phase":"Acknowledged",
@@ -207,6 +224,24 @@ pub(super) fn run(path: &Path, pin: Digest32) -> HostResult<Value> {
             "registry_head":ack.registry_receipt.ok_or("original registry ACK")?.head_digest.to_string(),
             "witness_digest":ack.witness_receipt.ok_or("original witness ACK")?.witness_digest.to_string(),
             "acknowledged_at":ack.acknowledged_at.ok_or("original ACK time")?,"state_digest":ack.state_digest.to_string()},
-        "delivery_denials":denials,"model_weight_forgetting_claimed":false}),
-    )
+        "delivery_denials":denials,"model_weight_forgetting_claimed":false});
+    if current_notices.is_some() {
+        let dependencies =
+            super::inspection_dependencies::artifact_events(&registry, affected.keys())?;
+        let (sources, supports) = super::inspection_dependencies::source_events(
+            &witnessed.snapshot,
+            &id(&request.source_record_id)?,
+        )?;
+        if sources.len() + supports.len() + dependencies.len() + 1 > 128 {
+            return Err("withdrawal causal graph capacity".into());
+        }
+        Ok(
+            serde_json::json!({"schema":"hepta.cpu-neuron.dataset-withdrawal-inspection.v2",
+            "original_inspection":facts,"source_record_event_digests":sources.iter().map(ToString::to_string).collect::<Vec<_>>(),
+            "source_support_digests":supports.iter().map(ToString::to_string).collect::<Vec<_>>(),
+            "artifact_registration_event_digests":dependencies.iter().map(ToString::to_string).collect::<Vec<_>>()}),
+        )
+    } else {
+        Ok(facts)
+    }
 }
