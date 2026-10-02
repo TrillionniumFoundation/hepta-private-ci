@@ -7,6 +7,7 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 
 [privileged_inventory]
 required_boundary_ids = [
+  "bao_operation_consumer_registration",
   "first_public_development_physical_measurement",
   "paired_custody_program_admission",
   "public_paired_generator_preregistration",
@@ -361,6 +362,15 @@ definition_path = "codex-rs/hepta-bao-adapter/src/consumer_registration.rs"
 definition_markers = ["impl RegisteredBaoConsumer", "pub fn new(", "ConsumerId"]
 product_callers = []
 caller_markers = []
+
+[[boundary]]
+id = "bao_operation_consumer_registration"
+symbol = "RegisteredBaoConsumer::for_prepared_operations"
+call_pattern = '\bRegisteredBaoConsumer\s*::\s*(?:for_operations|for_prepared_operations)\s*\('
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_registration.rs"
+definition_markers = ["pub fn for_operations", "pub fn for_prepared_operations", "configuration_sha256 == [0; 32]", "registration.operation_preparer = Some(preparer)"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/consumer_port.rs"]
+caller_markers = ["RegisteredBaoConsumer::for_prepared_operations", "prepare_receipt"]
 
 [[boundary]]
 id = "bao_final_use_host_new"

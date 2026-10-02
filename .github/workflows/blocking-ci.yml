@@ -154,6 +154,9 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      HEPTA_CI_LANE: source-head
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
     steps:
