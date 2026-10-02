@@ -65,3 +65,6 @@ pub use outbox::OutboxState;
 mod exact_claim_tests;
 #[cfg(test)]
 mod fault_tests;
+
+#[cfg(test)]
+mod sqlite_pool_policy_tests;

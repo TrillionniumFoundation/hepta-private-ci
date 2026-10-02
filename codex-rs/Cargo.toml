@@ -179,6 +179,7 @@ members = [
     "codex-client",
     "codex-api",
     "state",
+    "state/tests/support",
     "terminal-detection",
     "test-binary-support",
     "thread-manager-sample",
@@ -319,6 +320,7 @@ codex-shell-escalation = { path = "shell-escalation" }
 codex-skills-extension = { path = "ext/skills" }
 codex-skills = { path = "skills" }
 codex-state = { path = "state" }
+codex-state-test-support = { path = "state/tests/support" }
 codex-stdio-to-uds = { path = "stdio-to-uds" }
 codex-terminal-detection = { path = "terminal-detection" }
 codex-test-binary-support = { path = "test-binary-support" }

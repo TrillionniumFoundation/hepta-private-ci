@@ -48,19 +48,14 @@ async fn sqlite_full_never_leaves_half_of_the_ledger_outbox_transaction() {
     // Install it in every new connection's options while retaining the real
     // four-connection owner store. A one-off PRAGMA on an arbitrary pooled
     // connection lets another writer silently evade the fault.
-    let options = store
-        .pool
-        .connect_options()
-        .as_ref()
-        .clone()
-        .pragma("max_page_count", pages.to_string());
     store.pool.close().await;
-    store.pool = sqlx::sqlite::SqlitePoolOptions::new()
-        .max_connections(4)
-        .min_connections(4)
-        .connect_with(options)
-        .await
-        .expect("reopen owner pool with per-connection fault");
+    store.pool = codex_state_test_support::open_operation_page_limited_pool(
+        &store.pool,
+        std::num::NonZeroU32::new(u32::try_from(pages).expect("bounded page count"))
+            .expect("positive page count"),
+    )
+    .await
+    .expect("reopen owner pool with per-connection fault");
     let mut held = Vec::new();
     for _ in 0..4 {
         let mut connection = store.pool.acquire().await.expect("fault connection");
