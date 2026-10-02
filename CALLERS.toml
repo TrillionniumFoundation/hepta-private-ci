@@ -1090,6 +1090,6 @@ id = "fleet_verified_execution_prepare"
 symbol = "DurableFleetStore::prepare_local_verified_execution"
 call_pattern = '\.\s*prepare_local_verified_execution\s*\('
 definition_path = "codex-rs/hepta-fleet/src/durable_execution.rs"
-definition_markers = ["pub async fn prepare_local_verified_execution", "program.digest()", "Some(program.program_sha256())", "program.verify_current()", "fleet_execution_program_facts"]
+definition_markers = ["pub async fn prepare_local_verified_execution", "let launch: String = program", "context.manifest_digest != launch", "Some(program.program_sha256())", "program.verify_current()", "fleet_execution_program_facts"]
 product_callers = ["codex-rs/hepta-supervisor/src/local_fleet_host.rs"]
 caller_markers = ["prepare_local_verified_execution", "program: &codex_hepta_fleet::VerifiedLaunchProgram"]
