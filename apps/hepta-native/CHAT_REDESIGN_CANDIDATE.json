@@ -1,0 +1,60 @@
+{
+  "schema": "hepta.native-chat-redesign.candidate.v1",
+  "status": "implementation-candidate-unqualified",
+  "publishedSource": {
+    "commit": "625bbcd84108f1b939ae4d73eb32ee19d168ad12",
+    "tree": "53e2e5241e50c169a0afcd26f3ea6e30735a68b3"
+  },
+  "localSourceProvenance": {
+    "commit": "6f739fbdad72334b0e1d14268eb54764c74fe786",
+    "tree": "53e2e5241e50c169a0afcd26f3ea6e30735a68b3",
+    "publishedTreeEqualityVerified": true
+  },
+  "stackBase": {
+    "pullRequest": 1321,
+    "commit": "711859f23b73ad89af4d23e75fe0ed4a461e7979"
+  },
+  "historicalQualificationPredecessor": {
+    "commit": "6e76bb778b58abe557dca516fe66da020da84ae6",
+    "tree": "5f3b98aecf7c3fa688f8093a275fe8fba855ffef",
+    "evidenceTransferAllowed": false
+  },
+  "sharedPresentationOwner": "ui.control",
+  "sharedSourceBlobs": {
+    "apps/hepta-ui-shared/chat.rs": "f882fb55e1631fc6e6a154740896074ea7aa50a6",
+    "apps/hepta-ui-shared/chat_transport.rs": "9843115bd0abdd929efa45c2e287b6ed99a35171"
+  },
+  "chatOwnerDependency": {
+    "executable": "hepta-agent-chat-host",
+    "authority": "Agentd SessionIngress and app-server queue owner",
+    "separatelyBuilt": true,
+    "configuredExecutableDigestRequired": true,
+    "packagedCompositionQualified": false
+  },
+  "localValidation": {
+    "platform": "Linux",
+    "scopedTestsPassed": 75,
+    "unrelatedOrIgnoredTestsSkipped": 115,
+    "scope": [
+      "native UI fixtures",
+      "bounded stdio response validation",
+      "startup configuration matrix",
+      "fatal-error fallback classification"
+    ],
+    "strictAllTargetClippy": true,
+    "formatterCompleted": true,
+    "unrelatedBaselineFormatterChangesRetained": false,
+    "renderedScreenshots": "pending hosted diagnostic run"
+  },
+  "hostedDiagnosticWorkflow": ".github/workflows/hepta-diagnostic-source-export.yml",
+  "hostedDiagnosticJob": "native-chat-render-diagnostics",
+  "canonicalQualificationPending": true,
+  "pausedWorkUntouched": [
+    "Windows registrar safe-save/hardlink repair",
+    "AuthBus"
+  ],
+  "productionQualified": false,
+  "deploymentQualified": false,
+  "releaseAuthorized": false,
+  "claimBoundary": "UI and source diagnostics do not qualify native security, installed packaging, live chat accounts or the historical frozen candidate."
+}
