@@ -68,8 +68,12 @@ def kernel_identity(pid):
 
 
 def validate_service(service, allow_root=False, allow_credential_drop=False):
-    dropping = allow_credential_drop and service.get("process_binding") == "CredentialDroppingMainPidV1"
-    if set(service) != (SERVICE_FIELDS | {"process_binding"} if dropping else SERVICE_FIELDS):
+    late = allow_credential_drop and service.get("process_binding") == "RegisteredServiceMainPidV2"
+    dropping = late or allow_credential_drop and service.get("process_binding") == "CredentialDroppingMainPidV1"
+    required = SERVICE_FIELDS | {"process_binding"} if dropping else SERVICE_FIELDS
+    if late:
+        required -= {"main_pid", "start_ticks", "cgroup_device", "cgroup_inode"}
+    if set(service) != required:
         raise ValueError("closed service fields")
     if (
         not re.fullmatch(r"[A-Za-z0-9_.@-]{1,128}\.service", service["unit_name"])
@@ -79,10 +83,10 @@ def validate_service(service, allow_root=False, allow_credential_drop=False):
         or service["uid"] < (0 if allow_root else 1)
         or type(service["gid"]) is not int
         or service["gid"] < 0
-        or type(service["main_pid"]) is not int
-        or service["main_pid"] <= 1
-        or type(service["start_ticks"]) is not int
-        or service["start_ticks"] <= 0
+        or not late
+        and (type(service["main_pid"]) is not int or service["main_pid"] <= 1)
+        or not late
+        and (type(service["start_ticks"]) is not int or service["start_ticks"] <= 0)
         or type(service["cpu_millis_per_second"]) is not int
         or not 1 <= service["cpu_millis_per_second"] <= 4000
         or type(service["memory_max_bytes"]) is not int
@@ -95,8 +99,8 @@ def validate_service(service, allow_root=False, allow_credential_drop=False):
         or not cgroup.startswith("/system.slice/")
         or len(cgroup) > 256
         or ".." in Path(cgroup).parts
-        or service["cgroup_device"] < 0
-        or service["cgroup_inode"] <= 0
+        or not late
+        and (service["cgroup_device"] < 0 or service["cgroup_inode"] <= 0)
     ):
         raise ValueError("closed nondelegated service cgroup")
     user, group = service["user"], service["group"]
@@ -214,6 +218,26 @@ def observe_service(systemctl, service, deadline_ns):
     return snapshot
 
 
+def resolve_registered_producer(declaration, peer_pid):
+    if declaration.get("process_binding") != "RegisteredServiceMainPidV2":
+        return declaration
+    # The actual socket peer must be the current main process of this exact
+    # protected unit. Its lifetime and cgroup identity come from the kernel;
+    # service_properties below compares MainPID and the full Root declaration.
+    start, uids, gids, cgroup = kernel_identity(peer_pid)
+    if (uids, gids, cgroup) != ([declaration["uid"]] * 4, [declaration["gid"]] * 4, declaration["cgroup"]):
+        raise ValueError("registered producer kernel peer differs")
+    meta = protected_path(Path("/sys/fs/cgroup") / cgroup.lstrip("/"), directory=True).stat()
+    return {
+        **declaration,
+        "process_binding": "CredentialDroppingMainPidV1",
+        "main_pid": peer_pid,
+        "start_ticks": start,
+        "cgroup_device": meta.st_dev,
+        "cgroup_inode": meta.st_ino,
+    }
+
+
 def fingerprint(path):
     info = protected_path(path).stat()
     return (
@@ -310,9 +334,10 @@ class DevelopmentMeasurements:
             validate_service(batch["producer"], allow_credential_drop=True)
             if not isinstance(batch["producer_sources"], list) or not 1 <= len(batch["producer_sources"]) <= 32:
                 raise ValueError("closed producer physical source closure")
-            if batch["producer"].get("process_binding") == "CredentialDroppingMainPidV1" and not any(
-                source["path"] == "/usr/bin/setpriv" for source in batch["producer_sources"]
-            ):
+            if batch["producer"].get("process_binding") in (
+                "CredentialDroppingMainPidV1",
+                "RegisteredServiceMainPidV2",
+            ) and not any(source["path"] == "/usr/bin/setpriv" for source in batch["producer_sources"]):
                 raise ValueError("fixed credential drop outside producer physical closure")
             if not isinstance(batch["pairs"], list) or not 1 <= len(batch["pairs"]) <= 1024:
                 raise ValueError("closed public pair budget")
@@ -375,7 +400,7 @@ class DevelopmentMeasurements:
             raise ValueError("closed public row/window/request budget")
         self.remaining[request["batch_id"]] -= 1
         pid, uid, gid = struct.unpack("3i", connection.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
-        producer = batch["producer"]
+        producer = resolve_registered_producer(batch["producer"], pid)
         if (pid, uid, gid) != (producer["main_pid"], producer["uid"], producer["gid"]):
             raise ValueError("closed public peer must be its actual registered MainPID")
         self.revalidate_sources()

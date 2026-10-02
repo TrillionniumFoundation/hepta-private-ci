@@ -128,6 +128,76 @@ def observation(_, service, _deadline):
 
 
 class DevelopmentTests(unittest.TestCase):
+    def test_late_registered_service_derives_peer_without_a_future_pid(self):
+        config, pairs, request = fixture()
+        batch = config["public_development"]["batches"][0]
+        producer = batch["producer"]
+        original = dict(producer)
+        for key in ("main_pid", "start_ticks", "cgroup_device", "cgroup_inode"):
+            del producer[key]
+        producer.update(
+            user="",
+            group="",
+            process_binding="RegisteredServiceMainPidV2",
+            exec_start=(
+                "{ path=/usr/bin/setpriv ; argv[]=/usr/bin/setpriv "
+                f"--reuid={os.getuid()} --regid={os.getgid()} --clear-groups --no-new-privs "
+                "--bounding-set=-all --inh-caps=-all --ambient-caps=-all -- /opt/fixed/g ; }"
+            ),
+        )
+        batch["producer_sources"].append(source("/usr/bin/setpriv"))
+        measurements = new_measurements(config, pairs)
+        metadata = type("Metadata", (), {"st_dev": 7, "st_ino": 8})()
+        path = type("Cgroup", (), {"stat": lambda _: metadata})()
+        identity = (original["start_ticks"], [os.getuid()] * 4, [os.getgid()] * 4, producer["cgroup"])
+        left, right = socket.socketpair(socket.AF_UNIX)
+        with (
+            left,
+            right,
+            patch.object(dev, "fingerprint", fingerprint),
+            patch.object(dev, "kernel_identity", return_value=identity),
+            patch.object(dev, "protected_path", return_value=path),
+            patch.object(dev, "observe_service", observation),
+        ):
+            result = measurements.measure(left, request, None, None, "pin", lambda *_: {"features_q24": [1] * 512})
+        self.assertEqual(result["cost_context"]["producer_before"]["pid"], os.getpid())
+        self.assertFalse("main_pid" in producer)
+        for cause in ("pid", "flag", "source"):
+            bad = copy.deepcopy(config)
+            changed = bad["public_development"]["batches"][0]
+            if cause == "pid":
+                changed["producer"]["main_pid"] = os.getpid()
+            elif cause == "flag":
+                changed["producer"]["exec_start"] = changed["producer"]["exec_start"].replace(
+                    "--clear-groups", "--keep-groups"
+                )
+            else:
+                changed["producer_sources"].pop()
+            with self.assertRaises(ValueError):
+                new_measurements(bad, pairs)
+        with patch.object(dev, "kernel_identity", return_value=(1, [1] * 4, [2] * 4, producer["cgroup"])):
+            with self.assertRaises(ValueError):
+                dev.resolve_registered_producer(producer, os.getpid())
+
+    def test_service_manager_rejects_non_main_peer_even_with_the_same_uid(self):
+        producer = service("generator", os.getuid(), os.getpid())
+        properties = {
+            "Id": producer["unit_name"],
+            "FragmentPath": producer["unit_source"]["path"],
+            "ExecStart": producer["exec_start"],
+            "User": producer["user"],
+            "Group": producer["group"],
+            "MainPID": str(os.getpid() + 1),
+            "ControlGroup": producer["cgroup"],
+            "Delegate": "no",
+        }
+        completed = type(
+            "Completed", (), {"returncode": 0, "stdout": "".join(f"{k}={v}\n" for k, v in properties.items()).encode()}
+        )()
+        with patch.object(dev.subprocess, "run", return_value=completed):
+            with self.assertRaisesRegex(ValueError, "exact Root registration"):
+                dev.service_properties("/usr/bin/systemctl", producer, time.monotonic_ns() + 1_000_000_000)
+
     def test_root_setpriv_launcher_keeps_actual_mainpid_and_final_g_role(self):
         config, pairs, request = fixture()
         producer = config["public_development"]["batches"][0]["producer"]
