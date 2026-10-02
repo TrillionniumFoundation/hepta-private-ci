@@ -76,7 +76,7 @@ fn open_fifo_without_waiting(
             .custom_flags(libc::O_NOFOLLOW | libc::O_NONBLOCK)
             .open(fifo)
             .expect("release regressed FIFO reader");
-        receiver
+        let _ = receiver
             .recv_timeout(Duration::from_secs(/*secs*/ 2))
             .expect("regressed reader finishes after cleanup keeper");
         drop(keeper);
@@ -269,7 +269,7 @@ fn inspected_directory_fifo_replacement_does_not_wait_for_a_writer() {
     let temporary = tempfile::tempdir().expect("private fixture");
     let directory = PromptDirectory::open(&temporary.path().join("runtime"))
         .expect("private runtime directory");
-    let physical = directory.path.clone();
+    let physical = directory.path;
     let before = fs::symlink_metadata(&physical).expect("inspected canonical directory");
     validate_directory(&before).expect("regular directory admission");
     let marker = external_target(&physical);

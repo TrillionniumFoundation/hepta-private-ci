@@ -146,6 +146,7 @@ class WorkflowDependencyTests(unittest.TestCase):
         for target in (
             "optional_module_restart",
             "runtime_shutdown_outcomes",
+            "run_drain_product",
             "helper_dispatch",
             "--bin hepta-agentd-browser",
             "supervised_two_agents",

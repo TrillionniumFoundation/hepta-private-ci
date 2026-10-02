@@ -273,6 +273,14 @@ identity is available. Server connection tasks belong to one `JoinSet` and are
 stopped and joined when control ingress retires. Aborting a connection does not
 cancel or settle a durable effect already owned by another task.
 
+Unix control-socket retirement records the bound socket's device/inode identity
+and removes only that same socket. A displaced predecessor preserves a replacement
+socket, regular file or symlink. The private namespace remains a trusted
+operator/same-UID boundary: this check is not an atomic pathname deletion against
+a malicious concurrent replacer. The existing Windows transport profile is
+unchanged. Source regressions and exact execution limits are recorded in the
+[retirement follow-up](../../../qualification/runtime-agentd/AUDIT_20261002.md).
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
@@ -365,8 +373,15 @@ while checking object identity. This keeps synchronous I/O off the Tokio control
 executor and preserves durable uncertainty. It is not cancellation-safe external
 effect rollback, cross-owner atomic shutdown or independently provisioned trust.
 The current host drain snapshot requires no local effect workers, no durable armed
-or indeterminate effects, no automation blockers and actual App Server drain
-acknowledgement. The reservation closes this registered HTTP host's late-admission
+or indeterminate effects, no automation blockers, no nonterminal Agentd coordinator
+runs (including `Cancelling` and `Indeterminate`), and actual App Server drain
+acknowledgement. The runtime admission lock and then the existing run-coordinator
+lock remain held while composing that acknowledgement; an App Server with no
+physical turns cannot independently settle an Agentd run. The real-process
+`tests/run_drain_product.rs` regression retains two unresolved run identities
+through cancellation-ACK expiry and settles them separately through the existing
+trusted-local terminal ingress. It does not qualify authenticated physical turns
+or durable restart recovery. The reservation closes this registered HTTP host's late-admission
 window. Normal App Server drain still closes all RPC admission. Its original
 `AppServerDrainHandle` now retains an embedding-only historical observation
 capability, enabled only after request/thread-start background tasks and every

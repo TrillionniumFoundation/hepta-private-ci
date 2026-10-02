@@ -32,6 +32,8 @@ const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 pub(crate) struct AgentdControlServer {
     listener: UnixListener,
     socket_path: PathBuf,
+    #[cfg(unix)]
+    socket_identity: (u64, u64),
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
@@ -52,10 +54,22 @@ impl AgentdControlServer {
         let listener = UnixListener::bind(&socket_path)
             .await
             .map_err(|error| io_context("bind agentd control socket", &socket_path, error))?;
+        #[cfg(unix)]
+        let socket_identity = control_socket_identity(&socket_path)?.ok_or_else(|| {
+            AgentdError::Protocol("bound control socket was replaced".to_string())
+        })?;
         set_owner_only(&socket_path).await?;
+        #[cfg(unix)]
+        if control_socket_identity(&socket_path)? != Some(socket_identity) {
+            return Err(AgentdError::Protocol(
+                "bound control socket changed during permission setup".to_string(),
+            ));
+        }
         Ok(Self {
             listener,
             socket_path,
+            #[cfg(unix)]
+            socket_identity,
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
@@ -110,6 +124,23 @@ impl AgentdControlServer {
 
 impl Drop for AgentdControlServer {
     fn drop(&mut self) {
+        // A displaced predecessor must not unlink a successor's rendezvous or
+        // another replacement object. The private namespace still belongs to
+        // the trusted operator; this is not an atomic unlink against a hostile
+        // same-UID process changing the path between observation and removal.
+        #[cfg(unix)]
+        match control_socket_identity(&self.socket_path) {
+            Ok(Some(identity)) if identity == self.socket_identity => {}
+            Ok(_) => return,
+            Err(error) if error.kind() == ErrorKind::NotFound => return,
+            Err(error) => {
+                eprintln!(
+                    "failed to inspect owned agentd control socket {}: {error}",
+                    self.socket_path.display()
+                );
+                return;
+            }
+        }
         if let Err(error) = std::fs::remove_file(&self.socket_path)
             && error.kind() != ErrorKind::NotFound
         {
@@ -119,6 +150,18 @@ impl Drop for AgentdControlServer {
             );
         }
     }
+}
+
+#[cfg(unix)]
+fn control_socket_identity(path: &Path) -> std::io::Result<Option<(u64, u64)>> {
+    use std::os::unix::fs::FileTypeExt;
+    use std::os::unix::fs::MetadataExt;
+
+    let metadata = std::fs::symlink_metadata(path)?;
+    Ok(metadata
+        .file_type()
+        .is_socket()
+        .then_some((metadata.dev(), metadata.ino())))
 }
 
 async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {

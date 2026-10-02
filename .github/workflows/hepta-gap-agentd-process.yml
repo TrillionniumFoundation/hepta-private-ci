@@ -160,7 +160,7 @@ jobs:
         run: |
           set -euo pipefail
           just test --locked -p codex-hepta-agentd --test optional_module_restart \
-            --test runtime_shutdown_outcomes \
+            --test runtime_shutdown_outcomes --test run_drain_product \
             --test supervised_two_agents --test-threads=1
           just test --locked -p codex-hepta-automation --test retirement_recovery \
             --test operation_timer_fence --test-threads=1

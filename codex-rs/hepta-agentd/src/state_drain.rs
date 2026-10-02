@@ -78,6 +78,10 @@ impl AgentdState {
     ) -> Result<DrainSnapshot, AgentdError> {
         self.refresh_generation()?;
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
+        // Keep the admission lock through this coordinator observation, in the
+        // established runtime -> runs order. App Server retirement alone cannot
+        // settle this owner's dispatched or indeterminate run identities.
+        let runs = self.runs.lock().map_err(poisoned_state)?;
         let running_turns = u32::try_from(self.app_server_drain.running_turns()).map_err(|_| {
             AgentdError::Protocol("running assistant turn count exceeds u32".to_string())
         })?;
@@ -94,6 +98,9 @@ impl AgentdState {
                 && !runtime.fenced
                 && self.app_server_drain.drained()
                 && running_turns == 0
+                // active_run_count includes Indeterminate until an explicit
+                // terminal observation closes it; timeout is not retirement.
+                && runs.active_run_count() == 0
                 && automation_blockers == 0
                 && effect_workers == 0,
             lifecycle: runtime.lifecycle,

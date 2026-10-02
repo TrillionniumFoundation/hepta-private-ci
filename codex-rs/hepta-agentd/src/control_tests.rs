@@ -165,3 +165,59 @@ async fn retiring_control_server_closes_all_admitted_connections() -> anyhow::Re
     assert!(!socket.exists());
     Ok(())
 }
+
+#[cfg(unix)]
+#[tokio::test]
+async fn retired_control_server_preserves_a_successor_socket() -> anyhow::Result<()> {
+    let (_temp, state) = fixture()?;
+    let socket = state.identity().control_socket.clone();
+    let server = AgentdControlServer::bind(socket.clone(), state, CancellationToken::new()).await?;
+    std::fs::remove_file(&socket)?;
+    let mut successor = codex_uds::UnixListener::bind(&socket).await?;
+    drop(server);
+    let connected = UnixStream::connect(&socket).await?;
+    timeout(Duration::from_secs(1), successor.accept()).await??;
+    drop(connected);
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn retired_control_server_preserves_a_replacement_file() -> anyhow::Result<()> {
+    let (_temp, state) = fixture()?;
+    let socket = state.identity().control_socket.clone();
+    let server = AgentdControlServer::bind(socket.clone(), state, CancellationToken::new()).await?;
+    std::fs::remove_file(&socket)?;
+    std::fs::write(&socket, b"successor-owned content")?;
+    drop(server);
+    assert_eq!(std::fs::read(&socket)?, b"successor-owned content");
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn retired_control_server_preserves_a_replacement_symlink() -> anyhow::Result<()> {
+    let (temp, state) = fixture()?;
+    let socket = state.identity().control_socket.clone();
+    let target = temp.path().join("replacement-owner");
+    std::fs::write(&target, b"replacement target")?;
+    let server = AgentdControlServer::bind(socket.clone(), state, CancellationToken::new()).await?;
+    std::fs::remove_file(&socket)?;
+    std::os::unix::fs::symlink(&target, &socket)?;
+    drop(server);
+    assert_eq!(std::fs::read_link(&socket)?, target);
+    assert_eq!(std::fs::read(&socket)?, b"replacement target");
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn retired_control_server_tolerates_an_already_removed_socket() -> anyhow::Result<()> {
+    let (_temp, state) = fixture()?;
+    let socket = state.identity().control_socket.clone();
+    let server = AgentdControlServer::bind(socket.clone(), state, CancellationToken::new()).await?;
+    std::fs::remove_file(&socket)?;
+    drop(server);
+    assert!(!socket.exists());
+    Ok(())
+}
