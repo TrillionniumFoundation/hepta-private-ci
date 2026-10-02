@@ -239,6 +239,10 @@ class NativeFeedbackExecutionTests(unittest.TestCase):
                 f'[package]\nname = "{owner}"\nversion = "0.1.0"\nedition = "2021"\n'
             )
             (folder / "src/lib.rs").write_text("pub fn value() -> u8 { 0 }\n")
+        shutil.copyfile(
+            ROOT / "scripts/hepta_git_objects.py",
+            self.repo / "scripts/hepta_git_objects.py",
+        )
         (self.repo / "scripts/hepta-gap-closure.py").write_text(
             'import os\nprint("document diagnostic sentinel")\nraise SystemExit(int(os.environ.get("DOC_RC", "0")))\n'
         )
