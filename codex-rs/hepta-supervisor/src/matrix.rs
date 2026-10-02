@@ -391,7 +391,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     healthy: false,
                     fenced: false,
                 });
-                if slot.recovery_blocker.is_some() {
+                if slot.has_recovery_denial() {
                     return self.kill_matrix_now(agent_id, slot);
                 }
                 let admission =
@@ -572,6 +572,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             kind,
             spawn_generation,
         });
+        // The retained terminal owner is only awaiting exact lease cleanup.
+        // Keep the main deferred, without another signal, phase or event.
+        if slot.matrix.observed_exit.is_some() {
+            return Ok(true);
+        }
         let mut event_generation = None;
         if !matches!(
             runtime.phase,
@@ -635,6 +640,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot.matrix.degraded = true;
         slot.matrix.last_error = Some(message.clone());
         slot.event(generation, SupervisorEventKind::MatrixDegraded(message));
+        if slot.has_recovery_denial() {
+            // Retain diagnostics and prior durable claims, but denial cannot
+            // admit a new companion retry while observing absence or exit.
+            slot.matrix.retry_at = None;
+            slot.matrix.restart_after_exit = false;
+            return;
+        }
         let wall_now = match unix_millis_now() {
             Ok(wall_now) => wall_now,
             Err(error) => {

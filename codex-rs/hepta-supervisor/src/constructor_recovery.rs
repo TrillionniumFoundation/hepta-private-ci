@@ -31,6 +31,12 @@ impl<D: ProcessDriver> Supervisor<D> {
         if let Err(error) = self.restore_release_state(agent_id, slot, record) {
             faults.push(error);
         }
+        // Decode and bind signed denial before adoption can replay a control
+        // or an unsigned transaction/restart can drive another process effect.
+        // This read performs no CAS, journal publication or process operation.
+        if let Err(error) = self.prime_signed_recovery_denial(agent_id, slot, record) {
+            faults.push(error);
+        }
         if let Some(error) = faults.first() {
             // Deny semantic replay before acquisition, while leaving
             // both independent lease-bound adoption attempts enabled.

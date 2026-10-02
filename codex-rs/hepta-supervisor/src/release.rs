@@ -196,6 +196,10 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "release preparation binds signed authority before its first publication"
+    )]
     fn prepare_release_transaction(
         &self,
         agent_id: &AgentId,
@@ -204,6 +208,7 @@ impl<D: ProcessDriver> Supervisor<D> {
         target: &AgentRelease,
         explicit_rollback: bool,
         lifecycle_generation: u64,
+        authority: Option<(codex_hepta_contracts::Sha256Digest, u64)>,
     ) -> Result<(), SupervisorError> {
         let record = self.record(agent_id)?;
         let kind = if explicit_rollback {
@@ -227,34 +232,22 @@ impl<D: ProcessDriver> Supervisor<D> {
             lifecycle_generation,
         )
         .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        write_release_transaction(record.layout.run_root(), &transaction)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        slot.release_transaction = Some(transaction);
-        Ok(())
-    }
-
-    pub(crate) fn bind_release_transaction_authority(
-        &self,
-        agent_id: &AgentId,
-        slot: &mut AgentSlot<D::Process>,
-        grant_sha256: codex_hepta_contracts::Sha256Digest,
-        authority_epoch: u64,
-    ) -> Result<(), SupervisorError> {
-        let transaction = slot.release_transaction.clone().ok_or_else(|| {
-            SupervisorError::Invalid("release transaction is not prepared".to_string())
-        })?;
-        if transaction.source_binding.is_none()
-            || transaction.target_binding.is_none()
-            || transaction.compatibility_binding_sha256.is_none()
-        {
-            return Err(SupervisorError::ProductionAuthority(
-                "production release authority requires both catalog admission bindings".to_string(),
-            ));
-        }
-        let transaction = transaction
-            .with_authority(grant_sha256, authority_epoch)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let record = self.record(agent_id)?;
+        let transaction = if let Some((grant_sha256, authority_epoch)) = authority {
+            if transaction.source_binding.is_none()
+                || transaction.target_binding.is_none()
+                || transaction.compatibility_binding_sha256.is_none()
+            {
+                return Err(SupervisorError::ProductionAuthority(
+                    "production release authority requires both catalog admission bindings"
+                        .to_string(),
+                ));
+            }
+            transaction
+                .with_authority(grant_sha256, authority_epoch)
+                .map_err(|error| SupervisorError::Invalid(error.to_string()))?
+        } else {
+            transaction
+        };
         write_release_transaction(record.layout.run_root(), &transaction)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
         slot.release_transaction = Some(transaction);
@@ -416,10 +409,8 @@ impl<D: ProcessDriver> Supervisor<D> {
             &target,
             explicit_rollback,
             lifecycle.generation,
+            authority,
         )?;
-        if let Some((grant_sha256, authority_epoch)) = authority {
-            self.bind_release_transaction_authority(agent_id, slot, grant_sha256, authority_epoch)?;
-        }
         slot.release_change = Some(ReleaseChange {
             origin: current.clone(),
             target: target.clone(),
@@ -747,6 +738,14 @@ impl<D: ProcessDriver> Supervisor<D> {
                     .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
                 slot.release_transaction = Some(transaction);
             }
+            return Ok(());
+        }
+
+        if slot.has_recovery_denial() {
+            // A legacy partial authority publication can leave an unsigned
+            // Prepared transaction beside a trusted unresolved signed intent.
+            // Preserve it; neither unsigned terminal inference nor process
+            // replay may erase or bypass the independent signed denial.
             return Ok(());
         }
 

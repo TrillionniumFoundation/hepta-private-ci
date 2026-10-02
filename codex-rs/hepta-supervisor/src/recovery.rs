@@ -133,6 +133,11 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        if slot.has_recovery_denial() {
+            // Quarantine retains existing claims without reconciling or
+            // admitting automatic predecessor/replacement work.
+            return Ok(());
+        }
         let record = self.record(agent_id)?;
         if control_intent::cancel_restart_if_unresolved(record.layout.run_root(), agent_id)
             .map_err(|error| SupervisorError::Invalid(error.to_string()))?
@@ -487,7 +492,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             slot.recovery_blocker = Some(bounded_message(error.to_string()));
         }
         let hydration =
-            if slot.recovery_blocker.is_some() || hydration.observes_idle(agent_id, slot, record) {
+            if slot.has_recovery_denial() || hydration.observes_idle(agent_id, slot, record) {
                 Ok(())
             } else {
                 self.record(agent_id)
@@ -601,7 +606,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     healthy: false,
                     fenced: true,
                 });
-                if slot.recovery_blocker.is_some() {
+                if slot.has_recovery_denial() {
                     admission::reject_owned(agent_id, slot, now);
                     return Ok(());
                 }

@@ -72,6 +72,9 @@ mod constructor_recovery;
 #[path = "signed_effect.rs"]
 mod signed_effect;
 
+#[path = "signed_constructor_recovery.rs"]
+mod signed_constructor_recovery;
+
 impl<D: ProcessDriver> Supervisor<D> {
     pub fn recover(
         registry: FleetRegistry,
@@ -878,10 +881,11 @@ impl<D: ProcessDriver> Supervisor<D> {
             )?;
         }
         if let Some(runtime) = slot.runtime.as_mut() {
-            // Process adoption may already have fenced and successfully requested
-            // termination. Hydrating the signed-intent fence is not a second kill.
+            // Earlier constructor denial already attempted containment on this
+            // exact adopted handle. A failed attempt remains fenced for the
+            // next tick; signed hydration is not another signal on this pass.
             let already_requested =
-                runtime.fenced && matches!(runtime.phase, RuntimePhase::Killing);
+                runtime.fenced || matches!(runtime.phase, RuntimePhase::Killing);
             runtime.fenced = true;
             if !already_requested {
                 runtime

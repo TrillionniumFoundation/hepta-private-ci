@@ -250,6 +250,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         }
         if slot.matrix.runtime.is_none() {
             if let Some(action) = slot.deferred_agent_action {
+                if slot.runtime.as_ref().is_some_and(|runtime| {
+                    runtime.spawn_generation == action.spawn_generation
+                        && matches!(runtime.phase, crate::runtime::RuntimePhase::Killing)
+                }) {
+                    // The original main deadline already acknowledged Kill.
+                    // Late companion cleanup cannot repeat control or its CAS.
+                    slot.deferred_agent_action = None;
+                    return Ok(());
+                }
                 let applies_to_runtime = slot
                     .runtime
                     .as_ref()

@@ -530,6 +530,10 @@ impl<D: ProcessDriver> Supervisor<D> {
             // losing the restart intent after publishing Failed.
             let restart_fault = if !runtime.fenced
                 && matches!(runtime.phase, RuntimePhase::Running)
+                && !slot.has_recovery_denial()
+                && slot
+                    .deferred_agent_action
+                    .is_none_or(|action| action.spawn_generation != runtime.spawn_generation)
                 && slot.release_change.is_none()
                 && !slot.restart_pending
                 && !retrying

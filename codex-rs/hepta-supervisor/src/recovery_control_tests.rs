@@ -471,7 +471,9 @@ fn transient_release_recovery_fault_does_not_skip_signed_intent_recovery() -> Re
     )?;
     crate::signed_intent::write_intent(record.layout.run_root(), &intent)?;
     let (supervisor, report) = f.recover()?;
-    assert_eq!(report.faults.len(), 1);
+    // Signed denial is established before unsigned replay. The injected
+    // Drain failure must never be reached; only exact-owner containment runs.
+    assert_eq!(report, TickReport::default());
     assert!(supervisor.production_recovery_required(&f.agent)?);
     assert_eq!(
         crate::signed_intent::read_intent(record.layout.run_root())?
@@ -485,7 +487,7 @@ fn transient_release_recovery_fault_does_not_skip_signed_intent_recovery() -> Re
             .expect("snapshot")
             .runtime_fenced
     );
-    assert_eq!(f.process.lock().expect("process state").signals, [1, 0, 1]);
+    assert_eq!(f.process.lock().expect("process state").signals, [0, 0, 1]);
     f.assert_owned(&supervisor);
     Ok(())
 }
