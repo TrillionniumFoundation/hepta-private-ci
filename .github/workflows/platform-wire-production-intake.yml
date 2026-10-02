@@ -54,7 +54,8 @@ jobs:
           python3 - <<'PY'
           import json, os, re, urllib.request
           def get(path):
-              req=urllib.request.Request(f"https://api.github.com/repos/{os.environ['REPOSITORY']}{path}",headers={"Authorization":f"Bearer {os.environ['GH_TOKEN']}","Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","User-Agent":"hepta-platform-wire-production"})
+              req=urllib.request.Request(f"https://api.github.com/repos/{os.environ['REPOSITORY']}{path}",headers={"Accept":"application/vnd.github+json","X-GitHub-Api-Version":"2022-11-28","User-Agent":"hepta-platform-wire-production"})
+              req.add_unredirected_header("Authorization",f"Bearer {os.environ['GH_TOKEN']}")
               with urllib.request.urlopen(req,timeout=30) as r:return json.load(r)
           run_id=int(os.environ["OBSERVATION_RUN_ID"]); source=os.environ["SOURCE_SHA"]
           run=get(f"/actions/runs/{run_id}")

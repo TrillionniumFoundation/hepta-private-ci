@@ -37,12 +37,13 @@ def json_get(repository: str, token: str, path: str) -> object:
     request = urllib.request.Request(
         f"https://api.github.com/repos/{repository}{path}",
         headers={
-            "Authorization": f"Bearer {token}",
             "Accept": "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
             "User-Agent": "hepta-platform-wire-performance-intake",
         },
     )
+    # GitHub artifact redirects use signed storage URLs, never the API token.
+    request.add_unredirected_header("Authorization", f"Bearer {token}")
     with urllib.request.urlopen(request, timeout=30) as response:
         return json.load(response)
 
@@ -51,7 +52,6 @@ def download(repository: str, token: str, artifact_id: int, maximum: int) -> byt
     request = urllib.request.Request(
         f"https://api.github.com/repos/{repository}/actions/artifacts/{artifact_id}/zip",
         headers={
-            "Authorization": f"Bearer {token}",
             "Accept": "application/vnd.github+json",
             "X-GitHub-Api-Version": "2022-11-28",
             "User-Agent": "hepta-platform-wire-performance-intake",
@@ -59,6 +59,8 @@ def download(repository: str, token: str, artifact_id: int, maximum: int) -> byt
     )
     chunks: list[bytes] = []
     total = 0
+    # GitHub artifact redirects use signed storage URLs, never the API token.
+    request.add_unredirected_header("Authorization", f"Bearer {token}")
     with urllib.request.urlopen(request, timeout=60) as response:
         while True:
             chunk = response.read(min(1024 * 1024, maximum + 1 - total))

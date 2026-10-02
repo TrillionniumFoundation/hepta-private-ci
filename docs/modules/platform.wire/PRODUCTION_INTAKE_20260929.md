@@ -112,3 +112,9 @@ This source adds the closed contract, validator, protected intake, lifecycle req
 - perform canary/promotion and issue the release receipt.
 
 No second authenticator, transport listener, scheduler, authority owner, replay journal or domain executor is introduced. Wire admission and production observation never mint final-use authority. Lifecycle booleans remain derived and must not be edited by hand.
+
+## Artifact credential boundary
+
+The GitHub API token authenticates only the initial API request. Artifact redirects
+use their signed storage URL and never receive the API Authorization header.
+Network-free redirect regressions enforce this boundary for both intake paths.

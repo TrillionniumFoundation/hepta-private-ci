@@ -121,6 +121,27 @@ class ArtifactIntakeTests(unittest.TestCase):
                 )
         self.assertFalse(self.destination.exists())
 
+    def test_api_token_is_not_forwarded_to_artifact_redirects(self):
+        for operation in (shared.json_get, shared.download):
+            with self.subTest(operation=operation.__name__):
+                response = BytesIO(b"{}")
+                with patch.object(shared.urllib.request, "urlopen", return_value=response) as opened:
+                    if operation is shared.json_get:
+                        operation("fixture/repo", "fixture-token", "/actions/runs/7")
+                    else:
+                        operation("fixture/repo", "fixture-token", 7, 64)
+                request = opened.call_args.args[0]
+                self.assertEqual(request.get_header("Authorization"), "Bearer fixture-token")
+                for destination in (
+                    "https://storage.example/artifact?signature=fixture",
+                    "https://api.github.com/redirected",
+                ):
+                    redirected = shared.urllib.request.HTTPRedirectHandler().redirect_request(
+                        request, None, 302, "Found", {}, destination
+                    )
+                    self.assertIsNone(redirected.get_header("Authorization"))
+                    self.assertEqual(redirected.get_header("Accept"), "application/vnd.github+json")
+
     def test_compressed_archive_download_cap_is_enforced(self):
         with patch.object(
             shared.urllib.request, "urlopen", return_value=BytesIO(b"x" * 65)

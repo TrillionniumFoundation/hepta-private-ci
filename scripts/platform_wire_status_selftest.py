@@ -200,7 +200,8 @@ def fuzz_fixture(root: Path, source: str) -> tuple[dict, Path]:
         executed = index * 17
         log = directory / f"{target}.log"
         log.write_text(
-            f"INFO: seed corpus\nstat::number_of_executed_units: {executed}\n",
+            f"#2\tINITED cov: 1\n#{executed}\tDONE cov: 2\n"
+            f"stat::number_of_executed_units: {executed}\n",
             encoding="utf-8",
         )
         targets[target] = {

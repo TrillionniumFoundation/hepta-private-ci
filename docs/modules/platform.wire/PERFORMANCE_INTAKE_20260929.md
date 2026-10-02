@@ -108,3 +108,9 @@ retained exact-head, merge, target-host, fuzz, performance, production, reviewer
 operations and release receipts for the same selected source. The renderer checks
 consistency of trusted imported evidence; the importing owner must authenticate
 workflow, artifact and approver provenance.
+
+## Artifact credential boundary
+
+The GitHub API token authenticates only the initial API request. Artifact redirects
+use their signed storage URL and never receive the API Authorization header.
+Network-free redirect regressions enforce this boundary for both intake paths.

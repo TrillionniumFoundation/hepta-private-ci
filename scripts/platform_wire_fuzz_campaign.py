@@ -115,6 +115,30 @@ def executed_units(path: Path) -> int:
     return count
 
 
+def progressed_execution(path: Path) -> bool:
+    """Require one ordered initialization/completion pair beyond seed replay.
+
+    A positive final count also counts corpus initialization; it does not alone
+    establish that a coverage-guided campaign performed a subsequent execution.
+    """
+    markers = []
+    with path.open(errors="replace") as handle:
+        for line in handle:
+            progress = re.match(r"^#([0-9]+)\s+(INITED|DONE)\b", line)
+            final = re.fullmatch(r"stat::number_of_executed_units:\s*([0-9]+)\s*", line)
+            if progress:
+                markers.append((progress.group(2), int(progress.group(1))))
+            elif final:
+                markers.append(("FINAL", int(final.group(1))))
+            if len(markers) > 3:
+                return False
+    return (
+        len(markers) == 3
+        and [kind for kind, _ in markers] == ["INITED", "DONE", "FINAL"]
+        and 0 < markers[0][1] < markers[1][1] == markers[2][1]
+    )
+
+
 def subject(root: Path) -> dict:
     def git(*args: str) -> str:
         return subprocess.check_output(["git", *args], cwd=root, text=True).strip()
@@ -280,10 +304,10 @@ def run(root: Path, path: Path) -> None:
             row["exit_code"] = code
             row["executed_units"] = executed_units(log)
             row["status"] = (
-                "passed" if code == 0 and row["executed_units"] > 0 else "failed"
+                "passed" if code == 0 and progressed_execution(log) else "failed"
             )
             if row["status"] != "passed":
-                row["reason"] = "nonzero_exit_or_no_execution_statistics"
+                row["reason"] = "nonzero_exit_or_no_post_initialization_execution"
         except (OSError, subprocess.TimeoutExpired) as error:
             row.update(status="failed", reason=type(error).__name__, exit_code=None)
         row["elapsed_seconds"] = time.monotonic() - started
@@ -321,6 +345,7 @@ def valid_execution(
         and log.is_file()
         and digest(log) == row.get("log_sha256")
         and executed_units(log) == row["executed_units"]
+        and progressed_execution(log)
     )
 
 
