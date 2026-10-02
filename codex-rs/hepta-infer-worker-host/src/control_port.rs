@@ -14,6 +14,7 @@ use codex_hepta_infer_core::control_contracts::VerifiedExecutionPlan;
 #[cfg(test)]
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::Error;
+use codex_hepta_infer_core::durable_control::native::NativeBoundSourceProof;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejection;
 use codex_hepta_infer_core::durable_control::native::NativePreEffectAbortToken;
@@ -71,6 +72,14 @@ pub trait NativeControlPort: Send + Sync + sealed::Sealed {
         &mut self,
         request: NativeRequest,
         maximum_in_flight: usize,
+    ) -> NativeControlPortResult<NativeRunRecord>;
+
+    /// Reserve a run only with its checked signed-payload relationship.
+    async fn reserve_native_bound(
+        &mut self,
+        request: NativeRequest,
+        maximum_in_flight: usize,
+        proof: NativeBoundSourceProof,
     ) -> NativeControlPortResult<NativeRunRecord>;
 
     async fn bind_native_execution(
@@ -153,6 +162,16 @@ impl NativeControlPort for DurableInferenceControl {
         maximum_in_flight: usize,
     ) -> NativeControlPortResult<NativeRunRecord> {
         DurableInferenceControl::reserve_native(self, request, maximum_in_flight)
+            .map_err(Into::into)
+    }
+
+    async fn reserve_native_bound(
+        &mut self,
+        request: NativeRequest,
+        maximum_in_flight: usize,
+        proof: NativeBoundSourceProof,
+    ) -> NativeControlPortResult<NativeRunRecord> {
+        DurableInferenceControl::reserve_native_bound(self, request, maximum_in_flight, proof)
             .map_err(Into::into)
     }
 

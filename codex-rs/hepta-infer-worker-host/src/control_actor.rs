@@ -15,6 +15,8 @@ use tokio::sync::watch;
 
 pub use crate::actor_observation::NativePublishedMetrics;
 pub use crate::actor_policy::NativeWriterLimits;
+#[path = "control_actor_bound.rs"]
+mod bound;
 #[path = "control_actor_commands.rs"]
 mod commands;
 use commands::Command;
@@ -23,6 +25,7 @@ use async_trait::async_trait;
 use codex_hepta_infer_core::control_contracts::ProtectedOutput;
 use codex_hepta_infer_core::control_contracts::VerifiedExecutionPlan;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_core::durable_control::native::NativeBoundSourceProof;
 use codex_hepta_infer_core::durable_control::native::NativeControlMetrics;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use codex_hepta_infer_core::durable_control::native::NativeDispatchRejection;
@@ -475,6 +478,17 @@ impl NativeControlPort for NativeJournalWriterHandle {
         maximum_in_flight: usize,
     ) -> NativeControlPortResult<NativeRunRecord> {
         self.reserve(request, maximum_in_flight)
+            .await
+            .map_err(NativeControlPortError::Actor)
+    }
+
+    async fn reserve_native_bound(
+        &mut self,
+        request: NativeRequest,
+        maximum_in_flight: usize,
+        proof: NativeBoundSourceProof,
+    ) -> NativeControlPortResult<NativeRunRecord> {
+        self.reserve_bound(request, maximum_in_flight, proof)
             .await
             .map_err(NativeControlPortError::Actor)
     }
