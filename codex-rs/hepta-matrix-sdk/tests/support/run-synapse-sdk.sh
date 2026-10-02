@@ -58,11 +58,13 @@ root:
   handlers: [console]
 disable_existing_loggers: false
 YAML
-# The container's fixed user can write only this synthetic temporary directory.
-chmod 0777 "$fixture"
-docker run --rm -v "$fixture:/data" --entrypoint python "$image" -m synapse.app.homeserver --config-path /data/homeserver.yaml --generate-keys
+# Use the same unprivileged owner for generation and serving, so the private
+# signing key stays readable without widening fixture permissions.
+fixture_uid="$(id -u)"
+fixture_gid="$(id -g)"
+docker run --rm --user "$fixture_uid:$fixture_gid" -v "$fixture:/data" --entrypoint python "$image" -m synapse.app.homeserver --config-path /data/homeserver.yaml --generate-keys
 # Publish to loopback only; never expose the disposable registration endpoint.
-docker run -d --name "$name" -p 127.0.0.1:18008:8008 -v "$fixture:/data" "$image" >/dev/null
+docker run -d --user "$fixture_uid:$fixture_gid" -e UID="$fixture_uid" -e GID="$fixture_gid" --name "$name" -p 127.0.0.1:18008:8008 -v "$fixture:/data" "$image" >/dev/null
 for i in $(seq 1 90); do
   if curl --fail --silent http://127.0.0.1:18008/_matrix/client/versions >/dev/null; then break; fi
   if [[ "$i" == 90 ]]; then echo 'Synapse failed readiness' >&2; exit 1; fi
