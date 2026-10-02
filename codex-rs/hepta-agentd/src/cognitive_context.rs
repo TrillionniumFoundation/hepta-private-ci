@@ -25,7 +25,7 @@ use codex_hepta_agent_components::memory::DurableCognitiveSnapshot;
 use codex_hepta_agent_components::memory::RetrievalCandidateIdentityV1;
 use codex_hepta_agent_components::memory::RetrievalRequest;
 use codex_hepta_agent_components::memory::RevalidationStatus;
-use codex_hepta_agent_components::memory::execute_owner_observation_controlled;
+use codex_hepta_agent_components::memory::execute_owner_observation_v2_controlled;
 use codex_hepta_agent_components::types::Digest32;
 use codex_hepta_agent_components::types::Generation;
 use codex_hepta_agent_components::types::ProbabilityQ32;
@@ -261,7 +261,7 @@ pub(crate) async fn read_with_retrieval_executor(
             let query_digest = Digest32::of_bytes(query.as_bytes());
             executor
                 .run(retrieval_work, RetrievalBlockingKind::Core, move |work| {
-                    execute_owner_observation_controlled(
+                    execute_owner_observation_v2_controlled(
                         &observation,
                         &cut,
                         &context,
@@ -278,12 +278,12 @@ pub(crate) async fn read_with_retrieval_executor(
         (Err(error), _) => Err(error),
         (Ok(_), None) => Err(CognitiveContextError::RetrievalContextUnavailable),
     };
+    let mut semantic_policy_digest = None;
     match execution {
         Ok(execution) => {
             let selection_order = execution
-                .recall
-                .packet
-                .selections
+                .semantic
+                .selected_candidates()
                 .iter()
                 .enumerate()
                 .map(|(index, selection)| {
@@ -296,8 +296,11 @@ pub(crate) async fn read_with_retrieval_executor(
                     )
                 })
                 .collect::<BTreeMap<_, _>>();
+            // Record the original HNMF action separately from final delivery;
+            // explicit semantic veto is a downstream deterministic policy.
             pending_assignment = Some(execution.assignment);
             if delivers_hnmf {
+                semantic_policy_digest = Some(execution.semantic.policy_digest());
                 observed.retain(|candidate| {
                     selection_order.contains_key(&(
                         candidate.revalidation.memory.memory_id.as_str().to_string(),
@@ -380,7 +383,7 @@ pub(crate) async fn read_with_retrieval_executor(
         });
     }
 
-    let mut downstream_policy_digest = None;
+    let mut downstream_policy_digest = semantic_policy_digest;
     let mut delivery_propensity = ProbabilityQ32::ONE;
     if let Some(ranker) = ranker {
         let ranker = std::sync::Arc::clone(ranker);
@@ -402,7 +405,15 @@ pub(crate) async fn read_with_retrieval_executor(
             .map_err(|_| CognitiveContextError::RankerUnavailable)?;
         admitted_items = ranked_items;
         if rank_observation.applied {
-            downstream_policy_digest = Some(rank_observation.policy_digest);
+            downstream_policy_digest = Some(match semantic_policy_digest {
+                Some(semantic) => {
+                    let mut policy = b"hepta.agentd.semantic-then-ranker-policy.v2".to_vec();
+                    policy.extend_from_slice(semantic.as_array());
+                    policy.extend_from_slice(rank_observation.policy_digest.as_array());
+                    Digest32::of_bytes(&policy)
+                }
+                None => rank_observation.policy_digest,
+            });
             delivery_propensity = rank_observation.propensity;
         }
     }

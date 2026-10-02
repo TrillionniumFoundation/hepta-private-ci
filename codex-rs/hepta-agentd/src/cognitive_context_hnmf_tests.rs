@@ -403,3 +403,129 @@ async fn owner_drift_during_hnmf_final_use_validation_fails_closed() {
         "owner drift must fail final use: {result:?}"
     );
 }
+
+#[tokio::test]
+async fn complete_owner_assertions_veto_actual_context_delivery() {
+    use codex_hepta_agent_components::memory::KgEntityFactDraft;
+    use codex_hepta_agent_components::memory::KgFactSetDraft;
+    use codex_hepta_agent_components::memory::KgRelationFactDraft;
+    let (_temp, store, owner, mut context, _) = fixture(139).await;
+    let before_provider: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(SwitchingContext {
+        owner: owner.clone(),
+        generation: 1,
+        first: context.clone(),
+        later: context.clone(),
+        switch_after_first: false,
+        calls: Arc::new(AtomicUsize::new(0)),
+    });
+    let before =
+        read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&before_provider))
+            .await
+            .unwrap();
+    assert_eq!(
+        before.items.len(),
+        1,
+        "the original legal HNMF consumer must deliver before contradictory assertions"
+    );
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let facts = KgFactSetDraft {
+        entities: vec![
+            KgEntityFactDraft {
+                key: "lemon".into(),
+                entity_type: "concept".into(),
+                label: "lemon".into(),
+            },
+            KgEntityFactDraft {
+                key: "safe".into(),
+                entity_type: "property".into(),
+                label: "safe".into(),
+            },
+        ],
+        relations: vec![KgRelationFactDraft {
+            key: "semantic-assertion".into(),
+            from_entity_key: "lemon".into(),
+            to_entity_key: "safe".into(),
+            relation: "is".into(),
+        }],
+    };
+    for (name, denied) in [("positive", false), ("negative", true)] {
+        let content = format!("lemon {name} assertion");
+        let mut positive = facts.clone();
+        let negative = if denied {
+            std::mem::take(&mut positive.relations)
+        } else {
+            Vec::new()
+        };
+        store
+            .remember_with_assertions(
+                &access,
+                &SourceDraft {
+                    scope: CognitiveScope::AgentPrivate,
+                    kind: LedgerSourceKind::ExplicitMemoryDirective,
+                    event_key: format!("semantic-{name}"),
+                    content: content.as_bytes().to_vec(),
+                    observed_at_unix_seconds: 100,
+                },
+                &MemoryDraft {
+                    stable_key: format!("semantic-{name}"),
+                    revision: MemoryRevisionDraft {
+                        scope: CognitiveScope::AgentPrivate,
+                        content,
+                        verification: MemoryVerification::Verified,
+                        lifecycle: MemoryLifecycleState::Active,
+                        valid_from_unix_seconds: 100,
+                        valid_to_unix_seconds: None,
+                        citations: Vec::new(),
+                    },
+                },
+                &positive,
+                &negative,
+            )
+            .await
+            .expect("actual SQLite assertion");
+    }
+    let now = i64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs(),
+    )
+    .unwrap();
+    let cut = store
+        .lane_c_snapshot(&access, &CognitiveScope::AgentPrivate, now)
+        .await
+        .unwrap();
+    context.generation_vector.memory_ledger_frontier = cut.frontiers().memory;
+    context.generation_vector.source_ledger_frontier = cut.frontiers().source;
+    context.generation_vector.knowledge_fact_frontier = cut.frontiers().knowledge_facts;
+    context.generation_vector.knowledge_graph_generation = cut.frontiers().knowledge_graph;
+    context.approved_context_digest = cut.snapshot().snapshot_digest;
+    let generation = context.generation_vector.digest();
+    let mut nodes = context.engram_snapshot.nodes.clone();
+    for node in &mut nodes {
+        node.generation_vector_digest = generation;
+    }
+    context.engram_snapshot = EngramSnapshotV1::new(
+        generation,
+        context.engram_snapshot.engram_generation_digest,
+        nodes,
+        Vec::new(),
+    )
+    .unwrap();
+    context.validate().unwrap();
+    let provider: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(SwitchingContext {
+        owner: owner.clone(),
+        generation: 1,
+        first: context.clone(),
+        later: context,
+        switch_after_first: false,
+        calls: Arc::new(AtomicUsize::new(0)),
+    });
+    let result = read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&provider))
+        .await
+        .unwrap();
+    assert!(
+        result.items.is_empty(),
+        "no raw owner result may bypass semantic veto"
+    );
+}
