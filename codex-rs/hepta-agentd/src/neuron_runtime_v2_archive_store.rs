@@ -31,11 +31,20 @@ pub(super) struct GenerationArchiveStore {
     frontier: Frontier,
     maximum_total_bytes: u64,
     _lock: std::fs::File,
+    goal_frontier: Option<AgentdNeuronGoalScopeArchiveFrontierV3>,
 }
 impl GenerationArchiveStore {
     pub(super) fn open(
         control: &Path,
         maximum_total_bytes: u64,
+    ) -> Result<Self, AgentdNeuronControlErrorV2> {
+        Self::open_mode(control, maximum_total_bytes, ArchiveModeV3::ModelGeneration)
+    }
+
+    fn open_mode(
+        control: &Path,
+        maximum_total_bytes: u64,
+        mode: ArchiveModeV3,
     ) -> Result<Self, AgentdNeuronControlErrorV2> {
         if maximum_total_bytes == 0 {
             return Err(AgentdNeuronControlErrorV2::ControllerPoisoned);
@@ -90,6 +99,16 @@ impl GenerationArchiveStore {
         lock.try_lock()
             .map_err(|_| AgentdNeuronControlErrorV2::ControllerBusy)?;
         let path = directory.join("frontier.json");
+        let goal_path = directory.join("goal-scope-frontier-v3.json");
+        match mode {
+            ArchiveModeV3::ModelGeneration if goal_path.exists() => {
+                return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+            }
+            ArchiveModeV3::GoalScope if path.exists() => {
+                return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+            }
+            ArchiveModeV3::ModelGeneration | ArchiveModeV3::GoalScope => (),
+        }
         let frontier = if path.exists() {
             serde_json::from_slice(&read_private(&path, 4096)?)
                 .map_err(|_| AgentdNeuronControlErrorV2::ControllerPoisoned)?
@@ -101,6 +120,7 @@ impl GenerationArchiveStore {
             frontier,
             maximum_total_bytes,
             _lock: lock,
+            goal_frontier: None,
         };
         if store.frontier.generation != 0 {
             let receipt = store.read_receipt(store.frontier.generation)?;
@@ -124,10 +144,16 @@ impl GenerationArchiveStore {
         {
             return Err(AgentdNeuronControlErrorV2::ControllerPoisoned);
         }
-        Ok(store)
+        match mode {
+            ArchiveModeV3::ModelGeneration => Ok(store),
+            ArchiveModeV3::GoalScope => store.initialize_goal_frontier_v3(),
+        }
     }
 
     pub(super) fn contains(&self, generation: u64) -> Result<bool, AgentdNeuronControlErrorV2> {
+        if self.goal_frontier.is_some() {
+            return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+        }
         if generation == 0 || generation > self.frontier.generation {
             return Ok(false);
         }
@@ -142,6 +168,9 @@ impl GenerationArchiveStore {
         &mut self,
         archive: &NeuronGenerationArchiveV1,
     ) -> Result<(), AgentdNeuronControlErrorV2> {
+        if self.goal_frontier.is_some() {
+            return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+        }
         let generation = archive.generation();
         if self.contains(generation)? {
             let existing = self.read_archive(&self.read_receipt(generation)?)?;
@@ -355,3 +384,5 @@ fn publish(
     }
     Ok(())
 }
+
+include!("neuron_goal_scope_archive_store_v3.rs");

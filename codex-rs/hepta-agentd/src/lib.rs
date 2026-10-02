@@ -378,7 +378,9 @@ pub use neuron_runtime_v2::AgentdNeuronGenerationControllerSnapshotV2;
 pub use neuron_runtime_v2::AgentdNeuronGenerationControllerV2;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronGenerationStateV2;
+pub use neuron_runtime_v2::AgentdNeuronGoalScopeArchiveFrontierV3;
 pub use neuron_runtime_v2::AgentdNeuronGoalScopeStateV3;
+pub use neuron_runtime_v2::AgentdNeuronGoalScopeTopologyV3;
 pub use neuron_runtime_v2::AgentdNeuronGoalScopeV3;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::AgentdNeuronHandleV2;
@@ -408,6 +410,7 @@ pub use neuron_runtime_v2::read_agentd_neuron_generation_state_v2;
 pub use neuron_runtime_v2::read_agentd_neuron_goal_scope_state_v3;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::read_agentd_neuron_live_generation_state_v2;
+pub use neuron_runtime_v2::read_agentd_neuron_live_goal_scope_state_v3;
 #[cfg(feature = "server")]
 pub use neuron_runtime_v2::write_agentd_neuron_generation_state_v2;
 pub use neuron_runtime_v2::write_agentd_neuron_goal_scope_state_v3;
