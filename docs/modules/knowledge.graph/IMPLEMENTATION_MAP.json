@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "0b92811224c06801524ba7c04b3b9c1c2f6ae07b",
-    "tree": "11c2487af21c2aa4736a93ead20c574150a74e39"
+    "commit": "e5f7755fec463050fda183a6f79913749722a8dd",
+    "tree": "8e508a8dae0b62ad8f30f554af076e8f75a7266f"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -235,8 +235,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "0b92811224c06801524ba7c04b3b9c1c2f6ae07b",
-    "tree": "11c2487af21c2aa4736a93ead20c574150a74e39"
+    "commit": "e5f7755fec463050fda183a6f79913749722a8dd",
+    "tree": "8e508a8dae0b62ad8f30f554af076e8f75a7266f"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
@@ -412,11 +412,11 @@
     },
     {
       "path": "codex-rs/hepta-kg",
-      "object": "be40b31fe39d8a7a1ec4d3036adaa859edb32cbe"
+      "object": "fd412c5f865c500a2aabf5dda82926efea90d30b"
     },
     {
       "path": "codex-rs/hepta-kg/src/generation.rs",
-      "object": "5e68aa33252ef4cb483d4d96829569bd2bf9eb93"
+      "object": "fedc698d6ebeaea06cf3ecf6eb67bd38c36519d2"
     },
     {
       "path": "codex-rs/hepta-kg/src/generation_tests.rs",
@@ -580,7 +580,7 @@
     },
     {
       "path": "docs/modules/knowledge.graph/TECHNICAL.md",
-      "object": "a51ad0b88eefb790b2f936d3561859363ba2fc4a"
+      "object": "118f15cf45d5e77271d5aeddfce1c9752387af75"
     },
     {
       "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
@@ -598,5 +598,8 @@
       "path": "scripts/verify_hepta_callers.py",
       "object": "d2460ad20da700de96adc98a34d90bd078219cb6"
     }
+  ],
+  "technicalSupplements": [
+    "docs/modules/knowledge.graph/ADVERSARIAL_AUDIT_20261002.md"
   ]
 }
