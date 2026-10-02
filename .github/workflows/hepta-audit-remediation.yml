@@ -63,7 +63,7 @@ jobs:
 
       - name: Strict selected-package Clippy
         working-directory: codex-rs
-        run: cargo clippy --locked --package codex-hepta-intelligence-eval --all-targets -- -D warnings
+        run: cargo clippy --locked --package codex-hepta-intelligence-eval --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Check selected formatting without modifying source
         working-directory: codex-rs

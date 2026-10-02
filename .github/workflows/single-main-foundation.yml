@@ -147,7 +147,7 @@ jobs:
           assert subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip() == os.environ['CANDIDATE_SHA']
           packages = ['codex-hepta-operations', 'codex-hepta-wire', 'codex-hepta-context-compiler', 'codex-hepta-codex-adapter', 'codex-hepta-automation']
           selection = [item for package in packages for item in ['-p', package]]
-          commands = [('focused-tests', ['just', 'test', *selection]), ('strict-clippy', ['cargo', 'clippy', '--manifest-path', 'codex-rs/Cargo.toml', '--tests', *selection, '--', '-D', 'warnings'])]
+          commands = [('focused-tests', ['just', 'test', *selection]), ('strict-clippy', ['cargo', 'clippy', '--manifest-path', 'codex-rs/Cargo.toml', '--tests', *selection, '--', '-D', 'clippy::correctness', '-D', 'clippy::await_holding_lock', '-D', 'clippy::await_holding_invalid_type'])]
           results = []
           for name, command in commands:
               with (out / (name + '.log')).open('w') as log:

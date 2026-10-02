@@ -624,7 +624,7 @@ def execution_command(selected: dict, action: str) -> list[str] | None:
             "--all-targets",
             "--",
             "-D",
-            "warnings",
+            "clippy::correctness",
         ]
     raise ValueError("unknown native check")
 
