@@ -6,6 +6,72 @@ use crate::ReleaseReadPin;
 use crate::VerifiedLaunchDigest;
 
 impl FleetRegistry {
+    /// Capture bounded catalog metadata and actual FDs; no program bytes are
+    /// verified and this context cannot allow a release or authorize a launch.
+    #[cfg(unix)]
+    pub fn prepare_release_for_launch(
+        &self,
+        release_id: &ReleaseId,
+    ) -> Result<crate::PreparedReleaseRead, FleetRegistryError> {
+        let mut prepared = crate::PreparedReleaseRead::new();
+        resolve_catalog_release_with_programs(self, release_id, |program, metadata, manifest| {
+            prepared.prepare_program(program, manifest, &metadata.program_sha256)
+        })?;
+        Ok(prepared)
+    }
+
+    /// Consume preparation at the owner boundary through the actual original
+    /// FDs. Mutable installations are fully read; unchanged Root custody may
+    /// reuse the original protected complete-byte proof. No authority is cached.
+    #[cfg(unix)]
+    pub fn verify_prepared_release_for_launch(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+        mut prepared: crate::PreparedReleaseRead,
+    ) -> Result<(RegisteredRelease, ReleaseReadPin), FleetRegistryError> {
+        let mut programs = Vec::new();
+        let release =
+            self.resolve_release_with_catalog(agent_id, release_id, |registry, release_id| {
+                resolve_catalog_release_with_programs(
+                    registry,
+                    release_id,
+                    |program, metadata, manifest| {
+                        programs.push(prepared.read_verified_program(
+                            &registry.release_digests,
+                            program,
+                            manifest,
+                            &metadata.program_sha256,
+                        )?);
+                        Ok(())
+                    },
+                )
+                .map(|(release, _)| release)
+            })?;
+        Ok((release, ReleaseReadPin::from_catalog_programs(programs)))
+    }
+
+    /// Resolve only a descriptor from unverified preparation. Physical use
+    /// must first consume the context through the complete-byte verification.
+    #[cfg(unix)]
+    pub fn resolve_release_descriptor_from_prepared_read(
+        &self,
+        agent_id: &AgentId,
+        release_id: &ReleaseId,
+        prepared: &crate::PreparedReleaseRead,
+    ) -> Result<RegisteredRelease, FleetRegistryError> {
+        self.resolve_release_with_catalog(agent_id, release_id, |registry, release_id| {
+            resolve_catalog_release_with_programs(
+                registry,
+                release_id,
+                |program, metadata, manifest| {
+                    prepared.verify_catalog_program(program, manifest, &metadata.program_sha256)
+                },
+            )
+            .map(|(release, _)| release)
+        })
+    }
+
     /// Read installed bytes outside the writer lane and pin only their facts.
     pub fn prevalidate_release_for_launch(
         &self,

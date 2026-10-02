@@ -16,10 +16,10 @@ pub struct ReleaseReadPin {
 // actual FDs, not an allowance, grant or a reusable mutable-file digest cache.
 #[cfg(unix)]
 pub(crate) struct CatalogProgramRead {
-    program: PathBuf,
-    file: File,
-    entry: Arc<Entry>,
-    namespace: Vec<DirectoryIdentity>,
+    pub(super) program: PathBuf,
+    pub(super) file: File,
+    pub(super) entry: Arc<Entry>,
+    pub(super) namespace: Vec<DirectoryIdentity>,
 }
 
 #[cfg(unix)]
@@ -55,7 +55,9 @@ impl ReleaseReadPin {
 }
 
 #[cfg(unix)]
-fn program_namespace(program: &Path) -> Result<Vec<DirectoryIdentity>, FleetRegistryError> {
+pub(super) fn program_namespace(
+    program: &Path,
+) -> Result<Vec<DirectoryIdentity>, FleetRegistryError> {
     program
         .parent()
         .into_iter()

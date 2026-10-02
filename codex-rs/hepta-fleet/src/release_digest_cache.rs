@@ -40,6 +40,12 @@ pub use prefix::VerifiedLaunchDigest;
 #[cfg(unix)]
 pub use prefix::VerifiedLaunchProgram;
 
+#[cfg(unix)]
+#[path = "release_launch_prepared.rs"]
+mod prepared;
+#[cfg(unix)]
+pub use prepared::PreparedReleaseRead;
+
 #[derive(Debug, Default)]
 pub(crate) struct ReleaseDigestCache {
     #[cfg(unix)]

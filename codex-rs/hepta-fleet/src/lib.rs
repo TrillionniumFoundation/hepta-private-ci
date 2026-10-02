@@ -143,6 +143,8 @@ pub use registry::FleetRegistry;
 pub use registry::FleetSnapshot;
 #[cfg(unix)]
 pub use registry::LaunchDigestDomain;
+#[cfg(unix)]
+pub use registry::PreparedReleaseRead;
 pub use registry::ReleaseReadPin;
 #[cfg(unix)]
 pub use registry::VerifiedLaunchDigest;

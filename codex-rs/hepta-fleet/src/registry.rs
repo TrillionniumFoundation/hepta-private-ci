@@ -42,6 +42,8 @@ mod release_digest_cache;
 #[cfg(unix)]
 pub use release_digest_cache::LaunchDigestDomain;
 pub(crate) use release_digest_cache::ManifestRead;
+#[cfg(unix)]
+pub use release_digest_cache::PreparedReleaseRead;
 use release_digest_cache::ReleaseDigestCache;
 pub use release_digest_cache::ReleaseReadPin;
 #[cfg(unix)]

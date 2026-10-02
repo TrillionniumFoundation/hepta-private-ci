@@ -284,3 +284,187 @@ fn descriptor_pin_rejects_replaced_program_or_manifest_with_identical_bytes()
     }
     Ok(())
 }
+
+#[test]
+fn prepared_start_captures_no_bytes_and_final_verification_reads_the_original_fd_completely()
+-> Result<(), Box<dyn std::error::Error>> {
+    let fixture = ReleaseFixture::new()?;
+    let agent = fixture.allow_agent()?;
+    crate::registry::take_program_read_bytes();
+    let prepared = fixture
+        .registry
+        .prepare_release_for_launch(&fixture.release.release_id)?;
+    assert_eq!(crate::registry::take_program_read_bytes(), 0);
+    let descriptor = fixture
+        .registry
+        .resolve_release_descriptor_from_prepared_read(
+            &agent,
+            &fixture.release.release_id,
+            &prepared,
+        )?;
+    assert_eq!(descriptor, fixture.release);
+    assert_eq!(crate::registry::take_program_read_bytes(), 0);
+    let (_, verified) = fixture.registry.verify_prepared_release_for_launch(
+        &agent,
+        &fixture.release.release_id,
+        prepared,
+    )?;
+    assert_eq!(
+        crate::registry::take_program_read_bytes(),
+        fixture.bytes.len() as u64
+    );
+    fixture.registry.resolve_release_descriptor_from_read_pin(
+        &agent,
+        &fixture.release.release_id,
+        &verified,
+    )?;
+    assert_eq!(crate::registry::take_program_read_bytes(), 0);
+    // The old public verified reader has not become a preparation-only API.
+    fixture
+        .registry
+        .prevalidate_release_for_launch(&fixture.release.release_id)?;
+    assert_eq!(
+        crate::registry::take_program_read_bytes(),
+        fixture.bytes.len() as u64
+    );
+    Ok(())
+}
+
+#[test]
+fn prepared_bad_bytes_never_become_a_verified_read() -> Result<(), Box<dyn std::error::Error>> {
+    let fixture = ReleaseFixture::new()?;
+    let agent = fixture.allow_agent()?;
+    set_mode(&fixture.release.program, 0o755)?;
+    std::fs::write(&fixture.release.program, vec![b'x'; fixture.bytes.len()])?;
+    set_mode(&fixture.release.program, 0o555)?;
+    crate::registry::take_program_read_bytes();
+    let prepared = fixture
+        .registry
+        .prepare_release_for_launch(&fixture.release.release_id)?;
+    assert_eq!(crate::registry::take_program_read_bytes(), 0);
+    assert!(matches!(
+        fixture.registry.verify_prepared_release_for_launch(
+            &agent,
+            &fixture.release.release_id,
+            prepared,
+        ),
+        Err(FleetRegistryError::Corrupt(_))
+    ));
+    assert_eq!(
+        crate::registry::take_program_read_bytes(),
+        fixture.bytes.len() as u64
+    );
+    Ok(())
+}
+
+#[test]
+fn prepared_start_rejects_same_length_write_or_identical_file_replacement()
+-> Result<(), Box<dyn std::error::Error>> {
+    for replace in [false, true] {
+        let fixture = ReleaseFixture::new()?;
+        let agent = fixture.allow_agent()?;
+        let prepared = fixture
+            .registry
+            .prepare_release_for_launch(&fixture.release.release_id)?;
+        if replace {
+            let replacement = fixture._temporary.path().join("replacement");
+            std::fs::write(&replacement, &fixture.bytes)?;
+            set_mode(&replacement, 0o555)?;
+            let parent = fixture.release.program.parent().ok_or("program parent")?;
+            set_mode(parent, 0o755)?;
+            std::fs::rename(replacement, &fixture.release.program)?;
+            set_mode(parent, 0o555)?;
+        } else {
+            set_mode(&fixture.release.program, 0o755)?;
+            std::fs::write(&fixture.release.program, vec![b'x'; fixture.bytes.len()])?;
+            set_mode(&fixture.release.program, 0o555)?;
+        }
+        assert!(
+            fixture
+                .registry
+                .verify_prepared_release_for_launch(&agent, &fixture.release.release_id, prepared,)
+                .is_err()
+        );
+    }
+    Ok(())
+}
+
+#[test]
+fn prepared_start_rejects_current_revocation_other_release_and_parent_substitution()
+-> Result<(), Box<dyn std::error::Error>> {
+    let fixture = ReleaseFixture::new()?;
+    let agent = fixture.allow_agent()?;
+    let prepared = fixture
+        .registry
+        .prepare_release_for_launch(&fixture.release.release_id)?;
+    assert!(
+        fixture
+            .registry
+            .resolve_release_descriptor_from_prepared_read(
+                &agent,
+                &ReleaseId::parse("not-prepared")?,
+                &prepared,
+            )
+            .is_err()
+    );
+    fixture
+        .registry
+        .revoke_release(&agent, &fixture.release.release_id)?;
+    assert!(matches!(
+        fixture.registry.verify_prepared_release_for_launch(
+            &agent,
+            &fixture.release.release_id,
+            prepared,
+        ),
+        Err(FleetRegistryError::ReleaseRevoked { .. })
+    ));
+    let fixture = ReleaseFixture::new()?;
+    let agent = fixture.allow_agent()?;
+    let prepared = fixture
+        .registry
+        .prepare_release_for_launch(&fixture.release.release_id)?;
+    let parent = fixture.release.program.parent().ok_or("program parent")?;
+    let displaced = parent.with_extension("displaced");
+    let release_root = parent.parent().ok_or("release root")?;
+    set_mode(release_root, 0o755)?;
+    std::fs::rename(parent, &displaced)?;
+    std::fs::create_dir(parent)?;
+    std::fs::copy(displaced.join("hepta-agentd"), &fixture.release.program)?;
+    set_mode(parent, 0o555)?;
+    set_mode(release_root, 0o555)?;
+    assert!(
+        fixture
+            .registry
+            .verify_prepared_release_for_launch(&agent, &fixture.release.release_id, prepared,)
+            .is_err()
+    );
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+#[ignore = "requires root to change the actual program UID"]
+fn prepared_start_rejects_actual_uid_change_before_physical_use()
+-> Result<(), Box<dyn std::error::Error>> {
+    use std::os::unix::fs::MetadataExt;
+    assert_eq!(
+        std::process::Command::new("id").arg("-u").output()?.stdout,
+        b"0\n",
+        "run this native case as root"
+    );
+    let fixture = ReleaseFixture::new()?;
+    let agent = fixture.allow_agent()?;
+    let prepared = fixture
+        .registry
+        .prepare_release_for_launch(&fixture.release.release_id)?;
+    assert_eq!(std::fs::metadata(&fixture.release.program)?.uid(), 0);
+    std::os::unix::fs::chown(&fixture.release.program, Some(1000), None)?;
+    assert_eq!(std::fs::metadata(&fixture.release.program)?.uid(), 1000);
+    assert!(
+        fixture
+            .registry
+            .verify_prepared_release_for_launch(&agent, &fixture.release.release_id, prepared,)
+            .is_err()
+    );
+    Ok(())
+}
