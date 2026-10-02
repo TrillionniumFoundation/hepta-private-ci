@@ -632,3 +632,40 @@ source 与组合复核由独立 reviewer 检查，限定范围内无新具体反
 Clippy 通过（35.10 秒），qualification／offline Clippy 通过（10.44 秒）；
 均 --no-deps -- -D warnings。fix／fmt 后没有本地重跑测试。新 exact head 的
 完整远端执行仍是交付必要条件，12／2／2 与所有生产资格限制不提升。
+
+## 最新完整源码与共享输入绑定
+
+此前 6c 源码、156 对象／23 entrypoint 绑定和 21／77 回归要求是历史
+checkpoint。最新完整修复源码为
+`90ef2d19255502306488ef9009eed916a6d004bb`，tree 为
+`ac043ce60a390b7515989f11ed580b4e83f12bff`；二十个源码、指南与历史
+证据阶段实际改动依次为 256／225／248／389／457／373／431／404／399／
+122／38／368／191／427／16／153／196／468／484／306 行，各阶段低于
+500，API blob 和 tree 均与本地 immutable Git 对象相同。当前 84 个
+common repair identities、五个 Fleet identities 是源码要求；自 1f
+新增 28 个 Supervisor、两个 Fleet 叶。它们尚未取得最终 head 执行信用。
+
+三份关联 map 的 canonical inventory 现在包含 160 个对象（Supervisor
+144、Kernel 16）及 23 个 operation entrypoint blobs。新增三份 signed
+constructor 模块／测试和真实 6958 历史失败 receipt 均绑定实际源码对象。
+七份共享 Cargo.lock map 的历史 evidence／root／observation 闭包到新
+源码逐项证明只有 Cargo.lock 改变：1518 个 package 的版本、来源和
+checksum 不变，仅既有 Fleet 增加 workspace libc 依赖边。它们保留
+immutable sourceBase 和原 identity policy，增加 exact_blob 模式与
+92 个真实 operation blobs，绑定 90ef current observation；其余
+108 个 canonical 对象保持真实。合计 268 个对象（249 blob、19 tree）
+和 115 个 entrypoint bindings，十份 map 的完整结构／源码规则静态核对
+通过，不提升 owner、claims、gaps、capability 或激活状态。
+
+另外七份历史 provenance map 未修改。6958 远端 raw 对它们的实际错误
+是 nonancestor（merge-base exit 1）；本地对象未 fetch 的访问失败不等于
+已证明远端缺失。共享锁漂移是本轮造成且已修正，不能归入无关历史问题。
+历史结果交叉核验也纠正了 metadata 草稿误把 1f 的 deep PASS 带入 6958：
+6958 六 native 和两 deep 全部失败，两 deep 实际只跑 default
+406／403 PASS／三 FAIL，随后 qualification／product／lint 跳过。
+冻结 raw 与 receipt 不改写；只修正解释，不把静态 schema PASS 当运行证明。
+
+最终 metadata 候选将以 clean committed checkout 再执行完整 map verifier，
+随后单独进行六 native、两 deep 和增强六输入 Bazel 诊断。上述对象与
+源码检查不代替这一执行，也不建立 current-main merge、目标主机、独立
+验收、生产激活或发布资格。

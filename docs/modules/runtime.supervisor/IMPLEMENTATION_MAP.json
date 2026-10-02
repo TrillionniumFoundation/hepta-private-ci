@@ -97,14 +97,24 @@
           "path": "codex-rs/hepta-fleet/src/regular_file_tests.rs",
           "kind": "supporting_fleet_registry_catalog_descriptor_fifo_cuts_not_ledger_operation_execution",
           "command": "just test --locked -p codex-hepta-fleet --lib regular_file::tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_replay_tests.rs",
+          "kind": "real_signed_first_prepared_authority_legacy_unsigned_quarantine_and_terminal_recovery_proofs",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_containment_tests.rs",
+          "kind": "signed_denial_independent_owner_containment_fault_retention_and_retry",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::containment --retries 0"
         }
       ],
-      "sourceSemantics": "Creates a generation-fenced managed process. Unix post-spawn setup faults travel with the acquired process owner; failed initialization or lease publication retains an exact fenced main or Matrix handle until observed exit and same-owner cleanup. Constructor recovery prevalidates durable evidence, independently acquires exact main and Matrix owners, and isolates damaged Agent evidence without dropping unrelated owners. Adopted signals use kernel lifetime references on supported Linux/macOS hosts, never a bare-PID fallback. Daemon death before a recoverable lease and complete cross-daemon exit-cleanup reconciliation remain open. Every main launch repeats current canonical catalog admission before lifecycle or process effects; catalog-derived descriptors never downgrade to catalog-free plants after entry removal. Constructor-only pure idle hydration is observed at most 256 times and settled by a final complete Fleet read, complete AgentRecord equality and fresh absence of all eight durable witnesses; changed idle records use original fresh recovery, while acquired owners are retained and denied rather than re-adopted. No observation authorizes admission or mutation. Recovery proves supplied now plus Drain and Stop grace is representable before registry loading or any ownership acquisition. Matrix public binding is read from a bounded regular descriptor with prior/opened inode equality; Fleet registry/catalog inputs retain full global validation through descriptor-safe reads. Directory-sync failure retains existing exact-owner finalization requirements.",
+      "sourceSemantics": "Creates a generation-fenced managed process. Unix post-spawn setup faults travel with the acquired process owner; failed initialization or lease publication retains an exact fenced main or Matrix handle until observed exit and same-owner cleanup. Constructor recovery prevalidates durable evidence, independently acquires exact main and Matrix owners, and isolates damaged Agent evidence without dropping unrelated owners. Adopted signals use kernel lifetime references on supported Linux/macOS hosts, never a bare-PID fallback. Daemon death before a recoverable lease and complete cross-daemon exit-cleanup reconciliation remain open. Every main launch repeats current canonical catalog admission before lifecycle or process effects; catalog-derived descriptors never downgrade to catalog-free plants after entry removal. Constructor-only pure idle hydration is observed at most 256 times and settled by a final complete Fleet read, complete AgentRecord equality and fresh absence of all eight durable witnesses; changed idle records use original fresh recovery, while acquired owners are retained and denied rather than re-adopted. No observation authorizes admission or mutation. Recovery proves supplied now plus Drain and Stop grace is representable before registry loading or any ownership acquisition. Matrix public binding is read from a bounded regular descriptor with prior/opened inode equality; Fleet registry/catalog inputs retain full global validation through descriptor-safe reads. Directory-sync failure retains existing exact-owner finalization requirements. Constructor typed signed denial is primed before independent main/Matrix acquisition and automatic replay; exact matching Committed/RolledBack terminal evidence is recognized without false quarantine. The primer writes no journal and performs no CAS or process operation; full later recovery and terminal acknowledgement remain after acquisition. Trusted denial blocks new main/Matrix restart claims and dispatch while retaining diagnostics, actual exit, exact cleanup and prior durable charges.",
       "operation": "start_instance",
       "nativeSymbol": "pub fn start(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
+      "sourceBlob": "60d32763fb4617d8191a1096b31ef5559c73977d"
     },
     {
       "designOperation": "observe_health",
@@ -206,14 +216,34 @@
           "path": "codex-rs/hepta-supervisor/src/directory_io_tests.rs",
           "kind": "real_directory_to_fifo_rejection_before_sync_watchdog_release",
           "command": "just test --locked -p codex-hepta-supervisor --lib directory_io::tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_replay_tests.rs",
+          "kind": "real_signed_first_prepared_authority_legacy_unsigned_quarantine_and_terminal_recovery_proofs",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_containment_tests.rs",
+          "kind": "signed_denial_independent_owner_containment_fault_retention_and_retry",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::containment --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs::stored_matrix_exit_blocks_graceful_resignal_until_exact_cleanup",
+          "kind": "real_terminal_matrix_foreign_lease_graceful_deferral_and_late_acknowledged_main_kill",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests::stored_matrix_exit_blocks_graceful_resignal_until_exact_cleanup --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs::deferred_drain_exit_does_not_admit_automatic_restart_before_matrix_cleanup",
+          "kind": "real_same_spawn_deferred_drain_or_stop_exit_denies_new_automatic_restart_claim",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests::deferred_drain_exit_does_not_admit_automatic_restart_before_matrix_cleanup --retries 0"
         }
       ],
-      "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success. Emit automatic restart attempts only after durable charge and exact lineage/deadline admission; exhaustion is a normal bounded policy outcome. Preserve independently observed concurrent admission, signal, probe and cleanup faults once in the bounded tick report. Fresh complete read metadata and physical lease readiness remain mandatory when unchanged per-Agent status projections are reused. Agentd and Matrix Health use one existing 200 ms monotonic budget for each Unix control exchange, including nonblocking connect, kernel peer-PID validation before any request byte, partial writes, half-close and bounded response reads. Successful partial progress and interrupted I/O cannot renew the absolute deadline; a probe error or timeout publishes false through the existing health worker. The four common transport regressions are exact mandatory library identities; the full-accept-queue regression is Linux-only and is not a macOS requirement. This is not an entire adoption or lifecycle SLO, an immediate read-projection refresh, per-Agent scheduling isolation or preemption of intrinsically stuck kernel/path/filesystem calls. Expired acknowledged Draining/Stopping phases and already admitted current-unfenced-spawn pending due Drain/Stop or immediate Kill are contained before fallible Fleet observation and polling, preserving the original budget and stronger Kill. An unexpired exact Matrix-deferred Stop skips the main signal while retaining eligible startup/Running health observation. The same-tick control result cannot be readmitted after pending clears; Stopping/Killing remains unready on later healthy probes, with Draining semantics unchanged. Matrix direct signal errors survive later unresolved poll/Fleet/cleanup errors once, and stored exact exit makes every preceding containment helper cleanup-only without a new signal, Killing transition or MatrixKillRequested event. No acknowledgement or timeout creates exit or lease-cleanup evidence.",
+      "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success. Emit automatic restart attempts only after durable charge and exact lineage/deadline admission; exhaustion is a normal bounded policy outcome. Preserve independently observed concurrent admission, signal, probe and cleanup faults once in the bounded tick report. Fresh complete read metadata and physical lease readiness remain mandatory when unchanged per-Agent status projections are reused. Agentd and Matrix Health use one existing 200 ms monotonic budget for each Unix control exchange, including nonblocking connect, kernel peer-PID validation before any request byte, partial writes, half-close and bounded response reads. Successful partial progress and interrupted I/O cannot renew the absolute deadline; a probe error or timeout publishes false through the existing health worker. The four common transport regressions are exact mandatory library identities; the full-accept-queue regression is Linux-only and is not a macOS requirement. This is not an entire adoption or lifecycle SLO, an immediate read-projection refresh, per-Agent scheduling isolation or preemption of intrinsically stuck kernel/path/filesystem calls. Expired acknowledged Draining/Stopping phases and already admitted current-unfenced-spawn pending due Drain/Stop or immediate Kill are contained before fallible Fleet observation and polling, preserving the original budget and stronger Kill. An unexpired exact Matrix-deferred Stop skips the main signal while retaining eligible startup/Running health observation. The same-tick control result cannot be readmitted after pending clears; Stopping/Killing remains unready on later healthy probes, with Draining semantics unchanged. Matrix direct signal errors survive later unresolved poll/Fleet/cleanup errors once, and stored exact exit makes every preceding containment helper cleanup-only without a new signal, Killing transition or MatrixKillRequested event. No acknowledgement or timeout creates exit or lease-cleanup evidence. A same-spawn DeferredDrain/Stop marker excludes fresh automatic restart admission on true main exit; a stale marker does not suppress another spawn. Trusted recovery denial blocks new main and Matrix retry claims without suppressing actual exit observation, exact lease cleanup or degradation diagnostics. Stored exact Matrix exit also makes graceful deferral signal/phase/event-free while its marker waits for exact cleanup; late cleanup cannot repeat main control or lifecycle CAS after acknowledged Killing.",
       "operation": "observe_health",
       "nativeSymbol": "pub fn tick(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
+      "sourceBlob": "60d32763fb4617d8191a1096b31ef5559c73977d"
     },
     {
       "designOperation": "drain",
@@ -265,14 +295,24 @@
           "path": "codex-rs/hepta-supervisor/src/tick_pending_deadline_tests.rs",
           "kind": "admitted_due_control_and_fresh_stop_matrix_deferral_with_original_monotonic_budget",
           "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::pending_deadline_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs::stored_matrix_exit_blocks_graceful_resignal_until_exact_cleanup",
+          "kind": "real_terminal_matrix_foreign_lease_graceful_deferral_and_late_acknowledged_main_kill",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests::stored_matrix_exit_blocks_graceful_resignal_until_exact_cleanup --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs::deferred_drain_exit_does_not_admit_automatic_restart_before_matrix_cleanup",
+          "kind": "real_same_spawn_deferred_drain_or_stop_exit_denies_new_automatic_restart_claim",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests::deferred_drain_exit_does_not_admit_automatic_restart_before_matrix_cleanup --retries 0"
         }
       ],
-      "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement for the current spawn/draining generation. Agentd first closes App Server admission and waits for already-admitted RPC handlers, then requires zero running assistant turns and zero unclassified durable Automation/TaskFlow blockers. Durable uncertain/indeterminate effects remain unknown for reconciliation rather than being relabelled complete. A crash after durable Draining replays the idempotent Drain RPC; unavailable drain evidence fails closed into bounded stop escalation, never a drain==SIGTERM shortcut. Recovery of an exact journaled Stop preserves its original durable deadline; a transient bound-control driver failure retains the staged control and does not skip independent signed-intent recovery. Complete crash-cut lineage and the atomic recovery-observation envelope remain open. The typed Agentd Drain exchange uses one existing 200 ms monotonic budget across nonblocking connect, kernel peer-PID validation before request bytes, partial writes, half-close and bounded response reads; partial progress cannot renew it. Linux accept-backlog EAGAIN is a failed connection and cannot be treated as a successful handshake. Transport timeout, absence or an incomplete reply never establishes Drain acknowledgement or process exit, never releases an owned handle and does not undo a request already delivered. The original durable control deadline and escalation remain decisive. Common transport tests apply on Linux/macOS; the accept-queue regression is Linux-only. This per-exchange budget is not an entire Stop/adoption SLO and does not make intrinsic kernel/path/filesystem stalls preemptible. Drain checks the actual supplied now plus drain_timeout plus stop_grace before deferral, fencing, CAS or signals, rejecting overflow without granting Kill authority. Expiry uses the original drain limit plus Stop grace, not delayed-tick time. Admitted current-spawn pending Drain may escalate before a broken full-Fleet read only when due; its signal, registry and poll faults remain independently reportable and exact ownership survives until real exit and durable cleanup.",
+      "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement for the current spawn/draining generation. Agentd first closes App Server admission and waits for already-admitted RPC handlers, then requires zero running assistant turns and zero unclassified durable Automation/TaskFlow blockers. Durable uncertain/indeterminate effects remain unknown for reconciliation rather than being relabelled complete. A crash after durable Draining replays the idempotent Drain RPC; unavailable drain evidence fails closed into bounded stop escalation, never a drain==SIGTERM shortcut. Recovery of an exact journaled Stop preserves its original durable deadline; a transient bound-control driver failure retains the staged control and does not skip independent signed-intent recovery. Complete crash-cut lineage and the atomic recovery-observation envelope remain open. The typed Agentd Drain exchange uses one existing 200 ms monotonic budget across nonblocking connect, kernel peer-PID validation before request bytes, partial writes, half-close and bounded response reads; partial progress cannot renew it. Linux accept-backlog EAGAIN is a failed connection and cannot be treated as a successful handshake. Transport timeout, absence or an incomplete reply never establishes Drain acknowledgement or process exit, never releases an owned handle and does not undo a request already delivered. The original durable control deadline and escalation remain decisive. Common transport tests apply on Linux/macOS; the accept-queue regression is Linux-only. This per-exchange budget is not an entire Stop/adoption SLO and does not make intrinsic kernel/path/filesystem stalls preemptible. Drain checks the actual supplied now plus drain_timeout plus stop_grace before deferral, fencing, CAS or signals, rejecting overflow without granting Kill authority. Expiry uses the original drain limit plus Stop grace, not delayed-tick time. Admitted current-spawn pending Drain may escalate before a broken full-Fleet read only when due; its signal, registry and poll faults remain independently reportable and exact ownership survives until real exit and durable cleanup. Graceful Matrix deferral records the current-main-spawn action before honoring stored exact companion exit, then waits for exact lease cleanup without another Matrix signal, phase or event. Same-spawn deferred true main exit cannot admit a fresh automatic restart; acknowledged main Killing consumes late cleanup continuation without another main signal or CAS.",
       "operation": "drain",
       "nativeSymbol": "pub fn drain(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
+      "sourceBlob": "60d32763fb4617d8191a1096b31ef5559c73977d"
     },
     {
       "designOperation": "stop_instance",
@@ -319,14 +359,24 @@
           "path": "codex-rs/hepta-supervisor/src/directory_io_tests.rs",
           "kind": "real_directory_to_fifo_rejection_before_sync_watchdog_release",
           "command": "just test --locked -p codex-hepta-supervisor --lib directory_io::tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs::stored_matrix_exit_blocks_graceful_resignal_until_exact_cleanup",
+          "kind": "real_terminal_matrix_foreign_lease_graceful_deferral_and_late_acknowledged_main_kill",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests::stored_matrix_exit_blocks_graceful_resignal_until_exact_cleanup --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs::deferred_drain_exit_does_not_admit_automatic_restart_before_matrix_cleanup",
+          "kind": "real_same_spawn_deferred_drain_or_stop_exit_denies_new_automatic_restart_claim",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests::deferred_drain_exit_does_not_admit_automatic_restart_before_matrix_cleanup --retries 0"
         }
       ],
-      "sourceSemantics": "Before cancellation or signaling, persists a generation/process-bound Stop intent with its original deadline. Cancels an existing pending main restart through the canonical writer before companion deferral, lifecycle CAS and graceful signaling; preserves charged attempts, window origin, eligibility and companion budget. Recovery reuses that deadline and reconciles cancellation before journaled absence may complete the control. A stopped/failed Agent with no owned or leased processes can cancel its existing pending restart without inventing a process identity. Internal/deferred process stop preserves the restart it implements. Complete release-change/control supersession and cross-daemon exit-cleanup witnesses remain open. Process termination is not user-task success. A live Stop checks caller-supplied monotonic now plus stop_grace before durable publication. Private preparation distinguishes Fresh from Retained without changing the codec; Fresh stages that deadline only after durable restart cancellation succeeds, before Matrix deferral. Cancellation failure retains the journal without newly staged pending control, requested marker or signal. Retry combines the earlier pending/acknowledged Stop deadline and stronger Kill while validating the existing journal digest/exact target and Stop wall-clock rollback; only restoration without an in-process Stop/Kill continuation reconstructs wall-time remaining. Unexpired same-spawn deferred Stop waits for its owned Matrix without early main signal or probe-induced companion emergency Kill; at its original deadline exact main containment precedes Fleet reads. Stopping/Killing never becomes ready from later healthy probes.",
+      "sourceSemantics": "Before cancellation or signaling, persists a generation/process-bound Stop intent with its original deadline. Cancels an existing pending main restart through the canonical writer before companion deferral, lifecycle CAS and graceful signaling; preserves charged attempts, window origin, eligibility and companion budget. Recovery reuses that deadline and reconciles cancellation before journaled absence may complete the control. A stopped/failed Agent with no owned or leased processes can cancel its existing pending restart without inventing a process identity. Internal/deferred process stop preserves the restart it implements. Complete release-change/control supersession and cross-daemon exit-cleanup witnesses remain open. Process termination is not user-task success. A live Stop checks caller-supplied monotonic now plus stop_grace before durable publication. Private preparation distinguishes Fresh from Retained without changing the codec; Fresh stages that deadline only after durable restart cancellation succeeds, before Matrix deferral. Cancellation failure retains the journal without newly staged pending control, requested marker or signal. Retry combines the earlier pending/acknowledged Stop deadline and stronger Kill while validating the existing journal digest/exact target and Stop wall-clock rollback; only restoration without an in-process Stop/Kill continuation reconstructs wall-time remaining. Unexpired same-spawn deferred Stop waits for its owned Matrix without early main signal or probe-induced companion emergency Kill; at its original deadline exact main containment precedes Fleet reads. Stopping/Killing never becomes ready from later healthy probes. Stored exact Matrix exit preserves the current-main-spawn deferred Stop through foreign-lease cleanup denial without another companion signal, phase or event. After exact cleanup, acknowledged main Killing clears that deferred continuation without repeating control/CAS; failed Kill remains retryable. Same-spawn deferred true exit cannot create a new automatic replacement claim.",
       "operation": "stop_instance",
       "nativeSymbol": "pub fn stop(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
+      "sourceBlob": "60d32763fb4617d8191a1096b31ef5559c73977d"
     },
     {
       "designOperation": "kill_instance",
@@ -398,14 +448,24 @@
           "path": "codex-rs/hepta-supervisor/src/directory_io_tests.rs",
           "kind": "real_directory_to_fifo_rejection_before_sync_watchdog_release",
           "command": "just test --locked -p codex-hepta-supervisor --lib directory_io::tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs::stored_matrix_exit_blocks_graceful_resignal_until_exact_cleanup",
+          "kind": "real_terminal_matrix_foreign_lease_graceful_deferral_and_late_acknowledged_main_kill",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests::stored_matrix_exit_blocks_graceful_resignal_until_exact_cleanup --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs::deferred_drain_exit_does_not_admit_automatic_restart_before_matrix_cleanup",
+          "kind": "real_same_spawn_deferred_drain_or_stop_exit_denies_new_automatic_restart_claim",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests::deferred_drain_exit_does_not_admit_automatic_restart_before_matrix_cleanup --retries 0"
         }
       ],
-      "sourceSemantics": "Attempts durable generation/process-bound Kill intent and pending-main-restart cancellation, then attempts the already-owned main process before independently entering the companion driver. Companion, registry, intent or cancellation failures cannot suppress the main emergency termination attempt; all failures remain reportable and retained owners stay fenced until observed exit. Adopted signals use kernel lifetime references; a signal acknowledgement is not observed exit. Complete release-change/control supersession, cross-daemon exit-cleanup witnesses and target-host qualification remain open. An already admitted pending Kill for the exact current unfenced spawn retries before fallible full-Fleet observation; a stale pending target grants no such signal authority. Successful pre-read control is captured once and cannot regain readiness in the same tick. A stored Matrix exit makes shared containment callers mark unhealthy/fenced and retry cleanup only, without signaling or manufacturing control events. Original signal and later unresolved observation/cleanup faults remain visible once; only real exact exit plus durable cleanup releases ownership.",
+      "sourceSemantics": "Attempts durable generation/process-bound Kill intent and pending-main-restart cancellation, then attempts the already-owned main process before independently entering the companion driver. Companion, registry, intent or cancellation failures cannot suppress the main emergency termination attempt; all failures remain reportable and retained owners stay fenced until observed exit. Adopted signals use kernel lifetime references; a signal acknowledgement is not observed exit. Complete release-change/control supersession, cross-daemon exit-cleanup witnesses and target-host qualification remain open. An already admitted pending Kill for the exact current unfenced spawn retries before fallible full-Fleet observation; a stale pending target grants no such signal authority. Successful pre-read control is captured once and cannot regain readiness in the same tick. A stored Matrix exit makes shared containment callers mark unhealthy/fenced and retry cleanup only, without signaling or manufacturing control events. Original signal and later unresolved observation/cleanup faults remain visible once; only real exact exit plus durable cleanup releases ownership. Late exact Matrix cleanup cannot repeat an already acknowledged same-spawn main Kill or its lifecycle CAS; a failed Kill remains retryable. Signal acceptance remains distinct from observed exit and exact-owner cleanup.",
       "operation": "kill_instance",
       "nativeSymbol": "pub fn kill(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
+      "sourceBlob": "60d32763fb4617d8191a1096b31ef5559c73977d"
     },
     {
       "designOperation": "restart_instance",
@@ -452,14 +512,34 @@
           "path": "codex-rs/hepta-supervisor/src/tick_pending_deadline_tests.rs",
           "kind": "admitted_due_control_and_fresh_stop_matrix_deferral_with_original_monotonic_budget",
           "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::pending_deadline_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_replay_tests.rs",
+          "kind": "real_signed_first_prepared_authority_legacy_unsigned_quarantine_and_terminal_recovery_proofs",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_containment_tests.rs",
+          "kind": "signed_denial_independent_owner_containment_fault_retention_and_retry",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::containment --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs::stored_matrix_exit_blocks_graceful_resignal_until_exact_cleanup",
+          "kind": "real_terminal_matrix_foreign_lease_graceful_deferral_and_late_acknowledged_main_kill",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests::stored_matrix_exit_blocks_graceful_resignal_until_exact_cleanup --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs::deferred_drain_exit_does_not_admit_automatic_restart_before_matrix_cleanup",
+          "kind": "real_same_spawn_deferred_drain_or_stop_exit_denies_new_automatic_restart_claim",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests::deferred_drain_exit_does_not_admit_automatic_restart_before_matrix_cleanup --retries 0"
         }
       ],
-      "sourceSemantics": "Keeps an unresolved restart claim across budget-window rollover without resetting charged attempts or original eligibility. Admission, preflight and recovery reject wall-clock rollback before the window origin; internal/deferred Stop preserves the pending claim. Exact lineage binds the predecessor and any acquired replacement, and healthy completion retains its continuation until lineage and budget acknowledgement are durable. Replacement dispatch waits for exact Matrix exit and lease cleanup. A known driver spawn failure before acquiring a process cancels its exact charged claim; failed cancellation retains its witness, blocks competing dispatch and retries fresh durable acknowledgement without redispatch. Complete predecessor/replacement lineage across every launch-before-lease or rejected-adoption crash cut remains open. Shared live Stop continuation preserves its existing earlier monotonic deadline or stronger Kill while validating any existing journal and rejecting Stop wall rollback; Matrix deferral grants no renewed grace. This does not make restart-internal drain deadlines or exit-cleanup witnesses cross-daemon durable.",
+      "sourceSemantics": "Keeps an unresolved restart claim across budget-window rollover without resetting charged attempts or original eligibility. Admission, preflight and recovery reject wall-clock rollback before the window origin; internal/deferred Stop preserves the pending claim. Exact lineage binds the predecessor and any acquired replacement, and healthy completion retains its continuation until lineage and budget acknowledgement are durable. Replacement dispatch waits for exact Matrix exit and lease cleanup. A known driver spawn failure before acquiring a process cancels its exact charged claim; failed cancellation retains its witness, blocks competing dispatch and retries fresh durable acknowledgement without redispatch. Complete predecessor/replacement lineage across every launch-before-lease or rejected-adoption crash cut remains open. Shared live Stop continuation preserves its existing earlier monotonic deadline or stronger Kill while validating any existing journal and rejecting Stop wall rollback; Matrix deferral grants no renewed grace. This does not make restart-internal drain deadlines or exit-cleanup witnesses cross-daemon durable. Trusted signed recovery denial blocks new main and Matrix retry claims and replacement dispatch, retaining diagnostics, actual exit cleanup and existing durable charges. True main exit under a same-spawn DeferredDrain/Stop marker does not grant a new automatic claim; stale-spawn markers do not alter another incarnation policy.",
       "operation": "restart_instance",
       "nativeSymbol": "pub fn restart(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
+      "sourceBlob": "60d32763fb4617d8191a1096b31ef5559c73977d"
     },
     {
       "designOperation": "load_next",
@@ -498,12 +578,12 @@
           "command": "just test --locked -p codex-hepta-fleet --lib regular_file::tests --retries 0"
         }
       ],
-      "sourceSemantics": "Transitions through a fsynced unified release transaction that binds exact source/target immutable manifests/program bytes, the per-Agent allow/revoke admission frontier, the exact source/target pair identity, lifecycle/release-state generations and optional signed production authority. The pair digest is a structural binding, not independent semantic-compatibility approval; runtime compatibility is established by the typed Agentd/Matrixd readiness contract before commit. A production daemon configured with a verifier rejects unsigned Upgrade/Rollback. Supporting Fleet registry/catalog reads now reject substituted special files through opened regular/size/inode checks and bounded reads, retaining full global catalog, canonical workspace, immutable mode, digest/seal and CAS validation. JSON/frontier bounds stay 32 KiB; copy/hash is bounded by captured length plus one and must retain the original length, without a new executable-size cap.",
+      "sourceSemantics": "Transitions through a fsynced unified release transaction that binds exact source/target immutable manifests/program bytes, the per-Agent allow/revoke admission frontier, the exact source/target pair identity, lifecycle/release-state generations and optional signed production authority. The pair digest is a structural binding, not independent semantic-compatibility approval; runtime compatibility is established by the typed Agentd/Matrixd readiness contract before commit. A production daemon configured with a verifier rejects unsigned Upgrade/Rollback. Supporting Fleet registry/catalog reads now reject substituted special files through opened regular/size/inode checks and bounded reads, retaining full global catalog, canonical workspace, immutable mode, digest/seal and CAS validation. JSON/frontier bounds stay 32 KiB; copy/hash is bounded by captured length plus one and must retain the original length, without a new executable-size cap. Trusted signed recovery denial prevents constructor replay of a legacy unsigned Prepared transaction as unsigned Drain or dispatch; prior terminal signed history alone does not block a separate ordinary unsigned transition.",
       "operation": "load_next",
       "nativeSymbol": "pub fn upgrade(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
+      "sourceBlob": "60d32763fb4617d8191a1096b31ef5559c73977d"
     },
     {
       "designOperation": "rollback_release",
@@ -532,12 +612,12 @@
           "command": "just test --locked -p codex-hepta-fleet --lib regular_file::tests --retries 0"
         }
       ],
-      "sourceSemantics": "Re-resolves the recorded predecessor at the final-use boundary, rejects revoked or allowance/frontier-drifted releases, verifies its immutable bytes against the durable transaction, and starts rollback only as a fresh process generation. Supporting Fleet descriptor reads and directory sync retain the full canonical/catalog/digest/seal/CAS admission boundary; Unix special-file rejection does not relax rollback authority or make regular storage preemptible.",
+      "sourceSemantics": "Re-resolves the recorded predecessor at the final-use boundary, rejects revoked or allowance/frontier-drifted releases, verifies its immutable bytes against the durable transaction, and starts rollback only as a fresh process generation. Supporting Fleet descriptor reads and directory sync retain the full canonical/catalog/digest/seal/CAS admission boundary; Unix special-file rejection does not relax rollback authority or make regular storage preemptible. Trusted signed recovery denial prevents unsigned automatic terminal inference or dispatch for a legacy unsigned Prepared transaction paired with signed RecoveryRequired intent; separately admitted unsigned transition semantics remain unchanged.",
       "operation": "rollback_release",
       "nativeSymbol": "pub fn rollback(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
+      "sourceBlob": "60d32763fb4617d8191a1096b31ef5559c73977d"
     },
     {
       "designOperation": "signed_upgrade",
@@ -594,14 +674,24 @@
           "path": "codex-rs/hepta-fleet/src/regular_file_tests.rs",
           "kind": "supporting_fleet_registry_catalog_descriptor_fifo_cuts_not_ledger_operation_execution",
           "command": "just test --locked -p codex-hepta-fleet --lib regular_file::tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_replay_tests.rs",
+          "kind": "real_signed_first_prepared_authority_legacy_unsigned_quarantine_and_terminal_recovery_proofs",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_containment_tests.rs",
+          "kind": "signed_denial_independent_owner_containment_fault_retention_and_retry",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::containment --retries 0"
         }
       ],
-      "sourceSemantics": "Admits a production upgrade only after independently signed H7 and production-grant verification binds exact source/target releases and current control/lifecycle/daemon-authority fences. The fsynced release transaction additionally binds immutable program digests plus the current per-Agent admission frontier before drain. Signature/catalog/preflight validation and digest-bound status construction finish before the first durable Prepared publication attempt. Failure from that attempt onward returns SignedMutationIndeterminate, mapped by signed RPC to operation_indeterminate, with bounded original diagnostics, trusted in-memory RecoveryRequired and a best-effort durable marker. Even a Prepared directory-sync fault before confirmed process delivery cannot prove no effect. Pure pre-publication refusal remains safe rejection. Public bundle/request and offline seed/public-key readers use descriptor-safe bounded regular inputs while retaining existing caller checks and zeroization; stdin/key-fd streams and signing-authority composition are unchanged. This result does not claim physical delivery, independent authority acceptance, process exit or cleanup.",
+      "sourceSemantics": "Admits a production upgrade only after independently signed H7 and production-grant verification binds exact source/target releases and current control/lifecycle/daemon-authority fences. The fsynced release transaction additionally binds immutable program digests plus the current per-Agent admission frontier before drain. Signature/catalog/preflight validation and digest-bound status construction finish before the first durable Prepared publication attempt. Failure from that attempt onward returns SignedMutationIndeterminate, mapped by signed RPC to operation_indeterminate, with bounded original diagnostics, trusted in-memory RecoveryRequired and a best-effort durable marker. Even a Prepared directory-sync fault before confirmed process delivery cannot prove no effect. Pure pre-publication refusal remains safe rejection. Public bundle/request and offline seed/public-key readers use descriptor-safe bounded regular inputs while retaining existing caller checks and zeroization; stdin/key-fd streams and signing-authority composition are unchanged. This result does not claim physical delivery, independent authority acceptance, process exit or cleanup. The very first Prepared release-transaction publication already binds the exact grant digest, authority epoch, both catalog admission bindings and their compatibility digest. Missing bindings reject before that write, with no unsigned Prepared intermediate. Trusted signed denial blocks new main/Matrix restart claims while retaining exact ownership and cleanup.",
       "operation": "signed_upgrade",
       "nativeSymbol": "pub fn apply_production_grant(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
+      "sourceBlob": "60d32763fb4617d8191a1096b31ef5559c73977d"
     },
     {
       "designOperation": "signed_rollback",
@@ -658,14 +748,24 @@
           "path": "codex-rs/hepta-fleet/src/regular_file_tests.rs",
           "kind": "supporting_fleet_registry_catalog_descriptor_fifo_cuts_not_ledger_operation_execution",
           "command": "just test --locked -p codex-hepta-fleet --lib regular_file::tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_replay_tests.rs",
+          "kind": "real_signed_first_prepared_authority_legacy_unsigned_quarantine_and_terminal_recovery_proofs",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_containment_tests.rs",
+          "kind": "signed_denial_independent_owner_containment_fault_retention_and_retry",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::containment --retries 0"
         }
       ],
-      "sourceSemantics": "Admits production rollback only through an independently signed grant; the predecessor is freshly re-resolved and its manifest/program digests and current allow/revoke admission frontier must exactly match the durable transaction witness. The same first-Prepared-publication-attempt boundary preserves pure signature/catalog/preflight rejection but classifies later publication/continuation failure as SignedMutationIndeterminate/RPC operation_indeterminate. Trusted recovery intent and bounded diagnostics remain even if the best-effort durable marker fails. Descriptor-safe regular-file and directory I/O supplements existing authority and zeroization checks without relaxing them, claiming rollback completion or converting unknown effects into success.",
+      "sourceSemantics": "Admits production rollback only through an independently signed grant; the predecessor is freshly re-resolved and its manifest/program digests and current allow/revoke admission frontier must exactly match the durable transaction witness. The same first-Prepared-publication-attempt boundary preserves pure signature/catalog/preflight rejection but classifies later publication/continuation failure as SignedMutationIndeterminate/RPC operation_indeterminate. Trusted recovery intent and bounded diagnostics remain even if the best-effort durable marker fails. Descriptor-safe regular-file and directory I/O supplements existing authority and zeroization checks without relaxing them, claiming rollback completion or converting unknown effects into success. The first Prepared release transaction already contains complete grant/epoch and source/target admission/compatibility bindings before publication; there is no unsigned Prepared intermediate. Trusted denial cannot downgrade a legacy unsigned transaction into automatic Drain, spawn or terminal inference.",
       "operation": "signed_rollback",
       "nativeSymbol": "pub fn apply_production_grant(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
+      "sourceBlob": "60d32763fb4617d8191a1096b31ef5559c73977d"
     },
     {
       "designOperation": "reconcile_signed_intent",
@@ -712,14 +812,24 @@
           "path": "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
           "kind": "digest_only_abort_retains_unresolved_intent_and_blocks_ordinary_start",
           "command": "just test --locked -p codex-hepta-supervisor --test signed_intent_recovery --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_replay_tests.rs",
+          "kind": "real_signed_first_prepared_authority_legacy_unsigned_quarantine_and_terminal_recovery_proofs",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_constructor_containment_tests.rs",
+          "kind": "signed_denial_independent_owner_containment_fault_retention_and_retry",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::release_retry_tests::signed_recovery::constructor_replay::containment --retries 0"
         }
       ],
-      "sourceSemantics": "Quarantines ambiguous signed transitions as recovery_required while keeping owner-local status/recovery RPCs reachable. An independently signed recovery decision must bind the grant, signed-intent digest, release-transaction digest, observed immutable release bytes and current lifecycle/daemon-authority fences; the current admission frontier is revalidated again before terminal commit/rollback. Exact prepared source/target CAS generation and predecessor distinguish rollback-target success from failed-target source restoration. An interrupted terminal publication can resume only its exact signed decision after repeated verification, acknowledging both journals and advancing owner-local revision once; unrelated transaction digests are omitted from status. Decision/frontier/outcome/replay checks precede the first terminal transaction publication attempt; later failed transaction/intent/revision acknowledgement returns SignedMutationIndeterminate/RPC operation_indeterminate. The trusted recovery preimage and possibly published terminal bytes remain bound to the exact decision for retry; neither terminal record is overwritten to manufacture rollback. Failure leaves owner-local recovery revision unchanged, and both durable acknowledgements plus revision update are required before release of quarantine and one successful increment. A Prepared/RecoveryRequired intent with no release transaction has no supported terminalization API because the decision requires that exact transaction digest. The legacy digest-only abort writer has no production consumer and cannot clear quarantine or supply Aborted, exit or cleanup authority.",
+      "sourceSemantics": "Quarantines ambiguous signed transitions as recovery_required while keeping owner-local status/recovery RPCs reachable. An independently signed recovery decision must bind the grant, signed-intent digest, release-transaction digest, observed immutable release bytes and current lifecycle/daemon-authority fences; the current admission frontier is revalidated again before terminal commit/rollback. Exact prepared source/target CAS generation and predecessor distinguish rollback-target success from failed-target source restoration. An interrupted terminal publication can resume only its exact signed decision after repeated verification, acknowledging both journals and advancing owner-local revision once; unrelated transaction digests are omitted from status. Decision/frontier/outcome/replay checks precede the first terminal transaction publication attempt; later failed transaction/intent/revision acknowledgement returns SignedMutationIndeterminate/RPC operation_indeterminate. The trusted recovery preimage and possibly published terminal bytes remain bound to the exact decision for retry; neither terminal record is overwritten to manufacture rollback. Failure leaves owner-local recovery revision unchanged, and both durable acknowledgements plus revision update are required before release of quarantine and one successful increment. A Prepared/RecoveryRequired intent with no release transaction has no supported terminalization API because the decision requires that exact transaction digest. The legacy digest-only abort writer has no production consumer and cannot clear quarantine or supply Aborted, exit or cleanup authority. Constructor pure typed reads prime unresolved denial before independent acquisition or automatic replay, recognizing exact Committed/RolledBack intent or transaction/release proof without false quarantine; late complete recovery and terminal durability publication stay after acquisition. Legacy unsigned Prepared plus signed RecoveryRequired remains isolated. Missing transaction or authority binding requires a separately versioned authorized protocol. ProductionRecoveryOutcome supports Committed/RolledBack only; signed Aborted has no producer and the legacy abort directive cannot clear quarantine. Trusted denial blocks new main/Matrix restart claims while preserving diagnostics, true exit and exact cleanup.",
       "operation": "reconcile_signed_intent",
       "nativeSymbol": "pub fn resolve_production_recovery(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
+      "sourceBlob": "60d32763fb4617d8191a1096b31ef5559c73977d"
     }
   ],
   "repositoryControlledGaps": [
@@ -826,9 +936,9 @@
     "scripts/just-shell.py"
   ],
   "observedAtHead": {
-    "commit": "6c6c051e8f0fac8ce766fe1dc6eb7eda1c6cb58c",
-    "tree": "8c78d5c7faeeabfa24e75d0d2884a9d330a77f25",
-    "interpretation": "Source-only observation of the exact current control, signed-publication and descriptor-I/O repairs. Live Stop proves its caller-supplied monotonic deadline before publication; private Fresh/Retained preparation preserves the codec, and Fresh stages control only after durable restart cancellation. Live retries retain the earlier deadline or stronger Kill while validating the existing bound journal and Stop wall-clock rollback; only journal-only restoration reconstructs remaining wall time. Expired acknowledged phases and admitted current-spawn due Drain/Stop or pending Kill attempt exact-owned containment before fallible Fleet reads; unexpired Matrix-deferred Stop does not signal the main early, and Stopping/Killing cannot regain readiness from probes. Signal, observation and cleanup faults remain distinct; no signal or timeout establishes Drain acknowledgement, process exit or lease cleanup. Signed failures after the first durable publication attempt return SignedMutationIndeterminate/RPC operation_indeterminate with trusted recovery state and bounded diagnostics; no-journal Prepared quarantine remains unsupported for terminalization, and the legacy digest-only abort directive has no production consumer. Private regular-file and directory-descriptor helpers prevent final-component special-file waits while retaining caller bounds, zeroization, full Fleet/catalog/CAS checks and existing platform behavior; ordinary blocked regular storage and ancestor integrity remain host prerequisites, with no per-Agent or Stop SLO claim. The prior single-exchange 200 ms transport budget, peer-PID-before-request-bytes contract, four common tests and Linux-only backlog test remain unchanged. Historical 1f111388 six native lanes and two narrower deep lanes passed only their bound source; older 7c4e0ab/d74cde5/d0169ba records and that success do not validate these later bytes. Historical 6958a901 retained three default-library failures with the prior 20-new-Supervisor/76-repair source inventory; the current source has 21 new Supervisor and two new Fleet leaves and 77 exact repair identities, without a new pass claim. The actual 6958a901 Bazel update and after-check exits were zero and produced byte-identical MODULE.bazel.lock; this diagnostic did not change the lock or qualify the current/future head. Enhanced final-head lock input/clean-drift receipt checks still require their own execution. At the time this observation is written, exact final-candidate/platform execution remains to be obtained independently. All mapped objects and 23 operation entrypoint blobs belong to this exact source commit/tree. Immutable sourceBase, ownership, gaps and all capability/acceptance/activation/release boundaries remain unchanged; no production or target-host qualification is inferred."
+    "commit": "90ef2d19255502306488ef9009eed916a6d004bb",
+    "tree": "ac043ce60a390b7515989f11ed580b4e83f12bff",
+    "interpretation": "Source-only observation of the exact 2026-10-02 control, signed-constructor and descriptor-I/O composition repairs. All existing elapsed-time and owner boundaries are retained: live Fresh/Retained Stop keeps the original checked monotonic deadline and stronger Kill; exact-owned due containment precedes fallible Fleet/poll reads, without granting new admission, Drain acknowledgement, exit or cleanup authority. A stored exact Matrix exit retains a same-main-spawn deferred action through foreign-lease cleanup failure without another signal, phase or event; after exact cleanup an acknowledged main Killing phase does not repeat main control or CAS. An exact main exit with same-spawn DeferredDrain/Stop cannot create a fresh automatic restart claim. The first signed Prepared release-transaction publication already includes grant digest, authority epoch, both catalog admission bindings and compatibility digest; pure unsigned transitions remain separate. Constructor prime_signed_recovery_denial is a typed read before independent main/Matrix acquisition and automatic replay. It derives trusted unresolved denial while recognizing only a Committed/RolledBack intent or exact matching terminal transaction/release proof without false quarantine; late full validation and durable terminal acknowledgement remain after acquisition. Trusted denial preserves diagnostics, independent ownership, actual exit and exact cleanup while denying new main/Matrix restart claims and replacement dispatch. Legacy unsigned Prepared transactions beside signed RecoveryRequired intent cannot downgrade to unsigned Drain/spawn or unsigned terminal inference. Missing transaction or authority binding still requires a separately versioned authorized terminalization protocol. Signed Aborted is only a codec/projection shape, with no production producer; the legacy digest-only abort directive has no production consumer. Signed publication-attempt failures remain SignedMutationIndeterminate/RPC operation_indeterminate with trusted recovery state and bounded diagnostics, without claiming physical delivery or independent authority acceptance. Private regular-file and directory-descriptor helpers preserve bounds, zeroization, full Fleet/catalog/CAS checks and platform behavior; ordinary blocked regular storage and ancestor integrity remain host prerequisites. The existing per-exchange 200 ms absolute transport budget, peer-PID-before-request-bytes contract, four common exchange tests and Linux-only full-backlog test are unchanged; this is not a whole Stop/adoption SLO or per-Agent isolation claim. The final static source inventory is 28 new Supervisor and two new Fleet leaves since 1f111388, with 84 unique common repair identities and five Fleet identities. Historical 6c6c051e recorded 21 new Supervisor/two Fleet and 77 repair identities; 6958a901 retained all eight failed lanes: six native lanes with the actual three failing library leaves, plus two deep lanes whose default library observed 406 enumerated, 403 passed and three failed before later stages were skipped. Older 7c4e0ab/d74cde5/d0169ba and 1f111388 records also remain bound to their original sources; none validates these later bytes. The actual 6958a901 Bazel update and after-check both exited zero and kept MODULE.bazel.lock byte-identical; no lock change or current/future-head qualification is inferred. At the time this observation is written, exact final-candidate/platform execution remains to be obtained independently. All mapped objects and 23 related operation blobs bind this exact source commit/tree. Immutable sourceBase, ownership, capability status, gaps and acceptance/activation/release claims remain unchanged; no production or target-host qualification is inferred."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "productCallers": [
@@ -935,7 +1045,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor",
-      "object": "72d7f008375be9b5801e952c84b7b6f8a1bc90e6"
+      "object": "bc2fd2c7e5df82e45a87e277edecddf3ede8c383"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/authority_bundle.rs",
@@ -987,7 +1097,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/constructor_recovery.rs",
-      "object": "72fa9748112d464cbe80f7fa6f259c70103aa88b"
+      "object": "00839ee2633507db36136d43ebb22fad4243cff5"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/constructor_recovery_probe.rs",
@@ -1103,7 +1213,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/matrix.rs",
-      "object": "8f3d68b5c0709c54ecbbbbece01cc4d1af0721af"
+      "object": "932cb568e4761e2c91fcef3a7a2b1aed31be00c0"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/matrix_binding_io_tests.rs",
@@ -1131,7 +1241,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/matrix_tick.rs",
-      "object": "65151257bd59074bc1e4e9bcc1f3793096f0fd00"
+      "object": "b56b7b8ba1c98089d89a544858ea04ae24597457"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/matrix_tick_tests.rs",
@@ -1147,7 +1257,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/recovery_control_tests.rs",
-      "object": "66dfe0a212d10665c2943c41b65d7f9c802b907c"
+      "object": "5ef5a5dce0e0e37ad8c00d37af9a366adafe1181"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/recovery_observation.rs",
@@ -1175,7 +1285,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/release_signed_recovery_tests.rs",
-      "object": "b13de6f43639bb98cf98a69cc5967a1de647d511"
+      "object": "2fa4ee7d14217868728d7dd256620bc09f6d347f"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
@@ -1202,6 +1312,18 @@
       "object": "2ce6804b0e7bf1530b06114528683fc786992e38"
     },
     {
+      "path": "codex-rs/hepta-supervisor/src/signed_constructor_containment_tests.rs",
+      "object": "43d6e4b551d51b84a32df1b7421b463897508c97"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_constructor_recovery.rs",
+      "object": "39a78ae05bb3e3993937792d5c1d82689b9177db"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_constructor_replay_tests.rs",
+      "object": "165810ee8d388e0fc882a36eeed03c48fe2f1d95"
+    },
+    {
       "path": "codex-rs/hepta-supervisor/src/signed_effect.rs",
       "object": "2b37ef88e93bbf29087337e81424a98cfc9645e4"
     },
@@ -1211,7 +1333,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "object": "9044c5e4b975dc59116698d893443f936b899947"
+      "object": "60d32763fb4617d8191a1096b31ef5559c73977d"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/supervisor_snapshot_tests.rs",
@@ -1223,7 +1345,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/tick.rs",
-      "object": "6084f9336b93d0eb9796a8dec1fda2e54a8d2389"
+      "object": "e79299ad1c9ae29f75cf0998d4ff5b8362ede7a5"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/tick_control_budget_tests.rs",
@@ -1239,7 +1361,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs",
-      "object": "ce76cf0907b97a6867e686c574b983c5eb89edec"
+      "object": "ebc261ba0480e8eab11ccdabfb57ac0ffceea9cb"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/tick_pending_deadline_tests.rs",
@@ -1315,7 +1437,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/OWNER_AND_READ_ISOLATION.md",
-      "object": "1c9811a5017dae51ad6a19d28b6c898c273e4ebc"
+      "object": "89053c7518467ff466017d054d563d8a5dc886f7"
     },
     {
       "path": "docs/modules/runtime.supervisor/PROCESS_LIFETIME.md",
@@ -1323,7 +1445,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/PROCESS_OWNERSHIP.md",
-      "object": "c1ee73cc5129c22af2fdae9d3d0782855edb95ac"
+      "object": "758b1b6a3155ef35d4fac1bc35ad0398c06d525c"
     },
     {
       "path": "docs/modules/runtime.supervisor/PRODUCTION_BOUNDARY.md",
@@ -1331,7 +1453,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/PRODUCTION_CONTROL_RUNBOOK.md",
-      "object": "cec90cd3e19cffaf8d58d9af9e69259739cf8da5"
+      "object": "eeffdf0f05731cd92e9d8d6d86911d59109d288f"
     },
     {
       "path": "docs/modules/runtime.supervisor/PRODUCTION_QUALIFICATION_PROFILE.json",
@@ -1343,7 +1465,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md",
-      "object": "20afd642dbade8f9ab5f09da20e52b7e52fd528a"
+      "object": "6788a18c101714f01158b25862037465650cae65"
     },
     {
       "path": "docs/modules/runtime.supervisor/RESTART_CANCELLATION.md",
@@ -1359,7 +1481,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
-      "object": "71eae6c4ec4ab05bf4c5549cf9f07f2cf219a1ea"
+      "object": "e20145dd9bf034cfc6c614fadcb24e75f1019f3b"
     },
     {
       "path": "justfile",
@@ -1368,6 +1490,10 @@
     {
       "path": "qualification/runtime-supervisor/BAZEL_LOCK_DIAGNOSTIC_OBSERVATION_20261001_6958A901.json",
       "object": "c684aaf50ba2b3f260a0c917781eac1be89cd059"
+    },
+    {
+      "path": "qualification/runtime-supervisor/REMOTE_CI_OBSERVATION_20261001_6958A901.json",
+      "object": "bd31b14d8dd00d36004fd12f216b8c1a537e5d4f"
     },
     {
       "path": "qualification/runtime-supervisor/REMOTE_CI_OBSERVATION_20261001_7C4E.json",
@@ -1391,7 +1517,7 @@
     },
     {
       "path": "scripts/hepta_supervisor_ci_v3.py",
-      "object": "d4d6e65c5cdd154ea932b5b7912d4d2e9d7e9129"
+      "object": "e2916ed4a19163d134fe38bf0b51f0ee64c242f6"
     },
     {
       "path": "scripts/hepta_workflow_integrity.py",
@@ -1415,7 +1541,7 @@
     },
     {
       "path": "scripts/test_hepta_supervisor_ci_v3.py",
-      "object": "9c4598f23625da4a19ab9f79f92e85245ca52cde"
+      "object": "12b095adffee3f9e17ad9366c30b4d10994cd620"
     },
     {
       "path": "scripts/test_hepta_supervisor_workflow.py",
