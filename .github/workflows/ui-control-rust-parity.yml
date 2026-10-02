@@ -1,0 +1,214 @@
+name: ui.control Rust migration parity
+on:
+  push:
+    branches: ["work/ui-control-rust-20261002", "work/ui-chat-convergence-20261002"]
+    paths: ["apps/hepta-control-ui/**", ".github/workflows/ui-control-rust-parity.yml"]
+  pull_request:
+    paths: ["apps/hepta-control-ui/**", ".github/workflows/ui-control-rust-parity.yml"]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ui-control-rust-parity-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  identity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    outputs:
+      source_sha: ${{ steps.bind.outputs.source_sha }}
+      base_sha: ${{ steps.bind.outputs.base_sha }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - id: bind
+        name: Resolve one immutable integration base for both subjects
+        env:
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          BASE_REF: ${{ github.event.pull_request.base.ref || 'main' }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git fetch --no-tags origin "$BASE_REF"
+          BASE_SHA=$(git rev-parse FETCH_HEAD)
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          echo "source_sha=$SOURCE_SHA" >> "$GITHUB_OUTPUT"
+          echo "base_sha=$BASE_SHA" >> "$GITHUB_OUTPUT"
+  parity:
+    needs: identity
+    name: Rust ${{ matrix.subject }} / native core / WASM / three browsers
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        subject: [head, merge]
+    env:
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+      CARGO_TARGET_DIR: ${{ github.workspace }}/.tmp/ui-control-rust-target
+      UI_CONTROL_CANDIDATE: rust
+      CI: "1"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.identity.outputs.source_sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Materialize only the pinned integration commit
+        env:
+          SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
+          BASE_SHA: ${{ needs.identity.outputs.base_sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git cat-file -e "$BASE_SHA^{commit}" || git fetch --no-tags origin "$BASE_SHA"
+      - if: matrix.subject == 'merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          source-sha: ${{ needs.identity.outputs.source_sha }}
+          base-sha: ${{ needs.identity.outputs.base_sha }}
+          pr-number: ${{ github.event.pull_request.number || '0' }}
+          author-name: Hepta Rust UI qualification
+          author-email: ui-qualification@hepta.invalid
+          message: Rust control UI parity candidate
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: 22
+      - name: Install pinned official Rust tools
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt --target wasm32-unknown-unknown
+          rustup default 1.95.0
+          cargo install just --locked --version 1.58.0
+          cargo install cargo-nextest --locked --version 0.9.146
+          cargo install wasm-bindgen-cli --locked --version 0.2.128
+      - name: Bind evaluated identity and locked inputs
+        env:
+          SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
+          BASE_SHA: ${{ needs.identity.outputs.base_sha }}
+          SUBJECT: ${{ matrix.subject }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-control-ui/tools/rust-candidate-identity.mjs "$SOURCE_SHA" "$BASE_SHA" "$SUBJECT" .tmp/ui-control-rust-evidence/identity.json
+      - name: Verify differential oracle and strict Rust source
+        shell: bash
+        run: |
+          set -euo pipefail
+          node --test apps/hepta-control-ui/test/rust-migration-contract.test.js
+          node apps/hepta-control-ui/rust/core/tests/generate-differential.mjs --check
+          cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
+          just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml --locked -p hepta-control-core -p hepta-control-web 2>&1 | tee .tmp/ui-control-rust-evidence/native-tests.log
+          cargo clippy --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-control-web --all-targets -- -D warnings
+          cargo clippy --locked --manifest-path apps/hepta-control-ui/rust/Cargo.toml --target wasm32-unknown-unknown -p hepta-control-web -- -D warnings
+      - name: Build explicit WASM candidate and install browser matrix
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
+          node apps/hepta-control-ui/tools/build-rust.mjs
+          node apps/hepta-control-ui/tools/build-rust.mjs --active
+          node apps/hepta-control-ui/tools/verify-rust-artifacts.mjs
+          node --test apps/hepta-control-ui/test/deployment-security-invariants.test.js
+          cd apps/hepta-control-ui
+          npx playwright install --with-deps chromium firefox webkit
+      - name: Execute real Rust browser parity
+        working-directory: apps/hepta-control-ui
+        run: npx playwright test --config playwright.rust.config.mjs
+      - name: Reverify immutable source after every build and browser test
+        env:
+          SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
+          BASE_SHA: ${{ needs.identity.outputs.base_sha }}
+          SUBJECT: ${{ matrix.subject }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          node apps/hepta-control-ui/tools/rust-candidate-identity.mjs "$SOURCE_SHA" "$BASE_SHA" "$SUBJECT" .tmp/ui-control-rust-evidence/identity-final.json
+          cmp .tmp/ui-control-rust-evidence/identity.json .tmp/ui-control-rust-evidence/identity-final.json
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: ui-control-rust-${{ matrix.subject }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: |
+            .tmp/ui-control-rust-evidence/
+            apps/hepta-control-ui/dist-rust/build-manifest.json
+            apps/hepta-control-ui/test-results/
+          if-no-files-found: error
+
+  robrix-host:
+    needs: identity
+    name: Robrix-derived Makepad / WASM / actual browsers
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_BUILD_JOBS: 1
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_RELEASE_DEBUG: 0
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ needs.identity.outputs.source_sha }}
+          persist-credentials: false
+      - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
+        with:
+          node-version: 22
+      - name: Install and verify official build inputs
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --component rustfmt,clippy --target wasm32-unknown-unknown
+          rustup default 1.95.0
+          rustup toolchain install nightly --profile minimal --component rust-src
+          test "$(rustup run nightly rustc --version)" = "rustc 1.101.0-nightly (c36f14571 2026-10-01)"
+          cargo install just --locked --version 1.58.0
+          cargo install cargo-nextest --locked --version 0.9.146
+      - name: Verify shared Rust presentation and renderer
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
+          just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
+          cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
+          node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs
+      - name: Build canonical strict-CSP no-threads artifact
+        run: |
+          npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
+          npm run build --prefix apps/hepta-control-ui
+          cd apps/hepta-control-ui
+          npx playwright install --with-deps chromium firefox webkit
+      - name: Run actual browser renderer and capture layouts
+        working-directory: apps/hepta-control-ui
+        run: npm run test:robrix
+      - name: Build explicitly labeled owner-fixture through the same renderer
+        run: node apps/hepta-control-ui/tools/build-robrix.mjs --fixtures
+      - name: Capture populated fixture and responsive transitions
+        working-directory: apps/hepta-control-ui
+        env:
+          HEPTA_ROBRIX_FIXTURES: "1"
+        run: npm run test:robrix
+      - name: Confirm exact source after build and browser checks
+        env:
+          SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code HEAD
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: robrix-host-${{ needs.identity.outputs.source_sha }}
+          path: |
+            apps/hepta-control-ui/test-results/**/*.png
+            apps/hepta-control-ui/test-results/robrix-browser-results.json
+            apps/hepta-control-ui/dist/build-manifest.json
+            apps/hepta-control-ui/dist-robrix-fixtures/build-manifest.json
+          if-no-files-found: warn

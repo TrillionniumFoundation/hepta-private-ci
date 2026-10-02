@@ -1,0 +1,143 @@
+{
+  "schema": "hepta.ui-control.legacy-oracle.v1",
+  "productRuntime": false,
+  "purpose": "Historical differential test inputs only; no default package exports and no shipping JS application fallback.",
+  "referenceSource": "0063323c884d4ac0abb0605dce9c8ca914fbd86a",
+  "files": {
+    "browser-app.js": {
+      "sha256": "5d373d7be732b3ee5c4d502bd4612be495782ecb0a18c6eadc4438845989782d",
+      "rustOwners": [
+        "rust/web/src/app.rs",
+        "rust/web/src/dom.rs"
+      ],
+      "composition": "Retained legacy Rust DOM control counterpart only. New Robrix home/room widgets provide chat presentation; operational controls are not composed, so this is not Makepad behavioral parity."
+    },
+    "canonical.js": {
+      "sha256": "661e512c0aa4c8a8635c6eddc0fa110520bc5fb2a0295814ab431a27ab5daca1",
+      "rustOwners": [
+        "rust/core/src/canonical.rs"
+      ],
+      "composition": "Presentation or pure contract; host/runtime acceptance remains separate."
+    },
+    "confirmation.js": {
+      "sha256": "03e086b59a1f5d15422119797a3d2b5cdaa8a3bee384c69b113ac6ffc8d80f06",
+      "rustOwners": [
+        "rust/core/src/confirmation.rs"
+      ],
+      "composition": "Contract code exists; operational mutations and authenticated chat owner are not yet composed into the Makepad host."
+    },
+    "control.js": {
+      "sha256": "866d2dc53f95e46dd0d48d919562d541fee29971b4c876d7d7a581cde20c9969",
+      "rustOwners": [
+        "rust/core/src/controller.rs"
+      ],
+      "composition": "Contract code exists; operational mutations and authenticated chat owner are not yet composed into the Makepad host."
+    },
+    "core.js": {
+      "sha256": "fcec05f25e3cda1e43c87a6bb83e9a062b0cc35c12e490fda5c8ac059afbeb1e",
+      "rustOwners": [
+        "rust/core/src/lib.rs"
+      ],
+      "composition": "Presentation or pure contract; host/runtime acceptance remains separate."
+    },
+    "errors.js": {
+      "sha256": "d4adde3bdad2072158de282d9a9e49b00c7abe9449dffbdfafa4a0a47b27adb1",
+      "rustOwners": [
+        "rust/core/src/error.rs"
+      ],
+      "composition": "Presentation or pure contract; host/runtime acceptance remains separate."
+    },
+    "http-transport.js": {
+      "sha256": "07e4faafde53577f5dbf9541df27009d23bd1289ca4dd76180537f1dc1b9ed8c",
+      "rustOwners": [
+        "rust/web/src/transport.rs"
+      ],
+      "composition": "Contract code exists; operational mutations and authenticated chat owner are not yet composed into the Makepad host."
+    },
+    "index.js": {
+      "sha256": "a5e835430ce443c4aca3788cf2cebf4434f95c909f18b31da6404da7bc8b4187",
+      "rustOwners": [
+        "rust/core/src/lib.rs"
+      ],
+      "composition": "Presentation or pure contract; host/runtime acceptance remains separate."
+    },
+    "keyed-list.js": {
+      "sha256": "4e5ade8cdf2b23500461073f037affbfc608fdc7e5f12391fcfbe98bdf00c165",
+      "rustOwners": [
+        "rust/web/src/dom/lists.rs",
+        "rust/robrix-ui/src/presentation.rs"
+      ],
+      "composition": "Legacy keyed DOM behavior is retained in dom/lists.rs. Makepad presentation supplies stable IDs and bounded projections only; it does not claim identical DOM/recycling behavior."
+    },
+    "operation-ledger.js": {
+      "sha256": "c69d6b83c4c371bf9c3a206a5905bbae6740e02ac19ad4f2a496ee69b2b178c0",
+      "rustOwners": [
+        "rust/core/src/ledger.rs"
+      ],
+      "composition": "Contract code exists; operational mutations and authenticated chat owner are not yet composed into the Makepad host."
+    },
+    "recovery-directory.js": {
+      "sha256": "e28477d148bd98abf84f06bc6f50021af4c3960e00914114cbc202ba4f4e5d44",
+      "rustOwners": [
+        "rust/web/src/recovery.rs"
+      ],
+      "composition": "Contract code exists; operational mutations and authenticated chat owner are not yet composed into the Makepad host."
+    },
+    "recovery-scheduler.js": {
+      "sha256": "8c6d17461add9665d1884e541f4b60b343830b1ec96e3d691b079a984302102f",
+      "rustOwners": [
+        "rust/core/src/scheduler.rs"
+      ],
+      "composition": "Contract code exists; operational mutations and authenticated chat owner are not yet composed into the Makepad host."
+    },
+    "recovery-store.js": {
+      "sha256": "f949f5a89095719fb77a11e7de29f5348b6f6b9d18fdcfe2bd3bfc7df827de3f",
+      "rustOwners": [
+        "rust/core/src/recovery.rs"
+      ],
+      "composition": "Contract code exists; operational mutations and authenticated chat owner are not yet composed into the Makepad host."
+    },
+    "runtime-client.js": {
+      "sha256": "4fcfe450ad9b0ab1debb783361533a02db9ed390996d27328477a4c8893bb7c2",
+      "rustOwners": [
+        "rust/core/src/controller.rs"
+      ],
+      "composition": "Contract code exists; operational mutations and authenticated chat owner are not yet composed into the Makepad host."
+    },
+    "runtime-contract.js": {
+      "sha256": "7a77deb07df8ce730b0da58230ba2bb413433139b8cc175db83812e4e74b441e",
+      "rustOwners": [
+        "rust/core/src/controller.rs"
+      ],
+      "composition": "Contract code exists; operational mutations and authenticated chat owner are not yet composed into the Makepad host."
+    },
+    "session-provider.js": {
+      "sha256": "5b177025ee2ccb9b50e0c0a166cf9b2f67d0469a568303a01f38021945f3fcea",
+      "rustOwners": [
+        "rust/web/src/transport.rs"
+      ],
+      "composition": "Contract code exists; operational mutations and authenticated chat owner are not yet composed into the Makepad host."
+    },
+    "snapshot.js": {
+      "sha256": "28fc0060030ee2498632eb3cecb59602e27f3cbc7c29f2b0a88876012101b92e",
+      "rustOwners": [
+        "rust/core/src/projection.rs"
+      ],
+      "composition": "Presentation or pure contract; host/runtime acceptance remains separate."
+    },
+    "submission-outcome.js": {
+      "sha256": "6102f99ac3b20452f8853f0b7b7e36168bcc08ed929e67db4ecff463ea21c9a9",
+      "rustOwners": [
+        "rust/core/src/controller.rs"
+      ],
+      "composition": "Contract code exists; operational mutations and authenticated chat owner are not yet composed into the Makepad host."
+    },
+    "terminal-cleanup.js": {
+      "sha256": "0c424c26852b5e43e214690ad2ddec8dff2daff947b88bf34ad3be287875dc5a",
+      "rustOwners": [
+        "rust/core/src/ledger.rs"
+      ],
+      "composition": "Contract code exists; operational mutations and authenticated chat owner are not yet composed into the Makepad host."
+    }
+  }
+}

@@ -1,0 +1,8 @@
+{
+  "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
+  "path": "src/retained_instances.rs",
+  "beforeSha256": "0b046cced620f1eaf9c80d39e99cdefaa3e9cecf23a49ea88a05c55b4132eca0",
+  "afterSha256": "c9b39b14da87b6e9c58d2bdf8637d72a1e641cf0f381aaf246286c71b09b5362",
+  "patchSha256": "48d87028ad7b81c998c8f01749f9a62b3203ca1dbdb619a2a73493a7332f0b3a",
+  "reason": "std::time::Instant is unsupported on wasm32-unknown-unknown; use existing platform monotonic import. Native code path unchanged."
+}

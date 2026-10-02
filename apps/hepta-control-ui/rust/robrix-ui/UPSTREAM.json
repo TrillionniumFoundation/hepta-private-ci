@@ -1,0 +1,87 @@
+{
+  "upstream": "https://github.com/project-robius/robrix",
+  "revision": "f2208f16184e1b2d8307dc9f98375e47b1fcd677",
+  "license": "MIT",
+  "licenseFile": "licenses/ROBRIX-MIT.txt",
+  "makepad": {
+    "repository": "https://github.com/kevinaboos/makepad",
+    "revision": "337566c8b25d47f7e4fff6a202157b65bf183330"
+  },
+  "derivatives": [
+    {
+      "path": "src/robrix/dock.rs",
+      "source": "src/home/light_themed_dock.rs",
+      "sourceSha256": "31d577e7fce821eefd36a68dce80819ef367f297bf028418fb744eb36ca0bb57",
+      "sourceRegion": "1\u2013264,290\u2013305",
+      "adaptation": "Extracted themed splitter/tab/dock; omitted Matrix room tab action extension."
+    },
+    {
+      "path": "src/robrix/home.rs",
+      "source": "src/home/main_desktop_ui.rs",
+      "sourceSha256": "133a370692df79eac1c09c781e3b8af5a7145c24ba2f4bd653f2007e3d0badb7",
+      "sourceRegion": "15\u201381",
+      "adaptation": "Sidebar/main Dock composition; Hepta Conversation and Console tab factories."
+    },
+    {
+      "path": "src/robrix/home.rs",
+      "source": "src/home/home_screen.rs",
+      "sourceSha256": "0e09a5169341f0d49c12737f3914b02a264f9f46379a57c4b7911b29e93896aa",
+      "sourceRegion": "145\u2013210",
+      "adaptation": "AdaptiveView with cached host layout; Hepta breakpoint and page contents."
+    },
+    {
+      "path": "src/robrix/rooms.rs",
+      "source": "src/home/rooms_list_entry.rs",
+      "sourceSha256": "b4d5a8cd63054e981f036fb3735218b4271bd0bc2b47c035765d7ed1b9cdd85d",
+      "sourceRegion": "37\u2013143,169\u2013210",
+      "adaptation": "Room name/timestamp, selected/hover shader, full-preview hierarchy; Hepta input rows."
+    },
+    {
+      "path": "src/robrix/room.rs",
+      "source": "src/home/room_screen.rs",
+      "sourceSha256": "149b844e5b353fb0f7bf0b6547635931beb4209f01027274ebcfcb92832cac94",
+      "sourceRegion": "235\u2013383,654\u2013740",
+      "adaptation": "Profile/content message hierarchy, PortalList and timeline/composer composition."
+    },
+    {
+      "path": "src/robrix/composer.rs",
+      "source": "src/room/room_input_bar.rs",
+      "sourceSha256": "b6ea16080109287a1d275b7fb8da7f61aa958f794a2c95043e6da8681f219ef4",
+      "sourceRegion": "35\u2013179",
+      "adaptation": "Capped RoundedView, overlay, bottom-aligned input/send; no Matrix send/upload behavior."
+    },
+    {
+      "path": "src/robrix/styles.rs",
+      "source": "src/shared/styles.rs",
+      "sourceSha256": "8fca0bb96de4602ffe818926f28942d3b3e078df907a9009d7facf2371f4a1e2",
+      "sourceRegion": "67\u2013125",
+      "adaptation": "Semantic color/text style vocabulary; Hepta palette, no external resource assets."
+    },
+    {
+      "path": "src/app.rs",
+      "source": "src/app.rs",
+      "sourceSha256": "f814c6497ace510c60a5a79b2e7aa84ced54c8e62de21b53193dd6773a76795a",
+      "sourceRegion": "Root/Window and AppMain",
+      "adaptation": "Same Makepad script registration and application lifecycle; Hepta shared state."
+    },
+    {
+      "path": "src/main.rs",
+      "source": "src/main.rs",
+      "sourceSha256": "bdd2247342af2e5227bc7017554017891c9a7a2226386d6dd6ed9cca24ed0a88",
+      "sourceRegion": "entire entrypoint pattern",
+      "adaptation": "Hepta crate entrypoint."
+    },
+    {
+      "path": "src/robrix/hover_highlight.rs",
+      "source": "src/shared/hover_highlight.rs",
+      "sourceSha256": "2d04b1e207a4eda58ac930baec3e0205981d4b0d1dc873549b74b060a4412591",
+      "sourceRegion": "entire helper",
+      "adaptation": "Copied hover/press animation helper used by room rows."
+    }
+  ],
+  "excluded": [
+    "Robrix logos and separately attributed SVG assets",
+    "Matrix SDK, protocol, room service and authentication behavior"
+  ],
+  "status": "In-progress derived UI; compilation is not runtime or platform qualification."
+}
