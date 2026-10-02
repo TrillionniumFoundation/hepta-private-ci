@@ -433,6 +433,21 @@ pub fn run_fixed_custody_evaluator(request: &Path) -> ReviewResult<()> {
     independent::run(request)
 }
 
+/// Admit this actual fixed custody executable through the existing protected
+/// Root policy. The returned original distribution contains only public keys;
+/// this process's Observer controller is derived by the original factory.
+pub fn admit_fixed_custody_program(policy: &Path) -> ReviewResult<ReviewTrustWireV1> {
+    let trust = independent_trust::IndependentTrust::open_for_cycle(
+        policy,
+        generator_wire::now_ms()?,
+        /*approval_path*/ None,
+    )?;
+    Ok(ReviewTrustWireV1::from_native(
+        &trust.root,
+        &trust.distribution,
+    ))
+}
+
 /// Open an immutable root-owned review input for a read-only consumer.
 pub fn open_root_review_input(path: &Path) -> ReviewResult<std::fs::File> {
     files::root_file(path, Access::Immutable)

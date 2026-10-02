@@ -7,6 +7,7 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 
 [privileged_inventory]
 required_boundary_ids = [
+  "paired_custody_program_admission",
   "public_paired_generator_preregistration",
   "independent_paired_review_evaluator",
   "readonly_paired_review_execution_recompute",
@@ -87,6 +88,15 @@ required_boundary_ids = [
   "verified_operational_model_lease_v2",
   "independent_installed_cpu_model_use_v2"
 ]
+
+[[boundary]]
+id = "paired_custody_program_admission"
+symbol = "admit_fixed_custody_program"
+call_pattern = '\badmit_fixed_custody_program\s*\('
+definition_path = "codex-rs/hepta-learning-ledger/src/review_host/mod.rs"
+definition_markers = ["pub fn admit_fixed_custody_program", "IndependentTrust::open_for_cycle", "ReviewTrustWireV1::from_native(&trust.root, &trust.distribution)"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/fixed_holdout_custody.rs"]
+caller_markers = ["pub fn admit_fixed_paired_custody", "boundary()?", "wire.native()?", "codex_hepta_learning_ledger::admit_fixed_custody_program"]
 
 [[boundary]]
 id = "secrets_root_policy_maintenance"

@@ -95,6 +95,18 @@ pub(super) fn boundary() -> HostResult<()> {
     }
     Ok(())
 }
+
+/// Publish this actual executable's original Root admission before G registers
+/// its plan. No cohort, CAS, gold, model or evidence sink is opened.
+pub fn admit_fixed_paired_custody(path: &Path) -> HostResult<()> {
+    boundary()?;
+    let wire = codex_hepta_learning_ledger::admit_fixed_custody_program(path)?;
+    // A paired plan requires the existing distinct no-custody E admission.
+    // The original decoder and signed distribution define the accepted roster.
+    wire.native()?;
+    println!("{}", serde_json::to_string(&wire)?);
+    Ok(())
+}
 pub(super) fn private_directory(path: &Path) -> HostResult<File> {
     if !path.is_absolute()
         || path
