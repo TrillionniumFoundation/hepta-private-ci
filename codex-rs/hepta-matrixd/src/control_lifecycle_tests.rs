@@ -85,7 +85,8 @@ impl Fixture {
                 release_id: "release-1".to_string(),
                 fence: MatrixdFence {
                     binding_revision: 1,
-                    binding_digest: Sha256Digest::parse("a".repeat(/*n*/ 64))?,
+                    binding_digest: Sha256Digest::parse("a".repeat(/*n*/ 64))
+                        .map_err(anyhow::Error::msg)?,
                     attached_agent_generation: 7,
                     process_incarnation: "matrixd-1".to_string(),
                     plane_epoch: 1,

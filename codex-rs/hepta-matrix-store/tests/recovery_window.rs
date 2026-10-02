@@ -33,10 +33,11 @@ async fn recovery_frontier_reaches_rows_beyond_a_full_window_and_wraps_without_d
             changed_at_ms: 1,
         })
         .await?;
-    let fixture_pool = sqlx::sqlite::SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(sqlx::sqlite::SqliteConnectOptions::new().filename(store.path()))
-        .await?;
+    let fixture_pool = codex_state::SqliteConfig::new_for_testing(
+        codex_utils_absolute_path::AbsolutePathBuf::try_from(temp.path())?,
+    )
+    .open_read_write_pool(store.path())
+    .await?;
     let mut fixture = fixture_pool.begin().await?;
     let payload = b"pending recovery fixture";
     let digest = Sha256Digest::for_bytes(payload);

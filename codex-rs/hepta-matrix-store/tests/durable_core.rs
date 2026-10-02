@@ -772,10 +772,11 @@ async fn crash_reopen_reconciles_dispatch_and_expired_outbox_lease() -> TestResu
     );
     let completed = reopened.complete_inbox_dispatch(&admission, 42).await?;
     assert_eq!(completed.state, InboxDispatchState::Completed);
-    let fixture_pool = sqlx::sqlite::SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(sqlx::sqlite::SqliteConnectOptions::new().filename(reopened.path()))
-        .await?;
+    let fixture_pool = codex_state::SqliteConfig::new_for_testing(
+        codex_utils_absolute_path::AbsolutePathBuf::try_from(temp.path())?,
+    )
+    .open_read_only_pool(reopened.path())
+    .await?;
     assert_eq!(
         sqlx::query_scalar::<_, i64>("SELECT COUNT(*) FROM matrix_turn_recovery")
             .fetch_one(&fixture_pool)

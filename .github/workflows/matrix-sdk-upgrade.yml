@@ -1,0 +1,92 @@
+name: Matrix SDK compatibility
+on:
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-matrix*/**'
+      - 'codex-rs/third_party/**'
+      - 'codex-rs/Cargo.*'
+      - 'codex-rs/rust-toolchain.toml'
+      - 'qualification/matrix-sdk-019/**'
+      - '.github/workflows/matrix-sdk-upgrade.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  sdk-protocol:
+    name: Matrix SDK (${{ matrix.qualification }})
+    strategy:
+      fail-fast: false
+      matrix:
+        qualification: [crypto-migration, synapse-protocol]
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_INCREMENTAL: '0'
+      HEPTA_SDK_ARTIFACTS: ${{ github.workspace }}/sdk-qualification-artifacts
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+        with:
+          components: clippy
+      - name: Install pinned official test runners
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Real SDK 0.18 data-bearing crypto migration
+        if: matrix.qualification == 'crypto-migration'
+        run: qualification/matrix-sdk-019/run-crypto-migration.sh
+      - name: Real isolated encrypted send, sync and store reopen
+        if: matrix.qualification == 'synapse-protocol'
+        run: codex-rs/hepta-matrix-sdk/tests/support/run-synapse-sdk.sh
+      - name: Strict final-source Matrix lint
+        if: matrix.qualification == 'synapse-protocol'
+        working-directory: codex-rs
+        run: just clippy -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrix-protocol --features crypto-migration-qualification,synapse-sdk-qualification --no-deps -- -D warnings
+      - name: Preserve protocol evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: matrix-sdk-${{ matrix.qualification }}-evidence
+          path: sdk-qualification-artifacts
+
+  current-main:
+    name: Matrix immutable current-main regression
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      CARGO_BUILD_JOBS: '2'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_INCREMENTAL: '0'
+      MAIN_SHA: c6f90d48c40f7b5267db587bb3c3f4934f1414a8
+      CANDIDATE_SHA: a21a33c9718152ad58867bfc7a35903f359758c0
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: a21a33c9718152ad58867bfc7a35903f359758c0
+          persist-credentials: false
+          fetch-depth: 0
+      - name: Verify immutable candidate and current main
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$CANDIDATE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = 4951cf27e617f21cbdd9d5f93dbaff52f9def540
+          test "$(git ls-remote origin refs/heads/main | cut -f1)" = "$MAIN_SHA"
+          git merge-base --is-ancestor "$MAIN_SHA" HEAD
+          git merge-base --is-ancestor 209eacd902cb93b8bd94f21814e5c9342f215422 HEAD
+      - uses: dtolnay/rust-toolchain@3db9de313aa3e84732d075f6fd8938cc0d6d4b58
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Run Matrix source regressions on the pinned main integration
+        working-directory: codex-rs
+        run: just test --locked -p codex-hepta-matrix-protocol -p codex-hepta-matrix-sdk -p codex-hepta-matrix-store -p codex-hepta-matrixd
+      - name: Verify tracked candidate remains unchanged
+        run: test -z "$(git status --porcelain --untracked-files=no)"

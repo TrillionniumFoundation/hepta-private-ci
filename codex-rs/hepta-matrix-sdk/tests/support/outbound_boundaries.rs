@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 struct StalledTransport {
     txn_ids: Mutex<Vec<MatrixTransactionId>>,
@@ -305,11 +306,16 @@ async fn room_revocation_during_first_send_prevents_later_batch_send() -> TestRe
             .map_err(|_| "transaction log poisoned")?,
         vec![first.stable_txn_id]
     );
-    let later = store
-        .outbox_for_txn(&later_txn)
-        .await?
-        .ok_or("later outbox missing")?;
-    assert_eq!((later.state, later.attempts), (OutboxState::Pending, 0));
+    // The tombstone deliberately removes revoked records from the public view.
+    assert!(store.outbox_for_txn(&later_txn).await?.is_none());
+    assert!(
+        store
+            .claim_outbox(
+                /*now_ms*/ 200, /*lease_ms*/ 100, /*limit*/ 10
+            )
+            .await?
+            .is_empty()
+    );
     store.close().await;
     Ok(())
 }
