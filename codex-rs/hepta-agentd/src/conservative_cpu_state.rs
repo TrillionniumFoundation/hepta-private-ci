@@ -52,7 +52,8 @@ impl ConservativeCpuStateV1 {
         Ok(Self {
             subject_id,
             preference,
-            prompt_registry_digest: PromptRegistry::canonical_empty_snapshot_digest(),
+            prompt_registry_digest: PromptRegistry::canonical_empty_snapshot_digest()
+                .map_err(|error| AgentdError::Invalid(error.to_string()))?,
             artifact_set_digest: Digest32::of_bytes(&bytes),
         })
     }

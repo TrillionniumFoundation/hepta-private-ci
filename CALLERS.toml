@@ -1143,7 +1143,7 @@ caller_markers = ["deliver-cpu-objective", "deliver_initial_cpu_objective"]
 
 [[protected_file]]
 path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_goal_transport.rs"
-required = ["--require-program-sha256", "resource-observe", "process_start_ticks", "grant.expires_at_ms <= now", "record.lifecycle.lifecycle != AgentLifecycle::Running", "packet.ingress.body.spawn_generation != cfg.spawn_generation", "AgentdClient::new", "client.health().await?", "client.objective_start(packet.ingress).await?"]
+required = ["--require-program-sha256", "resource-observe", "process_start_ticks", "grant.expires_at_ms <= now", "record.lifecycle.lifecycle != AgentLifecycle::Running", "packet.ingress.body.spawn_generation != cfg.spawn_generation", "AgentdClient::new", "with_peer_process(home.uid(), cfg.process_id)?", "client.health().await?", "client.objective_start(packet.ingress).await?"]
 forbidden = ["SigningKey", "loop { client.objective_start", "set_permissions", "AuthorityPosture::ALLOW_ALL"]
 
 [[boundary]]

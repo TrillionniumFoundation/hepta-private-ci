@@ -144,7 +144,8 @@ async fn client_for_packet(
         record.layout.agentd_control_socket().to_owned(),
         agent,
         cfg.spawn_generation,
-    )?;
+    )?
+    .with_peer_process(home.uid(), cfg.process_id)?;
     let health = client.health().await?;
     if !health.ready
         || health.fenced
