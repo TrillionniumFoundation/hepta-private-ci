@@ -1,0 +1,47 @@
+{
+  "after": {
+    "commit": "b73445ecc703153bdcf7f505beafb9b25f84b89f",
+    "dirty": false,
+    "parents": [
+      "f2661efafcd4bef72ec22c37ed4947f19ca1e1de"
+    ],
+    "tree": "6242ed0022e31142d37486ee9ff480a0612338ba"
+  },
+  "base_sha": "c6f90d48c40f7b5267db587bb3c3f4934f1414a8",
+  "before": {
+    "commit": "b73445ecc703153bdcf7f505beafb9b25f84b89f",
+    "dirty": false,
+    "parents": [
+      "f2661efafcd4bef72ec22c37ed4947f19ca1e1de"
+    ],
+    "tree": "6242ed0022e31142d37486ee9ff480a0612338ba"
+  },
+  "command": [
+    "python3",
+    "scripts/hepta-inference-control-current-state.py",
+    "check"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 0.11024856700001351,
+  "exit_code": 0,
+  "finished_at": "2026-10-02T21:59:19.782906+00:00",
+  "job": "qualify",
+  "lane": "source-head",
+  "log_bytes": 274,
+  "log_file": "01-state.json.988d18708aca483182923ac52dcb6a4a.log",
+  "log_sha256": "5fd7a40d586dc81df076293980a5ac1e734fd54b352d246901f6515293f0125e",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": "1",
+  "run_id": "37069929674",
+  "schema_version": 1,
+  "source_sha": "b73445ecc703153bdcf7f505beafb9b25f84b89f",
+  "started_at": "2026-10-02T21:59:19.669971+00:00",
+  "status": "passed",
+  "tested_sha": "b73445ecc703153bdcf7f505beafb9b25f84b89f",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

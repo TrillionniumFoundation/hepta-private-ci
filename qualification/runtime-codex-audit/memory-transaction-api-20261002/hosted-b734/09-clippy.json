@@ -1,0 +1,60 @@
+{
+  "after": {
+    "commit": "b73445ecc703153bdcf7f505beafb9b25f84b89f",
+    "dirty": false,
+    "parents": [
+      "f2661efafcd4bef72ec22c37ed4947f19ca1e1de"
+    ],
+    "tree": "6242ed0022e31142d37486ee9ff480a0612338ba"
+  },
+  "base_sha": "c6f90d48c40f7b5267db587bb3c3f4934f1414a8",
+  "before": {
+    "commit": "b73445ecc703153bdcf7f505beafb9b25f84b89f",
+    "dirty": false,
+    "parents": [
+      "f2661efafcd4bef72ec22c37ed4947f19ca1e1de"
+    ],
+    "tree": "6242ed0022e31142d37486ee9ff480a0612338ba"
+  },
+  "command": [
+    "cargo",
+    "clippy",
+    "--locked",
+    "--manifest-path",
+    "codex-rs/Cargo.toml",
+    "-p",
+    "codex-hepta-infer-core",
+    "-p",
+    "codex-hepta-infer-worker-host",
+    "-p",
+    "codex-hepta-types",
+    "--all-targets",
+    "--all-features",
+    "--",
+    "-D",
+    "warnings"
+  ],
+  "command_exit_code": 101,
+  "elapsed_seconds": 158.32441740599995,
+  "exit_code": 101,
+  "finished_at": "2026-10-02T22:10:15.120167+00:00",
+  "job": "qualify",
+  "lane": "source-head",
+  "log_bytes": 47632,
+  "log_file": "09-clippy.json.62d5ec035dd543c2bb36b4127cbc8a32.log",
+  "log_sha256": "69b0ba8ddd09da6cfcd70f43f41ff3e8c92deb78a78421bc79082b54c4e303c8",
+  "minimum_tests": 0,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 0,
+  "output_limit_exceeded": false,
+  "returncode": 101,
+  "run_attempt": "1",
+  "run_id": "37069929674",
+  "schema_version": 1,
+  "source_sha": "b73445ecc703153bdcf7f505beafb9b25f84b89f",
+  "started_at": "2026-10-02T22:07:36.795066+00:00",
+  "status": "failed",
+  "tested_sha": "b73445ecc703153bdcf7f505beafb9b25f84b89f",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}
