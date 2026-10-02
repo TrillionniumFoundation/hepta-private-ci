@@ -45,7 +45,8 @@ jobs:
 
   sdks:
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    # The original cold V8/Rust build precedes SDK execution in this job.
+    timeout-minutes: 120
     environment:
       name: bazel
       deployment: false

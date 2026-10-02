@@ -88,7 +88,7 @@ class SharedMetadataTests(unittest.TestCase):
 
         with mock.patch.object(module, "load", side_effect=load):
             with contextlib.redirect_stdout(io.StringIO()):
-                self.assertEqual(module.verify(), 0)
+                self.assertEqual(module.verify("development"), 0)
 
     @staticmethod
     def global_verifier():

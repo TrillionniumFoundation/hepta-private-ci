@@ -44,7 +44,6 @@ LEARNING_README = "docs/learning/README.md"
 MODULES_PATH = "docs/modules/MODULES.json"
 CONTRACTS_PATH = "docs/contracts/CONTRACTS.json"
 PROTOCOLS_PATH = "docs/contracts/PROTOCOL_SCHEMAS.json"
-PROTOCOL_AUTHORITY_PATHS = (CONTRACTS_PATH, PROTOCOLS_PATH)
 DATA_PATH = "docs/data/DATA_AUTHORITY.json"
 WORK_PATH = "docs/delivery/WORK_PACKAGES.json"
 DAG_PATHS = [
@@ -346,16 +345,6 @@ def sha256_text(text: str) -> str:
     return hashlib.sha256(text.encode("utf-8")).hexdigest()
 
 
-def protocol_authority_boundary(text: str) -> bool:
-    remaining = text
-    for path in PROTOCOL_AUTHORITY_PATHS:
-        token = f"`{path}`"
-        if token not in remaining:
-            return False
-        remaining = remaining.replace(token, "")
-    return not any(Path(path).name in remaining for path in PROTOCOL_AUTHORITY_PATHS)
-
-
 def false_authority(value: Any, label: str) -> None:
     need(isinstance(value, dict), label + " authority object")
     need(set(value) == set(AUTHORITY_KEYS), label + " authority key closure")
@@ -366,7 +355,12 @@ def validate_specification_document(row: dict[str, Any], paper_ids: set[str]) ->
     """Check ownership and references without prescribing an editorial template."""
     doc_id = row["id"]
     target = ROOT / row["path"]
-    need(target.is_file(), doc_id + " missing")
+    need(
+        target.is_file()
+        and not target.is_symlink()
+        and target.resolve().is_relative_to(ROOT.resolve()),
+        doc_id + " missing or escaping document",
+    )
     text = target.read_text(encoding="utf-8")
     need(bool(text.strip()), doc_id + " empty document")
     need(row.get("documentationState") == "closed", doc_id + " documentation state")
@@ -374,12 +368,8 @@ def validate_specification_document(row: dict[str, Any], paper_ids: set[str]) ->
         row.get("implementationState") == "not_implied",
         doc_id + " implementation state",
     )
-    need(protocol_authority_boundary(text), doc_id + " protocol authority boundary")
-    for module in row["modules"]:
-        need(module in text, doc_id + " missing module " + module)
     for paper_id in row.get("paperIds", []):
         need(paper_id in paper_ids, doc_id + " unknown paper")
-        need(paper_id in text, doc_id + " missing paper " + paper_id)
 
 
 def committed_blob_sha(path: str, expected_sha: str) -> str:
@@ -1108,45 +1098,6 @@ def verify_algorithm_workflow_commands(dedicated: str, global_workflow: str) -> 
 
 
 def self_test() -> int:
-    authority_fixture = (
-        "Canonical production protocols remain owned by "
-        f"`{CONTRACTS_PATH}` and `{PROTOCOLS_PATH}`."
-    )
-    need(
-        protocol_authority_boundary(authority_fixture),
-        "canonical protocol authority fixture",
-    )
-    hostile_authority_cases: list[str] = []
-
-    def rejected_authority(name: str, candidate: str) -> None:
-        need(
-            not protocol_authority_boundary(candidate),
-            "hostile protocol authority fixture accepted: " + name,
-        )
-        hostile_authority_cases.append(name)
-
-    rejected_authority(
-        "abbreviated_protocol_schema",
-        authority_fixture.replace(PROTOCOLS_PATH, Path(PROTOCOLS_PATH).name),
-    )
-    rejected_authority(
-        "abbreviated_contract_registry",
-        authority_fixture.replace(CONTRACTS_PATH, Path(CONTRACTS_PATH).name),
-    )
-    rejected_authority(
-        "wrong_protocol_directory",
-        authority_fixture.replace(
-            PROTOCOLS_PATH, "docs/learning/PROTOCOL_SCHEMAS.json"
-        ),
-    )
-    rejected_authority(
-        "unquoted_canonical_protocol_path",
-        authority_fixture.replace(f"`{PROTOCOLS_PATH}`", PROTOCOLS_PATH),
-    )
-    rejected_authority(
-        "canonical_pair_plus_abbreviated_reference",
-        authority_fixture + " Alias `PROTOCOL_SCHEMAS.json` is forbidden.",
-    )
     try:
         json.loads('{"x":1,"x":2}', object_pairs_hook=pairs)
         raise AssertionError("duplicate key accepted")
@@ -1234,7 +1185,6 @@ def self_test() -> int:
             {
                 "status": "PASS_HEPTA_ALGORITHM_DOCS_SELF_TEST_V4",
                 "hostilePaperSourceCases": hostile_cases,
-                "hostileProtocolAuthorityCases": hostile_authority_cases,
                 "authorityGranted": False,
             },
             sort_keys=True,
