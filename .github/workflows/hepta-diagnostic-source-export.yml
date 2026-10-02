@@ -149,9 +149,13 @@ jobs:
           sha256sum MODULE.bazel.lock .hepta-diagnostics/MODULE.bazel.lock > .hepta-diagnostics/candidate-sha256.txt
           printf '%s\n' "$?" > .hepta-diagnostics/candidate-sha256.exit
           git rev-parse HEAD 'HEAD^{tree}' > .hepta-diagnostics/source-after-identity.txt
+          printf '%s\n' "$?" > .hepta-diagnostics/source-after-identity.exit
           sha256sum .bazelversion MODULE.bazel MODULE.bazel.lock codex-rs/Cargo.toml codex-rs/Cargo.lock codex-rs/hepta-fleet/Cargo.toml > .hepta-diagnostics/source-after-input-sha256.txt
+          printf '%s\n' "$?" > .hepta-diagnostics/source-after-input-sha256.exit
           git status --porcelain --untracked-files=no -- . ':!MODULE.bazel.lock' > .hepta-diagnostics/non-lock-tracked-drift.txt
-          test ! -s .hepta-diagnostics/non-lock-tracked-drift.txt
+          non_lock_status_exit=$?
+          printf '%s\n' "$non_lock_status_exit" > .hepta-diagnostics/non-lock-tracked-status.exit
+          test "$non_lock_status_exit" -eq 0 && test ! -s .hepta-diagnostics/non-lock-tracked-drift.txt
           printf '%s\n' "$?" > .hepta-diagnostics/non-lock-tracked-drift.exit
           set -e
 

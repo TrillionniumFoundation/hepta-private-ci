@@ -77,14 +77,34 @@
           "path": "codex-rs/hepta-supervisor/src/constructor_hydration_recovery_tests.rs",
           "kind": "constructor_whole_fleet_validation_and_owner_retention",
           "command": "just test -p codex-hepta-supervisor --lib --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_control_budget_tests.rs",
+          "kind": "checked_total_deadline_before_acquisition_or_drain_effects",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::deadline_tests::budget_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/matrix_binding_io_tests.rs",
+          "kind": "real_matrix_binding_metadata_to_fifo_substitution",
+          "command": "just test --locked -p codex-hepta-supervisor --lib matrix::binding_io_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/directory_io_tests.rs",
+          "kind": "real_directory_to_fifo_rejection_before_sync_watchdog_release",
+          "command": "just test --locked -p codex-hepta-supervisor --lib directory_io::tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/regular_file_tests.rs",
+          "kind": "supporting_fleet_registry_catalog_descriptor_fifo_cuts_not_ledger_operation_execution",
+          "command": "just test --locked -p codex-hepta-fleet --lib regular_file::tests --retries 0"
         }
       ],
-      "sourceSemantics": "Creates a generation-fenced managed process. Unix post-spawn setup faults travel with the acquired process owner; failed initialization or lease publication retains an exact fenced main or Matrix handle until observed exit and same-owner cleanup. Constructor recovery prevalidates durable evidence, independently acquires exact main and Matrix owners, and isolates damaged Agent evidence without dropping unrelated owners. Adopted signals use kernel lifetime references on supported Linux/macOS hosts, never a bare-PID fallback. Daemon death before a recoverable lease and complete cross-daemon exit-cleanup reconciliation remain open. Every main launch repeats current canonical catalog admission before lifecycle or process effects; catalog-derived descriptors never downgrade to catalog-free plants after entry removal. Constructor-only pure idle hydration is observed at most 256 times and settled by a final complete Fleet read, complete AgentRecord equality and fresh absence of all eight durable witnesses; changed idle records use original fresh recovery, while acquired owners are retained and denied rather than re-adopted. No observation authorizes admission or mutation.",
+      "sourceSemantics": "Creates a generation-fenced managed process. Unix post-spawn setup faults travel with the acquired process owner; failed initialization or lease publication retains an exact fenced main or Matrix handle until observed exit and same-owner cleanup. Constructor recovery prevalidates durable evidence, independently acquires exact main and Matrix owners, and isolates damaged Agent evidence without dropping unrelated owners. Adopted signals use kernel lifetime references on supported Linux/macOS hosts, never a bare-PID fallback. Daemon death before a recoverable lease and complete cross-daemon exit-cleanup reconciliation remain open. Every main launch repeats current canonical catalog admission before lifecycle or process effects; catalog-derived descriptors never downgrade to catalog-free plants after entry removal. Constructor-only pure idle hydration is observed at most 256 times and settled by a final complete Fleet read, complete AgentRecord equality and fresh absence of all eight durable witnesses; changed idle records use original fresh recovery, while acquired owners are retained and denied rather than re-adopted. No observation authorizes admission or mutation. Recovery proves supplied now plus Drain and Stop grace is representable before registry loading or any ownership acquisition. Matrix public binding is read from a bounded regular descriptor with prior/opened inode equality; Fleet registry/catalog inputs retain full global validation through descriptor-safe reads. Directory-sync failure retains existing exact-owner finalization requirements.",
       "operation": "start_instance",
       "nativeSymbol": "pub fn start(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "c689c7149de24858fd679cc098b54ffca0993b31"
+      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
     },
     {
       "designOperation": "observe_health",
@@ -166,14 +186,34 @@
           "path": "codex-rs/hepta-supervisor/src/unix_control_io_linux_tests.rs",
           "kind": "linux_only_full_accept_queue_deadline_with_outer_watchdog",
           "command": "just test --locked -p codex-hepta-supervisor --lib unix::control_io::linux_tests"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_control_deadline_tests.rs",
+          "kind": "expired_exact_owner_control_before_poll_and_fleet_faults",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::deadline_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_pending_deadline_tests.rs",
+          "kind": "admitted_due_control_and_fresh_stop_matrix_deferral_with_original_monotonic_budget",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::pending_deadline_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs",
+          "kind": "matrix_signal_fault_preservation_and_stored_exit_cleanup_only",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/directory_io_tests.rs",
+          "kind": "real_directory_to_fifo_rejection_before_sync_watchdog_release",
+          "command": "just test --locked -p codex-hepta-supervisor --lib directory_io::tests --retries 0"
         }
       ],
-      "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success. Emit automatic restart attempts only after durable charge and exact lineage/deadline admission; exhaustion is a normal bounded policy outcome. Preserve independently observed concurrent admission, signal, probe and cleanup faults once in the bounded tick report. Fresh complete read metadata and physical lease readiness remain mandatory when unchanged per-Agent status projections are reused. Agentd and Matrix Health use one existing 200 ms monotonic budget for each Unix control exchange, including nonblocking connect, kernel peer-PID validation before any request byte, partial writes, half-close and bounded response reads. Successful partial progress and interrupted I/O cannot renew the absolute deadline; a probe error or timeout publishes false through the existing health worker. The four common transport regressions are exact mandatory library identities; the full-accept-queue regression is Linux-only and is not a macOS requirement. This is not an entire adoption or lifecycle SLO, an immediate read-projection refresh, per-Agent scheduling isolation or preemption of intrinsically stuck kernel/path/filesystem calls.",
+      "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success. Emit automatic restart attempts only after durable charge and exact lineage/deadline admission; exhaustion is a normal bounded policy outcome. Preserve independently observed concurrent admission, signal, probe and cleanup faults once in the bounded tick report. Fresh complete read metadata and physical lease readiness remain mandatory when unchanged per-Agent status projections are reused. Agentd and Matrix Health use one existing 200 ms monotonic budget for each Unix control exchange, including nonblocking connect, kernel peer-PID validation before any request byte, partial writes, half-close and bounded response reads. Successful partial progress and interrupted I/O cannot renew the absolute deadline; a probe error or timeout publishes false through the existing health worker. The four common transport regressions are exact mandatory library identities; the full-accept-queue regression is Linux-only and is not a macOS requirement. This is not an entire adoption or lifecycle SLO, an immediate read-projection refresh, per-Agent scheduling isolation or preemption of intrinsically stuck kernel/path/filesystem calls. Expired acknowledged Draining/Stopping phases and already admitted current-unfenced-spawn pending due Drain/Stop or immediate Kill are contained before fallible Fleet observation and polling, preserving the original budget and stronger Kill. An unexpired exact Matrix-deferred Stop skips the main signal while retaining eligible startup/Running health observation. The same-tick control result cannot be readmitted after pending clears; Stopping/Killing remains unready on later healthy probes, with Draining semantics unchanged. Matrix direct signal errors survive later unresolved poll/Fleet/cleanup errors once, and stored exact exit makes every preceding containment helper cleanup-only without a new signal, Killing transition or MatrixKillRequested event. No acknowledgement or timeout creates exit or lease-cleanup evidence.",
       "operation": "observe_health",
       "nativeSymbol": "pub fn tick(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "c689c7149de24858fd679cc098b54ffca0993b31"
+      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
     },
     {
       "designOperation": "drain",
@@ -210,14 +250,29 @@
           "path": "codex-rs/hepta-supervisor/src/unix_control_io_linux_tests.rs",
           "kind": "linux_only_full_accept_queue_deadline_with_outer_watchdog",
           "command": "just test --locked -p codex-hepta-supervisor --lib unix::control_io::linux_tests"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_control_deadline_tests.rs",
+          "kind": "expired_exact_owner_control_before_poll_and_fleet_faults",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::deadline_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_control_budget_tests.rs",
+          "kind": "checked_total_deadline_before_acquisition_or_drain_effects",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::deadline_tests::budget_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_pending_deadline_tests.rs",
+          "kind": "admitted_due_control_and_fresh_stop_matrix_deferral_with_original_monotonic_budget",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::pending_deadline_tests --retries 0"
         }
       ],
-      "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement for the current spawn/draining generation. Agentd first closes App Server admission and waits for already-admitted RPC handlers, then requires zero running assistant turns and zero unclassified durable Automation/TaskFlow blockers. Durable uncertain/indeterminate effects remain unknown for reconciliation rather than being relabelled complete. A crash after durable Draining replays the idempotent Drain RPC; unavailable drain evidence fails closed into bounded stop escalation, never a drain==SIGTERM shortcut. Recovery of an exact journaled Stop preserves its original durable deadline; a transient bound-control driver failure retains the staged control and does not skip independent signed-intent recovery. Complete crash-cut lineage and the atomic recovery-observation envelope remain open. The typed Agentd Drain exchange uses one existing 200 ms monotonic budget across nonblocking connect, kernel peer-PID validation before request bytes, partial writes, half-close and bounded response reads; partial progress cannot renew it. Linux accept-backlog EAGAIN is a failed connection and cannot be treated as a successful handshake. Transport timeout, absence or an incomplete reply never establishes Drain acknowledgement or process exit, never releases an owned handle and does not undo a request already delivered. The original durable control deadline and escalation remain decisive. Common transport tests apply on Linux/macOS; the accept-queue regression is Linux-only. This per-exchange budget is not an entire Stop/adoption SLO and does not make intrinsic kernel/path/filesystem stalls preemptible.",
+      "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement for the current spawn/draining generation. Agentd first closes App Server admission and waits for already-admitted RPC handlers, then requires zero running assistant turns and zero unclassified durable Automation/TaskFlow blockers. Durable uncertain/indeterminate effects remain unknown for reconciliation rather than being relabelled complete. A crash after durable Draining replays the idempotent Drain RPC; unavailable drain evidence fails closed into bounded stop escalation, never a drain==SIGTERM shortcut. Recovery of an exact journaled Stop preserves its original durable deadline; a transient bound-control driver failure retains the staged control and does not skip independent signed-intent recovery. Complete crash-cut lineage and the atomic recovery-observation envelope remain open. The typed Agentd Drain exchange uses one existing 200 ms monotonic budget across nonblocking connect, kernel peer-PID validation before request bytes, partial writes, half-close and bounded response reads; partial progress cannot renew it. Linux accept-backlog EAGAIN is a failed connection and cannot be treated as a successful handshake. Transport timeout, absence or an incomplete reply never establishes Drain acknowledgement or process exit, never releases an owned handle and does not undo a request already delivered. The original durable control deadline and escalation remain decisive. Common transport tests apply on Linux/macOS; the accept-queue regression is Linux-only. This per-exchange budget is not an entire Stop/adoption SLO and does not make intrinsic kernel/path/filesystem stalls preemptible. Drain checks the actual supplied now plus drain_timeout plus stop_grace before deferral, fencing, CAS or signals, rejecting overflow without granting Kill authority. Expiry uses the original drain limit plus Stop grace, not delayed-tick time. Admitted current-spawn pending Drain may escalate before a broken full-Fleet read only when due; its signal, registry and poll faults remain independently reportable and exact ownership survives until real exit and durable cleanup.",
       "operation": "drain",
       "nativeSymbol": "pub fn drain(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "c689c7149de24858fd679cc098b54ffca0993b31"
+      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
     },
     {
       "designOperation": "stop_instance",
@@ -249,14 +304,29 @@
           "path": "codex-rs/hepta-supervisor/src/recovery_control_tests.rs",
           "kind": "original_deadline_recovery_and_retry",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_control_deadline_tests.rs",
+          "kind": "expired_exact_owner_control_before_poll_and_fleet_faults",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::deadline_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_pending_deadline_tests.rs",
+          "kind": "admitted_due_control_and_fresh_stop_matrix_deferral_with_original_monotonic_budget",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::pending_deadline_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/directory_io_tests.rs",
+          "kind": "real_directory_to_fifo_rejection_before_sync_watchdog_release",
+          "command": "just test --locked -p codex-hepta-supervisor --lib directory_io::tests --retries 0"
         }
       ],
-      "sourceSemantics": "Before cancellation or signaling, persists a generation/process-bound Stop intent with its original deadline. Cancels an existing pending main restart through the canonical writer before companion deferral, lifecycle CAS and graceful signaling; preserves charged attempts, window origin, eligibility and companion budget. Recovery reuses that deadline and reconciles cancellation before journaled absence may complete the control. A stopped/failed Agent with no owned or leased processes can cancel its existing pending restart without inventing a process identity. Internal/deferred process stop preserves the restart it implements. Complete release-change/control supersession and cross-daemon exit-cleanup witnesses remain open. Process termination is not user-task success.",
+      "sourceSemantics": "Before cancellation or signaling, persists a generation/process-bound Stop intent with its original deadline. Cancels an existing pending main restart through the canonical writer before companion deferral, lifecycle CAS and graceful signaling; preserves charged attempts, window origin, eligibility and companion budget. Recovery reuses that deadline and reconciles cancellation before journaled absence may complete the control. A stopped/failed Agent with no owned or leased processes can cancel its existing pending restart without inventing a process identity. Internal/deferred process stop preserves the restart it implements. Complete release-change/control supersession and cross-daemon exit-cleanup witnesses remain open. Process termination is not user-task success. A live Stop checks caller-supplied monotonic now plus stop_grace before durable publication. Private preparation distinguishes Fresh from Retained without changing the codec; Fresh stages that deadline only after durable restart cancellation succeeds, before Matrix deferral. Cancellation failure retains the journal without newly staged pending control, requested marker or signal. Retry combines the earlier pending/acknowledged Stop deadline and stronger Kill while validating the existing journal digest/exact target and Stop wall-clock rollback; only restoration without an in-process Stop/Kill continuation reconstructs wall-time remaining. Unexpired same-spawn deferred Stop waits for its owned Matrix without early main signal or probe-induced companion emergency Kill; at its original deadline exact main containment precedes Fleet reads. Stopping/Killing never becomes ready from later healthy probes.",
       "operation": "stop_instance",
       "nativeSymbol": "pub fn stop(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "c689c7149de24858fd679cc098b54ffca0993b31"
+      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
     },
     {
       "designOperation": "kill_instance",
@@ -313,14 +383,29 @@
           "path": "codex-rs/hepta-supervisor/src/matrix_control_order_tests.rs",
           "kind": "native_main_first_driver_entry_and_independent_failure_paths",
           "command": "just test -p codex-hepta-supervisor --lib matrix::tick::tests::control_order"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_pending_deadline_tests.rs",
+          "kind": "admitted_due_control_and_fresh_stop_matrix_deferral_with_original_monotonic_budget",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::pending_deadline_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs",
+          "kind": "matrix_signal_fault_preservation_and_stored_exit_cleanup_only",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::matrix_fault_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/directory_io_tests.rs",
+          "kind": "real_directory_to_fifo_rejection_before_sync_watchdog_release",
+          "command": "just test --locked -p codex-hepta-supervisor --lib directory_io::tests --retries 0"
         }
       ],
-      "sourceSemantics": "Attempts durable generation/process-bound Kill intent and pending-main-restart cancellation, then attempts the already-owned main process before independently entering the companion driver. Companion, registry, intent or cancellation failures cannot suppress the main emergency termination attempt; all failures remain reportable and retained owners stay fenced until observed exit. Adopted signals use kernel lifetime references; a signal acknowledgement is not observed exit. Complete release-change/control supersession, cross-daemon exit-cleanup witnesses and target-host qualification remain open.",
+      "sourceSemantics": "Attempts durable generation/process-bound Kill intent and pending-main-restart cancellation, then attempts the already-owned main process before independently entering the companion driver. Companion, registry, intent or cancellation failures cannot suppress the main emergency termination attempt; all failures remain reportable and retained owners stay fenced until observed exit. Adopted signals use kernel lifetime references; a signal acknowledgement is not observed exit. Complete release-change/control supersession, cross-daemon exit-cleanup witnesses and target-host qualification remain open. An already admitted pending Kill for the exact current unfenced spawn retries before fallible full-Fleet observation; a stale pending target grants no such signal authority. Successful pre-read control is captured once and cannot regain readiness in the same tick. A stored Matrix exit makes shared containment callers mark unhealthy/fenced and retry cleanup only, without signaling or manufacturing control events. Original signal and later unresolved observation/cleanup faults remain visible once; only real exact exit plus durable cleanup releases ownership.",
       "operation": "kill_instance",
       "nativeSymbol": "pub fn kill(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "c689c7149de24858fd679cc098b54ffca0993b31"
+      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
     },
     {
       "designOperation": "restart_instance",
@@ -362,14 +447,19 @@
           "path": "codex-rs/hepta-supervisor/src/restart_journal_read_tests.rs",
           "kind": "bounded_restart_state_input",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/tick_pending_deadline_tests.rs",
+          "kind": "admitted_due_control_and_fresh_stop_matrix_deferral_with_original_monotonic_budget",
+          "command": "just test --locked -p codex-hepta-supervisor --lib supervisor::tests::tick_control_fault_tests::pending_deadline_tests --retries 0"
         }
       ],
-      "sourceSemantics": "Keeps an unresolved restart claim across budget-window rollover without resetting charged attempts or original eligibility. Admission, preflight and recovery reject wall-clock rollback before the window origin; internal/deferred Stop preserves the pending claim. Exact lineage binds the predecessor and any acquired replacement, and healthy completion retains its continuation until lineage and budget acknowledgement are durable. Replacement dispatch waits for exact Matrix exit and lease cleanup. A known driver spawn failure before acquiring a process cancels its exact charged claim; failed cancellation retains its witness, blocks competing dispatch and retries fresh durable acknowledgement without redispatch. Complete predecessor/replacement lineage across every launch-before-lease or rejected-adoption crash cut remains open.",
+      "sourceSemantics": "Keeps an unresolved restart claim across budget-window rollover without resetting charged attempts or original eligibility. Admission, preflight and recovery reject wall-clock rollback before the window origin; internal/deferred Stop preserves the pending claim. Exact lineage binds the predecessor and any acquired replacement, and healthy completion retains its continuation until lineage and budget acknowledgement are durable. Replacement dispatch waits for exact Matrix exit and lease cleanup. A known driver spawn failure before acquiring a process cancels its exact charged claim; failed cancellation retains its witness, blocks competing dispatch and retries fresh durable acknowledgement without redispatch. Complete predecessor/replacement lineage across every launch-before-lease or rejected-adoption crash cut remains open. Shared live Stop continuation preserves its existing earlier monotonic deadline or stronger Kill while validating any existing journal and rejecting Stop wall rollback; Matrix deferral grants no renewed grace. This does not make restart-internal drain deadlines or exit-cleanup witnesses cross-daemon durable.",
       "operation": "restart_instance",
       "nativeSymbol": "pub fn restart(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "c689c7149de24858fd679cc098b54ffca0993b31"
+      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
     },
     {
       "designOperation": "load_next",
@@ -401,14 +491,19 @@
           "path": "codex-rs/hepta-supervisor/src/release_retry_tests.rs",
           "kind": "release_terminal_publication_and_exact_recovery_frontier",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/regular_file_tests.rs",
+          "kind": "supporting_fleet_registry_catalog_descriptor_fifo_cuts_not_ledger_operation_execution",
+          "command": "just test --locked -p codex-hepta-fleet --lib regular_file::tests --retries 0"
         }
       ],
-      "sourceSemantics": "Transitions through a fsynced unified release transaction that binds exact source/target immutable manifests/program bytes, the per-Agent allow/revoke admission frontier, the exact source/target pair identity, lifecycle/release-state generations and optional signed production authority. The pair digest is a structural binding, not independent semantic-compatibility approval; runtime compatibility is established by the typed Agentd/Matrixd readiness contract before commit. A production daemon configured with a verifier rejects unsigned Upgrade/Rollback.",
+      "sourceSemantics": "Transitions through a fsynced unified release transaction that binds exact source/target immutable manifests/program bytes, the per-Agent allow/revoke admission frontier, the exact source/target pair identity, lifecycle/release-state generations and optional signed production authority. The pair digest is a structural binding, not independent semantic-compatibility approval; runtime compatibility is established by the typed Agentd/Matrixd readiness contract before commit. A production daemon configured with a verifier rejects unsigned Upgrade/Rollback. Supporting Fleet registry/catalog reads now reject substituted special files through opened regular/size/inode checks and bounded reads, retaining full global catalog, canonical workspace, immutable mode, digest/seal and CAS validation. JSON/frontier bounds stay 32 KiB; copy/hash is bounded by captured length plus one and must retain the original length, without a new executable-size cap.",
       "operation": "load_next",
       "nativeSymbol": "pub fn upgrade(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "c689c7149de24858fd679cc098b54ffca0993b31"
+      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
     },
     {
       "designOperation": "rollback_release",
@@ -430,14 +525,19 @@
           "path": "codex-rs/hepta-supervisor/src/release_retry_tests.rs",
           "kind": "rollback_continuation_and_predecessor_preservation",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/regular_file_tests.rs",
+          "kind": "supporting_fleet_registry_catalog_descriptor_fifo_cuts_not_ledger_operation_execution",
+          "command": "just test --locked -p codex-hepta-fleet --lib regular_file::tests --retries 0"
         }
       ],
-      "sourceSemantics": "Re-resolves the recorded predecessor at the final-use boundary, rejects revoked or allowance/frontier-drifted releases, verifies its immutable bytes against the durable transaction, and starts rollback only as a fresh process generation.",
+      "sourceSemantics": "Re-resolves the recorded predecessor at the final-use boundary, rejects revoked or allowance/frontier-drifted releases, verifies its immutable bytes against the durable transaction, and starts rollback only as a fresh process generation. Supporting Fleet descriptor reads and directory sync retain the full canonical/catalog/digest/seal/CAS admission boundary; Unix special-file rejection does not relax rollback authority or make regular storage preemptible.",
       "operation": "rollback_release",
       "nativeSymbol": "pub fn rollback(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "c689c7149de24858fd679cc098b54ffca0993b31"
+      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
     },
     {
       "designOperation": "signed_upgrade",
@@ -469,14 +569,39 @@
           "path": "codex-rs/hepta-supervisor/src/release_retry_tests.rs",
           "kind": "registered_production_source_and_signed_terminal_binding",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_effect_boundary_tests.rs",
+          "kind": "signed_pure_rejection_and_real_prepared_or_queued_publication_cuts",
+          "command": "just test --locked -p codex-hepta-supervisor --lib daemon::authority_tests::effect_boundary_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/authority_bundle_open_tests.rs",
+          "kind": "real_pinned_bundle_metadata_to_fifo_substitution",
+          "command": "just test --locked -p codex-hepta-supervisor --lib authority_bundle::open_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/regular_file_io_tests.rs",
+          "kind": "regular_descriptor_fifo_and_growth_rejection_without_stream_or_zeroization_changes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib regular_file_io::tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/directory_io_tests.rs",
+          "kind": "real_directory_to_fifo_rejection_before_sync_watchdog_release",
+          "command": "just test --locked -p codex-hepta-supervisor --lib directory_io::tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/regular_file_tests.rs",
+          "kind": "supporting_fleet_registry_catalog_descriptor_fifo_cuts_not_ledger_operation_execution",
+          "command": "just test --locked -p codex-hepta-fleet --lib regular_file::tests --retries 0"
         }
       ],
-      "sourceSemantics": "Admits a production upgrade only after independently signed H7 and production-grant verification binds exact source/target releases and current control/lifecycle/daemon-authority fences. The fsynced release transaction additionally binds immutable program digests plus the current per-Agent admission frontier before drain.",
+      "sourceSemantics": "Admits a production upgrade only after independently signed H7 and production-grant verification binds exact source/target releases and current control/lifecycle/daemon-authority fences. The fsynced release transaction additionally binds immutable program digests plus the current per-Agent admission frontier before drain. Signature/catalog/preflight validation and digest-bound status construction finish before the first durable Prepared publication attempt. Failure from that attempt onward returns SignedMutationIndeterminate, mapped by signed RPC to operation_indeterminate, with bounded original diagnostics, trusted in-memory RecoveryRequired and a best-effort durable marker. Even a Prepared directory-sync fault before confirmed process delivery cannot prove no effect. Pure pre-publication refusal remains safe rejection. Public bundle/request and offline seed/public-key readers use descriptor-safe bounded regular inputs while retaining existing caller checks and zeroization; stdin/key-fd streams and signing-authority composition are unchanged. This result does not claim physical delivery, independent authority acceptance, process exit or cleanup.",
       "operation": "signed_upgrade",
       "nativeSymbol": "pub fn apply_production_grant(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "c689c7149de24858fd679cc098b54ffca0993b31"
+      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
     },
     {
       "designOperation": "signed_rollback",
@@ -508,14 +633,39 @@
           "path": "codex-rs/hepta-supervisor/src/release_retry_tests.rs",
           "kind": "signed_rollback_terminal_binding",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/signed_effect_boundary_tests.rs",
+          "kind": "signed_pure_rejection_and_real_prepared_or_queued_publication_cuts",
+          "command": "just test --locked -p codex-hepta-supervisor --lib daemon::authority_tests::effect_boundary_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/authority_bundle_open_tests.rs",
+          "kind": "real_pinned_bundle_metadata_to_fifo_substitution",
+          "command": "just test --locked -p codex-hepta-supervisor --lib authority_bundle::open_tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/regular_file_io_tests.rs",
+          "kind": "regular_descriptor_fifo_and_growth_rejection_without_stream_or_zeroization_changes",
+          "command": "just test --locked -p codex-hepta-supervisor --lib regular_file_io::tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/directory_io_tests.rs",
+          "kind": "real_directory_to_fifo_rejection_before_sync_watchdog_release",
+          "command": "just test --locked -p codex-hepta-supervisor --lib directory_io::tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-fleet/src/regular_file_tests.rs",
+          "kind": "supporting_fleet_registry_catalog_descriptor_fifo_cuts_not_ledger_operation_execution",
+          "command": "just test --locked -p codex-hepta-fleet --lib regular_file::tests --retries 0"
         }
       ],
-      "sourceSemantics": "Admits production rollback only through an independently signed grant; the predecessor is freshly re-resolved and its manifest/program digests and current allow/revoke admission frontier must exactly match the durable transaction witness.",
+      "sourceSemantics": "Admits production rollback only through an independently signed grant; the predecessor is freshly re-resolved and its manifest/program digests and current allow/revoke admission frontier must exactly match the durable transaction witness. The same first-Prepared-publication-attempt boundary preserves pure signature/catalog/preflight rejection but classifies later publication/continuation failure as SignedMutationIndeterminate/RPC operation_indeterminate. Trusted recovery intent and bounded diagnostics remain even if the best-effort durable marker fails. Descriptor-safe regular-file and directory I/O supplements existing authority and zeroization checks without relaxing them, claiming rollback completion or converting unknown effects into success.",
       "operation": "signed_rollback",
       "nativeSymbol": "pub fn apply_production_grant(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "c689c7149de24858fd679cc098b54ffca0993b31"
+      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
     },
     {
       "designOperation": "reconcile_signed_intent",
@@ -552,14 +702,24 @@
           "path": "codex-rs/hepta-supervisor/src/daemon_client_validation_tests.rs",
           "kind": "request_bound_terminal_recovery_reply",
           "command": "just test -p codex-hepta-supervisor --lib"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/directory_io_tests.rs",
+          "kind": "real_directory_to_fifo_rejection_before_sync_watchdog_release",
+          "command": "just test --locked -p codex-hepta-supervisor --lib directory_io::tests --retries 0"
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/tests/signed_intent_recovery.rs",
+          "kind": "digest_only_abort_retains_unresolved_intent_and_blocks_ordinary_start",
+          "command": "just test --locked -p codex-hepta-supervisor --test signed_intent_recovery --retries 0"
         }
       ],
-      "sourceSemantics": "Quarantines ambiguous signed transitions as recovery_required while keeping owner-local status/recovery RPCs reachable. An independently signed recovery decision must bind the grant, signed-intent digest, release-transaction digest, observed immutable release bytes and current lifecycle/daemon-authority fences; the current admission frontier is revalidated again before terminal commit/rollback. Exact prepared source/target CAS generation and predecessor distinguish rollback-target success from failed-target source restoration. An interrupted terminal publication can resume only its exact signed decision after repeated verification, acknowledging both journals and advancing owner-local revision once; unrelated transaction digests are omitted from status.",
+      "sourceSemantics": "Quarantines ambiguous signed transitions as recovery_required while keeping owner-local status/recovery RPCs reachable. An independently signed recovery decision must bind the grant, signed-intent digest, release-transaction digest, observed immutable release bytes and current lifecycle/daemon-authority fences; the current admission frontier is revalidated again before terminal commit/rollback. Exact prepared source/target CAS generation and predecessor distinguish rollback-target success from failed-target source restoration. An interrupted terminal publication can resume only its exact signed decision after repeated verification, acknowledging both journals and advancing owner-local revision once; unrelated transaction digests are omitted from status. Decision/frontier/outcome/replay checks precede the first terminal transaction publication attempt; later failed transaction/intent/revision acknowledgement returns SignedMutationIndeterminate/RPC operation_indeterminate. The trusted recovery preimage and possibly published terminal bytes remain bound to the exact decision for retry; neither terminal record is overwritten to manufacture rollback. Failure leaves owner-local recovery revision unchanged, and both durable acknowledgements plus revision update are required before release of quarantine and one successful increment. A Prepared/RecoveryRequired intent with no release transaction has no supported terminalization API because the decision requires that exact transaction digest. The legacy digest-only abort writer has no production consumer and cannot clear quarantine or supply Aborted, exit or cleanup authority.",
       "operation": "reconcile_signed_intent",
       "nativeSymbol": "pub fn resolve_production_recovery(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
       "sourcePathExists": true,
-      "sourceBlob": "c689c7149de24858fd679cc098b54ffca0993b31"
+      "sourceBlob": "9044c5e4b975dc59116698d893443f936b899947"
     }
   ],
   "repositoryControlledGaps": [
@@ -666,9 +826,9 @@
     "scripts/just-shell.py"
   ],
   "observedAtHead": {
-    "commit": "4b6b5afbe80cc8e25963dcd18ef72a54a6496d8b",
-    "tree": "f0eb8dd82c1eb058dc233e0b089144b798ae6880",
-    "interpretation": "Reviewed source-only exact-peer control transport and bounded nonblocking test-peer I/O with the original production and fixture budgets unchanged. The production single-exchange 200 ms absolute-deadline contract, kernel peer-PID verification before request bytes, bounded frames and timeout-without-Drain-acknowledgement-or-process-exit semantics remain unchanged. The test-only fixture avoids socket timeout setsockopt after accept and normalizes nonblocking mode without weakening peer, zero-request-byte, live-child or frame assertions. Darwin source establishes that setting socket options after both peer directions have shut down can return EINVAL; the historical d0169ba logs lack syscall context, so new native CI must confirm this repair. Historical d0169ba had three passing Linux native lanes, three macOS native lanes failing at negative-peer fixtures while constructor, Fleet and product scenarios passed, and two passing deep lanes. Those results and older 7c4e0ab/d74cde5 records do not validate or transfer credit to these new transport/fixture bytes. At the time this source observation is written, new actual exact-head/platform execution has not yet been obtained and remains pending; subsequent candidate CI is independent evidence. All mapped objects belong to this exact source commit/tree. Immutable sourceBase, ownership, gaps and existing capability/acceptance boundaries are preserved, with no target-host qualification, independent acceptance, activation or release claim transferred."
+    "commit": "6c6c051e8f0fac8ce766fe1dc6eb7eda1c6cb58c",
+    "tree": "8c78d5c7faeeabfa24e75d0d2884a9d330a77f25",
+    "interpretation": "Source-only observation of the exact current control, signed-publication and descriptor-I/O repairs. Live Stop proves its caller-supplied monotonic deadline before publication; private Fresh/Retained preparation preserves the codec, and Fresh stages control only after durable restart cancellation. Live retries retain the earlier deadline or stronger Kill while validating the existing bound journal and Stop wall-clock rollback; only journal-only restoration reconstructs remaining wall time. Expired acknowledged phases and admitted current-spawn due Drain/Stop or pending Kill attempt exact-owned containment before fallible Fleet reads; unexpired Matrix-deferred Stop does not signal the main early, and Stopping/Killing cannot regain readiness from probes. Signal, observation and cleanup faults remain distinct; no signal or timeout establishes Drain acknowledgement, process exit or lease cleanup. Signed failures after the first durable publication attempt return SignedMutationIndeterminate/RPC operation_indeterminate with trusted recovery state and bounded diagnostics; no-journal Prepared quarantine remains unsupported for terminalization, and the legacy digest-only abort directive has no production consumer. Private regular-file and directory-descriptor helpers prevent final-component special-file waits while retaining caller bounds, zeroization, full Fleet/catalog/CAS checks and existing platform behavior; ordinary blocked regular storage and ancestor integrity remain host prerequisites, with no per-Agent or Stop SLO claim. The prior single-exchange 200 ms transport budget, peer-PID-before-request-bytes contract, four common tests and Linux-only backlog test remain unchanged. Historical 1f111388 six native lanes and two narrower deep lanes passed only their bound source; older 7c4e0ab/d74cde5/d0169ba records and that success do not validate these later bytes. Historical 6958a901 retained three default-library failures with the prior 20-new-Supervisor/76-repair source inventory; the current source has 21 new Supervisor and two new Fleet leaves and 77 exact repair identities, without a new pass claim. The actual 6958a901 Bazel update and after-check exits were zero and produced byte-identical MODULE.bazel.lock; this diagnostic did not change the lock or qualify the current/future head. Enhanced final-head lock input/clean-drift receipt checks still require their own execution. At the time this observation is written, exact final-candidate/platform execution remains to be obtained independently. All mapped objects and 23 operation entrypoint blobs belong to this exact source commit/tree. Immutable sourceBase, ownership, gaps and all capability/acceptance/activation/release boundaries remain unchanged; no production or target-host qualification is inferred."
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "productCallers": [
@@ -722,6 +882,10 @@
       "object": "73a8bff815456a25aed5c8b11889f45165fd02de"
     },
     {
+      "path": "MODULE.bazel.lock",
+      "object": "b563f19f51fff22a4cddcb3cd1a043192befbf84"
+    },
+    {
       "path": "codex-rs/.cargo/config.toml",
       "object": "8a6f2c11ee7afbb11f7033ef3390fb1c57b4cd44"
     },
@@ -730,12 +894,36 @@
       "object": "4269cea9af8507324b62363a496ce60124a407da"
     },
     {
+      "path": "codex-rs/Cargo.lock",
+      "object": "52f70b601c19b1c3a542cff09fc085b1edff5f34"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/Cargo.toml",
+      "object": "cde5b909454add9ce6021b47a95083317194f0c6"
+    },
+    {
       "path": "codex-rs/hepta-fleet/src/authority_port.rs",
       "object": "503c9d5aac3fe95e08ace156d3c08b67166320c4"
     },
     {
+      "path": "codex-rs/hepta-fleet/src/lib.rs",
+      "object": "6692968e82f5beb4548e87f0dec75801d053d012"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/registry.rs",
+      "object": "4d64116c667b69f3247ac23f9fac7506380d2317"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/regular_file.rs",
+      "object": "6ae1e6001f7bec23cd91698504632f319fdade0b"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/regular_file_tests.rs",
+      "object": "74af818f0dd2518e6ff9fea4176004894d255d2a"
+    },
+    {
       "path": "codex-rs/hepta-fleet/src/release.rs",
-      "object": "334fac878fc27a552b5088d612a117853d5ce660"
+      "object": "1b066c2b83ae66dbb866747ba60936797713023e"
     },
     {
       "path": "codex-rs/hepta-fleet/src/release_copy_tests.rs",
@@ -747,11 +935,39 @@
     },
     {
       "path": "codex-rs/hepta-supervisor",
-      "object": "1f4f92588f8eaa4b031d7d135c94091dfc96e433"
+      "object": "72d7f008375be9b5801e952c84b7b6f8a1bc90e6"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/authority_bundle.rs",
+      "object": "765c429c0699690f1844cd35fc61741e9cbee23d"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/authority_bundle_open_tests.rs",
+      "object": "da8b54d430b052f43fa2067253639b68b1ea3b6b"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/authority_signer.rs",
+      "object": "9ae80cfbe72a683d5d51d7b5c746b6f505075e63"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/automatic_restart_event_tests.rs",
       "object": "37cf8fb86db114f858c2b807318937d4eb0a4a61"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/bin/hepta-final-use-approver.rs",
+      "object": "364d2ba1c577766a2b1bc978f6b54f0ab994e607"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/bin/hepta-final-use-revocation-signer.rs",
+      "object": "24c1a5c10506b3a546a14afcf088eb47dc4be3dc"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/bin/hepta-final-use-signer.rs",
+      "object": "2446b3faad6f76aee698700dc8510d003d4d4e3d"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/bin/hepta-supervisor-authority-bundle.rs",
+      "object": "fe3b487a232cbc728efee39842ae9478daf2c4c3"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/constructor_absence_recovery_tests.rs",
@@ -787,7 +1003,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/control.rs",
-      "object": "688ea66d4818b264ff5b51179a333b089798d22f"
+      "object": "5e86397d2ef5424b8a11f658ce8626453064f19b"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/control_completion_tests.rs",
@@ -795,19 +1011,27 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/control_durable_restart_tests.rs",
-      "object": "e519c7030807fb40212fe474908d621cfd56a00b"
+      "object": "a4240bc7ea4c22fb4e9c8b0e415cbcd654e8c16e"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/control_intent.rs",
-      "object": "e517f1ee4b10c65aa202e665871978f79b661a7b"
+      "object": "3ce1d1fc0a51170cc4b86aaf79e4833bf4e9c626"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/control_intent_write_tests.rs",
       "object": "dc5938913389457ca6c814fef3025ad4178ba2e1"
     },
     {
+      "path": "codex-rs/hepta-supervisor/src/control_pending.rs",
+      "object": "f1db26a0bdb6bacf034a2315ef9218192ed8c848"
+    },
+    {
       "path": "codex-rs/hepta-supervisor/src/daemon.rs",
       "object": "af7b7adb909ec40438727b66064afe416b9dfddf"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/daemon_authority_tests.rs",
+      "object": "93e4a8db7e86e9faf2c7a48a5307b1f8a3e4b795"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/daemon_client_validation_tests.rs",
@@ -842,8 +1066,16 @@
       "object": "b619367ea9f0ae1af6a08b80a2c4a20c55189690"
     },
     {
+      "path": "codex-rs/hepta-supervisor/src/directory_io.rs",
+      "object": "7e61422ca0b7ad14179e1d64a78e6c4786964e65"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/directory_io_tests.rs",
+      "object": "c20b32578c7e62cc4a58033a656c1d206290a1cd"
+    },
+    {
       "path": "codex-rs/hepta-supervisor/src/durable_publish.rs",
-      "object": "5935e26e70da2c5e7e03d8bb65af01780c505114"
+      "object": "68d9fb383d6c1c74c2e5b93931d45d0e480321cd"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/durable_read_tests.rs",
@@ -854,12 +1086,28 @@
       "object": "7bed8d84e69cf8656434cba92da250981da11874"
     },
     {
+      "path": "codex-rs/hepta-supervisor/src/lease.rs",
+      "object": "78bbf554411bc62632763d9850776e42eceb8753"
+    },
+    {
       "path": "codex-rs/hepta-supervisor/src/lease_read_tests.rs",
       "object": "ed82de8f382a6bd4b5df6fff966b29e98b8a22dd"
     },
     {
+      "path": "codex-rs/hepta-supervisor/src/lib.rs",
+      "object": "29cb33d4aa23e89d4253437783ff5203233591c5"
+    },
+    {
       "path": "codex-rs/hepta-supervisor/src/main.rs",
       "object": "d500363a6d2d09861996428e4a39b4a66c18770a"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix.rs",
+      "object": "8f3d68b5c0709c54ecbbbbece01cc4d1af0721af"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/matrix_binding_io_tests.rs",
+      "object": "2e8cbab4378bc62a8726be646671c81e3dd1a1db"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/matrix_budget_tests.rs",
@@ -874,12 +1122,20 @@
       "object": "206a62bcd73b19de6ae7036f391f97a5aa2c6f3a"
     },
     {
+      "path": "codex-rs/hepta-supervisor/src/matrix_lease_removal.rs",
+      "object": "98d237ad2deb5c6143527be917cad8a2d6db27e9"
+    },
+    {
       "path": "codex-rs/hepta-supervisor/src/matrix_lease_removal_tests.rs",
       "object": "6d332b458aad305fe68c1209676cedfb0dcce4bf"
     },
     {
+      "path": "codex-rs/hepta-supervisor/src/matrix_tick.rs",
+      "object": "65151257bd59074bc1e4e9bcc1f3793096f0fd00"
+    },
+    {
       "path": "codex-rs/hepta-supervisor/src/matrix_tick_tests.rs",
-      "object": "5942eb666914140ed740d7475e25aaeffc838dd6"
+      "object": "eae69d1f591fd8a82d77bd284b7ae328bf822889"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/mutation_journal.rs",
@@ -899,7 +1155,15 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/recovery_ownership_tests.rs",
-      "object": "eeca505b1a514c259eb1b6396956fe227a04aad6"
+      "object": "9a2213ebf2fe28ccc8505e3311d677af5d7f2e3e"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/regular_file_io.rs",
+      "object": "5a32b83793944be10e3db1464cd4d34576c2ab09"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/regular_file_io_tests.rs",
+      "object": "d97651bc92c6bbac29aaf6b58e676e938440a94d"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/release_admission_tests.rs",
@@ -911,7 +1175,7 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/release_signed_recovery_tests.rs",
-      "object": "ef29beaba7285e5106c8a2bb133e49ea849ec575"
+      "object": "b13de6f43639bb98cf98a69cc5967a1de647d511"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
@@ -938,8 +1202,16 @@
       "object": "2ce6804b0e7bf1530b06114528683fc786992e38"
     },
     {
+      "path": "codex-rs/hepta-supervisor/src/signed_effect.rs",
+      "object": "2b37ef88e93bbf29087337e81424a98cfc9645e4"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_effect_boundary_tests.rs",
+      "object": "ccba606b8b06114c509d3f601472bd28fa133689"
+    },
+    {
       "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "object": "c689c7149de24858fd679cc098b54ffca0993b31"
+      "object": "9044c5e4b975dc59116698d893443f936b899947"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/supervisor_snapshot_tests.rs",
@@ -951,11 +1223,27 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/tick.rs",
-      "object": "2ef125098647c99882da38ea6738c74cc0267422"
+      "object": "6084f9336b93d0eb9796a8dec1fda2e54a8d2389"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick_control_budget_tests.rs",
+      "object": "0340a22bb40add29a285396e196b4adbda7e333a"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick_control_deadline_tests.rs",
+      "object": "7fb5a84b7420ea7bd665a5ae7d6fd44a85773ce9"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/tick_control_fault_tests.rs",
-      "object": "2bd711aad2e8870eb8809dcc41ae2c5f05b19e07"
+      "object": "7eee5e4b5de7a243db56d4477689a63711fc6cf7"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick_matrix_fault_tests.rs",
+      "object": "ce76cf0907b97a6867e686c574b983c5eb89edec"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/tick_pending_deadline_tests.rs",
+      "object": "eaf6e780e10e576c886e7dbfcb24546c93aadb88"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/unix.rs",
@@ -1023,7 +1311,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/OWNER_AND_READ_ISOLATION.md",
-      "object": "a754ed90cd99335b6300b1f6a0be9060abc4ed1b"
+      "object": "1c9811a5017dae51ad6a19d28b6c898c273e4ebc"
     },
     {
       "path": "docs/modules/runtime.supervisor/PROCESS_LIFETIME.md",
@@ -1031,7 +1319,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/PROCESS_OWNERSHIP.md",
-      "object": "cd008b8eedd8c73e24f6659f6190d66991d554c9"
+      "object": "c1ee73cc5129c22af2fdae9d3d0782855edb95ac"
     },
     {
       "path": "docs/modules/runtime.supervisor/PRODUCTION_BOUNDARY.md",
@@ -1039,7 +1327,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/PRODUCTION_CONTROL_RUNBOOK.md",
-      "object": "cecb93b76d5b9960d1da00b22fa405bbc3f66297"
+      "object": "cec90cd3e19cffaf8d58d9af9e69259739cf8da5"
     },
     {
       "path": "docs/modules/runtime.supervisor/PRODUCTION_QUALIFICATION_PROFILE.json",
@@ -1051,7 +1339,7 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/RECOVERY_AND_QUALIFICATION.md",
-      "object": "a18aa248b5e2f47f6b6909d2862451d1dfe816dc"
+      "object": "20afd642dbade8f9ab5f09da20e52b7e52fd528a"
     },
     {
       "path": "docs/modules/runtime.supervisor/RESTART_CANCELLATION.md",
@@ -1067,11 +1355,15 @@
     },
     {
       "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
-      "object": "bfe8a205f6e38df9f20f238d8e4746cb4fcb2808"
+      "object": "71eae6c4ec4ab05bf4c5549cf9f07f2cf219a1ea"
     },
     {
       "path": "justfile",
       "object": "6ac734346c989cad04b754986032e364691233f3"
+    },
+    {
+      "path": "qualification/runtime-supervisor/BAZEL_LOCK_DIAGNOSTIC_OBSERVATION_20261001_6958A901.json",
+      "object": "c684aaf50ba2b3f260a0c917781eac1be89cd059"
     },
     {
       "path": "qualification/runtime-supervisor/REMOTE_CI_OBSERVATION_20261001_7C4E.json",
@@ -1095,7 +1387,7 @@
     },
     {
       "path": "scripts/hepta_supervisor_ci_v3.py",
-      "object": "0f40dd1e6cedfe8ad4202ed3fce891df94f4133a"
+      "object": "d4d6e65c5cdd154ea932b5b7912d4d2e9d7e9129"
     },
     {
       "path": "scripts/hepta_workflow_integrity.py",
@@ -1119,7 +1411,7 @@
     },
     {
       "path": "scripts/test_hepta_supervisor_ci_v3.py",
-      "object": "aa7df7e99ad89599c14f19194b00ae6ffa404044"
+      "object": "9c4598f23625da4a19ab9f79f92e85245ca52cde"
     },
     {
       "path": "scripts/test_hepta_supervisor_workflow.py",

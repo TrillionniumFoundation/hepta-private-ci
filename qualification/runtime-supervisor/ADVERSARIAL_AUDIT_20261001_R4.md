@@ -519,3 +519,32 @@ owner 的 Matrix-deferred Stop 继续遵守 companion-first，并允许原 Runni
 qualification／offline strict all-target Clippy 均通过。仅执行编译／静态
 检查，fix／fmt 后没有重跑本地测试；独立源码复核未找到新的具体反例。
 同 head 原生 CI 仍是新修复验收的必要条件。
+
+
+## 最终源码绑定与开发文档核验
+
+完整补修源码冻结于 `6c6c051e8f0fac8ce766fe1dc6eb7eda1c6cb58c`，
+tree 为 `8c78d5c7faeeabfa24e75d0d2884a9d330a77f25`。前十三个源码／指南
+阶段实际改动为 256／225／248／389／457／373／431／404／399／122／38／
+368／191 行，每阶段均低于 500；各 API blob、tree 与本地阶段一致。
+随后的 metadata 只将 Supervisor／Fleet／Kernel 三份实现映射绑定到该源码
+祖先，保留各自 sourceBase、owner、原 claims／gaps 与 12／2／2 能力状态。
+逐项原始对象证明和独立 Git 对象核对均确认 155 个 source objects
+（153 blob、2 tree）及 23 个 operation bindings 精确一致；新增 33 个
+explicit support／dependency 对象涵盖新 helper、测试及实际依赖／锁收据。
+这证明具名绑定，不能替代最终候选的执行或全项目文档闭包。
+
+main 快照 `c6f90d48c40f7b5267db587bb3c3f4934f1414a8` 已有三份模块文件：
+IMPLEMENTATION_MAP、TECHNICAL、RECOVERY_AND_QUALIFICATION。TECHNICAL 为
+401 行／27,742 字节，包含权属、架构、接口、持久化、并发、故障恢复、威胁、
+性能、运维、验收与完成定义的 17 个二级章节；恢复／资格指南为 174 行／
+12,043 字节。因此明确存在详细技术开发文档。候选模块目录现有 24 个文件
+（19 Markdown、5 JSON），本轮补充精确源码语义和运行边界，但文档详细程度
+与源码／执行／部署完成度分别判断，不能以页数或声明代替运行证据。
+
+增强的最终 Bazel 诊断另经对抗静态复核修正：set+e 中 non-lock git status
+必须记录自身退出码，combined drift 成功同时要求命令成功及输出为空，
+避免命令失败产生空文件被误判 clean。after identity 与六输入 hash 也独立
+记录退出码。Bash 语法检查通过；这些增强必须在最终 exact head 上实际
+运行，尚未获得执行信用。该 diagnostic workflow 不在三份 map 的源码
+对象或观察路径闭包内，因而 metadata 源码祖先仍精确绑定上述 6c 源码。
