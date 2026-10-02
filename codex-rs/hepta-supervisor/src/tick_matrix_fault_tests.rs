@@ -9,7 +9,9 @@ use crate::SupervisorEventKind;
 use crate::TickReport;
 use crate::lease::PROCESS_LEASE_FILE;
 use crate::lease::read_matrix_lease;
+use crate::runtime::DeferredAgentActionKind;
 use crate::runtime::MatrixRuntimePhase;
+use crate::runtime::RuntimePhase;
 
 fn pair_lease_bytes(fixture: &Fixture) -> Result<(Vec<u8>, Vec<u8>)> {
     let layout = fixture.fleet.registry.layout().agent(&fixture.fleet.first);
@@ -195,6 +197,283 @@ fn direct_companion_kill_failure_survives_exact_exit_lease_cleanup_failure() -> 
         ),
         (1, u32::MAX, u32::MAX)
     );
+    assert_eq!(f.control.matrix_spawn_count(&f.fleet.first), 1);
+    Ok(())
+}
+
+#[test]
+fn stored_matrix_exit_blocks_graceful_resignal_until_exact_cleanup() -> Result<()> {
+    for action in [
+        DeferredAgentActionKind::Drain,
+        DeferredAgentActionKind::Stop,
+    ] {
+        let mut f = Fixture::new(ProcessSet::WithMatrix)?;
+        let layout = f.fleet.registry.layout().agent(&f.fleet.first);
+        let main_path = layout.run_root().join(PROCESS_LEASE_FILE);
+        let matrix_path = layout.matrixd_process_lease().to_path_buf();
+        let leases = pair_lease_bytes(&f)?;
+        let admitted = f.fleet.registry.load_agent(&f.fleet.first)?.lifecycle;
+        let mut foreign = read_matrix_lease(&matrix_path)?.expect("owned Matrix lease");
+        foreign
+            .process_incarnation
+            .push_str("-foreign-cleanup-owner");
+        let foreign_bytes = serde_json::to_vec(&foreign)?;
+        std::fs::write(&matrix_path, &foreign_bytes)?;
+        f.control.set_matrix_exit(&f.fleet.first);
+        let report = f.supervisor.tick(f.now);
+        f.assert_faults(
+            &report,
+            &["Matrix exit cleanup requires the exact existing lease"],
+        );
+        let terminal = f.supervisor.slots[&f.fleet.first].matrix.observed_exit;
+        assert!(terminal.is_some());
+        {
+            let mut faults = f.faults.lock().expect("faults");
+            faults.matrix_stop_failures = u32::MAX;
+            faults.matrix_kill_failures = u32::MAX;
+            faults.matrix_poll_failures = u32::MAX;
+        }
+        match action {
+            DeferredAgentActionKind::Drain => f.supervisor.drain(&f.fleet.first, f.now)?,
+            DeferredAgentActionKind::Stop => f.supervisor.stop(&f.fleet.first, f.now)?,
+        }
+        let slot = &f.supervisor.slots[&f.fleet.first];
+        assert!(matches!(
+            slot.deferred_agent_action,
+            Some(deferred) if deferred.kind == action
+                && deferred.spawn_generation == slot.runtime.as_ref().expect("main owner").spawn_generation
+        ));
+        assert_eq!(slot.matrix.observed_exit, terminal);
+        assert!(matches!(
+            slot.matrix.runtime.as_ref().expect("terminal owner").phase,
+            MatrixRuntimePhase::Running
+        ));
+        assert_eq!(f.control.matrix_counts(&f.fleet.first), (0, 0, 0));
+        if action == DeferredAgentActionKind::Stop {
+            assert!(matches!(
+                slot.pending_control,
+                Some(crate::control::pending::PendingControl::Stop { deadline, .. })
+                    if deadline == f.now + std::time::Duration::from_millis(/*millis*/ 10)
+            ));
+        }
+        let report = f
+            .supervisor
+            .tick(f.now + std::time::Duration::from_millis(/*millis*/ 9));
+        f.assert_faults(
+            &report,
+            &["Matrix exit cleanup requires the exact existing lease"],
+        );
+        assert_eq!(f.control.counts(&f.fleet.first), (0, 0, 0));
+        assert_eq!(
+            pair_lease_bytes(&f)?,
+            (leases.0.clone(), foreign_bytes.clone())
+        );
+        assert_eq!(
+            f.fleet.registry.load_agent(&f.fleet.first)?.lifecycle,
+            admitted
+        );
+        if action == DeferredAgentActionKind::Stop {
+            let report = f
+                .supervisor
+                .tick(f.now + std::time::Duration::from_millis(/*millis*/ 10));
+            f.assert_faults(
+                &report,
+                &["Matrix exit cleanup requires the exact existing lease"],
+            );
+            assert_eq!(f.control.counts(&f.fleet.first), (0, 0, 1));
+            assert!(matches!(
+                f.supervisor.slots[&f.fleet.first]
+                    .runtime
+                    .as_ref()
+                    .expect("main owner")
+                    .phase,
+                RuntimePhase::Killing
+            ));
+            assert_eq!(pair_lease_bytes(&f)?, (leases.0.clone(), foreign_bytes));
+        }
+
+        // Restore the exact real lease while the main is still alive. Cleanup
+        // may release Matrix ownership, but cannot replay an acknowledged Kill.
+        std::fs::write(&matrix_path, &leases.1)?;
+        assert_eq!(
+            f.supervisor
+                .tick(f.now + std::time::Duration::from_millis(/*millis*/ 11)),
+            TickReport::default()
+        );
+        let slot = &f.supervisor.slots[&f.fleet.first];
+        let main = slot.runtime.as_ref().expect("still live main owner");
+        assert!(!main.healthy);
+        assert!(slot.matrix.runtime.is_none() && slot.matrix.observed_exit.is_none());
+        assert!(slot.matrix.exit_lease_removal.is_none() && slot.deferred_agent_action.is_none());
+        assert!(!matrix_path.exists());
+        assert_eq!(std::fs::read(&main_path)?, leases.0);
+        let after_cleanup = f.fleet.registry.load_agent(&f.fleet.first)?.lifecycle;
+        match action {
+            DeferredAgentActionKind::Drain => {
+                assert!(matches!(main.phase, RuntimePhase::Draining { .. }));
+                assert_eq!(f.control.counts(&f.fleet.first), (1, 0, 0));
+                assert_eq!(
+                    after_cleanup.lifecycle,
+                    codex_hepta_fleet::AgentLifecycle::Draining
+                );
+                assert_eq!(after_cleanup.generation, admitted.generation + 1);
+            }
+            DeferredAgentActionKind::Stop => {
+                assert!(matches!(main.phase, RuntimePhase::Killing));
+                assert_eq!(f.control.counts(&f.fleet.first), (0, 0, 1));
+                assert_eq!(after_cleanup, admitted);
+            }
+        }
+        let events = &slot.events.items;
+        assert_eq!(
+            events
+                .iter()
+                .filter(|event| matches!(event.kind, SupervisorEventKind::MatrixExited(_)))
+                .count(),
+            1
+        );
+        assert!(events.iter().all(|event| !matches!(
+            event.kind,
+            SupervisorEventKind::MatrixStopRequested | SupervisorEventKind::MatrixKillRequested
+        )));
+        assert_eq!(
+            events
+                .iter()
+                .filter(|event| event.kind == SupervisorEventKind::KillRequested)
+                .count(),
+            usize::from(action == DeferredAgentActionKind::Stop)
+        );
+        assert_eq!(f.control.matrix_counts(&f.fleet.first), (0, 0, 0));
+        {
+            let faults = f.faults.lock().expect("faults");
+            assert_eq!(
+                (
+                    faults.matrix_stop_failures,
+                    faults.matrix_kill_failures,
+                    faults.matrix_poll_failures
+                ),
+                (u32::MAX, u32::MAX, u32::MAX)
+            );
+        }
+
+        f.control.set_exit(&f.fleet.first);
+        assert_eq!(
+            f.supervisor
+                .tick(f.now + std::time::Duration::from_millis(/*millis*/ 12)),
+            TickReport::default()
+        );
+        let snapshot = f
+            .supervisor
+            .snapshot(&f.fleet.first)
+            .expect("finalized owners");
+        assert!(!snapshot.active && !snapshot.matrix.active && !snapshot.restart_pending);
+        assert!(!main_path.exists() && !matrix_path.exists());
+        let finalized = f.fleet.registry.load_agent(&f.fleet.first)?.lifecycle;
+        assert_eq!(finalized.generation, after_cleanup.generation + 1);
+        assert_eq!(
+            finalized.lifecycle,
+            match action {
+                DeferredAgentActionKind::Drain => codex_hepta_fleet::AgentLifecycle::Stopped,
+                DeferredAgentActionKind::Stop => codex_hepta_fleet::AgentLifecycle::Failed,
+            }
+        );
+        assert_eq!(f.control.spawn_count(&f.fleet.first), 1);
+        assert_eq!(f.control.matrix_spawn_count(&f.fleet.first), 1);
+    }
+    Ok(())
+}
+
+#[test]
+fn deferred_drain_exit_does_not_admit_automatic_restart_before_matrix_cleanup() -> Result<()> {
+    let mut f = Fixture::new(ProcessSet::WithMatrix)?;
+    let layout = f.fleet.registry.layout().agent(&f.fleet.first);
+    let main_path = layout.run_root().join(PROCESS_LEASE_FILE);
+    let matrix_path = layout.matrixd_process_lease().to_path_buf();
+    let lineage_path = layout
+        .run_root()
+        .join(crate::restart_lineage::RESTART_LINEAGE_FILE);
+    let initial_budget = crate::restart_journal::read_main_restart_budget(layout.run_root())?;
+    assert!(!lineage_path.exists());
+    let leases = pair_lease_bytes(&f)?;
+    let mut foreign = read_matrix_lease(&matrix_path)?.expect("owned Matrix lease");
+    foreign
+        .process_incarnation
+        .push_str("-foreign-drain-cleanup-owner");
+    let foreign_bytes = serde_json::to_vec(&foreign)?;
+    std::fs::write(&matrix_path, &foreign_bytes)?;
+    f.control.set_matrix_exit(&f.fleet.first);
+    let report = f.supervisor.tick(f.now);
+    f.assert_faults(
+        &report,
+        &["Matrix exit cleanup requires the exact existing lease"],
+    );
+    f.supervisor.drain(&f.fleet.first, f.now)?;
+    let slot = &f.supervisor.slots[&f.fleet.first];
+    assert!(matches!(
+        slot.deferred_agent_action,
+        Some(action) if action.kind == DeferredAgentActionKind::Drain
+            && action.spawn_generation == slot.runtime.as_ref().expect("main owner").spawn_generation
+    ));
+    assert!(slot.pending_control.is_none());
+    assert_eq!(pair_lease_bytes(&f)?, (leases.0, foreign_bytes.clone()));
+
+    // The physical source exits while its accepted Drain still awaits Matrix
+    // cleanup. That existing termination intent cannot admit a replacement.
+    f.control.set_exit(&f.fleet.first);
+    let report = f
+        .supervisor
+        .tick(f.now + std::time::Duration::from_millis(/*millis*/ 1));
+    f.assert_faults(
+        &report,
+        &["Matrix exit cleanup requires the exact existing lease"],
+    );
+    let slot = &f.supervisor.slots[&f.fleet.first];
+    assert!(slot.runtime.is_none() && slot.matrix.runtime.is_some());
+    assert!(slot.matrix.observed_exit.is_some());
+    assert!(!slot.restart_pending);
+    assert!(!main_path.exists());
+    assert_eq!(std::fs::read(&matrix_path)?, foreign_bytes);
+    assert_eq!(
+        crate::restart_journal::read_main_restart_budget(layout.run_root())?,
+        initial_budget
+    );
+    assert!(!lineage_path.exists());
+    assert!(slot.events.items.iter().all(|event| !matches!(
+        event.kind,
+        SupervisorEventKind::RestartQueued | SupervisorEventKind::AutomaticRestartQueued { .. }
+    )));
+    assert_eq!(
+        f.fleet
+            .registry
+            .load_agent(&f.fleet.first)?
+            .lifecycle
+            .lifecycle,
+        codex_hepta_fleet::AgentLifecycle::Failed
+    );
+
+    std::fs::write(&matrix_path, &leases.1)?;
+    assert_eq!(
+        f.supervisor
+            .tick(f.now + std::time::Duration::from_millis(/*millis*/ 20)),
+        TickReport::default()
+    );
+    let snapshot = f
+        .supervisor
+        .snapshot(&f.fleet.first)
+        .expect("finalized owners");
+    assert!(!snapshot.active && !snapshot.matrix.active && !snapshot.restart_pending);
+    assert!(!main_path.exists() && !matrix_path.exists() && !lineage_path.exists());
+    assert_eq!(
+        crate::restart_journal::read_main_restart_budget(layout.run_root())?,
+        initial_budget
+    );
+    assert!(snapshot.events.iter().all(|event| !matches!(
+        event.kind,
+        SupervisorEventKind::RestartQueued | SupervisorEventKind::AutomaticRestartQueued { .. }
+    )));
+    assert_eq!(f.control.counts(&f.fleet.first), (0, 0, 0));
+    assert_eq!(f.control.matrix_counts(&f.fleet.first), (0, 0, 0));
+    assert_eq!(f.control.spawn_count(&f.fleet.first), 1);
     assert_eq!(f.control.matrix_spawn_count(&f.fleet.first), 1);
     Ok(())
 }
