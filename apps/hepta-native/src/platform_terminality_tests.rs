@@ -20,7 +20,7 @@ fn launcher_failure_after_side_effect_stays_indeterminate() {
     let adapter =
         SystemPlatformAdapter::new(PlatformPolicy::new(Vec::new(), false, false).unwrap());
     assert_eq!(
-        adapter.launcher_observation(PlatformAction::OpenPath, status),
+        adapter.external_effect_observation(),
         PlatformObservation::indeterminate()
     );
     assert_eq!(active.load(Ordering::Acquire), 0);
@@ -37,7 +37,7 @@ fn launcher_success_without_queryable_receipt_stays_indeterminate() {
     let adapter =
         SystemPlatformAdapter::new(PlatformPolicy::new(Vec::new(), false, false).unwrap());
     assert_eq!(
-        adapter.launcher_observation(PlatformAction::Notify, status),
+        adapter.external_effect_observation(),
         PlatformObservation::indeterminate()
     );
 }

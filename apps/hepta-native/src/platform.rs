@@ -2,16 +2,18 @@
 use std::fs::File;
 #[cfg(target_os = "linux")]
 use std::fs::OpenOptions;
+#[cfg(any(target_os = "linux", target_os = "windows", test))]
 use std::path::Path;
 use std::path::PathBuf;
+#[cfg(any(target_os = "macos", target_os = "windows", test))]
 use std::process::Command;
+#[cfg(any(target_os = "macos", target_os = "windows", test))]
 use std::process::ExitStatus;
-#[cfg(target_os = "linux")]
-use std::process::Stdio;
 use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
+#[cfg(all(test, unix))]
 use std::time::Instant;
 
 use arboard::Clipboard;
@@ -28,17 +30,67 @@ use crate::model::sha256_hex;
 const MAX_CONCURRENT_LAUNCHERS: usize = 4;
 const NOTIFICATION_TIMEOUT: Duration = Duration::from_secs(8);
 #[cfg(target_os = "linux")]
-const PORTAL_PROBE_TIMEOUT: Duration = Duration::from_secs(3);
-#[cfg(target_os = "linux")]
-const RESOURCE_HANDOFF_TIMEOUT: Duration = Duration::from_secs(40);
+const RESOURCE_HANDOFF_TIMEOUT: Duration = Duration::from_secs(30);
+#[cfg(any(target_os = "macos", target_os = "windows", test))]
 const LAUNCHER_POLL_INTERVAL: Duration = Duration::from_millis(10);
 const RESOURCE_HANDOFF_ERROR: &str = "path effects require an OS adapter that consumes an already-verified resource capability; mutable path-string launch is disabled";
 
 #[cfg(target_os = "linux")]
-const PORTAL_OPEN_URI_PROGRAM: &str = include_str!("../portal/open_uri.py");
+#[path = "platform_linux.rs"]
+mod linux;
 
+#[cfg(any(target_os = "windows", target_os = "macos", test))]
+#[path = "platform_notification_helper.rs"]
+mod notification_helper;
+
+/// Run the unprivileged notification adapter on inherited pipes. This emits no
+/// capability, final-use, or delivery receipt; admission remains with the parent.
+#[cfg(any(target_os = "windows", target_os = "macos"))]
+pub fn run_notification_helper() -> Result<(), ShellError> {
+    notification_helper::run()
+}
+
+/// Explicit per-user installer entrypoint. Ordinary startup and notification
+/// sending never call this or manufacture the installed identity marker.
 #[cfg(target_os = "windows")]
-const WINDOWS_TOAST_PROGRAM: &str = include_str!("../portal/windows_toast.ps1");
+pub fn register_notification_identity() -> Result<PathBuf, ShellError> {
+    let executable = std::env::current_exe()?;
+    let marker = windows_identity_marker().ok_or_else(|| {
+        ShellError::Platform("Windows local application data directory is unavailable".into())
+    })?;
+    register_notification_identity_at(&marker, || {
+        hepta_native_platform::registrar::register(&executable).map_err(ShellError::Platform)
+    })
+}
+
+#[cfg(any(target_os = "windows", test))]
+fn register_notification_identity_at(
+    marker: &Path,
+    register: impl FnOnce() -> Result<PathBuf, ShellError>,
+) -> Result<PathBuf, ShellError> {
+    use std::io::Write as _;
+
+    let parent = marker
+        .parent()
+        .ok_or_else(|| ShellError::Platform("Windows notification marker has no parent".into()))?;
+    std::fs::create_dir_all(parent)?;
+    // A failed re-registration must not retain a stale positive marker.
+    match std::fs::remove_file(marker) {
+        Ok(()) => {}
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => {}
+        Err(error) => return Err(error.into()),
+    }
+    let shortcut = register()?;
+    let mut output = atomic_write_file::AtomicWriteFile::open(marker)?;
+    output.write_all(format!("{WINDOWS_AUMID}\n").as_bytes())?;
+    output.commit()?;
+    if !registered_notification_identity(marker) {
+        return Err(ShellError::Security(
+            "registered notification marker readback failed".into(),
+        ));
+    }
+    Ok(shortcut)
+}
 
 #[cfg(any(target_os = "windows", test))]
 const WINDOWS_AUMID: &str = "Trillionnium.Hepta.Native";
@@ -167,13 +219,9 @@ impl SystemPlatformAdapter {
         }
     }
 
-    fn launcher_observation(
-        &self,
-        _action: PlatformAction,
-        _status: std::process::ExitStatus,
-    ) -> PlatformObservation {
-        // A launcher or portal can apply the effect and then fail. Neither zero
-        // nor nonzero exit proves the terminal state of the external consumer.
+    fn external_effect_observation(&self) -> PlatformObservation {
+        // An OS adapter can apply an effect and then fail. Neither an accepted
+        // portal response nor notification submission proves consumer receipt.
         // Only a queryable, operation-bound receipt may resolve it.
         PlatformObservation::indeterminate()
     }
@@ -223,43 +271,17 @@ impl SystemPlatformAdapter {
     }
 
     #[cfg(target_os = "linux")]
-    fn ensure_portal_runtime(&self) -> Result<(), ShellError> {
-        let executable = Path::new("/usr/bin/python3");
-        if !executable.is_file() {
-            return Err(ShellError::Platform(
-                "verified resource handoff requires /usr/bin/python3".to_owned(),
-            ));
-        }
-        if std::env::var_os("DBUS_SESSION_BUS_ADDRESS").is_none()
-            && std::env::var_os("XDG_RUNTIME_DIR").is_none()
-        {
-            return Err(ShellError::Platform(
-                "XDG portal session bus is unavailable".to_owned(),
-            ));
-        }
-        let mut command = Command::new(executable);
-        restrict_desktop_environment(&mut command);
-        command
-            .args([
-                "-I",
-                "-c",
-                "import gi; gi.require_version('Gio','2.0'); from gi.repository import Gio; Gio.bus_get_sync(Gio.BusType.SESSION, None)",
-            ])
-            .stdin(Stdio::null())
-            .stdout(Stdio::null())
-            .stderr(Stdio::null());
-        let status = run_bounded_launcher(
-            command,
-            "probe XDG portal runtime",
-            &self.active_launchers,
-            PORTAL_PROBE_TIMEOUT,
-        )?;
-        if !status.success() {
-            return Err(ShellError::Platform(format!(
-                "XDG portal runtime probe failed: {status}"
-            )));
-        }
-        Ok(())
+    fn ensure_portal_runtime(&self, action: PlatformAction) -> Result<(), ShellError> {
+        let _slot = LauncherSlot::acquire(&self.active_launchers)?;
+        let minimum_version = if action == PlatformAction::RevealPath {
+            3
+        } else {
+            2
+        };
+        futures_lite::future::block_on(crate::native_portal::probe(
+            "org.freedesktop.portal.OpenURI",
+            minimum_version,
+        ))
     }
 }
 
@@ -288,7 +310,7 @@ impl PlatformAdapter for SystemPlatformAdapter {
             PlatformPayload::OpenPath { path } | PlatformPayload::RevealPath { path } => {
                 #[cfg(target_os = "linux")]
                 {
-                    self.ensure_portal_runtime()?;
+                    self.ensure_portal_runtime(payload.action())?;
                     let (_file, digest) = self.open_verified_resource(path)?;
                     Ok(Some(digest))
                 }
@@ -319,21 +341,15 @@ impl PlatformAdapter for SystemPlatformAdapter {
                                 .to_owned(),
                         ));
                     }
-                    self.ensure_portal_runtime()?;
+                    self.ensure_portal_runtime(payload.action())?;
                     let (file, digest) = self.open_verified_resource(path)?;
                     if expected_resource.as_ref() != Some(&digest) {
                         return Err(ShellError::Security(
                             "verified resource identity changed before effect entry".to_owned(),
                         ));
                     }
-                    let status =
-                        launch_portal_resource(file, payload.action(), &self.active_launchers)?;
-                    if !status.success() {
-                        return Err(ShellError::Platform(format!(
-                            "XDG resource handoff failed: {status}"
-                        )));
-                    }
-                    Ok(self.launcher_observation(payload.action(), status))
+                    launch_portal_resource(file, payload.action(), &self.active_launchers)?;
+                    Ok(self.external_effect_observation())
                 }
                 #[cfg(not(target_os = "linux"))]
                 {
@@ -425,8 +441,8 @@ impl PlatformAdapter for SystemPlatformAdapter {
                 Err(unsupported_resource_handoff(payload.action()))
             }
             PlatformPayload::Notify { title, body } => {
-                let status = launch_notification(title, body, &self.active_launchers)?;
-                Ok(self.launcher_observation(PlatformAction::Notify, status))
+                launch_notification(title, body, &self.active_launchers)?;
+                Ok(self.external_effect_observation())
             }
         }
     }
@@ -468,6 +484,7 @@ impl Drop for LauncherSlot {
     }
 }
 
+#[cfg(all(test, unix))]
 fn run_bounded_launcher(
     mut command: Command,
     description: &str,
@@ -497,7 +514,7 @@ fn run_bounded_launcher(
     }
 }
 
-#[cfg(unix)]
+#[cfg(target_os = "macos")]
 fn restrict_desktop_environment(command: &mut Command) {
     command.env_clear();
     command.env("PATH", "/usr/bin:/bin");
@@ -541,50 +558,61 @@ fn launch_portal_resource(
     file: File,
     action: PlatformAction,
     active: &Arc<AtomicUsize>,
-) -> Result<ExitStatus, ShellError> {
-    let executable = Path::new("/usr/bin/python3");
-    if !executable.is_file() {
-        return Err(ShellError::Platform(
-            "XDG resource handoff requires /usr/bin/python3".to_owned(),
-        ));
-    }
-    let action = match action {
-        PlatformAction::OpenPath => "open",
-        PlatformAction::RevealPath => "reveal",
+) -> Result<(), ShellError> {
+    let _slot = LauncherSlot::acquire(active)?;
+    let method = match action {
+        PlatformAction::OpenPath => "OpenFile",
+        PlatformAction::RevealPath => "OpenDirectory",
         _ => {
             return Err(ShellError::State(
                 "portal resource adapter received a non-resource action".to_owned(),
             ));
         }
     };
-    let mut command = Command::new(executable);
-    restrict_desktop_environment(&mut command);
-    command
-        .args(["-I", "-c", PORTAL_OPEN_URI_PROGRAM, action])
-        .stdin(Stdio::from(file))
-        .stdout(Stdio::null())
-        .stderr(Stdio::null());
-    run_bounded_launcher(
-        command,
-        "hand verified resource to XDG portal",
-        active,
+    let token = crate::native_portal::request_token()?;
+    let body = portal_resource_body(&file, &token);
+    match futures_lite::future::block_on(crate::native_portal::request(
+        "org.freedesktop.portal.OpenURI",
+        method,
+        &body,
+        &token,
         RESOURCE_HANDOFF_TIMEOUT,
+    ))? {
+        crate::native_portal::PortalResponse::Completed(_) => Ok(()),
+        crate::native_portal::PortalResponse::Cancelled => Err(ShellError::Platform(
+            "resource handoff was cancelled; effect remains indeterminate".to_owned(),
+        )),
+    }
+}
+
+#[cfg(target_os = "linux")]
+type PortalResourceBody<'a> = (
+    &'a str,
+    zbus::zvariant::Fd<'a>,
+    std::collections::HashMap<&'a str, zbus::zvariant::Value<'a>>,
+);
+
+#[cfg(target_os = "linux")]
+fn portal_resource_body<'a>(file: &'a File, token: &'a str) -> PortalResourceBody<'a> {
+    use std::os::fd::AsFd as _;
+    use zbus::zvariant::Value;
+
+    // SCM_RIGHTS transfers the already verified open capability. Neither the
+    // mutable name nor a /proc path is supplied to or reopened by this adapter.
+    (
+        "",
+        zbus::zvariant::Fd::from(file.as_fd()),
+        std::collections::HashMap::from([
+            ("handle_token", Value::from(token)),
+            ("writable", Value::from(false)),
+            ("ask", Value::from(false)),
+        ]),
     )
 }
 
 #[cfg(target_os = "macos")]
 fn notification_supported() -> bool {
-    Path::new("/usr/bin/osascript").is_file()
-}
-
-#[cfg(target_os = "windows")]
-fn windows_powershell() -> Option<PathBuf> {
-    let root = PathBuf::from(std::env::var_os("SystemRoot")?);
-    if !root.is_absolute() {
-        return None;
-    }
-    let executable = root.join("System32/WindowsPowerShell/v1.0/powershell.exe");
-    executable.is_file().then_some(executable)
+    notification_helper::macos_supported()
 }
 
 #[cfg(target_os = "windows")]
@@ -601,7 +629,7 @@ fn notification_supported() -> bool {
     let Some(marker) = windows_identity_marker() else {
         return false;
     };
-    windows_powershell().is_some() && registered_notification_identity(&marker)
+    registered_notification_identity(&marker)
 }
 
 #[cfg(any(target_os = "windows", test))]
@@ -611,9 +639,9 @@ fn registered_notification_identity(marker: &Path) -> bool {
     })
 }
 
-#[cfg(all(unix, not(target_os = "macos")))]
+#[cfg(target_os = "linux")]
 fn notification_supported() -> bool {
-    Path::new("/usr/bin/notify-send").is_file()
+    linux::notification_supported()
 }
 
 #[cfg(not(any(unix, target_os = "windows")))]
@@ -621,75 +649,29 @@ fn notification_supported() -> bool {
     false
 }
 
-#[cfg(target_os = "macos")]
+#[cfg(any(target_os = "macos", target_os = "windows"))]
 fn launch_notification(
     title: &str,
     body: &str,
     active: &Arc<AtomicUsize>,
 ) -> Result<ExitStatus, ShellError> {
-    let mut command = Command::new("/usr/bin/osascript");
-    restrict_desktop_environment(&mut command);
-    command.args([
-        "-e",
-        "on run argv",
-        "-e",
-        "display notification (item 2 of argv) with title (item 1 of argv)",
-        "-e",
-        "end run",
-        "--",
-        title,
-        body,
-    ]);
-    run_bounded_launcher(command, "send notification", active, NOTIFICATION_TIMEOUT)
-}
-
-#[cfg(target_os = "windows")]
-fn launch_notification(
-    title: &str,
-    body: &str,
-    active: &Arc<AtomicUsize>,
-) -> Result<ExitStatus, ShellError> {
-    if !notification_supported() {
-        return Err(ShellError::Platform(
-            "Windows notification identity is not registered for Trillionnium.Hepta.Native"
-                .to_owned(),
-        ));
+    let status = notification_helper::launch(title, body, active)?;
+    if !status.success() {
+        return Err(ShellError::Platform(format!(
+            "native notification helper rejected the request: {status}; effect remains indeterminate"
+        )));
     }
-    let executable = windows_powershell().ok_or_else(|| {
-        ShellError::Platform("trusted Windows PowerShell executable is unavailable".to_owned())
-    })?;
-    let mut command = Command::new(executable);
-    restrict_windows_environment(&mut command);
-    command
-        .env("HEPTA_NOTIFICATION_AUMID", WINDOWS_AUMID)
-        .env("HEPTA_NOTIFICATION_TITLE", title)
-        .env("HEPTA_NOTIFICATION_BODY", body)
-        .args([
-            "-NoLogo",
-            "-NoProfile",
-            "-NonInteractive",
-            "-STA",
-            "-Command",
-            WINDOWS_TOAST_PROGRAM,
-        ]);
-    run_bounded_launcher(
-        command,
-        "send WinRT notification",
-        active,
-        NOTIFICATION_TIMEOUT,
-    )
+    Ok(status)
 }
 
-#[cfg(all(unix, not(target_os = "macos")))]
+#[cfg(target_os = "linux")]
 fn launch_notification(
     title: &str,
     body: &str,
     active: &Arc<AtomicUsize>,
-) -> Result<ExitStatus, ShellError> {
-    let mut command = Command::new("/usr/bin/notify-send");
-    restrict_desktop_environment(&mut command);
-    command.arg("--").arg(title).arg(body);
-    run_bounded_launcher(command, "send notification", active, NOTIFICATION_TIMEOUT)
+) -> Result<(), ShellError> {
+    let _slot = LauncherSlot::acquire(active)?;
+    linux::send_notification(title, body)
 }
 
 #[cfg(test)]
@@ -808,24 +790,6 @@ mod tests {
         );
         assert!(adapter.open_verified_resource(&link).is_err());
     }
-
-    #[cfg(unix)]
-    #[test]
-    fn native_launchers_use_absolute_system_paths_and_cleared_environments() {
-        let mut command = if cfg!(target_os = "macos") {
-            Command::new("/usr/bin/osascript")
-        } else {
-            Command::new("/usr/bin/notify-send")
-        };
-        command.env("HEPTA_UNTRUSTED_TEST_VALUE", "must-not-survive");
-        restrict_desktop_environment(&mut command);
-        assert!(Path::new(command.get_program()).is_absolute());
-        assert!(
-            command
-                .get_envs()
-                .all(|(key, _)| key != "HEPTA_UNTRUSTED_TEST_VALUE")
-        );
-    }
 }
 
 #[cfg(all(test, unix))]
@@ -835,3 +799,7 @@ mod terminality_tests;
 #[cfg(test)]
 #[path = "platform_identity_tests.rs"]
 mod identity_tests;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "platform_resource_tests.rs"]
+mod resource_handoff_tests;
