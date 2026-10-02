@@ -83,7 +83,7 @@ impl BrowserApp {
             self.chat_host.show_list,
         );
         self.chat_rendered = Some(self.chat.clone());
-        chat::render_actions(&self.dom.document, &self.chat_host);
+        chat::render_actions(&self.dom.document, &self.chat_host, &self.chat);
         let _ = self.dom.render(
             &view,
             &RenderState {

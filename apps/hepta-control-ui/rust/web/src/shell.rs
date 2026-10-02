@@ -119,6 +119,9 @@ pub fn render(
                     },
                 )
                 .map_err(dom_error)?;
+            button
+                .append_child(avatar(document, &room.title, "room-avatar")?.as_ref())
+                .map_err(dom_error)?;
             for (tag, text) in [("strong", &room.title), ("span", &room.preview)] {
                 let label = document.create_element(tag).map_err(dom_error)?;
                 label.set_text_content(Some(text));
@@ -155,6 +158,8 @@ pub fn render(
         for message in &chat.messages {
             let row = document.create_element("article").map_err(dom_error)?;
             row.set_class_name("message");
+            row.append_child(avatar(document, &message.sender, "message-avatar")?.as_ref())
+                .map_err(dom_error)?;
             for (tag, text) in [("strong", &message.sender), ("p", &message.body)] {
                 let node = document.create_element(tag).map_err(dom_error)?;
                 node.set_text_content(Some(text));
@@ -169,13 +174,29 @@ pub fn render(
     Ok(())
 }
 
+fn avatar(document: &Document, label: &str, class: &str) -> Result<web_sys::Element, ControlError> {
+    let node = document.create_element("div").map_err(dom_error)?;
+    node.set_class_name(class);
+    node.set_attribute("aria-hidden", "true")
+        .map_err(dom_error)?;
+    node.set_text_content(Some(
+        &label
+            .chars()
+            .next()
+            .unwrap_or('•')
+            .to_string()
+            .to_uppercase(),
+    ));
+    Ok(node)
+}
+
 const SHELL: &str = r###"<a class="skip-link" href="#chat-app">Skip to conversation</a>
 <p id="startup-error" class="error" role="alert" hidden></p>
 <p id="live-status" class="visually-hidden" role="status" aria-live="polite"></p>
 <main id="chat-app" class="chat-app" tabindex="-1" aria-label="Hepta workspace">
 <nav class="app-rail" aria-label="Workspace"><span class="brand-mark" role="img" aria-label="Hepta">H</span><button id="tab-chat" aria-controls="chat-panel" aria-pressed="true" title="Conversations">Chat</button><button id="tab-console" aria-controls="console-panel" aria-pressed="false" title="Runtime console">Console</button><span class="rail-caption">HEPTA</span></nav>
 <aside class="rooms-pane" aria-label="Conversations"><header class="rooms-header"><p class="eyebrow">YOUR WORKSPACE</p><h1>Conversations</h1></header><label class="search-label" for="room-filter">Find a conversation</label><input id="room-filter" type="search" placeholder="Search conversations" autocomplete="off"><div class="chat-list-actions"><button id="new-conversation" type="button" disabled>New conversation</button><button id="chat-refresh" type="button">Refresh</button></div><div id="conversation-list" class="conversation-list"><p class="rooms-empty">No conversations loaded</p></div><footer class="workspace-identity"><span class="identity-avatar" aria-hidden="true">H</span><div><strong>Hepta workspace</strong><span id="chat-identity">No messaging session</span></div></footer></aside>
-<div id="main-content" tabindex="-1"><div id="chat-panel"><header class="conversation-header"><button id="chat-back" type="button">Back</button><div><p class="eyebrow">CONVERSATION</p><h2 id="conversation-title">A place to think together</h2></div><span id="chat-connection" class="connection-label">Messaging is not connected</span></header><div id="message-timeline" class="message-timeline" role="log" aria-label="Messages" aria-live="polite"><div class="conversation-empty"><div class="empty-orbit" aria-hidden="true">H</div><p class="eyebrow">HEPTA / CONVERSATIONS</p><h2>Your next idea starts here</h2><p id="chat-empty-description">Select a conversation when messaging becomes available. Runtime tools are in the Console tab.</p></div></div><div class="composer"><label for="message-draft">Message</label><textarea id="message-draft" placeholder="Write a message…" maxlength="4096" disabled aria-describedby="composer-hint"></textarea><div class="composer-footer"><p id="composer-hint">Messaging transport is unavailable. Nothing will be sent.</p><button id="reconcile-message" type="button" disabled hidden>Check send</button><button id="cancel-message" type="button" disabled hidden>Stop reply</button><button id="send-message" type="button" disabled>Send message <span aria-hidden="true">↑</span></button></div></div></div>
+<div id="main-content" tabindex="-1"><div id="chat-panel"><header class="conversation-header"><button id="chat-back" type="button">Back</button><div><p class="eyebrow">CONVERSATION</p><h2 id="conversation-title">A place to think together</h2></div><span id="chat-connection" class="connection-label">Messaging is not connected</span></header><div class="timeline-tools"><button id="older-messages" type="button" disabled hidden>Older messages</button><button id="latest-messages" type="button" disabled hidden>Back to latest</button><p id="history-note" role="status"></p></div><div id="message-timeline" class="message-timeline" role="log" aria-label="Messages" aria-live="polite"><div class="conversation-empty"><div class="empty-orbit" aria-hidden="true">H</div><p class="eyebrow">HEPTA / CONVERSATIONS</p><h2>Your next idea starts here</h2><p id="chat-empty-description">Select a conversation when messaging becomes available. Runtime tools are in the Console tab.</p></div></div><div class="composer"><label for="message-draft">Message</label><textarea id="message-draft" placeholder="Write a message…" maxlength="4096" disabled aria-describedby="composer-hint"></textarea><div class="composer-footer"><p id="composer-hint">Messaging transport is unavailable. Nothing will be sent.</p><button id="reconcile-message" type="button" disabled hidden>Check send</button><button id="cancel-message" type="button" disabled hidden>Stop reply</button><button id="send-message" type="button" disabled>Send message <span aria-hidden="true">↑</span></button></div></div></div>
 <div id="console-panel" hidden><header class="console-header"><p class="eyebrow">WORKSPACE / CONSOLE</p><h2>Runtime console</h2><p>Authenticated runtime observations and confirmation-bound requests.</p></header>      <section aria-labelledby="connection-heading">
         <h2 id="connection-heading"><span class="section-index" aria-hidden="true">01</span> Connection</h2>
         <dl class="summary-grid">

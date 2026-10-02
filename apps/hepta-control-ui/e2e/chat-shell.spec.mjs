@@ -115,3 +115,25 @@ test("authentication denial starts neither chat nor console reads", async ({ pag
   await expect(page.locator("#chat-connection")).not.toHaveText("Messaging connected");
   expect(chatRequests).toBe(0);
 });
+
+test("bounded older pages pause latest polling and compact Back retains selection", async ({ page, request }, testInfo) => {
+  await request.get("/__test__/chat-history");
+  await page.setViewportSize({width:390,height:960});
+  await loadControlConsole(page,{openConsole:false});
+  await page.getByRole("button",{name:/Engineering/}).click();
+  await expect(page.locator("#message-timeline")).toContainText("Historical message 120");
+  await page.getByRole("button",{name:"Older messages",exact:true}).click();
+  await expect(page.locator("#message-timeline")).toContainText("Historical message 70");
+  await expect(page.locator("#message-timeline")).not.toContainText("Historical message 120");
+  await expect(page.locator("#history-note")).toContainText("live updates paused");
+  // Allow a full regular 2s refresh interval: an older page must remain intact.
+  await page.waitForTimeout(2200);
+  await expect(page.locator("#message-timeline")).not.toContainText("Historical message 120");
+  await page.screenshot({path:testInfo.outputPath("compact-conversation-history.png"),fullPage:true});
+  await page.getByRole("button",{name:"Back to latest",exact:true}).click();
+  await expect(page.locator("#message-timeline")).toContainText("Historical message 120");
+  await page.locator("#message-draft").fill("Keep this draft while browsing rooms");
+  await page.locator("#chat-back").click();
+  await page.getByRole("button",{name:/Engineering/}).click();
+  await expect(page.locator("#message-draft")).toHaveValue("Keep this draft while browsing rooms");
+});

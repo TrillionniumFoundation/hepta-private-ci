@@ -86,9 +86,9 @@ Node fixture is test-only and is not a deployed chat service.
 
 ### Current bounded product limits
 
-The UI currently displays the latest bounded page (up to 50 conversations / 50
-messages); older-page browsing, attachment upload, rich rendering and docking are
-not implemented. Do not describe this as full Robrix feature parity. Drafts and
+The UI displays bounded pages (up to 50 conversations / 50 messages). Older messages
+are shown page-at-a-time; live polling pauses until Back to latest. Conversation-list
+pagination, attachment upload, rich rendering and docking are not implemented. Do not describe this as full Robrix feature parity. Drafts and
 uncertain send identities are tab/process memory, not durable offline delivery.
 
 Browser chat starts after authenticated session issuance, without waiting for the

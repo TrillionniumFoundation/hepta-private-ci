@@ -4,6 +4,10 @@ let messages = [];
 let sends = new Map();
 export function resetChat() { enabled = false; messages = []; sends = new Map(); }
 export function enableChat() { enabled = true; }
+export function seedChatHistory() {
+  enabled = true;
+  messages = Array.from({length:120}, (_,i)=>({id:`history-${i+1}`,threadId:"chat-one",turnId:"historical-turn",sender:"assistant",body:`Historical message ${i+1}`}));
+}
 export function chatState() { return { sendCount: sends.size, messages }; }
 export function chatReply(input) {
   if (!enabled) return null;
@@ -12,7 +16,11 @@ export function chatReply(input) {
   const room = id => ({ id, title: id === "chat-one" ? "Engineering" : "Research", preview: "Authenticated fixture conversation" });
   if (c.type === "list") result = { type: "conversations", data: [room("chat-one"), room("chat-two")], nextCursor: null };
   else if (c.type === "create") result = { type: "conversation", data: room("chat-new") };
-  else if (c.type === "timeline") result = { type: "timeline", threadId: c.threadId, activeTurnId: messages.length ? "turn-1" : null, data: messages.filter(m => m.threadId === c.threadId).map(({threadId, ...m})=>m), nextCursor: null };
+  else if (c.type === "timeline") {
+    const roomMessages = messages.filter(m=>m.threadId === c.threadId);
+    const offset=Number(c.cursor ?? 0), end=Math.max(0,roomMessages.length-offset), start=Math.max(0,end-c.limit);
+    result={type:"timeline",threadId:c.threadId,activeTurnId:sends.size ? "turn-1" : null,data:roomMessages.slice(start,end).map(({threadId,...m})=>m),nextCursor:start>0 ? String(offset+c.limit) : null};
+  }
   else if (c.type === "send" || c.type === "reconcile") {
     if (c.type === "send" && !sends.has(c.operationId)) {
       sends.set(c.operationId, c.text);

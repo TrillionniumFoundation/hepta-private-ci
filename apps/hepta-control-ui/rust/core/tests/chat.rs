@@ -79,3 +79,44 @@ fn session_reset_removes_all_private_content_but_preserves_navigation() {
         }
     );
 }
+
+#[test]
+fn page_epochs_reject_late_latest_and_room_changes_reset_history() {
+    let mut state = rooms();
+    state.select("one");
+    let latest = state.page.begin();
+    let older = state.page.begin();
+    assert!(!state.page.observe(latest, None, Some("late".into())));
+    assert!(
+        state
+            .page
+            .observe(older, Some("older".into()), Some("next".into()))
+    );
+    state.page.failed(latest);
+    assert_eq!(state.page.cursor.as_deref(), Some("older"));
+    state.select("two");
+    assert_eq!(state.page, Default::default());
+}
+
+#[test]
+fn rejected_duplicate_page_changes_neither_cursor_nor_messages() {
+    let mut state = rooms();
+    state.select("one");
+    let page = state.page.begin();
+    let message = Message {
+        id: "duplicate".into(),
+        sender: "assistant".into(),
+        body: "text".into(),
+        timestamp: String::new(),
+    };
+    let before = state.clone();
+    assert!(!state.observe_timeline_page(
+        "one",
+        state.selection_epoch,
+        page,
+        Some("older".into()),
+        None,
+        vec![message.clone(), message]
+    ));
+    assert_eq!(state, before);
+}

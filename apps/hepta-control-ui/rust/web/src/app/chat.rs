@@ -6,6 +6,8 @@ use hepta_control_core::{
 };
 use web_sys::{HtmlInputElement, HtmlTextAreaElement};
 
+mod projection;
+
 pub(super) struct ChatHost {
     pub note: String,
     pub show_list: bool,
@@ -79,6 +81,8 @@ pub(super) fn attach(
         "send-message",
         "reconcile-message",
         "cancel-message",
+        "older-messages",
+        "latest-messages",
     ] {
         let weak = Rc::downgrade(app);
         listen(app, element(document, id)?.as_ref(), "click", move |_| {
@@ -105,6 +109,26 @@ pub(super) fn attach(
                                     },
                                 )
                                 .await;
+                            }
+                        }
+                        "older-messages" | "latest-messages" => {
+                            let command =
+                                {
+                                    let state = app.borrow();
+                                    state.chat.selected.clone().map(|thread_id| {
+                                        ChatCommand::Timeline {
+                                            thread_id,
+                                            cursor: if id == "older-messages" {
+                                                state.chat.page.next_cursor.clone()
+                                            } else {
+                                                None
+                                            },
+                                            limit: 50,
+                                        }
+                                    })
+                                };
+                            if let Some(command) = command {
+                                execute(app, command).await;
                             }
                         }
                         "cancel-message" => {
@@ -139,6 +163,8 @@ pub(super) fn attach(
                     let selected = state.chat.select(&id);
                     if selected {
                         state.chat_host.show_list = false;
+                        state.chat.page.next_cursor = None;
+                        state.chat.page.cursor = None;
                     }
                     state.render();
                     selected
@@ -188,6 +214,7 @@ pub(super) async fn poll(app: Rc<RefCell<BrowserApp>>) {
         if state.chat.availability != ChatAvailability::Ready
             || state.chat_host.busy
             || state.chat.tab != AppTab::Chat
+            || state.chat.page.cursor.is_some()
         {
             return;
         }
@@ -252,6 +279,11 @@ async fn execute(app: Rc<RefCell<BrowserApp>>, command: ChatCommand) {
         if request.validate().is_err() {
             return;
         }
+        let page_epoch = if matches!(command, ChatCommand::Timeline { .. }) {
+            state.chat.page.begin()
+        } else {
+            state.chat.page.epoch
+        };
         state.chat_host.busy = true;
         state.chat.sending = true;
         state.chat_host.note = "Contacting messaging service…".into();
@@ -265,9 +297,10 @@ async fn execute(app: Rc<RefCell<BrowserApp>>, command: ChatCommand) {
             state.lifecycle.signal(),
             state.epoch,
             state.chat.selection_epoch,
+            page_epoch,
         )
     };
-    let (request, transport, signal, epoch, selection_epoch) = prepared;
+    let (request, transport, signal, epoch, selection_epoch, page_epoch) = prepared;
     let result = match serde_json::to_value(&request) {
         Ok(body) => transport.chat(&body, Some(signal)).await.and_then(|v| {
             serde_json::from_value::<ChatResponse>(v).map_err(|_| ControlError::invalid())
@@ -286,173 +319,30 @@ async fn execute(app: Rc<RefCell<BrowserApp>>, command: ChatCommand) {
     }
     state.chat_host.busy = false;
     state.chat.sending = false;
-    match result {
-        Ok(response)
-            if response.validate_for(&request).is_ok()
-                && response.session_id == request.session_id
-                && response.connection_generation == request.connection_generation =>
-        {
-            state.chat.availability = ChatAvailability::Ready;
-            state.chat_host.note =
-                "Messages shown are backend observations. Refresh to load updates.".into();
-            let approval_required = response.approval_required;
-            match response.result {
-                ChatResult::Conversations { data, .. } => {
-                    state.chat.conversations = data
-                        .into_iter()
-                        .take(50)
-                        .map(|r| Conversation {
-                            id: r.id,
-                            title: r.title,
-                            preview: r.preview,
-                            unread: 0,
-                        })
-                        .collect();
-                }
-                ChatResult::Conversation { data } => {
-                    let id = data.id.clone();
-                    state.chat.conversations.insert(
-                        0,
-                        Conversation {
-                            id: data.id,
-                            title: data.title,
-                            preview: data.preview,
-                            unread: 0,
-                        },
-                    );
-                    state.chat.conversations.truncate(50);
-                    if state.chat.selection_epoch == selection_epoch {
-                        state.chat.select(&id);
-                        state.chat_host.show_list = false;
-                    }
-                }
-                ChatResult::Timeline {
-                    thread_id,
-                    data,
-                    active_turn_id,
-                    ..
-                } => {
-                    if state.chat.selected.as_ref() == Some(&thread_id)
-                        && state.chat.selection_epoch == selection_epoch
-                    {
-                        state.chat_host.turn = active_turn_id.map(|turn| (thread_id.clone(), turn));
-                    }
-                    state.chat.observe_messages(
-                        &thread_id,
-                        selection_epoch,
-                        data.into_iter()
-                            .map(|m| Message {
-                                id: m.id,
-                                sender: m.sender,
-                                body: m.body,
-                                timestamp: String::new(),
-                            })
-                            .collect(),
-                    );
-                }
-                ChatResult::Submission {
-                    operation_id,
-                    state: observation,
-                } => {
-                    let expected = match &request.command {
-                        ChatCommand::Send { operation_id, .. }
-                        | ChatCommand::Reconcile { operation_id, .. } => Some(operation_id),
-                        _ => None,
-                    };
-                    if expected != Some(&operation_id) {
-                        state.chat_host.note =
-                            "Messaging returned a mismatched operation. Original send retained."
-                                .into();
-                    } else {
-                        match observation {
-                            SubmissionState::Queued { .. } => {
-                                state.chat_host.note = "Queued by the server. Check send to observe persistence; no reply is implied.".into();
-                            }
-                            SubmissionState::Persisted { .. } => {
-                                if let SubmissionState::Persisted { turn_id } = &observation
-                                    && let ChatCommand::Send { thread_id, .. }
-                                    | ChatCommand::Reconcile { thread_id, .. } = &request.command
-                                {
-                                    state.chat_host.turn =
-                                        Some((thread_id.clone(), turn_id.clone()));
-                                }
-                                state.chat_host.pending = None;
-                                if let ChatCommand::Send {
-                                    thread_id, text, ..
-                                }
-                                | ChatCommand::Reconcile {
-                                    thread_id, text, ..
-                                } = &request.command
-                                {
-                                    if state.chat.selected.as_ref() == Some(thread_id)
-                                        && state.chat.draft == *text
-                                    {
-                                        state.chat.draft.clear();
-                                    }
-                                    if state.chat.drafts.get(thread_id) == Some(text) {
-                                        state.chat.drafts.remove(thread_id);
-                                    }
-                                }
-                                state.chat_host.note = "Accepted by the conversation queue. Refresh to observe the reply.".into();
-                            }
-                            SubmissionState::Missing => {
-                                state.chat_host.note = "Not observed yet. Reconcile the original message; do not resend.".into();
-                            }
-                            SubmissionState::Cancelled => {
-                                state.chat_host.pending = None;
-                                state.chat_host.note =
-                                    "The original submission was cancelled.".into();
-                            }
-                        }
-                    }
-                }
-                ChatResult::CancelRequested { .. } => {
-                    state.chat_host.turn = None;
-                    state.chat_host.note =
-                        "Cancellation requested. Refresh to observe the final state.".into();
-                }
-            }
-            if approval_required {
-                state.chat_host.note = "The server requested approval. This chat surface declined it; use an approval-capable client to continue.".into();
-            }
-        }
-        Ok(_) => {
-            state.chat.availability = ChatAvailability::Failed;
-            state.chat_host.note =
-                "Messaging response belongs to a different session. Content discarded.".into();
-        }
-        Err(error) => {
-            if matches!(request.command, ChatCommand::Send { .. })
-                && (error.request_dispatched == Some(false)
-                    || matches!(
-                        error.code,
-                        ErrorCode::BackendRejected
-                            | ErrorCode::PermissionDenied
-                            | ErrorCode::SessionExpired
-                            | ErrorCode::SessionRevoked
-                    ))
-            {
-                state.chat_host.pending = None;
-            }
-            let status = error.details.get("status").and_then(Value::as_u64);
-            state.chat.availability = if matches!(status, Some(404 | 501)) {
-                ChatAvailability::Unavailable
-            } else {
-                ChatAvailability::Failed
-            };
-            state.chat_host.note = if state.chat_host.pending.is_some() {
-                "Send outcome unknown. Reconcile the original message before sending again."
-            } else {
-                "Messaging transport is unavailable. Nothing will be sent."
-            }
-            .into();
-        }
-    }
+    projection::apply(&mut state, &request, result, selection_epoch, page_epoch);
     state.chat.sending = state.chat_host.pending.is_some();
     state.render();
 }
 
-pub(super) fn render_actions(document: &Document, host: &ChatHost) {
+pub(super) fn render_actions(document: &Document, host: &ChatHost, chat: &ChatState) {
+    for (id, disabled) in [
+        ("older-messages", chat.page.next_cursor.is_none()),
+        ("latest-messages", chat.page.cursor.is_none()),
+    ] {
+        if let Ok(button) =
+            element(document, id).and_then(crate::dom::cast::<web_sys::HtmlButtonElement>)
+        {
+            button.set_disabled(disabled || host.busy);
+            button.set_hidden(chat.page.next_cursor.is_none() && chat.page.cursor.is_none());
+        }
+    }
+    if let Ok(note) = element(document, "history-note") {
+        note.set_text_content(Some(if chat.page.cursor.is_some() {
+            "History page · live updates paused"
+        } else {
+            ""
+        }));
+    }
     for (id, disabled) in [
         ("reconcile-message", host.pending.is_none()),
         ("cancel-message", host.turn.is_none()),

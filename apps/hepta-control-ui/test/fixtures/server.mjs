@@ -1,4 +1,4 @@
-import { resetChat, enableChat, chatState, chatReply } from "./chat.mjs";
+import { resetChat, enableChat, seedChatHistory, chatState, chatReply } from "./chat.mjs";
 import { createServer } from "node:http";
 import { readFile, stat } from "node:fs/promises";
 import { extname, join, normalize } from "node:path";
@@ -244,6 +244,7 @@ async function api(request, response, url) {
 }
 
 async function testApi(request, response, url) {
+  if (url.pathname === "/__test__/chat-history") { seedChatHistory(); return json(response, 200, {enabled:true}); }
   if (url.pathname === "/__test__/chat-enable") { enableChat(); return json(response, 200, {enabled:true}); }
   if (url.pathname === "/__test__/chat-state") return json(response, 200, chatState());
   if (url.pathname === "/__test__/reset") {
