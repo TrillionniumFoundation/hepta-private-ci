@@ -177,6 +177,14 @@ export function admitNewOperation(state, input, now) {
       "typed action destination does not match destinationOrigin",
     );
   }
+  if (
+    actionDestination === null &&
+    destinationOrigin !== state.documentOrigin
+  ) {
+    throw new TypeError(
+      "effect destination does not match the observed document origin",
+    );
+  }
   const finalPayloadDigest = digest(
     input.finalPayloadDigest,
     "finalPayloadDigest",

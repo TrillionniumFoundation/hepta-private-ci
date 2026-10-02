@@ -154,6 +154,7 @@ export class BrowserProfileHost {
           processId,
           pageGeneration: 0,
           documentDigest: null,
+          documentOrigin: null,
           bootstrapNavigationAvailable: true,
           allowedOrigins,
           effectGrants,
@@ -219,6 +220,10 @@ export class BrowserProfileHost {
       if (observationBudget > 1_000_000) {
         throw new TypeError("observationBudget exceeds profile limit");
       }
+      // The worker may replace its single-use snapshot even if its response
+      // is lost, late, or invalid. Retire the prior snapshot before refresh.
+      state.documentDigest = null;
+      state.documentOrigin = null;
       const observed = requireRecord(
         await this.#callDriver(
           "observe",
@@ -244,6 +249,7 @@ export class BrowserProfileHost {
       const originAllowed = state.allowedOrigins.has(origin);
       state.pageGeneration = pageGeneration;
       state.documentDigest = originAllowed ? documentDigest : null;
+      state.documentOrigin = originAllowed ? origin : null;
       return freezeResult({
         kind: "PageObservationV1",
         profileId: state.profileId,
@@ -382,6 +388,7 @@ export class BrowserProfileHost {
                 dispatchDeadlineMs,
               );
               state.documentDigest = null;
+              state.documentOrigin = null;
               state.bootstrapNavigationAvailable = false;
               return this.#callDriver(
                 "dispatch",
@@ -780,6 +787,9 @@ export class BrowserProfileHost {
       ...state,
       pageGeneration: durable.pageGeneration,
       documentDigest: durable.documentDigest,
+      // Historical recovery validates immutable recorded semantics rather than
+      // the origin of whichever document the live worker currently displays.
+      documentOrigin: durable.destinationOrigin,
       bootstrapNavigationAvailable: true,
       allowedOrigins: new Set([durable.destinationOrigin]),
       effectGrants: new Map([
