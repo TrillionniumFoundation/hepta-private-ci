@@ -1,4 +1,11 @@
 impl NativeJournal {
+    pub(super) fn verify_retained_checkpoint(&self) -> Result<(), Error> {
+        if let Some(checkpoint) = &self.retained_checkpoint {
+            checkpoint.verify()?;
+        }
+        Ok(())
+    }
+
     pub(super) fn replay(&mut self, json: &str) -> Result<(), Error> {
         let event =
             serde_json::from_str(json).map_err(|_| Error::CorruptJournal("native decode"))?;
@@ -394,7 +401,11 @@ impl NativeJournal {
         {
             return Err(Error::CorruptJournal("native checkpoint path"));
         }
-        let metadata = fs::metadata(path)?;
+        let checkpoint_file = File::open(path)?;
+        let metadata = checkpoint_file.metadata()?;
+        if !metadata.is_file() {
+            return Err(Error::CorruptJournal("native checkpoint file type"));
+        }
         if metadata.len() > MAX_CHECKPOINT_BYTES {
             return Err(Error::CapacityExceeded);
         }
@@ -405,7 +416,11 @@ impl NativeJournal {
                 return Err(Error::CorruptJournal("native checkpoint permissions"));
             }
         }
-        let bytes = read_bounded(path, MAX_CHECKPOINT_BYTES)?;
+        let mut bytes = Vec::new();
+        checkpoint_file.try_clone()?.take(MAX_CHECKPOINT_BYTES + 1).read_to_end(&mut bytes)?;
+        if bytes.len() as u64 > MAX_CHECKPOINT_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
         if sha256_hex(b"hepta.inference-control.checkpoint.v1\0", &bytes) != checkpoint_digest {
             return Err(Error::CorruptJournal("native checkpoint digest"));
         }
@@ -463,6 +478,9 @@ impl NativeJournal {
         self.checkpoint_generation = generation;
         self.archive_chain_digest = Some(archive_chain_digest.to_string());
         self.checkpoint_digest = Some(checkpoint_digest.to_string());
+        self.retained_checkpoint = Some(super::retained_journal::Checkpoint::new(
+            path.to_path_buf(), checkpoint_file, &bytes,
+        )?);
         Ok(())
     }
 }

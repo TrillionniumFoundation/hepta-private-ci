@@ -84,11 +84,16 @@ impl DurableInferenceControl {
         now_unix_ms: u64,
         failpoint: &mut dyn NativeMaintenanceFailpoint,
     ) -> Result<NativeMaintenanceReceipt, Error> {
-        let current_bytes = read_bounded(&self.path, super::MAX_JOURNAL_BYTES).inspect_err(|_| {
+        let current_bytes = read_bounded(&self.file, super::MAX_JOURNAL_BYTES).inspect_err(|_| {
             self.poisoned = true;
         })?;
         if current_bytes.len() as u64 != self.journal_bytes {
             return Err(Error::CorruptJournal("journal metadata drift"));
+        }
+        let observed_digest: [u8; 32] = Sha256::digest(&current_bytes).into();
+        let expected_digest: [u8; 32] = self.journal_hasher.clone().finalize().into();
+        if observed_digest != expected_digest {
+            return Err(Error::CorruptJournal("retained journal changed during maintenance"));
         }
         let archive_segment_digest = sha256_hex(
             b"hepta.inference-control.archive-segment.v1\0",
@@ -208,6 +213,9 @@ impl DurableInferenceControl {
         replacement.sync_all()?;
         failpoint.hit(NativeMaintenanceStage::AfterGenerationSync)?;
 
+        // A prepared checkpoint does not authorize overwriting intervening
+        // corruption or a substituted live generation with cached old state.
+        self.ensure_writer_available()?;
         fs::rename(&temp_path, &self.path)?;
         // The active path now names another generation. Any failure until the
         // new descriptor and replayed state are installed fences this owner,
@@ -219,9 +227,20 @@ impl DurableInferenceControl {
 
         let mut next = NativeJournal::default();
         next.apply(reference)?;
+        let mut next_hasher = Sha256::new();
+        next_hasher.update(&next_active);
+        super::retained_journal::verify(
+            &self.path,
+            &replacement,
+            next_active.len() as u64,
+            next_hasher.clone().finalize().into(),
+            super::retained_journal::Access::OwnerReadWrite,
+        )?;
+        next.verify_retained_checkpoint()?;
         self.file = replacement;
         self.native = next;
         self.journal_bytes = next_active.len() as u64;
+        self.journal_hasher = next_hasher;
         self.poisoned = false;
 
         Ok(NativeMaintenanceReceipt {

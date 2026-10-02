@@ -4,6 +4,7 @@ use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
+use std::io::Seek;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -304,6 +305,7 @@ pub(super) struct NativeJournal {
     checkpoint_generation: u64,
     archive_chain_digest: Option<String>,
     checkpoint_digest: Option<String>,
+    retained_checkpoint: Option<super::retained_journal::Checkpoint>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

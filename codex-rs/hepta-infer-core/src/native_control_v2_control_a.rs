@@ -1,9 +1,11 @@
 impl DurableInferenceControl {
     fn ensure_native_writer_available(&self) -> Result<(), Error> {
-        if self.poisoned {
-            return Err(Error::WriterUnavailable);
-        }
-        Ok(())
+        self.check_writer_poison()
+    }
+
+    fn acknowledge_native_record(&mut self, record: NativeRunRecord) -> Result<NativeRunRecord, Error> {
+        self.ensure_writer_available()?;
+        Ok(record)
     }
 
     /// The first admission pins the local slot limit for this journal. A
@@ -13,16 +15,11 @@ impl DurableInferenceControl {
         request: NativeRequest,
         maximum_in_flight: usize,
     ) -> Result<NativeRunRecord, Error> {
-        if self.poisoned {
-            return Err(Error::WriterUnavailable);
+        validate_native_request(&request)?;
+        if !(1..=256).contains(&maximum_in_flight) {
+            return Err(Error::CapacityExceeded);
         }
-        #[cfg(unix)]
-        {
-            use std::os::unix::fs::PermissionsExt;
-            if self.file.metadata()?.permissions().mode() & 0o077 != 0 {
-                return Err(Error::InvalidIdentity("native journal must be owner-only"));
-            }
-        }
+        self.ensure_native_writer_available()?;
         if self
             .native
             .maximum_in_flight
@@ -33,7 +30,7 @@ impl DurableInferenceControl {
         }
         if let Some(record) = self.native.records.get(&request.request_id) {
             return if record.request == request {
-                Ok(record.clone())
+                self.acknowledge_native_record(record.clone())
             } else {
                 Err(Error::Conflict)
             };
@@ -100,7 +97,7 @@ impl DurableInferenceControl {
             valid_until_unix_ms: plan.valid_until_unix_ms(),
         };
         if record.execution_binding.as_ref() == Some(&binding) {
-            return Ok(record.clone());
+            return self.acknowledge_native_record(record.clone());
         }
         self.commit_native(
             request_id,
@@ -117,6 +114,8 @@ impl DurableInferenceControl {
         request_id: &str,
         dispatch: NativeDispatch,
     ) -> Result<NativeRunRecord, Error> {
+        validate_identity(request_id, "native request")?;
+        validate_dispatch(&dispatch)?;
         self.ensure_native_writer_available()?;
         self.ensure_native_dispatch_space()?;
         self.commit_native(
@@ -294,7 +293,7 @@ impl DurableInferenceControl {
             .get(request_id)
             .ok_or(Error::RequestNotFound)?;
         if record.cancel_requested {
-            return Ok(record.clone());
+            return self.acknowledge_native_record(record.clone());
         }
         self.commit_native(
             request_id,

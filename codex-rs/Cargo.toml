@@ -630,6 +630,13 @@ ignored = [
 # across local dev builds.
 debug = "limited"
 
+[profile.dev.package.sha2]
+# Full-prefix durability tests deliberately hash every retained byte. Keep the
+# audited SHA-256 implementation optimized in debug/test builds rather than
+# weakening integrity checks, journal limits, or the original test deadlines.
+# This changes neither digest/wire semantics nor the release profile.
+opt-level = 3
+
 [profile.dev-small]
 inherits = "dev"
 opt-level = 0
