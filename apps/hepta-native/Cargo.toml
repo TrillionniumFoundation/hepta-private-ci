@@ -4,6 +4,10 @@ version = "0.1.0"
 edition = "2024"
 publish = false
 
+[workspace]
+members = ["platform-adapters"]
+resolver = "3"
+
 [lib]
 name = "hepta_native"
 path = "src/lib.rs"
@@ -38,15 +42,31 @@ zeroize = "1.8.2"
 [target.'cfg(unix)'.dependencies]
 rustix = { version = "1.1.5", features = ["fs", "process"] }
 
+[target.'cfg(target_os = "linux")'.dependencies]
+async-io = "2"
+futures-lite = "2"
+zbus = "=5.19.0"
+
 [target.'cfg(target_os = "macos")'.dependencies]
+block2 = "0.6"
 codex-utils-private-state = { path = "../../codex-rs/utils/private-state" }
+hepta-native-platform = { path = "platform-adapters" }
+objc2 = "0.6"
+objc2-foundation = { version = "0.3.2", default-features = false, features = ["std", "NSBundle", "NSError", "NSString"] }
+objc2-user-notifications = { version = "0.3.2", default-features = false, features = ["std", "block2", "UNNotificationContent", "UNNotificationRequest", "UNNotificationTrigger", "UNUserNotificationCenter"] }
 
 [target.'cfg(windows)'.dependencies]
 codex-hepta-private-state = { path = "../../codex-rs/hepta-private-state" }
+hepta-native-platform = { path = "platform-adapters" }
+windows = { version = "0.62.2", features = ["Data_Xml_Dom", "UI_Notifications"] }
 
 [dev-dependencies]
 insta = "=1.46.3"
 tempfile = "3.23"
+
+[target.'cfg(target_os = "linux")'.dev-dependencies]
+winit = { version = "0.30.13", default-features = false, features = ["x11"] }
+zbus = { version = "=5.19.0", features = ["p2p"] }
 
 [build-dependencies]
 embed-manifest = "1.5.0"

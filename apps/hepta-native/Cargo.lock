@@ -1656,8 +1656,10 @@ name = "hepta-native"
 version = "0.1.0"
 dependencies = [
  "arboard",
+ "async-io",
  "atomic-write-file",
  "base64",
+ "block2 0.6.2",
  "codex-hepta-contracts",
  "codex-hepta-private-state",
  "codex-keyring-store",
@@ -1665,15 +1667,34 @@ dependencies = [
  "ed25519-dalek",
  "eframe",
  "embed-manifest",
+ "futures-lite",
  "getrandom 0.4.3",
+ "hepta-native-platform",
  "insta",
+ "objc2 0.6.4",
+ "objc2-foundation 0.3.2",
+ "objc2-user-notifications 0.3.2",
  "rustix 1.1.5",
  "serde",
  "serde_json",
  "sha2",
  "tempfile",
  "thiserror 2.0.21",
+ "windows",
+ "winit",
+ "zbus 5.19.0",
  "zeroize",
+]
+
+[[package]]
+name = "hepta-native-platform"
+version = "0.1.0"
+dependencies = [
+ "objc2 0.6.4",
+ "objc2-app-kit 0.3.2",
+ "objc2-foundation 0.3.2",
+ "tempfile",
+ "windows",
 ]
 
 [[package]]
@@ -2466,7 +2487,7 @@ dependencies = [
  "objc2-quartz-core",
  "objc2-symbols",
  "objc2-uniform-type-identifiers",
- "objc2-user-notifications",
+ "objc2-user-notifications 0.2.2",
 ]
 
 [[package]]
@@ -2503,6 +2524,18 @@ dependencies = [
  "objc2 0.5.2",
  "objc2-core-location",
  "objc2-foundation 0.2.2",
+]
+
+[[package]]
+name = "objc2-user-notifications"
+version = "0.3.2"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "9df9128cbbfef73cda168416ccf7f837b62737d748333bfe9ab71c245d76613e"
+dependencies = [
+ "bitflags 2.13.2",
+ "block2 0.6.2",
+ "objc2 0.6.4",
+ "objc2-foundation 0.3.2",
 ]
 
 [[package]]
@@ -3535,6 +3568,7 @@ version = "1.26.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "2ef6dac1e96601b4fb3acccccff2139741fcb757cb9a36089bf5be91cfb285ce"
 dependencies = [
+ "getrandom 0.4.3",
  "js-sys",
  "serde_core",
  "wasm-bindgen",
