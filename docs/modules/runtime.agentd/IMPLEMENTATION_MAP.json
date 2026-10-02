@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "ca855069f63ef239c0f15d7c744812aa8552f76e",
-    "tree": "213fc76ed3da84e0d2af06e5f2ee03a12775f0a1"
+    "commit": "ad437e2681fa2e1eae40f2b78298998b53a8d7de",
+    "tree": "82eb35f95499e6354c8b3b342d70d4bc534e840e"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -364,11 +364,19 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "401635c2c9e33a5b6c170ddd2c5acf36c6be1500"
+      "object": "3d59fe87e2b08473eaa4dc0c8b3577237756f67e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+      "object": "4fc33670e5463df3a9674e2c0314486ad42b512b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+      "object": "7aae60c9b1181415d491cda1a09819042ddac298"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "object": "dfba6f9599d2736f977a84ad36482f8a0319935b"
+      "object": "5b41a56c67a4d892d9e7e70c6140ad013a12ca99"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
@@ -396,15 +404,15 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
-      "object": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
+      "object": "b2981675ddb7f56dd36c5ff7deb525afec280928"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
+      "object": "2888e10da5ac46e9b0cd568f6d37e30168cc5870"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-      "object": "4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"
+      "object": "5736ec59e6030becce80108201e70dc4c07b1226"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
