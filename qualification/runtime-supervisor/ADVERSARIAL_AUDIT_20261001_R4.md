@@ -529,8 +529,8 @@ tree 为 `8c78d5c7faeeabfa24e75d0d2884a9d330a77f25`。前十三个源码／指�
 368／191 行，每阶段均低于 500；各 API blob、tree 与本地阶段一致。
 随后的 metadata 只将 Supervisor／Fleet／Kernel 三份实现映射绑定到该源码
 祖先，保留各自 sourceBase、owner、原 claims／gaps 与 12／2／2 能力状态。
-逐项原始对象证明和独立 Git 对象核对均确认 155 个 source objects
-（153 blob、2 tree）及 23 个 operation bindings 精确一致；新增 33 个
+逐项原始对象证明和独立 Git 对象核对均确认 156 个 source objects
+（154 blob、2 tree）及 23 个 operation bindings 精确一致；新增 34 个
 explicit support／dependency 对象涵盖新 helper、测试及实际依赖／锁收据。
 这证明具名绑定，不能替代最终候选的执行或全项目文档闭包。
 
@@ -548,3 +548,11 @@ IMPLEMENTATION_MAP、TECHNICAL、RECOVERY_AND_QUALIFICATION。TECHNICAL 为
 记录退出码。Bash 语法检查通过；这些增强必须在最终 exact head 上实际
 运行，尚未获得执行信用。该 diagnostic workflow 不在三份 map 的源码
 对象或观察路径闭包内，因而 metadata 源码祖先仍精确绑定上述 6c 源码。
+
+
+Canonical verifier 首次指出新增测试引用中的 signed_intent_recovery.rs 尚未
+进入 sourceObjects；已补齐该既有源路径的精确对象并重新按 canonical inventory
+逐项静态核对，156 对象与 23 operation 绑定一致。首次失败保留，不把原 155
+对象的哈希一致误写为完整 inventory。全项目校验同时揭示本轮 Cargo.lock
+依赖边变化造成七个其他模块的输入观察漂移，须逐项证明无其他源码变更后
+最小重绑；七个不可访问历史 provenance pin 则单列，不提升任何完成声明。
