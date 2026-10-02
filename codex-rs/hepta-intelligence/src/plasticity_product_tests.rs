@@ -602,3 +602,6 @@ fn anchor_commit_failure_poison_writer_after_durable_append() {
         Err(DurableProposalRegistryError::Poisoned)
     );
 }
+
+#[path = "plasticity_product_final_time_tests.rs"]
+mod final_time_tests;
