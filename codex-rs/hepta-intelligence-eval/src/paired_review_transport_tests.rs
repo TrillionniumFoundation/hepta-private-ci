@@ -187,3 +187,109 @@ fn malformed_input_transport_and_expired_original_roles_are_rejected() {
             .is_err()
     );
 }
+
+#[test]
+fn root_material_encoder_matches_original_native_plan_without_inventing_a_receipt() {
+    use crate::paired_supervised_test_support::digest as fixture_digest;
+    use crate::paired_supervised_test_support::id as fixture_id;
+    use crate::paired_supervised_test_support::inputs;
+    use crate::*;
+    use std::path::Path;
+    let input = inputs(6);
+    let records: Vec<_> = (0..8)
+        .map(|index| TaskSourceRecordV1 {
+            source_file_digest: fixture_digest("synthetic-source-file"),
+            source_row_index: index + 1,
+            source_record_digest: fixture_digest(&format!("row-{index}")),
+            task_id: fixture_id(&format!("task-{index}")),
+            dependency_ids: vec![fixture_id(&format!("doc-{index}"))],
+        })
+        .collect();
+    let source = PairedReviewSourcePlanV1 {
+        base_plan: input.base_plan,
+        source_scope: TaskSourceScopeV1 {
+            objective_digest: fixture_digest("paired-objective"),
+            task_definition_digest: fixture_digest("paired-task-contract"),
+            source_archive_digest: fixture_digest("synthetic-source-archive"),
+        },
+        source_records: records,
+        folds: input.folds,
+        unscored_source_records: input.unscored_source_records,
+        tasks: input.tasks,
+        runtime: input.runtime,
+        policy: input.policy,
+        metrics: input.metrics,
+    };
+    let contract = |c: &MetricContractV1| {
+        serde_json::json!({"metric_id":c.metric_id.to_string(),
+        "direction":match c.direction {EvaluationDirectionV1::Maximize=>"Maximize",EvaluationDirectionV1::Minimize=>"Minimize"},
+        "safety_floor":c.safety_floor.map(codex_hepta_types::FixedQ32::raw)})
+    };
+    let ids =
+        |v: &[codex_hepta_types::StableId]| v.iter().map(ToString::to_string).collect::<Vec<_>>();
+    let digests = |v: &[Digest32]| v.iter().map(ToString::to_string).collect::<Vec<_>>();
+    let base = &source.base_plan;
+    let scope = &source.source_scope;
+    let runtime = &source.runtime;
+    let policy = &source.policy;
+    let value = serde_json::json!({"schema":"hepta.eval.paired-supervised.declarative-inputs.v1","inputs":{
+        "base_plan":{"plan_id":base.plan_id.to_string(),"claim_scope":"Qualification","candidate_id":base.candidate_id.to_string(),
+            "baseline_id":base.baseline_id.to_string(),"objective_digest":base.objective_digest.to_string(),"dataset_digest":base.dataset_digest.to_string(),
+            "estimand_digest":base.estimand_digest.to_string(),"metric_contracts":base.metric_contracts.iter().map(contract).collect::<Vec<_>>(),
+            "family_alpha_ppm":base.family_alpha_ppm,"simultaneous_comparisons":base.simultaneous_comparisons,"folds":[],
+            "final_holdout_window_id":base.final_holdout_window_id.to_string(),"final_holdout_digest":base.final_holdout_digest.to_string()},
+        "source_scope":{"objective_digest":scope.objective_digest.to_string(),"task_definition_digest":scope.task_definition_digest.to_string(),"source_archive_digest":scope.source_archive_digest.to_string()},
+        "source_records":source.source_records.iter().map(|r|serde_json::json!({"source_file_digest":r.source_file_digest.to_string(),"source_row_index":r.source_row_index,
+            "source_record_digest":r.source_record_digest.to_string(),"task_id":r.task_id.to_string(),"dependency_ids":ids(&r.dependency_ids)})).collect::<Vec<_>>(),
+        "folds":source.folds.iter().map(|f|serde_json::json!({"fold_id":f.fold_id.to_string(),"training_records":digests(&f.training_records),"holdout_records":digests(&f.holdout_records),
+            "training_windows":ids(&f.training_windows),"holdout_windows":ids(&f.holdout_windows),"model_digest":f.model_digest.to_string(),"predictions_digest":f.predictions_digest.to_string()})).collect::<Vec<_>>(),
+        "unscored_source_records":digests(&source.unscored_source_records),
+        "tasks":source.tasks.iter().map(|t|serde_json::json!({"source_record_digest":t.source_record_digest.to_string(),"candidate_request_id":t.candidate_request_id.to_string(),
+            "baseline_request_id":t.baseline_request_id.to_string(),"candidate_input_digest":t.candidate_input_digest.to_string(),"baseline_input_digest":t.baseline_input_digest.to_string()})).collect::<Vec<_>>(),
+        "runtime":{"candidate_artifact_digest":runtime.candidate_artifact_digest.to_string(),"deployed_baseline_digest":runtime.deployed_baseline_digest.to_string(),
+            "candidate_runtime_digest":runtime.candidate_runtime_digest.to_string(),"baseline_runtime_digest":runtime.baseline_runtime_digest.to_string(),"task_input_contract_digest":runtime.task_input_contract_digest.to_string()},
+        "policy":{"required_evidence_metrics":{"execution_cost":policy.required_evidence_metrics.execution_cost.to_string(),"retention":policy.required_evidence_metrics.retention.to_string(),"unlearning":policy.required_evidence_metrics.unlearning.to_string()},
+            "output_alphabet":ids(&policy.output_alphabet),"assumptions_digest":policy.assumptions_digest.to_string(),"minimum_independent_clusters":policy.minimum_independent_clusters,
+            "maximum_abstain_ppm":policy.maximum_abstain_ppm,"maximum_execution_window_micros":policy.maximum_execution_window_micros},
+        "metrics":source.metrics.iter().map(|m|serde_json::json!({"contract":contract(&m.contract),"role":match m.role {
+            MetricRoleV2::PrimarySuperiority{minimum_improvement}=>serde_json::json!({"PrimarySuperiority":{"minimum_improvement":minimum_improvement.raw()}}),
+            MetricRoleV2::NonInferiority{maximum_regression}=>serde_json::json!({"NonInferiority":{"maximum_regression":maximum_regression.raw()}}),
+            MetricRoleV2::AbsoluteConstraint=>serde_json::json!({"AbsoluteConstraint":{}})},"kind":match m.kind {
+                PairedMetricKindV1::ClassificationAccuracy=>serde_json::json!({"ClassificationAccuracy":{}}),
+                PairedMetricKindV1::ExecutionLatencyMillis{maximum}=>serde_json::json!({"ExecutionLatencyMillis":{"maximum":maximum.raw()}}),
+                PairedMetricKindV1::ObservedBounded{minimum,maximum}=>serde_json::json!({"ObservedBounded":{"minimum":minimum.raw(),"maximum":maximum.raw()}})}})).collect::<Vec<_>>()
+    }});
+    let file = crate::NamedTempFile::new().unwrap();
+    std::fs::write(file.path(), serde_json::to_vec(&value).unwrap()).unwrap();
+    let helper = Path::new(env!("CARGO_MANIFEST_DIR"))
+        .parent()
+        .unwrap()
+        .parent()
+        .unwrap()
+        .join("tools/hepta_encode_paired_plan_inputs.py");
+    let run = || {
+        std::process::Command::new("python3")
+            .args(["-I", "-B", "-S"])
+            .arg(&helper)
+            .arg(file.path())
+            .output()
+            .unwrap()
+    };
+    let out = run();
+    assert!(
+        out.status.success(),
+        "{}",
+        String::from_utf8_lossy(&out.stderr)
+    );
+    let bytes = codex_hepta_learning_ledger::decode_review_payload_hex(
+        std::str::from_utf8(&out.stdout).unwrap().trim(),
+    )
+    .unwrap();
+    let decoded = PairedReviewSourcePlanV1::decode(&bytes).unwrap();
+    assert_eq!(decoded, source);
+    assert_eq!(decoded.freeze().unwrap(), source.freeze().unwrap());
+    let mut unknown = value;
+    unknown["inputs"]["policy"]["unregistered_gate"] = serde_json::json!(0);
+    std::fs::write(file.path(), serde_json::to_vec(&unknown).unwrap()).unwrap();
+    assert!(!run().status.success());
+}
