@@ -1888,6 +1888,10 @@
         {
           "path": "apps/hepta-native",
           "mode": "exclusive"
+        },
+        {
+          "path": "apps/hepta-robrix",
+          "mode": "exclusive"
         }
       ],
       "hotPathPolicy": {
@@ -1904,7 +1908,8 @@
       "source_root_present": true,
       "production_implementation": false,
       "sourceEvidenceRoots": [
-        "apps/hepta-native"
+        "apps/hepta-native",
+        "apps/hepta-robrix"
       ],
       "missingDeclaredRoots": [],
       "bootstrapWorkPackage": "UI-NATIVE-1-SHELL",

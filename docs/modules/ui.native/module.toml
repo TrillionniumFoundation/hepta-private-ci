@@ -15,7 +15,7 @@ localHotPathCentralRpc = "not_applicable_or_bounded"
 sourceStatus = "existing_bound"
 source_root_present = true
 production_implementation = false
-sourceEvidenceRoots = ["apps/hepta-native"]
+sourceEvidenceRoots = ["apps/hepta-native", "apps/hepta-robrix"]
 missingDeclaredRoots = []
 bootstrapWorkPackage = "UI-NATIVE-1-SHELL"
 technicalDocument = "docs/modules/ui.native/TECHNICAL.md"
@@ -33,4 +33,8 @@ rawModelOrSecretPayloadExportAllowed = false
 
 [[rootBindings]]
 path = "apps/hepta-native"
+mode = "exclusive"
+
+[[rootBindings]]
+path = "apps/hepta-robrix"
 mode = "exclusive"
