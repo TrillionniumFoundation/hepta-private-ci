@@ -227,8 +227,13 @@ pub(super) async fn handle_with_request_id(
     match spawn_owned(state, permit, move |state| {
         // A private read fact pin survives the owner wait and execution. It
         // contains no fence, allowance, receipt or grant authorization.
-        let _release_read_pin = release_read_pin;
-        let reply = runtime.block_on(super::handle_request(Arc::clone(state), request_id, method));
+        let release_read_pin = release_read_pin.map(Arc::new);
+        let reply = runtime.block_on(super::handle_request(
+            Arc::clone(state),
+            request_id,
+            method,
+            release_read_pin,
+        ));
         let supervisor = state.supervisor.blocking_lock();
         // A live owner request may have changed state and therefore always
         // publishes a fresh projection before its result becomes observable.

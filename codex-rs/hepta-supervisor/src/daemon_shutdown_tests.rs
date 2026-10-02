@@ -46,14 +46,16 @@ impl Fixture {
         let cancellation = CancellationToken::new();
         let execution = Execution::new(cancellation.clone());
         let epoch = SupervisorEpoch::new();
+        let runtime_modules = crate::DurableRuntimeModuleSupervisorV1::open(
+            registry.layout().runtime_module_supervisor_state(),
+        )?;
+        // Publish only after the original durable fixture owners are ready.
+        // Cold database construction must not age the initial projection.
         execution.view.publish(
             &registry,
             &supervisor,
             &epoch,
             /*recovery_observation_blocked*/ false,
-        )?;
-        let runtime_modules = crate::DurableRuntimeModuleSupervisorV1::open(
-            registry.layout().runtime_module_supervisor_state(),
         )?;
         let state = Arc::new(DaemonState {
             registry,

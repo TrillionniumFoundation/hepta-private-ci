@@ -724,6 +724,7 @@ async fn handle_request<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     request_id: u64,
     method: SupervisordMethod,
+    read_pin: Option<Arc<codex_hepta_fleet::ReleaseReadPin>>,
 ) -> SupervisordPayload {
     match method {
         SupervisordMethod::AgentDiagnostics { agent_id } => {
@@ -880,6 +881,7 @@ async fn handle_request<D: ProcessDriver>(
                 Arc::clone(&state),
                 fence.agent_id.clone(),
                 release_id,
+                read_pin.clone(),
             )
             .await
             {
@@ -943,6 +945,7 @@ async fn handle_request<D: ProcessDriver>(
                 Arc::clone(&state),
                 fence.agent_id.clone(),
                 release_id,
+                None,
             )
             .await
             {
@@ -1222,12 +1225,17 @@ async fn resolve_release_outside_lock<D: ProcessDriver>(
     state: Arc<DaemonState<D>>,
     agent_id: AgentId,
     release_id: ReleaseId,
+    read_pin: Option<Arc<codex_hepta_fleet::ReleaseReadPin>>,
 ) -> Result<AgentRelease, SupervisorError> {
     let registry = state.registry.clone();
-    let release =
-        tokio::task::spawn_blocking(move || registry.resolve_release(&agent_id, &release_id))
-            .await
-            .map_err(|_| SupervisorError::Invalid("release resolver task failed".to_string()))??;
+    let release = tokio::task::spawn_blocking(move || match read_pin {
+        Some(pin) => {
+            registry.resolve_release_descriptor_from_read_pin(&agent_id, &release_id, &pin)
+        }
+        None => registry.resolve_release(&agent_id, &release_id),
+    })
+    .await
+    .map_err(|_| SupervisorError::Invalid("release resolver task failed".to_string()))??;
     AgentRelease::try_from(release)
 }
 

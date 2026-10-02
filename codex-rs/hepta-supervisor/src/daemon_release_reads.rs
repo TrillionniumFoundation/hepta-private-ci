@@ -7,6 +7,7 @@ use codex_hepta_fleet::FleetRegistry;
 use codex_hepta_fleet::FleetRegistryError;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_fleet::ReleaseReadPin;
+use tokio::sync::Mutex;
 use tokio::sync::oneshot;
 use tokio_util::sync::CancellationToken;
 
@@ -31,7 +32,15 @@ pub(super) enum ReadResult {
     Rejected(FleetRegistryError),
 }
 
+struct PendingRead {
+    release_id: ReleaseId,
+    response: oneshot::Receiver<Result<ReleaseReadPin, FleetRegistryError>>,
+}
+
 pub(super) struct ReleaseReads {
+    // A timed-out request abandons admission, not the bounded physical read.
+    // Its receiver carries progress only; final use rechecks the actual release.
+    pending: Mutex<Option<PendingRead>>,
     jobs: mpsc::SyncSender<ReadJob>,
 }
 
@@ -70,7 +79,10 @@ impl ReleaseReads {
         // The thread retains only a read-only registry/cache and cancellation.
         // It cannot keep the sole writer lock alive during a cold disk read or
         // make Tokio runtime shutdown wait for its blocking-pool completion.
-        Ok(Self { jobs })
+        Ok(Self {
+            jobs,
+            pending: Mutex::new(None),
+        })
     }
 
     pub(super) async fn prevalidate(
@@ -78,21 +90,57 @@ impl ReleaseReads {
         release_id: ReleaseId,
         cancellation: &CancellationToken,
     ) -> ReadResult {
-        let (reply, response) = oneshot::channel();
-        match self.jobs.try_send(ReadJob::Validate { release_id, reply }) {
-            Ok(()) => {}
-            Err(mpsc::TrySendError::Full(_)) => return ReadResult::Busy,
-            Err(mpsc::TrySendError::Disconnected(_)) => return ReadResult::Stopped,
-        }
         tokio::select! {
+            biased;
             _ = cancellation.cancelled() => ReadResult::Stopped,
-            result = tokio::time::timeout(WAIT_BUDGET, response) => match result {
-                Ok(Ok(Ok(pin))) => ReadResult::Validated(pin),
-                Ok(Ok(Err(FleetRegistryError::ReleasePrevalidationRequired))) => ReadResult::Busy,
-                Ok(Ok(Err(error))) => ReadResult::Rejected(error),
-                Ok(Err(_)) => ReadResult::Stopped,
-                Err(_) => ReadResult::Busy,
-            },
+            result = tokio::time::timeout(WAIT_BUDGET, self.read(release_id)) =>
+                result.unwrap_or(ReadResult::Busy),
+        }
+    }
+
+    async fn read(&self, release_id: ReleaseId) -> ReadResult {
+        // The same 250ms budget includes both lock acquisition and read wait.
+        let mut pending = self.pending.lock().await;
+        if let Some(read) = pending.as_mut()
+            && read.release_id != release_id
+        {
+            // Do not queue another release behind a still-running read. A
+            // completed result for a different release confers no authority.
+            match read.response.try_recv() {
+                Err(oneshot::error::TryRecvError::Empty) => return ReadResult::Busy,
+                _ => {
+                    pending.take();
+                }
+            }
+        }
+        if pending.is_none() {
+            let (reply, response) = oneshot::channel();
+            match self.jobs.try_send(ReadJob::Validate {
+                release_id: release_id.clone(),
+                reply,
+            }) {
+                Ok(()) => {
+                    *pending = Some(PendingRead {
+                        release_id,
+                        response,
+                    });
+                }
+                Err(mpsc::TrySendError::Full(_)) => return ReadResult::Busy,
+                Err(mpsc::TrySendError::Disconnected(_)) => return ReadResult::Stopped,
+            }
+        }
+        let Some(read) = pending.as_mut() else {
+            return ReadResult::Stopped;
+        };
+        // Await by mutable reference: cancellation/timeout cannot drop the
+        // receiver and make every fresh request restart the same cold read.
+        let result = (&mut read.response).await;
+        pending.take();
+        match result {
+            Ok(Ok(pin)) => ReadResult::Validated(pin),
+            Ok(Err(FleetRegistryError::ReleasePrevalidationRequired)) => ReadResult::Busy,
+            Ok(Err(error)) => ReadResult::Rejected(error),
+            Err(_) => ReadResult::Stopped,
         }
     }
 
@@ -110,3 +158,7 @@ impl ReleaseReads {
         Ok(resume)
     }
 }
+
+#[cfg(test)]
+#[path = "daemon_release_reads_tests.rs"]
+mod tests;
