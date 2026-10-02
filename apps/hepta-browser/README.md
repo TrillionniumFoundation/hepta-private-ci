@@ -18,6 +18,8 @@ Typed runtime actions are closed-world and bounded. Current action kinds are `na
 
 `BrowserProfileHost` serializes profile mutations and reserves an operation identity before dispatch. Final-use authority is expressed as `authority.withVerifiedUse(request, callback)`: durable intent fsync and local worker dispatch execute inside that fence. A concurrent retry therefore cannot race a revocation or dispatch the same operation twice.
 
+Document-scoped effects must match the canonical origin of the admitted page observation, even when several origins are allowed by the profile. Navigation/download bind their explicit destination URL instead. Starting an observation refresh retires the previous actionable snapshot before calling the worker; a lost, timed-out or invalid response cannot restore it. Historical replay still uses the original immutable operation. Worker-side document checks remain mandatory because the page can change after owner admission.
+
 After a dispatch may have crossed the worker boundary, exceptions and timeouts become `indeterminate`. They never delete the operation identity and never authorize redispatch. Reconciliation observes the original identity and is intentionally allowed after the original profile/effect deadline has expired; expiry prevents a new effect, not recovery of an old one.
 
 `FileBrowserOperationJournal` is append-only, checksum-bound, size-bounded, fsynced and mode-0600 on Unix. A process restart can use `reconcilePersistedOperation()` without issuing another effect. Terminal operations are bounded in memory while durable tombstones remain available for replay.
@@ -38,6 +40,8 @@ The configured `service_sha256` now binds the complete recipe-produced standalon
 
 The Servo worker source uses one software-rendered WebView and fixed worker-owned scripts for DOM actions. Credential, upload and download actions are admitted typed forms but fail closed as `capability_not_connected` until their brokers and terminal observers are connected and qualified. Navigation/DOM behavior requires real current-pin execution tests.
 
+A disconnected download preserves its explicit URL for target-origin admission. An admitted same- or cross-origin request reserves its operation identity and returns a terminal disconnected-capability failure, which is replayable and reconcilable. This does not execute a download or grant network access.
+
 ## Verification
 
 Run from the repository root:
@@ -57,6 +61,8 @@ sha256sum browser-artifacts/hepta-browser-service.mjs
 The existing Agentd `service_path` / `service_sha256` config fields select that standalone artifact and exact hash. Admit its `.receipt.json` with the source/build identities before deployment; a `.mjs` extension alone proves no import closure.
 
 The focused suite covers canonical URL/proposal parsing, typed actions, proposal-to-effect bridging, duplicate-dispatch exclusion, post-dispatch failures, deadline-expired reconciliation, final-use fencing, durable recovery, journal tamper rejection, bounded retention, private framing, artifact binding, parent challenge ordering and the Linux sandbox command posture. Fixture-worker tests exercise Node transport semantics and do not compile or execute Servo. The separate worker workflow defines locked native compilation, reproducibility, SBOM and real-sandbox start/stop gates; actual successful run receipts are required.
+
+For renderer-free Rust dispatch regression checks, `python3 apps/hepta-browser/scripts/build-dispatch-source-harness.py --output /absolute/path/dispatch.rs` extracts the actual dispatch, reconciliation, receipt/admission helpers and bounds from `servo-worker/src/main.rs`, includes its real document-authority module and inserts them into `servo-worker/tests/dispatch_source_harness.rs.in`. Compile that generated source with `rustc --edition=2024 --test`, supplying reviewed `serde_json`, `url` and `sha2` dependencies through `--extern`/`-L dependency`; then execute the test binary. Compile the same source without `--test` and run `node apps/hepta-browser/scripts/worker-dispatch-owner.mjs /absolute/path/dispatch` from the repository root for the owner-to-Rust refusal/reconciliation fixture. These are explicit source tests with renderer methods that panic if invoked. They do not build Servo, test its renderer or replace the private framed-protocol tests.
 
 Affected Browser source changes now select the Browser Node job in the aggregate blocking CI's required fan-in, with the private-process dependency mapped to the Agentd caller and reverse consumers. All Browser Node gates use Node 24 and the locked npm build dependencies. Structured worker evidence validation binds canonical repository/pin, resolved features, source/tree, worker/lock/SBOM, smoke and service-bundle identities; target admission also requires the reviewed committed source lock and a complete independent service source rebuild/receipt comparison. Observed Node/Bubblewrap hashes do not qualify installation, and `serviceExecutionQualified` remains false. Deep worker/target qualification remains opt-in and main/manual admission remains unchanged.
 
