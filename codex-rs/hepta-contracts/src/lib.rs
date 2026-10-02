@@ -25,6 +25,9 @@ mod provider_effect;
 mod qualification_receipt;
 mod receipt;
 mod run_bridge;
+mod run_bridge_outbox;
+pub use run_bridge_outbox::RunBridgeOutboxChangeV1;
+pub use run_bridge_outbox::RunBridgeOutboxV1;
 mod stable_id;
 mod verified_use_witness;
 
