@@ -20,10 +20,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             if args[0] == "--paired-execute" {
                 return codex_hepta_intelligence_eval::run_fixed_paired_custody(config);
             }
+            if args[0] == "--paired-finish" {
+                return codex_hepta_intelligence_eval::finish_fixed_paired_custody(config);
+            }
             if args[0] == "--paired-admit" {
                 return codex_hepta_intelligence_eval::admit_fixed_paired_custody(config);
             }
         }
     }
-    Err("usage: hepta-fixed-holdout-custody --prepare ROOT_CONFIG | --inspect ROOT_CONFIG | --prepare-climate ROOT_CONFIG | --inspect-climate ROOT_CONFIG | --paired-execute ROOT_CONFIG | --paired-admit ROOT_TRUST_POLICY".into())
+    Err("usage: hepta-fixed-holdout-custody --prepare ROOT_CONFIG | --inspect ROOT_CONFIG | --prepare-climate ROOT_CONFIG | --inspect-climate ROOT_CONFIG | --paired-execute ROOT_CONFIG | --paired-finish ROOT_CONFIG | --paired-admit ROOT_TRUST_POLICY".into())
 }

@@ -9,6 +9,7 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 required_boundary_ids = [
   "bao_operation_consumer_registration",
   "original_paired_custody_execution",
+  "original_paired_custody_finish",
   "original_consumed_custody_effect",
   "original_paired_numeric_process",
   "original_paired_readonly_withdrawal",
@@ -934,7 +935,7 @@ symbol = "protected_observer_provider"
 call_pattern = '\.protected_observer_provider\s*\('
 definition_path = "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs"
 definition_markers = ["pub(crate) fn protected_observer_provider", "self.poisoned", "ProtectedPairedObservationProviderV1::open"]
-product_callers = ["codex-rs/hepta-intelligence-eval/src/paired_supervised_facade.rs", "codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/paired_supervised_facade.rs", "codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs", "codex-rs/hepta-intelligence-eval/src/fixed_paired_finish_host.rs"]
 caller_markers = ["protected_observer_provider(", "clock.sample_registered"]
 
 [[protected_file]]
@@ -1023,12 +1024,21 @@ product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-holdout
 caller_markers = ["--paired-execute", "codex_hepta_intelligence_eval::run_fixed_paired_custody"]
 
 [[boundary]]
+id = "original_paired_custody_finish"
+symbol = "finish_fixed_paired_custody"
+call_pattern = '\bfinish_fixed_paired_custody\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_finish_host.rs"
+definition_markers = ["pub fn finish_fixed_paired_custody", "publication.recompute", "held.authorize_original_consumption", "decide_independently_v2", "LockedFileProductEvidenceSinkV1::open", "qualify_paired_with_clock"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-holdout-custody.rs"]
+caller_markers = ["--paired-finish", "codex_hepta_intelligence_eval::finish_fixed_paired_custody"]
+
+[[boundary]]
 id = "original_consumed_custody_effect"
 symbol = "authorize_original_consumption"
 call_pattern = '\.authorize_original_consumption\s*\('
 definition_path = "codex-rs/hepta-intelligence-eval/src/protected_paired_provider.rs"
 definition_markers = ["fn authorize_original_consumption", "if self.attempted", "self.consumption", "self.attempted = true"]
-product_callers = ["codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs", "codex-rs/hepta-intelligence-eval/src/fixed_paired_finish_host.rs"]
 caller_markers = ["authorize_original_consumption(", "clock.sample_registered"]
 
 [[boundary]]
