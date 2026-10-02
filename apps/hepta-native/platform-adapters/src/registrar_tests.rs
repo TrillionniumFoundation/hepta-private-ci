@@ -359,6 +359,44 @@ fn rust_registrar_rejects_directory_target_and_shortcut_without_overwriting() {
 }
 
 #[test]
+fn rust_registrar_does_not_overwrite_another_file_through_a_hard_linked_shortcut() {
+    let directory = tempfile::tempdir().unwrap();
+    let executable = directory.path().join("fixture.exe");
+    std::fs::write(&executable, b"owned target; never executed").unwrap();
+    let other = directory.path().join("other-owned-file.bin");
+    let original = b"preserve this unrelated fixture file exactly";
+    std::fs::write(&other, original).unwrap();
+    let shortcut = directory.path().join("Hepta Native.lnk");
+    std::fs::hard_link(&other, &shortcut).unwrap();
+    assert_eq!(
+        file_identity(&File::open(&other).unwrap()).unwrap(),
+        file_identity(&File::open(&shortcut).unwrap()).unwrap()
+    );
+    // No fixture handle is retained across Save, so this observes its actual
+    // destination publication behavior rather than imposing a test-only lock.
+    let result = register_in(&executable, || Ok(directory.path().to_path_buf()));
+    assert_eq!(std::fs::read(&other).unwrap(), original);
+    match result {
+        Ok(saved) => {
+            assert_eq!(saved, shortcut);
+            assert_ne!(
+                file_identity(&File::open(&other).unwrap()).unwrap(),
+                file_identity(&File::open(&shortcut).unwrap()).unwrap()
+            );
+            eprintln!(
+                "EXERCISED: shortcut save replaced the hard link without changing the other file"
+            );
+        }
+        Err(error) => {
+            assert_eq!(std::fs::read(&shortcut).unwrap(), original);
+            eprintln!(
+                "EXERCISED: shortcut registration rejected the hard-linked destination without changing either file: {error}"
+            );
+        }
+    }
+}
+
+#[test]
 fn native_sdk_owns_string_property_variant_and_roundtrip() {
     let value = app_id_value().unwrap();
     assert_eq!(value.vt(), windows::Win32::System::Variant::VT_LPWSTR);
