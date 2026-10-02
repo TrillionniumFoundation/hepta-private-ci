@@ -38,7 +38,7 @@ jobs:
       - name: Install build and capture prerequisites
         run: |
           sudo apt-get update
-          sudo apt-get install -y build-essential cmake llvm clang libclang-dev libssl-dev libsqlite3-dev pkg-config libxcursor-dev libx11-dev libasound2-dev libpulse-dev libwayland-dev libxkbcommon-dev libffi-dev libgl1-mesa-dri libegl1 xvfb xdotool imagemagick
+          sudo apt-get install -y build-essential cmake llvm clang libclang-dev libssl-dev libsqlite3-dev pkg-config libxcursor-dev libx11-dev libasound2-dev libpulse-dev libwayland-dev libxkbcommon-dev libffi-dev libgl1-mesa-dri libegl1 xvfb xdotool x11-utils imagemagick
           rustup toolchain install 1.96.0 --profile minimal
           rustup toolchain install nightly-2026-10-01 --profile minimal --component rust-src --target wasm32-unknown-unknown
           python3 -m venv "$RUNNER_TEMP/robrix-python"
@@ -70,9 +70,6 @@ jobs:
           command -v chromedriver
           google-chrome --version
           chromedriver --version
-      - name: Execute actual Robrix browser storage and account-epoch tests
-        if: matrix.platform == 'browser'
-        run: python scripts/robrix/qualify.py web-tests
       - name: Fetch exact Makepad build tool source
         if: matrix.platform == 'browser'
         env:
@@ -82,6 +79,11 @@ jobs:
           git -C "$MAKEPAD_SOURCE" remote add origin https://github.com/makepad/makepad
           git -C "$MAKEPAD_SOURCE" fetch --depth 1 origin 493d23a7630f487d29912dd73f2cbb5b639b74ca
           git -C "$MAKEPAD_SOURCE" checkout --detach FETCH_HEAD
+      - name: Execute actual Robrix browser storage and account-epoch tests
+        if: matrix.platform == 'browser'
+        env:
+          MAKEPAD_SOURCE: ${{ runner.temp }}/makepad-tool-source
+        run: python scripts/robrix/qualify.py web-tests
       - name: Link and package actual Makepad WASM application
         if: matrix.platform == 'browser'
         env:

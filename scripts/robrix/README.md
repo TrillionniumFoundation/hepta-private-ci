@@ -64,3 +64,28 @@ receipt for the next repair. Test WASM/generated JS stay outside uploaded eviden
 Failed artifact SHA-256 receipts:
 - Native artifact 11236788344: 768736086cb55e367aef9c92d61165a871b9d24a6622308a87369655855a3635
 - Browser artifact 11236886903: f05d2af69ec0cbc280139eeb24d36b1d1d7c09a06e8b8936934d566a9adb9437
+
+## Confirmed second-run causes and bounded adapter repair
+
+Run 37035006929 at 29f64edab494f9977eda9ede9c12eb83019dfc57 proved the
+native process was running; its ICCCM WM_NAME contained a Latin-1 middle dot
+(byte B7). Treating all xdotool output as UTF-8 was invalid. The acceptance path
+now reads WM_NAME through libX11, uses its declared STRING (ISO-8859-1) or
+UTF8_STRING encoding strictly, and rejects unsupported types or invalid UTF-8.
+Exact title, unique resource instance, and process liveness remain mandatory.
+Only diagnostic text uses escaped bytes. Official x11-utils supplies xwininfo.
+
+Browser page errors established an unresolved bare `env` import in the generated
+test glue. `makepad_test_bridge.py` applies the pinned Makepad493 packager's real
+`--bindgen` env/instance transformations and constructs the unchanged upstream
+`init_env` and `WasmBridge`, bound to the actual WASM instance/memory, before
+returning exports to the unchanged test runner. Raw Makepad exports are retained
+by the official runner's `WASM_BINDGEN_KEEP_LLD_EXPORTS` option. Both upstream
+bridge and packager source bytes are SHA-256 pinned; generated glue shape changes
+fail closed and each transformed input/output digest is recorded. No substitute
+env functions are supplied. All thirteen original tests and the existing deadline
+remain mandatory; the linked full-app Makepad package/canvas gate is still separate.
+
+Second failed artifact SHA-256 receipts:
+- Native 11240541155: c1c61519cbb69915aa887cde945691a01f2013c27487e0d56ec05ec5500d2269
+- Browser 11239920537: cb24a98b57517da76c8ab974de6efc3ebf15ea21db4486ac4569572bcc26ecf4

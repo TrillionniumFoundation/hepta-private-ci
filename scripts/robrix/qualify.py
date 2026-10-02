@@ -11,6 +11,7 @@ import shutil
 import tomllib
 import time
 import sys
+from x11_title import read_title
 
 ROOT = Path(__file__).resolve().parents[2]
 APP = ROOT / 'apps/hepta-robrix'
@@ -179,8 +180,9 @@ def select_fixture_window(process, resource_name):
             raise RuntimeError('Multiple mapped windows have the unique fixture identity')
         if len(windows) == 1:
             window = windows[0]
-            title = run(['xdotool', 'getwindowname', window], cwd=ROOT, timeout=5).strip()
-            if title == FIXTURE_TITLE:
+            title = read_title(window)
+            (OUT / f'native-window-{window}-title.json').write_text(json.dumps(title, indent=2) + '\n')
+            if title['title'] == FIXTURE_TITLE:
                 return window
         time.sleep(0.25)
     raise RuntimeError('No unique mapped window with the exact fixture title within 60 seconds')
@@ -190,9 +192,9 @@ def native_window_diagnostics(scene, process):
     for label, args in [('window-tree', ['xwininfo', '-root', '-tree']),
                         ('process', ['ps', '-p', str(process.pid), '-o', 'pid,ppid,stat,comm'])]:
         try:
-            result = subprocess.run(args, text=True, stdout=subprocess.PIPE,
+            result = subprocess.run(args, stdout=subprocess.PIPE,
                                     stderr=subprocess.STDOUT, timeout=5)
-            output = result.stdout
+            output = result.stdout.decode('utf-8', errors='backslashreplace')  # Diagnostics only.
         except (OSError, subprocess.TimeoutExpired) as error:
             output = str(error)
         (OUT / f'native-{scene}-{label}.log').write_text(output)
@@ -210,8 +212,10 @@ def native_capture():
                                        stdout=log, stderr=subprocess.STDOUT)
             try:
                 window = select_fixture_window(process, resource_name)
-                run(['xprop', '-id', window, 'WM_CLASS', 'WM_NAME', '_NET_WM_PID'],
-                    cwd=ROOT, log=f'native-{scene}-window-identity.log')
+                properties = subprocess.run(['xprop', '-id', window, 'WM_CLASS', 'WM_NAME', '_NET_WM_PID'],
+                                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=5, check=True)
+                (OUT / f'native-{scene}-window-identity.log').write_text(
+                    properties.stdout.decode('utf-8', errors='backslashreplace'))  # Not used for acceptance.
                 for label, width, height in [('wide', 1180, 760), ('narrow', 520, 760), ('short', 800, 560)]:
                     run(['xdotool', 'windowsize', window, str(width), str(height)], cwd=ROOT)
                     time.sleep(3)

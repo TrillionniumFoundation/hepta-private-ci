@@ -2,10 +2,11 @@
 """Drive the official wasm-bindgen interactive test page and retain bootstrap errors.
 
 The official server generates and executes the unchanged application's tests. This
-wrapper replaces only its WebDriver observation layer, which omits page errors
-when an ES module fails before the first test. No import or test-code shims.
+wrapper captures bootstrap errors and installs the pinned Makepad packager's
+real env/instance bridge. It never replaces application test code or env functions.
 """
 import json
+import hashlib
 import os
 from pathlib import Path
 import queue
@@ -17,6 +18,7 @@ import time
 from urllib.parse import urlsplit
 
 from qualify import OUT
+from makepad_test_bridge import load_pinned_bridge, patch_test_glue, BRIDGE_SHA256, PACKAGER_SHA256
 
 
 def passing_summary(output):
@@ -26,8 +28,9 @@ def passing_summary(output):
 def main():
     from playwright.sync_api import sync_playwright
     OUT.mkdir(parents=True, exist_ok=True)
+    bridge_source = load_pinned_bridge(os.environ['MAKEPAD_SOURCE'])
     env = dict(os.environ, NO_HEADLESS='1', WASM_BINDGEN_KEEP_TEST_BUILD='1',
-               WASM_BINDGEN_TEST_ADDRESS='127.0.0.1:0')
+               WASM_BINDGEN_TEST_ADDRESS='127.0.0.1:0', WASM_BINDGEN_KEEP_LLD_EXPORTS='1')
     process = subprocess.Popen(['wasm-bindgen-test-runner', *sys.argv[1:]], env=env,
                                text=True, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     lines = queue.Queue()
@@ -43,7 +46,8 @@ def main():
     receipt = {'schema': 1, 'fixture': True, 'liveAccounts': False,
                'runner': 'official wasm-bindgen 0.2.129 interactive server',
                'pageErrors': [], 'console': [], 'requestFailures': [], 'responses': [],
-               'passed': False, 'output': ''}
+               'passed': False, 'output': '', 'bridge': {'sourceSha256': BRIDGE_SHA256,
+               'packagerSha256': PACKAGER_SHA256, 'initialized': False}, 'glue': []}
     try:
         # This is server/bootstrap setup, not a longer allowance for test execution.
         deadline = time.monotonic() + 60
@@ -66,7 +70,18 @@ def main():
                 context = browser.new_context()
                 def route(request_route):
                     url = request_route.request.url
-                    if url.startswith(origin + '/') or url.startswith(('blob:', 'data:')):
+                    if url == origin + '/__makepad_bridge.js':
+                        request_route.fulfill(status=200, content_type='text/javascript', body=bridge_source)
+                    elif url == origin + '/wasm-bindgen-test':
+                        response = request_route.fetch()
+                        if response.status != 200:
+                            raise RuntimeError('Official generated test glue was not served')
+                        original = response.text()
+                        patched = patch_test_glue(original)
+                        receipt['glue'].append({'beforeSha256': hashlib.sha256(original.encode()).hexdigest(),
+                                                'afterSha256': hashlib.sha256(patched.encode()).hexdigest()})
+                        request_route.fulfill(response=response, body=patched, content_type='text/javascript')
+                    elif url.startswith(origin + '/') or url.startswith(('blob:', 'data:')):
                         request_route.continue_()
                     else:
                         receipt['requestFailures'].append('External request blocked: ' + urlsplit(url).netloc)
@@ -89,6 +104,10 @@ def main():
                         print(receipt['output'], flush=True)
                         if not passing_summary(receipt['output']):
                             raise RuntimeError('Actual browser tests failed, were ignored, or did not execute')
+                        bridge = page.evaluate('globalThis.__hepta_makepad_test_bridge')
+                        if not bridge or bridge.get('initialized') is not True or not receipt['glue']:
+                            raise RuntimeError('Original tests did not run through the real Makepad bridge')
+                        receipt['bridge']['initialized'] = True
                         receipt['passed'] = True
                         break
                     if process.poll() is not None:

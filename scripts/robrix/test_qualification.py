@@ -7,6 +7,8 @@ import unittest
 from unittest.mock import patch, Mock
 import qualify
 from browser_test_runner import passing_summary
+from x11_title import decode_title
+from makepad_test_bridge import patch_test_glue, load_pinned_bridge
 
 
 class TestExecutionGate(unittest.TestCase):
@@ -56,8 +58,9 @@ class TestNativeWindowIdentity(unittest.TestCase):
         process = Mock()
         process.poll.return_value = None
         with patch.object(qualify.subprocess, 'run', return_value=Mock(returncode=0, stdout='42\n')) as search:
-            with patch.object(qualify, 'run', return_value=qualify.FIXTURE_TITLE):
-                self.assertEqual(qualify.select_fixture_window(process, 'unique-fixture'), '42')
+            with patch.object(qualify, 'read_title', return_value={'title': qualify.FIXTURE_TITLE}):
+                with patch.object(Path, 'write_text'):
+                    self.assertEqual(qualify.select_fixture_window(process, 'unique-fixture'), '42')
         self.assertEqual(search.call_args.args[0], ['xdotool', 'search', '--onlyvisible',
                                                    '--classname', r'^unique\-fixture$'])
 
@@ -80,9 +83,10 @@ class TestNativeWindowIdentity(unittest.TestCase):
         with patch.object(qualify.time, 'monotonic', side_effect=[0, 1, 61]):
             with patch.object(qualify.time, 'sleep'):
                 with patch.object(qualify.subprocess, 'run', return_value=Mock(returncode=0, stdout='42\n')):
-                    with patch.object(qualify, 'run', return_value='Unrelated app'):
-                        with self.assertRaisesRegex(RuntimeError, 'exact fixture title'):
-                            qualify.select_fixture_window(process, 'fixture')
+                    with patch.object(qualify, 'read_title', return_value={'title': 'Unrelated app'}):
+                        with patch.object(Path, 'write_text'):
+                            with self.assertRaisesRegex(RuntimeError, 'exact fixture title'):
+                                qualify.select_fixture_window(process, 'fixture')
 
 
 class TestBrowserCompletion(unittest.TestCase):
@@ -92,6 +96,65 @@ class TestBrowserCompletion(unittest.TestCase):
                        'test result: ok. 12 passed; 0 failed; 1 ignored;',
                        'test result: FAILED. 12 passed; 1 failed; 0 ignored;']:
             self.assertFalse(passing_summary(output))
+
+
+class TestX11TitleEncoding(unittest.TestCase):
+    def test_declared_string_and_utf8_encodings_preserve_the_exact_title(self):
+        title = qualify.FIXTURE_TITLE
+        self.assertEqual(decode_title('STRING', title.encode('latin-1')), title)
+        self.assertEqual(decode_title('UTF8_STRING', title.encode('utf-8')), title)
+
+    def test_invalid_utf8_is_never_replaced_for_acceptance(self):
+        with self.assertRaises(UnicodeDecodeError):
+            decode_title('UTF8_STRING', b'Hepta \xb7 UI fixture')
+
+    def test_unsupported_title_encoding_is_rejected(self):
+        with self.assertRaises(ValueError):
+            decode_title('COMPOUND_TEXT', b'Hepta')
+
+
+class TestRealMakepadAdapter(unittest.TestCase):
+    GLUE = """import * as import0 from "env";
+function __wbg_get_imports() { return {
+    "env": import0,
+}; }
+function __wbg_finalize_init(instance, module) {
+    return wasm;
+}
+function initSync(module) {
+    const imports = __wbg_get_imports();
+}
+async function __wbg_init(module_or_path) {
+    const imports = __wbg_get_imports();
+}
+export { initSync, __wbg_init as default };
+"""
+
+    def test_adapter_uses_real_bridge_and_original_wasm_exports(self):
+        patched = patch_test_glue(self.GLUE)
+        self.assertIn('new WasmBridge(instance, {})', patched)
+        self.assertIn('const set_wasm = init_env(env)', patched)
+        self.assertIn('return instance.exports', patched)
+        self.assertNotIn('from "env"', patched)
+        self.assertEqual(patch_test_glue(self.GLUE.replace('from "env";', 'from "env"')), patched)
+
+    def test_glue_drift_fails_closed(self):
+        for changed in [self.GLUE.replace('"env": import0,', ''),
+                        self.GLUE.replace('__wbg_init(module_or_path)', '__wbg_init(changed)'),
+                        self.GLUE.replace('return wasm;', 'return changed;'),
+                        self.GLUE + 'import * as duplicate from "env";\n']:
+            with self.assertRaises(ValueError):
+                patch_test_glue(changed)
+
+    def test_bridge_hash_drift_fails_closed(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            for relative in ['libs/wasm_bridge/src/wasm_bridge.js', 'tools/cargo_makepad/src/wasm/compile.rs']:
+                path = root / relative
+                path.parent.mkdir(parents=True, exist_ok=True)
+                path.write_text('untrusted drift')
+            with self.assertRaisesRegex(ValueError, 'hash mismatch'):
+                load_pinned_bridge(root)
 
 
 if __name__ == '__main__':
