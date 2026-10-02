@@ -437,7 +437,7 @@ async fn run_product_case(case: ProfileCase) -> Result<()> {
         // directory cleanup; an ambiguous mutation must never be replayed.
         match codex_hepta_supervisor::read_mutation_status(layout.owner_run_root()) {
             Ok(Some(status)) => eprintln!(
-                "failed product case {case:?}: original mutation request={} operation={:?} phase={:?} record={} detail={:?}",
+                "failed product case {case:?}: original mutation request={} operation={:?} phase={:?} record={:?} detail={:?}",
                 status.request_id,
                 status.operation,
                 status.phase,
