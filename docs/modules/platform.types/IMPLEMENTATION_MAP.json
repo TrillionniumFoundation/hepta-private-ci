@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "86eb13b802ea9b269a30d0c941edc74b8d0e4312",
+    "tree": "3a0e74488341f9447de48e6afd2ac1df969adb2f"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.types",
@@ -277,12 +277,44 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "86eb13b802ea9b269a30d0c941edc74b8d0e4312",
+    "tree": "3a0e74488341f9447de48e6afd2ac1df969adb2f"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-types"
+  ],
+  "navigationRebindHistory": [
+    {
+      "previous": {
+        "sourceBase": {
+          "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+          "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+        },
+        "observedAtHead": {
+          "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+          "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+        }
+      },
+      "reason": "Current source navigation reviewed during 2026-10-02 scoped module audit. No historical execution is renewed.",
+      "historicalExecutionRevalidated": false,
+      "authorityGranted": false
+    },
+    {
+      "previous": {
+        "sourceBase": {
+          "commit": "c3228764172df19e37894053b54d3a8b5a1a6520",
+          "tree": "2bafd87190844c3af31f3b92bb054c5de4428a62"
+        },
+        "observedAtHead": {
+          "commit": "c3228764172df19e37894053b54d3a8b5a1a6520",
+          "tree": "2bafd87190844c3af31f3b92bb054c5de4428a62"
+        }
+      },
+      "reason": "Current source navigation reviewed during 2026-10-02 scoped module audit. No historical execution is renewed.",
+      "historicalExecutionRevalidated": false,
+      "authorityGranted": false
+    }
   ]
 }

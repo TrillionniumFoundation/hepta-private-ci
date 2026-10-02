@@ -21,6 +21,7 @@ qualification profile.
 
 | Design operation | Native symbol | Source | Status |
 |---|---|---|---|
+| canonical artifact JSON and independently pinned decode | `CanonicalBellmanArtifactV1` | `src/wire.rs` | structural/digest adapter; seven-component Q32 profile; no evaluator or selection authority |
 | build deterministic Bellman targets | `build_targets` (`train` compatibility alias) | `src/lib.rs` | implemented |
 | validate structural smooth-axis applicability | `validate_applicability_certificate` | `src/reference.rs` | compatibility implemented |
 | authenticate applicability for qualification | `validate_applicability_with_signed_evidence_v2` | `src/authenticated.rs` | implemented |

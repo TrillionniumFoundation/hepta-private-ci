@@ -88,7 +88,179 @@
           "name": "errorBudget",
           "type": "bounded_object",
           "required": true,
-          "maxBytes": 16384
+          "maxBytes": 16384,
+          "encodingProfiles": [
+            {
+              "id": "hepta.bellman-error-budget.q32.v1",
+              "canonicalEncoding": "compact_lexicographic_json_utf8_integer_only",
+              "denyUnknownFields": true,
+              "denyDuplicateFields": true,
+              "fields": [
+                {
+                  "name": "schema",
+                  "type": "enum",
+                  "required": true,
+                  "values": [
+                    "hepta.bellman-error-budget.q32.v1"
+                  ]
+                },
+                {
+                  "name": "dominantApprovalEvidenceDigest",
+                  "type": "sha256",
+                  "required": false,
+                  "maxBytes": 64,
+                  "nullAllowed": false
+                },
+                {
+                  "name": "model",
+                  "type": "bounded_object",
+                  "required": true,
+                  "fields": [
+                    {
+                      "name": "evidenceDigest",
+                      "type": "sha256",
+                      "required": true,
+                      "maxBytes": 64
+                    },
+                    {
+                      "name": "normalizedErrorQ32",
+                      "type": "i64",
+                      "required": true,
+                      "minimum": 0,
+                      "meaning": "signed integer raw Q32.32 normalized error"
+                    }
+                  ]
+                },
+                {
+                  "name": "network",
+                  "type": "bounded_object",
+                  "required": true,
+                  "fields": [
+                    {
+                      "name": "evidenceDigest",
+                      "type": "sha256",
+                      "required": true,
+                      "maxBytes": 64
+                    },
+                    {
+                      "name": "normalizedErrorQ32",
+                      "type": "i64",
+                      "required": true,
+                      "minimum": 0,
+                      "meaning": "signed integer raw Q32.32 normalized error"
+                    }
+                  ]
+                },
+                {
+                  "name": "optimization",
+                  "type": "bounded_object",
+                  "required": true,
+                  "fields": [
+                    {
+                      "name": "evidenceDigest",
+                      "type": "sha256",
+                      "required": true,
+                      "maxBytes": 64
+                    },
+                    {
+                      "name": "normalizedErrorQ32",
+                      "type": "i64",
+                      "required": true,
+                      "minimum": 0,
+                      "meaning": "signed integer raw Q32.32 normalized error"
+                    }
+                  ]
+                },
+                {
+                  "name": "reconstruction",
+                  "type": "bounded_object",
+                  "required": true,
+                  "fields": [
+                    {
+                      "name": "evidenceDigest",
+                      "type": "sha256",
+                      "required": true,
+                      "maxBytes": 64
+                    },
+                    {
+                      "name": "normalizedErrorQ32",
+                      "type": "i64",
+                      "required": true,
+                      "minimum": 0,
+                      "meaning": "signed integer raw Q32.32 normalized error"
+                    }
+                  ]
+                },
+                {
+                  "name": "rollout",
+                  "type": "bounded_object",
+                  "required": true,
+                  "fields": [
+                    {
+                      "name": "evidenceDigest",
+                      "type": "sha256",
+                      "required": true,
+                      "maxBytes": 64
+                    },
+                    {
+                      "name": "normalizedErrorQ32",
+                      "type": "i64",
+                      "required": true,
+                      "minimum": 0,
+                      "meaning": "signed integer raw Q32.32 normalized error"
+                    }
+                  ]
+                },
+                {
+                  "name": "sensor",
+                  "type": "bounded_object",
+                  "required": true,
+                  "fields": [
+                    {
+                      "name": "evidenceDigest",
+                      "type": "sha256",
+                      "required": true,
+                      "maxBytes": 64
+                    },
+                    {
+                      "name": "normalizedErrorQ32",
+                      "type": "i64",
+                      "required": true,
+                      "minimum": 0,
+                      "meaning": "signed integer raw Q32.32 normalized error"
+                    }
+                  ]
+                },
+                {
+                  "name": "statistical",
+                  "type": "bounded_object",
+                  "required": true,
+                  "fields": [
+                    {
+                      "name": "evidenceDigest",
+                      "type": "sha256",
+                      "required": true,
+                      "maxBytes": 64
+                    },
+                    {
+                      "name": "normalizedErrorQ32",
+                      "type": "i64",
+                      "required": true,
+                      "minimum": 0,
+                      "meaning": "signed integer raw Q32.32 normalized error"
+                    }
+                  ]
+                }
+              ],
+              "invariants": [
+                "all_digest_strings_nonzero_lowercase_hex",
+                "total_raw_error_at_most_floor_2pow32_div_20",
+                "dominant_term_above_half_requires_claimed_approval_digest",
+                "evidence_digests_require_independent_owner_authentication",
+                "optional_fields_omitted_not_null"
+              ]
+            }
+          ]
         },
         {
           "name": "predecessorArtifactId",
