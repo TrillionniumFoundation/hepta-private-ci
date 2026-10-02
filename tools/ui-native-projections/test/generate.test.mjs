@@ -70,6 +70,7 @@ test("test registry is source-discovered and has no duplicate paths", () => {
   assert.ok(paths.includes("apps/hepta-native/tests/journal_regressions.rs"));
   assert.ok(paths.includes("apps/hepta-native/tests/update_product.rs"));
   assert.ok(paths.includes("apps/hepta-native/src/ui/input_event_tests.rs"));
+  assert.ok(paths.includes("apps/hepta-native/platform-adapters/src/registrar_tests.rs"));
   assert.deepEqual(
     registry.files.find((file) => file.path === "codex-rs/utils/private-state/src/windows.rs"),
     {
@@ -99,11 +100,12 @@ test("test registry is source-discovered and has no duplicate paths", () => {
       "#[cfg(windows)]\n#[cfg(test)]\nmod tests {\n    #[test]\n    fn owned_handles_are_fenced() {}\n}\n",
     );
     writeFileSync(join(fixture, "codex-rs/utils/private-state/src/lib.rs"), "pub fn production_only() {}\n");
-    assert.deepEqual(discoverRustTestFiles(fixture), [{
-      path: inline,
-      role: "unit_test",
-      ownerPackage: "codex-utils-private-state",
-    }]);
+    const adapter = "apps/hepta-native/platform-adapters/src/dialog_tests.rs";
+    writeFileSync(join(fixture, adapter), "#[test]\nfn unicode_selection_is_preserved() {}\n");
+    assert.deepEqual(discoverRustTestFiles(fixture), [
+      { path: adapter, role: "unit_test", ownerPackage: "hepta-native-platform" },
+      { path: inline, role: "unit_test", ownerPackage: "codex-utils-private-state" },
+    ]);
   } finally {
     rmSync(fixture, { recursive: true, force: true });
   }

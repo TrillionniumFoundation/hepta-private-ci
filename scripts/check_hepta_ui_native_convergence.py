@@ -420,6 +420,113 @@ def check_frozen_storage_budgets(implementation: str) -> None:
     )
 
 
+def check_native_platform_contracts() -> None:
+    """Check declared Rust adapter wiring, not runtime or physical acceptance.
+
+    These lexical checks replace the retired absolute interpreter-launcher
+    checks. Actual bounds, identity, cancellation and terminality still require
+    the Rust behavioral tests and installed-platform evidence. This scope does
+    not declare the separate picker/installer/UI modules fully Rust-only.
+    """
+    contracts = {
+        "apps/hepta-native/src/platform.rs": {
+            "verified open resource": "fn open_verified_resource(",
+            "final-symlink rejection": "OFlags::NOFOLLOW",
+            "retained descriptor transport": "Fd::from(file.as_fd())",
+            "bounded native portal handoff": "RESOURCE_HANDOFF_TIMEOUT",
+            "uncertain external effects": "PlatformObservation::indeterminate()",
+            "bounded adapter slots": "LauncherSlot::acquire(active)?",
+            "cleared helper environment": "command.env_clear();",
+            "Rust notification helper dispatch": "notification_helper::launch(",
+        },
+        "apps/hepta-native/src/native_portal.rs": {
+            "pinned portal owner": ".sender(owner.as_str())",
+            "exact request path": ".path(path.as_str())",
+            "bounded response queue": "MessageStream::for_match_rule(rule, &connection, Some(4))",
+            "request handle verification": "returned.as_str() != path",
+            "bounded response bytes": "body.len() > MAX_RESPONSE_BYTES",
+            "bounded request cleanup": "CLOSE_TIMEOUT",
+        },
+        "apps/hepta-native/src/platform_linux.rs": {
+            "native notification method": '"Notify"',
+            "notification deadline": "super::NOTIFICATION_TIMEOUT",
+        },
+        "apps/hepta-native/src/platform_notification_helper.rs": {
+            "same executable": "std::env::current_exe()?",
+            "running image identity": "running_binary_digest()?",
+            "launcher image identity": "digest_file(&executable)? != expected_digest",
+            "child readiness identity": "ready.binary_digest != expected_digest",
+            "request identity": "self.nonce != nonce",
+            "bounded request bytes": "MAX_REQUEST_BYTES + 1",
+            "model payload validation": "PlatformPayload::Notify",
+            "closed request schema": "#[serde(deny_unknown_fields)]",
+            "inherited request pipe": ".stdin(Stdio::piped())",
+            "inherited readiness pipe": ".stdout(Stdio::piped())",
+            "child deadline": "super::NOTIFICATION_TIMEOUT",
+            "child termination": "child.kill()",
+            "child retirement": "child.wait()",
+            "nonblocking readiness reader": "crate::native_pipe::prepare_reader(&stdout)?",
+            "nonblocking request writer": "crate::native_pipe::prepare_writer(&stdin)?",
+            "polled readiness": "crate::native_pipe::read_available(",
+            "partial request writes": "writer.write(&request[written..])",
+        },
+        "apps/hepta-native/src/native_pipe.rs": {
+            "Unix nonblocking pipe mode": "OFlags::NONBLOCK",
+            "Windows available-byte reader": "hepta_native_platform::pipe::read_available(",
+            "Windows nonblocking pipe writer": "hepta_native_platform::pipe::configure_writer(",
+        },
+        "apps/hepta-native/platform-adapters/src/pipe.rs": {
+            "Windows nonblocking pipe mode": "PIPE_NOWAIT",
+            "Windows pipe availability observation": "PeekNamedPipe",
+            "empty open pipe is not EOF": "if available == 0",
+            "bounded available-byte read": "bytes.len().min(available as usize)",
+        },
+        "apps/hepta-native/src/platform_notify_macos.rs": {
+            "installed bundle identity": '"org.trillionnium.hepta.native"',
+            "native notification API": "UNUserNotificationCenter",
+            "literal notification title": "NSString::from_str(title)",
+        },
+        "apps/hepta-native/src/platform_notify_windows.rs": {
+            "registered identity gate": "notification_supported()",
+            "literal notification text": "CreateTextNode",
+            "registered native notifier": "CreateToastNotifierWithId",
+        },
+    }
+    for relative, required in contracts.items():
+        path = ROOT / relative
+        _require(
+            path.is_file() and not path.is_symlink(),
+            f"missing or unsafe Rust platform source: {relative}",
+        )
+        source = _read(relative)
+        _require(
+            re.search(
+                r"\b(?:python3?|powershell|osascript|notify-send)(?:\.exe)?\b",
+                source,
+                re.IGNORECASE,
+            )
+            is None,
+            f"retired interpreter/launcher reference in Rust platform source: {relative}",
+        )
+        _require(
+            re.search(
+                r"include_(?:str|bytes)!\s*\([^)]*\.(?:py|ps1|js|ts|sh)[\"']", source
+            )
+            is None,
+            f"embedded executable script in Rust platform source: {relative}",
+        )
+        for label, token in required.items():
+            _require(
+                token in source, f"missing Rust platform contract {label}: {relative}"
+            )
+    main = _read("apps/hepta-native/src/main.rs")
+    _require(
+        'raw_args == ["--native-notification-helper"]' in main
+        and "hepta_native::platform::run_notification_helper()?" in main,
+        "notification helper does not have its exact no-argument entrypoint",
+    )
+
+
 def check_repository() -> dict[str, Any]:
     workflows = ROOT / ".github" / "workflows"
     for name in FORBIDDEN_WORKFLOWS:
@@ -462,8 +569,6 @@ def check_repository() -> dict[str, Any]:
     journal = _read("apps/hepta-native/src/journal.rs")
     storage = _read("apps/hepta-native/src/journal_storage.rs")
     retirement = _read("apps/hepta-native/src/retirement.rs")
-    platform = _read("apps/hepta-native/src/platform.rs")
-
     source_contracts = {
         "journal-v7": 'const JOURNAL_SCHEMA_V7: &str = "hepta.native-operation-journal.v7";',
         "wal-v1": 'const WAL_SCHEMA: &str = "hepta.native-operation-wal.v1";',
@@ -503,22 +608,7 @@ def check_repository() -> dict[str, Any]:
         _require(key in structural, f"storage budget {key} is missing")
         _require(token in joined, f"source constant for {key} drifted")
 
-    _require(
-        'Command::new("/usr/bin/osascript")' in platform,
-        "macOS launcher is not absolute",
-    )
-    _require(
-        'Command::new("/usr/bin/notify-send")' in platform,
-        "Linux launcher is not absolute",
-    )
-    _require(
-        'Command::new("osascript")' not in platform, "PATH-resolved osascript remains"
-    )
-    _require(
-        'Command::new("notify-send")' not in platform,
-        "PATH-resolved notify-send remains",
-    )
-    _require("command.env_clear();" in platform, "launcher environment is not cleared")
+    check_native_platform_contracts()
 
     anchors: dict[str, str] = {}
     trees: dict[str, str] = {}
