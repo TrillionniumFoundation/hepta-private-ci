@@ -499,6 +499,11 @@ impl SupervisordClient {
             {
                 Err(SupervisorError::ConfigurationNotReady(message))
             }
+            SupervisordPayload::Error { code, .. } if code == "stale_control_fence" => {
+                // The owner rejects this fence before journal admission or an
+                // effect. Expose that result without refreshing the intent.
+                Err(SupervisorError::StaleControlFence)
+            }
             SupervisordPayload::Error {
                 code,
                 message,

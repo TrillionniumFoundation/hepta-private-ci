@@ -1468,6 +1468,11 @@ fn safe_rejection(
             "lifecycle owner is busy; no operation was admitted; refresh before retry",
             actual,
         ),
+        SupervisorError::StaleControlFence => error_payload(
+            "stale_control_fence",
+            "selected Agent changed; no operation was admitted; refresh before retry",
+            actual,
+        ),
         SupervisorError::ConfigurationNotReady(message) => {
             error_payload("configuration_not_ready", &message, actual)
         }

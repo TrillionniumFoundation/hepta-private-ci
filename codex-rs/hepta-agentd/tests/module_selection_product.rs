@@ -24,10 +24,12 @@ use codex_hepta_agent_components::types::Generation;
 use codex_hepta_agent_components::types::StableId;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_supervisor::DurableRuntimeModuleSupervisorV1;
+use codex_hepta_supervisor::SupervisorError;
 use codex_hepta_supervisor::SupervisordAgentStatus;
 use codex_hepta_supervisor::SupervisordClient;
 use codex_hepta_supervisor::run_supervisord;
 use std::fs::File;
+use std::os::unix::ffi::OsStrExt;
 use std::path::Path;
 use std::time::Duration;
 use std::time::SystemTime;
@@ -134,11 +136,7 @@ async fn exercise(
     agent: &AgentId,
     release: ReleaseId,
 ) -> Result<()> {
-    let before = client.snapshot(agent.clone()).await?;
-    client
-        .start(before.control_fence, release)
-        .await
-        .context("start explicitly allowed installed release")?;
+    start_allowed_release(client, agent, release).await?;
     let (product, first) = ready(client, registry, agent, 0).await?;
     let now = u64::try_from(SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis())?;
     // Keep the task outside this test's lifetime: no model/provider dispatch.
@@ -156,11 +154,7 @@ async fn exercise(
         .await
         .context("create remote product task")?;
     ensure!(product.automation_list(10).await?.len() == 1);
-    let current = client.snapshot(agent.clone()).await?;
-    client
-        .restart(current.control_fence)
-        .await
-        .context("restart selected installed release")?;
+    restart_same_process(client, agent).await?;
     let (reopened, second) = ready(
         client,
         registry,
@@ -197,17 +191,119 @@ enum ProfileCase {
     RetiredSelected,
 }
 
+async fn start_allowed_release(
+    client: &SupervisordClient,
+    agent: &AgentId,
+    release: ReleaseId,
+) -> Result<()> {
+    // Only an explicit no-admission response can retry. All snapshots, reads,
+    // sleeps and RPCs share one two-second deadline, preserving the first intent.
+    timeout(Duration::from_secs(2), async {
+        let intent = client.snapshot(agent.clone()).await?;
+        let mut before = intent.clone();
+        loop {
+            ensure!(
+                before.control_fence == intent.control_fence
+                    && before.process_id == intent.process_id,
+                "unadmitted Start intent changed"
+            );
+            match client.start(before.control_fence, release.clone()).await {
+                Ok(_) => return Ok::<_, anyhow::Error>(()),
+                Err(SupervisorError::NotAdmittedBusy | SupervisorError::StaleControlFence) => {
+                    sleep(Duration::from_millis(25)).await;
+                    before = client.snapshot(agent.clone()).await?;
+                }
+                Err(error) => return Err(error.into()),
+            }
+        }
+    })
+    .await
+    .context("start explicitly allowed installed release control deadline")?
+}
+
+fn same_restart_intent(
+    original: &SupervisordAgentStatus,
+    current: &SupervisordAgentStatus,
+) -> bool {
+    // A healthy observation of the same Starting process advances exactly one
+    // lifecycle generation. A replacement, release change, owner epoch, Matrix
+    // change or unaccounted state-digest change must never be silently rebound.
+    if original.control_fence == current.control_fence {
+        return original.process_id == current.process_id;
+    }
+    original.agent_id == current.agent_id
+        && original.control_fence.supervisor_epoch == current.control_fence.supervisor_epoch
+        && original.active
+        && current.active
+        && original.process_id.is_some()
+        && original.process_id == current.process_id
+        && original.spawn_generation.is_some()
+        && original.spawn_generation == current.spawn_generation
+        && original.current_release == current.current_release
+        && original.previous_release == current.previous_release
+        && !original.release_change_pending
+        && !current.release_change_pending
+        && original.matrix == current.matrix
+        && original.lifecycle == AgentLifecycle::Starting
+        && current.lifecycle == AgentLifecycle::Running
+        && current.healthy
+        && original.lifecycle_generation.checked_add(1) == Some(current.lifecycle_generation)
+        && original
+            .runtime_generation
+            .and_then(|generation| generation.checked_add(1))
+            == current.runtime_generation
+}
+
+async fn restart_same_process(client: &SupervisordClient, agent: &AgentId) -> Result<()> {
+    timeout(Duration::from_secs(2), async {
+        let intent = client.snapshot(agent.clone()).await?;
+        let mut current = intent.clone();
+        loop {
+            ensure!(
+                same_restart_intent(&intent, &current),
+                "Restart intent changed"
+            );
+            match client.restart(current.control_fence.clone()).await {
+                Ok(_) => return Ok::<_, anyhow::Error>(()),
+                Err(SupervisorError::StaleControlFence | SupervisorError::NotAdmittedBusy) => {
+                    sleep(Duration::from_millis(25)).await;
+                    current = client.snapshot(agent.clone()).await?;
+                }
+                Err(error) => return Err(error.into()),
+            }
+        }
+    })
+    .await
+    .context("restart selected installed process control deadline")?
+}
+
 async fn run_product_case(case: ProfileCase) -> Result<()> {
-    let temp = tempfile::Builder::new()
-        .prefix("hsel-product-")
-        .tempdir_in("/tmp")?;
+    let agent =
+        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").map_err(anyhow::Error::msg)?;
+    let temp = tempfile::Builder::new().prefix("hsel-").tempdir()?;
+    let temporary_fleet = HeptaFleetRoot::parse(temp.path().join("fleet"))?;
+    let temp = if temporary_fleet
+        .layout()
+        .agent(&agent)
+        .agentd_control_socket()
+        .as_os_str()
+        .as_bytes()
+        .len()
+        <= 103
+    {
+        temp
+    } else {
+        // Fall back only when the platform Unix socket path limit requires it.
+        drop(temp);
+        tempfile::Builder::new()
+            .prefix("hsel-")
+            .tempdir_in("/tmp")?
+    };
     let root = temp.path().canonicalize()?;
     let fleet = HeptaFleetRoot::parse(root.join("fleet"))?;
     let registry = FleetRegistry::initialize(fleet.clone())?;
     let workspace = root.join("workspace");
     std::fs::create_dir(&workspace)?;
-    let agent =
-        AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").map_err(anyhow::Error::msg)?;
     registry.register(AgentManifest::new(
         agent.clone(),
         WorkspaceBinding::new(&workspace, &fleet)?,
@@ -278,8 +374,7 @@ async fn run_product_case(case: ProfileCase) -> Result<()> {
         if case == ProfileCase::Selected {
             return exercise(&client, &registry, &agent, release_id).await;
         }
-        let before = client.snapshot(agent.clone()).await?;
-        client.start(before.control_fence, release_id).await?;
+        start_allowed_release(&client, &agent, release_id).await?;
         if matches!(
             case,
             ProfileCase::WrongImage
@@ -313,8 +408,7 @@ async fn run_product_case(case: ProfileCase) -> Result<()> {
                 product.automation_list(10).await.is_err(),
                 "absent/retired Automation must not advertise an idle owner"
             );
-            let current = client.snapshot(agent.clone()).await?;
-            client.restart(current.control_fence).await?;
+            restart_same_process(&client, &agent).await?;
             let (reopened, second) = ready(
                 &client,
                 &registry,
@@ -413,4 +507,77 @@ async fn normal_agentd_selected_corrupt_owner_requires_recovery_not_false_readin
 async fn normal_agentd_retired_timer_is_not_resurrected_by_selected_profile_or_restart()
 -> Result<()> {
     run_product_case(ProfileCase::RetiredSelected).await
+}
+
+#[test]
+fn stale_restart_can_follow_only_same_process_readiness() -> Result<()> {
+    let original: SupervisordAgentStatus = serde_json::from_value(serde_json::json!({
+        "agent_id": "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
+        "lifecycle": "starting", "lifecycle_generation": 7,
+        "active": true, "healthy": false, "process_id": 1234,
+        "spawn_generation": 7, "runtime_generation": 7,
+        "current_release": "original-release", "previous_release": null,
+        "release_change_pending": false,
+        "control_fence": {
+            "agent_id": "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
+            "supervisor_epoch": "018f4f72-5f8f-4cc1-8f55-df9fb3aa2c12",
+            "lifecycle": "starting", "lifecycle_generation": 7,
+            "spawn_generation": 7, "runtime_generation": 7,
+            "current_release": "original-release", "previous_release": null,
+            "release_change_pending": false, "state_digest": "a".repeat(64)
+        },
+        "matrix": {
+            "configured": false, "active": false, "healthy": false, "degraded": false,
+            "process_id": null, "attached_agent_generation": null, "binding_revision": null,
+            "restart_attempt": 0, "last_error": null
+        }
+    }))?;
+    let mut ready = original.clone();
+    ready.lifecycle = AgentLifecycle::Running;
+    ready.lifecycle_generation = 8;
+    ready.runtime_generation = Some(8);
+    ready.healthy = true;
+    ready.control_fence.lifecycle = ready.lifecycle;
+    ready.control_fence.lifecycle_generation = ready.lifecycle_generation;
+    ready.control_fence.runtime_generation = ready.runtime_generation;
+    ready.control_fence.state_digest =
+        codex_hepta_supervisor::ControlStateDigest::parse("b".repeat(64))
+            .map_err(anyhow::Error::msg)?;
+    ensure!(same_restart_intent(&original, &ready));
+    let mut changed = original.clone();
+    changed.control_fence.state_digest = ready.control_fence.state_digest.clone();
+    ensure!(
+        !same_restart_intent(&original, &changed),
+        "unexplained state changed"
+    );
+    changed = ready.clone();
+    changed.process_id = Some(1235);
+    ensure!(!same_restart_intent(&original, &changed), "another process");
+    changed = ready.clone();
+    changed.spawn_generation = Some(8);
+    changed.control_fence.spawn_generation = changed.spawn_generation;
+    ensure!(!same_restart_intent(&original, &changed), "another spawn");
+    changed = ready.clone();
+    changed.control_fence.supervisor_epoch = codex_hepta_supervisor::SupervisorEpoch::new();
+    ensure!(!same_restart_intent(&original, &changed), "another owner");
+    changed = ready.clone();
+    changed.current_release = Some(ReleaseId::parse("another-release")?);
+    changed.control_fence.current_release = changed.current_release.clone();
+    ensure!(!same_restart_intent(&original, &changed), "another release");
+    changed = ready.clone();
+    changed.lifecycle_generation = 9;
+    changed.runtime_generation = Some(9);
+    changed.control_fence.lifecycle_generation = 9;
+    changed.control_fence.runtime_generation = Some(9);
+    ensure!(
+        !same_restart_intent(&original, &changed),
+        "another lifecycle transition"
+    );
+    changed = ready;
+    changed.matrix.binding_revision = Some(1);
+    ensure!(
+        !same_restart_intent(&original, &changed),
+        "another Matrix binding"
+    );
+    Ok(())
 }

@@ -32,6 +32,8 @@ impl From<serde_json::Error> for ProcessDriverError {
 pub enum SupervisorError {
     #[error("supervisord owner is busy; this request was not admitted")]
     NotAdmittedBusy,
+    #[error("supervisord rejected stale_control_fence; this request was not admitted")]
+    StaleControlFence,
     #[error("configuration was not admitted: {0}")]
     ConfigurationNotReady(String),
     #[error("invalid supervisor value: {0}")]

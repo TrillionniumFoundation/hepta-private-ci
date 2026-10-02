@@ -14,6 +14,7 @@ use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_paths::HeptaFleetRoot;
 use codex_hepta_supervisor::DurableMutationPhaseV1;
 use codex_hepta_supervisor::DurableMutationStatusV1;
+use codex_hepta_supervisor::SupervisorError;
 use codex_hepta_supervisor::SupervisordClient;
 use codex_hepta_supervisor::SupervisordHealth;
 use codex_hepta_supervisor::SupervisordMethod;
@@ -172,7 +173,7 @@ async fn socket_reconnect_preserves_outcome_and_emergency_kill_preserves_ambigui
         .execute_mutation_with_request_id(start_id, start_method)
         .await
         .expect_err("old fence cannot spawn again");
-    assert!(replay.to_string().contains("stale_control_fence"));
+    assert!(matches!(replay, SupervisorError::StaleControlFence));
     assert_eq!(
         fleet
             .client
@@ -211,7 +212,9 @@ async fn socket_reconnect_preserves_outcome_and_emergency_kill_preserves_ambigui
         .restart(started.agent.control_fence.clone())
         .await
         .expect_err("no replay of ambiguous operation");
-    assert!(rejected.to_string().contains("mutation_journal_rejected"));
+    assert!(
+        matches!(rejected, SupervisorError::Invalid(ref message) if message.contains("mutation_journal_rejected"))
+    );
     assert!(
         !fleet
             .client
