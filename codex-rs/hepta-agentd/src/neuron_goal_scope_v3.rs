@@ -15,6 +15,12 @@ pub struct AgentdNeuronScopeIdentityV3 {
 }
 
 impl AgentdNeuronHandleV2 {
+    /// Current Root/E/S/withdrawal admission on the same serialized owner. This
+    /// does not construct a tick, dispatch a model or grant lifecycle activation.
+    pub fn validate_goal_scope_admission(&self) -> Result<(), AgentdNeuronControlErrorV2> {
+        self.owner.check_scope_control()
+    }
+
     pub fn scope_identity(
         &self,
     ) -> Result<AgentdNeuronScopeIdentityV3, AgentdNeuronControlErrorV2> {

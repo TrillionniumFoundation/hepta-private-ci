@@ -160,3 +160,71 @@ fn old_support_domain_and_cross_model_refresh_cannot_bypass_native_admission() {
     tampered.model.signature[0] ^= 1;
     assert!(ingress.submit_current_selections(tampered).is_err());
 }
+
+#[test]
+fn goal_scope_admission_revalidates_exact_goal_and_current_signed_refresh_without_a_tick() {
+    let mut fixture = Fixture::new();
+    let mut admission = fixture.admission();
+    let scope = codex_hepta_agent_components::neuron::NeuronTickInputV1::journal_scope_for_subject(
+        &id("fixture.agent"),
+        digest("fixture.objective"),
+    )
+    .expect("actual original objective scope");
+    assert_eq!(admission.check_scope(&fixture.config, scope), Ok(()));
+    let foreign_goal = codex_hepta_agent_components::neuron::JournalScope {
+        objective_digest: digest("foreign.goal"),
+        ..scope
+    };
+    assert_eq!(
+        admission.check_scope(&fixture.config, foreign_goal),
+        Err(NeuronAdmissionError::BindingMismatch)
+    );
+    let refresh = admission.selection_refresh_ingress();
+    fixture.advance();
+    assert!(admission.check_scope(&fixture.config, scope).is_err());
+    assert!(admission.closed);
+    refresh
+        .submit_current_selections(fixture.selections())
+        .expect("independent current signatures");
+    assert_eq!(admission.check_scope(&fixture.config, scope), Ok(()));
+    fixture.revoke_model();
+    assert!(admission.check_scope(&fixture.config, scope).is_err());
+    assert!(admission.closed);
+}
+
+#[test]
+fn goal_scope_admission_refuses_expired_source_and_original_tick_only_guards() {
+    struct ExpiredClock;
+    impl AuthorityClock for ExpiredClock {
+        fn now_unix_ms(
+            &self,
+        ) -> Result<u64, codex_hepta_agent_components::contracts::AuthorityTrustError> {
+            Ok(1_001)
+        }
+    }
+    struct TickOnly;
+    impl NeuronAdmissionGuard for TickOnly {
+        fn check(
+            &mut self,
+            _: &NeuronRuntimeConfigV1,
+            _: &NeuronTickInputV1,
+        ) -> Result<(), NeuronAdmissionError> {
+            Ok(())
+        }
+    }
+    let fixture = Fixture::new();
+    let scope = codex_hepta_agent_components::neuron::NeuronTickInputV1::journal_scope_for_subject(
+        &id("fixture.agent"),
+        digest("fixture.objective"),
+    )
+    .expect("actual original objective scope");
+    let mut admission = fixture.admission();
+    assert_eq!(admission.check_scope(&fixture.config, scope), Ok(()));
+    admission.clock = Arc::new(ExpiredClock);
+    assert!(admission.check_scope(&fixture.config, scope).is_err());
+    assert!(admission.closed);
+    assert_eq!(
+        TickOnly.check_scope(&fixture.config, scope),
+        Err(NeuronAdmissionError::Unavailable)
+    );
+}

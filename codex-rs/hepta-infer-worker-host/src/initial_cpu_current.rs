@@ -74,6 +74,8 @@ impl CurrentAdmission {
         if bytes != self.active.bytes {
             let fresh = CurrentInputs::read(&self.pointer, self.clock.clone())?;
             if fresh.inputs.runtime != *runtime
+                || fresh.inputs.evidence.objective_digest()
+                    != self.active.inputs.evidence.objective_digest()
                 || fresh.inputs.storage_binding() != self.storage_binding
                 || fresh.inputs.profile.model.path != self.model_source
                 || fresh.inputs.profile.owner_root != self.owner_root
@@ -100,6 +102,16 @@ impl CurrentAdmission {
 }
 
 impl NeuronAdmissionGuard for CurrentAdmission {
+    fn check_scope(
+        &mut self,
+        runtime: &NeuronRuntimeConfigV1,
+        scope: codex_hepta_neuron::JournalScope,
+    ) -> Result<(), NeuronAdmissionError> {
+        self.refresh(runtime)
+            .map_err(|_| NeuronAdmissionError::Unavailable)?;
+        self.active.admission.check_scope(runtime, scope)
+    }
+
     fn check(
         &mut self,
         runtime: &NeuronRuntimeConfigV1,

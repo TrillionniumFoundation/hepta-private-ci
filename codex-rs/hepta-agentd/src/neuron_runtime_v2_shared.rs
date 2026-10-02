@@ -419,6 +419,19 @@ where
         self.observe_locked(&mut locked)
     }
 
+    fn check_scope_control(&self) -> Result<(), AgentdNeuronControlErrorV2> {
+        let mut locked = self.lock_control()?;
+        let guarded = &mut *locked;
+        let config = guarded.owner.runtime.configuration();
+        let scope = guarded.owner.runtime.journal_scope();
+        guarded
+            .admission
+            .check_scope(config, scope)
+            .map_err(|error| {
+                AgentdNeuronControlErrorV2::Runtime(NeuronRuntimeV2Error::Admission(error))
+            })
+    }
+
     fn journal_scope_control(
         &self,
     ) -> Result<codex_hepta_agent_components::neuron::JournalScope, AgentdNeuronControlErrorV2>

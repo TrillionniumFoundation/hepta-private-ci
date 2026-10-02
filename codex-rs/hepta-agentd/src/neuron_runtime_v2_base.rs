@@ -281,6 +281,10 @@ where
 }
 
 trait ProductNeuronOwnerV2: Send + Sync {
+    fn check_scope_control(&self) -> Result<(), AgentdNeuronControlErrorV2> {
+        Err(AgentdNeuronControlErrorV2::GenerationConflict)
+    }
+
     fn current_tick_anchor(
         &self,
     ) -> Result<

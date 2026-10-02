@@ -12,6 +12,16 @@ use crate::sparse_tick;
 /// Host-owned live checks. Implementations must use authenticated current owners
 /// and enforce deadline/cancellation; a digest alone is not an admission grant.
 pub trait NeuronAdmissionGuard {
+    /// Revalidate an actual durable scope before lifecycle handoff. The default
+    /// refuses scope activation; legacy tick admission remains unchanged.
+    fn check_scope(
+        &mut self,
+        _config: &NeuronRuntimeConfigV1,
+        _scope: JournalScope,
+    ) -> Result<(), NeuronAdmissionError> {
+        Err(NeuronAdmissionError::Unavailable)
+    }
+
     fn check(
         &mut self,
         config: &NeuronRuntimeConfigV1,

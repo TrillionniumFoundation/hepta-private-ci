@@ -454,6 +454,19 @@ enum PayloadCheck {
 }
 
 impl NeuronAdmissionGuard for AgentdNeuronArtifactAdmissionV1 {
+    fn check_scope(
+        &mut self,
+        config: &NeuronRuntimeConfigV1,
+        scope: codex_hepta_agent_components::neuron::JournalScope,
+    ) -> Result<(), NeuronAdmissionError> {
+        if scope.scope_digest.is_zero()
+            || scope.objective_digest != self.selections.model.objective_digest
+        {
+            return Err(NeuronAdmissionError::BindingMismatch);
+        }
+        self.validate_current(config, PayloadCheck::AlreadyLoaded)
+    }
+
     fn check(
         &mut self,
         config: &NeuronRuntimeConfigV1,
