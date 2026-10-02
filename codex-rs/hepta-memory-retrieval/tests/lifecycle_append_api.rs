@@ -374,7 +374,7 @@ fn identity_and_frontier_mismatch_fail_before_storage() {
 fn quarantine_phase_requires_matching_typed_evidence() {
     let execution = identity("request-a");
     let next = record(
-        execution.clone(),
+        execution,
         RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome,
         7,
         1,
