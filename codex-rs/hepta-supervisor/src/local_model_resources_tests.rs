@@ -314,15 +314,22 @@ async fn original_owner_resource_route_checks_real_peer_and_exact_launch() -> an
                     .is_err()
                 );
             }
-            let result =
-                tokio::time::timeout(std::time::Duration::from_secs(2), issuer.exchange(stream))
-                    .await?;
+            let result = tokio::time::timeout(
+                std::time::Duration::from_secs(2),
+                issuer.exchange(stream, &super::super::Progress::new()),
+            )
+            .await?;
             assert_eq!(result.is_ok(), !(1..=4).contains(&case));
         }
         // Root's own process is not an enrolled workload or a substitute Agent.
         let _root_client = tokio::net::UnixStream::connect(temp.path().join("issuer")).await?;
         let (stream, _) = listener.accept().await?;
-        assert!(issuer.exchange(stream).await.is_err());
+        assert!(
+            issuer
+                .exchange(stream, &super::super::Progress::new())
+                .await
+                .is_err()
+        );
         Ok::<(), anyhow::Error>(())
     }
     .await;
