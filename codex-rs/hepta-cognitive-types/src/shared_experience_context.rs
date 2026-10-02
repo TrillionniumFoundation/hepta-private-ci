@@ -22,7 +22,9 @@ use crate::shared_experience::SharedExperienceUseGrantV2;
 use crate::shared_experience::SharedExperienceUseReceiptV2;
 use crate::wire::canonical_contract_digest_v1;
 
-const FINAL_USE_CONTEXT_DOMAIN_V2: &[u8] = b"hepta.shared-experience.final-use-context.v2\0";
+// Digest framing v3 binds the complete owner cut. This is independent of the
+// unchanged Shared Experience V2 DTO and frozen canonical wire/digest profiles.
+const FINAL_USE_CONTEXT_DOMAIN_V3: &[u8] = b"hepta.shared-experience.final-use-context.v3\0";
 
 impl SharedExperienceUseClassV2 {
     /// Stable protocol token. Never derive digest input from `Debug` output.
@@ -338,6 +340,10 @@ impl<'a> FinalSharedExperienceUseV2<'a> {
         self.receipt_digest
     }
 
+    /// Full contextual identity using `hepta.shared-experience.final-use-context.v3`.
+    /// Historical v2 context digests omitted three owner frontiers and must not
+    /// be interpreted as this complete owner-cut binding. Recompute from the
+    /// original checked observations; the V2 wire contracts are unchanged.
     #[must_use]
     pub const fn context_digest(&self) -> Digest32 {
         self.context_digest
@@ -354,13 +360,16 @@ fn compute_context_digest(
     publication_digest: Digest32,
     receipt_digest: Digest32,
 ) -> Digest32 {
-    let mut bytes = FINAL_USE_CONTEXT_DOMAIN_V2.to_vec();
+    let mut bytes = FINAL_USE_CONTEXT_DOMAIN_V3.to_vec();
     push_digest(&mut bytes, publication_digest);
     push_digest(&mut bytes, receipt_digest);
     push_text(&mut bytes, publication.source_kind.wire_token());
     push_text(&mut bytes, owner_cut.owner_id.as_str());
     push_u64(&mut bytes, owner_cut.owner_epoch);
     push_u64(&mut bytes, owner_cut.source_frontier);
+    push_u64(&mut bytes, owner_cut.memory_frontier);
+    push_u64(&mut bytes, owner_cut.learning_frontier);
+    push_u64(&mut bytes, owner_cut.deletion_frontier);
     push_u64(&mut bytes, owner_cut.revocation_frontier);
     push_digest(&mut bytes, owner_cut.schema_sha256.digest());
     push_digest(&mut bytes, owner_cut.policy_sha256.digest());

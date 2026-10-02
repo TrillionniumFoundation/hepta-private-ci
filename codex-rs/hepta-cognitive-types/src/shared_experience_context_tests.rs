@@ -256,3 +256,69 @@ fn final_use_proof_cannot_be_replayed_after_owner_cut_changes() {
     let error = must_err(proof.require_unchanged_owner_cut(&changed));
     assert_eq!(error.code, ContractErrorCodeV1::StateConflict);
 }
+
+#[test]
+fn final_use_context_digest_distinguishes_every_independently_valid_owner_frontier() {
+    let publication = must(Validated::new(publication()));
+    let receipt = must(Validated::new(receipt(publication.as_inner())));
+    let owner_cut = owner_cut();
+    let destination = id("scope:receiver");
+    let proof = must(FinalSharedExperienceUseV2::new(
+        &publication,
+        &receipt,
+        &owner_cut,
+        &destination,
+        500,
+    ));
+    for field in ["source", "memory", "learning", "deletion"] {
+        let mut changed = owner_cut.clone();
+        match field {
+            "source" => changed.source_frontier += 1,
+            "memory" => changed.memory_frontier += 1,
+            "learning" => changed.learning_frontier += 1,
+            "deletion" => changed.deletion_frontier += 1,
+            _ => unreachable!("fixture field"),
+        }
+        let changed_proof = must(FinalSharedExperienceUseV2::new(
+            &publication,
+            &receipt,
+            &changed,
+            &destination,
+            500,
+        ));
+        assert_ne!(
+            proof.context_digest(),
+            changed_proof.context_digest(),
+            "{field}"
+        );
+        assert_eq!(
+            proof.publication_digest(),
+            changed_proof.publication_digest()
+        );
+        assert_eq!(proof.receipt_digest(), changed_proof.receipt_digest());
+        assert_eq!(
+            must_err(proof.require_unchanged_owner_cut(&changed)).code,
+            ContractErrorCodeV1::StateConflict
+        );
+    }
+}
+
+#[test]
+fn final_use_context_v3_matches_independent_framing_vector() {
+    // Independently framed by qualification/cognitive-types-v2/verify_context_vector.py.
+    let publication = must(Validated::new(publication()));
+    let receipt = must(Validated::new(receipt(publication.as_inner())));
+    let owner_cut = owner_cut();
+    let destination = id("scope:receiver");
+    let proof = must(FinalSharedExperienceUseV2::new(
+        &publication,
+        &receipt,
+        &owner_cut,
+        &destination,
+        500,
+    ));
+    assert_eq!(
+        proof.context_digest().to_string(),
+        "a5bb8c3dd9f3e56f228e41c098b86a6c735c9a3753c495b828feca15325f6c1f"
+    );
+}

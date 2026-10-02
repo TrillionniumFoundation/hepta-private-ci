@@ -136,7 +136,7 @@ class ReceiptVerificationTests(unittest.TestCase):
                     with self.subTest(group=group, kind=kind, missing=key):
                         self.assert_resealed_change_rejected(
                             lambda r: r["checks"][0].pop(key), group, kind)
-        for version in (2, 3):
+        for version in (2, 3, 4):
             self.assert_resealed_change_rejected(lambda r: r.update(check_plan_version=version))
 
     def test_runner_refuses_to_seal_incomplete_process_capture(self):

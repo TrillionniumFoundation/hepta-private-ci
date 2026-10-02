@@ -17,7 +17,7 @@ from command_process import capture_command, closed_capture
 from evidence_inventory import collect_inventory, require_files, require_fresh_output
 
 SHA = re.compile(r"[0-9a-f]{40}")
-CHECK_PLAN_VERSION = 4
+CHECK_PLAN_VERSION = 5
 GROUPS = {
     "native": ["codex-hepta-cognitive-types"],
     "consumers": ["codex-hepta-cognitive-read", "codex-hepta-cognitive-store",
@@ -139,6 +139,7 @@ def command_plan(root: Path, group: str, output: Path) -> list[tuple[str, list[s
                  ("registry", [sys.executable, "scripts/hepta-hnmf.py", "verify"], root),
                  ("v1-vectors", [sys.executable, "qualification/cognitive-types-v1/verify_vectors.py"], root),
                  ("v2-vectors", [sys.executable, "qualification/cognitive-types-v2/verify_vectors.py"], root),
+                 ("context-v3-vector", [sys.executable, "qualification/cognitive-types-v2/verify_context_vector.py"], root),
                  ("bound-python", [sys.executable, "qualification/cognitive-types-v1/verify_bound_vector.py"], root),
                  ("bound-node", ["node", "qualification/cognitive-types-v1/verify_bound_vector.mjs"], root),
                  ("probe-build", ["cargo", "build", "--locked", "-p", "codex-hepta-cognitive-types",
@@ -155,7 +156,7 @@ def command_plan(root: Path, group: str, output: Path) -> list[tuple[str, list[s
                  ("archive-mutation-evidence", [sys.executable, "qualification/cognitive-types-v1/evidence_inventory.py",
                                                 "--archive", str(mutation_output),
                                                 "--destination", str(output / "mutations")], root),
-                 ("fuzz-build", ["cargo", "check", "--manifest-path",
+                 ("fuzz-build", ["cargo", "check", "--locked", "--manifest-path",
                                   "hepta-cognitive-types/fuzz/Cargo.toml", "--all-targets"], rust)]
     return plan
 

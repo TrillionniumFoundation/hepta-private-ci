@@ -364,3 +364,45 @@ paths and the union of node IDs in active nodes, path endpoints and contradictio
 Those are lower bounds on the claimed synapse and node counts. They do not prove
 actual owner execution or membership in an authenticated graph. Budget admission,
 source identity, freshness and final use remain the corresponding owner's work.
+
+### Complete shared-experience final-use context identity
+
+`FinalSharedExperienceUseV2::context_digest` uses digest framing
+`hepta.shared-experience.final-use-context.v3` (terminated by a zero byte).
+After the publication/receipt digests and source-kind token, it binds owner ID,
+owner epoch, source, memory, learning, deletion and revocation frontiers, schema
+and policy digests, destination, grant ID, use-class/disposition tokens and the
+trusted checked timestamp. Text uses an eight-byte big-endian byte length; every
+frontier/time uses eight-byte big-endian encoding; digests are their raw 32 bytes.
+
+Historical context framing v2 omitted the memory, learning and deletion
+frontiers. Two otherwise valid but distinct owner cuts could therefore share a
+context digest. Its full-value `require_unchanged_owner_cut` comparison already
+rejected drift, so this finding is an incomplete audit identity rather than a
+demonstrated authorization bypass. The corrected framing is explicitly v3;
+historical v2 context digests must not be relabelled as full-cut identities.
+Recompute from the original authenticated observations and retain the framing
+version beside any externally retained digest. This correction changes neither
+Shared Experience V2 DTOs nor the frozen/schema-bound V1 canonical profiles.
+
+The regression constructs independently valid cuts differing only in each
+source/memory/learning/deletion frontier and requires distinct context identities,
+unchanged publication/receipt identities and failed reuse of the original proof.
+The proof remains caller-supplied structural consistency, not owner authentication,
+revocation-set membership, or authority to deliver/train/adopt. No production
+caller of this proof was found in the reviewed candidate; the existing local
+Memory bridge and its separate gates are not promoted by this fix.
+
+The independent [361-byte v3 framing oracle](../../../qualification/cognitive-types-v2/verify_context_vector.py) and the native golden regression both pin context SHA-256 `a5bb8c3dd9f3e56f228e41c098b86a6c735c9a3753c495b828feca15325f6c1f`. The oracle alone is not native execution evidence.
+
+
+### Immutable fuzz dependency resolution
+
+The nested fuzz workspace retains its own generated `fuzz/Cargo.lock`. Without
+that file, the depth workflow fails before fuzz execution when protecting the
+lock, while the native qualification build generates untracked source and fails
+the clean-tree gate. The committed resolution and `fuzz-build --locked` remove
+that source-mutation path; a missing or stale lock remains a hard failure.
+Check-plan version 5 requires the locked build and independent v3 context vector.
+Historical version 4 receipts cannot satisfy this new command plan. Dependency
+pinning and reference-vector success do not establish a sustained fuzz campaign.

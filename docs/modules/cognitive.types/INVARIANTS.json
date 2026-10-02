@@ -241,6 +241,21 @@
         "clean-tree"
       ],
       "qualificationGroup": "depth-evidence"
+    },
+    {
+      "id": "CTYPE-SHARED-CONTEXT-CUT",
+      "obligation": "The final-use context digest binds every owner-cut field under explicit v3 digest framing; any later owner-cut drift rejects reuse. Neither the digest nor structural checks authenticate an owner.",
+      "source": [
+        "codex-rs/hepta-cognitive-types/src/shared_experience_context.rs"
+      ],
+      "tests": [
+        "codex-rs/hepta-cognitive-types/src/shared_experience_context_tests.rs",
+        "qualification/cognitive-types-v2/verify_context_vector.py"
+      ],
+      "checks": [
+        "package-tests"
+      ],
+      "qualificationGroup": "native"
     }
   ]
 }
