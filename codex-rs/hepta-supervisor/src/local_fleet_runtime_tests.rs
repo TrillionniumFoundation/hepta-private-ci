@@ -30,6 +30,9 @@ async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
     // The generated fixture needs a root-protected traversable ancestor;
     // the installed service parent deliberately admits only its workload GID.
     let fixture = tempfile::tempdir_in("/var/lib")?;
+    // The real non-Root workload executes the installed release below this
+    // protected ancestor; traversal must match the installed Fleet namespace.
+    std::fs::set_permissions(fixture.path(), std::fs::Permissions::from_mode(0o755))?;
     let cgroup = format!("hepta-runtime-native-{}", uuid::Uuid::new_v4().simple());
     let agent = AgentId::parse(uuid::Uuid::new_v4().to_string())?;
     let workspace = fixture.path().join("workspace");
