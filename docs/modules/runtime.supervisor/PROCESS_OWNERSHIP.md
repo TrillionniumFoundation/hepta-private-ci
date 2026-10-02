@@ -232,8 +232,10 @@ even when semantic preparation fails; a release hydration error cannot suppress
 that ownership attempt. Unreadable/undecodable lease bytes still cannot supply a
 process identity or authorize a signal.
 
-Constructor `prime_signed_recovery_denial` runs before these independent
-acquisition attempts. Its typed reads retain unresolved signed evidence as
+Constructor `prime_signed_recovery_denial` runs before idle hydration, Matrix
+budget normalization and these independent acquisition attempts. It consumes
+the same Agent-bound typed intent/transaction observations as pure durable
+validation, avoiding duplicate decode faults. These observations retain unresolved signed evidence as
 trusted RecoveryRequired state before any control or automatic release/restart
 replay. A Committed/RolledBack intent or the exact terminal transaction/release
 witness are recognized without false quarantine. This read does not publish,
@@ -241,6 +243,12 @@ CAS, adopt or signal; full later recovery and terminal acknowledgement still
 follow acquisition. Denial fences serving but retains both acquisition attempts,
 diagnostics, exact exit and cleanup. It blocks new main/Matrix restart claims
 and dispatch without erasing existing durable charges.
+Denied recovery still reports independent main admission, driver and catalog
+faults and Matrix admission, driver, catalog and public-binding faults. These
+pure checks do not assign serving metadata, perform CAS or replay control;
+each acquired owner has one containment attempt. Ownerless recovery retains
+current/previous catalog diagnostics and leaves future/expired budget bytes
+unchanged. An absent serving release caused by denial is not itself a mismatch.
 
 ## Deferred empty constructor hydration
 

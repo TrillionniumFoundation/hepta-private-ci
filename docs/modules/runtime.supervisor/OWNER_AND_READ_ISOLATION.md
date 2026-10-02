@@ -235,14 +235,22 @@ quarantine; a failed recovery does not advance the revision, and its successful
 exact retry advances once. Read projections, error payloads and signal delivery
 do not establish physical execution, authority acceptance or owner/lease cleanup.
 
-A constructor typed-read primer establishes unresolved signed denial before
-independent main/Matrix adoption, containment and automatic replay. An exact
+A constructor primer consumes the single typed intent/transaction observation
+from pure validation. It establishes unresolved signed denial before idle
+hydration, Matrix budget normalization, independent main/Matrix adoption,
+containment and automatic replay. An exact
 terminal transaction/release witness or Committed/RolledBack intent retains the
 existing terminal recovery path without false quarantine. The primer writes no journal,
 performs no CAS and acquires no process; full late recovery and terminal
 acknowledgement remain after independent acquisition. Trusted denial blocks
 new main and Matrix restart claims and replacement dispatch while retaining
 diagnostics, actual exit observation, exact cleanup and prior durable charges.
+Both future and expired Matrix budget bytes remain unchanged under denial.
+Independent main/Matrix admission and catalog/public-binding faults remain
+observable without serving metadata or release CAS. Ownerless slots still
+validate current and previous catalog releases through pure reads. Constructor
+containment is attempted once per acquired exact owner; denial alone does not
+create a binding fault.
 
 A Prepared intent without a release transaction remains an unsupported
 terminalization case. A legacy unsigned Prepared transaction with signed

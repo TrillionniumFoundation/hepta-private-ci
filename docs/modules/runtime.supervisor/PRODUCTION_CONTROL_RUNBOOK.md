@@ -118,14 +118,20 @@ Retain the original observation and the current control fence. Do not invent
 control revisions, epochs, lifecycle generations or SHA-256 values. Do not
 substitute a release name for immutable release-byte identity.
 
-On constructor recovery, typed signed evidence is read before independent
-main/Matrix adoption and automatic replay. Unresolved evidence establishes
+On constructor recovery, pure validation decodes and binds signed intent and
+release transaction once. The primer consumes those observations before idle
+hydration, Matrix budget normalization, independent main/Matrix adoption and
+automatic replay. Unresolved evidence establishes
 trusted RecoveryRequired denial; an exact proved terminal transaction/release
 witness or Committed/RolledBack intent follows the existing terminal path without
 false quarantine. This primer performs no CAS, durable publication or process action.
 The later full recovery and terminal acknowledgements still follow acquisition.
 Denial prevents new main/Matrix restart claims and dispatch, while retaining
 status diagnostics, actual exit observation, exact cleanup and prior charges.
+Independent admission, driver and catalog/public-binding faults remain visible
+without serving metadata, release CAS or control replay. Ownerless slots still
+validate current/previous catalog releases. Future and expired budget bytes
+remain unchanged; each exact owner receives one constructor containment attempt.
 
 ## 4. Recovery decision procedure
 
@@ -295,8 +301,10 @@ remains retryable. A main exit under that same-spawn deferred Stop/Drain cannot
 admit a new automatic replacement claim. Preserve both ownership and diagnostic
 evidence rather than interpreting a control acknowledgement as cleanup.
 The `6c6c051e` source count of 21 added Supervisor / 2 Fleet leaves and 77
-repair identities is historical; the 2026-10-02 combination repair inventory
-and its exact-source native evidence remain to be established.
+repair identities is historical. The current inventory is statically confirmed
+as 31 added Supervisor / 2 Fleet leaves, 88 common repair identities and five
+Fleet identities. Its own exact-source native evidence remains to be established;
+the two actual diagnostic failures at `5b71df96` remain failed historical results.
 
 ## 7. Candidate execution evidence
 

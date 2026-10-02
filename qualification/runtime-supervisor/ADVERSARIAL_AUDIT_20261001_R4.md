@@ -669,3 +669,57 @@ immutable sourceBase 和原 identity policy，增加 exact_blob 模式与
 随后单独进行六 native、两 deep 和增强六输入 Bazel 诊断。上述对象与
 源码检查不代替这一执行，也不建立 current-main merge、目标主机、独立
 验收、生产激活或发布资格。
+
+## 5b71 远端反例及继续修复
+
+`5b71df96f682765b01357ccf4af62f7b4917d02a` 是完成静态复核后发布的
+实际候选，不把它重标为成功。其 source／base deep 默认库各实际执行
+414 叶，412 PASS、两 FAIL、零 skip、零 retry；后续五组跳过。原三个
+时钟／健康失败及八个新增 mandatory 均在这两条默认库中逐名 PASS，
+84 个 mandatory 中 83 PASS、一个 FAIL。新失败为：
+
+- `new_corrupt_signed_witness_runs_fresh_validation_and_denies_recovery`：
+  signed codec 被先后重复读取，错误数实际二而原断言为一。
+- `process_recovery_fault_does_not_hide_signed_recovery_required`：
+  提前 signed denial 令 adopted main 在纯 catalog 检查前短路，已撤销
+  release 原应保留的 fault 被吞掉，实际零而原断言为一。
+
+全仓 docs source 实际 803 执行、801 PASS、两 ERROR，两个 traceback
+与 Lane B source／merge 同源：新增 Matrix 测试导航把 `file.rs::leaf`
+写入 test.path，而严格 canonical path 不接受冒号，truth 校验也要求
+实际文件。五个 operation 的十处 path 改为真实文件，kind 与命令中的
+exact leaf 不变；既有 validators 不放宽。真实 canonical_path 已检查
+全部 121 个 Supervisor 测试引用。之后暴露的 Agentd delegated-owner
+索引不闭合来自与 base 相同的 map／truth／guard，不宣称 Lane B 全绿。
+
+继续组合复核还确认，idle restore 会清空 expired Matrix 预算，或在墙钟
+rollback 时 normalize future 窗口。它必须位于完整 typed validation 与
+signed denial 之后；无 owner 时真实坏 persisted catalog 的纯诊断也必须
+保留。修复保留原两失败叶名字、断言和预算，并新增这些组合的实质回归。
+
+cargo-shear 的三份 Supervisor orphan 在 base 已缺声明链接；本轮机械
+publish_at 适配改变其 blob，不能说与 base 字节相同。它们已按 5b 原
+字节移入 history/unlinked-prototypes，显式 authoring CLI 仅在原事务中
+stage 恢复，历史 raw／manifests 不改。此整理没有编译其内嵌测试或实现
+跨 daemon witness／原子 recovery protocol，12／2／2 状态保持不变。
+
+[5b 增强 Bazel 实际收据](BAZEL_LOCK_DIAGNOSTIC_OBSERVATION_20261002_5B71DF96.json)
+核对官方 artifact 的 23 文件、六个 selected inputs、九个独立退出记录、
+before／after head／tree／parent、前 clean 与后 non-lock drift，21 项
+实际检查均通过；生成锁与已提交锁 byte-identical。该证据绑定 5b，
+不赋予后续 head 或 Fleet Bazel target 编译信用。诊断 push scope 补充
+Supervisor source 路径，使下一份修复候选取得自身精确执行收据。
+
+本次继续修复复用单次 Agent-bound signed intent／release transaction 读取，
+保持 main／Matrix／无 owner catalog 的独立纯诊断，并使 trusted denial
+先于 idle hydration／budget normalization；每个精确 owner 的 constructor
+containment 至多尝试一次。两个独立对抗审阅者在这一冻结范围未发现新
+具体反例；归档事务、CI exact identity guards 和五份指南也经独立只读
+复核。原两失败测试源码不改，新增三叶覆盖八种 signed 状态与 budget
+窗口组合、三种 Matrix binding 错误、两种 ownerless catalog 损坏。
+新源码共有 31 个 Supervisor／两个 Fleet 新增叶（相对 1f），88 个
+common repair／五个 Fleet 强制 exact identities；这是静态库存，不是
+新候选 PASS 收据。默认／qualification 的 scoped just fix、完整 just fmt
+及两组 own-crate strict Clippy 均实际通过；格式器的 46 个原 clean
+无关 Python 文件已从根目录精确恢复。遵循 AGENTS.md，没有在 fix／fmt
+后本地重跑测试。新候选的六 native／两 deep 及增强锁诊断仍须独立执行。

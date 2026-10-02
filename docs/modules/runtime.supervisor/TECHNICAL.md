@@ -56,6 +56,15 @@ implementation remains `src/supervisor.rs`; daemon composition lives in
 `src/daemon.rs`, `src/main.rs` and the bounded daemon submodules. Source
 presence is navigation evidence only.
 
+Three unlinked lifecycle prototypes are preserved byte-for-byte under
+`qualification/runtime-supervisor/history/unlinked-prototypes/`: ordinary
+mutation journaling, cross-daemon exit witnesses and atomic recovery
+observations. They previously sat under `src/` without module declarations or
+Cargo targets; the native library did not compile their embedded tests. They
+are historical source-authoring inputs, with restoration confined to the
+explicit authoring CLI's existing transaction. Their archive does not provide
+a supported runtime codec or close the corresponding capability gaps.
+
 Three tracked files have different roles:
 
 1. `IMPLEMENTATION_MAP.json` maps registered operations to source and test paths.
@@ -625,9 +634,11 @@ Do not edit or delete journals to make readiness pass; restoration of independen
 validated durable evidence requires operational recovery, followed by a fresh
 Supervisor recovery. No ordinary API clears this denial.
 
-Before independent main and Matrix ownership acquisition, constructor
-`prime_signed_recovery_denial` performs typed signed-intent and transaction reads
-against the captured Agent record. It establishes trusted in-memory
+Before independent main and Matrix ownership acquisition, constructor pure
+validation decodes each signed intent and release transaction once and checks
+its Agent binding. `prime_signed_recovery_denial` consumes those same typed
+observations, preserving independent codec faults without reporting a second
+decode failure. It establishes trusted in-memory
 RecoveryRequired denial for unresolved evidence before control, release or
 restart replay can run. A Committed/RolledBack intent or an exact matching
 terminal transaction plus release-state witness follows the existing terminal path;
@@ -639,6 +650,14 @@ denial permits containment of acquired exact handles, diagnostics, observed
 exit and exact cleanup, while suppressing new main and Matrix restart claims
 and replacement dispatch. It neither erases prior durable charges nor supplies
 missing transaction or authority evidence.
+
+The primer also precedes idle release hydration and Matrix budget normalization.
+Denied slots preserve future and expired budget bytes. An ownerless slot still
+validates current and previous catalog releases without assigning serving
+metadata. Acquired main and Matrix owners retain independent admission, driver,
+catalog and public-binding diagnostics; those checks neither replay control nor
+perform release CAS. Each exact owner receives at most one constructor
+containment attempt. Denial itself is not a catalog or Matrix binding failure.
 
 Constructor hydration has a narrow deferred observation for a newly registered,
 Stopped generation-zero Agent whose release state is also generation zero with
@@ -846,7 +865,7 @@ The following is source navigation, not a pass receipt:
 | Signed mutation | verifier and publication-effect boundary | `src/signed_authority.rs`, `src/supervisor.rs`, `src/signed_effect.rs`, `src/authority_bundle.rs` | `tests/authority_distribution.rs`, `src/signed_effect_boundary_tests.rs`, `src/authority_bundle_open_tests.rs` |
 | Signed recovery | decision verification, indeterminate acknowledgement and exact durable retry | `src/signed_authority.rs`, `src/supervisor.rs`, `src/signed_effect.rs`, `src/release.rs` | `tests/authority_recovery.rs`, `src/release_signed_recovery_tests.rs` |
 | Daemon ownership | lock/socket owner | `src/daemon_owner.rs`, `src/daemon.rs` | `tests/daemon_product.rs` |
-| Constructor recovery | early typed signed denial, retained ownership and final whole-Fleet consistency | `src/constructor_recovery.rs`, `src/signed_constructor_recovery.rs`, `src/recovery_denial.rs`, `src/constructor_hydration.rs`, `src/recovery.rs` | `src/constructor_recovery_tests.rs`, `src/constructor_hydration_tests.rs`, `src/constructor_hydration_recovery_tests.rs` |
+| Constructor recovery | single-read signed preparation, independent diagnostics, retained ownership and final whole-Fleet consistency | `src/constructor_recovery.rs`, `src/signed_constructor_recovery.rs`, `src/recovery_denial.rs`, `src/constructor_hydration.rs`, `src/recovery.rs`, `src/matrix_recovery_admission.rs` | `src/constructor_recovery_tests.rs`, `src/constructor_hydration_tests.rs`, `src/constructor_hydration_recovery_tests.rs`, `src/signed_constructor_preparation_tests.rs` |
 | Read projection | immutable bounded metadata view | `src/daemon_read_view.rs`, `src/supervisor.rs` | `src/daemon_read_view_tests.rs`, `src/supervisor_snapshot_tests.rs` |
 | Per-Agent status reuse | fresh complete epoch/record/runtime comparison | `src/daemon_read_projection.rs`, `src/daemon_read_view.rs` | `src/daemon_read_projection_tests.rs` |
 | Tick projection coalescing | 100 ms projection interval | `src/daemon_execution.rs` | `src/daemon_execution_tests.rs` |
@@ -908,9 +927,11 @@ For the current candidate:
 This document grants no model, provider, tool, network, filesystem, secret,
 operator-acceptance, promotion, activation or release authority.
 
-The final composition-repair source inventory adds seven leaves after the 6c
-checkpoint: two Matrix/deferred-control and five signed-constructor cases.
-It therefore has 28 new Supervisor and two new Fleet leaves since 1f111388,
-84 exact common repair identities and five Fleet identities. This is a static
+The 5b71 checkpoint had 28 new Supervisor leaves and 84 exact common repair
+identities. Its own remote execution exposed two diagnostic failures; those
+results remain failed. The subsequent repair adds three constructor-preparation
+leaves and makes the existing process-recovery diagnostic leaf mandatory too.
+The current source therefore has 31 new Supervisor and two new Fleet leaves
+since 1f111388, 88 exact common repair identities and five Fleet identities. This is a static
 requirement, confirmed against the real test modules and receipt rejection
 guards; native results must come from its own final candidate head.

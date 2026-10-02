@@ -62,7 +62,7 @@ One physical codec in `restart_journal.rs` owns the bounded, digest-protected sc
 - Main state persists its window origin, attempts, pending flag and `next_eligible_unix_ms`. Recovery converts the original eligibility into the remaining delay and reconciles the exact lineage before dispatch. Completion or cancellation clears pending without refunding attempts; ordinary Start and release changes do not reset the main window.
 - Matrix persists attempts and window origin but no next-eligible timestamp. Recovery conservatively reapplies the full backoff for the retained attempt rather than accelerating its retry. The no-Matrix-command clear affects only that companion domain and retries a failed persistence acknowledgement.
 - The shared record is written to a same-directory staging file, file-synchronized, and atomically published with directory durability acknowledgement. Claim or admission failure cannot authorize a spawn without the required durable witnesses.
-- Main wall-clock rollback rejects budget validation and remains fail-closed. Matrix rollback restores an exhausted window and durably normalizes that state before adoption. Neither path grants additional attempts.
+- Main wall-clock rollback rejects budget validation and remains fail-closed. Without trusted recovery denial, Matrix rollback restores an exhausted window and durably normalizes that state before adoption. Under denial, future and expired Matrix budget bytes remain unchanged. Neither path grants additional attempts.
 - Damaged or ambiguous records deny continuation; source recovery and its pending state must not be rewritten by an operator to create a fresh budget.
 
 The restart-attempt count and main pending eligibility therefore survive supervisord process restart. Durable pending state is not proof that a replacement may launch: exact process ownership, lineage, control-intent cancellation and release admission must still permit continuation. Target-host SIGKILL/fault-injection evidence remains required before claiming deployment qualification.
@@ -126,14 +126,21 @@ unsigned automatic Drain or spawn, and its missing grant/epoch binding cannot
 support the current signed terminalization checks. This requires a separately
 versioned authorized protocol too, rather than an unsigned downgrade.
 
-Constructor `prime_signed_recovery_denial` reads typed intent/transaction evidence
-before independent main and Matrix acquisition or automatic replay. It retains
+Constructor `prime_signed_recovery_denial` consumes the Agent-bound typed
+intent/transaction observations from one pure validation decode, before idle
+hydration, budget normalization, independent main and Matrix acquisition or
+automatic replay. It retains
 unresolved intent as trusted RecoveryRequired state, while a Committed/RolledBack
 intent or proved exact terminal transaction/release witness retains the
 existing terminal path. The primer performs no durable write, CAS or process
 operation. Later complete recovery and terminal durability acknowledgement stay
 after acquisition; exact adopted handles can still be contained, observed and
 cleaned up without admitting new main/Matrix restart claims.
+Independent owner admission, driver and catalog/public-binding faults are still
+reported through pure checks; denied recovery does not assign serving metadata
+or perform release CAS. Ownerless recovery still checks current/previous catalog
+releases. Denial does not manufacture a Matrix mismatch, and each acquired
+exact owner receives at most one constructor containment attempt.
 
 ### 3.1 Inspect
 
@@ -277,9 +284,11 @@ The 256-Agent test emits one machine-readable JSON line with tick duration, cach
 
 The production caller can consume a SHA-256-pinned public authority bundle and the qualification suite covers signer rotation, wrong signer, stale grant, stale daemon-authority epoch and current Fleet revocation. No signing key enters supervisord and no release selection is self-issued. Deployed authority distribution, target-host timing receipts and independent operational acceptance remain external gates.
 
-The final composition-repair source inventory adds seven leaves after the 6c
-checkpoint: two Matrix/deferred-control and five signed-constructor cases.
-It therefore has 28 new Supervisor and two new Fleet leaves since 1f111388,
-84 exact common repair identities and five Fleet identities. This is a static
+The 5b71 checkpoint had 28 new Supervisor leaves and 84 exact common repair
+identities. Its own remote execution exposed two diagnostic failures; those
+results remain failed. The subsequent repair adds three constructor-preparation
+leaves and makes the existing process-recovery diagnostic leaf mandatory too.
+The current source therefore has 31 new Supervisor and two new Fleet leaves
+since 1f111388, 88 exact common repair identities and five Fleet identities. This is a static
 requirement, confirmed against the real test modules and receipt rejection
 guards; native results must come from its own final candidate head.
