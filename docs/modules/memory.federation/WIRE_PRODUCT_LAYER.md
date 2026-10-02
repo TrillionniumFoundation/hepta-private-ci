@@ -64,6 +64,11 @@ this is a protocol/adapter candidate, not usable cross-host product recall.
 - Outbound query, response and cancellation-reply packet lengths are checked
   against the selected product profile before pending/terminal/replay state
   commits. Rejection preserves the prior durable snapshot and replay slots.
+- Outgoing query deadlines and response-body expiry must fit the actual signed
+  frame lifetime, including a shorter directional signing-key expiry. Rejection
+  occurs before pending/terminal persistence; the bridge does not silently
+  rewrite canonical query or response digests. Equality at the horizon is valid
+  while completion remains strictly before expiry.
 - An owner response already expired at completion is rejected before terminal
   persistence. Response shape and digest validation performed by body decoding
   is reused by client preflight.

@@ -196,6 +196,11 @@ where
             result,
             now_unix_ms,
             |frame| {
+                let sealed =
+                    decode_untrusted_frame(frame).map_err(|_| crate::FederationHostError::Codec)?;
+                if response.expires_unix_ms > sealed.expires_unix_ms {
+                    return Err(crate::FederationHostError::OutboundHorizonRejected);
+                }
                 require_profile_packet_bound(frame, &body, &self.profile)
                     .map_err(|_| crate::FederationHostError::OutboundFrameRejected)
             },
@@ -273,6 +278,11 @@ where
             now_unix_ms,
             query.deadline_unix_ms,
             |frame| {
+                let sealed = decode_untrusted_frame(frame)
+                    .map_err(|_| crate::FederationClientError::Codec)?;
+                if query.deadline_unix_ms > sealed.expires_unix_ms {
+                    return Err(crate::FederationClientError::OutboundHorizonRejected);
+                }
                 require_profile_packet_bound(frame, &body, &self.profile)
                     .map_err(|_| crate::FederationClientError::OutboundFrameRejected)
             },

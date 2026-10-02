@@ -1,5 +1,6 @@
 mod adapter;
 mod atomicity;
+mod horizon;
 
 use codex_hepta_memory_federation::FederatedCompletenessV2;
 use codex_hepta_memory_federation::FederatedEvidenceItemV2;

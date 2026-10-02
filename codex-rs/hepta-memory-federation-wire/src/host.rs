@@ -502,6 +502,7 @@ where
 pub enum FederationHostError {
     Codec,
     OutboundFrameRejected,
+    OutboundHorizonRejected,
     InvalidOutboundCredential,
     MissingOutboundCredential,
     PeerCapacityExhausted,
@@ -521,6 +522,9 @@ impl fmt::Display for FederationHostError {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
             Self::Codec => formatter.write_str("authenticated federation codec rejected the frame"),
+            Self::OutboundHorizonRejected => {
+                formatter.write_str("outbound product body exceeds the signed frame lifetime")
+            }
             Self::OutboundFrameRejected => {
                 formatter.write_str("outbound federation frame exceeds the product packet profile")
             }
