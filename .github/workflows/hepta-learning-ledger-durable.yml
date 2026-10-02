@@ -10,7 +10,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: hepta-learning-ledger-durable-${{ github.event.pull_request.number }}
+  group: hepta-learning-ledger-durable-${{ github.event.pull_request.number || github.ref }}
   cancel-in-progress: true
 
 jobs:
@@ -23,11 +23,18 @@ jobs:
       matrix:
         lane: [source-head, synthetic-merge]
     env:
-      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       CARGO_NET_GIT_FETCH_WITH_CLI: "true"
     steps:
+      - name: Record non-PR merge lane as not applicable
+        if: matrix.lane == 'synthetic-merge' && github.event_name != 'pull_request'
+        shell: bash
+        run: |
+          printf '%s\n' 'SKIP_NOT_APPLICABLE: no PR base; no merge qualification executed or claimed.' >> "$GITHUB_STEP_SUMMARY"
+
       - name: Check out exact source without credentials
+        if: matrix.lane == 'source-head' || github.event_name == 'pull_request'
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
           ref: ${{ env.SOURCE_SHA }}
@@ -35,6 +42,7 @@ jobs:
           fetch-depth: 0
 
       - name: Bind source and optional synthetic merge
+        if: matrix.lane == 'source-head' || github.event_name == 'pull_request'
         shell: bash
         run: |
           set -euo pipefail
@@ -51,19 +59,23 @@ jobs:
           git rev-parse HEAD HEAD^{tree}
 
       - name: Install pinned repository test tools
+        if: matrix.lane == 'source-head' || github.event_name == 'pull_request'
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
 
       - name: Locked all-target compilation
+        if: matrix.lane == 'source-head' || github.event_name == 'pull_request'
         working-directory: codex-rs
         run: cargo check --locked -p codex-hepta-learning-ledger --all-targets
 
       - name: Regression tests
+        if: matrix.lane == 'source-head' || github.event_name == 'pull_request'
         working-directory: codex-rs
         run: just test --locked -p codex-hepta-learning-ledger
 
       - name: Canonical evaluated shadow and witnessed ledger
+        if: matrix.lane == 'source-head' || github.event_name == 'pull_request'
         working-directory: codex-rs
         run: |
           set -euo pipefail
@@ -72,16 +84,17 @@ jobs:
           cargo clippy --locked -p codex-hepta-intelligence --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Strict lint
+        if: matrix.lane == 'source-head' || github.event_name == 'pull_request'
         working-directory: codex-rs
         run: cargo clippy --locked -p codex-hepta-learning-ledger --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Formatting check without source mutation
-        if: always()
+        if: always() && (matrix.lane == 'source-head' || github.event_name == 'pull_request')
         working-directory: codex-rs
         run: cargo fmt --package codex-hepta-learning-ledger --package codex-hepta-intelligence -- --check
 
       - name: Preserve exact source state
-        if: always()
+        if: always() && (matrix.lane == 'source-head' || github.event_name == 'pull_request')
         shell: bash
         run: |
           set -euo pipefail

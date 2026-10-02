@@ -225,3 +225,24 @@ still do not prove physical power-loss behavior, independent acceptance,
 longitudinal efficacy or hostile-writer resistance.
 
 The consolidated writer retains root-signed live distribution rotation through `LedgerWriter::rotate_trust`; failed root/signature/monotonicity checks preserve the current distribution. Raw durable append is crate-private, and only the explicit `qualification-legacy-write` feature exposes historical fixture writes. `measure_ledger_recovery_work` is replay-validated capacity accounting, not a target-host latency or efficacy claim.
+
+## Dataset current-use and branch compatibility audit
+
+The [2026-10-02 audit](AUDIT_20261002.md) records the exact reviewed integration
+candidate, red-before-green signed regressions, local checks and unclosed product
+boundaries. Credit and freeze admission must bind the current signer objective.
+Dataset final use requires live root distribution authority, the same objective,
+an actual witnessed canonical prefix, and active source rows within that prefix.
+Freeze cannot publish a dataset while a ledger tail awaits independent witness
+reconciliation. Older witnessed datasets can remain readable during an unrelated
+later one-event lag; exact retry reconciles the tail without another ledger row.
+
+`DatasetSnapshotReceiptV3` remains metadata-only, not proof of signed issuance or
+complete source selection. Signed consumer paths must retain freeze evidence and
+compare the owner's full re-derived receipt. Prefix validation uses existing
+sequence/digest indexes; it does not add full-history replay to final use.
+
+Do not combine this source's tag-10 `RetrievalPrepared` with draft #1315's tag-10
+publication intent without a coordinated persisted-format migration. Both use the
+same event digest domain and `HEPTLR01`/`HEPTLS02` envelopes; the differing event
+names do not supply a version discriminator. Preserve history and witness anchors.

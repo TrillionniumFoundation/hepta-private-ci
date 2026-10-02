@@ -1040,3 +1040,6 @@ mod growth;
 mod active_trust_tests;
 #[path = "production_retrieval_preparation_tests.rs"]
 mod retrieval_preparation;
+
+#[path = "production_binding_audit_tests.rs"]
+mod binding_audit_tests;
