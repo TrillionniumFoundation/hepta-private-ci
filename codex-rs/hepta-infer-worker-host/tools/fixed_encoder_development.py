@@ -125,6 +125,27 @@ def validate_service(service, allow_root=False, allow_credential_drop=False):
             raise ValueError("fixed Root producer credential-dropping declaration")
 
 
+def command_declaration(value):
+    # systemd's ExecStart display adds runtime status after the immutable
+    # executable/argv/ignore_errors fields. Lifecycle is checked separately
+    # against current MainPID and the exact kernel lifetime, never this text.
+    head, separator, tail = value.rpartition(" ; start_time=")
+    if not separator:
+        return value
+    if (
+        not head.startswith("{ path=")
+        or head.count("{ path=") != 1
+        or " ; argv[]=" not in head
+        or not head.endswith((" ; ignore_errors=no", " ; ignore_errors=yes"))
+        or not re.fullmatch(
+            r"\[[^\]\n]*\] ; stop_time=\[[^\]\n]*\] ; pid=[0-9]+ ; code=(?:\(null\)|[A-Za-z_]+) ; status=[0-9]+/[0-9]+ \}",
+            tail,
+        )
+    ):
+        raise ValueError("unknown service command/status encoding")
+    return head + " }"
+
+
 def service_properties(systemctl, service, deadline_ns):
     try:
         result = subprocess.run(
@@ -155,13 +176,14 @@ def service_properties(systemctl, service, deadline_ns):
     expected = {
         "Id": service["unit_name"],
         "FragmentPath": service["unit_source"]["path"],
-        "ExecStart": service["exec_start"],
+        "ExecStart": command_declaration(service["exec_start"]),
         "User": service["user"],
         "Group": service["group"],
         "MainPID": str(service["main_pid"]),
         "ControlGroup": service["cgroup"],
         "Delegate": "no",
     }
+    properties["ExecStart"] = command_declaration(properties.get("ExecStart", ""))
     if properties != expected:
         raise ValueError("service differs from the exact Root registration")
 

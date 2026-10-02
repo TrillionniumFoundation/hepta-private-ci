@@ -128,6 +128,25 @@ def observation(_, service, _deadline):
 
 
 class DevelopmentTests(unittest.TestCase):
+    def test_command_comparison_keeps_exact_argv_and_checks_runtime_separately(self):
+        prefix = "{ path=/usr/bin/setpriv ; argv[]=/usr/bin/setpriv --reuid=1000 --clear-groups ; ignore_errors=no"
+        before = prefix + " ; start_time=[n/a] ; stop_time=[n/a] ; pid=0 ; code=(null) ; status=0/0 }"
+        after = (
+            prefix
+            + " ; start_time=[Fri 2026-10-02 18:01:35 CST] ; stop_time=[n/a] ; pid=42 ; code=(null) ; status=0/0 }"
+        )
+        self.assertEqual(dev.command_declaration(before), dev.command_declaration(after))
+        self.assertNotEqual(
+            dev.command_declaration(before), dev.command_declaration(after.replace("--clear-groups", "--keep-groups"))
+        )
+        for changed in [
+            after + " extra",
+            after.replace(" ; pid=42", " ; surprise=42"),
+            after.replace("{ path=", "{ path={ path="),
+        ]:
+            with self.assertRaises(ValueError):
+                dev.command_declaration(changed)
+
     def test_late_registered_service_derives_peer_without_a_future_pid(self):
         config, pairs, request = fixture()
         batch = config["public_development"]["batches"][0]
