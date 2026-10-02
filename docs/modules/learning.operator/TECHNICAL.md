@@ -128,6 +128,18 @@ exercises evidence, freeze, fit, persistence, reload, a later generation and
 withdrawal. This is a deterministic table baseline, not a Laya backend, general
 Bellman solver, causal policy-improvement proof or deployment selection.
 
+The Agentd shared-replay host requires `with_current_artifacts` before loading or
+predicting with a candidate. The source opens the original protected read-only
+artifact owner on every use; the caller's registry remains the expected immutable
+manifest. The complete manifest must match an eligible authenticated CURRENT, and
+its use window must remain valid after loading or prediction. Missing, unreadable,
+withdrawn, changed or expired CURRENT rejects without a cached fallback. Candidate
+training still uses the original Memory sharing and Ledger gates. The
+[shared-replay integration case](../../../codex-rs/hepta-agentd/src/shared_terminal_cell_current_tests.rs)
+keeps an old eligible caller snapshot and loaded model while the separate CURRENT
+withdraws the artifact; both loading and prediction reject. Its signed unit view
+does not qualify an installed protected owner or grant deployment authority.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
