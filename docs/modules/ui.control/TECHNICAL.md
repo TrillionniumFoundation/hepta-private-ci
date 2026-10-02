@@ -1,26 +1,12 @@
 # ui.control technical development guide
 
-## Chat-first product correction (2026-10-02)
-
-This module's runtime console is a secondary tab of the shared Rust conversation
-application, not the product landing screen. The normative development contract is
-`apps/hepta-ui-shared/DEVELOPMENT.md`; shared navigation/drafts/tokens are in `chat.rs`,
-and session/generation-bound messaging DTOs in `chat_transport.rs`. Browser views and
-interactions are Rust WASM; native uses the same design contract through its Rust host.
-
-Earlier console screenshots and source-bound receipts remain historical evidence only.
-The new chat surfaces need their own exact-source browser/native visual and backend
-qualification. The browser HTTP deployment must compose the authenticated Agentd chat
-adapter; a fixture response is not evidence of deployed messaging capability.
-
-
 > Generated from `qualification/ui-control/UI_CONTROL_MANIFEST.json`. Edit the manifest or generator, not this file.
 
 ## 1. Scope and current truth
 
-`ui.control` is an authority-free runtime-control client and browser console. It owns presentation state, authenticated session metadata, bounded local recovery records, and user interaction. Runtime owners retain authorization, durable operation identity, mutation authority, and terminal facts.
+`ui.control` is a Rust conversation workspace with an authority-free runtime console as a secondary tab. The normative cross-host design is `apps/hepta-ui-shared/DEVELOPMENT.md`; both hosts consume the same Rust navigation, draft state, tokens and transport contract. Historical console screenshots do not qualify this chat redesign. The authenticated HTTP host composition must be independently bound and qualified; test fixtures are not deployed messaging capability. It owns presentation state, authenticated session metadata, bounded local recovery records, and user interaction. Runtime owners retain authorization, durable operation identity, mutation authority, and terminal facts.
 
-The active convergence branch is `work/ui-control-rust-20261002`. The repository baseline used to start this convergence is `a126987b84737dbc2ee2592442a314117bddb4a2` / tree `a22fd0074c45ae6f3cef2092cd6e273bf9c26c30`. Tracked documentation never self-certifies its own final commit; exact-head identity and outcomes are emitted by CI in `hepta.ui-control.qualification-receipt.v2`.
+The active convergence branch is `work/ui-chat-first-20261002`. The repository baseline used to start this convergence is `a126987b84737dbc2ee2592442a314117bddb4a2` / tree `a22fd0074c45ae6f3cef2092cd6e273bf9c26c30`. Tracked documentation never self-certifies its own final commit; exact-head identity and outcomes are emitted by CI in `hepta.ui-control.qualification-receipt.v2`.
 
 | Dimension | Current state |
 |---|---|
@@ -37,9 +23,13 @@ The active convergence branch is `work/ui-control-rust-20261002`. The repository
 | `exactHeadQualification` | `required_and_derived_by_ci_not_committed` |
 | `independentAcceptance` | `absent` |
 | `releaseAuthorization` | `absent` |
+| `productNavigation` | `chat_primary_console_secondary_shared_rust_contract` |
+| `messaging` | `typed_authenticated_adapter_implemented_production_composition_unqualified` |
+| `chatQualification` | `hosted_initial_accessibility_and_navigation_failures_corrected_requalification_pending` |
 
 ## 2. Repository layout
 
+- `apps/hepta-ui-shared/`: canonical cross-host conversation state, tokens, transport DTOs and development contract.
 - `apps/hepta-control-ui/rust/`: canonical Rust controller, same-origin HTTP/recovery adapters and semantic DOM browser host.
 - `apps/hepta-control-ui/src/`: legacy Node compatibility and differential-reference APIs, excluded from the browser artifact.
 - `apps/hepta-control-ui/web/`: semantic HTML/CSS browser shell.

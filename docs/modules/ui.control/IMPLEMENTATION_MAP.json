@@ -12,7 +12,8 @@
     "tree": "5697a2882cbe80eb47db6d7c5bf1ec6df8ed73ec"
   },
   "observedSourcePaths": [
-    "apps/hepta-control-ui"
+    "apps/hepta-control-ui",
+    "apps/hepta-ui-shared"
   ],
   "sourceObjects": [
     {
@@ -46,12 +47,14 @@
   ],
   "laneId": "LANE-B-RUNTIME",
   "module": "ui.control",
-  "sourceMaturity": "browser_console_candidate",
+  "sourceMaturity": "shared_rust_chat_workspace_candidate",
   "declaredRoots": [
-    "apps/hepta-control-ui"
+    "apps/hepta-control-ui",
+    "apps/hepta-ui-shared"
   ],
   "resolvedRoots": [
-    "apps/hepta-control-ui"
+    "apps/hepta-control-ui",
+    "apps/hepta-ui-shared"
   ],
   "statusManifest": "qualification/ui-control/UI_CONTROL_MANIFEST.json",
   "currentStatus": {
@@ -67,7 +70,10 @@
     "serverIdempotency": "contract_defined_backend_enforcement_unobserved",
     "exactHeadQualification": "required_and_derived_by_ci_not_committed",
     "independentAcceptance": "absent",
-    "releaseAuthorization": "absent"
+    "releaseAuthorization": "absent",
+    "productNavigation": "chat_primary_console_secondary_shared_rust_contract",
+    "messaging": "typed_authenticated_adapter_implemented_production_composition_unqualified",
+    "chatQualification": "hosted_initial_accessibility_and_navigation_failures_corrected_requalification_pending"
   },
   "evidenceSemantics": {
     "observedOutcome": "A concrete check ran and emitted a pass or failure observation for one exact subject. A later failure does not erase an earlier observation.",
@@ -256,6 +262,7 @@
   "deputy": "accessibility",
   "technicalGuide": "docs/modules/ui.control/TECHNICAL.md",
   "sourceRoot": [
-    "apps/hepta-control-ui"
+    "apps/hepta-control-ui",
+    "apps/hepta-ui-shared"
   ]
 }

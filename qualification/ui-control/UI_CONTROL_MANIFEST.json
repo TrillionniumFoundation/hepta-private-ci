@@ -5,7 +5,7 @@
   "laneId": "LANE-B-RUNTIME",
   "owner": "ui-platform",
   "deputy": "accessibility",
-  "authoritativeDevelopmentBranch": "work/ui-control-rust-20261002",
+  "authoritativeDevelopmentBranch": "work/ui-chat-first-20261002",
   "baseline": {
     "commit": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "tree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30"
@@ -15,7 +15,8 @@
     "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
   "sourceRoots": [
-    "apps/hepta-control-ui"
+    "apps/hepta-control-ui",
+    "apps/hepta-ui-shared"
   ],
   "status": {
     "clientCore": "rust_controller_with_legacy_node_reference_api",
@@ -30,7 +31,10 @@
     "serverIdempotency": "contract_defined_backend_enforcement_unobserved",
     "exactHeadQualification": "required_and_derived_by_ci_not_committed",
     "independentAcceptance": "absent",
-    "releaseAuthorization": "absent"
+    "releaseAuthorization": "absent",
+    "productNavigation": "chat_primary_console_secondary_shared_rust_contract",
+    "messaging": "typed_authenticated_adapter_implemented_production_composition_unqualified",
+    "chatQualification": "hosted_initial_accessibility_and_navigation_failures_corrected_requalification_pending"
   },
   "evidenceSemantics": {
     "observedOutcome": "A concrete check ran and emitted a pass or failure observation for one exact subject. A later failure does not erase an earlier observation.",
@@ -224,5 +228,6 @@
     "SameOriginHttpTransport",
     "SessionProvider",
     "createControlConsole"
-  ]
+  ],
+  "sourceMaturity": "shared_rust_chat_workspace_candidate"
 }
