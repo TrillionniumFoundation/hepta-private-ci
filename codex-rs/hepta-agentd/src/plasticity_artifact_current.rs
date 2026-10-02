@@ -133,6 +133,8 @@ pub(crate) struct FrozenPlasticityArtifactsV1 {
     provider: Arc<dyn PlasticityCurrentArtifactsV1>,
     receipt: RegistrySnapshotReceipt,
     accepted_trust: Option<Digest32>,
+    eligible_artifacts: Vec<StableId>,
+    requires_full_admission: bool,
 }
 
 impl FrozenPlasticityArtifactsV1 {
@@ -155,6 +157,19 @@ impl FrozenPlasticityArtifactsV1 {
             provider,
             receipt,
             accepted_trust: None,
+            eligible_artifacts: artifacts
+                .records()
+                .iter()
+                .filter_map(|record| match &record.event {
+                    codex_hepta_learning_artifacts::ArtifactEvent::Register {
+                        manifest, ..
+                    } if artifacts.is_eligible(&manifest.artifact_id) => {
+                        Some(manifest.artifact_id.clone())
+                    }
+                    _ => None,
+                })
+                .collect(),
+            requires_full_admission: false,
         })
     }
 
@@ -175,6 +190,21 @@ impl FrozenPlasticityArtifactsV1 {
                     .to_string(),
             ));
         }
+        // Full provenance is time-dependent even when the signed registry
+        // receipt stays unchanged. Never downgrade a previously strict view.
+        let full = current.verified_at().is_some();
+        if self.requires_full_admission && !full
+            || full && current.verified_at() != Some(now)
+            || full
+                && self.eligible_artifacts.iter().any(|artifact| {
+                    current.full_admission(artifact).is_none() || !current.is_eligible(artifact)
+                })
+        {
+            return Err(AgentdError::GenerationFenced(
+                "plasticity full artifact provenance expired, changed or became unavailable; rebootstrap required".to_string(),
+            ));
+        }
+        self.requires_full_admission |= full;
         self.accepted_trust = Some(current.trust_digest());
         Ok(())
     }
