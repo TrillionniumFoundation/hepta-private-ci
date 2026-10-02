@@ -526,9 +526,19 @@ pub use initial_neuron_operational_reader::inspect_initial_neuron_operational_ev
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod operational_model_lease_gguf_v2;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_model_lease_host_v2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod operational_model_lease_material_v2;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod operational_model_lease_policy_v2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_model_lease_reader_v2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_model_lease_host_v2::run_operational_model_lease_evaluator_v2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_model_lease_reader_v2::VerifiedOperationalModelLeaseV2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_model_lease_reader_v2::inspect_operational_model_lease_v2;
 
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_calibration_cycle_host;

@@ -75,7 +75,9 @@ required_boundary_ids = [
   "secrets_original_effect_clock_budget",
   "secrets_agent_runtime_consume",
   "bao_receipt_consumer_registration",
-  "secrets_root_policy_maintenance"
+  "secrets_root_policy_maintenance",
+  "independent_operational_model_lease_evaluator_v2",
+  "verified_operational_model_lease_v2"
 ]
 
 [[boundary]]
@@ -792,3 +794,32 @@ forbidden = ["SigningKey", "SignedFinalUseGrant", "MODEL_TRUST_CAS", "authority.
 path = "codex-rs/hepta-infer-worker-host/src/final_use_startup.rs"
 required = ["load_startup_snapshot", "remaining(deadline)", "socket_peercred", "validate_connected_issuer_with_attestation", "exchange_connected", "MODEL_TRUST_LOAD", "CONNREFUSED"]
 forbidden = ["MODEL_TRUST_CAS", "SignedFinalUseGrant", "SystemAuthorityClock"]
+
+
+[[boundary]]
+id = "independent_operational_model_lease_evaluator_v2"
+symbol = "run_operational_model_lease_evaluator_v2"
+call_pattern = '\brun_operational_model_lease_evaluator_v2\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2.rs"
+definition_markers = ["pub fn run_operational_model_lease_evaluator_v2", "boundary(config.uid, config.gid)", "verify_actual_reviewer", "key(&config.private_key_path, config.uid)", "verify_signed_actor_separation", "reinspect_inputs", "hepta.intelligence-eval.operational-model-lease.v2"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs"]
+caller_markers = ["--operational-model-lease-v2", "codex_hepta_intelligence_eval::run_operational_model_lease_evaluator_v2"]
+
+[[boundary]]
+id = "verified_operational_model_lease_v2"
+symbol = "inspect_operational_model_lease_v2"
+call_pattern = '\binspect_operational_model_lease_v2\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2.rs"
+definition_markers = ["pub struct VerifiedOperationalModelLeaseV2", "pub fn inspect_operational_model_lease_v2", "pub fn revalidate_current", "observe_clock", "verify_signed_actor_separation", "reinspect_inputs"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs"]
+caller_markers = ["--inspect-operational-model-lease-v2", "inspected.revalidate_current()?", "cpu_answer_acceptance_permitted"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2.rs"
+required = ["VerifiedOperationalModelLeaseV2", "AtomicU64", "MaterialAdmission::Retained", "observe_clock", "current.authentication_digest != self.authentication_digest"]
+forbidden = ["SigningKey", "pub fn permit_all", "pub fn from_unverified", "pub config:", "pub body:"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2.rs"
+required = ["hepta.intelligence-eval.operational-model-lease.v2", "verify_actual_reviewer", "verify_signed_actor_separation", "reinspect_inputs", "cpu_answer_acceptance_permitted", "execution_ceilings_independently_measured"]
+forbidden = ["calibration_preflight_signing_payload_v1", "holdout.consume", "AuthorityPosture::ALLOW_ALL"]
