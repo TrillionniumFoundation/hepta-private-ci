@@ -39,6 +39,9 @@ mod matrix_fault_tests;
 #[path = "tick_pending_deadline_tests.rs"]
 mod pending_deadline_tests;
 
+#[path = "tick_health_probe_deadline_tests.rs"]
+mod health_probe_deadline_tests;
+
 #[derive(Default)]
 struct Faults {
     main_drain_failures: u32,
