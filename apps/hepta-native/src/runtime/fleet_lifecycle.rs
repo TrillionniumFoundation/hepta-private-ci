@@ -150,6 +150,7 @@ impl NativeShellRuntime {
                         | "unknown_agent"
                         | "not_admitted_busy"
                         | "not_admitted_stopping"
+                        | "release_validation_rejected"
                         | "signed_release_authority_required"
                         | "recovery_observation_required"
                         | "signed_intent_recovery_required"
