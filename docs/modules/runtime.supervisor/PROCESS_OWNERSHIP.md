@@ -91,6 +91,16 @@ transition or MatrixKillRequested event. Two
 outcomes to cover combined poll faults and failed cleanup; source presence is
 not a native execution receipt.
 
+`defer_agent_action_for_matrix` also honors a stored exact Matrix exit. It
+retains the current-main-spawn DeferredDrain/Stop marker, then returns without
+another companion signal, phase transition or event. A foreign lease blocking
+cleanup keeps that owner and marker as a barrier. Only after exact cleanup
+succeeds may deferred main control continue. If that same main spawn already
+acknowledged Killing, late companion cleanup clears the marker without another
+main signal or lifecycle CAS; failed Kill remains retryable. True main exit
+with a same-spawn marker cannot admit a new automatic restart charge or
+replacement. A stale marker does not block another spawn's normal policy.
+
 ## Rejected identity is not process absence
 
 `Adoption::Rejected` retains both the main and Matrix process leases. It does
@@ -222,6 +232,16 @@ even when semantic preparation fails; a release hydration error cannot suppress
 that ownership attempt. Unreadable/undecodable lease bytes still cannot supply a
 process identity or authorize a signal.
 
+Constructor `prime_signed_recovery_denial` runs before these independent
+acquisition attempts. Its typed reads retain unresolved signed evidence as
+trusted RecoveryRequired state before any control or automatic release/restart
+replay. A Committed/RolledBack intent or the exact terminal transaction/release
+witness are recognized without false quarantine. This read does not publish,
+CAS, adopt or signal; full later recovery and terminal acknowledgement still
+follow acquisition. Denial fences serving but retains both acquisition attempts,
+diagnostics, exact exit and cleanup. It blocks new main/Matrix restart claims
+and dispatch without erasing existing durable charges.
+
 ## Deferred empty constructor hydration
 
 `constructor_hydration.rs` may retain a constructor-local observation only for
@@ -337,7 +357,8 @@ real exit and durable finalization. Ordinary admission and not-yet-due Drain/Sto
 complete Fleet validation. This continuation changes no lease identity,
 durable record format, Matrix ownership or cross-daemon exit-cleanup contract.
 
-Five `supervisor::tests::tick_control_fault_tests::deadline_tests` functions in
+At the historical `6c6c051e` source checkpoint, five
+`supervisor::tests::tick_control_fault_tests::deadline_tests` functions in
 `tick_control_deadline_tests.rs` exercise acknowledged Drain/Stop with repeated
 poll faults, combined signal/poll failure, stronger pending Kill and unrelated
 Fleet corruption. They use real Fleet files and explicit process-driver
@@ -352,7 +373,9 @@ and stale-spawn rejection. The added
 `fresh_stop_retains_monotonic_deadline_while_matrix_defers_main_control` uses
 two retained owners and real main/Matrix leases to cover deferral/retry, no early
 signal, exact deadline, terminal-phase readiness and cleanup. These use explicit
-process-driver doubles.
+process-driver doubles. That checkpoint recorded 21 added Supervisor and 2
+Fleet leaves and 77 repair identities. The final inventory after the
+2026-10-02 combination repairs awaits a new static count.
 Test source is not actual-child, current-head or target-host execution evidence.
 
 ## Control-intent file boundary
@@ -377,6 +400,14 @@ continuation returns `SignedMutationIndeterminate`, surfaced as
 process delivery has been confirmed: possibly published bytes cannot be treated
 as absent because their durability acknowledgement failed.
 
+The signed release transition's first Prepared transaction write already binds
+the grant digest and authority epoch, both catalog admission bindings and their
+compatibility digest. It cannot expose an unsigned Prepared intermediate;
+missing bindings reject before publication. The pure unsigned path is unchanged.
+Unsigned automatic Aborted reconciliation is separate and cannot cross trusted
+signed denial. Signed recovery supports only Committed/RolledBack outcomes;
+the signed Aborted codec/projection shape has no authorized production producer.
+
 The same lifecycle owner retains trusted RecoveryRequired intent and bounded
 original diagnostics without discarding exact process handles or leases.
 Grant application makes a best-effort durable recovery-marker write; its failure
@@ -389,13 +420,16 @@ error is neither a physical-effect receipt nor authority/operator acceptance,
 and supplies no exit or cleanup proof.
 
 A Prepared intent can be quarantined before any release transaction exists.
-The supported signed recovery API requires an exact transaction and its
-decision-bound digest, so it cannot terminalize this no-journal case. The
-legacy offline abort writes a digest-only directive with no production
+The supported signed recovery API requires an exact authority-bound transaction
+and its decision-bound digest, so it cannot terminalize this no-journal case.
+A legacy unsigned Prepared transaction with signed RecoveryRequired intent
+also stays isolated: it cannot be replayed as an unsigned Drain or spawn and
+does not provide the missing signed authority binding. The legacy offline abort
+writes a digest-only directive with no production
 consumer; it cannot produce Aborted or authorize reuse after process exit.
-This pre-existing crash cut remains blocked until a separately designed and
-authorized recovery protocol exists. Do not fabricate a transaction or delete
-the intent to bypass this boundary.
+These pre-existing cuts remain blocked until a separately versioned and
+authorized recovery protocol exists. Do not fabricate a transaction, downgrade
+authority or delete the intent to bypass this boundary.
 
 Three `daemon::authority_tests::effect_boundary_tests` functions in
 `signed_effect_boundary_tests.rs` exercise pure rejection and real signed-intent

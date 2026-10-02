@@ -173,6 +173,15 @@ fallible Fleet reads. Tick remembers same-tick continuation even if pending
 clears, and acknowledged Stopping/Killing cannot regain readiness from later
 successful probes. Draining retains its existing observation behavior.
 
+With a stored exact Matrix exit, a new Stop/Drain deferral retains its
+current-main-spawn marker and waits for exact companion lease cleanup without
+another Matrix signal, phase or event. A foreign lease does not satisfy cleanup.
+Once cleanup succeeds, the same-spawn deferred continuation does not repeat
+main control or CAS if main Killing was already acknowledged; a failed Kill
+remains retryable. A true main exit under the same-spawn DeferredDrain/Stop
+cannot create a fresh automatic restart claim or replacement. Stale markers
+do not confer control authority or suppress another spawn's restart policy.
+
 This continuation requires representable deadlines. Recovery checks the
 combined Drain/Stop budget against its supplied time before process acquisition;
 Drain repeats that check at the actual slot invocation before deferral, fencing,
@@ -209,6 +218,14 @@ step returns `SignedMutationIndeterminate`, mapped by the signed RPC handlers
 to `operation_indeterminate`; even an unacknowledged Prepared write before
 confirmed process delivery cannot establish no effect.
 
+The first Prepared release transaction of a signed transition is already bound
+to the grant digest, authority epoch, source and target catalog admission, and
+their compatibility digest before publication. Binding failure rejects before
+that write. The unsigned transition path retains its original semantics.
+Its automatic Aborted reconciliation cannot cross trusted signed denial.
+Signed recovery supports Committed/RolledBack only; an Aborted codec/projection
+shape is not an authorized signed terminalization path.
+
 The same owner retains trusted recovery intent and bounded original fault
 diagnostics. Grant application tries to publish its recovery marker; marker
 failure still leaves the in-memory quarantine. Recovery instead preserves
@@ -218,13 +235,25 @@ quarantine; a failed recovery does not advance the revision, and its successful
 exact retry advances once. Read projections, error payloads and signal delivery
 do not establish physical execution, authority acceptance or owner/lease cleanup.
 
+A constructor typed-read primer establishes unresolved signed denial before
+independent main/Matrix adoption, containment and automatic replay. An exact
+terminal transaction/release witness or Committed/RolledBack intent retains the
+existing terminal recovery path without false quarantine. The primer writes no journal,
+performs no CAS and acquires no process; full late recovery and terminal
+acknowledgement remain after independent acquisition. Trusted denial blocks
+new main and Matrix restart claims and replacement dispatch while retaining
+diagnostics, actual exit observation, exact cleanup and prior durable charges.
+
 A Prepared intent without a release transaction remains an unsupported
-terminalization case. Signed recovery requires the transaction and its exact
-decision-bound digest; quarantine alone does not supply either. The legacy
-offline abort writes only a digest-bound directive and has no production
+terminalization case. A legacy unsigned Prepared transaction with signed
+RecoveryRequired intent also remains quarantined, rather than becoming
+unsigned automatic Drain or dispatch. Signed recovery requires the exact
+authority-bound transaction and its decision-bound digest; quarantine alone
+does not supply either. The legacy offline abort writes only a digest-bound
+directive and has no production
 consumer, so neither that directive nor process exit clears quarantine. This
-pre-existing crash boundary remains blocked pending a separately authorized
-recovery protocol.
+pre-existing missing-transaction or missing-authority boundary remains blocked
+pending a separately versioned and authorized recovery protocol.
 
 ### Descriptor-bound file and directory I/O
 

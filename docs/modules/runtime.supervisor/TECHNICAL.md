@@ -238,6 +238,17 @@ in that tick cannot readmit it. Subsequent healthy probes cannot make an
 acknowledged Stopping or Killing phase ready. Existing Draining probe semantics
 remain unchanged.
 
+The 2026-10-02 combination repair preserves deferred control across a stored
+exact Matrix exit. `defer_agent_action_for_matrix` records the action against
+the current main spawn, then returns without another Matrix signal, phase
+transition or event while the retained companion awaits exact lease cleanup.
+A foreign or reappearing lease remains a cleanup barrier. After cleanup
+succeeds, an already acknowledged main Killing phase clears the same-spawn
+deferred action without repeating main control or its lifecycle CAS; a failed
+Kill is still retryable. An exact main exit while its same-spawn DeferredDrain
+or DeferredStop is retained cannot admit a new automatic restart claim or
+replacement. A stale action does not suppress another spawn's policy.
+
 The continuation grants no new admission authority and retains independently
 observed signal, registry and poll faults once on unresolved paths. Signal
 acceptance does not manufacture a Drain acknowledgement, exit or cleanup
@@ -261,11 +272,13 @@ See `src/control_intent.rs`, `src/control.rs`,
 The source-only regression
 `supervisor::tests::tick_control_fault_tests::pending_deadline_tests::fresh_stop_retains_monotonic_deadline_while_matrix_defers_main_control`
 uses two exact owners and real leases to exercise deferral/retry, no early main
-signal, original-deadline containment and readiness after Stop/Kill. This raises
-the current added source inventory to 21 Supervisor and 2 Fleet leaves, with
-77 repair identities in the current library plan. Historical `6958a901` had the
+signal, original-deadline containment and readiness after Stop/Kill. The
+`6c6c051e` source checkpoint recorded 21 added Supervisor and 2 Fleet leaves,
+with 77 repair identities. Those are historical source counts, not the final
+inventory after the 2026-10-02 combination repairs. Historical `6958a901` had the
 prior 20/76 inventory and a default-library run with three failures; it is not
-relabelled as proof of these later bytes. New native execution remains required.
+relabelled as proof of later bytes. The final inventory needs a new static
+count, and new native execution remains required.
 
 ## 7. Release transactions and signed authority
 
@@ -276,6 +289,16 @@ frontier, a deterministic source/target compatibility binding, expected Fleet
 release generation, lifecycle generation, rollback predecessor and optional
 production grant/authority epoch. Each process boundary is preceded by a durable
 phase transition.
+
+For a signed transition, the first Prepared release-transaction publication
+already includes the exact grant digest, authority epoch, both catalog admission
+bindings and their compatibility binding. Missing bindings reject before that
+transaction write; there is no temporarily unsigned Prepared publication on
+this path. Pure unsigned transitions retain their existing transaction semantics.
+Their existing automatic Aborted reconciliation is separate and cannot run
+through trusted signed recovery denial. Signed recovery supports only
+Committed/RolledBack outcomes; the signed codec's Aborted shape has no
+authorized production terminalization producer.
 
 Immediately before process start or rollback, the supervisor re-resolves the
 release through Fleet and compares immutable bytes plus the admission frontier
@@ -326,11 +349,16 @@ Recovery support remains narrower than quarantine. A Prepared intent can exist
 without a release transaction after a crash or failed first publication
 acknowledgement. `resolve_production_recovery` requires that exact transaction
 and a signed decision binding its digest; it cannot terminalize the no-journal
-case. This crash boundary already existed before the indeterminate-error repair.
+case. A legacy unsigned Prepared transaction paired with a signed
+RecoveryRequired intent is also quarantined: its missing authority binding
+cannot authorize unsigned automatic Drain, process dispatch or signed
+terminalization. This crash boundary already existed before the
+indeterminate-error repair.
 The legacy offline `abort` command writes a digest-only directive, with no
 production consumer, and therefore cannot clear this quarantine or manufacture
-Aborted. Such a case remains blocked pending a separately designed and
-authorized recovery protocol; exact process exit alone is insufficient.
+Aborted. Missing-transaction and missing-authority cases remain blocked pending
+a separately versioned and authorized recovery protocol; exact process exit
+alone is insufficient.
 
 Three source regressions in `src/signed_effect_boundary_tests.rs` cover pure
 signature/preflight rejection, Queued publication failure after Drain delivery,
@@ -597,6 +625,21 @@ Do not edit or delete journals to make readiness pass; restoration of independen
 validated durable evidence requires operational recovery, followed by a fresh
 Supervisor recovery. No ordinary API clears this denial.
 
+Before independent main and Matrix ownership acquisition, constructor
+`prime_signed_recovery_denial` performs typed signed-intent and transaction reads
+against the captured Agent record. It establishes trusted in-memory
+RecoveryRequired denial for unresolved evidence before control, release or
+restart replay can run. A Committed/RolledBack intent or an exact matching
+terminal transaction plus release-state witness follows the existing terminal path;
+the pure read does not falsely quarantine that proved outcome. The primer
+performs no CAS, journal publication or process operation. Full late recovery,
+including fresh lifecycle CAS and terminal durability acknowledgement, remains
+after acquisition. Both independent lease-bound adoption attempts still run;
+denial permits containment of acquired exact handles, diagnostics, observed
+exit and exact cleanup, while suppressing new main and Matrix restart claims
+and replacement dispatch. It neither erases prior durable charges nor supplies
+missing transaction or authority evidence.
+
 Constructor hydration has a narrow deferred observation for a newly registered,
 Stopped generation-zero Agent whose release state is also generation zero with
 no current or previous release. It requires an empty owner/scheduling slot,
@@ -803,7 +846,7 @@ The following is source navigation, not a pass receipt:
 | Signed mutation | verifier and publication-effect boundary | `src/signed_authority.rs`, `src/supervisor.rs`, `src/signed_effect.rs`, `src/authority_bundle.rs` | `tests/authority_distribution.rs`, `src/signed_effect_boundary_tests.rs`, `src/authority_bundle_open_tests.rs` |
 | Signed recovery | decision verification, indeterminate acknowledgement and exact durable retry | `src/signed_authority.rs`, `src/supervisor.rs`, `src/signed_effect.rs`, `src/release.rs` | `tests/authority_recovery.rs`, `src/release_signed_recovery_tests.rs` |
 | Daemon ownership | lock/socket owner | `src/daemon_owner.rs`, `src/daemon.rs` | `tests/daemon_product.rs` |
-| Constructor recovery | retained ownership and final whole-Fleet consistency | `src/constructor_recovery.rs`, `src/constructor_hydration.rs`, `src/recovery.rs` | `src/constructor_recovery_tests.rs`, `src/constructor_hydration_tests.rs`, `src/constructor_hydration_recovery_tests.rs` |
+| Constructor recovery | early typed signed denial, retained ownership and final whole-Fleet consistency | `src/constructor_recovery.rs`, `src/signed_constructor_recovery.rs`, `src/recovery_denial.rs`, `src/constructor_hydration.rs`, `src/recovery.rs` | `src/constructor_recovery_tests.rs`, `src/constructor_hydration_tests.rs`, `src/constructor_hydration_recovery_tests.rs` |
 | Read projection | immutable bounded metadata view | `src/daemon_read_view.rs`, `src/supervisor.rs` | `src/daemon_read_view_tests.rs`, `src/supervisor_snapshot_tests.rs` |
 | Per-Agent status reuse | fresh complete epoch/record/runtime comparison | `src/daemon_read_projection.rs`, `src/daemon_read_view.rs` | `src/daemon_read_projection_tests.rs` |
 | Tick projection coalescing | 100 ms projection interval | `src/daemon_execution.rs` | `src/daemon_execution_tests.rs` |
@@ -864,3 +907,10 @@ For the current candidate:
 
 This document grants no model, provider, tool, network, filesystem, secret,
 operator-acceptance, promotion, activation or release authority.
+
+The final composition-repair source inventory adds seven leaves after the 6c
+checkpoint: two Matrix/deferred-control and five signed-constructor cases.
+It therefore has 28 new Supervisor and two new Fleet leaves since 1f111388,
+84 exact common repair identities and five Fleet identities. This is a static
+requirement, confirmed against the real test modules and receipt rejection
+guards; native results must come from its own final candidate head.

@@ -118,12 +118,21 @@ Retain the original observation and the current control fence. Do not invent
 control revisions, epochs, lifecycle generations or SHA-256 values. Do not
 substitute a release name for immutable release-byte identity.
 
+On constructor recovery, typed signed evidence is read before independent
+main/Matrix adoption and automatic replay. Unresolved evidence establishes
+trusted RecoveryRequired denial; an exact proved terminal transaction/release
+witness or Committed/RolledBack intent follows the existing terminal path without
+false quarantine. This primer performs no CAS, durable publication or process action.
+The later full recovery and terminal acknowledgements still follow acquisition.
+Denial prevents new main/Matrix restart claims and dispatch, while retaining
+status diagnostics, actual exit observation, exact cleanup and prior charges.
+
 ## 4. Recovery decision procedure
 
 Use signed terminal recovery only when the current durable release outcome is
 independently observable and agrees with the exact durable release transaction
-and signed intent. The transaction must support the quarantined outcome or
-the same decision's exact terminal retry; a release name or process exit alone
+and signed intent. The authority-bound transaction must support the quarantined
+outcome or the same decision's exact terminal retry; a release name or process exit alone
 is insufficient. The
 signer request operation is `production_recovery`. It contains every field:
 
@@ -148,10 +157,13 @@ authority epoch or lifecycle generation, and every mismatched intent,
 transaction, manifest or executable digest.
 
 If a Prepared/RecoveryRequired intent exists but its release transaction is
-absent, stop this procedure: the current API requires that transaction and a
-decision binding its digest. This pre-existing crash cut has no authorized
-terminalization path. Preserve the evidence and quarantine pending a separately
-designed and authorized recovery protocol. Do not create a dummy transaction,
+absent or lacks the intent's exact grant/authority binding, stop this procedure:
+the current API requires that transaction and a decision binding its digest.
+This includes a legacy unsigned Prepared transaction beside signed
+RecoveryRequired intent; it cannot fall back to unsigned automatic Drain or
+spawn. These pre-existing cuts have no authorized terminalization path. Preserve
+the evidence and quarantine pending a separately versioned and authorized
+recovery protocol. Do not create a dummy transaction,
 remove journals or use the legacy abort directive to bypass the requirement.
 
 The offline invocation is:
@@ -222,6 +234,15 @@ exact retry; a failed recovery does not advance the revision, and a successful
 exact retry advances once. The grant path makes a best-effort durable quarantine
 marker, whose failure still leaves in-memory quarantine.
 
+For a signed release transition, its first Prepared transaction publication is
+already complete with the grant digest, authority epoch, source/target catalog
+admission and compatibility binding. Missing bindings reject before that write.
+This source ordering does not establish physical delivery or independent
+authority acceptance, and does not alter pure unsigned transitions.
+Unsigned automatic Aborted reconciliation remains separate and cannot cross
+trusted signed denial. The signed protocol supports Committed/RolledBack only;
+an Aborted codec/projection value does not authorize production terminalization.
+
 ## 6. Legacy inspect and abort do not terminalize production quarantine
 
 The existing offline commands remain available:
@@ -242,8 +263,9 @@ The existing source regression
 `signed_intent_recovery::digest_only_abort_directive_cannot_terminalize_an_unresolved_signed_intent`
 proves that an exact directive leaves the intent retained and Start blocked.
 Use the supported independently signed decision only with its exact transaction
-and release witnesses. If that transaction is absent, preserve the blocked
-state until a separately authorized recovery protocol exists. Do not edit or
+and release witnesses. If that transaction is absent or lacks its exact signed
+authority binding, preserve the blocked state until a separately versioned and
+authorized recovery protocol exists. Do not edit or
 delete intent/restart/transaction files to make the daemon ready. An offline
 inspection or directive is not a physical-effect or deployment-acceptance receipt.
 
@@ -264,6 +286,17 @@ continuation after pending clears, and acknowledged Stopping/Killing cannot
 regain readiness from a later healthy probe; Draining behavior is unchanged.
 The new two-owner source regression requires its own native receipt and does
 not relabel `6958a901`'s three default-library failures as passed.
+
+A true Matrix exit does not complete cleanup while a foreign lease blocks the
+exact lease-removal witness. New Stop/Drain retains its same-main-spawn deferred
+marker and makes no new Matrix signal, phase or event. Once cleanup succeeds,
+already acknowledged main Killing is not signaled or CASed again; failed Kill
+remains retryable. A main exit under that same-spawn deferred Stop/Drain cannot
+admit a new automatic replacement claim. Preserve both ownership and diagnostic
+evidence rather than interpreting a control acknowledgement as cleanup.
+The `6c6c051e` source count of 21 added Supervisor / 2 Fleet leaves and 77
+repair identities is historical; the 2026-10-02 combination repair inventory
+and its exact-source native evidence remain to be established.
 
 ## 7. Candidate execution evidence
 

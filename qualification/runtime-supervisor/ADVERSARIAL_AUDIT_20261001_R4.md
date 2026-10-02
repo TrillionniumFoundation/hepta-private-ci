@@ -581,3 +581,54 @@ validator 73、两 strict lints、格式和 identity 检查。两 deep lanes 只
 七个历史 pin 的真实远端失败是 nonancestor（merge-base exit 1），不能
 等同为已证明 missing。模块源码、源码绑定、执行与资格分别判断。
 本 compact 不验证之后新增的 Matrix 终态／延迟控制与 signed 恢复修复。
+
+
+## 2026-10-02 组合审计的继续修复
+
+扩大有界组合复核后新增的具体反例继续修复，不用历史 CI 成功替代新代码：
+
+- 已观察 Matrix 真退出但 foreign-incarnation lease 阻挡清理时，public
+  Drain／Stop 仍可能再次信号终态 owner。现保留 matching deferred marker
+  与 owner，仅等待 exact cleanup，不再发信号、改 phase 或记控制事件。
+- 主进程原期限已 acknowledged Kill 后，晚到的 Matrix cleanup 可能恢复
+  deferred Stop，再次 Kill 主进程。现到真正 cleanup 后才丢弃同 spawn
+  的终止 marker，不重放 control／CAS，也不把 Kill 视为实际进程退出。
+- 同 spawn deferred Drain 尚未完成、主进程实际退出时，原 Running phase
+  会错误准入 automatic restart。现在既有 deferred termination 会阻止
+  新预算／lineage／replacement，stale spawn marker 不挡正常重启。
+- signed release 原先先发布 unsigned Prepared，再单独绑定 authority；
+  第二写失败留下可被 cold recovery 按 unsigned 重放的事务。现在第一次
+  publication 即含完整已验证 authority。对旧 partial journal，constructor
+  在任何控制／语义重放前纯读取并验证 typed intent，建立 trusted denial，
+  继续独立取得 main／Matrix exact owner 并 containment。完整 signed
+  CAS／terminal-witness 写入仍在 owner acquisition 后。真实无 signed
+  denial 的 unsigned 自动恢复保留；旧 unsigned Prepared + signed denial
+  不能自动 Drain、terminalize 或 spawn，也不伪造缺失 authority。
+- trusted denial 原先可能在真实退出／Missing／Rejected 时准入 main 或
+  Matrix 新重启 claim。现在保留诊断、真实退出、精确清理与旧持久化事实，
+  禁止新自动 claim。失败 containment 各 owner 在 constructor 尝试一次，
+  用 bounded main event／Matrix report 保留错误，后续 tick 再重试。
+
+primer 对真实匹配的 Committed／RolledBack transaction + release state
+证明导出纯内存终态，防止 Queued／RecoveryRequired 历史 intent 错杀合法
+目标；后续仍 fresh-read／publish。codec/projection 中的 Aborted 没有生产
+签名 decision producer，未把任意 raw Aborted 或 legacy digest directive
+当授权终态。Prepared 无事务或缺 authority 的显式终止仍需版本化协议。
+
+新增两个 Matrix 和五个 signed constructor 叶，使用真实 Fleet、leases、
+签名验证和 journal publication，进程观测明确为 double；不冒充 OS child
+或目标 SLO。既有 transient_release_recovery_fault_does_not_skip_signed_intent_recovery
+保留名字及 ownership／quarantine 断言，oracle 加强为根本不调用被注入的
+Drain；没有跳过、延长预算或把原 unsafe Drain 路径接受为成功。
+
+当前静态要求为自 1f 新增 28 个 Supervisor、两个 Fleet 叶，84 个 common
+repair mandatory 与五个 Fleet mandatory。逐项源码名字与 missing／prefix／
+wrong-binary 拒绝保护集合一致；旧 6c 的 21／77 和 6958 的 20／76 不重标。
+source 与组合复核由独立 reviewer 检查，限定范围内无新具体反例。
+
+最新源码 scoped fix default／qualification 分别通过（41.92／17.19 秒），
+完整 fmt 通过且从正确 repository root 恢复 46 个仅 formatter 产生的
+无关文件，保留全部 20 个授权路径。严格 all-target default Supervisor／Fleet
+Clippy 通过（35.10 秒），qualification／offline Clippy 通过（10.44 秒）；
+均 --no-deps -- -D warnings。fix／fmt 后没有本地重跑测试。新 exact head 的
+完整远端执行仍是交付必要条件，12／2／2 与所有生产资格限制不提升。

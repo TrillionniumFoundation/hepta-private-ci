@@ -8,7 +8,7 @@ The main process and optional Matrix companion use independent bounded restart d
 
 Current main-process dispatch rules are:
 
-- A fresh automatic claim follows an exact unexpected exit from an unfenced `Running` runtime, with no release transition, existing pending restart or control retry. `AutomaticRestartQueued` is emitted only after durable budget, lineage and deadline admission.
+- A fresh automatic claim follows an exact unexpected exit from an unfenced `Running` runtime, with no release transition, existing pending restart, control retry, trusted recovery denial or same-spawn DeferredDrain/Stop marker. `AutomaticRestartQueued` is emitted only after durable budget, lineage and deadline admission.
 - An initial `Starting`/`AwaitingHealth` exit does not create a new automatic claim. A health deadline marks the lifecycle failed and stages bounded Stop/Kill containment; the resulting exit does not itself create a new automatic claim.
 - A charged replacement that exits before establishing health cancels that pending operation while retaining its consumed attempt. It is not respawned indefinitely under the same charge.
 - Constructor `Missing`/`Rejected` adoption does not by itself create a claim. Recovery resumes only an existing durable pending claim whose exact predecessor/replacement lineage permits continuation; an unresolved or rejected lease cannot prove process absence.
@@ -19,6 +19,11 @@ Current main-process dispatch rules are:
 Matrix faults use their separate release-bound window. `MatrixRestartBudgetExhausted` leaves the companion degraded. `start_matrix_companion` clears that companion budget only when there is no active release or the selected release has no Matrix command. A new Matrix-enabled release does not refund charges. Recovery does not erase charges merely because the committed release differs from an in-flight adopted release; a healthy readiness observation does not zero the flap counter or reset the main budget.
 
 These rules describe `tick.rs`, `control.rs`, `recovery.rs`, `restart_budget.rs` and `matrix.rs`; they do not promise automatic retries for every startup or adoption failure.
+
+Trusted recovery denial also prevents new Matrix retry claims and replacement
+dispatch. Degradation diagnostics, exact process observations and lease cleanup
+remain available, and prior durable charges are retained. Denial does not prove
+process absence or erase unresolved ownership.
 
 Live Stop proves the supplied monotonic `now + stop_grace` before durable
 publication. Private Fresh/Retained preparation preserves the journal codec;
@@ -39,6 +44,16 @@ Draining keeps its existing observation semantics. The two-owner source leaf
 these boundaries with real leases and explicit process-driver doubles. Historical
 `6958a901`'s three failed default-library cases remain failures; these new source
 bytes require their own native execution receipt.
+
+If Matrix has a stored true exit but exact lease cleanup is blocked, a new
+Stop/Drain retains its same-main-spawn deferred marker without another Matrix
+signal, phase or event. After exact cleanup, an already acknowledged main
+Killing phase consumes that marker without another main control or CAS;
+failed Kill remains retryable. A main exit while that same-spawn DeferredDrain
+or DeferredStop is retained does not create an automatic replacement claim.
+These 2026-10-02 contracts are source observations. The `6c6c051e` inventory
+of 21 added Supervisor / 2 Fleet leaves and 77 repair identities remains a
+historical checkpoint; the final static count and native receipts are pending.
 
 ### Durable restart counter
 
@@ -73,6 +88,16 @@ absence of effect. Clients must inspect durable state rather than replay the
 grant. A later ordinary mutation is rejected as `signed_intent_recovery_required`
 while quarantine remains.
 
+When that signed operation prepares its release transaction, the very first
+Prepared publication already binds the grant digest, authority epoch, both
+catalog admission bindings and their compatibility digest. Missing bindings
+reject before the transaction write. Pure unsigned transitions keep their
+existing semantics; a signed operation has no unsigned Prepared intermediate.
+Unsigned automatic Aborted reconciliation remains separate and cannot run
+through trusted signed denial. ProductionRecoveryOutcome supports only
+Committed/RolledBack; the signed Aborted codec/projection shape does not supply
+an authorized signed terminalization producer.
+
 The signed path runs inside `with_slot()`, which temporarily removes the agent slot from `Supervisor::slots`. Signed preflight and revision arithmetic therefore operate directly on the borrowed slot. They must not call helpers that re-query `self.slots` for the same agent.
 
 ## 3. Signed recovery limits and legacy abort directives
@@ -92,8 +117,23 @@ those publications or an unacknowledged first intent write. This boundary
 predates the indeterminate-error repair. `resolve_production_recovery` requires
 an existing transaction and the decision must bind its digest, so the no-journal
 case currently has no authorized terminalization API. Retain its quarantine and
-durable evidence pending a separately designed and authorized recovery protocol.
+durable evidence pending a separately versioned and authorized recovery protocol.
 Neither process exit nor an offline directive supplies that missing authority.
+
+A legacy unsigned Prepared release transaction paired with signed
+RecoveryRequired intent also remains quarantined. It must not resume as an
+unsigned automatic Drain or spawn, and its missing grant/epoch binding cannot
+support the current signed terminalization checks. This requires a separately
+versioned authorized protocol too, rather than an unsigned downgrade.
+
+Constructor `prime_signed_recovery_denial` reads typed intent/transaction evidence
+before independent main and Matrix acquisition or automatic replay. It retains
+unresolved intent as trusted RecoveryRequired state, while a Committed/RolledBack
+intent or proved exact terminal transaction/release witness retains the
+existing terminal path. The primer performs no durable write, CAS or process
+operation. Later complete recovery and terminal durability acknowledgement stay
+after acquisition; exact adopted handles can still be contained, observed and
+cleaned up without admitting new main/Matrix restart claims.
 
 ### 3.1 Inspect
 
@@ -236,3 +276,10 @@ Repository-controlled tests execute the crash matrix for process lease, unified 
 The 256-Agent test emits one machine-readable JSON line with tick duration, cached status latency, lifecycle-owner latency, mutex wait/hold counters and crash-wave fault counts. Slow-driver and slow-durable-I/O cases deliberately expose serialization. They establish measurable HOL coupling but do not, by themselves, assert a target-host service-level violation. The global lifecycle writer remains until [HOL_REFACTOR_DECISION.md](HOL_REFACTOR_DECISION.md) is satisfied.
 
 The production caller can consume a SHA-256-pinned public authority bundle and the qualification suite covers signer rotation, wrong signer, stale grant, stale daemon-authority epoch and current Fleet revocation. No signing key enters supervisord and no release selection is self-issued. Deployed authority distribution, target-host timing receipts and independent operational acceptance remain external gates.
+
+The final composition-repair source inventory adds seven leaves after the 6c
+checkpoint: two Matrix/deferred-control and five signed-constructor cases.
+It therefore has 28 new Supervisor and two new Fleet leaves since 1f111388,
+84 exact common repair identities and five Fleet identities. This is a static
+requirement, confirmed against the real test modules and receipt rejection
+guards; native results must come from its own final candidate head.
