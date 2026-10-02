@@ -889,6 +889,11 @@ def verify() -> int:
     need(isinstance(documents, list) and bool(documents), "specification registry")
     ids = [row.get("id") for row in documents]
     need(len(ids) == len(set(ids)), "duplicate specification ID")
+    paths = [row.get("path") for row in documents]
+    need(
+        all(isinstance(path, str) for path in paths) and len(paths) == len(set(paths)),
+        "duplicate or invalid specification path",
+    )
     bound = coverage(registry)
     paper_ids = {item["id"] for item in papers["papers"]}
     for row in documents:
@@ -1026,7 +1031,6 @@ def verify() -> int:
 
     dedicated_workflow = (ROOT / WORKFLOW_PATH).read_text(encoding="utf-8")
     global_workflow = (ROOT / GLOBAL_WORKFLOW).read_text(encoding="utf-8")
-    global_verifier = (ROOT / GLOBAL_VERIFIER).read_text(encoding="utf-8")
     for workflow, label in (
         (dedicated_workflow, "dedicated workflow"),
         (global_workflow, "global workflow"),
