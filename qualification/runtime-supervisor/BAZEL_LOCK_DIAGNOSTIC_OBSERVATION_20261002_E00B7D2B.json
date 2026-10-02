@@ -1,0 +1,373 @@
+{
+  "schema_version": 1,
+  "source_sha": "e00b7d2b6acccf6a35683a595cf88e1f23673642",
+  "tree_sha": "79a1810d36bc6217595c0f31129eb9812c729d1a",
+  "parents": [
+    "75886ae97f2deb6c1da6b921f80ffaa0696d9ea3"
+  ],
+  "exact_receipt_checks": [
+    {
+      "check": "source-identity.txt",
+      "passed": true,
+      "observed": [
+        "e00b7d2b6acccf6a35683a595cf88e1f23673642",
+        "79a1810d36bc6217595c0f31129eb9812c729d1a"
+      ]
+    },
+    {
+      "check": "source-after-identity.txt",
+      "passed": true,
+      "observed": [
+        "e00b7d2b6acccf6a35683a595cf88e1f23673642",
+        "79a1810d36bc6217595c0f31129eb9812c729d1a"
+      ]
+    },
+    {
+      "check": "source-parents.txt",
+      "passed": true,
+      "observed": [
+        "75886ae97f2deb6c1da6b921f80ffaa0696d9ea3"
+      ]
+    },
+    {
+      "check": "bazel-lock-before.exit",
+      "passed": true,
+      "observed": [
+        "0"
+      ]
+    },
+    {
+      "check": "bazel-lock-update.exit",
+      "passed": true,
+      "observed": [
+        "0"
+      ]
+    },
+    {
+      "check": "bazel-lock-after.exit",
+      "passed": true,
+      "observed": [
+        "0"
+      ]
+    },
+    {
+      "check": "candidate-copy.exit",
+      "passed": true,
+      "observed": [
+        "0"
+      ]
+    },
+    {
+      "check": "candidate-sha256.exit",
+      "passed": true,
+      "observed": [
+        "0"
+      ]
+    },
+    {
+      "check": "source-after-identity.exit",
+      "passed": true,
+      "observed": [
+        "0"
+      ]
+    },
+    {
+      "check": "source-after-input-sha256.exit",
+      "passed": true,
+      "observed": [
+        "0"
+      ]
+    },
+    {
+      "check": "non-lock-tracked-status.exit",
+      "passed": true,
+      "observed": [
+        "0"
+      ]
+    },
+    {
+      "check": "non-lock-tracked-drift.exit",
+      "passed": true,
+      "observed": [
+        "0"
+      ]
+    },
+    {
+      "check": "tracked-before-status.txt",
+      "passed": true,
+      "observed": ""
+    },
+    {
+      "check": "non-lock-tracked-drift.txt",
+      "passed": true,
+      "observed": ""
+    },
+    {
+      "check": "six_selected_input_names_before",
+      "passed": true,
+      "observed": {
+        ".bazelversion": "cdecb300baad839a6f62791229f551a4fa33f3cbdca08e378dc976466354e778",
+        "MODULE.bazel": "aaae03b0fc03055cecd7ef060ab53299e1e62abba7082daf513e5c2d3feb0d5f",
+        "MODULE.bazel.lock": "c03b95ff14a8c813ea4cbb27498437293057540d2374b7f9b6903c1a0a4749d4",
+        "codex-rs/Cargo.toml": "1d330229883da5d44681b4e7387ab1133c6edbe5ba46ff577543c29532c4d63b",
+        "codex-rs/Cargo.lock": "a77c21226452d4da6c826d8c7f09df2b9dc9d5fccd3aecc9176d2a685f3b03fd",
+        "codex-rs/hepta-fleet/Cargo.toml": "a1c88db81e6f1944d003438bc70b76613ac3b84a37b997dd0d9217cd597a93d8"
+      }
+    },
+    {
+      "check": "six_selected_input_names_after",
+      "passed": true,
+      "observed": {
+        ".bazelversion": "cdecb300baad839a6f62791229f551a4fa33f3cbdca08e378dc976466354e778",
+        "MODULE.bazel": "aaae03b0fc03055cecd7ef060ab53299e1e62abba7082daf513e5c2d3feb0d5f",
+        "MODULE.bazel.lock": "c03b95ff14a8c813ea4cbb27498437293057540d2374b7f9b6903c1a0a4749d4",
+        "codex-rs/Cargo.toml": "1d330229883da5d44681b4e7387ab1133c6edbe5ba46ff577543c29532c4d63b",
+        "codex-rs/Cargo.lock": "a77c21226452d4da6c826d8c7f09df2b9dc9d5fccd3aecc9176d2a685f3b03fd",
+        "codex-rs/hepta-fleet/Cargo.toml": "a1c88db81e6f1944d003438bc70b76613ac3b84a37b997dd0d9217cd597a93d8"
+      }
+    },
+    {
+      "check": "before_hashes_match_exact_API_bytes",
+      "passed": true,
+      "observed": {
+        ".bazelversion": "cdecb300baad839a6f62791229f551a4fa33f3cbdca08e378dc976466354e778",
+        "MODULE.bazel": "aaae03b0fc03055cecd7ef060ab53299e1e62abba7082daf513e5c2d3feb0d5f",
+        "MODULE.bazel.lock": "c03b95ff14a8c813ea4cbb27498437293057540d2374b7f9b6903c1a0a4749d4",
+        "codex-rs/Cargo.toml": "1d330229883da5d44681b4e7387ab1133c6edbe5ba46ff577543c29532c4d63b",
+        "codex-rs/Cargo.lock": "a77c21226452d4da6c826d8c7f09df2b9dc9d5fccd3aecc9176d2a685f3b03fd",
+        "codex-rs/hepta-fleet/Cargo.toml": "a1c88db81e6f1944d003438bc70b76613ac3b84a37b997dd0d9217cd597a93d8"
+      }
+    },
+    {
+      "check": "five_non_output_selected_inputs_unchanged",
+      "passed": true,
+      "observed": {
+        ".bazelversion": "cdecb300baad839a6f62791229f551a4fa33f3cbdca08e378dc976466354e778",
+        "MODULE.bazel": "aaae03b0fc03055cecd7ef060ab53299e1e62abba7082daf513e5c2d3feb0d5f",
+        "MODULE.bazel.lock": "c03b95ff14a8c813ea4cbb27498437293057540d2374b7f9b6903c1a0a4749d4",
+        "codex-rs/Cargo.toml": "1d330229883da5d44681b4e7387ab1133c6edbe5ba46ff577543c29532c4d63b",
+        "codex-rs/Cargo.lock": "a77c21226452d4da6c826d8c7f09df2b9dc9d5fccd3aecc9176d2a685f3b03fd",
+        "codex-rs/hepta-fleet/Cargo.toml": "a1c88db81e6f1944d003438bc70b76613ac3b84a37b997dd0d9217cd597a93d8"
+      }
+    },
+    {
+      "check": "candidate_copy_and_both_hashes_match_actual_bytes",
+      "passed": true,
+      "observed": {
+        "reported": {
+          "MODULE.bazel.lock": "c03b95ff14a8c813ea4cbb27498437293057540d2374b7f9b6903c1a0a4749d4",
+          ".hepta-diagnostics/MODULE.bazel.lock": "c03b95ff14a8c813ea4cbb27498437293057540d2374b7f9b6903c1a0a4749d4"
+        },
+        "actual_sha256": "c03b95ff14a8c813ea4cbb27498437293057540d2374b7f9b6903c1a0a4749d4",
+        "bytes": 1657200
+      }
+    },
+    {
+      "check": "source_after_lock_hash_matches_candidate",
+      "passed": true,
+      "observed": {
+        ".bazelversion": "cdecb300baad839a6f62791229f551a4fa33f3cbdca08e378dc976466354e778",
+        "MODULE.bazel": "aaae03b0fc03055cecd7ef060ab53299e1e62abba7082daf513e5c2d3feb0d5f",
+        "MODULE.bazel.lock": "c03b95ff14a8c813ea4cbb27498437293057540d2374b7f9b6903c1a0a4749d4",
+        "codex-rs/Cargo.toml": "1d330229883da5d44681b4e7387ab1133c6edbe5ba46ff577543c29532c4d63b",
+        "codex-rs/Cargo.lock": "a77c21226452d4da6c826d8c7f09df2b9dc9d5fccd3aecc9176d2a685f3b03fd",
+        "codex-rs/hepta-fleet/Cargo.toml": "a1c88db81e6f1944d003438bc70b76613ac3b84a37b997dd0d9217cd597a93d8"
+      }
+    },
+    {
+      "check": "candidate_is_JSON_lock",
+      "passed": true,
+      "observed": 26
+    }
+  ],
+  "all_exact_receipt_checks_passed": true,
+  "candidate_sha256": "c03b95ff14a8c813ea4cbb27498437293057540d2374b7f9b6903c1a0a4749d4",
+  "candidate_bytes": 1657200,
+  "candidate_unchanged_from_committed_lock": true,
+  "job_log_bytes": 734882,
+  "job_log_sha256": "bdccaeb375e5a6602dbece2f67cea8e7bfd0c9c0f43aded6a947eee24e81a3dd",
+  "artifact_member_byte_hashes": [
+    {
+      "file": "MODULE.bazel.lock",
+      "bytes": 1657200,
+      "sha256": "c03b95ff14a8c813ea4cbb27498437293057540d2374b7f9b6903c1a0a4749d4"
+    },
+    {
+      "file": "MODULE.bazel.lock.numstat",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "MODULE.bazel.lock.stat",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "bazel-lock-after.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "bazel-lock-after.log",
+      "bytes": 692,
+      "sha256": "60acb104478337c309828a2fbabb8e9005c68e1b40aa60a016d601e6aba57d48"
+    },
+    {
+      "file": "bazel-lock-before.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "bazel-lock-before.log",
+      "bytes": 2271,
+      "sha256": "dc3ec3a01ca4da80206e1cabd7344e38015b77fd9ac7f1396272720694afd9ae"
+    },
+    {
+      "file": "bazel-lock-update.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "bazel-lock-update.log",
+      "bytes": 2125,
+      "sha256": "bbce8548a7ef219d7a4d899de8e374d8fe5144402eceef1890486a74bd76709f"
+    },
+    {
+      "file": "candidate-copy.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "candidate-sha256.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "candidate-sha256.txt",
+      "bytes": 187,
+      "sha256": "d5b50cd03a89112f8225baad00e30d1bbb9f597e6732a83fc498859f2efb0973"
+    },
+    {
+      "file": "non-lock-tracked-drift.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "non-lock-tracked-drift.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "non-lock-tracked-status.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "source-after-identity.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "source-after-identity.txt",
+      "bytes": 82,
+      "sha256": "e63167f90979afc90c6b30f053dfffafa526f9f379f57d2da8d1d1b681af0cb6"
+    },
+    {
+      "file": "source-after-input-sha256.exit",
+      "bytes": 2,
+      "sha256": "9a271f2a916b0b6ee6cecb2426f0b3206ef074578be55d9bc94f6f3fe3ab86aa"
+    },
+    {
+      "file": "source-after-input-sha256.txt",
+      "bytes": 513,
+      "sha256": "1d3fddcee8d84149c662bace04d4c471c9964f6e372b378d17271facdd0911d6"
+    },
+    {
+      "file": "source-identity.txt",
+      "bytes": 82,
+      "sha256": "e63167f90979afc90c6b30f053dfffafa526f9f379f57d2da8d1d1b681af0cb6"
+    },
+    {
+      "file": "source-input-sha256.txt",
+      "bytes": 513,
+      "sha256": "1d3fddcee8d84149c662bace04d4c471c9964f6e372b378d17271facdd0911d6"
+    },
+    {
+      "file": "source-parents.txt",
+      "bytes": 41,
+      "sha256": "56ece6212a2e812d2887dc33b62a5f68a731e02dc3a6bdadbd0c0ae78a2d5789"
+    },
+    {
+      "file": "tracked-before-status.txt",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope": "Nine captured exits, six selected inputs, exact identity/parents, tracked before-clean and after non-lock drift; not a complete Cargo input closure or Bazel target compile proof",
+  "native_module_qualified": false,
+  "current_main_merge_pass": false,
+  "production_activation": false,
+  "run_id": 36960863517,
+  "job_id": 110694015673,
+  "run_attempt": 1,
+  "event": "push",
+  "job_conclusion": "success",
+  "official_artifact_id": 11207094270,
+  "official_artifact_name": "hepta-bazel-lock-diagnostics-e00b7d2b6acccf6a35683a595cf88e1f23673642",
+  "official_zip_bytes": 227486,
+  "official_zip_sha256": "6188404c6e9b9b2deb18483f1c5b39d63332b45ed94654cdb1176b3490528041",
+  "selected_inputs_API_git_blob_proof": [
+    {
+      "path": ".bazelversion",
+      "bytes": 6,
+      "sha256": "cdecb300baad839a6f62791229f551a4fa33f3cbdca08e378dc976466354e778",
+      "git_blob_sha": "f7ee06693c17a06e2a0f51ef7eb2a61866e77b8e",
+      "mode": "100644",
+      "API_tree_blob_match": true
+    },
+    {
+      "path": "MODULE.bazel",
+      "bytes": 21895,
+      "sha256": "aaae03b0fc03055cecd7ef060ab53299e1e62abba7082daf513e5c2d3feb0d5f",
+      "git_blob_sha": "a49ef6c1cf4cf6b12f76296cd488c93f0753905b",
+      "mode": "100644",
+      "API_tree_blob_match": true
+    },
+    {
+      "path": "MODULE.bazel.lock",
+      "bytes": 1657200,
+      "sha256": "c03b95ff14a8c813ea4cbb27498437293057540d2374b7f9b6903c1a0a4749d4",
+      "git_blob_sha": "b563f19f51fff22a4cddcb3cd1a043192befbf84",
+      "mode": "100644",
+      "API_tree_blob_match": true
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "bytes": 21240,
+      "sha256": "1d330229883da5d44681b4e7387ab1133c6edbe5ba46ff577543c29532c4d63b",
+      "git_blob_sha": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a",
+      "mode": "100644",
+      "API_tree_blob_match": true
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "bytes": 418394,
+      "sha256": "a77c21226452d4da6c826d8c7f09df2b9dc9d5fccd3aecc9176d2a685f3b03fd",
+      "git_blob_sha": "52f70b601c19b1c3a542cff09fc085b1edff5f34",
+      "mode": "100644",
+      "API_tree_blob_match": true
+    },
+    {
+      "path": "codex-rs/hepta-fleet/Cargo.toml",
+      "bytes": 694,
+      "sha256": "a1c88db81e6f1944d003438bc70b76613ac3b84a37b997dd0d9217cd597a93d8",
+      "git_blob_sha": "cde5b909454add9ce6021b47a95083317194f0c6",
+      "mode": "100644",
+      "API_tree_blob_match": true
+    }
+  ],
+  "other4_jobs": "SKIPPED",
+  "complete_module_source_pin": "75886ae97f2deb6c1da6b921f80ffaa0696d9ea3",
+  "candidate_complete_bytes_equal_committed_lock": true,
+  "qualification_transfer_to_other_heads": false
+}
