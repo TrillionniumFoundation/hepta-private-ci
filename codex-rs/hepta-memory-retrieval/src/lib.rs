@@ -6,6 +6,12 @@
 
 #![forbid(unsafe_code)]
 
+mod owner_propositions;
+pub use owner_propositions::OwnerPropositionDecisionV2;
+pub use owner_propositions::OwnerPropositionEvidenceV2;
+pub use owner_propositions::ProductRecallWithPropositionsV2;
+pub use owner_propositions::recall_product_with_owner_propositions_v2;
+
 mod decision;
 mod engram;
 mod generation_bound;
