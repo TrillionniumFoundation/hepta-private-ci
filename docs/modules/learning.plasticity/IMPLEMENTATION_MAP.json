@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "abbc6af16b4e8f3adc7a893748f0f10f5fa80094",
-    "tree": "f0693a1ec24b3c5c35cb7a11367b0e34b0e54e72"
+    "commit": "6eb61a67f654ceef858f39ce88dcfc3d9ab9d052",
+    "tree": "0f18215ee707c21ab4ccbb6dea467f853e25a606"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "learning.plasticity",
@@ -747,7 +747,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/iteration_envelope_wire_tests.rs",
-      "object": "0498de681d79612ae9ac133f28c3587e69303968"
+      "object": "d8a480a8f02667e35952e508ea5a829f3fde7a43"
     },
     {
       "path": "codex-rs/hepta-agentd/src/plasticity_anchor_journal.rs",
@@ -951,8 +951,8 @@
     }
   ],
   "observedAtHead": {
-    "commit": "abbc6af16b4e8f3adc7a893748f0f10f5fa80094",
-    "tree": "f0693a1ec24b3c5c35cb7a11367b0e34b0e54e72"
+    "commit": "6eb61a67f654ceef858f39ce88dcfc3d9ab9d052",
+    "tree": "0f18215ee707c21ab4ccbb6dea467f853e25a606"
   },
   "navigationRebindHistory": [
     {
@@ -963,6 +963,21 @@
         }
       },
       "reason": "Add canonical iteration submission adapter navigation; historical execution not renewed.",
+      "historicalExecutionRevalidated": false,
+      "authorityGranted": false
+    },
+    {
+      "previous": {
+        "sourceBase": {
+          "commit": "abbc6af16b4e8f3adc7a893748f0f10f5fa80094",
+          "tree": "f0693a1ec24b3c5c35cb7a11367b0e34b0e54e72"
+        },
+        "observedAtHead": {
+          "commit": "abbc6af16b4e8f3adc7a893748f0f10f5fa80094",
+          "tree": "f0693a1ec24b3c5c35cb7a11367b0e34b0e54e72"
+        }
+      },
+      "reason": "Current source navigation reviewed during 2026-10-02 scoped module audit. No historical execution is renewed.",
       "historicalExecutionRevalidated": false,
       "authorityGranted": false
     }
