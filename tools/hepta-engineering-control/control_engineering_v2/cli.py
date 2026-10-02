@@ -3,6 +3,8 @@
 import argparse
 from dataclasses import asdict, fields
 import json
+import os
+import stat
 from pathlib import Path
 import sqlite3
 import sys
@@ -31,8 +33,20 @@ def _unique_pairs(pairs):
 
 
 def _read(path):
-    with Path(path).open("rb") as source:
-        content = source.read(MAX_INPUT_BYTES + 1)
+    # Reject special files through the descriptor we actually read. A FIFO
+    # without a writer must not block before the byte/depth budgets can apply.
+    flags = os.O_RDONLY | getattr(os, "O_NONBLOCK", 0) | getattr(os, "O_BINARY", 0)
+    descriptor = os.open(Path(path), flags)
+    try:
+        metadata = os.fstat(descriptor)
+        if not stat.S_ISREG(metadata.st_mode):
+            raise EngineeringError("input_regular_file_required")
+        if metadata.st_size > MAX_INPUT_BYTES:
+            raise EngineeringError("input_byte_limit_exceeded")
+        with os.fdopen(descriptor, "rb", closefd=False) as source:
+            content = source.read(MAX_INPUT_BYTES + 1)
+    finally:
+        os.close(descriptor)
     if len(content) > MAX_INPUT_BYTES:
         raise EngineeringError("input_byte_limit_exceeded")
     content = content.decode(json.detect_encoding(content))

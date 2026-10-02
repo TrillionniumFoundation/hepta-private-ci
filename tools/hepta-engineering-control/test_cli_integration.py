@@ -2,6 +2,8 @@ from contextlib import redirect_stderr, redirect_stdout
 from dataclasses import asdict, replace
 import io
 import json
+import os
+import sys
 from pathlib import Path
 import subprocess
 import tempfile
@@ -122,6 +124,20 @@ class CliIntegrationTests(unittest.TestCase):
                 self.assertEqual(result["error"], expected)
         with EngineeringStore(self.database) as store:
             self.assertEqual(store.connection.execute("SELECT count(*) FROM work_envelopes").fetchone()[0], 0)
+
+    @unittest.skipUnless(hasattr(os, "mkfifo") and hasattr(os, "O_NONBLOCK"),
+                         "nonblocking FIFO admission requires POSIX")
+    def test_cli_rejects_fifo_without_waiting_for_a_writer(self):
+        path = self.root / "input.fifo"
+        os.mkfifo(path)
+        result = subprocess.run(
+            [sys.executable, "-m", "control_engineering_v2", "readiness-projection",
+             "--facts", str(path)], capture_output=True, text=True, timeout=3,
+            env={**os.environ, "PYTHONPATH": str(Path(cli.__file__).resolve().parent.parent)},
+        )
+        self.assertEqual(result.returncode, 1)
+        self.assertEqual(json.loads(result.stderr),
+                         {"error": "input_regular_file_required", "authorityGranted": False})
 
     def test_cli_rejects_invalid_completion_set_and_package_count(self):
         for packages, completed, expected in (

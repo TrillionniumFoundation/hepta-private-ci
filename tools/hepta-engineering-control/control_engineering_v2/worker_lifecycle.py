@@ -112,9 +112,26 @@ class WorkerRecoveryReport:
 
 def _now(value: int | None) -> int:
     result = time.time_ns() if value is None else value
-    if type(result) is not int or result < 0:
+    if type(result) is not int or not 0 <= result <= 2**63 - 1:
         raise EngineeringError("invalid_time")
     return result
+
+
+def _validate_worker_observation(receipt: WorkerHeartbeatReceipt | WorkerResultReceipt) -> None:
+    # Python equality aliases bool/float to integer fences. Authenticate the
+    # exact bounded wire scalars before comparing or persisting them.
+    for value, label in (
+        (receipt.worker_id, "worker_id"),
+        (receipt.worker_signing_identity, "worker_signing_identity"),
+        (receipt.claim_id, "claim_id"),
+    ):
+        checked_id(value, label)
+    if any(type(value) is not int or not 1 <= value <= 2**63 - 1
+           for value in (receipt.claim_fence, receipt.expected_revision)):
+        raise EngineeringError("invalid_worker_observation_identity")
+    if any(type(value) is not int or not 0 <= value <= 2**63 - 1
+           for value in (receipt.observed_unix_ns, receipt.expires_unix_ns)):
+        raise EngineeringError("invalid_time")
 
 
 def _decode_json(value: object, code: str):
@@ -300,9 +317,11 @@ def revoke_worker(
     expected_revision: int,
     now_ns: int | None = None,
 ) -> None:
-    now = _now(now_ns)
     checked_id(worker_id, "worker_id")
+    if type(expected_revision) is not int or not 1 <= expected_revision < 2**63 - 1:
+        raise EngineeringError("invalid_worker_registration_revision")
     with store._transaction():
+        now = _now(now_ns)
         row = store.connection.execute(
             "SELECT state,revision FROM worker_registrations WHERE worker_id=?",
             (worker_id,),
@@ -682,6 +701,7 @@ def heartbeat_claim(
 ) -> WorkerClaim:
     if not isinstance(receipt, WorkerHeartbeatReceipt):
         raise EngineeringError("worker_heartbeat_required")
+    _validate_worker_observation(receipt)
     if (
         type(heartbeat_ttl_ns) is not int
         or not 1 <= heartbeat_ttl_ns <= MAX_HEARTBEAT_TTL_NS
@@ -742,6 +762,8 @@ def heartbeat_claim(
             raise EngineeringError("worker_heartbeat_replay_conflict")
         if str(claim["state"]) not in {"claimed", "running"}:
             raise EngineeringError("claim_not_running")
+        if current_revision >= 2**63 - 1:
+            raise EngineeringError("worker_claim_revision_exhausted")
         revision = current_revision + 1
         store.connection.execute(
             "INSERT INTO worker_heartbeat_observations VALUES(?,?,?,?,?,?,?)",
@@ -798,8 +820,9 @@ def submit_worker_result(
 ) -> WorkerClaim:
     if not isinstance(receipt, WorkerResultReceipt):
         raise EngineeringError("worker_result_required")
+    _validate_worker_observation(receipt)
     checked_sha256(receipt.result_digest, "result_digest")
-    if receipt.outcome not in {"success", "infra_failure", "semantic_failure"}:
+    if not isinstance(receipt.outcome, str) or receipt.outcome not in {"success", "infra_failure", "semantic_failure"}:
         raise EngineeringError("invalid_worker_outcome")
     with store._transaction():
         now = _now(now_ns)
@@ -858,6 +881,8 @@ def submit_worker_result(
         else:
             state = "failed"
             failure = "semantic"
+        if int(claim["revision"]) >= 2**63 - 1:
+            raise EngineeringError("worker_claim_revision_exhausted")
         revision = int(claim["revision"]) + 1
         store.connection.execute(
             "INSERT INTO worker_result_observations VALUES(?,?,?,?,?,?,?)",
@@ -1146,6 +1171,8 @@ def observe_claim_completion(
                 now,
             ),
         )
+        if int(claim["revision"]) >= 2**63 - 1:
+            raise EngineeringError("worker_claim_revision_exhausted")
         revision = int(claim["revision"]) + 1
         store.connection.execute(
             "UPDATE worker_claims SET state='completed_observed',revision=?,"

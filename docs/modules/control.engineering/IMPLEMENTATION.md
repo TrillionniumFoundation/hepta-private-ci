@@ -360,7 +360,9 @@ the `candidates` output, including its no-change entry. The legacy `schedule` CL
 local compatibility surface. Product composition must use
 `plan_engineering_work` with authenticated `CompletionReceipt` objects and must
 not treat caller-supplied completion strings as production evidence. Each input
-file is bounded to 2 MiB; duplicate and unknown record keys reject. Machine-readable
+file must resolve to a regular file and is bounded to 2 MiB; admission checks the
+opened descriptor before reading. On POSIX, nonblocking open rejects a FIFO without
+waiting for a writer. Duplicate and unknown record keys reject. Machine-readable
 results go to stdout; a rejected operation emits a safe error code on stderr and
 exits 1. A failed sandbox check also exits 1. The CLI cannot issue signed review
 receipts, self-approve changes or deploy them.

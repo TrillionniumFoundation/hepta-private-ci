@@ -46,6 +46,23 @@ caller-supplied generators still propagate. Both the ordinary quality workflow a
 read-only collector type-check the canonical store and path policy alongside the
 existing product/evidence boundaries.
 
+## Recovery and worker ingress consistency
+
+Ordinary reopen/full-checkpoint verification and bounded suffix verification use
+one stored-event validator. Both reject sequence gaps, noncanonical or duplicate-key
+JSON bytes, invalid event metadata and digest/identity disagreement. Full startup
+verification streams one SQLite cursor instead of retaining every historical
+payload in a Python list. It remains a complete cold-path scan; this does not bound
+one event's decoded memory or certify the owner's state from audit history alone.
+
+Worker heartbeat/result observations require exact positive integer claim fences
+and revisions and nonnegative SQLite-range timestamps before comparison or
+persistence. Python booleans cannot alias revision/fence 1. Registration revocation
+uses the same exact-integer CAS discipline, and expired/replayed observations retain
+their existing signature and historical-acknowledgement rules. Revision exhaustion
+rejects within the existing owner transaction. No additional durable owner or
+provider authority is introduced.
+
 ## Bounded audit suffix verification
 
 ### Entry points and limits

@@ -8,7 +8,6 @@ from __future__ import annotations
 
 from contextlib import contextmanager
 from dataclasses import asdict, dataclass
-import json
 import sqlite3
 import time
 from typing import Iterator
@@ -17,7 +16,7 @@ from .control_plane import (
     EngineeringError,
     EngineeringStore,
     ZERO_DIGEST,
-    canonical_json,
+    _verify_audit_event,
     checked_sha256,
     semantic_digest,
 )
@@ -213,36 +212,8 @@ def _verify_page(
             (checkpoint.sequence, admitted[-1], len(admitted)),
         ) if admitted else ()
         for event in events:
-            sequence = event["sequence"]
-            if sequence != latest + 1:
-                raise EngineeringError("audit_chain_sequence_gap")
-            try:
-                raw = event["payload_json"]
-                if not isinstance(raw, bytes):
-                    raise EngineeringError("audit_chain_payload_invalid")
-                payload = json.loads(raw.decode("utf-8"))
-                if not isinstance(payload, dict) or canonical_json(payload) != raw:
-                    raise EngineeringError("audit_chain_payload_invalid")
-                created = event["created_unix_ns"]
-                if type(created) is not int or created < 0:
-                    raise EngineeringError("audit_chain_metadata_invalid")
-                digest = semantic_digest({
-                    "previousDigest": previous,
-                    "eventType": event["event_type"],
-                    "payload": payload,
-                    "createdUnixNs": created,
-                })
-            except EngineeringError:
-                raise
-            except (TypeError, UnicodeError, ValueError, RecursionError):
-                raise EngineeringError("audit_chain_payload_invalid") from None
-            if (
-                event["previous_digest"] != previous
-                or event["event_digest"] != digest
-                or event["event_id"] != digest[:32]
-            ):
-                raise EngineeringError("audit_chain_invalid")
-            previous, latest = digest, sequence
+            previous = _verify_audit_event(event, previous, latest + 1)
+            latest = event["sequence"]
         if admitted and latest != admitted[-1]:
             raise EngineeringError("audit_chain_sequence_gap")
         complete = latest == through.sequence

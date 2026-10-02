@@ -230,6 +230,44 @@ def semantic_digest(value: Any) -> str:
     return hashlib.sha256(canonical_json(value)).hexdigest()
 
 
+def _verify_audit_event(event: sqlite3.Row, previous: str, sequence: int) -> str:
+    """Validate one stored event identically during recovery and suffix reads."""
+    if event["sequence"] != sequence:
+        _error("audit_chain_sequence_gap")
+    created = event["created_unix_ns"]
+    event_type = event["event_type"]
+    if (
+        type(created) is not int or created < 0
+        or not isinstance(event_type, str) or "\x00" in event_type
+        or not 1 <= len(event_type.encode("utf-8")) <= 128
+    ):
+        _error("audit_chain_metadata_invalid")
+    try:
+        raw = event["payload_json"]
+        if not isinstance(raw, bytes):
+            _error("audit_chain_payload_invalid")
+        payload = json.loads(raw.decode("utf-8"))
+        if not isinstance(payload, dict) or canonical_json(payload) != raw:
+            _error("audit_chain_payload_invalid")
+        digest = semantic_digest({
+            "previousDigest": previous,
+            "eventType": event_type,
+            "payload": payload,
+            "createdUnixNs": created,
+        })
+    except EngineeringError:
+        raise
+    except (TypeError, UnicodeError, ValueError, RecursionError):
+        _error("audit_chain_payload_invalid")
+    if (
+        event["previous_digest"] != previous
+        or event["event_digest"] != digest
+        or event["event_id"] != digest[:32]
+    ):
+        _error("audit_chain_invalid")
+    return digest
+
+
 @dataclass(frozen=True)
 class WorkEnvelope:
     envelope_id: str
@@ -1318,23 +1356,15 @@ class EngineeringStore:
         )
 
     def verify_audit_chain(self) -> None:
+        """Stream the full cold-path history without weakening paged validation."""
         previous = ZERO_DIGEST
+        # A single active cursor pins its SQLite read snapshot. Stream rows so
+        # reopening does not retain every historical payload simultaneously.
         rows = self.connection.execute(
             "SELECT * FROM audit_events ORDER BY sequence"
-        ).fetchall()
-        for row in rows:
-            payload = json.loads(bytes(row["payload_json"]).decode("utf-8"))
-            body = {
-                "previousDigest": previous,
-                "eventType": str(row["event_type"]),
-                "payload": payload,
-                "createdUnixNs": int(row["created_unix_ns"]),
-            }
-            digest = semantic_digest(body)
-            if (
-                row["previous_digest"] != previous
-                or row["event_digest"] != digest
-                or row["event_id"] != digest[:32]
-            ):
+        )
+        for sequence, row in enumerate(rows, start=1):
+            try:
+                previous = _verify_audit_event(row, previous, sequence)
+            except EngineeringError:
                 _error("audit_chain_broken")
-            previous = digest

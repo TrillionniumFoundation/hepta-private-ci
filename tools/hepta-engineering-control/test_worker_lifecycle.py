@@ -8,6 +8,8 @@ from control_engineering_v2 import (
     CompletionReceipt,
     EngineeringCapacity,
     EngineeringStore,
+    EngineeringError,
+    revoke_worker,
     EngineeringWorkPackage,
     HmacTrustStore,
     ReviewCapacity,
@@ -162,6 +164,54 @@ class WorkerLifecycleTests(unittest.TestCase):
             value,
             signature=self.trust.sign(value, value.issuer, value.signing_identity),
         )
+
+    def test_revocation_rejects_boolean_revision_without_effects(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with EngineeringStore(Path(temporary) / "owner.sqlite3") as store:
+                self.register(store)
+                before = store.audit_anchor()
+                with self.assertRaises(EngineeringError):
+                    revoke_worker(store, "worker-a", expected_revision=True, now_ns=self.now)
+                self.assertEqual(before, store.audit_anchor())
+                self.assertEqual("active", store.connection.execute(
+                    "SELECT state FROM worker_registrations").fetchone()[0])
+
+    def test_signed_worker_scalars_reject_aliases_and_overflow_atomically(self):
+        for kind, field, invalid in (
+            ("heartbeat", "claim_fence", True),
+            ("heartbeat", "expected_revision", True),
+            ("heartbeat", "expires_unix_ns", 2**63),
+            ("result", "claim_fence", True),
+            ("result", "expires_unix_ns", 2**63),
+        ):
+            with self.subTest(kind=kind, field=field), tempfile.TemporaryDirectory() as temporary:
+                with EngineeringStore(Path(temporary) / "owner.sqlite3") as store:
+                    self.register(store)
+                    self.plan_and_lease(store)
+                    claim = claim_assignment(store, "generation-a", "package-a", "worker-a",
+                                             "lease-a", heartbeat_ttl_ns=1_000_000_000, now_ns=self.now + 2)
+                    if kind == "result":
+                        claim = heartbeat_claim(store, self.heartbeat(claim, self.now + 3),
+                                                self.trust, heartbeat_ttl_ns=1_000_000_000, now_ns=self.now + 3)
+                    receipt = (self.heartbeat(claim, self.now + 4) if kind == "heartbeat"
+                               else self.result(claim, self.now + 4, "success"))
+                    receipt = replace(receipt, **{field: invalid})
+                    receipt = replace(receipt, signature=self.trust.sign(
+                        receipt, receipt.worker_id, receipt.worker_signing_identity))
+                    before = store.audit_anchor()
+                    operation = heartbeat_claim if kind == "heartbeat" else submit_worker_result
+                    with self.assertRaises(EngineeringError):
+                        operation(store, receipt, self.trust, now_ns=self.now + 4,
+                                  **({"heartbeat_ttl_ns": 1_000_000_000} if kind == "heartbeat" else {}))
+                    self.assertEqual(before, store.audit_anchor())
+                    self.assertEqual(claim.revision, store.connection.execute(
+                        "SELECT revision FROM worker_claims").fetchone()[0])
+
+    def test_worker_recovery_rejects_unrepresentable_time(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            with EngineeringStore(Path(temporary) / "owner.sqlite3") as store:
+                with self.assertRaises(EngineeringError):
+                    expire_stale_claims(store, now_ns=2**63)
 
     def test_claim_heartbeat_worker_result_and_independent_completion(self):
         with tempfile.TemporaryDirectory() as temporary:
