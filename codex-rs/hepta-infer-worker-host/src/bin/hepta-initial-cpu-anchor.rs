@@ -21,6 +21,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         "select-installed-model-use-v2" => {
             codex_hepta_infer_worker_host::initial_cpu_anchor::select_cpu_model_use_v2(path, pin)?
         }
+        "withdraw-learning-dataset" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::withdraw_initial_cpu_dataset(
+                path, pin,
+            )?
+        }
         "preview-initial-objective" => {
             codex_hepta_infer_worker_host::initial_cpu_anchor::preview_initial_cpu_objective(
                 path, pin,
@@ -62,6 +67,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         _ => return Err("unsupported initial operational purpose".into()),
     };
     println!("{}", serde_json::to_string(&report)?);
+    if arguments[0] == "withdraw-learning-dataset" && report["phase"] != "artifact_acknowledged" {
+        return Err("withdrawal is incomplete; retain the original request and resolve its existing checkpoint".into());
+    }
     Ok(())
 }
 

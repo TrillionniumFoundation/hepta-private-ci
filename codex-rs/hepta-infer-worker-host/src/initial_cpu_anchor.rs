@@ -61,6 +61,9 @@ pub fn preview_operational_model_use_v2(path: &Path, pin: Digest32) -> HostResul
 }
 #[path = "initial_cpu_withdrawal.rs"]
 mod withdrawal;
+pub fn withdraw_initial_cpu_dataset(path: &Path, pin: Digest32) -> HostResult<Value> {
+    withdrawal::run(path, pin)
+}
 #[path = "initial_cpu_state.rs"]
 mod state;
 pub use current::open_current_cpu_neuron;
