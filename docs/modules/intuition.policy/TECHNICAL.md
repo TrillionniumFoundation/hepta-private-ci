@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `67a6ddb0dd58e6e6a1fcbb2ce184f3e35d0a7d725df586c28dce12d9005995ce`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `ee945951baf9e47e9abbcfa0b7ddfef218535ce419f3d94a9e623ec2f0f1bc28`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -11,7 +11,7 @@ All four production completion predicates remain false. Current execution identi
 | Requirement | Source state | Scope |
 | --- | --- | --- |
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
-| `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
+| `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; request objective bound to trusted objective in V1/V2/V3; pairwise verified controller separation in V2/V3. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
 | `admission_receipt` | `source_partial` | Canonical final use rechecks seven owners, RunStart authentication and deadlines; selected runs retain evaluation proofs; launch and lifecycle generations remain distinct; Compiled retries require reconciliation, while stored compiler ExplicitAbstain can replay without provider/policy/run/context; outward V1 is unchanged. |
 | `authority_read` | `source_present` | Owner files use bounded checked-handle reads; full fences and evaluator-session construction bind one immutable authenticated seven-owner manifest to the request snapshot; live stages still reread current input. |
@@ -49,6 +49,8 @@ Version and requirement-to-test/artifact mappings: `docs/modules/intuition.polic
 **Bootstrap work package:** `INT-1-CALIBRATED-INTUITION-POLICY`
 
 This stable document is the implementation guide for `intuition.policy`. Normative identity, ownership, contract, data-authority and delivery facts remain in the canonical JSON registries. This guide explains how those facts are implemented and operated. Documentation readiness is not source implementation, activation, operator acceptance, promotion or release.
+
+Authentication binds both the signed evidence envelope and the embedded request to the trust snapshot's exact objective. V1/V2/V3 reject a mismatch before choosing selected, abstained or slow-path; a valid signature under objective A is not authority for payload objective B. V2 and V3 require all three role pairs to have independent verified controllers as well as distinct principals. These checks preserve existing signed payload and receipt encodings. The signed positive/negative matrix is in `codex-rs/hepta-intelligence/tests/intuition_objective_scope.rs`.
 
 **Current source boundary:** V4 product semantics, V2 owner-separated commitments, authenticated V3 admission, complete Agentd pins, the canonical serving hook and in-process receipt binding exist in source. Final-use `commit_v4` retains the original signed qualification and samples the owner clock only after acquiring the sole learning-writer lock; it revalidates the root-signed trust lease, current trust generation, signatures, controller separation, lifetime and host pins before append. A workflow definition or a queued run is not a passing execution receipt. Use the current implementation dossier and exact command artifacts to distinguish source, execution and production acceptance; no production acceptance or promotion is asserted here.
 

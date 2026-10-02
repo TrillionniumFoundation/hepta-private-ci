@@ -1,6 +1,6 @@
 # intuition.policy 本轮对抗审计
 
-审计日期：2026-09-30；继续复审：2026-10-01。候选入口：[PR #1036](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1036)。本报告记录持续源码审查、修正与有限本地验证，不签发生产完成、独立接受、部署或发布证明。当前源码事实以 [CURRENT_STATE.json](CURRENT_STATE.json) 为准；精确执行证明须来自绑定候选提交、树、命令、日志和运行身份的不可变工件。
+审计日期：2026-09-30；继续复审：2026-10-01、2026-10-02。候选入口：[PR #1036](https://github.com/TrillionniumFoundation/hepta-private-ci/pull/1036)。本报告记录持续源码审查、修正与有限本地验证，不签发生产完成、独立接受、部署或发布证明。当前源码事实以 [CURRENT_STATE.json](CURRENT_STATE.json) 为准；精确执行证明须来自绑定候选提交、树、命令、日志和运行身份的不可变工件。
 
 ## 文档与项目位置
 
@@ -47,6 +47,17 @@
 版本兼容边界仍须保留：V2 评分与分配承诺分别编码，但历史生成者 completeness V1 签名仍绑定含 utility、confidence、OOD 和 assignment probability 的 V1 候选 digest。本轮明确记录这种耦合，未改写已有签名字节；彻底分离需要新版本及生产者、消费者迁移。
 
 严格 lint 的联动修正保留公开服务的完整已确认回执、ledger 的 pending 尾部及现有 V1 参数合同；大错误/枚举与较多参数的例外只限这些有原因说明的边界。learning.plasticity 中尚未接线的 self-iteration 字段使用明确标注的保留例外，没有伪造调用链或改写其完成状态。无调用者的 private helper 和校验完成后冗余的字段按实际使用清理；automation 的大 private effect 使用 Box 并在 consumer 取回原值，公开 Product/AdmittedOutcome payload 保持兼容。已取得旧候选完整十五项 lint 明细并逐项映射修正；这些修改仍须新候选严格 CI 验证。
+
+## 2026-10-02 复审：认证目标与控制者边界
+
+在最新候选 `9f18f67e4d515109e5178773761a4a676fa66b61` 上重新检查真实调用边界，完成两次独立的复现→修正→验证循环：
+
+- **P1，认证 envelope 与 payload 的 objective 脱节。** V1/V2/V3 校验了签名 envelope 的 objective 与已授权 trust 一致，却没有检查被签 payload 内 request.objective_digest。持有目标 A 权限的合法签名者可以为目标 B 的 payload 生成合法三方证明。9 个版本×结果类型反例（selected、abstained、slow-path）原先全部成功；非 selected 路径不调用 ledger，不能依赖 writer 的额外绑定。三个现有认证入口现在先以既有 ContextMismatch 拒绝 objective 不一致，再计算 payload 和验证签名。没有更改签名字节、历史 receipt 编码或内核策略。
+- **P1，V2 第三对角色缺少控制者独立性。** V2 已对 generator/evaluator 与 generator/observer 使用已认证 controller，却只对 evaluator/observer 检查 principal。新的真实签名反例以不同 key、credential、principal 但同一 controller 通过旧实现。第三对改用现有 verify_verified_role_separation，按既有 ControllerCollision 拒绝；不同 controller 的正控制继续通过。V3 已具有此检查，未重写其合同。
+
+新增集成文件 `codex-rs/hepta-intelligence/tests/intuition_objective_scope.rs` 由 Cargo 自动发现；完整与 independent intuition 资格计划都执行整个 codex-hepta-intelligence 包，因此没有添加独立旁路或降低 CI 范围。本地完整 intelligence 包执行 92/92 通过（包括上述 10 个新回归及正控制）；纯 intuition 基线 37/37 通过。它们是当前工作树的本地执行观察，不代替发布后的精确候选、synthetic merge、独立执行或 Agentd 进程资格。
+
+继续复审确认 evaluation 的独立认证入口已经绑定 bundle.objective_digest 与两份 envelope，未复制政策缺陷；final-use、生命周期与 Compiled 重放隔离仍沿既有 owner。下述 durable handoff、真实 crash 恢复及外部接受缺口保持开放，四个 completion 谓词没有提升。
 
 ## 验证与证据限制
 

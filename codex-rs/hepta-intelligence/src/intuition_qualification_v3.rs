@@ -107,6 +107,12 @@ pub fn decide_authenticated_intuition_v3(
     verifier: &LearningEvidenceVerifierV1,
     now: u64,
 ) -> Result<AuthenticatedIntuitionDecisionV3, IntuitionQualificationErrorV3> {
+    // The signature envelope scopes a trusted signer; its signed payload can
+    // still name another objective. Bind both layers before any disposition,
+    // including abstention and slow path, which never reach the ledger writer.
+    if request.objective_digest != verifier.objective_digest() {
+        return Err(SignedEvidenceError::ContextMismatch.into());
+    }
     let completeness_payload = canonical_completeness_evidence_payload_v1(&request)
         .map_err(ProductionPolicyError::Qualified)?;
     let profile_qualification_payload = canonical_profile_qualification_payload_v1(&profile)

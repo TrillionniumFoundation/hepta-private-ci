@@ -348,7 +348,7 @@
   ],
   "sourceStateProjection": {
     "source": "docs/modules/intuition.policy/CURRENT_STATE.json",
-    "contentSha256": "67a6ddb0dd58e6e6a1fcbb2ce184f3e35d0a7d725df586c28dce12d9005995ce",
+    "contentSha256": "ee945951baf9e47e9abbcfa0b7ddfef218535ce419f3d94a9e623ec2f0f1bc28",
     "facts": [
       {
         "id": "native_policy",
@@ -363,14 +363,15 @@
       },
       {
         "id": "authenticated_roles",
-        "summary": "Generator, evaluator and observer signatures; pairwise verified controller separation.",
+        "summary": "Generator, evaluator and observer signatures; request objective bound to trusted objective in V1/V2/V3; pairwise verified controller separation in V2/V3.",
         "state": "source_present",
         "source": "codex-rs/hepta-intelligence/src/intuition_qualification_v3.rs",
         "symbol": "verify_verified_role_separation",
         "tests": [
-          "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs"
+          "codex-rs/hepta-agentd/tests/intuition_policy_product_v3.rs",
+          "codex-rs/hepta-intelligence/tests/intuition_objective_scope.rs"
         ],
-        "evidence": "Signed product tests including distinct principals sharing one evaluator/observer controller."
+        "evidence": "Signed product tests plus real Ed25519 objective-scope rejection across V1/V2/V3 selected, abstained and slow-path results, and V2 evaluator/observer controller collision; matched-scope and independent-controller controls."
       },
       {
         "id": "host_commit",

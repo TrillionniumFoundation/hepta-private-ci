@@ -3,7 +3,7 @@
 <!-- intuition-source-state:begin -->
 ## Canonical source-state projection
 
-Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `67a6ddb0dd58e6e6a1fcbb2ce184f3e35d0a7d725df586c28dce12d9005995ce`.
+Source: `docs/modules/intuition.policy/CURRENT_STATE.json`; content SHA-256: `ee945951baf9e47e9abbcfa0b7ddfef218535ce419f3d94a9e623ec2f0f1bc28`.
 
 These are inspected source facts, not compilation, runtime, independent acceptance or release receipts.
 All four production completion predicates remain false. Current execution identity belongs only to immutable command artifacts.
@@ -11,7 +11,7 @@ All four production completion predicates remain false. Current execution identi
 | Requirement | Source state | Scope |
 | --- | --- | --- |
 | `native_policy` | `source_present` | Explicit native profile risk routing and 1..128 candidate preflight before commitment hashing; historical encoding preserves prior receipt digests. |
-| `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; pairwise verified controller separation. |
+| `authenticated_roles` | `source_present` | Generator, evaluator and observer signatures; request objective bound to trusted objective in V1/V2/V3; pairwise verified controller separation in V2/V3. |
 | `host_commit` | `source_present` | At most 127 product candidates plus abstain; complete pins, fresh owner clock and retained three-party/root-signed trust-lease revalidation under sole LedgerWriter lock. |
 | `admission_receipt` | `source_partial` | Canonical final use rechecks seven owners, RunStart authentication and deadlines; selected runs retain evaluation proofs; launch and lifecycle generations remain distinct; Compiled retries require reconciliation, while stored compiler ExplicitAbstain can replay without provider/policy/run/context; outward V1 is unchanged. |
 | `authority_read` | `source_present` | Owner files use bounded checked-handle reads; full fences and evaluator-session construction bind one immutable authenticated seven-owner manifest to the request snapshot; live stages still reread current input. |
