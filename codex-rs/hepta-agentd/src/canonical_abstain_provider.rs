@@ -44,6 +44,7 @@ use inputs::owner_inputs;
 #[path = "canonical_cpu_abstain_provider.rs"]
 mod cpu;
 pub use cpu::AgentdDurableCpuAbstainInvocationProviderV2;
+pub use cpu::ConservativeCpuGoalBindingsV1;
 
 const REQUIRED_OWNERS: [&str; 7] = [
     "objective.compiler",

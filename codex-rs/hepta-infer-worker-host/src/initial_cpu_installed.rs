@@ -42,6 +42,7 @@ impl Composition {
             .map_err(|error| error.to_string())?,
         );
         let goal_mode = installed.model_use_pointer.is_some();
+        let mut inactive_admission = None;
         let tick_mode = if let Some(pointer) = installed.model_use_pointer.as_ref() {
             let admission = model_use_current::Admission::open(
                 pointer.clone(),
@@ -50,10 +51,12 @@ impl Composition {
                 clock.clone(),
             )?;
             let binding = admission.binding();
-            tick::GoalMode::ActualCompiledGoal {
+            let mode = tick::GoalMode::ActualCompiledGoal {
                 encoder_manifest_digest: binding.encoder_manifest_digest,
                 tokenizer_digest: binding.tokenizer_digest,
-            }
+            };
+            inactive_admission = Some(admission);
+            mode
         } else {
             tick::GoalMode::FixedObjective
         };
@@ -74,13 +77,24 @@ impl Composition {
             installed.authority_file.clone(),
             verifier.clone(),
         )?);
-        let provider = Arc::new(AgentdDurableCpuAbstainInvocationProviderV2::new(
+        let mut provider = AgentdDurableCpuAbstainInvocationProviderV2::new(
             installed.authority_file.clone(),
             verifier,
             native,
             runtime_digest,
             body_digest,
-        )?);
+        )?;
+        if let Some(admission) = inactive_admission {
+            let subject = id(identity.agent_id.as_str())?;
+            // Validate now, then borrow this same CURRENT reader on each Goal.
+            admission.inactive_state(subject.clone())?;
+            provider = provider.with_current_inactive_state(Arc::new(move || {
+                admission.inactive_state(subject.clone()).map_err(|error| {
+                    AgentdError::Invalid(format!("current inactive CPU state: {error}"))
+                })
+            }));
+        }
+        let provider = Arc::new(provider);
         let model_generation = plan.runtime.generation;
         let worker = crate::CpuNeuronControlConfigV2 {
             resources,

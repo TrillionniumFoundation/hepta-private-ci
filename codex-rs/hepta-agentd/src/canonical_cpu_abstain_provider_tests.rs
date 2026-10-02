@@ -7,6 +7,78 @@ use crate::intelligence_product::tests::fixture;
 use crate::intelligence_product::tests::write_authority_file;
 
 #[test]
+fn inactive_cpu_state_is_native_empty_and_rejects_caller_active_state() {
+    use crate::ConservativeCpuStateV1;
+    use codex_hepta_agent_components::prompt_optimizer::optimize;
+    let value = fixture();
+    let mut record = durable_record(&value);
+    let native = value.inputs.neural_config.clone();
+    let directory = tempfile::tempdir().expect("directory");
+    let authority = directory.path().join("authority.json");
+    let runtime_digest = digest("actual-runtime");
+    let mut owners = value.owners.clone();
+    let neuron = owners
+        .iter_mut()
+        .find(|row| row.owner_id.as_str() == "neuron.runtime")
+        .expect("neuron");
+    neuron.generation = native.generation;
+    neuron.implementation_digest = runtime_digest;
+    write_authority_file(
+        &authority,
+        &owners,
+        value.request.snapshot.revocation_frontier_digest(),
+    );
+    let identity = identity(directory.path(), record.snapshot.generation - 1);
+    let state = ConservativeCpuStateV1::from_current_payloads(
+        id(identity.agent_id.as_str()).expect("subject"),
+        [
+            digest("actual-current-config"),
+            digest("actual-current-calibration"),
+            digest("actual-current-resources"),
+        ],
+    )
+    .expect("inactive native state");
+    record.snapshot.model_tuple_digest = native.model_digest;
+    record.snapshot.preference_state_digest = state.preference_state_digest();
+    record.snapshot.prompt_registry_digest = state.prompt_registry_digest();
+    record.snapshot.artifact_set_digest = state.artifact_set_digest();
+    let provider = AgentdDurableCpuAbstainInvocationProviderV2::new(
+        authority,
+        authority_verifier(),
+        native,
+        runtime_digest,
+        record.runtime_body_digest,
+    )
+    .expect("provider")
+    .with_inactive_state(state);
+    let invocation = provider
+        .build(&identity, &record)
+        .expect("actual inactive bindings");
+    let portfolio =
+        optimize(invocation.inputs.prompt_request).expect("native empty registry portfolio");
+    assert!(portfolio.selected.is_empty());
+    assert!(portfolio.decisions.is_empty());
+    assert_eq!(portfolio.total_cost, 0);
+    for field in [0, 1, 2] {
+        let mut changed = record.clone();
+        match field {
+            0 => changed.snapshot.preference_state_digest = digest("claimed-active-preference"),
+            1 => changed.snapshot.prompt_registry_digest = digest("claimed-active-prompts"),
+            2 => changed.snapshot.artifact_set_digest = digest("different-CURRENT"),
+            _ => unreachable!(),
+        }
+        assert!(provider.build(&identity, &changed).is_err());
+    }
+    assert!(
+        ConservativeCpuStateV1::from_current_payloads(
+            id(identity.agent_id.as_str()).expect("subject"),
+            [Digest32::ZERO; 3]
+        )
+        .is_err()
+    );
+}
+
+#[test]
 fn installed_cpu_provider_keeps_run_lifecycle_distinct_from_real_model_generation() {
     let value = fixture();
     let mut record = durable_record(&value);

@@ -366,6 +366,31 @@ fn objective_claims(
     request: &AuthBusObjectiveIngress,
     payload: &[u8],
 ) -> Result<SignedMessageClaims, AgentdError> {
+    objective_claims_for_subject(&identity.agent_id, request, payload)
+}
+
+/// Canonical V1 signing material for an ordinary structured objective sender.
+/// These bytes confer no authority without the original issuer signature and
+/// Agentd's current admission, replay, lifecycle and execution checks.
+pub fn objective_ingress_signing_claims_v1(
+    agent_id: &codex_hepta_agent_components::contracts::AgentId,
+    request: &AuthBusObjectiveIngress,
+) -> Result<SignedMessageClaims, AgentdError> {
+    if request.body.source_envelope_json.len() > PRODUCT_SOURCE_JSON_BYTES {
+        return Err(invalid("objective source exceeds 32 KiB"));
+    }
+    let payload = serde_json::to_vec(&request.body)?;
+    if payload.len() > PRODUCT_BODY_JSON_BYTES {
+        return Err(invalid("encoded objective body exceeds 48 KiB"));
+    }
+    objective_claims_for_subject(agent_id, request, &payload)
+}
+
+fn objective_claims_for_subject(
+    agent_id: &codex_hepta_agent_components::contracts::AgentId,
+    request: &AuthBusObjectiveIngress,
+    payload: &[u8],
+) -> Result<SignedMessageClaims, AgentdError> {
     Ok(SignedMessageClaims {
         issuer_id: StableId::new(&request.issuer_id)
             .map_err(|error| invalid(&format!("objective issuer: {error}")))?,
@@ -373,9 +398,9 @@ fn objective_claims(
             .map_err(|error| invalid(&format!("objective key epoch: {error}")))?,
         message_id: StableId::new(&request.message_id)
             .map_err(|error| invalid(&format!("objective message id: {error}")))?,
-        subject_id: StableId::new(identity.agent_id.as_str())
+        subject_id: StableId::new(agent_id.as_str())
             .map_err(|error| invalid(&format!("objective subject: {error}")))?,
-        scope_digest: objective_scope(identity),
+        scope_digest: objective_scope_for_subject(agent_id),
         payload_digest: Digest32::of_bytes(payload),
         sequence: request.sequence,
         expires_at_ms: request.expires_at_ms,
@@ -383,8 +408,14 @@ fn objective_claims(
 }
 
 fn objective_scope(identity: &AgentdIdentity) -> Digest32 {
+    objective_scope_for_subject(&identity.agent_id)
+}
+
+fn objective_scope_for_subject(
+    agent_id: &codex_hepta_agent_components::contracts::AgentId,
+) -> Digest32 {
     let mut bytes = b"hepta:agentd:signed-objective:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
+    bytes.extend_from_slice(agent_id.as_str().as_bytes());
     Digest32::of_bytes(&bytes)
 }
 

@@ -8,6 +8,10 @@
 mod app_runtime;
 #[cfg(feature = "server")]
 mod authbus_checkpoint;
+#[cfg(all(feature = "server", unix))]
+mod authbus_offline_initialization;
+#[cfg(all(feature = "server", unix))]
+pub use authbus_offline_initialization::initialize_offline_authbus_checkpoint_v1;
 #[cfg(feature = "server")]
 mod authbus_dispatch;
 #[cfg(feature = "server")]
@@ -70,6 +74,8 @@ mod neuron_runtime;
 pub mod neuron_runtime_v2;
 #[cfg(feature = "server")]
 mod objective_runtime;
+#[cfg(feature = "server")]
+pub use objective_runtime::objective_ingress_signing_claims_v1;
 #[cfg(all(unix, feature = "server"))]
 mod operator_namespace;
 #[cfg(feature = "server")]
@@ -159,7 +165,11 @@ pub use canonical_abstain_provider::AgentdDurableCpuAbstainInvocationProviderV2;
 #[cfg(feature = "server")]
 pub use canonical_abstain_provider::CanonicalIntelligenceProviderProfileV1;
 #[cfg(feature = "server")]
+pub use canonical_abstain_provider::ConservativeCpuGoalBindingsV1;
+#[cfg(feature = "server")]
 pub use canonical_abstain_provider::compose_durable_abstain_intelligence_profile_v1;
+#[cfg(feature = "server")]
+mod conservative_cpu_state;
 pub use client::AgentdClient;
 #[cfg(feature = "server")]
 pub use codex_hepta_agent_components::memory::RetrievalExecutionContextV1;
@@ -282,6 +292,10 @@ pub use config::HEPTA_AGENT_ID_ENV;
 pub use config::HEPTA_AGENT_RUN_ROOT_ENV;
 #[cfg(feature = "server")]
 pub use config::HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV;
+#[cfg(feature = "server")]
+pub use conservative_cpu_state::ConservativeCpuStateModeV1;
+#[cfg(feature = "server")]
+pub use conservative_cpu_state::ConservativeCpuStateV1;
 pub use error::AgentdError;
 #[cfg(feature = "server")]
 pub use evidence_frontier::EvidenceRecoveryFrontierV1;

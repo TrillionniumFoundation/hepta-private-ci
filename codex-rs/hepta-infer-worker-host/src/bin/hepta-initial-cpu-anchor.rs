@@ -8,6 +8,24 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let path = std::path::Path::new(&arguments[1]);
     let pin = arguments[2].parse()?;
     let report = match arguments[0].as_str() {
+        "initialize-offline-authbus-checkpoint" => {
+            tokio::runtime::Runtime::new()?.block_on(
+                codex_hepta_infer_worker_host::initial_cpu_anchor::initialize_initial_cpu_authbus_checkpoint(path, pin),
+            )?
+        }
+        "sign-cpu-objective" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::sign_initial_cpu_objective(path, pin)?
+        }
+        "deliver-cpu-objective" => {
+            tokio::runtime::Runtime::new()?.block_on(
+                codex_hepta_infer_worker_host::initial_cpu_anchor::deliver_initial_cpu_objective(path, pin),
+            )?
+        }
+        "inspect-cpu-objective" => {
+            tokio::runtime::Runtime::new()?.block_on(
+                codex_hepta_infer_worker_host::initial_cpu_anchor::inspect_initial_cpu_objective(path, pin),
+            )?
+        }
         "prepare-initial-objective-source" => {
             codex_hepta_infer_worker_host::initial_cpu_anchor::prepare_initial_cpu_objective_source(
                 path, pin,

@@ -16,6 +16,82 @@ fn id(value: &str) -> StableId {
     StableId::new(value).expect("stable id")
 }
 
+#[test]
+fn ordinary_sender_uses_original_v1_preimage_and_rejects_mutated_subject_body_and_time() {
+    use codex_hepta_agent_components::contracts::AgentId;
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
+    let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").unwrap();
+    let request = AuthBusObjectiveIngress {
+        issuer_id: "root.readonly-public-facts".into(),
+        key_epoch: 1,
+        message_id: "message:original-goal".into(),
+        sequence: 1,
+        expires_at_ms: 300_000,
+        signature_hex: String::new(),
+        body: AuthBusObjectiveBody {
+            spawn_generation: 7,
+            run_id: "run:original-goal".into(),
+            objective_revision: 1,
+            source_envelope_json: "{}".into(),
+            runtime_body_digest: digest("body").to_string(),
+            preference_state_digest: digest("preferences").to_string(),
+            model_tuple_digest: digest("model").to_string(),
+            prompt_registry_digest: digest("prompts").to_string(),
+            artifact_set_digest: digest("artifacts").to_string(),
+            authority_epoch: 1,
+        },
+    };
+    let payload = serde_json::to_vec(&request.body).unwrap();
+    let actual = objective_ingress_signing_claims_v1(&agent, &request).unwrap();
+    assert_eq!(
+        actual,
+        objective_claims_for_subject(&agent, &request, &payload).unwrap()
+    );
+    let key = SigningKey::from_bytes(&[83; 32]);
+    let signature = key.sign(&actual.signing_bytes());
+    key.verifying_key()
+        .verify_strict(&actual.signing_bytes(), &signature)
+        .unwrap();
+    let other = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13").unwrap();
+    assert!(
+        key.verifying_key()
+            .verify_strict(
+                &objective_ingress_signing_claims_v1(&other, &request)
+                    .unwrap()
+                    .signing_bytes(),
+                &signature
+            )
+            .is_err()
+    );
+    let mut changed = request.clone();
+    changed.body.artifact_set_digest = digest("different CURRENT payloads").to_string();
+    assert!(
+        key.verifying_key()
+            .verify_strict(
+                &objective_ingress_signing_claims_v1(&agent, &changed)
+                    .unwrap()
+                    .signing_bytes(),
+                &signature
+            )
+            .is_err()
+    );
+    changed = request;
+    changed.expires_at_ms += 1;
+    assert!(
+        key.verifying_key()
+            .verify_strict(
+                &objective_ingress_signing_claims_v1(&agent, &changed)
+                    .unwrap()
+                    .signing_bytes(),
+                &signature
+            )
+            .is_err()
+    );
+    changed.body.source_envelope_json = "x".repeat(PRODUCT_SOURCE_JSON_BYTES + 1);
+    assert!(objective_ingress_signing_claims_v1(&agent, &changed).is_err());
+}
+
 fn record(
     run_id: &str,
     sequence: u64,

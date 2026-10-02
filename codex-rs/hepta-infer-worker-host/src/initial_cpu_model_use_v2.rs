@@ -308,6 +308,31 @@ impl VerifiedCpuModelUseV2 {
     pub fn runtime_body_digest(&self) -> Digest32 {
         self.inputs.body_digest
     }
+    pub(super) fn worker_program(&self) -> HostResult<Source> {
+        self.revalidate_current()?;
+        let bytes = self
+            .inputs
+            .configuration
+            .body_implementation
+            .read(1024 * 1024)?;
+        let closure: Value = serde_json::from_slice(&bytes)?;
+        Ok(serde_json::from_value(closure["worker_host"].clone())?)
+    }
+    /// Hashes of the exact three current, full-ACK payloads signed by S. This
+    /// read-only projection does not grant Goal, installation or effect authority.
+    pub fn current_payload_digests(&self) -> HostResult<[Digest32; 3]> {
+        self.revalidate_current()?;
+        let [configuration, calibration, resources] = &self.original_body.payload_digests;
+        Ok([
+            digest(configuration)?,
+            digest(calibration)?,
+            digest(resources)?,
+        ])
+    }
+    pub fn current_authority_epoch(&self) -> HostResult<u64> {
+        self.revalidate_current()?;
+        Ok(self.original_body.authority_epoch)
+    }
     pub fn revalidate_current(&self) -> HostResult<()> {
         if self.inputs.body(self.original_body.issued_at)? != self.original_body {
             return Err("stable model-use current tuple changed".into());

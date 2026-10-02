@@ -27,6 +27,25 @@ use evidence::InitialEvidence;
 mod current;
 #[path = "initial_cpu_goal.rs"]
 mod goal;
+#[path = "initial_cpu_goal_checkpoint.rs"]
+mod goal_checkpoint;
+#[path = "initial_cpu_goal_ingress.rs"]
+mod goal_ingress;
+pub async fn initialize_initial_cpu_authbus_checkpoint(
+    path: &Path,
+    pin: Digest32,
+) -> HostResult<Value> {
+    goal_checkpoint::initialize(path, pin).await
+}
+pub fn sign_initial_cpu_objective(path: &Path, pin: Digest32) -> HostResult<Value> {
+    goal_ingress::sign(path, pin)
+}
+pub async fn deliver_initial_cpu_objective(path: &Path, pin: Digest32) -> HostResult<Value> {
+    goal_ingress::deliver(path, pin).await
+}
+pub async fn inspect_initial_cpu_objective(path: &Path, pin: Digest32) -> HostResult<Value> {
+    goal_ingress::inspect(path, pin).await
+}
 #[path = "initial_cpu_installed_plan.rs"]
 mod installed_plan;
 pub use installed_plan::InstalledCpuSourceV1;

@@ -364,6 +364,14 @@ pub struct PromptRegistry {
 }
 
 impl PromptRegistry {
+    /// Snapshot of the canonical revision-one empty registry. This read-only
+    /// fact grants no admission and exposes no private registry mutation.
+    pub fn canonical_empty_snapshot_digest() -> Digest32 {
+        let registry = Self::new(/*maximum_records*/ 1)
+            .expect("the fixed nonzero empty registry capacity is valid");
+        registry.snapshot_digest()
+    }
+
     pub(crate) fn new(maximum_records: usize) -> Result<Self, Error> {
         if maximum_records == 0 {
             return Err(Error::ZeroCapacity);

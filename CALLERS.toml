@@ -96,7 +96,10 @@ required_boundary_ids = [
   "secrets_root_policy_maintenance",
   "independent_operational_model_lease_evaluator_v2",
   "verified_operational_model_lease_v2",
-  "independent_installed_cpu_model_use_v2"
+  "independent_installed_cpu_model_use_v2",
+  "closed_cpu_objective_root_signing",
+  "ordinary_cpu_objective_delivery",
+  "original_agent_offline_authbus_checkpoint"
 ]
 
 [[boundary]]
@@ -1113,3 +1116,41 @@ forbidden = ["SigningKey", "append_unlearning", "LockedFileFinalHoldoutCasStore"
 path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_withdrawal_inspection_dependencies.rs"
 required = ["historical.snapshot()", "current_snapshot", "get(..historical_snapshot", "predecessor_id", "record.event_digest", "ids.len() > 126"]
 forbidden = ["SigningKey", "append_unlearning", "LedgerWriter", "AuthorityPosture::ALLOW_ALL"]
+
+
+[[boundary]]
+id = "closed_cpu_objective_root_signing"
+symbol = "sign_initial_cpu_objective"
+call_pattern = '\bsign_initial_cpu_objective\s*\('
+definition_path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_anchor.rs"
+definition_markers = ["pub fn sign_initial_cpu_objective", "goal_ingress::sign(path, pin)"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/bin/hepta-initial-cpu-anchor.rs"]
+caller_markers = ["sign-cpu-objective", "sign_initial_cpu_objective"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_goal_ingress.rs"
+required = ["role::actual_role_for_program", "transport::observe(&cfg)", "model_use_current::inspect_current", "current.worker_program()?", "current.current_payload_digests()?", "current_goal_bindings", "goal::preview", "objective_ingress_signing_claims_v1", "current.revalidate_current()?", "expires <= now_ms()?"]
+forbidden = ["SigningKey::generate", "unwrap_or_default", "AuthorityPosture::ALLOW_ALL"]
+
+[[boundary]]
+id = "ordinary_cpu_objective_delivery"
+symbol = "deliver_initial_cpu_objective"
+call_pattern = '\bdeliver_initial_cpu_objective\s*\('
+definition_path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_anchor.rs"
+definition_markers = ["pub async fn deliver_initial_cpu_objective", "goal_ingress::deliver(path, pin).await"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/bin/hepta-initial-cpu-anchor.rs"]
+caller_markers = ["deliver-cpu-objective", "deliver_initial_cpu_objective"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_goal_transport.rs"
+required = ["--require-program-sha256", "resource-observe", "process_start_ticks", "grant.expires_at_ms <= now", "record.lifecycle.lifecycle != AgentLifecycle::Running", "packet.ingress.body.spawn_generation != cfg.spawn_generation", "AgentdClient::new", "client.health().await?", "client.objective_start(packet.ingress).await?"]
+forbidden = ["SigningKey", "loop { client.objective_start", "set_permissions", "AuthorityPosture::ALLOW_ALL"]
+
+[[boundary]]
+id = "original_agent_offline_authbus_checkpoint"
+symbol = "initialize_offline_authbus_checkpoint_v1"
+call_pattern = '\binitialize_offline_authbus_checkpoint_v1\s*\('
+definition_path = "codex-rs/hepta-agentd/src/authbus_offline_initialization.rs"
+definition_markers = ["pub async fn initialize_offline_authbus_checkpoint_v1", "AgentLifecycle::Stopped", "lock.try_lock()", "open_existing_read_only", "authbus_replay_frontier_digest", "reconcile_authbus_restore_checkpoint", "advance_authbus_restore_checkpoint", "create_new(true)"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/initial_cpu_goal_checkpoint.rs"]
+caller_markers = ["initialize_offline_authbus_checkpoint_v1", "cfg.fleet_root", "cfg.checkpoint"]

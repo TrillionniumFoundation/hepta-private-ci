@@ -50,6 +50,10 @@ impl CurrentUse {
     }
 }
 
+pub(super) fn inspect_current(pointer: &Path) -> HostResult<VerifiedCpuModelUseV2> {
+    Ok(CurrentUse::read(pointer)?.verified)
+}
+
 pub(super) fn read_installed_inputs(
     path: &Path,
     clock: Arc<dyn AuthorityClock>,
@@ -83,6 +87,22 @@ pub(super) struct Admission {
     clock: Arc<dyn AuthorityClock>,
 }
 impl Admission {
+    pub(super) fn inactive_state(
+        &self,
+        subject: StableId,
+    ) -> HostResult<codex_hepta_agentd::ConservativeCpuStateV1> {
+        self.refresh()?;
+        let current = self
+            .current
+            .lock()
+            .map_err(|_| "model-use state poisoned")?;
+        Ok(
+            codex_hepta_agentd::ConservativeCpuStateV1::from_current_payloads(
+                subject,
+                current.active.verified.current_payload_digests()?,
+            )?,
+        )
+    }
     pub(super) fn binding(
         &self,
     ) -> &codex_hepta_agent_components::intelligence_eval::OperationalModelLeaseBindingV2 {
@@ -140,7 +160,7 @@ impl Admission {
         Ok(next)
     }
 
-    fn refresh(&mut self) -> HostResult<()> {
+    fn refresh(&self) -> HostResult<()> {
         let mut state = self
             .current
             .lock()
