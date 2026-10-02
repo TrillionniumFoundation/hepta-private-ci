@@ -52,6 +52,57 @@ impl ReadOnlyArtifactCurrentOwnerV1 {
         owner.current_registry_view(now)?;
         Ok(owner)
     }
+    /// Read an original complete publication ACK under the independently
+    /// current Root frontier. Historical signatures authenticate history only;
+    /// this method never obtains a writer lease, repairs or advances checkpoints.
+    pub fn acknowledged_publication(
+        &self,
+        operation_id: &StableId,
+        original_head: &SignedCurrentArtifactHeadV1,
+        now: u64,
+    ) -> Result<Option<ArtifactOwnerPublicationCheckpointV1>, ArtifactOwnerHostError> {
+        self.current_registry_view(now)?;
+        let context = ArtifactOwnerReadContext {
+            root: &self.root,
+            verifier: &self.verifier,
+            required_current_head: &self.required,
+        };
+        let Some(recovery) = context.recover_publication(operation_id)? else {
+            return Ok(None);
+        };
+        let checkpoint = recovery.checkpoint;
+        if checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        let current = context.discover_current_head(now)?;
+        context.enforce_required_current_head(original_head, current.as_ref())?;
+        let expected = self.verifier.verify_signed_head(
+            original_head,
+            &RegistryHeadRequirementV1 {
+                registry_id: self.verifier.trust.registry_id.clone(),
+                minimum_generation: original_head.witness.generation,
+                expected_predecessor_head_digest: original_head.witness.predecessor_head_digest,
+                minimum_authority_epoch: original_head.witness.authority_epoch,
+                now: original_head.witness.issued_at,
+            },
+            false,
+        )?;
+        if checkpoint.registry_receipt.is_none_or(|receipt| {
+            receipt.binding != original_head.binding
+                || receipt.head_digest != original_head.witness.head_digest
+        }) || checkpoint
+            .witness_receipt
+            .is_none_or(|receipt| receipt.witness_digest != expected.witness_digest)
+            || checkpoint.expected_registry_predecessor_head
+                != original_head.witness.predecessor_head_digest
+            || checkpoint.withdrawal_scope_digest != original_head.withdrawal_scope_digest
+            || checkpoint.acknowledged_at.is_none()
+        {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        self.current_registry_view(now)?;
+        Ok(Some(checkpoint))
+    }
     /// Return only a complete current snapshot with exact native V2 provenance,
     /// withdrawals, original operation history and live signed-head time facts.
     pub fn current_registry_view(

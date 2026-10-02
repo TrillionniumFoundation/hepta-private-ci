@@ -171,6 +171,7 @@ pub use trust_distribution::SignedLearningTrustDistributionV1;
 pub use trust_distribution::activate_learning_trust;
 pub use witness::LedgerWitnessFrontier;
 pub use witness::LedgerWitnessStore;
+pub use witness::inspect_ledger_witness_frontier;
 
 #[cfg(test)]
 #[path = "shadow_tests.rs"]

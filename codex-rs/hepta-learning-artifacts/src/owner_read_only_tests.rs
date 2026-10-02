@@ -294,6 +294,17 @@ fn root_readonly_current_preserves_the_real_writer_and_closes_on_withdrawal_and_
         service.recovery_required(),
         Some(&id("recover-original-withdrawal"))
     );
+    let pending_reader =
+        ReadOnlyArtifactCurrentOwnerV1::open(&root, trust.clone(), withdrawals.clone(), now)
+            .fixture("pending read-only original owner");
+    assert!(matches!(
+        pending_reader.acknowledged_publication(&id("recover-original-withdrawal"), &head, now),
+        Err(ArtifactOwnerHostError::CheckpointMismatch)
+    ));
+    assert_eq!(
+        fs::read(root.join("READ-CURRENT")).fixture("pending inspection unchanged"),
+        before_probe
+    );
     let changes = vec![crate::ArtifactEvent::Revoke(crate::StateChange {
         event_id: id("original-withdrawal-revoke"),
         artifact_id: id("candidate"),
@@ -321,6 +332,7 @@ fn root_readonly_current_preserves_the_real_writer_and_closes_on_withdrawal_and_
         expected_registry_predecessor_head: registry.head_digest(),
         now,
     };
+    let original_withdrawal_head = request.signed_current_head.clone();
     let ack = service
         .publish_with_state_changes(request.clone(), &changes)
         .fixture("same original checkpoint ACK");
@@ -341,6 +353,61 @@ fn root_readonly_current_preserves_the_real_writer_and_closes_on_withdrawal_and_
             .current_registry_view(now)
             .fixture("complete withdrawal view")
             .is_eligible(&id("candidate"))
+    );
+    let before_read = fs::read(root.join("READ-CURRENT")).fixture("current read bytes");
+    let historical_ack = revoked
+        .acknowledged_publication(
+            &id("recover-original-withdrawal"),
+            &original_withdrawal_head,
+            now,
+        )
+        .fixture("original full ACK while writer held")
+        .fixture("existing native checkpoint");
+    assert_eq!(
+        historical_ack.phase,
+        ArtifactPublicationPhaseV1::Acknowledged
+    );
+    assert_eq!(historical_ack.operation_id, ack.operation_id);
+    assert_eq!(
+        historical_ack
+            .registry_receipt
+            .fixture("original native registry")
+            .head_digest,
+        ack.registry_head_digest
+    );
+    assert_eq!(
+        historical_ack
+            .witness_receipt
+            .fixture("original native witness")
+            .witness_digest,
+        ack.witness_digest
+    );
+    assert_eq!(historical_ack.state_digest, ack.state_digest);
+    assert_eq!(
+        revoked
+            .acknowledged_publication(&id("absent-operation"), &original_withdrawal_head, now)
+            .fixture("no fake ACK"),
+        None
+    );
+    assert!(
+        revoked
+            .acknowledged_publication(
+                &id("recover-original-withdrawal"),
+                &original_withdrawal_head,
+                now + 60001
+            )
+            .is_err()
+    );
+    let mut substituted = original_withdrawal_head;
+    substituted.binding = digest("foreign owner binding");
+    assert!(
+        revoked
+            .acknowledged_publication(&id("recover-original-withdrawal"), &substituted, now)
+            .is_err()
+    );
+    assert_eq!(
+        fs::read(root.join("READ-CURRENT")).fixture("inspection does not write"),
+        before_read
     );
     let sidecar = fs::read_dir(root.join("admissions"))
         .fixture("admissions")
