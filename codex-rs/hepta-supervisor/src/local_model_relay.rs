@@ -5,16 +5,17 @@
 use std::sync::Arc;
 use std::time::Duration;
 
+use ::http::header::AUTHORIZATION;
+use ::http::header::HeaderMap;
+use ::http::header::HeaderName;
+use ::http::header::HeaderValue;
 use anyhow::Context;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::claim_final_use;
 use codex_http_client::ClientRouteClass;
+use codex_http_client::HttpClientBuilder;
 use codex_http_client::HttpClientFactory;
 use codex_http_client::OutboundProxyPolicy;
-use reqwest::header::AUTHORIZATION;
-use reqwest::header::HeaderMap;
-use reqwest::header::HeaderName;
-use reqwest::header::HeaderValue;
 use sha2::Digest;
 use sha2::Sha256;
 use tokio::net::UnixListener;
@@ -136,7 +137,7 @@ async fn prepare(
     policy: &ModelRelayPolicy,
     stream: &mut UnixStream,
 ) -> anyhow::Result<(
-    reqwest::RequestBuilder,
+    codex_http_client::RequestBuilder,
     FinalUseBinding,
     codex_hepta_contracts::VerifiedUseToken,
 )> {
@@ -163,15 +164,16 @@ async fn prepare(
     } else {
         "https://api.openai.com/v1/responses"
     };
-    let client = HttpClientFactory::new(OutboundProxyPolicy::RespectSystemProxy)
-        .build_reqwest_client(
-            reqwest::Client::builder()
-                .redirect(reqwest::redirect::Policy::none())
-                .connect_timeout(Duration::from_secs(15))
-                .timeout(Duration::from_millis(policy.call_timeout_ms)),
+    let client = HttpClientBuilder::new()
+        .without_redirects()
+        .without_request_logging()
+        .connect_timeout(Duration::from_secs(15))
+        .build_respecting_outbound_proxy_policy(
+            &HttpClientFactory::new(OutboundProxyPolicy::RespectSystemProxy),
             upstream,
             ClientRouteClass::Api,
-        )?;
+        )?
+        .without_trace_propagation();
     let mut headers = HeaderMap::new();
     for name in [
         "content-type",
@@ -228,7 +230,11 @@ async fn prepare(
         scope_sha256: Sha256::digest(scope).into(),
         payload_sha256: body_digest,
     };
-    let outgoing = client.post(upstream).headers(headers).body(request.body);
+    let outgoing = client
+        .post(upstream)
+        .headers(headers)
+        .body(request.body)
+        .timeout(Duration::from_millis(policy.call_timeout_ms));
     let head = issuer.synchronize_head()?;
     anyhow::ensure!(
         capture_peer(

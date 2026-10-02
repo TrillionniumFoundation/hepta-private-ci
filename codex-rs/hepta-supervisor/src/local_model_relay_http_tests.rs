@@ -77,7 +77,7 @@ fn compressed_requests_keep_wire_digest_and_enforce_decoded_bound() {
 }
 
 #[tokio::test]
-async fn real_reqwest_unix_transport_receives_chunked_sse_without_private_headers() {
+async fn real_shared_unix_transport_receives_chunked_sse_without_private_headers() {
     let directory = tempfile::tempdir().unwrap();
     let socket = directory.path().join("model.sock");
     let listener = tokio::net::UnixListener::bind(&socket).unwrap();
@@ -88,12 +88,12 @@ async fn real_reqwest_unix_transport_receives_chunked_sse_without_private_header
         assert!(!request.headers.contains_key("authorization"));
         let headers = HeaderMap::from_iter([
             (
-                reqwest::header::CONTENT_TYPE,
-                reqwest::header::HeaderValue::from_static("text/event-stream"),
+                ::http::header::CONTENT_TYPE,
+                ::http::header::HeaderValue::from_static("text/event-stream"),
             ),
             (
-                reqwest::header::SET_COOKIE,
-                reqwest::header::HeaderValue::from_static("private-account=secret"),
+                ::http::header::SET_COOKIE,
+                ::http::header::HeaderValue::from_static("private-account=secret"),
             ),
         ]);
         start_response(&mut stream, 200, &headers).await.unwrap();
@@ -105,10 +105,10 @@ async fn real_reqwest_unix_transport_receives_chunked_sse_without_private_header
             .unwrap();
         finish(&mut stream).await.unwrap();
     });
-    let response = reqwest::Client::builder()
+    let response = codex_http_client::HttpClientBuilder::new()
         .unix_socket(socket)
-        .no_proxy()
-        .build()
+        .without_request_logging()
+        .build_direct()
         .unwrap()
         .post("http://localhost/hepta/v1/responses")
         .header("content-type", "application/json")

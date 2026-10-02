@@ -6,7 +6,7 @@ use std::collections::BTreeMap;
 use std::io::Read;
 
 use anyhow::Context;
-use reqwest::header::HeaderMap;
+use http::header::HeaderMap;
 use serde::Deserialize;
 use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;

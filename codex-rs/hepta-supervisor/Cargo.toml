@@ -34,7 +34,7 @@ offline-authority-tools = ["production-verifier"]
 # Explicit root-owned ordinary model issuer; never independent qualification.
 local-model-authority = ["codex-hepta-fleet/durable-store"]
 # Credential custody and HTTP streaming remain inside the ordinary model owner.
-local-model-relay = ["local-model-authority", "dep:codex-login", "dep:codex-http-client", "dep:reqwest", "dep:zstd"]
+local-model-relay = ["local-model-authority", "dep:codex-login", "dep:codex-http-client", "dep:http", "dep:zstd"]
 
 [[bin]]
 name = "hepta-supervisord"
@@ -116,7 +116,7 @@ libc = { workspace = true }
 rustix = { workspace = true, features = ["process"] }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
-reqwest = { workspace = true, optional = true, features = ["stream"] }
+http = { workspace = true, optional = true }
 zstd = { workspace = true, optional = true }
 sha2 = { workspace = true }
 thiserror = { workspace = true }
