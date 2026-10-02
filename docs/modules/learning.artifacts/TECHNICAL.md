@@ -54,6 +54,14 @@ adapters. These are concrete implementation and composition facts. Their tests,
 all-target build and lint results must be recorded for the exact candidate before
 claiming qualification.
 
+Publication time is caller-supplied logical `request.now`. Preflight rejects bad
+payloads/signatures/projections before `Prepared`, and later phases revalidate
+against that request time. There is no authoritative clock callback in this API;
+it cannot establish elapsed wall-clock freshness after a long computation or I/O
+stall. Deployment composition must supply/enforce current time at the final
+mutation/use boundary. A logical-clock test is not a measured real-time lease
+expiry qualification.
+
 The deployment supplies public trust, signed writer/selector/head evidence,
 independently retained restart floors and an authoritative newest-head channel.
 Those are necessary inputs to implemented verification APIs. Supplying them does
@@ -272,6 +280,13 @@ canonical byte digest and length, not merely semantic heads. The signed-head
 retry check independently derives the complete witness receipt from the signed
 canonical witness. Correct historical encodings are unchanged; fabricated or
 incompletely bound receipts now fail closed.
+
+Retained signed predecessors are checked with their historical signing time and
+per-signer epoch/key/revocation bounds. Raised CURRENT generation/epoch floors are
+applied to the terminal live head and public current-view verification, not to
+older authentic ancestry. Independent restart anchors may be older than the live
+floor but must occur in the recovered chain. Historical verification never makes
+an old head current or accepts a signature issued after its key was revoked.
 
 Each publication phase validates a cloned transaction before creating its durable effect. A bad signed head or changed withdrawal frontier therefore cannot publish a rejected CURRENT. Recovery accepts only canonical checkpoint paths and encodings, complete ordered phases and consistent operation, admission, original lease and receipt identities. A renewed valid lease can finish the exact original transaction without rewriting its historical lease binding. Startup scans are bounded to 4,096 operations and five checkpoints per operation.
 
