@@ -21,15 +21,24 @@ import time
 program_dir = Path(__file__).parent
 for ancestor in (program_dir, *program_dir.parents):
     metadata = ancestor.lstat()
-    if ancestor.resolve() != ancestor or metadata.st_uid != 0 or metadata.st_mode & 0o022:
+    if (
+        ancestor.resolve() != ancestor
+        or metadata.st_uid != 0
+        or metadata.st_mode & 0o022
+    ):
         raise ValueError("unprotected encoder program directory")
 sys.path.insert(0, str(program_dir))
 sys.dont_write_bytecode = True
 helper = program_dir / "fixed_encoder_sources.py"
 metadata = helper.lstat()
-if not stat.S_ISREG(metadata.st_mode) or metadata.st_uid != 0 or metadata.st_mode & 0o022 or metadata.st_nlink != 1:
+if (
+    not stat.S_ISREG(metadata.st_mode)
+    or metadata.st_uid != 0
+    or metadata.st_mode & 0o022
+    or metadata.st_nlink != 1
+):
     raise ValueError("unprotected encoder source module")
-from fixed_encoder_sources import (
+from fixed_encoder_sources import (  # noqa: E402 - imports follow physical Root source validation
     decode_json,
     protected_path,
     root_role,
@@ -47,7 +56,10 @@ def now_ms():
 def load_config(path, pin):
     root_role()
     payload = protected_path(path).read_bytes()
-    if not 0 < len(payload) <= 2 * 1024 * 1024 or hashlib.sha256(payload).hexdigest() != pin:
+    if (
+        not 0 < len(payload) <= 2 * 1024 * 1024
+        or hashlib.sha256(payload).hexdigest() != pin
+    ):
         raise ValueError("encoder configuration pin/budget")
     config = decode_json(payload)
     required = {
@@ -72,7 +84,10 @@ def load_config(path, pin):
         "max_requests",
         "principals",
     }
-    if config["schema"] in ("hepta.fixed-nomic-encoder.v2", "hepta.fixed-nomic-encoder.v3"):
+    if config["schema"] in (
+        "hepta.fixed-nomic-encoder.v2",
+        "hepta.fixed-nomic-encoder.v3",
+    ):
         required.add("resource_observer")
         if config["schema"] == "hepta.fixed-nomic-encoder.v3":
             required.add("public_development")
@@ -82,33 +97,56 @@ def load_config(path, pin):
         raise ValueError("encoder configuration fields")
     if not now_ms() < config["expires_at_ms"] <= now_ms() + 24 * 60 * 60 * 1000:
         raise ValueError("encoder configuration expired")
-    if not 1 <= config["timeout_ms"] <= 120_000 or not 1 <= config["max_requests"] <= 4096:
+    if (
+        not 1 <= config["timeout_ms"] <= 120_000
+        or not 1 <= config["max_requests"] <= 4096
+    ):
         raise ValueError("encoder request budget")
     if config["backend_uid"] <= 0 or config["backend_pid"] <= 1:
         raise ValueError("backend physical identity")
     for item in config["runtime_sources"] + config["program_sources"]:
         verify_large_source(item, 128 * 1024 * 1024)
     program_paths = {item["path"] for item in config["program_sources"]}
-    if str(Path(__file__)) not in program_paths or str(program_dir / "fixed_encoder_sources.py") not in program_paths:
+    if (
+        str(Path(__file__)) not in program_paths
+        or str(program_dir / "fixed_encoder_sources.py") not in program_paths
+    ):
         raise ValueError("encoder source closure")
-    if config["schema"] in ("hepta.fixed-nomic-encoder.v2", "hepta.fixed-nomic-encoder.v3"):
+    if config["schema"] in (
+        "hepta.fixed-nomic-encoder.v2",
+        "hepta.fixed-nomic-encoder.v3",
+    ):
         if str(program_dir / "fixed_encoder_resources.py") not in program_paths:
-            raise ValueError("original resource reader outside protected source closure")
+            raise ValueError(
+                "original resource reader outside protected source closure"
+            )
         if (
             config["schema"] == "hepta.fixed-nomic-encoder.v3"
             and str(program_dir / "fixed_encoder_development.py") not in program_paths
         ):
-            raise ValueError("closed public measurement outside protected source closure")
+            raise ValueError(
+                "closed public measurement outside protected source closure"
+            )
     protected_path(config["model_directory"], directory=True)
-    paths = sorted(str(item) for item in Path(config["model_directory"]).rglob("*") if not item.is_dir())
-    if paths != sorted(item["path"] for item in config["model_sources"]) or len(paths) != 5:
+    paths = sorted(
+        str(item)
+        for item in Path(config["model_directory"]).rglob("*")
+        if not item.is_dir()
+    )
+    if (
+        paths != sorted(item["path"] for item in config["model_sources"])
+        or len(paths) != 5
+    ):
         raise ValueError("fixed model closure")
     for item in config["model_sources"]:
         verify_large_source(item, 300 * 1024 * 1024)
     if config["gguf_source"] not in config["model_sources"]:
         raise ValueError("GGUF outside model closure")
     preprocessor = decode_json(source_bytes(config["preprocessor_source"], 16 * 1024))
-    if config["preprocessor_source"]["sha256"] != "fa0d37d65471c4c08c9c4cd5d458660e46599ec7acdd42063dc52fddd0f7bc27":
+    if (
+        config["preprocessor_source"]["sha256"]
+        != "fa0d37d65471c4c08c9c4cd5d458660e46599ec7acdd42063dc52fddd0f7bc27"
+    ):
         raise ValueError("original text normalization pin")
     with open(protected_path(config["gguf_source"]["path"]), "rb") as stream:
         if tokenizer_digest(stream) != preprocessor["tokenizer_sha256"]:
@@ -139,7 +177,11 @@ def load_config(path, pin):
         raise ValueError("unsupported original preprocessor")
     if preprocessor["weights_sha256"] != config["gguf_source"]["sha256"]:
         raise ValueError("preprocessor weights pin")
-    runtime = next(item for item in config["runtime_sources"] if item["path"] == "/usr/local/bin/ollama")
+    runtime = next(
+        item
+        for item in config["runtime_sources"]
+        if item["path"] == "/usr/local/bin/ollama"
+    )
     if runtime["sha256"] != preprocessor["runtime_binary_sha256"]:
         raise ValueError("original physical embedding runtime pin")
     verify_inventory(config["numpy_directory"], config["numpy_sources"])
@@ -148,7 +190,8 @@ def load_config(path, pin):
 
     if (
         numpy.__version__ != "1.26.4"
-        or Path(numpy.__file__).resolve() != Path(config["numpy_directory"]) / "__init__.py"
+        or Path(numpy.__file__).resolve()
+        != Path(config["numpy_directory"]) / "__init__.py"
     ):
         raise ValueError("fixed NumPy implementation")
     pairs = decode_json(source_bytes(config["pairs_source"], 4 * 1024 * 1024))
@@ -166,9 +209,22 @@ def load_config(path, pin):
             raise ValueError("masked pair fields")
         if pair["pair_id"] in by_id or not isinstance(pair["abstract_sentences"], list):
             raise ValueError("duplicate or invalid pair")
-        if not all(isinstance(text, str) for text in [pair["claim_text"], pair["title"], *pair["abstract_sentences"]]):
+        if not all(
+            isinstance(text, str)
+            for text in [pair["claim_text"], pair["title"], *pair["abstract_sentences"]]
+        ):
             raise ValueError("masked pair text")
-        if sum(len(text) for text in [pair["claim_text"], pair["title"], *pair["abstract_sentences"]]) > 100_000:
+        if (
+            sum(
+                len(text)
+                for text in [
+                    pair["claim_text"],
+                    pair["title"],
+                    *pair["abstract_sentences"],
+                ]
+            )
+            > 100_000
+        ):
             raise ValueError("masked pair size")
         if len(bytes.fromhex(pair["source_row_sha256"])) != 32:
             raise ValueError("original pair identity")
@@ -181,7 +237,11 @@ def process_identity(pid):
     root = Path("/proc") / str(pid)
     raw = (root / "stat").read_text()
     start = raw[raw.rfind(")") + 2 :].split()[19]
-    fields = dict(line.split(":", 1) for line in (root / "status").read_text().splitlines() if ":" in line)
+    fields = dict(
+        line.split(":", 1)
+        for line in (root / "status").read_text().splitlines()
+        if ":" in line
+    )
     uids = [int(value) for value in fields["Uid"].split()]
     gids = [int(value) for value in fields["Gid"].split()]
     cgroups = (root / "cgroup").read_text().splitlines()
@@ -213,7 +273,8 @@ def encode(config, preprocessor, numpy, pair, pin):
     before = backend_identity(config)
     texts = [
         preprocessor["claim_prefix"] + pair["claim_text"],
-        preprocessor["document_prefix"] + (pair["title"] + "\n" + " ".join(pair["abstract_sentences"]))[:6000],
+        preprocessor["document_prefix"]
+        + (pair["title"] + "\n" + " ".join(pair["abstract_sentences"]))[:6000],
     ]
     body = json.dumps(
         {
@@ -227,9 +288,13 @@ def encode(config, preprocessor, numpy, pair, pin):
     ).encode()
     started = time.monotonic_ns()
     # No proxy environment, redirects, caller URL, model, pull or HTTP methods.
-    connection = http.client.HTTPConnection("127.0.0.1", 11435, timeout=config["timeout_ms"] / 1000)
+    connection = http.client.HTTPConnection(
+        "127.0.0.1", 11435, timeout=config["timeout_ms"] / 1000
+    )
     try:
-        connection.request("POST", "/api/embed", body, {"Content-Type": "application/json"})
+        connection.request(
+            "POST", "/api/embed", body, {"Content-Type": "application/json"}
+        )
         response = connection.getresponse()
         payload = response.read(128 * 1024 + 1)
         if response.status != 200 or len(payload) > 128 * 1024:
@@ -248,7 +313,9 @@ def encode(config, preprocessor, numpy, pair, pin):
         norm = numpy.linalg.norm(centered)
         if not numpy.isfinite(norm) or norm <= 0:
             raise ValueError("zero/nonfinite physical embedding")
-        features.extend(numpy.rint((centered / norm) * (1 << 24)).astype(numpy.int64).tolist())
+        features.extend(
+            numpy.rint((centered / norm) * (1 << 24)).astype(numpy.int64).tolist()
+        )
     if backend_identity(config) != before or now_ms() >= config["expires_at_ms"]:
         raise ValueError("physical backend or expiry changed")
     result = {
@@ -263,7 +330,11 @@ def encode(config, preprocessor, numpy, pair, pin):
         "features_q24": features,
     }
     if config["schema"] == "hepta.fixed-nomic-encoder.v3":
-        manifests = [source for source in config["model_sources"] if "/manifests/" in source["path"]]
+        manifests = [
+            source
+            for source in config["model_sources"]
+            if "/manifests/" in source["path"]
+        ]
         if len(manifests) != 1:
             raise ValueError("fixed physical encoder manifest identity")
         result["encoder_manifest_sha256"] = manifests[0]["sha256"]
@@ -271,7 +342,10 @@ def encode(config, preprocessor, numpy, pair, pin):
 
 
 def authorize(connection, config, request):
-    if config["schema"] in ("hepta.fixed-nomic-encoder.v2", "hepta.fixed-nomic-encoder.v3"):
+    if config["schema"] in (
+        "hepta.fixed-nomic-encoder.v2",
+        "hepta.fixed-nomic-encoder.v3",
+    ):
         return authorize_current(connection, config, request)
     fields = {
         "pair_id",
@@ -287,7 +361,9 @@ def authorize(connection, config, request):
     }
     if set(request) != fields:
         raise ValueError("fixed request fields")
-    pid, uid, gid = struct.unpack("3i", connection.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
+    pid, uid, gid = struct.unpack(
+        "3i", connection.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12)
+    )
     identity = process_identity(pid)
     for principal in config["principals"]:
         if set(principal) != fields - {"pair_id", "source_row_sha256"} | {
@@ -304,7 +380,8 @@ def authorize(connection, config, request):
             and identity[2] == [gid] * 4
         ):
             if identity[3] == principal["cgroup"] and all(
-                request[key] == principal[key] for key in fields - {"pair_id", "source_row_sha256"}
+                request[key] == principal[key]
+                for key in fields - {"pair_id", "source_row_sha256"}
             ):
                 if now_ms() < request["grant_expires_at_ms"]:
                     return pid, identity
@@ -323,9 +400,15 @@ def authorize_current(connection, config, request):
         "run_id",
         "ndu_digest",
     }
-    if set(request) != fields or len(bytes.fromhex(request["ndu_digest"])) != 32 or request["ndu_digest"] == "0" * 64:
+    if (
+        set(request) != fields
+        or len(bytes.fromhex(request["ndu_digest"])) != 32
+        or request["ndu_digest"] == "0" * 64
+    ):
         raise ValueError("actual canonical neural stage fields")
-    pid, uid, gid = struct.unpack("3i", connection.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12))
+    pid, uid, gid = struct.unpack(
+        "3i", connection.getsockopt(socket.SOL_SOCKET, socket.SO_PEERCRED, 12)
+    )
     identity = process_identity(pid)
     for principal in config["principals"]:
         expected = fields - {"ndu_digest"} | {
@@ -369,8 +452,15 @@ def authorize_current(connection, config, request):
         if not all(request[key] == principal[key] for key in fixed):
             continue
         verify_large_source(principal["program_source"], 512 * 1024 * 1024)
-        body_records = [decode_json(source_bytes(item, 64 * 1024)) for item in principal["body_sources"]]
-        compiled = [value for value in body_records if isinstance(value, dict) and "runtime_body_digest" in value]
+        body_records = [
+            decode_json(source_bytes(item, 64 * 1024))
+            for item in principal["body_sources"]
+        ]
+        compiled = [
+            value
+            for value in body_records
+            if isinstance(value, dict) and "runtime_body_digest" in value
+        ]
         if (
             len(compiled) != 1
             or compiled[0]["runtime_body_digest"] != principal["body_digest"]
@@ -388,7 +478,10 @@ def authorize_current(connection, config, request):
 def serve(config, preprocessor, numpy, pairs, pin):
     development = None
     if config["schema"] == "hepta.fixed-nomic-encoder.v3":
-        from fixed_encoder_development import MAX_RESPONSE_BYTES, DevelopmentMeasurements
+        from fixed_encoder_development import (
+            MAX_RESPONSE_BYTES,
+            DevelopmentMeasurements,
+        )
 
         development = DevelopmentMeasurements(config, pairs)
     path = Path(config["socket_path"])
@@ -424,9 +517,17 @@ def serve(config, preprocessor, numpy, pairs, pin):
                     request = decode_json(payload)
                     if not isinstance(request, dict):
                         raise ValueError("single request object required")
-                    if development is not None and request.get("purpose") == "PublicDevelopmentMeasurementOnlyV1":
-                        result = development.measure(connection, request, preprocessor, numpy, pin, encode)
-                        response = json.dumps(result, separators=(",", ":")).encode() + b"\n"
+                    if (
+                        development is not None
+                        and request.get("purpose")
+                        == "PublicDevelopmentMeasurementOnlyV1"
+                    ):
+                        result = development.measure(
+                            connection, request, preprocessor, numpy, pin, encode
+                        )
+                        response = (
+                            json.dumps(result, separators=(",", ":")).encode() + b"\n"
+                        )
                         if len(response) > MAX_RESPONSE_BYTES:
                             raise ValueError("closed public response budget")
                         connection.sendall(response)
@@ -439,9 +540,13 @@ def serve(config, preprocessor, numpy, pairs, pin):
                     if authorize(connection, config, request) != (pid, before):
                         raise ValueError("peer changed during physical encoding")
                     result["run_tuple"] = {
-                        key: request[key] for key in request if key not in ("pair_id", "source_row_sha256")
+                        key: request[key]
+                        for key in request
+                        if key not in ("pair_id", "source_row_sha256")
                     }
-                    connection.sendall(json.dumps(result, separators=(",", ":")).encode() + b"\n")
+                    connection.sendall(
+                        json.dumps(result, separators=(",", ":")).encode() + b"\n"
+                    )
                 except (ValueError, KeyError, OSError, TypeError):
                     connection.sendall(b'{"error":"fixed physical encoder denied"}\n')
     finally:
@@ -457,7 +562,9 @@ def main():
     config, preprocessor, numpy, pairs = load_config(path, pin)
     if purpose == "probe-physical-encoding" and len(sys.argv) == 5:
         result = encode(config, preprocessor, numpy, pairs[sys.argv[4]], pin)
-        result["qualification_scope"] = "physical encoding only; no grant, Neuron execution, selection or activation"
+        result["qualification_scope"] = (
+            "physical encoding only; no grant, Neuron execution, selection or activation"
+        )
         print(json.dumps(result, separators=(",", ":")))
     elif purpose == "serve-fixed-pairs" and len(sys.argv) == 4:
         serve(config, preprocessor, numpy, pairs, pin)

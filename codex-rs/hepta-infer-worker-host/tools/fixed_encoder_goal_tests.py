@@ -20,7 +20,9 @@ def source_function(name):
     program = Path(__file__).with_name("hepta_fixed_nomic_encoder.py")
     parsed = ast.parse(program.read_text())
     selected = [
-        item for item in parsed.body if isinstance(item, ast.FunctionDef) and item.name in (name, "process_identity")
+        item
+        for item in parsed.body
+        if isinstance(item, ast.FunctionDef) and item.name in (name, "process_identity")
     ]
     namespace = {
         "Path": Path,
@@ -36,21 +38,34 @@ def source_function(name):
         "source_bytes": lambda source, _: json.dumps(source).encode(),
         "decode_json": json.loads,
     }
-    exec(compile(ast.Module(body=selected, type_ignores=[]), str(program), "exec"), namespace)
+    exec(
+        compile(ast.Module(body=selected, type_ignores=[]), str(program), "exec"),
+        namespace,
+    )
     return namespace[name]
 
 
 class GoalTests(unittest.TestCase):
-    def test_v3_reports_physical_manifest_separately_from_cpu_alias_and_keeps_v2_wire(self):
-        numpy_site = Path("/opt/hepta-private-ci/encoders/fixed-nomic-20261001-v4/python-site")
+    def test_v3_reports_physical_manifest_separately_from_cpu_alias_and_keeps_v2_wire(
+        self,
+    ):
+        numpy_site = Path(
+            "/opt/hepta-private-ci/encoders/fixed-nomic-20261001-v4/python-site"
+        )
         if not numpy_site.is_dir():
-            self.skipTest("this Linux physical transform fixture needs the installed immutable NumPy snapshot")
+            self.skipTest(
+                "this Linux physical transform fixture needs the installed immutable NumPy snapshot"
+            )
         sys.path.insert(0, str(numpy_site))
         import numpy
 
         self.assertEqual(numpy.__version__, "1.26.4")
-        self.assertEqual(Path(numpy.__file__).resolve(), numpy_site / "numpy/__init__.py")
-        vectors = [[(value - offset) / 768 for value in range(768)] for offset in (7, 19)]
+        self.assertEqual(
+            Path(numpy.__file__).resolve(), numpy_site / "numpy/__init__.py"
+        )
+        vectors = [
+            [(value - offset) / 768 for value in range(768)] for offset in (7, 19)
+        ]
         payload = json.dumps({"embeddings": vectors}).encode()
         calls = []
 
@@ -80,7 +95,9 @@ class GoalTests(unittest.TestCase):
             "timeout_ms": 2000,
             "preprocessor_source": {"sha256": "1" * 64},
             "gguf_source": {"sha256": "2" * 64},
-            "model_sources": [{"path": "/opt/physical/manifests/nomic", "sha256": "3" * 64}],
+            "model_sources": [
+                {"path": "/opt/physical/manifests/nomic", "sha256": "3" * 64}
+            ],
         }
         preprocessor = {
             "claim_prefix": "search_query: ",
@@ -98,7 +115,13 @@ class GoalTests(unittest.TestCase):
         encode = source_function("encode")
         with patch.object(http.client, "HTTPConnection", Connection):
             v3 = encode(cfg, preprocessor, numpy, pair, "6" * 64)
-            v2 = encode({**cfg, "schema": "hepta.fixed-nomic-encoder.v2"}, preprocessor, numpy, pair, "7" * 64)
+            v2 = encode(
+                {**cfg, "schema": "hepta.fixed-nomic-encoder.v2"},
+                preprocessor,
+                numpy,
+                pair,
+                "7" * 64,
+            )
         self.assertEqual(v3["encoder_manifest_sha256"], "3" * 64)
         self.assertEqual(v3["weights_sha256"], "2" * 64)
         self.assertEqual(v3["tokenizer_sha256"], "4" * 64)
@@ -112,7 +135,9 @@ class GoalTests(unittest.TestCase):
 
     def setUp(self):
         self.authorize = source_function("authorize_current")
-        _, uids, gids, cgroup = self.authorize.__globals__["process_identity"](os.getpid())
+        _, uids, gids, cgroup = self.authorize.__globals__["process_identity"](
+            os.getpid()
+        )
         self.request = {
             "pair_id": "public.one",
             "source_row_sha256": "a" * 64,
@@ -122,9 +147,15 @@ class GoalTests(unittest.TestCase):
             "run_id": "run:goal.one",
             "ndu_digest": "d" * 64,
         }
-        body = {"runtime_body_digest": "b" * 64, "agent_id": "actual.agent", "body_generation": 1}
+        body = {
+            "runtime_body_digest": "b" * 64,
+            "agent_id": "actual.agent",
+            "body_generation": 1,
+        }
         self.principal = {
-            **{key: value for key, value in self.request.items() if key != "ndu_digest"},
+            **{
+                key: value for key, value in self.request.items() if key != "ndu_digest"
+            },
             "agent_id": "actual.agent",
             "uid": uids[0],
             "gid": gids[0],
@@ -139,16 +170,30 @@ class GoalTests(unittest.TestCase):
         with (
             left,
             right,
-            patch.object(fixed_encoder_resources, "observe", return_value=("actual.root.resource",)) as observe,
+            patch.object(
+                fixed_encoder_resources,
+                "observe",
+                return_value=("actual.root.resource",),
+            ) as observe,
         ):
-            result = self.authorize(left, {"schema": schema, "principals": [principal]}, request)
+            result = self.authorize(
+                left, {"schema": schema, "principals": [principal]}, request
+            )
             self.assertEqual(result[0], os.getpid())
             self.assertEqual(observe.call_args.args[2], os.getpid())
-            self.assertEqual(observe.call_args.args[1]["fleet_manifest_digest"], "e" * 64)
+            self.assertEqual(
+                observe.call_args.args[1]["fleet_manifest_digest"], "e" * 64
+            )
             return result
 
-    def test_explicit_goal_mode_accepts_two_actual_stages_same_model_and_kernel_peer(self):
-        principal = {key: value for key, value in self.principal.items() if key not in ("objective_digest", "run_id")}
+    def test_explicit_goal_mode_accepts_two_actual_stages_same_model_and_kernel_peer(
+        self,
+    ):
+        principal = {
+            key: value
+            for key, value in self.principal.items()
+            if key not in ("objective_digest", "run_id")
+        }
         principal["goal_scope_mode"] = "ActualCompiledGoalScopeV3"
         first = self.call("hepta.fixed-nomic-encoder.v3", principal, self.request)
         second = self.call(
@@ -179,7 +224,11 @@ class GoalTests(unittest.TestCase):
             )
 
     def test_wrong_peer_body_model_or_empty_stage_cannot_reach_the_resource_owner(self):
-        principal = {key: value for key, value in self.principal.items() if key not in ("objective_digest", "run_id")}
+        principal = {
+            key: value
+            for key, value in self.principal.items()
+            if key not in ("objective_digest", "run_id")
+        }
         principal["goal_scope_mode"] = "ActualCompiledGoalScopeV3"
         for field, value in [
             ("body_digest", "2" * 64),
@@ -198,7 +247,10 @@ class GoalTests(unittest.TestCase):
             ):
                 self.authorize(
                     left,
-                    {"schema": "hepta.fixed-nomic-encoder.v3", "principals": [principal]},
+                    {
+                        "schema": "hepta.fixed-nomic-encoder.v3",
+                        "principals": [principal],
+                    },
                     {**self.request, field: value},
                 )
             observe.assert_not_called()
