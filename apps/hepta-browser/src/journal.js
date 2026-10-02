@@ -178,7 +178,12 @@ async function readSnapshot(handle, size) {
   const buffer = Buffer.alloc(size + 1);
   let offset = 0;
   while (offset < buffer.length) {
-    const { bytesRead } = await handle.read(buffer, offset, buffer.length - offset, offset);
+    const { bytesRead } = await handle.read(
+      buffer,
+      offset,
+      buffer.length - offset,
+      offset,
+    );
     if (bytesRead === 0) break;
     offset += bytesRead;
   }
@@ -312,7 +317,10 @@ export class FileBrowserOperationJournal {
     let handle;
     await this.#prepareParent();
     try {
-      handle = await open(this.#path, constants.O_RDONLY | noFollow | (constants.O_NONBLOCK ?? 0));
+      handle = await open(
+        this.#path,
+        constants.O_RDONLY | noFollow | (constants.O_NONBLOCK ?? 0),
+      );
     } catch (error) {
       if (error?.code === "ENOENT") {
         if (this.#cacheIdentity !== null) this.#historyFailure("disappeared");
@@ -332,7 +340,10 @@ export class FileBrowserOperationJournal {
       if (identity === this.#cacheIdentity) return this.#cacheRecords;
       raw = await readSnapshot(handle, Number(info.size));
       const after = await handle.stat({ bigint: true });
-      if (raw.length !== Number(info.size) || fileIdentity(after) !== identity) {
+      if (
+        raw.length !== Number(info.size) ||
+        fileIdentity(after) !== identity
+      ) {
         this.#historyFailure("changed while reading");
       }
       requirePrivateFile(after);
@@ -388,9 +399,12 @@ export class FileBrowserOperationJournal {
       }
       records.set(key, applyRecord(prior, record, envelope.type));
     }
-    if (this.#cacheIdentity !== null &&
-        (raw.length < this.#cacheSize ||
-         checksumBytes(raw.subarray(0, this.#cacheSize)) !== this.#cacheHash.copy().digest("hex"))) {
+    if (
+      this.#cacheIdentity !== null &&
+      (raw.length < this.#cacheSize ||
+        checksumBytes(raw.subarray(0, this.#cacheSize)) !==
+          this.#cacheHash.copy().digest("hex"))
+    ) {
       this.#historyFailure("was truncated or rewritten");
     }
     this.#cacheIdentity = identity;
@@ -411,7 +425,10 @@ export class FileBrowserOperationJournal {
     await this.#prepareParent();
     const noFollow = constants.O_NOFOLLOW ?? 0;
     const flags =
-      constants.O_WRONLY | constants.O_APPEND | constants.O_CREAT | noFollow |
+      constants.O_WRONLY |
+      constants.O_APPEND |
+      constants.O_CREAT |
+      noFollow |
       (constants.O_NONBLOCK ?? 0);
     // Once opening/creating the file starts, any failure can leave an uncertain
     // durable prefix. Fence this owner rather than treating a retry as success.
@@ -441,11 +458,13 @@ export class FileBrowserOperationJournal {
       } finally {
         await handle.close();
       }
-      if (await syncDirectory(dirname(this.#path)) !== this.#parentIdentity) {
+      if ((await syncDirectory(dirname(this.#path))) !== this.#parentIdentity) {
         this.#historyFailure("parent identity changed while appending");
       }
-      const current = await open(this.#path,
-        constants.O_RDONLY | noFollow | (constants.O_NONBLOCK ?? 0));
+      const current = await open(
+        this.#path,
+        constants.O_RDONLY | noFollow | (constants.O_NONBLOCK ?? 0),
+      );
       try {
         const info = await current.stat({ bigint: true });
         requirePrivateFile(info);
@@ -475,7 +494,7 @@ export class FileBrowserOperationJournal {
       if ((await realpath(parent)) !== resolve(parent)) {
         throw new TypeError("browser journal parent path contains a symlink");
       }
-      if (await requirePrivateParent(parent) !== this.#parentIdentity) {
+      if ((await requirePrivateParent(parent)) !== this.#parentIdentity) {
         this.#historyFailure("parent identity changed");
       }
       return;
@@ -507,7 +526,9 @@ export class FileBrowserOperationJournal {
   }
 
   #historyFailure(reason) {
-    this.#uncertainWrite = new TypeError(`browser journal append-only history ${reason}; owner recovery required`);
+    this.#uncertainWrite = new TypeError(
+      `browser journal append-only history ${reason}; owner recovery required`,
+    );
     throw this.#uncertainWrite;
   }
 
@@ -544,7 +565,9 @@ export class FileBrowserOperationJournal {
         // Persist the lock entry before any risky write: an uncertain append
         // must not survive a crash without its cross-process recovery fence.
         try {
-          if (await syncDirectory(dirname(this.#path)) !== this.#parentIdentity) {
+          if (
+            (await syncDirectory(dirname(this.#path))) !== this.#parentIdentity
+          ) {
             this.#historyFailure("parent identity changed while locking");
           }
         } catch (error) {

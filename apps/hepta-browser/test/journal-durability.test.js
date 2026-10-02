@@ -1,5 +1,14 @@
 import assert from "node:assert/strict";
-import { appendFile, mkdtemp, open, readFile, rename, rm, stat, writeFile } from "node:fs/promises";
+import {
+  appendFile,
+  mkdtemp,
+  open,
+  readFile,
+  rename,
+  rm,
+  stat,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import test from "node:test";
@@ -366,7 +375,6 @@ test("complete-looking bytes after failed sync cannot be blessed by a different 
   await assert.rejects(reopened.recordDispatch(record()), /owner recovery/);
 });
 
-
 test("a journal replaced during fsync cannot acknowledge a dispatch in a detached file", async (t) => {
   const { path, prototype, journal } = await fixture(t);
   let replaced = false;
@@ -376,8 +384,18 @@ test("a journal replaced during fsync cannot acknowledge a dispatch in a detache
     await rename(path, `${path}.detached`);
     await writeFile(path, "", { mode: 0o600 });
   });
-  await assert.rejects(journal.recordDispatch(record()), /file identity changed/);
-  await assert.rejects(new FileBrowserOperationJournal(path).getOperation("profile.1", 1, "operation.1"), /owner recovery/);
+  await assert.rejects(
+    journal.recordDispatch(record()),
+    /file identity changed/,
+  );
+  await assert.rejects(
+    new FileBrowserOperationJournal(path).getOperation(
+      "profile.1",
+      1,
+      "operation.1",
+    ),
+    /owner recovery/,
+  );
   assert.equal(await readFile(path, "utf8"), "");
   assert.match(await readFile(`${path}.detached`, "utf8"), /operation.1/);
 });
@@ -388,24 +406,37 @@ test("growth during a bounded snapshot read is rejected and cannot allocate beyo
   const before = await readFile(path);
   const read = prototype.read;
   let mutated = false;
-  t.mock.method(prototype, "read", async function (buffer, offset, length, position) {
-    assert.ok(buffer.length <= before.length + 1);
-    if (!mutated) {
-      mutated = true;
-      await appendFile(path, before);
-    }
-    return read.call(this, buffer, offset, length, position);
-  });
+  t.mock.method(
+    prototype,
+    "read",
+    async function (buffer, offset, length, position) {
+      assert.ok(buffer.length <= before.length + 1);
+      if (!mutated) {
+        mutated = true;
+        await appendFile(path, before);
+      }
+      return read.call(this, buffer, offset, length, position);
+    },
+  );
   const reopened = new FileBrowserOperationJournal(path);
-  await assert.rejects(reopened.getOperation("profile.1", 1, "operation.1"), /changed while reading/);
+  await assert.rejects(
+    reopened.getOperation("profile.1", 1, "operation.1"),
+    /changed while reading/,
+  );
   assert.equal(mutated, true);
-  await assert.rejects(journal.getOperation("profile.1", 1, "operation.1"), /owner recovery/);
+  await assert.rejects(
+    journal.getOperation("profile.1", 1, "operation.1"),
+    /owner recovery/,
+  );
 });
 
 test("a FIFO substituted at the journal path fails before blocking on a reader", async (t) => {
   if (process.platform === "win32") return t.skip("Unix named pipe boundary");
   const { path } = await fixture(t);
-  const fifo = spawnSync("mkfifo", ["-m", "600", path], { encoding: "utf8", timeout: 2000 });
+  const fifo = spawnSync("mkfifo", ["-m", "600", path], {
+    encoding: "utf8",
+    timeout: 2000,
+  });
   if (fifo.error?.code === "ENOENT") return t.skip("mkfifo unavailable");
   assert.equal(fifo.status, 0, fifo.stderr);
   const source = new URL("../src/journal.js", import.meta.url).href;
@@ -417,14 +448,18 @@ test("a FIFO substituted at the journal path fails before blocking on a reader",
       process.stderr.write(error.message);
       process.exit(73);
     }`;
-  const child = spawnSync(process.execPath, ["--input-type=module", "-e", code], {
-    encoding: "utf8", timeout: 2000,
-  });
+  const child = spawnSync(
+    process.execPath,
+    ["--input-type=module", "-e", code],
+    {
+      encoding: "utf8",
+      timeout: 2000,
+    },
+  );
   assert.equal(child.error, undefined, child.error?.message);
   assert.equal(child.status, 73, child.stderr);
   assert.match(child.stderr, /regular file/);
 });
-
 
 test("writer lock is durably installed before an uncertain append", async (t) => {
   const { root, path, prototype, journal } = await fixture(t);
@@ -432,22 +467,40 @@ test("writer lock is durably installed before an uncertain append", async (t) =>
   const events = observeSync(t, prototype, async (event) => {
     if (event.kind === "file") throw ioFailure();
   });
-  await assert.rejects(journal.recordDispatch(record("operation.2")), { code: "EIO" });
-  assert.deepEqual(events.map((event) => event.kind), ["directory", "file"]);
+  await assert.rejects(journal.recordDispatch(record("operation.2")), {
+    code: "EIO",
+  });
+  assert.deepEqual(
+    events.map((event) => event.kind),
+    ["directory", "file"],
+  );
   assert.equal(events[0].id, identity(await stat(root)));
   assert.equal((await stat(`${path}.writer-lock`)).isDirectory(), true);
   t.mock.restoreAll();
-  await assert.rejects(new FileBrowserOperationJournal(path).listOperations("profile.1", 1), /writer lock/);
+  await assert.rejects(
+    new FileBrowserOperationJournal(path).listOperations("profile.1", 1),
+    /writer lock/,
+  );
 });
 
 test("failed writer-lock barrier prevents append and retains recovery fence", async (t) => {
   const { path, prototype, journal } = await fixture(t);
   await journal.recordDispatch(record());
   const bytes = await readFile(path);
-  const events = observeSync(t, prototype, async () => { throw ioFailure(); });
-  await assert.rejects(journal.recordDispatch(record("operation.2")), { code: "EIO" });
-  assert.deepEqual(events.map((event) => event.kind), ["directory"]);
+  const events = observeSync(t, prototype, async () => {
+    throw ioFailure();
+  });
+  await assert.rejects(journal.recordDispatch(record("operation.2")), {
+    code: "EIO",
+  });
+  assert.deepEqual(
+    events.map((event) => event.kind),
+    ["directory"],
+  );
   assert.deepEqual(await readFile(path), bytes);
   t.mock.restoreAll();
-  await assert.rejects(new FileBrowserOperationJournal(path).listOperations("profile.1", 1), /writer lock/);
+  await assert.rejects(
+    new FileBrowserOperationJournal(path).listOperations("profile.1", 1),
+    /writer lock/,
+  );
 });
