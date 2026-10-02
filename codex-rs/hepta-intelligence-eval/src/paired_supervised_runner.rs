@@ -170,23 +170,55 @@ impl<S: FinalHoldoutCasStoreV1> ProductEvaluationRunnerV1<S> {
             .map_err(ProductEvaluationError::from)?;
         let now = clock.sample_registered(trust, registration)?;
         verify_cut(registration, &observations, trust.verifier(), now)?;
-        let estimate = estimate_paired_cut(&registration.plan, &observations.cut)?;
-        let (support_digest, confidence_digest) = evidence_digests(registration, &estimate);
-        let mut receipt = ProductPairedEvaluationReceiptV1 {
-            registration: registration.clone(),
+        review_execution(
+            registration.clone(),
             holdout,
             observations,
-            estimate,
-            execution_digest: Digest32::ZERO,
-            support_digest,
-            confidence_digest,
-            receipt_seal: Digest32::ZERO,
-        };
-        receipt.execution_digest = receipt.seal();
-        receipt.receipt_seal = receipt.execution_digest;
-        receipt.validate()?;
-        Ok(receipt)
+            trust.verifier(),
+            now,
+        )
     }
+}
+
+/// Recompute a read-only independent review from original signed inputs. This
+/// crate-private bridge never checks or mutates custody: final qualification
+/// must match this exact execution against the original owner's held receipt.
+pub(crate) fn review_execution(
+    registration: AuthenticatedPairedRegistrationV1,
+    holdout: FinalHoldoutJournalReceiptV1,
+    observations: SignedPairedObservationCutV1,
+    verifier: &LearningEvidenceVerifierV1,
+    now: u64,
+) -> Result<ProductPairedEvaluationReceiptV1, PairedSupervisedErrorV1> {
+    registration.verify_current(verifier, now)?;
+    if holdout.disposition != HoldoutUseDispositionV1::Recorded
+        || holdout.use_receipt.disposition != HoldoutUseDispositionV1::Recorded
+        || holdout.sequence == 0
+        || holdout.record_digest.is_zero()
+        || holdout.record_digest != holdout.head_digest
+        || holdout.authority.grants_any()
+    {
+        return Err(PairedSupervisedErrorV1::Binding(
+            "original paired consumption receipt",
+        ));
+    }
+    verify_cut(&registration, &observations, verifier, now)?;
+    let estimate = estimate_paired_cut(&registration.plan, &observations.cut)?;
+    let (support_digest, confidence_digest) = evidence_digests(&registration, &estimate);
+    let mut receipt = ProductPairedEvaluationReceiptV1 {
+        registration,
+        holdout,
+        observations,
+        estimate,
+        execution_digest: Digest32::ZERO,
+        support_digest,
+        confidence_digest,
+        receipt_seal: Digest32::ZERO,
+    };
+    receipt.execution_digest = receipt.seal();
+    receipt.receipt_seal = receipt.execution_digest;
+    receipt.validate()?;
+    Ok(receipt)
 }
 
 fn verify_cut(

@@ -70,6 +70,10 @@ pub(crate) use test_tempfile::NamedTempFile;
 mod ope;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod paired_observer_transport;
+mod paired_review_plan;
+mod paired_review_transport;
+pub use paired_review_plan::PairedReviewSourcePlanV1;
+pub use paired_review_transport::encode_paired_review_publication_v1;
 mod paired_supervised_estimate;
 mod paired_supervised_facade;
 mod paired_supervised_host_clock;
@@ -511,6 +515,10 @@ mod signed_qualification_e2e_tests;
 mod fixed_calibration_cycle_evaluator;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_calibration_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_paired_review_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_paired_review_host::run_fixed_paired_review_evaluator;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod initial_neuron_operational_host;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]

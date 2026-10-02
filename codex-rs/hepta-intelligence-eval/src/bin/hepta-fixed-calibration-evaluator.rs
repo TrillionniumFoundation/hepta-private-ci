@@ -52,6 +52,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 std::path::Path::new(&args[1]),
             );
         }
+        if args.len() == 2 && args[0] == "--paired-review" {
+            return codex_hepta_intelligence_eval::run_fixed_paired_review_evaluator(
+                std::path::Path::new(&args[1]),
+            );
+        }
         if args.len() == 2 && args[0] == "--request" {
             return codex_hepta_intelligence_eval::run_fixed_calibration_evaluator(
                 std::path::Path::new(&args[1]),
@@ -68,7 +73,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 args[5].to_str().ok_or("gid")?.parse()?,
             );
         }
-        Err("usage: hepta-fixed-calibration-evaluator --request ROOT_CONFIG | --initialize-key PRIVATE_KEY --uid UID --gid GID".into())
+        Err("usage: hepta-fixed-calibration-evaluator --request ROOT_CONFIG | --paired-review ROOT_CONFIG | --initialize-key PRIVATE_KEY --uid UID --gid GID".into())
     }
     #[cfg(not(target_os = "linux"))]
     Err("fixed evaluation requires Linux".into())
