@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CFBundleDevelopmentRegion</key>
+	<string>English</string>
+	<key>CFBundleDisplayName</key>
+	<string>Robrix</string>
+	<key>CFBundleExecutable</key>
+	<string>robrix</string>
+	<key>CFBundleIconFile</key>
+	<string>Robrix.icns</string>
+	<key>CFBundleIdentifier</key>
+	<string>rs.robius.robrix</string>
+	<key>CFBundleInfoDictionaryVersion</key>
+	<string>6.0</string>
+	<key>CFBundleName</key>
+	<string>Robrix</string>
+	<key>CFBundlePackageType</key>
+	<string>APPL</string>
+	<!-- Both are overwritten from Cargo.toml at build time by build-macos-dmg.sh.
+	     Keep them roughly current anyway, so the committed file isn't misleading. -->
+	<key>CFBundleShortVersionString</key>
+	<string>1.0.0-alpha.2</string>
+	<key>CFBundleVersion</key>
+	<string>20260812.1415</string>
+	<key>CSResourcesFileMapped</key>
+	<true/>
+	<key>LSApplicationCategoryType</key>
+	<string>public.app-category.social-networking</string>
+	<key>LSMinimumSystemVersion</key>
+	<string>11.0</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>robrix</string>
+				<string>matrix</string>
+			</array>
+			<key>CFBundleURLName</key>
+			<string>rs.robius.robrix robrix</string>
+			<key>CFBundleTypeRole</key>
+			<string>Viewer</string>
+		</dict>
+	</array>
+	<key>LSRequiresCarbon</key>
+	<true/>
+	<key>NSHighResolutionCapable</key>
+	<true/>
+	<key>NSHumanReadableCopyright</key>
+	<string>Copyright 2023-2026, Project Robius</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string>Robrix needs permission to share your current location to a Matrix room.</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Robrix needs permission to share your current location to a Matrix room.</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Robrix needs permission to share your current location to a Matrix room.</string>
+	<key>NSLocationDefaultAccuracyReduced</key>
+	<false/>
+	
+</dict>
+</plist>

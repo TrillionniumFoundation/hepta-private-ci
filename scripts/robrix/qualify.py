@@ -1,0 +1,197 @@
+#!/usr/bin/env python3
+"""Exact-source, account-free Robrix qualification. No publishing or account access."""
+import argparse
+import hashlib
+import json
+import os
+from pathlib import Path
+import re
+import subprocess
+import shutil
+import tomllib
+import time
+
+ROOT = Path(__file__).resolve().parents[2]
+APP = ROOT / 'apps/hepta-robrix'
+OUT = Path(os.environ.get('ROBRIX_EVIDENCE', ROOT / 'robrix-evidence')).resolve()
+MAKEPAD = '493d23a7630f487d29912dd73f2cbb5b639b74ca'
+
+
+def run(args, *, cwd=APP, log=None, env=None, timeout=None):
+    if log:
+        # Keep partial diagnostics when the hosted job is cancelled or times out.
+        with (OUT / log).open('w') as receipt:
+            process = subprocess.Popen(args, cwd=cwd, env=env, text=True,
+                                       stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+            output = []
+            for line in process.stdout:
+                print(line, end='', flush=True)
+                receipt.write(line)
+                receipt.flush()
+                output.append(line)
+            process.stdout.close()
+            status = process.wait(timeout=timeout)
+        if status:
+            raise subprocess.CalledProcessError(status, args)
+        return ''.join(output)
+    result = subprocess.run(args, cwd=cwd, env=env, text=True,
+                            stdout=subprocess.PIPE, stderr=subprocess.STDOUT, timeout=timeout)
+    print(result.stdout, end='', flush=True)
+    result.check_returncode()
+    return result.stdout
+
+
+def digest(path):
+    return hashlib.sha256(path.read_bytes()).hexdigest()
+
+
+def identity():
+    upstream = json.loads((APP / 'UPSTREAM_PROVENANCE.json').read_text())
+    deps = json.loads((APP / 'HEPTA_DEPENDENCY_PROVENANCE.json').read_text())
+    assert upstream['commit'] == '2e9194caddb842eb9697d6dfa774c398ddea25d0'
+    assert upstream['tree'] == '7b66458e9cc161cf7a4312ec0960c6f22c62cd3f'
+    assert deps['makepad']['commit'] == MAKEPAD
+    assert deps['matrix_sdk']['version'] == '0.19.1'
+    locked = tomllib.loads((APP / 'Cargo.lock').read_text())['package']
+    assert any(p['name'] == 'matrix-sdk' and p['version'] == '0.19.1' for p in locked)
+    assert all(p.get('source', '').endswith('#' + MAKEPAD) for p in locked if p['name'] in ('makepad-widgets', 'makepad-code-editor'))
+    assert not (APP / '.github').exists(), 'Upstream administration automation is forbidden'
+    for name, expected in upstream['files_sha256'].items():
+        if name == 'LICENSE-MIT' or name.startswith('licenses/'):
+            assert digest(APP / name) == expected, f'Upstream license drift: {name}'
+    data = {'schema': 1, 'candidate': run(['git', 'rev-parse', 'HEAD']).strip(),
+            'tree': run(['git', 'rev-parse', 'HEAD^{tree}']).strip(),
+            'appTree': run(['git', 'rev-parse', 'HEAD:apps/hepta-robrix']).strip(),
+            'cargoLockSha256': digest(APP / 'Cargo.lock'),
+            'upstream': {k: upstream[k] for k in ('commit', 'tree', 'upstream')},
+            'makepad': MAKEPAD, 'matrixSdk': '0.19.1', 'fixture': True,
+            'liveAccounts': False, 'securityQualification': False,
+            'installedAcceptance': False,
+            'licenseScope': 'Preserved upstream notices; not a refreshed dependency license audit',
+            'preservedLicenseSha256': {name: digest(APP / name) for name in upstream['files_sha256']
+                                       if name == 'LICENSE-MIT' or name.startswith('licenses/')},
+            'nativeCompiler': run(['rustc', '+1.96.0', '-Vv']).strip(),
+            'webCompiler': run(['rustc', '+nightly-2026-10-01', '-Vv']).strip()}
+    assert not run(['git', 'status', '--porcelain', '--untracked-files=no']).strip(), 'Dirty tracked source'
+    (OUT / 'source-identity.json').write_text(json.dumps(data, indent=2) + '\n')
+
+
+def checked_tests(args, log, minimum):
+    output = run(args, log=log)
+    summaries = re.findall(r'test result: ok\. (\d+) passed; (\d+) failed; (\d+) ignored', output)
+    assert summaries, 'No executed test summary; compilation is not qualification'
+    assert sum(int(row[0]) for row in summaries) >= minimum, 'Missing expected test execution'
+    assert all(row[1:] == ('0', '0') for row in summaries), 'Failed or ignored tests'
+
+
+def native_tests():
+    for module, minimum in [('hepta_console::tests', 4),
+                            ('home::main_desktop_ui::hepta_dock_tests', 3),
+                            ('app::ui_fixture::tests', 1),
+                            ('ui_dispatch::tests', 3),
+                            ('timeline_channel::tests', 3)]:
+        checked_tests(['cargo', '+1.96.0', 'test', '--locked', '--features', 'ui-fixture',
+                       '--lib', module, '--', '--nocapture'], module.replace('::', '-') + '.log', minimum)
+    checked_tests(['cargo', '+1.96.0', 'test', '--locked', '--manifest-path',
+                   '../hepta-native/Cargo.toml', '--no-default-features', '--lib',
+                   'console::tests', '--', '--nocapture'], 'native-console-tests.log', 5)
+
+
+def web_build():
+    source = Path(os.environ['MAKEPAD_SOURCE']).resolve()
+    assert run(['git', 'rev-parse', 'HEAD'], cwd=source).strip() == MAKEPAD
+    target = source / 'tools/cargo_makepad/src/wasm/compile.rs'
+    before = target.read_text()
+    # Only the build tool is patched. Application and dependency source are untouched.
+    assert before.count('"nightly",') == 1
+    assert before.count('"nightly".to_string(),') == 1
+    after = before.replace('"nightly",', '&std::env::var("MAKEPAD_WASM_TOOLCHAIN").expect("pinned toolchain"),')
+    after = after.replace('"nightly".to_string(),', 'std::env::var("MAKEPAD_WASM_TOOLCHAIN").expect("pinned toolchain"),')
+    flags = 'let mut env = vec![("RUSTFLAGS", rustflags)];'
+    assert after.count(flags) == 1
+    after = after.replace(flags, 'let rustflags = format!(r#"{rustflags} --cfg ruma_identifiers_storage=\"Arc\""#);\n    let mut env = vec![("RUSTFLAGS", rustflags.as_str())];')
+    target.write_text(after)
+    run(['git', 'diff', '--', str(target)], cwd=source, log='makepad-tool-only.patch')
+    (OUT / 'makepad-tool-patch.json').write_text(json.dumps({
+        'revision': MAKEPAD, 'beforeSha256': hashlib.sha256(before.encode()).hexdigest(),
+        'afterSha256': digest(target), 'toolchain': 'nightly-2026-10-01'}, indent=2))
+    run(['cargo', '+1.96.0', 'install', '--locked', '--path',
+         str(source / 'tools/cargo_makepad'), '--root', str(OUT / 'makepad-tool')], log='makepad-tool-build.log')
+    env = dict(os.environ, MAKEPAD_WASM_TOOLCHAIN='nightly-2026-10-01')
+    # Makepad owns the custom target specification, build-std, flags, JS and resources.
+    # Do not replace this with cargo build --target wasm32-unknown-unknown.
+    run([str(OUT / 'makepad-tool/bin/cargo-makepad'), 'wasm', '--bindgen', '--no-threads',
+         'build', '-p', 'robrix', '--locked', '--features', 'ui-fixture', '--release'],
+        env=env, log='makepad-wasm-package.log')
+    package = APP / 'target/makepad-wasm-app/release/robrix'
+    assert (package / 'index.html').is_file()
+    assert (package / 'robrix.wasm').stat().st_size > 8
+    assert (package / 'bindgen.js').is_file()
+    (OUT / 'web-package-sha256.json').write_text(json.dumps({
+        str(p.relative_to(package)): digest(p) for p in sorted(package.rglob('*')) if p.is_file()
+    }, indent=2))
+
+
+def web_tests():
+    env = dict(os.environ, CARGO_TARGET_WASM32_UNKNOWN_UNKNOWN_RUNNER='wasm-bindgen-test-runner',
+               WASM_BINDGEN_USE_BROWSER='1', CHROMEDRIVER=shutil.which('chromedriver') or 'chromedriver',
+               WASM_BINDGEN_TEST_TIMEOUT='120')
+    # Ordinary wasm target is intentionally for wasm-bindgen tests only, not UI packaging.
+    output = run(['cargo', '+nightly-2026-10-01', 'test', '--locked', '--target',
+                  'wasm32-unknown-unknown', '--features', 'ui-fixture', '--lib', '--', '--nocapture'],
+                 env=env, log='browser-tests.log')
+    expected = ['session_roundtrip_is_isolated_from_layout_storage_and_cleared',
+                'malformed_restore_clears_metadata_without_contacting_a_server',
+                'logout_removes_the_entire_session_record',
+                'stale_restore_cannot_remove_newer_account_metadata',
+                'request_burst_is_bounded_and_returns_rejected_payload',
+                'delayed_account_setup_cannot_install_after_shutdown',
+                'failed_credential_removal_retires_authority_and_cannot_complete_successfully',
+                'full_and_poisoned_queue_preserve_exact_draft_until_one_retry_is_admitted',
+                'poisoned_stream_blocks_requests_until_new_authority',
+                'authority_transition_aborts_old_account_work',
+                'old_account_cannot_mutate_after_an_await',
+                'active_logout_task_survives_its_own_transition',
+                'stale_registered_callback_is_cancelled_before_execution']
+    for test in expected:
+        assert re.search(re.escape(test) + r'\s+\.\.\.\s+ok', output), f'No executed passing test: {test}'
+    assert re.search(r'test result: ok\. [1-9]\d* passed; 0 failed;', output)
+    assert not re.search(r'; [1-9]\d* ignored', output)
+
+
+def native_capture():
+    from PIL import Image
+    binary = APP / 'target/debug/robrix'
+    run(['cargo', '+1.96.0', 'build', '--locked', '--features', 'ui-fixture', '--bin', 'robrix'], log='native-build.log')
+    for scene in ('login', 'console'):
+        with (OUT / f'native-{scene}.log').open('w') as log:
+            process = subprocess.Popen([str(binary), '--hepta-ui-fixture', scene], cwd=APP, stdout=log, stderr=subprocess.STDOUT)
+            try:
+                window = run(['xdotool', 'search', '--sync', '--onlyvisible', '--pid', str(process.pid)], cwd=ROOT, timeout=60).splitlines()[0]
+                for label, width, height in [('wide', 1180, 760), ('narrow', 520, 760), ('short', 800, 560)]:
+                    run(['xdotool', 'windowsize', window, str(width), str(height)], cwd=ROOT)
+                    time.sleep(3)
+                    assert process.poll() is None, 'Native application exited before capture'
+                    png = OUT / f'native-{scene}-{label}.png'
+                    run(['import', '-window', window, str(png)], cwd=ROOT)
+                    with Image.open(png) as image:
+                        assert image.size == (width, height), image.size
+                        assert len(image.convert('RGB').getcolors(width * height)) > 32, 'Blank fixture image'
+            finally:
+                process.terminate()
+                try:
+                    process.wait(timeout=10)
+                except subprocess.TimeoutExpired:
+                    process.kill()
+                    process.wait()
+        errors = (OUT / f'native-{scene}.log').read_text()
+        assert not re.search(r'panicked at|shader.*error|script.*error|not found error', errors, re.I), errors
+
+
+if __name__ == '__main__':
+    parser = argparse.ArgumentParser()
+    parser.add_argument('mode', choices=['identity', 'native-tests', 'native-capture', 'web-build', 'web-tests'])
+    mode = parser.parse_args().mode
+    OUT.mkdir(parents=True, exist_ok=True)
+    globals()[mode.replace('-', '_')]()
+    (OUT / f'{mode}-passed.json').write_text(json.dumps({'mode': mode, 'passed': True}) + '\n')

@@ -1,0 +1,9 @@
+## Add these flags onto all target builds cumulatively.
+## <https://github.com/rust-lang/cargo/issues/5376#issuecomment-2163350032>
+[target.'cfg(all())']
+rustflags = ["--cfg", "ruma_identifiers_storage=\"Arc\""]
+
+## Override the bundle/package ID that Makepad uses by default with Robrix's ID.
+[env]
+MAKEPAD_BUNDLE_IDENTIFIER = { value = "rs.robius.robrix", force = true }
+

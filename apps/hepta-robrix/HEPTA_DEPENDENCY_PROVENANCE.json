@@ -1,0 +1,33 @@
+{
+  "schema": 1,
+  "matrix_sdk": {
+    "version": "0.19.1",
+    "registry_archive_sha256": "2afc652a144822f6fbe24084e08bc59cb483fd0b504396d492131dec0749396e",
+    "path": "../../codex-rs/third_party/matrix-sdk-0.19.1",
+    "qualified_vendor_tree": "6e84bf7d6e6b52c40b3a1add02eff0bb59327765",
+    "patch": "anymap2 -> exact anymap3 1.1.0; unchanged crypto/store/auth/transport implementation",
+    "required_advisory": "RUSTSEC-2026-0318"
+  },
+  "makepad": {
+    "upstream": "https://github.com/makepad/makepad",
+    "commit": "493d23a7630f487d29912dd73f2cbb5b639b74ca"
+  },
+  "robius": {
+    "upstream": "https://github.com/project-robius/robius",
+    "commit": "cca3cc3dc99d8fcb6c69a127cd28d47ba8f3e3eb"
+  },
+  "excluded_experimental_feature": {
+    "name": "tsp",
+    "reason": "Upstream TSP dependency graph requires incompatible SQLite native links and custom Ruma0.16 field. Sources preserved; enabling the feature fails explicitly. No full upstream feature parity claim."
+  },
+  "qualification": "pending native and WASM application builds; prior Matrix adapter receipts do not qualify this UI",
+  "retired_store_encryption_patch": {
+    "upstream_pr": "https://github.com/matrix-org/matrix-rust-sdk/pull/6976",
+    "merged_at": "2026-09-07T07:30:36Z",
+    "merge_commit": "2c2cf6e7028ac71cce996104b0ab343db8602992",
+    "replacement": "registry matrix-sdk-store-encryption 0.19.1",
+    "registry_vcs_commit": "b18166c68bb958a21f0bca8b2d8320cb53583362",
+    "verified_implementation": "src/lib.rs EncryptedValue.ciphertext uses #[serde(with = \"serde_bytes\")]",
+    "crypto_code_modified": false
+  }
+}

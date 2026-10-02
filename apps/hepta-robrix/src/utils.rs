@@ -1,0 +1,1653 @@
+use std::{borrow::Cow, ops::{Deref, DerefMut}};
+use serde::{Deserialize, Serialize};
+use url::Url;
+
+use unicode_segmentation::UnicodeSegmentation;
+use chrono::{DateTime, Duration, Local, TimeZone};
+use makepad_widgets::{error, log, Cx, Event, ImageRef, image_cache::{looks_like_svg, ImageError}};
+use matrix_sdk::{media::{MediaFormat, MediaThumbnailSettings}, ruma::{api::client::media::get_content_thumbnail::v3::Method, MilliSecondsSinceUnixEpoch, OwnedRoomAliasId, OwnedRoomId, RoomId}, RoomDisplayName};
+use matrix_sdk_ui::timeline::{EventTimelineItem, PaginationError, TimelineDetails};
+
+use crate::{
+    room::FetchedRoomAvatar,
+    shared::{avatar::AvatarImage, popup_list::{enqueue_popup_notification, PopupKind}},
+    sliding_sync::{submit_async_request, MatrixRequest, TimelineKind},
+};
+
+/// The scheme for GEO links, used for location messages in Matrix.
+pub const GEO_URI_SCHEME: &str = "geo:";
+
+/// Opens the given URL or shows an error popup.
+pub fn open_url(url: &str) {
+    log!("Opening URL \"{}\"", url);
+    if let Err(e) = robius_open::Uri::new(url).open() {
+        error!("Failed to open URL {:?}. Error: {:?}", url, e);
+        enqueue_popup_notification(
+            format!("Could not open URL: {url}"),
+            PopupKind::Error,
+            Some(6.0),
+        );
+    }
+}
+
+
+/// Formats a byte count using decimal units with user-facing byte suffixes, e.g. KB/MB/GB.
+pub fn format_decimal_file_size(bytes: u64) -> String {
+    let mut size = bytesize::ByteSize::b(bytes).display().si().to_string();
+    // SI suffixes are always ASCII
+    size.make_ascii_uppercase();
+    size
+}
+
+pub fn deserialize_or_default<'de, D, T>(deserializer: D) -> Result<T, D::Error>
+where
+    D: serde::Deserializer<'de>,
+    T: serde::de::DeserializeOwned + Default,
+{
+    let value = serde_json::Value::deserialize(deserializer)?;
+    Ok(serde_json::from_value(value).unwrap_or_default())
+}
+
+
+/// A wrapper type that implements the `Debug` trait for non-`Debug` types.
+pub struct DebugWrapper<T>(T);
+impl<T> std::fmt::Debug for DebugWrapper<T> {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        write!(f, "({})", std::any::type_name::<T>())
+    }
+}
+impl<T> Deref for DebugWrapper<T> {
+    type Target = T;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+impl<T> DerefMut for DebugWrapper<T> {
+    fn deref_mut(&mut self) -> &mut Self::Target {
+        &mut self.0
+    }
+}
+impl<T> From<T> for DebugWrapper<T> {
+    fn from(value: T) -> Self {
+        DebugWrapper(value)
+    }
+}
+impl<T: Default> Default for DebugWrapper<T> {
+    fn default() -> Self {
+        DebugWrapper(T::default())
+    }
+}
+impl<T> DebugWrapper<T> {
+    /// Consumes the wrapper and returns the inner value.
+    pub fn into_inner(self) -> T {
+        self.0
+    }
+}
+
+/// Returns true if the given event is an interactive hit-related event
+/// that should require a view/widget to be visible in order to handle/receive it.
+pub fn is_interactive_hit_event(event: &Event) -> bool {
+    matches!(
+        event,
+        Event::MouseDown(..)
+        | Event::MouseUp(..)
+        | Event::MouseMove(..)
+        | Event::MouseLeave(..)
+        | Event::TouchUpdate(..)
+        | Event::Scroll(..)
+        | Event::KeyDown(..)
+        | Event::KeyUp(..)
+        | Event::TextInput(..)
+        | Event::TextCopy(..)
+        | Event::TextCut(..)
+    )
+}
+
+/// Returns true if the given MIME type is an image format that makepad can display.
+pub fn is_supported_image_mimetype(mimetype: &str) -> bool {
+    matches!(
+        mimetype,
+        "image/png"
+            | "image/jpeg"
+            | "image/jpg"
+            | "image/gif"
+            | "image/webp"
+            | "image/bmp"
+            | "image/x-bmp"
+            | "image/x-ms-bmp"
+            | "image/x-icon"
+            | "image/vnd.microsoft.icon"
+            | "image/qoi"
+            | "image/x-qoi"
+            | "image/svg+xml"
+    )
+}
+
+/// File extensions offered by the avatar image picker.
+pub const AVATAR_IMAGE_EXTENSIONS: &[&str] = &["png", "jpg", "jpeg", "gif", "webp", "avif"];
+
+/// Returns true if the given MIME type is a valid Matrix avatar.
+///
+/// The spec doesn't restrict avatar formats, but only certain ones will actually
+/// show up as avatars in the actual room timelines.
+/// SVG is excluded on purpose, since homeservers won't serve it to clients as an avatar.
+pub fn is_supported_avatar_mimetype(mimetype: &str) -> bool {
+    matches!(mimetype,
+        "image/png"
+            | "image/apng"
+            | "image/jpeg"
+            | "image/jpg"
+            | "image/gif"
+            | "image/webp"
+            | "image/avif"
+    )
+}
+
+/// Loads the given fetched avatar into the given `ImageRef`.
+pub fn load_avatar_image(
+    img: &ImageRef,
+    cx: &mut Cx,
+    avatar: &AvatarImage,
+) -> Result<(), ImageError> {
+    load_image_with_cache_key(
+        img,
+        cx,
+        std::path::Path::new(avatar.uri.as_str()),
+        std::sync::Arc::clone(&avatar.data),
+    )
+}
+
+/// Loads the encoded image `data` into the given `ImageRef`,
+/// auto-detecting and handling any image format that makepad supports.
+pub fn load_image_with_cache_key(
+    img: &ImageRef,
+    cx: &mut Cx,
+    cache_key: &std::path::Path,
+    data: std::sync::Arc<[u8]>,
+) -> Result<(), ImageError> {
+    if looks_like_svg(&data) {
+        return img.load_svg_from_shared_data(cx, data);
+    }
+    img.load_image_from_data_async(cx, cache_key, data)
+}
+
+
+/// Returns a human-readable label for a file, e.g. "PNG image".
+pub fn file_type_label(mime_type: &str, is_text_preview: bool) -> &'static str {
+    let has_family = mime_type.starts_with("video/")
+        || mime_type.starts_with("audio/")
+        || mime_type.starts_with("image/")
+        || mime_type.starts_with("font/");
+    if is_text_preview && has_family {
+        "Text file"
+    } else {
+        display_file_type_label(mime_type)
+    }
+}
+
+fn display_file_type_label(mime_type: &str) -> &'static str {
+    let mime_type = mime_type
+        .split(';')
+        .next()
+        .unwrap_or(mime_type)
+        .trim()
+        .to_ascii_lowercase();
+
+    match mime_type.as_str() {
+        "text/plain" => "Plain text file",
+        "text/markdown" | "text/x-markdown" => "Markdown file",
+        "text/csv" => "CSV spreadsheet",
+        "text/html" => "HTML document",
+        "text/css" => "CSS stylesheet",
+        "text/javascript" | "application/javascript" | "application/x-javascript" => "JavaScript file",
+        "text/xml" | "application/xml" => "XML document",
+        "application/json" => "JSON file",
+        "application/pdf" => "PDF document",
+        "application/rtf" | "text/rtf" => "Rich text document",
+        "application/msword" |
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document" => "Word document",
+        "application/vnd.ms-excel" |
+        "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" => "Excel spreadsheet",
+        "application/vnd.ms-powerpoint" |
+        "application/vnd.openxmlformats-officedocument.presentationml.presentation" => "PowerPoint presentation",
+        "application/zip" => "ZIP archive",
+        "application/x-tar" => "TAR archive",
+        "application/gzip" | "application/x-gzip" => "Gzip archive",
+        "application/x-bzip2" => "Bzip2 archive",
+        "application/x-7z-compressed" => "7-Zip archive",
+        "application/vnd.rar" | "application/x-rar-compressed" => "RAR archive",
+        "application/x-sh" => "Shell script",
+        "application/x-sql" => "SQL file",
+        "image/png" => "PNG image",
+        "image/jpeg" | "image/jpg" => "JPEG image",
+        "image/gif" => "GIF image",
+        "image/webp" => "WebP image",
+        "image/bmp" => "BMP image",
+        "image/svg+xml" => "SVG image",
+        "image/tiff" => "TIFF image",
+        "audio/mpeg" => "MP3 audio",
+        "audio/mp4" => "MPEG-4 audio",
+        "audio/wav" | "audio/x-wav" => "WAV audio",
+        "audio/ogg" => "Ogg audio",
+        "audio/flac" => "FLAC audio",
+        "video/mp4" => "MP4 video",
+        "video/webm" => "WebM video",
+        "video/quicktime" => "QuickTime video",
+        "video/x-msvideo" => "AVI video",
+        "font/ttf" | "font/otf" | "font/woff" | "font/woff2" => "Font file",
+        _ if mime_type.starts_with("text/") => "Text file",
+        _ if mime_type.starts_with("image/") => "Image file",
+        _ if mime_type.starts_with("audio/") => "Audio file",
+        _ if mime_type.starts_with("video/") => "Video file",
+        _ if mime_type.starts_with("font/") => "Font file",
+        _ => "File",
+    }
+}
+
+/// Returns true if the file path's extension indicates a code file.
+///
+/// Plain text, logs, CSVs, markdown, etc all return false.
+pub fn is_code_file(path: &std::path::Path) -> bool {
+    let ext = path.extension().and_then(|e| e.to_str()).unwrap_or("").to_ascii_lowercase();
+    matches!(
+        ext.as_str(),
+        "rs" | "py" | "pyi" | "js" | "mjs" | "cjs" | "jsx" | "ts" | "tsx" | "mts" | "cts"
+            | "json" | "json5" | "jsonc" | "html" | "htm" | "xhtml" | "xml" | "svg"
+            | "css" | "scss" | "sass" | "less" | "toml" | "yaml" | "yml" | "ini" | "cfg" | "conf"
+            | "c" | "h" | "cpp" | "cc" | "cxx" | "hpp" | "hh" | "hxx" | "java" | "kt" | "kts"
+            | "go" | "rb" | "php" | "pl" | "pm" | "lua" | "sh" | "bash" | "zsh" | "fish"
+            | "sql" | "swift" | "scala" | "groovy" | "clj" | "cljs" | "hs" | "ml" | "mli"
+            | "fs" | "fsx" | "r" | "jl" | "nim" | "zig" | "v" | "sol" | "dart" | "ex" | "exs"
+            | "erl" | "hrl" | "proto" | "graphql" | "gql" | "vue" | "svelte" | "astro"
+            | "gradle" | "cmake" | "mk" | "bat" | "cmd" | "ps1" | "psm1" | "tex" | "bib"
+    )
+}
+
+/// Returns true if `mime_type` could be a text-like format worth attempting a text preview for.
+pub fn mimetype_might_be_text(mime_type: &str, is_mime_guaranteed: bool) -> bool {
+    if !is_mime_guaranteed {
+        return true;
+    }
+    let mt = mime_type.split(';').next().unwrap_or(mime_type).trim().to_ascii_lowercase();
+    if mt.starts_with("text/") {
+        return true;
+    }
+    if mt.starts_with("image/")
+        || mt.starts_with("audio/")
+        || mt.starts_with("video/")
+        || mt.starts_with("font/")
+    {
+        return false;
+    }
+    if mt.ends_with("+json") || mt.ends_with("+xml") {
+        return true;
+    }
+    matches!(
+        mt.as_str(),
+        "application/json" | "application/ld+json" | "application/xml"
+            | "application/javascript" | "application/x-javascript" | "application/ecmascript"
+            | "application/x-sh" | "application/x-shellscript" | "application/x-python"
+            | "application/x-perl" | "application/x-ruby" | "application/x-php"
+            | "application/x-httpd-php" | "application/x-yaml" | "application/yaml"
+            | "application/toml" | "application/x-toml" | "application/sql"
+            | "application/x-sql" | "application/graphql" | "application/x-latex"
+            | "application/x-tex" | "application/manifest+json"
+            | "application/octet-stream" | ""
+    )
+}
+
+
+/// Parses a CSS-style hex color string into a `Vec4` with RGBA components in `[0.0, 1.0]`.
+///
+/// Supports the following formats (with or without a leading `#`):
+/// * 3 hex digits: `RGB` (each digit is doubled, alpha = 1.0)
+/// * 4 hex digits: `RGBA` (each digit is doubled)
+/// * 6 hex digits: `RRGGBB` (alpha = 1.0)
+/// * 8 hex digits: `RRGGBBAA`
+pub fn vec4_from_hex_str(s: &str) -> Option<makepad_widgets::Vec4> {
+    let s = s.strip_prefix('#').unwrap_or(s);
+    let (r, g, b, a) = match s.len() {
+        3 => {
+            let r = u8::from_str_radix(&s[0..1], 16).ok()?;
+            let g = u8::from_str_radix(&s[1..2], 16).ok()?;
+            let b = u8::from_str_radix(&s[2..3], 16).ok()?;
+            (r * 17, g * 17, b * 17, 255)
+        }
+        4 => {
+            let r = u8::from_str_radix(&s[0..1], 16).ok()?;
+            let g = u8::from_str_radix(&s[1..2], 16).ok()?;
+            let b = u8::from_str_radix(&s[2..3], 16).ok()?;
+            let a = u8::from_str_radix(&s[3..4], 16).ok()?;
+            (r * 17, g * 17, b * 17, a * 17)
+        }
+        6 => {
+            let r = u8::from_str_radix(&s[0..2], 16).ok()?;
+            let g = u8::from_str_radix(&s[2..4], 16).ok()?;
+            let b = u8::from_str_radix(&s[4..6], 16).ok()?;
+            (r, g, b, 255)
+        }
+        8 => {
+            let r = u8::from_str_radix(&s[0..2], 16).ok()?;
+            let g = u8::from_str_radix(&s[2..4], 16).ok()?;
+            let b = u8::from_str_radix(&s[4..6], 16).ok()?;
+            let a = u8::from_str_radix(&s[6..8], 16).ok()?;
+            (r, g, b, a)
+        }
+        _ => return None,
+    };
+    Some(makepad_widgets::vec4(
+        r as f32 / 255.0,
+        g as f32 / 255.0,
+        b as f32 / 255.0,
+        a as f32 / 255.0,
+    ))
+}
+
+/// A simplified version of `eyeball_im::VectorDiff` that uses `Vec` instead of `imbl::Vector`.
+///
+/// This is used to communicate room order changes from the room list service to the RoomsList widget.
+#[derive(Debug)]
+pub enum VecDiff<T> {
+    /// Append the given elements at the end.
+    Append { values: Vec<T> },
+    /// Clear the list.
+    Clear,
+    /// Insert an element at the given index.
+    Insert { index: usize, value: T },
+    /// Set (replace) the element at the given index.
+    Set { index: usize, value: T },
+    /// Remove the element at the given index.
+    Remove { index: usize },
+    /// Push an element at the front.
+    PushFront { value: T },
+    /// Push an element at the back.
+    PushBack { value: T },
+    /// Pop an element from the front.
+    PopFront,
+    /// Pop an element from the back.
+    PopBack,
+    /// Truncate the list to the given length.
+    Truncate { length: usize },
+}
+
+
+pub fn unix_time_millis_to_datetime(millis: MilliSecondsSinceUnixEpoch) -> Option<DateTime<Local>> {
+    let millis: i64 = millis.get().into();
+    Local.timestamp_millis_opt(millis).single()
+}
+
+/// Replaces all line breaks, tabs, paragraphs and other separators with a single space `' '`.
+///
+/// If `is_html` is true, it also removes line-breaking tags, e.g., `<br>`.
+pub fn replace_linebreaks_separators<'a>(s: &'a str, is_html: bool) -> Cow<'a, str> {
+    #[inline]
+    fn is_separator(byte: u8) -> bool {
+        matches!(byte, b'\n' | b'\r' | b'\t' | 0x0B | 0x0C)
+    }
+
+    #[inline]
+    fn is_html_break_tag(tag_name: &[u8]) -> bool {
+        tag_name.eq_ignore_ascii_case(b"br")
+            || tag_name.eq_ignore_ascii_case(b"p")
+            || tag_name.eq_ignore_ascii_case(b"hr")
+            || tag_name.eq_ignore_ascii_case(b"div")
+    }
+
+    #[inline]
+    fn html_tag_causes_break(tag_content: &[u8]) -> bool {
+        let mut i = 0;
+        while i < tag_content.len() && tag_content[i].is_ascii_whitespace() {
+            i += 1;
+        }
+        if i >= tag_content.len() {
+            return false;
+        }
+
+        if tag_content[i] == b'/' {
+            i += 1;
+            while i < tag_content.len() && tag_content[i].is_ascii_whitespace() {
+                i += 1;
+            }
+        }
+
+        let name_start = i;
+        while i < tag_content.len() && tag_content[i].is_ascii_alphanumeric() {
+            i += 1;
+        }
+        if name_start == i {
+            return false;
+        }
+
+        is_html_break_tag(&tag_content[name_start..i])
+    }
+
+    let mut has_allocated = false;
+    let mut out = String::new();
+    let mut segment_start = 0;
+    let bytes = s.as_bytes();
+
+    if !is_html {
+        for (i, &byte) in bytes.iter().enumerate() {
+            if is_separator(byte) {
+                if !has_allocated {
+                    has_allocated = true;
+                    out = String::with_capacity(s.len());
+                }
+                out.push_str(&s[segment_start..i]);
+                out.push(' ');
+                segment_start = i + 1;
+            }
+        }
+    } else {
+        let mut i = 0;
+        while i < bytes.len() {
+            let byte = bytes[i];
+
+            if is_separator(byte) {
+                if !has_allocated {
+                    has_allocated = true;
+                    out = String::with_capacity(s.len());
+                }
+                out.push_str(&s[segment_start..i]);
+                out.push(' ');
+                i += 1;
+                segment_start = i;
+                continue;
+            }
+
+            if byte == b'<' {
+                let mut tag_end = i + 1;
+                while tag_end < bytes.len() && bytes[tag_end] != b'>' {
+                    tag_end += 1;
+                }
+
+                if tag_end < bytes.len() && html_tag_causes_break(&bytes[i + 1..tag_end]) {
+                    if !has_allocated {
+                        has_allocated = true;
+                        out = String::with_capacity(s.len());
+                    }
+                    out.push_str(&s[segment_start..i]);
+                    out.push(' ');
+                    i = tag_end + 1;
+                    segment_start = i;
+                    continue;
+                }
+
+                if tag_end < bytes.len() {
+                    i = tag_end + 1;
+                    continue;
+                }
+            }
+
+            i += 1;
+        }
+    }
+
+    if segment_start == 0 {
+        return Cow::Borrowed(s);
+    }
+
+    out.push_str(&s[segment_start..]);
+    Cow::Owned(out)
+}
+
+/// Looks for and removes the `<mx-reply>` element from the given HTML message body, if it exists.
+///
+/// Follows this behavior defined in the Matrix spec:
+/// <https://spec.matrix.org/v1.13/client-server-api/#rich-replies>
+pub fn remove_mx_reply(html_message_body: &str) -> &str {
+    const MX_REPLY_START: &str = "<mx-reply>";
+    const MX_REPLY_END:   &str = "</mx-reply>";
+    if html_message_body.trim().starts_with(MX_REPLY_START) {
+        if let Some(end) = html_message_body.find(MX_REPLY_END) {
+            if let Some(after) = html_message_body.get(end + MX_REPLY_END.len() ..) {
+                return after;
+            }
+        }
+    }
+    html_message_body
+}
+
+/// Returns a string error message, handling special cases related to joining/leaving rooms.
+pub fn stringify_join_leave_error(
+    error: &matrix_sdk::Error,
+    room_name_id: &RoomNameId,
+    was_join: bool,
+    was_invite: bool,
+) -> String {
+    let msg_opt = match error {
+        // The below is a stupid hack to workaround `WrongRoomState` being private.
+        // We get the string representation of the error and then search for the "got" state.
+        matrix_sdk::Error::WrongRoomState(wrs) => {
+            if was_join && wrs.to_string().contains(", got: Joined") {
+                Some(format!("Failed to join {room_name_id}: it has already been joined."))
+            } else if !was_join && wrs.to_string().contains(", got: Left") {
+                Some(format!("Failed to leave {room_name_id}: it has already been left."))
+            } else {
+                None
+            }
+        }
+        // Special case for 404 errors, which indicate the room no longer exists.
+        // This avoids the weird "no known servers" error, which is misleading and incorrect.
+        // See: <https://github.com/element-hq/element-web/issues/25627>.
+        matrix_sdk::Error::Http(error)
+            if error.as_client_api_error().is_some_and(|e| e.status_code.as_u16() == 404) =>
+        {
+            Some(format!(
+                "Failed to {} {room_name_id}: the room no longer exists on the server.{}",
+                if was_join { "join" } else { "leave" },
+                if was_join && was_invite { "\n\nYou may safely reject this invite." } else { "" },
+            ))
+        }
+        _ => None,
+    };
+    msg_opt.unwrap_or_else(|| format!(
+        "Failed to {} {}: {}",
+        match (was_join, was_invite) {
+            (true, true) => "accept invite to",
+            (true, false) => "join",
+            (false, true) => "reject invite to",
+            (false, false) => "leave",
+        },
+        room_name_id,
+        error
+    ))
+}
+
+/// Returns a string error message for pagination errors,
+/// handling special cases related to common pagination errors, e.g., timeouts.
+pub fn stringify_pagination_error(
+    error: &matrix_sdk_ui::timeline::Error,
+    room_name: &str,
+) -> String {
+    use matrix_sdk::{paginators::PaginatorError, event_cache::EventCacheError};
+    use matrix_sdk_ui::timeline::Error as TimelineError;
+
+    #[allow(clippy::single_match)]
+    let match_sdk_error = |sdk_error: &matrix_sdk::Error| {
+        match sdk_error {
+            matrix_sdk::Error::Http(http_error) => match http_error.deref() {
+                matrix_sdk::HttpError::Reqwest(reqwest_error) if reqwest_error.is_timeout() => {
+                    return Some(format!("Failed to load earlier messages in \"{room_name}\": request timed out."));
+                }
+                _ => {}
+            }
+            _ => {}
+        }
+        None
+    };
+
+    match error {
+        TimelineError::PaginationError(PaginationError::NotSupported) => {
+            return format!("Failed to load earlier messages in \"{room_name}\": \
+                pagination is not supported in this timeline focus mode.");
+        }
+        TimelineError::PaginationError(PaginationError::Pagination(PaginatorError::SdkError(sdk_error)))
+        | TimelineError::EventCacheError(EventCacheError::PaginationError(sdk_error)) =>
+        {
+            if let Some(message) = match_sdk_error(sdk_error) {
+                return message; 
+            }
+        }
+        _ => {}
+    }
+    format!("Failed to load earlier messages in \"{room_name}\": {error}")
+}
+
+
+
+/// Formats a given Unix timestamp in milliseconds into a relative human-readable date.
+///
+/// # Cases:
+/// - **Less than 60 seconds ago**: Returns `"Just now"`.
+/// - **Less than 60 minutes ago**: Returns `"X min(s) ago"`, where X is the number of minutes.
+/// - **Same day**: Returns `"HH:MM"` (current time format for today).
+/// - **Yesterday**: Returns `"Yesterday at HH:MM"` for messages from the previous day.
+/// - **Within the past week**: Returns the name of the day (e.g., "Tuesday").
+/// - **Older than a week**: Returns `"DD/MM/YY"` as the absolute date.
+///
+/// # Returns:
+/// - `Option<String>` representing the human-readable time or `None` if formatting fails.
+pub fn relative_format(millis: MilliSecondsSinceUnixEpoch) -> Option<Cow<'static, str>> {
+    let datetime = unix_time_millis_to_datetime(millis)?;
+
+    // Calculate the time difference between now and the given timestamp
+    let now = Local::now();
+    let duration = now - datetime;
+
+    // Handle different time ranges and format accordingly
+    if duration < Duration::seconds(60) {
+        Some("Just now".into())
+    } else if duration < Duration::minutes(60) {
+        let mins = duration.num_minutes();
+        if mins == 1 {
+            Some("1 min ago".into())
+        } else {
+            Some(format!("{mins} mins ago").into())
+        }
+    } else if duration < Duration::hours(24) && now.date_naive() == datetime.date_naive() {
+        Some(datetime.format("%H:%M").to_string().into()) // "HH:MM" format for today
+    } else if duration < Duration::hours(48) {
+        if let Some(yesterday) = now.date_naive().succ_opt() {
+            if yesterday == datetime.date_naive() {
+                return Some(format!("Yesterday at {}", datetime.format("%H:%M")).into());
+            }
+        }
+        Some(datetime.format("%A").to_string().into()) // Fallback to day of the week if not yesterday
+    } else if duration < Duration::weeks(1) {
+        Some(datetime.format("%A").to_string().into()) // Day of the week (e.g., "Tuesday")
+    } else {
+        Some(datetime.format("%F").to_string().into()) // "YYYY-MM-DD" format for older messages
+    }
+}
+
+/// Formats the given Unix timestamp in milliseconds into a fully-relative "time ago" label,
+///
+/// # Cases:
+/// - **Less than 1 hour ago**: Delegates to [`relative_format`] (`"Just now"` or `"X mins ago"`).
+/// - **Less than 24 hours ago**: Returns `"X hours ago"`, where X is the number of hours.
+/// - **Yesterday** (24 to 48 hours ago): Returns `"yesterday"`.
+/// - **Older than that**: Returns `"X days ago"`, where X is the number of days.
+///
+/// # Returns:
+/// - `Option<String>` representing the human-readable time or `None` if formatting fails.
+pub fn time_ago(millis: MilliSecondsSinceUnixEpoch) -> Option<Cow<'static, str>> {
+    let datetime = unix_time_millis_to_datetime(millis)?;
+    let duration = Local::now() - datetime;
+    if duration < Duration::hours(1) {
+        // Same as the rooms-list format for recent times ("Now", "X mins ago").
+        relative_format(millis)
+    } else if duration < Duration::hours(24) {
+        let hours = duration.num_hours();
+        if hours == 1 {
+            Some("1 hour ago".into())
+        } else {
+            Some(format!("{hours} hours ago").into())
+        }
+    } else if duration < Duration::hours(48) {
+        Some("yesterday".into())
+    } else {
+        Some(format!("{} days ago", duration.num_days()).into())
+    }
+}
+
+/// Returns the first "letter" (Unicode grapheme) of given user name,
+/// skipping any leading "@" characters.
+pub fn user_name_first_letter(user_name: &str) -> Option<&str> {
+    use unicode_segmentation::UnicodeSegmentation;
+    user_name
+        .graphemes(true)
+        .find(|&g| g != "@")
+}
+
+
+/// A const-compatible version of [`MediaFormat`].
+#[derive(Clone, Debug)]
+pub enum MediaFormatConst {
+    /// The file that was uploaded.
+    File,
+    /// A thumbnail of the file that was uploaded.
+    Thumbnail(MediaThumbnailSettingsConst),
+}
+impl From<MediaFormatConst> for MediaFormat {
+    fn from(constant: MediaFormatConst) -> Self {
+        match constant {
+            MediaFormatConst::File => Self::File,
+            MediaFormatConst::Thumbnail(size) => Self::Thumbnail(size.into()),
+        }
+    }
+}
+
+/// A const-compatible version of [`MediaThumbnailSettings`].
+#[derive(Clone, Debug)]
+pub struct MediaThumbnailSettingsConst {
+    /// The desired resizing method.
+    pub method: Method,
+    /// The desired width of the thumbnail. The actual thumbnail may not match
+    /// the size specified.
+    pub width: u32,
+    /// The desired height of the thumbnail. The actual thumbnail may not match
+    /// the size specified.
+    pub height: u32,
+    /// If we want to request an animated thumbnail from the homeserver.
+    ///
+    /// If it is `true`, the server should return an animated thumbnail if
+    /// the media supports it.
+    ///
+    /// Defaults to `false`.
+    pub animated: bool,
+}
+impl From<MediaThumbnailSettingsConst> for MediaThumbnailSettings {
+    fn from(constant: MediaThumbnailSettingsConst) -> Self {
+        Self {
+            method: constant.method,
+            width: constant.width.into(),
+            height: constant.height.into(),
+            animated: constant.animated,
+        }
+    }
+}
+
+
+/// The thumbnail format to use for user and room avatars.
+pub const AVATAR_THUMBNAIL_FORMAT: MediaFormatConst = MediaFormatConst::Thumbnail(
+    MediaThumbnailSettingsConst {
+        method: Method::Scale,
+        // while we typically show avatars at around 40x40,
+        // fetching a higher quality one is needed for good downscaling.
+        width: 192,
+        height: 192,
+        animated: false,
+    }
+);
+
+/// The thumbnail format to use for regular media images.
+pub const MEDIA_THUMBNAIL_FORMAT: MediaFormatConst = MediaFormatConst::Thumbnail(
+    MediaThumbnailSettingsConst {
+        method: Method::Scale,
+        width: 400,
+        height: 400,
+        animated: false,
+    }
+);
+
+/// Removes leading whitespace and HTML whitespace tags (`<p>` and `<br>`) from the given `text`.
+pub fn trim_start_html_whitespace(mut text: &str) -> &str {
+    let mut prev_text_len = text.len();
+    loop {
+        text = text
+            .trim_start_matches("<p>")
+            .trim_start_matches("<br>")
+            .trim_start_matches("<br/>")
+            .trim_start_matches("<br />")
+            .trim_start();
+
+        if text.len() == prev_text_len {
+            break;
+        }
+        prev_text_len = text.len();
+    }
+    text
+}
+
+/// Looks for bare links in the given `text` and converts them into proper HTML links.
+///
+/// If `links_found` is provided, it will be populated with the list of URLs found in the text.
+pub fn linkify_get_urls<'t>(
+    text: &'t str,
+    is_html: bool,
+    mut links_found: Option<&mut Vec<Url>>,
+) -> Cow<'t, str> {
+    const MAILTO: &str = "mailto:";
+
+    use linkify::{Link, LinkFinder, LinkKind};
+    use std::fmt::Write as _;
+    let mut links = LinkFinder::new()
+        .links(text)
+        .peekable();
+    if links.peek().is_none() {
+        return Cow::Borrowed(text);
+    }
+
+    // A closure to escape text if it's not HTML.
+    let escaped = |text| {
+        if is_html {
+            Cow::from(text)
+        } else {
+            htmlize::escape_text(text)
+        }
+    };
+
+    let mut linkified_text = String::with_capacity(text.len() + 64);
+    let mut last_end_index = 0;
+    let mut did_linkify = false;
+    for link in links {
+        let link_txt = link.as_str();
+
+        // Only linkify the URL if it's not already part of an HTML or mailto href attribute.
+        let is_link_within_href_attr = text.get(.. link.start())
+            .is_some_and(ends_with_href);
+        let is_link_within_html_tag = |link: &Link| {
+            text.get(link.end() ..)
+                .is_some_and(|after| after.trim_end().starts_with("</a>"))
+        };
+        let is_mailto_link_within_href_attr = |link: &Link| {
+            if !matches!(link.kind(), LinkKind::Email) { return false; }
+            let mailto_start = link.start().saturating_sub(MAILTO.len());
+            text.get(mailto_start .. link.start())
+                .is_some_and(|t| t == MAILTO)
+                .then(|| text.get(.. mailto_start))
+                .flatten()
+                .is_some_and(ends_with_href)
+        };
+
+        // The above checks are relevant to real HTML, but plaintext links are just regular text,
+        // not html attributes/tags, so we have to linkify + escap) the URL.
+        if is_html && (
+            is_link_within_href_attr
+                || is_link_within_html_tag(&link)
+                || is_mailto_link_within_href_attr(&link)
+        ) {
+            linkified_text.push_str(text.get(last_end_index..link.end()).unwrap_or_default());
+            if let Some(links_found) = links_found.as_mut() {
+                if let Ok(url) = Url::parse(link_txt) {
+                    links_found.push(url);
+                }
+            }
+        } else {
+            match link.kind() {
+                LinkKind::Url => {
+                    let _ = write!(
+                        linkified_text,
+                        "{}<a href=\"{}\">{}</a>",
+                        escaped(text.get(last_end_index..link.start()).unwrap_or_default()),
+                        htmlize::escape_attribute(link_txt),
+                        htmlize::escape_text(link_txt),
+                    );
+                    did_linkify = true;
+                    if let Some(links_found) = links_found.as_mut() {
+                        if let Ok(url) = Url::parse(link_txt) {
+                            links_found.push(url);
+                        }
+                    }
+                }
+                LinkKind::Email => {
+                    let _ = write!(
+                        linkified_text,
+                        "{}<a href=\"mailto:{}\">{}</a>",
+                        escaped(text.get(last_end_index..link.start()).unwrap_or_default()),
+                        htmlize::escape_attribute(link_txt),
+                        htmlize::escape_text(link_txt),
+                    );
+                    did_linkify = true;
+                }
+                _ => return Cow::Borrowed(text), // unreachable
+            }
+        }
+        last_end_index = link.end();
+    }
+    if !did_linkify && is_html {
+        return Cow::Borrowed(text);
+    }
+    linkified_text.push_str(
+        &escaped(text.get(last_end_index..).unwrap_or_default())
+    );
+    Cow::Owned(linkified_text)
+}
+
+/// Looks for bare links in the given `text` and converts them into proper HTML links.
+///
+/// To obtain the list of found URLs, use [`linkify_get_urls()`] instead.
+pub fn linkify(text: &str, is_html: bool) -> Cow<'_, str> {
+    linkify_get_urls(text, is_html, None)
+}
+
+/// Returns true if the given `text` string ends with a valid href attribute opener.
+///
+/// An href attribute looks like this: `href="http://example.com"`,.
+/// so we look for `href="` at the end of the given string.
+///
+/// Spaces are allowed to exist in between the `href`, `=`, and `"`.
+/// In addition, the quotation mark is optional, and can be either a single or double quote,
+/// so this function takes those into account as well.
+pub fn ends_with_href(text: &str) -> bool {
+    // let mut idx = text.len().saturating_sub(1);
+    let mut substr = text.trim_end();
+    // Search backwards for a single quote, double quote, or an equals sign.
+    match substr.as_bytes().last() {
+        Some(b'\'' | b'"')
+            if substr
+                .get(.. substr.len().saturating_sub(1))
+                .map(|s| {
+                    substr = s.trim_end();
+                    substr.as_bytes().last() == Some(&b'=')
+                })
+                .unwrap_or(false)
+        => {
+            substr = &substr[..substr.len().saturating_sub(1)];
+        }
+        Some(b'=') => {
+            substr = &substr[..substr.len().saturating_sub(1)];
+        }
+        _ => return false,
+    }
+
+    // Now we have found the equals sign, so search backwards for the `href` attribute.
+    substr.trim_end().ends_with("href")
+}
+
+/// Converts a list of names into a human-readable string with a limit parameter.
+pub fn human_readable_list<S>(names: &[S], limit: usize) -> String
+where
+    S: AsRef<str>
+{
+    let mut result = String::new();
+    match names.len() {
+        0 => return result, // early return if no names provided
+        1 => {
+            result.push_str(names[0].as_ref());
+        },
+        2 => {
+            result.push_str(names[0].as_ref());
+            result.push_str(" and ");
+            result.push_str(names[1].as_ref());
+        },
+        _ => {
+            let display_count = names.len().min(limit);
+            for (i, name) in names.iter().take(display_count - 1).enumerate() {
+                if i > 0 {
+                    result.push_str(", ");
+                }
+                result.push_str(name.as_ref());
+            }
+            if names.len() > limit {
+                let remaining = names.len() - limit;
+                result.push_str(", ");
+                result.push_str(names[display_count - 1].as_ref());
+                result.push_str(", and ");
+                if remaining == 1 {
+                    result.push_str("1 other");
+                } else {
+                    result.push_str(&format!("{} others", remaining));
+                }
+            } else {
+                result.push_str(" and ");
+                result.push_str(names[display_count - 1].as_ref());
+            }
+        }
+    };
+    result
+}
+
+
+/// Returns the sender's display name if available.
+///
+/// If not available, and if the `room_id` is provided, this function will
+/// submit an async request to fetch the event details.
+/// In this case, this will return the event sender's user ID as a string.
+pub fn get_or_fetch_event_sender(
+    event_tl_item: &EventTimelineItem,
+    room_id: Option<&OwnedRoomId>,
+) -> String {
+    let sender_username = match event_tl_item.sender_profile() {
+        TimelineDetails::Ready(profile) => profile.display_name.as_deref(),
+        TimelineDetails::Unavailable => {
+            if let Some(room_id) = room_id {
+                if let Some(event_id) = event_tl_item.event_id() {
+                    submit_async_request(MatrixRequest::FetchDetailsForEvent {
+                        timeline_kind: TimelineKind::MainRoom {
+                            room_id: room_id.clone(),
+                        },
+                        event_id: event_id.to_owned(),
+                    });
+                }
+            }
+            None
+        }
+        _ => None,
+    }
+    .unwrap_or_else(|| event_tl_item.sender().as_str());
+    sender_username.to_owned()
+}
+
+/// How well a string matches a given query, ordered from best to worst.
+#[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Debug)]
+pub enum MatchQuality {
+    Exact,
+    Prefix,
+    Substring,
+    None,
+}
+impl MatchQuality {
+    /// Both args to [`MatchQuality::of`] must be lowercase.
+    pub fn of(haystack: &str, needle: &str) -> MatchQuality {
+        if haystack == needle {
+            MatchQuality::Exact
+        } else if haystack.starts_with(needle) {
+            MatchQuality::Prefix
+        } else if haystack.contains(needle) {
+            MatchQuality::Substring
+        } else {
+            MatchQuality::None
+        }
+    }
+
+    /// True for any match, i.e. anything but `None`.
+    pub fn is_match(self) -> bool {
+        !matches!(self, MatchQuality::None)
+    }
+}
+
+/// Returns the "localpart" of an alias, like "robrix" for alias "#robrix:matrix.org".
+pub fn alias_localpart(alias: &OwnedRoomAliasId) -> &str {
+    alias.as_str()
+        .strip_prefix('#')
+        .and_then(|ss| ss.split(':').next())
+        .unwrap_or_else(|| alias.as_str())
+}
+
+/// Converts a byte index in a string to the corresponding grapheme index
+pub fn byte_index_to_grapheme_index(text: &str, byte_idx: usize) -> usize {
+    let mut current_byte_pos = 0;
+    for (i, g) in text.graphemes(true).enumerate() {
+        if current_byte_pos <= byte_idx && current_byte_pos + g.len() > byte_idx {
+            return i;
+        }
+        current_byte_pos += g.len();
+    }
+    // If byte_idx is at end of string or past it, return grapheme count
+    text.graphemes(true).count()
+}
+
+/// Safely replaces text between byte indices with a new string,
+/// ensuring proper grapheme boundaries are respected
+pub fn safe_replace_by_byte_indices(text: &str, start_byte: usize, end_byte: usize, replacement: &str) -> String {
+    let text_graphemes: Vec<&str> = text.graphemes(true).collect();
+
+    let start_grapheme_idx = byte_index_to_grapheme_index(text, start_byte);
+    let end_grapheme_idx = byte_index_to_grapheme_index(text, end_byte);
+
+    let before = text_graphemes[..start_grapheme_idx].join("");
+    let after = text_graphemes[end_grapheme_idx..].join("");
+
+    format!("{before}{replacement}{after}")
+}
+
+/// The name and ID of a room or space.
+///
+/// Two `RoomNameId`s are considered equal if they have the same room ID;
+/// the name string is ignored for purposes of equality testing.
+///
+/// This type combines `RoomDisplayName` with `OwnedRoomId` to provide:
+/// * Automatic fallback to room ID when displaying empty/unknown room names.
+/// * Type-safe room name handling throughout the codebase.
+/// * Simplified `Display` implementation that doesn't require passing room_id separately.
+#[derive(Clone, Serialize, Deserialize)]
+pub struct RoomNameId {
+    display_name: RoomDisplayName,
+    room_id: OwnedRoomId,
+}
+
+impl RoomNameId {
+    /// Create a new `RoomNameId` with the given display name and room ID.
+    pub fn new(display_name: RoomDisplayName, room_id: OwnedRoomId) -> Self {
+        Self { display_name, room_id }
+    }
+
+    /// Creates a new `RoomNameId` with an empty display name.
+    pub fn empty(room_id: OwnedRoomId) -> Self {
+        Self::new(RoomDisplayName::Empty, room_id)
+    }
+
+    /// Creates a new `RoomNameId` from a `Room`.
+    pub async fn from_room(room: &matrix_sdk::Room) -> Self {
+        Self::new(
+            room.display_name().await.unwrap_or(RoomDisplayName::Empty),
+            room.room_id().to_owned(),
+        )
+    }
+
+    /// Returns an efficient displayable/string representation.
+    pub fn display(&self) -> Cow<'_, str> {
+        match &self.display_name {
+            RoomDisplayName::Named(n)
+            | RoomDisplayName::Aliased(n)
+            | RoomDisplayName::Calculated(n) => Cow::Borrowed(n),
+            RoomDisplayName::Empty => Cow::Owned(format!("Room ID {}", self.room_id)),
+            RoomDisplayName::EmptyWas(name) => Cow::Owned(format!("Empty Room (was \"{name}\")")),
+        }
+    }
+
+    /// Get a reference to the underlying display name.
+    #[inline]
+    pub fn display_name(&self) -> &RoomDisplayName {
+        &self.display_name
+    }
+
+    /// Get a reference to the room ID or space ID.
+    #[inline]
+    pub fn room_id(&self) -> &OwnedRoomId {
+        &self.room_id
+    }
+
+    /// Returns `true` if the display name is `Empty` only (not `EmptyWas` or other).
+    #[inline]
+    pub fn is_empty(&self) -> bool {
+        matches!(self.display_name, RoomDisplayName::Empty)
+    }
+
+    /// Get the display name as a string for avatar generation.
+    ///
+    /// Returns `None` for `RoomDisplayName::Empty` (no name to use for avatar).
+    /// For `EmptyWas`, returns the previous name (preserving the old name for avatar).
+    /// For other variants, returns the string representation.
+    /// Unlike `Display::to_string()`, this does NOT fall back to the room ID for Empty names.
+    pub fn name_for_avatar(&self) -> Option<&str> {
+        match &self.display_name {
+            RoomDisplayName::Empty => None,
+            // Use previous name so that avatars show "A" for "Empty(was Alice)", not "E".
+            RoomDisplayName::EmptyWas(name)
+            | RoomDisplayName::Aliased(name)
+            | RoomDisplayName::Calculated(name)
+            | RoomDisplayName::Named(name) => Some(name.as_str()),
+        }
+    }
+
+    /// Convert into the inner display name and room ID.
+    pub fn into_inner(self) -> (RoomDisplayName, OwnedRoomId) {
+        (self.display_name, self.room_id)
+    }
+}
+
+impl PartialEq for RoomNameId {
+    fn eq(&self, other: &Self) -> bool {
+        self.room_id == other.room_id
+    }
+}
+impl Eq for RoomNameId { }
+impl std::fmt::Debug for RoomNameId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let mut ds = f.debug_struct("RoomNameId");
+        match &self.display_name {
+            RoomDisplayName::Empty => ds.field("name", &"Empty"),
+            RoomDisplayName::EmptyWas(name) => ds.field("name", &format!("Empty Room (was \"{name}\")")),
+            RoomDisplayName::Aliased(name)
+            | RoomDisplayName::Calculated(name)
+            | RoomDisplayName::Named(name) => ds.field("name", name)
+        };
+        ds.field("ID", &self.room_id)
+            .finish()
+    }
+}
+impl std::ops::Deref for RoomNameId {
+    type Target = RoomDisplayName;
+
+    fn deref(&self) -> &Self::Target {
+        &self.display_name
+    }
+}
+impl AsRef<RoomDisplayName> for RoomNameId {
+    fn as_ref(&self) -> &RoomDisplayName {
+        &self.display_name
+    }
+}
+impl AsRef<RoomId> for RoomNameId {
+    fn as_ref(&self) -> &RoomId {
+        &self.room_id
+    }
+}
+impl AsRef<OwnedRoomId> for RoomNameId {
+    fn as_ref(&self) -> &OwnedRoomId {
+        &self.room_id
+    }
+}
+
+/// Display implementation that automatically handles Empty names by falling back to room ID.
+///
+/// - `Empty` → displays room ID
+/// - `EmptyWas(name)` → displays "Empty Room (was "name")"
+/// - Other variants → displays the name as-is
+impl std::fmt::Display for RoomNameId {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match &self.display_name {
+            RoomDisplayName::Empty => write!(f, "Room ID {}", self.room_id),
+            RoomDisplayName::EmptyWas(name) => write!(f, "Empty Room (was \"{}\")", name),
+            other => write!(f, "{}", other),
+        }
+    }
+}
+impl From<(RoomDisplayName, OwnedRoomId)> for RoomNameId {
+    fn from((display_name, room_id): (RoomDisplayName, OwnedRoomId)) -> Self {
+        Self::new(display_name, room_id)
+    }
+}
+impl From<(&RoomDisplayName, &OwnedRoomId)> for RoomNameId {
+    fn from((display_name, room_id): (&RoomDisplayName, &OwnedRoomId)) -> Self {
+        Self::new(display_name.clone(), room_id.clone())
+    }
+}
+impl From<(Option<RoomDisplayName>, OwnedRoomId)> for RoomNameId {
+    fn from((display_name, room_id): (Option<RoomDisplayName>, OwnedRoomId)) -> Self {
+        Self::new(display_name.unwrap_or(RoomDisplayName::Empty), room_id)
+    }
+}
+
+/// Returns a text avatar string containing the first character of the room name.
+///
+/// Skips the first character if it is a `#` or `!`, the sigils used for Room aliases and Room IDs.
+pub fn avatar_from_room_name(room_name: Option<&str>) -> FetchedRoomAvatar {
+    let first = room_name.and_then(|rn| rn
+        .graphemes(true)
+        .find(|&g| g != "#" && g != "!")
+        .map(ToString::to_string)
+    ).unwrap_or_else(|| String::from("?"));
+    FetchedRoomAvatar::Text(first)
+}
+
+
+#[cfg(test)]
+mod tests_room_name {
+    use super::*;
+    use std::convert::TryFrom;
+    use matrix_sdk::RoomDisplayName;
+    use matrix_sdk::ruma::OwnedRoomId;
+
+    fn sample_room_id(raw: &str) -> OwnedRoomId {
+        OwnedRoomId::try_from(raw).expect("valid room id")
+    }
+
+    #[test]
+    fn to_string_prefers_display_name() {
+        let room_id = sample_room_id("!preferred:example.org");
+        let room_name = RoomNameId::new(RoomDisplayName::Named("Hello World".into()), room_id.clone());
+        assert_eq!(room_name.to_string(), "Hello World");
+        assert_eq!(room_name.room_id().as_str(), room_id.as_str());
+    }
+
+    #[test]
+    fn to_string_falls_back_to_id_when_empty() {
+        let room_id = sample_room_id("!fallback:example.org");
+        let room_name = RoomNameId::new(RoomDisplayName::Empty, room_id.clone());
+        assert_eq!(room_name.to_string(), format!("Room ID {}", room_id.as_str()));
+    }
+
+    #[test]
+    fn to_string_includes_context_for_empty_was() {
+        let room_id = sample_room_id("!emptywas:example.org");
+        let room_name = RoomNameId::new(RoomDisplayName::EmptyWas("Prior Name".into()), room_id);
+        assert_eq!(room_name.to_string(), "Empty Room (was \"Prior Name\")");
+    }
+}
+
+#[cfg(test)]
+mod tests_human_readable_list {
+    use super::*;
+    #[test]
+    fn test_human_readable_list_empty() {
+        let names: Vec<&str> = Vec::new();
+        let result = human_readable_list(&names, 3);
+        assert_eq!(result, "");
+    }
+
+    #[test]
+    fn test_human_readable_list_single() {
+        let names: Vec<&str> = vec!["Alice"];
+        let result = human_readable_list(&names, 3);
+        assert_eq!(result, "Alice");
+    }
+
+    #[test]
+    fn test_human_readable_list_two() {
+        let names: Vec<&str> = vec!["Alice", "Bob"];
+        let result = human_readable_list(&names, 3);
+        assert_eq!(result, "Alice and Bob");
+    }
+
+    #[test]
+    fn test_human_readable_list_many() {
+        let names: Vec<&str> = vec!["Alice", "Bob", "Charlie", "David"];
+        let result = human_readable_list(&names, 3);
+        assert_eq!(result, "Alice, Bob, Charlie, and 1 other");
+    }
+
+    #[test]
+    fn test_human_readable_list_long() {
+        let names: Vec<&str> = vec!["Alice", "Bob", "Charlie", "Dennis", "Eudora", "Fanny", "Gina", "Hiroshi", "Ivan", "James", "Karen", "Lisa", "Michael", "Nathan", "Oliver", "Peter", "Quentin", "Rachel", "Sally", "Tanya", "Ulysses", "Victor", "William", "Xenia", "Yuval", "Zachariah"];
+        let result = human_readable_list(&names, 3);
+        assert_eq!(result, "Alice, Bob, Charlie, and 23 others");
+    }
+}
+
+#[cfg(test)]
+mod tests_linkify {
+    use super::*;
+
+    #[test]
+    fn test_linkify0() {
+        let text = "Hello, world!";
+        assert_eq!(linkify(text, false).as_ref(), text);
+    }
+
+    /// Plaintext with no links comes back borrowed and unescaped,
+    /// so callers have to escape it themselves.
+    #[test]
+    fn test_linkify_plaintext_no_links_is_borrowed_unescaped() {
+        let text = "a < b & c";
+        let actual = linkify(text, false);
+        assert!(matches!(actual, Cow::Borrowed(_)));
+        assert_eq!(actual.as_ref(), text);
+    }
+
+    /// Plaintext that merely looks like an HTML href attribute must still be
+    /// escaped, otherwise a topic/message could inject its own markup.
+    #[test]
+    fn test_linkify_plaintext_fake_href_is_escaped() {
+        let text = "<b>hi</b> href=\"https://example.com";
+        let actual = linkify(text, false);
+        assert_eq!(
+            actual.as_ref(),
+            "&lt;b&gt;hi&lt;/b&gt; href=\"<a href=\"https://example.com\">https://example.com</a>",
+        );
+    }
+
+    /// The same input as HTML keeps its markup and doesn't re-linkify the href.
+    #[test]
+    fn test_linkify_html_href_is_left_alone() {
+        let text = "<a href=\"https://example.com\">click</a>";
+        assert_eq!(linkify(text, true).as_ref(), text);
+    }
+
+    #[test]
+    fn test_linkify1() {
+        let text = "Check out this website: https://example.com";
+        let expected = "Check out this website: <a href=\"https://example.com\">https://example.com</a>";
+        let actual = linkify(text, false);
+        println!("{:?}", actual.as_ref());
+        assert_eq!(actual.as_ref(), expected);
+    }
+
+    #[test]
+    fn test_linkify2() {
+        let text = "Send an email to john@example.com";
+        let expected = "Send an email to <a href=\"mailto:john@example.com\">john@example.com</a>";
+        let actual = linkify(text, false);
+        println!("{:?}", actual.as_ref());
+        assert_eq!(actual.as_ref(), expected);
+    }
+
+    #[test]
+    fn test_linkify3() {
+        let text = "Visit our website at www.example.com";
+        assert_eq!(linkify(text, false).as_ref(), text);
+    }
+
+    #[test]
+    fn test_linkify4() {
+        let text = "Link 1 http://google.com Link 2 https://example.com";
+        let expected = "Link 1 <a href=\"http://google.com\">http://google.com</a> Link 2 <a href=\"https://example.com\">https://example.com</a>";
+        let actual = linkify(text, false);
+        println!("{:?}", actual.as_ref());
+        assert_eq!(actual.as_ref(), expected);
+    }
+
+
+    #[test]
+    fn test_linkify5() {
+        let text = "html test <a href=http://google.com>Link title</a> Link 2 https://example.com";
+        let expected = "html test <a href=http://google.com>Link title</a> Link 2 <a href=\"https://example.com\">https://example.com</a>";
+        let actual = linkify(text, true);
+        println!("{:?}", actual.as_ref());
+        assert_eq!(actual.as_ref(), expected);
+    }
+
+    #[test]
+    fn test_linkify6() {
+        let text = "<a href=http://google.com>link title</a>";
+        assert_eq!(linkify(text, true).as_ref(), text);
+    }
+
+    #[test]
+    fn test_linkify7() {
+        let text = "https://example.com";
+        let expected = "<a href=\"https://example.com\">https://example.com</a>";
+        assert_eq!(linkify(text, false).as_ref(), expected);
+    }
+
+    #[test]
+    fn test_linkify8() {
+        let text = "test test https://crates.io/crates/cargo-packager test test";
+        let expected = "test test <a href=\"https://crates.io/crates/cargo-packager\">https://crates.io/crates/cargo-packager</a> test test";
+        assert_eq!(linkify(text, false).as_ref(), expected);
+    }
+
+    #[test]
+    fn test_linkify9() {
+        let text = "<mx-reply><blockquote><a href=\"https://matrix.to/#/!ifW4td0it0scmZpEM6:computer.surgery/$GwDzIlPzNgxhJ2QCIsmcPMC-sHdoKNsb0g2MS1psyyM?via=matrix.org&via=mozilla.org&via=gitter.im\">In reply to</a> <a href=\"https://matrix.to/#/@spore:mozilla.org\">@spore:mozilla.org</a><br />So I asked if there's a crate for it (bc I don't have the time to test and debug it) or if there's simply a better way that involves less states and invariants</blockquote></mx-reply>https://docs.rs/aho-corasick/latest/aho_corasick/struct.AhoCorasick.html#method.stream_find_iter";
+
+        let expected = "<mx-reply><blockquote><a href=\"https://matrix.to/#/!ifW4td0it0scmZpEM6:computer.surgery/$GwDzIlPzNgxhJ2QCIsmcPMC-sHdoKNsb0g2MS1psyyM?via=matrix.org&via=mozilla.org&via=gitter.im\">In reply to</a> <a href=\"https://matrix.to/#/@spore:mozilla.org\">@spore:mozilla.org</a><br />So I asked if there's a crate for it (bc I don't have the time to test and debug it) or if there's simply a better way that involves less states and invariants</blockquote></mx-reply><a href=\"https://docs.rs/aho-corasick/latest/aho_corasick/struct.AhoCorasick.html#method.stream_find_iter\">https://docs.rs/aho-corasick/latest/aho_corasick/struct.AhoCorasick.html#method.stream_find_iter</a>";
+        assert_eq!(linkify(text, true).as_ref(), expected);
+    }
+
+    #[test]
+    fn test_linkify10() {
+        let text = "And then call <a href=\"https://doc.rust-lang.org/std/io/trait.BufRead.html#method.read_until\"><code>read_until</code></a> or other <code>BufRead</code> methods.";
+        let expected = "And then call <a href=\"https://doc.rust-lang.org/std/io/trait.BufRead.html#method.read_until\"><code>read_until</code></a> or other <code>BufRead</code> methods.";
+        assert_eq!(linkify(text, true).as_ref(), expected);
+    }
+
+
+    #[test]
+    fn test_linkify11() {
+        let text = "And then https://google.com call <a href=\"https://doc.rust-lang.org/std/io/trait.BufRead.html#method.read_until\"><code>read_until</code></a> or other <code>BufRead</code> methods.";
+        let expected = "And then <a href=\"https://google.com\">https://google.com</a> call <a href=\"https://doc.rust-lang.org/std/io/trait.BufRead.html#method.read_until\"><code>read_until</code></a> or other <code>BufRead</code> methods.";
+        assert_eq!(linkify(text, true).as_ref(), expected);
+    }
+
+    #[test]
+    fn test_linkify12() {
+        let text = "And then https://google.com call <a href=\"https://doc.rust-lang.org/std/io/trait.BufRead.html#method.read_until\"><code>read_until</code></a> or other <code>BufRead http://another-link.http.com </code> methods.";
+        let expected = "And then <a href=\"https://google.com\">https://google.com</a> call <a href=\"https://doc.rust-lang.org/std/io/trait.BufRead.html#method.read_until\"><code>read_until</code></a> or other <code>BufRead <a href=\"http://another-link.http.com\">http://another-link.http.com</a> </code> methods.";
+        assert_eq!(linkify(text, true).as_ref(), expected);
+    }
+
+    #[test]
+    fn test_linkify13() {
+        let text = "Check out this website: <a href=\"https://example.com\">https://example.com</a>";
+        let expected = "Check out this website: <a href=\"https://example.com\">https://example.com</a>";
+        assert_eq!(linkify(text, true).as_ref(), expected);
+    }
+
+    #[test]
+    fn test_linkify14() {
+        let text = "<p>If you have any questions please drop us an email to <a href=\"mailto:legal@matrix.org\">legal@matrix.org</a></p>";
+        let expected = text;
+        assert_eq!(linkify(text, true).as_ref(), expected);
+    }
+
+    #[test]
+    fn test_linkify15() {
+        let text = "If you have any questions please drop us an email to:legal@matrix.org";
+        let expected = "If you have any questions please drop us an email to:<a href=\"mailto:legal@matrix.org\">legal@matrix.org</a>";
+        assert_eq!(linkify(text, false).as_ref(), expected);
+    }
+}
+
+#[cfg(test)]
+mod tests_ends_with_href {
+    use super::*;
+
+    #[test]
+    fn test_ends_with_href0() {
+        assert!(ends_with_href("href=\""));
+    }
+
+    #[test]
+    fn test_ends_with_href1() {
+        assert!(ends_with_href("href = \""));
+    }
+
+    #[test]
+    fn test_ends_with_href2() {
+        assert!(ends_with_href("href  =  \""));
+    }
+
+    #[test]
+    fn test_ends_with_href3() {
+        assert!(ends_with_href("href='"));
+    }
+
+    #[test]
+    fn test_ends_with_href4() {
+        assert!(ends_with_href("href = '"));
+    }
+
+    #[test]
+    fn test_ends_with_href5() {
+        assert!(ends_with_href("href  =  '"));
+    }
+
+    #[test]
+    fn test_ends_with_href6() {
+        assert!(ends_with_href("href="));
+    }
+
+    #[test]
+    fn test_ends_with_href7() {
+        assert!(ends_with_href("href ="));
+    }
+
+    #[test]
+    fn test_ends_with_href8() {
+        assert!(ends_with_href("href  =  "));
+    }
+
+    #[test]
+    fn test_ends_with_href9() {
+        assert!(!ends_with_href("href"));
+    }
+
+    #[test]
+    fn test_ends_with_href10() {
+        assert!(ends_with_href("href ="));
+    }
+
+    #[test]
+    fn test_ends_with_href11() {
+        assert!(!ends_with_href("href  ==  "));
+    }
+
+    #[test]
+    fn test_ends_with_href12() {
+        assert!(ends_with_href("href =\""));
+    }
+
+    #[test]
+    fn test_ends_with_href13() {
+        assert!(ends_with_href("href = '"));
+    }
+
+    #[test]
+    fn test_ends_with_href14() {
+        assert!(ends_with_href("href ="));
+    }
+
+    #[test]
+    fn test_ends_with_href15() {
+        assert!(!ends_with_href("href =a"));
+    }
+
+    #[test]
+    fn test_ends_with_href16() {
+        assert!(!ends_with_href("href '="));
+    }
+
+    #[test]
+    fn test_ends_with_href17() {
+        assert!(!ends_with_href("href =''"));
+    }
+
+    #[test]
+    fn test_ends_with_href18() {
+        assert!(!ends_with_href("href =\"\""));
+    }
+
+    #[test]
+    fn test_ends_with_href19() {
+        assert!(!ends_with_href("hrf="));
+    }
+
+    #[test]
+    fn test_ends_with_href20() {
+        assert!(ends_with_href(" href = \""));
+    }
+
+    #[test]
+    fn test_ends_with_href21() {
+        assert!(ends_with_href("href = \" "));
+    }
+
+    #[test]
+    fn test_ends_with_href22() {
+        assert!(ends_with_href(" href = \" "));
+    }
+
+    #[test]
+    fn test_ends_with_href23() {
+        assert!(ends_with_href("href = ' "));
+    }
+
+    #[test]
+    fn test_ends_with_href24() {
+        assert!(ends_with_href(" href = ' "));
+    }
+
+    #[test]
+    fn test_ends_with_href25() {
+        assert!(ends_with_href("href = "));
+    }
+
+    #[test]
+    fn test_ends_with_href26() {
+        assert!(ends_with_href(" href = "));
+    }
+
+    #[test]
+    fn test_ends_with_href27() {
+        assert!(ends_with_href("href =\" "));
+    }
+
+    #[test]
+    fn test_ends_with_href28() {
+        assert!(ends_with_href(" href =\" "));
+    }
+
+    #[test]
+    fn test_ends_with_href29() {
+        assert!(ends_with_href("href = ' "));
+    }
+
+    #[test]
+    fn test_ends_with_href30() {
+        assert!(ends_with_href(" href = ' "));
+    }
+
+    #[test]
+    fn test_ends_with_href31() {
+        assert!(!ends_with_href("href =\"\" "));
+    }
+
+    #[test]
+    fn test_ends_with_href32() {
+        assert!(!ends_with_href(" href =\"\" "));
+    }
+
+    #[test]
+    fn test_ends_with_href33() {
+        assert!(!ends_with_href("href ='' "));
+    }
+
+    #[test]
+    fn test_ends_with_href34() {
+        assert!(!ends_with_href(" href ='' "));
+    }
+
+    #[test]
+    fn test_ends_with_href35() {
+        assert!(ends_with_href("href = "));
+    }
+
+    #[test]
+    fn test_ends_with_href36() {
+        assert!(ends_with_href(" href = "));
+    }
+
+    #[test]
+    fn test_ends_with_href37() {
+        assert!(!ends_with_href("hrf= "));
+    }
+
+    #[test]
+    fn test_ends_with_href38() {
+        assert!(!ends_with_href(" hrf= "));
+    }
+}

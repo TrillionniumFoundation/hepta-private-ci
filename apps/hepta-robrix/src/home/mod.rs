@@ -1,0 +1,65 @@
+use makepad_widgets::ScriptVm;
+
+pub mod add_room;
+pub mod edited_indicator;
+pub mod editing_pane;
+pub mod event_source_modal;
+pub mod home_screen;
+pub mod invite_modal;
+pub mod invite_screen;
+pub mod light_themed_dock;
+pub mod tombstone_footer;
+pub mod loading_pane;
+pub mod location_preview;
+pub mod main_desktop_ui;
+pub mod room_screen;
+pub mod room_read_receipt;
+pub mod send_status_indicator;
+pub mod rooms_list;
+pub mod rooms_list_entry;
+pub mod rooms_list_header;
+pub mod rooms_sidebar;
+pub mod search_messages;
+pub mod space_lobby;
+pub mod spaces_bar;
+pub mod navigation_tab_bar;
+pub mod welcome_screen;
+pub mod event_reaction_list;
+pub mod new_message_context_menu;
+pub mod room_context_menu;
+pub mod link_preview;
+pub mod room_image_viewer;
+pub mod upload_progress;
+
+pub fn script_mod(vm: &mut ScriptVm) {
+    search_messages::script_mod(vm);
+    loading_pane::script_mod(vm);
+    location_preview::script_mod(vm);
+    add_room::script_mod(vm);
+    space_lobby::script_mod(vm);
+    link_preview::script_mod(vm);
+    event_reaction_list::script_mod(vm);
+    room_read_receipt::script_mod(vm);
+    send_status_indicator::script_mod(vm);
+    rooms_list_entry::script_mod(vm);
+    rooms_list_header::script_mod(vm);
+    rooms_list::script_mod(vm);
+    edited_indicator::script_mod(vm);
+    editing_pane::script_mod(vm);
+    new_message_context_menu::script_mod(vm);
+    event_source_modal::script_mod(vm);
+    room_context_menu::script_mod(vm);
+    invite_modal::script_mod(vm);
+    invite_screen::script_mod(vm);
+    tombstone_footer::script_mod(vm);
+    room_screen::script_mod(vm);
+    rooms_sidebar::script_mod(vm);
+    welcome_screen::script_mod(vm);
+    light_themed_dock::script_mod(vm);
+    main_desktop_ui::script_mod(vm);
+    spaces_bar::script_mod(vm);
+    navigation_tab_bar::script_mod(vm);
+    upload_progress::script_mod(vm);
+    // Keep HomeScreen last, it references many widgets registered above.
+    home_screen::script_mod(vm);
+}

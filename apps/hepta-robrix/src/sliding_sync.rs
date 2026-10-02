@@ -1,0 +1,6202 @@
+#[cfg(not(target_family = "wasm"))]
+use tokio::sync::mpsc::{UnboundedReceiver, UnboundedSender};
+#[cfg(not(target_family = "wasm"))]
+use crate::cache_dir;
+#[cfg(not(target_family = "wasm"))]
+use tokio::time::Instant;
+#[cfg(target_family = "wasm")]
+use web_time::Instant;
+pub(crate) mod runtime;
+pub use runtime::Handle;
+use matrix_sdk_common::{executor::JoinHandle, SendOutsideWasm};
+#[cfg(not(target_family = "wasm"))]
+use tokio::time::error::Elapsed;
+use anyhow::{anyhow, bail, Result};
+use bitflags::bitflags;
+use mime::Mime;
+use clap::Parser;
+use eyeball::Subscriber;
+use eyeball_im::VectorDiff;
+use futures_util::{future::{Abortable, join_all}, pin_mut, stream, StreamExt};
+use imbl::Vector;
+use makepad_widgets::{error, image_cache::image_size_by_data, log, warning, SignalToUI, WidgetUid};
+use matrix_sdk_base::crypto::{DecryptionSettings, TrustRequirement};
+use matrix_sdk::{
+    authentication::oauth::error::OAuthDiscoveryError, config::RequestConfig, encryption::{identities::Device, EncryptionSettings}, event_handler::EventHandlerDropGuard, media::MediaRequestParameters, room::{edit::EditedContent, reply::Reply, IncludeRelations, Receipts, RelationsOptions}, ruma::{
+        api::{Direction, client::{authenticated_media::get_media_preview, discovery::get_authorization_server_metadata::v1::{AccountManagementAction, AccountManagementActionData}, profile::{AvatarUrl, DisplayName}, receipt::create_receipt::v3::ReceiptType}, error::{ErrorKind, RetryAfter}}, events::{
+            receipt::{ReceiptThread, ReceiptType as ReceiptEventType},
+            relation::RelationType,
+            room::{
+                encrypted::Relation as EncryptedRelation, message::{MessageType, Relation, RoomMessageEventContent, TextMessageEventContent}, power_levels::RoomPowerLevels, redaction::SyncRoomRedactionEvent, MediaSource
+            }, AnyMessageLikeEventContent, AnySyncMessageLikeEvent, AnySyncTimelineEvent, MessageLikeEventType, StateEventType
+        }, EventId, MatrixToUri, MatrixUri, MilliSecondsSinceUnixEpoch, OwnedEventId, OwnedMxcUri, OwnedRoomId, OwnedTransactionId, OwnedUserId, RoomOrAliasId, TransactionId, UserId, uint
+    }, send_queue::{LocalEchoContent, RoomSendQueueUpdate, SendQueueUpdate}, sliding_sync::VersionBuilder, Client, ClientBuildError, OwnedServerName, Room, RoomDisplayName, RoomMemberships, RoomState, SessionChange, SuccessorRoom
+};
+#[cfg(not(any(target_os = "ios", target_family = "wasm")))]
+use matrix_sdk::Error;
+use matrix_sdk_ui::{
+    RoomListService, Timeline, encryption_sync_service, room_list_service::{RoomListItem, RoomListLoadingState, SyncIndicator, filters}, sync_service::{self, SyncService}, timeline::{AttachmentSource, EventSendState, LatestEventValue, RedactError, RoomExt, TimelineEventItemId, TimelineFocus, TimelineItem, TimelineReadReceiptTracking, TimelineDetails}
+};
+#[cfg(not(any(target_os = "ios", target_family = "wasm")))]
+use robius_open::Uri;
+use ruma::{OwnedRoomAliasId, OwnedRoomOrAliasId, RoomId, events::tag::Tags};
+use tokio::{
+    sync::{broadcast, mpsc::Sender, watch, Notify, Semaphore},
+};
+use url::Url;
+use std::{borrow::Cow, cmp::{max, min}, future::Future, hash::{BuildHasherDefault, DefaultHasher}, iter::Peekable, ops::{Deref, DerefMut, Not}, path::{Path, PathBuf}, sync::{Arc, LazyLock, Mutex, atomic::{AtomicBool, Ordering}}, time::Duration};
+use std::io;
+use hashbrown::{HashMap, HashSet};
+use crate::{
+    app::AppStateAction, app_data_dir, avatar_cache::AvatarUpdate, event_preview::{BeforeText, TextPreview, text_preview_of_raw_timeline_event, text_preview_of_timeline_item}, home::{
+        add_room::KnockResultAction, invite_screen::{JoinRoomResultAction, LeaveRoomResultAction}, link_preview::LinkPreviewData, room_screen::{InviteResultAction, TimelineUpdate, index_of_event}, rooms_list::{self, InvitedRoomInfo, InviterInfo, JoinedRoomInfo, RoomsListUpdate, enqueue_rooms_list_update}, rooms_list_header::RoomsListHeaderAction, send_status_indicator::stringify_send_error, tombstone_footer::SuccessorRoomDetails
+    }, login::login_screen::LoginAction, logout::{logout_confirm_modal::LogoutAction, logout_state_machine::{LogoutConfig, is_logout_in_progress, logout_with_state_machine}}, media_cache::{MediaCacheEntry, MediaCacheEntryRef}, persistence::{self, ClientSessionPersisted, load_app_state}, profile::{
+        user_profile::UserProfile,
+        user_profile_cache::{UserProfileUpdate, enqueue_user_profile_update},
+    }, room::{FetchedRoomAvatar, FetchedRoomPreview, RoomPreviewAction}, room_preview_cache::{RoomPreviewUpdate, enqueue_room_preview_update}, settings::account_settings::AccountManagementUrl, shared::{
+        attachment_download::{MediaDownloadResult, media_source_mxc}, avatar::AvatarState, file_upload_modal::{AttachmentUpload, FileUploadAttemptId, FileUploadMetadata}, jump_to_bottom_button::UnreadMessageCount, mention_popup::{MentionItem, RoomMentionCandidate}, mentionable_text_input::MentionMatches, popup_list::{PopupKind, enqueue_popup_notification}
+    }, space_service_sync::space_service_loop, utils::{self, AVATAR_THUMBNAIL_FORMAT, MatchQuality, RoomNameId, VecDiff, alias_localpart, avatar_from_room_name}, verification::add_verification_event_handlers_and_sync_client
+};
+
+#[derive(Parser, Default, Clone)]
+struct Cli {
+    /// Native Hepta Console configuration, loaded separately from Matrix login.
+    #[clap(long)]
+    console_config: Option<PathBuf>,
+
+    /// The user ID to login with.
+    #[clap(value_parser)]
+    user_id: String,
+
+    /// The password that should be used for the login.
+    #[clap(value_parser)]
+    password: String,
+
+    /// The homeserver to connect to.
+    #[clap(value_parser)]
+    homeserver: Option<String>,
+
+    /// Set the proxy that should be used for the connection.
+    #[clap(short, long)]
+    proxy: Option<String>,
+
+    /// Force login screen.
+    #[clap(short, long, action)]
+    login_screen: bool,
+
+    /// Enable verbose logging output.
+    #[clap(short, long, action)]
+    verbose: bool,
+}
+
+impl std::fmt::Debug for Cli {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        f.debug_struct("Cli")
+            .field("user_id", &self.user_id)
+            .field("password", &"<REDACTED>")
+            .field("homeserver", &self.homeserver)
+            .field("proxy", &self.proxy)
+            .field("login_screen", &self.login_screen)
+            .field("verbose", &self.verbose)
+            .finish()
+    }
+}
+
+impl From<LoginByPassword> for Cli {
+    fn from(login: LoginByPassword) -> Self {
+        Self {
+            console_config: None,
+            user_id: login.user_id,
+            password: login.password,
+            homeserver: login.homeserver,
+            proxy: None,
+            login_screen: false,
+            verbose: false,
+        }
+    }
+}
+
+
+/// Shared SQLite store config for both `build_client` and `restore_session`,
+/// so both code paths can't drift.
+#[cfg(not(target_family = "wasm"))]
+pub fn build_sqlite_store_config(
+    db_path: &Path,
+    passphrase: &str,
+) -> matrix_sdk::SqliteStoreConfig {
+    matrix_sdk::SqliteStoreConfig::with_low_memory_config(db_path)
+        .passphrase(Some(passphrase))
+}
+
+/// Fix the SDK to use standard webpki TLS root certificates, only relevant on Android.
+///
+/// This is necessary because of: <https://github.com/matrix-org/matrix-rust-sdk/pull/6645>.
+fn use_android_tls_roots(builder: matrix_sdk::ClientBuilder) -> matrix_sdk::ClientBuilder {
+    #[cfg(target_os = "android")]
+    let builder = {
+        let roots = webpki_root_certs::TLS_SERVER_ROOT_CERTS
+            .iter()
+            .filter_map(|der| matrix_sdk::reqwest::Certificate::from_der(der.as_ref()).ok())
+            .collect();
+        builder
+            .disable_built_in_root_certificates()
+            .add_root_certificates(roots)
+    };
+    builder
+}
+
+/// Creates and returns a `ClientBuilder` configured with every setting Robrix needs.
+pub(crate) fn base_client_builder(db_path: &Path, passphrase: &str) -> matrix_sdk::ClientBuilder {
+    #[cfg(not(target_family = "wasm"))]
+    let store_config = build_sqlite_store_config(db_path, passphrase);
+    // Store event and media cache content in the platform's intended cache dir.
+    #[cfg(not(target_family = "wasm"))]
+    let cache_path = db_path.file_name().map(|name| cache_dir().join(name));
+
+    #[cfg(not(target_family = "wasm"))]
+    let builder = Client::builder().sqlite_store_with_config_and_cache_path(store_config, cache_path);
+    #[cfg(target_family = "wasm")]
+    let builder = Client::builder().indexeddb_store(&format!("hepta-robrix/{}", db_path.file_name().unwrap_or_default().to_string_lossy()), Some(passphrase));
+    let builder = builder
+        .with_threading_support(matrix_sdk::ThreadingSupport::Enabled {
+            with_subscriptions: true,
+        })
+        .with_decryption_settings(DecryptionSettings {
+            sender_device_trust_requirement: TrustRequirement::Untrusted,
+        })
+        .with_encryption_settings(EncryptionSettings {
+            auto_enable_cross_signing: true,
+            backup_download_strategy: matrix_sdk::encryption::BackupDownloadStrategy::OneShot,
+            auto_enable_backups: true,
+        })
+        .with_enable_share_history_on_invite(true)
+        .handle_refresh_tokens()
+        // Use a 60 second timeout for all requests to the homeserver.
+        // Yes, this is a long timeout, but the standard matrix homeserver is often very slow.
+        .request_config(RequestConfig::new().timeout(std::time::Duration::from_secs(60)));
+
+    use_android_tls_roots(builder)
+}
+
+/// Build a new client.
+#[allow(clippy::result_large_err)]
+async fn build_client(
+    cli: &Cli,
+    data_dir: &Path,
+) -> Result<(Client, ClientSessionPersisted), ClientBuildError> {
+    // Generate a unique subfolder name for the client database,
+    // which allows multiple clients to run simultaneously.
+    let now = chrono::Local::now();
+    let db_subfolder_name: String = format!("db_{}", now.format("%F_%H_%M_%S_%f"));
+    let db_path = data_dir.join(&db_subfolder_name);
+    log!("Building new client with db at: {}", db_path.display());
+
+    // Eagerly creat the db dir to avoid any issues within the matrix SDK.
+    #[cfg(not(target_family = "wasm"))]
+    if let Err(e) = tokio::fs::create_dir_all(&db_path).await {
+        error!(
+            "Failed to pre-create db directory at {}: {e}. Continuing anyway; \
+             matrix-sdk-sqlite will retry the create internally.",
+            db_path.display(),
+        );
+    }
+
+    // Generate a random passphrase.
+    let passphrase: String = {
+        use rand::{Rng, thread_rng};
+        thread_rng()
+            .sample_iter(rand::distributions::Alphanumeric)
+            .take(32)
+            .map(char::from)
+            .collect()
+    };
+
+    let homeserver_url = cli.homeserver.as_deref()
+        .unwrap_or("https://matrix-client.matrix.org/");
+        // .unwrap_or("https://matrix.org/");
+
+    let builder = base_client_builder(&db_path, &passphrase)
+        .server_name_or_homeserver_url(homeserver_url)
+        // The sliding sync proxy has now been deprecated in favor of native sliding sync.
+        .sliding_sync_version_builder(VersionBuilder::DiscoverNative);
+
+    #[cfg(not(target_family = "wasm"))]
+    let builder = if let Some(proxy) = cli.proxy.as_ref() {
+        builder.proxy(proxy.clone())
+    } else { builder };
+
+    let client = builder.build().await?;
+    let homeserver_url =  client.homeserver().to_string();
+    Ok((
+        client,
+        ClientSessionPersisted {
+            homeserver: homeserver_url,
+            // Store the relative subfolder name only. The absolute path is
+            // rebuilt on restore. Avoids baking in a sandbox path that goes
+            // stale on iOS (container UUID changes across reinstalls).
+            db_path: PathBuf::from(db_subfolder_name),
+            passphrase,
+        },
+    ))
+}
+
+/// Logs in to the given Matrix homeserver using the given username and password.
+///
+/// This function is used by the login screen to log in to the Matrix server.
+///
+/// Upon success, this function returns the logged-in client and an optional sync token.
+async fn login(
+    cli: &Cli,
+    login_request: LoginRequest,
+) -> Result<(Client, Option<String>)> {
+    match login_request {
+        LoginRequest::LoginByCli | LoginRequest::LoginByPassword(_) => {
+            let cli = if let LoginRequest::LoginByPassword(login_by_password) = login_request {
+                &Cli::from(login_by_password)
+            } else {
+                cli
+            };
+            let (client, client_session) = build_client(cli, app_data_dir()).await.map_err(runtime::sdk_error)?;
+            crate::ui_dispatch::post_action(LoginAction::Status {
+                title: "Authenticating".into(),
+                status: format!("Logging in as {}...", cli.user_id),
+            });
+            // Attempt to login using the CLI-provided username & password.
+            let login_result = client
+                .matrix_auth()
+                .login_username(&cli.user_id, &cli.password)
+                .initial_device_display_name("robrix-un-pw")
+                .send()
+                .await.map_err(runtime::sdk_error)?;
+            if client.matrix_auth().logged_in() {
+                log!("Logged in successfully.");
+                let status = format!("Logged in as {}.\n → Loading rooms...", cli.user_id);
+                // enqueue_popup_notification(status.clone());
+                enqueue_rooms_list_update(RoomsListUpdate::Status { status });
+                if let Err(e) = persistence::save_session(&client, client_session).await {
+                    let err_msg = format!("Failed to save session state to storage: {e}");
+                    error!("{err_msg}");
+                    enqueue_popup_notification(err_msg, PopupKind::Error, None);
+                }
+                Ok((client, None))
+            } else {
+                let err_msg = format!("Failed to login as {}: {:?}", cli.user_id, login_result);
+                enqueue_popup_notification(err_msg.clone(), PopupKind::Error, None);
+                enqueue_rooms_list_update(RoomsListUpdate::Status { status: err_msg.clone() });
+                bail!(err_msg);
+            }
+        }
+
+        LoginRequest::LoginBySSOSuccess(client, client_session) => {
+            if let Err(e) = persistence::save_session(&client, client_session).await {
+                error!("Failed to save session state to storage: {e:?}");
+            }
+            Ok((client, None))
+        }
+        LoginRequest::HomeserverLoginTypesQuery(_) => {
+            bail!("LoginRequest::HomeserverLoginTypesQuery not handled earlier");
+        }
+    }
+}
+
+
+/// Which direction to paginate in.
+///
+/// * `Forwards` will retrieve later events (towards the end of the timeline),
+///   which only works if the timeline is *focused* on a specific event.
+/// * `Backwards`: the more typical choice, in which earlier events are retrieved
+///   (towards the start of the timeline), which works in  both live mode and focused mode.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub enum PaginationDirection {
+    Forwards,
+    Backwards,
+}
+impl std::fmt::Display for PaginationDirection {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            Self::Forwards => write!(f, "forwards"),
+            Self::Backwards => write!(f, "backwards"),
+        }
+    }
+}
+
+/// The function signature for the callback that gets invoked when media is fetched.
+pub type OnMediaFetchedFn = fn(
+    &Mutex<MediaCacheEntry>,
+    MediaRequestParameters,
+    matrix_sdk::Result<Vec<u8>>,
+    Option<crate::timeline_channel::Sender<TimelineUpdate>>,
+);
+
+/// Error types for URL preview operations.
+#[derive(Debug)]
+pub enum UrlPreviewError {
+    /// The Matrix client was not available.
+    ClientNotAvailable,
+    /// The request to the homeserver failed.
+    Request(matrix_sdk::HttpError),
+    /// Parsing the preview JSON failed.
+    Json(serde_json::Error),
+}
+
+impl std::fmt::Display for UrlPreviewError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            UrlPreviewError::ClientNotAvailable => write!(f, "Matrix client not available"),
+            UrlPreviewError::Request(e) => write!(f, "HTTP request failed: {e}"),
+            UrlPreviewError::Json(e) => write!(f, "JSON parsing failed: {e}"),
+        }
+    }
+}
+
+impl std::error::Error for UrlPreviewError {}
+
+/// The function signature for the callback that gets invoked when link preview data is fetched.
+pub type OnLinkPreviewFetchedFn = fn(
+    Arc<Mutex<crate::home::link_preview::TimestampedCacheEntry>>,
+    Result<LinkPreviewData, UrlPreviewError>,
+    Option<crate::timeline_channel::Sender<TimelineUpdate>>,
+);
+
+
+/// Actions emitted in response to a [`MatrixRequest::GenerateMatrixLink`].
+#[derive(Clone, Debug)]
+pub enum MatrixLinkAction {
+    MatrixToUri(MatrixToUri),
+    MatrixUri(MatrixUri),
+    Error(String),
+}
+
+/// Actions emitted when account data (e.g., avatar, display name) changes.
+#[derive(Clone, Debug)]
+pub enum AccountDataAction {
+    /// The user's avatar was successfully updated or removed.
+    AvatarChanged(Option<OwnedMxcUri>),
+    /// Failed to update or remove the user's avatar.
+    AvatarChangeFailed(String),
+    /// The user's display name was successfully updated or removed.
+    DisplayNameChanged(Option<String>),
+    /// Failed to update the user's display name.
+    DisplayNameChangeFailed(String),
+    /// Result of [`MatrixRequest::GetOwnDevice`], in a `Box` because `Device` is large.
+    /// * `None` if not logged in or the crypto store isn't ready yet.
+    OwnDeviceFetched(Option<Box<Device>>),
+    /// Result of [`MatrixRequest::GetAccountManagementUrl`].
+    AccountManagementUrlFetched(AccountManagementUrl),
+}
+
+/// Actions emitted in response to a [`MatrixRequest::OpenOrCreateDirectMessage`].
+#[derive(Debug)]
+pub enum DirectMessageRoomAction {
+    /// A direct message room already existed with the given user.
+    FoundExisting {
+        user_id: OwnedUserId,
+        room_name_id: RoomNameId,
+    },
+    /// A direct message room didn't exist, and we didn't attempt to create a new one.
+    DidNotExist {
+        user_profile: UserProfile,
+    },
+    /// A direct message room didn't exist, but we successfully created a new one.
+    NewlyCreated {
+        user_profile: UserProfile,
+        room_name_id: RoomNameId,
+    },
+    /// A direct message room didn't exist, and we failed to create a new one.
+    FailedToCreate {
+        user_profile: UserProfile,
+        error: matrix_sdk::Error,
+    },
+}
+
+/// Either a main room timeline or a thread-focused timeline.
+#[derive(Clone, Debug, PartialEq, Eq, Hash)]
+pub enum TimelineKind {
+    MainRoom {
+        room_id: OwnedRoomId,
+    },
+    Thread {
+        room_id: OwnedRoomId,
+        thread_root_event_id: OwnedEventId,
+    },
+}
+impl TimelineKind {
+    pub fn room_id(&self) -> &OwnedRoomId {
+        match self {
+            TimelineKind::MainRoom { room_id } => room_id,
+            TimelineKind::Thread { room_id, .. } => room_id,
+        }
+    }
+
+    pub fn thread_root_event_id(&self) -> Option<&OwnedEventId> {
+        match self {
+            TimelineKind::MainRoom { .. } => None,
+            TimelineKind::Thread { thread_root_event_id, .. } => Some(thread_root_event_id),
+        }
+    }
+
+    /// What to call this timeline in messages shown to the user.
+    pub fn desc(&self) -> &'static str {
+        match self {
+            TimelineKind::MainRoom { .. } => "room",
+            TimelineKind::Thread { .. } => "thread",
+        }
+    }
+}
+impl std::fmt::Display for TimelineKind {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            TimelineKind::MainRoom { room_id } => write!(f, "MainRoom({})", room_id),
+            TimelineKind::Thread { room_id, thread_root_event_id } => {
+                write!(f, "Thread({}, {})", room_id, thread_root_event_id)
+            }
+        }
+    }
+}
+
+/// The desired response for a [`MatrixRequest::GetRoomPreview`].
+#[derive(Clone, Debug)]
+pub enum RoomPreviewResponseMode {
+    /// Posts a [`RoomPreviewAction::Fetched`] action with the result.
+    Action,
+    /// Enqueues the result to be inserted into the [`crate::room_preview_cache`],
+    /// if successful.
+    RoomPreviewCache,
+}
+
+/// The set of requests for async work that can be made to the worker thread.
+#[allow(clippy::large_enum_variant)]
+pub enum MatrixRequest {
+    /// Request from the login screen to log in with the given credentials.
+    Login(LoginRequest),
+    /// Request to logout.
+    Logout {
+        is_desktop: bool,
+    },
+    /// Request to paginate the older (or newer) events of a room or thread timeline.
+    PaginateTimeline {
+        timeline_kind: TimelineKind,
+        /// The maximum number of timeline events to fetch in each pagination batch.
+        num_events: u16,
+        direction: PaginationDirection,
+    },
+    /// Request to edit the content of an event in the given room's timeline.
+    EditMessage {
+        timeline_kind: TimelineKind,
+        timeline_event_item_id: TimelineEventItemId,
+        edited_content: EditedContent,
+    },
+    /// Request to fetch the full details of the given event in the given room's timeline.
+    FetchDetailsForEvent {
+        timeline_kind: TimelineKind,
+        event_id: OwnedEventId,
+    },
+    /// Request to fetch the latest thread-reply preview and latest reply count
+    /// for the given thread root.
+    FetchThreadSummaryDetails {
+        timeline_kind: TimelineKind,
+        thread_root_event_id: OwnedEventId,
+        timeline_item_index: usize,
+    },
+    /// Request to fetch profile information for all members of a room.
+    ///
+    /// This can be *very* slow depending on the number of members in the room.
+    ///
+    /// Even though it operates on a room itself, this accepts a `TimelineKind`
+    /// in order to be able to send the fetched room member list to a specific timeline UI.
+    SyncRoomMemberList {
+        timeline_kind: TimelineKind,
+    },
+    /// Request to create a thread timeline focused on the given thread root event in the given room.
+    CreateThreadTimeline {
+        room_id: OwnedRoomId,
+        thread_root_event_id: OwnedEventId,
+    },
+    /// Request to stop a thread timeline's backend sync loop (e.g. for when its tab was closed).
+    CloseThreadTimeline {
+        room_id: OwnedRoomId,
+        thread_root_event_id: OwnedEventId,
+    },
+    /// Request to knock on (request an invite to) the given room.
+    Knock {
+        room_or_alias_id: OwnedRoomOrAliasId,
+        reason: Option<String>,
+        #[doc(alias("via"))]
+        server_names: Vec<OwnedServerName>,
+    },
+    /// Request to invite the given user to the given room.
+    InviteUser {
+        room_id: OwnedRoomId,
+        user_id: OwnedUserId,
+    },
+    /// Request to join the given room.
+    JoinRoom {
+        room_id: OwnedRoomId,
+    },
+    /// Request to leave the given room.
+    LeaveRoom {
+        room_id: OwnedRoomId,
+    },
+    /// Request to get the actual list of members in a room.
+    ///
+    /// This returns the list of members that can be displayed in the UI.
+    ///
+    /// Even though it operates on a room itself, this accepts a `TimelineKind`
+    /// in order to be able to send the fetched room member list to a specific timeline UI.
+    GetRoomMembers {
+        timeline_kind: TimelineKind,
+        memberships: RoomMemberships,
+        /// * If `true` (not recommended), only the local cache will be accessed.
+        /// * If `false` (recommended), details will be fetched from the server.
+        local_only: bool,
+    },
+    /// Request to fetch the preview (basic info) for the given room,
+    /// either one that is joined locally or one that is unknown.
+    ///
+    /// On completion, the result is dispatched according to `response_mode`:
+    /// either as a [`RoomPreviewAction::Fetched`] action, or by enqueueing
+    /// a cache update into the [`crate::room_preview_cache`].
+    GetRoomPreview {
+        room_or_alias_id: OwnedRoomOrAliasId,
+        via: Vec<OwnedServerName>,
+        response_mode: RoomPreviewResponseMode,
+    },
+    /// Request to fetch the full details (the room preview) of a tombstoned room.
+    GetSuccessorRoomDetails {
+        tombstoned_room_id: OwnedRoomId,
+    },
+    /// Request to create or open a direct message room with the given user.
+    ///
+    /// If there is no existing DM room with the given user, this will create a new DM room
+    /// if `allow_create` is `true`; otherwise it will emit an action indicating that
+    /// no DM room existed, upon which the UI will prompt the user to confirm that they want
+    /// to proceed with creating a new DM room.
+    #[doc(alias("dm"))]
+    OpenOrCreateDirectMessage {
+        user_profile: UserProfile,
+        allow_create: bool,
+    },
+    /// Request to fetch profile information for the given user ID.
+    GetUserProfile {
+        user_id: OwnedUserId,
+        /// * If `Some`, the user is known to be a member of a room, so this will
+        ///   fetch the user's profile from that room's membership info.
+        /// * If `None`, the user's profile info will be fetched from the server
+        ///   in a room-agnostic manner, and no room membership info will be returned.
+        room_id: Option<OwnedRoomId>,
+        /// * If `true` (not recommended), only the local cache will be accessed.
+        /// * If `false` (recommended), details will be fetched from the server.
+        local_only: bool,
+    },
+    /// Request to fetch the number of unread messages in the given room.
+    GetNumberUnreadMessages {
+        timeline_kind: TimelineKind,
+    },
+    /// Request to set the unread flag for the given room.
+    SetUnreadFlag {
+        room_id: OwnedRoomId,
+        /// If `true`, marks the room as unread.
+        /// If `false`, marks the room as read.
+        mark_as_unread: bool,
+    },
+    /// Request to mark the given room as fully read.
+    ///
+    /// This sends a read receipt for the latest-seen event,
+    /// moves the fully-read marker to right after that event,
+    /// and clears the unread flag for the given room.
+    MarkRoomAsRead {
+        room_id: OwnedRoomId,
+        receipt_type: ReceiptType,
+    },
+    /// Request to set the favorite flag for the given room.
+    SetIsFavorite {
+        room_id: OwnedRoomId,
+        is_favorite: bool,
+    },
+    /// Request to set the low priority flag for the given room.
+    SetIsLowPriority {
+        room_id: OwnedRoomId,
+        is_low_priority: bool,
+    },
+    /// Request to gather diagnostic info about the given room's sync/cache state.
+    GetRoomDiagnostics {
+        room_id: OwnedRoomId,
+    },
+    /// Request to clear the event cache of all rooms, forcing a re-fetch from the homeserver.
+    ClearEventCache,
+    /// Request to generate a Matrix link (permalink) for a room or event.
+    GenerateMatrixLink {
+        /// The ID of the room to generate a link for.
+        room_id: OwnedRoomId,
+        /// * If `Some`, the link will point to this specific event within the room.
+        /// * If `None`, the link will point to the room itself.
+        event_id: Option<OwnedEventId>,
+        /// * If `true`, the `matrix:` URI scheme will be used to create a [`MatrixUri`].
+        /// * If `false` (default), the `https://matrix.to` scheme will be used to create a [`MatrixToUri`].
+        use_matrix_scheme: bool,
+        /// * If `true` (default is false), the link will include an action hint to join the room.
+        join_on_click: bool,
+    },
+    /// Request to ignore/block or unignore/unblock a user.
+    IgnoreUser {
+        user_id: OwnedUserId,
+        /// Whether to ignore (`true`) or unignore (`false`) the user.
+        ignore: bool,
+        /// The room that the user was (un)ignored in, so we can re-paginate it.
+        room_id: OwnedRoomId,
+    },
+    /// Request to set or remove the avatar of the current user's account.
+    SetAvatar {
+        /// * If `Some`, the avatar will be set to the given MXC URI.
+        /// * If `None`, the avatar will be removed.
+        avatar_url: Option<OwnedMxcUri>,
+    },
+    /// Request to upload the given image file and set it as the current user's avatar.
+    ///
+    /// The result is delivered as either an [`AccountDataAction::AvatarChanged`] or
+    /// [`AccountDataAction::AvatarChangeFailed`] action.
+    UploadAvatar {
+        file_data: FileUploadMetadata,
+    },
+    /// Request to set or remove the display name of the current user's account.
+    SetDisplayName {
+        /// * If `Some`, the display name will be set to the given value.
+        /// * If `None`, the display name will be removed.
+        new_display_name: Option<String>,
+    },
+    /// Request to fetch our own [`Device`].
+    /// The response is delivered via [`AccountDataAction::OwnDeviceFetched`].
+    GetOwnDevice,
+    /// Request to fetch the URL of the homeserver's account management page.
+    /// The response is delivered via [`AccountDataAction::AccountManagementUrlFetched`].
+    GetAccountManagementUrl,
+    /// Request to verify this device by sending an outgoing verification request
+    /// to the user's other logged-in devices, which'll open the verification modal.
+    RequestSelfVerification,
+    /// Request to fetch an Avatar image from the server.
+    /// Upon completion of the async media request, the `on_fetched` function
+    /// will be invoked with the content of an `AvatarUpdate`.
+    FetchAvatar {
+        mxc_uri: OwnedMxcUri,
+        on_fetched: fn(AvatarUpdate),
+    },
+    /// Request to fetch or compute a room's avatar.
+    /// Returns the result via [`RoomsListUpdate::UpdateRoomAvatar`].
+    FetchRoomAvatar {
+        room_name_id: RoomNameId,
+    },
+    /// Request to fetch media from the server.
+    /// Upon completion of the async media request, the `on_fetched` function
+    /// will be invoked with four arguments: the `destination`, the `media_request`,
+    /// the result of the media fetch, and the `update_sender`.
+    FetchMedia {
+        media_request: MediaRequestParameters,
+        on_fetched: OnMediaFetchedFn,
+        destination: MediaCacheEntryRef,
+        update_sender: Option<crate::timeline_channel::Sender<TimelineUpdate>>,
+    },
+    /// Request to send a message to the given room.
+    SendMessage {
+        timeline_kind: TimelineKind,
+        message: RoomMessageEventContent,
+        replied_to: Option<Reply>,
+        #[cfg(feature = "tsp")]
+        sign_with_tsp: bool,
+    },
+    /// Request to send a file attachment to the given room.
+    SendAttachment {
+        upload_id: FileUploadAttemptId,
+        upload: AttachmentUpload,
+    },
+    /// Sends a notice to the given room that the current user is or is not typing.
+    ///
+    /// This request does not return a response or notify the UI thread, and
+    /// furthermore, there is no need to send a follow-up request to stop typing
+    /// (though you certainly can do so).
+    SendTypingNotice {
+        room_id: OwnedRoomId,
+        typing: bool,
+    },
+    /// Spawn an async task to login to the given Matrix homeserver using the given SSO identity provider ID.
+    ///
+    /// While an SSO request is in flight, the login screen will temporarily prevent the user
+    /// from submitting another redundant request, until this request has succeeded or failed.
+    SpawnSSOServer{
+        brand: String,
+        homeserver_url: String,
+        identity_provider_id: String,
+    },
+    /// Subscribe to typing notices for the given room.
+    ///
+    /// This is only valid for the main room timeline, not for thread-focused timelines.
+    ///
+    /// This request does not immediately return a response or notify the UI thread,
+    /// but it will send updates to the UI via the timeline's update sender.
+    SubscribeToTypingNotices {
+        room_id: OwnedRoomId,
+        /// Whether to subscribe or unsubscribe.
+        subscribe: bool,
+    },
+    /// Subscribe to changes in the read receipts of our own user.
+    ///
+    /// This is only valid for the main room timeline, not for thread-focused timelines.
+    /// Updates are sent to the UI via the timeline's update sender.
+    SubscribeToOwnUserReadReceiptsChanged {
+        room_id: OwnedRoomId,
+        /// Whether to subscribe or unsubscribe.
+        subscribe: bool,
+    },
+    /// Subscribe to changes in the set of pinned events for the given room.
+    ///
+    /// This is only valid for the main room timeline, not for thread-focused timelines.
+    SubscribeToPinnedEvents {
+        room_id: OwnedRoomId,
+        /// Whether to subscribe or unsubscribe.
+        subscribe: bool,
+    },
+    /// Sends a read receipt for the given event to the given room or thread timeline.
+    ReadReceipt {
+        timeline_kind: TimelineKind,
+        event_id: OwnedEventId,
+        receipt_type: ReceiptType,
+    },
+    /// Requests the event ID of the given user's latest read receipt in this timeline.
+    ///
+    /// The response is delivered back to the main UI thread via [`TimelineUpdate::UserReadReceiptFetched`].
+    GetUserReadReceipt {
+        timeline_kind: TimelineKind,
+        user_id: OwnedUserId,
+    },
+    /// Sends a request to obtain the power levels for this room.
+    ///
+    /// The response is delivered back to the main UI thread via [`TimelineUpdate::UserPowerLevels`].
+    ///
+    /// Even though it operates on a room itself, this accepts a `TimelineKind`
+    /// in order to be able to send the fetched room member list to a specific timeline UI.
+    GetRoomPowerLevels {
+        timeline_kind: TimelineKind,
+    },
+    /// Toggles the given reaction to the given event in the given room.
+    ToggleReaction {
+        timeline_kind: TimelineKind,
+        timeline_event_id: TimelineEventItemId,
+        reaction: String,
+    },
+    /// Redacts (deletes) the given event in the given room.
+    #[doc(alias("delete"))]
+    RedactMessage {
+        timeline_kind: TimelineKind,
+        timeline_event_id: TimelineEventItemId,
+        reason: Option<String>,
+    },
+    /// Retries sending the given local echo of a message,
+    /// typically one that previously failed to send.
+    RetrySend {
+        timeline_kind: TimelineKind,
+        timeline_event_id: TimelineEventItemId,
+    },
+    /// Pin or unpin the given event in the given room.
+    #[doc(alias("unpin"))]
+    PinEvent {
+        timeline_kind: TimelineKind,
+        event_id: OwnedEventId,
+        pin: bool,
+    },
+    /// Request to fetch URL preview from the Matrix homeserver.
+    GetUrlPreview {
+        url: String,
+        on_fetched: OnLinkPreviewFetchedFn,
+        destination: Arc<Mutex<crate::home::link_preview::TimestampedCacheEntry>>,
+        update_sender: Option<crate::timeline_channel::Sender<TimelineUpdate>>,
+    },
+    /// Request to download a media attachment/file.
+    ///
+    /// The given callback `on_download_result` is called from the backend
+    /// matrix worker tokio task.
+    /// If the given McxUri was already downloading, the request is rejected
+    /// and `on_download_result` is called with `Cancelled`.
+    DownloadMedia {
+        media_source: MediaSource,
+        filename: String,
+        on_download_result: DownloadResultCallback,
+    },
+    /// Request to cancel an in-progress download.
+    CancelDownload(OwnedMxcUri),
+    /// Request to find all known rooms and spaces that match the `query` string.
+    /// 
+    /// Returns a list of matching rooms/spaces via [`MentionMatches`]
+    GetMatchingRooms {
+        query: String,
+        request_id: u64,
+        owner: WidgetUid,
+    },
+}
+
+/// Submits a request when the caller does not own draft/UI state to retain.
+pub fn submit_async_request(req: MatrixRequest) {
+    let _ = try_submit_async_request(req);
+}
+
+/// Return actual queue admission. Callers must retain unsent drafts/attachments
+/// until this returns true; admission does not imply server delivery.
+pub fn try_submit_async_request(req: MatrixRequest) -> bool {
+    #[cfg(target_family = "wasm")]
+    if !crate::ui_dispatch::accepts_requests() {
+        reject_browser_request();
+        finish_unadmitted_callback(req);
+        return false;
+    }
+    // Release the holder before invoking rejection callbacks, which may submit work.
+    let sender = request_sender_state().lock().unwrap().as_ref().cloned();
+    let Some(sender) = sender else {
+        #[cfg(target_family = "wasm")]
+        { reject_browser_request(); finish_unadmitted_callback(req); }
+        return false;
+    };
+    #[cfg(not(target_family = "wasm"))]
+    {
+        sender.send((runtime::origin_epoch(), req))
+            .expect("BUG: matrix worker task receiver has died!");
+        true
+    }
+    #[cfg(target_family = "wasm")]
+    match sender.try_send((runtime::origin_epoch(), req)) {
+        Ok(()) => {
+            REQUEST_BACKPRESSURE.store(false, Ordering::Release);
+            true
+        }
+        Err(error) => {
+            reject_browser_request();
+            finish_unadmitted_callback(error.into_inner().1);
+            false
+        }
+    }
+}
+
+/// Requests with completion callbacks must not remain pending after rejection.
+#[cfg(target_family = "wasm")]
+fn finish_unadmitted_callback(request: MatrixRequest) {
+    if let MatrixRequest::DownloadMedia { on_download_result, .. } = request {
+        on_download_result(MediaDownloadResult::Failed(
+            "Download request was not submitted; synchronize or reload before retrying.".into()
+        ));
+    }
+}
+
+#[cfg(target_family = "wasm")]
+static REQUEST_BACKPRESSURE: AtomicBool = AtomicBool::new(false);
+#[cfg(target_family = "wasm")]
+fn reject_browser_request() {
+    if !REQUEST_BACKPRESSURE.swap(true, Ordering::AcqRel) {
+        enqueue_popup_notification(
+            "This request was not submitted: the queue is full or synchronization requires a reload. Wait for synchronization or reload before retrying.",
+            PopupKind::Error, None,
+        );
+    }
+}
+
+/// A media download in flight, tracked by MXC so duplicates are rejected and
+/// the fetch can be cancelled.
+struct ActiveDownload {
+    /// Aborts the underlying fetch when [`MatrixRequest::CancelDownload`] arrives.
+    abort_handle: futures_util::future::AbortHandle,
+    /// Delivers the result to the requester. Whichever of the completion or
+    /// cancellation path runs removes it from the map and calls it.
+    on_download_result: DownloadResultCallback,
+}
+
+/// Browser callbacks remain on the local executor and may own local SDK data.
+#[cfg(not(target_family = "wasm"))]
+pub type DownloadResultCallback = Box<dyn FnOnce(MediaDownloadResult) + Send + 'static>;
+#[cfg(target_family = "wasm")]
+pub type DownloadResultCallback = Box<dyn FnOnce(MediaDownloadResult) + 'static>;
+
+/// Spawns a one-off async task on the backend Tokio runtime.
+pub fn spawn_async_task<F>(future: F)
+where
+    F: Future<Output = ()> + SendOutsideWasm + 'static,
+{
+    runtime::handle().spawn(future);
+}
+
+/// Details of a login request that get submitted within [`MatrixRequest::Login`].
+pub enum LoginRequest{
+    LoginByPassword(LoginByPassword),
+    LoginBySSOSuccess(Client, ClientSessionPersisted),
+    LoginByCli,
+    HomeserverLoginTypesQuery(String),
+
+}
+/// Information needed to log in to a Matrix homeserver.
+pub struct LoginByPassword {
+    pub user_id: String,
+    pub password: String,
+    pub homeserver: Option<String>,
+}
+
+
+/// The entry point for the worker task that runs Matrix-related operations.
+///
+/// All this task does is wait for [`MatrixRequests`] from the main UI thread
+/// and then executes them within an async runtime context.
+async fn matrix_worker_task(
+    mut request_receiver: MatrixRequestReceiver,
+    login_sender: Sender<(u64, LoginRequest)>,
+) -> Result<()> {
+    log!("Started matrix_worker_task.");
+
+    // The async tasks that are spawned to subscribe to changes in our own user's read receipts for each room.
+    let mut subscribers_own_user_read_receipts: HashMap<OwnedRoomId, JoinHandle<()>> = HashMap::new();
+    // The async tasks that are spawned to subscribe to changes in the pinned events for each room.
+    let mut subscribers_pinned_events: HashMap<OwnedRoomId, JoinHandle<()>> = HashMap::new();
+    // The async tasks spawned to handle media downloads, keyed by MxcUri.
+    // Here we intentionally use a `std` Mutex, not async, since it's cheaper under no contention.
+    let download_tasks: Arc<Mutex<HashMap<OwnedMxcUri, ActiveDownload>>> = Arc::new(Mutex::new(HashMap::new()));
+
+    while let Some((epoch, request)) = request_receiver.recv().await {
+        if epoch != runtime::current_epoch() { continue; }
+        match request {
+            MatrixRequest::Login(login_request) => {
+                if let Err(e) = login_sender.send((epoch, login_request)).await {
+                    error!("Error sending login request to login_sender: {e:?}");
+                    crate::ui_dispatch::post_action(LoginAction::LoginFailure(String::from(
+                        "BUG: failed to send login request to login worker task."
+                    )));
+                }
+            }
+
+            MatrixRequest::Logout { is_desktop } => {
+                log!("Received MatrixRequest::Logout, is_desktop: {}", is_desktop);
+                let _logout_task = runtime::handle().spawn(async move {
+                    log!("Starting logout task");
+                    // Use the state machine implementation
+                    match logout_with_state_machine(is_desktop).await {
+                        Ok(()) => {
+                            log!("Logout completed successfully via state machine");
+                        },
+                        Err(e) => {
+                            error!("Logout failed: {e:?}");
+                        }
+                    }
+                });
+            }
+
+            MatrixRequest::PaginateTimeline {timeline_kind, num_events, direction} => {
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    log!("Skipping pagination request for unknown {timeline_kind}");
+                    continue;
+                };
+
+                // Spawn a new async task that will make the actual pagination request.
+                let _paginate_task = runtime::handle().spawn(async move {
+                    log!("Starting {direction} pagination request for {timeline_kind}...");
+                    if sender.send(TimelineUpdate::PaginationRunning(direction)).is_err() {
+                        error!("Failed to send pagination status to UI for {timeline_kind}");
+                    }
+                    SignalToUI::set_ui_signal();
+
+                    let res = if direction == PaginationDirection::Forwards {
+                        timeline.paginate_forwards(num_events).await
+                    } else {
+                        timeline.paginate_backwards(num_events).await
+                    };
+
+                    match res {
+                        Ok(fully_paginated) => {
+                            log!("Completed {direction} pagination request for {timeline_kind}, hit {} of timeline? {}",
+                                if direction == PaginationDirection::Forwards { "end" } else { "start" },
+                                if fully_paginated { "yes" } else { "no" },
+                            );
+                            if sender.send(TimelineUpdate::PaginationIdle {
+                                fully_paginated,
+                                direction,
+                            }).is_err() {
+                                error!("Failed to send pagination result to UI for {timeline_kind}");
+                            }
+                            SignalToUI::set_ui_signal();
+                        }
+                        Err(error) => {
+                            error!("Error sending {direction} pagination request for {timeline_kind}: {error:?}");
+                            if sender.send(TimelineUpdate::PaginationError {
+                                error,
+                                direction,
+                            }).is_err() {
+                                error!("Failed to send pagination error to UI for {timeline_kind}");
+                            }
+                            SignalToUI::set_ui_signal();
+                        }
+                    }
+                });
+            }
+
+            MatrixRequest::EditMessage { timeline_kind, timeline_event_item_id, edited_content } => {
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    log!("BUG: {timeline_kind} not found for edit request");
+                    continue;
+                };
+
+                // Spawn a new async task that will make the actual edit request.
+                let _edit_task = runtime::handle().spawn(async move {
+                    log!("Sending request to edit message {timeline_event_item_id:?} in {timeline_kind}...");
+                    let result = timeline.edit(&timeline_event_item_id, edited_content).await;
+                    match result {
+                        Ok(_) => {
+                            log!("Successfully edited message {timeline_event_item_id:?} in {timeline_kind}.");
+                            // Re-enable the send queue after editing a message, since a prior failure
+                            // may have disabled the room's send queue.
+                            if matches!(timeline_event_item_id, TimelineEventItemId::TransactionId(_)) {
+                                timeline.room().send_queue().set_enabled(true);
+                            }
+                        }
+                        Err(ref e) => error!("Error editing message {timeline_event_item_id:?} in {timeline_kind}: {e:?}"),
+                    }
+                    if sender.send(TimelineUpdate::MessageEdited {
+                        timeline_event_item_id,
+                        result,
+                    }).is_err() {
+                        error!("Failed to send edit result to UI for {timeline_kind}");
+                    }
+                    SignalToUI::set_ui_signal();
+                });
+            }
+
+            MatrixRequest::FetchDetailsForEvent { timeline_kind, event_id } => {
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    log!("BUG: {timeline_kind} not found for fetch details for event request");
+                    continue;
+                };
+
+                let _fetch_task = runtime::handle().spawn(async move {
+                    // log!("Sending request to fetch details for event {event_id} in {timeline_kind}...");
+                    let result = timeline.fetch_details_for_event(&event_id).await;
+                    match &result {
+                        Ok(_) => {
+                            // log!("Successfully fetched details for event {event_id} in {timeline_kind}.");
+                        }
+                        Err(_e) => {
+                            // error!("Error fetching details for event {event_id} in {timeline_kind}: {_e:?}");
+                        }
+                    }
+                    if sender.send(TimelineUpdate::EventDetailsFetched { event_id, result }).is_err() {
+                        error!("Failed to send fetched event details to UI for {timeline_kind}");
+                    }
+                    SignalToUI::set_ui_signal();
+                });
+            }
+
+            MatrixRequest::FetchThreadSummaryDetails {
+                timeline_kind,
+                thread_root_event_id,
+                timeline_item_index,
+            } => {
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    log!("BUG: {timeline_kind} not found for fetch thread summary details request");
+                    continue;
+                };
+
+                let _fetch_task = runtime::handle().spawn(async move {
+                    let (num_replies, latest_reply_event) = fetch_thread_summary_details(
+                        timeline.room(),
+                        &thread_root_event_id,
+                    ).await;
+                    let latest_reply_preview_text = match latest_reply_event.as_ref() {
+                        Some(event) => text_preview_of_latest_thread_reply(timeline.room(), event).await,
+                        None => None,
+                    };
+
+                    if sender.send(TimelineUpdate::ThreadSummaryDetailsFetched {
+                        thread_root_event_id,
+                        timeline_item_index,
+                        num_replies,
+                        latest_reply_preview_text,
+                    }).is_err() {
+                        error!("Failed to send fetched thread summary details to UI for {timeline_kind}");
+                    }
+                    SignalToUI::set_ui_signal();
+                });
+            }
+
+            MatrixRequest::SyncRoomMemberList { timeline_kind } => {
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    log!("BUG: {timeline_kind} not found for sync members list request");
+                    continue;
+                };
+
+                let _fetch_task = runtime::handle().spawn(async move {
+                    log!("Sending sync room members request for {timeline_kind}...");
+                    timeline.fetch_members().await;
+                    log!("Completed sync room members request for {timeline_kind}.");
+                    if sender.send(TimelineUpdate::RoomMembersSynced).is_err() {
+                        error!("Failed to send synced room members to UI for {timeline_kind}");
+                    }
+                    SignalToUI::set_ui_signal();
+                });
+            }
+
+            MatrixRequest::CreateThreadTimeline { room_id, thread_root_event_id } => {
+                let main_room_timeline = {
+                    let mut all_joined_rooms = all_joined_rooms_state().lock().unwrap();
+                    let Some(room_info) = all_joined_rooms.get_mut(&room_id) else {
+                        error!("BUG: room info not found for create thread timeline request, room {room_id}");
+                        continue;
+                    };
+                    if room_info.thread_timelines.contains_key(&thread_root_event_id) {
+                        continue;
+                    }
+                    let newly_pending = room_info.pending_thread_timelines.insert(thread_root_event_id.clone());
+                    if !newly_pending {
+                        continue;
+                    }
+                    room_info.main_timeline.timeline.clone()
+                };
+
+                let _create_thread_timeline_task = runtime::handle().spawn(async move {
+                    log!("Creating thread-focused timeline for room {room_id}, thread {thread_root_event_id}...");
+                    let build_result = main_room_timeline.room()
+                        .timeline_builder()
+                        .with_focus(TimelineFocus::Thread {
+                            root_event_id: thread_root_event_id.clone(),
+                        })
+                        .track_read_marker_and_receipts(TimelineReadReceiptTracking::AllEvents)
+                        .build()
+                        .await;
+
+                    match build_result {
+                        Ok(thread_timeline) => {
+                            let mut all_joined_rooms = all_joined_rooms_state().lock().unwrap();
+                            let Some(room_info) = all_joined_rooms.get_mut(&room_id) else {
+                                return;
+                            };
+                            if !room_info.pending_thread_timelines.remove(&thread_root_event_id) {
+                                log!("Thread-focused timeline for room {room_id}, thread {thread_root_event_id} was closed during creation; discarding it.");
+                                return;
+                            }
+                            log!("Successfully created thread-focused timeline for room {room_id}, thread {thread_root_event_id}.");
+                            let thread_timeline = Arc::new(thread_timeline);
+                            let (timeline_update_sender, timeline_update_receiver) = crate::timeline_channel::channel();
+                            let (request_sender, request_receiver) = watch::channel(TimelineRequest {
+                                backwards_paginate: Vec::new(),
+                                is_timeline_open: true,
+                            });
+                            let timeline_subscriber_handler_task = runtime::handle().spawn(
+                                timeline_subscriber_handler(
+                                    thread_timeline.clone(),
+                                    timeline_update_sender.clone(),
+                                    request_receiver,
+                                    Some(thread_root_event_id.clone()),
+                                )
+                            );
+                            room_info.thread_timelines.insert(
+                                thread_root_event_id.clone(),
+                                PerTimelineDetails {
+                                    timeline: thread_timeline,
+                                    timeline_update_sender,
+                                    timeline_singleton_endpoints: Some((
+                                        timeline_update_receiver,
+                                        request_sender,
+                                    )),
+                                    timeline_subscriber: TimelineSubscriber::Running(
+                                        timeline_subscriber_handler_task,
+                                    ),
+                                },
+                            );
+                            crate::ui_dispatch::post_action(TimelineEndpointsRecreated { room_id: room_id.clone() });
+                            SignalToUI::set_ui_signal();
+                        }
+                        Err(error) => {
+                            error!("Failed to create thread-focused timeline for room {room_id}, thread {thread_root_event_id}: {error}");
+                            let mut all_joined_rooms = all_joined_rooms_state().lock().unwrap();
+                            if let Some(room_info) = all_joined_rooms.get_mut(&room_id) {
+                                room_info
+                                    .pending_thread_timelines
+                                    .remove(&thread_root_event_id);
+                            }
+                            enqueue_popup_notification(
+                                format!("Failed to create thread-focused timeline. Please retry opening the thread again later.\n\nError: {error}"),
+                                PopupKind::Error,
+                                None,
+                            );
+                        }
+                    }
+                });
+            }
+
+            MatrixRequest::CloseThreadTimeline { room_id, thread_root_event_id } => {
+                let mut all_joined_rooms = all_joined_rooms_state().lock().unwrap();
+                let Some(room_info) = all_joined_rooms.get_mut(&room_id) else {
+                    continue;
+                };
+                // Remove it from the pending set to handle the rare case where we showed the
+                // thread timeline but then quickly hid it before its backend task could finish being set up.
+                room_info.pending_thread_timelines.remove(&thread_root_event_id);
+                // Remove and drop the entry (see [`PerTimelineDetails::drop()`] to abort its async task.
+                if room_info.thread_timelines.remove(&thread_root_event_id).is_some() {
+                    log!("Closed thread timeline for room {room_id}, thread {thread_root_event_id}.");
+                }
+            }
+
+            MatrixRequest::Knock { room_or_alias_id, reason, server_names } => {
+                let Some(client) = get_client() else { continue };
+                let _knock_room_task = runtime::handle().spawn(async move {
+                    log!("Sending request to knock on room {room_or_alias_id}...");
+                    match client.knock(room_or_alias_id.clone(), reason, server_names).await {
+                        Ok(room) => {
+                            let _ = room.display_name().await; // populate this room's display name cache
+                            crate::ui_dispatch::post_action(KnockResultAction::Knocked {
+                                room_or_alias_id,
+                                room,
+                            });
+                        }
+                        Err(error) => crate::ui_dispatch::post_action(KnockResultAction::Failed {
+                            room_or_alias_id,
+                            error,
+                        }),
+                    }
+                });
+            }
+
+            MatrixRequest::InviteUser { room_id, user_id } => {
+                let Some(client) = get_client() else { continue };
+                let _invite_task = runtime::handle().spawn(async move {
+                    // We use `client.get_room()` here because the room might also be a space,
+                    // not just a joined room.
+                    if let Some(room) = client.get_room(&room_id) {
+                        log!("Sending request to invite user {user_id} to room {room_id}...");
+                        match room.invite_user_by_id(&user_id).await {
+                            Ok(_) => crate::ui_dispatch::post_action(InviteResultAction::Sent {
+                                room_id,
+                                user_id,
+                            }),
+                            Err(error) => crate::ui_dispatch::post_action(InviteResultAction::Failed {
+                                room_id,
+                                user_id,
+                                error,
+                            }),
+                        }
+                    }
+                    else {
+                        error!("Room/Space not found for invite user request {room_id}, {user_id}");
+                        crate::ui_dispatch::post_action(InviteResultAction::Failed {
+                            room_id,
+                            user_id,
+                            error: matrix_sdk::Error::UnknownError("Room/Space not found in client's known list.".into()),
+                        })
+                    }
+                });
+            }
+
+            MatrixRequest::JoinRoom { room_id } => {
+                let Some(client) = get_client() else { continue };
+                let _join_room_task = runtime::handle().spawn(async move {
+                    log!("Sending request to join room {room_id}...");
+                    let known_room = client.get_room(&room_id);
+                    let was_invite = known_room.as_ref().is_some_and(|r| r.state() == RoomState::Invited);
+                    let result = match known_room.as_ref() {
+                        Some(room) => room.join().await.map(|_| room.clone()),
+                        None => client.join_room_by_id(&room_id).await,
+                    };
+                    // Show the success/failure popup here in case the UI screen that requested the join action
+                    // has been hidden or navigated away from since then.
+                    let result_action = match result {
+                        Ok(room) => {
+                            log!("Successfully joined room {room_id}.");
+                            let room_name_id = RoomNameId::from_room(&room).await;
+                            enqueue_popup_notification(
+                                format!(
+                                    "Successfully joined {} \"{room_name_id}\".",
+                                    if room.is_space() { "space" } else { "room" },
+                                ),
+                                PopupKind::Success,
+                                Some(4.0),
+                            );
+                            JoinRoomResultAction::Joined { room_id }
+                        }
+                        Err(e) => {
+                            error!("Error joining room {room_id}: {e:?}");
+                            let room_name_id = match known_room.as_ref() {
+                                Some(room) => RoomNameId::from_room(room).await,
+                                None => RoomNameId::empty(room_id.clone()),
+                            };
+                            enqueue_popup_notification(
+                                utils::stringify_join_leave_error(&e, &room_name_id, true, was_invite),
+                                PopupKind::Error,
+                                None,
+                            );
+                            JoinRoomResultAction::Failed { room_id, error: e }
+                        }
+                    };
+                    crate::ui_dispatch::post_action(result_action);
+                });
+            }
+
+            MatrixRequest::LeaveRoom { room_id } => {
+                let Some(client) = get_client() else { continue };
+                let _leave_room_task = runtime::handle().spawn(async move {
+                    log!("Sending request to leave room {room_id}...");
+                    let Some(room) = client.get_room(&room_id) else {
+                        error!("BUG: client could not get room with ID {room_id}");
+                        enqueue_popup_notification(
+                            "Failed to leave room: Robrix couldn't locate it.",
+                            PopupKind::Error,
+                            None,
+                        );
+                        crate::ui_dispatch::post_action(LeaveRoomResultAction::Failed {
+                            room_id,
+                            error: matrix_sdk::Error::UnknownError("Client couldn't locate room to leave it.".into()),
+                        });
+                        return;
+                    };
+                    // Rejecting an invite is the same as leaving a room, but is phrased differently.
+                    let was_invite = room.state() == RoomState::Invited;
+                    let room_name_id = RoomNameId::from_room(&room).await;
+                    let result_action = match room.leave().await {
+                        Ok(()) => {
+                            log!("Successfully left room {room_id}.");
+                            enqueue_popup_notification(
+                                if was_invite {
+                                    format!("Successfully rejected the invite to \"{room_name_id}\".")
+                                } else {
+                                    format!("Successfully left \"{room_name_id}\".")
+                                },
+                                PopupKind::Success,
+                                Some(5.0),
+                            );
+                            LeaveRoomResultAction::Left { room_id }
+                        }
+                        Err(e) => {
+                            error!("Error leaving room {room_id}: {e:?}");
+                            enqueue_popup_notification(
+                                utils::stringify_join_leave_error(&e, &room_name_id, false, was_invite),
+                                PopupKind::Error,
+                                None,
+                            );
+                            LeaveRoomResultAction::Failed { room_id, error: e }
+                        }
+                    };
+                    crate::ui_dispatch::post_action(result_action);
+                });
+            }
+
+            MatrixRequest::GetRoomMembers { timeline_kind, memberships, local_only } => {
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    log!("BUG: {timeline_kind} not found for get room members request");
+                    continue;
+                };
+
+                let _get_members_task = runtime::handle().spawn(async move {
+                    let send_update = |members: Vec<matrix_sdk::room::RoomMember>, source: &str| {
+                        log!("{} {} members for {timeline_kind}", source, members.len());
+                        if sender.send(TimelineUpdate::RoomMembersListFetched { members }).is_err() {
+                            error!("Failed to send fetched room members to UI for {timeline_kind}");
+                        }
+                        SignalToUI::set_ui_signal();
+                    };
+
+                    let room = timeline.room();
+                    if local_only {
+                        if let Ok(members) = room.members_no_sync(memberships).await {
+                            send_update(members, "Got");
+                        }
+                    } else {
+                        if let Ok(members) = room.members(memberships).await {
+                            send_update(members, "Successfully fetched");
+                        }
+                    }
+                });
+            }
+
+            MatrixRequest::GetRoomPreview { room_or_alias_id, via, response_mode } => {
+                let Some(client) = get_client() else { continue };
+                let _fetch_task = runtime::handle().spawn(async move {
+                    let res = fetch_room_preview_with_avatar(&client, &room_or_alias_id, via).await;
+                    match response_mode {
+                        RoomPreviewResponseMode::Action => {
+                            crate::ui_dispatch::post_action(RoomPreviewAction::Fetched(res));
+                        }
+                        RoomPreviewResponseMode::RoomPreviewCache => match res {
+                            Ok(fetched) => enqueue_room_preview_update(RoomPreviewUpdate {
+                                room_or_alias_id,
+                                fetched,
+                            }),
+                            Err(e) => log!("Failed to get room preview for {room_or_alias_id:?}: {e:?}"),
+                        },
+                    }
+                });
+            }
+
+            MatrixRequest::GetSuccessorRoomDetails { tombstoned_room_id } => {
+                let Some(client) = get_client() else { continue };
+                let (senders, successor_room) = {
+                    let all_joined_rooms = all_joined_rooms_state().lock().unwrap();
+                    let Some(room_info) = all_joined_rooms.get(&tombstoned_room_id) else {
+                        error!("BUG: tombstoned room {tombstoned_room_id} info not found for get successor room details request");
+                        continue;
+                    };
+                    (
+                        room_info.all_timeline_update_senders(),
+                        room_info.main_timeline.timeline.room().successor_room(),
+                    )
+                };
+                spawn_fetch_successor_room_preview(
+                    client,
+                    successor_room,
+                    tombstoned_room_id,
+                    senders,
+                );
+            }
+
+            MatrixRequest::OpenOrCreateDirectMessage { user_profile, allow_create } => {
+                let Some(client) = get_client() else { continue };
+                let _create_dm_task = runtime::handle().spawn(async move {
+                    if let Some(room) = client.get_dm_room(&user_profile.user_id) {
+                        log!("Found existing DM room: {}", room.room_id());
+                        crate::ui_dispatch::post_action(DirectMessageRoomAction::FoundExisting {
+                            user_id: user_profile.user_id,
+                            room_name_id: RoomNameId::from_room(&room).await,
+                        });
+                        return;
+                    }
+                    if !allow_create {
+                        crate::ui_dispatch::post_action(DirectMessageRoomAction::DidNotExist { user_profile });
+                        return;
+                    }
+                    log!("Creating new DM room with {user_profile:?}...");
+                    match client.create_dm(&user_profile.user_id).await {
+                        Ok(room) => {
+                            log!("Successfully created DM room: {}", room.room_id());
+                            crate::ui_dispatch::post_action(DirectMessageRoomAction::NewlyCreated {
+                                user_profile,
+                                room_name_id: RoomNameId::from_room(&room).await,
+                            });
+                        },
+                        Err(error) => {
+                            error!("Failed to create DM with {user_profile:?}: {error}");
+                            crate::ui_dispatch::post_action(DirectMessageRoomAction::FailedToCreate {
+                                user_profile,
+                                error,
+                            });
+                        }
+                    }
+                });
+            }
+
+            MatrixRequest::GetUserProfile { user_id, room_id, local_only } => {
+                let Some(client) = get_client() else { continue };
+                let _fetch_task = runtime::handle().spawn(async move {
+                    // log!("Sending get user profile request: user: {user_id}, \
+                    //     room: {room_id:?}, local_only: {local_only}...",
+                    // );
+
+                    let mut update = None;
+
+                    if let Some(room_id) = room_id.as_ref() {
+                        if let Some(room) = client.get_room(room_id) {
+                            let member = if local_only {
+                                room.get_member_no_sync(&user_id).await
+                            } else {
+                                room.get_member(&user_id).await
+                            };
+                            if let Ok(Some(room_member)) = member {
+                                update = Some(UserProfileUpdate::Full {
+                                    new_profile: UserProfile {
+                                        username: room_member.display_name().map(|u| u.to_owned()),
+                                        user_id: user_id.clone(),
+                                        avatar_state: AvatarState::Known(room_member.avatar_url().map(|u| u.to_owned())),
+                                    },
+                                    room_id: room_id.to_owned(),
+                                    room_member,
+                                });
+                            } else {
+                                // log!("User profile request: user {user_id} was not a member of room {room_id}");
+                            }
+                        } else {
+                            log!("User profile request: client could not get room with ID {room_id}");
+                        }
+                    }
+
+                    if !local_only {
+                        if update.is_none() {
+                            if let Ok(response) = client.account().fetch_user_profile_of(&user_id).await {
+                                update = Some(UserProfileUpdate::UserProfileOnly(
+                                    UserProfile {
+                                        username: response.get_static::<DisplayName>().ok().flatten(),
+                                        user_id: user_id.clone(),
+                                        avatar_state: response.get_static::<AvatarUrl>()
+                                            .ok()
+                                            .map_or(AvatarState::Unknown, AvatarState::Known),
+                                    }
+                                ));
+                            } else {
+                                log!("User profile request: client could not get user with ID {user_id}");
+                            }
+                        }
+
+                        match update.as_mut() {
+                            Some(UserProfileUpdate::Full { new_profile: UserProfile { username, .. }, .. }) if username.is_none() => {
+                                if let Ok(response) = client.account().fetch_user_profile_of(&user_id).await {
+                                    *username = response.get_static::<DisplayName>().ok().flatten();
+                                }
+                            }
+                            _ => { }
+                        }
+                    }
+
+                    // Even if we didn't get room-specific member info, we still need to send an error update
+                    // to ensure that the cache entry transitions from Requested to Failed.
+                    let missing_member_room_id = room_id.clone()
+                        .filter(|_| !local_only)
+                        .filter(|_| !matches!(update, Some(UserProfileUpdate::Full { .. })));
+
+                    if let Some(upd) = update {
+                        // log!("Successfully completed get user profile request: user: {user_id}, room: {room_id:?}, local_only: {local_only}.");
+                        enqueue_user_profile_update(upd);
+                    } else {
+                        log!("Failed to get user profile: user: {user_id}, room: {room_id:?}, local_only: {local_only}.");
+                    }
+
+                    if let Some(room_id) = missing_member_room_id {
+                        enqueue_user_profile_update(UserProfileUpdate::RoomMemberFailed {
+                            user_id,
+                            room_id,
+                        });
+                    }
+                });
+            }
+
+            MatrixRequest::GetMatchingRooms { query, request_id, owner } => {
+                let Some(client) = get_client() else { continue };
+                let _match_task = runtime::handle().spawn(async move {
+                    let items = rank_matching_rooms(&client, &query).await;
+                    crate::ui_dispatch::post_action(MentionMatches::new(request_id, owner, items));
+                });
+            }
+
+            MatrixRequest::GetNumberUnreadMessages { timeline_kind } => {
+                // The SDK only tracks unread counts per room, not per thread.
+                let TimelineKind::MainRoom { .. } = &timeline_kind else { continue };
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    log!("Skipping get number of unread messages request for {timeline_kind}");
+                    continue;
+                };
+
+                let _get_unreads_task = runtime::handle().spawn(async move {
+                    match sender.send(TimelineUpdate::NewUnreadMessagesCount(
+                        UnreadMessageCount::Known(timeline.room().num_unread_messages())
+                    )) {
+                        Ok(_) => SignalToUI::set_ui_signal(),
+                        Err(e) => log!("Failed to send timeline update: {e:?} for GetNumberUnreadMessages request for {timeline_kind}"),
+                    }
+                    if let TimelineKind::MainRoom { room_id } = timeline_kind {
+                        enqueue_rooms_list_update(RoomsListUpdate::UpdateNumUnreadMessages {
+                            room_id,
+                            is_marked_unread: None,
+                            unread_messages: UnreadMessageCount::Known(timeline.room().num_unread_messages()),
+                            unread_mentions: timeline.room().num_unread_mentions(),
+                        });
+                    }
+                });
+            }
+
+            MatrixRequest::SetUnreadFlag { room_id, mark_as_unread } => {
+                let Some(main_timeline) = get_room_timeline(&room_id) else {
+                    log!("BUG: skipping set unread flag request for not-yet-known room {room_id}");
+                    continue;
+                };
+                let _set_unread_task = runtime::handle().spawn(async move {
+                    let result = main_timeline.room().set_unread_flag(mark_as_unread).await;
+                    match result {
+                        Ok(_) => {
+                            log!("Set unread flag to {} for room {}", mark_as_unread, room_id);
+                            enqueue_rooms_list_update(RoomsListUpdate::UpdateMarkedUnread {
+                                room_id,
+                                is_marked_unread: mark_as_unread,
+                            });
+                        }
+                        Err(e) => error!("Failed to set unread flag to {} for room {}: {:?}", mark_as_unread, room_id, e),
+                    }
+                });
+            }
+
+            MatrixRequest::MarkRoomAsRead { room_id, receipt_type } => {
+                let Some(main_timeline) = get_room_timeline(&room_id) else {
+                    log!("BUG: skipping mark-as-read request for not-yet-known room {room_id}");
+                    continue;
+                };
+                let _mark_read_task = runtime::handle().spawn(async move {
+                    let Some(latest_event_id) = main_timeline.latest_event_id().await else {
+                        if main_timeline.room().num_unread_messages() > 0 {
+                            warning!("Room {room_id} has unread messages but no timeline events, so we can only clear its unread flag.");
+                        }
+                        // If we can't get the latest event, just mark it as read.
+                        match main_timeline.room().set_unread_flag(false).await {
+                            Ok(_) => enqueue_rooms_list_update(RoomsListUpdate::UpdateMarkedUnread {
+                                room_id,
+                                is_marked_unread: false,
+                            }),
+                            Err(e) => error!("Failed to clear unread flag for empty room {room_id}: {e:?}"),
+                        }
+                        return;
+                    };
+
+                    let receipts = Receipts::new().fully_read_marker(latest_event_id.clone());
+                    let receipts = if matches!(receipt_type, ReceiptType::ReadPrivate) {
+                        receipts.private_read_receipt(latest_event_id)
+                    } else {
+                        receipts.public_read_receipt(latest_event_id)
+                    };
+                    match main_timeline.send_multiple_receipts(receipts).await {
+                        Ok(()) => {
+                            log!("Marked room {room_id} as fully read");
+                            enqueue_rooms_list_update(RoomsListUpdate::UpdateNumUnreadMessages {
+                                room_id,
+                                is_marked_unread: Some(false),
+                                unread_messages: UnreadMessageCount::Known(0),
+                                unread_mentions: 0,
+                            });
+                        }
+                        Err(e) => error!("Failed to mark room {room_id} as fully read: {e:?}"),
+                    }
+                });
+            }
+
+            MatrixRequest::SetIsFavorite { room_id, is_favorite } => {
+                let Some(main_timeline) = get_room_timeline(&room_id) else {
+                    log!("BUG: skipping set favorite flag request for not-yet-known room {room_id}");
+                    continue;
+                };
+                let _set_favorite_task = runtime::handle().spawn(async move {
+                    let result = main_timeline.room().set_is_favourite(is_favorite, None).await;
+                    match result {
+                        Ok(_) => log!("Set favorite to {} for room {}", is_favorite, room_id),
+                        Err(e) => error!("Failed to set favorite to {} for room {}: {:?}", is_favorite, room_id, e),
+                    }
+                });
+            }
+
+            MatrixRequest::SetIsLowPriority { room_id, is_low_priority } => {
+                let Some(main_timeline) = get_room_timeline(&room_id) else {
+                    log!("BUG: skipping set low priority flag request for not-yet-known room {room_id}");
+                    continue;
+                };
+                let _set_lp_task = runtime::handle().spawn(async move {
+                    let result = main_timeline.room().set_is_low_priority(is_low_priority, None).await;
+                    match result {
+                        Ok(_) => log!("Set low priority to {} for room {}", is_low_priority, room_id),
+                        Err(e) => error!("Failed to set low priority to {} for room {}: {:?}", is_low_priority, room_id, e),
+                    }
+                });
+            }
+
+            MatrixRequest::SetAvatar { avatar_url } => {
+                let Some(client) = get_client() else { continue };
+                let _set_avatar_task = runtime::handle().spawn(async move {
+                    let is_removing = avatar_url.is_none();
+                    log!("Sending request to {} avatar...", if is_removing { "remove" } else { "set" });
+                    let result = client.account().set_avatar_url(avatar_url.as_deref()).await;
+                    match result {
+                        Ok(_) => {
+                            log!("Successfully {} avatar.", if is_removing { "removed" } else { "set" });
+                            crate::ui_dispatch::post_action(AccountDataAction::AvatarChanged(avatar_url));
+                        }
+                        Err(e) => {
+                            let err_msg = format!("Failed to {} avatar: {e}", if is_removing { "remove" } else { "set" });
+                            crate::ui_dispatch::post_action(AccountDataAction::AvatarChangeFailed(err_msg));
+                        }
+                    }
+                });
+            }
+
+            MatrixRequest::UploadAvatar { file_data } => {
+                let Some(client) = get_client() else { continue };
+                let _upload_avatar_task = runtime::handle().spawn(async move {
+                    let name = file_data.file_name();
+                    let size = utils::format_decimal_file_size(file_data.size);
+                    log!("Uploading new avatar image {name} ({} bytes)...", file_data.size);
+                    let content_type: Mime = file_data.mime_type.parse()
+                        .unwrap_or(mime::APPLICATION_OCTET_STREAM);
+
+                    let result = match exceeds_upload_limit(file_data.size, "the new avatar").await {
+                        Some(max_size) => Err(format!(
+                            "\"{name}\" is {size}, over your homeserver's {} upload limit. \
+                             Please choose a smaller image.",
+                            utils::format_decimal_file_size(max_size),
+                        )),
+                        None => match runtime::read_file(file_data.path()).await {
+                            Err(e) => Err(format!("Couldn't read \"{name}\": {e}")),
+                            Ok(data) => client.account().upload_avatar(&content_type, data).await
+                                .map_err(|e| avatar_rejection_message(&e, &size, &file_data.mime_type)),
+                        },
+                    };
+                    match result {
+                        Ok(avatar_url) => {
+                            log!("Successfully uploaded and set new avatar {avatar_url}.");
+                            crate::ui_dispatch::post_action(AccountDataAction::AvatarChanged(Some(avatar_url)));
+                        }
+                        Err(err_msg) => {
+                            crate::ui_dispatch::post_action(AccountDataAction::AvatarChangeFailed(err_msg));
+                        }
+                    }
+                });
+            }
+
+            MatrixRequest::SetDisplayName { new_display_name } => {
+                let Some(client) = get_client() else { continue };
+                let _set_display_name_task = runtime::handle().spawn(async move {
+                    let is_removing = new_display_name.is_none();
+                    log!("Sending request to {} display name{}...",
+                        if is_removing { "remove" } else { "set" },
+                        new_display_name.as_ref().map(|n| format!(" to '{n}'")).unwrap_or_default()
+                    );
+                    let result = client.account().set_display_name(new_display_name.as_deref()).await;
+                    match result {
+                        Ok(_) => {
+                            log!("Successfully {} display name.", if is_removing { "removed" } else { "set" });
+                            enqueue_popup_notification(
+                                format!("Successfully {} display name.", if is_removing { "removed" } else { "updated" }),
+                                PopupKind::Success,
+                                Some(4.0),
+                            );
+                            crate::ui_dispatch::post_action(AccountDataAction::DisplayNameChanged(new_display_name));
+                        }
+                        Err(e) => {
+                            let err_msg = format!("Failed to {} display name: {e}", if is_removing { "remove" } else { "set" });
+                            enqueue_popup_notification(err_msg.clone(), PopupKind::Error, None);
+                            crate::ui_dispatch::post_action(AccountDataAction::DisplayNameChangeFailed(err_msg));
+                        }
+                    }
+                });
+            }
+
+            MatrixRequest::GetOwnDevice => {
+                let Some(client) = get_client() else { continue };
+                let _get_own_device_task = runtime::handle().spawn(async move {
+                    let device = match client.encryption().get_own_device().await {
+                        Ok(device) => device,
+                        Err(e) => {
+                            error!("Failed to get own device: {e:?}");
+                            None
+                        }
+                    };
+                    crate::ui_dispatch::post_action(AccountDataAction::OwnDeviceFetched(device.map(Box::new)));
+                });
+            }
+
+            MatrixRequest::GetAccountManagementUrl => {
+                let Some(client) = get_client() else { continue };
+                let _account_management_url_task = runtime::handle().spawn(async move {
+                    // Only homeservers that use oauth have an account management page.
+                    let url = match client.oauth().cached_server_metadata().await {
+                        Ok(md) => {
+                            let url = if md.is_account_management_action_supported(&AccountManagementAction::Profile) {
+                                md.account_management_url_with_action(AccountManagementActionData::Profile)
+                            } else {
+                                md.account_management_uri
+                            };
+                            url.map_or(AccountManagementUrl::Unavailable, AccountManagementUrl::Known)
+                        }
+                        Err(e @ OAuthDiscoveryError::NotSupported) => {
+                            log!("The current homeserver has no account management page: {e}");
+                            AccountManagementUrl::Unavailable
+                        }
+                        Err(e) => {
+                            warning!("Couldn't discover the account management page: {e}");
+                            AccountManagementUrl::Unknown
+                        }
+                    };
+                    crate::ui_dispatch::post_action(AccountDataAction::AccountManagementUrlFetched(url));
+                });
+            }
+
+            MatrixRequest::RequestSelfVerification => {
+                let Some(client) = get_client() else { continue };
+                let _verify_task = runtime::handle().spawn(
+                    crate::verification::request_self_verification_handler(client)
+                );
+            }
+
+            MatrixRequest::GetRoomDiagnostics { room_id } => {
+                let Some(client) = get_client() else { continue };
+                let _diagnostics_task = runtime::handle().spawn(async move {
+                    use std::fmt::Write as _;
+                    let mut text = format!("Robrix diagnostics for room {room_id}\n");
+                    let _ = writeln!(text, "Robrix version: {}", env!("CARGO_PKG_VERSION"));
+                    if let Some(sync_service) = get_sync_service() {
+                        let _ = writeln!(text, "Sync service state: {:?}", sync_service.state().get());
+                    }
+
+                    match client.get_room(&room_id) {
+                        Some(room) => {
+                            let _ = writeln!(text, "\n## Room info");
+                            let _ = writeln!(text, "name: {:?}", room.cached_display_name());
+                            let _ = writeln!(text, "topic: {:?}", room.topic());
+                            let _ = writeln!(text, "canonical alias: {:?}, alt aliases: {:?}",
+                                room.canonical_alias(), room.alt_aliases(),
+                            );
+                            let _ = writeln!(text, "state: {:?}, room version: {:?}, type: {:?}",
+                                room.state(), room.version(), room.room_type(),
+                            );
+                            let _ = writeln!(text, "encryption: {:?}, public: {:?}, space: {:?}, direct: {:?}",
+                                room.encryption_state(), room.is_public(), room.is_space(), room.is_direct().await,
+                            );
+                            let _ = writeln!(text, "join rule: {:?}, guest access: {:?}, history visibility: {:?}",
+                                room.join_rule(), room.guest_access(), room.history_visibility(),
+                            );
+                            let _ = writeln!(text, "state fully synced: {}, partially synced: {}",
+                                room.is_state_fully_synced(), room.is_state_partially_or_fully_synced(),
+                            );
+                            let _ = writeln!(text, "members: {:?} active service, {:?} direct targets, heroes: {:?}",
+                                room.active_service_members_count(), room.direct_targets_length(),
+                                room.heroes().await.iter().map(|h| h.user_id.as_str()).collect::<Vec<_>>(),
+                            );
+                            let _ = writeln!(text, "creators: {:?}, own user: {}", room.creators(), room.own_user_id());
+                            let _ = writeln!(text, "successor (tombstone): {:?}", room.successor_room());
+                            let _ = writeln!(text, "tags: {:?}", room.tags().await);
+                            let _ = writeln!(text, "unread: {} messages, {} mentions, {} notifications, marked unread: {}",
+                                room.num_unread_messages(), room.num_unread_mentions(),
+                                room.num_unread_notifications(), room.is_marked_unread(),
+                            );
+                            let _ = writeln!(text, "latest event timestamp: {:?}, recency stamp: {:?}",
+                                room.latest_event_timestamp(), room.recency_stamp(),
+                            );
+                            let _ = writeln!(text, "fully read event: {:?}", room.fully_read_event_id());
+                            let _ = writeln!(text, "pinned events: {:?}", room.pinned_event_ids());
+                            let _ = writeln!(text, "last prev_batch token: {:?}", room.last_prev_batch());
+                            let _ = writeln!(text, "avatar url: {:?}", room.avatar_url());
+                            let _ = writeln!(text, "latest event: {:?}", room.latest_event().await);
+                        }
+                        None => { let _ = writeln!(text, "\n## Room was NOT found in the client!"); }
+                    }
+
+                    let _ = writeln!(text, "\n## Robrix timeline state");
+                    {
+                        let all_joined_rooms = all_joined_rooms_state().lock().unwrap();
+                        match all_joined_rooms.get(&room_id) {
+                            Some(details) => {
+                                let _ = writeln!(text, "subscriber running: {}, endpoints taken by UI: {}",
+                                    matches!(details.main_timeline.timeline_subscriber, TimelineSubscriber::Running(_)),
+                                    details.main_timeline.timeline_singleton_endpoints.is_none(),
+                                );
+                                let _ = writeln!(text, "typing notices subscribed: {}, pinned events subscribed: {}",
+                                    details.typing_notice_subscriber.is_some(),
+                                    details.pinned_events_subscriber.is_some(),
+                                );
+                                let _ = writeln!(text, "thread timelines: {:?}, pending: {:?}",
+                                    details.thread_timelines.keys().collect::<Vec<_>>(),
+                                    details.pending_thread_timelines,
+                                );
+                            }
+                            None => { let _ = writeln!(text, "Room is NOT in the list of all joined rooms!"); }
+                        }
+                    }
+
+                    let _ = writeln!(text, "\n## Event cache");
+                    match client.event_cache().room(&room_id).await {
+                        Ok((room_cache, _drop_handles)) => {
+                            match room_cache.events().await {
+                                Ok(events) => { let _ = writeln!(text, "loaded events: {}", events.len()); }
+                                Err(e) => { let _ = writeln!(text, "couldn't load events: {e}"); }
+                            }
+                            for line in room_cache.debug_string().await {
+                                let _ = writeln!(text, "{line}");
+                            }
+                        }
+                        Err(e) => { let _ = writeln!(text, "unavailable: {e}"); }
+                    }
+                    crate::ui_dispatch::post_action(RoomDiagnosticsReady { text });
+                });
+            }
+
+            MatrixRequest::ClearEventCache => {
+                let Some(client) = get_client() else { continue };
+                let _clear_cache_task = runtime::handle().spawn(async move {
+                    match client.event_cache().clear_all_rooms().await {
+                        Ok(()) => enqueue_popup_notification(
+                            "Cleared all rooms' cached events.\n\n\
+                            Timelines will now be re-fetched from your homeserver.",
+                            PopupKind::Success,
+                            Some(6.0),
+                        ),
+                        Err(e) => enqueue_popup_notification(
+                            format!("Failed to clear the event cache: {e}"),
+                            PopupKind::Error,
+                            None,
+                        ),
+                    }
+                });
+            }
+
+            MatrixRequest::GenerateMatrixLink { room_id, event_id, use_matrix_scheme, join_on_click } => {
+                let Some(client) = get_client() else { continue };
+                let _gen_link_task = runtime::handle().spawn(async move {
+                    if let Some(room) = client.get_room(&room_id) {
+                        let result = if use_matrix_scheme {
+                            if let Some(event_id) = event_id {
+                                room.matrix_event_permalink(event_id).await
+                                    .map(MatrixLinkAction::MatrixUri)
+                            } else {
+                                room.matrix_permalink(join_on_click).await
+                                    .map(MatrixLinkAction::MatrixUri)
+                            }
+                        } else {
+                            if let Some(event_id) = event_id {
+                                room.matrix_to_event_permalink(event_id).await
+                                    .map(MatrixLinkAction::MatrixToUri)
+                            } else {
+                                room.matrix_to_permalink().await
+                                    .map(MatrixLinkAction::MatrixToUri)
+                            }
+                        };
+    
+                        match result {
+                            Ok(action) => crate::ui_dispatch::post_action(action),
+                            Err(e) => crate::ui_dispatch::post_action(MatrixLinkAction::Error(e.to_string())),
+                        }
+                    } else {
+                         crate::ui_dispatch::post_action(MatrixLinkAction::Error(format!("Room {room_id} not found")));
+                    }
+                });
+            }
+
+            MatrixRequest::IgnoreUser { ignore, user_id, room_id } => {
+                let Some(client) = get_client() else { continue };
+                let _ignore_task = runtime::handle().spawn(async move {
+                    log!("Sending request to {}ignore user: {user_id}...", if ignore { "" } else { "un" });
+                    let ignore_result = if ignore {
+                        client.account().ignore_user(&user_id).await
+                    } else {
+                        client.account().unignore_user(&user_id).await
+                    };
+
+                    if let Err(e) = ignore_result {
+                        error!("Failed to {}ignore user {user_id}: {e:?}", if ignore { "" } else { "un" });
+                        enqueue_popup_notification(
+                            format!("Couldn't {}ignore {user_id}. Error: {e}", if ignore { "" } else { "un" }),
+                            PopupKind::Error,
+                            None,
+                        );
+                        return;
+                    }
+                    log!("Successfully {}ignored user {user_id}.", if ignore { "" } else { "un" });
+                    enqueue_popup_notification(
+                        format!("{} ignoring {user_id}.", if ignore { "Now" } else { "No longer" }),
+                        PopupKind::Success,
+                        Some(4.0),
+                    );
+
+                    // We need to re-acquire the `RoomMember` object now that its state
+                    // has changed, i.e., the user has been (un)ignored.
+                    // We then need to send an update to replace the cached `RoomMember`
+                    // with the now-stale ignored state.
+                    if let Some(room) = client.get_room(&room_id) {
+                        if let Ok(Some(new_room_member)) = room.get_member(&user_id).await {
+                            log!("Enqueueing user profile update for user {user_id}, who is now {}ignored.",
+                                if new_room_member.is_ignored() { "" } else { "un" },
+                            );
+                            enqueue_user_profile_update(UserProfileUpdate::RoomMemberOnly {
+                                room_id: room_id.clone(),
+                                room_member: new_room_member,
+                            });
+                        }
+                    }
+
+                    // After successfully (un)ignoring a user, all timelines are fully cleared by the Matrix SDK.
+                    // Therefore, we need to re-fetch all timelines for all rooms,
+                    // and currently the only way to actually accomplish this is via pagination.
+                    // See: <https://github.com/matrix-org/matrix-rust-sdk/issues/1703#issuecomment-2250297923>
+                    //
+                    // Note that here we only proactively re-paginate the *current* room
+                    // (the one being viewed by the user when this ignore request was issued),
+                    // and all other rooms will be re-paginated in `handle_ignore_user_list_subscriber()`.`
+                    submit_async_request(MatrixRequest::PaginateTimeline {
+                        timeline_kind: TimelineKind::MainRoom { room_id },
+                        num_events: 50,
+                        direction: PaginationDirection::Backwards,
+                    });
+                });
+            }
+
+            MatrixRequest::SendTypingNotice { room_id, typing } => {
+                let Some(main_room_timeline) = get_room_timeline(&room_id) else {
+                    log!("BUG: skipping send typing notice request for not-yet-known room {room_id}");
+                    continue;
+                };
+                let _typing_task = runtime::handle().spawn(async move {
+                    if let Err(e) = main_room_timeline.room().typing_notice(typing).await {
+                        error!("Failed to send typing notice to room {room_id}: {e:?}");
+                    }
+                });
+            }
+
+            MatrixRequest::SubscribeToTypingNotices { room_id, subscribe } => {
+                let (main_timeline, timeline_update_sender, mut typing_notice_receiver) = {
+                    let mut all_joined_rooms = all_joined_rooms_state().lock().unwrap();
+                    let Some(jrd) = all_joined_rooms.get_mut(&room_id) else {
+                        log!("BUG: room info not found for subscribe to typing notices request, room {room_id}");
+                        continue;
+                    };
+                    let (main_timeline, receiver) = if subscribe {
+                        if jrd.typing_notice_subscriber.is_some() {
+                            warning!("Note: room {room_id} is already subscribed to typing notices.");
+                            continue;
+                        } else {
+                            let main_timeline = jrd.main_timeline.timeline.clone();
+                            let (drop_guard, receiver) = main_timeline.room().subscribe_to_typing_notifications();
+                            jrd.typing_notice_subscriber = Some(drop_guard);
+                            (main_timeline, receiver)
+                        }
+                    } else {
+                        jrd.typing_notice_subscriber.take();
+                        continue;
+                    };
+                    // Here: we don't have an existing subscriber running, so we fall through and start one.
+                    (main_timeline, jrd.main_timeline.timeline_update_sender.clone(), receiver)
+                };
+
+                let _typing_notices_task = runtime::handle().spawn(async move {
+                    while let Ok(user_ids) = typing_notice_receiver.recv().await {
+                        // log!("Received typing notifications for room {room_id}: {user_ids:?}");
+                        let users = join_all(user_ids.into_iter().map(|user_id| {
+                            let tl = main_timeline.clone();
+                            async move {
+                                tl.room().get_member_no_sync(&user_id).await
+                                    .ok().flatten()
+                                    .and_then(|m| m.display_name().map(|d| d.to_owned()))
+                                    .unwrap_or_else(|| user_id.to_string())
+                            }
+                        })).await;
+                        if let Err(e) = timeline_update_sender.send(TimelineUpdate::TypingUsers { users }) {
+                            error!("Error: timeline update sender couldn't send the list of typing users: {e:?}");
+                        }
+                        SignalToUI::set_ui_signal();
+                    }
+                    // log!("Note: typing notifications recv loop has ended for room {}", room_id);
+                });
+            }
+
+            MatrixRequest::SubscribeToOwnUserReadReceiptsChanged { room_id, subscribe } => {
+                if !subscribe {
+                    if let Some(task_handler) = subscribers_own_user_read_receipts.remove(&room_id) {
+                        task_handler.abort();
+                    }
+                    continue;
+                }
+                let timeline_kind = TimelineKind::MainRoom { room_id: room_id.clone() };
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    log!("BUG: skipping subscribe to own user read receipts changed request for room {room_id}");
+                    continue;
+                };
+
+                let task_room_id = room_id.clone();
+                let subscribe_own_read_receipt_task = runtime::handle().spawn(async move {
+                    let update_receiver = timeline.subscribe_own_user_read_receipts_changed().await;
+                    pin_mut!(update_receiver);
+
+                    while update_receiver.next().await.is_some() {
+                        let unread_count = timeline.room().num_unread_messages();
+                        let unread_mentions = timeline.room().num_unread_mentions();
+                        match sender.send(TimelineUpdate::NewUnreadMessagesCount(
+                            UnreadMessageCount::Known(unread_count)
+                        )) {
+                            Ok(_) => SignalToUI::set_ui_signal(),
+                            Err(_) => error!("Failed to send unread message count update to timeline UI."),
+                        }
+                        enqueue_rooms_list_update(RoomsListUpdate::UpdateNumUnreadMessages {
+                            room_id: task_room_id.clone(),
+                            is_marked_unread: None,
+                            unread_messages: UnreadMessageCount::Known(unread_count),
+                            unread_mentions,
+                        });
+                    }
+                });
+                if let Some(old) = subscribers_own_user_read_receipts.insert(room_id, subscribe_own_read_receipt_task) {
+                    old.abort();
+                }
+            }
+
+            MatrixRequest::SubscribeToPinnedEvents { room_id, subscribe } => {
+                if !subscribe {
+                    if let Some(task_handler) = subscribers_pinned_events.remove(&room_id) {
+                        task_handler.abort();
+                    }
+                    continue;
+                }
+                let kind = TimelineKind::MainRoom { room_id: room_id.clone() };
+                let Some((main_timeline, sender)) = get_timeline_and_sender(&kind) else {
+                    log!("BUG: skipping subscribe to pinned events request for unknown room {room_id}");
+                    continue;
+                };
+                let subscribe_pinned_events_task = runtime::handle().spawn(async move {
+                    // Send an initial update, as the stream may not update immediately.
+                    let pinned_events = main_timeline.room().pinned_event_ids().unwrap_or_default();
+                    match sender.send(TimelineUpdate::PinnedEvents(pinned_events)) {
+                        Ok(()) => SignalToUI::set_ui_signal(),
+                        Err(_) => log!("Failed to send initial pinned events update to UI."),
+                    }
+                    let update_receiver = main_timeline.room().pinned_event_ids_stream();
+                    pin_mut!(update_receiver);
+                    while let Some(pinned_events) = update_receiver.next().await {
+                        match sender.send(TimelineUpdate::PinnedEvents(pinned_events)) {
+                            Ok(()) => SignalToUI::set_ui_signal(),
+                            Err(e) => log!("Failed to send pinned events update: {e:?}"),
+                        }
+                    }
+                });
+                if let Some(old) = subscribers_pinned_events.insert(room_id, subscribe_pinned_events_task) {
+                    old.abort();
+                }
+            }
+
+            MatrixRequest::SpawnSSOServer { brand, homeserver_url, identity_provider_id} => {
+                spawn_sso_server(brand, homeserver_url, identity_provider_id, login_sender.clone()).await;
+            }
+
+            MatrixRequest::FetchAvatar { mxc_uri, on_fetched } => {
+                let Some(client) = get_client() else { continue };
+                runtime::handle().spawn(async move {
+                    // log!("Sending fetch avatar request for {mxc_uri:?}...");
+                    let media_request = MediaRequestParameters {
+                        source: MediaSource::Plain(mxc_uri.clone()),
+                        format: AVATAR_THUMBNAIL_FORMAT.into(),
+                    };
+                    let res = client.media().get_media_content(&media_request, true).await;
+                    // log!("Fetched avatar for {mxc_uri:?}, succeeded? {}", res.is_ok());
+                    on_fetched(AvatarUpdate { mxc_uri, avatar_data: res.map(|v| v.into()) });
+                });
+            }
+
+            MatrixRequest::FetchRoomAvatar { room_name_id } => {
+                let Some(client) = get_client() else { continue };
+                let Some(room) = client.get_room(room_name_id.room_id()) else {
+                    log!("Skipping avatar fetch for unknown room {}", room_name_id.room_id());
+                    continue;
+                };
+                spawn_fetch_room_avatar_inner(room, room_name_id);
+            }
+
+            MatrixRequest::FetchMedia { media_request, on_fetched, destination, update_sender } => {
+                let Some(client) = get_client() else { continue };
+                
+                let _fetch_task = runtime::handle().spawn(async move {
+                    // log!("Sending fetch media request for {media_request:?}...");
+                    let res = client.media().get_media_content(&media_request, true).await;
+                    on_fetched(&destination, media_request, res, update_sender);
+                });
+            }
+
+            MatrixRequest::SendMessage {
+                timeline_kind,
+                message,
+                replied_to,
+                #[cfg(feature = "tsp")]
+                sign_with_tsp,
+            } => {
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    log!("BUG: {timeline_kind} not found for send message request");
+                    continue;
+                };
+
+                // Spawn a new async task that will send the actual message.
+                let _send_message_task = runtime::handle().spawn(async move {
+                    log!("Sending message to {timeline_kind}: {message:?}...");
+                    let message = {
+                        #[cfg(not(feature = "tsp"))] {
+                            message
+                        }
+
+                        #[cfg(feature = "tsp")] {
+                            let mut message = message;
+                            if sign_with_tsp {
+                                log!("Signing message with TSP...");
+                                match serde_json::to_vec(&message) {
+                                    Ok(message_bytes) => {
+                                        log!("Serialized message to bytes, length {}", message_bytes.len());
+                                        match crate::tsp::sign_anycast_with_default_vid(&message_bytes) {
+                                            Ok(signed_msg) => {
+                                                log!("Successfully signed message with TSP, length {}", signed_msg.len());
+                                                use matrix_sdk::ruma::serde::Base64;
+                                                message.tsp_signature = Some(Base64::new(signed_msg));
+                                            }
+                                            Err(e) => {
+                                                error!("Failed to sign message with TSP: {e:?}");
+                                                enqueue_popup_notification(
+                                                    format!("Failed to sign message with TSP: {e}"),
+                                                    PopupKind::Error,
+                                                    None,
+                                                );
+                                                let _ = sender.send(TimelineUpdate::SendFailedBeforeBeingQueued { message, replied_to });
+                                                SignalToUI::set_ui_signal();
+                                                return;
+                                            }
+                                        }
+                                    }
+                                    Err(e) => {
+                                        error!("Failed to serialize message to bytes for TSP signing: {e:?}");
+                                        enqueue_popup_notification(
+                                            format!("Failed to serialize message for TSP signing: {e}"),
+                                            PopupKind::Error,
+                                            None,
+                                        );
+                                        let _ = sender.send(TimelineUpdate::SendFailedBeforeBeingQueued { message, replied_to });
+                                        SignalToUI::set_ui_signal();
+                                        return;
+                                    }
+                                }
+                            }
+                            message
+                        }
+                    };
+
+                    let r_or_m = if replied_to.is_some() { "reply" } else { "message" };
+                    let content: AnyMessageLikeEventContent = if let Some(reply) = &replied_to {
+                        let reply = Reply {
+                            event_id: reply.event_id.clone(),
+                            enforce_thread: reply.enforce_thread,
+                            add_mentions: reply.add_mentions,
+                        };
+                        match timeline.room().make_reply_event(message.clone().into(), reply).await {
+                            Ok(content) => content.into(),
+                            Err(_e) => {
+                                error!("Failed to build reply content to send to {timeline_kind}: {_e:?}");
+                                enqueue_popup_notification(format!("Failed to send reply: {_e}"), PopupKind::Error, None);
+                                let _ = sender.send(TimelineUpdate::SendFailedBeforeBeingQueued { message, replied_to });
+                                SignalToUI::set_ui_signal();
+                                return;
+                            }
+                        }
+                    } else {
+                        message.clone().into()
+                    };
+                    match timeline.send(content).await {
+                        Ok(_send_handle) => log!("Sent {r_or_m} to {timeline_kind}."),
+                        Err(_e) => {
+                            error!("Failed to send {r_or_m} to {timeline_kind}: {_e:?}");
+                            enqueue_popup_notification(format!("Failed to send {r_or_m}: {_e}"), PopupKind::Error, None);
+                            let _ = sender.send(TimelineUpdate::SendFailedBeforeBeingQueued { message, replied_to });
+                        }
+                    }
+                    SignalToUI::set_ui_signal();
+                });
+            }
+
+            MatrixRequest::SendAttachment {
+                upload_id,
+                upload,
+            } => {
+                let timeline_kind = upload.timeline_kind.clone();
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    log!("BUG: {timeline_kind} not found for send attachment request");
+                    enqueue_popup_notification(
+                        "Cannot upload file: timeline not available.",
+                        PopupKind::Error,
+                        None,
+                    );
+                    SignalToUI::set_ui_signal();
+                    continue;
+                };
+
+                #[cfg(feature = "tsp")]
+                if upload.sign_with_tsp {
+                    let _ = sender.send(TimelineUpdate::FileUploadError {
+                        upload_id,
+                        error: "TSP-signed attachment uploads are not supported yet.".to_string(),
+                        retryable_upload: None,
+                    });
+                    SignalToUI::set_ui_signal();
+                    continue;
+                }
+
+                let sender_clone = sender.clone();
+                let (abort_handle, abort_registration) = futures_util::future::AbortHandle::new_pair();
+                // Spawn a new async task to send the attachment.
+                let _send_attachment_task = runtime::handle().spawn(async move {
+                    use matrix_sdk::attachment::{
+                        AttachmentInfo,
+                        BaseFileInfo, BaseImageInfo, BaseVideoInfo, BaseAudioInfo,
+                    };
+                    use matrix_sdk_ui::timeline::AttachmentConfig as TimelineAttachmentConfig;
+
+                    // Create a new transaction ID for this so we can track it through the send queue.
+                    let txn_id = TransactionId::new();
+                    let queue_updates = timeline.room().send_queue().subscribe().await
+                        .map(|(_local_echoes, receiver)| receiver);
+
+                    // WE allow the upload to be cancelled up until the point where
+                    // the messages has reached the send queue.
+                    let queue_future = async {
+                        let _ = sender_clone.send(TimelineUpdate::FileUploadStarted {
+                            upload_id,
+                            file_name: upload.file_data.file_name(),
+                            in_reply_to: upload.in_reply_to.clone(),
+                            abort_handle,
+                        });
+                        SignalToUI::set_ui_signal();
+
+                        if let Some(max_size) = exceeds_upload_limit(upload.file_data.size, &timeline_kind).await {
+                            let error = format!(
+                                "file size of ({}) exceeds the homeserver's {} limit.",
+                                utils::format_decimal_file_size(upload.file_data.size),
+                                utils::format_decimal_file_size(max_size),
+                            );
+                            let _ = sender_clone.send(TimelineUpdate::FileUploadError {
+                                upload_id,
+                                error,
+                                retryable_upload: None,
+                            });
+                            SignalToUI::set_ui_signal();
+                            return false;
+                        }
+
+                        let bytes = match runtime::read_file(upload.file_data.path()).await {
+                            Ok(bytes) => bytes,
+                            Err(e) => {
+                                error!("Failed to read attachment {:?} for {timeline_kind}: {e:?}", upload.file_data.path());
+                                let _ = sender_clone.send(TimelineUpdate::FileUploadError {
+                                    upload_id,
+                                    error: format!("couldn't read the file: {e}"),
+                                    retryable_upload: Some(upload.clone()),
+                                });
+                                SignalToUI::set_ui_signal();
+                                return false;
+                            }
+                        };
+
+                        let file_data = &upload.file_data;
+                        log!(
+                            "Sending attachment to {timeline_kind}: {} ({} bytes)...",
+                            file_data.file_name(),
+                            file_data.size,
+                        );
+
+                        // Parse MIME type, falling back to octet-stream for unknown types
+                        let content_type: Mime = file_data.mime_type.parse()
+                            .unwrap_or(mime::APPLICATION_OCTET_STREAM);
+
+                        let image_dimensions: Option<(u32, u32)> = if content_type.type_() == mime::IMAGE {
+                            image_size_by_data(&bytes, file_data.path()).ok()
+                                .map(|(w, h)| (w as u32, h as u32))
+                        } else {
+                            None
+                        };
+                        let matrix_file_size = || matrix_sdk::ruma::UInt::try_from(file_data.size).ok();
+
+                        // Create AttachmentInfo based on the MIME type
+                        let info = match content_type.type_() {
+                            mime::IMAGE => AttachmentInfo::Image(BaseImageInfo {
+                                width: image_dimensions.map(|(width, _height)| width.into()),
+                                height: image_dimensions.map(|(_width, height)| height.into()),
+                                size: matrix_file_size(),
+                                blurhash: None,
+                                is_animated: None,
+                            }),
+                            mime::VIDEO => AttachmentInfo::Video(BaseVideoInfo {
+                                // TODO: Extract actual dimensions and duration from video
+                                width: None,
+                                height: None,
+                                duration: None,
+                                size: matrix_file_size(),
+                                blurhash: None,
+                            }),
+                            mime::AUDIO => AttachmentInfo::Audio(BaseAudioInfo {
+                                // TODO: Extract actual duration from audio
+                                duration: None,
+                                size: matrix_file_size(),
+                                waveform: None,
+                            }),
+                            _ => AttachmentInfo::File(BaseFileInfo {
+                                size: matrix_file_size(),
+                            }),
+                        };
+
+                        if let Err(e) = timeline.send_attachment(
+                            AttachmentSource::Data { bytes, filename: file_data.file_name() },
+                            content_type,
+                            TimelineAttachmentConfig {
+                                txn_id: Some(txn_id.clone()),
+                                info: Some(info),
+                                caption: file_data.caption.as_ref().map(TextMessageEventContent::plain),
+                                in_reply_to: upload.in_reply_to.clone(),
+                                ..Default::default()
+                            },
+                        ).use_send_queue().await {
+                            error!("Failed to send attachment to {timeline_kind}: {e:?}");
+                            let _ = sender_clone.send(TimelineUpdate::FileUploadError {
+                                upload_id,
+                                error: format!("{e}"),
+                                retryable_upload: Some(upload.clone()),
+                            });
+                            SignalToUI::set_ui_signal();
+                            return false;
+                        }
+                        true
+                    };
+                    match Abortable::new(queue_future, abort_registration).await {
+                        // Note: a cancel that lands in the brief window after this future has
+                        // queued the message can't stop it, so the message still gets sent.
+                        Ok(true) => { }
+                        Ok(false) => return,
+                        Err(_) => {
+                            log!("Attachment upload task {upload_id:?} for {timeline_kind} was aborted.");
+                            return;
+                        }
+                    }
+                    log!("Successfully queued attachment to send to {timeline_kind}.");
+                    // If the user cancels at this point, we have to discard the message via the send queue.
+                    let _ = sender_clone.send(TimelineUpdate::FileUploadQueuing {
+                        upload_id,
+                        transaction_id: txn_id.clone(),
+                    });
+                    SignalToUI::set_ui_signal();
+
+                    // If we're offline we ought to notify the upload modal so the user knows that
+                    // nothing will happen until we're back online.
+                    if is_offline() {
+                        let _ = sender_clone.send(TimelineUpdate::FileUploadComplete { upload_id });
+                        SignalToUI::set_ui_signal();
+                        return;
+                    }
+
+                    let mut queue_updates = match queue_updates {
+                        Ok(receiver) => receiver,
+                        Err(_e) => {
+                            error!("Couldn't watch the send queue for {timeline_kind}: {_e:?}");
+                            let _ = sender_clone.send(TimelineUpdate::FileUploadComplete { upload_id });
+                            SignalToUI::set_ui_signal();
+                            return;
+                        }
+                    };
+                    // Track the progress of this upload until it's sent, cancelled, or gives up,
+                    // since we want to show its progress in the room input bar with as much detail as possible.
+                    let mut last_percent = None;
+                    loop {
+                        let update = match queue_updates.recv().await {
+                            Ok(update) => update,
+                            Err(broadcast::error::RecvError::Lagged(_)) => continue,
+                            Err(broadcast::error::RecvError::Closed) => break,
+                        };
+                        match update {
+                            RoomSendQueueUpdate::MediaUpload { related_to, progress, .. }
+                                if related_to == txn_id =>
+                            {
+                                let percent = (progress.total > 0)
+                                    .then(|| progress.current * 100 / progress.total);
+                                if last_percent == percent { continue }
+                                last_percent = percent;
+                                let _ = sender_clone.send(TimelineUpdate::FileUploadProgress {
+                                    upload_id,
+                                    current_bytes: progress.current,
+                                    total_bytes: progress.total,
+                                });
+                            }
+                            // From here on, the upload modal won't be shown,
+                            // only the send status indicator by the message can show its status.
+                            RoomSendQueueUpdate::SentEvent { transaction_id, .. }
+                            | RoomSendQueueUpdate::CancelledLocalEvent { transaction_id }
+                            | RoomSendQueueUpdate::SendError { transaction_id, .. }
+                                if transaction_id == txn_id =>
+                            {
+                                let _ = sender_clone.send(TimelineUpdate::FileUploadComplete { upload_id });
+                                SignalToUI::set_ui_signal();
+                                break;
+                            }
+                            _ => continue,
+                        }
+                        SignalToUI::set_ui_signal();
+                    }
+                });
+            }
+            MatrixRequest::ReadReceipt { timeline_kind, event_id, receipt_type } => {
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    log!("BUG: {timeline_kind} not found when sending read receipt, {event_id}");
+                    continue;
+                };
+
+                // Unread counts get refreshed by the own_user_read_receipts subscriber,
+                // so we don't need to send any updates to the UI here.
+                let _send_rr_task = runtime::handle().spawn(async move {
+                    match timeline.send_single_receipt(receipt_type.clone(), event_id.clone()).await {
+                        Ok(sent) => log!("{} {receipt_type} read receipt to {timeline_kind} for event {event_id}", if sent { "Sent" } else { "Already sent" }),
+                        Err(_e) => {
+                            error!("Failed to send {receipt_type} read receipt to {timeline_kind} for event {event_id}; error: {_e:?}");
+                            // Tell the RoomScreen to forget that it sent this read receipt so it can retry later.
+                            if sender.send(TimelineUpdate::ReadReceiptSendFailed { receipt_type, event_id }).is_ok() {
+                                SignalToUI::set_ui_signal();
+                            }
+                        }
+                    }
+                });
+            },
+
+            MatrixRequest::GetUserReadReceipt { timeline_kind, user_id } => {
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    error!("BUG: {timeline_kind} not found when getting read receipt of user {user_id}");
+                    enqueue_popup_notification(
+                        format!("Couldn't look up read receipts in this {}.", timeline_kind.desc()),
+                        PopupKind::Error,
+                        Some(5.0),
+                    );
+                    continue;
+                };
+
+                let _get_rr_task = runtime::handle().spawn(async move {
+                    let mut event_id = timeline.latest_user_read_receipt_timeline_event_id(&user_id).await;
+                    if event_id.is_none() {
+                        // Some timeline events aren't separately visible, like edits or reactions,
+                        // so we try to find the event that this receipt is shown *on*, e.g., the reacted-to event.
+                        let mut candidates = vec![timeline.latest_user_read_receipt(&user_id).await];
+                        if timeline_kind.thread_root_event_id().is_none() {
+                            let room = timeline.room();
+                            for receipt_type in [ReceiptEventType::Read, ReceiptEventType::ReadPrivate] {
+                                candidates.push(
+                                    room.load_user_receipt(receipt_type, &ReceiptThread::Unthreaded, &user_id).await.ok().flatten()
+                                );
+                            }
+                        }
+                        // find the latest (newest) event from the list of candidates
+                        event_id = candidates.into_iter().flatten()
+                            .max_by_key(|(_, receipt)| receipt.ts)
+                            .map(|(ev_id, _)| ev_id);
+
+                        if let Some(ev_id) = event_id {
+                            event_id = Some(resolve_receipt_target(
+                                timeline.room(),
+                                ev_id,
+                                timeline_kind.thread_root_event_id().is_some(),
+                            ).await);
+                        }
+                    }
+                    if sender.send(TimelineUpdate::UserReadReceiptFetched { user_id, event_id }).is_err() {
+                        error!("Failed to send fetched user read receipt to UI for {timeline_kind}");
+                    }
+                    SignalToUI::set_ui_signal();
+                });
+            },
+
+            MatrixRequest::GetRoomPowerLevels { timeline_kind } => {
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    log!("BUG: {timeline_kind} not found for room power levels request");
+                    continue;
+                };
+
+                let Some(user_id) = current_user_id() else { continue };
+
+                let _power_levels_task = runtime::handle().spawn(async move {
+                    match timeline.room().power_levels().await {
+                        Ok(power_levels) => {
+                            log!("Successfully fetched power levels for {timeline_kind}.");
+                            if sender.send(TimelineUpdate::UserPowerLevels(
+                                UserPowerLevels::from(&power_levels, &user_id),
+                            )).is_err() {
+                                error!("Failed to send room power levels to UI.")
+                            }
+                            SignalToUI::set_ui_signal();
+                        }
+                        Err(e) => {
+                            error!("Failed to fetch power levels for {timeline_kind}: {e:?}");
+                        }
+                    }
+                });
+            },
+
+            MatrixRequest::ToggleReaction { timeline_kind, timeline_event_id, reaction } => {
+                let Some(timeline) = get_timeline(&timeline_kind) else {
+                    log!("BUG: {timeline_kind} not found for toggle reaction request");
+                    continue;
+                };
+
+                let _toggle_reaction_task = runtime::handle().spawn(async move {
+                    log!("Sending toggle reaction {reaction:?} to {timeline_kind}: ...");
+                    match timeline.toggle_reaction(&timeline_event_id, &reaction).await {
+                        Ok(_send_handle) => {
+                            log!("Sent toggle reaction {reaction:?} to {timeline_kind}.");
+                            SignalToUI::set_ui_signal();
+                        },
+                        Err(_e) => error!("Failed to send toggle reaction to {timeline_kind}; error: {_e:?}"),
+                    }
+                });
+            },
+
+            MatrixRequest::RedactMessage { timeline_kind, timeline_event_id, reason } => {
+                let Some(timeline) = get_timeline(&timeline_kind) else {
+                    log!("BUG: {timeline_kind} not found for redact message request");
+                    continue;
+                };
+
+                let _redact_task = runtime::handle().spawn(async move {
+                    match timeline.redact(&timeline_event_id, reason.as_deref()).await {
+                        Ok(()) => log!("Successfully redacted message in {timeline_kind}."),
+                        Err(e) => {
+                            error!("Failed to redact message in {timeline_kind}; error: {e:?}");
+                            let msg = match (&timeline_event_id, &e) {
+                                (TimelineEventItemId::TransactionId(_), matrix_sdk_ui::timeline::Error::RedactError(RedactError::InvalidLocalEchoState)) =>
+                                    "This message was already sent, so it can't be cancelled. You can delete it instead.".to_string(),
+                                (TimelineEventItemId::TransactionId(_), e) => format!("Couldn't cancel sending this message: {e}"),
+                                (_, e) => format!("Failed to redact message. Error: {e}"),
+                            };
+                            enqueue_popup_notification(msg, PopupKind::Error, Some(8.0));
+                        }
+                    }
+                });
+            },
+
+            MatrixRequest::RetrySend { timeline_kind, timeline_event_id } => {
+                let Some(timeline) = get_timeline(&timeline_kind) else {
+                    log!("BUG: {timeline_kind} not found for retry send request");
+                    continue;
+                };
+
+                let _retry_task = runtime::handle().spawn(async move {
+                    let items = timeline.items().await;
+                    let event_tl_item = items.iter().rev()
+                        .find_map(|item| item.as_event().filter(|ev| ev.identifier() == timeline_event_id));
+                    let send_handle = match event_tl_item.map(|ev| (ev, ev.send_state())) {
+                        Some((ev, Some(EventSendState::SendingFailed { .. }))) => ev.local_echo_send_handle(),
+                        Some((_, Some(EventSendState::NotSentYet { .. }))) => {
+                            enqueue_popup_notification("This message is already being sent.", PopupKind::Info, Some(5.0));
+                            return;
+                        }
+                        _ => None,
+                    };
+                    let Some(send_handle) = send_handle else {
+                        enqueue_popup_notification("This message was already sent.", PopupKind::Info, Some(5.0));
+                        return;
+                    };
+                    if let Err(e) = send_handle.unwedge().await {
+                        error!("Failed to retry sending{timeline_event_id:?} in {timeline_kind}: {e:?}");
+                        enqueue_popup_notification(format!("Couldn't retry sending: {e}"), PopupKind::Error, Some(8.0));
+                        return;
+                    }
+                    // We still need to re-enable the send queue, since `unwedge()` doesn't do that itself
+                    timeline.room().send_queue().set_enabled(true);
+                    if is_offline() {
+                        enqueue_popup_notification(
+                            "You're offline. This message will be re-sent automatically when you're back online.",
+                            PopupKind::Warning,
+                            Some(7.0),
+                        );
+                    }
+                    SignalToUI::set_ui_signal();
+                });
+            },
+
+            MatrixRequest::PinEvent { timeline_kind, event_id, pin } => {
+                let Some((timeline, sender)) = get_timeline_and_sender(&timeline_kind) else {
+                    log!("BUG: {timeline_kind} not found for pin event request");
+                    continue;
+                };
+
+                let _pin_task = runtime::handle().spawn(async move {
+                    let room = timeline.room();
+                    let result = if pin {
+                        room.pin_event(&event_id).await
+                    } else {
+                        room.unpin_event(&event_id).await
+                    };
+                    match sender.send(TimelineUpdate::PinResult { event_id, pin, result }) {
+                        Ok(_) => SignalToUI::set_ui_signal(),
+                        Err(_) => log!("Failed to send UI update for pin event."),
+                    }
+                });
+            }
+
+            MatrixRequest::GetUrlPreview { url, on_fetched, destination, update_sender } => {
+                let _fetch_url_preview_task = runtime::handle().spawn(async move {
+                    let result: Result<LinkPreviewData, UrlPreviewError> = async {
+                        let client = get_client().ok_or(UrlPreviewError::ClientNotAvailable)?;
+                        let request = get_media_preview::v1::Request::new(url);
+                        let response = client.send(request).await.map_err(UrlPreviewError::Request)?;
+                        match response.data {
+                            Some(raw) => serde_json::from_str::<LinkPreviewData>(raw.get())
+                                .map_err(UrlPreviewError::Json),
+                            None => Ok(LinkPreviewData::default()),
+                        }
+                    }.await;
+
+                    on_fetched(destination, result, update_sender);
+                    SignalToUI::set_ui_signal();
+                });
+            }
+
+            MatrixRequest::DownloadMedia { media_source, filename, on_download_result } => {
+                use crate::shared::attachment_download::{enqueue_already_downloading_notification, MediaDownloadResult};
+            
+                // Note: in this code block, we always want to call `on_download_result` with any error.
+
+                let Some(client) = get_client() else {
+                    on_download_result(MediaDownloadResult::Failed("Matrix client is not available".to_string()));
+                    continue;
+                };
+                let mxc_uri = media_source_mxc(&media_source).clone();
+                // Only allow a given MxcUri to be downloaded once at a time.
+                if download_tasks.lock().unwrap().contains_key(&mxc_uri) {
+                    enqueue_already_downloading_notification();
+                    on_download_result(MediaDownloadResult::Cancelled);
+                    continue;
+                }
+                let (abort_handle, abort_registration) = futures_util::future::AbortHandle::new_pair();
+                let download_tasks2 = download_tasks.clone();
+                let mxc_uri2 = mxc_uri.clone();
+                let download_future = async move {
+                    let media_request = MediaRequestParameters {
+                        source: media_source,
+                        format: matrix_sdk::media::MediaFormat::File,
+                    };
+                    let res = match client.media().get_media_content(&media_request, true).await {
+                            Ok(bytes) => {
+                                log!("Downloaded attachment {filename:?} ({} bytes) to memory", bytes.len());
+                                Ok(bytes)
+                            }
+                            Err(e) => {
+                                error!("Failed to fetch media content for attachment {filename:?}: {e}");
+                                Err(e.to_string())
+                            }
+                        };
+                    if let Some(active) = download_tasks2.lock().unwrap().remove(&mxc_uri2) {
+                        (active.on_download_result)(match res {
+                            Ok(bytes) => MediaDownloadResult::Downloaded(bytes),
+                            Err(e) => MediaDownloadResult::Failed(e),
+                        });
+                    }
+                };
+                
+                let download_tasks3 = download_tasks.clone();
+                let mxc_uri3 = mxc_uri.clone();
+                download_tasks.lock().unwrap().insert(
+                    mxc_uri,
+                    ActiveDownload { abort_handle, on_download_result },
+                );
+                runtime::handle().spawn(async move {
+                    if Abortable::new(download_future, abort_registration).await.is_err() {
+                        if let Some(active) = download_tasks3.lock().unwrap().remove(&mxc_uri3) {
+                            (active.on_download_result)(MediaDownloadResult::Cancelled);
+                        }
+                    }
+                });
+            }
+
+            MatrixRequest::CancelDownload(mxc) => {
+                if let Some(active) = download_tasks.lock().unwrap().get(&mxc) {
+                    active.abort_handle.abort();
+                }
+            }
+
+        }
+    }
+
+    error!("matrix_worker_task task ended unexpectedly");
+    bail!("matrix_worker_task task ended unexpectedly")
+}
+
+
+#[cfg(not(target_family = "wasm"))]
+type MatrixRequestSender = UnboundedSender<(u64, MatrixRequest)>;
+#[cfg(not(target_family = "wasm"))]
+type MatrixRequestReceiver = UnboundedReceiver<(u64, MatrixRequest)>;
+#[cfg(target_family = "wasm")]
+type MatrixRequestSender = tokio::sync::mpsc::Sender<(u64, MatrixRequest)>;
+#[cfg(target_family = "wasm")]
+type MatrixRequestReceiver = tokio::sync::mpsc::Receiver<(u64, MatrixRequest)>;
+#[cfg(target_family = "wasm")]
+const MATRIX_REQUEST_CAPACITY: usize = 512;
+fn matrix_request_channel() -> (MatrixRequestSender, MatrixRequestReceiver) {
+    #[cfg(not(target_family = "wasm"))]
+    { tokio::sync::mpsc::unbounded_channel() }
+    #[cfg(target_family = "wasm")]
+    { tokio::sync::mpsc::channel(MATRIX_REQUEST_CAPACITY) }
+}
+
+/// The sender used by [`submit_async_request`] to send requests to the async worker thread.
+/// Currently there is only one, but it can be cloned if we need more concurrent senders.
+#[cfg(not(target_family = "wasm"))]
+static REQUEST_SENDER: Mutex<Option<MatrixRequestSender>> = Mutex::new(None);
+#[cfg(target_family = "wasm")]
+thread_local! {
+    static REQUEST_SENDER: &'static Mutex<Option<MatrixRequestSender>> = Box::leak(Box::new(Mutex::new(None)));
+}
+/// Native shared state; browser state belongs exclusively to its event-loop thread.
+/// The browser allocation is bounded to one holder per thread, like native statics.
+fn request_sender_state() -> &'static Mutex<Option<MatrixRequestSender>> {
+    #[cfg(not(target_family = "wasm"))]
+    { &REQUEST_SENDER }
+    #[cfg(target_family = "wasm")]
+    { REQUEST_SENDER.with(|state| *state) }
+}
+
+
+/// A client object that is proactively created during initialization
+/// in order to speed up the client-building process when the user logs in.
+#[cfg(not(target_family = "wasm"))]
+static DEFAULT_SSO_CLIENT: Mutex<Option<(Client, ClientSessionPersisted)>> = Mutex::new(None);
+#[cfg(target_family = "wasm")]
+thread_local! {
+    static DEFAULT_SSO_CLIENT: &'static Mutex<Option<(Client, ClientSessionPersisted)>> = Box::leak(Box::new(Mutex::new(None)));
+}
+/// Native shared state; browser state belongs exclusively to its event-loop thread.
+/// The browser allocation is bounded to one holder per thread, like native statics.
+fn default_sso_client_state() -> &'static Mutex<Option<(Client, ClientSessionPersisted)>> {
+    #[cfg(not(target_family = "wasm"))]
+    { &DEFAULT_SSO_CLIENT }
+    #[cfg(target_family = "wasm")]
+    { DEFAULT_SSO_CLIENT.with(|state| *state) }
+}
+
+
+/// Used to notify the SSO login task that the async creation of the `DEFAULT_SSO_CLIENT` has finished.
+static DEFAULT_SSO_CLIENT_NOTIFIER: LazyLock<Arc<Notify>> = LazyLock::new(|| Arc::new(Notify::new()));
+
+/// Handle to the in-flight `ASWebAuthenticationSession`. Set when the auth
+/// sheet is presented, cleared by the completion callback or by
+/// [`cancel_active_sso_auth_session`].
+#[cfg(target_os = "ios")]
+static ACTIVE_SSO_AUTH_SESSION: Mutex<Option<robius_web_auth_session::AuthSessionHandle>> =
+    Mutex::new(None);
+
+/// Dismiss the iOS auth sheet. The completion callback fires with
+/// `UserCancelled`, which surfaces as a `LoginFailure` and resets all
+/// SSO state so the next attempt works. No-op if nothing's running.
+#[cfg(target_os = "ios")]
+pub fn cancel_active_sso_auth_session() {
+    if let Ok(mut slot) = ACTIVE_SSO_AUTH_SESSION.lock() {
+        if let Some(handle) = slot.take() {
+            handle.cancel();
+        }
+    }
+}
+
+/// Blocks the current thread until the given future completes.
+///
+/// ## Warning
+/// This should be used with caution, especially on the main UI thread,
+/// as blocking a thread prevents it from handling other events or running other tasks.
+#[cfg(not(target_family = "wasm"))]
+pub fn block_on_async_with_timeout<T>(
+    timeout: Option<Duration>,
+    async_future: impl Future<Output = T>,
+) -> Result<T, Elapsed> {
+    let rt = runtime::handle();
+
+    if let Some(timeout) = timeout {
+        rt.block_on(async {
+            tokio::time::timeout(timeout, async_future).await
+        })
+    } else {
+        Ok(rt.block_on(async_future))
+    }
+}
+
+
+/// The primary initialization routine for starting the Matrix client sync
+/// and the async tokio runtime.
+///
+/// Returns a handle to the Tokio runtime that is used to run async background tasks.
+pub fn start_matrix_tokio() -> Result<Handle> {
+    let rt_handle = runtime::handle();
+
+    let rt = rt_handle.clone();
+    // Spawn the main async task that drives the Matrix client SDK and
+    // monitors the related background tasks. (The `DEFAULT_SSO_CLIENT`
+    // pre-build is gated inside that task on whether the user actually
+    // needs to log in. Otherwise it leaves an orphaned sqlite db on disk
+    // every cold start.)
+    runtime::spawn_control(start_matrix_client_login_and_sync(rt));
+
+    Ok(rt_handle)
+}
+
+
+/// A tokio::watch channel sender for sending requests from the RoomScreen UI widget
+/// to the corresponding background async task for that room (its `timeline_subscriber_handler`).
+pub type TimelineRequestSender = watch::Sender<TimelineRequest>;
+
+/// Details of current requests that the RoomScreen UI has made of the background timeline subscriber task.
+pub struct TimelineRequest {
+    /// Pending backwards-pagination-until-event requests (jump to a specific event).
+    pub backwards_paginate: Vec<BackwardsPaginateUntilEventRequest>,
+    /// Whether this timeline is currently open in the UI.
+    ///
+    /// The timeline subscriber stops sending updates while it's closed,
+    /// and when it gets re-opened, it sends one catch-up update.
+    pub is_timeline_open: bool,
+}
+
+/// The return type for [`take_timeline_endpoints()`].
+///
+/// This primarily contains endpoints for channels of communication
+/// between the timeline UI (`RoomScreen`] and the background worker tasks.
+/// If the relevant room was tombstoned, this also includes info about its successor room.
+pub struct TimelineEndpoints {
+    pub update_sender: crate::timeline_channel::Sender<TimelineUpdate>,
+    pub update_receiver: crate::timeline_channel::Receiver<TimelineUpdate>,
+    pub request_sender: TimelineRequestSender,
+    pub successor_room: Option<SuccessorRoom>,
+    pub is_encrypted: bool,
+}
+
+/// The state of a timeline's background subscriber task.
+///
+/// For efficiency's sake, tasks aren't spawned until the timeline is opened.
+enum TimelineSubscriber {
+    /// The timeline (room or thread) hasn't been opened yet, so its background subscriber task isn't running.
+    NotStarted {
+        request_receiver: watch::Receiver<TimelineRequest>,
+    },
+    /// The timeline's background subscriber task is running, meaning the room has been opened at least once.
+    Running(JoinHandle<()>),
+}
+
+/// Info about a timeline for a joined room or a thread in a joined room.
+struct PerTimelineDetails {
+    /// A shared reference to a room's main timeline or thread's timeline of events.
+    timeline: Arc<Timeline>,
+    /// A clone-able sender for updates to this timeline.
+    timeline_update_sender: crate::timeline_channel::Sender<TimelineUpdate>,
+    /// A tuple of two separate channel endpoints that can only be taken *once* by the main UI thread:
+    /// 1. The single receiver that can receive updates from this timeline.
+    ///    * When a new room is joined (or a thread is opened), an unbounded crossbeam channel will be created
+    ///      and its sender given to a background task (the `timeline_subscriber_handler()`)
+    ///      that enqueues timeline updates as it receives timeline vector diffs from the server.
+    ///    * The UI thread can take ownership of this update receiver in order to receive updates
+    ///      to this room or thread timeline, but only one receiver can exist at a time.
+    /// 2. The sender that can send requests to the background timeline subscriber handler,
+    ///    e.g., to watch for a specific event to be prepended to the timeline (via back pagination).
+    timeline_singleton_endpoints: Option<(
+        crate::timeline_channel::Receiver<TimelineUpdate>,
+        TimelineRequestSender,
+    )>,
+    /// The backend subscriber task that handles updates to this timeline and sends them to the UI.
+    timeline_subscriber: TimelineSubscriber,
+}
+impl PerTimelineDetails {
+    /// Starts the background subscriber task for this timeline, if one wasn't already running.
+    fn ensure_subscriber_started(&mut self) {
+        let request_receiver = match &self.timeline_subscriber {
+            TimelineSubscriber::NotStarted { request_receiver } => request_receiver.clone(),
+            TimelineSubscriber::Running(_) => return,
+        };
+        // this fn might be called from a regular OS thread with no async context, so don't use `Handle::spawn()`
+        let task = runtime::handle().spawn(timeline_subscriber_handler(
+            self.timeline.clone(),
+            self.timeline_update_sender.clone(),
+            request_receiver,
+            // a thread timeline will already have spawned its subscriber task at creation,
+            // so we can only reach this point for a main room timeline.
+            None,
+        ));
+        self.timeline_subscriber = TimelineSubscriber::Running(task);
+    }
+}
+impl Drop for PerTimelineDetails {
+    fn drop(&mut self) {
+        if let TimelineSubscriber::Running(task) = &self.timeline_subscriber {
+            task.abort();
+        }
+    }
+}
+
+struct JoinedRoomDetails {
+    /// The room ID of this joined room.
+    room_id: OwnedRoomId,
+    /// Details about the main timeline for this room.
+    main_timeline: PerTimelineDetails,
+    /// Thread-focused timelines for this room, keyed by thread root event ID.
+    thread_timelines: HashMap<OwnedEventId, PerTimelineDetails>,
+    /// The set of thread timelines currently being created, to avoid duplicate in-flight work.
+    pending_thread_timelines: HashSet<OwnedEventId>,
+    /// A drop guard for the event handler that represents a subscription to typing notices for this room.
+    typing_notice_subscriber: Option<EventHandlerDropGuard>,
+    /// A drop guard for the event handler that represents a subscription to pinned events for this room.
+    pinned_events_subscriber: Option<EventHandlerDropGuard>,
+}
+impl Drop for JoinedRoomDetails {
+    fn drop(&mut self) {
+        log!("Dropping JoinedRoomDetails for room {}", self.room_id);
+        // main_timeline and each thread_timelines entry abort their own task via
+        // PerTimelineDetails::Drop, so just tear down the room-level subscriptions here.
+        drop(self.typing_notice_subscriber.take());
+        drop(self.pinned_events_subscriber.take());
+    }
+}
+impl JoinedRoomDetails {
+    /// Returns the update senders for this room's main timeline and all of its thread timelines.
+    fn all_timeline_update_senders(&self) -> Vec<crate::timeline_channel::Sender<TimelineUpdate>> {
+        std::iter::once(&self.main_timeline)
+            .chain(self.thread_timelines.values())
+            .map(|d| d.timeline_update_sender.clone())
+            .collect()
+    }
+}
+
+
+/// A const-compatible hasher, used for `static` items containing `HashMap`s or `HashSet`s.
+type ConstHasher = BuildHasherDefault<DefaultHasher>;
+
+/// Information about all joined rooms that our client currently know about.
+/// We use a `HashMap` for O(1) lookups, as this is accessed frequently (e.g. every timeline update).
+#[cfg(not(target_family = "wasm"))]
+static ALL_JOINED_ROOMS: Mutex<HashMap<OwnedRoomId, JoinedRoomDetails, ConstHasher>> = Mutex::new(HashMap::with_hasher(BuildHasherDefault::new()));
+#[cfg(target_family = "wasm")]
+thread_local! {
+    static ALL_JOINED_ROOMS: &'static Mutex<HashMap<OwnedRoomId, JoinedRoomDetails, ConstHasher>> = Box::leak(Box::new(Mutex::new(HashMap::with_hasher(BuildHasherDefault::new()))));
+}
+/// Native shared state; browser state belongs exclusively to its event-loop thread.
+/// The browser allocation is bounded to one holder per thread, like native statics.
+fn all_joined_rooms_state() -> &'static Mutex<HashMap<OwnedRoomId, JoinedRoomDetails, ConstHasher>> {
+    #[cfg(not(target_family = "wasm"))]
+    { &ALL_JOINED_ROOMS }
+    #[cfg(target_family = "wasm")]
+    { ALL_JOINED_ROOMS.with(|state| *state) }
+}
+
+
+/// The diagnostic info gathered upon a [`MatrixRequest::GetRoomDiagnostics`] request.
+///
+/// This is *NOT* a widget action.
+#[derive(Debug)]
+pub struct RoomDiagnosticsReady {
+    pub text: String,
+}
+
+/// Tells any RoomScreen showing this room that its backend timeline was recreated,
+/// so it needs to take and use the new channel endpoints.
+///
+/// This is *NOT* a widget action.
+#[derive(Debug)]
+pub struct TimelineEndpointsRecreated {
+    pub room_id: OwnedRoomId,
+}
+
+/// Returns the timeline and timeline update sender for the given joined room/thread timeline.
+fn get_per_timeline_details<'a>(
+    all_joined_rooms: &'a mut HashMap<OwnedRoomId, JoinedRoomDetails, ConstHasher>,
+    kind: &TimelineKind,
+) -> Option<&'a mut PerTimelineDetails> {
+    let room_info = all_joined_rooms.get_mut(kind.room_id())?;
+    match kind {
+        TimelineKind::MainRoom { .. } => Some(&mut room_info.main_timeline),
+        TimelineKind::Thread { thread_root_event_id, .. } => room_info.thread_timelines.get_mut(thread_root_event_id),
+    }
+}
+
+/// Obtains the lock on `ALL_JOINED_ROOMS` and returns the timeline for the given timeline kind.
+fn get_timeline(kind: &TimelineKind) -> Option<Arc<Timeline>> {
+    get_per_timeline_details(all_joined_rooms_state().lock().unwrap().deref_mut(), kind)
+        .map(|details| details.timeline.clone())
+}
+
+/// Obtains the lock on `ALL_JOINED_ROOMS` and returns the timeline and timeline update sender for the given timeline kind.
+fn get_timeline_and_sender(kind: &TimelineKind) -> Option<(Arc<Timeline>, crate::timeline_channel::Sender<TimelineUpdate>)> {
+    get_per_timeline_details(all_joined_rooms_state().lock().unwrap().deref_mut(), kind)
+        .map(|details| (details.timeline.clone(), details.timeline_update_sender.clone()))
+}
+
+/// Obtains the lock on `ALL_JOINED_ROOMS` and returns the main timeline for the given room.
+fn get_room_timeline(room_id: &RoomId) -> Option<Arc<Timeline>> {
+    all_joined_rooms_state().lock().unwrap()
+        .get(room_id)
+        .map(|jrd| jrd.main_timeline.timeline.clone())
+}
+
+/// The logged-in Matrix client, which can be freely and cheaply cloned.
+#[cfg(not(target_family = "wasm"))]
+static CLIENT: Mutex<Option<Client>> = Mutex::new(None);
+#[cfg(target_family = "wasm")]
+thread_local! {
+    static CLIENT: &'static Mutex<Option<Client>> = Box::leak(Box::new(Mutex::new(None)));
+}
+/// Native shared state; browser state belongs exclusively to its event-loop thread.
+/// The browser allocation is bounded to one holder per thread, like native statics.
+fn client_state() -> &'static Mutex<Option<Client>> {
+    #[cfg(not(target_family = "wasm"))]
+    { &CLIENT }
+    #[cfg(target_family = "wasm")]
+    { CLIENT.with(|state| *state) }
+}
+
+
+pub fn get_client() -> Option<Client> {
+    client_state().lock().unwrap().clone()
+}
+
+/// Returns the user ID of the currently logged-in user, if any.
+pub fn current_user_id() -> Option<OwnedUserId> {
+    client_state().lock().unwrap().as_ref().and_then(|c|
+        c.session_meta().map(|m| m.user_id.clone())
+    )
+}
+
+/// The display name of the currently-logged-in user, if any.
+static OWN_DISPLAY_NAME: Mutex<Option<String>> = Mutex::new(None);
+
+/// Returns the display name of the currently logged-in user, if any.
+/// Fetches and caches it if not yet known.
+async fn own_display_name(client: &Client) -> Option<String> {
+    if let Some(name) = OWN_DISPLAY_NAME.lock().unwrap().clone() {
+        return Some(name);
+    }
+    let fetched = client.account().get_display_name().await.ok().flatten();
+    if fetched.is_some() {
+        *OWN_DISPLAY_NAME.lock().unwrap() = fetched.clone();
+    }
+    fetched
+}
+
+/// The singleton sync service.
+#[cfg(not(target_family = "wasm"))]
+static SYNC_SERVICE: Mutex<Option<Arc<SyncService>>> = Mutex::new(None);
+#[cfg(target_family = "wasm")]
+thread_local! {
+    static SYNC_SERVICE: &'static Mutex<Option<Arc<SyncService>>> = Box::leak(Box::new(Mutex::new(None)));
+}
+/// Native shared state; browser state belongs exclusively to its event-loop thread.
+/// The browser allocation is bounded to one holder per thread, like native statics.
+fn sync_service_state() -> &'static Mutex<Option<Arc<SyncService>>> {
+    #[cfg(not(target_family = "wasm"))]
+    { &SYNC_SERVICE }
+    #[cfg(target_family = "wasm")]
+    { SYNC_SERVICE.with(|state| *state) }
+}
+
+static SYNC_SERVICE_DESIRED_RUNNING: AtomicBool = AtomicBool::new(true);
+static SYNC_SERVICE_ASSUMED_RUNNING: AtomicBool = AtomicBool::new(false);
+static SYNC_SERVICE_LIFECYCLE_LOCK: LazyLock<tokio::sync::Mutex<()>> =
+    LazyLock::new(|| tokio::sync::Mutex::new(()));
+
+/// Set to `true` when the access token has been rejected by the homeserver,
+/// signaling the main task to tear down the current session and wait for re-login.
+static TOKEN_EXPIRED: AtomicBool = AtomicBool::new(false);
+
+/// Whether the sync service currently reports the homeserver as unreachable.
+static IS_OFFLINE: AtomicBool = AtomicBool::new(false);
+
+pub fn is_offline() -> bool {
+    IS_OFFLINE.load(Ordering::Acquire)
+}
+
+/// Notifies the main monitoring loop to wake up and check `TOKEN_EXPIRED`.
+static TOKEN_EXPIRED_NOTIFY: LazyLock<Notify> = LazyLock::new(Notify::new);
+
+/// Wakes the monitoring loop on logout, see `is_logout_in_progress()`.
+static LOGOUT_NOTIFY: LazyLock<Notify> = LazyLock::new(Notify::new);
+
+
+/// Get a reference to the current sync service, if available.
+pub fn get_sync_service() -> Option<Arc<SyncService>> {
+    sync_service_state().lock().ok()?.as_ref().cloned()
+}
+
+pub fn sync_service_desired_running() -> bool {
+    SYNC_SERVICE_DESIRED_RUNNING.load(Ordering::Acquire)
+}
+
+pub fn set_sync_service_desired_running(running: bool, reason: &'static str) {
+    let previous = SYNC_SERVICE_DESIRED_RUNNING.swap(running, Ordering::AcqRel);
+    if previous == running && SYNC_SERVICE_ASSUMED_RUNNING.load(Ordering::Acquire) == running {
+        log!(
+            "Matrix sync service already desired {}; skipping lifecycle request ({reason}).",
+            if running { "running" } else { "stopped" }
+        );
+        return;
+    }
+
+    runtime::handle().spawn(apply_sync_service_desired_state(reason));
+}
+
+async fn apply_sync_service_desired_state(reason: &'static str) {
+    let _guard = SYNC_SERVICE_LIFECYCLE_LOCK.lock().await;
+    loop {
+        let desired = SYNC_SERVICE_DESIRED_RUNNING.load(Ordering::Acquire);
+        if SYNC_SERVICE_ASSUMED_RUNNING.load(Ordering::Acquire) == desired {
+            break;
+        }
+
+        let Some(sync_service) = get_sync_service() else {
+            log!("Matrix sync service is not available while applying lifecycle request ({reason}).");
+            break;
+        };
+
+        if desired {
+            log!("Starting Matrix sync service after lifecycle request ({reason}).");
+            sync_service.start().await;
+        } else {
+            log!("Stopping Matrix sync service after lifecycle request ({reason}).");
+            sync_service.stop().await;
+        }
+        SYNC_SERVICE_ASSUMED_RUNNING.store(desired, Ordering::Release);
+    }
+}
+
+#[cfg(not(target_family = "wasm"))]
+pub fn stop_sync_service_for_shutdown(timeout: Duration) -> Result<(), Elapsed> {
+    SYNC_SERVICE_DESIRED_RUNNING.store(false, Ordering::Release);
+    let Some(sync_service) = get_sync_service() else {
+        SYNC_SERVICE_ASSUMED_RUNNING.store(false, Ordering::Release);
+        return Ok(());
+    };
+
+    let result = block_on_async_with_timeout(Some(timeout), async move {
+        let _guard = SYNC_SERVICE_LIFECYCLE_LOCK.lock().await;
+        sync_service.stop().await;
+    });
+    if result.is_ok() {
+        SYNC_SERVICE_ASSUMED_RUNNING.store(false, Ordering::Release);
+    }
+    result
+}
+
+/// The list of users that the current user has chosen to ignore.
+/// Ideally we shouldn't have to maintain this list ourselves,
+/// but the Matrix SDK doesn't currently properly maintain the list of ignored users.
+static IGNORED_USERS: Mutex<HashSet<OwnedUserId, ConstHasher>> = Mutex::new(HashSet::with_hasher(BuildHasherDefault::new()));
+
+/// Returns a deep clone of the current list of ignored users.
+pub fn get_ignored_users() -> HashSet<OwnedUserId, ConstHasher> {
+    IGNORED_USERS.lock().unwrap().clone()
+}
+
+/// Returns whether the given user ID is currently being ignored.
+pub fn is_user_ignored(user_id: &UserId) -> bool {
+    IGNORED_USERS.lock().unwrap().contains(user_id)
+}
+
+
+/// Returns three channel endpoints related to the timeline for the given joined room or thread.
+///
+/// 1. A timeline update sender.
+/// 2. The timeline update receiver, which is a singleton, and can only be taken once.
+/// 3. A `tokio::watch` sender that can be used to send requests to the timeline subscriber handler.
+///
+/// Spawns the background timeline subscriber async task if it didn't already exist.
+///
+/// This will only succeed once per room (or once per room thread),
+/// as only a single channel receiver can exist.
+pub fn take_timeline_endpoints(kind: &TimelineKind) -> Option<TimelineEndpoints> {
+    let mut all_joined_rooms = all_joined_rooms_state().lock().unwrap();
+    let jrd = all_joined_rooms.get_mut(kind.room_id())?;
+    let details = match kind {
+        TimelineKind::MainRoom { .. } => &mut jrd.main_timeline,
+        TimelineKind::Thread { thread_root_event_id, .. } => jrd.thread_timelines.get_mut(thread_root_event_id)?,
+    };
+    let (update_receiver, request_sender) = details.timeline_singleton_endpoints.take()?;
+    details.ensure_subscriber_started();
+    Some(TimelineEndpoints {
+        update_sender: details.timeline_update_sender.clone(),
+        update_receiver,
+        request_sender,
+        successor_room: details.timeline.room().successor_room(),
+        is_encrypted: details.timeline.room().encryption_state().is_encrypted(),
+    })
+}
+
+const DEFAULT_HOMESERVER: &str = "matrix.org";
+
+fn username_to_full_user_id(
+    username: &str,
+    homeserver: Option<&str>,
+) -> Option<OwnedUserId> {
+    username
+        .try_into()
+        .ok()
+        .or_else(|| {
+            let homeserver_url = homeserver.unwrap_or(DEFAULT_HOMESERVER);
+            let user_id_str = if username.starts_with("@") {
+                format!("{}:{}", username, homeserver_url)
+            } else {
+                format!("@{}:{}", username, homeserver_url)
+            };
+            user_id_str.as_str().try_into().ok()
+        })
+}
+
+
+/// Info we store about a room received by the room list service.
+///
+/// This struct is necessary in order for us to track the previous state
+/// of a room received from the room list service, so that we can
+/// determine what room data has changed since the last update.
+/// We can't just store the `matrix_sdk::Room` object itself,
+/// because that is a shallow reference to an inner room object within
+/// the room list service.
+#[derive(Clone)]
+struct RoomListServiceRoomInfo {
+    room_id: OwnedRoomId,
+    state: RoomState,
+    is_direct: bool,
+    is_space: bool,
+    is_marked_unread: bool,
+    is_tombstoned: bool,
+    is_encrypted: bool,
+    tags: Option<Tags>,
+    user_power_levels: Option<UserPowerLevels>,
+    latest_event_timestamp: Option<MilliSecondsSinceUnixEpoch>,
+    num_unread_messages: u64,
+    num_unread_mentions: u64,
+    display_name: Option<RoomDisplayName>,
+    room_avatar: Option<OwnedMxcUri>,
+    canonical_alias: Option<OwnedRoomAliasId>,
+    alt_aliases: Vec<OwnedRoomAliasId>,
+    /// Only ever set for invited rooms.
+    inviter_info: Option<InviterInfo>,
+    room: matrix_sdk::Room,
+}
+impl RoomListServiceRoomInfo {
+    async fn from_room(
+        room: matrix_sdk::Room,
+        current_user_id: &Option<OwnedUserId>,
+        fetch_power_levels: bool,
+    ) -> Self {
+        // Parallelize fetching of independent room data.
+        // Only joined rooms actually use tags and power levels.
+        let (is_direct, tags, display_name, user_power_levels, inviter_info) = tokio::join!(
+            room.is_direct(),
+            async {
+                if room.state() == RoomState::Joined { room.tags().await } else { Ok(None) }
+            },
+            room.display_name(),
+            async {
+                if !fetch_power_levels || room.state() != RoomState::Joined { return None; }
+                let Some(user_id) = current_user_id else { return None; };
+                UserPowerLevels::from_room(&room, user_id.deref()).await
+            },
+            async {
+                if room.state() != RoomState::Invited { return None; }
+                let invite = room.invite_details().await
+                    .inspect_err(|e| warning!("Couldn't obtain who invited us to room {}: {e}", room.room_id()))
+                    .ok()?;
+                let inviter = invite.inviter;
+                Some(InviterInfo {
+                    display_name: inviter.as_ref().and_then(|m| m.display_name().map(str::to_owned)),
+                    avatar_url: inviter.and_then(|m| m.avatar_url().map(ToOwned::to_owned)),
+                    user_id: invite.inviter_id,
+                })
+            }
+        );
+
+        Self {
+            room_id: room.room_id().to_owned(),
+            state: room.state(),
+            is_direct: is_direct.unwrap_or(false),
+            is_space: room.is_space(),
+            is_marked_unread: room.is_marked_unread(),
+            is_tombstoned: room.is_tombstoned(),
+            is_encrypted: room.encryption_state().is_encrypted(),
+            tags: tags.ok().flatten(),
+            user_power_levels,
+            latest_event_timestamp: room.latest_event_timestamp(),
+            num_unread_messages: room.num_unread_messages(),
+            num_unread_mentions: room.num_unread_mentions(),
+            display_name: display_name.ok(),
+            room_avatar: room.avatar_url(),
+            canonical_alias: room.canonical_alias(),
+            alt_aliases: room.alt_aliases(),
+            inviter_info,
+            room,
+        }
+    }
+
+    async fn from_room_ref(
+        room: &matrix_sdk::Room,
+        current_user_id: &Option<OwnedUserId>,
+        fetch_power_levels: bool,
+    ) -> Self {
+        Self::from_room(room.clone(), current_user_id, fetch_power_levels).await
+    }
+}
+
+/// Aborts all handles in parallel, then awaits each so their Drop chain
+/// (Arcs, channels, etc.) finishes before we move on.
+async fn abort_and_await_handles(handles: &mut Vec<JoinHandle<()>>) {
+    for h in handles.iter() {
+        h.abort();
+    }
+    for h in handles.drain(..) {
+        // Skip handles we've already consumed, as those would block forever.
+        if !h.is_finished() {
+            let _ = h.await;
+        }
+    }
+}
+
+/// Performs the Matrix client login or session restore, and starts the main sync service.
+///
+/// After starting the sync service, this also starts the main room list service loop
+/// and the main space service loop.
+async fn start_matrix_client_login_and_sync(rt: Handle) {
+    // Run clean up before anything else, like creating new db dirs.
+    persistence::cleanup_orphan_db_dirs().await;
+
+    // Create a channel for sending requests from the main UI thread to a background worker task.
+    let (sender, receiver) = matrix_request_channel();
+    request_sender_state().lock().unwrap().replace(sender);
+
+    let (login_sender, mut login_receiver) = tokio::sync::mpsc::channel(1);
+
+    // Spawn the async worker task that handles matrix requests.
+    // We must do this now such that the matrix worker task can listen for incoming login requests
+    // from the UI, and forward them to this task (via the login_sender --> login_receiver).
+    let mut matrix_worker_task_handle = runtime::spawn_control(matrix_worker_task(receiver, login_sender));
+
+    let most_recent_user_id = persistence::most_recent_user_id().await;
+    log!("Most recent user ID: {most_recent_user_id:?}");
+    #[cfg(not(target_family = "wasm"))]
+    let cli_parse_result = Cli::try_parse();
+    #[cfg(target_family = "wasm")]
+    let cli_parse_result = Cli::try_parse_from(["hepta-robrix"]);
+    #[cfg(not(target_family = "wasm"))]
+    let force_login = std::env::args().any(|arg| arg == "--login-screen" || arg == "--force-login");
+    #[cfg(target_family = "wasm")]
+    let force_login = false;
+    let cli_has_valid_username_password = cli_parse_result.as_ref()
+        .is_ok_and(|cli| !cli.user_id.is_empty() && !cli.password.is_empty());
+    log!("CLI parsing succeeded? {}. CLI has valid UN+PW? {}",
+        cli_parse_result.as_ref().is_ok(),
+        cli_has_valid_username_password,
+    );
+    let wait_for_login = !cli_has_valid_username_password && (
+        most_recent_user_id.is_none()
+            || force_login
+    );
+    log!("Waiting for login? {}", wait_for_login);
+
+    let new_login_opt = if !wait_for_login {
+        let specified_username = cli_parse_result.as_ref().ok().and_then(|cli|
+            username_to_full_user_id(
+                &cli.user_id,
+                cli.homeserver.as_deref(),
+            )
+        );
+        log!("Trying to restore session for user: {:?}",
+            specified_username.as_ref().or(most_recent_user_id.as_ref())
+        );
+        let restore_epoch = runtime::current_epoch();
+        match runtime::run_account(persistence::restore_session(specified_username)).await {
+            Err(_) if restore_epoch != runtime::current_epoch() => None,
+            Ok(session) => Some(session),
+            Err(e) => {
+                let status_err = "Could not restore previous user session.\n\nPlease login again.";
+                log!("{status_err} Error: {e:?}");
+                crate::ui_dispatch::post_action(LoginAction::LoginFailure(status_err.to_string()));
+
+                if let Ok(cli) = &cli_parse_result {
+                    log!("Attempting auto-login from CLI arguments as user '{}'...", cli.user_id);
+                    crate::ui_dispatch::post_action(LoginAction::CliAutoLogin {
+                        user_id: cli.user_id.clone(),
+                        homeserver: cli.homeserver.clone(),
+                    });
+                    let owned_cli = cli.clone();
+                    match runtime::run_account(async move { login(&owned_cli, LoginRequest::LoginByCli).await }).await {
+                        Ok(new_login) => Some(new_login),
+                        Err(e) => {
+                            error!("CLI-based login failed: {e:?}");
+                            crate::ui_dispatch::post_action(LoginAction::LoginFailure(
+                                format!("Could not login with CLI-provided arguments.\n\nPlease login manually.\n\nError: {e}")
+                            ));
+                            enqueue_rooms_list_update(RoomsListUpdate::Status {
+                                status: format!("Login failed: {e:?}"),
+                            });
+                            None
+                        }
+                    }
+                } else {
+                    None
+                }
+            }
+        }
+    } else {
+        None
+    };
+    let cli: Cli = cli_parse_result.unwrap_or(Cli::default());
+    // `initial_client_opt` holds the client obtained from the session restore or CLI auto-login.
+    // On subsequent iterations of the login loop (after a post-auth setup failure), it is `None`,
+    // which causes the loop to wait for the user to submit a new manual login request.
+    let mut initial_client_opt = new_login_opt;
+
+    // Only pre-build `DEFAULT_SSO_CLIENT` if we'll actually show the login
+    // screen. Building it eagerly during session restore just leaves an
+    // orphaned sqlite db every cold start. If we skip the build, still
+    // notify so a later SSO attempt doesn't deadlock on the notifier.
+    // The SSO handler builds a fresh client itself if it's still `None`.
+    if initial_client_opt.is_none() {
+        rt.spawn(async move {
+            match build_client(&Cli::default(), app_data_dir()).await {
+                Ok(client_and_session) => {
+                    default_sso_client_state().lock().unwrap()
+                        .get_or_insert(client_and_session);
+                }
+                Err(e) => error!("Error: could not create DEFAULT_SSO_CLIENT object: {e}"),
+            };
+            DEFAULT_SSO_CLIENT_NOTIFIER.notify_one();
+            crate::ui_dispatch::post_action(LoginAction::SsoPending(false));
+        });
+    } else {
+        DEFAULT_SSO_CLIENT_NOTIFIER.notify_one();
+    }
+
+    'login_loop: loop {
+        let (client, _sync_token) = match initial_client_opt.take() {
+            Some(login) => login,
+            None => {
+                loop {
+                    log!("Waiting for login request...");
+                    match login_receiver.recv().await {
+                        Some((epoch, login_request)) => {
+                            if epoch != runtime::current_epoch() { continue; }
+                            let owned_cli = cli.clone();
+                            let result = runtime::run_account(async move { login(&owned_cli, login_request).await }).await;
+                            if epoch != runtime::current_epoch() { continue; }
+                            match result {
+                                Ok((client, sync_token)) => break (client, sync_token),
+                                Err(e) => {
+                                    error!("Login failed: {e:?}");
+                                    crate::ui_dispatch::post_action(LoginAction::LoginFailure(format!("{e}")));
+                                    enqueue_rooms_list_update(RoomsListUpdate::Status {
+                                        status: format!("Login failed: {e}"),
+                                    });
+                                }
+                            }
+                        },
+                        None => {
+                            error!("BUG: login_receiver hung up unexpectedly");
+                            let err = String::from("Please restart Robrix.\n\nUnable to listen for login requests.");
+                            crate::ui_dispatch::post_action(LoginAction::LoginFailure(err.clone()));
+                            enqueue_rooms_list_update(RoomsListUpdate::Status {
+                                status: err,
+                            });
+                            return;
+                        }
+                    }
+                }
+            }
+        };
+
+        // Deallocate the default SSO client after a successful login.
+        if let Ok(mut client_opt) = default_sso_client_state().lock() {
+            let _ = client_opt.take();
+        }
+
+        let logged_in_user_id: OwnedUserId = client.user_id()
+            .expect("BUG: Client::user_id() returned None after successful login!")
+            .to_owned();
+        let status = format!("Logged in as {}.\n → Loading rooms...", logged_in_user_id);
+        enqueue_rooms_list_update(RoomsListUpdate::Status { status });
+
+        // Store this active client in our global Client state so that other tasks can access it.
+        runtime::advance_authority();
+        let account_epoch = runtime::current_epoch();
+        all_joined_rooms_state().lock().unwrap().clear();
+        let previous_sync = sync_service_state().lock().unwrap().take();
+        if let Some(previous_sync) = previous_sync { previous_sync.stop().await; }
+        if account_epoch != runtime::current_epoch() { continue 'login_loop; }
+        if let Some(_existing) = client_state().lock().unwrap().replace(client.clone()) {
+            error!("BUG: unexpectedly replaced an existing client when initializing the matrix client.");
+        }
+
+        let setup = runtime::run_account(initialize_matrix_account(client, logged_in_user_id)).await;
+        if account_epoch != runtime::current_epoch() { continue 'login_loop; }
+        let (mut subscriber_task_handles, mut room_list_service_task, mut space_service_task) = match setup {
+            Ok(tasks) => tasks,
+            Err(error) => {
+                error!("Account setup ended before becoming ready: {error}");
+                continue 'login_loop;
+            }
+        };
+        // A failed space service must not stop otherwise healthy room sync.
+        let mut is_space_service_alive = true;
+
+        // Now, this task becomes an infinite loop that monitors the state of the
+        // three core matrix-related background tasks that we just spawned above.
+        #[allow(clippy::never_loop)] // unsure if needed, just following tokio's examples.
+        loop {
+            tokio::select! {
+                // If we were notified but it got cancelled, check the TOKEN_EXPIRED bool.
+                _ = TOKEN_EXPIRED_NOTIFY.notified() => {
+                    if !TOKEN_EXPIRED.load(Ordering::Acquire) {
+                        continue;
+                    }
+                    break;
+                }
+                _ = LOGOUT_NOTIFY.notified() => {
+                    if !is_logout_in_progress() {
+                        continue;
+                    }
+                    log!("Login loop received logout signal");
+                    break;
+                }
+                result = &mut matrix_worker_task_handle => {
+                    match result {
+                        Ok(Ok(())) => {
+                            // Check if this is due to logout
+                            if is_logout_in_progress() {
+                                log!("matrix worker task ended due to logout");
+                            } else {
+                                error!("BUG: matrix worker task ended unexpectedly!");
+                            }
+                        }
+                        Ok(Err(e)) => {
+                            // Check if this is due to logout
+                            if is_logout_in_progress() {
+                                log!("matrix worker task ended with error due to logout: {e:?}");
+                            } else {
+                                error!("Error: matrix worker task ended:\n\t{e:?}");
+                            }
+                        },
+                        Err(e) => {
+                            error!("BUG: failed to join matrix worker task: {e:?}");
+                        }
+                    }
+                    break;
+                }
+                result = &mut room_list_service_task => {
+                    match result {
+                        Ok(Ok(())) => {
+                            error!("BUG: room list service loop task ended unexpectedly!");
+                        }
+                        Ok(Err(e)) => {
+                            error!("Error: room list service loop task ended:\n\t{e:?}");
+                            rooms_list::enqueue_rooms_list_update(RoomsListUpdate::Status {
+                                status: e.to_string(),
+                            });
+                            enqueue_popup_notification(
+                                format!("Room list service  error: {e}"),
+                                PopupKind::Error,
+                                None,
+                            );
+                        },
+                        Err(e) => {
+                            error!("BUG: failed to join room list service loop task: {e:?}");
+                        }
+                    }
+                    break;
+                }
+                result = &mut space_service_task, if is_space_service_alive => {
+                    is_space_service_alive = false;
+                    match result {
+                        Ok(Ok(())) => {
+                            error!("BUG: space service loop task ended unexpectedly!");
+                        }
+                        Ok(Err(e)) => {
+                            error!("Error: space service loop task ended:\n\t{e:?}");
+                            enqueue_popup_notification(
+                                format!("Spaces sync service has died. Rooms will still be synced, but spaces won't until you restart Robrix.\n\nError: {e}"),
+                                PopupKind::Error,
+                                None,
+                            );
+                        },
+                        Err(e) => {
+                            error!("BUG: failed to join space service loop task: {e:?}");
+                        }
+                    }
+                    continue;
+                }
+            }
+        }
+
+        let was_token_expired = TOKEN_EXPIRED.load(Ordering::Acquire);
+        let was_logout = is_logout_in_progress();
+        if was_token_expired || was_logout {
+            if was_token_expired {
+                log!("Token expired; cleaning up session state and waiting for re-login.");
+            } else {
+                log!("Logout in progress; cleaning up session state and waiting for re-login.");
+            }
+            // `is_finished()` skips handles already consumed by the select!
+            // above; awaiting them again would block forever.
+            room_list_service_task.abort();
+            space_service_task.abort();
+            for h in &subscriber_task_handles {
+                h.abort();
+            }
+            if !room_list_service_task.is_finished() {
+                let _ = room_list_service_task.await;
+            }
+            if !space_service_task.is_finished() {
+                let _ = space_service_task.await;
+            }
+            for h in subscriber_task_handles.drain(..) {
+                if !h.is_finished() {
+                    let _ = h.await;
+                }
+            }
+            // No-ops if `clear_app_state` already cleared these.
+            let _ = client_state().lock().unwrap().take();
+            let _ = sync_service_state().lock().unwrap().take();
+            SYNC_SERVICE_ASSUMED_RUNNING.store(false, Ordering::Release);
+            continue 'login_loop;
+        }
+        // Unexpected break (e.g. matrix_worker_task panicked).
+        room_list_service_task.abort();
+        space_service_task.abort();
+        for h in &subscriber_task_handles {
+            h.abort();
+        }
+        if !room_list_service_task.is_finished() {
+            let _ = room_list_service_task.await;
+        }
+        if !space_service_task.is_finished() {
+            let _ = space_service_task.await;
+        }
+        for h in subscriber_task_handles.drain(..) {
+            if !h.is_finished() {
+                let _ = h.await;
+            }
+        }
+        return;
+    }
+}
+
+
+
+/// Every post-auth await runs inside one tracked account task. An authority
+/// transition aborts it before it can publish login success, install services,
+/// enable sending, or spawn subscribers for the retired account.
+async fn initialize_matrix_account(
+    client: Client,
+    logged_in_user_id: OwnedUserId,
+) -> Result<(Vec<JoinHandle<()>>, JoinHandle<Result<()>>, JoinHandle<Result<()>>)> {
+        // Eagerly fetch the homeserver's supported versions such that it gets cached locally.
+        if let Err(e) = client.supported_versions().await {
+            warning!("Couldn't cache the homeserver's supported versions: {e:?}");
+        }
+
+        // Track all async tasks so we can nicely clean them up with abort+await.
+        // Generally anything that holds a reference to `Client` should be here.
+        let mut subscriber_task_handles: Vec<JoinHandle<()>> = Vec::new();
+
+        // Listen for changes to our verification status and incoming verification requests.
+        subscriber_task_handles.push(add_verification_event_handlers_and_sync_client(client.clone()));
+
+        // Listen for updates to the ignored user list.
+        subscriber_task_handles.push(handle_ignore_user_list_subscriber(client.clone()));
+
+        // Listen for session changes, e.g., when the access token becomes invalid.
+        subscriber_task_handles.push(handle_session_changes(client.clone()));
+
+        crate::ui_dispatch::post_action(LoginAction::Status {
+            title: "Connecting".into(),
+            status: "Setting up sync service...".into(),
+        });
+        let sync_service = match SyncService::builder(client.clone())
+            .with_offline_mode()
+            .build()
+            .await
+        {
+            Ok(ss) => ss,
+            Err(e) => {
+                error!("Failed to create SyncService: {e:?}");
+                let err_msg = if is_invalid_token_error(&e) {
+                    "Your login token is no longer valid.\n\nPlease log in again.".to_string()
+                } else {
+                    format!("Please restart Robrix.\n\nFailed to create Matrix sync service: {e}.")
+                };
+                crate::ui_dispatch::post_action(LoginAction::LoginFailure(err_msg.clone()));
+                enqueue_popup_notification(err_msg.clone(), PopupKind::Error, None);
+                enqueue_rooms_list_update(RoomsListUpdate::Status { status: err_msg });
+                // Clear the stored client so the next login attempt doesn't trigger the
+                // "unexpectedly replaced an existing client" warning.
+                let _ = client_state().lock().unwrap().take();
+                abort_and_await_handles(&mut subscriber_task_handles).await;
+                return Err(anyhow!("Matrix sync service initialization failed"));
+            }
+        };
+
+        // Signal login success now that SyncService::build() has already succeeded,
+        // which is the only step that can fail with an invalid/expired token.
+        // Doing this before sync_service.start() lets the UI transition to the home screen
+        // without waiting for the sync loop to begin.
+        TOKEN_EXPIRED.store(false, Ordering::Release);
+        crate::ui_dispatch::post_action(LoginAction::LoginSuccess);
+
+        // Attempt to load the previously-saved app state.
+        // One-shot, drops on its own; not tracked.
+        handle_load_app_state(logged_in_user_id.to_owned());
+        subscriber_task_handles.push(handle_sync_indicator_subscriber(&sync_service));
+        subscriber_task_handles.push(handle_sync_service_state_subscriber(sync_service.state()));
+
+        let room_list_service = sync_service.room_list_service();
+        let sync_service = Arc::new(sync_service);
+
+        if let Some(_existing) = sync_service_state().lock().unwrap().replace(sync_service) {
+            error!("BUG: unexpectedly replaced an existing sync service when initializing the matrix client.");
+        }
+        apply_sync_service_desired_state("initial Matrix sync startup").await;
+
+        // Subscribe before enabling the send queue so we get ALL the updates possible,
+        // especially for pending messages that were not yet sent.
+        subscriber_task_handles.push(handle_send_queue_subscriber(client.clone()));
+        client.send_queue().enable_upload_progress(true);
+        client.send_queue().set_enabled(true).await;
+
+        let room_list_service_task = runtime::handle().spawn(room_list_service_loop(room_list_service));
+        let space_service_task = runtime::handle().spawn(space_service_loop(client));
+
+    Ok((subscriber_task_handles, room_list_service_task, space_service_task))
+}
+
+/// A max limit on concurrent tasks so that we don't tie up all the CPUs
+/// (potentially starving the main thread).
+#[cfg(target_family = "wasm")]
+static MAX_CONCURRENCY: LazyLock<usize> = LazyLock::new(|| 2);
+#[cfg(not(target_family = "wasm"))]
+static MAX_CONCURRENCY: LazyLock<usize> = LazyLock::new(||
+    std::thread::available_parallelism() // SMT/hyperthreads
+        .map_or(4, |n| n.get())
+        .min(num_cpus::get_physical()) // real CPU count
+        .saturating_sub(2) // leave a core or two for the main UI thread, etc
+        .clamp(2, 16)
+);
+
+/// The main async task that listens for changes to all rooms.
+async fn room_list_service_loop(room_list_service: Arc<RoomListService>) -> Result<()> {
+    let all_rooms_list = room_list_service.all_rooms().await.map_err(runtime::sdk_error)?;
+    handle_room_list_service_loading_state(all_rooms_list.loading_state());
+
+    let (room_diff_stream, room_list_dynamic_entries_controller) =
+        // TODO: paginate room list to avoid loading all rooms at once
+        all_rooms_list.entries_with_dynamic_adapters(usize::MAX);
+
+    // By default, our rooms list should only show rooms that are:
+    // 1. not spaces, except invited ones (joined spaces are handled by the SpaceService,
+    //    which can only ever see spaces we've already joined),
+    // 2. not left (clients don't typically show rooms that the user has already left),
+    // 3. not outdated (don't show tombstoned rooms whose successor is already joined).
+    room_list_dynamic_entries_controller.set_filter(Box::new(
+        filters::new_filter_all(vec![
+            Box::new(filters::new_filter_any(vec![
+                Box::new(filters::new_filter_not(Box::new(filters::new_filter_space()))),
+                Box::new(filters::new_filter_invite()),
+            ])),
+            Box::new(filters::new_filter_non_left()),
+            Box::new(filters::new_filter_deduplicate_versions()),
+        ])
+    ));
+
+    let mut all_known_rooms: Vector<RoomListServiceRoomInfo> = Vector::new();
+    let mut subscribed_rooms: HashSet<OwnedRoomId, ConstHasher> = HashSet::default();
+    let current_user_id = current_user_id();
+
+    pin_mut!(room_diff_stream);
+    while let Some(batch) = room_diff_stream.next().await {
+        let mut peekable_diffs = batch.into_iter().peekable();
+        while let Some(diff) = peekable_diffs.next() {
+            let is_reset = matches!(diff, VectorDiff::Reset { .. });
+            match diff {
+                VectorDiff::Append { values: new_rooms }
+                | VectorDiff::Reset { values: new_rooms } => {
+                    // Append and Reset are identical, except for Reset first clears all rooms.
+                    let _num_new_rooms = new_rooms.len();
+                    if is_reset {
+                        if LOG_ROOM_LIST_DIFFS { log!("room_list: diff Reset, old length {}, new length {}", all_known_rooms.len(), new_rooms.len()); }
+                        // Iterate manually so we can know which rooms are being removed.
+                        while let Some(room) = all_known_rooms.pop_back() {
+                            remove_room(&room);
+                        }
+                        // ALL_JOINED_ROOMS should already be empty due to successive calls to `remove_room()`,
+                        // so this is just a sanity check.
+                        all_joined_rooms_state().lock().unwrap().clear();
+                        enqueue_rooms_list_update(RoomsListUpdate::ClearRooms);
+                        enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(VecDiff::Clear));
+                    } else {
+                        if LOG_ROOM_LIST_DIFFS { log!("room_list: diff Append, old length {}, adding {} new items", all_known_rooms.len(), _num_new_rooms); }
+                    }
+
+                    // Parallelize creating each room's RoomListServiceRoomInfo and adding that new room.
+                    // We combine `from_room` and `add_new_room` into a single async task per room.
+                    // We limit concurrency to ensure that the CPUs don't get flooded by a huge initial sync.
+                    let new_room_infos: Vec<RoomListServiceRoomInfo> = stream::iter(
+                        new_rooms.into_iter().map(|room| async {
+                            let room_info = RoomListServiceRoomInfo::from_room(room.into_inner(), &current_user_id, false).await;
+                            if let Err(e) = add_new_room(&room_info, &room_list_service).await {
+                                error!("Failed to add new room: {:?} ({}); error: {:?}", room_info.display_name, room_info.room_id, e);
+                            }
+                            room_info
+                        })
+                    ).buffered(*MAX_CONCURRENCY).collect().await;
+
+                    // Send room order update with the new room IDs
+                    let room_ids = new_room_infos.iter()
+                        .map(|r| r.room_id.clone())
+                        .collect::<Vec<_>>();
+                    if !room_ids.is_empty() {
+                        enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(
+                            VecDiff::Append { values: room_ids }
+                        ));
+                        all_known_rooms.extend(new_room_infos);
+                    }
+                }
+                VectorDiff::Clear => {
+                    if LOG_ROOM_LIST_DIFFS { log!("room_list: diff Clear"); }
+                    all_known_rooms.clear();
+                    all_joined_rooms_state().lock().unwrap().clear();
+                    enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(VecDiff::Clear));
+                    enqueue_rooms_list_update(RoomsListUpdate::ClearRooms);
+                }
+                VectorDiff::PushFront { value: new_room } => {
+                    if LOG_ROOM_LIST_DIFFS { log!("room_list: diff PushFront"); }
+                    let new_room = RoomListServiceRoomInfo::from_room(new_room.into_inner(), &current_user_id, true).await;
+                    let room_id = new_room.room_id.clone();
+                    add_new_room(&new_room, &room_list_service).await?;
+                    enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(
+                        VecDiff::PushFront { value: room_id }
+                    ));
+                    all_known_rooms.push_front(new_room);
+                }
+                VectorDiff::PushBack { value: new_room } => {
+                    if LOG_ROOM_LIST_DIFFS { log!("room_list: diff PushBack"); }
+                    let new_room = RoomListServiceRoomInfo::from_room(new_room.into_inner(), &current_user_id, true).await;
+                    let room_id = new_room.room_id.clone();
+                    add_new_room(&new_room, &room_list_service).await?;
+                    enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(
+                        VecDiff::PushBack { value: room_id }
+                    ));
+                    all_known_rooms.push_back(new_room);
+                }
+                remove_diff @ VectorDiff::PopFront => {
+                    if LOG_ROOM_LIST_DIFFS { log!("room_list: diff PopFront"); }
+                    if let Some(room) = all_known_rooms.pop_front() {
+                        enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(VecDiff::PopFront));
+                        optimize_remove_then_add_into_update(
+                            remove_diff,
+                            &room,
+                            &mut peekable_diffs,
+                            &mut all_known_rooms,
+                            &room_list_service,
+                            &current_user_id,
+                        ).await?;
+                    }
+                }
+                remove_diff @ VectorDiff::PopBack => {
+                    if LOG_ROOM_LIST_DIFFS { log!("room_list: diff PopBack"); }
+                    if let Some(room) = all_known_rooms.pop_back() {
+                        enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(VecDiff::PopBack));
+                        optimize_remove_then_add_into_update(
+                            remove_diff,
+                            &room,
+                            &mut peekable_diffs,
+                            &mut all_known_rooms,
+                            &room_list_service,
+                            &current_user_id,
+                        ).await?;
+                    }
+                }
+                VectorDiff::Insert { index, value: new_room } => {
+                    if LOG_ROOM_LIST_DIFFS { log!("room_list: diff Insert at {index}"); }
+                    let new_room = RoomListServiceRoomInfo::from_room(new_room.into_inner(), &current_user_id, true).await;
+                    let room_id = new_room.room_id.clone();
+                    add_new_room(&new_room, &room_list_service).await?;
+                    enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(
+                        VecDiff::Insert { index, value: room_id }
+                    ));
+                    all_known_rooms.insert(index, new_room);
+                }
+                VectorDiff::Set { index, value: changed_room } => {
+                    if LOG_ROOM_LIST_DIFFS { log!("room_list: diff Set at {index}"); }
+                    let changed_room = RoomListServiceRoomInfo::from_room(changed_room.into_inner(), &current_user_id, true).await;
+                    if let Some(old_room) = all_known_rooms.get(index) {
+                        update_room(old_room, &changed_room, &room_list_service).await?;
+                    } else {
+                        error!("BUG: room list diff: Set index {index} was out of bounds.");
+                    }
+                    // Send order update (room ID at this index may have changed)
+                    enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(
+                        VecDiff::Set { index, value: changed_room.room_id.clone() }
+                    ));
+                    all_known_rooms.set(index, changed_room);
+                }
+                remove_diff @ VectorDiff::Remove { index } => {
+                    if LOG_ROOM_LIST_DIFFS { log!("room_list: diff Remove at {index}"); }
+                    if index < all_known_rooms.len() {
+                        let room = all_known_rooms.remove(index);
+                        enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(VecDiff::Remove { index }));
+                        optimize_remove_then_add_into_update(
+                            remove_diff,
+                            &room,
+                            &mut peekable_diffs,
+                            &mut all_known_rooms,
+                            &room_list_service,
+                            &current_user_id,
+                        ).await?;
+                    } else {
+                        error!("BUG: room_list: diff Remove index {index} out of bounds, len {}", all_known_rooms.len());
+                    }
+                }
+                VectorDiff::Truncate { length } => {
+                    if LOG_ROOM_LIST_DIFFS { log!("room_list: diff Truncate to {length}"); }
+                    // Iterate manually so we can know which rooms are being removed.
+                    while all_known_rooms.len() > length {
+                        if let Some(room) = all_known_rooms.pop_back() {
+                            remove_room(&room);
+                        }
+                    }
+                    all_known_rooms.truncate(length); // sanity check
+                    enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(
+                        VecDiff::Truncate { length }
+                    ));
+                }
+            }
+        }
+
+        // `set_room_subscriptions()` replaces the whole subscription set rather than adding to it,
+        // so hand it every room we still want, but ONLY when that set changes.
+        // We use a set type for comparison, not a list, because rooms continuously get reordered.
+        let is_wanted = |r: &RoomListServiceRoomInfo| matches!(r.state, RoomState::Invited | RoomState::Joined);
+        let mut num_wanted = 0;
+        let mut has_new_room = false;
+        for room in all_known_rooms.iter().filter(|r| is_wanted(r)) {
+            num_wanted += 1;
+            has_new_room |= !subscribed_rooms.contains(&room.room_id);
+        }
+        if has_new_room || num_wanted != subscribed_rooms.len() {
+            subscribed_rooms = all_known_rooms.iter()
+                .filter(|r| is_wanted(r))
+                .map(|r| r.room_id.clone())
+                .collect();
+            let room_id_refs = subscribed_rooms.iter().map(|r| r.as_ref()).collect::<Vec<_>>();
+            room_list_service.set_room_subscriptions(&room_id_refs).await;
+        }
+    }
+
+    bail!("room list service sync loop ended unexpectedly")
+}
+
+
+/// Attempts to optimize a common RoomListService operation of remove + add.
+///
+/// If a `Remove` diff (or `PopBack` or `PopFront`) is immediately followed by
+/// an `Insert` diff (or `PushFront` or `PushBack`) for the same room,
+/// we can treat it as a simple `Set` operation, in which we call `update_room()`.
+/// This is much more efficient than removing the room and then adding it back.
+///
+/// This tends to happen frequently in order to change the room's state
+/// or to "sort" the room list by changing its positional order.
+async fn optimize_remove_then_add_into_update(
+    remove_diff: VectorDiff<RoomListItem>,
+    room: &RoomListServiceRoomInfo,
+    peekable_diffs: &mut Peekable<impl Iterator<Item = VectorDiff<RoomListItem>>>,
+    all_known_rooms: &mut Vector<RoomListServiceRoomInfo>,
+    room_list_service: &RoomListService,
+    current_user_id: &Option<OwnedUserId>,
+) -> Result<()> {
+    let next_diff_was_handled: bool;
+    match peekable_diffs.peek() {
+        Some(VectorDiff::Insert { index: insert_index, value: new_room })
+            if room.room_id == new_room.room_id() =>
+        {
+            if LOG_ROOM_LIST_DIFFS {
+                log!("Optimizing {remove_diff:?} + Insert({insert_index}) into Update for room {}", room.room_id);
+            }
+            let new_room = RoomListServiceRoomInfo::from_room_ref(new_room.deref(), current_user_id, true).await;
+            update_room(room, &new_room, room_list_service).await?;
+            // Send order update for the insert
+            enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(
+                VecDiff::Insert { index: *insert_index, value: new_room.room_id.clone() }
+            ));
+            all_known_rooms.insert(*insert_index, new_room);
+            next_diff_was_handled = true;
+        }
+        Some(VectorDiff::PushFront { value: new_room })
+            if room.room_id == new_room.room_id() =>
+        {
+            if LOG_ROOM_LIST_DIFFS {
+                log!("Optimizing {remove_diff:?} + PushFront into Update for room {}", room.room_id);
+            }
+            let new_room = RoomListServiceRoomInfo::from_room_ref(new_room.deref(), current_user_id, true).await;
+            update_room(room, &new_room, room_list_service).await?;
+            // Send order update for the push front
+            enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(
+                VecDiff::PushFront { value: new_room.room_id.clone() }
+            ));
+            all_known_rooms.push_front(new_room);
+            next_diff_was_handled = true;
+        }
+        Some(VectorDiff::PushBack { value: new_room })
+            if room.room_id == new_room.room_id() =>
+        {
+            if LOG_ROOM_LIST_DIFFS {
+                log!("Optimizing {remove_diff:?} + PushBack into Update for room {}", room.room_id);
+            }
+            let new_room = RoomListServiceRoomInfo::from_room_ref(new_room.deref(), current_user_id, true).await;
+            update_room(room, &new_room, room_list_service).await?;
+            // Send order update for the push back
+            enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(
+                VecDiff::PushBack { value: new_room.room_id.clone() }
+            ));
+            all_known_rooms.push_back(new_room);
+            next_diff_was_handled = true;
+        }
+        _ => next_diff_was_handled = false,
+    }
+    if next_diff_was_handled {
+        peekable_diffs.next(); // consume the next diff
+    } else {
+        remove_room(room);
+    }
+    Ok(())
+}
+
+
+/// Invoked when the room list service has received an update that changes an existing room.
+async fn update_room(
+    old_room: &RoomListServiceRoomInfo,
+    new_room: &RoomListServiceRoomInfo,
+    room_list_service: &RoomListService,
+) -> Result<()> {
+    let new_room_id = new_room.room_id.clone();
+    if old_room.room_id == new_room_id {
+        // Handle state transitions for a room.
+        if LOG_ROOM_LIST_DIFFS {
+            log!("Room {:?} ({new_room_id}) state went from {:?} --> {:?}", new_room.display_name, old_room.state, new_room.state);
+        }
+        if old_room.state != new_room.state {
+            match new_room.state {
+                RoomState::Banned => {
+                    // TODO: handle rooms that this user has been banned from.
+                    log!("Removing Banned room: {:?} ({new_room_id})", new_room.display_name);
+                    remove_room(new_room);
+                    return Ok(());
+                }
+                RoomState::Left => {
+                    log!("Removing Left room: {:?} ({new_room_id})", new_room.display_name);
+                    // TODO: instead of removing this, we could optionally add it to
+                    //       a separate list of left rooms, which would be collapsed by default.
+                    //       Upon clicking a left room, we could show a splash page
+                    //       that prompts the user to rejoin the room or forget it permanently.
+                    //       Currently, we just remove it and do not show left rooms at all.
+                    remove_room(new_room);
+                    return Ok(());
+                }
+                RoomState::Joined => {
+                    log!("update_room(): adding new Joined room: {:?} ({new_room_id})", new_room.display_name);
+                    return add_new_room(new_room, room_list_service).await;
+                }
+                RoomState::Invited => {
+                    log!("update_room(): adding new Invited room: {:?} ({new_room_id})", new_room.display_name);
+                    return add_new_room(new_room, room_list_service).await;
+                }
+                RoomState::Knocked => {
+                    // TODO: handle Knocked rooms (e.g., can you re-knock? or cancel a prior knock?)
+                    //       for now, drop the room instead of leaving it as a stale entry in the rooms list.
+                    log!("Removing Knocked room: {:?} ({new_room_id})", new_room.display_name);
+                    remove_room(new_room);
+                    return Ok(());
+                }
+            }
+        }
+
+        // First, we check for changes to room data that is relevant to any room,
+        // including joined, invited, and other rooms.
+        // This includes the room name and room avatar.
+        let was_name_changed = old_room.display_name != new_room.display_name;
+        // A room with no avatar image uses a text avatar based on the room name, so we update that too.
+        if old_room.room_avatar != new_room.room_avatar
+            || (was_name_changed && new_room.room_avatar.is_none())
+        {
+            log!("Updating room avatar for room {}", new_room_id);
+            spawn_fetch_room_avatar(new_room);
+        }
+        if was_name_changed {
+            log!("Updating room {} name: {:?} --> {:?}", new_room_id, old_room.display_name, new_room.display_name);
+
+            enqueue_rooms_list_update(RoomsListUpdate::UpdateRoomName {
+                new_room_name: (new_room.display_name.clone(), new_room_id.clone()).into(),
+            });
+        }
+
+        // An invited room will often arrive before we get its room creation event,
+        // so we can't always know whether it's a space up front; we have to check on every update.
+        if old_room.is_space != new_room.is_space {
+            enqueue_rooms_list_update(RoomsListUpdate::UpdateIsSpace {
+                room_id: new_room_id.clone(),
+                is_space: new_room.is_space,
+            });
+        }
+
+        // If we know anything new about the inviter, send it to the rooms list.
+        if old_room.inviter_info != new_room.inviter_info
+            && let Some(inviter_info) = new_room.inviter_info.clone()
+        {
+            enqueue_rooms_list_update(RoomsListUpdate::UpdateInviterInfo {
+                room_id: new_room_id.clone(),
+                inviter_info,
+            });
+        }
+
+        // Check to see if any room aliases have changed.
+        if old_room.canonical_alias != new_room.canonical_alias
+            || old_room.alt_aliases != new_room.alt_aliases
+        {
+            log!("Updating room {} aliases: {:?} --> {:?}",
+                new_room_id, old_room.canonical_alias, new_room.canonical_alias,
+            );
+            enqueue_rooms_list_update(RoomsListUpdate::UpdateAliases {
+                room_id: new_room_id.clone(),
+                canonical_alias: new_room.canonical_alias.clone(),
+                alt_aliases: new_room.alt_aliases.clone(),
+            });
+        }
+
+        // From here on out, we check for changes to room data that is only relevant to joined rooms:
+        // including the latest event, tags, unread counts, is_direct, tombstoned state, power levels, etc.
+        // Invited or left rooms don't care about these details.
+        if matches!(new_room.state, RoomState::Joined) { 
+            // we can't just assume the latest event timestamp is larger. If a redaction happens,
+            // then the latest event timestamp might go backwards, so we just need to test if they're different.
+            if old_room.latest_event_timestamp != new_room.room.latest_event_timestamp() {
+                update_latest_event(&new_room.room).await;
+            }
+
+            if old_room.tags != new_room.tags {
+                log!("Updating room {} tags from {:?} to {:?}", new_room_id, old_room.tags, new_room.tags);
+                enqueue_rooms_list_update(RoomsListUpdate::Tags {
+                    room_id: new_room_id.clone(),
+                    new_tags: new_room.tags.clone().unwrap_or_default(),
+                });
+            }
+
+            if old_room.is_marked_unread != new_room.is_marked_unread
+                || old_room.num_unread_messages != new_room.num_unread_messages
+                || old_room.num_unread_mentions != new_room.num_unread_mentions
+            {
+                log!("Updating room {}, marked unread {} --> {}, unread messages {} --> {}, unread mentions {} --> {}",
+                    new_room_id,
+                    old_room.is_marked_unread, new_room.is_marked_unread,
+                    old_room.num_unread_messages, new_room.num_unread_messages,
+                    old_room.num_unread_mentions, new_room.num_unread_mentions,
+                );
+                enqueue_rooms_list_update(RoomsListUpdate::UpdateNumUnreadMessages {
+                    room_id: new_room_id.clone(),
+                    is_marked_unread: Some(new_room.is_marked_unread),
+                    unread_messages: UnreadMessageCount::Known(new_room.num_unread_messages),
+                    unread_mentions: new_room.num_unread_mentions,
+                });
+            }
+
+            if old_room.is_direct != new_room.is_direct {
+                log!("Updating room {} is_direct from {} to {}",
+                    new_room_id,
+                    old_room.is_direct,
+                    new_room.is_direct,
+                );
+                enqueue_rooms_list_update(RoomsListUpdate::UpdateIsDirect {
+                    room_id: new_room_id.clone(),
+                    is_direct: new_room.is_direct,
+                });
+            }
+
+            let mut __timeline_update_senders_opt = None;
+            let mut get_timeline_update_senders = |room_id: &RoomId| -> Vec<crate::timeline_channel::Sender<TimelineUpdate>> {
+                __timeline_update_senders_opt.get_or_insert_with(||
+                    all_joined_rooms_state().lock().unwrap().get(room_id)
+                        .map(JoinedRoomDetails::all_timeline_update_senders)
+                        .unwrap_or_default()
+                ).clone()
+            };
+
+            if !old_room.is_tombstoned && new_room.is_tombstoned {
+                let successor_room = new_room.room.successor_room();
+                log!("Updating room {new_room_id} to be tombstoned, {successor_room:?}");
+                enqueue_rooms_list_update(RoomsListUpdate::TombstonedRoom { room_id: new_room_id.clone() });
+                let timeline_update_senders = get_timeline_update_senders(&new_room_id);
+                if !timeline_update_senders.is_empty() {
+                    spawn_fetch_successor_room_preview(
+                        room_list_service.client().clone(),
+                        successor_room,
+                        new_room_id.clone(),
+                        timeline_update_senders,
+                    );
+                } else {
+                    error!("BUG: could not find JoinedRoomDetails for newly-tombstoned room {new_room_id}");
+                }
+            }
+
+            if let Some(nupl) = new_room.user_power_levels
+                && old_room.user_power_levels.is_none_or(|oupl| oupl != nupl)
+            {
+                let timeline_update_senders = get_timeline_update_senders(&new_room_id);
+                if !timeline_update_senders.is_empty() {
+                    log!("Updating room {new_room_id} user power levels.");
+                    for sender in &timeline_update_senders {
+                        let _ = sender.send(TimelineUpdate::UserPowerLevels(nupl));
+                    }
+                    SignalToUI::set_ui_signal();
+                } else {
+                    error!("BUG: could not find JoinedRoomDetails for room {new_room_id} where power levels changed.");
+                }
+            }
+
+            if !old_room.is_encrypted && new_room.is_encrypted {
+                let timeline_update_senders = get_timeline_update_senders(&new_room_id);
+                if !timeline_update_senders.is_empty() {
+                    log!("Room {new_room_id} is now encrypted.");
+                    for sender in &timeline_update_senders {
+                        let _ = sender.send(TimelineUpdate::RoomEncrypted);
+                    }
+                    SignalToUI::set_ui_signal();
+                } else {
+                    error!("BUG: could not find JoinedRoomDetails for room {new_room_id} that became encrypted.");
+                }
+            }
+        }
+        Ok(())
+    }
+    else {
+        warning!("UNTESTED SCENARIO: update_room(): removing old room {}, replacing with new room {}",
+            old_room.room_id, new_room_id,
+        );
+        remove_room(old_room);
+        add_new_room(new_room, room_list_service).await
+    }
+}
+
+
+/// Invoked when the room list service has received an update to remove an existing room.
+fn remove_room(room: &RoomListServiceRoomInfo) {
+    all_joined_rooms_state().lock().unwrap().remove(&room.room_id);
+    enqueue_rooms_list_update(
+        RoomsListUpdate::RemoveRoom {
+            room_id: room.room_id.clone(),
+            new_state: room.state,
+            // Re-obtain whether this room is a space,
+            // since it may have changed since the last sync.
+            is_space: room.room.is_space(),
+        }
+    );
+}
+
+
+/// Invoked when the room list service has received an update with a brand new room.
+async fn add_new_room(
+    new_room: &RoomListServiceRoomInfo,
+    room_list_service: &RoomListService,
+) -> Result<()> {
+    match new_room.state {
+        RoomState::Knocked => {
+            log!("Got new Knocked room: {:?} ({})", new_room.display_name, new_room.room_id);
+            // Note: here we could optionally display Knocked rooms as a separate type of room
+            //       in the rooms list, but it's not really necessary at this point.
+            return Ok(());
+        }
+        RoomState::Banned => {
+            log!("Got new Banned room: {:?} ({})", new_room.display_name, new_room.room_id);
+            // Note: here we could optionally display Banned rooms as a separate type of room
+            //       in the rooms list, but it's not really necessary at this point.
+            return Ok(());
+        }
+        RoomState::Left => {
+            log!("Got new Left room: {:?} ({:?})", new_room.display_name, new_room.room_id);
+            // Note: here we could optionally display Left rooms as a separate type of room
+            //       in the rooms list, but it's not really necessary at this point.
+            return Ok(());
+        }
+        RoomState::Invited => {
+            let room_name_id = RoomNameId::from((new_room.display_name.clone(), new_room.room_id.clone()));
+            // Start with a basic text avatar; the avatar image will be fetched asynchronously below.
+            let room_avatar = avatar_from_room_name(room_name_id.name_for_avatar());
+            rooms_list::enqueue_rooms_list_update(RoomsListUpdate::AddInvitedRoom(InvitedRoomInfo {
+                room_name_id: room_name_id.clone(),
+                inviter_info: new_room.inviter_info.clone(),
+                room_avatar,
+                canonical_alias: new_room.canonical_alias.clone(),
+                alt_aliases: new_room.alt_aliases.clone(),
+                invite_state: Default::default(),
+                is_selected: false,
+                is_direct: new_room.is_direct,
+                is_space: new_room.is_space,
+            }));
+            crate::ui_dispatch::post_action(AppStateAction::RoomLoadedSuccessfully {
+                room_name_id,
+                is_invite: true,
+            });
+            // Spawn this after the update above, so the rooms list knows about the room first.
+            spawn_fetch_room_avatar(new_room);
+            return Ok(());
+        }
+        // Joined spaces are handled by the SpaceService, so don't handle them here.
+        RoomState::Joined if new_room.is_space => return Ok(()),
+        RoomState::Joined => { } // Fall through to adding the joined room below.
+    }
+
+    let timeline = Arc::new(
+        new_room.room.timeline_builder()
+            .with_focus(TimelineFocus::Live {
+                // we show threads as separate timelines in their own RoomScreen
+                hide_threaded_events: true,
+            })
+            .track_read_marker_and_receipts(TimelineReadReceiptTracking::AllEvents)
+            .build()
+            .await
+            .map_err(|e| anyhow::anyhow!("BUG: Failed to build timeline for room {}: {e}", new_room.room_id))?,
+    );
+    let (timeline_update_sender, timeline_update_receiver) = crate::timeline_channel::channel();
+
+    // The `timeline_subscriber_handler` async task is spawned lazily when the room/thread is first opened.
+    // All we do here is set up a channel between the UI and backend, for future use.
+    let (request_sender, request_receiver) = watch::channel(TimelineRequest {
+        backwards_paginate: Vec::new(),
+        is_timeline_open: true,
+    });
+
+    // We need to add the room to the `ALL_JOINED_ROOMS` list before we can send
+    // an `AddJoinedRoom` update to the RoomsList widget, because that widget might
+    // immediately issue a `MatrixRequest` that relies on that room being in `ALL_JOINED_ROOMS`.
+    log!("Adding new joined room {}, name: {:?}", new_room.room_id, new_room.display_name);
+    all_joined_rooms_state().lock().unwrap().insert(
+        new_room.room_id.clone(),
+        JoinedRoomDetails {
+            room_id: new_room.room_id.clone(),
+            main_timeline: PerTimelineDetails {
+                timeline,
+                timeline_singleton_endpoints: Some((timeline_update_receiver, request_sender)),
+                timeline_update_sender,
+                timeline_subscriber: TimelineSubscriber::NotStarted { request_receiver },
+            },
+            thread_timelines: HashMap::new(),
+            pending_thread_timelines: HashSet::new(),
+            typing_notice_subscriber: None,
+            pinned_events_subscriber: None,
+        },
+    );
+    // A visible RoomScreen might still have this room's previous channel endpoints,
+    // which are now dead, so we inform it that there are new endpoints it needs to take & use.
+    crate::ui_dispatch::post_action(TimelineEndpointsRecreated { room_id: new_room.room_id.clone() });
+
+    let latest = get_latest_event_details(
+        &new_room.room.latest_event().await,
+        room_list_service.client(),
+    ).await;
+    let room_name_id = RoomNameId::from((new_room.display_name.clone(), new_room.room_id.clone()));
+    // Start with a basic text avatar; the avatar image will be fetched asynchronously below.
+    let room_avatar = avatar_from_room_name(room_name_id.name_for_avatar());
+    rooms_list::enqueue_rooms_list_update(RoomsListUpdate::AddJoinedRoom(JoinedRoomInfo {
+        latest,
+        tags: new_room.tags.clone().unwrap_or_default(),
+        num_unread_messages: new_room.num_unread_messages,
+        num_unread_mentions: new_room.num_unread_mentions,
+        is_marked_unread: new_room.is_marked_unread,
+        room_avatar,
+        room_name_id: room_name_id.clone(),
+        canonical_alias: new_room.canonical_alias.clone(),
+        alt_aliases: new_room.alt_aliases.clone(),
+        has_been_shown: false,
+        is_selected: false,
+        is_direct: new_room.is_direct,
+        is_tombstoned: new_room.is_tombstoned,
+    }));
+
+    crate::ui_dispatch::post_action(AppStateAction::RoomLoadedSuccessfully {
+        room_name_id,
+        is_invite: false,
+    });
+    Ok(())
+}
+
+#[allow(unused)]
+async fn current_ignore_user_list(client: &Client) -> Option<HashSet<OwnedUserId>> {
+    use matrix_sdk::ruma::events::ignored_user_list::IgnoredUserListEventContent;
+    let ignored_users = client.account()
+        .account_data::<IgnoredUserListEventContent>()
+        .await
+        .ok()??
+        .deserialize()
+        .ok()?
+        .ignored_users
+        .into_keys()
+        .collect();
+
+    Some(ignored_users)
+}
+
+/// This function spawns a task that captures a strong `Client` ref,
+/// so the caller should abort+await it upon logout to ensure the Client gets dropped.
+fn handle_ignore_user_list_subscriber(client: Client) -> JoinHandle<()> {
+    let mut subscriber = client.subscribe_to_ignore_user_list_changes();
+    log!("Initial ignored-user list is: {:?}", subscriber.get());
+    runtime::handle().spawn(async move {
+        let mut first_update = true;
+        while let Some(ignore_list) = subscriber.next().await {
+            log!("Received an updated ignored-user list: {ignore_list:?}");
+            let ignored_users_new = ignore_list
+                .into_iter()
+                .filter_map(|u| OwnedUserId::try_from(u).ok())
+                .collect::<HashSet<_, ConstHasher>>();
+
+            // TODO: when we support persistent state, don't forget to update `IGNORED_USERS` upon app boot.
+            let mut ignored_users_old = IGNORED_USERS.lock().unwrap();
+            let has_changed = *ignored_users_old != ignored_users_new;
+            *ignored_users_old = ignored_users_new;
+
+            if has_changed && !first_update {
+                // After successfully (un)ignoring a user, all timelines are fully cleared by the Matrix SDK.
+                // Therefore, we need to re-fetch all timelines for all rooms,
+                // and currently the only way to actually accomplish this is via pagination.
+                // See: <https://github.com/matrix-org/matrix-rust-sdk/issues/1703#issuecomment-2250297923>
+                for joined_room in client.joined_rooms() {
+                    submit_async_request(MatrixRequest::PaginateTimeline {
+                        timeline_kind: TimelineKind::MainRoom {
+                            room_id: joined_room.room_id().to_owned(),
+                        },
+                        num_events: 50,
+                        direction: PaginationDirection::Backwards,
+                    });
+                }
+            }
+
+            first_update = false;
+        }
+    })
+}
+
+/// Asynchronously loads and restores the app state from persistent storage for the given user.
+///
+/// When a saved state file is found, this emits a `RestoreAppStateFromPersistentState` action
+/// so that the app can restore preferences and the dock layout (on desktop).
+/// We emit this action even if the dock state is empty to ensure that prefs always get restored.
+fn handle_load_app_state(user_id: OwnedUserId) {
+    runtime::handle().spawn(async move {
+        match load_app_state(&user_id).await {
+            Ok(Some(app_state)) => {
+                log!("Loaded app state from persistent storage. Restoring now...");
+                crate::ui_dispatch::post_action(AppStateAction::RestoreAppStateFromPersistentState(app_state));
+            }
+            Ok(None) => {
+                // No saved file (fresh install) or file was unreadable; nothing to restore.
+            }
+            Err(_e) => {
+                log!("Failed to restore app state from persistent storage: {_e}");
+                enqueue_popup_notification(
+                    "Could not restore the previous session's app state.",
+                    PopupKind::Warning,
+                    None,
+                );
+            }
+        }
+    });
+}
+
+/// Returns `true` if the given sync service error is due to an invalid/expired access token.
+fn is_invalid_token_error(e: &sync_service::Error) -> bool {
+    use matrix_sdk::ruma::api::error::ErrorKind;
+    let sdk_error = match e {
+        sync_service::Error::RoomList(
+            matrix_sdk_ui::room_list_service::Error::SlidingSync(err)
+        ) => err,
+        sync_service::Error::EncryptionSync(
+            encryption_sync_service::Error::SlidingSync(err)
+        ) => err,
+        _ => return false,
+    };
+    matches!(
+        sdk_error.client_api_error_kind(),
+        Some(ErrorKind::UnknownToken { .. } | ErrorKind::MissingToken)
+    )
+}
+
+/// Subscribes to session change notifications from the Matrix client.
+///
+/// When the homeserver rejects the access token with a 401 `M_UNKNOWN_TOKEN` error
+/// (e.g., the token was revoked or expired), this emits a [`LoginAction::LoginFailure`]
+/// so the user is prompted to log in again.
+fn handle_session_changes(client: Client) -> JoinHandle<()> {
+    let mut receiver = client.subscribe_to_session_changes();
+    runtime::handle().spawn(async move {
+        loop {
+            match receiver.recv().await {
+                Ok(SessionChange::UnknownToken(data)) => {
+                    let soft_logout = data.soft_logout;
+                    let msg = if soft_logout {
+                        "Your login session has expired.\n\nPlease log in again."
+                    } else {
+                        "Your login token is no longer valid.\n\nPlease log in again."
+                    };
+                    error!("Session token is no longer valid (soft_logout: {soft_logout}). Prompting re-login.");
+                    TOKEN_EXPIRED.store(true, Ordering::Release);
+                    TOKEN_EXPIRED_NOTIFY.notify_one();
+                    crate::ui_dispatch::post_action(LoginAction::LoginFailure(msg.to_string()));
+                    // Only prompt once — the SDK will keep emitting UnknownToken
+                    // for every rejected request, but one re-login prompt suffices.
+                    break;
+                }
+                Ok(SessionChange::TokensRefreshed) => {}
+                Err(broadcast::error::RecvError::Lagged(n)) => {
+                    warning!("Session change receiver lagged, missed {n} messages.");
+                }
+                Err(broadcast::error::RecvError::Closed) => {
+                    break;
+                }
+            }
+        }
+    })
+}
+
+const SEND_QUEUE_RETRY_DELAY: Duration = Duration::from_secs(5);
+
+/// What a queued send request was for.
+enum LocalSendKind {
+    Message,
+    Attachment,
+    Edit,
+    Reaction { key: String },
+    Redaction,
+}
+
+/// Watches the send queue for any failures and handles them appropriately.
+///
+/// Recoverable errors will re-enable the send queue after a delay so messages
+/// can be auto-retried, while unrecoverable errors show a popup notification
+/// and wake up the room so future messages can still be sent.
+fn handle_send_queue_subscriber(client: Client) -> JoinHandle<()> {
+    let mut updates = client.send_queue().subscribe();
+    runtime::handle().spawn(async move {
+        let mut kinds: HashMap<OwnedTransactionId, LocalSendKind> = HashMap::new();
+        // The time when a room's queue should be woken up after a recoverable failure.
+        let mut reenable_at: HashMap<OwnedRoomId, Instant> = HashMap::new();
+        // If we missed updates and don't know which rooms they're for, we set this
+        // to ensure that all rooms' queues get re-enabled.
+        let mut reenable_all_at: Option<Instant> = None;
+
+        loop {
+            let next_wakeup = reenable_at.values().copied().min().into_iter().chain(reenable_all_at).min();
+            tokio::select! {
+                res = updates.recv() => match res {
+                    Ok(SendQueueUpdate { room_id, update }) => match update {
+                        RoomSendQueueUpdate::NewLocalEvent(echo) => {
+                            let kind = match echo.content {
+                                LocalEchoContent::Event { serialized_event, .. } => match serialized_event.deserialize() {
+                                    Ok(AnyMessageLikeEventContent::RoomMessage(msg)) => match msg.msgtype {
+                                        _ if matches!(msg.relates_to, Some(Relation::Replacement(_))) => LocalSendKind::Edit,
+                                        MessageType::Image(_) | MessageType::Video(_)
+                                        | MessageType::File(_) | MessageType::Audio(_) => LocalSendKind::Attachment,
+                                        _ => LocalSendKind::Message,
+                                    },
+                                    _ => LocalSendKind::Message,
+                                },
+                                LocalEchoContent::React { key, .. } => LocalSendKind::Reaction { key },
+                                LocalEchoContent::Redaction { .. } => LocalSendKind::Redaction,
+                            };
+                            kinds.insert(echo.transaction_id, kind);
+                        }
+                        RoomSendQueueUpdate::SentEvent { transaction_id, .. }
+                        | RoomSendQueueUpdate::CancelledLocalEvent { transaction_id } => {
+                            kinds.remove(&transaction_id);
+                        }
+                        RoomSendQueueUpdate::SendError { transaction_id, error, is_recoverable } => {
+                            if is_recoverable {
+                                // If we're offline, the sync state subscriber will re-enable the send queue upon reconnect.
+                                if !is_offline() && sync_service_desired_running() {
+                                    let delay = match error.client_api_error_kind() {
+                                        Some(ErrorKind::LimitExceeded(data)) => match data.retry_after {
+                                            Some(RetryAfter::Delay(delay)) => delay,
+                                            Some(RetryAfter::DateTime(time)) => time.duration_since(runtime::system_time_now()).unwrap_or(SEND_QUEUE_RETRY_DELAY),
+                                            None => SEND_QUEUE_RETRY_DELAY,
+                                        },
+                                        _ => SEND_QUEUE_RETRY_DELAY,
+                                    };
+                                    warning!("Recoverable send error in room {room_id}, retrying in {delay:?}: {error}");
+                                    reenable_at.insert(room_id, Instant::now() + delay);
+                                }
+                                continue;
+                            }
+
+                            error!("Unrecoverable send error in room {room_id}: {error:?}");
+                            // The SDK disabled the whole room's queue, so we have to re-enable it.
+                            let room = client.get_room(&room_id);
+                            if let Some(room) = &room {
+                                room.send_queue().set_enabled(true);
+                            }
+                            let room_name = match &room {
+                                Some(room) => RoomNameId::from_room(room).await,
+                                None => RoomNameId::empty(room_id.clone()),
+                            };
+                            let desc = stringify_send_error(&error);
+                            let msg = match kinds.get(&transaction_id) {
+                                Some(LocalSendKind::Message) => format!("Couldn't send a message in {room_name}: {desc}\n\nOpen the message's menu to edit, retry, or cancel it."),
+                                Some(LocalSendKind::Attachment) => format!("Couldn't send an attachment in {room_name}: {desc}\n\nOpen the message's menu to retry or cancel it."),
+                                Some(LocalSendKind::Edit) => format!("Couldn't send your edit in {room_name}: {desc}"),
+                                Some(LocalSendKind::Reaction { key }) => format!("Couldn't send your {key} reaction in {room_name}: {desc}"),
+                                Some(LocalSendKind::Redaction) => format!("Couldn't delete a message in {room_name}: {desc}"),
+                                None => format!("Couldn't send to {room_name}: {desc}"),
+                            };
+                            enqueue_popup_notification(msg, PopupKind::Error, Some(8.0));
+                        }
+                        _ => {}
+                    },
+                    Err(broadcast::error::RecvError::Lagged(n)) => {
+                        warning!("Send queue update receiver lagged and we missed {n} messages.");
+                        if !is_offline() && sync_service_desired_running() {
+                            reenable_all_at = Some(Instant::now() + SEND_QUEUE_RETRY_DELAY);
+                        }
+                    }
+                    Err(broadcast::error::RecvError::Closed) => break,
+                },
+                _ = async { matrix_sdk_common::sleep::sleep(next_wakeup.unwrap().saturating_duration_since(Instant::now())).await},
+                    if next_wakeup.is_some() =>
+                {
+                    let now = Instant::now();
+                    if reenable_all_at.is_some_and(|at| at <= now) {
+                        reenable_all_at = None;
+                        reenable_at.clear();
+                        client.send_queue().set_enabled(true).await;
+                        continue;
+                    }
+                    let due: Vec<OwnedRoomId> = reenable_at.iter()
+                        .filter(|(_, at)| **at <= now)
+                        .map(|(room_id, _)| room_id.clone())
+                        .collect();
+                    for room_id in due {
+                        reenable_at.remove(&room_id);
+                        if let Some(room) = client.get_room(&room_id) {
+                            room.send_queue().set_enabled(true);
+                        }
+                    }
+                }
+            }
+        }
+    })
+}
+
+fn handle_sync_service_state_subscriber(mut subscriber: Subscriber<sync_service::State>) -> JoinHandle<()> {
+    log!("Initial sync service state is {:?}", subscriber.get());
+    runtime::handle().spawn(async move {
+        while let Some(state) = subscriber.next().await {
+            log!("Received a sync service state update: {state:?}");
+            match state {
+                sync_service::State::Error(e) => {
+                    SYNC_SERVICE_ASSUMED_RUNNING.store(false, Ordering::Release);
+                    if is_invalid_token_error(&e) {
+                        // The access token is invalid; `handle_session_changes` will have
+                        // already posted a LoginAction::LoginFailure, so just log here.
+                        // Stop the sync service and exit this loop to prevent further
+                        // state transitions (e.g., Offline) from triggering misleading
+                        // "cannot reach homeserver" notifications.
+                        // Setting TOKEN_EXPIRED signals the main monitoring loop to
+                        // tear down the current session and wait for re-login.
+                        error!("Sync service stopped due to invalid/expired access token: {e}.");
+                        TOKEN_EXPIRED.store(true, Ordering::Release);
+                        TOKEN_EXPIRED_NOTIFY.notify_one();
+                        if let Some(ss) = get_sync_service() {
+                            ss.stop().await;
+                            SYNC_SERVICE_ASSUMED_RUNNING.store(false, Ordering::Release);
+                        }
+                        break;
+                    } else {
+                        if !sync_service_desired_running() {
+                            log!("Not restarting sync service after error because lifecycle currently wants it stopped: {e}.");
+                            continue;
+                        }
+                        log!("Restarting sync service due to error: {e}.");
+                        if get_sync_service().is_some() {
+                            apply_sync_service_desired_state("sync service error restart").await;
+                        } else {
+                            enqueue_popup_notification(
+                                "Unable to restart the Matrix sync service.\n\nPlease quit and restart Robrix.",
+                                PopupKind::Error,
+                                None,
+                            );
+                        }
+                    }
+                }
+                _other if TOKEN_EXPIRED.load(Ordering::Acquire) => {
+                    log!("Ignoring sync service state update after token expiration.");
+                    break;
+                }
+                other => {
+                    IS_OFFLINE.store(matches!(other, sync_service::State::Offline), Ordering::Release);
+                    let is_now_running = matches!(other, sync_service::State::Running);
+                    crate::ui_dispatch::post_action(RoomsListHeaderAction::StateUpdate(other));
+                    if is_now_running && let Some(client) = get_client() {
+                        client.send_queue().set_enabled(true).await;
+                    }
+                }
+            }
+        }
+    })
+}
+
+fn handle_sync_indicator_subscriber(sync_service: &SyncService) -> JoinHandle<()> {
+    /// Duration for sync indicator delay before showing
+    const SYNC_INDICATOR_DELAY: Duration = Duration::from_millis(100);
+    /// Duration for sync indicator delay before hiding
+    const SYNC_INDICATOR_HIDE_DELAY: Duration = Duration::from_millis(200);
+    let sync_indicator_stream = sync_service
+        .room_list_service()
+        .sync_indicator(
+            SYNC_INDICATOR_DELAY,
+            SYNC_INDICATOR_HIDE_DELAY
+        );
+
+    runtime::handle().spawn(async move {
+       let mut sync_indicator_stream = std::pin::pin!(sync_indicator_stream);
+
+        while let Some(indicator) = sync_indicator_stream.next().await {
+            let is_syncing = match indicator {
+                SyncIndicator::Show => true,
+                SyncIndicator::Hide => false,
+            };
+            crate::ui_dispatch::post_action(RoomsListHeaderAction::SetSyncStatus(is_syncing));
+        }
+    })
+}
+
+fn handle_room_list_service_loading_state(mut loading_state: Subscriber<RoomListLoadingState>) {
+    log!("Initial room list loading state is {:?}", loading_state.get());
+    runtime::handle().spawn(async move {
+        while let Some(state) = loading_state.next().await {
+            log!("Received a room list loading state update: {state:?}");
+            match state {
+                RoomListLoadingState::NotLoaded => {
+                    enqueue_rooms_list_update(RoomsListUpdate::NotLoaded);
+                }
+                RoomListLoadingState::Loaded { maximum_number_of_rooms } => {
+                    enqueue_rooms_list_update(RoomsListUpdate::LoadedRooms { max_rooms: maximum_number_of_rooms });
+                    // The SDK docs state that we cannot move from the `Loaded` state
+                    // back to the `NotLoaded` state, so we can safely exit this task here.
+                    return;
+                }
+            }
+        }
+    });
+}
+
+/// Spawns an async task to fetch the RoomPreview for the given successor room.
+///
+/// After the fetch completes, this emites a [`RoomPreviewAction`]
+/// containing the fetched room preview or an error if it failed.
+fn spawn_fetch_successor_room_preview(
+    client: Client,
+    successor_room: Option<SuccessorRoom>,
+    tombstoned_room_id: OwnedRoomId,
+    timeline_update_senders: Vec<crate::timeline_channel::Sender<TimelineUpdate>>,
+) {
+    runtime::handle().spawn(async move {
+        log!("Updating room {tombstoned_room_id} to be tombstoned, {successor_room:?}");
+        let srd = if let Some(SuccessorRoom { room_id, reason }) = successor_room {
+            match fetch_room_preview_with_avatar(
+                &client,
+                room_id.deref().into(),
+                Vec::new(),
+            ).await {
+                Ok(room_preview) => SuccessorRoomDetails::Full { room_preview, reason },
+                Err(e) => {
+                    log!("Failed to fetch preview of successor room {room_id}, error: {e:?}");
+                    SuccessorRoomDetails::Basic(SuccessorRoom { room_id, reason })
+                }
+            }
+        } else {
+            log!("BUG: room {tombstoned_room_id} was tombstoned but had no successor room!");
+            SuccessorRoomDetails::None
+        };
+
+        for sender in &timeline_update_senders {
+            let _ = sender.send(TimelineUpdate::Tombstoned(srd.clone()));
+        }
+        SignalToUI::set_ui_signal();
+    });
+}
+
+/// Fetches the full preview information for the given `room`.
+/// Also fetches that room preview's avatar, if it had an avatar URL.
+async fn fetch_room_preview_with_avatar(
+    client: &Client,
+    room: &RoomOrAliasId,
+    via: Vec<OwnedServerName>,
+) -> Result<FetchedRoomPreview, matrix_sdk::Error> {
+    let room_preview = client.get_room_preview(room, via).await?;
+    // If this room has an avatar URL, fetch it.
+    let room_avatar = if let Some(avatar_url) = room_preview.avatar_url.clone() {
+        let media_request = MediaRequestParameters {
+            source: MediaSource::Plain(avatar_url.clone()),
+            format: AVATAR_THUMBNAIL_FORMAT.into(),
+        };
+        match client.media().get_media_content(&media_request, true).await {
+            Ok(avatar_content) => {
+                log!("Fetched avatar for room preview {:?} ({})", room_preview.name, room_preview.room_id);
+                FetchedRoomAvatar::Image((avatar_url, avatar_content).into())
+            }
+            Err(e) => {
+                log!("Failed to fetch avatar for room preview {:?} ({}), error: {e:?}",
+                    room_preview.name, room_preview.room_id
+                );
+                avatar_from_room_name(room_preview.name.as_deref())
+            }
+        }
+    } else {
+        // The successor room did not have an avatar URL
+        avatar_from_room_name(room_preview.name.as_deref())
+    };
+    Ok(FetchedRoomPreview::from(room_preview, room_avatar))
+}
+
+/// Resolves a receipt's target to the nearest event the timeline can display,
+/// since receipts can refer to non-visible events like reactions, edits, or redactions.
+async fn resolve_receipt_target(
+    room: &Room,
+    mut event_id: OwnedEventId,
+    is_thread_timeline: bool,
+) -> OwnedEventId {
+    let original = event_id.clone();
+    // we only need to iterate over a few links in the chain of reactions/edits, or threaded replies.
+    // i picked 5 randomly, but typically just 2 or 3 is sufficient.
+    for _ in 0..5 {
+        let Ok(event) = room.load_or_fetch_event(&event_id, None).await else { break };
+        let Ok(AnySyncTimelineEvent::MessageLike(message_like)) = event.raw().deserialize() else { break };
+        let next_target = if let AnySyncMessageLikeEvent::RoomRedaction(SyncRoomRedactionEvent::Original(ev)) = &message_like {
+            ev.content.redacts.clone().or_else(|| ev.redacts.clone())
+        } else {
+            message_like.original_content().and_then(|content| match content.relation() {
+                Some(EncryptedRelation::Annotation(annotation)) => Some(annotation.event_id),
+                Some(EncryptedRelation::Replacement(replacement)) => Some(replacement.event_id),
+                // Things like poll responses and verification steps are hidden as "references".
+                // Call notifications are the same, but we can actually jump to them since we display them as an event.
+                Some(EncryptedRelation::Reference(reference))
+                if !matches!(message_like, AnySyncMessageLikeEvent::RtcNotification(_))
+                    => Some(reference.event_id),
+                // Thread replies are only hidden in the main room timeline.
+                Some(EncryptedRelation::Thread(thread)) if !is_thread_timeline => Some(thread.event_id),
+                _ => None,
+            })
+        };
+        let Some(next) = next_target else { break };
+        event_id = next;
+    }
+    if event_id != original {
+        log!("Resolved read receipt target {original} to displayable event {event_id}");
+    }
+    event_id
+}
+
+/// Fetches key details about the given thread root event.
+///
+/// Returns a tuple of:
+/// 1. the number of replies in the thread (excluding the root event itself),
+/// 2. the latest reply event, if it could be fetched.
+async fn fetch_thread_summary_details(
+    room: &Room,
+    thread_root_event_id: &EventId,
+) -> (u32, Option<matrix_sdk::deserialized_responses::TimelineEvent>) {
+    let mut num_replies = 0;
+    let mut latest_reply_event = None;
+
+    if let Ok(thread_root_event) = room.load_or_fetch_event(thread_root_event_id, None).await
+        && let Some(thread_summary) = thread_root_event.thread_summary.summary()
+    {
+        num_replies = thread_summary.num_replies;
+        if let Some(latest_reply_event_id) = thread_summary.latest_reply.as_ref()
+            && let Ok(latest_reply) = room.load_or_fetch_event(latest_reply_event_id, None).await
+        {
+            latest_reply_event = Some(latest_reply);
+        }
+    }
+
+    // Always compute the reply count directly from the fetched thread relations,
+    // for some reason we can't rely on the SDK-provided thread_summary to be accurate
+    // (it's almost always totally wrong or out-of-date...).
+    let count_replies_future = count_thread_replies(room, thread_root_event_id);
+
+    // Fetch the latest reply event and count the thread replies in parallel.
+    let (fetched_latest_reply_opt, reply_count_opt) = if latest_reply_event.is_none() {
+        tokio::join!(
+            fetch_latest_thread_reply_event(room, thread_root_event_id),
+            count_replies_future,
+        )
+    } else {
+        (None, count_replies_future.await)
+    };
+
+    if let Some(event) = fetched_latest_reply_opt {
+        latest_reply_event = Some(event);
+    }
+    if let Some(count) = reply_count_opt {
+        num_replies = count;
+    }
+    (num_replies, latest_reply_event)
+}
+
+/// Fetches the latest reply event in the thread rooted at `thread_root_event_id`.
+async fn fetch_latest_thread_reply_event(
+    room: &Room,
+    thread_root_event_id: &EventId,
+) -> Option<matrix_sdk::deserialized_responses::TimelineEvent> {
+    let options = RelationsOptions {
+        dir: Direction::Backward,
+        limit: Some(uint!(1)),
+        include_relations: IncludeRelations::RelationsOfType(RelationType::Thread),
+        ..Default::default()
+    };
+
+    room.relations(thread_root_event_id.to_owned(), options)
+        .await
+        .ok()
+        .and_then(|relations| relations.chunk.into_iter().next())
+}
+
+/// Counts all replies in the given thread by paginating `/relations` in batches.
+async fn count_thread_replies(
+    room: &Room,
+    thread_root_event_id: &EventId,
+) -> Option<u32> {
+    let mut total_replies: u32 = 0;
+    let mut next_batch_token = None;
+
+    loop {
+        let options = RelationsOptions {
+            from: next_batch_token.clone(),
+            dir: Direction::Backward,
+            limit: Some(uint!(100)),
+            include_relations: IncludeRelations::RelationsOfType(RelationType::Thread),
+            ..Default::default()
+        };
+
+        let relations = room.relations(thread_root_event_id.to_owned(), options).await.ok()?;
+        if relations.chunk.is_empty() {
+            break;
+        }
+        total_replies = total_replies.saturating_add(relations.chunk.len() as u32);
+
+        next_batch_token = relations.next_batch_token;
+        if next_batch_token.is_none() {
+            break;
+        }
+    }
+
+    Some(total_replies)
+}
+
+/// Returns an HTML-formatted text preview of the given latest thread reply event.
+async fn text_preview_of_latest_thread_reply(
+    room: &Room,
+    latest_reply_event: &matrix_sdk::deserialized_responses::TimelineEvent,
+) -> Option<String> {
+    let raw = latest_reply_event.raw();
+    let sender_id = raw.get_field::<OwnedUserId>("sender").ok().flatten()?;
+    let sender_room_member = match room.get_member_no_sync(&sender_id).await {
+        Ok(Some(rm)) => Some(rm),
+        _ => room.get_member(&sender_id).await.ok().flatten(),
+    };
+    let sender_name = sender_room_member.as_ref()
+        .and_then(|rm| rm.display_name())
+        .unwrap_or(sender_id.as_str());
+    let text_preview = text_preview_of_raw_timeline_event(raw, sender_name).unwrap_or_else(|| {
+        let event_type = raw.get_field::<String>("type").ok().flatten();
+        TextPreview::from((
+            event_type.unwrap_or_else(|| "unknown event type".to_string()),
+            BeforeText::UsernameWithColon,
+        ))
+    });
+    let preview_str = text_preview.format_with(sender_name, true);
+    match utils::replace_linebreaks_separators(&preview_str, true) {
+        Cow::Borrowed(_) => Some(preview_str),
+        Cow::Owned(replaced) => Some(replaced),
+    }
+}
+
+
+/// Returns the timestamp and an HTML-formatted text preview of the given `latest_event`.
+///
+/// If the sender profile of the event is not yet available, this function will
+/// generate a preview using the sender's user ID instead of their display name.
+async fn get_latest_event_details(
+    latest_event_value: &LatestEventValue,
+    client: &Client,
+) -> Option<(MilliSecondsSinceUnixEpoch, String)> {
+    macro_rules! get_sender_username {
+        ($profile:expr, $sender:expr, $is_own:expr) => {{
+            match $profile {
+                TimelineDetails::Ready(profile) => match profile.display_name.as_deref() {
+                    Some(name) => Cow::Borrowed(name),
+                    None => Cow::Borrowed($sender.as_str()),
+                },
+                _ => match if $is_own { own_display_name(client).await } else { None } {
+                    Some(name) => Cow::Owned(name),
+                    None => Cow::Borrowed($sender.as_str()),
+                },
+            }
+        }};
+    }
+
+    match latest_event_value {
+        LatestEventValue::None => None,
+        LatestEventValue::Remote { timestamp, sender, is_own, profile, content } => {
+            let sender_username = get_sender_username!(profile, sender, *is_own);
+            let latest_message_text = text_preview_of_timeline_item(
+                content,
+                sender,
+                &sender_username,
+            ).format_with(&sender_username, true);
+            Some((*timestamp, latest_message_text))
+        }
+        LatestEventValue::Local { timestamp, sender, profile, content, state: _ } => {
+            // TODO: use the `state` enum to augment the preview text with more details.
+            //       Example: "<span color="blue">Sending... {msg}</span>" or
+            //                "<span color="red">Failed to send {msg}</span>"
+            let is_own = current_user_id().is_some_and(|id| &id == sender);
+            let sender_username = get_sender_username!(profile, sender, is_own);
+            let latest_message_text = text_preview_of_timeline_item(
+                content,
+                sender,
+                &sender_username,
+            ).format_with(&sender_username, true);
+            Some((*timestamp, latest_message_text))
+        }
+        LatestEventValue::RemoteInvite { timestamp, .. } => {
+            Some((*timestamp, String::from("You were invited to this room.")))
+        }
+    }    
+}
+
+/// Handles the given updated latest event for the given room.
+///
+/// This function sends a `RoomsListUpdate::UpdateLatestEvent`
+/// to update the latest event in the RoomsListEntry for the given room.
+async fn update_latest_event(room: &Room) {
+    if let Some((timestamp, latest_message_text)) = get_latest_event_details(
+        &room.latest_event().await,
+        &room.client(),
+    ).await {
+        enqueue_rooms_list_update(RoomsListUpdate::UpdateLatestEvent {
+            room_id: room.room_id().to_owned(),
+            timestamp,
+            latest_message_text,
+        });
+    }
+}
+
+
+/// Returns the homeserver's max upload size if `size` exceeds it.
+///
+/// Returns `None` if the file fits, or if we couldn't determine the limit,
+/// in which case we let the homeserver be the judge.
+async fn exceeds_upload_limit(size: u64, context: impl std::fmt::Display) -> Option<u64> {
+    let Some(client) = get_client() else {
+        warning!("Could not fetch homeserver max upload size for {context}: client unavailable; continuing without a local size-limit check.");
+        return None;
+    };
+    let max_upload_size = match client.load_or_fetch_max_upload_size().await {
+        Ok(max_upload_size) => max_upload_size,
+        Err(e) => {
+            warning!("Could not fetch homeserver max upload size for {context}: {e:?}; continuing without a local size-limit check.");
+            return None;
+        }
+    };
+    matrix_sdk::ruma::UInt::try_from(size)
+        .map(|size| size > max_upload_size)
+        .unwrap_or(true)
+        .then(|| max_upload_size.into())
+}
+
+/// Returns human-readable errors explaining why the homeserver refused an avatar upload.
+fn avatar_rejection_message(error: &matrix_sdk::Error, size: &str, mime_type: &str) -> String {
+    let status_code = error.as_client_api_error().map(|e| e.status_code.as_u16());
+    match status_code {
+        Some(403) => format!(
+            "Your homeserver refused this avatar ({size}, {mime_type}). It may be too large, \
+             or your server may not allow that image type. \
+             Try a smaller image file, or a common format like PNG/JPEG."
+        ),
+        Some(413) => format!(
+            "This image ({size}) is too large for your homeserver. Please choose a smaller one."
+        ),
+        _ => format!("Failed to upload avatar: {error}"),
+    }
+}
+
+/// Returns an ordered list of rooms/spaces that the client knows about that match the given `query`.
+///
+/// The order is as follows:
+/// 1. membership state of the room/space: joined rooms first, then invited, then knocked, then left, then banned.
+/// 2. The field that actually matched: room name first, then canonical alias, then alternate aliases.
+///    * For each of these fields, an exact match will be ranked above a partial match
+///
+/// Direct rooms / DMs are excluded from matching.
+async fn rank_matching_rooms(client: &Client, query: &str) -> Vec<MentionItem> {
+    let query = query.to_lowercase();
+    let mut all_matches: Vec<((u8, u8, MatchQuality), String, RoomMentionCandidate)> = Vec::new();
+
+    for room in client.rooms() {
+        if room.is_direct().await.unwrap_or(false) {
+            continue;
+        }
+        let room_state: u8 = match room.state() {
+            RoomState::Joined  => 0,
+            RoomState::Invited => 1,
+            RoomState::Knocked => 2,
+            RoomState::Left    => 3,
+            RoomState::Banned  => 4,
+        };
+
+        let room_name_id = RoomNameId::new(
+            room.cached_display_name()
+                .or_else(|| room.name().map(RoomDisplayName::Named))
+                .unwrap_or(RoomDisplayName::Empty),
+            room.room_id().to_owned(),
+        );
+        let canonical = room.canonical_alias();
+        let alt_aliases = room.alt_aliases();
+
+        // we give room name the highest order (0), then canonical alias (1), then other aliases (2)
+        let Some((matched_field, quality)) = room_name_id.name_for_avatar()
+            .map(|name| (0u8, MatchQuality::of(&name.to_lowercase(), &query)))
+            .filter(|(_, q)| q.is_match())
+            .or_else(|| canonical.as_ref()
+                .map(|c| (1, MatchQuality::of(&alias_localpart(c).to_lowercase(), &query)))
+                .filter(|(_, q)| q.is_match()))
+            .or_else(|| alt_aliases.iter()
+                .map(|a| MatchQuality::of(&alias_localpart(a).to_lowercase(), &query))
+                .filter(|q| q.is_match())
+                .min()
+                .map(|q| (2, q)))
+        else {
+            continue;
+        };
+
+        all_matches.push((
+            (room_state, matched_field, quality),
+            room_name_id.to_string().to_lowercase(),
+            RoomMentionCandidate {
+                room_name_id,
+                alias: canonical,
+                avatar_url: room.avatar_url(),
+                is_space: room.is_space(),
+            },
+        ));
+    }
+
+    all_matches.sort_by(|a, b| a.0.cmp(&b.0).then_with(|| a.1.cmp(&b.1)));
+    // now that it's sorted, remove the other info that was only used for sorting.
+    all_matches.into_iter().map(|(_, _, c)| MentionItem::Room(c)).collect()
+}
+
+
+/// A request to search backwards for a specific event in a room's timeline.
+pub struct BackwardsPaginateUntilEventRequest {
+    pub room_id: OwnedRoomId,
+    pub target_event_id: OwnedEventId,
+    /// The index in the timeline where a backwards search should begin.
+    pub starting_index: usize,
+    /// The number of items in the timeline at the time of the request,
+    /// which is used to detect if the timeline has changed since the request was made,
+    /// meaning that the `starting_index` can no longer be relied upon.
+    pub current_tl_len: usize,
+}
+
+/// Whether to enable verbose logging of all timeline diff updates.
+const LOG_TIMELINE_DIFFS: bool = cfg!(feature = "log_timeline_diffs");
+/// Whether to enable verbose logging of all room list service diff updates.
+const LOG_ROOM_LIST_DIFFS: bool = cfg!(feature = "log_room_list_diffs");
+
+/// A per-timeline async task that listens for timeline updates and sends them to the UI thread.
+///
+/// One instance of this async task is spawned for each room or thread that is opened by the user.
+async fn timeline_subscriber_handler(
+    timeline: Arc<Timeline>,
+    timeline_update_sender: crate::timeline_channel::Sender<TimelineUpdate>,
+    mut request_receiver: watch::Receiver<TimelineRequest>,
+    thread_root_event_id: Option<OwnedEventId>,
+) {
+    /// An inner function that searches the given new timeline items for a target event.
+    ///
+    /// If the target event is found, it is removed from the `target_event_id_opt` and returned,
+    /// along with the index/position of that event in the given iterator of new items.
+    fn find_target_event<'a>(
+        target_event_id_opt: &mut Option<OwnedEventId>,
+        mut new_items_iter: impl Iterator<Item = &'a Arc<TimelineItem>>,
+    ) -> Option<(usize, OwnedEventId)> {
+        let found_index = target_event_id_opt
+            .as_ref()
+            .and_then(|target_event_id| new_items_iter
+                .position(|new_item| new_item
+                    .as_event()
+                    .is_some_and(|new_ev| new_ev.event_id() == Some(target_event_id))
+                )
+            );
+
+        if let Some(index) = found_index {
+            target_event_id_opt.take().map(|ev| (index, ev))
+        } else {
+            None
+        }
+    }
+
+
+    let room_id = timeline.room().room_id().to_owned();
+    log!("Starting timeline subscriber for room {room_id}, thread {thread_root_event_id:?}...");
+    let (mut timeline_items, mut subscriber) = timeline.subscribe().await;
+    log!("Received initial timeline update of {} items for room {room_id}, thread {thread_root_event_id:?}.", timeline_items.len());
+
+    if timeline_update_sender.send(TimelineUpdate::FirstUpdate {
+        initial_items: timeline_items.clone(),
+    }).is_err() {
+        log!("Timeline for room {room_id}, thread {thread_root_event_id:?} was closed or recreated \
+            before its first update; ending this subscriber task.");
+        return;
+    }
+    SignalToUI::set_ui_signal();
+
+    // the event ID to search for while loading previous items into the timeline.
+    let mut target_event_id = None;
+    // the timeline index and event ID of the target event, if it has been found.
+    let mut found_target_event_id: Option<(usize, OwnedEventId)> = None;
+
+    // Whether this timeline is currently open in the UI.
+    // This starts as true because we only spawn this subscriber task lazily upon open.
+    let mut is_timeline_open = true;
+    // Whether any update changes have arrived since this timeline was last closed,
+    // meaning that we need to send an cumulative update when the timeline gets re-opened.
+    let mut has_unsent_changes = false;
+    // The latest upload progress that was sent to the UI: `(item index, percent)`.
+    let mut latest_progress_update: Option<(usize, usize)> = None;
+
+    loop { tokio::select! {
+        // we should check for new requests before handling new timeline updates,
+        // because the request might influence how we handle a timeline update.
+        biased;
+
+        // Handle updates to the current backwards pagination requests.
+        Ok(()) = request_receiver.changed() => {
+            let prev_target_event_id = target_event_id.clone();
+            let (now_open, new_request_details) = {
+                let req = request_receiver.borrow_and_update();
+                let details = req.backwards_paginate.iter()
+                    .find_map(|r| r.room_id
+                        .eq(&room_id)
+                        .then(|| (r.target_event_id.clone(), r.starting_index, r.current_tl_len))
+                    );
+                (req.is_timeline_open, details)
+            };
+
+            // On reopen, send one catch-up snapshot, but only if something actually
+            // changed while closed (otherwise the UI already has the current items).
+            if now_open && !is_timeline_open && has_unsent_changes {
+                let len = timeline_items.len();
+                if timeline_update_sender.send(TimelineUpdate::NewItems {
+                    new_items: timeline_items.clone(),
+                    changed_indices: 0..len,
+                    clear_cache: true,
+                    is_append: false,
+                }).is_ok() {
+                    SignalToUI::set_ui_signal();
+                }
+                has_unsent_changes = false;
+            }
+            is_timeline_open = now_open;
+
+            target_event_id = new_request_details.as_ref().map(|(ev, ..)| ev.clone());
+
+            // If we received a new request, start searching backwards for the target event.
+            if let Some((new_target_event_id, starting_index, current_tl_len)) = new_request_details {
+                if prev_target_event_id.as_ref() != Some(&new_target_event_id) {
+                    let starting_index = if current_tl_len == timeline_items.len() {
+                        starting_index
+                    } else {
+                        // The timeline has changed since the request was made, so we can't rely on the `starting_index`.
+                        // Instead, we have no choice but to start from the end of the timeline.
+                        timeline_items.len()
+                    };
+                    // log!("Received new request to search for event {new_target_event_id} in room {room_id}, thread {thread_root_event_id:?} starting from index {starting_index} (tl len {}).", timeline_items.len());
+                    // Search backwards for the target event in the timeline, starting from the given index.
+                    if let Some(target_event_tl_index) = index_of_event(&timeline_items, &new_target_event_id, starting_index, usize::MAX) {
+                        // log!("Found existing target event {new_target_event_id} in room {room_id}, thread {thread_root_event_id:?} at index {target_event_tl_index}.");
+
+                        // Nice! We found the target event in the current timeline items,
+                        // so there's no need to actually proceed with backwards pagination;
+                        // thus, we can clear the locally-tracked target event ID.
+                        target_event_id = None;
+                        found_target_event_id = None;
+                        if timeline_update_sender.send(
+                            TimelineUpdate::TargetEventFound {
+                                target_event_id: new_target_event_id.clone(),
+                                index: target_event_tl_index,
+                            }
+                        ).is_err() {
+                            log!("Timeline for room {room_id}, thread {thread_root_event_id:?} was closed \
+                                or recreated; ending this subscriber task.");
+                            return;
+                        }
+                        // Send a Makepad-level signal to update this room's timeline UI view.
+                        SignalToUI::set_ui_signal();
+                    }
+                    else {
+                        log!("Target event not in timeline. Starting backwards pagination \
+                            in room {room_id}, thread {thread_root_event_id:?} to find target event \
+                            {new_target_event_id} starting from index {starting_index}.",
+                        );
+                        // If we didn't find the target event in the current timeline items,
+                        // we need to start loading previous items into the timeline.
+                        submit_async_request(MatrixRequest::PaginateTimeline {
+                            timeline_kind: if let Some(thread_root_event_id) = thread_root_event_id.clone() {
+                                TimelineKind::Thread {
+                                    room_id: room_id.clone(),
+                                    thread_root_event_id,
+                                }
+                            } else {
+                                TimelineKind::MainRoom {
+                                    room_id: room_id.clone(),
+                                }
+                            },
+                            num_events: 50,
+                            direction: PaginationDirection::Backwards,
+                        });
+                    }
+                }
+            }
+        }
+
+        // Handle updates to the actual timeline content.
+        batch_opt = subscriber.next() => {
+            let Some(batch) = batch_opt else { break };
+            let mut num_updates = 0;
+            let mut index_of_first_change = usize::MAX;
+            let mut index_of_last_change = usize::MIN;
+            // whether to clear the entire cache of drawn items
+            let mut clear_cache = false;
+            // whether the changes include items being appended to the end of the timeline
+            let mut is_append = false;
+            // the (index, percent) of the last upload progress tick in this batch
+            let mut latest_progress_updates = None;
+            let mut num_progress_updates = 0;
+
+            for diff in batch {
+                num_updates += 1;
+                match diff {
+                    VectorDiff::Append { values } => {
+                        let _values_len = values.len();
+                        index_of_first_change = min(index_of_first_change, timeline_items.len());
+                        timeline_items.extend(values);
+                        index_of_last_change = max(index_of_last_change, timeline_items.len());
+                        if LOG_TIMELINE_DIFFS { log!("timeline_subscriber: room {room_id}, thread {thread_root_event_id:?} diff Append {_values_len}. Changes: {index_of_first_change}..{index_of_last_change}"); }
+                        is_append = true;
+                    }
+                    VectorDiff::Clear => {
+                        if LOG_TIMELINE_DIFFS { log!("timeline_subscriber: room {room_id}, thread {thread_root_event_id:?} diff Clear"); }
+                        clear_cache = true;
+                        timeline_items.clear();
+                    }
+                    VectorDiff::PushFront { value } => {
+                        if LOG_TIMELINE_DIFFS { log!("timeline_subscriber: room {room_id}, thread {thread_root_event_id:?} diff PushFront"); }
+                        if let Some((index, _ev)) = found_target_event_id.as_mut() {
+                            *index += 1; // account for this new `value` being prepended.
+                        } else {
+                            found_target_event_id = find_target_event(&mut target_event_id, std::iter::once(&value));
+                        }
+
+                        clear_cache = true;
+                        timeline_items.push_front(value);
+                    }
+                    VectorDiff::PushBack { value } => {
+                        index_of_first_change = min(index_of_first_change, timeline_items.len());
+                        timeline_items.push_back(value);
+                        index_of_last_change = max(index_of_last_change, timeline_items.len());
+                        if LOG_TIMELINE_DIFFS { log!("timeline_subscriber: room {room_id}, thread {thread_root_event_id:?} diff PushBack. Changes: {index_of_first_change}..{index_of_last_change}"); }
+                        is_append = true;
+                    }
+                    VectorDiff::PopFront => {
+                        if LOG_TIMELINE_DIFFS { log!("timeline_subscriber: room {room_id}, thread {thread_root_event_id:?} diff PopFront"); }
+                        clear_cache = true;
+                        timeline_items.pop_front();
+                        if let Some((i, _ev)) = found_target_event_id.as_mut() {
+                            *i = i.saturating_sub(1); // account for the first item being removed.
+                        }
+                        // This doesn't affect whether we should reobtain the latest event.
+                    }
+                    VectorDiff::PopBack => {
+                        timeline_items.pop_back();
+                        index_of_first_change = min(index_of_first_change, timeline_items.len());
+                        index_of_last_change = usize::MAX;
+                        if LOG_TIMELINE_DIFFS { log!("timeline_subscriber: room {room_id}, thread {thread_root_event_id:?} diff PopBack. Changes: {index_of_first_change}..{index_of_last_change}"); }
+                    }
+                    VectorDiff::Insert { index, value } => {
+                        if index == 0 {
+                            clear_cache = true;
+                        } else {
+                            index_of_first_change = min(index_of_first_change, index);
+                            index_of_last_change = usize::MAX;
+                        }
+                        if index >= timeline_items.len() {
+                            is_append = true;
+                        }
+
+                        if let Some((i, _ev)) = found_target_event_id.as_mut() {
+                            // account for this new `value` being inserted before the previously-found target event's index.
+                            if index <= *i {
+                                *i += 1;
+                            }
+                        } else {
+                            found_target_event_id = find_target_event(&mut target_event_id, std::iter::once(&value))
+                                .map(|(i, ev)| (i + index, ev));
+                        }
+
+                        timeline_items.insert(index, value);
+                        if LOG_TIMELINE_DIFFS { log!("timeline_subscriber: room {room_id}, thread {thread_root_event_id:?} diff Insert at {index}. Changes: {index_of_first_change}..{index_of_last_change}"); }
+                    }
+                    VectorDiff::Set { index, value } => {
+                        // The way that the sdk provides progress updates for an upload/message being sent
+                        // is by delivering a `Set` diff here, which replaces the local echo with an updated
+                        // version of itself. When that happens, we only need to update the progress value in the UI.
+                        if let Some(old_txn_id) = timeline_items.get(index).and_then(|old| old.as_event()?.transaction_id())
+                            && let Some(new_event) = value.as_event()
+                            && new_event.transaction_id() == Some(old_txn_id)
+                            && let Some(EventSendState::NotSentYet { progress: Some(p) }) = new_event.send_state()
+                        {
+                            let percent = (p.progress.current * 100)
+                                .checked_div(p.progress.total)
+                                .unwrap_or(0);
+                            latest_progress_updates = Some((index, percent));
+                            num_progress_updates += 1;
+                        }
+
+                        index_of_first_change = min(index_of_first_change, index);
+                        index_of_last_change  = max(index_of_last_change, index.saturating_add(1));
+                        timeline_items.set(index, value);
+                        if LOG_TIMELINE_DIFFS { log!("timeline_subscriber: room {room_id}, thread {thread_root_event_id:?} diff Set at {index}. Changes: {index_of_first_change}..{index_of_last_change}"); }
+                    }
+                    VectorDiff::Remove { index } => {
+                        if index == 0 {
+                            clear_cache = true;
+                        } else {
+                            index_of_first_change = min(index_of_first_change, index.saturating_sub(1));
+                            index_of_last_change = usize::MAX;
+                        }
+                        if let Some((i, _ev)) = found_target_event_id.as_mut() {
+                            // account for an item being removed before the previously-found target event's index.
+                            if index <= *i {
+                                *i = i.saturating_sub(1);
+                            }
+                        }
+                        timeline_items.remove(index);
+                        if LOG_TIMELINE_DIFFS { log!("timeline_subscriber: room {room_id}, thread {thread_root_event_id:?} diff Remove at {index}. Changes: {index_of_first_change}..{index_of_last_change}"); }
+                    }
+                    VectorDiff::Truncate { length } => {
+                        if length == 0 {
+                            clear_cache = true;
+                        } else {
+                            index_of_first_change = min(index_of_first_change, length.saturating_sub(1));
+                            index_of_last_change = usize::MAX;
+                        }
+                        timeline_items.truncate(length);
+                        if LOG_TIMELINE_DIFFS { log!("timeline_subscriber: room {room_id}, thread {thread_root_event_id:?} diff Truncate to length {length}. Changes: {index_of_first_change}..{index_of_last_change}"); }
+                    }
+                    VectorDiff::Reset { values } => {
+                        if LOG_TIMELINE_DIFFS { log!("timeline_subscriber: room {room_id}, thread {thread_root_event_id:?} diff Reset, new length {}", values.len()); }
+                        // Every item is replaced, so any index we already found is stale.
+                        if let Some((_i, ev)) = found_target_event_id.take() {
+                            target_event_id = Some(ev);
+                        }
+                        found_target_event_id = find_target_event(&mut target_event_id, values.iter());
+                        clear_cache = true; // we must assume all items have changed.
+                        timeline_items = values;
+                    }
+                }
+            }
+            let is_progress_only = num_progress_updates == num_updates;
+
+            if num_updates > 0 {
+                // Handle the case where back pagination inserts items at the beginning of the timeline
+                // (meaning the entire timeline needs to be re-drawn),
+                // but there is a virtual event at index 0 (e.g., a day divider).
+                // When that happens, we want the RoomScreen to treat this as if *all* events changed.
+                if index_of_first_change == 1 && timeline_items.front().and_then(|item| item.as_virtual()).is_some() {
+                    index_of_first_change = 0;
+                    clear_cache = true;
+                }
+
+                let changed_indices = index_of_first_change..index_of_last_change;
+
+                if LOG_TIMELINE_DIFFS {
+                    log!("timeline_subscriber: applied {num_updates} updates for room {room_id}, thread {thread_root_event_id:?}, timeline now has {} items. is_append? {is_append}, clear_cache? {clear_cache}. Changes: {changed_indices:?}.", timeline_items.len());
+                }
+                // Only send updates to the UI while this timeline is open.
+                // While it's closed, we process the updates locally until it is re-opened again.
+                if is_timeline_open {
+                    // Only send a progress-change update if it's actually different than before.
+                    let ui_needs_update = !is_progress_only
+                        || latest_progress_updates != latest_progress_update;
+                    if ui_needs_update {
+                        let update = if is_progress_only {
+                            latest_progress_update = latest_progress_updates;
+                            TimelineUpdate::LocalEchoProgress { new_items: timeline_items.clone() }
+                        } else {
+                            TimelineUpdate::NewItems {
+                                new_items: timeline_items.clone(),
+                                changed_indices,
+                                clear_cache,
+                                is_append,
+                            }
+                        };
+                        if timeline_update_sender.send(update).is_err() {
+                            log!("Timeline for room {room_id}, thread {thread_root_event_id:?} was closed \
+                                or recreated; ending this subscriber task.");
+                            return;
+                        }
+
+                        // We must send this update *after* the actual NewItems update,
+                        // otherwise the RoomScreen UI won't be able to correctly locate the target event.
+                        if let Some((index, found_event_id)) = found_target_event_id.take() {
+                            target_event_id = None;
+                            if timeline_update_sender.send(
+                                TimelineUpdate::TargetEventFound {
+                                    target_event_id: found_event_id.clone(),
+                                    index,
+                                }
+                            ).is_err() {
+                                log!("Timeline for room {room_id}, thread {thread_root_event_id:?} was closed \
+                                    or recreated; ending this subscriber task.");
+                                return;
+                            }
+                        }
+                        SignalToUI::set_ui_signal();
+                    }
+                } else {
+                    // Closed: our local items are updated above; remember to catch the UI up on reopen.
+                    has_unsent_changes = true;
+                }
+            }
+        }
+
+        else => {
+            break;
+        }
+    } }
+
+    error!("Error: unexpectedly ended timeline subscriber for room {room_id}, thread {thread_root_event_id:?}.");
+}
+
+
+/// Spawn a new async task to fetch the room's new avatar.
+fn spawn_fetch_room_avatar(room: &RoomListServiceRoomInfo) {
+    let room_name_id = RoomNameId::from((room.display_name.clone(), room.room_id.clone()));
+    spawn_fetch_room_avatar_inner(room.room.clone(), room_name_id);
+}
+
+/// Spawns an async task to fetch or compute the room's avatar and send it to the rooms list.
+fn spawn_fetch_room_avatar_inner(room: Room, room_name_id: RoomNameId) {
+    // Limit the number of concurrent room avatar fetches,
+    // as they can be expensive and max out the CPUs.
+    static ROOM_AVATAR_FETCH_LIMIT: Semaphore = Semaphore::const_new(8);
+
+    runtime::handle().spawn(async move {
+        let Ok(_permit) = ROOM_AVATAR_FETCH_LIMIT.acquire().await else { return };
+        let room_id = room_name_id.room_id().clone();
+        let room_avatar = room_avatar(&room, &room_name_id).await;
+        rooms_list::enqueue_rooms_list_update(RoomsListUpdate::UpdateRoomAvatar {
+            room_id,
+            room_avatar,
+        });
+    });
+}
+
+/// Fetches and returns the avatar image for the given room (if one exists),
+/// otherwise returns a text avatar string of the first character of the room name.
+async fn room_avatar(room: &Room, room_name_id: &RoomNameId) -> FetchedRoomAvatar {
+    if let Some(avatar_url) = room.avatar_url() {
+        if let Ok(Some(avatar)) = room.avatar(AVATAR_THUMBNAIL_FORMAT.into()).await {
+            return FetchedRoomAvatar::Image((avatar_url, avatar).into());
+        }
+    }
+    // For rooms without an avatar that have only one hero (i.e., a 2-member DM), use their avatar.
+    if let Ok([one_hero]) = <[_; 1]>::try_from(room.heroes().await) {
+        if let Some(avatar_url) = one_hero.avatar_url {
+            let request = MediaRequestParameters {
+                source: MediaSource::Plain(avatar_url.clone()),
+                format: AVATAR_THUMBNAIL_FORMAT.into(),
+            };
+            if let Ok(avatar) = room.client().media().get_media_content(&request, true).await {
+                return FetchedRoomAvatar::Image((avatar_url, avatar).into());
+            }
+        }
+    }
+    utils::avatar_from_room_name(room_name_id.name_for_avatar())
+}
+
+/// Spawn an async task to login to the given Matrix homeserver using the given SSO identity provider ID.
+///
+/// This function will post a `LoginAction::SsoPending(true)` to the main thread, and another
+/// `LoginAction::SsoPending(false)` once the async task has either successfully logged in or
+/// failed to do so.
+///
+/// If the login attempt is successful, the resulting `Client` and `ClientSession` will be sent
+/// to the login screen using the `login_sender`.
+async fn spawn_sso_server(
+    brand: String,
+    homeserver_url: String,
+    identity_provider_id: String,
+    login_sender: Sender<(u64, LoginRequest)>,
+) {
+    crate::ui_dispatch::post_action(LoginAction::SsoPending(true));
+    // Post a status update to inform the user that we're waiting for the client to be built.
+    crate::ui_dispatch::post_action(LoginAction::Status {
+        title: "Initializing client...".into(),
+        status: "Please wait while Matrix builds and configures the client object for login.".into(),
+    });
+
+    #[cfg(target_family = "wasm")]
+    let _ = (&brand, &identity_provider_id);
+
+    // Wait for the notification that the client has been built
+    DEFAULT_SSO_CLIENT_NOTIFIER.notified().await;
+
+    // Try to use the DEFAULT_SSO_CLIENT, if it was successfully built.
+    // We do not clone it because a Client cannot be re-used again
+    // once it has been used for a login attempt, so this forces us to create a new one
+    // if that occurs.
+    let client_and_session_opt = default_sso_client_state().lock().unwrap().take();
+
+    runtime::handle().spawn(async move {
+        // Try to use the DEFAULT_SSO_CLIENT that we proactively created
+        // during initialization (to speed up opening the SSO browser window).
+        let mut client_and_session = client_and_session_opt;
+
+        // If the DEFAULT_SSO_CLIENT is none (meaning it failed to build),
+        // or if the homeserver_url is *not* empty and isn't the default,
+        // we cannot use the DEFAULT_SSO_CLIENT, so we must build a new one.
+        let mut build_client_error = None;
+        if client_and_session.is_none() || (
+            !homeserver_url.is_empty()
+                && homeserver_url != "matrix.org"
+                && Url::parse(&homeserver_url) != Url::parse("https://matrix-client.matrix.org/")
+                && Url::parse(&homeserver_url) != Url::parse("https://matrix.org/")
+        ) {
+            match build_client(
+                &Cli {
+                    homeserver: homeserver_url.is_empty().not().then_some(homeserver_url),
+                    ..Default::default()
+                },
+                app_data_dir(),
+            ).await {
+                Ok(success) => client_and_session = Some(success),
+                Err(e) => build_client_error = Some(e),
+            }
+        }
+
+        let Some((client, client_session)) = client_and_session else {
+            crate::ui_dispatch::post_action(LoginAction::LoginFailure(
+                if let Some(err) = build_client_error {
+                    format!("Could not create client object. Please try to login again.\n\nError: {err}")
+                } else {
+                    String::from("Could not create client object. Please try to login again.")
+                }
+            ));
+            // This ensures that the called to `DEFAULT_SSO_CLIENT_NOTIFIER.notified()`
+            // at the top of this function will not block upon the next login attempt.
+            DEFAULT_SSO_CLIENT_NOTIFIER.notify_one();
+            crate::ui_dispatch::post_action(LoginAction::SsoPending(false));
+            return;
+        };
+
+        // The proactively-built client may have a stale TCP connection by
+        // now. Retry once here so it surfaces before we open the browser.
+        if let Err(e) = warmup_homeserver_connection(&client).await {
+            error!("SSO warmup failed twice: {e:?}");
+            crate::ui_dispatch::post_action(LoginAction::LoginFailure(format!(
+                "Could not reach homeserver: {e}"
+            )));
+            DEFAULT_SSO_CLIENT_NOTIFIER.notify_one();
+            crate::ui_dispatch::post_action(LoginAction::SsoPending(false));
+            return;
+        }
+
+        let mut is_logged_in = false;
+
+        // Desktop's `login_sso` uses a local HTTP server for the OAuth
+        // redirect, which iOS suspends when Robrix backgrounds for Safari.
+        // iOS uses ASWebAuthenticationSession to keep the app foregrounded.
+        #[cfg(not(any(target_os = "ios", target_family = "wasm")))]
+        let login_result = {
+            crate::ui_dispatch::post_action(LoginAction::Status {
+                title: "Opening your browser...".into(),
+                status: "Please finish logging in using your browser, and then come back to Robrix.".into(),
+            });
+            client
+                .matrix_auth()
+                .login_sso(|sso_url: String| async move {
+                    let url = Url::parse(&sso_url)?;
+                    for (key, value) in url.query_pairs() {
+                        if key == "redirectUrl" {
+                            let redirect_url = Url::parse(&value)?;
+                            crate::ui_dispatch::post_action(LoginAction::SsoSetRedirectUrl(redirect_url));
+                            break
+                        }
+                    }
+                    Uri::new(&sso_url).open().map_err(|err|
+                        Error::Io(io::Error::other(format!("Unable to open SSO login url. Error: {:?}", err)))
+                    )
+                })
+                .identity_provider_id(&identity_provider_id)
+                .initial_device_display_name(&format!("robrix-sso-{brand}"))
+                .await
+        };
+        #[cfg(target_family = "wasm")]
+        let login_result: Result<matrix_sdk::ruma::api::client::session::login::v3::Response, matrix_sdk::Error> = Err(matrix_sdk::Error::Io(io::Error::other("Browser SSO requires a registered HTTPS callback; use password login on a supporting homeserver.")));
+        #[cfg(target_os = "ios")]
+        let login_result = {
+            crate::ui_dispatch::post_action(LoginAction::Status {
+                title: "Opening in-app authentication...".into(),
+                status: "Please complete login in the authentication sheet that appeared.".into(),
+            });
+            run_ios_sso_flow(&client, &identity_provider_id, &brand).await
+        };
+
+        match login_result.inspect(|_| {
+            if let Some(client) = get_client() {
+                if client.matrix_auth().logged_in() {
+                    is_logged_in = true;
+                    log!("Already logged in, ignore login with sso");
+                }
+            }
+        }) {
+            Ok(identity_provider_res) => {
+                if !is_logged_in {
+                    if let Err(e) = login_sender.send((runtime::origin_epoch(), LoginRequest::LoginBySSOSuccess(client, client_session))).await {
+                        error!("Error sending login request to login_sender: {e:?}");
+                        crate::ui_dispatch::post_action(LoginAction::LoginFailure(String::from(
+                            "BUG: failed to send login request to matrix worker thread."
+                        )));
+                    }
+                    enqueue_rooms_list_update(RoomsListUpdate::Status {
+                        status: format!(
+                            "Logged in as {:?}.\n → Loading rooms...",
+                            identity_provider_res.user_id
+                        ),
+                    });
+                }
+            }
+            Err(e) => {
+                if !is_logged_in {
+                    error!("SSO Login failed: {e:?}");
+                    crate::ui_dispatch::post_action(LoginAction::LoginFailure(format!("SSO login failed: {e}")));
+                }
+            }
+        }
+
+        // This ensures that the called to `DEFAULT_SSO_CLIENT_NOTIFIER.notified()`
+        // at the top of this function will not block upon the next login attempt.
+        DEFAULT_SSO_CLIENT_NOTIFIER.notify_one();
+        crate::ui_dispatch::post_action(LoginAction::SsoPending(false));
+    });
+}
+
+
+/// Pings the homeserver before SSO opens a browser or sheet, retrying once.
+/// Recovers from stale pooled connections so the first SSO click doesn't
+/// fail visibly.
+async fn warmup_homeserver_connection(client: &Client) -> matrix_sdk::HttpResult<()> {
+    // `supported_versions()` doesn't cache for unauthenticated clients, so
+    // it always hits the network, which is what we want for warmup.
+    match client.supported_versions().await {
+        Ok(_) => Ok(()),
+        Err(e) => {
+            warning!("Homeserver warmup failed (likely stale connection): {e:?}. Retrying once.");
+            client.supported_versions().await.map(|_| ())
+        }
+    }
+}
+
+/// Drives iOS SSO via `ASWebAuthenticationSession`. Gets the SSO URL with a
+/// `robrix://` redirect, opens it in the auth sheet, and feeds the callback
+/// URL through `login_with_sso_callback` to finish.
+#[cfg(target_os = "ios")]
+async fn run_ios_sso_flow(
+    client: &Client,
+    identity_provider_id: &str,
+    brand: &str,
+) -> std::result::Result<
+    matrix_sdk::ruma::api::client::session::login::v3::Response,
+    matrix_sdk::Error,
+> {
+    use tokio::sync::oneshot;
+
+    // Session-scoped scheme, so no Info.plist registration needed. Synapse
+    // doesn't validate redirectUrl, so the URL shape is up to us.
+    const REDIRECT_URL: &str = "robrix://login";
+    const CALLBACK_SCHEME: &str = "robrix";
+
+    let auth = client.matrix_auth();
+    let sso_url = auth
+        .get_sso_login_url(REDIRECT_URL, Some(identity_provider_id))
+        .await?;
+
+    // Bridge the OS completion callback into a Rust oneshot. Mutex<Option>
+    // guards against the OS double-firing, and the same callback clears
+    // ACTIVE_SSO_AUTH_SESSION so cancel becomes a no-op once auth is done.
+    let (tx, rx) = oneshot::channel::<robius_web_auth_session::Result<String>>();
+    let tx = std::sync::Mutex::new(Some(tx));
+
+    let handle = robius_web_auth_session::AuthSession::new(&sso_url, CALLBACK_SCHEME)
+        .start(move |result| {
+            if let Ok(mut slot) = ACTIVE_SSO_AUTH_SESSION.lock() {
+                *slot = None;
+            }
+            if let Some(tx) = tx.lock().unwrap().take() {
+                let _ = tx.send(result);
+            }
+        })
+        .map_err(|e| {
+            matrix_sdk::Error::Io(io::Error::other(format!(
+                "Failed to start ASWebAuthenticationSession: {e}"
+            )))
+        })?;
+
+    // Publish the cancel handle so the modal's Cancel button can reach it.
+    // Cleared by the completion callback above.
+    if let Ok(mut slot) = ACTIVE_SSO_AUTH_SESSION.lock() {
+        *slot = Some(handle);
+    }
+
+    let callback_url_str = rx
+        .await
+        .map_err(|_| {
+            matrix_sdk::Error::Io(io::Error::other(
+                "ASWebAuthenticationSession completion handler dropped without firing",
+            ))
+        })?
+        .map_err(|e| {
+            matrix_sdk::Error::Io(io::Error::other(format!(
+                "ASWebAuthenticationSession failed: {e}"
+            )))
+        })?;
+
+    let callback_url = Url::parse(&callback_url_str).map_err(|e| {
+        matrix_sdk::Error::Io(io::Error::other(format!(
+            "Invalid SSO callback URL ({callback_url_str:?}): {e}"
+        )))
+    })?;
+
+    auth.login_with_sso_callback(callback_url.into())
+        .map_err(|e| {
+            matrix_sdk::Error::Io(io::Error::other(format!(
+                "Failed to parse SSO callback for loginToken: {e}"
+            )))
+        })?
+        .initial_device_display_name(&format!("robrix-sso-{brand}"))
+        .await
+}
+
+
+bitflags! {
+    /// The powers that a user has in a given room.
+    #[derive(Copy, Clone, PartialEq, Eq)]
+    pub struct UserPowerLevels: u64 {
+        const Ban = 1 << 0;
+        const Invite = 1 << 1;
+        const Kick = 1 << 2;
+        const Redact = 1 << 3;
+        const NotifyRoom = 1 << 4;
+        // -------------------------------------
+        // -- Copied from TimelineEventType ----
+        // -- Unused powers are commented out --
+        // -------------------------------------
+        // const CallAnswer = 1 << 5;
+        // const CallInvite = 1 << 6;
+        // const CallHangup = 1 << 7;
+        // const CallCandidates = 1 << 8;
+        // const CallNegotiate = 1 << 9;
+        // const CallReject = 1 << 10;
+        // const CallSdpStreamMetadataChanged = 1 << 11;
+        // const CallSelectAnswer = 1 << 12;
+        // const KeyVerificationReady = 1 << 13;
+        // const KeyVerificationStart = 1 << 14;
+        // const KeyVerificationCancel = 1 << 15;
+        // const KeyVerificationAccept = 1 << 16;
+        // const KeyVerificationKey = 1 << 17;
+        // const KeyVerificationMac = 1 << 18;
+        // const KeyVerificationDone = 1 << 19;
+        const Location = 1 << 20;
+        const Message = 1 << 21;
+        // const PollStart = 1 << 22;
+        // const UnstablePollStart = 1 << 23;
+        // const PollResponse = 1 << 24;
+        // const UnstablePollResponse = 1 << 25;
+        // const PollEnd = 1 << 26;
+        // const UnstablePollEnd = 1 << 27;
+        // const Beacon = 1 << 28;
+        const Reaction = 1 << 29;
+        // const RoomEncrypted = 1 << 30;
+        const RoomMessage = 1 << 31;
+        const RoomRedaction = 1 << 32;
+        const Sticker = 1 << 33;
+        // const CallNotify = 1 << 34;
+        // const PolicyRuleRoom = 1 << 35;
+        // const PolicyRuleServer = 1 << 36;
+        // const PolicyRuleUser = 1 << 37;
+        // const RoomAliases = 1 << 38;
+        // const RoomAvatar = 1 << 39;
+        // const RoomCanonicalAlias = 1 << 40;
+        // const RoomCreate = 1 << 41;
+        // const RoomEncryption = 1 << 42;
+        // const RoomGuestAccess = 1 << 43;
+        // const RoomHistoryVisibility = 1 << 44;
+        // const RoomJoinRules = 1 << 45;
+        // const RoomMember = 1 << 46;
+        // const RoomName = 1 << 47;
+        const RoomPinnedEvents = 1 << 48;
+        // const RoomPowerLevels = 1 << 49;
+        // const RoomServerAcl = 1 << 50;
+        // const RoomThirdPartyInvite = 1 << 51;
+        // const RoomTombstone = 1 << 52;
+        // const RoomTopic = 1 << 53;
+        // const SpaceChild = 1 << 54;
+        // const SpaceParent = 1 << 55;
+        // const BeaconInfo = 1 << 56;
+        // const CallMember = 1 << 57;
+        // const MemberHints = 1 << 58;
+    }
+}
+impl UserPowerLevels {
+    pub fn from(power_levels: &RoomPowerLevels, user_id: &UserId) -> Self {
+        let mut retval = UserPowerLevels::empty();
+        let user_power = power_levels.for_user(user_id);
+        retval.set(UserPowerLevels::Ban, user_power >= power_levels.ban);
+        retval.set(UserPowerLevels::Invite, user_power >= power_levels.invite);
+        retval.set(UserPowerLevels::Kick, user_power >= power_levels.kick);
+        retval.set(UserPowerLevels::Redact, user_power >= power_levels.redact);
+        retval.set(UserPowerLevels::NotifyRoom, user_power >= power_levels.notifications.room);
+        retval.set(UserPowerLevels::Location, user_power >= power_levels.for_message(MessageLikeEventType::Location));
+        retval.set(UserPowerLevels::Message, user_power >= power_levels.for_message(MessageLikeEventType::Message));
+        retval.set(UserPowerLevels::Reaction, user_power >= power_levels.for_message(MessageLikeEventType::Reaction));
+        retval.set(UserPowerLevels::RoomMessage, user_power >= power_levels.for_message(MessageLikeEventType::RoomMessage));
+        retval.set(UserPowerLevels::RoomRedaction, user_power >= power_levels.for_message(MessageLikeEventType::RoomRedaction));
+        retval.set(UserPowerLevels::Sticker, user_power >= power_levels.for_message(MessageLikeEventType::Sticker));
+        retval.set(UserPowerLevels::RoomPinnedEvents, user_power >= power_levels.for_state(StateEventType::RoomPinnedEvents));
+        retval
+    }
+
+    pub async fn from_room(room: &Room, user_id: &UserId) -> Option<Self> {
+        let room_power_levels = room.power_levels().await.ok()?;
+        Some(UserPowerLevels::from(&room_power_levels, user_id))
+    }
+
+    pub fn can_ban(self) -> bool {
+        self.contains(UserPowerLevels::Ban)
+    }
+
+    pub fn can_unban(self) -> bool {
+        self.can_ban() && self.can_kick()
+    }
+
+    pub fn can_invite(self) -> bool {
+        self.contains(UserPowerLevels::Invite)
+    }
+
+    pub fn can_kick(self) -> bool {
+        self.contains(UserPowerLevels::Kick)
+    }
+
+    pub fn can_redact(self) -> bool {
+        self.contains(UserPowerLevels::Redact)
+    }
+
+    pub fn can_notify_room(self) -> bool {
+        self.contains(UserPowerLevels::NotifyRoom)
+    }
+
+    pub fn can_redact_own(self) -> bool {
+        self.contains(UserPowerLevels::RoomRedaction)
+    }
+
+    pub fn can_redact_others(self) -> bool {
+        self.can_redact_own() && self.contains(UserPowerLevels::Redact)
+    }
+
+    pub fn can_send_location(self) -> bool {
+        self.contains(UserPowerLevels::Location)
+    }
+
+    pub fn can_send_message(self) -> bool {
+        self.contains(UserPowerLevels::RoomMessage)
+        || self.contains(UserPowerLevels::Message)
+    }
+
+    pub fn can_send_reaction(self) -> bool {
+        self.contains(UserPowerLevels::Reaction)
+    }
+
+    pub fn can_send_sticker(self) -> bool {
+        self.contains(UserPowerLevels::Sticker)
+    }
+
+    #[doc(alias("unpin"))]
+    pub fn can_pin(self) -> bool {
+        self.contains(UserPowerLevels::RoomPinnedEvents)
+    }
+}
+
+
+/// Drops session state and signals the login loop to wait for re-login.
+/// Keeps `REQUEST_SENDER` alive, and also the `matrix_worker_task
+/// which needs to keep running to receive the next login request.
+pub async fn clear_app_state(config: &LogoutConfig) -> Result<()> {
+    runtime::advance_authority();
+    default_sso_client_state().lock().unwrap().take();
+    client_state().lock().unwrap().take();
+    sync_service_state().lock().unwrap().take();
+    SYNC_SERVICE_ASSUMED_RUNNING.store(false, Ordering::Release);
+    IGNORED_USERS.lock().unwrap().clear();
+    all_joined_rooms_state().lock().unwrap().clear();
+    OWN_DISPLAY_NAME.lock().unwrap().take();
+    LOGOUT_NOTIFY.notify_one();
+
+    let on_clear_appstate = Arc::new(Notify::new());
+    crate::ui_dispatch::post_action(LogoutAction::ClearAppState { on_clear_appstate: on_clear_appstate.clone() });
+
+    match matrix_sdk_common::timeout::timeout(on_clear_appstate.notified(), config.app_state_cleanup_timeout).await {
+        Ok(_) => {
+            log!("Received signal that UI-side app state was cleaned successfully");
+            Ok(())
+        }
+        Err(_) => Err(anyhow!("Timed out waiting for UI-side app state cleanup")),
+    }
+}
+
+#[cfg(all(test, target_family = "wasm"))]
+mod browser_request_tests {
+    use super::*;
+    use wasm_bindgen_test::wasm_bindgen_test;
+    #[wasm_bindgen_test]
+    fn full_and_poisoned_queue_preserve_exact_draft_until_one_retry_is_admitted() {
+        use crate::room::room_input_bar::preserve_until_admitted;
+        struct RestoreSender(Option<MatrixRequestSender>);
+        impl Drop for RestoreSender {
+            fn drop(&mut self) {
+                *request_sender_state().lock().unwrap() = self.0.take();
+                REQUEST_BACKPRESSURE.store(false, Ordering::Release);
+            }
+        }
+        crate::ui_dispatch::advance_epoch();
+        let (sender, mut receiver) = matrix_request_channel();
+        let _restore = RestoreSender(request_sender_state().lock().unwrap().replace(sender.clone()));
+        let epoch = runtime::current_epoch();
+        for _ in 0..MATRIX_REQUEST_CAPACITY {
+            assert!(sender.try_send((epoch, MatrixRequest::GetOwnDevice)).is_ok());
+        }
+        let mut draft = "  你好 👩🏽‍💻\nsecond line\n  ".to_owned();
+        let mut reply = Some("$synthetic-reply:example.invalid".to_owned());
+        let original = (draft.clone(), reply.clone());
+        preserve_until_admitted(try_submit_async_request(MatrixRequest::GetOwnDevice), || {
+            draft.clear(); reply = None;
+        });
+        assert_eq!((draft.clone(), reply.clone()), original);
+        draft.push_str("edited before retry ✨");
+        let edited = (draft.clone(), reply.clone());
+        while receiver.try_recv().is_ok() {}
+        crate::ui_dispatch::report_overflow();
+        preserve_until_admitted(try_submit_async_request(MatrixRequest::GetOwnDevice), || {
+            draft.clear(); reply = None;
+        });
+        assert_eq!((draft.clone(), reply.clone()), edited);
+        assert!(receiver.try_recv().is_err());
+        crate::ui_dispatch::advance_epoch();
+        preserve_until_admitted(try_submit_async_request(MatrixRequest::GetOwnDevice), || {
+            draft.clear(); reply = None;
+        });
+        assert_eq!((draft, reply), (String::new(), None));
+        assert!(receiver.try_recv().is_ok());
+        assert!(receiver.try_recv().is_err());
+    }
+
+    #[wasm_bindgen_test]
+    fn request_burst_is_bounded_and_returns_rejected_payload() {
+        let (sender, mut receiver) = matrix_request_channel();
+        for _ in 0..MATRIX_REQUEST_CAPACITY {
+            assert!(sender.try_send((0, MatrixRequest::Login(LoginRequest::LoginByCli))).is_ok());
+        }
+        assert!(matches!(sender.try_send((0, MatrixRequest::Login(LoginRequest::LoginByCli))),
+            Err(tokio::sync::mpsc::error::TrySendError::Full(_))));
+        assert!(receiver.try_recv().is_ok());
+        assert!(sender.try_send((0, MatrixRequest::Login(LoginRequest::LoginByCli))).is_ok());
+    }
+}

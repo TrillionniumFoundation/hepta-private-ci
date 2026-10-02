@@ -1,0 +1,330 @@
+[package]
+name = "robrix"
+authors = ["Kevin Boos <kevinaboos@gmail.com>", "Robius Project Maintainers"]
+description = "A powerful multi-platform Matrix chat client written in Rust using Makepad + Robius app dev framework."
+documentation = "https://docs.rs/robrix"
+edition = "2024" ## mostly just to allow let-chains
+homepage = "https://robius.rs/"
+keywords = ["matrix", "chat", "client", "robius", "makepad"]
+license = "MIT"
+readme = "README.md"
+categories = ["gui"]
+repository = "https://github.com/project-robius/robrix"
+version = "1.0.0-beta.1"
+metadata.makepad-auto-version = "zqpv-Yj-K7WNVK2I8h5Okhho46Q="
+
+[dependencies]
+makepad-widgets = { git = "https://github.com/makepad/makepad", rev = "493d23a7630f487d29912dd73f2cbb5b639b74ca", features = ["serde"] }
+makepad-code-editor = { git = "https://github.com/makepad/makepad", rev = "493d23a7630f487d29912dd73f2cbb5b639b74ca" }
+
+
+robius-directories = { git = "https://github.com/project-robius/robius", rev = "cca3cc3dc99d8fcb6c69a127cd28d47ba8f3e3eb" }
+robius-file-picker = { git = "https://github.com/project-robius/robius", rev = "cca3cc3dc99d8fcb6c69a127cd28d47ba8f3e3eb" }
+robius-location    = { git = "https://github.com/project-robius/robius", rev = "cca3cc3dc99d8fcb6c69a127cd28d47ba8f3e3eb" }
+robius-open        = { git = "https://github.com/project-robius/robius", rev = "cca3cc3dc99d8fcb6c69a127cd28d47ba8f3e3eb" }
+robius-share       = { git = "https://github.com/project-robius/robius", rev = "cca3cc3dc99d8fcb6c69a127cd28d47ba8f3e3eb" }
+robius-use-makepad = "0.1.1" ## auto-configures all `robius-*` crates to work with Makepad.
+
+
+anyhow = "1.0"
+bitflags = "2.6.0"
+blurhash = { version = "0.2.3", default-features = false }
+bytesize = "2.0"
+chrono = "0.4"
+clap = { version = "4.0.16", features = ["derive"] }
+crossbeam-channel = "0.5.10"
+crossbeam-queue = "0.3.8"
+eyeball = { version = "0.8.8", features = ["tracing"] } # same as matrix-sdk-ui
+eyeball-im = { version = "0.9.1", features = [ "tracing" ] } # same as matrix-sdk-ui
+futures = "0.3"
+imbl = { version = "7.0.2", features = ["serde"] } # same as matrix-sdk-ui
+futures-util = "0.3"
+hashbrown = { version = "0.16", features = ["raw-entry"] }
+htmlize = { version = "1.0.5", features = ["unescape"] }
+indexmap = "2.6.0"
+libc = "0.2"
+mime = "0.3"
+mime_guess = "2.0"
+linkify = "0.10.0"
+matrix-sdk-base = { version = "=0.19.1" }
+matrix-sdk-common = { version = "=0.19.1" }
+matrix-sdk = { version = "=0.19.1", default-features = false, features = [
+    "e2e-encryption",
+    "automatic-room-key-forwarding",
+    "markdown",
+] }
+matrix-sdk-ui = { version = "=0.19.1", default-features = false }
+## Use the same ruma version as what's specified in matrix-sdk's Cargo.toml.
+## Enable a few extra features:
+## * "compat-optional" feature to allow missing body field in m.room.tombstone event.
+## * "compat-unset-avatar" feature to allow deleting the user's avatar to work properly.
+## * "unstable-compat-lax-syncv5-deser" feature to tolerate deserialization failures, which we added.
+## * Note: we need a feature like "compat-unset-display-name" to unset display names, but that doesn't exist yet.
+##
+## Note: we actually patch this below to use our `tsp` branch instead.
+ruma = { version = "=0.17.0", features = [
+    "compat-optional",
+    "compat-unset-avatar",
+    "unstable-compat-lax-syncv5-deser",
+] }
+num_cpus = "1.17.0"
+rand = "0.8.5"
+rangemap = "1.5.0"
+sanitize-filename = "0.6"
+serde = "1.0"
+serde_json = "1.0"
+thiserror = "2.0.16"
+tokio = { version = "1.43.1", features = ["macros"] }
+tracing-subscriber = { version = "0.3.17", features = ["env-filter"] }
+unicode-segmentation = "1.11.0"
+url = "2.5.0"
+
+
+# Upstream experimental TSP sources are preserved, but its incompatible SQLite/
+# Ruma dependency graph is excluded from this Matrix 0.19.1 application.
+# The reserved feature fails explicitly in build.rs; it never silently falls back.
+
+[target.'cfg(not(target_arch = "wasm32"))'.dependencies]
+hepta-native = { path = "../hepta-native", default-features = false }
+matrix-sdk = { version = "=0.19.1", default-features = false, features = ["sqlite", "bundled-sqlite", "sso-login", "rustls-aws-lc-rs"] }
+tokio = { version = "1.43.1", features = ["rt-multi-thread"] }
+# Security floor already qualified by the shared Hepta Matrix upgrade.
+rustls = { version = ">=0.23.45, <0.24", default-features = false }
+
+[target.'cfg(target_arch = "wasm32")'.dependencies]
+matrix-sdk = { version = "=0.19.1", default-features = false, features = ["js", "indexeddb"] }
+matrix-sdk-ui = { version = "=0.19.1", default-features = false, features = ["js"] }
+tokio = { version = "1.43.1", features = ["rt"] }
+web-sys = { version = "0.3", features = ["Window", "Storage", "Location"] }
+web-time = "1"
+
+## For OAuth/SSO login on iOS, via `ASWebAuthenticationSession`. Ugh....
+[target.'cfg(target_os = "ios")'.dependencies]
+robius-web-auth-session = { git = "https://github.com/project-robius/robius", rev = "cca3cc3dc99d8fcb6c69a127cd28d47ba8f3e3eb" }
+
+## On Android, the matrix-sdk no longer sets up TLS roots for rustls by default,
+## so we have to do it manually.
+[target.'cfg(target_os = "android")'.dependencies]
+webpki-root-certs = "1"
+
+
+[features]
+default = []
+# Explicit no-account actual-widget fixture; never enabled in production.
+ui-fixture = []
+## Enables experimental support for using TSP wallets.
+tsp = []
+
+## Hides the command prompt console/log window on Windows.
+## This is enabled automatically for packaged builds via cargo-packager
+## (see `build.rs`), but you can also enable it manually if desired.
+hide_windows_console = []
+
+## Logs all diffs received by the Matrix RoomListService.
+log_room_list_diffs = []
+
+## Logs all diffs to all room timelines.
+log_timeline_diffs = []
+
+## Logs all diffs received by the Matrix SpaceService.
+log_space_service_diffs = []
+
+
+# Reuse the reviewed SDK event-handler context patch. All crypto/store code is upstream.
+[patch.crates-io]
+matrix-sdk = { path = "../../codex-rs/third_party/matrix-sdk-0.19.1" }
+
+[build-dependencies]
+toml = "1"
+
+## On Windows, use the `winresource` crate to embed the app's icon and metadata into the executable.
+[target.'cfg(windows)'.build-dependencies]
+winresource = "0.1"
+
+
+[package.metadata.docs.rs]
+all-features = true
+
+[profile.release]
+debug = false
+strip = "symbols"
+
+## An optimized profile for development, with full debug info and assertions.
+[profile.debug-opt]
+inherits = "dev"
+opt-level = 3
+
+## An optimized release profile with thin LTO.
+[profile.release-lto]
+inherits = "release"
+lto = "thin"
+
+## Enable full optimizations when building app bundles for distribution.
+[profile.distribution]
+inherits = "release"
+codegen-units = 1
+lto = "fat"
+
+## For very fast compilation, not for creating an actual high-quality executable.
+## This is primarily useful for CI builds.
+[profile.fast]
+inherits = "dev"
+opt-level = 0
+debug = false
+lto = "off"
+strip = true
+debug-assertions = false
+
+
+
+## Configuration for cargo makepad (`cargo makepad android build-aab`).
+## The `[package.metadata.packager]` section below already sets the package ID
+## and product name, so we just need a version code for Google Play Store builds.
+[package.metadata.makepad.android]
+## Specifying "auto" will set it to a format like 'YYYYMMDDHH'.
+version_code = "auto"
+
+
+## Configuration for `cargo packager`
+[package.metadata.packager]
+product_name = "Hepta"
+identifier = "org.hepta.chat"
+category = "SocialNetworking"
+authors = [
+    "Project Robius <contact@robius.rs>",
+    "Kevin Boos <kevinaboos@gmail.com>",
+]
+publisher = "Hepta Contributors"
+license_file = "LICENSE-MIT"
+copyright = "Copyright 2023-2026, Project Robius"
+homepage = "https://github.com/project-robius/robrix"
+### Note: there is an 80-character max for the one-line summary.
+description = "A powerful multi-platform Matrix chat client written from scratch in Rust"
+### Note: there is an 80-character max for each line of the `long_description`.
+long_description = """
+Robrix is a powerful open-source Matrix chat client written in pure Rust
+using the Makepad UI framework (https://github.com/makepad/makepad)
+and the Project Robius app dev framework and platform abstractions
+(https://github.com/project-robius).
+Robrix runs on all major desktop and mobile platforms:
+macOS, Windows, Linux, Android, and iOS.
+"""
+icons = [
+    "./resources/icon_32.png",
+    "./resources/icon_48.png",
+    "./resources/icon_64.png",
+    "./resources/icon_128.png",
+    "./resources/icon_256.png",
+    "./resources/icon_512.png",
+    "./resources/icon.ico",
+]
+out_dir = "./dist"
+
+## Here, we define the list of resource directories for both Makepad and Robrix.
+## The `src` directory is based on `./dist/` as the `out_dir` (above), which is where the
+## `robius-packaging-commands` tool outputs the resources that it discovers after each build.
+## See the README from the `robius-packaging-commands` repo for more details.
+resources = [
+    # Makepad resources
+    { src = "./dist/resources/makepad_widgets", target = "makepad_widgets" },
+    { src = "./dist/resources/makepad_fonts_chinese_bold", target = "makepad_fonts_chinese_bold" },
+    { src = "./dist/resources/makepad_fonts_chinese_bold_2", target = "makepad_fonts_chinese_bold_2" },
+    { src = "./dist/resources/makepad_fonts_chinese_regular", target = "makepad_fonts_chinese_regular" },
+    { src = "./dist/resources/makepad_fonts_chinese_regular_2", target = "makepad_fonts_chinese_regular_2" },
+    { src = "./dist/resources/makepad_fonts_emoji", target = "makepad_fonts_emoji" },
+    # Robrix resources
+    { src = "./dist/resources/robrix", target = "robrix" },
+]
+
+## We use the `robius-packaging-commands` tool to build the entire Robrix app project,
+## which properly configures the release build settings for each target platform
+## (e.g., it sets the `MAKEPAD`/`MAKEPAD_PACKAGE_DIR` env vars to the appropriate value).
+## Note: `geoclue-2.0` has to be declared by hand. It's a D-Bus service that `robius-location`
+## talks to over a socket, so there's no linked library or dlopen'd soname for the tool to find.
+before-each-package-command = """
+robius-packaging-commands before-each-package \
+    --force-makepad \
+    --binary-name robrix \
+    --path-to-binary ./target/release/robrix \
+    --add-deb-dep geoclue-2.0
+"""
+
+## This is not yet implemented, so remove it.
+# deep_link_protocols = [
+#     { schemes = [
+#         "robrix",
+#         "matrix",
+#     ], role = "viewer" }, ## `name` is left as default
+# ]
+
+[package.metadata.packager.deb]
+depends = "./dist/depends_deb.txt"
+desktop_template = "./packaging/robrix.desktop"
+section = "utils"
+
+## These metainfo and licensing files are needed for package manager compliance.
+[package.metadata.packager.deb.files]
+"./packaging/rs.robius.robrix.metainfo.xml" = "/usr/share/metainfo/rs.robius.robrix.metainfo.xml"
+"./packaging/debian-copyright" = "/usr/share/doc/robrix/copyright"
+"./licenses/THIRD-PARTY-NOTICES.html" = "/usr/share/doc/robrix/THIRD-PARTY-NOTICES.html"
+
+[package.metadata.packager.appimage.files]
+"./packaging/rs.robius.robrix.metainfo.xml" = "/usr/share/metainfo/rs.robius.robrix.metainfo.xml"
+"./packaging/debian-copyright" = "/usr/share/doc/robrix/copyright"
+"./licenses/THIRD-PARTY-NOTICES.html" = "/usr/share/doc/robrix/THIRD-PARTY-NOTICES.html"
+
+[package.metadata.packager.pacman.files]
+"./packaging/rs.robius.robrix.metainfo.xml" = "/usr/share/metainfo/rs.robius.robrix.metainfo.xml"
+"./packaging/debian-copyright" = "/usr/share/licenses/robrix/copyright"
+"./licenses/THIRD-PARTY-NOTICES.html" = "/usr/share/licenses/robrix/THIRD-PARTY-NOTICES.html"
+
+[package.metadata.packager.macos]
+minimum_system_version = "11.0"
+frameworks = []
+info_plist_path = "./packaging/Info.plist"
+entitlements = "./packaging/Entitlements.plist"
+# Hepta signing identity is intentionally not configured.
+
+
+## Configuration for `cargo packager`'s generation of a macOS `.dmg`.
+[package.metadata.packager.dmg]
+background = "./packaging/Robrix macOS dmg background.png"
+window_size = { width = 960, height = 540 }
+app_position = { x = 200, y = 250 }
+application_folder_position = { x = 760, y = 250 }
+
+
+## Configuration for `cargo packager`'s generation of a Windows `.exe` setup installer.
+[package.metadata.packager.nsis]
+installer_icon = "./resources/icon.ico"
+## See this: <https://nsis.sourceforge.io/Docs/Chapter4.html#varconstant>
+appdata_paths = [
+    "$APPDATA/$PUBLISHER/$PRODUCTNAME",
+    "$LOCALAPPDATA/$PRODUCTNAME",
+]
+
+[lints.rust]
+keyword_idents_2024 = "forbid"
+non_ascii_idents = "forbid"
+non_local_definitions = "forbid"
+unsafe_op_in_unsafe_fn = "forbid"
+unnameable_types = "warn"
+unused_import_braces = "warn"
+
+## Configuration for clippy lints.
+[lints.clippy]
+blocks_in_conditions = "allow"
+collapsible_if = "allow"
+collapsible_else_if = "allow"
+doc_overindented_list_items = "allow"
+module_name_repetitions = "allow"
+needless_late_init = "allow"
+too_many_arguments = "allow"
+uninlined_format_args = "allow"
+used_underscore_binding = "allow"
+
+# Standalone application workspace, shared by native and Makepad WASM builds.
+[workspace]
+
+[target.'cfg(target_arch = "wasm32")'.dev-dependencies]
+wasm-bindgen-test = "0.3"
