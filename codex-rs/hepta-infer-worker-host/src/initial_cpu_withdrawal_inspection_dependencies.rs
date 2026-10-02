@@ -1,6 +1,7 @@
 //! Current authority includes the full prefix; statistical causes include only
 //! the actual affected registration lineage, not unrelated signed history.
 use super::super::*;
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 pub(super) fn current_prefix(
@@ -74,12 +75,12 @@ pub(super) fn artifact_events<'a>(
 pub(super) fn source_events(
     snapshot: &codex_hepta_agent_components::learning_ledger::LedgerSnapshot,
     source: &StableId,
-) -> HostResult<(BTreeSet<Digest32>, BTreeSet<Digest32>)> {
+) -> HostResult<(BTreeSet<Digest32>, BTreeMap<Digest32, Digest32>)> {
     use codex_hepta_agent_components::learning_ledger::LedgerEvent;
     let mut pending = vec![source.clone()];
     let mut visited = BTreeSet::new();
     let mut events = BTreeSet::new();
-    let mut supports = BTreeSet::new();
+    let mut supports = BTreeMap::new();
     while let Some(id) = pending.pop() {
         if !visited.insert(id.clone()) {
             continue;
@@ -95,10 +96,14 @@ pub(super) fn source_events(
         events.insert(record.event_digest);
         match &record.event {
             LedgerEvent::AuthenticatedDecisionV2(decision) => {
-                supports.insert(decision.support_digest);
+                if supports
+                    .insert(decision.support_digest, decision.policy_digest)
+                    .is_some_and(|old| old != decision.policy_digest)
+                {
+                    return Err("original support cannot name two model policies".into());
+                }
             }
             LedgerEvent::AuthenticatedOutcomeV2(outcome) => {
-                supports.insert(outcome.support_digest);
                 if let Some(predecessor) = &outcome.correction_predecessor {
                     let predecessor = snapshot
                         .records()
@@ -122,7 +127,7 @@ pub(super) fn source_events(
                         LedgerEvent::AuthenticatedDecisionV2(decision)
                             if decision.episode_id == outcome.episode_id =>
                         {
-                            Some(decision.record_id.clone())
+                            Some((decision.record_id.clone(), decision.policy_digest))
                         }
                         _ => None,
                     })
@@ -130,7 +135,14 @@ pub(super) fn source_events(
                 if decisions.len() != 1 {
                     return Err("source outcome lacks its exact original decision".into());
                 }
-                pending.extend(decisions);
+                let (decision, policy) = decisions.into_iter().next().ok_or("source decision")?;
+                if supports
+                    .insert(outcome.support_digest, policy)
+                    .is_some_and(|old| old != policy)
+                {
+                    return Err("original support cannot name two model policies".into());
+                }
+                pending.push(decision);
             }
             _ => {
                 return Err(
@@ -143,7 +155,8 @@ pub(super) fn source_events(
     if events.is_empty()
         || events.contains(&Digest32::ZERO)
         || supports.is_empty()
-        || supports.contains(&Digest32::ZERO)
+        || supports.contains_key(&Digest32::ZERO)
+        || supports.values().any(|pin| pin.is_zero())
     {
         return Err("original causal source/support event missing".into());
     }

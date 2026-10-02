@@ -127,7 +127,7 @@ impl Observation {
         let request: Digest32 = self.withdrawal_request_digest.parse()?;
         if request.is_zero()
             || request.to_string() != self.withdrawal_request_digest
-            || !(4..=128).contains(&self.causal_dependencies.len())
+            || !(5..=128).contains(&self.causal_dependencies.len())
             || self
                 .causal_dependencies
                 .windows(2)
@@ -139,6 +139,7 @@ impl Observation {
         let mut event_count = 0;
         let mut artifact_count = 0;
         let mut support_count = 0;
+        let mut input_count = 0;
         let mut dependencies = BTreeSet::new();
         for value in &self.causal_dependencies {
             let rest = value
@@ -150,6 +151,7 @@ impl Observation {
                 "event" => event_count += 1,
                 "artifact" => artifact_count += 1,
                 "support" => support_count += 1,
+                "input" => input_count += 1,
                 _ => return Err("withdrawal causal kind".into()),
             }
             let digest: Digest32 = pin.parse()?;
@@ -158,9 +160,14 @@ impl Observation {
             }
             dependencies.insert(StableId::new(value)?);
         }
-        if source_count == 0 || event_count != 1 || artifact_count == 0 || support_count == 0 {
+        if source_count == 0
+            || event_count != 1
+            || artifact_count == 0
+            || support_count == 0
+            || input_count == 0
+        {
             return Err(
-                "actual SourceACK lineage, registration and one withdrawal event required".into(),
+                "actual SourceACK lineage, original numeric input, registration and one withdrawal event required".into(),
             );
         }
         Ok(dependencies)

@@ -9,6 +9,8 @@ use serde::Serialize;
 use std::path::PathBuf;
 #[path = "initial_cpu_withdrawal_delivery.rs"]
 mod delivery;
+#[path = "initial_cpu_withdrawal_input_causality.rs"]
+mod input_causality;
 #[path = "initial_cpu_withdrawal_inspection.rs"]
 mod inspection;
 #[path = "initial_cpu_withdrawal_inspection_dependencies.rs"]

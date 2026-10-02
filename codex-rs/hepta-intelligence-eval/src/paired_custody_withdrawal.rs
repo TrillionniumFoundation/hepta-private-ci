@@ -149,9 +149,14 @@ pub(super) fn descriptor(config: &Config) -> HostResult<ProbeBinding> {
             withdrawal_request: Source,
             current_owner: Source,
             current_withdrawals: Vec<serde_json::Value>,
+            source_observations: Vec<Source>,
         }
         let current: CurrentProbe = serde_json::from_slice(&bytes)?;
-        if current.current_withdrawals.is_empty() || current.current_withdrawals.len() > 64 {
+        if current.current_withdrawals.is_empty()
+            || current.current_withdrawals.len() > 64
+            || current.source_observations.is_empty()
+            || current.source_observations.len() > 3
+        {
             return Err("bounded current withdrawal prefix".into());
         }
         Probe {
@@ -257,32 +262,36 @@ fn parse(
     if bytes.len() > 128 * 1024 || !bytes.ends_with(b"\n") || finished_ms < started_ms {
         return Err("bounded complete current inspection and original clock".into());
     }
-    let (mut value, causal_events): (Inspection, Option<(Vec<String>, Vec<String>, Vec<String>)>) =
-        if binding.probe.schema == "hepta.cpu-neuron.dataset-withdrawal-current-probe.v2" {
-            #[derive(Deserialize)]
-            #[serde(deny_unknown_fields)]
-            struct CurrentInspection {
-                schema: String,
-                original_inspection: Inspection,
-                source_record_event_digests: Vec<String>,
-                source_support_digests: Vec<String>,
-                artifact_registration_event_digests: Vec<String>,
-            }
-            let current: CurrentInspection = serde_json::from_slice(bytes)?;
-            if current.schema != "hepta.cpu-neuron.dataset-withdrawal-inspection.v2" {
-                return Err("current withdrawal inspection version".into());
-            }
-            (
-                current.original_inspection,
-                Some((
-                    current.source_record_event_digests,
-                    current.source_support_digests,
-                    current.artifact_registration_event_digests,
-                )),
-            )
-        } else {
-            (serde_json::from_slice(bytes)?, None)
-        };
+    let (mut value, causal_events): (
+        Inspection,
+        Option<(Vec<String>, Vec<String>, Vec<String>, Vec<String>)>,
+    ) = if binding.probe.schema == "hepta.cpu-neuron.dataset-withdrawal-current-probe.v2" {
+        #[derive(Deserialize)]
+        #[serde(deny_unknown_fields)]
+        struct CurrentInspection {
+            schema: String,
+            original_inspection: Inspection,
+            source_record_event_digests: Vec<String>,
+            source_support_digests: Vec<String>,
+            source_input_digests: Vec<String>,
+            artifact_registration_event_digests: Vec<String>,
+        }
+        let current: CurrentInspection = serde_json::from_slice(bytes)?;
+        if current.schema != "hepta.cpu-neuron.dataset-withdrawal-inspection.v2" {
+            return Err("current withdrawal inspection version".into());
+        }
+        (
+            current.original_inspection,
+            Some((
+                current.source_record_event_digests,
+                current.source_support_digests,
+                current.source_input_digests,
+                current.artifact_registration_event_digests,
+            )),
+        )
+    } else {
+        (serde_json::from_slice(bytes)?, None)
+    };
     if value.schema != "hepta.cpu-neuron.dataset-withdrawal-inspection.v1"
         || value.request_digest != binding.probe.withdrawal_request.digest
         || value.current_owner_digest != binding.probe.current_owner.digest
@@ -344,9 +353,9 @@ fn parse(
     if targets != binding.targets || !acknowledged_target {
         return Err("current inspection omitted source or descendant targets".into());
     }
-    if let Some((sources, supports, artifacts)) = causal_events {
+    if let Some((sources, supports, inputs, artifacts)) = causal_events {
         if !sources.contains(&value.source_ack.source_event_digest)
-            || sources.len() + supports.len() + artifacts.len() + 1 > 128
+            || sources.len() + supports.len() + inputs.len() + artifacts.len() + 1 > 128
         {
             return Err("actual SourceACK causal membership/capacity".into());
         }
@@ -357,6 +366,7 @@ fn parse(
         for (kind, events) in [
             ("source", sources),
             ("support", supports),
+            ("input", inputs),
             ("artifact", artifacts),
         ] {
             if events.is_empty() || events.windows(2).any(|pair| pair[0] >= pair[1]) {

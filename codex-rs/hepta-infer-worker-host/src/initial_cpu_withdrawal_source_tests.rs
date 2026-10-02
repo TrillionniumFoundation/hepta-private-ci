@@ -96,6 +96,24 @@ fn source(path: PathBuf, bytes: &[u8]) -> Source {
 fn fixture(root: &Path) -> Request {
     fixture_at(root, now_ms().unwrap())
 }
+fn numeric_line(request: &str, now: u64) -> Vec<u8> {
+    let pin = digest("policy").to_string();
+    let input = Digest32::of_bytes(
+        &vec![1_i64; 512]
+            .into_iter()
+            .flat_map(i64::to_be_bytes)
+            .collect::<Vec<_>>(),
+    );
+    let mut bytes=serde_json::to_vec(&serde_json::json!({
+        "schema":"hepta.cpu-neuron.offline-observation.v1","request_id":request,
+        "executed_at_ms":now,"input_line_digest":digest(request).to_string(),"input_digest":input.to_string(),
+        "model_manifest_digest":pin,"runtime_digest":pin,"weights_digest":pin,"encoder_digest":pin,"head_digest":pin,
+        "terminal_observed":true,"succeeded":true,"qualified":false,"authority_grants_any":false,
+        "drive_q24":vec![0_i64;10],"prediction_q24":vec![0_i64;10],"latency_micros":1,
+        "resident_bytes":1024,"transient_allocation_bytes":128})).unwrap();
+    bytes.push(b'\n');
+    bytes
+}
 fn fixture_at(root: &Path, now: u64) -> Request {
     let keys: [SigningKey; 5] =
         std::array::from_fn(|i| SigningKey::from_bytes(&[71 + i as u8; 32]));
@@ -167,6 +185,12 @@ fn fixture_at(root: &Path, now: u64) -> Request {
         now,
     );
     let candidates = vec![id("action"), id("abstain")];
+    let g_numeric = numeric_line("original-generator", now);
+    let o_numeric = numeric_line("original-observer", now + 1);
+    source(
+        root.join("original-numeric.jsonl"),
+        &[g_numeric.clone(), o_numeric.clone()].concat(),
+    );
     let decision = ProductionDecisionV2 {
         record_id: id("decision"),
         episode_id: id("episode"),
@@ -190,7 +214,7 @@ fn fixture_at(root: &Path, now: u64) -> Request {
             canonical_order_digest: candidate_order_digest_v2(&candidates),
             complete_for_generator: true,
         },
-        support_digest: digest("decision-support"),
+        support_digest: Digest32::of_bytes(&g_numeric),
     };
     let evidence = sign(
         &writer,
@@ -211,7 +235,7 @@ fn fixture_at(root: &Path, now: u64) -> Request {
         observed_at: Some(now),
         value: Some(FixedQ32::from_raw(100)),
         unit_profile_digest: digest("unit"),
-        support_digest: digest("outcome-support"),
+        support_digest: Digest32::of_bytes(&o_numeric),
         watermark: OutcomeWatermarkV1 {
             latest_observable_at: now,
             expected_delay_profile_digest: digest("delay"),
@@ -536,6 +560,30 @@ fn root_readonly_source_ack_keeps_expired_history_and_rejects_partial_or_substit
         observed.notice.source_tombstone_digest,
         receipt.append.event_digest
     );
+    let (_, supports) =
+        super::super::inspection_dependencies::source_events(&observed.snapshot, &id("outcome"))
+            .unwrap();
+    let material_path = root.join("original-numeric.jsonl");
+    let original_bytes = std::fs::read(&material_path).unwrap();
+    let material = Source {
+        path: material_path.clone(),
+        digest: Digest32::of_bytes(&original_bytes).to_string(),
+    };
+    assert_eq!(
+        super::super::input_causality::read(&[material.clone()], &supports)
+            .unwrap()
+            .len(),
+        1
+    );
+    let mut wrong_pin = material;
+    wrong_pin.digest = digest("substituted original numeric archive").to_string();
+    assert!(super::super::input_causality::read(&[wrong_pin], &supports).is_err());
+    let missing_original = source(
+        root.join("incomplete-original.jsonl"),
+        &numeric_line("not-original-support", historical_now),
+    );
+    assert!(super::super::input_causality::read(&[missing_original], &supports).is_err());
+    assert_eq!(std::fs::read(material_path).unwrap(), original_bytes);
     let mut substituted = evidence.clone();
     substituted.signature[0] ^= 1;
     assert!(

@@ -163,7 +163,11 @@ fn corrected_outcomes_share_original_decision_and_support_without_joining_other_
     let (corrected, corrected_support) = source_events(&snapshot, &id("record-left-1")?)?;
     let (other, other_support) = source_events(&snapshot, &id("record-right-0")?)?;
     assert!(first.is_subset(&corrected));
-    assert!(first_support.is_subset(&corrected_support));
+    assert!(
+        first_support
+            .iter()
+            .all(|(support, policy)| corrected_support.get(support) == Some(policy))
+    );
     assert_eq!(
         corrected,
         snapshot.records()[..3]
@@ -172,7 +176,16 @@ fn corrected_outcomes_share_original_decision_and_support_without_joining_other_
             .collect()
     );
     assert!(corrected.is_disjoint(&other));
-    assert!(corrected_support.is_disjoint(&other_support));
+    assert!(
+        corrected_support
+            .keys()
+            .all(|support| !other_support.contains_key(support))
+    );
+    assert!(
+        corrected_support
+            .values()
+            .all(|policy| *policy == Digest32::of_bytes(b"left"))
+    );
     assert!(source_events(&snapshot, &id("absent")?).is_err());
     Ok(())
 }

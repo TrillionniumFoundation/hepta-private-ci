@@ -21,6 +21,7 @@ enum Probe {
         withdrawal_request: Source,
         current_owner: Source,
         current_withdrawals: Vec<super::Notice>,
+        source_observations: Vec<Source>,
     },
 }
 
@@ -30,16 +31,22 @@ pub(super) fn run(path: &Path, pin: Digest32) -> HostResult<Value> {
         digest: pin.to_string(),
     };
     let probe: Probe = serde_json::from_slice(&original_probe.read(32 * 1024)?)?;
-    let (withdrawal_request, current_owner, current_notices) = match &probe {
+    let (withdrawal_request, current_owner, current_notices, numeric_sources) = match &probe {
         Probe::Original {
             withdrawal_request,
             current_owner,
-        } => (withdrawal_request, current_owner, None),
+        } => (withdrawal_request, current_owner, None, None),
         Probe::CurrentPrefix {
             withdrawal_request,
             current_owner,
             current_withdrawals,
-        } => (withdrawal_request, current_owner, Some(current_withdrawals)),
+            source_observations,
+        } => (
+            withdrawal_request,
+            current_owner,
+            Some(current_withdrawals),
+            Some(source_observations),
+        ),
     };
     let current = Inputs::read(&current_owner.path, digest(&current_owner.digest)?)?;
     if current.profile.owner.uid != 0 || current.profile.owner.gid != 0 {
@@ -203,6 +210,23 @@ pub(super) fn run(path: &Path, pin: Digest32) -> HostResult<Value> {
         denials.push(serde_json::json!({"artifact_id":target.as_str(),"role":role,
             "gate":"RevalidatingCandidate::with_current","result":"Ineligible","accepted":false,"consumer_invoked":false}));
     }
+    // Complete original support bytes are joined before final current-use
+    // revalidation. Historical parsing never renews signer/clock authority.
+    let causes = if let Some(numeric_sources) = numeric_sources {
+        let artifacts =
+            super::inspection_dependencies::artifact_events(&registry, affected.keys())?;
+        let (sources, supports) = super::inspection_dependencies::source_events(
+            &witnessed.snapshot,
+            &id(&request.source_record_id)?,
+        )?;
+        let inputs = super::input_causality::read(numeric_sources, &supports)?;
+        if sources.len() + supports.len() + inputs.len() + artifacts.len() + 1 > 128 {
+            return Err("withdrawal causal graph capacity".into());
+        }
+        Some((sources, supports, inputs, artifacts))
+    } else {
+        None
+    };
     current.revalidate()?;
     original_probe.read(32 * 1024)?;
     withdrawal_request.read(32 * 1024)?;
@@ -225,20 +249,12 @@ pub(super) fn run(path: &Path, pin: Digest32) -> HostResult<Value> {
             "witness_digest":ack.witness_receipt.ok_or("original witness ACK")?.witness_digest.to_string(),
             "acknowledged_at":ack.acknowledged_at.ok_or("original ACK time")?,"state_digest":ack.state_digest.to_string()},
         "delivery_denials":denials,"model_weight_forgetting_claimed":false});
-    if current_notices.is_some() {
-        let dependencies =
-            super::inspection_dependencies::artifact_events(&registry, affected.keys())?;
-        let (sources, supports) = super::inspection_dependencies::source_events(
-            &witnessed.snapshot,
-            &id(&request.source_record_id)?,
-        )?;
-        if sources.len() + supports.len() + dependencies.len() + 1 > 128 {
-            return Err("withdrawal causal graph capacity".into());
-        }
+    if let Some((sources, supports, inputs, dependencies)) = causes {
         Ok(
             serde_json::json!({"schema":"hepta.cpu-neuron.dataset-withdrawal-inspection.v2",
             "original_inspection":facts,"source_record_event_digests":sources.iter().map(ToString::to_string).collect::<Vec<_>>(),
-            "source_support_digests":supports.iter().map(ToString::to_string).collect::<Vec<_>>(),
+            "source_support_digests":supports.keys().map(ToString::to_string).collect::<Vec<_>>(),
+            "source_input_digests":inputs.iter().map(ToString::to_string).collect::<Vec<_>>(),
             "artifact_registration_event_digests":dependencies.iter().map(ToString::to_string).collect::<Vec<_>>()}),
         )
     } else {

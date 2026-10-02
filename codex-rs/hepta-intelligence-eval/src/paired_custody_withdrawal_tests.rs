@@ -195,9 +195,9 @@ fn v2_actual_inspection_exposes_only_original_causal_events_and_preserves_ack_ch
     let (mut binding, original) = fixture();
     binding.probe.schema = "hepta.cpu-neuron.dataset-withdrawal-current-probe.v2".into();
     let event = Digest32::of_bytes(b"original-registration").to_string();
-    let mut wrapper = serde_json::json!({"schema":"hepta.cpu-neuron.dataset-withdrawal-inspection.v2", "original_inspection":original, "source_record_event_digests":[original["source_ack"]["source_event_digest"]], "source_support_digests":[Digest32::of_bytes(b"actual-support").to_string()], "artifact_registration_event_digests":[event]});
+    let mut wrapper = serde_json::json!({"schema":"hepta.cpu-neuron.dataset-withdrawal-inspection.v2", "original_inspection":original, "source_record_event_digests":[original["source_ack"]["source_event_digest"]], "source_support_digests":[Digest32::of_bytes(b"actual-support").to_string()], "source_input_digests":[Digest32::of_bytes(b"actual-input").to_string()], "artifact_registration_event_digests":[event]});
     let value = parse(&line(&wrapper), &binding, 100, 102).unwrap();
-    assert_eq!(value.causal_dependencies().len(), 4);
+    assert_eq!(value.causal_dependencies().len(), 5);
     wrapper["artifact_registration_event_digests"] = serde_json::json!([]);
     assert!(parse(&line(&wrapper), &binding, 100, 102).is_err());
     wrapper["artifact_registration_event_digests"] = serde_json::json!([event, event]);
@@ -206,6 +206,21 @@ fn v2_actual_inspection_exposes_only_original_causal_events_and_preserves_ack_ch
         serde_json::json!([Digest32::ZERO.to_string()]);
     assert!(parse(&line(&wrapper), &binding, 100, 102).is_err());
     wrapper["artifact_registration_event_digests"] = serde_json::json!([event]);
+    for input in [
+        serde_json::json!([]),
+        serde_json::json!([Digest32::ZERO.to_string()]),
+        serde_json::json!([event, event]),
+    ] {
+        wrapper["source_input_digests"] = input;
+        assert!(parse(&line(&wrapper), &binding, 100, 102).is_err());
+    }
+    wrapper
+        .as_object_mut()
+        .unwrap()
+        .remove("source_input_digests");
+    assert!(parse(&line(&wrapper), &binding, 100, 102).is_err());
+    wrapper["source_input_digests"] =
+        serde_json::json!([Digest32::of_bytes(b"actual-input").to_string()]);
     wrapper["original_inspection"]["source_ack"]["sequence"] = serde_json::json!(0);
     assert!(parse(&line(&wrapper), &binding, 100, 102).is_err());
 }
