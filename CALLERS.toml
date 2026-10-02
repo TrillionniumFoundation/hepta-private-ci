@@ -7,6 +7,8 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 
 [privileged_inventory]
 required_boundary_ids = [
+  "paired_original_cas_consumption_reader",
+  "paired_protected_observer_provider",
   "climate_source_custody_prepare",
   "fixed_source_custody_initialize",
   "supervisor_authorized_boot",
@@ -868,3 +870,31 @@ forbidden = ["SignedArtifactSelectionV1", "permit_all", "from_unverified", "Sign
 path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_program_v2.rs"
 required = ["open_root_review_input", "Digest32::of_reader", "self.file.metadata()", "self.original", "512 * 1024 * 1024"]
 forbidden = ["SigningKey", "set_permissions", "write_all", "pub struct Program"]
+
+[[boundary]]
+id = "paired_original_cas_consumption_reader"
+symbol = "paired_consumption_reader"
+call_pattern = '\.paired_consumption_reader\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/paired_holdout_consumption.rs"
+definition_markers = ["pub(crate) fn paired_consumption_reader", "open_root_review_input", "self.file.try_clone()", "reader.read_state()", "read_exact_at", "decode_locked_state"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/protected_paired_provider.rs"]
+caller_markers = ["paired_consumption_reader", "hepta.fixed-source-holdout.witness.v1", "FinalHoldoutCasAnchorV1"]
+
+[[boundary]]
+id = "paired_protected_observer_provider"
+symbol = "protected_observer_provider"
+call_pattern = '\.protected_observer_provider\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs"
+definition_markers = ["pub(crate) fn protected_observer_provider", "self.poisoned", "ProtectedPairedObservationProviderV1::open"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/paired_supervised_facade.rs"]
+caller_markers = ["evaluate_protected_observer_transport", "clock.sample_registered", "original_witness_path", "evaluate_paired_with_clock"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/protected_paired_provider.rs"
+required = ["read_root_review_input", "private_gold_digest", "hepta.fixed-source-holdout.binding.v1", "paired_consumption_reader", "self.consumption", "self.attempted = true", "decode_transport"]
+forbidden = ["SigningKey", "AuthorityPosture::ALLOW_ALL", "Command::new", "new_generation"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_observer_transport.rs"
+required = ["deny_unknown_fields", "hepta.eval.paired-supervised.observer-cut.v1", "signature_hex.len() != 128", "paired_observation_cut_signing_payload_v1(&cut)? != bytes", "original_elapsed_micros"]
+forbidden = ["SigningKey", "AuthorityPosture::ALLOW_ALL"]

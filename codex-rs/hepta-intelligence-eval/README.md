@@ -101,3 +101,29 @@ genuine reference/candidate outputs, monotonic costs, retention observations
 and exact registered unlearning evidence, followed by independent O/E and S.
 Source invalidation and CURRENT delivery denial can establish structural
 withdrawal; they do not establish removal of information from model weights.
+
+The Linux production facade now has `evaluate_protected_observer_transport`
+for an original immutable O cut. It takes the same original locked CAS path,
+independent custody witness and registered cut path. The manifest comes from
+the original witness's private-gold digest; the binding is recomputed in the
+original custody domain. Before reading observations, it replays the held CAS
+descriptor with the witness minimum and matches the complete original plan,
+sequence, use and journal head. A caller receipt cannot authorize release. The
+cloned descriptor retains the same physical lock, uses positional reads without
+moving the writer cursor, and does not create a second owner or reset a fence.
+
+`encode_signed_paired_observation_transport_v1` transfers the original binary
+O signing payload and existing evidence wire. Decoding does not authenticate
+it: the registered runner rechecks current G/O trust, clock, independent O
+signature, complete graph, monotonic observations and unchanged frozen metric
+gates. Independent E qualification still publishes through the original durable
+evidence sink. Missing or invalid post-consumption transport preserves the
+Consumed obligation; ordinary evaluation refuses another execution on replay.
+
+This is a concrete protected transport consumer, not an installed scientific
+measurement result. The fresh public-development encoder route, actual numeric
+candidate/reference measurements, retention and structural-withdrawal producer,
+and independent E normal-role entry remain required before the new Climate
+cohort is initialized or consumed. No scalar receipt or hash establishes a
+passed metric. Rejected and Insufficient results must preserve the same original
+costs, profile thresholds, consumption history and terminal evidence.
