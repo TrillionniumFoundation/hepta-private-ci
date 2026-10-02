@@ -613,6 +613,7 @@ async fn current_durable_run_start_requires_live_owner_trust() {
             .lock()
             .expect("runs")
             .run(second_id.as_str())
+            .expect("retained run status")
             .is_none()
     );
 }

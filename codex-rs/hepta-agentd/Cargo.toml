@@ -112,3 +112,6 @@ core_test_support = { workspace = true }
 sqlx = { workspace = true }
 tempfile = { workspace = true }
 wiremock = { workspace = true }
+
+[target.'cfg(unix)'.dependencies]
+libc = { workspace = true }

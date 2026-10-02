@@ -18,7 +18,6 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
-use crate::AgentRunCoordinator;
 use crate::AgentRunError;
 use crate::AgentdError;
 use crate::AgentdEventKind;
@@ -26,6 +25,7 @@ use crate::AgentdIdentity;
 use crate::EventBuffer;
 use crate::RunReceipt;
 use crate::RuntimeComposition;
+use crate::lane_b_runtime::DurableAgentRunCoordinator;
 
 #[path = "state_control.rs"]
 mod control;
@@ -57,7 +57,7 @@ pub(crate) struct AgentdState {
     events: Mutex<EventBuffer>,
     automation: Mutex<Option<AutomationStore>>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
-    runs: Mutex<AgentRunCoordinator>,
+    runs: Mutex<DurableAgentRunCoordinator>,
     app_server_drain: AppServerDrainHandle,
     pub(crate) prompt_pipeline: Arc<crate::AgentdPromptPipelineOwner>,
 }
@@ -99,18 +99,21 @@ impl AgentdState {
             identity.app_server_socket.display(),
             crate::AGENTD_CONTROL_SCHEMA_VERSION
         );
-        let run_coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
-            agent_id: identity.agent_id.as_str().to_string(),
-            supervisor_generation: identity.spawn_generation,
-            agentd_generation: identity.spawn_generation,
-            configuration_digest: Sha256Digest::for_bytes(configuration_material.as_bytes())
-                .as_str()
-                .to_string(),
-            ports_digest: Sha256Digest::for_bytes(ports_material.as_bytes())
-                .as_str()
-                .to_string(),
-            max_active_runs: usize::from(identity.resources.max_concurrent_turns),
-        })
+        let run_coordinator = DurableAgentRunCoordinator::open(
+            RuntimeComposition {
+                agent_id: identity.agent_id.as_str().to_string(),
+                supervisor_generation: identity.spawn_generation,
+                agentd_generation: identity.spawn_generation,
+                configuration_digest: Sha256Digest::for_bytes(configuration_material.as_bytes())
+                    .as_str()
+                    .to_string(),
+                ports_digest: Sha256Digest::for_bytes(ports_material.as_bytes())
+                    .as_str()
+                    .to_string(),
+                max_active_runs: usize::from(identity.resources.max_concurrent_turns),
+            },
+            identity.run_root.join("runtime-codex-agent-runs-v1.json"),
+        )
         .map_err(run_error)?;
 
         let prompt_registry_root = identity.home_root.join("prompt-registry");
@@ -532,7 +535,7 @@ impl AgentdState {
             events.push(AgentdEventKind::GenerationFenced);
         }
         if let Ok(mut runs) = self.runs.lock() {
-            runs.close_admissions();
+            let _ = runs.close_admissions();
             if let Ok(now_ms) = unix_now_ms() {
                 let _ = runs.begin_drain(now_ms, "generation_fenced");
             }

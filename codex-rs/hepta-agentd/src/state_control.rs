@@ -55,6 +55,13 @@ impl AgentdState {
             )));
         }
         self.refresh_generation()?;
+        // Health/status cannot acknowledge a stale retained run image. The
+        // existing owner stays poisoned after uncertain storage failure.
+        self.runs
+            .lock()
+            .map_err(poisoned_state)?
+            .verify()
+            .map_err(run_error)?;
         let (
             current_generation,
             lifecycle,
@@ -527,6 +534,7 @@ impl AgentdState {
                     .lock()
                     .map_err(poisoned_state)?
                     .run(&run_id)
+                    .map_err(run_error)?
                     .map(wire_run_receipt);
                 AgentdPayload::RunStatus { run }
             }
