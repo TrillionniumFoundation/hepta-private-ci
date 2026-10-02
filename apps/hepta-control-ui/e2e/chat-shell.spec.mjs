@@ -203,3 +203,26 @@ test("offline draft remains editable and reconnect never sends automatically", a
   await expect(page.locator("#message-draft")).toHaveValue("Draft edited while offline");
   expect((await (await request.get("/__test__/chat-state")).json()).sendCount).toBe(0);
 });
+
+for (const width of [533,347]) {
+  test(`short 150%-equivalent layout retains timeline and keyboard-accessible composer at ${width}px`, async ({page,request},testInfo) => {
+    await request.get("/__test__/chat-history");
+    await page.setViewportSize({width,height:373});
+    await loadControlConsole(page,{openConsole:false});
+    await page.getByRole("button",{name:/Engineering/}).click();
+    await expect(page.locator("#message-timeline")).toContainText("Historical message 120");
+    await page.locator("#message-draft").fill("First line\nSecond line\nThird line");
+    const timeline=await page.locator("#message-timeline").boundingBox();
+    expect(timeline.height).toBeGreaterThanOrEqual(120);
+    await page.locator("#send-message").focus();
+    const send=await page.locator("#send-message").boundingBox();
+    expect(send.y+send.height).toBeLessThanOrEqual(374);
+    const visibleTimeline=await page.locator("#message-timeline").boundingBox();
+    expect(visibleTimeline.y).toBeGreaterThanOrEqual(0);
+    expect(visibleTimeline.y+visibleTimeline.height).toBeLessThanOrEqual(374);
+    expect(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth)).toBe(true);
+    await expect(page.locator("#message-draft")).toHaveValue("First line\nSecond line\nThird line");
+    expect((await new AxeBuilder({page}).analyze()).violations).toEqual([]);
+    await page.screenshot({path:testInfo.outputPath(`short-150-percent-${width}.png`),fullPage:true});
+  });
+}

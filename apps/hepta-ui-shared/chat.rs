@@ -202,6 +202,8 @@ pub mod design {
     pub const COMPOSER_RADIUS: f32 = 12.0;
     pub const MESSAGE_SPACING: f32 = 12.0;
     pub const COMPACT_WIDTH: f32 = 760.0;
+    pub const SHORT_VIEWPORT_HEIGHT: f32 = 440.0;
+    pub const MIN_TIMELINE_HEIGHT: f32 = 120.0;
     pub const BACKGROUND: [u8; 3] = [10, 15, 24];
     pub const SURFACE: [u8; 3] = [17, 25, 38];
     pub const BORDER: [u8; 3] = [53, 72, 96];
