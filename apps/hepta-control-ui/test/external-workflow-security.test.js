@@ -1,11 +1,10 @@
+// Historical pinned workflow contracts only; not current host/deployment acceptance.
+import { readLegacyWorkflow } from "./legacy-workflow-fixture.js";
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 
-const root = fileURLToPath(new URL("../../../", import.meta.url));
-const external = readFileSync(`${root}.github/workflows/ui-control-external-qualification.yml`, "utf8");
-const qualification = readFileSync(`${root}.github/workflows/ui-control-qualification.yml`, "utf8");
+const external = readLegacyWorkflow("ui-control-external-qualification.yml");
+const qualification = readLegacyWorkflow("ui-control-qualification.yml");
 
 function section(text, start, end) {
   const from = text.indexOf(start);

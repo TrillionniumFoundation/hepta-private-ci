@@ -1,3 +1,5 @@
+// Historical pinned workflow contracts only; not current host/deployment acceptance.
+import { readLegacyWorkflow } from "./legacy-workflow-fixture.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
@@ -9,8 +11,8 @@ import {
 } from "../../../qualification/ui-control/external-workflow-observation.mjs";
 
 const root = fileURLToPath(new URL("../../../", import.meta.url));
-const observerWorkflow = readFileSync(`${root}.github/workflows/ui-control-external-observer.yml`, "utf8");
-const qualificationWorkflow = readFileSync(`${root}.github/workflows/ui-control-qualification.yml`, "utf8");
+const observerWorkflow = readLegacyWorkflow("ui-control-external-observer.yml");
+const qualificationWorkflow = readLegacyWorkflow("ui-control-qualification.yml");
 const schema = JSON.parse(readFileSync(`${root}qualification/ui-control/EXTERNAL_WORKFLOW_OBSERVATION_SCHEMA.json`, "utf8"));
 const candidate = "a".repeat(40);
 const workflowSha = "b".repeat(40);

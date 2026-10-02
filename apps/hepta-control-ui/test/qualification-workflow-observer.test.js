@@ -1,13 +1,12 @@
+// Historical pinned workflow contracts only; not current host/deployment acceptance.
+import { readLegacyWorkflow } from "./legacy-workflow-fixture.js";
 import test from "node:test";
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { fileURLToPath } from "node:url";
 
 const root = fileURLToPath(new URL("../../../", import.meta.url));
-const workflow = readFileSync(
-  `${root}.github/workflows/ui-control-qualification-observer.yml`,
-  "utf8",
-);
+const workflow = readLegacyWorkflow("ui-control-qualification-observer.yml");
 const schema = JSON.parse(
   readFileSync(
     `${root}qualification/ui-control/QUALIFICATION_WORKFLOW_OBSERVATION_SCHEMA.json`,
