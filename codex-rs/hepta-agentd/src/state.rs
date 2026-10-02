@@ -88,6 +88,7 @@ struct RuntimeState {
     revocation_ready: bool,
     required_ports_ready: bool,
     admission_open: bool,
+    draining: bool,
     fenced: bool,
 }
 
@@ -170,6 +171,7 @@ impl AgentdState {
                 revocation_ready: false,
                 required_ports_ready: false,
                 admission_open: false,
+                draining: false,
                 fenced: false,
             }),
             identity,
@@ -361,6 +363,7 @@ impl AgentdState {
                 runtime.lifecycle,
                 AgentLifecycle::Draining | AgentLifecycle::Stopped | AgentLifecycle::Failed
             ) {
+                runtime.draining = true;
                 runtime.app_server_ready = false;
                 runtime.required_ports_ready = false;
             }
@@ -369,6 +372,7 @@ impl AgentdState {
                 && runtime.critical_stores_ready
                 && runtime.revocation_ready
                 && runtime.required_ports_ready
+                && !runtime.draining
                 && !runtime.fenced
             {
                 runtime.admission_open = true;
@@ -430,12 +434,13 @@ impl AgentdState {
 
     pub(crate) fn mark_app_server_ready(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
-        if !runtime.app_server_ready {
+        if !runtime.draining && !runtime.fenced && !runtime.app_server_ready {
             runtime.app_server_ready = true;
             runtime.required_ports_ready = true;
             if runtime.lifecycle == AgentLifecycle::Running
                 && runtime.critical_stores_ready
                 && runtime.revocation_ready
+                && !runtime.draining
                 && !runtime.fenced
             {
                 runtime.admission_open = true;
@@ -450,6 +455,7 @@ impl AgentdState {
 
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        runtime.draining = true;
         runtime.app_server_ready = false;
         runtime.required_ports_ready = false;
         runtime.admission_open = false;
@@ -505,9 +511,11 @@ impl AgentdState {
         Ok(DrainSnapshot {
             admission_closed: runtime.lifecycle == AgentLifecycle::Draining
                 && !runtime.app_server_ready
+                && !runtime.draining
                 && !runtime.fenced,
             running_turns,
             drained: runtime.lifecycle == AgentLifecycle::Draining
+                && !runtime.draining
                 && !runtime.fenced
                 && self.app_server_drain.drained()
                 && running_turns == 0
@@ -564,6 +572,7 @@ impl AgentdState {
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         Ok(runtime.lifecycle == AgentLifecycle::Running
             && runtime.app_server_ready
+            && !runtime.draining
             && !runtime.fenced)
     }
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
@@ -864,3 +873,12 @@ mod isolation_tests;
 #[cfg(test)]
 #[path = "run_store_dispatch_tests.rs"]
 mod run_store_dispatch_tests;
+
+#[path = "state_plasticity.rs"]
+mod plasticity;
+
+/// Serializes final admission with local draining/fencing until synchronous
+/// append and original anchor commit finish; it grants no effect authority.
+pub(crate) struct PlasticityFinalAdmissionGuardV1<'a> {
+    _runtime: std::sync::MutexGuard<'a, RuntimeState>,
+}
