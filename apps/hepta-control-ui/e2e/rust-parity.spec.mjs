@@ -81,3 +81,19 @@ test("two tabs agree that an already-cleaned terminal record is settled", async 
   expect((await (await request.get("/__test__/state")).json()).requestCount).toBe(1);
   await second.close();
 });
+
+test("narrow console keeps controls, confirmation and error diagnostics readable", async ({ page, request }, testInfo) => {
+  await page.setViewportSize({ width: 390, height: 844 });
+  await loadControlConsole(page);
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+  await page.screenshot({ path: testInfo.outputPath("narrow-console.png"), fullPage: true });
+  await page.getByLabel("Reason").fill("Review the narrow-window confirmation.");
+  await page.getByRole("button", { name: "Request reconcile", exact: true }).click();
+  await expect(page.getByRole("dialog")).toBeVisible();
+  await page.screenshot({ path: testInfo.outputPath("narrow-confirmation.png"), fullPage: true });
+  await request.get("/__test__/bump");
+  await page.getByRole("button", { name: "Submit request", exact: true }).click();
+  await expect(page.getByRole("dialog")).toBeHidden();
+  await expect(page.locator("#error-status")).toContainText("UI_CONTROL_STALE_REVISION");
+  await page.screenshot({ path: testInfo.outputPath("narrow-error.png"), fullPage: true });
+});
