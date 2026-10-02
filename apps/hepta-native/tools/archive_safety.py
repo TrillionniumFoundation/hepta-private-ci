@@ -12,7 +12,7 @@ import re
 import stat
 import zipfile
 
-SCHEMA = "hepta.ui-native-unsigned-package.v2"
+SCHEMA = "hepta.ui-native-unsigned-package.v3"
 MANIFEST = "unsigned-package-manifest.json"
 MAX_MEMBERS = 64
 MAX_MEMBER_BYTES = 512 * 1024 * 1024
@@ -22,7 +22,7 @@ HEX = re.compile(r"[0-9a-f]{64}\Z")
 VERSION = re.compile(r"(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)\.(?:0|[1-9][0-9]*)(?:-[0-9A-Za-z.-]+)?\Z")
 ROOTS = {"linux": "HeptaNative.AppDir", "macos": "Hepta Native.app", "windows": "HeptaNative"}
 BINARIES = ("hepta-native", "hepta-native-updater", "hepta-native-credential")
-WINDOWS_IDENTITY_SCRIPT = "Register-HeptaNativeIdentity.ps1"
+WINDOWS_IDENTITY_COMMAND = ["hepta-native.exe", "--register-notification-identity"]
 DEVICES = {"con", "prn", "aux", "nul", *(f"com{i}" for i in range(1, 10)), *(f"lpt{i}" for i in range(1, 10))}
 
 
@@ -107,7 +107,7 @@ def platform_metadata(platform: str) -> set[str]:
         return {"usr/share/applications/hepta-native.desktop", "PACKAGING.md"}
     if platform == "macos":
         return {"Contents/Info.plist", "PACKAGING.md"}
-    return {"app.manifest", WINDOWS_IDENTITY_SCRIPT, "PACKAGING.md"}
+    return {"app.manifest", "PACKAGING.md"}
 
 
 def validate_open_archive(source: zipfile.ZipFile) -> tuple[dict, list[zipfile.ZipInfo]]:
@@ -137,6 +137,9 @@ def validate_open_archive(source: zipfile.ZipFile) -> tuple[dict, list[zipfile.Z
             raise ValueError(f"unsigned package cannot promote {field}")
     if manifest.get("windowsAppUserModelIdRegistrationIncluded") is not (platform == "windows"):
         raise ValueError("Windows identity registration declaration is inconsistent")
+    expected_command = WINDOWS_IDENTITY_COMMAND if platform == "windows" else None
+    if "windowsAppUserModelIdRegistrationCommand" not in manifest or manifest["windowsAppUserModelIdRegistrationCommand"] != expected_command:
+        raise ValueError("Windows identity registration command is inconsistent")
     if manifest.get("linuxPortalFirstPicker") is not (platform == "linux"):
         raise ValueError("Linux portal declaration is inconsistent")
     files, binaries = manifest.get("fileSha256"), manifest.get("binarySha256")

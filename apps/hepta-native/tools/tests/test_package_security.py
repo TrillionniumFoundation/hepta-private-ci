@@ -87,7 +87,7 @@ class PackageSecurityTests(unittest.TestCase):
             "windows": {
                 "hepta-native.exe", "hepta-native-updater.exe",
                 "hepta-native-credential.exe", "app.manifest",
-                "Register-HeptaNativeIdentity.ps1", "PACKAGING.md",
+                "PACKAGING.md",
             },
         }
         for platform, archive in self.archives.items():
@@ -98,9 +98,31 @@ class PackageSecurityTests(unittest.TestCase):
                 self.assertEqual(manifest["version"], package.tomllib.loads(
                     (package.APP / "Cargo.toml").read_text())["package"]["version"])
                 self.assertFalse(manifest["releaseAuthorized"])
+                self.assertEqual(manifest["windowsAppUserModelIdRegistrationCommand"],
+                                 safety.WINDOWS_IDENTITY_COMMAND if platform == "windows" else None)
 
     def test_reproducible_three_platform_packages(self):
         package.self_test()
+
+    def test_registration_command_cannot_select_another_program_or_arguments(self):
+        for value in [None, [], ["powershell.exe"],
+                      ["hepta-native.exe", "--register-notification-identity", "other.exe"],
+                      "hepta-native.exe --register-notification-identity"]:
+            archive = self.manifest_change(lambda manifest: manifest.update(
+                windowsAppUserModelIdRegistrationCommand=value), "windows")
+            with self.subTest(command=value), self.assertRaisesRegex(ValueError, "registration command"):
+                safety.validate_archive(archive)
+        archive = self.manifest_change(lambda manifest: manifest.pop(
+            "windowsAppUserModelIdRegistrationCommand"), "windows")
+        with self.assertRaisesRegex(ValueError, "registration command"):
+            safety.validate_archive(archive)
+
+    def test_non_windows_package_cannot_declare_registration(self):
+        for platform in ["linux", "macos"]:
+            archive = self.manifest_change(lambda manifest: manifest.update(
+                windowsAppUserModelIdRegistrationCommand=safety.WINDOWS_IDENTITY_COMMAND), platform)
+            with self.subTest(platform=platform), self.assertRaisesRegex(ValueError, "registration command"):
+                safety.validate_archive(archive)
 
     def test_extra_unlisted_member_is_rejected(self):
         archive = self.rewrite(lambda entries: entries + [("HeptaNative.AppDir/extra", b"x")])
