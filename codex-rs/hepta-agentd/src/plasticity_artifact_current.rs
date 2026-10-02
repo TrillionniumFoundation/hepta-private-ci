@@ -193,13 +193,16 @@ impl FrozenPlasticityArtifactsV1 {
         // Full provenance is time-dependent even when the signed registry
         // receipt stays unchanged. Never downgrade a previously strict view.
         let full = current.verified_at().is_some();
-        if self.requires_full_admission && !full
-            || full && current.verified_at() != Some(now)
-            || full
-                && self.eligible_artifacts.iter().any(|artifact| {
-                    current.full_admission(artifact).is_none() || !current.is_eligible(artifact)
-                })
-        {
+        let admission_valid = match current.verified_at() {
+            Some(verified_at) => {
+                verified_at == now
+                    && self.eligible_artifacts.iter().all(|artifact| {
+                        current.full_admission(artifact).is_some() && current.is_eligible(artifact)
+                    })
+            }
+            None => !self.requires_full_admission,
+        };
+        if !admission_valid {
             return Err(AgentdError::GenerationFenced(
                 "plasticity full artifact provenance expired, changed or became unavailable; rebootstrap required".to_string(),
             ));
