@@ -42,6 +42,13 @@ class CurrentStateTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "unsafe test path"):
                     STATE.validate_source(source)
 
+    def test_product_caller_evidence_cannot_claim_exclusive_worker_root(self):
+        self.source["ownership"]["declaredRoots"].append(
+            "codex-rs/hepta-infer-worker-host"
+        )
+        with self.assertRaisesRegex(ValueError, "registered exclusive owner"):
+            STATE.validate_source(self.source)
+
     def test_map_preserves_external_gates_and_exact_receipt_policy(self):
         mapping = STATE.build_map(self.source)
         self.assertEqual(mapping["sourceIdentityPolicy"], "exact_ci_receipt_v1")

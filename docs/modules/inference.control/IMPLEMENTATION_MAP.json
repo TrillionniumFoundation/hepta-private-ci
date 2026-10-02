@@ -18,17 +18,14 @@
   "currentState": "docs/modules/inference.control/CURRENT_STATE.json",
   "declaredRoots": [
     "codex-rs/hepta-infer-core",
-    "codex-rs/hepta-infer-worker-host",
     "codex-rs/hepta-inferd"
   ],
   "resolvedRoots": [
     "codex-rs/hepta-infer-core",
-    "codex-rs/hepta-infer-worker-host",
     "codex-rs/hepta-inferd"
   ],
   "sourceRoot": [
     "codex-rs/hepta-infer-core",
-    "codex-rs/hepta-infer-worker-host",
     "codex-rs/hepta-inferd"
   ],
   "sourceRootPresent": true,
@@ -303,7 +300,7 @@
         "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs::success_requires_both_matching_completion_and_final_ready_owner"
       ],
       "designOperation": "exact_plan_native_app_server_execution",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -316,7 +313,7 @@
         "codex-rs/hepta-infer-worker-host/src/control_actor_compat_tests.rs::one_writer_owns_the_journal_and_effect_capability_is_one_shot"
       ],
       "designOperation": "unique_writer_effect_reconciler_actor_boundary",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -330,7 +327,7 @@
         "codex-rs/hepta-infer-worker-host/src/unix_output_protector_boundary_tests.rs::vault_config_rejects_symlinks_hardlinks_and_oversize_files"
       ],
       "designOperation": "external_encrypted_output",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -343,7 +340,7 @@
         "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry"
       ],
       "designOperation": "signed_operator_recovery_cli",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -356,7 +353,7 @@
         "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::compaction_preserves_indeterminate_capacity_and_exact_state"
       ],
       "designOperation": "bounded_maintenance_cli",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -397,7 +394,7 @@
         "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::real_writer_mixed_query_terminal_contention_curve"
       ],
       "designOperation": "bounded_terminal_admission_and_fifo_fairness",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -414,7 +411,7 @@
         "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::shutdown_deadline_retains_lock_until_the_real_owner_exits"
       ],
       "designOperation": "accepted_response_loss_and_post_commit_observation",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -427,7 +424,7 @@
         "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::published_metrics_are_immutable_stale_and_do_not_queue_reads"
       ],
       "designOperation": "immutable_observational_metrics",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     }

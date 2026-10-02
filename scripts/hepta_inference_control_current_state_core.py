@@ -67,6 +67,12 @@ def validate_source(source: dict[str, Any]) -> None:
     roots = ownership.get("declaredRoots")
     require(isinstance(roots, list) and roots, "declared roots must be nonempty")
     require(len(roots) == len(set(roots)), "declared roots must be unique")
+    modules = load_json(ROOT / "docs/modules/MODULES.json")["modules"]
+    registered = next(row for row in modules if row["id"] == source["module"])
+    require(
+        set(roots) == {row["path"] for row in registered["rootBindings"]},
+        "declared roots must match registered exclusive owner",
+    )
     for root in roots:
         require(isinstance(root, str) and root, "invalid declared root")
         require((ROOT / root).is_dir(), f"missing declared root: {root}")
@@ -280,7 +286,15 @@ def build_map(source: dict[str, Any]) -> dict[str, Any]:
                 "mappingClass": (
                     "documentation_evidence"
                     if operation["state"].startswith("documentation_")
-                    else "owner_native"
+                    else (
+                        "owner_native"
+                        if any(
+                            operation["sourcePath"] == root
+                            or operation["sourcePath"].startswith(root + "/")
+                            for root in ownership["declaredRoots"]
+                        )
+                        else "delegated_evidence"
+                    )
                 ),
                 "sourcePathExists": True,
                 "authority": "none_minted_by_execution_owner",

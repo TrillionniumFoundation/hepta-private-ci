@@ -33,18 +33,16 @@ Plane `domain`, kind `service`, state model `stateful` and architecture role `ex
 Declared exclusive target roots:
 
 - `codex-rs/hepta-infer-core`
-- `codex-rs/hepta-infer-worker-host`
 - `codex-rs/hepta-inferd`
 
 Existing declared roots at this exact source snapshot:
 
 - `codex-rs/hepta-infer-core`
-- `codex-rs/hepta-infer-worker-host`
 - `codex-rs/hepta-inferd`
 
 Non-authoritative implementation evidence roots:
 
-None.
+- `codex-rs/hepta-infer-worker-host`, exclusively owned by `inference.worker`; its writer actor and named product caller remain cross-owner implementation evidence.
 
 Declared roots not yet present:
 

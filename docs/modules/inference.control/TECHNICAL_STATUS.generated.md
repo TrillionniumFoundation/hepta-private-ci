@@ -19,7 +19,6 @@ Exact candidate success is not stored here; it is carried by a CI evidence recei
 ## Formal roots
 
 - `codex-rs/hepta-infer-core`
-- `codex-rs/hepta-infer-worker-host`
 - `codex-rs/hepta-inferd`
 
 ## Operation inventory
