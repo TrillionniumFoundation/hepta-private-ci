@@ -1068,3 +1068,16 @@ async fn generation_monitor_honors_host_cancellation_during_readiness_probe()
     result?;
     Ok(())
 }
+
+#[cfg(not(feature = "qualification-cognitive-write"))]
+#[test]
+fn default_profile_rejects_unavailable_critical_cognitive_owner() {
+    let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
+        codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
+    ));
+    assert!(matches!(
+        result,
+        Err(crate::AgentdError::Protocol(message))
+            if message == "critical cognitive owner unavailable"
+    ));
+}

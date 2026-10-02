@@ -20,9 +20,11 @@ are unchanged. Preparation is not source authentication or current authorization
 
 Agentd's private `OwnerCutReadView` accepts only the already acquired
 DurableCognitiveSnapshot. It retains that exact cut borrow rather than pairing
-an index with caller-supplied scope metadata. One normal read request reuses it
-for admission and the final selected projection. It is not placed in process
-state, a shared cache, a persistent record or a cross-request handle.
+an index with caller-supplied scope metadata. Admission uses a view of the
+candidate cut. After selection, the narrower selected subcut has its own
+snapshot digest and therefore gets its own bound view; the implementation does
+not reuse an index across those distinct snapshots. Neither view is placed in
+process state, a shared cache, a persistent record or a cross-request handle.
 
 The final-use request still reacquires the current owner cut, compares bindings,
 constructs a fresh view and repeats record/retrieval/ranker checks. No publication

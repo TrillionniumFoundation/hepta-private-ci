@@ -72,11 +72,11 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
 
     let provider = responses::start_mock_server().await;
     MockResponsesConfig::new(&provider.uri()).write(agent.layout.home_root())?;
-    mount_terminal_response(&provider).await;
-
     fleet.start(&agent)?;
     let (_, health) = fleet.wait_ready(&agent, /*generation*/ 1).await?;
     ensure!(health.ready && !health.fenced);
+    // Do not mask a startup error with an unmet provider expectation on drop.
+    mount_terminal_response(&provider).await;
 
     let authority_root = tempfile::tempdir()?;
     std::fs::set_permissions(

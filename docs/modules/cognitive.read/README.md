@@ -1,6 +1,12 @@
 # cognitive.read development entry point
 
-## Reviewed source, 2026-10-01
+## Reviewed source and continuation, 2026-10-02
+
+The continuation independently reverified audit candidate
+`ab60cb27a160dd350a6b89d2ac7dffa33d9a23d1`, its stacked base and current main.
+`ADVERSARIAL_AUDIT_20261002.md` records the exact-candidate CI failures, scoped
+repairs and fresh local checks. Neither the older audit nor this continuation
+is a successful complete source/merge qualification receipt.
 
 The current audit starts from the 2026-09-30 production-convergence source
 `8a2f9256102a7bf36fbab4f22152573ba8fb91ad`. The accompanying
@@ -26,6 +32,8 @@ together:
   measurement boundaries, operational diagnostics and external acceptance.
 - `ADVERSARIAL_AUDIT_20261001.md`: reproducible findings, repairs, verification
   and the remaining completion boundary.
+- `ADVERSARIAL_AUDIT_20261002.md`: independently verified CI failure causes,
+  continuation repairs, current local execution and unresolved owner/product gates.
 
 ## Current completion boundary
 

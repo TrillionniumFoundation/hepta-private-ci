@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8de1cedb08adaf136f79cb937d7c01a0964368b3",
-    "tree": "18d16f0bf1ae608065812364c9891f884fb9d1e3"
+    "commit": "ba347dbf5e173c7af455060a703f9214bf7beac4",
+    "tree": "5bedf33fdcd4b209613fe8d2e9531a0f8c071ce9"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -22,6 +22,7 @@
     "docs/modules/cognitive.read/SELECTED_OWNER_CUT.md",
     "docs/modules/cognitive.read/DELIVERY_EVIDENCE.md",
     "docs/modules/cognitive.read/ADVERSARIAL_AUDIT_20261001.md",
+    "docs/modules/cognitive.read/ADVERSARIAL_AUDIT_20261002.md",
     "docs/modules/cognitive.read/PREPARATION_HANDOFF.md"
   ],
   "declaredRoots": [
@@ -258,7 +259,7 @@
     },
     {
       "path": ".github/workflows/cognitive-read-qualification.yml",
-      "object": "ea20848ffe885a48a59977f62b8b8c7c3da078bd"
+      "object": "13b1d5d56fc497e8453b8c41e5c55087978c4299"
     },
     {
       "path": "codex-rs/Cargo.lock",
@@ -390,11 +391,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-      "object": "4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"
+      "object": "d82e0129dd812cbe154e15278db32d82d0bb601a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/test_support.rs",
-      "object": "4dd764e684935398dfdd5f2cc47e05f4973567b1"
+      "object": "133aeaf7d246db5b8f8105caf46c45d15d9d798a"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_delivery_join.rs",
@@ -653,6 +654,10 @@
       "object": "afde86377f872fe5b38093222bed027b73d93d08"
     },
     {
+      "path": "codex-rs/hepta-memory/migrations/0021_lane_c_witness_count_paths.sql",
+      "object": "dd31032f413f956f7c0964b5a5494b8bb2750d5a"
+    },
+    {
       "path": "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
       "object": "b316e663272d5a23e5e06218139beda6971cd8ad"
     },
@@ -674,7 +679,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "object": "86335a9881c055479dac8bbee73900de8e7476ba"
+      "object": "f892ca898e387d3f9b6332a7142ebd09e822dbbe"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_lane_c_integrity.rs",
@@ -690,7 +695,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
-      "object": "c4f8a6f84e37748f44118b9e31e4e44988f4fcbb"
+      "object": "2e0c0bce85425567c85f8a0ae01cc7b3f68cfc3e"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
@@ -846,7 +851,7 @@
     },
     {
       "path": "docs/modules/cognitive.read/FINAL_USE_CLOSURE.md",
-      "object": "1885a07a6cd471e08165192273236ed643c33c9a"
+      "object": "a120d4ca9ddb4fe388fb2bc1e502f38d26624ae1"
     },
     {
       "path": "docs/modules/cognitive.read/PREPARATION_HANDOFF.md",
@@ -858,7 +863,7 @@
     },
     {
       "path": "docs/modules/cognitive.read/README.md",
-      "object": "102ec763ca3caf366e47d54e79b507b01fb8061e"
+      "object": "f87f1c70b878128a00ce757c64b77a0a28b2902e"
     },
     {
       "path": "docs/modules/cognitive.read/SELECTED_OWNER_CUT.md",
@@ -866,11 +871,11 @@
     },
     {
       "path": "docs/modules/cognitive.read/STRUCTURAL_REUSE.md",
-      "object": "1851595618a1162277cbdd4945dae401cce5ebf2"
+      "object": "b9ddfe7f2a2e366ed82b5346583c7e062e5b7ad6"
     },
     {
       "path": "docs/modules/cognitive.read/TECHNICAL.md",
-      "object": "20db7fccd7f41e3513f67dbfc8fe6a695689be81"
+      "object": "0bb5313d8943a6f7d40dfa69807ca875a805f7fa"
     },
     {
       "path": "docs/modules/compact.engine/IMPLEMENTATION_MAP.json",
@@ -1009,6 +1014,10 @@
       "object": "ef87e7e1d207eb456bb06aa76b278b09d4c336eb"
     },
     {
+      "path": "scripts/setup-cognitive-read-toolchain.sh",
+      "object": "82b8245bcb99d33326a30f2797c9861f8c91285c"
+    },
+    {
       "path": "scripts/test_cognitive_read_consumers.py",
       "object": "56a2d924817427f275f0aa2ca378b8a887946d43"
     },
@@ -1034,7 +1043,15 @@
     },
     {
       "path": "scripts/test_cognitive_read_sqlite_integrity.py",
-      "object": "ea58fd0840b11104e9924db4a833502aef618078"
+      "object": "b7820b3fcc92da121a0c88defcee6938322a7a78"
+    },
+    {
+      "path": "scripts/test_cognitive_read_toolchain_setup.py",
+      "object": "3b42317d9eb52ea7639ea88f250d5dc5244e7d68"
+    },
+    {
+      "path": "scripts/test_cognitive_read_witness_counts.py",
+      "object": "b306c8a085bcec483cd00ba7e126a41bd4d25873"
     },
     {
       "path": "scripts/verify-cognitive-read-constants.py",
@@ -1095,8 +1112,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8de1cedb08adaf136f79cb937d7c01a0964368b3",
-    "tree": "18d16f0bf1ae608065812364c9891f884fb9d1e3"
+    "commit": "ed06a8269b71bf763e98b44b2381c3d4c714146b",
+    "tree": "3d0bf15bfd7c41933d0a0b6c1813c7bd647eeaf4"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "revision_bound_shadow_v2_source_candidate",
@@ -1287,6 +1304,7 @@
     "codex-rs/hepta-memory/migrations/0018_lane_c_witness_monotonic.sql",
     "codex-rs/hepta-memory/migrations/0019_lane_c_scope_audit_indexes.sql",
     "codex-rs/hepta-memory/migrations/0020_lane_c_canonical_identity_guards.sql",
+    "codex-rs/hepta-memory/migrations/0021_lane_c_witness_count_paths.sql",
     "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
     "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
     "codex-rs/hepta-memory/src/cognitive_read_compact_product.rs",
@@ -1376,6 +1394,7 @@
     "scripts/hepta-implementation-maps.py",
     "scripts/prepare-cognitive-read-source.py",
     "scripts/run-cognitive-read-qualification.sh",
+    "scripts/setup-cognitive-read-toolchain.sh",
     "scripts/test_cognitive_read_consumers.py",
     "scripts/test_cognitive_read_delivery_gates.py",
     "scripts/test_cognitive_read_evidence.py",
@@ -1383,6 +1402,8 @@
     "scripts/test_cognitive_read_full_gate_integrity.py",
     "scripts/test_cognitive_read_native_gate.py",
     "scripts/test_cognitive_read_sqlite_integrity.py",
+    "scripts/test_cognitive_read_toolchain_setup.py",
+    "scripts/test_cognitive_read_witness_counts.py",
     "scripts/verify-cognitive-read-constants.py",
     "scripts/verify-cognitive-read-map.py"
   ]
