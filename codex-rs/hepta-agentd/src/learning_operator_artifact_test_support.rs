@@ -381,11 +381,14 @@ fn make_publication(
     operation_id: StableId,
     key: &SigningKey,
 ) -> LearningArtifactPublishRequestV1 {
+    // One publication has one actual observation time. A later witness sample
+    // must not make the same request appear earlier than its signed issuance.
+    let publication_now = now();
     let admission = admit_manifest_at_withdrawal_head_v3(
         service.withdrawal_registry(),
         service.withdrawal_registry().head_digest(),
         manifest,
-        now(),
+        publication_now,
     )
     .unwrap();
     let predecessor = service.registry().snapshot().head_digest;
@@ -394,7 +397,7 @@ fn make_publication(
         admission,
         payload,
         expected_registry_predecessor_head: predecessor,
-        now: now(),
+        now: publication_now,
         signed_current_head: SignedCurrentArtifactHeadV1 {
             withdrawal_scope_digest: service.withdrawal_registry().scope_digest().unwrap(),
             binding: digest("binding"),
@@ -406,8 +409,8 @@ fn make_publication(
                 authority_epoch: 1,
                 signer_id: id("artifact-owner"),
                 signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
-                issued_at: now(),
-                expires_at: expiry(),
+                issued_at: publication_now,
+                expires_at: publication_now + 90_000,
             },
             signature: [0; 64],
         },
