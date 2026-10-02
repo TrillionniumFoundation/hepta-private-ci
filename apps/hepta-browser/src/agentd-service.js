@@ -53,6 +53,8 @@ function positiveInteger(value, name) {
   return value;
 }
 
+class AgentdBrowserChannelClosed extends Error {}
+
 export class AgentdBrowserChannel {
   #input;
   #output;
@@ -85,12 +87,16 @@ export class AgentdBrowserChannel {
     output.on?.("error", (error) => this.#fail(error));
     for (const event of ["close", "finish"]) {
       output.on?.(event, () => {
-        if (!this.#ended) this.#fail(new Error("Agentd browser output closed"));
+        if (!this.#ended)
+          this.#fail(
+            new AgentdBrowserChannelClosed("Agentd browser output closed"),
+          );
       });
     }
   }
 
   async nextFrame({ signal } = {}) {
+    this.#checkStreams();
     if (signal?.aborted) throw signal.reason;
     if (this.#failed) throw this.#failed;
     if (this.#queue.length) {
@@ -121,10 +127,29 @@ export class AgentdBrowserChannel {
     });
   }
 
-  assertOpen() {
-    if (this.#output.destroyed || this.#output.writableEnded) {
-      this.#fail(new Error("Agentd browser output closed"));
+  #checkStreams() {
+    if (this.#input.destroyed || this.#input.closed) {
+      if (!this.#ended)
+        this.#fail(
+          new AgentdBrowserChannelClosed("Agentd browser input closed"),
+        );
+    } else if (this.#input.readableEnded) {
+      this.#onEnd();
     }
+    if (
+      this.#output.destroyed ||
+      this.#output.closed ||
+      this.#output.writableEnded
+    ) {
+      if (!this.#ended)
+        this.#fail(
+          new AgentdBrowserChannelClosed("Agentd browser output closed"),
+        );
+    }
+  }
+
+  assertOpen() {
+    this.#checkStreams();
     if (this.#failed) throw this.#failed;
     if (this.#ended) throw new Error("Agentd browser channel is closed");
   }
@@ -374,7 +399,14 @@ export class BrowserAgentdService {
 
   async run() {
     while (true) {
-      const frame = await this.#channel.nextFrame();
+      let frame;
+      try {
+        frame = await this.#channel.nextFrame();
+      } catch (error) {
+        // Retirement while idle ends the service; active exchanges still fail.
+        if (error instanceof AgentdBrowserChannelClosed) return;
+        throw error;
+      }
       if (frame === null) return;
       if (frame.kind !== "request") {
         throw new TypeError("Browser service expected an Agentd request frame");

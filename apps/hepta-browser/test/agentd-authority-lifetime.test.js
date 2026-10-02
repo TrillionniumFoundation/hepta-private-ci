@@ -339,3 +339,27 @@ test(
     output.destroy();
   },
 );
+
+test(
+  "input destruction fences authorization before the deferred close event",
+  { timeout: TEST_TIMEOUT_MS },
+  async (t) => {
+    const input = new PassThrough();
+    const output = new PassThrough();
+    closeStreamsAfter(t, input, output);
+    output.resume();
+    const channel = new AgentdBrowserChannel({ input, output });
+    const authority = new ParentFinalUseAuthority(channel);
+    let consumed = 0;
+    const call = authority.withRequest(REQUEST_ID, () =>
+      authority.withVerifiedUse(REQUEST, async () => {
+        consumed += 1;
+      }),
+    );
+    await new Promise((resolve) => setImmediate(resolve));
+    input.write(authorization());
+    input.destroy();
+    await assert.rejects(call, /input closed/);
+    assert.equal(consumed, 0);
+  },
+);

@@ -24,6 +24,7 @@ export class BrowserProfileHost {
   #driver;
   #authority;
   #journal;
+  #journalFailure = null;
   #clock;
   #driverCallTimeoutMs;
   #profiles = new Map();
@@ -266,11 +267,11 @@ export class BrowserProfileHost {
       const operationId = stableId(input.operationId, "operationId");
       let prior = state.operations.get(operationId);
       if (!prior) {
-        const durable = await this.#journal.getOperation(
+        const durable = await this.#callJournal("getOperation", [
           state.profileId,
           state.generation,
           operationId,
-        );
+        ]);
         if (durable)
           prior = this.#entryFromDurable(
             durable,
@@ -374,10 +375,12 @@ export class BrowserProfileHost {
               // This fsync and the local worker dispatch execute inside the
               // final-use fence. A successful revocation update therefore
               // cannot slip between final validation and effect dispatch.
-              await this.#journal.recordDispatch(
-                this.#durableRecord(state, entry),
-              );
               state.operations.set(operationId, entry);
+              await this.#callJournal(
+                "recordDispatch",
+                [this.#durableRecord(state, entry)],
+                dispatchDeadlineMs,
+              );
               state.documentDigest = null;
               state.bootstrapNavigationAvailable = false;
               return this.#callDriver(
@@ -418,6 +421,7 @@ export class BrowserProfileHost {
   }
 
   async reconcileOperation(input) {
+    if (this.#journalFailure) throw this.#journalFailure;
     requireRecord(input, "input");
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
@@ -425,11 +429,11 @@ export class BrowserProfileHost {
       const operationId = stableId(input.operationId, "operationId");
       let prior = state.operations.get(operationId);
       if (!prior) {
-        const durable = await this.#journal.getOperation(
+        const durable = await this.#callJournal("getOperation", [
           state.profileId,
           state.generation,
           operationId,
-        );
+        ]);
         if (!durable) {
           throw new TypeError(
             "operation has not crossed the browser effect boundary",
@@ -492,11 +496,11 @@ export class BrowserProfileHost {
     const generation = positiveInteger(input.generation, "generation");
     const operationId = stableId(input.operationId, "operationId");
     return exclusive(this.#locks, profileId, async () => {
-      const durable = await this.#journal.getOperation(
+      const durable = await this.#callJournal("getOperation", [
         profileId,
         generation,
         operationId,
-      );
+      ]);
       if (!durable) throw new TypeError("persisted operation does not exist");
       if (input.principalId !== durable.principalId) {
         throw new TypeError("principal does not own persisted operation");
@@ -573,13 +577,15 @@ export class BrowserProfileHost {
             : "reconcile_error",
         );
       }
-      await this.#journal.recordObservation({
-        ...durable,
-        status: receipt.status,
-        outcomeDigest: receipt.outcomeDigest,
-        terminalObserved: receipt.terminalObserved,
-        observationReason: receipt.observationReason,
-      });
+      await this.#callJournal("recordObservation", [
+        {
+          ...durable,
+          status: receipt.status,
+          outcomeDigest: receipt.outcomeDigest,
+          terminalObserved: receipt.terminalObserved,
+          observationReason: receipt.observationReason,
+        },
+      ]);
       return applyReceipt(receipt);
     });
   }
@@ -589,10 +595,10 @@ export class BrowserProfileHost {
     const profileId = stableId(input.profileId, "profileId");
     return exclusive(this.#locks, profileId, async () => {
       const state = this.#profile(input, false);
-      const durable = await this.#journal.listOperations(
+      const durable = await this.#callJournal("listOperations", [
         state.profileId,
         state.generation,
-      );
+      ]);
       if (
         durable.some((entry) => entry.terminalObserved !== true) ||
         [...state.operations.values()].some(
@@ -714,8 +720,20 @@ export class BrowserProfileHost {
   }
 
   async #persistReceipt(state, entry) {
+    if (this.#journalFailure) {
+      entry.phase = "indeterminate";
+      entry.receipt = indeterminateReceipt(
+        state.profileId,
+        entry.semantics.operationId,
+        entry.semanticDigest,
+        "journal_recovery_required",
+      );
+      return;
+    }
     try {
-      await this.#journal.recordObservation(this.#durableRecord(state, entry));
+      await this.#callJournal("recordObservation", [
+        this.#durableRecord(state, entry),
+      ]);
     } catch {
       entry.phase = "indeterminate";
       entry.receipt = indeterminateReceipt(
@@ -784,6 +802,38 @@ export class BrowserProfileHost {
       ...admitted.requestSemantics,
       deadlineMs: durable.deadlineMs,
     });
+  }
+
+  async #callJournal(
+    method,
+    args,
+    deadlineMs = this.#clock() + this.#driverCallTimeoutMs,
+  ) {
+    if (this.#journalFailure) throw this.#journalFailure;
+    try {
+      const result = await callWithDeadline({
+        call: () => {
+          if (this.#journalFailure) throw this.#journalFailure;
+          return this.#journal[method](...args);
+        },
+        payload: null,
+        now: this.#clock,
+        deadlineMs,
+        timeoutCapMs: this.#driverCallTimeoutMs,
+        abortable: false,
+        timeoutName: "browser journal",
+      });
+      if (this.#journalFailure) throw this.#journalFailure;
+      return result;
+    } catch (error) {
+      if (error?.name === "BrowserJournalTimeoutError") {
+        this.#journalFailure = new Error(
+          "browser journal requires owner recovery after I/O timeout",
+          { cause: error },
+        );
+      }
+      throw error;
+    }
   }
 
   async #withVerifiedUse(request, deadlineMs, consumer) {

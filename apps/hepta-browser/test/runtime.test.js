@@ -754,3 +754,108 @@ test("persisted reconciliation requires the original deadline even after that de
   );
   assert.equal(fakeDriver.dispatchCalls, 1);
 });
+
+test(
+  "stalled durable intent releases authority and cannot dispatch on late completion",
+  { timeout: 1_000 },
+  async (t) => {
+    let release;
+    const gate = new Promise((resolve) => {
+      release = resolve;
+    });
+    t.after(() => release());
+    const base = new MemoryBrowserOperationJournal();
+    let observations = 0;
+    let authorityExited = false;
+    const trusted = authority();
+    const journal = {
+      async recordDispatch(record) {
+        await gate;
+        await base.recordDispatch(record);
+      },
+      async recordObservation(record) {
+        observations += 1;
+        await base.recordObservation(record);
+      },
+      getOperation: (...args) => base.getOperation(...args),
+      listOperations: (...args) => base.listOperations(...args),
+    };
+    const { host, fakeDriver } = await preparedHost({
+      journal,
+      driverCallTimeoutMs: 10,
+      authority: {
+        async withVerifiedUse(request, consumer) {
+          try {
+            return await trusted.withVerifiedUse(request, consumer);
+          } finally {
+            authorityExited = true;
+          }
+        },
+      },
+    });
+    const receipt = await host.navigateOrAct(operation());
+    assert.equal(receipt.observationReason, "journal_recovery_required");
+    assert.equal(receipt.terminalObserved, false);
+    assert.equal(authorityExited, true);
+    assert.equal(observations, 0);
+    await assert.rejects(
+      host.navigateOrAct(operation({ operationId: "operation.new" })),
+      /owner recovery/,
+    );
+    await assert.rejects(
+      host.reconcileOperation(operation()),
+      /owner recovery/,
+    );
+    release();
+    await new Promise((resolve) => setImmediate(resolve));
+    assert.equal(fakeDriver.dispatchCalls, 0);
+    const replay = await host.navigateOrAct(operation());
+    assert.equal(replay.semanticDigest, receipt.semanticDigest);
+    assert.equal(replay.terminalObserved, false);
+    assert.equal(trusted.calls, 1);
+  },
+);
+
+for (const method of ["getOperation", "recordObservation"]) {
+  test(
+    `stalled journal ${method} is bounded and fences further I/O`,
+    { timeout: 1_000 },
+    async () => {
+      const base = new MemoryBrowserOperationJournal();
+      let calls = 0;
+      const journal = {
+        recordDispatch: (...args) => base.recordDispatch(...args),
+        recordObservation: (...args) => base.recordObservation(...args),
+        getOperation: (...args) => base.getOperation(...args),
+        listOperations: (...args) => base.listOperations(...args),
+        [method]() {
+          calls += 1;
+          return new Promise(() => {});
+        },
+      };
+      const { host, fakeDriver } = await preparedHost({
+        journal,
+        driverCallTimeoutMs: 10,
+      });
+      if (method === "getOperation") {
+        await assert.rejects(host.navigateOrAct(operation()), {
+          name: "BrowserJournalTimeoutError",
+        });
+        assert.equal(fakeDriver.dispatchCalls, 0);
+      } else {
+        const receipt = await host.navigateOrAct(operation());
+        assert.equal(receipt.terminalObserved, false);
+        assert.equal(
+          receipt.observationReason,
+          "journal_observation_write_failed",
+        );
+        assert.equal(fakeDriver.dispatchCalls, 1);
+      }
+      await assert.rejects(
+        host.navigateOrAct(operation({ operationId: "operation.new" })),
+        /owner recovery/,
+      );
+      assert.equal(calls, 1);
+    },
+  );
+}

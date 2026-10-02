@@ -99,7 +99,7 @@ test("successful parent initialization is not repeated on every append", async (
   await journal.recordDispatch(record("operation.2"));
   assert.deepEqual(
     events.map((event) => event.kind),
-    ["file", "directory"],
+    ["directory", "file", "directory"],
   );
 });
 
@@ -423,4 +423,31 @@ test("a FIFO substituted at the journal path fails before blocking on a reader",
   assert.equal(child.error, undefined, child.error?.message);
   assert.equal(child.status, 73, child.stderr);
   assert.match(child.stderr, /regular file/);
+});
+
+
+test("writer lock is durably installed before an uncertain append", async (t) => {
+  const { root, path, prototype, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  const events = observeSync(t, prototype, async (event) => {
+    if (event.kind === "file") throw ioFailure();
+  });
+  await assert.rejects(journal.recordDispatch(record("operation.2")), { code: "EIO" });
+  assert.deepEqual(events.map((event) => event.kind), ["directory", "file"]);
+  assert.equal(events[0].id, identity(await stat(root)));
+  assert.equal((await stat(`${path}.writer-lock`)).isDirectory(), true);
+  t.mock.restoreAll();
+  await assert.rejects(new FileBrowserOperationJournal(path).listOperations("profile.1", 1), /writer lock/);
+});
+
+test("failed writer-lock barrier prevents append and retains recovery fence", async (t) => {
+  const { path, prototype, journal } = await fixture(t);
+  await journal.recordDispatch(record());
+  const bytes = await readFile(path);
+  const events = observeSync(t, prototype, async () => { throw ioFailure(); });
+  await assert.rejects(journal.recordDispatch(record("operation.2")), { code: "EIO" });
+  assert.deepEqual(events.map((event) => event.kind), ["directory"]);
+  assert.deepEqual(await readFile(path), bytes);
+  t.mock.restoreAll();
+  await assert.rejects(new FileBrowserOperationJournal(path).listOperations("profile.1", 1), /writer lock/);
 });

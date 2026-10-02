@@ -541,6 +541,16 @@ export class FileBrowserOperationJournal {
           }
           throw error;
         }
+        // Persist the lock entry before any risky write: an uncertain append
+        // must not survive a crash without its cross-process recovery fence.
+        try {
+          if (await syncDirectory(dirname(this.#path)) !== this.#parentIdentity) {
+            this.#historyFailure("parent identity changed while locking");
+          }
+        } catch (error) {
+          this.#uncertainWrite = error;
+          throw error;
+        }
         // Never steal an existing lock: a crashed writer requires owner recovery.
         try {
           return await operation();

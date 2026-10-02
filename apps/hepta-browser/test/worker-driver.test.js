@@ -801,3 +801,82 @@ test(
     }
   },
 );
+
+for (const event of ["close", "finish"]) {
+  test(
+    `worker stdin ${event} retires pending requests without process exit`,
+    { timeout: 1_000 },
+    async (t) => {
+      let child;
+      const { driver, started } = await preparedDriver({
+        launcher: fakeLauncher({
+          holdKinds: ["observe"],
+          onSpawn(value) {
+            child = value;
+          },
+        }),
+      });
+      t.after(() => driver.shutdown());
+      const request = {
+        profileId: "profile.1",
+        generation: 1,
+        processId: started.processId,
+      };
+      const pending = driver.observe(request);
+      child.stdin.emit(event);
+      await assert.rejects(pending, /channel closed/);
+      await assert.rejects(driver.observe(request), /channel is closed/);
+    },
+  );
+}
+
+test(
+  "destroyed worker stdin rejects admission before its close event",
+  { timeout: 1_000 },
+  async (t) => {
+    let child;
+    const { driver, started } = await preparedDriver({
+      launcher: fakeLauncher({
+        onSpawn(value) {
+          child = value;
+        },
+      }),
+    });
+    t.after(() => driver.shutdown());
+    child.stdin.destroy();
+    await assert.rejects(
+      driver.observe({
+        profileId: "profile.1",
+        generation: 1,
+        processId: started.processId,
+      }),
+      /channel/,
+    );
+  },
+);
+
+for (const extra of [
+  { error: "contradictory" },
+  { criticalFutureField: true },
+]) {
+  test(`worker rejects extra response keys ${Object.keys(extra)}`, async (t) => {
+    const { driver, started } = await preparedDriver({
+      launcher: fakeLauncher({
+        payloadForResponse(request, observation) {
+          return request.kind === "observe"
+            ? { ok: true, observation, ...extra }
+            : { ok: true, observation };
+        },
+      }),
+    });
+    t.after(() => driver.shutdown());
+    await assert.rejects(
+      driver.observe({
+        profileId: "profile.1",
+        generation: 1,
+        processId: started.processId,
+      }),
+      /response payload/,
+    );
+  });
+}

@@ -204,6 +204,11 @@ class PrivateWorkerClient {
       this.#failAll(new Error("browser worker response channel closed"));
       child.kill("SIGKILL");
     });
+    for (const event of ["close", "finish"]) {
+      child.stdin.on(event, () => {
+        this.#failAll(new Error("browser worker request channel closed"));
+      });
+    }
     for (const stream of [child.stdin, child.stdout, child.stderr].filter(
       Boolean,
     )) {
@@ -226,8 +231,18 @@ class PrivateWorkerClient {
     });
   }
 
+  #checkStreams() {
+    const { stdin, stdout } = this.#child;
+    if (stdout.destroyed || stdout.closed || stdout.readableEnded) {
+      this.#failAll(new Error("browser worker response channel closed"));
+    } else if (stdin.destroyed || stdin.closed || stdin.writableEnded) {
+      this.#failAll(new Error("browser worker request channel closed"));
+    }
+    return !this.#closed;
+  }
+
   request(kind, semanticId, payload, { signal, onDispatched } = {}) {
-    if (this.#closed)
+    if (!this.#checkStreams())
       return Promise.reject(new Error("browser worker channel is closed"));
     if (signal?.aborted) return Promise.reject(abortError());
     if (this.#pending.size >= MAX_PENDING_REQUESTS) {
@@ -280,6 +295,7 @@ class PrivateWorkerClient {
       }
       writeStarted = true;
       this.#child.stdin.write(encoded, (error) => {
+        if (!this.#checkStreams() || !this.#pending.has(id)) return;
         if (error) {
           if (this.#pending.delete(id)) {
             entry.cleanup?.();
@@ -307,7 +323,7 @@ class PrivateWorkerClient {
   }
 
   #onBytes(chunk) {
-    if (this.#closed) return;
+    if (!this.#checkStreams()) return;
     let frames;
     try {
       frames = this.#decoder.push(chunk);
@@ -357,6 +373,17 @@ class PrivateWorkerClient {
       }
       try {
         const payload = requireRecord(frame.payload, "worker response payload");
+        const expected =
+          payload.ok === true ? ["observation", "ok"] : ["error", "ok"];
+        const keys = Object.keys(payload).sort();
+        if (
+          keys.length !== expected.length ||
+          keys.some((key, index) => key !== expected[index])
+        ) {
+          throw new TypeError(
+            "worker response payload contains missing or unknown fields",
+          );
+        }
         if (payload.ok === true) {
           const observation = requireRecord(
             payload.observation,
