@@ -3,7 +3,7 @@
   "schemaVersion": 1,
   "module": "inference.control",
   "generatedFrom": "docs/modules/inference.control/CURRENT_STATE_SOURCE.json",
-  "sourceManifestSha256": "eea3397e62fffd21879e931c25805a04a8750d044577d716425f473778a180f1",
+  "sourceManifestSha256": "10b32fc0170fa700c4fc2dd196ea29ce70b2986b91340c23f76802f7c85eaa59",
   "provenance": {
     "baselineCommit": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "baselineTree": "a22fd0074c45ae6f3cef2092cd6e273bf9c26c30",
@@ -50,7 +50,7 @@
   "safetyInvariants": [
     "no recovered dispatch is blindly replayed",
     "cancellation intent does not release capacity",
-    "external effect requires a still-live exact execution binding and final-use grant",
+    "writer application verifies the signed execution binding; final-send freshness after transport queue and readiness waits remains a repository-controlled gap",
     "indeterminate release requires a signed terminal receipt or revision-bound dual-control retirement",
     "the active journal never stores plaintext output on the exact-plan production path",
     "checkpoint replacement preserves the stable lifecycle sidecar owner lock and validates checkpoint content plus recorded archive bindings; replay does not rehash the complete archive history",
@@ -67,7 +67,8 @@
     "retirement audits persist distinct actual verification-key fingerprints; historical audits lacking them remain held Indeterminate until fresh revision-bound approval, and excess recovered capacity fails closed",
     "authorized worker return qualification is projected from durable settlement; empty encrypted terminal output still requires output protection",
     "the four execution-authority roles require distinct actual verification public keys in normal and historical verification",
-    "protected-output structure is checked on journal and checkpoint replay even after a valid retention TTL expires"
+    "protected-output structure is checked on journal and checkpoint replay even after a valid retention TTL expires",
+    "positive cached acknowledgements and new mutations verify the complete live journal and current referenced checkpoint before publication; integrity or uncertain I/O failure poisons the owner and restoring bytes does not clear that poison"
   ],
   "operations": [
     {
@@ -96,7 +97,10 @@
       "nativeSymbol": "DurableInferenceControl::bind_native_execution",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
       "tests": [
-        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output"
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output",
+        "codex-rs/hepta-infer-core/src/retained_journal_tests.rs::truncation_denies_cached_ack_and_restoring_bytes_does_not_clear_poison",
+        "codex-rs/hepta-infer-core/src/retained_journal_tests.rs::same_length_valid_history_substitution_denies_new_write_without_repair",
+        "codex-rs/hepta-infer-core/src/retained_journal_tests.rs::checkpoint_damage_denies_cached_ack_and_restore_does_not_clear_poison"
       ]
     },
     {
@@ -284,7 +288,10 @@
     "qualify host-selected mailbox, response and shutdown limits under real provider and storage contention",
     "compose the real inference-control neuron feature port and selected worker into the Agentd daemon lifecycle; typed feature receipts alone do not execute a model",
     "connect real enrolled-worker scheduling, measured device capacity and provider usage/billing to their existing owners; signed declared leases are not physical observations",
-    "define a bounded retained-request lifecycle beyond the 16384 distinct-record ceiling; checkpoint compaction preserves released request identities"
+    "define a bounded retained-request lifecycle beyond the 16384 distinct-record ceiling; checkpoint compaction preserves released request identities",
+    "carry original signed-plan and Agentd admitted absolute deadlines through transport queue/readiness waits to guarded physical-send admission; preserve cancellation and owner-generation fencing without claiming packet completion",
+    "reconcile the ordinary runtime.codex durable Agentd dispatch/abort handoff with the V2 inference actor rather than replacing either owner or executing source-writing migrations",
+    "qualify full-prefix journal/checkpoint verification latency and selected Windows filesystem/ACL/locking behavior; current Windows 64-bit file identity does not qualify ReFS"
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",

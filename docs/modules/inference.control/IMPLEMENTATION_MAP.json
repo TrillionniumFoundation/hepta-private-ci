@@ -106,7 +106,10 @@
       "nativeSymbol": "DurableInferenceControl::bind_native_execution",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
       "tests": [
-        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output"
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output",
+        "codex-rs/hepta-infer-core/src/retained_journal_tests.rs::truncation_denies_cached_ack_and_restoring_bytes_does_not_clear_poison",
+        "codex-rs/hepta-infer-core/src/retained_journal_tests.rs::same_length_valid_history_substitution_denies_new_write_without_repair",
+        "codex-rs/hepta-infer-core/src/retained_journal_tests.rs::checkpoint_damage_denies_cached_ack_and_restore_does_not_clear_poison"
       ],
       "designOperation": "reserve_and_bind_native_execution",
       "mappingClass": "owner_native",
@@ -353,7 +356,10 @@
     "qualify host-selected mailbox, response and shutdown limits under real provider and storage contention",
     "compose the real inference-control neuron feature port and selected worker into the Agentd daemon lifecycle; typed feature receipts alone do not execute a model",
     "connect real enrolled-worker scheduling, measured device capacity and provider usage/billing to their existing owners; signed declared leases are not physical observations",
-    "define a bounded retained-request lifecycle beyond the 16384 distinct-record ceiling; checkpoint compaction preserves released request identities"
+    "define a bounded retained-request lifecycle beyond the 16384 distinct-record ceiling; checkpoint compaction preserves released request identities",
+    "carry original signed-plan and Agentd admitted absolute deadlines through transport queue/readiness waits to guarded physical-send admission; preserve cancellation and owner-generation fencing without claiming packet completion",
+    "reconcile the ordinary runtime.codex durable Agentd dispatch/abort handoff with the V2 inference actor rather than replacing either owner or executing source-writing migrations",
+    "qualify full-prefix journal/checkpoint verification latency and selected Windows filesystem/ACL/locking behavior; current Windows 64-bit file identity does not qualify ReFS"
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",

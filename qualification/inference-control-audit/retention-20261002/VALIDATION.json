@@ -1,0 +1,126 @@
+{
+  "schema": "hepta.inference-control-retention-audit.v1",
+  "date": "2026-10-02",
+  "baselineSha": "ef2d2d14e36fb694f9fc7bbdf58c177010f9832a",
+  "sourceCommit": "4c43a577bd0ffce567312604093f3404eb00eeda",
+  "sourceTree": "958a6653f3e2ec50b2c1f79dc234047ae5549d63",
+  "sourceFileSha256": {
+    "codex-rs/Cargo.lock": "1fc28b771440eaf4a91a0fd2a6876e2edfbc4bcbdf76a18ddcb0bbd168746f7f",
+    "codex-rs/Cargo.toml": "3bbfad9fcf2b2ed36edea399636a19b06365d9272cb7a2d87ba70a72bc4cdd1e",
+    "codex-rs/hepta-infer-core/Cargo.toml": "dc5611f62917703fc1b4570626978e30e9bcee155b7e6eaaf1d9e7a88acba06c",
+    "codex-rs/hepta-infer-core/src/durable_control.rs": "e61c9713d497784ea69c81df1227c461a24f54fa679fa16f4dd22db7774597f9",
+    "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs": "9e57d4a442ed428ff9717c731f91f0dde76e7f5d7fe16e5a4757bcf4d316d8b1",
+    "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs": "0619c8972df8e5bc9c14a635ce354b7c597a7e201d1df07605413580295f1aa9",
+    "codex-rs/hepta-infer-core/src/native_control_v2_control_c.rs": "b96ee189eb079618202f7fb1cf6a32553984b0637eaf91871267886f9e1d6264",
+    "codex-rs/hepta-infer-core/src/native_control_v2_helpers.rs": "0e0ca4b0e6316f9cc9ea5e89dfb10bba392cddde8592199167f056a852c7380f",
+    "codex-rs/hepta-infer-core/src/native_control_v2_journal.rs": "176f5c3ba2982318629dc20e5efe3ddb22f6f7b68b268c9be394b1718dbc1632",
+    "codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs": "a5e1ce0d73d4ecc4c6d9da3127fe9ae9a923d672d58c30b895391a14affb63f4",
+    "codex-rs/hepta-infer-core/src/native_control_v2_types.rs": "a7d6b9f960a1428d4c39de011625f5fb877b592f04ac83a81849d0db0d6ca1f9",
+    "codex-rs/hepta-infer-core/src/retained_journal.rs": "798155ceff1d536e3f8fc6c7fdc16b049608504855d1570755cf831ed6f2c5d7",
+    "codex-rs/hepta-infer-core/src/retained_journal_tests.rs": "069a994a54b7b70e17c93d8e37e785b1e6d5f05612caca3156bab414ddbdf3c2"
+  },
+  "scope": "scoped local original-workspace core/types validation; not exact-head or base-merge product qualification",
+  "commands": [
+    {
+      "command": "just test -p codex-hepta-infer-core -p codex-hepta-types --offline --locked --retries 0 --test-threads 2 --success-output immediate",
+      "result": "passed",
+      "passed": 152,
+      "failed": 0,
+      "ignored": 1,
+      "log": "logs/normal-core-types-final.log",
+      "profile": "repository defaults with persisted profile.dev.package.sha2 opt-level=3; jobs=2; debug info=0; incremental=false"
+    },
+    {
+      "command": "cargo clippy --offline --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --all-targets -- -D warnings",
+      "result": "passed",
+      "log": "logs/strict-core-clippy.log"
+    },
+    {
+      "command": "cargo check --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core --target x86_64-pc-windows-gnu",
+      "result": "passed_with_two_preexisting_unused_parameter_warnings",
+      "runtimeExecuted": false,
+      "log": "logs/windows-cross-check.log"
+    },
+    {
+      "command": "just bazel-lock-update",
+      "result": "passed",
+      "executionMode": "batch with writable output/cache locations",
+      "lockFileChanged": false,
+      "log": "logs/bazel-lock-update.log"
+    },
+    {
+      "command": "just fmt",
+      "result": "passed",
+      "outOfScopeFormatterChangesRetained": false,
+      "log": "logs/format-final.log"
+    }
+  ],
+  "historicalNegativeEvidence": [
+    {
+      "result": "2 failed baseline actual-source regression assertions",
+      "log": "logs/baseline-retained-history-red.log"
+    },
+    {
+      "result": "unoptimized core 96 passed, one original byte-budget test timed out at unchanged 60s; original soak ignored",
+      "log": "logs/unoptimized-full-core-timeout.log"
+    }
+  ],
+  "proofLimits": [
+    "No full Agentd/App Server or guarded-send product validation",
+    "No current-main synthetic merge qualification",
+    "No independent restart anti-rollback witness",
+    "Historical predecessor archives not traversed",
+    "Windows runtime, ACLs and ReFS full-width identity not qualified",
+    "Original 1024-identity/16-generation maintenance soak not rerun by this stage"
+  ],
+  "claims": {
+    "productionImplementation": false,
+    "productExecutionProved": false,
+    "targetHostQualification": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "release": false
+  },
+  "logs": {
+    "qualification/inference-control-audit/retention-20261002/logs/baseline-retained-history-red.log": {
+      "sha256": "798ca8acfddbf6f7dc6cb3c5f9ca512c26bd8fdeaaeee01c73edad0121d8d202",
+      "bytes": 3686
+    },
+    "qualification/inference-control-audit/retention-20261002/logs/first-repair-retained-history-green.log": {
+      "sha256": "355cc65c92992f825f9e1db446d890f0d6e0e10850b1b399e6fa9fae8d9b3af0",
+      "bytes": 883
+    },
+    "qualification/inference-control-audit/retention-20261002/logs/unoptimized-full-core-timeout.log": {
+      "sha256": "889379777697c9f4fd6f846dba51517afe877d7937868cc379cc3701d5b9c304",
+      "bytes": 40255
+    },
+    "qualification/inference-control-audit/retention-20261002/logs/all-optimized-core-diagnostic.log": {
+      "sha256": "c354e04fe21e3dbbe68f8e19ca1116fc8a6e551ce003dbcba6d9906e4c80ab7a",
+      "bytes": 40681
+    },
+    "qualification/inference-control-audit/retention-20261002/logs/sha2-only-core-diagnostic.log": {
+      "sha256": "de032c9f8863636bbce0fefa916b5d6dc201c6553562d8694c88515ba624a870",
+      "bytes": 40706
+    },
+    "qualification/inference-control-audit/retention-20261002/logs/normal-core-types-final.log": {
+      "sha256": "165ba8d792dac8b745ee1cad2ff871bc39bcf72a0b9bf1aac59f181edab84059",
+      "bytes": 60056
+    },
+    "qualification/inference-control-audit/retention-20261002/logs/strict-core-clippy.log": {
+      "sha256": "f1b58f426486350aa26e7b749d26dadaabf60f5781c5b9881bbec216582e5735",
+      "bytes": 416
+    },
+    "qualification/inference-control-audit/retention-20261002/logs/windows-cross-check.log": {
+      "sha256": "6ca79fd38025e88aafd713f5f7e92852f68f6be17085a9358e261afc768a49a7",
+      "bytes": 1128
+    },
+    "qualification/inference-control-audit/retention-20261002/logs/bazel-lock-update.log": {
+      "sha256": "f72361ad4dca1f7adca857a233d4f4f07ed1b18c277505cee9338aae5e1227a8",
+      "bytes": 2036
+    },
+    "qualification/inference-control-audit/retention-20261002/logs/format-final.log": {
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    }
+  }
+}
