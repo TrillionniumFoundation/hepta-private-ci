@@ -178,6 +178,9 @@ pub(super) async fn refresh(app: Rc<RefCell<BrowserApp>>) -> Result<(), ControlE
     let mut state = app.borrow_mut();
     state.active(owner_epoch)?;
     state.refreshing = false;
+    // Give diagnostics an observable idle window after slow cleanup. A fixed
+    // interval tick immediately after a deadline must not start another 5s batch.
+    state.next_poll_at = now().saturating_add(2000);
     if !state.destroyed {
         if let Err(error) = &result {
             state.show_error(error);

@@ -24,7 +24,7 @@ async function loadConsole(page) {
 
 test.beforeEach(async ({ request }) => { await reset(request); });
 
-test("browser shell exposes a coherent accessible control view with redacted session material", async ({ page }) => {
+test("browser shell exposes a coherent accessible control view with redacted session material", async ({ page }, testInfo) => {
   await loadConsole(page);
   await expect(page.getByText("sess…-1", { exact: true })).toBeVisible();
   await expect(page.getByText("session-1", { exact: true })).toHaveCount(0);
@@ -32,6 +32,7 @@ test("browser shell exposes a coherent accessible control view with redacted ses
   await expect(page.getByText("11", { exact: true }).first()).toBeVisible();
   const accessibility = await new AxeBuilder({ page }).analyze();
   expect(accessibility.violations).toEqual([]);
+  await page.screenshot({ path: testInfo.outputPath("accessible-console.png"), fullPage: true });
 });
 
 test("keyboard confirmation traps intent, defaults to cancel, redacts identifiers, and restores focus", async ({ page }) => {

@@ -117,6 +117,7 @@ fn schedule_poll(app: &Rc<RefCell<BrowserApp>>) -> Result<(), ControlError> {
             let should_run = {
                 let state = app.borrow();
                 !state.destroyed
+                    && now() >= state.next_poll_at
                     && !state.dom.document.hidden()
                     && state.window.navigator().on_line()
             };

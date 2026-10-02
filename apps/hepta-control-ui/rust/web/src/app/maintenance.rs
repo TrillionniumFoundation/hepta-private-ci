@@ -36,8 +36,7 @@ pub(super) async fn cleanup(app: Rc<RefCell<BrowserApp>>) {
             return;
         }
         if state.cleanup_outstanding.is_empty() {
-            state.cleanup_error = None;
-            state.clear_error();
+            clear_settled_error(&mut state);
             return;
         }
         let mut ids: Vec<_> = state.cleanup_outstanding.keys().cloned().collect();
@@ -95,11 +94,20 @@ pub(super) async fn cleanup(app: Rc<RefCell<BrowserApp>>) {
         return;
     }
     if !failed && state.cleanup_outstanding.is_empty() {
-        state.cleanup_error = None;
-        state.clear_error();
+        clear_settled_error(&mut state);
     } else if failed {
         let error = ControlError::new(ErrorCode::Storage).retryable(true);
         state.cleanup_error = Some(error.clone());
         state.show_error(&error);
+    }
+}
+
+// Cleanup owns only its own alert. A no-op settlement must not erase a newer
+// submission/storage/confirmation error displayed by another operation.
+fn clear_settled_error(state: &mut BrowserApp) {
+    if let Some(error) = state.cleanup_error.take()
+        && state.dom.error.text_content().as_deref() == Some(error.to_string().as_str())
+    {
+        state.clear_error();
     }
 }
