@@ -184,6 +184,18 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 Embed retrieval against an authorized coherent read cut. The real Agentd process profile is selected by `HEPTA_COGNITIVE_RETRIEVAL_MODE`: absence or `compatibility` preserves the compatibility path, while `hnmf-required` selects the fail-closed HNMF profile. The ordinary binary does not synthesize a current retrieval context; selecting `hnmf-required` without an externally composed authenticated `CurrentMemoryRetrievalContext` therefore rejects startup instead of falling back. The explicit HNMF host first obtains the Lane C cut, then observes the SQLite owner's bounded generator output before legacy top-four truncation. The owner adapter preserves channel rank and `Exhausted` versus `LimitReached` state and converts only owner-observed rows into generator batches. The durable SQLite KG owner reserves exact `Causes`, `ProcedureStep` and `Contradicts` relation vocabulary for independent causal, procedural and contradiction-support channels; generic GraphOneHop explicitly excludes those typed edges, so they cannot be double-counted or relabelled. A positive-weight retrieval policy channel without its owner batch, or with an owner batch explicitly marked `Unavailable`, fails closed; a saturated `LimitReached` channel remains explicitly incomplete. HNMF selection is followed by exact revision/content/source revalidation before materialization. Response byte/result limits, NDU context planning and optional learned reranking may narrow the final delivered subset; the learning-ledger bridge records that delivered subset separately from HNMF selection.
 
+The SQLite owner projects every applicable explicit assertion from the same read
+cut through `execute_owner_observation_v2_controlled`. The bounded V2 semantic
+decision binds exact record revisions, original assertion supports and the
+contradiction policy, then may narrow the delivered set. It preserves the
+original HNMF V1 packet, receipt and assignment bytes; it does not manufacture
+channels or rewrite a selection into an abstention. Agentd records the original
+assignment and the final delivered subset separately. The predecessor V1 owner
+adapter rejects an observation containing explicit assertions instead of
+silently dropping them. Polarity comes from explicit owner assertions; relation
+text and conflict reports cannot manufacture affirmed or denied claims. This
+source path does not activate an authenticated HNMF context for an installation.
+
 Current operating and state-format references:
 
 - [codex-rs/hepta-memory/LANE_C_SQLITE.md](../../../codex-rs/hepta-memory/LANE_C_SQLITE.md).
@@ -199,6 +211,8 @@ Current focused test sources (source references, not pass receipts):
 - [generator_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/generator_tests.rs): generator permutation invariance, total 512-candidate ingress bound, channel-rank integrity, policy-relative owner coverage and cross-generation rebinding rejection.
 - [engram_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/engram_tests.rs): recurrent association, sparse population bounds, contradiction abstention, recomputed structural-forgery rejection and RET-04 no-intervention/no-recurrence/no-inhibition baselines.
 - [decision_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/decision_tests.rs): complete legal candidate-set and deterministic assignment binding.
+- [owner_propositions_tests.rs](../../../codex-rs/hepta-memory-retrieval/src/owner_propositions_tests.rs): complete multi-assertion admission, canonical original supports, V1 packet/assignment preservation, excluded-record noninterference and original HNMF delivery order.
+- [cognitive_proposition_owner_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_proposition_owner_tests.rs): actual SQLite assertions and corrections at one owner cut, including multiple assertions on one revision.
 - [cognitive_retrieval_adapter_tests.rs](../../../codex-rs/hepta-memory/src/cognitive_retrieval_adapter_tests.rs): real SQLite owner adaptation before top-four truncation, source completeness and Lane C retrieval-profile fencing.
 - [cognitive_context_hnmf_tests.rs](../../../codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs): explicit Agentd HNMF consumer and final owner-currentness behavior.
 - [runtime_tests.rs](../../../codex-rs/hepta-agentd/src/runtime_tests.rs): explicit `Compatibility` versus `HnmfRequired` startup behavior; `Compatibility` rejects an attached HNMF context and `HnmfRequired` rejects a missing current retrieval context.
