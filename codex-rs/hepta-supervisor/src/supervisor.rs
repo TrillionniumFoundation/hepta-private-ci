@@ -52,7 +52,11 @@ pub struct Supervisor<D: ProcessDriver> {
     pub(crate) driver: D,
     pub(crate) config: SupervisorConfig,
     slots: BTreeMap<AgentId, AgentSlot<D::Process>>,
+    tick_records: Option<tick_registry_observation::TickRegistryObservation>,
 }
+
+#[path = "tick_registry_observation.rs"]
+mod tick_registry_observation;
 
 #[path = "agent_registration.rs"]
 mod agent_registration;
@@ -81,6 +85,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             driver,
             config,
             slots,
+            tick_records: None,
         };
         let mut report = TickReport::default();
         for (agent_id, record) in snapshot.agents {
@@ -1180,6 +1185,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub fn tick(&mut self, now: Instant) -> TickReport {
+        self.tick_records = Some(tick_registry_observation::TickRegistryObservation::Pending);
         let mut report = TickReport::default();
         let agent_ids: Vec<_> = self.slots.keys().cloned().collect();
         for agent_id in agent_ids {
@@ -1190,6 +1196,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 self.record_fault(&agent_id, &error, &mut report);
             }
         }
+        self.tick_records = None;
         report
     }
 

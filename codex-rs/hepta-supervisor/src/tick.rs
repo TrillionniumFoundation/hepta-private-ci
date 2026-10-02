@@ -249,7 +249,7 @@ impl<D: ProcessDriver> Supervisor<D> {
             termination?;
             return Ok(RuntimeTickOutcome::Keep);
         }
-        let registry_generation = self.record(agent_id)?.lifecycle.generation;
+        let registry_generation = self.record_for_tick(agent_id)?.lifecycle.generation;
         let needs_companion_fence = registry_generation != runtime.generation;
         if registry_generation != runtime.generation && !runtime.fenced {
             // Logical fencing is immediate. A failed signal is not an

@@ -74,7 +74,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     pub(crate) fn persist_matrix_restart_budget(
-        &self,
+        &mut self,
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
     ) -> Result<(), SupervisorError> {
@@ -87,7 +87,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                     "agent {agent_id} has restart state without an active release"
                 ))
             })?;
-        let record = self.record(agent_id)?;
+        let record = self.record_for_tick(agent_id)?;
         let journal = RestartBudgetJournal::new(
             agent_id.clone(),
             release_id,

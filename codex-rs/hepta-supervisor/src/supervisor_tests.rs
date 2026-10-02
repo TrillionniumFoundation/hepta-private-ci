@@ -46,6 +46,9 @@ use crate::driver::SpawnedProcess;
 const FIRST_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 const SECOND_AGENT_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75dd3";
 
+#[path = "tick_registry_observation_tests.rs"]
+mod tick_registry_observation_tests;
+
 struct TestFleet {
     _temp: TempDir,
     registry: FleetRegistry,

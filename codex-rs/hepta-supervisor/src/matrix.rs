@@ -583,7 +583,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 
     fn degrade_matrix(
-        &self,
+        &mut self,
         agent_id: &AgentId,
         slot: &mut AgentSlot<D::Process>,
         generation: u64,
