@@ -94,9 +94,10 @@ impl Policy {
             }
         }
         if let Some(pin) = &self.initial_product_profile_digest
-            && pin.parse::<Digest32>()?.is_zero() {
-                return Err("initial product profile pin".into());
-            }
+            && pin.parse::<Digest32>()?.is_zero()
+        {
+            return Err("initial product profile pin".into());
+        }
         self.gates.validate()
     }
 }
@@ -124,6 +125,16 @@ pub(super) fn inspect_inputs(config: &Config, now: u64) -> HostResult<Operationa
         return Err("initial fixed evaluator protected profile".into());
     }
     let policy: Policy = serde_json::from_slice(&config.policy.read(32 * 1024)?)?;
+    inspect_inputs_with_policy(config, policy, now)
+}
+
+// The V2 evaluator reuses the original native cut verification, without changing
+// any V1 schema, signing domain, bytes, gates or public admission API.
+pub(super) fn inspect_inputs_with_policy(
+    config: &Config,
+    policy: Policy,
+    now: u64,
+) -> HostResult<OperationalInputs> {
     policy.validate(now)?;
     let manifest = config.baseline_manifest.read(16 * 1024)?;
     let weights = config.baseline_weights.read(8 * 1024 * 1024)?;

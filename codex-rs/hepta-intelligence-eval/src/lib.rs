@@ -527,6 +527,8 @@ pub use initial_neuron_operational_reader::inspect_initial_neuron_operational_ev
 mod operational_model_lease_gguf_v2;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod operational_model_lease_material_v2;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_model_lease_policy_v2;
 
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_calibration_cycle_host;
