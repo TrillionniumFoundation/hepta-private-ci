@@ -19,7 +19,7 @@ use std::process::Stdio;
 use std::time::Duration;
 use std::time::Instant;
 
-#[derive(Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Config {
     pub program: Source,
@@ -28,10 +28,10 @@ pub(super) struct Config {
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
-struct Probe {
-    schema: String,
-    withdrawal_request: Source,
-    current_owner: Source,
+pub(super) struct Probe {
+    pub(super) schema: String,
+    pub(super) withdrawal_request: Source,
+    pub(super) current_owner: Source,
 }
 
 #[derive(Debug, Deserialize, PartialEq)]
@@ -86,6 +86,8 @@ pub(super) struct Inspection {
     artifact_ack: ArtifactAck,
     delivery_denials: Vec<Denial>,
     model_weight_forgetting_claimed: bool,
+    #[serde(skip)]
+    causal_dependencies: BTreeSet<StableId>,
 }
 
 fn nonzero(value: &str) -> HostResult<()> {
@@ -115,11 +117,55 @@ pub(super) fn bind(
             "original G contract does not bind this actual withdrawal program/probe".into(),
         );
     }
-    config.program.read(128 * 1024 * 1024)?;
-    let probe: Probe = serde_json::from_slice(&config.probe.read(32 * 1024)?)?;
+    let binding = descriptor(config)?;
+    let probe = &binding.probe;
     if probe.schema != "hepta.cpu-neuron.dataset-withdrawal-current-probe.v1" {
-        return Err("original read-only withdrawal probe schema".into());
+        return Err("V1 requires its original probe version".into());
     }
+    let dependency = StableId::new(format!("withdrawal.{}", probe.withdrawal_request.digest))?;
+    if source.tasks.iter().any(|task| {
+        source
+            .source_records
+            .iter()
+            .find(|record| record.source_record_digest == task.source_record_digest)
+            .is_none_or(|record| !record.dependency_ids.contains(&dependency))
+    }) {
+        return Err("all tasks reusing one withdrawal must share its original dependency".into());
+    }
+    Ok(binding)
+}
+
+/// Descriptor pins are navigation only; actual authority is checked by the
+/// physically invoked original owner. V2 uses its current complete prefix.
+pub(super) fn descriptor(config: &Config) -> HostResult<ProbeBinding> {
+    config.program.read(128 * 1024 * 1024)?;
+    let bytes = config.probe.read(32 * 1024)?;
+    let raw: serde_json::Value = serde_json::from_slice(&bytes)?;
+    let probe: Probe = if raw["schema"] == "hepta.cpu-neuron.dataset-withdrawal-current-probe.v2" {
+        #[derive(Deserialize)]
+        #[serde(deny_unknown_fields)]
+        struct CurrentProbe {
+            schema: String,
+            withdrawal_request: Source,
+            current_owner: Source,
+            current_withdrawals: Vec<serde_json::Value>,
+        }
+        let current: CurrentProbe = serde_json::from_slice(&bytes)?;
+        if current.current_withdrawals.is_empty() || current.current_withdrawals.len() > 64 {
+            return Err("bounded current withdrawal prefix".into());
+        }
+        Probe {
+            schema: current.schema,
+            withdrawal_request: current.withdrawal_request,
+            current_owner: current.current_owner,
+        }
+    } else {
+        let probe: Probe = serde_json::from_slice(&bytes)?;
+        if probe.schema != "hepta.cpu-neuron.dataset-withdrawal-current-probe.v1" {
+            return Err("original read-only withdrawal probe schema".into());
+        }
+        probe
+    };
     let request_bytes = probe.withdrawal_request.read(32 * 1024)?;
     let request: serde_json::Value = serde_json::from_slice(&request_bytes)?;
     if request["schema"] != "hepta.cpu-neuron.dataset-withdrawal-request.v1" {
@@ -157,16 +203,6 @@ pub(super) fn bind(
     if program.path != config.program.path || program.digest != config.program.digest {
         return Err("current original owner profile pins a different actual program".into());
     }
-    let dependency = StableId::new(format!("withdrawal.{}", probe.withdrawal_request.digest))?;
-    if source.tasks.iter().any(|task| {
-        source
-            .source_records
-            .iter()
-            .find(|record| record.source_record_digest == task.source_record_digest)
-            .is_none_or(|record| !record.dependency_ids.contains(&dependency))
-    }) {
-        return Err("all tasks reusing one withdrawal must share its original dependency".into());
-    }
     Ok(ProbeBinding {
         probe,
         targets,
@@ -186,7 +222,7 @@ pub(super) fn bind(
 }
 
 pub(super) struct ProbeBinding {
-    probe: Probe,
+    pub(super) probe: Probe,
     targets: BTreeSet<StableId>,
     lineage_id: String,
     source_record_id: String,
@@ -221,7 +257,32 @@ fn parse(
     if bytes.len() > 128 * 1024 || !bytes.ends_with(b"\n") || finished_ms < started_ms {
         return Err("bounded complete current inspection and original clock".into());
     }
-    let value: Inspection = serde_json::from_slice(bytes)?;
+    let (mut value, causal_events): (Inspection, Option<(Vec<String>, Vec<String>, Vec<String>)>) =
+        if binding.probe.schema == "hepta.cpu-neuron.dataset-withdrawal-current-probe.v2" {
+            #[derive(Deserialize)]
+            #[serde(deny_unknown_fields)]
+            struct CurrentInspection {
+                schema: String,
+                original_inspection: Inspection,
+                source_record_event_digests: Vec<String>,
+                source_support_digests: Vec<String>,
+                artifact_registration_event_digests: Vec<String>,
+            }
+            let current: CurrentInspection = serde_json::from_slice(bytes)?;
+            if current.schema != "hepta.cpu-neuron.dataset-withdrawal-inspection.v2" {
+                return Err("current withdrawal inspection version".into());
+            }
+            (
+                current.original_inspection,
+                Some((
+                    current.source_record_event_digests,
+                    current.source_support_digests,
+                    current.artifact_registration_event_digests,
+                )),
+            )
+        } else {
+            (serde_json::from_slice(bytes)?, None)
+        };
     if value.schema != "hepta.cpu-neuron.dataset-withdrawal-inspection.v1"
         || value.request_digest != binding.probe.withdrawal_request.digest
         || value.current_owner_digest != binding.probe.current_owner.digest
@@ -282,6 +343,32 @@ fn parse(
     }
     if targets != binding.targets || !acknowledged_target {
         return Err("current inspection omitted source or descendant targets".into());
+    }
+    if let Some((sources, supports, artifacts)) = causal_events {
+        if !sources.contains(&value.source_ack.source_event_digest)
+            || sources.len() + supports.len() + artifacts.len() + 1 > 128
+        {
+            return Err("actual SourceACK causal membership/capacity".into());
+        }
+        value.causal_dependencies.insert(StableId::new(format!(
+            "withdrawal.v2.event.{}",
+            value.source_ack.event_digest
+        ))?);
+        for (kind, events) in [
+            ("source", sources),
+            ("support", supports),
+            ("artifact", artifacts),
+        ] {
+            if events.is_empty() || events.windows(2).any(|pair| pair[0] >= pair[1]) {
+                return Err("canonical bounded causal events".into());
+            }
+            for event in events {
+                nonzero(&event)?;
+                value
+                    .causal_dependencies
+                    .insert(StableId::new(format!("withdrawal.v2.{kind}.{event}"))?);
+            }
+        }
     }
     Ok(value)
 }
@@ -374,6 +461,16 @@ impl Drop for JoinedChild {
 }
 
 impl Inspection {
+    pub(super) fn same_current_authority(&self, other: &Self) -> bool {
+        self.current_owner_digest == other.current_owner_digest
+            && self.current_read_digest == other.current_read_digest
+            && self.current_head_digest == other.current_head_digest
+            && self.withdrawal_head == other.withdrawal_head
+            && self.observed_at_ms >= other.observed_at_ms
+    }
+    pub(super) fn causal_dependencies(&self) -> &BTreeSet<StableId> {
+        &self.causal_dependencies
+    }
     pub(super) fn same_original_facts(&self, earlier: &Self) -> bool {
         self.request_digest == earlier.request_digest
             && self.current_owner_digest == earlier.current_owner_digest
@@ -383,6 +480,7 @@ impl Inspection {
             && self.source_ack == earlier.source_ack
             && self.artifact_ack == earlier.artifact_ack
             && self.delivery_denials == earlier.delivery_denials
+            && self.causal_dependencies == earlier.causal_dependencies
             && self.observed_at_ms >= earlier.observed_at_ms
     }
     pub(super) fn delivery_denial_fraction(&self) -> HostResult<FixedQ32> {

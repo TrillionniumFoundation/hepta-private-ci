@@ -189,3 +189,42 @@ fn shared_withdrawal_cannot_become_many_independent_task_samples() {
     );
     assert!(require_independent_clusters(&frozen).is_err());
 }
+
+#[test]
+fn v2_actual_inspection_exposes_only_original_causal_events_and_preserves_ack_checks() {
+    let (mut binding, original) = fixture();
+    binding.probe.schema = "hepta.cpu-neuron.dataset-withdrawal-current-probe.v2".into();
+    let event = Digest32::of_bytes(b"original-registration").to_string();
+    let mut wrapper = serde_json::json!({"schema":"hepta.cpu-neuron.dataset-withdrawal-inspection.v2", "original_inspection":original, "source_record_event_digests":[original["source_ack"]["source_event_digest"]], "source_support_digests":[Digest32::of_bytes(b"actual-support").to_string()], "artifact_registration_event_digests":[event]});
+    let value = parse(&line(&wrapper), &binding, 100, 102).unwrap();
+    assert_eq!(value.causal_dependencies().len(), 4);
+    wrapper["artifact_registration_event_digests"] = serde_json::json!([]);
+    assert!(parse(&line(&wrapper), &binding, 100, 102).is_err());
+    wrapper["artifact_registration_event_digests"] = serde_json::json!([event, event]);
+    assert!(parse(&line(&wrapper), &binding, 100, 102).is_err());
+    wrapper["artifact_registration_event_digests"] =
+        serde_json::json!([Digest32::ZERO.to_string()]);
+    assert!(parse(&line(&wrapper), &binding, 100, 102).is_err());
+    wrapper["artifact_registration_event_digests"] = serde_json::json!([event]);
+    wrapper["original_inspection"]["source_ack"]["sequence"] = serde_json::json!(0);
+    assert!(parse(&line(&wrapper), &binding, 100, 102).is_err());
+}
+
+#[test]
+fn v2_observation_sequence_rejects_clock_rollback_and_current_frontier_change() {
+    let (binding, value) = fixture();
+    let before = parse(&line(&value), &binding, 100, 102).unwrap();
+    let mut next = value;
+    next["observed_at_ms"] = 100.into();
+    let rolled_back = parse(&line(&next), &binding, 99, 102).unwrap();
+    assert!(!rolled_back.same_current_authority(&before));
+    next["observed_at_ms"] = 103.into();
+    let later = parse(&line(&next), &binding, 102, 104).unwrap();
+    assert!(later.same_current_authority(&before));
+    next["current_head_digest"] = Digest32::of_bytes(b"changed-current").to_string().into();
+    assert!(
+        !parse(&line(&next), &binding, 102, 104)
+            .unwrap()
+            .same_current_authority(&before)
+    );
+}

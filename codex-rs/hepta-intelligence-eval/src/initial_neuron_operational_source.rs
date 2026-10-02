@@ -27,7 +27,7 @@ use serde_json::Value;
 
 pub(super) type HostResult<T> = Result<T, Box<dyn std::error::Error>>;
 
-#[derive(Clone, Debug, Deserialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Source {
     pub path: PathBuf,
