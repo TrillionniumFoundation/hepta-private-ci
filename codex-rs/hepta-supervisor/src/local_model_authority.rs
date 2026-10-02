@@ -548,21 +548,27 @@ impl Issuer {
         progress.enter(Stage::Decode);
         let request: Exchange = serde_json::from_slice(&bytes)?;
         if let Exchange::Resource(request) = request {
+            progress.enter(Stage::ResourceObservation);
             let response = resources::observe(self, request, &peer).await?;
+            progress.enter(Stage::PeerRecheck);
             anyhow::ensure!(
                 capture_peer(&self.config, &self.verifier, &self.executables, &stream).await?
                     == peer,
                 "resource caller identity changed during observation"
             );
+            progress.enter(Stage::Encode);
             let bytes = serde_json::to_vec(&response)?;
             anyhow::ensure!(
                 bytes.len() <= MODEL_ISSUER_MAX_RESPONSE_BYTES,
                 "resource observation exceeds its bound"
             );
+            progress.enter(Stage::WriteLength);
             stream
                 .write_all(&u32::try_from(bytes.len())?.to_be_bytes())
                 .await?;
+            progress.enter(Stage::WriteBody);
             stream.write_all(&bytes).await?;
+            progress.enter(Stage::Flush);
             stream.flush().await?;
             return Ok(());
         }
