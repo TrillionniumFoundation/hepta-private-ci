@@ -12,6 +12,58 @@ pub struct ReadOnlyArtifactCurrentOwnerV1 {
     frontier_bytes: Vec<u8>,
 }
 impl ReadOnlyArtifactCurrentOwnerV1 {
+    /// Inspect exact V2 dataset membership in an authenticated historical
+    /// registry prefix. Historical membership never restores eligibility.
+    pub fn historical_dataset_members(
+        &self,
+        receipt: RegistrySnapshotReceipt,
+        dataset: Digest32,
+        now: u64,
+    ) -> Result<Vec<StableId>, ArtifactOwnerHostError> {
+        let current = self.current_registry_view(now)?;
+        if dataset.is_zero() || receipt.binding != current.receipt().binding {
+            return Err(ArtifactOwnerHostError::ProvenanceMismatch);
+        }
+        let context = ArtifactOwnerReadContext {
+            root: &self.root,
+            verifier: &self.verifier,
+            required_current_head: &self.required,
+        };
+        let historical = read_registry_snapshot(
+            File::open(context.registry_snapshot_path(receipt))?,
+            receipt,
+        )?;
+        if current
+            .registry()
+            .records()
+            .get(..historical.records().len())
+            != Some(historical.records())
+        {
+            return Err(ArtifactOwnerHostError::CurrentHeadRollback);
+        }
+        let mut members = Vec::new();
+        for record in historical.records() {
+            if let ArtifactEvent::Register { manifest, .. } = &record.event
+                && historical.is_eligible(&manifest.artifact_id)
+            {
+                let admission = context.read_manifest_admission(manifest)?;
+                if admission.withdrawal_scope_digest != self.verifier.trust.withdrawal_scope_digest
+                {
+                    return Err(ArtifactOwnerHostError::ProvenanceMismatch);
+                }
+                if admission
+                    .validated_manifest
+                    .manifest
+                    .source_dataset_digests
+                    .contains(&dataset)
+                {
+                    members.push(manifest.artifact_id.clone());
+                }
+            }
+        }
+        self.current_registry_view(now)?;
+        Ok(members)
+    }
     /// Return the original public signed header only after revalidating this
     /// exact Root-published frontier and its complete current snapshot.
     pub fn protected_current_head(

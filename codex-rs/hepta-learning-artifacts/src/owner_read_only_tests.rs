@@ -148,6 +148,12 @@ fn root_readonly_current_preserves_the_real_writer_and_closes_on_withdrawal_and_
         registry.manifest(&id("candidate")).fixture("manifest"),
         dataset
     ));
+    assert_eq!(
+        reader
+            .historical_dataset_members(view.receipt(), dataset, now)
+            .fixture("native historical V2 membership"),
+        vec![id("candidate")]
+    );
     assert!(matches!(
         LearningArtifactOwnerHost::open(&root, trust.clone(), lease.clone(), now),
         Err(ArtifactOwnerHostError::WriterFenceBusy)
@@ -355,6 +361,12 @@ fn root_readonly_current_preserves_the_real_writer_and_closes_on_withdrawal_and_
             .is_eligible(&id("candidate"))
     );
     let before_read = fs::read(root.join("READ-CURRENT")).fixture("current read bytes");
+    assert_eq!(
+        revoked
+            .historical_dataset_members(view.receipt(), dataset, now)
+            .fixture("membership does not restore current eligibility"),
+        vec![id("candidate")]
+    );
     let historical_ack = revoked
         .acknowledged_publication(
             &id("recover-original-withdrawal"),
