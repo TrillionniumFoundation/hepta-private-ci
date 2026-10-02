@@ -14,7 +14,7 @@
   "resolvedRoots": [
     "codex-rs/hepta-agentd"
   ],
-  "stateOwnerDisposition": "Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.",
+  "stateOwnerDisposition": "Owns durable bounded run admission, immutable snapshot references, private released-run deduplication and runtime-health composition state on the reviewed protected Unix storage profile; non-Unix retained-store construction currently fails closed.",
   "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.",
   "operations": [
     {
@@ -45,7 +45,7 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
         "symbol": "pub fn start_run(",
         "buildTarget": "codex-hepta-agentd"
       },
@@ -55,12 +55,17 @@
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "snapshot_and_capacity",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+          "kind": "retained_run_replay_and_pre_ack_failure",
+          "command": "just test -p codex-hepta-agentd --lib durable"
         }
       ],
-      "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity; it does not itself dispatch a Codex turn.",
+      "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity; it does not itself dispatch a Codex turn. The product retained coordinator stages, validates and persists reducer state before publishing a successful acknowledgement; storage uncertainty poisons the owner.",
       "operation": "start_run",
       "nativeSymbol": "pub fn start_run(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sourcePath": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
       "sourcePathExists": true
     },
     {
@@ -68,8 +73,8 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-        "symbol": "pub(crate) fn start_revalidated_run_start(",
+        "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+        "symbol": "pub fn start_revalidated_run_start(",
         "buildTarget": "codex-hepta-agentd"
       },
       "delegatedCallees": [
@@ -86,12 +91,17 @@
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "durable_run_start_projection",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+          "kind": "retained_run_replay_and_pre_ack_failure",
+          "command": "just test -p codex-hepta-agentd --lib durable"
         }
       ],
-      "sourceSemantics": "Projects only a product-revalidated durable RunStartRecordV1 into the sole daemon coordinator. request_digest is admitted_source_digest; body/artifact/authority/generation/fence/deadline are exact durable fields. ExplicitAbstain never enters runtime admission. Authentication/currentness remains a caller precondition.",
+      "sourceSemantics": "Projects only a product-revalidated durable RunStartRecordV1 into the sole daemon coordinator. request_digest is admitted_source_digest; body/artifact/authority/generation/fence/deadline are exact durable fields. ExplicitAbstain never enters runtime admission. Authentication/currentness remains a caller precondition. The product retained coordinator stages, validates and persists reducer state before publishing a successful acknowledgement; storage uncertainty poisons the owner.",
       "operation": "admit_revalidated_run_start",
-      "nativeSymbol": "pub(crate) fn start_revalidated_run_start(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "nativeSymbol": "pub fn start_revalidated_run_start(",
+      "sourcePath": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
       "sourcePathExists": true
     },
     {
@@ -99,7 +109,7 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
         "symbol": "pub fn cancel_run(",
         "buildTarget": "codex-hepta-agentd"
       },
@@ -109,12 +119,17 @@
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "cancellation_race",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+          "kind": "retained_run_replay_and_pre_ack_failure",
+          "command": "just test -p codex-hepta-agentd --lib durable"
         }
       ],
-      "sourceSemantics": "Transitions only Agentd-owned lifecycle state. Pre-dispatch cancellation is locally terminal; post-dispatch cancellation remains pending/indeterminate until the execution owner is invoked and observed by a separately composed caller.",
+      "sourceSemantics": "Transitions only Agentd-owned lifecycle state. Pre-dispatch cancellation is locally terminal; post-dispatch cancellation remains pending/indeterminate until the execution owner is invoked and observed by a separately composed caller. The product retained coordinator stages, validates and persists reducer state before publishing a successful acknowledgement; storage uncertainty poisons the owner.",
       "operation": "cancel_run",
       "nativeSymbol": "pub fn cancel_run(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sourcePath": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
       "sourcePathExists": true
     },
     {
@@ -122,7 +137,7 @@
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
         "symbol": "pub fn attach_context(",
         "buildTarget": "codex-hepta-agentd"
       },
@@ -132,12 +147,17 @@
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "mixed_generation_rejection",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+          "kind": "retained_run_replay_and_pre_ack_failure",
+          "command": "just test -p codex-hepta-agentd --lib durable"
         }
       ],
-      "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple; it does not itself submit the context to Codex.",
+      "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple; it does not itself submit the context to Codex. The product retained coordinator stages, validates and persists reducer state before publishing a successful acknowledgement; storage uncertainty poisons the owner.",
       "operation": "attach_context",
       "nativeSymbol": "pub fn attach_context(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "sourcePath": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
       "sourcePathExists": true
     },
     {
@@ -152,7 +172,7 @@
       "delegatedCallees": [
         {
           "role": "delegated_callee",
-          "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+          "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
           "symbol": "pub fn start_run(",
           "buildTarget": "codex-hepta-agentd",
           "ownerModule": "runtime.agentd"
@@ -170,7 +190,7 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "The real Agentd control path owns one Fleet-budget-bounded run coordinator, advertises run.lifecycle/1.1, enforces complete frozen tuple/deadline/reasoned-cancellation semantics, advances a 3-second cancellation-ack deadline to Indeterminate, supports exact-revision closed-record release, and keeps terminal reconciliation available during bounded drain.",
+      "sourceSemantics": "The real Agentd control path owns one Fleet-budget-bounded run coordinator, advertises run.lifecycle/1.1, enforces complete frozen tuple/deadline/reasoned-cancellation semantics, advances a 3-second cancellation-ack deadline to Indeterminate, supports exact-revision closed-record release, and keeps terminal reconciliation available during bounded drain. The coordinator now retains validated atomic images on Unix, preserves private released-run deduplication, and refuses changed composition or ambiguous missing history; cross-owner typed outbox and ingress generation fencing remain pending.",
       "operation": "daemon_run_lifecycle_control",
       "nativeSymbol": "crate::AgentdMethod::RunStart",
       "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
