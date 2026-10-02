@@ -3,6 +3,8 @@
 //! independently admits the real process and lease. No credentials enter here.
 
 use codex_http_client::HttpClient;
+#[cfg(target_os = "linux")]
+use codex_http_client::HttpClientBuilder;
 
 pub(crate) fn client(request_url: &str) -> std::io::Result<Option<HttpClient>> {
     let Some(socket) = std::env::var_os("HEPTA_MODEL_RELAY_SOCKET") else {
@@ -49,13 +51,12 @@ fn client_for_socket(socket: &std::path::Path, request_url: &str) -> std::io::Re
             "model relay socket is not root protected",
         ));
     }
-    let client = reqwest::Client::builder()
+    HttpClientBuilder::new()
         .unix_socket(socket)
-        .no_proxy()
-        .redirect(reqwest::redirect::Policy::none())
-        .build()
-        .map_err(std::io::Error::other)?;
-    Ok(HttpClient::new_without_request_logging(client))
+        .without_redirects()
+        .without_request_logging()
+        .build_direct()
+        .map_err(std::io::Error::other)
 }
 
 #[cfg(all(test, target_os = "linux"))]
