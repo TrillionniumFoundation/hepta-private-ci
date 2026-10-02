@@ -9,7 +9,7 @@ from unittest.mock import patch
 from unittest.mock import Mock
 
 from scripts.hepta_ci_dependencies import graph, plan
-from scripts.hepta_git_objects import GitTree
+from scripts.hepta_ci_git_objects import GitTree
 
 
 class GitObjectPlanningTests(unittest.TestCase):

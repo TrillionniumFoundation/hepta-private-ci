@@ -277,7 +277,7 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
             "hepta_ci_exec.py",
             "hepta_ci_dependencies.py",
             "hepta_ci_modules.py",
-            "hepta_git_objects.py",
+            "hepta_ci_git_objects.py",
         ):
             shutil.copyfile(RUNNER.with_name(name), self.repo / "scripts" / name)
         (self.repo / "codex-rs/Cargo.toml").write_text(

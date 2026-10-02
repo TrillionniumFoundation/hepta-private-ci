@@ -25,11 +25,11 @@ from pathlib import Path
 from typing import Iterable
 
 try:
-    from scripts.hepta_git_objects import GitTree
+    from scripts.hepta_ci_git_objects import GitTree
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_git_objects import GitTree
+    from hepta_ci_git_objects import GitTree
 
 OID = re.compile(r"[0-9a-f]{40}\Z")
 WORKSPACE = "codex-rs"
