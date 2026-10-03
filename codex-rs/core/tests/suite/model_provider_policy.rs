@@ -436,7 +436,30 @@ async fn active_provider_policy_governs_websocket_prewarm_and_turn() -> Result<(
     let connections = server.connections();
     assert_eq!(connections.len(), 1);
     assert_eq!(connections[0].len(), 2);
+    let prewarm_request = connections[0][0].body_json();
     let turn_request = connections[0][1].body_json();
+    assert!(
+        prewarm_request["client_metadata"]
+            .get("root_turn_id")
+            .is_none()
+    );
+    let prewarm_metadata: serde_json::Value = serde_json::from_str(
+        prewarm_request["client_metadata"]["x-codex-turn-metadata"]
+            .as_str()
+            .context("prewarm canonical turn metadata")?,
+    )?;
+    assert!(prewarm_metadata.get("root_turn_id").is_none());
+    let turn_metadata: serde_json::Value = serde_json::from_str(
+        turn_request["client_metadata"]["x-codex-turn-metadata"]
+            .as_str()
+            .context("turn canonical metadata")?,
+    )?;
+    let turn_id = turn_request["client_metadata"]["turn_id"]
+        .as_str()
+        .context("actual provider turn ID")?;
+    assert!(!turn_id.is_empty());
+    assert_eq!(turn_request["client_metadata"]["root_turn_id"], turn_id);
+    assert_eq!(turn_metadata["root_turn_id"], turn_id);
     assert_eq!(
         turn_request["previous_response_id"].as_str(),
         Some("warm-1")

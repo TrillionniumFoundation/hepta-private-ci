@@ -13,6 +13,7 @@ on:
       - codex-rs/hepta-context-compiler/**
       - codex-rs/hepta-intelligence/**
       - codex-rs/hepta-agentd/**
+      - codex-rs/hepta-supervisor/**
       - codex-rs/hepta-prompt-registry/**
       - codex-rs/hepta-prompt-optimizer/**
       - codex-rs/hepta-contracts/**
@@ -152,7 +153,7 @@ jobs:
           printf '%s\n' "$RUNNER_IMAGE" > "$RUNNER_TEMP/context-source/runner-image.txt"
           printf '%s\n' "$RUNNER_OS/$RUNNER_ARCH" > "$RUNNER_TEMP/context-source/runner-platform.txt"
           sha256sum "$RUNNER_TEMP/context-source/source.tar.gz" > "$RUNNER_TEMP/context-source/archive-sha256.txt"
-          find "$RUNNER_TEMP/context-source" -type f -print0 | sort -z | xargs -0 sha256sum \
+          find "$RUNNER_TEMP/context-source" -type f ! -path "$RUNNER_TEMP/context-source/artifact-files.sha256" -print0 | sort -z | xargs -0 sha256sum \
             > "$RUNNER_TEMP/context-source/artifact-files.sha256"
       - uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
         with:
@@ -251,7 +252,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -d "$RUNNER_TEMP/context-evidence" ]; then
-            find "$RUNNER_TEMP/context-evidence" -type f -print0 | sort -z | xargs -0 sha256sum \
+            find "$RUNNER_TEMP/context-evidence" -type f ! -path "$RUNNER_TEMP/context-evidence/artifact-files.sha256" -print0 | sort -z | xargs -0 sha256sum \
               > "$RUNNER_TEMP/context-evidence/artifact-files.sha256"
           fi
       - name: Retain candidate, partial failures and command receipts

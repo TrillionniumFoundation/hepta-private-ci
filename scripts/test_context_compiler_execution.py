@@ -17,6 +17,46 @@ def libtest(passed=1, failed=0, ignored=0):
 
 
 class ExecutionSummaryTests(unittest.TestCase):
+    def test_response_stream_regressions_require_every_named_case(self):
+        from context_compiler_named_evidence import bind_named_tests
+
+        spec = next(
+            value
+            for value in specs(legacy)
+            if value["name"] == "core-response-stream-regressions"
+        )
+        self.assertEqual(spec["argv"][:2], ["just", "test"])
+        self.assertIn("codex-core", spec["argv"])
+        self.assertIn("--lib", spec["argv"])
+        names = spec["requiredNativeTests"]
+        self.assertEqual(len(set(names)), 10)
+        self.assertEqual(spec["minimumTests"], 10)
+        self.assertEqual(
+            spec["argv"][spec["argv"].index("-E") + 1],
+            " | ".join(f"test({name})" for name in names),
+        )
+        for missing in [None, *names]:
+            with self.subTest(missing=missing):
+                # A green ten-test summary and an unrelated passing case must
+                # not replace any required acknowledgement/cancellation case.
+                observed = [name for name in names if name != missing]
+                if missing is not None:
+                    observed.append("client::tests::unrelated")
+                summary = "Summary [1s] 10 tests run: 10 passed"
+                result = {"succeeded": True}
+                bind_test_count(summary, spec, result)
+                with tempfile.TemporaryDirectory() as directory:
+                    path = Path(directory) / "native.log"
+                    path.write_text(
+                        "\n".join(f"PASS [0.1s] codex-core {name}" for name in observed)
+                        + f"\n{summary}\n"
+                    )
+                    named = bind_named_tests(path, names)
+                self.assertEqual(
+                    result["succeeded"] and named["namedNativeTestsPassed"],
+                    missing is None,
+                )
+
     def test_websocket_identity_regression_requires_actual_named_nonzero_execution(
         self,
     ):

@@ -105,9 +105,38 @@ def specs(legacy):
             spec["minimumTests"] = 1
         commands.append(spec)
 
+    stream_regression_names = [
+        "client::provider_policy_tests::completed_is_hidden_until_exact_terminal_is_acknowledged",
+        "client::provider_policy_tests::terminal_failure_suppresses_completed_and_last_response",
+        "client::provider_policy_tests::consumer_drop_records_partial_indeterminate_terminal",
+        "client::provider_policy_tests::unauthorized_stream_error_records_rejected_before_downstream_error",
+        "client::provider_policy_tests::eof_records_partial_indeterminate_terminal",
+        "client::provider_policy_tests::terminal_acknowledgement_wait_is_not_consumer_timeout_driven",
+        "client::tests::dropped_response_stream_traces_cancelled_partial_output",
+        "client::tests::response_stream_records_last_model_feedback_ids",
+        "client::tests::ephemeral_unauthorized_and_stream_errors_are_redacted",
+        "client::tests::dropped_backpressured_response_stream_traces_cancelled_partial_output",
+    ]
+
     # These selectors exercise the actual provider-body slots, not only the
     # context compiler crate in isolation.
     commands[2:2] = [
+        {
+            "name": "core-response-stream-regressions",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-core",
+                "--lib",
+                "-E",
+                " | ".join(f"test({name})" for name in stream_regression_names),
+            ],
+            "minimumTests": len(stream_regression_names),
+            "requiredNativeTests": stream_regression_names,
+        },
         {
             "name": "core-websocket-connection-identity-regression",
             "cwd": legacy.CODEX_RS,
