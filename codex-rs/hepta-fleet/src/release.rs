@@ -993,10 +993,23 @@ fn write_new_json<T: Serialize>(path: &Path, value: &T) -> Result<(), FleetRegis
     let mut bytes = serde_json::to_vec(value)
         .map_err(|error| FleetRegistryError::Corrupt(format!("encode release state: {error}")))?;
     bytes.push(b'\n');
-    let mut file = OpenOptions::new().write(true).create_new(true).open(path)?;
-    file.write_all(&bytes)?;
+    let mut file = OpenOptions::new()
+        .write(true)
+        .create_new(true)
+        .open(path)
+        .inspect_err(|_error| {
+            #[cfg(test)]
+            copy_tests::trace_io_failure("create release metadata", path, _error);
+        })?;
+    file.write_all(&bytes).inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("write release metadata", path, _error);
+    })?;
     crate::registry_metadata::inherit_protected_read_group(&file, path)?;
-    file.sync_all()?;
+    file.sync_all().inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("sync release metadata writer", path, _error);
+    })?;
     Ok(())
 }
 
@@ -1019,16 +1032,29 @@ fn read_bounded_json<T: for<'de> Deserialize<'de>>(
 }
 
 fn copy_immutable_program(source: &Path, destination: &Path) -> Result<(), FleetRegistryError> {
-    let mut input = File::open(source)?;
+    let mut input = File::open(source).inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("open source program", source, _error);
+    })?;
     let mut output = OpenOptions::new()
         .write(true)
         .create_new(true)
-        .open(destination)?;
-    std::io::copy(&mut input, &mut output)?;
+        .open(destination)
+        .inspect_err(|_error| {
+            #[cfg(test)]
+            copy_tests::trace_io_failure("create destination program", destination, _error);
+        })?;
+    std::io::copy(&mut input, &mut output).inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("copy program bytes", destination, _error);
+    })?;
     set_mode(destination, /*mode*/ 0o555)?;
     // Flush through the writing handle retained across the mode change.
     // Windows cannot FlushFileBuffers on a separately opened read-only handle.
-    output.sync_all()?;
+    output.sync_all().inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("sync program writing handle", destination, _error);
+    })?;
     Ok(())
 }
 
@@ -1128,7 +1154,12 @@ fn is_executable(_metadata: &std::fs::Metadata) -> bool {
 #[cfg(unix)]
 fn set_mode(path: &Path, mode: u32) -> Result<(), FleetRegistryError> {
     use std::os::unix::fs::PermissionsExt;
-    std::fs::set_permissions(path, std::fs::Permissions::from_mode(mode))?;
+    std::fs::set_permissions(path, std::fs::Permissions::from_mode(mode)).inspect_err(
+        |_error| {
+            #[cfg(test)]
+            copy_tests::trace_io_failure("set release mode", path, _error);
+        },
+    )?;
     Ok(())
 }
 
@@ -1152,7 +1183,14 @@ fn make_tree_removable(path: &Path) {
 
 #[cfg(unix)]
 fn sync_directory(path: &Path) -> Result<(), FleetRegistryError> {
-    File::open(path)?.sync_all()?;
+    let directory = File::open(path).inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("open release directory", path, _error);
+    })?;
+    directory.sync_all().inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("sync release directory", path, _error);
+    })?;
     Ok(())
 }
 
