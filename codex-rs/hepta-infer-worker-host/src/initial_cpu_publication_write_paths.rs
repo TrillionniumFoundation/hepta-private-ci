@@ -21,7 +21,7 @@ pub(crate) fn original_publication_write_paths(
     }
     let paths = vec![
         profile.owner_root.clone(),
-        profile.original_owner_state.clone(),
+        profile.original_owner_state,
     ];
     if original_owner.read(32 * 1024)? != deployment_bytes
         || deployment.profile.read(64 * 1024)? != profile_bytes
