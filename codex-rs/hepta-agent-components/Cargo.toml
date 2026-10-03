@@ -13,7 +13,7 @@ test = false
 
 [features]
 default = []
-fixed-eval-host = ["codex-hepta-intelligence-eval/fixed-eval-host"]
+fixed-eval-host = ["codex-hepta-intelligence-eval/fixed-eval-host", "dep:serde", "dep:serde_json"]
 qualification-legacy-learning-write = ["codex-hepta-learning-ledger/qualification-legacy-write"]
 qualification-unverified-operator-input = ["codex-hepta-bellman-operator/qualification-unverified-input"]
 
@@ -21,6 +21,8 @@ qualification-unverified-operator-input = ["codex-hepta-bellman-operator/qualifi
 workspace = true
 
 [dependencies]
+serde = { workspace = true, features = ["derive"], optional = true }
+serde_json = { workspace = true, optional = true }
 codex-hepta-infer-core = { path = "../hepta-infer-core" }
 codex-hepta-automation = { workspace = true }
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
@@ -50,3 +52,8 @@ codex-hepta-memory-extension = { workspace = true }
 codex-hepta-paths = { workspace = true }
 codex-hepta-plasticity = { path = "../hepta-plasticity" }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
+
+[[test]]
+name = "frozen_generator_wire"
+path = "tests/frozen_generator_wire.rs"
+required-features = ["fixed-eval-host"]
