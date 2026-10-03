@@ -607,9 +607,10 @@ impl AppServerModelDriver {
             .as_ref()
             .ok_or("runtime.codex turn/start final-use authorizer is required")?;
         let claim_budget = remaining_before(adapter_intent.deadline_ms)?;
-        let verified_use = timeout(claim_budget, authorizer.claim(authority_binding.clone()))
-            .await
-            .map_err(|_| "final-use authority request exceeded runtime.codex deadline")??;
+        let verified_use: VerifiedUseToken =
+            timeout(claim_budget, authorizer.claim(authority_binding.clone()))
+                .await
+                .map_err(|_| "final-use authority request exceeded runtime.codex deadline")??;
         let authority_epoch = verified_use.claimed_authority_epoch();
         let revocation_revision = verified_use.claimed_revocation_revision();
         let revocation_head_digest =

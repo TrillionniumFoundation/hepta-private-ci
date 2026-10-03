@@ -152,3 +152,30 @@ Run the parser/candidate regressions with:
 ```text
 python3 -m unittest discover -s qualification/kernel-authority -p 'test_*.py' -v
 ```
+
+### Exact internal method delegate
+
+The closed caller proof has one source-bound method delegate in
+`qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json`:
+`VerifiedFinalUseRevocationHead::verify` calls
+`FinalUseRevocationFeedVerifier::verify` once inside
+`codex-rs/hepta-contracts/src/authority_trust.rs`. This wrapper already existed
+unchanged at `6012a1827c15f2eb6968803b4844c2fe69dc306d`; its signature and body
+have SHA-256 `4835ceb7715d8a9971956a316569bad6e2e0718849ee0f19540e7f695bf3bd12`.
+It authenticates the opaque recovery head and is separately inventoried as
+`final_use_verified_revocation_head_verify`.
+
+This is a narrowly checked internal delegation, not an additional product
+caller. Both caller checks exclude only the uniquely located function span
+after checking its existing wrapper classification, exact raw definition digest,
+typed callee, and one-call count. The rest of that file and all external files
+remain checked. A changed body, another call, another enclosing type or method,
+or a changed path fails closed. The existing free-function delegate rules and
+all product caller lists stay unchanged. This one digest binds a specific
+security exception; it is not a second general source-evidence registry.
+
+The complete candidate remains identified by the actual source commit and tree
+in the candidate qualification receipts. This local definition digest cannot
+replace those identities or fresh exact-head/prospective-merge tests. The
+lexical caller proof is conservative source analysis, not a complete Rust parser
+or proof of runtime authorization, provider acceptance, or production readiness.

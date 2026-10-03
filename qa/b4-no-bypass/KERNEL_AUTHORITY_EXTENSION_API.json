@@ -109,5 +109,16 @@
       ],
       "allowedCallers": []
     }
+  ],
+  "methodDelegates": [
+    {
+      "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "enclosingType": "VerifiedFinalUseRevocationHead",
+      "enclosingMethod": "verify",
+      "wrapperBoundary": "final_use_verified_revocation_head_verify",
+      "calleeBoundary": "final_use_revocation_feed_verify",
+      "expectedCalls": 1,
+      "definitionSha256": "4835ceb7715d8a9971956a316569bad6e2e0718849ee0f19540e7f695bf3bd12"
+    }
   ]
 }

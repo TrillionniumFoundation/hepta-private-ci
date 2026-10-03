@@ -1,12 +1,13 @@
+use sqlx::Connection;
+
 use crate::AuthBusAuthorityError;
 use crate::AuthBusAuthorityStore;
 
 #[tokio::test]
 async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
     let root = tempfile::tempdir().unwrap();
-    let fixture = AuthBusAuthorityStore::open(&root.path().join("fixture.sqlite"))
-        .await
-        .unwrap();
+    let fixture_path = root.path().join("fixture.sqlite");
+    let fixture = AuthBusAuthorityStore::open(&fixture_path).await.unwrap();
     let triggers = sqlx::query_as::<_, (String, String)>(
         "SELECT name, tbl_name FROM sqlite_schema WHERE type = 'trigger' ORDER BY name",
     )
@@ -14,10 +15,20 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
     .await
     .unwrap();
     assert!(!triggers.is_empty());
+    let (busy, _, _): (i64, i64, i64) = sqlx::query_as("PRAGMA wal_checkpoint(TRUNCATE)")
+        .fetch_one(&fixture.pool)
+        .await
+        .unwrap();
+    assert_eq!(busy, 0);
     fixture.pool.close().await;
     for (name, table) in triggers {
         for replace in [false, true] {
             let path = root.path().join(format!("{name}-{replace}.sqlite"));
+            // Copy only the verified, checkpointed reference after every pool
+            // handle closes. Each mutation and owner reopen remains real and
+            // isolated, without repeating all migration DDL for every trigger.
+            std::fs::copy(&fixture_path, &path).unwrap();
+            std::fs::File::open(&path).unwrap().sync_all().unwrap();
             let store = AuthBusAuthorityStore::open(&path).await.unwrap();
             // Use one connection for the entire injected DDL cut. Another
             // pooled connection may still hold the pre-drop schema image.
@@ -27,18 +38,20 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
             // data or untrusted SQL fragments are interpolated.
             let quoted_name = format!("\"{}\"", name.replace('"', "\"\""));
             let quoted_table = format!("\"{}\"", table.replace('"', "\"\""));
+            let mut mutation = connection.begin().await.unwrap();
             sqlx::query(sqlx::AssertSqlSafe(format!("DROP TRIGGER {quoted_name}")))
-                .execute(&mut *connection)
+                .execute(&mut *mutation)
                 .await
                 .unwrap();
             if replace {
                 sqlx::query(sqlx::AssertSqlSafe(format!(
                     "CREATE TRIGGER {quoted_name} AFTER UPDATE ON {quoted_table} BEGIN SELECT 1; END"
                 )))
-                .execute(&mut *connection)
+                .execute(&mut *mutation)
                 .await
                 .unwrap();
             }
+            mutation.commit().await.unwrap();
             let check: String = sqlx::query_scalar("PRAGMA quick_check")
                 .fetch_one(&mut *connection)
                 .await

@@ -2,8 +2,6 @@ use std::path::Path;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
-use codex_state::SqliteConfig;
-use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
@@ -26,13 +24,7 @@ pub struct AuthBusAuthorityStore {
 
 impl AuthBusAuthorityStore {
     pub async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
-        let path = std::path::absolute(path).map_err(storage)?;
-        let home = AbsolutePathBuf::try_from(path.parent().unwrap_or_else(|| Path::new(".")))
-            .map_err(storage)?;
-        let pool = SqliteConfig::from_sqlite_home(home)
-            .open_durable_evidence_pool(&path)
-            .await
-            .map_err(storage)?;
+        let pool = crate::sqlite::open_durable_pool(path).await?;
         let quick_check: String = sqlx::query_scalar("PRAGMA quick_check")
             .fetch_one(&pool)
             .await

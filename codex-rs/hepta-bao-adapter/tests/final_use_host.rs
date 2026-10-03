@@ -1,3 +1,8 @@
+#![allow(
+    clippy::unwrap_used,
+    reason = "Integration fixture assertions must fail immediately when setup is invalid."
+)]
+
 #[cfg(unix)]
 mod unix {
     // Fixture setup fails the test immediately; runtime authority lints stay active.

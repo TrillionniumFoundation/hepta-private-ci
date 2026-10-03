@@ -158,6 +158,9 @@ caller_markers = ["HttpProviderEffectAdapter::new", "dispatch_with_payload", "lo
 
 [[boundary]]
 id = "final_use_open_state"
+receiver_associated_only = true
+receiver_type = "FinalUseAuthority"
+receiver_methods = ["open_state_dir", "open_state_dir_with_clock", "open_state_dir_with_trust", "open_state_dir_with_issuer_keys", "recover_state_dir_with_issuer_keys"]
 symbol = "FinalUseAuthority::open_state_dir"
 call_pattern = "(?:FinalUseAuthority\\s*::\\s*open_state_dir(?:_with_clock|_with_trust|_with_issuer_keys)?\\s*\\(|FinalUseAuthority\\s*::\\s*recover_state_dir_with_issuer_keys\\s*\\()"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
@@ -167,6 +170,7 @@ caller_markers = ["FinalUseAuthority::", "FinalUseAuthority", "authority"]
 
 [[boundary]]
 id = "final_use_claim"
+free_function = true
 symbol = "claim_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim_final_use(", "authority.claim(signed, expected)"]
@@ -175,16 +179,19 @@ caller_markers = ["claim_final_use"]
 
 [[boundary]]
 id = "final_use_claim_raw"
+receiver_type = "FinalUseAuthority"
+receiver_methods = ["claim"]
 symbol = "FinalUseAuthority::claim"
-call_pattern = '(?:authority|final_use|self\s*\.\s*authority)\s*\.\s*claim\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim(", "verify_strict", "used_nonces"]
-product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
-caller_markers = ["FinalUseAuthority", "SignedFinalUseGrant", ".claim("]
+product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-automation/src/authorized_effect.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
+caller_markers = ["authority", "binding"]
 
 [[boundary]]
 id = "final_use_delivery"
+free_function = true
 symbol = "deliver_final_use"
+call_pattern = '\b(?:r#)?deliver_final_use\b\s*(?:\(|::\s*<)'
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn deliver_final_use", "authority.with_verified_use(token, expected, consumer)"]
 product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
@@ -192,7 +199,9 @@ caller_markers = ["deliver_final_use", "deliver_final_use(authority, verified, &
 
 [[boundary]]
 id = "final_use_delivery_witness"
+free_function = true
 symbol = "deliver_final_use_with_witness"
+call_pattern = '\b(?:r#)?deliver_final_use_with_witness\b\s*(?:\(|::\s*<)'
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn deliver_final_use_with_witness", "VerifiedUseTokenWitnessV1", "ConsumerEntry"]
 product_callers = []
@@ -200,16 +209,19 @@ caller_markers = []
 
 [[boundary]]
 id = "final_use_delivery_raw"
+receiver_type = "FinalUseAuthority"
+receiver_methods = ["with_verified_use", "enter_verified_use"]
 symbol = "FinalUseAuthority::with_verified_use"
-call_pattern = '(?:authority|final_use|self\s*\.\s*authority)\s*\.\s*with_verified_use\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
-definition_markers = ["pub fn with_verified_use", "Arc::ptr_eq", "validate_live"]
+definition_markers = ["pub fn with_verified_use", "pub fn enter_verified_use", "Arc::ptr_eq", "validate_live"]
 product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
-caller_markers = ["FinalUseAuthority", ".claim(", "with_verified_use"]
+caller_markers = ["with_verified_use", "binding"]
 
 [[boundary]]
 id = "final_use_dispatch"
+free_function = true
 symbol = "dispatch_final_use"
+call_pattern = '\b(?:r#)?dispatch_final_use\b\s*(?:\(|::\s*<)'
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn dispatch_final_use", "HEPTA_PRIVILEGED_BOUNDARY_FINAL_USE_DISPATCH", "with_dispatch_boundary"]
 product_callers = ["codex-rs/hepta-agentd/src/browser_servo.rs"]
@@ -217,7 +229,9 @@ caller_markers = ["dispatch_final_use", "authority_enter", "dispatch_boundary"]
 
 [[boundary]]
 id = "final_use_dispatch_witness"
+free_function = true
 symbol = "dispatch_final_use_with_witness"
+call_pattern = '\b(?:r#)?dispatch_final_use_with_witness\b\s*(?:\(|::\s*<)'
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn dispatch_final_use_with_witness", "VerifiedUseTokenWitnessV1", "DispatchEntry"]
 product_callers = []
@@ -225,6 +239,8 @@ caller_markers = []
 
 [[boundary]]
 id = "final_use_dispatch_raw"
+receiver_type = "FinalUseAuthority"
+receiver_methods = ["with_dispatch_boundary"]
 symbol = "FinalUseAuthority::with_dispatch_boundary"
 call_pattern = "authority\\s*\\.\\s*with_dispatch_boundary\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
@@ -234,6 +250,8 @@ caller_markers = []
 
 [[boundary]]
 id = "final_use_revocation_update"
+receiver_type = "FinalUseAuthority"
+receiver_methods = ["update_revocations"]
 symbol = "FinalUseAuthority::update_revocations"
 call_pattern = "authority\\s*\\.\\s*update_revocations\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
@@ -243,6 +261,9 @@ caller_markers = ["FinalUseAuthority", "update_revocations", "FinalUseRevocation
 
 [[boundary]]
 id = "final_use_approval_trust"
+receiver_associated_only = true
+receiver_type = "FinalUseApprovalVerifier"
+receiver_methods = ["new", "new_with_keys"]
 symbol = "FinalUseApprovalVerifier::new"
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
 definition_markers = ["impl FinalUseApprovalVerifier", "pub fn new(", "InvalidTrust"]
@@ -251,6 +272,8 @@ caller_markers = []
 
 [[boundary]]
 id = "final_use_approval_verify"
+receiver_type = "FinalUseApprovalVerifier"
+receiver_methods = ["verify", "verify_with_key_id"]
 symbol = "FinalUseApprovalVerifier::verify"
 call_pattern = "approval_verifier\\s*\\.\\s*verify\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
@@ -260,6 +283,9 @@ caller_markers = ["approval_verifier", ".verify(grant, approval)", "BaoFinalUseH
 
 [[boundary]]
 id = "final_use_revocation_feed_trust"
+receiver_associated_only = true
+receiver_type = "FinalUseRevocationFeedVerifier"
+receiver_methods = ["new", "new_with_keys"]
 symbol = "FinalUseRevocationFeedVerifier::new"
 call_pattern = 'FinalUseRevocationFeedVerifier\s*::\s*(?:new|new_with_keys)\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
@@ -269,6 +295,8 @@ caller_markers = ["FinalUseRevocationFeedVerifier::new_with_keys", "final_use_re
 
 [[boundary]]
 id = "final_use_revocation_feed_verify"
+receiver_type = "FinalUseRevocationFeedVerifier"
+receiver_methods = ["verify"]
 symbol = "FinalUseRevocationFeedVerifier::verify"
 call_pattern = 'revocation_feed_verifier\s*\.\s*verify\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
@@ -278,6 +306,9 @@ caller_markers = []
 
 [[boundary]]
 id = "final_use_verified_revocation_head_verify"
+receiver_associated_only = true
+receiver_type = "VerifiedFinalUseRevocationHead"
+receiver_methods = ["verify"]
 symbol = "VerifiedFinalUseRevocationHead::verify"
 call_pattern = 'VerifiedFinalUseRevocationHead\s*::\s*verify\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_trust.rs"
@@ -287,6 +318,8 @@ caller_markers = ["VerifiedFinalUseRevocationHead::verify", "initial signed fina
 
 [[boundary]]
 id = "final_use_feed_clock_publish"
+receiver_type = "FinalUseFeedClock"
+receiver_methods = ["publish"]
 symbol = "FinalUseFeedClock::publish"
 call_pattern = '\.\s*publish\s*\('
 caller_type_marker = "FinalUseFeedClock"
@@ -297,6 +330,9 @@ caller_markers = ["FinalUseFeedClock", ".publish(&verified_initial_head)"]
 
 [[boundary]]
 id = "final_use_production_trust_bind"
+receiver_associated_only = true
+receiver_type = "ProductionFinalUseTrustContext"
+receiver_methods = ["bind"]
 symbol = "ProductionFinalUseTrustContext::bind"
 call_pattern = 'ProductionFinalUseTrustContext\s*::\s*bind\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_trust.rs"
@@ -306,6 +342,8 @@ caller_markers = ["ProductionFinalUseTrustContext::bind", "from_trust_bundle"]
 
 [[boundary]]
 id = "final_use_revocation_feed_apply"
+receiver_type = "FinalUseRevocationFeedVerifier"
+receiver_methods = ["apply"]
 symbol = "FinalUseRevocationFeedVerifier::apply"
 call_pattern = 'revocation_(?:feed_)?verifier\s*\.\s*apply\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
@@ -318,6 +356,9 @@ caller_markers = ["FinalUseRevocationFeedVerifier", ".apply("]
 
 [[boundary]]
 id = "final_use_revocation_convergence_trust"
+receiver_associated_only = true
+receiver_type = "FinalUseRevocationConvergenceVerifier"
+receiver_methods = ["new"]
 symbol = "FinalUseRevocationConvergenceVerifier::new"
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
 definition_markers = ["pub struct FinalUseRevocationConvergenceVerifier", "pub fn new(", "InvalidRevocationNodeTrust"]
@@ -326,6 +367,8 @@ caller_markers = []
 
 [[boundary]]
 id = "final_use_revocation_convergence_verify"
+receiver_type = "FinalUseRevocationConvergenceVerifier"
+receiver_methods = ["verify"]
 symbol = "FinalUseRevocationConvergenceVerifier::verify"
 call_pattern = "convergence_verifier\\s*\\.\\s*verify\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
@@ -335,6 +378,8 @@ caller_markers = ["convergence_verifier", ".verify(", "FleetRevocationCoordinato
 
 [[boundary]]
 id = "bao_final_use_consumer"
+receiver_type = "BaoClient"
+receiver_methods = ["consume_kv_v2", "consume_kv_v2_with_authbus"]
 symbol = "BaoClient::consume_kv_v2"
 call_pattern = "\\.\\s*consume_kv_v2\\s*\\("
 caller_type_marker = "BaoClient"
@@ -345,6 +390,9 @@ caller_markers = []
 
 [[boundary]]
 id = "bao_registered_consumer_new"
+receiver_associated_only = true
+receiver_type = "RegisteredBaoConsumer"
+receiver_methods = ["new"]
 symbol = "RegisteredBaoConsumer::new"
 definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
 definition_markers = ["impl RegisteredBaoConsumer", "pub fn new(", "ConsumerId"]
@@ -353,6 +401,9 @@ caller_markers = []
 
 [[boundary]]
 id = "bao_final_use_host_new"
+receiver_associated_only = true
+receiver_type = "BaoFinalUseHost"
+receiver_methods = ["new"]
 symbol = "BaoFinalUseHost::new"
 definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
 definition_markers = ["impl BaoFinalUseHost", "pub fn new(", "DuplicateConsumer"]
@@ -361,6 +412,8 @@ caller_markers = []
 
 [[boundary]]
 id = "bao_registered_revocation_update"
+receiver_type = "BaoFinalUseHost"
+receiver_methods = ["apply_revocation_update"]
 symbol = "BaoFinalUseHost::apply_revocation_update"
 call_pattern = "\\.\\s*apply_revocation_update\\s*\\("
 definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
@@ -370,6 +423,8 @@ caller_markers = []
 
 [[boundary]]
 id = "bao_registered_final_use_host"
+receiver_type = "BaoFinalUseHost"
+receiver_methods = ["consume_kv_v2"]
 symbol = "BaoFinalUseHost::consume_kv_v2"
 call_pattern = "\\.\\s*consume_kv_v2\\s*\\("
 caller_type_marker = "BaoFinalUseHost"
@@ -380,6 +435,9 @@ caller_markers = []
 
 [[boundary]]
 id = "authority_lease_open_state"
+receiver_associated_only = true
+receiver_type = "AuthorityLeaseRegistry"
+receiver_methods = ["open_state_dir", "open_state_dir_with_frontier_store", "open_state_dir_with_clock", "open_state_dir_with_trust"]
 symbol = "AuthorityLeaseRegistry::open_state_dir"
 call_pattern = 'AuthorityLeaseRegistry\s*::\s*open_state_dir(?:_with_frontier_store|_with_clock|_with_trust)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
@@ -389,6 +447,9 @@ caller_markers = []
 
 [[boundary]]
 id = "authority_lease_open_production_state"
+receiver_associated_only = true
+receiver_type = "AuthorityLeaseRegistry"
+receiver_methods = ["open_production_state_dir"]
 symbol = "AuthorityLeaseRegistry::open_production_state_dir"
 call_pattern = 'AuthorityLeaseRegistry\s*::\s*open_production_state_dir\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_trust.rs"
@@ -398,6 +459,8 @@ caller_markers = ["AuthorityLeaseRegistry::open_production_state_dir", "pub fn o
 
 [[boundary]]
 id = "authority_lease_put"
+receiver_type = "AuthorityLeaseRegistry"
+receiver_methods = ["put_lease"]
 symbol = "AuthorityLeaseRegistry::put_lease"
 call_pattern = '\.\s*put_lease\s*\('
 caller_type_marker = "AuthorityLeaseRegistry"
@@ -408,6 +471,8 @@ caller_markers = []
 
 [[boundary]]
 id = "authority_lease_revoke"
+receiver_type = "AuthorityLeaseRegistry"
+receiver_methods = ["revoke"]
 symbol = "AuthorityLeaseRegistry::revoke"
 call_pattern = '\.\s*revoke\s*\('
 caller_type_marker = "AuthorityLeaseRegistry"
@@ -418,6 +483,8 @@ caller_markers = []
 
 [[boundary]]
 id = "authority_lease_prune"
+receiver_type = "AuthorityLeaseRegistry"
+receiver_methods = ["prune_expired_leases"]
 symbol = "AuthorityLeaseRegistry::prune_expired_leases"
 call_pattern = '\.\s*prune_expired_leases\s*\('
 caller_type_marker = "AuthorityLeaseRegistry"
@@ -428,6 +495,8 @@ caller_markers = []
 
 [[boundary]]
 id = "authority_lease_epoch_advance"
+receiver_type = "AuthorityLeaseRegistry"
+receiver_methods = ["advance_epoch"]
 symbol = "AuthorityLeaseRegistry::advance_epoch"
 call_pattern = '\.\s*advance_epoch\s*\('
 caller_type_marker = "AuthorityLeaseRegistry"
@@ -438,6 +507,8 @@ caller_markers = []
 
 [[boundary]]
 id = "authority_lease_verify_use"
+receiver_type = "AuthorityLeaseVerifier"
+receiver_methods = ["verify_use"]
 symbol = "AuthorityLeaseVerifier::verify_use"
 call_pattern = '\.\s*verify_use\s*\('
 caller_type_marker = "AuthorityLeaseVerifier"
@@ -448,6 +519,8 @@ caller_markers = ["self.verify_use(", "pub fn bind_dispatch"]
 
 [[boundary]]
 id = "authority_lease_bind_dispatch"
+receiver_type = "AuthorityLeaseVerifier"
+receiver_methods = ["bind_dispatch"]
 symbol = "AuthorityLeaseVerifier::bind_dispatch"
 call_pattern = '\.\s*bind_dispatch\s*\('
 caller_type_marker = "AuthorityLeaseVerifier"
@@ -458,6 +531,8 @@ caller_markers = ["AuthorityDispatchBinding", ".bind_dispatch(", "FleetAuthority
 
 [[boundary]]
 id = "authority_lease_delivery"
+receiver_type = "AuthorityLeaseVerifier"
+receiver_methods = ["with_verified_use"]
 symbol = "AuthorityLeaseVerifier::with_verified_use"
 call_pattern = '\.\s*with_verified_use\s*\('
 caller_type_marker = "AuthorityLeaseVerifier"
@@ -468,7 +543,9 @@ caller_markers = []
 
 [[boundary]]
 id = "authority_lease_delivery_witness"
+free_function = true
 symbol = "deliver_authority_lease_with_witness"
+call_pattern = '\b(?:r#)?deliver_authority_lease_with_witness\b\s*(?:\(|::\s*<)'
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn deliver_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "validate_token_live_witness"]
 product_callers = []
@@ -476,6 +553,8 @@ caller_markers = []
 
 [[boundary]]
 id = "authority_lease_dispatch_raw"
+receiver_type = "AuthorityLeaseVerifier"
+receiver_methods = ["with_dispatch_boundary"]
 symbol = "AuthorityLeaseVerifier::with_dispatch_boundary"
 call_pattern = '\.\s*with_dispatch_boundary\s*\('
 caller_type_marker = "AuthorityLeaseVerifier"
@@ -486,7 +565,9 @@ caller_markers = []
 
 [[boundary]]
 id = "authority_lease_dispatch_witness"
+free_function = true
 symbol = "dispatch_authority_lease_with_witness"
+call_pattern = '\b(?:r#)?dispatch_authority_lease_with_witness\b\s*(?:\(|::\s*<)'
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn dispatch_authority_lease_with_witness", "VerifiedUseTokenWitnessV1", "with_dispatch_boundary_witness"]
 product_callers = ["codex-rs/hepta-contracts/src/authority_trust.rs"]
@@ -494,6 +575,8 @@ caller_markers = ["dispatch_authority_lease_with_witness", "AuthorityDispatchBin
 
 [[boundary]]
 id = "authority_lease_dispatch_binding"
+receiver_type = "AuthorityDispatchBinding"
+receiver_methods = ["dispatch"]
 symbol = "AuthorityDispatchBinding::dispatch"
 call_pattern = '\bdispatch_binding\s*\.\s*dispatch\s*\('
 caller_type_marker = "AuthorityDispatchBinding"
@@ -603,6 +686,8 @@ release = false
 
 [[boundary]]
 id = "final_use_async_dispatch_fence"
+receiver_type = "FinalUseAuthority"
+receiver_methods = ["with_verified_use_async", "with_verified_use_async_with_witness"]
 call_pattern = 'authority\s*\.\s*with_verified_use_async(?:_with_witness)?\s*\('
 symbol = "FinalUseAuthority::with_verified_use_async"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
@@ -620,6 +705,8 @@ caller_markers = []
 
 [[boundary]]
 id = "final_use_guarded_effect"
+receiver_type = "FinalUseAuthority"
+receiver_methods = ["with_verified_effect"]
 symbol = "FinalUseAuthority::with_verified_effect"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect", "enter_verified_effect", "active_dispatches"]
@@ -628,6 +715,9 @@ caller_markers = []
 
 [[boundary]]
 id = "final_use_async_entry"
+receiver_type = "FinalUseAuthority"
+receiver_methods = ["enter_verified_use"]
+receiver_alternatives = ["VerifiedUseToken::enter"]
 symbol = "VerifiedUseToken::enter / FinalUseAuthority::enter_verified_use"
 call_pattern = '(?:\bverified_use|\btoken)\s*\.\s*enter\s*\(|\.\s*enter_verified_use\s*\(|VerifiedUseToken\s*::\s*enter\s*\(|FinalUseAuthority\s*::\s*enter_verified_use\s*\('
 caller_type_marker = "VerifiedUseToken"
@@ -638,6 +728,8 @@ caller_markers = ["VerifiedUseToken", "verified_use.enter", "EnteredUseToken"]
 
 [[boundary]]
 id = "bao_authbus_final_use_consumer"
+receiver_type = "BaoClient"
+receiver_methods = ["consume_kv_v2_with_authbus"]
 symbol = "BaoClient::consume_kv_v2_with_authbus"
 call_pattern = '\.\s*consume_kv_v2_with_authbus\s*\('
 definition_path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"

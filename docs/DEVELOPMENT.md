@@ -39,6 +39,12 @@ test or merge authorized repository changes. Those records apply when their
 runtime, independent-evaluation or deployment boundary is actually exercised.
 Repository merge does not itself activate that boundary.
 
+Reviewer approval, administrator enforcement and comment resolution are selected
+by the repository owner. The supplied main ruleset permits administrators to
+merge PRs without granting a direct-push bypass; ordinary required checks remain
+bound to their real publisher. These repository settings do not authorize a
+workload effect or replace independent runtime evaluation.
+
 The repository has two development paths. The ordinary path is the fast path:
 edit the owned source, run the affected package tests, run the applicable
 review checks and merge through the normal protected branch. The qualification
@@ -97,7 +103,7 @@ release and changes to shared execution boundaries.
 
 No branch name, pull-request number, queued workflow, cached check result or prose claim is source-selection authority. `docs/CURRENT.json` records only the static repository identity, cleanup baseline, claim levels and dynamic-observation policy. The current source head, source tree, target branch, merge candidate, CI, review and operator decisions must be resolved from a fresh `CanonicalSourceReceiptV1` or the exact external receipt defined by the global verifier.
 
-The static repository policy records `main` as the observed administrative default at the V8 cleanup baseline. `DOC-2-DEFAULT-BRANCH-SELECTION` remains `blocked_external` until a current repository-administration observation proves a different state. The document tree must not infer that `main`, the recorded default, or any candidate branch is selected merely because equivalent bytes exist or a pull request is open.
+The static repository policy records `main` as the observed administrative default at the V8 cleanup baseline. Authorized integration may target that branch after checking the current repository setting; changing the default branch is not a prerequisite. `DOC-2-DEFAULT-BRANCH-SELECTION` tracks exact-source and merge-candidate validation, followed by the authorized operator's target selection. It does not impose an additional independent-review approval on ordinary repository integration. Runtime candidates still require the independent evaluation and authority checks defined by their owners. A branch name, equivalent bytes or an open pull request alone never establish qualification.
 
 Historical cleanup remains bound to the exact head/tree and 143-path deletion inventory in `DOCUMENT_SYSTEM.json`. Live branch counts, pull-request counts and branch-tip relationships are deliberately excluded from canonical files because they can change after a commit. This posture grants no runtime, model, provider, tool, network, filesystem, secret, Matrix, fleet, operator, acceptance, selection, promotion or release authority.
 

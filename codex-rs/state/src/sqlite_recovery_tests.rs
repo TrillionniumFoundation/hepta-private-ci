@@ -22,6 +22,9 @@ impl RecoveryFixture {
         std::fs::create_dir(&home).context("create recovery home")?;
         std::fs::set_permissions(&home, std::fs::Permissions::from_mode(0o700))
             .context("protect recovery home")?;
+        let home = home
+            .canonicalize()
+            .context("resolve physical recovery home")?;
         let database = home.join("recovery.sqlite3");
         write_private(&database, b"database bytes")?;
         write_private(&sidecar_path(&database, "-wal"), b"wal bytes")?;

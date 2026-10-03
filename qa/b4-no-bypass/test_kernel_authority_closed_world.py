@@ -242,8 +242,22 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
         ignored = ("/tests/", "/examples/", "_tests.rs")
         sources = self.rust_sources()
         extension_delegates = self.extension_delegates()
-        raw_cache: dict[Path, str] = {}
-        code_cache: dict[Path, str] = {}
+        method_source = json.loads(EXTENSION_INVENTORY.read_text())["sourcePath"]
+        method_delegates = CALLER_PROOF._verified_method_delegate_spans(
+            ROOT,
+            CALLER_PROOF._boundary_rows(tomllib.loads(MANIFEST.read_text())),
+            {method_source: self.lexical_code(method_source)},
+        )
+        raw_cache = {path: path.read_text(encoding="utf-8") for path in sources}
+        code_cache = {
+            path: CALLER_PROOF._strip_cfg_test_items(CALLER_PROOF._strip_rust_non_code(raw))
+            for path, raw in raw_cache.items()
+        }
+        alias_index = {path.relative_to(ROOT).as_posix(): code for path, code in code_cache.items()}
+        free_symbols = {
+            name for item in self.data()["freeFunctions"]
+            for name in item["privilegedFunctions"]
+        }
         for row in self.inventory():
             boundary_id = str(row["id"])
             type_marker = str(row["typeMarker"])
@@ -252,6 +266,7 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
             patterns = [re.compile(str(value)) for value in row["callPatterns"]]
             expected = {str(value) for value in row["allowedCallers"]}
             observed: set[str] = set()
+            aliases = CALLER_PROOF.symbol_aliases(alias_index, type_marker) if type_marker in free_symbols else frozenset()
             for path in sources:
                 relative = path.relative_to(ROOT).as_posix()
                 if (
@@ -263,20 +278,25 @@ class KernelAuthorityClosedWorldTests(unittest.TestCase):
                 if path not in raw_cache:
                     raw_cache[path] = path.read_text(encoding="utf-8")
                 raw = raw_cache[path]
-                if type_marker not in raw:
+                if type_marker not in raw and not aliases:
                     continue
                 if path not in code_cache:
                     code_cache[path] = CALLER_PROOF._strip_cfg_test_items(
                         CALLER_PROOF._strip_rust_non_code(raw)
                     )
-                code = code_cache[path]
+                code = CALLER_PROOF._mask_method_delegate_spans(
+                    code_cache[path], method_delegates.get(boundary_id, {}).get(relative, [])
+                )
+                if aliases:
+                    code = CALLER_PROOF.normalize_symbol_aliases(code, type_marker, aliases)
                 if any(pattern.search(code) for pattern in patterns):
                     observed.add(relative)
-            self.assertEqual(
-                observed,
-                expected,
-                f"{boundary_id}: independent kernel.authority caller set drifted",
-            )
+            with self.subTest(boundary=boundary_id):
+                self.assertEqual(
+                    observed,
+                    expected,
+                    f"{boundary_id}: independent kernel.authority caller set drifted",
+                )
 
 
 if __name__ == "__main__":

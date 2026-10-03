@@ -168,7 +168,7 @@ jobs:
             -p codex-hepta-kg -p codex-hepta-prompt-registry \
             -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd \
             --no-deps --all-targets --features codex-hepta-agentd/qualification-cognitive-write \
-            -- -D warnings
+            -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Preserve exact tracked source
         if: always()

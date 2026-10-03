@@ -308,7 +308,8 @@ impl AgentdAutomationEffectHost {
                 authority_trust
                     .ensure_initial_frontier(initial_frontier, local_authority_uninitialized)?;
                 let refresh_clock: Arc<dyn AuthorityClock> = authority_trust.clone();
-                let admission_clock = Arc::new(FinalUseFeedClock::new(Arc::clone(&refresh_clock)));
+                let admission_clock: Arc<FinalUseFeedClock> =
+                    Arc::new(FinalUseFeedClock::new(Arc::clone(&refresh_clock)));
                 admission_clock
                     .publish(&verified_initial_head)
                     .map_err(|error| {
@@ -356,7 +357,7 @@ impl AgentdAutomationEffectHost {
                         "initial signed final-use revocation feed rejected: {error}"
                     ))
                 })?;
-                let admission_clock = context.feed_clock();
+                let admission_clock: Arc<FinalUseFeedClock> = context.feed_clock();
                 admission_clock
                     .publish(&verified_initial_head)
                     .map_err(|error| {

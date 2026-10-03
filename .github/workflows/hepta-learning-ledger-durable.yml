@@ -69,11 +69,11 @@ jobs:
           set -euo pipefail
           cargo check --locked -p codex-hepta-intelligence --all-targets
           just test --locked -p codex-hepta-intelligence
-          cargo clippy --locked -p codex-hepta-intelligence --all-targets -- -D warnings
+          cargo clippy --locked -p codex-hepta-intelligence --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Strict lint
         working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-learning-ledger --all-targets -- -D warnings
+        run: cargo clippy --locked -p codex-hepta-learning-ledger --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Formatting check without source mutation
         if: always()

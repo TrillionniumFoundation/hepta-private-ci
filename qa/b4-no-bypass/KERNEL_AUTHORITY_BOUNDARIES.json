@@ -188,11 +188,11 @@
       "typeMarker": "FinalUseAuthority",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "FinalUseAuthority\\s*::\\s*open_state_dir\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*open_state_dir_with_clock\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*open_state_dir_with_trust\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*open_state_dir_with_issuer_keys\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*recover_state_dir_with_issuer_keys\\s*\\("
+        "(?:\\bFinalUseAuthority|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseAuthority\\s*>)\\s*::\\s*(?:r#)?open_state_dir\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseAuthority|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseAuthority\\s*>)\\s*::\\s*(?:r#)?open_state_dir_with_clock\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseAuthority|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseAuthority\\s*>)\\s*::\\s*(?:r#)?open_state_dir_with_trust\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseAuthority|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseAuthority\\s*>)\\s*::\\s*(?:r#)?open_state_dir_with_issuer_keys\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseAuthority|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseAuthority\\s*>)\\s*::\\s*(?:r#)?recover_state_dir_with_issuer_keys\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
@@ -217,8 +217,8 @@
       "typeMarker": "FinalUseAuthority",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "\\.\\s*claim\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*claim\\s*\\("
+        "\\.\\s*(?:r#)?claim\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseAuthority|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseAuthority\\s*>)\\s*::\\s*(?:r#)?claim\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -236,7 +236,7 @@
       "typeMarker": "deliver_final_use",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "\\bdeliver_final_use\\s*\\("
+        "\\b(?:r#)?deliver_final_use\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
@@ -247,7 +247,7 @@
       "typeMarker": "deliver_final_use_with_witness",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "\\bdeliver_final_use_with_witness\\s*\\("
+        "\\b(?:r#)?deliver_final_use_with_witness\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -256,8 +256,8 @@
       "typeMarker": "FinalUseAuthority",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "\\.\\s*with_verified_use\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*with_verified_use\\s*\\("
+        "\\.\\s*(?:r#)?(?:with_verified_use|enter_verified_use)\\b\\s*(?:\\(|::\\s*<)",
+        "::\\s*(?:r#)?(?:with_verified_use|enter_verified_use)\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-memory/src/production_writer.rs",
@@ -273,7 +273,7 @@
       "typeMarker": "dispatch_final_use",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "\\bdispatch_final_use\\s*\\("
+        "\\b(?:r#)?dispatch_final_use\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/browser_servo.rs"
@@ -284,7 +284,7 @@
       "typeMarker": "dispatch_final_use_with_witness",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "\\bdispatch_final_use_with_witness\\s*\\("
+        "\\b(?:r#)?dispatch_final_use_with_witness\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -293,8 +293,8 @@
       "typeMarker": "FinalUseAuthority",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "\\.\\s*with_dispatch_boundary\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*with_dispatch_boundary\\s*\\("
+        "\\.\\s*(?:r#)?(?:with_dispatch_boundary)\\b\\s*(?:\\(|::\\s*<)",
+        "::\\s*(?:r#)?(?:with_dispatch_boundary)\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -303,8 +303,8 @@
       "typeMarker": "FinalUseAuthority",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "\\.\\s*update_revocations\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*update_revocations\\s*\\("
+        "\\.\\s*(?:r#)?update_revocations\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseAuthority|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseAuthority\\s*>)\\s*::\\s*(?:r#)?update_revocations\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-contracts/src/final_use_control.rs",
@@ -316,8 +316,8 @@
       "typeMarker": "FinalUseApprovalVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "callPatterns": [
-        "FinalUseApprovalVerifier\\s*::\\s*new\\s*\\(",
-        "FinalUseApprovalVerifier\\s*::\\s*new_with_keys\\s*\\("
+        "(?:\\bFinalUseApprovalVerifier|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseApprovalVerifier\\s*>)\\s*::\\s*(?:r#)?new\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseApprovalVerifier|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseApprovalVerifier\\s*>)\\s*::\\s*(?:r#)?new_with_keys\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -326,10 +326,10 @@
       "typeMarker": "FinalUseApprovalVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "callPatterns": [
-        "\\.\\s*verify\\s*\\(",
-        "FinalUseApprovalVerifier\\s*::\\s*verify\\s*\\(",
-        "\\.\\s*verify_with_key_id\\s*\\(",
-        "FinalUseApprovalVerifier\\s*::\\s*verify_with_key_id\\s*\\("
+        "\\.\\s*(?:r#)?verify\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseApprovalVerifier|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseApprovalVerifier\\s*>)\\s*::\\s*(?:r#)?verify\\b\\s*(?:\\(|::\\s*<)",
+        "\\.\\s*(?:r#)?verify_with_key_id\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseApprovalVerifier|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseApprovalVerifier\\s*>)\\s*::\\s*(?:r#)?verify_with_key_id\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
@@ -340,8 +340,8 @@
       "typeMarker": "FinalUseRevocationFeedVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "callPatterns": [
-        "FinalUseRevocationFeedVerifier\\s*::\\s*new\\s*\\(",
-        "FinalUseRevocationFeedVerifier\\s*::\\s*new_with_keys\\s*\\("
+        "(?:\\bFinalUseRevocationFeedVerifier|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseRevocationFeedVerifier\\s*>)\\s*::\\s*(?:r#)?new\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseRevocationFeedVerifier|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseRevocationFeedVerifier\\s*>)\\s*::\\s*(?:r#)?new_with_keys\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs"
@@ -352,8 +352,8 @@
       "typeMarker": "FinalUseRevocationFeedVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "callPatterns": [
-        "revocation_feed_verifier\\s*\\.\\s*verify\\s*\\(",
-        "FinalUseRevocationFeedVerifier\\s*::\\s*verify\\s*\\("
+        "revocation_feed_verifier\\s*\\.\\s*(?:r#)?verify\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseRevocationFeedVerifier|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseRevocationFeedVerifier\\s*>)\\s*::\\s*(?:r#)?verify\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -362,7 +362,7 @@
       "typeMarker": "VerifiedFinalUseRevocationHead",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_trust.rs",
       "callPatterns": [
-        "VerifiedFinalUseRevocationHead\\s*::\\s*verify\\s*\\("
+        "(?:\\bVerifiedFinalUseRevocationHead|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?VerifiedFinalUseRevocationHead\\s*>)\\s*::\\s*(?:r#)?verify\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs"
@@ -373,8 +373,8 @@
       "typeMarker": "FinalUseFeedClock",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_trust.rs",
       "callPatterns": [
-        "\\.\\s*publish\\s*\\(",
-        "FinalUseFeedClock\\s*::\\s*publish\\s*\\("
+        "\\.\\s*(?:r#)?publish\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseFeedClock|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseFeedClock\\s*>)\\s*::\\s*(?:r#)?publish\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs"
@@ -385,7 +385,7 @@
       "typeMarker": "ProductionFinalUseTrustContext",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_trust.rs",
       "callPatterns": [
-        "ProductionFinalUseTrustContext\\s*::\\s*bind\\s*\\("
+        "(?:\\bProductionFinalUseTrustContext|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?ProductionFinalUseTrustContext\\s*>)\\s*::\\s*(?:r#)?bind\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_authority_bootstrap.rs"
@@ -396,8 +396,8 @@
       "typeMarker": "FinalUseRevocationFeedVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "callPatterns": [
-        "\\.\\s*apply\\s*\\(",
-        "FinalUseRevocationFeedVerifier\\s*::\\s*apply\\s*\\("
+        "\\.\\s*(?:r#)?apply\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseRevocationFeedVerifier|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseRevocationFeedVerifier\\s*>)\\s*::\\s*(?:r#)?apply\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-agentd/src/automation_effect_host.rs",
@@ -409,7 +409,7 @@
       "typeMarker": "FinalUseRevocationConvergenceVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "callPatterns": [
-        "FinalUseRevocationConvergenceVerifier\\s*::\\s*new\\s*\\("
+        "(?:\\bFinalUseRevocationConvergenceVerifier|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseRevocationConvergenceVerifier\\s*>)\\s*::\\s*(?:r#)?new\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -418,8 +418,8 @@
       "typeMarker": "FinalUseRevocationConvergenceVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use_control.rs",
       "callPatterns": [
-        "convergence_verifier\\s*\\.\\s*verify\\s*\\(",
-        "FinalUseRevocationConvergenceVerifier\\s*::\\s*verify\\s*\\("
+        "convergence_verifier\\s*\\.\\s*(?:r#)?verify\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseRevocationConvergenceVerifier|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseRevocationConvergenceVerifier\\s*>)\\s*::\\s*(?:r#)?verify\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-fleet/src/revocation_control.rs"
@@ -430,8 +430,8 @@
       "typeMarker": "BaoClient",
       "definitionPath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "callPatterns": [
-        "\\.\\s*consume_kv_v2\\s*\\(",
-        "BaoClient\\s*::\\s*consume_kv_v2\\s*\\("
+        "\\.\\s*(?:r#)?(?:consume_kv_v2|consume_kv_v2_with_authbus)\\b\\s*(?:\\(|::\\s*<)",
+        "::\\s*(?:r#)?(?:consume_kv_v2|consume_kv_v2_with_authbus)\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -440,7 +440,7 @@
       "typeMarker": "RegisteredBaoConsumer",
       "definitionPath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
       "callPatterns": [
-        "RegisteredBaoConsumer\\s*::\\s*new\\s*\\("
+        "(?:\\bRegisteredBaoConsumer|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?RegisteredBaoConsumer\\s*>)\\s*::\\s*(?:r#)?new\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -449,7 +449,7 @@
       "typeMarker": "BaoFinalUseHost",
       "definitionPath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
       "callPatterns": [
-        "BaoFinalUseHost\\s*::\\s*new\\s*\\("
+        "(?:\\bBaoFinalUseHost|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?BaoFinalUseHost\\s*>)\\s*::\\s*(?:r#)?new\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -458,8 +458,8 @@
       "typeMarker": "BaoFinalUseHost",
       "definitionPath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
       "callPatterns": [
-        "\\.\\s*apply_revocation_update\\s*\\(",
-        "BaoFinalUseHost\\s*::\\s*apply_revocation_update\\s*\\("
+        "\\.\\s*(?:r#)?apply_revocation_update\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bBaoFinalUseHost|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?BaoFinalUseHost\\s*>)\\s*::\\s*(?:r#)?apply_revocation_update\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -468,8 +468,8 @@
       "typeMarker": "BaoFinalUseHost",
       "definitionPath": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
       "callPatterns": [
-        "\\.\\s*consume_kv_v2\\s*\\(",
-        "BaoFinalUseHost\\s*::\\s*consume_kv_v2\\s*\\("
+        "\\.\\s*(?:r#)?consume_kv_v2\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bBaoFinalUseHost|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?BaoFinalUseHost\\s*>)\\s*::\\s*(?:r#)?consume_kv_v2\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -478,10 +478,10 @@
       "typeMarker": "AuthorityLeaseRegistry",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "callPatterns": [
-        "AuthorityLeaseRegistry\\s*::\\s*open_state_dir\\s*\\(",
-        "AuthorityLeaseRegistry\\s*::\\s*open_state_dir_with_frontier_store\\s*\\(",
-        "AuthorityLeaseRegistry\\s*::\\s*open_state_dir_with_clock\\s*\\(",
-        "AuthorityLeaseRegistry\\s*::\\s*open_state_dir_with_trust\\s*\\("
+        "(?:\\bAuthorityLeaseRegistry|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?AuthorityLeaseRegistry\\s*>)\\s*::\\s*(?:r#)?open_state_dir\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bAuthorityLeaseRegistry|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?AuthorityLeaseRegistry\\s*>)\\s*::\\s*(?:r#)?open_state_dir_with_frontier_store\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bAuthorityLeaseRegistry|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?AuthorityLeaseRegistry\\s*>)\\s*::\\s*(?:r#)?open_state_dir_with_clock\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bAuthorityLeaseRegistry|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?AuthorityLeaseRegistry\\s*>)\\s*::\\s*(?:r#)?open_state_dir_with_trust\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -490,7 +490,7 @@
       "typeMarker": "AuthorityLeaseRegistry",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_trust.rs",
       "callPatterns": [
-        "AuthorityLeaseRegistry\\s*::\\s*open_production_state_dir\\s*\\("
+        "(?:\\bAuthorityLeaseRegistry|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?AuthorityLeaseRegistry\\s*>)\\s*::\\s*(?:r#)?open_production_state_dir\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-fleet/src/authority_port.rs"
@@ -501,8 +501,8 @@
       "typeMarker": "AuthorityLeaseRegistry",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "callPatterns": [
-        "\\.\\s*put_lease\\s*\\(",
-        "AuthorityLeaseRegistry\\s*::\\s*put_lease\\s*\\("
+        "\\.\\s*(?:r#)?put_lease\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bAuthorityLeaseRegistry|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?AuthorityLeaseRegistry\\s*>)\\s*::\\s*(?:r#)?put_lease\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -511,8 +511,8 @@
       "typeMarker": "AuthorityLeaseRegistry",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "callPatterns": [
-        "\\.\\s*revoke\\s*\\(",
-        "AuthorityLeaseRegistry\\s*::\\s*revoke\\s*\\("
+        "\\.\\s*(?:r#)?revoke\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bAuthorityLeaseRegistry|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?AuthorityLeaseRegistry\\s*>)\\s*::\\s*(?:r#)?revoke\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -521,8 +521,8 @@
       "typeMarker": "AuthorityLeaseRegistry",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "callPatterns": [
-        "\\.\\s*prune_expired_leases\\s*\\(",
-        "AuthorityLeaseRegistry\\s*::\\s*prune_expired_leases\\s*\\("
+        "\\.\\s*(?:r#)?prune_expired_leases\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bAuthorityLeaseRegistry|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?AuthorityLeaseRegistry\\s*>)\\s*::\\s*(?:r#)?prune_expired_leases\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -531,8 +531,8 @@
       "typeMarker": "AuthorityLeaseRegistry",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "callPatterns": [
-        "\\.\\s*advance_epoch\\s*\\(",
-        "AuthorityLeaseRegistry\\s*::\\s*advance_epoch\\s*\\("
+        "\\.\\s*(?:r#)?advance_epoch\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bAuthorityLeaseRegistry|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?AuthorityLeaseRegistry\\s*>)\\s*::\\s*(?:r#)?advance_epoch\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -541,8 +541,8 @@
       "typeMarker": "AuthorityLeaseVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "callPatterns": [
-        "\\.\\s*verify_use\\s*\\(",
-        "AuthorityLeaseVerifier\\s*::\\s*verify_use\\s*\\("
+        "\\.\\s*(?:r#)?verify_use\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bAuthorityLeaseVerifier|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?AuthorityLeaseVerifier\\s*>)\\s*::\\s*(?:r#)?verify_use\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-contracts/src/authority_trust.rs"
@@ -553,8 +553,8 @@
       "typeMarker": "AuthorityLeaseVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_trust.rs",
       "callPatterns": [
-        "\\.\\s*bind_dispatch\\s*\\(",
-        "AuthorityLeaseVerifier\\s*::\\s*bind_dispatch\\s*\\("
+        "\\.\\s*(?:r#)?bind_dispatch\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bAuthorityLeaseVerifier|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?AuthorityLeaseVerifier\\s*>)\\s*::\\s*(?:r#)?bind_dispatch\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-fleet/src/authority_port.rs"
@@ -565,8 +565,8 @@
       "typeMarker": "AuthorityLeaseVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "callPatterns": [
-        "\\.\\s*with_verified_use\\s*\\(",
-        "AuthorityLeaseVerifier\\s*::\\s*with_verified_use\\s*\\("
+        "\\.\\s*(?:r#)?(?:with_verified_use)\\b\\s*(?:\\(|::\\s*<)",
+        "::\\s*(?:r#)?(?:with_verified_use)\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -575,7 +575,7 @@
       "typeMarker": "deliver_authority_lease_with_witness",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "callPatterns": [
-        "\\bdeliver_authority_lease_with_witness\\s*\\("
+        "\\b(?:r#)?deliver_authority_lease_with_witness\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -584,8 +584,8 @@
       "typeMarker": "AuthorityLeaseVerifier",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "callPatterns": [
-        "\\.\\s*with_dispatch_boundary\\s*\\(",
-        "AuthorityLeaseVerifier\\s*::\\s*with_dispatch_boundary\\s*\\("
+        "\\.\\s*(?:r#)?(?:with_dispatch_boundary)\\b\\s*(?:\\(|::\\s*<)",
+        "::\\s*(?:r#)?(?:with_dispatch_boundary)\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -594,7 +594,7 @@
       "typeMarker": "dispatch_authority_lease_with_witness",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_lease.rs",
       "callPatterns": [
-        "\\bdispatch_authority_lease_with_witness\\s*\\("
+        "\\b(?:r#)?dispatch_authority_lease_with_witness\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-contracts/src/authority_trust.rs"
@@ -605,8 +605,8 @@
       "typeMarker": "AuthorityDispatchBinding",
       "definitionPath": "codex-rs/hepta-contracts/src/authority_trust.rs",
       "callPatterns": [
-        "\\bdispatch_binding\\s*\\.\\s*dispatch\\s*\\(",
-        "AuthorityDispatchBinding\\s*::\\s*dispatch\\s*\\("
+        "\\.\\s*(?:r#)?(?:dispatch)\\b\\s*(?:\\(|::\\s*<)",
+        "::\\s*(?:r#)?(?:dispatch)\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-fleet/src/authority_port.rs"
@@ -617,8 +617,8 @@
       "typeMarker": "FinalUseAuthority",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "\\.\\s*with_verified_effect\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*with_verified_effect\\s*\\("
+        "\\.\\s*(?:r#)?with_verified_effect\\b\\s*(?:\\(|::\\s*<)",
+        "::\\s*(?:r#)?with_verified_effect\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     },
@@ -627,10 +627,8 @@
       "typeMarker": "FinalUseAuthority",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "\\.\\s*with_verified_use_async\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*with_verified_use_async\\s*\\(",
-        "\\.\\s*with_verified_use_async_with_witness\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*with_verified_use_async_with_witness\\s*\\("
+        "\\.\\s*(?:r#)?(?:with_verified_use_async|with_verified_use_async_with_witness)\\b\\s*(?:\\(|::\\s*<)",
+        "::\\s*(?:r#)?(?:with_verified_use_async|with_verified_use_async_with_witness)\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-automation/src/authorized_effect.rs"
@@ -641,11 +639,11 @@
       "typeMarker": "VerifiedUseToken",
       "definitionPath": "codex-rs/hepta-contracts/src/final_use.rs",
       "callPatterns": [
-        "\\bverified_use\\s*\\.\\s*enter\\s*\\(",
-        "\\btoken\\s*\\.\\s*enter\\s*\\(",
-        "\\.\\s*enter_verified_use\\s*\\(",
-        "VerifiedUseToken\\s*::\\s*enter\\s*\\(",
-        "FinalUseAuthority\\s*::\\s*enter_verified_use\\s*\\("
+        "\\bverified_use\\s*\\.\\s*(?:r#)?enter\\b\\s*(?:\\(|::\\s*<)",
+        "\\btoken\\s*\\.\\s*(?:r#)?enter\\b\\s*(?:\\(|::\\s*<)",
+        "\\.\\s*(?:r#)?enter_verified_use\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bVerifiedUseToken|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?VerifiedUseToken\\s*>)\\s*::\\s*(?:r#)?enter\\b\\s*(?:\\(|::\\s*<)",
+        "(?:\\bFinalUseAuthority|<\\s*(?:::\\s*)?(?:(?:r#)?[^\\W\\d]\\w*\\s*::\\s*)*(?:r#)?FinalUseAuthority\\s*>)\\s*::\\s*(?:r#)?enter_verified_use\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": [
         "codex-rs/hepta-infer-worker-host/src/native_app_server.rs"
@@ -656,8 +654,8 @@
       "typeMarker": "BaoClient",
       "definitionPath": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
       "callPatterns": [
-        "\\.\\s*consume_kv_v2_with_authbus\\s*\\(",
-        "BaoClient\\s*::\\s*consume_kv_v2_with_authbus\\s*\\("
+        "\\.\\s*(?:r#)?(?:consume_kv_v2_with_authbus)\\b\\s*(?:\\(|::\\s*<)",
+        "::\\s*(?:r#)?(?:consume_kv_v2_with_authbus)\\b\\s*(?:\\(|::\\s*<)"
       ],
       "allowedCallers": []
     }
