@@ -86,6 +86,8 @@ mod operation_observation;
 pub use operation_observation::MAX_NEURON_OPERATION_OBSERVATION_BYTES_V2;
 pub use operation_observation::NeuronAcknowledgedOperationV2;
 
+#[path = "runtime_v2_checkpoint_observation.rs"]
+mod checkpoint_observation;
 #[path = "runtime_v2_tick_context.rs"]
 mod tick_context;
 pub use archive::MAX_NEURON_GENERATION_ARCHIVE_BYTES_V1;

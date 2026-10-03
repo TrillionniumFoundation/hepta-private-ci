@@ -1020,6 +1020,8 @@ fn lost_witness_ack_is_read_back_and_does_not_repeat_model() {
 #[path = "runtime_v2_closure_tests.rs"]
 mod closure;
 
+#[path = "runtime_v2_checkpoint_observation_tests.rs"]
+mod checkpoint_observation;
 #[path = "runtime_v2_tick_context_tests.rs"]
 mod tick_context;
 

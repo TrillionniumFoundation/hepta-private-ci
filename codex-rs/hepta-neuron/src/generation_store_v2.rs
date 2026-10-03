@@ -549,6 +549,17 @@ impl FileNeuronGenerationStoreV2 {
         })
     }
 
+    pub(crate) fn contains_acknowledged_anchor(
+        &self,
+        anchor: JournalAnchor,
+    ) -> Result<bool, GenerationStoreError> {
+        self.ensure_healthy()?;
+        Ok(self
+            .records
+            .iter()
+            .any(|record| record.witness_acknowledged && record.next_anchor == anchor))
+    }
+
     pub fn current_anchor(&self) -> Result<Option<JournalAnchor>, GenerationStoreError> {
         self.ensure_healthy()?;
         Ok(self.local_frontier)
