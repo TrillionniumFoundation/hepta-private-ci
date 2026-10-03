@@ -94,10 +94,10 @@ impl StartTransitionCompletion {
         self.done.load(std::sync::atomic::Ordering::Acquire)
     }
 
-    /// A running task may admit its successor once terminal persistence and
+    /// A terminal owner may admit its successor once terminal persistence and
     /// recovery publication have finished, while shutdown still waits for
-    /// this exact owner's idle callbacks. Start transitions never use this
-    /// release and remain fenced until their completion.
+    /// this exact owner's notification and idle callbacks. An aborted start
+    /// transition uses the same split after its identity-fenced active clear.
     pub(crate) fn release_admission(&self) {
         self.admission_released
             .store(true, std::sync::atomic::Ordering::Release);
