@@ -26,6 +26,7 @@ export function expectedPixelChecks(capture){
  if(capture.draft)checks.push('draft-visible');
  if(capture.kept)checks.push('focus-kept-text');
  if(capture.lastMessage)checks.push('last-owner-message-visible');
+ if(capture.fixtures&&!capture.consoleView&&!capture.jump)checks.push('last-owner-status-fully-visible');
  if(capture.jump)checks.push('jump-visible-in-rendered-area');
  if(capture.assertTheme)checks.push('exact-theme');
  if(capture.cjk)checks.push('exact-cjk');

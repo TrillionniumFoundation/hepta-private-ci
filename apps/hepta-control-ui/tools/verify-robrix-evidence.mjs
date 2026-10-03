@@ -7,6 +7,24 @@ import {fileURLToPath} from 'node:url';
 import {captureSchedule,expectedPixelChecks} from './robrix-pixel-plan.mjs';
 import {readScreenshotText,requireChatText,prepareScreenshotForOcr,prepareObservedControlForOcr,prepareObservedFixtureRows,prepareObservedAreaForOcr} from './verify-robrix-pixels.mjs';
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+export function validateTailStatusGeometry(entry){
+ const g=entry.geometryBefore;
+ assert.ok(g,'Follow-latest capture requires real Rust geometry');
+ assert.deepEqual(g,entry.geometryAfter,'Tail geometry changed during capture');
+ assert.equal(g.layoutFinalized,true,'Tail geometry must be sampled after Root layout');
+ assert.equal(g.followLatest,true,'Expected retained follow-latest intent');
+ assert.equal(g.atEnd,true,'Rendered PortalList must have reached its end');
+ assert.equal(g.total,64,'Status must belong to the actual final fixture row');
+ const valid=rect=>Array.isArray(rect)&&rect.length===4&&rect.every(Number.isFinite)&&rect[2]>0&&rect[3]>0;
+ for(const key of ['viewport','lastRow','lastStatusVisibleGlyphs','composer'])assert.ok(valid(g[key]),`Missing/invalid actual ${key} bounds`);
+ const [vx,vy,vw,vh]=g.viewport,[rx,ry,rw,rh]=g.lastRow,[x,y,width,height]=g.lastStatusVisibleGlyphs;
+ const epsilon=0.01; // Float-coordinate roundoff only, not a pixel clipping allowance.
+ assert.ok(vx>=0&&vy>=0&&vx+vw<=entry.viewport.width+epsilon&&vy+vh<=entry.viewport.height+epsilon,'Timeline viewport must fit screenshot');
+ assert.ok(ry>=vy-epsilon&&ry+rh<=vy+vh+epsilon,'Entire final fixture row must fit timeline');
+ assert.ok(x>=Math.max(vx,rx)-epsilon&&y>=Math.max(vy,ry)-epsilon&&x+width<=Math.min(vx+vw,rx+rw)+epsilon&&y+height<=Math.min(vy+vh,ry+rh)+epsilon,'All visible status glyph bounds must fit final row and timeline');
+ assert.ok(y+height<=g.composer[1]+epsilon,'Composer must not cover final status');
+ return {x:Math.max(vx,x-4),y:Math.max(vy,y-4),width:Math.min(vx+vw,x+width+4)-Math.max(vx,x-4),height:Math.min(vy+vh,y+height+4)-Math.max(vy,y-4)};
+}
 export async function verifyCapture(directory,entry,expected){
  assert.equal(entry.name,expected.name);
  assert.equal(entry.theme,expected.theme);
@@ -42,6 +60,17 @@ export async function verifyCapture(directory,entry,expected){
  if(expected.draft)outcomes.push({check:'draft-visible',passed:/Theme round trip draft/i.test(original)||/Theme round trip draft/i.test(await withBlock())});
  if(expected.kept)outcomes.push({check:'focus-kept-text',passed:/kept/i.test(original)||/kept/i.test(await withBlock())});
  if(expected.lastMessage)outcomes.push({check:'last-owner-message-visible',passed:/Fixture\s*64/i.test(original)||/Fixture\s*64/i.test(await withBlock())});
+ if(expected.fixtures&&!expected.consoleView&&!expected.jump){
+  const area=validateTailStatusGeometry(entry);
+  const regionPath=join(directory,expected.name+'-last-status-region.png');
+  const region=await prepareObservedAreaForOcr(path,regionPath,area,expected.viewport);
+  await writeFile(join(directory,expected.name+'-last-status-region.json'),JSON.stringify({sourcePngSha256:entry.pngSha256,geometry:entry.geometryBefore,...region}));
+  const raw=await readScreenshotText(region.rawPath,{layout:'block'});
+  await writeFile(region.rawPath.replace(/\.png$/,'-ocr.txt'),raw);
+  let text=raw;
+  if(!/\bReceiving\b/.test(text)){const normalized=await readScreenshotText(regionPath,{layout:'block'});await writeFile(regionPath.replace(/\.png$/,'-ocr.txt'),normalized);text+='\n'+normalized;}
+  outcomes.push({check:'last-owner-status-fully-visible',passed:/\bReceiving\b/.test(text)});
+ }
  if(expected.jump){
   assert.deepEqual(entry.jumpArea,entry.jumpAreaBefore,'Rendered target moved during capture');
   assert.ok(entry.jumpArea,'Jump requires actual rendered geometry');

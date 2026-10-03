@@ -8,7 +8,7 @@ import { robrixSourceIdentity } from '../tools/robrix-source-identity.mjs';
 import { mkdtemp, readFile, readdir, rm, mkdir, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { dirname, join } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import { fileURLToPath, pathToFileURL } from 'node:url';
 
 const root = fileURLToPath(new URL('..', import.meta.url));
 const generated = join(root, 'rust/target/robrix-build');
@@ -25,7 +25,7 @@ async function filesBelow(path) {
   return files;
 }
 
-test('actual parent redraw requires the child read guard to be released', async t => {
+test('actual parent redraw releases child guards and defers draw-generated actions', async t => {
   const artifacts = await filesBelow(target);
   const dependencyDirs = [...new Set(artifacts
     .filter(path => /\.(?:rmeta|so|dylib|dll)$/.test(path))
@@ -65,7 +65,7 @@ test('actual parent redraw requires the child read guard to be released', async 
   const temporary = await mkdtemp(join(tmpdir(), 'hepta-real-widget-borrow-'));
   t.after(() => rm(temporary, { recursive: true, force: true }));
   const source = `extern crate makepad_widgets;
-use makepad_widgets::{Cx, PortalList, View, WidgetNode, WidgetRef, ScriptNew, LiveId, live_id};
+use makepad_widgets::*;
 use std::sync::atomic::{AtomicU32, Ordering};
 static PANIC: AtomicU32 = AtomicU32::new(0);
 fn setup() -> (Cx, View, WidgetRef) {
@@ -97,6 +97,25 @@ fn setup() -> (Cx, View, WidgetRef) {
     u32::from(redraw_parent)
 }
 #[no_mangle] pub extern "C" fn panic_was_reborrow() -> u32 { PANIC.load(Ordering::SeqCst) }
+static DRAWS: AtomicU32=AtomicU32::new(0);
+static ACTIONS: AtomicU32=AtomicU32::new(0);
+static NEXTS: AtomicU32=AtomicU32::new(0);
+#[no_mangle] pub extern "C" fn start(mode:u32)->*mut Cx {
+ let mut list: Option<DrawList> = None;
+ let mut pending: Option<NextFrame> = None;
+ let mut cx=Box::new(Cx::new(Box::new(move |cx,event| {
+  match event {
+   Event::Draw(_) => {if DRAWS.fetch_add(1,Ordering::SeqCst)==0 {list=Some(DrawList::new(cx)); cx.action(1u32);}},
+   Event::Actions(_) => {ACTIONS.fetch_add(1,Ordering::SeqCst); if mode==0 {cx.redraw_list(list.as_ref().unwrap().id());} else {pending=Some(cx.new_next_frame());}},
+   _ => {if pending.is_some_and(|token|token.is_event(event).is_some()) {pending=None; NEXTS.fetch_add(1,Ordering::SeqCst);cx.redraw_list(list.as_ref().unwrap().id());}}
+  }
+ })));
+ cx.redraw_all();Box::into_raw(cx)
+}
+#[no_mangle] pub unsafe extern "C" fn pump(cx:*mut Cx,msg:u32)->u32 {(*cx).process_to_wasm(msg)}
+#[no_mangle] pub extern "C" fn draws()->u32 {DRAWS.load(Ordering::SeqCst)}
+#[no_mangle] pub extern "C" fn actions()->u32 {ACTIONS.load(Ordering::SeqCst)}
+#[no_mangle] pub extern "C" fn nexts()->u32 {NEXTS.load(Ordering::SeqCst)}
 `;
   const sourcePath = join(temporary, 'probe.rs');
   const wasmPath = join(temporary, 'probe.wasm');
@@ -134,7 +153,26 @@ fn setup() -> (Cx, View, WidgetRef) {
   const positive = await WebAssembly.instantiate(module, { env: imports });
   assert.equal(positive.exports.released_child_guard_parent_redraw(), 1);
   assert.equal(positive.exports.panic_was_reborrow(), 0);
-  const receipt = {schema:'hepta.makepad-widget-borrow-probe.v1',scope:'SDK borrow contract only',appQualified:false,sourceIdentityCurrent,producerSourceIdentity:manifest.sourceIdentity.sha256,producerManifestSha256:sha(manifestBytes),sdkRevision:provenance.makepad.revision,generatedLockSha256:sha(lock),compilerVersion,artifactHashes,probeSourceSha256:sha(source),probeWasmSha256:sha(await readFile(wasmPath)),negativeReborrowObserved:true,releasedGuardRedrawPassed:true};
+  const packaged = join(root,'dist/makepad_wasm_bridge');
+  const {WasmBridge,ToWasmMsg,FromWasmMsg}=await import(pathToFileURL(join(packaged,'wasm_bridge.js')));
+  const messages=await import(pathToFileURL(join(packaged,'static-message-bridge.js')));
+  const observations=[];
+  for(const mode of [0,1]) {
+    const {exports}=await WebAssembly.instantiate(module,{env:imports});
+    const app=new WasmBridge({exports,_memory:exports.memory},{});
+    app.msg_class=messages.createMessageClasses(ToWasmMsg,FromWasmMsg);
+    const cx=exports.start(mode);
+    for(let frame=1;frame<=3;frame++) {
+      const msg=app.new_to_wasm();msg.ToWasmAnimationFrame({time:frame});
+      const ptr=msg.ptr;msg.release_ownership();const result=exports.pump(cx,ptr);
+      exports.wasm_msg_free(result);
+      observations.push({mode,frame,draws:exports.draws(),actions:exports.actions(),nexts:exports.nexts()});
+    }
+    assert.equal(exports.actions(),1);
+    assert.equal(exports.draws(),mode===0?1:2);
+    assert.equal(exports.nexts(),mode===0?0:1);
+  }
+  const receipt = {schema:'hepta.makepad-widget-borrow-probe.v1',scope:'SDK borrow contract only',appQualified:false,sourceIdentityCurrent,producerSourceIdentity:manifest.sourceIdentity.sha256,producerManifestSha256:sha(manifestBytes),sdkRevision:provenance.makepad.revision,generatedLockSha256:sha(lock),compilerVersion,artifactHashes,probeSourceSha256:sha(source),probeWasmSha256:sha(await readFile(wasmPath)),negativeReborrowObserved:true,releasedGuardRedrawPassed:true,drawActionRedraw:observations};
   await mkdir(join(root, 'test-results'), {recursive:true});
   await writeFile(join(root, 'test-results/robrix-widget-borrow-results.json'), JSON.stringify(receipt,null,2)+'\n');
   console.log(JSON.stringify(receipt));

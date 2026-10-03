@@ -73,3 +73,14 @@ test('wrong source identity and missing mandatory stages cannot pass aggregate',
   result=await verifyEvidence(root,'2'.repeat(40),true);assert.equal(result.passed,false);assert.equal(result.captures.required,78);assert.equal(result.captures.passed,0);assert.equal(result.results.length,78);assert.ok(result.results.every(row=>/Missing mandatory capture/.test(row.error)));assert.ok(result.semanticChecks.required>78);
  }finally{await rm(root,{recursive:true,force:true});}
 });
+
+test('follow-latest rejects clipped, stale, unfinished and missing final status geometry',async()=>{
+ const {validateTailStatusGeometry}=await import('../tools/verify-robrix-evidence.mjs');
+ const geometry={frame:10,room:0,epoch:0,total:64,layoutFinalized:true,followLatest:true,atEnd:true,viewport:[0,80,640,605],lastRow:[0,568,640,117],lastStatusVisibleGlyphs:[82,662,70,11],composer:[16,693,608,94]};
+ const entry=g=>({viewport:{width:640,height:800},geometryBefore:g,geometryAfter:structuredClone(g)});
+ assert.deepEqual(validateTailStatusGeometry(entry(geometry)),{x:78,y:658,width:78,height:19});
+ // Actual f96 Lunar geometry: final row bottom724.65 exceeds viewport685.6.
+ for(const patch of [{atEnd:false},{lastRow:[0,583.293,640,141.36]},{lastStatusVisibleGlyphs:[82,689.33,70,10.64]},{lastStatusVisibleGlyphs:[0,0,0,0]},{lastRow:null},{layoutFinalized:false},{followLatest:false},{total:63},{viewport:[0,80,640,NaN]}])assert.throws(()=>validateTailStatusGeometry(entry({...geometry,...patch})));
+ assert.throws(()=>validateTailStatusGeometry({...entry(geometry),geometryAfter:{...geometry,frame:11}}),/changed during capture/);
+ assert.throws(()=>validateTailStatusGeometry({viewport:{width:640,height:800}}),/requires real Rust geometry/);
+});

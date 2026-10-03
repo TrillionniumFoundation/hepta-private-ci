@@ -91,11 +91,94 @@ struct RoomViewMemory {
     jump_samples: std::collections::HashMap<WidgetUid, (bool, bool, bool, [u64; 4])>,
     #[cfg(feature = "ui-fixtures")]
     geometry_samples: std::collections::HashMap<WidgetUid, String>,
+    #[cfg(feature = "ui-fixtures")]
+    geometry_last_items: std::collections::HashMap<WidgetUid, (FixtureLastIdentity, WidgetUid)>,
+    #[cfg(feature = "ui-fixtures")]
+    pending_geometry: Vec<FixtureGeometry>,
     positions: std::collections::HashMap<RoomKey, (usize, f64, bool)>,
     message_styles:
         std::collections::HashMap<WidgetUid, (crate::visual_theme::VisualTheme, bool, u64)>,
     last_widget: Option<WidgetUid>,
     epoch: Option<u64>,
+}
+#[cfg(feature = "ui-fixtures")]
+#[derive(PartialEq, Eq)]
+struct FixtureLastIdentity {
+    room: RoomKey,
+    total: usize,
+    thread: String,
+    turn: String,
+    item: String,
+    text: String,
+    status: String,
+}
+// Capture areas in the actual room draw, then resolve their final coordinates
+// only after Root has completed its parent layout/clipping. This is fixture-only
+// observation; it never requests drawing or changes scroll state.
+#[cfg(feature = "ui-fixtures")]
+struct FixtureGeometry {
+    widget: WidgetUid,
+    key: RoomKey,
+    total: usize,
+    first: usize,
+    offset: f64,
+    at_end: bool,
+    follow_latest: bool,
+    travel: f64,
+    areas: [Area; 6],
+}
+#[cfg(feature = "ui-fixtures")]
+pub(crate) fn finish_fixture_geometry(cx: &mut Cx) {
+    let pending = std::mem::take(&mut cx.global::<RoomViewMemory>().pending_geometry);
+    for sample in pending {
+        let rect = |area: Area, clipped: bool| -> String {
+            if !area.is_valid(cx) {
+                return "null".into();
+            }
+            let r = if clipped {
+                area.clipped_rect_union(cx)
+            } else {
+                area.rect(cx)
+            };
+            let values = [r.pos.x, r.pos.y, r.size.x, r.size.y];
+            if values.iter().all(|value| value.is_finite()) {
+                format!("{:?}", values)
+            } else {
+                "null".into()
+            }
+        };
+        let serialized = format!(
+            "{{\"room\":{},\"epoch\":{},\"total\":{},\"first\":{},\"offset\":{},\"atEnd\":{},\"followLatest\":{},\"travel\":{},\"viewport\":{},\"lastRow\":{},\"lastContent\":{},\"lastBodyVisibleGlyphs\":{},\"lastStatusFirstGlyph\":{},\"lastStatusVisibleGlyphs\":{},\"composer\":{},\"layoutFinalized\":true}}",
+            sample.key.local_id,
+            sample.key.epoch,
+            sample.total,
+            sample.first,
+            sample.offset,
+            sample.at_end,
+            sample.follow_latest,
+            sample.travel,
+            rect(sample.areas[0], false),
+            rect(sample.areas[1], false),
+            rect(sample.areas[2], false),
+            rect(sample.areas[3], true),
+            rect(sample.areas[4], false),
+            rect(sample.areas[4], true),
+            rect(sample.areas[5], false)
+        );
+        if cx
+            .global::<RoomViewMemory>()
+            .geometry_samples
+            .insert(sample.widget, serialized.clone())
+            .as_ref()
+            != Some(&serialized)
+        {
+            log!(
+                "HEPTA_FIXTURE_GEOMETRY frame={} {}",
+                cx.redraw_id,
+                serialized
+            );
+        }
+    }
 }
 #[derive(Script, ScriptHook, Widget)]
 pub struct RoomScreen {
@@ -105,6 +188,8 @@ pub struct RoomScreen {
     active_key: Option<RoomKey>,
     #[rust]
     scroll_tracker: UserScrollTracker,
+    #[rust]
+    pending_tail_redraw: Option<(NextFrame, RoomKey, f64)>,
 }
 impl Widget for RoomScreen {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
@@ -119,6 +204,36 @@ impl Widget for RoomScreen {
         let follow_latest = workspace
             .timeline()
             .is_none_or(|timeline| timeline.scroll.at_end);
+        if let Some((frame, expected_room, expected_travel)) = self.pending_tail_redraw
+            && frame.is_event(event).is_some()
+        {
+            self.pending_tail_redraw = None;
+            let list = self.view.portal_list(cx, ids!(list));
+            let current_room = RoomKey {
+                epoch: workspace.presentation_epoch(),
+                local_id: workspace.active_id(),
+            };
+            let valid = source == expected_room
+                && current_room == expected_room
+                && follow_latest
+                && list.user_scroll_travel() == expected_travel;
+            #[cfg(feature = "ui-fixtures")]
+            log!(
+                "HEPTA_FIXTURE_TAIL_CALLBACK room={} epoch={} valid={} travel={} expected_travel={}",
+                source.local_id,
+                source.epoch,
+                valid,
+                list.user_scroll_travel(),
+                expected_travel
+            );
+            if valid {
+                // Draw-generated Actions still execute inside the SDK draw
+                // dispatch, where ordinary redraw requests are ignored. Its
+                // NextFrame event is outside that dispatch and can repaint the
+                // cached parent without changing the user's scroll position.
+                self.view.redraw(cx);
+            }
+        }
         let mut apply = |command| apply_action(workspace, PresentationAction { source, command });
         apply(PresentationCommand::SetComposing(input.is_composing()));
         if let Event::Actions(actions) = event {
@@ -128,6 +243,7 @@ impl Widget for RoomScreen {
                 // the SDK's user-travel counter identifies wheel/touch/bar input.
                 let travel = list.user_scroll_travel();
                 if let Some(at_end) = self.scroll_tracker.observe(travel, list.is_at_end()) {
+                    self.pending_tail_redraw = None;
                     let _result = apply(PresentationCommand::UserScrolled { at_end });
                     #[cfg(feature = "ui-fixtures")]
                     log!(
@@ -157,8 +273,15 @@ impl Widget for RoomScreen {
                     });
                     // Drop the PortalList read guard before the parent redraw
                     // traverses its children and takes their mutable guards.
-                    if redraw_parent {
-                        self.view.redraw(cx);
+                    if redraw_parent && self.pending_tail_redraw.is_none() {
+                        self.pending_tail_redraw = Some((cx.new_next_frame(), source, travel));
+                        #[cfg(feature = "ui-fixtures")]
+                        log!(
+                            "HEPTA_FIXTURE_TAIL_SCHEDULE room={} epoch={} travel={}",
+                            source.local_id,
+                            source.epoch,
+                            travel
+                        );
                     }
                 }
                 #[cfg(feature = "ui-fixtures")]
@@ -194,6 +317,7 @@ impl Widget for RoomScreen {
             let switch_view = cx.global::<RoomViewMemory>().last_widget != Some(widget_id);
             if self.active_key != Some(key) || switch_view {
                 let list = self.view.portal_list(cx, ids!(list));
+                self.pending_tail_redraw = None;
                 self.scroll_tracker.reset(list.user_scroll_travel());
                 let memory = cx.global::<RoomViewMemory>();
                 if memory.epoch != Some(key.epoch) {
@@ -456,58 +580,97 @@ impl Widget for RoomScreen {
                 let total = project(workspace, 0, TimelineWindow::default())
                     .timeline
                     .total;
-                let last = diagnostic_items
-                    .iter()
-                    .find(|(index, _)| *index + 1 == total);
-                let rect = |area: Area, clipped: bool| -> String {
-                    if !area.is_valid(cx) {
-                        return "null".into();
-                    }
-                    let r = if clipped {
-                        area.clipped_rect_union(cx)
-                    } else {
-                        area.rect(cx)
-                    };
-                    let values = [r.pos.x, r.pos.y, r.size.x, r.size.y];
-                    if values.iter().all(|value| value.is_finite()) {
-                        format!("{:?}", values)
-                    } else {
-                        "null".into()
-                    }
+                let key = RoomKey {
+                    epoch: workspace.presentation_epoch(),
+                    local_id: workspace.active_id(),
                 };
+                let widget = self.widget_uid();
+                let current = project(
+                    workspace,
+                    0,
+                    TimelineWindow::Range {
+                        start: total.saturating_sub(1),
+                        limit: 1,
+                    },
+                );
+                let identity =
+                    current
+                        .timeline
+                        .messages
+                        .first()
+                        .map(|message| FixtureLastIdentity {
+                            room: key,
+                            total,
+                            thread: message.id.thread_id.into(),
+                            turn: message.id.turn_id.into(),
+                            item: message.id.item_id.into(),
+                            text: message.text.into(),
+                            status: message.status.into(),
+                        });
+                if let Some((_, item)) = diagnostic_items
+                    .iter()
+                    .find(|(index, _)| *index + 1 == total)
+                    && let Some(identity) = identity
+                {
+                    cx.global::<RoomViewMemory>()
+                        .geometry_last_items
+                        .insert(widget, (identity, item.widget_uid()));
+                }
+                let last = total
+                    .checked_sub(1)
+                    .and_then(|index| inner.get_item(index))
+                    .map(|(_, item)| item);
+                let last = last.filter(|item| {
+                    let current = project(
+                        workspace,
+                        0,
+                        TimelineWindow::Range {
+                            start: total.saturating_sub(1),
+                            limit: 1,
+                        },
+                    );
+                    current.timeline.messages.first().is_some_and(|message| {
+                        cx.global::<RoomViewMemory>()
+                            .geometry_last_items
+                            .get(&widget)
+                            .is_some_and(|(identity, uid)| {
+                                *uid == item.widget_uid()
+                                    && identity.room == key
+                                    && identity.total == total
+                                    && identity.thread == message.id.thread_id
+                                    && identity.turn == message.id.turn_id
+                                    && identity.item == message.id.item_id
+                                    && identity.text == message.text
+                                    && identity.status == message.status
+                            })
+                    })
+                });
                 let area = |ids: &[LiveId]| {
-                    last.map_or(Area::Empty, |(_, item)| item.widget(cx, ids).area())
+                    last.as_ref()
+                        .map_or(Area::Empty, |item| item.widget(cx, ids).area())
                 };
                 let status = area(ids!(send_status_indicator));
-                let sample = format!(
-                    "{{\"room\":{},\"epoch\":{},\"total\":{},\"first\":{},\"offset\":{},\"atEnd\":{},\"followLatest\":{},\"travel\":{},\"viewport\":{},\"lastRow\":{},\"lastContent\":{},\"lastBodyVisibleGlyphs\":{},\"lastStatusFirstGlyph\":{},\"lastStatusVisibleGlyphs\":{},\"composer\":{}}}",
-                    workspace.active_id(),
-                    workspace.presentation_epoch(),
+                let sample = FixtureGeometry {
+                    widget,
+                    key,
                     total,
-                    inner.first_id(),
-                    inner.first_scroll(),
-                    inner.is_at_end(),
-                    workspace
+                    first: inner.first_id(),
+                    offset: inner.first_scroll(),
+                    at_end: inner.is_at_end(),
+                    follow_latest: workspace
                         .timeline()
                         .is_none_or(|timeline| timeline.scroll.at_end),
                     travel,
-                    rect(inner.area(), false),
-                    rect(last.map_or(Area::Empty, |(_, item)| item.area()), false),
-                    rect(area(ids!(content)), false),
-                    rect(area(ids!(message)), true),
-                    rect(status, false),
-                    rect(status, true),
-                    rect(self.view.widget(cx, ids!(room_input_bar)).area(), false)
-                );
-                if cx
-                    .global::<RoomViewMemory>()
-                    .geometry_samples
-                    .insert(self.widget_uid(), sample.clone())
-                    .as_ref()
-                    != Some(&sample)
-                {
-                    log!("HEPTA_FIXTURE_GEOMETRY frame={} {}", cx.redraw_id, sample);
-                }
+                    areas: [
+                        inner.area(),
+                        last.as_ref().map_or(Area::Empty, WidgetRef::area),
+                        area(ids!(content)),
+                        area(ids!(message)),
+                        status,
+                        self.view.widget(cx, ids!(room_input_bar)).area(),
+                    ],
+                };
+                cx.global::<RoomViewMemory>().pending_geometry.push(sample);
             }
         }
         #[cfg(feature = "ui-fixtures")]

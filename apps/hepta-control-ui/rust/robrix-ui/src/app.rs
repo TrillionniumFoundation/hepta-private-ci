@@ -86,5 +86,9 @@ impl AppMain for App {
         self.ui
             .handle_event(cx, event, &mut Scope::with_data(&mut self.workspace));
         crate::visual_theme::apply_tree(cx, &self.ui);
+        #[cfg(feature = "ui-fixtures")]
+        if matches!(event, Event::Draw(_)) {
+            crate::robrix::room::finish_fixture_geometry(cx);
+        }
     }
 }
