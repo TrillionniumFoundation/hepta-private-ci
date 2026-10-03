@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "da786ba4a02b60be99cf791579476fe09fbf44c8",
-    "tree": "d02fa8cd2151ababbbe807a1a2d332ba0baf784c"
+    "commit": "74912afa219b065bb569de13585cd63c98f7a184",
+    "tree": "3d27b2244ef172e309e7c83e84650ea5976e3b84"
   },
   "laneId": "LANE-F-ADAPTIVE-POLICY",
   "module": "neuron.runtime",
@@ -173,7 +173,8 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-neuron/src/protocol_tests.rs",
-        "codex-rs/hepta-neuron/src/protocol_bounds_tests.rs"
+        "codex-rs/hepta-neuron/src/protocol_bounds_tests.rs",
+        "codex-rs/hepta-neuron/src/protocol_shape_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "canonical_neuron_protocols",
@@ -187,6 +188,11 @@
         {
           "path": "codex-rs/hepta-neuron/src/protocol_receipt_validation.rs",
           "symbol": "validate_tick_receipt_fields",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/src/protocol_json_object.rs",
+          "symbol": "deserialize",
           "role": "source_declaration"
         }
       ]
@@ -275,7 +281,7 @@
     },
     {
       "path": "codex-rs/hepta-neuron",
-      "object": "7d89013c8a8f737512a286e22824282480fb4cb6"
+      "object": "a372abb585ce4157e3d5f9a56429a08a05ecb7fe"
     },
     {
       "path": "codex-rs/hepta-neuron/src/deletion.rs",
@@ -323,19 +329,27 @@
     },
     {
       "path": "codex-rs/hepta-neuron/src/protocol.rs",
-      "object": "703e3d54239f10d3af1e1f0eb5036646fd47b0a9"
+      "object": "5fbcfc9db740b62cab99a936876071f45337a162"
     },
     {
       "path": "codex-rs/hepta-neuron/src/protocol_bounds_tests.rs",
       "object": "470c83ee36357c39f818a665aa4789f33b6c81a5"
     },
     {
+      "path": "codex-rs/hepta-neuron/src/protocol_json_object.rs",
+      "object": "813b9acb87a946f984e1adbf586b3165dcb33848"
+    },
+    {
       "path": "codex-rs/hepta-neuron/src/protocol_receipt_validation.rs",
       "object": "aa7089c5948ab94e794c4202be309a0e4af2c7f0"
     },
     {
+      "path": "codex-rs/hepta-neuron/src/protocol_shape_tests.rs",
+      "object": "1dcba753078c27b61f049f19cb14bf00e8c89ff7"
+    },
+    {
       "path": "codex-rs/hepta-neuron/src/protocol_tests.rs",
-      "object": "3f8dbab383a36c1b77b20f4ff23e24e11d9b7829"
+      "object": "b32188e25ce3922db20f474ec83a0459f1418f5b"
     },
     {
       "path": "codex-rs/hepta-neuron/src/protocol_timestamp.rs",
@@ -387,7 +401,7 @@
     },
     {
       "path": "docs/modules/neuron.runtime/TECHNICAL.md",
-      "object": "8ad4e685bdd146f4abf000ed8fcf5592c4144566"
+      "object": "ec340860cd8733906304e85beb19fe481a7106d8"
     }
   ]
 }

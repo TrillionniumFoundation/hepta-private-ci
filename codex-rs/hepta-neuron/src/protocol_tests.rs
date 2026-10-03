@@ -15,6 +15,9 @@ use crate::sparse_tick;
 #[path = "protocol_bounds_tests.rs"]
 mod profile_bounds;
 
+#[path = "protocol_shape_tests.rs"]
+mod wire_shapes;
+
 const Q: i64 = 1 << 24;
 
 const MALFORMED_UTC_EXPIRIES: [&str; 18] = [
