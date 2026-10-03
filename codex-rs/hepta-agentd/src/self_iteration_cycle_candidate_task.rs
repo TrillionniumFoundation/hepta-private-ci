@@ -26,6 +26,7 @@ where
             return Ok(candidate.clone());
         }
         if self.pending_candidate.is_none() {
+            let mut completed_only = false;
             if let Some(round) = &self.round {
                 let status = self
                     .runtime
@@ -35,17 +36,20 @@ where
                         round.canonical_policy_digest(),
                     )
                     .await?;
-                if status.candidate_effects != AgentdSelfIterationCandidateEffectsV1::NotStarted {
-                    return Err(invalid(
-                        "original candidate effects are pending; no cold reissue",
-                    ));
-                }
+                completed_only = match status.candidate_effects {
+                    AgentdSelfIterationCandidateEffectsV1::NotStarted => false,
+                    AgentdSelfIterationCandidateEffectsV1::Started => true,
+                    AgentdSelfIterationCandidateEffectsV1::LegacyUnknown => {
+                        return Err(invalid("legacy candidate effects remain unknown"));
+                    }
+                };
             }
             let assembler = self
                 .assembler
                 .as_mut()
                 .ok_or_else(|| invalid("original candidate assembler unavailable"))?;
-            if let AgentdSelfIterationCandidateEffectAdmissionV1::RejectedBeforeCandidateEffects(
+            if !completed_only {
+                if let AgentdSelfIterationCandidateEffectAdmissionV1::RejectedBeforeCandidateEffects(
                 reason,
             ) = assembler
                 .validate_before_candidate_effects(&envelope, &proposal)
@@ -58,16 +62,17 @@ where
                 }
                 return Err(AgentdError::SelfIterationProposalRejected);
             }
-            if let Some(round) = &self.round
-                && self
-                    .runtime
-                    .begin_candidate_effects(round.clone(), proposal.clone())
-                    .await?
-                    != AgentdSelfIterationCandidateConstructionAdmissionV1::Fresh
-            {
-                return Err(invalid(
-                    "original candidate effects already admitted; no reissue",
-                ));
+                if let Some(round) = &self.round
+                    && self
+                        .runtime
+                        .begin_candidate_effects(round.clone(), proposal.clone())
+                        .await?
+                        != AgentdSelfIterationCandidateConstructionAdmissionV1::Fresh
+                {
+                    return Err(invalid(
+                        "original candidate effects already admitted; no reissue",
+                    ));
+                }
             }
             let mut assembler = self
                 .assembler
@@ -76,7 +81,12 @@ where
             let execution = envelope_digest(&envelope);
             let assembly_envelope = envelope.clone();
             let task = tokio::spawn(async move {
-                let result = assembler.assemble(assembly_envelope, &proposal).await;
+                let result = if completed_only {
+                    assembler.recover_completed(assembly_envelope,&proposal).await.and_then(|candidate|
+                        candidate.ok_or_else(||invalid("original candidate effects have no completed recovery; no reissue")))
+                } else {
+                    assembler.assemble(assembly_envelope, &proposal).await
+                };
                 (assembler, result)
             });
             self.pending_candidate = Some(PendingCandidate {

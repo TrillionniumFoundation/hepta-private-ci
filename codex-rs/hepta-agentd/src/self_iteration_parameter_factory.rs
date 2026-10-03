@@ -41,6 +41,28 @@ pub trait AgentdGovernedParameterGenerationCompilerV1: Send {
         ))
     }
 
+    /// Pure inspection of installed materials and exact advice, without prepare.
+    fn recovery_request(
+        &self,
+        _envelope: &IterationEnvelopeV1,
+        _proposal: &SelfIterationModelAssessmentV1,
+    ) -> impl Future<Output = Result<Option<ParameterPlasticityProductRequestV1>, AgentdError>> + Send
+    {
+        std::future::ready(Ok(None))
+    }
+
+    /// Open only complete original generation stores and immutable G publication.
+    /// Partial stores or unknown issuance remain None; creating them is forbidden.
+    fn materialize_completed(
+        &mut self,
+        _envelope: IterationEnvelopeV1,
+        _proposal: &SelfIterationModelAssessmentV1,
+        _admitted: &ParameterPlasticityProductReceiptV1,
+    ) -> impl Future<Output = Result<Option<AgentdSelfIterationCandidateV1>, AgentdError>> + Send
+    {
+        std::future::ready(Ok(None))
+    }
+
     fn prepare(
         &mut self,
         envelope: &IterationEnvelopeV1,
@@ -90,6 +112,13 @@ impl<C: AgentdGovernedParameterGenerationCompilerV1> AgentdSelfIterationCandidat
         self.compiler
             .validate_before_candidate_effects(envelope, proposal)
     }
+    async fn recover_completed(
+        &mut self,
+        envelope: IterationEnvelopeV1,
+        proposal: &SelfIterationModelAssessmentV1,
+    ) -> Result<Option<AgentdSelfIterationCandidateV1>, AgentdError> {
+        self.recover_governed_completed(envelope, proposal).await
+    }
     async fn assemble(
         &mut self,
         envelope: IterationEnvelopeV1,
@@ -112,40 +141,15 @@ impl<C: AgentdGovernedParameterGenerationCompilerV1> AgentdSelfIterationCandidat
             .propose_parameter(request, now)
             .await
             .map_err(|error| invalid(format!("governed parameter owner: {error}")))?;
-        if receipt.disposition != ParameterPlasticityDispositionV1::UpdateCandidates
-            || receipt.proposal.proposal_id != expected_proposal
-            || receipt.proposal.candidate_generation.get() != expected_generation
-            || receipt.proposal.authority.grants_any()
-            || receipt.registry.authority.grants_any()
-            || receipt.composition_digest.is_zero()
-            || receipt.registry.proposal_digest != receipt.proposal.proposal_digest
-            || receipt.registry.sequence != receipt.committed_registry_anchor.sequence
-            || receipt.registry.frame_digest != receipt.committed_registry_anchor.frame_digest
-        {
-            return Err(invalid(
-                "parameter proposal has no anchored admissible update",
-            ));
-        }
+        recovery::validate_receipt(&receipt, &expected_proposal, expected_generation)?;
         let candidate = self
             .compiler
             .materialize(envelope.clone(), proposal, &receipt)
             .await?;
-        if candidate.envelope != envelope
-            || candidate.successor.generation().map_err(control_error)? != expected_generation
-            || candidate.base_generation != receipt.proposal.baseline_generation.get()
-            || candidate.governed_proposal_digest != receipt.proposal.proposal_digest
-            || candidate.governed_anchor_digest != receipt.committed_registry_anchor.frame_digest
-            || candidate.governed_composition_digest != receipt.composition_digest
-            || !receipt.proposal.candidates.iter().any(|value| {
-                value.candidate_id == candidate.candidate.candidate_id
-                    && value.kind == ParameterCandidateKindV2::Update
-            })
-        {
-            return Err(invalid(
-                "compiled generation changed governed parameter proposal",
-            ));
-        }
-        self_iteration_frozen_candidate_payload_v1(&candidate)?;
+        recovery::validate_candidate(&candidate, &envelope, &receipt, expected_generation)?;
         Ok(candidate)
     }
 }
+
+#[path = "self_iteration_parameter_recovery.rs"]
+mod recovery;

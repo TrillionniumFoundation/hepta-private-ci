@@ -1,5 +1,6 @@
 //! Controlled compiler adapter; task lifetime, not a second writer, is exercised.
 use super::*;
+use codex_hepta_agent_components::infer_core::SelfIterationModelRequestV1;
 use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;
 use std::sync::atomic::Ordering;
