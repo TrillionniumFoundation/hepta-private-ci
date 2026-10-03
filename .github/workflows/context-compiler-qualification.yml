@@ -39,7 +39,7 @@ on:
         required: false
         type: string
   schedule:
-    - cron: '23 18 * * *'
+    - cron: "23 18 * * *"
 
 permissions:
   contents: read
@@ -66,8 +66,8 @@ jobs:
           SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
           PR_BASE: ${{ github.event.pull_request.base.sha }}
           INPUT_BASE: ${{ inputs.base_sha }}
-          GIT_NO_REPLACE_OBJECTS: '1'
-          GIT_CONFIG_NOSYSTEM: '1'
+          GIT_NO_REPLACE_OBJECTS: "1"
+          GIT_CONFIG_NOSYSTEM: "1"
           GIT_CONFIG_GLOBAL: /dev/null
         run: |
           set -euo pipefail
@@ -172,7 +172,7 @@ jobs:
     timeout-minutes: 240
     env:
       CARGO_TERM_COLOR: always
-      PYTHONDONTWRITEBYTECODE: '1'
+      PYTHONDONTWRITEBYTECODE: "1"
       QUALIFICATION_HEAD_SHA: ${{ needs.identity.outputs.source }}
       QUALIFICATION_BASE_SHA: ${{ needs.identity.outputs.base }}
       QUALIFICATION_WORKFLOW_REF: ${{ github.workflow_ref }}

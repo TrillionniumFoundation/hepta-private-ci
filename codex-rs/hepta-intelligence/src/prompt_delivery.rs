@@ -252,7 +252,7 @@ pub fn compile_prompt_registry_v2(
         admission_snapshot: prepared.admission_snapshot.clone(),
         compiled: prepared.compiled,
         model_profile,
-        registry_model_tuple: request.registry_model_tuple.clone(),
+        registry_model_tuple: request.registry_model_tuple,
         selected_deliveries,
         serialized_payload,
         serialization: delivery.serialization,

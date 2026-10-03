@@ -17,6 +17,7 @@ use crate::GenerateAttestationFuture;
 use crate::config::Config;
 use crate::model_provider_policy::ModelProviderPolicyContext;
 use crate::responses_metadata::CodexResponsesMetadata;
+use crate::responses_metadata::CodexResponsesRequestKind;
 use crate::test_support::TestCodexResponsesRequestKind;
 use crate::test_support::responses_metadata as test_responses_metadata;
 use codex_api::AgentIdentityTelemetry;
@@ -330,10 +331,58 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         "window-a".to_string(),
     );
     metadata_a.sandbox_mode = Some("workspace-write".to_string());
+    metadata_a.request_kind = Some(CodexResponsesRequestKind::Turn);
     metadata_a.turn_started_at_unix_ms = Some(1);
     let identity_a =
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
             .expect("identity a");
+
+    let mut prewarm_metadata = metadata_a.clone();
+    prewarm_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &prewarm_metadata,
+        )
+        .expect("prewarm connection identity")
+    );
+    let prewarm_recovery =
+        serde_json::to_value(prewarm_metadata.turn_recovery_compatibility_projection())
+            .expect("prewarm recovery identity");
+    let turn_recovery = serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+        .expect("turn recovery identity");
+    assert_ne!(prewarm_recovery, turn_recovery);
+    assert_eq!(prewarm_recovery["request_kind"], "prewarm");
+    let mut expected_connection = prewarm_recovery;
+    expected_connection
+        .as_object_mut()
+        .expect("typed projection object")
+        .remove("request_kind");
+    assert_eq!(
+        serde_json::to_value(prewarm_metadata.websocket_connection_compatibility_projection())
+            .expect("connection projection"),
+        expected_connection,
+    );
+
+    let mut other_kind = metadata_a.clone();
+    other_kind.request_kind = Some(CodexResponsesRequestKind::Memory);
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &other_kind)
+            .expect("memory connection identity"),
+    );
+    prewarm_metadata.sandbox_mode = Some("danger-full-access".to_string());
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &prewarm_metadata,
+        )
+        .expect("prewarm cannot bypass a changed sandbox boundary"),
+    );
 
     let mut volatile_metadata = metadata_a.clone();
     volatile_metadata.session_id = "session-after-restart".to_string();
