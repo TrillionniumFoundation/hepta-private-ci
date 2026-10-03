@@ -30,6 +30,7 @@ on:
       - .github/scripts/check_ci_results.py
       - scripts/test_hepta_agentd_ci.py
       - scripts/test_hepta_agentd_recovery_scope.py
+      - scripts/test_hepta_agentd_kg_oracle.py
       - scripts/hepta_ci_candidate.py
       - scripts/hepta_workspace.py
       - scripts/test_hepta_workspace.py
@@ -60,6 +61,7 @@ jobs:
           python3 scripts/hepta-implementation-maps.py verify
           python3 -m unittest -v scripts.tests.test_hepta_ci_candidate
           python3 -m unittest -v scripts.test_hepta_agentd_recovery_scope
+          python3 -m unittest -v scripts.test_hepta_agentd_kg_oracle
           python3 -m unittest discover -v -s scripts -p 'test_hepta_agentd_ci.py'
 
   owner-formatting:

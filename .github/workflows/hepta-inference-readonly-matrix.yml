@@ -128,6 +128,8 @@ jobs:
           record 13-memory-outbox 1 just test --locked -p codex-hepta-memory --lib -E 'test(local_lease_outbox_tests)' --test-threads=1
           record 14-memory-production 1 just test --locked -p codex-hepta-memory --lib -E 'test(production_writer::)' --test-threads=1
           record 15-memory-lib-clippy 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory --lib --no-deps -- -D warnings
+          record 16-memory-exact-recovery 1 just test --locked -p codex-hepta-memory --lib -E 'test(=cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation)' --test-threads=1 --no-tests=fail
+          record 17-agentd-recovery-product 1 just test --locked -p codex-hepta-agentd --test cognitive_store_product_writer -E 'test(=agentd_product_host_recovers_exact_cut_into_fenced_writer_generation)' --test-threads=1 --no-tests=fail
           exit "$result"
       - name: Retain formatting proposal outside the tested source
         if: ${{ always() && steps.bound.outcome == 'success' }}

@@ -2270,6 +2270,7 @@ async fn read_kg_sqlite_evidence(
     let pool = SqliteConfig::from_sqlite_home(sqlite_home)
         .open_read_only_pool(&database_path)
         .await?;
+    let mut transaction = pool.begin().await?;
     let memory_revision = i64::try_from(memory_revision)?;
     let (
         fact_set_sha256,
@@ -2284,7 +2285,7 @@ async fn read_kg_sqlite_evidence(
     )
     .bind(memory_id)
     .bind(memory_revision)
-    .fetch_one(&pool)
+    .fetch_one(&mut *transaction)
     .await?;
     ensure!(
         fact_source_id == expected_source_id && fact_source_revision == 1,
@@ -2298,7 +2299,7 @@ async fn read_kg_sqlite_evidence(
     .bind(memory_id)
     .bind(memory_revision)
     .bind(expected_source_id)
-    .fetch_one(&pool)
+    .fetch_one(&mut *transaction)
     .await?;
     let immutable_relations: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM kg_revision_relations
@@ -2308,13 +2309,17 @@ async fn read_kg_sqlite_evidence(
     .bind(memory_id)
     .bind(memory_revision)
     .bind(expected_source_id)
-    .fetch_one(&pool)
+    .fetch_one(&mut *transaction)
     .await?;
     ensure!(
         immutable_entity_count == immutable_entities
             && immutable_relation_count == immutable_relations,
         "immutable KG fact rows did not match their fact-set receipt"
     );
+    // G14 compact generations reconstruct occurrence counts from each
+    // memory's latest immutable trigger at this exact cut. Historical copied
+    // generations use their physical rows. Never accept an unknown storage
+    // mode or replace either independent count with the receipt's own count.
     let (
         generation,
         receipt_fact_set_sha256,
@@ -2328,6 +2333,7 @@ async fn read_kg_sqlite_evidence(
         edge_count,
         actual_node_count,
         actual_edge_count,
+        storage_mode,
     ): (
         i64,
         String,
@@ -2341,36 +2347,79 @@ async fn read_kg_sqlite_evidence(
         i64,
         i64,
         i64,
+        Option<String>,
     ) = sqlx::query_as(
         "SELECT r.generation, r.fact_set_sha256, r.input_heads_sha256, r.output_sha256,
                 s.generation_sha256, s.publication_sha256,
                 r.entity_count, r.relation_count, r.node_count, r.edge_count,
-                (SELECT COUNT(*) FROM kg_nodes AS n
-                 WHERE n.projection_scope = r.projection_scope
-                   AND n.generation = r.generation
-                   AND n.memory_id = r.trigger_memory_id
-                   AND n.memory_revision = r.trigger_memory_revision
-                   AND n.source_id = ? AND n.source_revision = 1),
-                (SELECT COUNT(*) FROM kg_edges AS e
-                 WHERE e.projection_scope = r.projection_scope
-                   AND e.generation = r.generation
-                   AND e.memory_id = r.trigger_memory_id
-                   AND e.memory_revision = r.trigger_memory_revision
-                   AND e.source_id = ? AND e.source_revision = 1)
+                CASE
+                  WHEN storage.storage_mode = 'revision_facts_v1' THEN (
+                    SELECT COUNT(*) FROM kg_revision_entities e
+                    JOIN memory_revisions m
+                      ON m.memory_id = e.memory_id AND m.revision = e.memory_revision
+                    JOIN kg_projection_generation_receipts h
+                      ON h.projection_scope = r.projection_scope
+                     AND h.trigger_memory_id = e.memory_id
+                     AND h.trigger_memory_revision = e.memory_revision
+                     AND h.generation = (
+                         SELECT MAX(x.generation) FROM kg_projection_generation_receipts x
+                         WHERE x.projection_scope = r.projection_scope
+                           AND x.trigger_memory_id = e.memory_id
+                           AND x.generation <= r.generation
+                     )
+                    WHERE m.verification = 'verified' AND m.lifecycle = 'active'
+                  )
+                  WHEN storage.storage_mode IS NULL THEN (
+                    SELECT COUNT(*) FROM kg_nodes n
+                    WHERE n.projection_scope = r.projection_scope AND n.generation = r.generation
+                  )
+                  ELSE -1
+                END,
+                CASE
+                  WHEN storage.storage_mode = 'revision_facts_v1' THEN (
+                    SELECT COUNT(*) FROM kg_revision_relations q
+                    JOIN memory_revisions m
+                      ON m.memory_id = q.memory_id AND m.revision = q.memory_revision
+                    JOIN kg_projection_generation_receipts h
+                      ON h.projection_scope = r.projection_scope
+                     AND h.trigger_memory_id = q.memory_id
+                     AND h.trigger_memory_revision = q.memory_revision
+                     AND h.generation = (
+                         SELECT MAX(x.generation) FROM kg_projection_generation_receipts x
+                         WHERE x.projection_scope = r.projection_scope
+                           AND x.trigger_memory_id = q.memory_id
+                           AND x.generation <= r.generation
+                     )
+                    WHERE m.verification = 'verified' AND m.lifecycle = 'active'
+                  )
+                  WHEN storage.storage_mode IS NULL THEN (
+                    SELECT COUNT(*) FROM kg_edges e
+                    WHERE e.projection_scope = r.projection_scope AND e.generation = r.generation
+                  )
+                  ELSE -1
+                END,
+                storage.storage_mode
          FROM kg_projection_generation_receipts AS r
          JOIN kg_projection_generation_semantics AS s
            ON s.projection_scope = r.projection_scope AND s.generation = r.generation
          JOIN kg_projection AS p
            ON p.projection_scope = r.projection_scope AND p.generation = r.generation
+         LEFT JOIN kg_projection_generation_storage storage
+           ON storage.projection_scope = r.projection_scope AND storage.generation = r.generation
          WHERE r.trigger_memory_id = ? AND r.trigger_memory_revision = ?",
     )
-    .bind(expected_source_id)
-    .bind(expected_source_id)
     .bind(memory_id)
     .bind(memory_revision)
-    .fetch_one(&pool)
+    .fetch_one(&mut *transaction)
     .await?;
+    transaction.commit().await?;
     pool.close().await;
+    ensure!(
+        storage_mode
+            .as_deref()
+            .is_none_or(|mode| mode == "revision_facts_v1"),
+        "current projection has an unrecognized storage witness: {storage_mode:?}"
+    );
     ensure!(
         receipt_fact_set_sha256 == fact_set_sha256,
         "current projection receipt did not bind the immutable fact set"

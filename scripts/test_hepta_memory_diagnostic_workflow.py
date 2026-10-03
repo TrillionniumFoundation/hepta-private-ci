@@ -28,7 +28,14 @@ class MemoryDiagnosticWorkflowTests(unittest.TestCase):
                 commands[words[1]] = words[3:]
         self.assertEqual(commands, EXPECTED)
 
-    def execute(self, *, prior_failure=False, zero_selection=False, lint_failure=False):
+    def execute(
+        self,
+        *,
+        prior_failure=False,
+        zero_selection=False,
+        lint_failure=False,
+        empty_filter="test(local_lease_outbox_tests)",
+    ):
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             repo = root / "repo"
@@ -54,7 +61,7 @@ class MemoryDiagnosticWorkflowTests(unittest.TestCase):
             fake = """#!/usr/bin/env python3
 import os, sys
 if sys.argv[0].endswith('just'):
-    empty = os.environ['ZERO_SELECTION'] == '1' and 'test(local_lease_outbox_tests)' in sys.argv
+    empty = os.environ['ZERO_SELECTION'] == '1' and os.environ['EMPTY_FILTER'] in sys.argv
     print('Summary [ 0.001s] 0 tests run: 0 passed, 50 skipped' if empty else 'Summary [ 0.001s] 2 tests run: 2 passed, 50 skipped')
 else:
     raise SystemExit(int(os.environ['LINT_FAILURE']))
@@ -94,6 +101,7 @@ else:
                     "BASE_SHA": sha,
                     "HEPTA_CI_LANE": "source-head",
                     "ZERO_SELECTION": str(int(zero_selection)),
+                    "EMPTY_FILTER": empty_filter,
                     "LINT_FAILURE": str(int(lint_failure)),
                 },
             )
@@ -108,6 +116,8 @@ else:
                     "13-memory-outbox",
                     "14-memory-production",
                     "15-memory-lib-clippy",
+                    "16-memory-exact-recovery",
+                    "17-agentd-recovery-product",
                 },
             )
             for record in records.values():
@@ -145,8 +155,26 @@ else:
         self.assertEqual(code, 0)
         self.assertEqual(
             [records[name]["observed_passed_tests"] for name in sorted(records)],
-            [2, 2, 2, 0],
+            [2, 2, 2, 0, 2, 2],
         )
+
+    def test_each_exact_recovery_case_rejects_zero_selection(self):
+        for name, selector in (
+            (
+                "16-memory-exact-recovery",
+                "test(=cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation)",
+            ),
+            (
+                "17-agentd-recovery-product",
+                "test(=agentd_product_host_recovers_exact_cut_into_fenced_writer_generation)",
+            ),
+        ):
+            with self.subTest(name=name):
+                code, records = self.execute(zero_selection=True, empty_filter=selector)
+                self.assertEqual(code, 1)
+                self.assertEqual(records[name]["observed_passed_tests"], 0)
+                self.assertEqual(records[name]["status"], "failed")
+                self.assertIn("--no-tests=fail", records[name]["command"])
 
 
 if __name__ == "__main__":
