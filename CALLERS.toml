@@ -993,8 +993,8 @@ symbol = "run_fixed_paired_generator"
 call_pattern = '\brun_fixed_paired_generator\s*\('
 definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_generator_host.rs"
 definition_markers = ["pub fn run_fixed_paired_generator", "boundary_in_service", "actual_limits(&cgroup)", "actual_generator", "structural.freeze()", "measured_contract", "signing.sign", "final_holdout_consumed"]
-product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-product-evaluation.rs"]
-caller_markers = ["--paired-preregister", "codex_hepta_intelligence_eval::run_fixed_paired_generator"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-product-evaluation.rs", "codex-rs/hepta-infer-worker-host/src/bin/hepta-native-role-generator.rs"]
+caller_markers = ["--paired-preregister", "run_fixed_paired_generator"]
 
 [[protected_file]]
 path = "codex-rs/hepta-intelligence-eval/src/paired_development_transport.rs"
@@ -1026,8 +1026,8 @@ symbol = "run_fixed_paired_custody"
 call_pattern = '\brun_fixed_paired_custody\s*\('
 definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs"
 definition_markers = ["pub fn run_fixed_paired_custody", "root_boundary()", "inputs.verify_registration", "paired_custody_retention::preflight", "withdrawal-preflight", "evaluate_paired_with_clock"]
-product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-holdout-custody.rs"]
-caller_markers = ["--paired-execute", "codex_hepta_intelligence_eval::run_fixed_paired_custody"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-holdout-custody.rs", "codex-rs/hepta-infer-worker-host/src/bin/hepta-native-role-observer.rs"]
+caller_markers = ["--paired-execute", "run_fixed_paired_custody"]
 
 [[boundary]]
 id = "original_paired_custody_finish"
@@ -1035,8 +1035,8 @@ symbol = "finish_fixed_paired_custody"
 call_pattern = '\bfinish_fixed_paired_custody\s*\('
 definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_finish_host.rs"
 definition_markers = ["pub fn finish_fixed_paired_custody", "publication.recompute", "held.authorize_original_consumption", "decide_independently_v2", "LockedFileProductEvidenceSinkV1::open", "qualify_paired_with_clock"]
-product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-holdout-custody.rs"]
-caller_markers = ["--paired-finish", "codex_hepta_intelligence_eval::finish_fixed_paired_custody"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-holdout-custody.rs", "codex-rs/hepta-infer-worker-host/src/bin/hepta-native-role-observer.rs"]
+caller_markers = ["--paired-finish", "finish_fixed_paired_custody"]
 
 [[boundary]]
 id = "original_consumed_custody_effect"

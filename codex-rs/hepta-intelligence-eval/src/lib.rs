@@ -559,11 +559,11 @@ mod paired_custody_retention;
 mod paired_custody_withdrawal;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_paired_custody_host::run_fixed_paired_custody;
-#[cfg(feature = "fixed-eval-host")]
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_paired_custody_host::verify_original_observer_controller;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_paired_finish_host::finish_fixed_paired_custody;
-#[cfg(feature = "fixed-eval-host")]
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_product_host::root_boundary as verify_original_observer_process_boundary_v1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_paired_generator_host;
