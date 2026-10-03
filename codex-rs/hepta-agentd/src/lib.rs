@@ -594,6 +594,12 @@ pub use self_iteration::AgentdSelfIterationCanaryVerdictV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationCandidateAssemblerV1;
 #[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationCandidateConstructionAdmissionV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationCandidateEffectAdmissionV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationCandidateEffectsV1;
+#[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationCandidateV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationHandleV1;
@@ -611,6 +617,8 @@ pub use self_iteration::AgentdSelfIterationPendingProposalV1;
 pub use self_iteration::AgentdSelfIterationPhaseV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationPhysicalMeasurementV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationProposalRejectionV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationQualificationCaseV1;
 #[cfg(feature = "server")]

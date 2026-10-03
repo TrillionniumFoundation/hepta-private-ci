@@ -99,18 +99,6 @@ impl AgentdSelfIterationRoundV1 {
     }
 }
 
-/// Read-only projection from the original reserved round. It grants no model,
-/// custody, publication or result-use authority to the requester.
-#[derive(Clone, Debug)]
-pub struct AgentdSelfIterationRoundStatusV1 {
-    pub round: AgentdSelfIterationRoundV1,
-    pub frozen_digest: Option<Digest32>,
-    pub generator_request_id: Option<StableId>,
-    pub generator_native_run_digest: Option<Digest32>,
-    pub generator_output_digest: Option<Digest32>,
-    pub terminal: bool,
-}
-
 /// Pending means the original request was admitted; it may not be reissued.
 pub enum AgentdSelfIterationModelAdmissionV1 {
     Fresh,
@@ -144,6 +132,10 @@ struct RoundState {
     #[serde(with = "super::codec::optional_digest")]
     frozen: Option<Digest32>,
     terminal: bool,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    rejected_proposal: Option<rejection::RejectedProposal>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    candidate_effects: Option<AgentdSelfIterationCandidateEffectsV1>,
     stages: Vec<ModelStage>,
 }
 #[derive(Clone, Deserialize, Serialize)]
@@ -184,9 +176,14 @@ impl RoundJournal {
                 || current.permit.admitted_at_ms > self.watermark_ms
                 || current.stages.len() > 4
                 || current.frozen.is_some_and(Digest32::is_zero)
-                || current.terminal && current.frozen.is_none()
+                || current.terminal
+                    && current.frozen.is_none()
+                    && current.rejected_proposal.is_none()
             {
                 return Err(invalid("durable round state"));
+            }
+            if let Some(rejection) = &current.rejected_proposal {
+                rejection.validate(current)?;
             }
             if !self.windows.iter().any(|window| {
                 window.policy == current.permit.policy
@@ -327,6 +324,8 @@ impl RoundJournal {
             permit: permit.clone(),
             frozen: None,
             terminal: false,
+            rejected_proposal: None,
+            candidate_effects: Some(AgentdSelfIterationCandidateEffectsV1::NotStarted),
             stages: Vec::new(),
         });
         Ok(permit)
@@ -365,6 +364,11 @@ impl RoundJournal {
             .model_assessment
             .as_ref()
             .ok_or_else(|| invalid("candidate lacks actual Generator receipt"))?;
+        if current.rejected_proposal.is_some() {
+            return Err(invalid(
+                "no-candidate rejected round cannot freeze a candidate",
+            ));
+        }
         let generator = current
             .stages
             .first()
@@ -386,39 +390,6 @@ impl RoundJournal {
         }
         current.frozen = Some(frozen);
         Ok(())
-    }
-    pub(super) fn status(
-        &self,
-        goal: &StableId,
-        policy: Digest32,
-    ) -> Result<AgentdSelfIterationRoundStatusV1, AgentdError> {
-        let current = self
-            .current
-            .as_ref()
-            .ok_or_else(|| invalid("round not reserved"))?;
-        if current.permit.goal != goal.as_str() || current.permit.policy != policy {
-            return Err(invalid("read-only round Goal or policy differs"));
-        }
-        let generator = current
-            .stages
-            .first()
-            .filter(|stage| stage.output.is_some() && stage.native_run.is_some());
-        Ok(AgentdSelfIterationRoundStatusV1 {
-            round: current.permit.clone(),
-            frozen_digest: current.frozen,
-            generator_request_id: generator
-                .map(|_| {
-                    current
-                        .permit
-                        .model_request_id(SelfIterationModelRoleV1::Generator, None)
-                })
-                .transpose()?,
-            generator_native_run_digest: generator.and_then(|stage| stage.native_run),
-            generator_output_digest: generator
-                .and_then(|stage| stage.output.as_ref())
-                .map(|output| Digest32::of_bytes(output.as_bytes())),
-            terminal: current.terminal,
-        })
     }
     pub(super) fn deadline(&self) -> Option<u64> {
         self.current
@@ -443,8 +414,17 @@ impl RoundJournal {
         Ok(())
     }
 }
+#[path = "self_iteration_round_effects.rs"]
+mod effects;
+#[path = "self_iteration_round_status.rs"]
+mod status_codec;
+pub use status_codec::AgentdSelfIterationRoundStatusV1;
+
 #[path = "self_iteration_round_model.rs"]
 mod model;
+
+#[path = "self_iteration_round_rejection.rs"]
+mod rejection;
 
 #[cfg(test)]
 #[path = "self_iteration_round_tests.rs"]

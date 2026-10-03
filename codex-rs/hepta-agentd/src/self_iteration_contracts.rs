@@ -8,6 +8,36 @@ use codex_hepta_agent_components::types::Digest32;
 use serde::Deserialize;
 use serde::Serialize;
 
+/// Only a trusted installed compiler may establish rejection before any
+/// candidate admission, physical creation or Generator issuance intent.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AgentdSelfIterationProposalRejectionV1 {
+    InvalidAdvice,
+    CandidateNotInstalled,
+    PolicyRejected,
+}
+
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
+pub enum AgentdSelfIterationCandidateEffectsV1 {
+    LegacyUnknown,
+    NotStarted,
+    Started,
+}
+
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AgentdSelfIterationCandidateConstructionAdmissionV1 {
+    Fresh,
+    Pending,
+}
+
+pub enum AgentdSelfIterationCandidateEffectAdmissionV1 {
+    ConservativeUnknown,
+    Proceed,
+    RejectedBeforeCandidateEffects(AgentdSelfIterationProposalRejectionV1),
+}
+
 /// Host-owned immutable candidate material. The two runtime handles must already
 /// own real durable generations; this request cannot build or sign a model.
 #[derive(Clone)]

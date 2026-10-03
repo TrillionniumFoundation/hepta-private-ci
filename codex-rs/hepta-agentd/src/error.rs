@@ -26,6 +26,8 @@ pub enum AgentdError {
     GenerationFenced(String),
     #[error("cognitive write runtime unavailable")]
     CognitiveWriteRuntimeUnavailable,
+    #[error("self-iteration proposal rejected before candidate effects")]
+    SelfIterationProposalRejected,
     #[error("agentd protocol error: {0}")]
     Protocol(String),
     #[error("agentd control overloaded; retry after {retry_after_ms} ms")]

@@ -39,3 +39,24 @@ pub(super) mod optional_digest {
             .transpose()
     }
 }
+
+pub(super) mod optional_stable_id {
+    use codex_hepta_agent_components::types::StableId;
+    use serde::Deserialize;
+    use serde::Deserializer;
+    use serde::Serialize;
+    use serde::Serializer;
+    pub fn serialize<S: Serializer>(
+        value: &Option<StableId>,
+        serializer: S,
+    ) -> Result<S::Ok, S::Error> {
+        value.as_ref().map(StableId::as_str).serialize(serializer)
+    }
+    pub fn deserialize<'de, D: Deserializer<'de>>(
+        deserializer: D,
+    ) -> Result<Option<StableId>, D::Error> {
+        Option::<String>::deserialize(deserializer)?
+            .map(|value| StableId::new(value).map_err(serde::de::Error::custom))
+            .transpose()
+    }
+}
