@@ -419,6 +419,9 @@ mod effects;
 #[path = "self_iteration_round_status.rs"]
 mod status_codec;
 pub use status_codec::AgentdSelfIterationRoundStatusV1;
+#[path = "self_iteration_round_current.rs"]
+mod current;
+pub use current::AgentdSelfIterationCurrentRoundV1;
 
 #[path = "self_iteration_round_model.rs"]
 pub(super) mod model;

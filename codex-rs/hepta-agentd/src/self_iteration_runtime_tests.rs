@@ -148,6 +148,9 @@ async fn cancelled_caller_leaves_actual_model_task_to_persist_terminal_and_never
                 Command::InspectRound(goal, policy, response) => {
                     let _ = response.send(rounds.status(&goal, policy));
                 }
+                Command::InspectCurrentRound(response) => {
+                    let _ = response.send(rounds.current_status());
+                }
                 Command::BeginCandidateEffects(round, assessment, response) => {
                     let admission = rounds
                         .begin_candidate_effects(
@@ -173,7 +176,14 @@ async fn cancelled_caller_leaves_actual_model_task_to_persist_terminal_and_never
         started: Arc::clone(&started),
         release: Arc::clone(&release),
     };
-    let mut cycle = AgentdSelfIterationModelCycleV1::new(model, Assembler, Owners, runtime);
+    assert_eq!(
+        runtime
+            .inspect_current_round()
+            .await
+            .expect("original empty owner"),
+        None
+    );
+    let mut cycle = AgentdSelfIterationModelCycleV1::new(model, Assembler, Owners, runtime.clone());
     let goal = StableId::new("goal.actual.fixture").expect("goal");
     {
         let run = cycle.run_for_goal(
@@ -187,6 +197,14 @@ async fn cancelled_caller_leaves_actual_model_task_to_persist_terminal_and_never
         // Dropping the caller future does not drop/abort the owned model task.
     }
     assert_eq!(calls.load(Ordering::SeqCst), 1);
+    let current = runtime
+        .inspect_current_round()
+        .await
+        .expect("same bounded channel")
+        .expect("pending original round");
+    assert_eq!(current.status.round.goal_id(), goal.as_str());
+    assert!(current.has_pending_model_requests);
+    assert!(!current.can_admit_next_round());
     release.notify_one();
     tokio::time::timeout(std::time::Duration::from_secs(5), completed.notified())
         .await
@@ -198,6 +216,13 @@ async fn cancelled_caller_leaves_actual_model_task_to_persist_terminal_and_never
         matches!(result,Err(AgentdError::Invalid(message)) if message == "fixture stops before generation effects")
     );
     assert_eq!(calls.load(Ordering::SeqCst), 1);
+    let current = runtime
+        .inspect_current_round()
+        .await
+        .expect("same bounded channel")
+        .expect("original round");
+    assert!(!current.has_pending_model_requests);
+    assert!(!current.can_admit_next_round());
     stop.cancel();
     owner.await.expect("actual journal owner retired");
     let journal = IterationJournal::open(path).expect("restart original journal");

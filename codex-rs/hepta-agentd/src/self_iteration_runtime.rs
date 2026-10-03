@@ -11,6 +11,9 @@ use codex_hepta_agent_components::types::StableId;
 
 type Response = oneshot::Sender<Result<AgentdSelfIterationRecordV1, AgentdError>>;
 enum Command {
+    InspectCurrentRound(
+        oneshot::Sender<Result<Option<AgentdSelfIterationCurrentRoundV1>, AgentdError>>,
+    ),
     InspectRound(
         StableId,
         Digest32,
@@ -65,6 +68,9 @@ impl Command {
                 let _ = response.send(Err(error));
             }
             Self::InspectRound(_, _, response) => {
+                let _ = response.send(Err(error));
+            }
+            Self::InspectCurrentRound(response) => {
                 let _ = response.send(Err(error));
             }
             Self::Reserve(_, _, _, response) => {
@@ -322,6 +328,7 @@ impl SelfIterationRuntime {
                     Some(
                         Command::Complete(..)
                             | Command::InspectRound(..)
+                            | Command::InspectCurrentRound(..)
                             | Command::RejectProposal(..)
                     )
                 ) && let Err(error) = owner.journal.observe_clock(now, command.is_some())
@@ -336,6 +343,7 @@ impl SelfIterationRuntime {
                     Some(
                         Command::Complete(..)
                             | Command::InspectRound(..)
+                            | Command::InspectCurrentRound(..)
                             | Command::RejectProposal(..)
                     )
                 ) {
@@ -355,6 +363,9 @@ impl SelfIterationRuntime {
                 }
                 if let Some(command) = command {
                     match command {
+                        Command::InspectCurrentRound(response) => {
+                            let _ = response.send(owner.inspect_current_round());
+                        }
                         Command::InspectRound(goal, policy, response) => {
                             let result = owner
                                 .journal
@@ -472,3 +483,6 @@ mod tests;
 
 #[path = "self_iteration_runtime_effects.rs"]
 mod effects;
+
+#[path = "self_iteration_runtime_current.rs"]
+mod current;

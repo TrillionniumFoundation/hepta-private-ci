@@ -77,6 +77,7 @@ pub use payload::self_iteration_stage_payload_v1;
 mod apply;
 #[path = "self_iteration_round.rs"]
 mod round;
+pub use round::AgentdSelfIterationCurrentRoundV1;
 pub use round::AgentdSelfIterationModelAdmissionV1;
 pub use round::AgentdSelfIterationRoundStatusV1;
 pub use round::AgentdSelfIterationRoundV1;

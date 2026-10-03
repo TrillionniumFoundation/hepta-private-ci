@@ -1,5 +1,7 @@
 //! Synthetic model receipts exercise the real sole-writer journal, not a live model.
 use super::*;
+#[path = "self_iteration_round_current_tests.rs"]
+mod current_tests;
 #[path = "self_iteration_round_effects_tests.rs"]
 mod effect_tests;
 #[path = "self_iteration_round_rejection_tests.rs"]
@@ -378,6 +380,14 @@ fn rejected_candidate_keeps_unknown_model_until_its_actual_terminal_is_recorded(
     drop(journal);
     let mut journal = journal::IterationJournal::open(path).expect("restart");
     let mut rounds = journal.rounds.clone().expect("original rounds");
+    let cold = rounds
+        .current_status()
+        .expect("current cold facts")
+        .expect("round");
+    assert!(cold.status.terminal);
+    assert!(cold.has_pending_model_requests);
+    assert!(!cold.can_admit_next_round());
+    assert_eq!(cold.status.round, permit);
     assert!(
         rounds
             .reserve(
@@ -407,6 +417,11 @@ fn rejected_candidate_keeps_unknown_model_until_its_actual_terminal_is_recorded(
         .persist_rounds(rounds)
         .expect("retain actual terminal before new admission");
     let mut rounds = journal.rounds.clone().expect("terminal original model");
+    let completed = rounds
+        .current_status()
+        .expect("current terminal facts")
+        .expect("round");
+    assert!(completed.can_admit_next_round());
     let next = rounds
         .reserve(
             StableId::new("goal.b").expect("goal"),
@@ -417,6 +432,13 @@ fn rejected_candidate_keeps_unknown_model_until_its_actual_terminal_is_recorded(
         .expect("fresh round after real terminal");
     assert_eq!(next.ordinal(), permit.ordinal() + 1);
     assert_eq!(next.deadline_ms(), permit.deadline_ms());
+    let current = rounds
+        .current_status()
+        .expect("new original facts")
+        .expect("round");
+    assert_eq!(current.status.round, next);
+    assert_eq!(current.status.admitted_policy_candidates, 4);
+    assert!(!current.can_admit_next_round());
 }
 
 #[test]
