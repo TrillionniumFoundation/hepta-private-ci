@@ -908,5 +908,9 @@ mod plasticity_observation;
 #[path = "state_prepared_generation_tests.rs"]
 mod prepared_generation_tests;
 
+#[path = "state_parameter_context_refresh.rs"]
+mod parameter_context_refresh;
 #[path = "state_parameter_preparation.rs"]
 mod parameter_preparation;
+#[path = "state_parameter_protected_preparation.rs"]
+mod parameter_protected_preparation;

@@ -51,26 +51,49 @@ impl AgentdClient {
                 && actual_source == search_source
                 && actual_pin == search_digest =>
             {
-                let input = crate::parameter_admission_query::decode_query(&query)?;
-                let evidence = decode_untrusted_plasticity_admission_v1(
-                    &crate::parameter_admission_query::decode_hex(&admission_hex)?,
-                )
-                .map_err(|e| AgentdError::Protocol(e.to_string()))?;
-                crate::parameter_admission_query::validate_response(&input, &evidence)?;
-                if input.generated.candidates.len() > round.candidate_admissions() as usize
-                    || baseline.registry_head_digest
-                        != evidence.artifact_registry_head_digest.to_string()
-                {
-                    return Err(AgentdError::Protocol(
-                        "prepared original Round/frontier/CURRENT binding".into(),
-                    ));
-                }
-                validate_prepared_baseline(&baseline, &input, &self.expected_agent_id)?;
+                let (input, evidence, baseline) = decode_prepared(
+                    &round,
+                    query,
+                    admission_hex,
+                    baseline,
+                    &self.expected_agent_id,
+                )?;
                 Ok((response.current_generation, input, evidence, baseline))
             }
             payload => unexpected(payload),
         }
     }
+}
+
+pub(super) fn decode_prepared(
+    round: &crate::AgentdSelfIterationRoundV1,
+    query: crate::ParameterAdmissionQueryV1,
+    admission_hex: String,
+    baseline: crate::ParameterPreparationBaselineV1,
+    agent: &AgentId,
+) -> Result<
+    (
+        crate::AgentdPlasticityAdmissionInputV1,
+        PlasticityAdmissionEvidenceV1,
+        crate::ParameterPreparationBaselineV1,
+    ),
+    AgentdError,
+> {
+    let input = crate::parameter_admission_query::decode_query(&query)?;
+    let evidence = decode_untrusted_plasticity_admission_v1(
+        &crate::parameter_admission_query::decode_hex(&admission_hex)?,
+    )
+    .map_err(|e| AgentdError::Protocol(e.to_string()))?;
+    crate::parameter_admission_query::validate_response(&input, &evidence)?;
+    if input.generated.candidates.len() > round.candidate_admissions() as usize
+        || baseline.registry_head_digest != evidence.artifact_registry_head_digest.to_string()
+    {
+        return Err(AgentdError::Protocol(
+            "prepared original Round/frontier/CURRENT binding".into(),
+        ));
+    }
+    validate_prepared_baseline(&baseline, &input, agent)?;
+    Ok((input, evidence, baseline))
 }
 
 fn validate_prepared_baseline(

@@ -241,6 +241,7 @@ pub use codex_hepta_agent_protocol::ObjectiveRunAdmission;
 pub use codex_hepta_agent_protocol::ObjectiveStartOutcome;
 pub use codex_hepta_agent_protocol::ParameterAdmissionQueryV1;
 pub use codex_hepta_agent_protocol::ParameterPreparationBaselineV1;
+pub use codex_hepta_agent_protocol::ParameterPreparationBaselineV2;
 pub use codex_hepta_agent_protocol::ReadinessSnapshot;
 pub use codex_hepta_agent_protocol::SecretsOriginalObservation;
 pub use codex_hepta_agent_protocol::SessionIngress;

@@ -4,11 +4,17 @@ use codex_hepta_agent_components::plasticity::decode_untrusted_parameter_generat
 use codex_hepta_agent_components::plasticity::generate_parameter_candidates_v3;
 use codex_hepta_agent_components::types::Digest32;
 use std::path::PathBuf;
-type Prepared = (
+pub(crate) type Prepared = (
     crate::AgentdPlasticityAdmissionInputV1,
     codex_hepta_agent_components::intelligence::PlasticityAdmissionEvidenceV1,
-    crate::ParameterPreparationBaselineV1,
+    crate::ParameterPreparationBaselineV2,
 );
+
+pub(crate) struct ProtectedParameterPreparationV2 {
+    pub(crate) round: crate::AgentdSelfIterationRoundV1,
+    pub(crate) context: (PathBuf, Digest32),
+    pub(crate) search: (PathBuf, Digest32),
+}
 
 impl PlasticityRuntimeHandleV1 {
     /// Source is an independently Root-protected unsigned search shape. Actual
@@ -18,7 +24,14 @@ impl PlasticityRuntimeHandleV1 {
         round: crate::AgentdSelfIterationRoundV1,
         path: PathBuf,
         pin: Digest32,
-    ) -> Result<Prepared, PlasticityRuntimeCallErrorV1> {
+    ) -> Result<
+        (
+            crate::AgentdPlasticityAdmissionInputV1,
+            codex_hepta_agent_components::intelligence::PlasticityAdmissionEvidenceV1,
+            crate::ParameterPreparationBaselineV1,
+        ),
+        PlasticityRuntimeCallErrorV1,
+    > {
         let (response, receive) = oneshot::channel();
         self.sender
             .send(PlasticityRuntimeCommandV1::PrepareParameterInput {
@@ -79,12 +92,37 @@ impl PlasticityRuntimeOwnerV1 {
         {
             return Err(PlasticityRuntimeCallErrorV1::Unavailable);
         }
+        self.prepare_with_context(state, cancellation, generation, path, pin, context)
+    }
+
+    pub(super) fn prepare_with_context(
+        &mut self,
+        state: &Arc<AgentdState>,
+        cancellation: &CancellationToken,
+        generation: u64,
+        path: PathBuf,
+        pin: Digest32,
+        context: super::input_context::PlasticityInputContextV2,
+    ) -> Result<Prepared, PlasticityRuntimeCallErrorV1> {
+        let round = context.round.clone();
+        let now = observe_plasticity_clock_v1(self.clock.as_mut(), &mut self.last_observed_unix_ms)
+            .map_err(|_| PlasticityRuntimeCallErrorV1::ClockUnavailable)?;
+        if cancellation.is_cancelled() || now < round.admitted_at_ms() || now >= round.deadline_ms()
+        {
+            return Err(PlasticityRuntimeCallErrorV1::Unavailable);
+        }
+        let predecessor = self
+            .parameter_writer
+            .current_anchor()
+            .map_err(|_| PlasticityRuntimeCallErrorV1::Unavailable)?
+            .map_or(Digest32::ZERO, |anchor| anchor.frame_digest);
         let (material_path, material_pin) = context
             .baseline_source
             .as_ref()
             .ok_or(PlasticityRuntimeCallErrorV1::Unavailable)?;
         let material = context
             .baseline_material
+            .as_ref()
             .ok_or(PlasticityRuntimeCallErrorV1::Unavailable)?;
         let baseline = crate::ParameterPreparationBaselineV1 {
             agent_id: state.identity().agent_id.to_string(),
@@ -108,11 +146,17 @@ impl PlasticityRuntimeOwnerV1 {
                 .ok_or(PlasticityRuntimeCallErrorV1::Unavailable)?
                 .to_owned(),
             material_digest: material_pin.to_string(),
-            context_source: context_path
+            context_source: context
+                .source
+                .0
                 .to_str()
                 .ok_or(PlasticityRuntimeCallErrorV1::Unavailable)?
                 .to_owned(),
-            context_digest: context_pin.to_string(),
+            context_digest: context.source.1.to_string(),
+        };
+        let baseline = crate::ParameterPreparationBaselineV2 {
+            baseline,
+            proposal_registry_predecessor: predecessor.to_string(),
         };
         let bytes =
             crate::plasticity_process_bootstrap::protected_context_bytes(&path, pin, 32 * 1024)
@@ -134,7 +178,7 @@ impl PlasticityRuntimeOwnerV1 {
         let generated = generate_parameter_candidates_v3(profile.clone())
             .map_err(|_| PlasticityRuntimeCallErrorV1::Unavailable)?;
         let shape = crate::AgentdPlasticityAdmissionInputV1 {
-            baseline_id: context.baseline,
+            baseline_id: context.baseline.clone(),
             objective_digest: material.scope.objective_digest,
             generator_profile: profile,
             generated,
@@ -150,8 +194,8 @@ impl PlasticityRuntimeOwnerV1 {
             modulator_broadcast_digest: Digest32::ZERO,
             eligibility_digest: Digest32::ZERO,
         };
-        let input = self
-            .owner_evidence_resolver
+        let input = context
+            .resolver
             .prepare_parameter_input(shape.clone(), now)
             .map_err(|e| PlasticityRuntimeCallErrorV1::Parameter(e.into()))?;
         if !same_search_shape(&shape.generator_profile, &input.generator_profile)
@@ -165,13 +209,19 @@ impl PlasticityRuntimeOwnerV1 {
         }
         // Original final-use admission independently samples Fleet, lifecycle,
         // actual CURRENT, Ledger and all seven owners before and after its read.
-        let evidence =
-            self.resolve_parameter_admission(state, cancellation, generation, ready, &input)?;
+        let evidence = self.resolve_parameter_admission_with_context(
+            state,
+            cancellation,
+            generation,
+            true,
+            &input,
+            Some(&context),
+        )?;
         let after =
             observe_plasticity_clock_v1(self.clock.as_mut(), &mut self.last_observed_unix_ms)
                 .map_err(|_| PlasticityRuntimeCallErrorV1::ClockUnavailable)?;
-        let final_input = self
-            .owner_evidence_resolver
+        let final_input = context
+            .resolver
             .prepare_parameter_input(shape, after)
             .map_err(|e| PlasticityRuntimeCallErrorV1::Parameter(e.into()))?;
         if after >= round.deadline_ms()
@@ -183,9 +233,26 @@ impl PlasticityRuntimeOwnerV1 {
         {
             return Err(PlasticityRuntimeCallErrorV1::Unavailable);
         }
-        let final_evidence =
-            self.resolve_parameter_admission(state, cancellation, generation, ready, &input)?;
-        if final_evidence != evidence {
+        let final_evidence = self.resolve_parameter_admission_with_context(
+            state,
+            cancellation,
+            generation,
+            true,
+            &input,
+            Some(&context),
+        )?;
+        let final_now =
+            observe_plasticity_clock_v1(self.clock.as_mut(), &mut self.last_observed_unix_ms)
+                .map_err(|_| PlasticityRuntimeCallErrorV1::ClockUnavailable)?;
+        if final_evidence != evidence
+            || final_now >= round.deadline_ms()
+            || self
+                .parameter_writer
+                .current_anchor()
+                .map_err(|_| PlasticityRuntimeCallErrorV1::Unavailable)?
+                .map_or(Digest32::ZERO, |anchor| anchor.frame_digest)
+                != predecessor
+        {
             return Err(PlasticityRuntimeCallErrorV1::Unavailable);
         }
         Ok((input, final_evidence, baseline))

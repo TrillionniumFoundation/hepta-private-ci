@@ -60,6 +60,12 @@ impl fmt::Display for PlasticityRuntimeCallErrorV1 {
 impl StdError for PlasticityRuntimeCallErrorV1 {}
 
 enum PlasticityRuntimeCommandV1 {
+    PrepareParameterInputFromContext {
+        fence: crate::self_iteration::runtime::plasticity_context::RoundContextFence,
+        request: parameter_preparation::ProtectedParameterPreparationV2,
+        response:
+            oneshot::Sender<Result<parameter_preparation::Prepared, PlasticityRuntimeCallErrorV1>>,
+    },
     PrepareParameterInput {
         round: crate::AgentdSelfIterationRoundV1,
         path: std::path::PathBuf,
@@ -421,6 +427,21 @@ impl PlasticityRuntimeOwnerV1 {
                 && state.plasticity_admission_ready()?
                 && state.current_generation()? == owner_generation;
             match command {
+                PlasticityRuntimeCommandV1::PrepareParameterInputFromContext {
+                    fence,
+                    request,
+                    response,
+                } => {
+                    let result = self.prepare_parameter_from_context(
+                        &state,
+                        &cancellation,
+                        owner_generation,
+                        ready,
+                        fence,
+                        request,
+                    );
+                    let _ = response.send(result);
+                }
                 PlasticityRuntimeCommandV1::RefreshInputContext {
                     fence,
                     path,
@@ -444,15 +465,17 @@ impl PlasticityRuntimeOwnerV1 {
                     pin,
                     response,
                 } => {
-                    let result = self.prepare_parameter_input(
-                        &state,
-                        &cancellation,
-                        owner_generation,
-                        ready,
-                        round,
-                        path,
-                        pin,
-                    );
+                    let result = self
+                        .prepare_parameter_input(
+                            &state,
+                            &cancellation,
+                            owner_generation,
+                            ready,
+                            round,
+                            path,
+                            pin,
+                        )
+                        .map(|(input, admission, baseline)| (input, admission, baseline.baseline));
                     let _ = response.send(result);
                 }
                 PlasticityRuntimeCommandV1::ResolveParameterAdmission { input, response } => {
@@ -617,4 +640,6 @@ mod parameter_admission;
 pub(crate) mod input_context;
 
 #[path = "plasticity_runtime_parameter_preparation.rs"]
-mod parameter_preparation;
+pub(crate) mod parameter_preparation;
+#[path = "plasticity_runtime_protected_preparation.rs"]
+mod protected_preparation;

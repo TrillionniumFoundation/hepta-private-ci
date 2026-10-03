@@ -488,3 +488,43 @@ fn first_observed_expiry_survives_restart_without_idle_writes_or_fresh_clock_all
 
 #[path = "self_iteration_round_plasticity_context_tests.rs"]
 mod plasticity_context_tests;
+
+#[test]
+fn readonly_context_clock_check_preserves_original_bytes_and_cold_stored_floor() {
+    let directory = directory();
+    let path = directory.path().join("iteration.json");
+    let (canonical, envelope) = inputs(2);
+    let mut rounds = RoundJournal::default();
+    let permit = rounds
+        .reserve(
+            StableId::new("goal.readonly").expect("goal"),
+            &canonical,
+            &envelope,
+            1000,
+        )
+        .expect("actual reservation");
+    let mut journal = journal::IterationJournal::open(path.clone()).expect("original journal");
+    journal
+        .persist_rounds(rounds)
+        .expect("original durable reservation");
+    journal
+        .observe_clock(2000, true)
+        .expect("original admitted clock floor");
+    let before = std::fs::read(&path).expect("original bytes");
+    journal.check_clock(3000).expect("readonly later clock");
+    assert!(journal.check_clock(1999).is_err());
+    journal
+        .check_clock(permit.deadline_ms())
+        .expect("pure check cannot write expiry");
+    assert_eq!(std::fs::read(&path).expect("same original bytes"), before);
+    drop(journal);
+    let journal = journal::IterationJournal::open(path.clone()).expect("same cold original owner");
+    assert!(journal.check_clock(1999).is_err());
+    let mut rounds = journal.rounds.expect("same admitted reservation");
+    assert!(
+        rounds
+            .begin(&permit, &request(&permit), permit.deadline_ms())
+            .is_err()
+    );
+    assert_eq!(std::fs::read(path).expect("same cold bytes"), before);
+}
