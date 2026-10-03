@@ -686,13 +686,19 @@ pub use plasticity_untrusted_material_codec::decode_untrusted_plasticity_learnin
 pub use plasticity_untrusted_material_codec::encode_untrusted_plasticity_evaluation_v1;
 pub use plasticity_untrusted_material_codec::encode_untrusted_plasticity_learning_evidence_v1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
-mod operational_registered_model_v3;
-#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
-mod operational_registered_program_v3;
+mod operational_registered_host_v3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod operational_registered_measurement_v3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_registered_model_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod operational_registered_policy_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_registered_program_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_registered_reader_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_registered_host_v3::run_registered_operational_model_evaluator_v3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use operational_registered_model_v3::RegisteredArtifactCurrentFactsV3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
@@ -701,3 +707,7 @@ pub use operational_registered_model_v3::RegisteredOperationalModelBindingV3;
 pub use operational_registered_model_v3::inspect_registered_artifact_current_material_v3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use operational_registered_program_v3::verify_registered_operational_program_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_registered_reader_v3::VerifiedRegisteredOperationalEvaluationV3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_registered_reader_v3::inspect_registered_operational_evaluation_v3;

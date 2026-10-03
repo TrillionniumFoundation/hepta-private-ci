@@ -42,6 +42,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             );
             return Ok(());
         }
+        if args.len() == 2 && args[0] == "--registered-operational-model-v3" {
+            return codex_hepta_intelligence_eval::run_registered_operational_model_evaluator_v3(
+                std::path::Path::new(&args[1]),
+            );
+        }
         if args.len() == 2 && args[0] == "--operational-model-lease-v2" {
             return codex_hepta_intelligence_eval::run_operational_model_lease_evaluator_v2(
                 std::path::Path::new(&args[1]),
