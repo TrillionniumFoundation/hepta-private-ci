@@ -46,9 +46,7 @@ pub fn observe_parameter_pre_registered_artifacts_v1(
             &operation,
             inputs.storage_binding(),
         )?;
-        if previous.is_some_and(|previous| signed.witness.predecessor_head_digest != previous) {
-            return Err("whole four original E1 publication chain differs".into());
-        }
+        validate_chain(previous, &signed)?;
         let sidecar_path = inputs
             .profile
             .owner_root
@@ -115,7 +113,7 @@ pub fn observe_parameter_pre_registered_artifacts_v1(
             operation_id: operation.to_string(),
             current_head: signed.witness.head_digest.to_string(),
         });
-        previous = Some(signed.witness.head_digest);
+        previous = Some((signed.witness.head_digest, signed.witness.generation));
         acknowledgements.push((operation.clone(), signed.clone(), ack.clone()));
         let head_source = Source {
             path: signed_path.clone(),
@@ -163,17 +161,12 @@ pub fn observe_parameter_pre_registered_artifacts_v1(
     let (signed, head_source, ack) = last.ok_or("four completed E1 publications absent")?;
     // Hc/op/ACK are the original terminal tuple. The independently observed H'
     // only establishes current eligibility; it never rewrites the old receipt.
-    let result = packet(
-        &config,
-        &evaluation,
-        receipts,
-        &signed,
-        head_source,
-        &ack,
-    )?;
+    let result = packet(&config, &evaluation, receipts, &signed, head_source, &ack)?;
     let settled = now_ms()?;
-    if settled < final_now || settled >= evaluation.expires_at()
-        || settled >= evaluation.round().deadline_ms {
+    if settled < final_now
+        || settled >= evaluation.expires_at()
+        || settled >= evaluation.round().deadline_ms
+    {
         return Err("completed E1 expired or clock rolled back during final observation".into());
     }
     Ok(Some(result))
@@ -184,6 +177,18 @@ fn existing(path: &Path, maximum: u64) -> HostResult<Option<Vec<u8>>> {
         Err(error) if error.kind() == std::io::ErrorKind::NotFound => Ok(None),
         Err(error) => Err(error.into()),
     }
+}
+fn validate_chain(
+    previous: Option<(Digest32, Generation)>,
+    signed: &SignedCurrentArtifactHeadV1,
+) -> HostResult<()> {
+    if let Some((head, generation)) = previous
+        && (signed.witness.predecessor_head_digest != head
+            || signed.witness.generation != generation.next()?)
+    {
+        return Err("whole four original E1 publication chain differs".into());
+    }
+    Ok(())
 }
 fn validate_complete_tuple(
     operation: &StableId,
@@ -251,3 +256,7 @@ pub(super) fn packet(
             .map_err(|_| "exact four E1 publications")?,
     })
 }
+
+#[cfg(test)]
+#[path = "initial_cpu_parameter_publication_observation_tests.rs"]
+mod tests;
