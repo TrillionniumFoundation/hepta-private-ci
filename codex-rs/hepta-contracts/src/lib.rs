@@ -330,3 +330,6 @@ pub use final_use_port::MODEL_TRUST_LOAD;
 pub use final_use_port::ModelIssuerProcessIdentity;
 pub use final_use_port::ModelTrustRequest;
 pub use final_use_port::ModelTrustResponse;
+
+mod original_agentd_response;
+pub use original_agentd_response::{OriginalAgentdResponseV1, ParameterServingScopeV1, ParameterServingScopePayloadV1, ParameterServingScopeResponseV1, ORIGINAL_AGENTD_CONTROL_SCHEMA_VERSION, MAX_ORIGINAL_PARAMETER_SERVING_RESPONSE_BYTES_V1, decode_original_parameter_serving_scope_response_v1};
