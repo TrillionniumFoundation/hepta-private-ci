@@ -30,9 +30,11 @@ impl LearningArtifactOwnerHost {
         records::write_record_with_limit(&path, &bytes, MAX_ARTIFACT_ADMISSION_BYTES)?;
         let manifest_path =
             self.manifest_admission_path(admission.validated_manifest.manifest_digest);
-        match fs::hard_link(&path, &manifest_path) {
+        // Each durable source needs its own inode: root custody readers reject
+        // permanent hard links even when both names belong to this owner.
+        match records::write_record_with_limit(&manifest_path, &bytes, MAX_ARTIFACT_ADMISSION_BYTES) {
             Ok(()) => {}
-            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
+            Err(ArtifactOwnerHostError::IdentityConflict) => {
                 let existing = read_artifact_admission_by_manifest_digest(
                     File::open(&manifest_path)?,
                     admission.validated_manifest.manifest_digest,
@@ -43,7 +45,7 @@ impl LearningArtifactOwnerHost {
                     return Err(ArtifactOwnerHostError::ProvenanceMismatch);
                 }
             }
-            Err(error) => return Err(error.into()),
+            Err(error) => return Err(error),
         }
         records::sync_parent(&manifest_path)?;
         Ok(())

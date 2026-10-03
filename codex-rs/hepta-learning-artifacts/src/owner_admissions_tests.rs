@@ -128,6 +128,15 @@ fn prepared_checkpoint_recovers_the_complete_durable_admission() {
         "{}.manifest",
         admission.validated_manifest.manifest_digest
     ));
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+
+        let admission_metadata = fs::symlink_metadata(&admission_path).fixture("admission metadata");
+        let manifest_metadata = fs::symlink_metadata(&manifest_path).fixture("manifest metadata");
+        assert_eq!((admission_metadata.nlink(), manifest_metadata.nlink()), (1, 1));
+        assert_ne!(admission_metadata.ino(), manifest_metadata.ino());
+    }
     assert_eq!(
         read_artifact_admission_by_digest(
             File::open(&admission_path).fixture("durable admission exists"),
