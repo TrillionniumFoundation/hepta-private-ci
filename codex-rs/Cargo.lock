@@ -3923,7 +3923,9 @@ dependencies = [
 name = "codex-hepta-intelligence-eval"
 version = "0.0.0"
 dependencies = [
+ "codex-hepta-learning-artifacts",
  "codex-hepta-learning-ledger",
+ "codex-hepta-neuron",
  "codex-hepta-types",
  "codex-utils-cargo-bin",
  "ed25519-dalek 2.2.0",
