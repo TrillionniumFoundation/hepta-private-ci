@@ -235,6 +235,7 @@ def commands(candidate: str, evidence: Path) -> dict[str, list[str]]:
     result["fuzz-harness"] = [
         "cargo",
         "check",
+        "--locked",
         "--manifest-path",
         "codex-rs/hepta-cognitive-read/fuzz/Cargo.toml",
         "--all-targets",
