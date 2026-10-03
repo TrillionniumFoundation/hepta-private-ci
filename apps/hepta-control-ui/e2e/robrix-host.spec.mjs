@@ -12,12 +12,17 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
   const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
   const fixtures=process.env.HEPTA_ROBRIX_FIXTURES==='1';
   const schedule=captureSchedule(viewport.width,fixtures);const pixelCaptures=[];const captureTimings=[];const controlTimings=[];
-  const errors=[];const logs=[];const rustFontStates=[];const scrollObservations=[];const jumpObservations=[];const uploads=[];const fonts=[];const pendingFonts=new Set();
+  const errors=[];const logs=[];const rustFontStates=[];const scrollObservations=[];const jumpObservations=[];const geometryObservations=[];const uploads=[];const fonts=[];const pendingFonts=new Set();
   const isFont=request=>/\.(?:ttf|otf|woff2?)(?:[?#]|$)/i.test(request.url());
   page.on('pageerror',error=>errors.push({phase,message:error.message}));
   page.on('console',message=>{
    if(message.type()==='error') errors.push({phase,message:message.text()});
    if(logs.length<500) logs.push({phase,type:message.type(),text:message.text().slice(0,2000)});
+   const geometry=message.text().match(/HEPTA_FIXTURE_GEOMETRY frame=(\d+) (\{.*\})/);
+   if(geometry){
+    try{geometryObservations.push({frame:Number(geometry[1]),observedAt:performance.now(),phase,...JSON.parse(geometry[2])});if(geometryObservations.length>256)geometryObservations.shift();}
+    catch(error){errors.push({phase,message:'Invalid real Rust geometry observation: '+String(error)});}
+   }
    const scroll=message.text().match(/HEPTA_FIXTURE_SCROLL travel=([-\d.]+) at_end=(true|false) first=(\d+)/);
    if(scroll){scrollObservations.push({travel:Number(scroll[1]),atEnd:scroll[2]==='true',first:Number(scroll[3])});if(scrollObservations.length>64)scrollObservations.shift();}
    if(/HEPTA_FIXTURE_(?:SCROLL_ACTION|JUMP)/.test(message.text())){
@@ -72,7 +77,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    // frame boundary before reading pixels; no time-based sleep or retry waiver.
    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
    phase='snapshot';await page.evaluate(()=>window.__heptaTestPhase='snapshot');
-   const path=testInfo.outputPath(name+'.png');const beforeScreenshot=performance.now();const jumpAreaBefore=latestJumpArea();
+   const path=testInfo.outputPath(name+'.png');const beforeScreenshot=performance.now();const jumpAreaBefore=latestJumpArea();const geometryBefore=geometryObservations.at(-1)??null;
    timing.stage='capturing-png';timing.readyMs=beforeScreenshot-started;
    try {await page.screenshot({path,fullPage:true,caret:'initial'});}
    finally {await page.evaluate(()=>window.__heptaTestPhase='application');phase='application';}
@@ -96,7 +101,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    const jumpArea=latestJumpArea();
    if(expected.jump){expect(jumpArea).not.toBeNull();expect(jumpArea).toEqual(jumpAreaBefore);}
    timing.stage='complete';timing.screenshotAndReadbackMs=performance.now()-beforeScreenshot;timing.totalMs=performance.now()-started;
-   pixelCaptures.push({name,viewport:page.viewportSize(),theme:expected.theme,jumpArea,jumpAreaBefore,pngSha256:createHash('sha256').update(png).digest('hex')});
+   pixelCaptures.push({name,viewport:page.viewportSize(),theme:expected.theme,jumpArea,jumpAreaBefore,geometryBefore,geometryAfter:geometryObservations.at(-1)??null,pngSha256:createHash('sha256').update(png).digest('hex')});
    await assertApplicationHealth(expect.soft);
    return {path,name,jumpArea};
   }
@@ -199,7 +204,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    await writeFile(testInfo.outputPath('pixel-plan.json'),JSON.stringify({sourceSha,browser:browserName,initialWidth:viewport.width,fixtures,captures:pixelCaptures,captureTimings,controlTimings},null,2));
    const observed=await page.evaluate(()=>({violations:window.__cspViolations??[],snapshotStyles:window.__snapshotStyles??[],bootPhase:document.documentElement.dataset.heptaBootPhase??'unobserved',wasmStages:window.__wasmStages??[],readyState:document.readyState,canvas:[...document.querySelectorAll('canvas')].map(canvas=>({width:canvas.width,height:canvas.height})),resources:performance.getEntriesByType('resource').map(item=>({name:item.name,duration:item.duration,bytes:item.transferSize}))})).catch(()=>({}));
    const diagnostics=testInfo.outputPath('host-diagnostics.json');
-   await writeFile(diagnostics,JSON.stringify({errors,logs,rustFontStates,scrollObservations,jumpObservations,uploads,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),...observed},null,2));
+   await writeFile(diagnostics,JSON.stringify({errors,logs,rustFontStates,scrollObservations,jumpObservations,geometryObservations,uploads,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),...observed},null,2));
    if(testInfo.status!==testInfo.expectedStatus) console.log(JSON.stringify({scope:'fixture scroll diagnostics; not acceptance',browserName,viewport,scrollObservations,jumpObservations}));
    await testInfo.attach('host-diagnostics',{path:diagnostics,contentType:'application/json'});
   }

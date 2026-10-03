@@ -89,6 +89,8 @@ struct RoomViewMemory {
         std::collections::HashSet<(makepad_draw::text::font_family::FontFamilyId, usize, bool)>,
     #[cfg(feature = "ui-fixtures")]
     jump_samples: std::collections::HashMap<WidgetUid, (bool, bool, bool, [u64; 4])>,
+    #[cfg(feature = "ui-fixtures")]
+    geometry_samples: std::collections::HashMap<WidgetUid, String>,
     positions: std::collections::HashMap<RoomKey, (usize, f64, bool)>,
     message_styles:
         std::collections::HashMap<WidgetUid, (crate::visual_theme::VisualTheme, bool, u64)>,
@@ -419,6 +421,69 @@ impl Widget for RoomScreen {
                             }
                         }
                     }
+                }
+            }
+        }
+        #[cfg(feature = "ui-fixtures")]
+        if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
+            // Observe only. No additional layout, scrolling, or redraw is requested.
+            let list = self.view.portal_list(cx, ids!(list));
+            let travel = list.user_scroll_travel();
+            if let Some(inner) = list.borrow() {
+                let total = project(workspace, 0, TimelineWindow::default())
+                    .timeline
+                    .total;
+                let last = diagnostic_items
+                    .iter()
+                    .find(|(index, _)| *index + 1 == total);
+                let rect = |area: Area, clipped: bool| -> String {
+                    if !area.is_valid(cx) {
+                        return "null".into();
+                    }
+                    let r = if clipped {
+                        area.clipped_rect_union(cx)
+                    } else {
+                        area.rect(cx)
+                    };
+                    let values = [r.pos.x, r.pos.y, r.size.x, r.size.y];
+                    if values.iter().all(|value| value.is_finite()) {
+                        format!("{:?}", values)
+                    } else {
+                        "null".into()
+                    }
+                };
+                let area = |ids: &[LiveId]| {
+                    last.map_or(Area::Empty, |(_, item)| item.widget(cx, ids).area())
+                };
+                let status = area(ids!(send_status_indicator));
+                let sample = format!(
+                    "{{\"room\":{},\"epoch\":{},\"total\":{},\"first\":{},\"offset\":{},\"atEnd\":{},\"followLatest\":{},\"travel\":{},\"viewport\":{},\"lastRow\":{},\"lastContent\":{},\"lastBodyVisibleGlyphs\":{},\"lastStatusFirstGlyph\":{},\"lastStatusVisibleGlyphs\":{},\"composer\":{}}}",
+                    workspace.active_id(),
+                    workspace.presentation_epoch(),
+                    total,
+                    inner.first_id(),
+                    inner.first_scroll(),
+                    inner.is_at_end(),
+                    workspace
+                        .timeline()
+                        .is_none_or(|timeline| timeline.scroll.at_end),
+                    travel,
+                    rect(inner.area(), false),
+                    rect(last.map_or(Area::Empty, |(_, item)| item.area()), false),
+                    rect(area(ids!(content)), false),
+                    rect(area(ids!(message)), true),
+                    rect(status, false),
+                    rect(status, true),
+                    rect(self.view.widget(cx, ids!(room_input_bar)).area(), false)
+                );
+                if cx
+                    .global::<RoomViewMemory>()
+                    .geometry_samples
+                    .insert(self.widget_uid(), sample.clone())
+                    .as_ref()
+                    != Some(&sample)
+                {
+                    log!("HEPTA_FIXTURE_GEOMETRY frame={} {}", cx.redraw_id, sample);
                 }
             }
         }
