@@ -499,6 +499,26 @@ mod tests {
     }
 }
 
+#[path = "plasticity_product_prepared.rs"]
+mod prepared;
+
 #[path = "plasticity_product_final_time.rs"]
 mod final_time;
 pub use final_time::propose_authenticated_parameter_plasticity_with_final_time_v1;
+
+#[path = "plasticity_product_completed.rs"]
+mod completed;
+
+#[path = "plasticity_product_materials.rs"]
+mod materials;
+#[path = "plasticity_product_profile_wire.rs"]
+mod profile_wire;
+#[path = "plasticity_product_material_wire.rs"]
+mod wire;
+pub use materials::MAX_PARAMETER_PLASTICITY_MATERIAL_BYTES_V1;
+pub use materials::decode_parameter_plasticity_receipt_v1;
+pub use materials::decode_parameter_plasticity_request_v1;
+pub use materials::encode_parameter_plasticity_receipt_v1;
+pub use materials::encode_parameter_plasticity_request_v1;
+
+pub use completed::materialize_completed_parameter_receipt_v1;

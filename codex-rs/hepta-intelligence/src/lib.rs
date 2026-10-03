@@ -333,3 +333,11 @@ mod vertical_tests;
 #[cfg(test)]
 #[path = "plasticity_product_tests.rs"]
 mod plasticity_product_tests;
+
+pub use plasticity_product::MAX_PARAMETER_PLASTICITY_MATERIAL_BYTES_V1;
+pub use plasticity_product::decode_parameter_plasticity_receipt_v1;
+pub use plasticity_product::decode_parameter_plasticity_request_v1;
+pub use plasticity_product::encode_parameter_plasticity_receipt_v1;
+pub use plasticity_product::encode_parameter_plasticity_request_v1;
+
+pub use plasticity_product::materialize_completed_parameter_receipt_v1;
