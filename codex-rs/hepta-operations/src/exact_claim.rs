@@ -12,6 +12,7 @@ use crate::DurableOperationState;
 use crate::DurableOperationStore;
 use crate::MAX_DURABLE_LEASE_MS;
 use crate::MAX_DURABLE_OUTBOX_ATTEMPTS;
+use crate::durable_store::ensure_clock_not_behind;
 
 impl DurableOperationStore {
     /// Claim one exact prepared operation rather than whichever destination row
@@ -37,6 +38,7 @@ impl DurableOperationStore {
             .await
             .map_err(unavailable)?;
         let now = now_millis()?;
+        ensure_clock_not_behind(&mut tx, now).await?;
         let candidate = sqlx::query(
             "SELECT l.destination, l.state AS operation_state, l.owner_generation AS ledger_generation,
                     l.revision, o.state AS outbox_state, o.owner_generation AS outbox_generation,

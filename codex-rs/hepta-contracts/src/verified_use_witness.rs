@@ -1,5 +1,5 @@
 //! Serializable observation emitted only after an opaque VerifiedUse token
-//! passes its final live-authority check.
+//! passes the live-authority check identified by its boundary.
 //!
 //! A witness is evidence, never a bearer capability. No authority API accepts
 //! it as authorization input and it cannot be converted back into an opaque
@@ -16,6 +16,9 @@ pub const VERIFIED_USE_TOKEN_WITNESS_SCHEMA_VERSION: u32 = 1;
 pub enum VerifiedUseBoundaryV1 {
     ConsumerEntry,
     DispatchEntry,
+    /// Pre-contact preparation may await persistence and then fail or be
+    /// cancelled. This records neither the later final check nor a send.
+    PreparationEntry,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -48,7 +51,7 @@ pub enum VerifiedUseAuthorityRefV1 {
     AuthorityLease(AuthorityLeaseWitnessRefV1),
 }
 
-/// Canonical V1 audit/evidence witness for a successful final authority check.
+/// Canonical V1 audit observation of a successful check at its declared boundary.
 ///
 /// This record cannot grant, delegate, refresh or revive authority. It records
 /// one already-completed verification linearization point.

@@ -3,42 +3,129 @@ name: automation-taskflow-focused
 on:
   push:
     branches:
-      - work/automation-taskflow-durable-causal-chain
+      - main
     paths:
       - codex-rs/hepta-automation/**
       - codex-rs/hepta-agentd/**
+      - codex-rs/app-server-client/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-operations/**
+      - codex-rs/hepta-evidence/**
       - codex-rs/hepta-types/**
+      - codex-rs/agent-protocol/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/model-provider/**
+      - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
+      - justfile
+      - scripts/run-nextest.py
+      - scripts/hepta_ci_exec.py
+      - scripts/test_hepta_ci_exec.py
+      - scripts/test_taskflow_owner_workflow.py
+      - .github/workflows/automation-taskflow-focused.yml
+  pull_request:
+    paths:
+      - codex-rs/hepta-automation/**
+      - codex-rs/hepta-agentd/**
+      - codex-rs/app-server-client/**
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-operations/**
+      - codex-rs/hepta-evidence/**
+      - codex-rs/hepta-types/**
+      - codex-rs/agent-protocol/**
+      - codex-rs/hepta-agent-protocol/**
+      - codex-rs/model-provider/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - justfile
+      - scripts/run-nextest.py
+      - scripts/hepta_ci_exec.py
+      - scripts/test_hepta_ci_exec.py
+      - scripts/test_taskflow_owner_workflow.py
       - .github/workflows/automation-taskflow-focused.yml
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: taskflow-${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
 jobs:
   focused:
     runs-on: ubuntu-24.04
-    timeout-minutes: 30
+    timeout-minutes: 60
+    env:
+      CARGO_BUILD_JOBS: "1"
+      CARGO_INCREMENTAL: "0"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      TESTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || '' }}
+      HEPTA_CI_LANE: source-head
     defaults:
       run:
         working-directory: codex-rs
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
       - name: Rustfmt changed automation owners
-        run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -- --check
-      - name: Check automation, operations and Agentd
-        run: cargo check -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd
+        run: cargo fmt -p codex-hepta-contracts -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-evidence -p codex-hepta-agentd -p codex-model-provider -p codex-app-server-client -- --check
+      - name: Test owner execution identity adapter
+        run: |
+          python3 -m unittest discover -s ../scripts -p test_taskflow_owner_workflow.py
+          python3 -m unittest discover -s ../scripts -p test_hepta_ci_exec.py
+      - name: Check durable owner packages first
+        id: compile
+        run: cargo check --locked -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-evidence
       - name: Test kernel operation contract
-        run: cargo test -p codex-hepta-operations
-      - name: Test durable automation causal chain
-        run: cargo test -p codex-hepta-automation --test durable_causal_chain
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-owners/operations.json" --minimum-tests 1 -- just test --locked -p codex-hepta-operations
+      - name: Test final-use preparation contracts
+        if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-owners/contracts.json" --minimum-tests 1 -- just test --locked -p codex-hepta-contracts
       - name: Test automation package
-        run: cargo test -p codex-hepta-automation
+        if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-owners/automation.json" --minimum-tests 1 -- just test --locked -p codex-hepta-automation
       - name: Test automation qualification profile
-        run: cargo test -p codex-hepta-automation --features taskflow-structural-qualification
+        if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-owners/structural.json" --minimum-tests 1 -- just test --locked -p codex-hepta-automation --features taskflow-structural-qualification
+      - name: Test evidence owner recovery and admission
+        if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-owners/evidence.json" --minimum-tests 1 -- just test --locked -p codex-hepta-evidence
+      - name: Retain early exact-source owner results
+        if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: taskflow-owners-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/taskflow-owners/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Check Agentd and provider transports
+        if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        id: host_compile
+        run: cargo check --locked -p codex-hepta-agentd -p codex-model-provider -p codex-app-server-client
+      - name: Test provider-effect adapter
+        if: ${{ !cancelled() && steps.host_compile.outcome == 'success' }}
+        run: just test --locked -p codex-model-provider --lib
+      - name: Test queue transport pre-send guard
+        if: ${{ !cancelled() && steps.host_compile.outcome == 'success' }}
+        run: just test --locked -p codex-app-server-client --lib -E 'test(remote_send_guard)'
       - name: Test Agentd library
-        run: cargo test -p codex-hepta-agentd --lib
+        if: ${{ !cancelled() && steps.host_compile.outcome == 'success' }}
+        run: just test --locked -p codex-hepta-agentd --lib
+      - name: Strict Automation library lint
+        if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        run: cargo clippy --locked -p codex-hepta-contracts -p codex-hepta-automation --lib --features taskflow-structural-qualification -- -D warnings
+      - name: Apply scoped recovery lint checks
+        if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        run: just fix --locked -p codex-hepta-contracts -p codex-hepta-automation -p codex-hepta-evidence --features taskflow-structural-qualification
+      - name: Verify scoped lint kept the reviewed source
+        if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        run: git diff --exit-code

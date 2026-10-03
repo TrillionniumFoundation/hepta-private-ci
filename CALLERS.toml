@@ -50,6 +50,7 @@ required_boundary_ids = [
   "authority_lease_dispatch_raw",
   "authority_lease_dispatch_witness",
   "final_use_async_dispatch_fence",
+  "final_use_prepared_dispatch_fence",
   "automation_taskflow_provider_effect_bridge",
   "final_use_guarded_effect"
 ]
@@ -518,5 +519,14 @@ symbol = "FinalUseAuthority::with_verified_effect"
 call_pattern = '\bauthority\s*\.\s*with_verified_effect\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect", "enter_verified_effect", "active_dispatches"]
+product_callers = []
+caller_markers = []
+
+[[boundary]]
+id = "final_use_prepared_dispatch_fence"
+symbol = "FinalUseAuthority::with_prepared_verified_use_async"
+call_pattern = '\.\s*with_prepared_verified_use_async\s*\('
+definition_path = "codex-rs/hepta-contracts/src/final_use_async_prepare.rs"
+definition_markers = ["pub async fn with_prepared_verified_use_async", "PreparationEntry", "DispatchEntry"]
 product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
-caller_markers = ["with_verified_effect"]
+caller_markers = ["with_prepared_verified_use_async"]

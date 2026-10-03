@@ -409,8 +409,10 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     let id = enqueue(&store, 1).await.delivery_id;
     // Fill active capacity using copies with independent fixture identities;
     // admission hashing/signatures are exercised separately, not 4096 times.
+    // Spread fixtures over independent issuers: the global capacity case must
+    // not trip the separate 512-active-per-issuer admission bound.
     sqlx::query("WITH RECURSIVE n(x) AS (SELECT 1 UNION ALL SELECT x+1 FROM n WHERE x < 4095)
-        INSERT INTO authbus_outbox SELECT randomblob(32), issuer_id, key_epoch, 'fixture:' || x,
+        INSERT INTO authbus_outbox SELECT randomblob(32), 'fixture:issuer:' || ((x-1) / 512), key_epoch, 'fixture:' || x,
         subject_id, scope_digest, payload_digest, sequence, expires_at_ms, signature, payload,
         state, fence, attempts, worker_id, lease_until_ms, available_at_ms, created_at_ms,
         updated_at_ms, terminal_at_ms, acknowledgement FROM authbus_outbox, n WHERE delivery_id = ?")
@@ -467,6 +469,15 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
         ..issuer
     };
     store.quarantine_authbus_issuer(&revoked).await.unwrap();
+    for bucket in 0..8 {
+        let (mut fixture_issuer, _) = fixture(/*sequence*/ 1, u64::MAX);
+        fixture_issuer.issuer_id = StableId::new(format!("fixture:issuer:{bucket}")).unwrap();
+        fixture_issuer.revoked = true;
+        store
+            .quarantine_authbus_issuer(&fixture_issuer)
+            .await
+            .unwrap();
+    }
     let mut tx = store.pool.begin_with("BEGIN IMMEDIATE").await.unwrap();
     maintain(&mut tx, now_millis().unwrap() + 86_400_001)
         .await
