@@ -1,3 +1,5 @@
+#![cfg(unix)]
+
 use std::fs::OpenOptions;
 #[cfg(unix)]
 use std::path::Path;
