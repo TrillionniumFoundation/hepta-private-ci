@@ -652,6 +652,10 @@ pub enum AgentdMethod {
     NativeModelReceipt {
         request_id: String,
     },
+    SelfIterationRoundStatus {
+        goal_id: String,
+        canonical_policy_digest: String,
+    },
     SecretsConsumeOriginal {
         original_id: String,
         budget_ms: u64,
@@ -843,6 +847,11 @@ pub struct AgentdResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    SelfIterationRoundStatus {
+        goal_id: String,
+        canonical_policy_digest: String,
+        round_status_json: String,
+    },
     SecretsOriginal(SecretsOriginalObservation),
     Capabilities(AgentdCapabilitySet),
     Health(HealthSnapshot),

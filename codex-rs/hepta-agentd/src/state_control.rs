@@ -92,6 +92,13 @@ impl AgentdState {
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
         let payload = match method {
+            crate::AgentdMethod::SelfIterationRoundStatus {
+                goal_id,
+                canonical_policy_digest,
+            } => {
+                self.self_iteration_round_status(goal_id, canonical_policy_digest)
+                    .await?
+            }
             method @ (crate::AgentdMethod::SecretsConsumeOriginal { .. }
             | crate::AgentdMethod::SecretsOriginalStatus { .. }
             | crate::AgentdMethod::SecretsRecoverOriginal { .. }) => {

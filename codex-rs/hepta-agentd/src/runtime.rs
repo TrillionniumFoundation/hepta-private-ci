@@ -98,6 +98,9 @@ pub async fn run(
         ));
     }
     let self_iteration_config = config.take_self_iteration_runtime();
+    let self_iteration_handle = self_iteration_config
+        .as_ref()
+        .map(crate::AgentdSelfIterationRuntimeConfigV1::handle);
     let self_iteration_model_owner = config.take_self_iteration_model_owner();
     let native_model_receipt_reader = config.take_native_model_receipt_reader();
     let iteration_recovery = self_iteration_config
@@ -137,6 +140,11 @@ pub async fn run(
     if let Some(reader) = native_model_receipt_reader {
         state.native_model_receipt_reader.set(reader).map_err(|_| {
             AgentdError::Invalid("original native receipt reader already attached".into())
+        })?;
+    }
+    if let Some(handle) = self_iteration_handle {
+        state.self_iteration_handle.set(handle).map_err(|_| {
+            AgentdError::Invalid("original iteration handle already attached".into())
         })?;
     }
     let plasticity_runtime =

@@ -108,6 +108,7 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
     let response = if matches!(
         &request.method,
         crate::AgentdMethod::NativeModelReceipt { .. }
+            | crate::AgentdMethod::SelfIterationRoundStatus { .. }
     ) && root_peer.is_err()
     {
         error_response(
@@ -115,7 +116,14 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             request.request_id,
             request.spawn_generation,
             "root_peer_required",
-            "native receipt inspection requires the actual Root kernel peer",
+            if matches!(
+                &request.method,
+                crate::AgentdMethod::SelfIterationRoundStatus { .. }
+            ) {
+                "round inspection requires the actual Root kernel peer"
+            } else {
+                "native receipt inspection requires the actual Root kernel peer"
+            },
         )
     } else if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
         error_response(

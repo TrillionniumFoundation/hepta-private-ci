@@ -50,6 +50,9 @@ mod automation_listing;
 
 #[path = "client_native_model_receipt.rs"]
 mod native_model_receipt;
+#[path = "client_self_iteration_round.rs"]
+mod self_iteration_round;
+
 #[path = "client_secrets.rs"]
 mod secrets;
 

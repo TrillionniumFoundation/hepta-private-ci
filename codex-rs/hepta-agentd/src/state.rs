@@ -28,6 +28,9 @@ use crate::RunReceipt;
 mod automation_attachment;
 use automation_attachment::AutomationAttachment;
 
+#[path = "state_self_iteration_round.rs"]
+mod self_iteration_round;
+
 #[path = "state_control.rs"]
 mod control;
 
@@ -48,6 +51,7 @@ pub(crate) struct AgentdState {
     #[cfg(target_os = "linux")]
     pub(crate) secrets_host: std::sync::OnceLock<Arc<crate::secrets_host::AgentdSecretsHost>>,
     pub(crate) retrieval_executor: crate::retrieval_executor::RetrievalExecutor,
+    pub(crate) self_iteration_handle: std::sync::OnceLock<crate::AgentdSelfIterationHandleV1>,
     pub(crate) neuron_runtime_v2: std::sync::OnceLock<Arc<crate::AgentdNeuronRuntimeV2Host>>,
     pub(crate) native_model_receipt_reader:
         std::sync::OnceLock<Arc<dyn crate::AgentdNativeModelReceiptReaderV1>>,
@@ -156,6 +160,7 @@ impl AgentdState {
             intelligence_product: std::sync::OnceLock::new(),
             neuron_runtime_v2: std::sync::OnceLock::new(),
             native_model_receipt_reader: std::sync::OnceLock::new(),
+            self_iteration_handle: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),
@@ -201,7 +206,6 @@ impl AgentdState {
             .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
     }
 
-    /// Borrow the original daemon's bounded product sender after composition.
     pub(crate) fn plasticity_runtime_handle(&self) -> Option<crate::PlasticityRuntimeHandleV1> {
         self.plasticity_runtime.get().map(
             crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::runtime_handle,
