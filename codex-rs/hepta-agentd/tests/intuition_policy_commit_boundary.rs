@@ -290,8 +290,7 @@ fn prepared_decision_rejects_every_changed_host_pin_before_writing() {
                 Digest32::ZERO,
                 Some(decision_evidence.clone()),
             )
-            .err()
-            .expect("every changed host pin must reject before append");
+            .expect_err("every changed host pin must reject before append");
         // Final-use checks report the concrete pin mismatch before the complete
         // host binding check. A deterministic assignment does not consume an RNG
         // owner, but even that pin remains bound to the prepared host identity.

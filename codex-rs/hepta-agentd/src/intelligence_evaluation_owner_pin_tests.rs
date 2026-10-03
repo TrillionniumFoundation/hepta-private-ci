@@ -2,6 +2,7 @@
 
 use super::*;
 use codex_hepta_intelligence::CurrentOwnerStateV1;
+use std::sync::Arc;
 
 #[allow(
     clippy::expect_used,
@@ -87,7 +88,7 @@ async fn evaluator_session_rejects_a_different_snapshot_pin_before_worker_admiss
             )
             .await,
         Err(AgentdIntelligenceProductError::Canonical(
-            CanonicalIntelligenceError::StaleOwner(owner)
+            CanonicalIntelligenceError::KeyDrift(owner)
         )) if owner == id("learning.eval")
     ));
 }
@@ -125,7 +126,40 @@ async fn restoring_manifest_a_cannot_admit_evaluator_b_proof_bound_to_context_a(
     let path = directory.path().join("authority");
     let frontier = value.request.snapshot.revocation_frontier_digest();
     write_authority_file(&path, &b, frontier);
-    let source = FileBackedFreshnessOracleV1::new(path.clone(), authority_verifier());
+    let mut source = FileBackedFreshnessOracleV1::new(path.clone(), authority_verifier());
+    let owner_id = id("learning.eval");
+    let context = compile(value.inputs.context_request.clone()).expect("context A");
+    let legal = build_legal_candidates(value.request.legal_candidates.clone()).expect("legal set");
+    let input = CanonicalPortInputV1 {
+        run_id: value.request.run_id.clone(),
+        objective_digest: value.request.snapshot.objective_digest(),
+        snapshot_digest: value.request.snapshot.digest(),
+        predecessor_digest: context.context_digest,
+        candidate_set_digest: legal.candidate_set_digest,
+        budget_micros: value.request.budget.evaluation_micros,
+        stage: CanonicalStageV1::EvaluationAdmitted,
+    };
+    let candidate = id("action.read");
+    let now = wall_clock_ms().expect("evaluation clock");
+    let mut session = AgentdEvaluationSessionV1 {
+        run_id: value.request.run_id.clone(),
+        current_owner: source.current(&owner_id).expect("signed evaluator B"),
+        trust: Arc::new(trust.clone()),
+        signed: value
+            .inputs
+            .signed_evaluation
+            .clone()
+            .expect("signed proof B"),
+    };
+    // The exact proof is valid for B even though its use binds context A.
+    // Restoring A must reject this proof solely because the owner key differs.
+    assert!(
+        !session
+            .clone()
+            .evaluate(&input, &candidate, now)
+            .expect("B proof bound to context A is valid under owner B")
+            .is_zero()
+    );
     let mut restoring = RestoreManifest {
         oracle: source.snapshot_oracle(),
         path: &path,
@@ -139,12 +173,16 @@ async fn restoring_manifest_a_cannot_admit_evaluator_b_proof_bound_to_context_a(
             &mut restoring,
             &id("learning.eval"),
         ),
-        Err(CanonicalIntelligenceError::StaleOwner(id("learning.eval")))
+        Err(CanonicalIntelligenceError::KeyDrift(id("learning.eval")))
     );
     assert!(restoring.restored);
-    source
-        .validate_snapshot(&value.request.snapshot)
+    session.current_owner = source
+        .current_from_snapshot(&value.request.snapshot, &owner_id)
         .expect("fresh manifest A really matches snapshot A");
+    assert!(matches!(
+        session.evaluate(&input, &candidate, now),
+        Err(AgentdIntelligenceEvaluationError::Binding)
+    ));
     let runner = AgentdIntelligenceProductRunnerV1::new(path, authority_verifier())
         .expect("runner")
         .with_evaluation_trust(trust)
@@ -165,8 +203,11 @@ async fn restoring_manifest_a_cannot_admit_evaluator_b_proof_bound_to_context_a(
         Err(AgentdIntelligenceProductError::Canonical(
             CanonicalIntelligenceError::PortFailure {
                 stage: CanonicalStageV1::EvaluationAdmitted,
-                ..
+                class: CanonicalPortFailureClassV1::Rejected,
+                evidence_digest,
             }
-        ))
+        )) if evidence_digest == digest(
+            "hepta.agentd.intelligence.owner-failure.v1:EvaluationAdmitted:signed evaluation binding or evidence"
+        )
     ));
 }
