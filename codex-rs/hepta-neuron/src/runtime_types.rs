@@ -446,6 +446,19 @@ impl From<io::Error> for WitnessStoreError {
 /// must authenticate scope/generation and make compare-and-swap durable before
 /// returning success.
 pub trait AnchorWitnessStore {
+    /// Actual original fresh file facts; unsupported witnesses stay unknown.
+    fn observe_fresh_prepared_v2(
+        &self,
+    ) -> Result<
+        (
+            crate::NeuronWitnessContextV2,
+            crate::NeuronPreparedFileObservationV2,
+        ),
+        WitnessStoreError,
+    > {
+        Err(WitnessStoreError::Unavailable)
+    }
+
     /// Optional local diagnostics. None means unmeasured, not zero I/O.
     fn io_metrics(&self) -> Option<crate::NeuronIoMetricsV2> {
         None

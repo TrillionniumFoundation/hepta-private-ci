@@ -1031,3 +1031,7 @@ mod decision_cell_control_port_tests;
 
 #[path = "runtime_v2_archive_tests.rs"]
 mod archive_tests;
+
+#[cfg(unix)]
+#[path = "runtime_v2_prepared_tests.rs"]
+mod prepared_tests;

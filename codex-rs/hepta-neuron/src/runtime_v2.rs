@@ -1012,3 +1012,8 @@ fn write_amplification(
 #[cfg(test)]
 #[path = "runtime_v2_tests.rs"]
 mod tests;
+
+#[path = "runtime_v2_prepared.rs"]
+mod prepared;
+pub use prepared::MAX_NEURON_PREPARED_GENERATION_BYTES_V2;
+pub use prepared::NeuronPreparedGenerationV2;

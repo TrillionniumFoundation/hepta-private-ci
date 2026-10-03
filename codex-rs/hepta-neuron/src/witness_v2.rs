@@ -275,6 +275,18 @@ impl FileNeuronWitnessStoreV2 {
 }
 
 impl AnchorWitnessStore for FileNeuronWitnessStoreV2 {
+    fn observe_fresh_prepared_v2(
+        &self,
+    ) -> Result<
+        (
+            NeuronWitnessContextV2,
+            crate::NeuronPreparedFileObservationV2,
+        ),
+        WitnessStoreError,
+    > {
+        self.observe_fresh_prepared_file_v2()
+    }
+
     fn io_metrics(&self) -> Option<crate::NeuronIoMetricsV2> {
         Some(self.file.metrics())
     }
@@ -492,3 +504,5 @@ fn sync_parent_directory(_path: &Path) -> Result<(), WitnessStoreError> {
 #[cfg(test)]
 #[path = "witness_v2_tests.rs"]
 mod tests;
+
+include!("witness_v2_prepared.rs");

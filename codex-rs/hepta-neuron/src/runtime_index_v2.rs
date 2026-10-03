@@ -940,3 +940,5 @@ fn sync_parent_directory(_path: &Path) -> Result<(), NeuronRuntimeIndexError> {
 #[cfg(test)]
 #[path = "runtime_index_v2_tests.rs"]
 mod tests;
+
+include!("runtime_index_v2_prepared.rs");

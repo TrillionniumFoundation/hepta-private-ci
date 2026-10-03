@@ -71,6 +71,10 @@ impl MeasuredFileV2 {
         Ok(())
     }
 
+    pub(crate) fn path_for_prepared_v2(&self) -> &Path {
+        &self.path
+    }
+
     pub(crate) fn metrics(&self) -> NeuronIoMetricsV2 {
         self.metrics.get()
     }

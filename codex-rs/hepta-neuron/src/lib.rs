@@ -382,3 +382,8 @@ mod tests;
 #[cfg(test)]
 #[path = "generation_store_v2_process_tests.rs"]
 mod generation_store_v2_process_tests;
+
+mod runtime_prepared_file_v2;
+pub use runtime_prepared_file_v2::NeuronPreparedFileObservationV2;
+pub use runtime_v2::MAX_NEURON_PREPARED_GENERATION_BYTES_V2;
+pub use runtime_v2::NeuronPreparedGenerationV2;

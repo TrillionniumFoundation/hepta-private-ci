@@ -1248,3 +1248,5 @@ fn sync_parent_directory(_path: &Path) -> Result<(), GenerationStoreError> {
 #[cfg(test)]
 #[path = "generation_store_v2_tests.rs"]
 mod tests;
+
+include!("generation_store_v2_prepared.rs");
