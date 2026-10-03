@@ -28,6 +28,7 @@ fn actual_root_public_configuration_is_readable_but_effect_slot_stays_private() 
     let root = tempfile::Builder::new()
         .prefix("hepta-public-config-")
         .tempdir_in("/run")?;
+    std::fs::set_permissions(root.path(), std::fs::Permissions::from_mode(0o700))?;
     let public = root.path().join("public");
     std::fs::create_dir(&public)?;
     std::fs::set_permissions(&public, std::fs::Permissions::from_mode(0o755))?;
@@ -61,9 +62,19 @@ fn actual_root_public_configuration_is_readable_but_effect_slot_stays_private() 
     file.write_all(b"private original effect receipt")?;
     file.sync_all()?;
     let before = std::fs::metadata(&private)?;
+    // /run is mounted noexec on the actual installed host. Keep data there,
+    // while the same immutable test program lives on a Root-controlled exec FS.
+    let executable_directory = tempfile::Builder::new()
+        .prefix("hepta-public-config-program-")
+        .tempdir_in("/var/lib")?;
+    std::fs::set_permissions(executable_directory.path(), std::fs::Permissions::from_mode(0o755))?;
+    let executable = executable_directory.path().join("original-test-elf");
+    std::fs::copy(std::env::current_exe()?, &executable)?;
+    std::fs::set_permissions(&executable, std::fs::Permissions::from_mode(0o555))?;
+    ensure!(Digest32::of_bytes(&std::fs::read(&executable)?) == Digest32::of_bytes(&std::fs::read(std::env::current_exe()?)?), "same original program bytes");
     let status = Command::new("/usr/bin/setpriv")
         .args(["--reuid=65534", "--regid=65534", "--clear-groups", "--no-new-privs", "--inh-caps=-all", "--bounding-set=-all", "--ambient-caps=-all"])
-        .arg(std::env::current_exe()?)
+        .arg(&executable)
         .args(["--ignored", "--exact", "root_frozen_generator::independent_owners::roles::publication::public_sources::tests::actual_root_public_configuration_is_readable_but_effect_slot_stays_private", "--nocapture"])
         .env_clear().env(CHILD, "1").env("HEPTA_PUBLIC_CONFIG", &source.path).env("HEPTA_PRIVATE_EFFECT", &private)
         .status()?;

@@ -143,7 +143,7 @@ fn actual_root_generator_preserves_enrolled_group_at_process_boundary() -> Resul
         .duration_since(std::time::UNIX_EPOCH)?
         .as_nanos();
     let root = OriginalFixtureDirectory(PathBuf::from(format!(
-        "/run/hepta-g-group-{}-{stamp}",
+        "/var/lib/hepta-g-group-{}-{stamp}",
         std::process::id()
     )));
     std::fs::create_dir(&root.0)?;
