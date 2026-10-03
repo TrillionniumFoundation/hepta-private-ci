@@ -220,10 +220,6 @@ pub use review_host::FixedCalibrationCutV1;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::FixedCalibrationPublicationV1;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
-pub use review_host::PrincipalWire;
-#[cfg(all(target_os = "linux", feature = "review-host"))]
-pub use review_host::ReviewDatasetWireV1;
-#[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::ReviewEvidenceWireV1;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::ReviewSignerWireV1;
@@ -253,3 +249,17 @@ mod review_input;
 pub use review_input::open_root_review_input;
 #[cfg(target_os = "linux")]
 pub use review_input::read_root_review_input;
+mod public_principal_wire_v1;
+#[cfg(not(all(target_os = "linux", feature = "review-host")))]
+pub use public_principal_wire_v1::PrincipalWire;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::PrincipalWire;
+mod public_dataset_wire_v1;
+#[cfg(not(all(target_os = "linux", feature = "review-host")))]
+pub use public_dataset_wire_v1::ReviewDatasetWireV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::ReviewDatasetWireV1;
+
+#[cfg(test)]
+#[path = "public_dataset_wire_v1_tests.rs"]
+mod public_dataset_wire_v1_tests;
