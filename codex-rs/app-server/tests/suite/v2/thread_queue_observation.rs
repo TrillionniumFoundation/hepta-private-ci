@@ -12,12 +12,13 @@ use codex_app_server_protocol::ThreadSource;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 
-async fn observed_fixture() -> Result<(TestAppServer, TempDir, MockServer, ThreadQueueObserveParams)>
-{
-    let (mut app, home, server) = queue_app(vec![create_final_assistant_message_sse_response(
-        "original reply",
-    )?])
-    .await?;
+async fn observed_fixture(
+    model_turns: usize,
+) -> Result<(TestAppServer, TempDir, MockServer, ThreadQueueObserveParams)> {
+    let responses = (0..model_turns)
+        .map(|_| create_final_assistant_message_sse_response("original reply"))
+        .collect::<Result<Vec<_>>>()?;
+    let (mut app, home, server) = queue_app(responses).await?;
     let cwd = AbsolutePathBuf::from_absolute_path(home.path())?;
     let project: ProjectCreateResponse = app
         .request(|request_id| ClientRequest::ProjectCreate {
@@ -34,6 +35,7 @@ async fn observed_fixture() -> Result<(TestAppServer, TempDir, MockServer, Threa
         .start_thread(ThreadStartParams {
             cwd: Some(cwd.as_path().to_string_lossy().into_owned()),
             project_id: Some(project.project.id.clone()),
+            history_mode: Some(codex_app_server_protocol::ThreadHistoryMode::Paginated),
             thread_source: Some(ThreadSource::Feature("hepta-ui-chat".into())),
             ..Default::default()
         })
@@ -74,6 +76,40 @@ async fn observed_fixture() -> Result<(TestAppServer, TempDir, MockServer, Threa
         },
     ))
 }
+// Match the original protected Send producer: atomically identify the request
+// through QueueReconcile rather than the legacy unbound QueueAdd path.
+async fn bound_queue_item(
+    app: &mut TestAppServer,
+    params: ThreadQueueAddParams,
+) -> Result<QueuedSubmission> {
+    let digest = user_input_payload_sha256(
+        &params
+            .input
+            .clone()
+            .into_iter()
+            .map(UserInput::into_core)
+            .collect::<Vec<_>>(),
+    )?;
+    let response: ThreadQueueReconcileResponse = app
+        .request(|request_id| ClientRequest::ThreadQueueReconcile {
+            request_id,
+            params: ThreadQueueReconcileParams {
+                thread_id: params.thread_id,
+                input: params.input,
+                client_user_message_id: params.client_user_message_id,
+                expected_payload_sha256: digest,
+                mode: ThreadQueueReconcileMode::AllowIfAbsent,
+            },
+        })
+        .await?;
+    let ThreadQueueReconcileOutcome::Queued {
+        queued_submission, ..
+    } = response.outcome
+    else {
+        anyhow::bail!("original protected Send did not bind the queued item");
+    };
+    Ok(queued_submission)
+}
 async fn observe(
     app: &mut TestAppServer,
     params: ThreadQueueObserveParams,
@@ -92,8 +128,8 @@ async fn loaded(app: &mut TestAppServer) -> Result<ThreadLoadedListResponse> {
 #[tokio::test]
 async fn cold_observation_retains_pending_and_missing_without_loading_or_dispatching() -> Result<()>
 {
-    let (mut app, home, server, params) = observed_fixture().await?;
-    let queued = queue_item(
+    let (mut app, home, server, params) = observed_fixture(1).await?;
+    let queued = bound_queue_item(
         &mut app,
         ThreadQueueAddParams {
             thread_id: params.thread_id.clone(),
@@ -144,8 +180,8 @@ async fn cold_observation_retains_pending_and_missing_without_loading_or_dispatc
 #[tokio::test]
 async fn observation_rejects_changed_scope_and_payload_without_repairing_or_loading() -> Result<()>
 {
-    let (mut app, home, _server, params) = observed_fixture().await?;
-    queue_item(
+    let (mut app, home, _server, params) = observed_fixture(1).await?;
+    bound_queue_item(
         &mut app,
         ThreadQueueAddParams {
             thread_id: params.thread_id.clone(),
@@ -194,8 +230,8 @@ async fn observation_rejects_changed_scope_and_payload_without_repairing_or_load
 
 #[tokio::test]
 async fn cold_observation_reads_cancelled_identity_without_resubmission() -> Result<()> {
-    let (mut app, home, _server, params) = observed_fixture().await?;
-    let queued = queue_item(
+    let (mut app, home, _server, params) = observed_fixture(1).await?;
+    let queued = bound_queue_item(
         &mut app,
         ThreadQueueAddParams {
             thread_id: params.thread_id.clone(),
@@ -241,7 +277,7 @@ async fn cold_observation_reads_cancelled_identity_without_resubmission() -> Res
 
 #[tokio::test]
 async fn cold_observation_reads_the_exact_persisted_turn_without_resuming_it() -> Result<()> {
-    let (mut app, home, server, params) = observed_fixture().await?;
+    let (mut app, home, server, params) = observed_fixture(2).await?;
     let _: ThreadResumeResponse = app
         .request(|request_id| ClientRequest::ThreadResume {
             request_id,
@@ -251,7 +287,7 @@ async fn cold_observation_reads_the_exact_persisted_turn_without_resuming_it() -
             },
         })
         .await?;
-    let _queued = queue_item(
+    let _queued = bound_queue_item(
         &mut app,
         ThreadQueueAddParams {
             thread_id: params.thread_id.clone(),

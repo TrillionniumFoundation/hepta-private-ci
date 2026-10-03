@@ -28,7 +28,7 @@ enum ProjectSelection {
 impl ProjectSelection {
     fn validate(&self) -> Result<()> {
         match self {
-            (Self::Existing(id) | Self::ObservedExisting(id)) if identifier(id) => Ok(()),
+            Self::Existing(id) | Self::ObservedExisting(id) if identifier(id) => Ok(()),
             Self::Managed(project) | Self::ObservedManaged(project) => project.validate(),
             _ => Err(invalid("invalid project")),
         }
