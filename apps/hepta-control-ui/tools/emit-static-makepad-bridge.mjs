@@ -21,6 +21,21 @@ const code=readBridgeSchema(this.memory,ptr,ptr=>this.wasm_msg_free(ptr));
 if(code!==expectedBridgeCode)throw new Error("Makepad bridge schema mismatch");
 this.msg_class=createMessageClasses(ToWasmMsg,FromWasmMsg);
 }`;
+const RESERVE_PREFIX = `reserve_u32(u32_capacity){
+let app=this.app;
+this.u32_needed_capacity+=u32_capacity;`;
+
+/** Direct Rust callbacks can grow memory before a queued message is encoded. */
+export function patchMessageMemoryRefresh(source) {
+  if (source.split(RESERVE_PREFIX).length !== 2) {
+    throw new Error('Unexpected pristine Makepad message reserve shape; refusing to patch');
+  }
+  return source.replace(RESERVE_PREFIX, `reserve_u32(u32_capacity){
+let app=this.app;
+app.update_array_buffer_refs();
+this.u32_needed_capacity+=u32_capacity;`);
+}
+
 const sha256 = bytes => createHash('sha256').update(bytes).digest('hex');
 
 // Used unchanged during extraction and by the generated static browser module.
@@ -153,7 +168,7 @@ export async function emitStaticBridge(packageDir) {
     input: staticModule, encoding: 'utf8', timeout: 5000, maxBuffer: 1024 * 1024,
   });
   const bridge = `import {createMessageClasses,expectedBridgeCode,readBridgeSchema} from './static-message-bridge.js';\n`
-    + originalBridge.replace(ORIGINAL_METHOD, STATIC_METHOD);
+    + patchMessageMemoryRefresh(originalBridge).replace(ORIGINAL_METHOD, STATIC_METHOD);
   if (/\b(?:eval\s*\(|new\s+Function\s*\()/.test(bridge)) throw new Error('Dynamic evaluation survived bridge packaging');
   await writeFile(join(packageDir, MODULE_PATH), staticModule);
   await writeFile(join(packageDir, BRIDGE_PATH), bridge);
@@ -161,6 +176,8 @@ export async function emitStaticBridge(packageDir) {
     wasmFile, wasmSha256: sha256(bytes), schemaSha256: sha256(code), schemaCodeUnits: code.length,
     bridgePath: BRIDGE_PATH, originalBridgeSha256: sha256(originalBridge), packagedBridgeSha256: sha256(bridge),
     staticModulePath: MODULE_PATH, staticModuleSha256: sha256(staticModule), imports,
+    memoryViewRefresh: 'reserve-u32-before-header',
+
   };
 }
 

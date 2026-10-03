@@ -125,6 +125,7 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
                 if name == id!(send_status_indicator)
                     || name == id!(cannot_send_notice)
                     || name == id!(preview)
+                    || name == id!(presentation_note)
                 {
                     muted
                 } else {
@@ -158,6 +159,11 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
                 draw_text +: {color: #(muted) color_active: #(text)}
             });
         } else if widget
+            .borrow::<crate::robrix::home::MainDesktopUI>()
+            .is_some()
+        {
+            script_apply_eval!(cx,widget,{draw_bg +: {color: #(panel)}});
+        } else if widget
             .borrow::<crate::robrix::rooms::RoomsSideBar>()
             .is_some()
         {
@@ -167,8 +173,6 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
             .is_some()
         {
             script_apply_eval!(cx,widget,{draw_bg +: {color_hover: #(surface) color_selected: #(selected) color_selected_hover: #(selected)}});
-        } else if widget.borrow::<Splitter>().is_some() {
-            script_apply_eval!(cx,widget,{draw_bg +: {color: #(border) color_hover: #(accent) color_drag: #(accent)}});
         } else if widget.borrow::<Dock>().is_some() {
             let width = match theme {
                 VisualTheme::ObsidianIce => 300.0,

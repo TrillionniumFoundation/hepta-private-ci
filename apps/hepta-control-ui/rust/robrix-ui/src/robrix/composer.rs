@@ -39,6 +39,7 @@ script_mod! {
     }
     send_message_button := mod.widgets.SendButton {
      enabled: false text: "Send"
+     animator.disabled.default: @on
      margin: Inset{top: 4, left: 8, right: 6, bottom: 6}
     }
    }
@@ -46,7 +47,7 @@ script_mod! {
   cannot_send_notice := Label {
    width: Fill height: Fit flow: Flow.Right{wrap: true}
    padding: Inset{left: 14, right: 14, top: 0, bottom: 8} draw_text +: {color: TIMESTAMP_TEXT_COLOR text_style: theme.font_regular{font_size: 9}}
-   text: "Sending unavailable: no authenticated chat owner is configured. Draft stays local."
+   text: "Local draft · chat owner unavailable"
   }
  }
 }

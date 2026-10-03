@@ -256,7 +256,7 @@ jobs:
         run: |
           npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
           npm run build --prefix apps/hepta-control-ui
-          node --test apps/hepta-control-ui/test/makepad-font-patch.test.mjs apps/hepta-control-ui/test/makepad-instance-layout.test.mjs apps/hepta-control-ui/test/makepad-ime-bridge.test.mjs
+          node --test apps/hepta-control-ui/test/makepad-font-patch.test.mjs apps/hepta-control-ui/test/makepad-instance-layout.test.mjs apps/hepta-control-ui/test/makepad-ime-bridge.test.mjs apps/hepta-control-ui/test/makepad-network-memory.test.mjs
           python3 apps/hepta-control-ui/test/check-makepad-ime-dto.py
           cd apps/hepta-control-ui
           npx playwright install --with-deps chromium firefox webkit

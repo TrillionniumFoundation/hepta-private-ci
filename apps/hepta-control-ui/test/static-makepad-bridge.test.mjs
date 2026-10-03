@@ -15,7 +15,12 @@ FromWasmMsg:class extends FromWasmMsg{
 7(){this.app.received=this.app.value;}
 }
 }`;
-const pristine = `export class ToWasmMsg{constructor(app){this.app=app;}}
+const pristine = `export class ToWasmMsg{constructor(app){this.app=app;}
+reserve_u32(u32_capacity){
+let app=this.app;
+this.u32_needed_capacity+=u32_capacity;
+}
+}
 export class FromWasmMsg{constructor(app){this.app=app;}}
 export class WasmBridge{
 create_js_message_bridge(wasm_app){

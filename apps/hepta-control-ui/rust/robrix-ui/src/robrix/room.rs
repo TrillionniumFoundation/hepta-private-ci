@@ -30,15 +30,15 @@ script_mod! {
     width: Fill height: Fit flow: Down padding: 0
     show_bg: false draw_bg +: {color: COLOR_SECONDARY border_radius: 12 border_size: 1 border_color: COLOR_BORDER}
     username := Label {
-     width: Fill max_lines: 1 text_overflow: Ellipsis
+     width: Fill padding: 0 max_lines: 1 text_overflow: Ellipsis
      margin: Inset{bottom: 5, top: 0, right: 10}
      draw_text +: {text_style: USERNAME_TEXT_STYLE {} color: COLOR_TEXT}
     }
     message := Label {
-     width: Fill height: Fit flow: Flow.Right{wrap: true}
+     width: Fill height: Fit padding: 0 flow: Flow.Right{wrap: true}
      draw_text +: {text_style: MESSAGE_TEXT_STYLE {} color: COLOR_TEXT}
     }
-    send_status_indicator := Label {width: Fill draw_text.color: TIMESTAMP_TEXT_COLOR}
+    send_status_indicator := Label {width: Fill padding: Inset{top: 4} draw_text.color: TIMESTAMP_TEXT_COLOR}
    }
   }
  }
@@ -54,8 +54,12 @@ script_mod! {
  }
  mod.widgets.RoomScreen = #(RoomScreen::register_widget(vm)) {
   width: Fill height: Fill cursor: MouseCursor.Default flow: Down spacing: 0
-  presentation_note := Label {visible: false width: Fill height: Fit padding: Inset{left: 20, right: 20, top: 2, bottom: 6} flow: Flow.Right{wrap:true} draw_text.color: COLOR_TEXT}
-  room_actions := Label {width: Fill height: Fit padding: Inset{left: 20, right: 20, top: 6, bottom: 8} text: "New conversation" draw_text.color: COLOR_TEXT}
+  conversation_header := View {
+   width: Fill height: Fit flow: Right align: Align{y: 0.5} spacing: 14
+   padding: Inset{left: 20, right: 20, top: 5, bottom: 8}
+   room_actions := Label {width: Fit{max: FitBound.Abs(240)} height: Fit padding: 0 max_lines: 1 text_overflow: Ellipsis text: "New conversation" draw_text.color: COLOR_TEXT}
+   presentation_note := Label {visible: false width: Fill height: Fit padding: 0 flow: Flow.Right{wrap:true} draw_text.color: TIMESTAMP_TEXT_COLOR}
+  }
   room_screen_wrapper := SolidView {
    width: Fill height: Fill flow: Overlay
    draw_bg +: {color: COLOR_PRIMARY_DARKER accent: uniform(COLOR_ROBRIX_PURPLE) secondary: uniform(COLOR_AURORA_CORAL)

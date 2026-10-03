@@ -48,7 +48,14 @@ font transfers. The pinned wasm32 DrawVars ABI had four bytes of tail padding
 between dynamic and native shader fields; a separate exact-hash platform patch
 moves that padding before the array without changing native layout or capacity.
 Actual-type offset/slice probes and screenshot OCR are necessary regressions,
-not full visual approval. Actual browser/native visual acceptance, keyboard/IME,
+not full visual approval. A later intermittent large-font failure was reproduced
+with the actual WASM HTTP callback: its body allocation grew memory, detaching
+JavaScript views before the next signal message was serialized. The owned
+packaging helper now refreshes those views at `ToWasmMsg.reserve_u32`, before
+reading the capacity header. The change is exact-shape checked, recorded in the
+bridge manifest and preserves the strict static schema/CSP path. This repairs a
+platform message boundary; new actual-browser glyph checks still decide whether
+the product rendering is qualified. Actual browser/native visual acceptance, keyboard/IME,
 assistive technology, light-theme parity and mobile Web input remain unqualified.
 The pinned framework disables mobile Safari/Android keyboard binding; this is a
 real implementation gap, not a supported mobile-chat claim.

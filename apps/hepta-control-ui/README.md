@@ -26,25 +26,37 @@ JavaScript is framework boot/render/input glue.
 
 ## Current status
 
-The adaptation is in progress. Widget state/actions are still being connected.
-The production principal/signer bridge is absent, so local drafts are not live
-chat and Send must remain unavailable with an explanation. Console currently
-contains a placeholder; operational controls have not been ported into this host.
+The shared chat widgets consume the bounded Rust workspace and preserve its
+room/principal action fences. The production principal/signer bridge is absent,
+so local drafts are not live chat and Send remains disabled. Console identifies
+its unported operational controls; the tab is not functional parity with the
+retained native Console implementation.
 
-Latest reported checks on 2026-10-02:
+Latest observed checks on 2026-10-03:
 
-- Standard `wasm32-unknown-unknown` Rust check passed
-- Twelve presentation-only tests passed with the Makepad UI feature disabled
-- Native check is blocked by missing Wayland development metadata; installation
-  attempts were denied by filesystem/root permissions
-- The unsupported WASM clock call was repaired by a recorded, isolated platform
-  patch; the corrected artifact starts and yields its actual bridge schema
-- Static bridge emission and 17 targeted helper tests passed. An actual-artifact
-  check constructed the generated classes and encoded/freed a message. The
-  packaged bridge checks schema equality without runtime JavaScript evaluation
-- Earlier no-threads packaging succeeded; fresh final package/build verification
-  and browser checks are pending
-- Native rendering and successful packaged browser startup remain unvalidated
+- Standard WASM checks, pinned no-threads release packaging, and the strict-CSP
+  static bridge build have passed. Native display/OS qualification is still
+  blocked; the cloud native check lacked Wayland development metadata
+- Exact-head and prospective-merge Rust compatibility passed at `24472794`.
+  [Its actual Makepad browser run](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/37104412555)
+  failed and remains failed evidence. Chromium/Firefox produced all three
+  default theme screenshots without application script errors; this does not
+  qualify the populated timeline, CJK/emoji pixels or WebKit presentation
+- Runtime-used widgets now include the real three-theme selector, role-aware
+  message layout and shared desktop/narrow editor instances. Fresh source
+  `7c568089` adds scroll/reflow separation, a disabled circular send control,
+  viewport overflow regression and fixture-only resource lifecycle diagnostics
+- Thirteen projection tests and eighteen static-bridge/pixel regressions passed
+  locally for that source. Browser wheel/resize/Jump and font lifecycle checks
+  require fresh actual-host results; model probes do not qualify pixels
+- The initial glyph-block defect was traced to WASM instance-layout padding and
+  repaired with exact-type regressions. CJK/emoji rendering remains intermittent:
+  valid font bytes, fallback and raster probes pass. An actual-WASM callback
+  regression traced missing delivery signals to detached JavaScript views after
+  large-body memory growth. The packaging fix refreshes views before each message;
+  fresh browser pixels remain required. The current browser gate stays strict
+- Real OS input methods, assistive technology, native rendering, mobile Web
+  keyboard support, live chat composition and font redistribution are unqualified
 
 These are intermediate results, not product or release completion. Existing
 Console/DOM/egui test receipts and CPU fixtures do not qualify this new host.

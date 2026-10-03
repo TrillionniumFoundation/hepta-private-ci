@@ -15,16 +15,15 @@ script_mod! {
         // max_vertical: theme.splitter_max_vertical
 
         draw_bg +: {
-            color: COLOR_SECONDARY
+            color: #0000
             color_hover: COLOR_ROBRIX_PURPLE
             color_drag: COLOR_ROBRIX_PURPLE
 
             pixel: fn() {
                 let sdf = Sdf2d.viewport(self.pos * self.rect_size)
 
-                // Body: dark gray by default (matches the default dark theme's
-                // `color_bg_app`), transitions to purple on hover/drag.
-                // Mildly rounded corners soften the edges where panels meet.
+                // Resting divider reveals the shared themed desktop surface.
+                // Keep the actual splitter's hover/drag affordance visible.
                 let body_color = mix(
                     self.color
                     mix(self.color_hover, self.color_drag, self.drag)

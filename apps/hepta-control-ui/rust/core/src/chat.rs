@@ -132,9 +132,7 @@ impl ChatWorkspace {
             .owner
             .require_capability(ChatCapability::SubmitSignedText, now_ms)
         {
-            Err(ChatOwnerError::Unavailable) => {
-                "Authenticated chat owner is unavailable; draft remains local"
-            }
+            Err(ChatOwnerError::Unavailable) => "Local draft · chat owner unavailable",
             Err(ChatOwnerError::Expired) => {
                 "Chat owner session expired; re-authentication is required"
             }

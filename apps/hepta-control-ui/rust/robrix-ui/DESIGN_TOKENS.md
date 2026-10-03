@@ -25,7 +25,7 @@ cross-reload preference persistence is not implemented.
 
 Lunar Titanium also uses the separately generated, UI-free landscape in
 `resources/lunar-titanium.png`, bound by `resources/ASSETS.json`. A Rust Image
-layer renders it behind the conversation with Cover fitting and a small
+layer renders it behind the conversation with the pinned `ImageFit.CropToFill` mode and a small
 rightward focal offset. It is hidden in the other themes. Message surfaces
 protect foreground contrast. The original complete design mockups are never
 used as application backgrounds.
@@ -38,7 +38,7 @@ and Console. The theme selector is available in both layouts.
 Typography uses 12 pt body and author text (approximately 16 CSS px), with
 explicit IBM Plex, LXGW CJK and emoji fallback chains. Identity marks are code
 drawn initials in 36 px framed avatars. Search is 40 px high; the composer has a
-64 px editor, separate status text and outside margins. Fine SDF outlines and a
+52 px editor, a compact truthful status line and outside margins. Fine SDF outlines and a
 bounded shader gradient supply material depth without rendering fake telemetry.
 
 Theme changes recolour existing widget instances and adjust the existing Dock

@@ -220,9 +220,6 @@ impl Widget for RoomsSideBar {
         };
         let Some(source) = self.rendered else { return };
         if let Event::Actions(actions) = event {
-            if self.view.button(cx, ids!(theme_switch)).clicked(actions) && !workspace.composing {
-                crate::visual_theme::cycle(cx);
-            }
             if self.view.button(cx, ids!(new_draft)).clicked(actions) {
                 apply_action(
                     workspace,

@@ -10,7 +10,7 @@ script_mod! {
  use mod.prelude.widgets.*
  use mod.widgets.*
  mod.widgets.MainDesktopUI = #(MainDesktopUI::register_widget(vm)) {
-  flow: Right
+  flow: Right show_bg: true draw_bg.color: COLOR_PRIMARY
   rail := SolidView {
    width: 64 height: Fill flow: Down spacing: 16 padding: 8 draw_bg.color: COLOR_PRIMARY
    brand_mark := mod.widgets.HeptaMark {}
@@ -78,6 +78,8 @@ pub struct HomeScreen {
     view: View,
     #[rust]
     rendered: Option<RoomKey>,
+    #[rust]
+    theme_return_focus: Option<(RoomKey, Area)>,
 }
 impl ScriptHook for HomeScreen {
     fn on_after_new(&mut self, vm: &mut ScriptVm) {
@@ -96,19 +98,50 @@ impl ScriptHook for HomeScreen {
 }
 impl Widget for HomeScreen {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        if let Event::MouseDown(mouse) = event {
+            self.theme_return_focus = None;
+            let focus = cx.key_focus();
+            let editor = self.view.text_input(cx, ids!(message_input)).area();
+            let search = self.view.text_input(cx, ids!(room_filter)).area();
+            let on_theme = [ids!(theme_switch), ids!(mobile_theme_switch)]
+                .into_iter()
+                .any(|id| {
+                    let area = self.view.button(cx, id).area();
+                    area.is_valid(cx) && area.rect(cx).contains(mouse.abs)
+                });
+            if on_theme
+                && focus.is_valid(cx)
+                && (focus == editor || focus == search)
+                && let Some(key) = self.rendered
+            {
+                self.theme_return_focus = Some((key, focus));
+            }
+        } else if matches!(event, Event::KeyDown(_)) {
+            // A keyboard-activated theme control keeps its own navigation focus.
+            self.theme_return_focus = None;
+        }
         self.view.handle_event(cx, event, scope);
         let Some(workspace) = scope.data.get_mut::<ChatWorkspace>() else {
             return;
         };
         let Some(source) = self.rendered else { return };
         if let Event::Actions(actions) = event {
-            if self
+            if (self
                 .view
                 .button(cx, ids!(mobile_theme_switch))
                 .clicked(actions)
+                || self.view.button(cx, ids!(theme_switch)).clicked(actions))
                 && !workspace.composing
             {
                 crate::visual_theme::cycle(cx);
+                if let Some((key, focus)) = self.theme_return_focus.take()
+                    && key == source
+                    && key.epoch == workspace.presentation_epoch()
+                    && key.local_id == workspace.active_id()
+                    && focus.is_valid(cx)
+                {
+                    cx.set_key_focus(focus);
+                }
             }
             let command = if self.view.button(cx, ids!(conversations)).clicked(actions) {
                 Some(PresentationCommand::SetNavigationOpen(true))

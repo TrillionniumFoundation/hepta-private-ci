@@ -84,8 +84,8 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
       expect.soft(chinese.replace(/\s+/g,''),'Actual fixture Chinese must render recognizable glyphs').toMatch(/中文输入|键盘焦点|滚动位置/);
      }
      const ordinals=[...text.matchAll(/Fixture\s*(\d{1,3})\b/gi)].map(match=>Number(match[1]));
-     expect(ordinals.length,'At least two real fixture messages must be visible').toBeGreaterThanOrEqual(2);
-     expect(ordinals,'Rendered owner order must remain oldest to newest').toEqual([...ordinals].sort((a,b)=>a-b));
+     expect.soft(ordinals.length,'At least two real fixture messages must be visible').toBeGreaterThanOrEqual(2);
+     expect.soft(ordinals,'Rendered owner order must remain oldest to newest').toEqual([...ordinals].sort((a,b)=>a-b));
     }
    }
    await assertApplicationHealth(expect.soft);
@@ -134,9 +134,9 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     await page.keyboard.type(' kept');
    }
    captured=await capture('robrix-theme-round-trip');
-   expect(captured.text).toMatch(/Aurora/i);
+   expect.soft(captured.text).toMatch(/Aurora/i);
    expect(captured.text).toMatch(/Theme round trip draft/i);
-   expect(captured.text).toMatch(/kept/i);
+   expect.soft(captured.text).toMatch(/kept/i);
    await clickRenderedWord(captured,'Console',{topOnly:true});
    const consoleCapture=await capture('robrix-console',{consoleView:true});
    await clickRenderedWord(consoleCapture,page.viewportSize().width<760?'Chat':'Conversation',{topOnly:true});
