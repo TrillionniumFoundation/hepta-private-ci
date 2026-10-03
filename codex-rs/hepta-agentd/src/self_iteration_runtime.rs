@@ -33,6 +33,17 @@ enum Command {
         SelfIterationModelAssessmentV1,
         oneshot::Sender<Result<(), AgentdError>>,
     ),
+    BeginCandidateEffects(
+        AgentdSelfIterationRoundV1,
+        SelfIterationModelAssessmentV1,
+        oneshot::Sender<Result<AgentdSelfIterationCandidateConstructionAdmissionV1, AgentdError>>,
+    ),
+    RejectProposal(
+        AgentdSelfIterationRoundV1,
+        SelfIterationModelAssessmentV1,
+        AgentdSelfIterationProposalRejectionV1,
+        oneshot::Sender<Result<(), AgentdError>>,
+    ),
     Freeze(Box<AgentdSelfIterationCandidateV1>, Response),
     Evaluate(Digest32, Box<AgentdSignedEvaluationV1>, Response),
     Select(Digest32, SignedLearningEvidenceV1, Response),
@@ -65,6 +76,12 @@ impl Command {
             Self::Complete(_, _, _, response) => {
                 let _ = response.send(Err(error));
             }
+            Self::BeginCandidateEffects(_, _, response) => {
+                let _ = response.send(Err(error));
+            }
+            Self::RejectProposal(_, _, _, response) => {
+                let _ = response.send(Err(error));
+            }
         }
     }
 }
@@ -76,6 +93,23 @@ pub struct AgentdSelfIterationHandleV1 {
     sender: mpsc::Sender<Command>,
 }
 impl AgentdSelfIterationHandleV1 {
+    #[cfg(test)]
+    pub(in crate::self_iteration) fn closed_test_handle() -> Self {
+        let (sender, _receiver) = mpsc::channel(8);
+        Self { sender }
+    }
+    pub async fn begin_candidate_effects(
+        &self,
+        round: AgentdSelfIterationRoundV1,
+        assessment: SelfIterationModelAssessmentV1,
+    ) -> Result<AgentdSelfIterationCandidateConstructionAdmissionV1, AgentdError> {
+        let (response, receive) = oneshot::channel();
+        self.send(
+            Command::BeginCandidateEffects(round, assessment, response),
+            receive,
+        )
+        .await
+    }
     pub async fn inspect_round(
         &self,
         goal: StableId,
@@ -120,6 +154,20 @@ impl AgentdSelfIterationHandleV1 {
         let (response, receive) = oneshot::channel();
         self.send(
             Command::Complete(round, request, assessment, response),
+            receive,
+        )
+        .await
+    }
+
+    pub async fn reject_proposal_before_candidate_effects(
+        &self,
+        round: AgentdSelfIterationRoundV1,
+        assessment: SelfIterationModelAssessmentV1,
+        reason: AgentdSelfIterationProposalRejectionV1,
+    ) -> Result<(), AgentdError> {
+        let (response, receive) = oneshot::channel();
+        self.send(
+            Command::RejectProposal(round, assessment, reason, response),
             receive,
         )
         .await
@@ -186,6 +234,7 @@ impl AgentdSelfIterationHandleV1 {
 
 pub struct AgentdSelfIterationRuntimeConfigV1 {
     journal: IterationJournal,
+    handle: AgentdSelfIterationHandleV1,
     trust: Arc<ActivatedLearningTrustV1>,
     receiver: mpsc::Receiver<Command>,
 }
@@ -199,14 +248,19 @@ impl AgentdSelfIterationRuntimeConfigV1 {
         }
         let journal = IterationJournal::open(journal_path)?;
         let (sender, receiver) = mpsc::channel(8);
+        let handle = AgentdSelfIterationHandleV1 { sender };
         Ok((
             Self {
                 journal,
+                handle: handle.clone(),
                 trust,
                 receiver,
             },
-            AgentdSelfIterationHandleV1 { sender },
+            handle,
         ))
+    }
+    pub(crate) fn handle(&self) -> AgentdSelfIterationHandleV1 {
+        self.handle.clone()
     }
     pub(crate) fn unresolved_apply(&self) -> bool {
         self.journal.unresolved_apply()
@@ -265,7 +319,11 @@ impl SelfIterationRuntime {
                     .map_err(|_| invalid("self-iteration owner poisoned"))?;
                 if !matches!(
                     &command,
-                    Some(Command::Complete(..) | Command::InspectRound(..))
+                    Some(
+                        Command::Complete(..)
+                            | Command::InspectRound(..)
+                            | Command::RejectProposal(..)
+                    )
                 ) && let Err(error) = owner.journal.observe_clock(now, command.is_some())
                 {
                     if let Some(command) = command {
@@ -275,7 +333,11 @@ impl SelfIterationRuntime {
                 }
                 let expiry = if matches!(
                     &command,
-                    Some(Command::Complete(..) | Command::InspectRound(..))
+                    Some(
+                        Command::Complete(..)
+                            | Command::InspectRound(..)
+                            | Command::RejectProposal(..)
+                    )
                 ) {
                     Ok(())
                 } else {
@@ -361,6 +423,27 @@ impl SelfIterationRuntime {
                             })();
                             let _ = response.send(result);
                         }
+                        Command::BeginCandidateEffects(round, assessment, response) => {
+                            let result = owner.begin_candidate_effects(round, assessment, now);
+                            let _ = response.send(result);
+                        }
+                        Command::RejectProposal(round, assessment, reason, response) => {
+                            let result = (|| {
+                                let mut rounds = owner
+                                    .journal
+                                    .rounds
+                                    .clone()
+                                    .ok_or_else(|| invalid("round not reserved"))?;
+                                rounds.retain_terminal_clock(now);
+                                rounds.reject_before_candidate_effects(
+                                    &round,
+                                    &assessment,
+                                    reason,
+                                )?;
+                                owner.journal.persist_rounds(rounds)
+                            })();
+                            let _ = response.send(result);
+                        }
                         Command::Freeze(candidate, response) => {
                             let _ = response.send(owner.freeze(*candidate, now));
                         }
@@ -386,3 +469,6 @@ impl SelfIterationRuntime {
 #[cfg(test)]
 #[path = "self_iteration_runtime_tests.rs"]
 mod tests;
+
+#[path = "self_iteration_runtime_effects.rs"]
+mod effects;

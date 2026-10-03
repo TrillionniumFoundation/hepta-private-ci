@@ -30,6 +30,19 @@ pub trait AgentdSelfIterationCandidateAssemblerV1: Send {
     /// the installed host compiler rather than invented by the model.
     fn describe(&self, envelope: &IterationEnvelopeV1) -> Result<String, AgentdError>;
 
+    /// The default makes no no-effect claim. Implementations must reject only
+    /// before all original candidate intents/tasks, including cold recovery.
+    fn validate_before_candidate_effects(
+        &mut self,
+        _envelope: &IterationEnvelopeV1,
+        _proposal: &SelfIterationModelAssessmentV1,
+    ) -> impl Future<Output = Result<AgentdSelfIterationCandidateEffectAdmissionV1, AgentdError>> + Send
+    {
+        std::future::ready(Ok(
+            AgentdSelfIterationCandidateEffectAdmissionV1::ConservativeUnknown,
+        ))
+    }
+
     fn assemble(
         &mut self,
         envelope: IterationEnvelopeV1,
@@ -79,7 +92,10 @@ pub struct AgentdSelfIterationModelCycleV1<M, A, O> {
     pending_model: Option<PendingModel<M>>,
     round: Option<AgentdSelfIterationRoundV1>,
     canonical: Option<crate::CanonicalIterationEnvelopeV1>,
-    assembler: A,
+    assembler: Option<A>,
+    pending_candidate: Option<candidate_task::PendingCandidate<A>>,
+    constructed_candidate: Option<AgentdSelfIterationCandidateV1>,
+    actual_description: Option<String>,
     owners: O,
     runtime: AgentdSelfIterationHandleV1,
 }
@@ -87,7 +103,7 @@ pub struct AgentdSelfIterationModelCycleV1<M, A, O> {
 impl<M, A, O> AgentdSelfIterationModelCycleV1<M, A, O>
 where
     M: SelfIterationModelPortV1 + 'static,
-    A: AgentdSelfIterationCandidateAssemblerV1,
+    A: AgentdSelfIterationCandidateAssemblerV1 + 'static,
     O: AgentdSelfIterationIndependentOwnersV1,
 {
     pub fn new(model: M, assembler: A, owners: O, runtime: AgentdSelfIterationHandleV1) -> Self {
@@ -96,7 +112,10 @@ where
             pending_model: None,
             round: None,
             canonical: None,
-            assembler,
+            assembler: Some(assembler),
+            pending_candidate: None,
+            constructed_candidate: None,
+            actual_description: None,
             owners,
             runtime,
         }
@@ -118,8 +137,16 @@ where
             .runtime
             .reserve_round(goal, canonical.clone(), envelope.clone())
             .await?;
-        self.assembler
-            .bind_round(round.clone(), canonical.clone())?;
+        if self.round.as_ref() != Some(&round) {
+            if self.pending_candidate.is_some() {
+                return Err(invalid("original candidate task still owned"));
+            }
+            self.constructed_candidate = None;
+            self.actual_description = None;
+        }
+        if let Some(assembler) = &mut self.assembler {
+            assembler.bind_round(round.clone(), canonical.clone())?;
+        }
         self.round = Some(round);
         self.canonical = Some(canonical);
         self.run_inner(envelope, objective_prompt).await
@@ -130,9 +157,11 @@ where
         envelope: IterationEnvelopeV1,
         objective_prompt: String,
     ) -> Result<AgentdSelfIterationRecordV1, AgentdError> {
-        if self.pending_model.is_some() {
+        if self.pending_model.is_some() || self.pending_candidate.is_some() {
             return Err(invalid("original model request is still owned"));
         }
+        self.constructed_candidate = None;
+        self.actual_description = None;
         self.round = None;
         self.canonical = None;
         self.run_inner(envelope, objective_prompt).await
@@ -160,7 +189,14 @@ where
         if deadline_ms <= now || deadline_ms > now.saturating_add(3_600_000) {
             return Err(invalid("iteration deadline"));
         }
-        let current = self.assembler.describe(&envelope)?;
+        let current = if let Some(assembler) = &self.assembler {
+            assembler.describe(&envelope)?
+        } else {
+            self.actual_description
+                .clone()
+                .ok_or_else(|| invalid("original candidate description unavailable"))?
+        };
+        self.actual_description = Some(current.clone());
         if current.is_empty() || current.len() > 2 * 1024 {
             return Err(invalid("host parameter description budget"));
         }
@@ -169,7 +205,9 @@ where
             envelope_digest, None, deadline_ms, format!(
                 "Propose a bounded durable Neuron generation change and its rollback.\nObjective: {objective_prompt}\nActual baseline and permitted mutations: {current}\nEnvelope: {envelope_digest}\nNo acceptance or signing authority is granted."
             )).await?;
-        let candidate = self.assembler.assemble(envelope.clone(), &proposal).await?;
+        let candidate = self
+            .construct_candidate(envelope.clone(), proposal.clone())
+            .await?;
         if self
             .canonical
             .as_ref()
@@ -418,3 +456,6 @@ pub(super) fn now_ms() -> Result<u64, AgentdError> {
         .try_into()
         .map_err(|_| invalid("iteration clock overflow"))
 }
+
+#[path = "self_iteration_cycle_candidate_task.rs"]
+mod candidate_task;

@@ -29,6 +29,18 @@ pub trait AgentdGovernedParameterGenerationCompilerV1: Send {
 
     fn describe(&self, envelope: &IterationEnvelopeV1) -> Result<String, AgentdError>;
 
+    /// A compiler with any original intent or task must remain conservative.
+    fn validate_before_candidate_effects(
+        &mut self,
+        _envelope: &IterationEnvelopeV1,
+        _proposal: &SelfIterationModelAssessmentV1,
+    ) -> impl Future<Output = Result<AgentdSelfIterationCandidateEffectAdmissionV1, AgentdError>> + Send
+    {
+        std::future::ready(Ok(
+            AgentdSelfIterationCandidateEffectAdmissionV1::ConservativeUnknown,
+        ))
+    }
+
     fn prepare(
         &mut self,
         envelope: &IterationEnvelopeV1,
@@ -68,6 +80,15 @@ impl<C: AgentdGovernedParameterGenerationCompilerV1> AgentdSelfIterationCandidat
     }
     fn describe(&self, envelope: &IterationEnvelopeV1) -> Result<String, AgentdError> {
         self.compiler.describe(envelope)
+    }
+    fn validate_before_candidate_effects(
+        &mut self,
+        envelope: &IterationEnvelopeV1,
+        proposal: &SelfIterationModelAssessmentV1,
+    ) -> impl Future<Output = Result<AgentdSelfIterationCandidateEffectAdmissionV1, AgentdError>> + Send
+    {
+        self.compiler
+            .validate_before_candidate_effects(envelope, proposal)
     }
     async fn assemble(
         &mut self,
