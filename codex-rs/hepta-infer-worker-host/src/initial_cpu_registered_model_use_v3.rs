@@ -351,6 +351,46 @@ impl VerifiedRegisteredCpuModelUseV3 {
     pub fn facts(&self) -> &RegisteredArtifactCurrentFactsV3 {
         &self.inputs.facts
     }
+    pub fn workload_uid(&self) -> u32 {
+        self.inputs.config.workload_uid
+    }
+    pub fn issued_at(&self) -> u64 {
+        self.body.issued_at
+    }
+    pub(super) fn original_artifact_admission(
+        &self,
+        clock: std::sync::Arc<dyn codex_hepta_contracts::AuthorityClock>,
+    ) -> HostResult<codex_hepta_agentd::AgentdNeuronArtifactAdmissionV1> {
+        self.revalidate_current()?;
+        let facts = inspect_registered_artifact_current_material_v3(
+            &self.inputs.config.current_material.path,
+            digest(&self.inputs.config.current_material.digest)?,
+            self.material(),
+            &id(&self.binding().subject)?,
+            clock.now_unix_ms()?,
+        )?;
+        require_current_binding(facts.operational_binding(), self.binding())?;
+        let artifact_root = facts.artifact_root().to_path_buf();
+        let selected = codex_hepta_agentd::NeuronSelectedArtifactsV1 {
+            model: self.selections[0].clone(),
+            calibration: self.selections[1].clone(),
+            ood: self.selections[2].clone(),
+            model_artifact_manifest: facts.manifests()[0].manifest.clone(),
+            calibration_lineage_digest: facts.manifests()[1].manifest_digest,
+            ood_lineage_digest: facts.manifests()[2].manifest_digest,
+        };
+        Ok(
+            codex_hepta_agentd::AgentdNeuronArtifactAdmissionV1::from_read_only_owner(
+                std::sync::Arc::new(std::sync::Mutex::new(facts.into_read_only_owner())),
+                artifact_root,
+                self.selector_verifier(),
+                selected,
+                clock,
+                &self.material().runtime,
+            )
+            .map_err(|error| format!("original registered artifact admission: {error:?}"))?,
+        )
+    }
     pub fn expires_at(&self) -> u64 {
         self.body.expires_at
     }
