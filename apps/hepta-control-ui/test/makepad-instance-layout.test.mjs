@@ -114,7 +114,7 @@ const _: () = assert!(offset_of!(DrawText, rect_pos) == offset_of!(DrawText, dra
   for (const path of dependencyDirs) args.push('-L', `dependency=${path}`);
   const rustc = process.env.HEPTA_NIGHTLY_RUSTC;
   try {
-    execFileSync(rustc ?? 'rustup', rustc ? args : ['run', 'nightly', 'rustc', ...args], {
+    execFileSync(rustc ?? 'rustup', rustc ? args : ['run', 'nightly-2026-10-02', 'rustc', ...args], {
       timeout: 60_000, maxBuffer: 1024 * 1024, stdio: 'pipe',
     });
   } catch (error) {

@@ -21,8 +21,9 @@ if(!widgets?.source?.endsWith('#'+provenance.makepad.revision)) throw new Error(
 const makepadRoot=dirname(dirname(widgets.manifest_path));
 if(execFileSync('git',['-C',makepadRoot,'rev-parse','HEAD'],{encoding:'utf8'}).trim()!==provenance.makepad.revision) throw new Error('Wrong Makepad checkout');
 execFileSync('git',['-C',makepadRoot,'diff','--quiet','HEAD','--']);
-const nightly=execFileSync('rustup',['run','nightly','rustc','--version'],{encoding:'utf8'}).trim();
-if(nightly!=='rustc 1.101.0-nightly (c36f14571 2026-10-01)') throw new Error('Unqualified nightly: '+nightly);
+const toolchainPatch=JSON.parse(await readFile(join(workspace,'robrix-ui/patches/cargo-makepad-toolchain.json'),'utf8'));
+const nightly=execFileSync('rustup',['run',toolchainPatch.toolchain,'rustc','--version'],{encoding:'utf8'}).trim();
+if(nightly!==toolchainPatch.rustcVersion) throw new Error('Unqualified nightly: '+nightly);
 const toolTarget=join(workspace,'target/robrix-tools');
 // Upstream intentionally has no tracked lockfile. Build its tool in an isolated
 // exact Git archive with our reviewed lock; never depend on or modify cache state.
@@ -34,6 +35,13 @@ await mkdir(toolSource,{recursive:true});
 execFileSync('git',['-C',makepadRoot,'archive','--format=tar','--output='+toolArchive,provenance.makepad.revision]);
 try {execFileSync('tar',['-xf',toolArchive,'-C',toolSource]);}
 finally {await rm(toolArchive,{force:true});}
+const toolCompile=join(toolSource,toolchainPatch.path);
+const pristineCompile=await readFile(toolCompile,'utf8');
+if(sha(pristineCompile)!==toolchainPatch.beforeSha256||pristineCompile.split('"nightly"').length-1!==toolchainPatch.literalCount)throw new Error('Pinned packager toolchain source changed');
+const datedCompile=pristineCompile.replaceAll('"nightly"',JSON.stringify(toolchainPatch.toolchain));
+if(sha(datedCompile)!==toolchainPatch.afterSha256)throw new Error('Packager date pin differs from reviewed transformation');
+await writeFile(toolCompile,datedCompile);
+
 const packagerLock=await readFile(join(workspace,'robrix-ui/patches/cargo-makepad.Cargo.lock'));
 await writeFile(join(toolSource,'Cargo.lock'),packagerLock);
 const toolEnv={...process.env,CARGO_BUILD_JOBS:'1',CARGO_INCREMENTAL:'0',CARGO_PROFILE_DEV_DEBUG:'0'};
@@ -118,5 +126,5 @@ async function inventory(dir) {
  }
 }
 await inventory(output);
-await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,artAssets:art,nightly,platformPatch:overlay.identity,instanceLayoutPatch:overlay.layoutIdentity,drawPatch:overlay.drawIdentity,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
+await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,artAssets:art,nightly,platformPatch:overlay.identity,instanceLayoutPatch:overlay.layoutIdentity,drawPatch:overlay.drawIdentity,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerToolchainPatch:toolchainPatch,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
 console.log(`Packaged Robrix-derived Rust UI (${Object.keys(files).length} assets); rendering still requires host acceptance`);
