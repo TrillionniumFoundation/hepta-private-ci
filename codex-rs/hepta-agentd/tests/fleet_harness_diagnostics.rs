@@ -28,8 +28,10 @@ async fn readiness_reports_exited_child_with_bounded_decoded_output() -> Result<
         Path::new("/bin/sh").canonicalize()?,
         vec![
             "-c".into(),
-            r#"printf '%05000d' 0
+            r#"printf 'stdout first diagnostic\n'
+printf '%05000d' 0
 printf '\377stdout diagnostic marker\n'
+printf 'stderr original startup error\n' >&2
 printf '%05000d' 0 >&2
 printf '\377stderr startup failure marker\n' >&2
 while [ ! -f "$1" ]; do sleep 0.01; done
@@ -91,12 +93,20 @@ exit 17"#
     ensure!(diagnostic.contains("code: Some(17)"), "{diagnostic}");
     ensure!(diagnostic.contains("last_health="), "{diagnostic}");
     let (_, output) = diagnostic
-        .split_once("stdout (tail, max 4096 bytes):\n")
+        .split_once("stdout (head/tail, max 4096 bytes):\n")
         .context("stdout diagnostic missing")?;
     let (stdout, stderr) = output
-        .split_once("\nstderr (tail, max 4096 bytes):\n")
+        .split_once("\nstderr (head/tail, max 4096 bytes):\n")
         .context("stderr diagnostic missing")?;
     ensure!(stdout.len() <= 4096 && stderr.len() <= 4096, "{diagnostic}");
+    ensure!(
+        stdout.starts_with("stdout first diagnostic\n"),
+        "{diagnostic}"
+    );
+    ensure!(
+        stderr.starts_with("stderr original startup error\n"),
+        "{diagnostic}"
+    );
     ensure!(
         stdout.ends_with("\u{fffd}stdout diagnostic marker\n"),
         "{diagnostic}"

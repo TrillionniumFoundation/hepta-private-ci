@@ -150,6 +150,8 @@ class WorkflowDependencyTests(unittest.TestCase):
             "test(production_writer::)",
             "test(production_cognitive_source_target::tests::)",
             "cognitive_product_e2e",
+            "fleet_stream_diagnostics",
+            "fleet_harness_diagnostics",
             "runtime::tests::qualification_",
             "cargo clippy --locked",
         ):

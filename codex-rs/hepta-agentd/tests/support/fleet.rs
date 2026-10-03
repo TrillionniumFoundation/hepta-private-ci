@@ -29,8 +29,10 @@ use codex_hepta_supervisor::SupervisorEventKind;
 use codex_hepta_supervisor::UnixProcessDriver;
 use codex_utils_absolute_path::AbsolutePathBuf;
 
+use super::stream_diagnostics::MAX_STREAM_BYTES;
+use super::stream_diagnostics::summarize_stream;
+
 const READY_TIMEOUT: Duration = Duration::from_secs(60);
-const MAX_DIAGNOSTIC_STREAM_BYTES: usize = 4_096;
 
 pub(crate) struct AgentFixture {
     pub(crate) agent_id: AgentId,
@@ -369,29 +371,19 @@ fn readiness_diagnostics(snapshot: Option<&AgentSupervisorSnapshot>, last_health
         }
     });
     let [stdout, stderr] = [ProcessStream::Stdout, ProcessStream::Stderr].map(|stream| {
-        let mut bytes = snapshot
-            .logs
-            .iter()
-            .filter(|log| log.stream == stream)
-            .flat_map(|log| log.bytes.iter().copied())
-            .rev()
-            .take(MAX_DIAGNOSTIC_STREAM_BYTES)
-            .collect::<Vec<_>>();
-        bytes.reverse();
-        let decoded = String::from_utf8_lossy(&bytes);
-        // Lossy UTF-8 decoding can expand invalid bytes. Bound the decoded tail
-        // too, without splitting a replacement character or a valid code point.
-        let mut start = decoded.len().saturating_sub(MAX_DIAGNOSTIC_STREAM_BYTES);
-        while !decoded.is_char_boundary(start) {
-            start += 1;
-        }
-        decoded[start..].to_string()
+        summarize_stream(
+            snapshot
+                .logs
+                .iter()
+                .filter(|log| log.stream == stream)
+                .flat_map(|log| log.bytes.iter().copied()),
+        )
     });
     format!(
         "active={}; healthy={}; runtime_generation={:?}; release_change_pending={}; \
          last_exit={last_exit:?}; last_health={last_health}; \
-         stdout (tail, max {MAX_DIAGNOSTIC_STREAM_BYTES} bytes):\n{stdout}\n\
-         stderr (tail, max {MAX_DIAGNOSTIC_STREAM_BYTES} bytes):\n{stderr}",
+         stdout (head/tail, max {MAX_STREAM_BYTES} bytes):\n{stdout}\n\
+         stderr (head/tail, max {MAX_STREAM_BYTES} bytes):\n{stderr}",
         snapshot.active,
         snapshot.healthy,
         snapshot.runtime_generation,
