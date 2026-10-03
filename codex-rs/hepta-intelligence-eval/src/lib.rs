@@ -307,6 +307,13 @@ pub use self_iteration_evaluation_transport::VerifiedSelfIterationEvaluationTran
 pub use self_iteration_evaluation_transport::decode_self_iteration_evaluation_transport_v1;
 pub use self_iteration_evaluation_transport::encode_self_iteration_evaluation_transport_v1;
 pub use self_iteration_evaluation_transport::self_iteration_evaluation_use_payload_v1;
+mod self_iteration_frozen_consumer;
+pub use self_iteration_frozen_consumer::MAX_SELF_ITERATION_FROZEN_CANDIDATE_BYTES;
+pub use self_iteration_frozen_consumer::MAX_SELF_ITERATION_FROZEN_CONSUMER_BYTES;
+pub use self_iteration_frozen_consumer::VerifiedSelfIterationFrozenConsumerV1;
+pub use self_iteration_frozen_consumer::decode_self_iteration_frozen_consumer_v1;
+pub use self_iteration_frozen_consumer::encode_self_iteration_frozen_consumer_v1;
+pub use self_iteration_frozen_consumer::inspect_signed_self_iteration_frozen_consumer_v1;
 pub use signed_evaluation::SignedEvaluationDecisionV1;
 pub use signed_evaluation::SignedEvaluationError;
 pub use signed_evaluation::SignedEvaluationEvidenceV1;
@@ -551,6 +558,10 @@ mod fixed_public_development_host;
 pub use fixed_holdout_custody::admit_fixed_paired_custody;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_paired_review_host;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+mod self_iteration_role_input;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use self_iteration_role_input::read_self_iteration_role_input_v1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod paired_development_transport;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
