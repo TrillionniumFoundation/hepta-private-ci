@@ -1,7 +1,8 @@
 //! Original neutral Agentd response envelope and one bounded readonly purpose.
 //! These decoded facts are not authenticated peer custody or execution authority.
 use crate::AgentId;
-use serde::{Deserialize, Serialize};
+use serde::Deserialize;
+use serde::Serialize;
 
 pub const ORIGINAL_AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
 pub const MAX_ORIGINAL_PARAMETER_SERVING_RESPONSE_BYTES_V1: usize = 65_536;

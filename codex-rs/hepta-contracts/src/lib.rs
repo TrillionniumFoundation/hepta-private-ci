@@ -332,4 +332,10 @@ pub use final_use_port::ModelTrustRequest;
 pub use final_use_port::ModelTrustResponse;
 
 mod original_agentd_response;
-pub use original_agentd_response::{OriginalAgentdResponseV1, ParameterServingScopeV1, ParameterServingScopePayloadV1, ParameterServingScopeResponseV1, ORIGINAL_AGENTD_CONTROL_SCHEMA_VERSION, MAX_ORIGINAL_PARAMETER_SERVING_RESPONSE_BYTES_V1, decode_original_parameter_serving_scope_response_v1};
+pub use original_agentd_response::MAX_ORIGINAL_PARAMETER_SERVING_RESPONSE_BYTES_V1;
+pub use original_agentd_response::ORIGINAL_AGENTD_CONTROL_SCHEMA_VERSION;
+pub use original_agentd_response::OriginalAgentdResponseV1;
+pub use original_agentd_response::ParameterServingScopePayloadV1;
+pub use original_agentd_response::ParameterServingScopeResponseV1;
+pub use original_agentd_response::ParameterServingScopeV1;
+pub use original_agentd_response::decode_original_parameter_serving_scope_response_v1;
