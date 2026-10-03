@@ -235,7 +235,7 @@ fn provider_success_does_not_replace_original_runtime_release_or_identity() {
                     .observation
                     .as_mut()
                     .unwrap()
-                    .codex_terminal_correlation_digest = Some(Digest32::zero().to_string())
+                    .codex_terminal_correlation_digest = Some(Digest32::ZERO.to_string())
             }
             _ => {
                 changed
