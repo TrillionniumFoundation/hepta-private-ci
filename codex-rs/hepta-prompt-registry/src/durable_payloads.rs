@@ -75,6 +75,32 @@ impl PayloadState {
         self.references.values().cloned().collect()
     }
 
+    /// Recheck only the selected prefix. An unselected append is neither a
+    /// committed fact nor permission to rewrite any previously selected bytes.
+    pub(super) fn verify_selected_bytes(
+        &self,
+        directory: &File,
+    ) -> Result<(), DurableRegistryError> {
+        if !self.initialized {
+            return Err(DurableRegistryError::Corrupt);
+        }
+        let mut file = open_private(directory, FILE_NAME, Access::Read)?;
+        require_header(&mut file)?;
+        if file.metadata().map_err(map_precommit_io)?.len() < self.committed_end {
+            return Err(DurableRegistryError::Corrupt);
+        }
+        for reference in self.references.values() {
+            file.seek(SeekFrom::Start(reference.offset))
+                .map_err(map_precommit_io)?;
+            let digest = Digest32::of_reader((&mut file).take(reference.length), reference.length)
+                .map_err(|_| DurableRegistryError::Corrupt)?;
+            if digest.into_array() != reference.digest {
+                return Err(DurableRegistryError::Corrupt);
+            }
+        }
+        Ok(())
+    }
+
     pub fn hydrate(
         directory: &File,
         mut stored: StoredV3,

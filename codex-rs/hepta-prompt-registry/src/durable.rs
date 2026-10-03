@@ -15,6 +15,8 @@ use std::fs::File;
 use std::io::Read;
 use std::io::Write;
 use std::path::Path;
+use std::sync::atomic::AtomicBool;
+use std::sync::atomic::Ordering;
 
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::SignedFinalUseGrant;
@@ -61,6 +63,9 @@ mod lifecycle_validation;
 mod recovery;
 pub use recovery::PromptRegistryRecoveryAnchor;
 
+#[path = "durable_live_integrity.rs"]
+mod live_integrity;
+
 const STORE_SCHEMA: u32 = 2;
 const MAX_STATE_BYTES: u64 = 32 * 1024 * 1024;
 const LEGACY_CONTEXT_PROFILE_DOMAIN: &[u8] = b"hepta.prompt-registry.legacy-context-profile.v1";
@@ -69,7 +74,7 @@ const MIGRATION_REASON_DOMAIN: &[u8] = b"hepta.prompt-registry.migration.v1-v2";
 pub struct DurablePromptRegistry {
     registry: PromptRegistry,
     store: Store,
-    poisoned: bool,
+    poisoned: AtomicBool,
 }
 
 impl fmt::Debug for DurablePromptRegistry {
@@ -108,13 +113,13 @@ impl DurablePromptRegistry {
         Ok(Self {
             registry,
             store,
-            poisoned: false,
+            poisoned: AtomicBool::new(false),
         })
     }
 
-    /// Returns the current authoritative in-process image. After an
-    /// indeterminate durable commit no authoritative view is exposed until the
-    /// owner is reopened and reconciled.
+    /// Returns the current in-process image after bounded verification of its
+    /// selected backing bytes. Integrity loss or an indeterminate commit blocks
+    /// authoritative reads and writes until explicit reopen and reconciliation.
     pub fn registry(&self) -> Result<&PromptRegistry, DurableRegistryError> {
         self.ensure_available()?;
         Ok(&self.registry)
@@ -126,12 +131,19 @@ impl DurablePromptRegistry {
     }
 
     #[must_use]
-    pub const fn requires_reopen(&self) -> bool {
-        self.poisoned
+    pub fn requires_reopen(&self) -> bool {
+        self.poisoned.load(Ordering::Acquire)
     }
 
     fn ensure_available(&self) -> Result<(), DurableRegistryError> {
-        if self.poisoned {
+        if self.requires_reopen() {
+            return Err(DurableRegistryError::ReopenRequired);
+        }
+        if let Err(error) = self.store.verify_selected_bytes() {
+            self.poisoned.store(true, Ordering::Release);
+            return Err(error);
+        }
+        if self.requires_reopen() {
             return Err(DurableRegistryError::ReopenRequired);
         }
         Ok(())
@@ -423,16 +435,14 @@ impl DurablePromptRegistry {
         &mut self,
         mutation: impl FnOnce(&mut PromptRegistry) -> Result<RegistryReceipt, Error>,
     ) -> Result<RegistryReceipt, DurableRegistryError> {
-        if self.poisoned {
-            return Err(DurableRegistryError::ReopenRequired);
-        }
+        self.ensure_available()?;
         let mut next = self.registry.clone();
         let receipt = mutation(&mut next).map_err(DurableRegistryError::Core)?;
         if receipt.disposition != crate::MutationDisposition::Unchanged {
             match self.store.persist(&next) {
                 Ok(()) => self.registry = next,
                 Err(DurableRegistryError::IndeterminateDurability) => {
-                    self.poisoned = true;
+                    self.poisoned.store(true, Ordering::Release);
                     return Err(DurableRegistryError::IndeterminateDurability);
                 }
                 Err(error) => return Err(error),
@@ -1321,6 +1331,7 @@ struct Store {
     _lock: File,
     new_owner_marker: bool,
     payloads: payloads::PayloadState,
+    selected_manifest_digest: Option<Digest32>,
     #[cfg(test)]
     fail_directory_sync_after_rename_once: Cell<bool>,
     #[cfg(test)]
@@ -1387,6 +1398,7 @@ impl Store {
             _lock: lock,
             new_owner_marker,
             payloads: payloads::PayloadState::default(),
+            selected_manifest_digest: None,
             #[cfg(test)]
             fail_directory_sync_after_rename_once: Cell::new(false),
             #[cfg(test)]
@@ -1407,6 +1419,7 @@ impl Store {
         if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_STATE_BYTES {
             return Err(DurableRegistryError::Corrupt);
         }
+        store.selected_manifest_digest = Some(Digest32::of_bytes(&bytes));
         // Probe only the header without materializing an untrusted JSON tree.
         // Decode the selected schema directly from bytes so duplicate members
         // at every typed record level are rejected rather than overwritten.
@@ -1504,6 +1517,7 @@ impl Store {
             .sync_all()
             .map_err(|_| DurableRegistryError::IndeterminateDurability)?;
         self.payloads = successor;
+        self.selected_manifest_digest = Some(Digest32::of_bytes(&bytes));
         Ok(())
     }
 }
@@ -1701,8 +1715,8 @@ pub enum DurableRegistryError {
     /// Rename may have succeeded but directory fsync failed; disk state is
     /// unknown and the current writer is poisoned until reopened.
     IndeterminateDurability,
-    /// This in-process image may be stale relative to disk after an
-    /// indeterminate commit and must not serve authoritative reads or writes.
+    /// This owner observed lost selected-byte integrity or an indeterminate
+    /// commit and must not serve authoritative reads or writes until reopened.
     ReopenRequired,
 }
 
@@ -3054,3 +3068,7 @@ mod restore_tests;
 #[cfg(all(test, unix))]
 #[path = "durable_input_bounds_tests.rs"]
 mod input_bounds_tests;
+
+#[cfg(all(test, unix))]
+#[path = "durable_live_integrity_tests.rs"]
+mod live_integrity_tests;

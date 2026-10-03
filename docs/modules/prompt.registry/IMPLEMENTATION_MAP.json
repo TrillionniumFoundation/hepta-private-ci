@@ -2,20 +2,16 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "dcbd48c50173fd67e3334ca86fd68bd6a40fb6a3",
-    "tree": "0bd70587f6c4a2759560bfde980d40c0feacf153"
+    "commit": "da211ae3814b438557f3ad95b644edd75969833a",
+    "tree": "7a96d26f18b7af4d0aeeccdd8e679cf237297a19"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "prompt.registry",
   "owner": "intelligence-platform",
   "deputy": "cognitive-platform",
   "technicalGuide": "docs/modules/prompt.registry/TECHNICAL.md",
-  "declaredRoots": [
-    "codex-rs/hepta-prompt-registry"
-  ],
-  "resolvedRoots": [
-    "codex-rs/hepta-prompt-registry"
-  ],
+  "declaredRoots": ["codex-rs/hepta-prompt-registry"],
+  "resolvedRoots": ["codex-rs/hepta-prompt-registry"],
   "sourceRootPresent": true,
   "productionImplementation": false,
   "productCallerState": "partial_owner_bootstrap_and_runtime_host_staging_ingress_pending",
@@ -30,6 +26,9 @@
       "tests": [
         {
           "path": "codex-rs/hepta-prompt-registry/src/durable.rs"
+        },
+        {
+          "path": "codex-rs/hepta-prompt-registry/src/durable_live_integrity_tests.rs"
         }
       ],
       "sourcePathExists": true,
@@ -284,9 +283,7 @@
     "release": false,
     "implementedOperationMappingComplete": true
   },
-  "sourceRoot": [
-    "codex-rs/hepta-prompt-registry"
-  ],
+  "sourceRoot": ["codex-rs/hepta-prompt-registry"],
   "productCallerBindingPolicy": "closed_world",
   "productCallerBindings": [
     {
@@ -314,6 +311,10 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/prompt-live-integrity-regression.yml",
+      "object": "f0662e094e5172ce1ccfda8d3703f2c4b18bc6ec"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/app_runtime.rs",
       "object": "b25375be9219be18baba2ab4d3488658d0040897"
     },
@@ -322,16 +323,36 @@
       "object": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
     },
     {
+      "path": "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
+      "object": "e2a52dccc2db7c78d41aae1655ebc659867d245a"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+      "object": "9e634c0a0ace3588de7bb737525253ec25f36630"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/prompt_pipeline_live_integrity_tests.rs",
+      "object": "d1ba330262faf932b294c009d536619a0ad07d2d"
+    },
+    {
       "path": "codex-rs/hepta-prompt-registry",
-      "object": "24feec81ffefa9b0e8f83e943e4545000dba63a5"
+      "object": "66e1b7e8d41d581218aac43615bc4551bee4dabb"
     },
     {
       "path": "codex-rs/hepta-prompt-registry/src/durable.rs",
-      "object": "8a6200c818a94c0e6bf317cccc1c1d69f3067d3b"
+      "object": "c8bc08a2d48354b4d3963ee22c0fb532772d601a"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable_live_integrity.rs",
+      "object": "a7476cf88c502e090228da5bf572c6256cff3351"
+    },
+    {
+      "path": "codex-rs/hepta-prompt-registry/src/durable_live_integrity_tests.rs",
+      "object": "47d2af956853eaee2c1b545c63cc2fa35cfb066d"
     },
     {
       "path": "codex-rs/hepta-prompt-registry/src/durable_recovery.rs",
-      "object": "5b8cd87bbcff2cf1a0d854d000d7b68e51929ada"
+      "object": "cbe119eee400717486c459f3658794c1bfbe41ae"
     },
     {
       "path": "codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs",
@@ -350,8 +371,12 @@
       "object": "d9de3e0ee47e664647613d38ce78872d90170530"
     },
     {
+      "path": "docs/modules/prompt.registry/LIVE_INTEGRITY_AUDIT_2026-10-03.md",
+      "object": "ab39a35505d9e29aeeeac0f32a6cddec183fd242"
+    },
+    {
       "path": "docs/modules/prompt.registry/TECHNICAL.md",
-      "object": "20ac28ec24cedd7e82a7efa1b9fec7887c5b72ce"
+      "object": "5a456a61cae329ba4c175e75aa8bed63ce68d4ac"
     }
   ]
 }

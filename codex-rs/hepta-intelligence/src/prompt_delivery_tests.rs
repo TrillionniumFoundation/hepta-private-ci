@@ -56,16 +56,42 @@ pub(crate) fn admitted_registry_with_token_cost(
     SigningKey,
     u64,
 ) {
+    admitted_registry_at_index(root, payload, token_cost, /*index*/ 0)
+}
+
+pub(crate) fn admitted_registry_at_index(
+    root: &std::path::Path,
+    payload: &[u8],
+    token_cost: u32,
+    index: u8,
+) -> (
+    DurablePromptRegistry,
+    PromptModelTupleV2,
+    FinalUseAuthority,
+    SigningKey,
+    u64,
+) {
+    assert!(index < 16);
+    let factor_name = if index == 0 {
+        "factor:verify".to_owned()
+    } else {
+        format!("factor:verify:{index}")
+    };
+    let realization_name = if index == 0 {
+        "realization:verify".to_owned()
+    } else {
+        format!("realization:verify:{index}")
+    };
     let mut registry =
         DurablePromptRegistry::open_state_dir(root, 64).expect("open durable registry");
     let factor = PromptFactor {
-        factor_id: id("factor:verify"),
+        factor_id: id(&factor_name),
         proposer_id: id("proposer:1"),
         semantic_version: id("v1"),
         semantic_purpose: "inspect evidence before mutation".to_owned(),
         authority_class: "registered_prompt_factor".to_owned(),
         eligible_objective_dimensions: vec![id("dimension:truth")],
-        content_digest: digest("factor:verify"),
+        content_digest: digest(&factor_name),
         source: FactorSource::GovernedInternal,
         lifecycle: Lifecycle::Draft,
     };
@@ -102,8 +128,12 @@ pub(crate) fn admitted_registry_with_token_cost(
         schema_version: 1,
         signer_id: "review-authority:prompt".to_owned(),
         authority_epoch: 1,
-        grant_id: "admission:prompt:1".to_owned(),
-        nonce: [23; 32],
+        grant_id: format!("admission:prompt:{}", index + 1),
+        nonce: {
+            let mut nonce = [23; 32];
+            nonce[31] += index;
+            nonce
+        },
         binding,
         not_before_unix_ms: now.saturating_sub(1_000),
         expires_at_unix_ms: now + 30_000,
@@ -136,7 +166,7 @@ pub(crate) fn admitted_registry_with_token_cost(
         locale_id: id("locale:en-US"),
     };
     let realization = PromptRealizationBindingV2 {
-        realization_id: id("realization:verify"),
+        realization_id: id(&realization_name),
         factor_id: factor.factor_id.clone(),
         model_id: tuple.model_id.clone(),
         model_version: tuple.model_version.clone(),
@@ -165,8 +195,12 @@ pub(crate) fn admitted_registry_with_token_cost(
         schema_version: 1,
         signer_id: "review-authority:prompt".to_owned(),
         authority_epoch: 1,
-        grant_id: "realization:prompt:1".to_owned(),
-        nonce: [24; 32],
+        grant_id: format!("realization:prompt:{}", index + 1),
+        nonce: {
+            let mut nonce = [24; 32];
+            nonce[31] += index;
+            nonce
+        },
         binding: authority_binding,
         not_before_unix_ms: now.saturating_sub(1_000),
         expires_at_unix_ms: now + 30_000,
@@ -206,6 +240,22 @@ pub(crate) fn canonical_selection(
     tuple: &PromptModelTupleV2,
     now: u64,
 ) -> CanonicalSelection {
+    canonical_selection_with_maximum(
+        registry,
+        tuple,
+        now,
+        /*maximum_candidates*/ 8,
+        vec![id("factor:verify")],
+    )
+}
+
+pub(crate) fn canonical_selection_with_maximum(
+    registry: &DurablePromptRegistry,
+    tuple: &PromptModelTupleV2,
+    now: u64,
+    maximum_candidates: u32,
+    required_factor_ids: Vec<StableId>,
+) -> CanonicalSelection {
     let candidates = enumerate_factors_v1(
         registry.registry().expect("registry"),
         PromptEnumerationRequestV1 {
@@ -215,8 +265,8 @@ pub(crate) fn canonical_selection(
             generation_vector_digest: digest("generation-vector"),
             model_tuple: tuple.clone(),
             now_unix_ms: now,
-            required_factor_ids: vec![id("factor:verify")],
-            maximum_candidates: 8,
+            required_factor_ids,
+            maximum_candidates,
             selection_grammar_digest: digest("grammar"),
         },
     )

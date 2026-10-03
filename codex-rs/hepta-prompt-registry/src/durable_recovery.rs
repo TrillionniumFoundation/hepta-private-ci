@@ -104,7 +104,7 @@ impl DurablePromptRegistry {
         Ok(Self {
             registry,
             store,
-            poisoned: false,
+            poisoned: super::AtomicBool::new(false),
         })
     }
 }
