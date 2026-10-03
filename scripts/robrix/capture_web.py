@@ -14,6 +14,7 @@ from qualify import APP, OUT, digest
 from package_resources import package_inventory
 from render_checks import login_pixels
 from web_usability import capture_login_usability
+from chat_usability import capture_theme_switches
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -145,6 +146,8 @@ def main():
                                         )
                                         == 1
                                     ), "Repeated font request during input redraw"
+                            if scene == 'chat-prism' and label == 'wide':
+                                capture_theme_switches(page, messages, OUT)
                             assert not failures, failures
                             assert not any(
                                 message.startswith("error:") for message in messages
@@ -154,7 +157,8 @@ def main():
                             (OUT / f'web-{scene}-{label}-runtime.json').write_text(json.dumps(
                                 {'failures': failures, 'responses': responses, 'wasm': wasm}, indent=2))
                         context.close()
-                usability = capture_login_usability(browser, origin, OUT)
+                    if scene == 'login':
+                        usability = capture_login_usability(browser, origin, OUT)
             finally:
                 browser.close()
     finally:

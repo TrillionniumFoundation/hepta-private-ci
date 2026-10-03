@@ -84,6 +84,15 @@ struct PaintCache(std::collections::HashMap<usize, Option<MaterialSlots>>);
 
 fn owned_material(cx: &Cx, shader: usize) -> Option<MaterialSlots> {
     let mapping = &cx.draw_shaders.shaders[shader].mapping;
+    if mapping.dyn_uniforms.inputs.iter().any(|i| i.id == id!(hepta_owned_avatar)) {
+        return Some(MaterialSlots {
+            stride: 0,
+            colors: Vec::new(),
+            uniforms: mapping.dyn_uniforms.inputs.iter()
+                .filter(|i| i.id == id!(hepta_color_avatar) && i.slots == 4)
+                .map(|i| (i.id, i.offset, i.slots)).collect(),
+        });
+    }
     // A deliberate app-owned tag is mandatory. A matching RGBA value alone is
     // never authority to recolor an image, avatar, rich text, or another widget.
     if !mapping.dyn_uniforms.inputs.iter().any(|i| i.id == id!(hepta_owned_material)) {
@@ -174,6 +183,7 @@ script_mod! {
     }
 
     mod.widgets.HeptaThemeButton = Button {
+        grab_key_focus: false
         padding: Inset{left: 10, right: 10, top: 6, bottom: 6}
         draw_bg +: {
             hepta_owned_material: uniform(1.0)
@@ -200,19 +210,19 @@ script_mod! {
                 if self.hepta_material < 0.5 {
                     // Titanium: a restrained orbital horizon, not a screenshot.
                     sdf.circle(self.rect_size.x * 0.55, self.rect_size.y * 4.6, self.rect_size.y * 4.5)
-                    sdf.stroke(self.color_accent * 0.32, 1.0)
+                    sdf.stroke(vec4(self.color_accent.rgb, 0.5), 1.0)
                     sdf.circle(self.rect_size.x * 0.64, 9.0, 5.0)
-                    sdf.stroke(self.color_accent * 0.45, 0.8)
+                    sdf.stroke(vec4(self.color_accent.rgb, 0.6), 0.8)
                 } else if self.hepta_material < 1.5 {
                     // Prism: quiet facets across the top rail.
                     sdf.move_to(self.rect_size.x * 0.31, 0.0)
                     sdf.line_to(self.rect_size.x * 0.37, self.rect_size.y)
                     sdf.line_to(self.rect_size.x * 0.46, 0.0)
-                    sdf.stroke(self.color_accent * 0.18, 0.8)
+                    sdf.stroke(vec4(self.color_accent.rgb, 0.3), 0.8)
                 } else {
                     // Ceramic: a slim champagne seam in matte charcoal.
                     sdf.rect(0.0, self.rect_size.y - 1.0, self.rect_size.x, 1.0)
-                    sdf.fill(self.color_accent * 0.18)
+                    sdf.fill(vec4(self.color_accent.rgb, 0.3))
                 }
                 return sdf.result
             }

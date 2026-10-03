@@ -49,7 +49,7 @@ pub(super) fn start(app: &mut App, cx: &mut Cx) -> bool {
     host.set_fixture_unconfigured();
     app.update_login_visibility(cx);
     #[cfg(target_arch = "wasm32")]
-    if mode == "login-usability" { observation::start(cx); }
+    if mode == "login-usability" || mode.starts_with("chat-") { observation::start(cx); }
     cx.redraw_all();
     true
 }
@@ -139,14 +139,28 @@ mod tests {
 
     #[test]
     fn actual_app_templates_compile_without_script_errors() {
+        let _ = makepad_widgets::makepad_platform::shader_error::take();
         let mut cx = Cx::new(Box::new(|_, _| {}));
         cx.with_vm(|vm| {
             vm.bx.captured_errors = Some(Vec::new());
             let value = <App as AppMain>::script_mod(vm);
             let _app = App::script_from_value(vm, value);
+            // Dock templates are lazy: instantiate the real splitter too, so a
+            // shader scope error cannot hide behind an otherwise valid App.
+            let splitter = script_eval!(vm, { mod.widgets.RobrixSplitter {} });
+            let _splitter = Splitter::script_from_value(vm, splitter);
+            for value in [
+                script_eval!(vm, { mod.widgets.RoomScreen {} }),
+                script_eval!(vm, { mod.widgets.ImageMessage {} }),
+                script_eval!(vm, { mod.widgets.Avatar {} }),
+                script_eval!(vm, { mod.widgets.ReactionList {} }),
+            ] {
+                let _widget = WidgetRef::script_from_value(vm, value);
+            }
             let errors = vm.take_errors();
             assert!(errors.is_empty(), "actual app template errors: {errors:#?}");
         });
+        assert_eq!(makepad_widgets::makepad_platform::shader_error::take(), None, "native shader diagnostics are independent of script errors");
     }
 
     #[test]

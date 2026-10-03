@@ -159,7 +159,7 @@ script_mod! {
 
     mod.widgets.COLOR_BG_PREVIEW_HOVER = #x463666
 
-    mod.widgets.COLOR_AVATAR_BG = #x382e55
+    mod.widgets.COLOR_AVATAR_BG = #x30343c
 
     mod.widgets.COLOR_AVATAR_BG_IDLE = #x231e39
 

@@ -1,0 +1,71 @@
+{
+  "candidate": "1ee5455b7c2b5d6004aac9d5e5660bed804406b6",
+  "tree": "ecc27d2c567d79d9ee88857635d42200078f242c",
+  "run": 37093182850,
+  "artifacts": {
+    "native": {
+      "id": 11263213752,
+      "zipSha256": "1d113e0eb5db97ba7db81bb3391d32b245b31756f45cf528cf0bcb12a05732f8",
+      "verifiedIncludedHashes": 61,
+      "exactFileSetVerified": true
+    },
+    "browser": {
+      "id": 11263588561,
+      "zipSha256": "4511cb1c09b970170ac420dd3f63f05f0137dc0d5f42164dab91fa3da568d7bc",
+      "verifiedIncludedHashes": 42,
+      "exactFileSetVerified": true
+    }
+  },
+  "reviewedNativeChatPngs": {
+    "native-chat-ceramic-narrow.png": {
+      "sha256": "170e0341d69e439f724b1452a558de8bafc0817f7745704ecdc70a644db2d543",
+      "bytes": 53630
+    },
+    "native-chat-ceramic-short.png": {
+      "sha256": "67bf4c056bd5ecc7dac60e7d05ed5cd0bc02bd0d4ea80a1720730990770a6454",
+      "bytes": 42324
+    },
+    "native-chat-ceramic-wide.png": {
+      "sha256": "0b63db69785898dbec17ad079a8b4fa5516638bb6aae0e459e055da19f5bd018",
+      "bytes": 160340
+    },
+    "native-chat-prism-narrow.png": {
+      "sha256": "6fd27a093d061c0471797b3c162de0855766ca08501ba15b6b212f16aa4c5655",
+      "bytes": 53700
+    },
+    "native-chat-prism-short.png": {
+      "sha256": "4e34d88e7dbb60fb439e877b16edb55bb32a08affe491c50e36a0b29b82b0b24",
+      "bytes": 42610
+    },
+    "native-chat-prism-wide.png": {
+      "sha256": "5b8c09d64e7e1ae6af8070fadf8c40ec764e244469d77c5bae575066a9a49198",
+      "bytes": 161638
+    },
+    "native-chat-titanium-narrow.png": {
+      "sha256": "0f60e27b793c89d8940dfbda3c6712e3bc0d5925348e11c9c38c17e292b17b3e",
+      "bytes": 54769
+    },
+    "native-chat-titanium-short.png": {
+      "sha256": "361ba295f5a8f95bc3df99109afaf34e9242fe71af4e7d87cd27c4e2b83f1e61",
+      "bytes": 44011
+    },
+    "native-chat-titanium-wide.png": {
+      "sha256": "901901d08817b9860e6fd41f6d09f0c6c4c2eee5208a171d5c909aac7b9e4b27",
+      "bytes": 160858
+    }
+  },
+  "findings": {
+    "nativeJob": "passed, but shader diagnostics escaped the old regex; not accepted",
+    "browserCapture": "failed at Console DrawSplitter unbound COLOR_TEXT; no chat or strict navigation exercise reached",
+    "loginFontTyping": "passed: seven font resources once, input offsets <=0.5px, footer contrast 7.175",
+    "visualAcceptance": false,
+    "gaps": [
+      "A/C retain purple chrome and avatars",
+      "header subtitle clipped and initial author partially offscreen",
+      "timeline reads as row cards; composer too short",
+      "narrow/short native capture is room list, not selected chat",
+      "material detail and attachment/reply/reaction composition below concept references"
+    ],
+    "fixQualification": "pending a new exact-source native/browser run"
+  }
+}

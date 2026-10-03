@@ -58,3 +58,24 @@ Actual screenshots, full theme-switch interaction, active SDK reply/edit target
 preservation, modal keyboard behavior, IME/accessibility and live Matrix flows
 remain acceptance work. This stage is not a claim of completed visual recreation,
 production readiness, live-account qualification or deployment.
+
+
+## First pixel review and repair stage
+
+`qualification/themes-1ee5455b.json` binds the inspected run to its ZIP and
+screenshot hashes. Native's job passed but its log contained the same unbound
+DrawSplitter shader as the failed browser Console capture. Native acceptance is
+therefore rejected; the tightened gate permits only the known headless audio
+fallback. Login font/typing passed, while strict browser navigation was not reached.
+
+The repair reserves header/icon/subtitle geometry, aligns names and timestamps,
+uses one quiet timeline plane, gives the real multiline composer more height,
+and removes purple chrome from Titanium/Ceramic. Avatar fallback paint has its
+own narrowly owned uniform; explicit avatar colors and images remain untouched.
+The fixture now exercises production ImageMessage, reply-preview and reaction
+widgets with synthetic content and no timeline/delivery authority. Native narrow
+capture records the list then selects the real room with a pointer action.
+Browser theme checks separately cover pointer-retained composer focus and
+keyboard-retained selector focus, while comparing real editor identity, draft,
+room/tab, fixture account and Console authority. No active SDK reply/edit claim is
+made. New exact-source native/web captures and pixel comparison remain required.

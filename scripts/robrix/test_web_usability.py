@@ -62,3 +62,75 @@ class TestActualUsabilityReceipt(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class ThemeSwitchGate(unittest.TestCase):
+    def test_owner_or_focus_loss_cannot_pass(self):
+        import copy
+        from chat_usability import switch_checks
+
+        before = {
+            "controls": {"composer": {"uid": "editor-1", "focused": True}},
+            "selected_room": "!fixture:example.invalid",
+            "selected_tab": "Home",
+            "fixture_logged_in": True,
+            "console_authority": [False, False, False, 0, False],
+        }
+        after = dict(
+            copy.deepcopy(before), theme="PolarPrism", draft_matches_fixture=True
+        )
+        good = switch_checks(before, after, "PolarPrism")
+        self.assertTrue(all(value for key, value in good.items() if key != "theme"))
+        for key, replacement in [
+            ("selected_room", None),
+            ("selected_tab", "Console"),
+            ("fixture_logged_in", False),
+            ("console_authority", [True]),
+            ("draft_matches_fixture", False),
+            ("theme", "ObsidianCeramic"),
+        ]:
+            changed = dict(copy.deepcopy(after), **{key: replacement})
+            self.assertFalse(
+                all(
+                    value
+                    for key, value in switch_checks(
+                        before, changed, "PolarPrism"
+                    ).items()
+                    if key != "theme"
+                )
+            )
+        for key, value in [("uid", "replacement-editor"), ("focused", False)]:
+            changed = copy.deepcopy(after)
+            changed["controls"]["composer"][key] = value
+            self.assertFalse(
+                all(
+                    value
+                    for key, value in switch_checks(
+                        before, changed, "PolarPrism"
+                    ).items()
+                    if key != "theme"
+                )
+            )
+
+    def test_keyboard_activation_keeps_theme_control_focus(self):
+        from chat_usability import switch_checks
+
+        state = {
+            "controls": {
+                "composer": {"uid": "same", "focused": False},
+                "theme_a": {"focused": True},
+            },
+            "theme": "DeepSpaceTitanium",
+            "draft_matches_fixture": True,
+            "selected_room": "synthetic",
+            "selected_tab": "Home",
+            "fixture_logged_in": True,
+            "console_authority": [False],
+        }
+        check = switch_checks(
+            state, state, "DeepSpaceTitanium", expected_focus="theme_a"
+        )
+        self.assertTrue(all(v for k, v in check.items() if k != "theme"))
+        self.assertFalse(
+            switch_checks(state, state, "DeepSpaceTitanium")["input_mode_focus"]
+        )

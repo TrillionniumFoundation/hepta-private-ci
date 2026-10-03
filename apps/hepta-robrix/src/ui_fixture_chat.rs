@@ -5,7 +5,8 @@ use crate::{
     app::SelectedRoom,
     home::rooms_list::{enqueue_rooms_list_update, JoinedRoomInfo, RoomsListAction, RoomsListRef, RoomsListUpdate},
     room::FetchedRoomAvatar,
-    shared::html_or_plaintext::HtmlOrPlaintextWidgetRefExt,
+    shared::{html_or_plaintext::HtmlOrPlaintextWidgetRefExt, text_or_image::TextOrImageWidgetRefExt},
+    home::event_reaction_list::ReactionListWidgetRefExt,
     utils::RoomNameId,
 };
 
@@ -43,6 +44,13 @@ pub(super) fn select_room(cx: &mut Cx) {
     cx.widget_action(uid, RoomsListAction::Selected(SelectedRoom::JoinedRoom { room_name_id: room(0) }));
 }
 
+#[derive(Default)]
+struct FixtureDrawState {
+    initialized: std::collections::HashSet<WidgetUid>,
+    lists: std::collections::HashSet<WidgetUid>,
+    image: Option<Texture>,
+}
+
 pub(crate) fn draw(view: &mut View, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
     // These are the production PortalList's Message templates, including its real
     // HTML/plaintext body, Avatar, Timestamp and RoomInputBar beneath the list.
@@ -57,13 +65,48 @@ pub(crate) fn draw(view: &mut View, cx: &mut Cx2d, scope: &mut Scope, walk: Walk
         let list = child.as_portal_list();
         let Some(mut list) = list.borrow_mut() else { continue; };
         list.set_item_range(cx, 0, MESSAGES.len());
+        if cx.global::<FixtureDrawState>().lists.insert(list.widget_uid()) {
+            list.set_tail_range(false);
+            list.set_first_id_and_scroll(0, 0.0);
+        }
         while let Some(index) = list.next_visible_item(cx) {
             let Some((name, time, body)) = MESSAGES.get(index) else { continue; };
-            let item = list.item(cx, index, id!(Message));
+            let item = list.item(cx, index, if index == 0 { id!(ImageMessage) } else { id!(Message) });
             item.label(cx, ids!(username)).set_text(cx, name);
             item.label(cx, ids!(timestamp.ts_label)).set_text(cx, time);
             item.label(cx, ids!(avatar.text_view.text)).set_text(cx, ["◇", "◯", "△", "◈", "H"][index]);
-            item.html_or_plaintext(cx, ids!(content.message)).show_plaintext(cx, body);
+            if index == 0 {
+                item.view(cx, ids!(caption_view)).set_visible(cx, true);
+                item.html_or_plaintext(cx, ids!(caption)).show_plaintext(cx, body);
+            } else {
+                item.html_or_plaintext(cx, ids!(content.message)).show_plaintext(cx, body);
+            }
+            if cx.global::<FixtureDrawState>().initialized.insert(item.widget_uid()) {
+                if index == 0 {
+                    // A small procedural material swatch, carried by the real
+                    // ImageMessage/TextOrImage path. No files or media requests.
+                    let texture = if let Some(texture) = cx.global::<FixtureDrawState>().image.clone() { texture } else {
+                        let mut bytes = Vec::with_capacity(320 * 96 * 4);
+                        for y in 0..96 {
+                            for x in 0..320 {
+                                let facet = ((x + y * 2) % 160) as u8;
+                                bytes.extend_from_slice(&[25 + facet / 4, 23 + facet / 5, 50 + facet / 2, 255]);
+                            }
+                        }
+                        let texture = image_cache::ImageBuffer::new(&bytes, 320, 96).unwrap().into_new_texture(cx);
+                        cx.global::<FixtureDrawState>().image = Some(texture.clone());
+                        texture
+                    };
+                    let _ = item.text_or_image(cx, ids!(content.message.image)).show_image(cx, None,
+                        |cx, image| -> Result<(usize, usize), ()> { image.set_texture(cx, Some(texture)); Ok((320, 96)) });
+                }
+                if index == 2 {
+                    item.widget(cx, ids!(replied_to_message)).set_visible(cx, true);
+                    item.label(cx, ids!(reply_preview_username)).set_text(cx, "Mika · synthetic reply");
+                    item.html_or_plaintext(cx, ids!(reply_preview_body)).show_plaintext(cx, "The room list and top tabs feel especially clean.");
+                    item.reaction_list(cx, ids!(reaction_list)).set_fixture(cx, room(0).room_id().clone());
+                }
+            }
             item.draw_all(cx, scope);
         }
     }

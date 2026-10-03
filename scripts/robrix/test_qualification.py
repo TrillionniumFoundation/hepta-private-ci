@@ -1,4 +1,5 @@
 """Guard against counting compile-only, empty, skipped or failed tests as execution."""
+
 import subprocess
 import sys
 import tempfile
@@ -14,6 +15,19 @@ from stage_evidence import stage
 
 
 class TestExecutionGate(unittest.TestCase):
+    def test_native_shader_diagnostics_fail_closed(self):
+        for output in [
+            "[E] src/home/light_themed_dock.rs:62:60 - shader variable COLOR_TEXT not found.",
+            "[E] draw_vars.rs:148:9 - draw shader 'DrawSplitter' failed to compile and will NOT be drawn:",
+            "[E] app.rs:1:1 - script field has invalid type",
+            "thread 'main' panicked at src/app.rs:2:3",
+        ]:
+            with self.subTest(output=output), self.assertRaises(AssertionError):
+                qualify.validate_native_log(output)
+        qualify.validate_native_log(
+            "[E] pulse_audio.rs:749:17 - PulseAudio: pa_context_connect failed (Connection refused), using ALSA only"
+        )
+
     def check(self, output, minimum=4):
         with patch.object(qualify, 'run', return_value=output):
             qualify.checked_tests(['not-executed'], 'unused', minimum)

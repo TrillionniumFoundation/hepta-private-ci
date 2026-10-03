@@ -19,9 +19,9 @@ script_mod! {
     use mod.widgets.*
 
 
-    mod.widgets.COLOR_HEADER_FG = #F;
+    mod.widgets.COLOR_HEADER_FG = mod.widgets.COLOR_TEXT_SECONDARY;
 
-    mod.widgets.COLOR_HEADER_BG = (mod.widgets.COLOR_ROBRIX_PURPLE); // the purple color from the Robrix logo
+    mod.widgets.COLOR_HEADER_BG = (mod.widgets.COLOR_PRIMARY);
 
     mod.widgets.CollapsibleHeader = set_type_default() do #(CollapsibleHeader::register_widget(vm)) {
         ..mod.widgets.RoundedView
@@ -35,6 +35,7 @@ script_mod! {
 
         cursor: MouseCursor.Hand,
         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
             border_radius: 4.0
             color: mod.widgets.COLOR_HEADER_BG
         }

@@ -89,7 +89,7 @@ script_mod! {
                 // Bottom-align everything to ensure that buttons always stick to the bottom
                 // even when the mentionable_text_input box is very tall.
                 align: Align{y: 1.0},
-                padding: 6,
+                padding: 10,
 
                 open_popup_menu_button := RobrixIconButton {
                     padding: 9
@@ -122,7 +122,9 @@ script_mod! {
                     },
 
                     text_input := RobrixTextInput {
-                        empty_text: "Write a message (in Markdown) ..."
+                        height: Fit{min: FitBound.Abs(68.0)}
+                        padding: Inset{left: 12, right: 12, top: 12, bottom: 12}
+                        empty_text: "Write a message …"
                         is_multiline: true,
                     }
                 }

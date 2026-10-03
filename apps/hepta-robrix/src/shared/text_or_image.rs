@@ -18,7 +18,7 @@ script_mod! {
             visible: true,
             width: Fill, height: Fit,
             show_bg: true,
-            draw_bg.color: #dddddd
+            draw_bg +: {hepta_owned_material: uniform(1.0), color: COLOR_SECONDARY}
 
             label := Label {
                 width: Fill, height: Fit,

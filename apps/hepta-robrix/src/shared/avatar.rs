@@ -44,7 +44,19 @@ script_mod! {
             visible: true,
             align: Align { x: 0.5, y: 0.5 }
             show_bg: true,
-            draw_bg.color: (COLOR_AVATAR_BG)
+            draw_bg +: {
+                // Only the fallback paint is theme-owned. Explicit caller colors
+                // and image pixels remain outside theme retargeting.
+                hepta_owned_avatar: uniform(1.0)
+                hepta_color_avatar: uniform(COLOR_BG_PREVIEW)
+                color: vec4(-1.0)
+                pixel: fn() {
+                    let sdf = Sdf2d.viewport(self.pos * self.rect_size)
+                    let c = self.rect_size * 0.5
+                    sdf.circle(c.x, c.y, min(c.x, c.y) - 0.5)
+                    return sdf.fill(if self.color.x < -0.5 self.hepta_color_avatar else self.color)
+                }
+            }
 
             text := Label {
                 padding: 0,

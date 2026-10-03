@@ -93,7 +93,7 @@ script_mod! {
                 height: (mod.widgets.NAVIGATION_TAB_BAR_AVATAR_SIZE)
                 // If no avatar picture, use white text on a dark background.
                 text_view +: {
-                    draw_bg.color: (COLOR_FG_DISABLED),
+                    draw_bg.color: #x555d69,
                     text +: {
                         draw_text +: {
                             text_style: theme.font_regular { font_size: mod.widgets.NAVIGATION_TAB_BAR_AVATAR_FONT_SIZE },
@@ -191,7 +191,8 @@ script_mod! {
             height: Fill
 
             draw_bg +: {
-                color: (COLOR_SECONDARY)
+                hepta_owned_material: uniform(1.0)
+                color: (COLOR_PRIMARY)
                 border_radius: 4.0
             }
 
@@ -229,7 +230,8 @@ script_mod! {
             }
 
             draw_bg +: {
-                color: (COLOR_SECONDARY)
+                hepta_owned_material: uniform(1.0)
+                color: (COLOR_PRIMARY)
                 border_radius: 4.0
             }
 

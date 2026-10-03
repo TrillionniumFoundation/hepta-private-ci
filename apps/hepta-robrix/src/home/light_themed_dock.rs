@@ -16,6 +16,7 @@ script_mod! {
             color: COLOR_PRIMARY_DARKER
             color_hover: COLOR_ROBRIX_PURPLE
             color_drag: COLOR_ROBRIX_PURPLE
+            color_grab: uniform(COLOR_TEXT)
 
             pixel: fn() {
                 let sdf = Sdf2d.viewport(self.pos * self.rect_size)
@@ -58,7 +59,7 @@ script_mod! {
                 }
 
                 // Grab bar: white when hovered/dragged, otherwise matches body
-                let grab_color = mix(self.color, COLOR_TEXT, self.hover)
+                let grab_color = mix(self.color, self.color_grab, self.hover)
                 return sdf.fill_keep(grab_color)
             }
         }

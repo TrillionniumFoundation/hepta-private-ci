@@ -66,6 +66,30 @@ fn only_explicit_materials_own_color_slots() {
 }
 
 #[test]
+fn avatar_ownership_excludes_caller_color_even_when_palette_bytes_match() {
+    let mut cx = Cx::new(Box::new(|_, _| {}));
+    let avatar = cx.with_vm(|vm| {
+        makepad_widgets::script_mod(vm);
+        let value = script_eval!(vm, {
+            use mod.prelude.widgets.*
+            mod.widgets.SolidView {
+                draw_bg +: {
+                    hepta_owned_avatar: uniform(1.0)
+                    hepta_color_avatar: uniform(#x382e55)
+                    color: #x171329
+                    pixel: fn() { return if self.color.x < -0.5 self.hepta_color_avatar else self.color }
+                }
+            }
+        });
+        View::script_from_value(vm, value)
+    });
+    let shader = avatar.draw_bg.draw_vars.draw_shader_id.unwrap().index;
+    let slots = owned_material(&cx, shader).unwrap();
+    assert!(slots.colors.is_empty(), "caller colors never grant theme ownership");
+    assert_eq!(slots.uniforms.iter().map(|s| s.0).collect::<Vec<_>>(), vec![id!(hepta_color_avatar)]);
+}
+
+#[test]
 fn paint_changes_owned_material_without_touching_same_color_foreign_content() {
     let mut cx = Cx::new(Box::new(|_, _| {}));
     let (mut panel, mut foreign) = cx.with_vm(|vm| {

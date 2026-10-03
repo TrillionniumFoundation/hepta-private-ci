@@ -33,7 +33,7 @@ use crate::{
     },
     room::{BasicRoomDetails, reply_preview::{CollapsiblePreviewRef, CollapsiblePreviewWidgetRefExt}, room_input_bar::{RoomInputBarState, RoomInputBarWidgetRefExt}, typing_notice::TypingNoticeWidgetExt},
     shared::{
-        attachment_download::{enqueue_already_downloading_notification, DownloadDisplayState, DownloadKind, DownloadableAttachment, PendingDownload, PendingDownloadState, TimelineUpdateSenderOption, TransferKind, media_source_mxc, start_attachment_download, start_attachment_share}, avatar::{AvatarState, AvatarWidgetRefExt}, confirmation_modal::ConfirmationModalContent, context_menu::ContextMenuClosed, file_upload_modal::FileUploadAttemptId, hover_highlight::handle_hover_hit, html_or_plaintext::{HtmlOrPlaintextRef, HtmlOrPlaintextWidgetRefExt, RobrixHtmlLinkAction}, image_viewer::{ImageViewerAction, ImageViewerMetaData, LoadState}, jump_to_bottom_button::{JumpToBottomButtonWidgetExt, UnreadMessageCount, SCROLL_TO_BOTTOM_SPEED}, popup_list::{PopupKind, enqueue_popup_notification}, restore_status_view::RestoreStatusViewWidgetExt, room_input_popup_menu::{RoomInputPopupMenuAction, RoomInputPopupMenuRef, RoomInputPopupMenuWidgetExt}, styles::*, text_or_image::{TextOrImageAction, TextOrImageRef, TextOrImageWidgetRefExt}, timestamp::TimestampWidgetRefExt
+        attachment_download::{enqueue_already_downloading_notification, DownloadDisplayState, DownloadKind, DownloadableAttachment, PendingDownload, PendingDownloadState, TimelineUpdateSenderOption, TransferKind, media_source_mxc, start_attachment_download, start_attachment_share}, avatar::{AvatarState, AvatarWidgetExt, AvatarWidgetRefExt}, confirmation_modal::ConfirmationModalContent, context_menu::ContextMenuClosed, file_upload_modal::FileUploadAttemptId, hover_highlight::handle_hover_hit, html_or_plaintext::{HtmlOrPlaintextRef, HtmlOrPlaintextWidgetRefExt, RobrixHtmlLinkAction}, image_viewer::{ImageViewerAction, ImageViewerMetaData, LoadState}, jump_to_bottom_button::{JumpToBottomButtonWidgetExt, UnreadMessageCount, SCROLL_TO_BOTTOM_SPEED}, popup_list::{PopupKind, enqueue_popup_notification}, restore_status_view::RestoreStatusViewWidgetExt, room_input_popup_menu::{RoomInputPopupMenuAction, RoomInputPopupMenuRef, RoomInputPopupMenuWidgetExt}, styles::*, text_or_image::{TextOrImageAction, TextOrImageRef, TextOrImageWidgetRefExt}, timestamp::TimestampWidgetRefExt
     },
     sliding_sync::{BackwardsPaginateUntilEventRequest, MatrixRequest, PaginationDirection, TimelineEndpoints, TimelineKind, TimelineRequestSender, UserPowerLevels, submit_async_request, try_submit_async_request, take_timeline_endpoints, TimelineEndpointsRecreated}, utils::{self, MEDIA_THUMBNAIL_FORMAT, RoomNameId, unix_time_millis_to_datetime}
 };
@@ -245,10 +245,10 @@ script_mod! {
             color_highlight: instance(COLOR_BG_PREVIEW)
             highlight: instance(0.0)
             hover: instance(0.0)
-            color: instance((COLOR_PRIMARY)) // default color)
+            color: instance((COLOR_PRIMARY_DARKER)) // one quiet conversation plane
             color_hover: instance(COLOR_LIST_ITEM_BG_HOVER)
 
-            mentions_bar_color: instance((COLOR_PRIMARY))
+            mentions_bar_color: instance((COLOR_PRIMARY_DARKER))
             mentions_bar_width: instance(4.0)
 
             pixel: fn() {
@@ -324,7 +324,7 @@ script_mod! {
             width: Fill,
             height: Fit
             flow: Right,
-            padding: Inset{top: 14, bottom: 12, left: 22, right: 24},
+            padding: Inset{top: 18, bottom: 14, left: 24, right: 24},
 
             profile := View {
                 align: Align{x: 0.5, y: 0.0} // centered horizontally, top aligned
@@ -335,9 +335,6 @@ script_mod! {
                 avatar := Avatar {
                     width: 38,
                     height: 38,
-                }
-                timestamp := Timestamp {
-                    margin: Inset{ top: 5.9 }
                 }
                 edited_indicator := EditedIndicator { }
                 tsp_sign_indicator := TspSignIndicator { }
@@ -353,11 +350,12 @@ script_mod! {
                     flow: Right,
                     width: Fill,
                     height: Fit,
+                    align: Align{y: 0.5}
                     username := Label {
-                        width: Fill,
+                        width: Fit,
                         flow: Flow.Right { wrap: false },
                         padding: 0,
-                        margin: Inset{bottom: 7.0, top: 7.0, right: 10.0,}
+                        margin: Inset{bottom: 6.0, top: 0.0, right: 12.0,}
                         max_lines: 1
                         text_overflow: Ellipsis
                         draw_text +: {
@@ -366,6 +364,7 @@ script_mod! {
                         }
                         text: "<Username not available>"
                     }
+                    timestamp := Timestamp { margin: Inset{bottom: 6} }
                 }
 
                 message := HtmlOrPlaintext { }
@@ -714,12 +713,16 @@ script_mod! {
                 width: Fill, height: Fill,
                 flow: Down,
 
-                HeptaPanel {
-                    width: Fill, height: 64
-                    padding: Inset{left: 24, right: 18, top: 12, bottom: 12}
-                    flow: Down, spacing: 5
-                    room_heading := Label { text: "Room" draw_text +: {color: COLOR_TEXT, text_style: theme.font_bold {font_size: 16}} }
-                    room_subtitle := Label { text: "Conversation" draw_text +: {color: COLOR_TEXT_SECONDARY, text_style: theme.font_regular {font_size: 10}} }
+                room_header := HeptaPanel {
+                    width: Fill, height: 78
+                    padding: Inset{left: 22, right: 18, top: 14, bottom: 14}
+                    flow: Right, spacing: 16, align: Align{y: 0.5}
+                    room_avatar := Avatar { width: 44, height: 44 }
+                    View {
+                        width: Fill, height: Fit, flow: Down, spacing: 6
+                        room_heading := Label { width: Fill, padding: 0, text: "Room", draw_text +: {color: COLOR_TEXT, text_style: theme.font_bold {font_size: 16}} }
+                        room_subtitle := Label { width: Fill, padding: 0, text: "Conversation", draw_text +: {color: COLOR_TEXT_SECONDARY, text_style: theme.font_regular {font_size: 10}} }
+                    }
                 }
                 // First, display the timeline of all messages/events.
                 timeline := mod.widgets.Timeline { }
@@ -3378,6 +3381,7 @@ impl RoomScreen {
         if crate::app::ui_fixture::chat_active(cx) {
             self.room_name_id = Some(room_name_id.clone());
             self.view.label(cx, ids!(room_heading)).set_text(cx, &room_name_id.to_string());
+            self.view.avatar(cx, ids!(room_avatar)).show_text(cx, None, None, &room_name_id.to_string());
             self.view.label(cx, ids!(room_subtitle)).set_text(cx, "Synthetic fixture · no account or delivery");
             self.redraw(cx);
             return;
@@ -6343,8 +6347,8 @@ impl Widget for Message {
         if self.details.as_ref().is_some_and(|d| d.should_be_highlighted) {
             script_apply_eval!(cx, self, {
                 draw_bg +: {
-                    color: #ffffd1,
-                    mentions_bar_color: #ffd54f
+                    color: COLOR_BG_PREVIEW,
+                    mentions_bar_color: COLOR_ACTIVE_PRIMARY
                 }
             });
         }

@@ -92,6 +92,11 @@ impl Default for ConsoleHost {
 }
 impl ConsoleHost {
     #[cfg(feature = "ui-fixture")]
+    pub(crate) fn fixture_authority(&self) -> (bool, bool, bool, u64, bool) {
+        (self.started, self.closed, self.busy, self.epoch, self.can_refresh())
+    }
+
+    #[cfg(feature = "ui-fixture")]
     pub(crate) fn set_fixture_unconfigured(&mut self) {
         self.status = "UI fixture: Console is not configured".into();
         self.detail = "Account-free fixture of the actual Robrix/Makepad dock. No Matrix, Agentd, keyring or console connection was created.".into();

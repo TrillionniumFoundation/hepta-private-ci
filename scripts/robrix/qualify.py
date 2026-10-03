@@ -109,7 +109,7 @@ def native_tests():
                    '--lib', 'hepta_font_tests', '--', '--nocapture'], 'makepad-font-cache-tests.log', 1)
     checked_tests(['cargo', '+1.96.0', 'test', '--locked', '-p', 'makepad-widgets',
                    '--lib', 'hepta_nav_tests', '--', '--nocapture'], 'makepad-nav-tests.log', 3)
-    for module, minimum in [('shared::hepta_theme::tests', 5),
+    for module, minimum in [('shared::hepta_theme::tests', 6),
                             ('hepta_console::tests', 4),
                             ('home::main_desktop_ui::hepta_dock_tests', 3),
                             ('app::ui_fixture::tests', 4),
@@ -288,6 +288,25 @@ def capture_short_login_scroll(window, process):
     }, indent=2) + '\n')
 
 
+def validate_native_log(output):
+    # The headless runner has no PulseAudio daemon. This one known fallback is
+    # harmless; all other Makepad error diagnostics remain fatal.
+    lines = [
+        line
+        for line in output.splitlines()
+        if not (
+            "pulse_audio.rs:" in line
+            and "PulseAudio: pa_context_connect failed (Connection refused), using ALSA only"
+            in line
+        )
+    ]
+    errors = "\n".join(lines)
+    assert not re.search(
+        r'\[E\]|"level"\s*:\s*"error"|panicked at|shader.*(?:error|failed|not found)|script.*error|not found error',
+        errors,
+        re.I,
+    ), errors
+
 def native_capture():
     from PIL import Image
     from render_checks import login_pixels
@@ -309,6 +328,12 @@ def native_capture():
                     run(['xdotool', 'windowsize', window, str(width), str(height)], cwd=ROOT)
                     time.sleep(3)
                     assert process.poll() is None, 'Native application exited before capture'
+                    if scene.startswith('chat-') and label == 'narrow':
+                        # Production resize opens the list; retain evidence, then
+                        # select the real first room through its pointer handler.
+                        run(['import', '-window', window, str(OUT / f'native-{scene}-narrow-room-list.png')], cwd=ROOT)
+                        run(['xdotool', 'mousemove', '--window', window, '180', '215', 'click', '1'], cwd=ROOT)
+                        time.sleep(1)
                     png = OUT / f'native-{scene}-{label}.png'
                     run(['import', '-window', window, str(png)], cwd=ROOT)
                     with Image.open(png) as image:
@@ -327,7 +352,7 @@ def native_capture():
                     process.kill()
                     process.wait()
         errors = (OUT / f'native-{scene}.log').read_text()
-        assert not re.search(r'panicked at|shader.*error|script.*error|not found error', errors, re.I), errors
+        validate_native_log(errors)
 
 
 if __name__ == '__main__':

@@ -6,31 +6,10 @@ use crate::{LivePtr, widget_ref_from_live_ptr};
 use matrix_sdk::ruma::{OwnedRoomId, OwnedUserId};
 use matrix_sdk_ui::timeline::{ReactionsByKeyBySender, TimelineEventItemId};
 
-const EMOJI_BORDER_COLOR_INCLUDE_SELF: Vec4 = Vec4 {
-    x: 0.0,
-    y: 0.6,
-    z: 0.47,
-    w: 1.0,
-}; // DarkGreen
-const EMOJI_BORDER_COLOR_NOT_INCLUDE_SELF: Vec4 = Vec4 {
-    x: 0.714,
-    y: 0.73,
-    z: 0.75,
-    w: 1.0,
-}; // Grey
-
-const EMOJI_BG_COLOR_INCLUDE_SELF: Vec4 = Vec4 {
-    x: 0.89,
-    y: 0.967,
-    z: 0.929,
-    w: 1.0,
-}; // LightGreen
-const EMOJI_BG_COLOR_NOT_INCLUDE_SELF: Vec4 = Vec4 {
-    x: 0.968,
-    y: 0.976,
-    z: 0.98,
-    w: 1.0,
-}; // LightGrey
+const EMOJI_BORDER_COLOR_INCLUDE_SELF: Vec4 = crate::shared::hepta_theme::rgba(0xbba6ffff);
+const EMOJI_BORDER_COLOR_NOT_INCLUDE_SELF: Vec4 = crate::shared::hepta_theme::rgba(0x4c4269ff);
+const EMOJI_BG_COLOR_INCLUDE_SELF: Vec4 = crate::shared::hepta_theme::rgba(0x382e55ff);
+const EMOJI_BG_COLOR_NOT_INCLUDE_SELF: Vec4 = crate::shared::hepta_theme::rgba(0x231e39ff);
 
 script_mod! {
     use mod.prelude.widgets.*
@@ -57,15 +36,16 @@ script_mod! {
             margin: Inset{ top: 3, bottom: 3, left: 0, right: 6 },
 
             draw_bg +: {
+                hepta_owned_material: uniform(1.0)
                 // Anything that we apply over must be an `instance`,
                 // and their names must be distinct from the base Button type.
                 reaction_bg_color: instance(mod.widgets.COLOR_BUTTON_GREY)
                 reaction_border_color: instance(#001A11)
                 // Override values from the base Button type.
-                color_hover: #fef65b
+                color_hover: COLOR_ACTIVE_PRIMARY
                 hover: 0.0
                 border_size: 1.5
-                border_radius: 3.0
+                border_radius: 9.0
 
                 get_color: fn() -> vec4 {
                     return mix(self.reaction_bg_color, mix(self.reaction_bg_color, self.color_hover, 0.2), self.hover)
@@ -237,6 +217,23 @@ impl ReactionList {
 
 
 impl ReactionListRef {
+    /// Account-free fixture data rendered by the production reaction Button.
+    #[cfg(feature = "ui-fixture")]
+    pub(crate) fn set_fixture(&self, cx: &mut Cx, room_id: OwnedRoomId) {
+        let Some(mut inner) = self.borrow_mut() else { return };
+        if !inner.children.is_empty() { return; }
+        let mut button = widget_ref_from_live_ptr(cx, inner.item).as_button();
+        button.set_text(cx, "♥  3");
+        let bg = EMOJI_BG_COLOR_NOT_INCLUDE_SELF;
+        let border = EMOJI_BORDER_COLOR_NOT_INCLUDE_SELF;
+        script_apply_eval!(cx, button, {draw_bg +: {reaction_bg_color: #(bg), reaction_border_color: #(border)}});
+        inner.children.push((button, ReactionData {
+            reaction: "♥".into(), includes_user: false, reaction_senders: Vec::new(),
+            total_reaction_senders: 3, room_id,
+        }));
+        // No timeline authority or event ID is installed; a click cannot send.
+    }
+
     /// Set the list of reactions and their counts to display in the ReactionList widget,
     /// along with the room ID and event ID that these reactions are for.
     ///
