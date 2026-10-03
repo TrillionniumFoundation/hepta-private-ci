@@ -6,7 +6,7 @@ use crate::paired_supervised_test_support::id;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::Generation;
 
-fn profile() -> ParameterGeneratorProfileV3 {
+pub(crate) fn profile() -> ParameterGeneratorProfileV3 {
     let artifact = digest("artifact");
     let window = ProposalWindowV2 {
         window_id: id("window"),
@@ -125,7 +125,7 @@ fn request_codec_preserves_the_actual_round_and_refuses_no_change_for_update() {
     );
 }
 
-fn admission(profile: &ParameterGeneratorProfileV3) -> PlasticityAdmissionEvidenceV1 {
+pub(crate) fn admission(profile: &ParameterGeneratorProfileV3) -> PlasticityAdmissionEvidenceV1 {
     PlasticityAdmissionEvidenceV1 {
         baseline_id: id("baseline"),
         objective_digest: digest("paired-objective"),

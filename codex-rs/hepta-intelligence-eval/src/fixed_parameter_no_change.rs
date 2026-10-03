@@ -13,7 +13,7 @@ pub(crate) type HostResult<T> = Result<T, Box<dyn std::error::Error>>;
 pub(crate) const MAX_NO_CHANGE_OUTPUT_BYTES: usize = 64 * 1024;
 #[cfg(test)]
 #[path = "fixed_parameter_no_change_tests.rs"]
-mod tests;
+pub(crate) mod tests;
 
 #[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]

@@ -62,6 +62,14 @@ pub struct CompletedParameterEvaluationsV1 {
     evaluations: Vec<OriginalEvaluation>,
     dispositions: Vec<IndependentEvaluationDispositionV1>,
     reports: Vec<String>,
+    binding: Option<CompletedParameterEvaluationBindingV1>,
+}
+struct CompletedParameterEvaluationBindingV1 {
+    round: ParameterEvaluationRoundBindingV1,
+    profile: ParameterGeneratorProfileV3,
+    admission: PlasticityAdmissionEvidenceV1,
+    generator: SignedLearningEvidenceV1,
+    observer: SignedLearningEvidenceV1,
 }
 impl CompletedParameterEvaluationsV1 {
     pub fn evaluations(&self) -> &[OriginalEvaluation] {
@@ -72,6 +80,30 @@ impl CompletedParameterEvaluationsV1 {
     }
     pub fn into_original_evaluations(self) -> Vec<OriginalEvaluation> {
         self.evaluations
+    }
+    /// Match the complete original inputs checked by the completed-only reader.
+    /// This comparison does not refresh trust or Sources; consumers must obtain
+    /// this value through a fresh original inspection before joining materials.
+    pub fn validate_parameter_binding_v1(
+        &self,
+        round: &ParameterEvaluationRoundBindingV1,
+        profile: &ParameterGeneratorProfileV3,
+        admission: &PlasticityAdmissionEvidenceV1,
+        generator: &SignedLearningEvidenceV1,
+        observer: &SignedLearningEvidenceV1,
+    ) -> HostResult<()> {
+        let Some(binding) = &self.binding else {
+            return Err("completed E has no independently checked original request binding".into());
+        };
+        if &binding.round != round
+            || &binding.profile != profile
+            || &binding.admission != admission
+            || &binding.generator != generator
+            || &binding.observer != observer
+        {
+            return Err("completed E belongs to another original round or whole request".into());
+        }
+        Ok(())
     }
 }
 
@@ -124,7 +156,7 @@ pub fn inspect_completed_parameter_evaluations_v1(
         Ok(())
     };
     validate_actors(now)?;
-    let completed = replay_completed(
+    let mut completed = replay_completed(
         inputs, &generated, admission, generator, reviewer, trust, now,
     )?;
     let final_now = crate::fixed_calibration_host::now_ms()?;
@@ -184,6 +216,13 @@ pub fn inspect_completed_parameter_evaluations_v1(
             settled,
         )?;
     }
+    completed.binding = Some(CompletedParameterEvaluationBindingV1 {
+        round: round.clone(),
+        profile: profile.clone(),
+        admission: admission.clone(),
+        generator: generator.clone(),
+        observer: observer.clone(),
+    });
     Ok(completed)
 }
 
@@ -303,8 +342,13 @@ fn replay_completed(
         evaluations,
         dispositions,
         reports,
+        binding: None,
     })
 }
+
+#[cfg(test)]
+#[path = "fixed_parameter_completed_binding_tests.rs"]
+mod binding_tests;
 
 pub(crate) fn replay_rejected_preparation(
     inputs: &[FixedParameterCompletedReviewSourceV1],
