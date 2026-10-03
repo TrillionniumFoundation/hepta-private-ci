@@ -1,3 +1,8 @@
+#![allow(
+    clippy::unwrap_used,
+    reason = "deterministic test fixtures require successful setup; a setup error must fail the test immediately"
+)]
+
 use std::time::Duration;
 
 use codex_hepta_authbus::Error;
