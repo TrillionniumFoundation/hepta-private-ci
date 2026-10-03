@@ -326,11 +326,55 @@ pub(crate) fn runtime_fixture_for_subject_and_objective(
     subject_id: StableId,
     objective_digest: Digest32,
 ) -> RuntimeFixture {
+    runtime_fixture_with_material(
+        generation_value,
+        provider_delay,
+        witness_delay,
+        subject_id,
+        objective_digest,
+        false,
+    )
+    .0
+}
+
+/// Complete material fixture for the real protected context reader. Existing
+/// lock-metric fixtures keep their original body identity unchanged.
+pub(crate) fn runtime_fixture_for_parameter_preparation(
+    subject_id: StableId,
+    objective_digest: Digest32,
+) -> (
+    RuntimeFixture,
+    codex_hepta_agent_components::neuron::NeuronGenerationMaterialV2,
+) {
+    runtime_fixture_with_material(
+        1,
+        Duration::ZERO,
+        Duration::ZERO,
+        subject_id,
+        objective_digest,
+        true,
+    )
+}
+
+fn runtime_fixture_with_material(
+    generation_value: u64,
+    provider_delay: Duration,
+    witness_delay: Duration,
+    subject_id: StableId,
+    objective_digest: Digest32,
+    complete_body: bool,
+) -> (
+    RuntimeFixture,
+    codex_hepta_agent_components::neuron::NeuronGenerationMaterialV2,
+) {
     let root = checked(TempDir::new());
     let generation = checked(Generation::new(generation_value));
     let native = native_config(generation);
     let config = runtime_config(&native);
-    let body = body_bundle(generation);
+    let mut body = body_bundle(generation);
+    if complete_body {
+        body.effective_parameter_digest = checked(config.execution_profile_digest_v1());
+    }
     let scope = checked(NeuronTickInputV1::journal_scope_for_subject(
         &subject_id,
         objective_digest,
@@ -349,9 +393,23 @@ pub(crate) fn runtime_fixture_for_subject_and_objective(
     let witness = DelayedFileWitness {
         inner: checked(FileNeuronWitnessStoreV2::create(
             &witness_path,
-            witness_context,
+            witness_context.clone(),
         )),
         delay: witness_delay,
+    };
+    let material = codex_hepta_agent_components::neuron::NeuronGenerationMaterialV2 {
+        model_manifest: root.path().join("model-manifest.json"),
+        model_manifest_digest: config.model_manifest_digest,
+        generation_store: store_path.clone(),
+        runtime_index: index_path.clone(),
+        witness: witness_path,
+        native: native.clone(),
+        scope,
+        runtime: config.clone(),
+        body: body.clone(),
+        store_context: store_context.clone(),
+        index_context: index_context.clone(),
+        witness_context,
     };
     let runtime = checked(NeuronRuntimeV2::bootstrap(
         &store_path,
@@ -389,15 +447,18 @@ pub(crate) fn runtime_fixture_for_subject_and_objective(
         budget_micros: 30_000_000,
         stage: CanonicalStageV1::NeuralSignalCollected,
     };
-    RuntimeFixture {
-        _root: root,
-        handle,
-        invocation,
-        input,
-        canonical,
-        calls,
-        started,
-    }
+    (
+        RuntimeFixture {
+            _root: root,
+            handle,
+            invocation,
+            input,
+            canonical,
+            calls,
+            started,
+        },
+        material,
+    )
 }
 
 #[derive(Debug)]
@@ -779,4 +840,9 @@ fn neuron_runtime_v2_hol_diagnostic_matrix() {
             concurrency,
         ));
     }
+}
+
+pub(crate) fn commit_parameter_preparation_checkpoint(fixture: &RuntimeFixture) {
+    checked(fixture.invocation.execute(&fixture.canonical, &mut Allow));
+    assert_eq!(fixture.calls.load(Ordering::SeqCst), 1);
 }
