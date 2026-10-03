@@ -89,10 +89,24 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         probe = self.root / "probe.py"
         probe.write_text(PROBE, encoding="utf-8")
         if os.name == "nt":
-            executable = self.root / "bazel.cmd"
-            executable.write_text(
-                f'@"{sys.executable}" "{probe}" %*\n', encoding="utf-8"
+            # A .cmd probe adds CMD's 8191-character limit, which is not the
+            # native executable contract exercised by these long-argv cases.
+            # Use pip's installed Windows script launcher without downloading
+            # or compiling a binary, while retaining the complete probe argv.
+            from pip._vendor.distlib.scripts import ScriptMaker
+
+            launcher_source = self.root / "launcher-source"
+            launcher_source.mkdir()
+            (launcher_source / "bazel.py").write_text(
+                "#!python\n" + PROBE, encoding="utf-8"
             )
+            ScriptMaker(str(launcher_source), str(self.root)).make("bazel.py")
+            executable = self.root / "bazel.exe"
+            self.assertTrue(executable.is_file())
+            interpreter = sys.executable
+            if " " in interpreter:
+                interpreter = f'"{interpreter}"'
+            self.assertIn(f"#!{interpreter}\n".encode("utf-8"), executable.read_bytes())
             git_bash = (
                 Path(os.environ.get("ProgramFiles", "C:/Program Files"))
                 / "Git/bin/bash.exe"
@@ -187,6 +201,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             check=False,
             capture_output=True,
             text=True,
+            encoding="utf-8",
             timeout=60,
         )
         self.assertTrue(self.log.exists(), result.stdout + result.stderr)
@@ -291,7 +306,18 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertTrue("--config=clippy" in args)
         self.assertFalse(any(arg.startswith("--action_env=") for arg in args))
         self.assertFalse(any(arg.startswith("--target_pattern_file=") for arg in args))
-        self.assertFalse(self.target_file_log.exists())
+        if os.name == "nt":
+            # RUNNER_OS is a job label; it does not remove the native host's
+            # argv limit. Its safe roster transport must retain every target.
+            observed = json.loads(self.target_file_log.read_text(encoding="utf-8"))
+            self.assertEqual(observed["effective_patterns"], targets)
+            self.assertIn(
+                f"--target_pattern_file={observed['native_path']}",
+                observed["native_argv"],
+            )
+            self.assertFalse(Path(observed["path"]).exists())
+        else:
+            self.assertFalse(self.target_file_log.exists())
         self.assertFalse(self.path_mapping.exists())
         self.assertEqual(list(self.temporary_files.iterdir()), [])
 

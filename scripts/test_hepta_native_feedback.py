@@ -199,7 +199,6 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
 
 
 class NativeFeedbackExecutionTests(unittest.TestCase):
-
     def test_build_inputs_reach_automatic_scope_and_dependency_selection(self):
         try:
             from scripts.hepta_ci_dependencies import Graph, select_packages
