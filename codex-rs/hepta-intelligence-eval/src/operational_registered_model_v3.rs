@@ -11,6 +11,10 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
+
+#[path = "registered_material_projection_v3.rs"]
+mod manifest_projection;
+pub use manifest_projection::project_registered_artifact_manifest_configuration_v3;
 use std::path::Path;
 use std::path::PathBuf;
 

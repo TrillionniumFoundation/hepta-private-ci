@@ -10,11 +10,13 @@ pub(crate) struct CurrentCpuNeuronMaterialProjectionV3 {
     pub material: NeuronGenerationMaterialV2,
     pub material_source: InstalledCpuSourceV1,
     pub registered_use_configuration: Option<InstalledCpuSourceV1>,
+    pub current_registration_configuration: Option<InstalledCpuSourceV1>,
     descriptor: Source,
     descriptor_bytes: Vec<u8>,
     registry_path: std::path::PathBuf,
     registry_bytes: Vec<u8>,
     material_bytes: Vec<u8>,
+    registered_use_bytes: Option<Vec<u8>>,
 }
 impl CurrentCpuNeuronMaterialProjectionV3 {
     pub(crate) fn revalidate(&self) -> HostResult<()> {
@@ -28,6 +30,16 @@ impl CurrentCpuNeuronMaterialProjectionV3 {
                 != self.material_bytes
         {
             return Err("whole original current material projection changed".into());
+        }
+        if let Some(source) = &self.registered_use_configuration {
+            let (registration, bytes) = crate::initial_cpu_anchor::registered_model_use::current_material_source(
+                source, &self.identity.subject,
+            )?;
+            if self.registered_use_bytes.as_ref() != Some(&bytes)
+                || self.current_registration_configuration.as_ref() != Some(&registration)
+            {
+                return Err("whole indexed registration Source changed".into());
+            }
         }
         Ok(())
     }
@@ -90,16 +102,28 @@ pub(crate) fn read_current_cpu_neuron_material_projection_v3(
                 path: sources.configuration.path.clone(),
                 digest: sources.configuration.digest.clone(),
             });
+    let (current_registration_configuration, registered_use_bytes) = match &registered_use_configuration {
+        Some(source) => {
+            let (registration, bytes) = crate::initial_cpu_anchor::registered_model_use::current_material_source(
+                source, subject,
+            )?;
+            (Some(registration), Some(bytes))
+        }
+        None if identity.generation.get() == 1 => (None, None),
+        None => return Err("original successor registration Source absent".into()),
+    };
     let projection = CurrentCpuNeuronMaterialProjectionV3 {
         identity,
         material,
         material_source,
         registered_use_configuration,
+        current_registration_configuration,
         descriptor,
         descriptor_bytes,
         registry_path: parsed.registry_head,
         registry_bytes,
         material_bytes,
+        registered_use_bytes,
     };
     projection.revalidate()?;
     Ok(projection)

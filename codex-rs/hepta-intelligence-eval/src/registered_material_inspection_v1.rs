@@ -14,6 +14,7 @@ pub(super) fn manifests(
     now: u64,
 ) -> HostResult<(Vec<ValidatedArtifactManifestV2>, u64)> {
     let profile = plan.runtime.execution_profile_digest_v1()?;
+    let material_digest = Digest32::of_bytes(&encode_neuron_generation_material_v2(plan)?);
     let expected = [
         (ArtifactKind::Model, plan.runtime.weights_digest),
         (
@@ -56,7 +57,8 @@ pub(super) fn manifests(
             || current.objective_digest != manifest.objective_class_digest
             || current.producer_id != manifest.producer_id
             || current.predecessor_id.as_ref() != manifest.predecessor_ids.first()
-            || manifest.predecessor_ids.len() != usize::from(predecessor.is_some())
+            || manifest.predecessor_ids.len()
+                != usize::from(kind == ArtifactKind::Model && predecessor.is_some())
             || manifests
                 .iter()
                 .any(|m| m.manifest.artifact_id == manifest.artifact_id)
@@ -73,7 +75,9 @@ pub(super) fn manifests(
             && (manifest.predecessor_ids.first() != predecessor.as_ref()
                 || !manifest
                     .lineage_digests
-                    .contains(&plan.runtime.model_manifest_digest))
+                    .contains(&plan.runtime.model_manifest_digest)
+                || (plan.runtime.generation.get() > 1
+                    && !manifest.lineage_digests.contains(&material_digest)))
         {
             return Err("actual model predecessor/whole model source".into());
         }

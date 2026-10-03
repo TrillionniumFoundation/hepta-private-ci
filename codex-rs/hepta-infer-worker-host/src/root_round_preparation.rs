@@ -11,6 +11,8 @@ use codex_hepta_types::Digest32;
 
 #[path = "root_round_parameter_roles.rs"]
 mod parameter_roles;
+#[path = "root_round_publication_configuration.rs"]
+mod publication_configuration;
 
 impl RootFrozenGeneratorServiceV1 {
     pub(super) async fn prepare_round(

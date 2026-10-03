@@ -28,6 +28,30 @@ struct Configuration {
     expires_at_ms: u64,
     inaccessible_paths: Vec<std::path::PathBuf>,
 }
+
+/// Read the original pinned configuration's registration Source. This factual
+/// projection grants no S authority and does not consume or renew a selection.
+pub(crate) fn current_material_source(
+    source: &InstalledCpuSourceV1,
+    subject: &StableId,
+) -> HostResult<(InstalledCpuSourceV1, Vec<u8>)> {
+    let bytes = Source {
+        path: source.path.clone(),
+        digest: source.digest.clone(),
+    }.read(64 * 1024)?;
+    let config: Configuration = serde_json::from_slice(&bytes)?;
+    if config.schema != "hepta.cpu-neuron.registered-model-use-config.v3"
+        || config.subject != subject.as_str()
+        || !config.current_material.path.is_absolute()
+        || digest(&config.current_material.digest)?.is_zero()
+    {
+        return Err("whole original registered configuration or material Source differs".into());
+    }
+    Ok((InstalledCpuSourceV1 {
+        path: config.current_material.path,
+        digest: config.current_material.digest,
+    }, bytes))
+}
 #[derive(Clone, Debug, Deserialize, Serialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
 struct Body {

@@ -67,6 +67,8 @@ pub use goal_factory::model_capability::CpuNeuronModelIdentityV3;
 pub use goal_factory::model_capability::CpuNeuronModelUsePurposeV3;
 pub use goal_factory::model_capability::CpuNeuronOriginalGenerationReaderV3;
 pub use goal_factory::model_capability::RegisteredCpuModelResolverV3;
+pub(crate) use goal_factory::model_capability::current_material::read_current_cpu_neuron_material_projection_v3;
+pub(crate) use goal_factory::project_cpu_neuron_goal_material_v3;
 #[path = "initial_cpu_iteration_selection.rs"]
 mod iteration_selection;
 #[path = "initial_cpu_registered_cycle_v1.rs"]

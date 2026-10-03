@@ -213,6 +213,7 @@ fn manifests(
                 evaluation.evaluation_publication_digest(),
                 evaluation.authentication_digest(),
                 material_digest,
+                material.runtime.model_manifest_digest,
             ],
             predecessor_ids: match index {
                 0 => vec![predecessor_model.clone()],
