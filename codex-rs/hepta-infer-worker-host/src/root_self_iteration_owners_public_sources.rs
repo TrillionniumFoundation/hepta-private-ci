@@ -24,7 +24,7 @@ fn public_directory(directory: &Path) -> Result<()> {
     Ok(())
 }
 
-pub(super) fn public_root_source(
+pub(in crate::root_frozen_generator) fn public_root_source(
     directory: &Path,
     name: &str,
     bytes: &[u8],
