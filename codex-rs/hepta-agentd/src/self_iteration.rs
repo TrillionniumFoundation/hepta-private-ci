@@ -63,10 +63,17 @@ pub use parameter_factory::AgentdGovernedParameterGenerationCompilerV1;
 mod payload;
 pub use payload::self_iteration_canary_payload_v1;
 pub use payload::self_iteration_candidate_payload_v1;
+pub use payload::self_iteration_frozen_candidate_payload_v1;
 pub use payload::self_iteration_stage_payload_v1;
 
 #[path = "self_iteration_apply.rs"]
 mod apply;
+#[path = "self_iteration_round.rs"]
+mod round;
+pub use round::AgentdSelfIterationModelAdmissionV1;
+pub use round::AgentdSelfIterationRoundStatusV1;
+pub use round::AgentdSelfIterationRoundV1;
+
 #[path = "self_iteration_journal.rs"]
 mod journal;
 #[path = "self_iteration_runtime.rs"]
@@ -118,11 +125,21 @@ impl SelfIterationOwner {
         if !self.trust.is_current_at(now) {
             return Err(invalid("self-iteration learning trust is not current"));
         }
-        let payload = self_iteration_candidate_payload_v1(&request)?;
+        let payload = self_iteration_frozen_candidate_payload_v1(&request)?;
         let frozen_digest = Digest32::of_bytes(&payload);
         let exact_recovery = self.journal.record().is_some_and(|previous| {
             previous.frozen_digest == frozen_digest && self.journal.pending()
         });
+        if !exact_recovery
+            && self
+                .journal
+                .rounds
+                .as_ref()
+                .and_then(round::RoundJournal::deadline)
+                .is_some_and(|deadline| now >= deadline)
+        {
+            return Err(invalid("admitted round wall time expired"));
+        }
         if !exact_recovery
             && (request.envelope.expiry_unix_seconds <= now / 1_000
                 || request.envelope.expiry_unix_seconds > (now / 1_000).saturating_add(3_600))
@@ -167,7 +184,14 @@ impl SelfIterationOwner {
                 .rollback_successor
                 .body_bundle_digest()
                 .ok_or_else(|| invalid("rollback durable body"))?,
-            expires_at: request.envelope.expiry_unix_seconds,
+            expires_at: self
+                .journal
+                .rounds
+                .as_ref()
+                .and_then(round::RoundJournal::deadline)
+                .map(|deadline| deadline / 1000)
+                .unwrap_or(request.envelope.expiry_unix_seconds)
+                .min(request.envelope.expiry_unix_seconds),
             phase: AgentdSelfIterationPhaseV1::Frozen,
             evaluation_digest: None,
             selection_digest: None,
@@ -232,7 +256,21 @@ impl SelfIterationOwner {
         {
             return Err(invalid("recovered terminal configuration changed"));
         }
-        self.journal.persist(&record)?;
+        let mut rounds = self.journal.rounds.clone();
+        if let Some(rounds) = &mut rounds {
+            rounds.bind_candidate(&request, frozen_digest)?;
+        } else if request.canonical_envelope.is_some() {
+            return Err(invalid(
+                "canonical candidate requires original admitted round",
+            ));
+        }
+        // Bind the receipt and frozen candidate in the same original journal write.
+        let old_rounds = self.journal.rounds.clone();
+        self.journal.rounds = rounds;
+        if let Err(error) = self.journal.persist(&record) {
+            self.journal.rounds = old_rounds;
+            return Err(error);
+        }
         if matches!(
             record.phase,
             AgentdSelfIterationPhaseV1::Accepted

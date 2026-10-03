@@ -92,7 +92,7 @@ impl AgentdSelfIterationLocalSignerV1 {
         expires_at_ms: u64,
     ) -> Result<SignedLearningEvidenceV1, AgentdError> {
         if payload.is_empty()
-            || payload.len() > 64 * 1024
+            || payload.len() > codex_hepta_agent_components::intelligence_eval::MAX_SELF_ITERATION_FROZEN_CANDIDATE_BYTES
             || expires_at_ms <= issued_at_ms
             || expires_at_ms > issued_at_ms.saturating_add(3_600_000)
         {

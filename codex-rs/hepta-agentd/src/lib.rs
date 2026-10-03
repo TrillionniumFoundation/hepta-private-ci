@@ -602,6 +602,8 @@ pub use self_iteration::AgentdSelfIterationIndependentOwnersV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationLocalSignerV1;
 #[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationModelAdmissionV1;
+#[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationModelCycleV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationPendingProposalV1;
@@ -613,6 +615,10 @@ pub use self_iteration::AgentdSelfIterationPhysicalMeasurementV1;
 pub use self_iteration::AgentdSelfIterationQualificationCaseV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationRecordV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationRoundStatusV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationRoundV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationRuntimeConfigV1;
 #[cfg(feature = "server")]
@@ -627,6 +633,8 @@ pub use self_iteration::self_iteration_canary_payload_v1;
 pub use self_iteration::self_iteration_candidate_payload_v1;
 #[cfg(feature = "server")]
 pub use self_iteration::self_iteration_envelope_digest_v1;
+#[cfg(feature = "server")]
+pub use self_iteration::self_iteration_frozen_candidate_payload_v1;
 #[cfg(feature = "server")]
 pub use self_iteration::self_iteration_stage_payload_v1;
 

@@ -12,6 +12,13 @@ use serde::Serialize;
 /// own real durable generations; this request cannot build or sign a model.
 #[derive(Clone)]
 pub struct AgentdSelfIterationCandidateV1 {
+    /// The original compiler enforces the whole independently installed policy.
+    /// Every retained byte is then included in the actual Generator signature.
+    pub round: Option<super::round::AgentdSelfIterationRoundV1>,
+    pub canonical_envelope: Option<crate::CanonicalIterationEnvelopeV1>,
+    /// Actual completed G model work from the original admitted round.
+    pub model_assessment:
+        Option<codex_hepta_agent_components::infer_core::SelfIterationModelAssessmentV1>,
     pub envelope: IterationEnvelopeV1,
     pub candidate: IterationCandidateV1,
     pub semantic_diff: Vec<u8>,

@@ -17,6 +17,16 @@ use super::*;
 /// signs their exact frozen identity using the installed Generator credential.
 /// These capabilities stay outside request data and model text.
 pub trait AgentdGovernedParameterGenerationCompilerV1: Send {
+    fn bind_round(
+        &mut self,
+        _round: AgentdSelfIterationRoundV1,
+        _canonical: crate::CanonicalIterationEnvelopeV1,
+    ) -> Result<(), AgentdError> {
+        Err(invalid(
+            "generation compiler has no installed canonical round port",
+        ))
+    }
+
     fn describe(&self, envelope: &IterationEnvelopeV1) -> Result<String, AgentdError>;
 
     fn prepare(
@@ -49,6 +59,13 @@ impl<C: AgentdGovernedParameterGenerationCompilerV1>
 impl<C: AgentdGovernedParameterGenerationCompilerV1> AgentdSelfIterationCandidateAssemblerV1
     for AgentdGovernedParameterCandidateAssemblerV1<C>
 {
+    fn bind_round(
+        &mut self,
+        round: AgentdSelfIterationRoundV1,
+        canonical: crate::CanonicalIterationEnvelopeV1,
+    ) -> Result<(), AgentdError> {
+        self.compiler.bind_round(round, canonical)
+    }
     fn describe(&self, envelope: &IterationEnvelopeV1) -> Result<String, AgentdError> {
         self.compiler.describe(envelope)
     }
@@ -107,7 +124,7 @@ impl<C: AgentdGovernedParameterGenerationCompilerV1> AgentdSelfIterationCandidat
                 "compiled generation changed governed parameter proposal",
             ));
         }
-        self_iteration_candidate_payload_v1(&candidate)?;
+        self_iteration_frozen_candidate_payload_v1(&candidate)?;
         Ok(candidate)
     }
 }

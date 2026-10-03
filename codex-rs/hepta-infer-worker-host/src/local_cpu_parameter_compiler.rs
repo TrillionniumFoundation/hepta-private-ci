@@ -408,6 +408,9 @@ impl AgentdGovernedParameterGenerationCompilerV1 for CpuNeuronGovernedParameterC
             .ok_or_else(|| error("CPU compiler expiry overflow"))?;
         let provisional = self.plan.request.generator_attestation.clone();
         let mut candidate = AgentdSelfIterationCandidateV1 {
+            round: None,
+            canonical_envelope: None,
+            model_assessment: None,
             candidate: IterationCandidateV1 {
                 candidate_id: id,
                 envelope_id: envelope.envelope_id.clone(),
