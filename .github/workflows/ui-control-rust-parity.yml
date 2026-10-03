@@ -182,24 +182,32 @@ jobs:
           just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
           cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
           node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs
-      - name: Build canonical strict-CSP no-threads artifact
+      - id: default_build
+        name: Build canonical strict-CSP no-threads artifact
         run: |
           npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
           npm run build --prefix apps/hepta-control-ui
-          node --test apps/hepta-control-ui/test/makepad-font-patch.test.mjs
+          node --test apps/hepta-control-ui/test/makepad-font-patch.test.mjs apps/hepta-control-ui/test/makepad-instance-layout.test.mjs
           cd apps/hepta-control-ui
           npx playwright install --with-deps chromium firefox webkit
-      - name: Run actual browser renderer and capture layouts
+          sudo apt-get install -y tesseract-ocr tesseract-ocr-eng
+          node --test test/screenshot-readability.test.mjs
+      - id: default_browser
+        name: Run actual browser renderer and capture layouts
         working-directory: apps/hepta-control-ui
         run: npm run test:robrix
-      - name: Build explicitly labeled owner-fixture through the same renderer
+      - id: fixture_build
+        if: always() && steps.default_build.outcome == 'success'
+        name: Build explicitly labeled owner-fixture through the same renderer
         run: node apps/hepta-control-ui/tools/build-robrix.mjs --fixtures
-      - name: Capture populated fixture and responsive transitions
+      - if: always() && steps.fixture_build.outcome == 'success'
+        name: Capture populated fixture and responsive transitions
         working-directory: apps/hepta-control-ui
         env:
           HEPTA_ROBRIX_FIXTURES: "1"
         run: npm run test:robrix
-      - name: Confirm exact source after build and browser checks
+      - if: always() && steps.default_build.outcome == 'success'
+        name: Confirm exact source after build and browser checks
         env:
           SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
         run: |
@@ -212,7 +220,8 @@ jobs:
           path: |
             apps/hepta-control-ui/test-results/**/*.png
             apps/hepta-control-ui/test-results/**/host-diagnostics.json
-            apps/hepta-control-ui/test-results/robrix-browser-results.json
+            apps/hepta-control-ui/test-results/**/*-ocr.txt
+            apps/hepta-control-ui/test-results/robrix-*-results.json
             apps/hepta-control-ui/dist/build-manifest.json
             apps/hepta-control-ui/dist-robrix-fixtures/build-manifest.json
           if-no-files-found: warn

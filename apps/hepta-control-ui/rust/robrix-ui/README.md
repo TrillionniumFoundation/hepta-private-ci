@@ -43,7 +43,12 @@ an unsupported no-thread MSDF worker. The narrow hash-checked draw overlay uses
 the existing synchronous SDF path only on non-atomic WASM, defers only registered
 Loading font errors and retains native/atomic behavior. Browser requalification
 must demonstrate readable glyphs after real font transfers, not just no console
-errors. Actual browser/native visual acceptance, keyboard/IME,
+errors. A subsequent real screenshot still showed glyph blocks despite completed
+font transfers. The pinned wasm32 DrawVars ABI had four bytes of tail padding
+between dynamic and native shader fields; a separate exact-hash platform patch
+moves that padding before the array without changing native layout or capacity.
+Actual-type offset/slice probes and screenshot OCR are necessary regressions,
+not full visual approval. Actual browser/native visual acceptance, keyboard/IME,
 assistive technology, light-theme parity and mobile Web input remain unqualified.
 The pinned framework disables mobile Safari/Android keyboard binding; this is a
 real implementation gap, not a supported mobile-chat claim.
