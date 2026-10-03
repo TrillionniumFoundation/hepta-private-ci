@@ -1,5 +1,9 @@
 use super::*;
+use crate::test_support::TurnRetirementObservationError;
+use crate::test_support::wait_for_session_turn_retirement;
 use pretty_assertions::assert_eq;
+use tokio::time::Instant;
+use tokio::time::timeout_at;
 
 use codex_thread_store as thread_store;
 use codex_thread_store::ThreadStore;
@@ -287,4 +291,330 @@ async fn compact_after_turn_complete_rejects_while_terminalization_pending() {
         rx.try_recv().is_err(),
         "rejected Compact must not run after fence retirement"
     );
+}
+
+struct PausedRetirement {
+    session: Arc<Session>,
+    store: Arc<PausedTerminalFlushStore>,
+    idle: Arc<PausedThreadIdle>,
+    completion: Arc<crate::state::StartTransitionCompletion>,
+    deadline: Instant,
+    _rx: async_channel::Receiver<Event>,
+}
+
+impl PausedRetirement {
+    async fn start(store: PausedTerminalFlushStore) -> Self {
+        let (mut session, turn_context, rx) = make_session_and_context_with_rx().await;
+        let store = Arc::new(store);
+        let idle = Arc::new(PausedThreadIdle::default());
+        let mut builder =
+            codex_extension_api::ExtensionRegistryBuilder::<crate::config::Config>::new();
+        builder.thread_lifecycle_contributor(idle.clone());
+        let unique_session = Arc::get_mut(&mut session).expect("unique test session");
+        unique_session.services.extensions = Arc::new(builder.build());
+        attach_thread_store(unique_session, store.clone()).await;
+        let deadline = Instant::now() + StdDuration::from_secs(2);
+        session
+            .spawn_task(turn_context, Vec::new(), CompletingTask)
+            .await
+            .expect("seed task should start");
+        recv_terminal_event(&rx, TerminalEventKind::TurnComplete).await;
+        timeout_at(deadline, store.flush_entered.notified())
+            .await
+            .expect("terminal flush should be paused");
+        let completion = {
+            let pending = session
+                .pending_task_terminalization_completions
+                .lock()
+                .expect("terminalization registry should not be poisoned");
+            assert_eq!(pending.len(), 1);
+            Arc::clone(&pending[0].1)
+        };
+        Self {
+            session,
+            store,
+            idle,
+            completion,
+            deadline,
+            _rx: rx,
+        }
+    }
+
+    async fn release_flush(&self) {
+        self.store.flush_release.notify_one();
+        timeout_at(self.deadline, self.idle.entered.notified())
+            .await
+            .expect("terminalizer should reach idle callback");
+    }
+
+    async fn retire(&self) {
+        self.release_flush().await;
+        self.idle.release.notify_one();
+        timeout_at(self.deadline, self.completion.wait())
+            .await
+            .expect("exact terminalizer should retire");
+    }
+}
+
+#[tokio::test]
+async fn retirement_observation_waits_for_flush_and_idle_fence() {
+    let fixture = PausedRetirement::start(PausedTerminalFlushStore::default()).await;
+    let mut observation = Box::pin(wait_for_session_turn_retirement(
+        &fixture.session,
+        fixture.deadline,
+    ));
+    // One poll establishes the captured generation and proves the held fence
+    // blocks observation; this is not a polling-based readiness wait.
+    assert!(futures::poll!(observation.as_mut()).is_pending());
+    assert!(fixture.session.active_turn.try_lock().is_ok());
+    assert!(!fixture.completion.is_complete());
+
+    fixture.release_flush().await;
+    assert!(fixture.session.active_turn.lock().await.is_none());
+    assert!(futures::poll!(observation.as_mut()).is_pending());
+    fixture.idle.release.notify_one();
+    assert_eq!(observation.await, Ok(()));
+    assert!(fixture.completion.is_complete());
+    assert!(!fixture.session.has_pending_admission_fence());
+}
+
+#[tokio::test]
+async fn retirement_observation_rejects_newer_active_and_retired_turns() {
+    let fixture = PausedRetirement::start(PausedTerminalFlushStore::default()).await;
+    let mut active_observation = Box::pin(wait_for_session_turn_retirement(
+        &fixture.session,
+        fixture.deadline,
+    ));
+    let mut idle_observation = Box::pin(wait_for_session_turn_retirement(
+        &fixture.session,
+        fixture.deadline,
+    ));
+    assert!(futures::poll!(active_observation.as_mut()).is_pending());
+    assert!(futures::poll!(idle_observation.as_mut()).is_pending());
+    fixture.retire().await;
+
+    let successor = fixture
+        .session
+        .new_default_turn_with_sub_id("retirement-observer-successor".to_string())
+        .await;
+    fixture
+        .session
+        .spawn_task(
+            successor,
+            Vec::new(),
+            NeverEndingTask {
+                kind: TaskKind::Regular,
+                listen_to_cancellation_token: true,
+            },
+        )
+        .await
+        .expect("ordinary admission should attach a real successor");
+    assert_eq!(
+        active_observation.await,
+        Err(TurnRetirementObservationError::Stale)
+    );
+    assert_eq!(
+        wait_for_session_turn_retirement(&fixture.session, fixture.deadline).await,
+        Err(TurnRetirementObservationError::Busy)
+    );
+    assert!(
+        fixture
+            .session
+            .active_turn
+            .lock()
+            .await
+            .as_ref()
+            .is_some_and(|turn| turn.task.is_some())
+    );
+    // Normal test cleanup, not a replacement or retry by the observer.
+    fixture.idle.release.notify_one();
+    fixture
+        .session
+        .abort_all_tasks(TurnAbortReason::Interrupted)
+        .await;
+    assert!(fixture.session.active_turn.lock().await.is_none());
+    assert!(!fixture.session.has_pending_admission_fence());
+    assert_eq!(
+        idle_observation.await,
+        Err(TurnRetirementObservationError::Stale)
+    );
+}
+
+#[tokio::test]
+async fn retirement_observation_rejects_registry_contention_at_capture_and_recheck() {
+    enum Registry {
+        StartTransition,
+        TaskTerminalization,
+    }
+    // Four independent scenarios, not a readiness polling or retry loop.
+    for after_retirement in [false, true] {
+        for registry in [Registry::StartTransition, Registry::TaskTerminalization] {
+            let fixture = PausedRetirement::start(PausedTerminalFlushStore::default()).await;
+            let mut observation = Box::pin(wait_for_session_turn_retirement(
+                &fixture.session,
+                fixture.deadline,
+            ));
+            if after_retirement {
+                assert!(futures::poll!(observation.as_mut()).is_pending());
+                fixture.retire().await;
+            }
+            // Poll synchronously once while holding the chosen registry. There
+            // is no await with a std mutex guard, and even an empty contended
+            // registry after legitimate retirement must report Busy.
+            let mut context = std::task::Context::from_waker(futures::task::noop_waker_ref());
+            let result = match registry {
+                Registry::StartTransition => {
+                    let _guard = fixture
+                        .session
+                        .pending_start_transition_completions
+                        .lock()
+                        .expect("start registry should not be poisoned");
+                    std::future::Future::poll(observation.as_mut(), &mut context)
+                }
+                Registry::TaskTerminalization => {
+                    let _guard = fixture
+                        .session
+                        .pending_task_terminalization_completions
+                        .lock()
+                        .expect("terminalization registry should not be poisoned");
+                    std::future::Future::poll(observation.as_mut(), &mut context)
+                }
+            };
+            assert_eq!(
+                result,
+                std::task::Poll::Ready(Err(TurnRetirementObservationError::Busy))
+            );
+            if !after_retirement {
+                fixture.retire().await;
+            }
+            assert!(!fixture.session.has_pending_admission_fence());
+        }
+    }
+}
+
+#[tokio::test]
+async fn cancelled_retirement_observation_preserves_terminalizer() {
+    let fixture = PausedRetirement::start(PausedTerminalFlushStore::default()).await;
+    let mut observation = Box::pin(wait_for_session_turn_retirement(
+        &fixture.session,
+        fixture.deadline,
+    ));
+    assert!(futures::poll!(observation.as_mut()).is_pending());
+    drop(observation);
+    assert!(!fixture.completion.is_complete());
+    assert!(fixture.session.has_pending_task_terminalization());
+    fixture.retire().await;
+    assert_eq!(fixture.store.inner.calls().await.flush_thread, 2);
+    assert!(!fixture.session.has_pending_admission_fence());
+}
+
+#[tokio::test]
+async fn retirement_observation_deadline_does_not_cancel_terminalizer() {
+    let fixture = PausedRetirement::start(PausedTerminalFlushStore::default()).await;
+    tokio::time::pause();
+    // Expire the observer before the existing 2s terminalizer watchdog.
+    let now = Instant::now();
+    let deadline = now + fixture.deadline.saturating_duration_since(now) / 2;
+    let mut observation = Box::pin(wait_for_session_turn_retirement(&fixture.session, deadline));
+    assert!(futures::poll!(observation.as_mut()).is_pending());
+    tokio::time::advance(deadline.saturating_duration_since(Instant::now())).await;
+    assert_eq!(
+        observation.await,
+        Err(TurnRetirementObservationError::Deadline)
+    );
+    assert!(!fixture.completion.is_complete());
+    assert!(fixture.session.has_pending_task_terminalization());
+
+    // Release the owner for cleanup without renewing the observer's deadline.
+    fixture.store.flush_release.notify_one();
+    fixture.idle.release.notify_one();
+    timeout_at(fixture.deadline, fixture.completion.wait())
+        .await
+        .expect("owner cleanup should complete within the original fixture budget");
+    assert!(!fixture.session.has_pending_admission_fence());
+    assert_eq!(
+        wait_for_session_turn_retirement(&fixture.session, deadline).await,
+        Err(TurnRetirementObservationError::Deadline)
+    );
+}
+
+#[tokio::test]
+async fn retirement_observation_deadline_bounds_capture_lock() {
+    let fixture = PausedRetirement::start(PausedTerminalFlushStore::default()).await;
+    tokio::time::pause();
+    // Expire the observer before the existing 2s terminalizer watchdog.
+    let now = Instant::now();
+    let deadline = now + fixture.deadline.saturating_duration_since(now) / 2;
+    let active = fixture.session.active_turn.lock().await;
+    let mut observation = Box::pin(wait_for_session_turn_retirement(&fixture.session, deadline));
+    assert!(futures::poll!(observation.as_mut()).is_pending());
+    tokio::time::advance(deadline.saturating_duration_since(Instant::now())).await;
+    assert_eq!(
+        observation.await,
+        Err(TurnRetirementObservationError::Deadline)
+    );
+    drop(active);
+    fixture.store.flush_release.notify_one();
+    fixture.idle.release.notify_one();
+    timeout_at(fixture.deadline, fixture.completion.wait())
+        .await
+        .expect("owner cleanup should complete within the original fixture budget");
+}
+
+#[tokio::test]
+async fn retirement_observation_deadline_bounds_recheck_lock() {
+    let fixture = PausedRetirement::start(PausedTerminalFlushStore::default()).await;
+    tokio::time::pause();
+    // Expire the observer before the existing 2s terminalizer watchdog.
+    let now = Instant::now();
+    let deadline = now + fixture.deadline.saturating_duration_since(now) / 2;
+    let mut observation = Box::pin(wait_for_session_turn_retirement(&fixture.session, deadline));
+    assert!(futures::poll!(observation.as_mut()).is_pending());
+    fixture.retire().await;
+    let active = fixture.session.active_turn.lock().await;
+    assert!(futures::poll!(observation.as_mut()).is_pending());
+    tokio::time::advance(deadline.saturating_duration_since(Instant::now())).await;
+    assert_eq!(
+        observation.await,
+        Err(TurnRetirementObservationError::Deadline)
+    );
+    drop(active);
+    assert!(!fixture.session.has_pending_admission_fence());
+}
+
+#[tokio::test]
+async fn retirement_observation_rechecks_shutdown() {
+    let fixture = PausedRetirement::start(PausedTerminalFlushStore::default()).await;
+    let mut observation = Box::pin(wait_for_session_turn_retirement(
+        &fixture.session,
+        fixture.deadline,
+    ));
+    assert!(futures::poll!(observation.as_mut()).is_pending());
+    fixture.session.begin_shutdown();
+    fixture.store.flush_release.notify_one();
+    fixture.idle.release.notify_one();
+    assert_eq!(
+        observation.await,
+        Err(TurnRetirementObservationError::Shutdown)
+    );
+    assert!(fixture.completion.is_complete());
+}
+
+#[tokio::test]
+async fn retirement_observation_does_not_imply_successful_terminal_flush() {
+    let fixture = PausedRetirement::start(PausedTerminalFlushStore {
+        fail_terminal_flush: true,
+        ..Default::default()
+    })
+    .await;
+    let failure_generation = fixture.session.rollout_persistence_failure_generation();
+    let mut observation = Box::pin(wait_for_session_turn_retirement(
+        &fixture.session,
+        fixture.deadline,
+    ));
+    assert!(futures::poll!(observation.as_mut()).is_pending());
+    fixture.retire().await;
+    assert_eq!(observation.await, Ok(()));
+    assert_eq!(fixture.store.inner.calls().await.flush_thread, 1);
+    assert!(fixture.session.rollout_persistence_failure_generation() > failure_generation);
 }
