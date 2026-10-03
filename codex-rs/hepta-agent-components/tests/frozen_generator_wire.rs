@@ -96,3 +96,39 @@ fn refuses_unknown_error_codes_mixed_responses_and_oversized_evidence() {
     };
     assert_eq!(error.error, FrozenGeneratorErrorCodeV1::Pending);
 }
+
+#[test]
+fn observation_has_a_separate_finite_purpose_without_changing_issue_bytes() {
+    let payload = b"original-frozen-facts";
+    let issue = encode_frozen_generator_request_v1(
+        &FrozenGeneratorRequestV1::from_payload(payload).unwrap(),
+    )
+    .unwrap();
+    let observation = encode_frozen_generator_observation_request_v2(
+        &FrozenGeneratorObservationRequestV2::from_payload(payload).unwrap(),
+    )
+    .unwrap();
+    assert!(decode_frozen_generator_request_v1(&observation).is_err());
+    assert!(decode_frozen_generator_observation_request_v2(&issue).is_err());
+    for (bytes, expected_observation) in [(&issue, false), (&observation, true)] {
+        let decoded = match decode_frozen_generator_operation_v1(bytes).unwrap() {
+            FrozenGeneratorOperationV1::Issue(request) => {
+                assert!(!expected_observation);
+                request.payload().unwrap()
+            }
+            FrozenGeneratorOperationV1::Observe(request) => {
+                assert!(expected_observation);
+                request.payload().unwrap()
+            }
+        };
+        assert_eq!(decoded, payload);
+    }
+    for bytes in [
+        br#"{"schema_version":2,"frozen_payload_hex":"AA"}"#.as_slice(),
+        br#"{"schema_version":2,"frozen_payload_hex":"ab","dispatch":true}"#.as_slice(),
+        br#"{"schema_version":2,"schema_version":1,"frozen_payload_hex":"ab"}"#.as_slice(),
+        br#"{"schema_version":3,"frozen_payload_hex":"ab"}"#.as_slice(),
+    ] {
+        assert!(decode_frozen_generator_operation_v1(bytes).is_err());
+    }
+}

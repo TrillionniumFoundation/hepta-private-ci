@@ -68,6 +68,78 @@ impl FrozenGeneratorRequestV1 {
     }
 }
 
+/// Schema 2 only observes an original immutable publication. It cannot ask the
+/// Root service to reserve an output or dispatch the Generator.
+#[derive(Debug, Deserialize, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct FrozenGeneratorObservationRequestV2 {
+    pub schema_version: u32,
+    pub frozen_payload_hex: String,
+}
+
+impl FrozenGeneratorObservationRequestV2 {
+    pub fn from_payload(payload: &[u8]) -> WireResult<Self> {
+        let request = FrozenGeneratorRequestV1::from_payload(payload)?;
+        Ok(Self {
+            schema_version: 2,
+            frozen_payload_hex: request.frozen_payload_hex,
+        })
+    }
+
+    pub fn payload(&self) -> WireResult<Vec<u8>> {
+        if self.schema_version != 2 {
+            return Err("frozen Generator observation schema".into());
+        }
+        FrozenGeneratorRequestV1 {
+            schema_version: 1,
+            frozen_payload_hex: self.frozen_payload_hex.clone(),
+        }
+        .payload()
+    }
+}
+
+/// A finite service operation; legacy schema 1 remains an issuance request.
+pub enum FrozenGeneratorOperationV1 {
+    Issue(FrozenGeneratorRequestV1),
+    Observe(FrozenGeneratorObservationRequestV2),
+}
+
+pub fn encode_frozen_generator_observation_request_v2(
+    request: &FrozenGeneratorObservationRequestV2,
+) -> WireResult<Vec<u8>> {
+    request.payload()?;
+    bounded_json(request, MAX_FROZEN_GENERATOR_REQUEST_BYTES_V1)
+}
+
+pub fn decode_frozen_generator_observation_request_v2(
+    bytes: &[u8],
+) -> WireResult<FrozenGeneratorObservationRequestV2> {
+    validate_frame(bytes, MAX_FROZEN_GENERATOR_REQUEST_BYTES_V1)?;
+    let request: FrozenGeneratorObservationRequestV2 = serde_json::from_slice(bytes)?;
+    request.payload()?;
+    Ok(request)
+}
+
+pub fn decode_frozen_generator_operation_v1(
+    bytes: &[u8],
+) -> WireResult<FrozenGeneratorOperationV1> {
+    #[derive(Deserialize)]
+    struct Header {
+        schema_version: u32,
+    }
+    validate_frame(bytes, MAX_FROZEN_GENERATOR_REQUEST_BYTES_V1)?;
+    let header: Header = serde_json::from_slice(bytes)?;
+    match header.schema_version {
+        1 => Ok(FrozenGeneratorOperationV1::Issue(
+            decode_frozen_generator_request_v1(bytes)?,
+        )),
+        2 => Ok(FrozenGeneratorOperationV1::Observe(
+            decode_frozen_generator_observation_request_v2(bytes)?,
+        )),
+        _ => Err("frozen Generator operation schema".into()),
+    }
+}
+
 /// Finite refusal codes, with no caller-controlled explanation or new receipt.
 #[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(rename_all = "snake_case")]
