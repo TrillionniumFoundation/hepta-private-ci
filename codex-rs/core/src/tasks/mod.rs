@@ -962,6 +962,33 @@ impl Session {
         completion.complete();
     }
 
+    /// Release admission only for the exact durable terminal owner. Keep its
+    /// completion in the original registry until idle callbacks finish so
+    /// shutdown cannot close persistence underneath those callbacks.
+    fn release_task_terminalization_admission(
+        &self,
+        identity: &Arc<()>,
+        completion: &Arc<StartTransitionCompletion>,
+    ) -> bool {
+        let pending = self
+            .pending_task_terminalization_completions
+            .lock()
+            .unwrap_or_else(|error| {
+                panic!("task terminalization completion registry mutex poisoned: {error:?}")
+            });
+        if !pending
+            .iter()
+            .any(|(current_identity, current_completion, _, _, _, _)| {
+                Arc::ptr_eq(current_identity, identity)
+                    && Arc::ptr_eq(current_completion, completion)
+            })
+        {
+            return false;
+        }
+        completion.release_admission();
+        true
+    }
+
     fn pending_task_terminalization_completions_except(
         &self,
         excluded_identity: Option<&Arc<()>>,
@@ -1068,11 +1095,10 @@ impl Session {
             })
     }
 
-    /// Returns true while any task finish/abort/suspend owner still has
-    /// post-terminal work outstanding.  The marker is intentionally kept in
-    /// an independent registry after the active slot CAS so idle observers
-    /// cannot admit history mutation or a replacement in the clear→publish
-    /// window.
+    /// Returns true until each task finish/abort/suspend owner has published
+    /// its terminal persistence and recovery state. The independent registry
+    /// also retains completed publication owners through idle callbacks for
+    /// shutdown, without blocking the successor that an idle callback starts.
     pub(crate) fn has_pending_task_terminalization(&self) -> bool {
         self.has_pending_task_terminalization_except(/*ignored_identity*/ None)
     }
@@ -1087,8 +1113,9 @@ impl Session {
                 panic!("task terminalization completion registry mutex poisoned: {error:?}")
             })
             .iter()
-            .any(|(identity, _, _, _, _, _)| {
-                ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
+            .any(|(identity, completion, _, _, _, _)| {
+                !completion.admission_released()
+                    && ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
             })
     }
 
@@ -3491,18 +3518,28 @@ impl Session {
         .await;
         handoff.phase = TaskFinishHandoffPhase::PendingWorkStarting;
         if let Some(completion) = cleared_completion.as_ref() {
+            // The task is detached and its terminal/recovery state is now
+            // published. Release its execution guards before a lifecycle
+            // contributor admits a successor; retain the completion witness.
+            handoff.task.take();
+            if !self.release_task_terminalization_admission(
+                &handoff.terminalization_identity,
+                completion,
+            ) {
+                handoff.failed_closed = true;
+                return;
+            }
+            self.maybe_start_turn_for_pending_work_after_terminalization(Arc::clone(
+                &handoff.terminalization_identity,
+            ))
+            .await;
             self.emit_thread_idle_lifecycle_if_idle_for_terminalization(
                 idle_cause,
                 Some(&handoff.terminalization_identity),
             )
             .await;
-            self.maybe_start_turn_for_pending_work_after_terminalization(Arc::clone(
-                &handoff.terminalization_identity,
-            ))
-            .await;
             self.finish_task_terminalization(&handoff.terminalization_identity, completion);
             handoff.phase = TaskFinishHandoffPhase::Complete;
-            handoff.task.take();
         }
     }
 
@@ -3703,6 +3740,15 @@ impl Session {
         .await;
 
         handoff.phase = TaskAbortHandoffPhase::PendingWorkStarting;
+        if handoff.task_quiesced
+            && !self.release_task_terminalization_admission(
+                &handoff.terminalization_identity,
+                &completion,
+            )
+        {
+            handoff.failed_closed = true;
+            return AbortTurnOutcome::Terminalizing;
+        }
         if handoff.reason == TurnAbortReason::Interrupted {
             self.maybe_start_turn_for_pending_work_after_terminalization(Arc::clone(
                 &handoff.terminalization_identity,

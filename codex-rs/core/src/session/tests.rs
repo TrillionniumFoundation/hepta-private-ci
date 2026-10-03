@@ -12148,11 +12148,29 @@ async fn cancelled_finish_owner_keeps_terminalizer_alive() {
     timeout(Duration::from_secs(2), idle_entered.notified())
         .await
         .expect("finish terminalizer should reach idle lifecycle");
-    assert!(session.has_pending_task_terminalization());
+    assert!(!session.has_pending_admission_fence());
+    let mut terminalization_drain = tokio::spawn({
+        let session = Arc::clone(&session);
+        async move {
+            session
+                .drain_task_terminalizations_for_shutdown_except(None)
+                .await
+        }
+    });
+    assert!(
+        timeout(Duration::from_millis(100), &mut terminalization_drain)
+            .await
+            .is_err(),
+        "shutdown must still wait for the durable owner's idle callback"
+    );
 
     finish_owner.abort();
     let _ = finish_owner.await;
     idle_release.notify_one();
+    timeout(Duration::from_secs(2), terminalization_drain)
+        .await
+        .expect("released idle callback should unblock shutdown")
+        .expect("detached terminalizer should complete its original shutdown witness");
 
     timeout(Duration::from_secs(2), async {
         loop {
