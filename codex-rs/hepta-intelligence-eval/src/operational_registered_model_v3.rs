@@ -176,6 +176,19 @@ impl RegisteredArtifactCurrentFactsV3 {
     pub fn current_view(&self) -> &VerifiedCurrentRegistryViewV1 {
         &self.view
     }
+    /// Observe the original CURRENT snapshot Source for complete input-context
+    /// publication. This neither copies history nor opens a mutable owner.
+    pub fn protected_current_registry_source(
+        &self,
+        now: u64,
+    ) -> HostResult<(PathBuf, RegistrySnapshotReceipt)> {
+        self.revalidate_current(now)?;
+        let source = self.owner.protected_current_registry_source(now)?;
+        if source.1 != self.view.receipt() {
+            return Err("original complete current registry Source changed".into());
+        }
+        Ok(source)
+    }
     pub fn manifests(&self) -> &[ValidatedArtifactManifestV2; 3] {
         &self.manifests
     }

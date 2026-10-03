@@ -145,6 +145,22 @@ fn scope_plan(
     identity: &AgentdIdentity,
     scope: &AgentdNeuronGoalScopeV3,
 ) -> HostResult<crate::CpuNeuronGenerationPlanV1> {
+    let plan = project_cpu_neuron_goal_material_v3(original, identity, scope)?;
+    if scope.ordinal > 1 {
+        for path in [&plan.generation_store, &plan.runtime_index, &plan.witness] {
+            crate::evolving_agentd::private_parent(path)?;
+        }
+    }
+    Ok(plan)
+}
+
+/// Project the original factory's complete Goal material without creating a
+/// directory, store, worker or admission. The held host must authenticate it.
+pub(crate) fn project_cpu_neuron_goal_material_v3(
+    original: &crate::CpuNeuronGenerationPlanV1,
+    identity: &AgentdIdentity,
+    scope: &AgentdNeuronGoalScopeV3,
+) -> HostResult<crate::CpuNeuronGenerationPlanV1> {
     let mut plan = original.clone();
     let actual_scope = NeuronTickInputV1::journal_scope_for_subject(
         &id(identity.agent_id.as_str())?,
@@ -174,7 +190,6 @@ fn scope_plan(
             if !path.starts_with(&identity.home_root) {
                 return Err("Goal store escaped the original private home".into());
             }
-            crate::evolving_agentd::private_parent(path)?;
         }
     }
     Ok(plan)

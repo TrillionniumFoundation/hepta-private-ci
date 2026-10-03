@@ -12,6 +12,21 @@ pub struct ReadOnlyArtifactCurrentOwnerV1 {
     frontier_bytes: Vec<u8>,
 }
 impl ReadOnlyArtifactCurrentOwnerV1 {
+    /// Return the existing complete snapshot Source and its original receipt
+    /// after the same CURRENT reader checks custody, inventory and frontier.
+    pub fn protected_current_registry_source(
+        &self,
+        now: u64,
+    ) -> Result<(PathBuf, RegistrySnapshotReceipt), ArtifactOwnerHostError> {
+        let receipt = self.current_registry_view(now)?.receipt();
+        let context = ArtifactOwnerReadContext {
+            root: &self.root,
+            verifier: &self.verifier,
+            required_current_head: &self.required,
+        };
+        Ok((context.registry_snapshot_path(receipt), receipt))
+    }
+
     /// Inspect exact V2 dataset membership in an authenticated historical
     /// registry prefix. Historical membership never restores eligibility.
     pub fn historical_dataset_members(
