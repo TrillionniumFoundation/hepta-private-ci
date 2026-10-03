@@ -14,6 +14,9 @@ type WireResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
 #[path = "frozen_model_failure_wire.rs"]
 mod model_failure;
 pub use model_failure::*;
+#[path = "frozen_self_iteration_owners_wire.rs"]
+mod independent_owners;
+pub use independent_owners::*;
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -107,6 +110,7 @@ pub enum FrozenGeneratorOperationV1 {
     Issue(FrozenGeneratorRequestV1),
     Observe(FrozenGeneratorObservationRequestV2),
     ObserveModelFailure(SelfIterationModelFailureObservationRequestV1),
+    IndependentOwner(SelfIterationOwnerRequestV1),
 }
 
 pub fn encode_frozen_generator_observation_request_v2(
@@ -143,6 +147,9 @@ pub fn decode_frozen_generator_operation_v1(
         )),
         4 => Ok(FrozenGeneratorOperationV1::ObserveModelFailure(
             decode_self_iteration_model_failure_observation_request_v1(bytes)?,
+        )),
+        5..=7 => Ok(FrozenGeneratorOperationV1::IndependentOwner(
+            decode_self_iteration_owner_request_v1(bytes)?,
         )),
         _ => Err("frozen Generator operation schema".into()),
     }

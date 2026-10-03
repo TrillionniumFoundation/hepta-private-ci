@@ -23,8 +23,11 @@ use tokio::net::UnixStream;
 #[path = "frozen_generator_route.rs"]
 mod routing;
 use routing::Route;
+#[path = "installed_self_iteration_owners.rs"]
+mod independent_owners;
 #[path = "frozen_model_failure_client.rs"]
 mod model_failure;
+pub use independent_owners::*;
 
 /// Installed route and original roster principal, with no signing material.
 pub struct CpuNeuronFrozenGeneratorClientV1 {
