@@ -3,6 +3,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     #[cfg(target_os = "linux")]
     {
         let args = std::env::args_os().skip(1).collect::<Vec<_>>();
+        if args.len() == 2 && args[0] == "--parameter-serving-scope-incompatible" {
+            return codex_hepta_intelligence_eval::run_fixed_parameter_serving_scope_evaluator_v1(
+                std::path::Path::new(&args[1]),
+            );
+        }
         if args.len() == 2 && args[0] == "--parameter-preparation" {
             return codex_hepta_intelligence_eval::run_fixed_parameter_preparation_evaluator_v1(
                 std::path::Path::new(&args[1]),

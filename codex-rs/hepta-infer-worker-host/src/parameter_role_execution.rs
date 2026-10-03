@@ -55,6 +55,9 @@ pub fn execute_retained_parameter_role_v1(
         ParameterRoleExecutionPurposeV1::EvaluatorPairedReview => {
             OriginalFixedRolePurposeV1::PairedEvaluator
         }
+        ParameterRoleExecutionPurposeV1::EvaluatorServingScopeIncompatible => {
+            OriginalFixedRolePurposeV1::ServingScopeEvaluator
+        }
         ParameterRoleExecutionPurposeV1::EvaluatorPreparation => {
             OriginalFixedRolePurposeV1::PreparationEvaluator
         }
@@ -111,6 +114,7 @@ pub enum ParameterRoleExecutionPurposeV1 {
     EvaluatorPairedReview,
     EvaluatorParameterReview,
     EvaluatorPreparation,
+    EvaluatorServingScopeIncompatible,
     EvaluatorPreRegistration,
     SelectorPreRegistration,
     SelectorCycleStage,
@@ -188,6 +192,12 @@ impl ParameterRoleExecutionPurposeV1 {
             Self::EvaluatorParameterReview => (
                 "hepta-fixed-calibration-eval-",
                 "--parameter-review",
+                false,
+                false,
+            ),
+            Self::EvaluatorServingScopeIncompatible => (
+                "hepta-fixed-calibration-eval-",
+                "--parameter-serving-scope-incompatible",
                 false,
                 false,
             ),

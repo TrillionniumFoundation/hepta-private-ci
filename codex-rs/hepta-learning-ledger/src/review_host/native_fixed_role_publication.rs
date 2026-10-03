@@ -25,6 +25,7 @@ pub enum OriginalFixedRolePurposeV1 {
     PairedEvaluator,
     ParameterEvaluator,
     PreparationEvaluator,
+    ServingScopeEvaluator,
     PreRegistrationEvaluator,
     PreRegistrationSelector,
     CycleSelector,
@@ -48,6 +49,7 @@ impl OriginalFixedRolePurposeV1 {
             Self::PairedEvaluator => "hepta.native-paired-evaluator-execution.v1",
             Self::ParameterEvaluator => "hepta.native-parameter-evaluator-execution.v1",
             Self::PreparationEvaluator => "hepta.native-parameter-preparation-execution.v1",
+            Self::ServingScopeEvaluator => "hepta.native-serving-scope-incompatible-execution.v1",
             Self::PreRegistrationEvaluator => "hepta.native-parameter-preregistration-execution.v1",
             Self::PreRegistrationSelector => {
                 "hepta.native-parameter-preregistered-selector-execution.v1"
