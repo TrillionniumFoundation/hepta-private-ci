@@ -3,7 +3,7 @@
   "module": "context.compiler",
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "45cc6002225ec69eaa93a75b9653bf631e8b1c1a8d7599698412f5790d41f6a1",
+    "stateSha256": "072115c05ce88846d2a14c518c6e0734476536978b23330157ec6c5f9b70e9e9",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
@@ -272,8 +272,8 @@
   ],
   "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
   "integrationBranch": "codex/context-compiler-v3-closure-20260928",
-  "runtimeSourceAnchor": "ce91c49c86a2bcb27b0ff0de1ca48274242f6ad3",
-  "runtimeSourceTree": "09b5724509e8539565cbef26ce766d08b4c4dff5",
+  "runtimeSourceAnchor": "ddbcc0d2737bfde47487a31d885ce9297531b44b",
+  "runtimeSourceTree": "cd86eaa0a1e5ac3ab2d202869f9242c97fa75cb0",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -455,7 +455,7 @@
     },
     {
       "path": "scripts/generate_context_compiler_module_docs.py",
-      "blobSha": "ed87a51242ab525bd6db4d12e522245b454d9f4a"
+      "blobSha": "cc4797d5d47dd6d0cdcc70f1201e9847c8f8f5fd"
     },
     {
       "path": "scripts/test_context_compiler_named_evidence.py",
@@ -467,7 +467,7 @@
     },
     {
       "path": "scripts/test_context_compiler_state.py",
-      "blobSha": "21d98b9984378f22fc47c73ab8e1800405f26533"
+      "blobSha": "3f3737a09536ea9f91c134b8055765da477b0741"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2.rs",
@@ -499,7 +499,7 @@
     },
     {
       "path": "codex-rs/.config/nextest.toml",
-      "blobSha": "5c61526c4421c840847a270b6ed788aba1e95d3c"
+      "blobSha": "7e11e1e34502d51ab889652d67c55216873d2619"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/wire.rs",
@@ -885,6 +885,20 @@
     }
   ],
   "invariantInterpretation": "Retained invariants are required contracts; status and knownOpenItems identify implementation and execution gaps.",
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "ce91c49c86a2bcb27b0ff0de1ca48274242f6ad3",
+        "tree": "09b5724509e8539565cbef26ce766d08b4c4dff5"
+      },
+      "observedAtHead": {
+        "commit": "ce91c49c86a2bcb27b0ff0de1ca48274242f6ad3",
+        "tree": "09b5724509e8539565cbef26ce766d08b4c4dff5"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    }
+  ],
   "schema": "hepta.module-implementation-map.v3",
   "contractStatus": {
     "coreImplementation": "complete",
@@ -893,12 +907,12 @@
     "currentHeadQualification": "absent"
   },
   "sourceBase": {
-    "commit": "e2d1c12855e7f598c317b83b76cecab79b6e1d4a",
-    "tree": "e93854c35e2deb4e7a8ef4c4b0d67574ceeeb33b"
+    "commit": "ddbcc0d2737bfde47487a31d885ce9297531b44b",
+    "tree": "cd86eaa0a1e5ac3ab2d202869f9242c97fa75cb0"
   },
   "observedAtHead": {
-    "commit": "e2d1c12855e7f598c317b83b76cecab79b6e1d4a",
-    "tree": "e93854c35e2deb4e7a8ef4c4b0d67574ceeeb33b"
+    "commit": "ddbcc0d2737bfde47487a31d885ce9297531b44b",
+    "tree": "cd86eaa0a1e5ac3ab2d202869f9242c97fa75cb0"
   },
   "observedSourcePaths": [
     "codex-rs/hepta-context-compiler",
@@ -1213,19 +1227,5 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false
-  },
-  "historicalNavigationAnchors": [
-    {
-      "sourceBase": {
-        "commit": "ce91c49c86a2bcb27b0ff0de1ca48274242f6ad3",
-        "tree": "09b5724509e8539565cbef26ce766d08b4c4dff5"
-      },
-      "observedAtHead": {
-        "commit": "ce91c49c86a2bcb27b0ff0de1ca48274242f6ad3",
-        "tree": "09b5724509e8539565cbef26ce766d08b4c4dff5"
-      },
-      "disposition": "historical_source_navigation_only",
-      "executionEvidenceTransferred": false
-    }
-  ]
+  }
 }
