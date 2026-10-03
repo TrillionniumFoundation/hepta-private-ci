@@ -405,7 +405,13 @@ async fn active_provider_policy_governs_websocket_prewarm_and_turn() -> Result<(
     );
 
     state.terminal_release.add_permits(1);
-    timeout(Duration::from_secs(15), state.wait_for_terminal_count(2)).await?;
+    timeout(Duration::from_secs(15), async {
+        tokio::select! {
+            result = &mut submit => panic!("turn completed before turn terminal entered: {result:?}"),
+            () = state.wait_for_terminal_count(2) => {}
+        }
+    })
+    .await?;
     assert!(
         timeout(Duration::from_millis(50), &mut submit)
             .await
