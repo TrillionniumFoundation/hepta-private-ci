@@ -186,6 +186,7 @@ async fn cancelled_caller_leaves_actual_model_task_to_persist_terminal_and_never
         None
     );
     let mut cycle = AgentdSelfIterationModelCycleV1::new(model, Assembler, Owners, runtime.clone());
+    assert!(cycle.model_mut().is_some());
     let goal = StableId::new("goal.actual.fixture").expect("goal");
     {
         let run = cycle.run_for_goal(
@@ -199,6 +200,7 @@ async fn cancelled_caller_leaves_actual_model_task_to_persist_terminal_and_never
         // Dropping the caller future does not drop/abort the owned model task.
     }
     assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert!(cycle.model_mut().is_none());
     let current = runtime
         .inspect_current_round()
         .await
@@ -218,6 +220,7 @@ async fn cancelled_caller_leaves_actual_model_task_to_persist_terminal_and_never
         matches!(result,Err(AgentdError::Invalid(message)) if message == "fixture stops before generation effects")
     );
     assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert!(cycle.model_mut().is_some());
     let current = runtime
         .inspect_current_round()
         .await

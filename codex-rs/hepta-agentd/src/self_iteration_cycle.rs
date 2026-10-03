@@ -136,6 +136,16 @@ where
 
     /// Uses the actual existing Goal and an independently installed canonical
     /// window. Reservation, quota and absolute time survive process restart.
+    /// Borrow only the same actual native model owner while no retained model
+    /// task owns it. Release this borrow before running the reserved cycle.
+    pub fn model_mut(&mut self) -> Option<&mut M> {
+        if self.pending_model.is_some() {
+            None
+        } else {
+            self.model.as_mut()
+        }
+    }
+
     pub async fn run_for_goal(
         &mut self,
         goal: StableId,
