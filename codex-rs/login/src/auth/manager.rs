@@ -2353,8 +2353,9 @@ impl AuthManager {
             && let Err(err) = self.refresh_token().await
         {
             tracing::error!("Failed to refresh token: {}", err);
-            return Some(auth);
         }
+        // A concurrent reload or logout may have replaced the snapshot while
+        // refresh awaited. Return the current cache on failure as well.
         self.auth_cached()
     }
 

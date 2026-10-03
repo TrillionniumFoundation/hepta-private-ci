@@ -1233,6 +1233,59 @@ async fn refresh_failure_is_scoped_to_the_matching_auth_snapshot() {
 }
 
 #[tokio::test]
+#[serial(codex_auth_env)]
+async fn failed_proactive_refresh_does_not_return_auth_cleared_while_waiting() {
+    let codex_home = tempdir().unwrap();
+    let _access_token_guard = remove_access_token_env_var();
+    write_auth_file(
+        AuthFileParams {
+            openai_api_key: None,
+            chatgpt_plan_type: Some("pro".to_string()),
+            chatgpt_account_id: Some(WORKSPACE_ID_ALLOWED.to_string()),
+        },
+        codex_home.path(),
+    )
+    .expect("isolated auth fixture");
+    let path = get_auth_file(codex_home.path());
+    let mut fixture: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    fixture["last_refresh"] = serde_json::to_value(Utc::now() - chrono::Duration::days(9)).unwrap();
+    std::fs::write(&path, serde_json::to_vec(&fixture).unwrap()).unwrap();
+    let auth = super::load_auth(
+        codex_home.path(),
+        false,
+        AuthCredentialsStoreMode::File,
+        None,
+        None,
+        None,
+        AuthKeyringBackendKind::Direct,
+        None,
+        &crate::test_support::transport_default_auth_route_config(),
+    )
+    .await
+    .expect("isolated cached auth")
+    .expect("fixture auth");
+    assert!(AuthManager::should_refresh_proactively(&auth));
+    let manager =
+        AuthManager::from_auth_for_testing_with_home(auth, codex_home.path().to_path_buf());
+    let refresh_guard = manager.refresh_lock.acquire().await.unwrap();
+    let query = manager.auth();
+    tokio::pin!(query);
+    std::future::poll_fn(|context| {
+        assert!(std::future::Future::poll(query.as_mut(), context).is_pending());
+        std::task::Poll::Ready(())
+    })
+    .await;
+
+    // This is the original logout/reload cache transition while the original
+    // refresh semaphore is occupied. No token authority is contacted.
+    manager.set_cached_auth(None);
+    drop(refresh_guard);
+    assert_eq!(query.await, None);
+    assert_eq!(manager.auth_cached(), None);
+}
+
+#[tokio::test]
 async fn external_bearer_only_auth_manager_uses_cached_provider_token() {
     let script = ProviderAuthScript::new(&["provider-token", "next-token"]).unwrap();
     let manager = AuthManager::external_bearer_only(script.auth_config());
