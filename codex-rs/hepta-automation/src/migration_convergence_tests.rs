@@ -1,3 +1,4 @@
+use sqlx::SqlStr;
 use sqlx::migrate::Migrate;
 use sqlx::migrate::Migration;
 use sqlx::migrate::MigrationType;
@@ -149,7 +150,9 @@ async fn authority_schema20_is_rejected_without_relabelling_or_extending_history
         /*version*/ 20,
         "effect dispatch authority witness".into(),
         MigrationType::Simple,
-        include_str!("../tests/fixtures/kernel_authority_schema20.sql").into(),
+        SqlStr::from_static(include_str!(
+            "../tests/fixtures/kernel_authority_schema20.sql"
+        )),
         /*no_tx*/ false,
     );
     connection
