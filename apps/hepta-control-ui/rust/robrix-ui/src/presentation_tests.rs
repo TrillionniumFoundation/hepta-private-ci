@@ -582,3 +582,32 @@ fn font_reflow_does_not_replace_user_scroll_intent_and_jump_restores_tail() {
     // A following real upward gesture can opt out again.
     assert_eq!(tracker.observe(220.0, false), Some(false));
 }
+
+#[test]
+fn tail_reflow_restore_never_overrides_new_user_input_or_scrollback() {
+    let mut tracker = UserScrollTracker::default();
+    assert!(tracker.restore_tail(true, 0.0, false));
+    assert!(!tracker.restore_tail(true, 0.0, true));
+    // A wheel event can arrive before its coalesced viewport action.
+    assert!(!tracker.restore_tail(true, 80.0, false));
+    assert_eq!(tracker.observe(80.0, false), Some(false));
+    assert!(!tracker.restore_tail(false, 80.0, false));
+    // Explicit Jump re-enables following at the same observed travel value.
+    assert!(tracker.restore_tail(true, 80.0, false));
+    assert!(!tracker.restore_tail(true, 81.0, false));
+    assert!(!tracker.restore_tail(true, f64::NAN, false));
+    assert!(!tracker.restore_tail(true, f64::INFINITY, false));
+    tracker.reset(123.0);
+    assert!(tracker.restore_tail(true, 123.0, false));
+}
+
+#[test]
+fn tail_anchor_leaves_empty_lists_and_oversized_last_item_offsets_alone() {
+    assert_eq!(UserScrollTracker::tail_anchor(0, 0), None);
+    assert_eq!(UserScrollTracker::tail_anchor(0, 1), None);
+    assert_eq!(UserScrollTracker::tail_anchor(52, 64), Some(63));
+    // After reanchoring, the SDK can keep a negative offset into a tall last row.
+    assert_eq!(UserScrollTracker::tail_anchor(63, 64), None);
+    // A new room/range gets its own terminal index; no previous-room offset is used.
+    assert_eq!(UserScrollTracker::tail_anchor(0, 12), Some(11));
+}

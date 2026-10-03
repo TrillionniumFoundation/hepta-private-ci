@@ -244,6 +244,7 @@ impl Widget for RoomScreen {
         let mut diagnostic_items = Vec::new();
         while let Some(widget) = self.view.draw_walk(cx, scope, walk).step() {
             let portal = widget.as_portal_list();
+            let user_travel = portal.user_scroll_travel();
             let Some(mut list) = portal.borrow_mut() else {
                 continue;
             };
@@ -258,6 +259,22 @@ impl Widget for RoomScreen {
             .timeline
             .total;
             list.set_item_range(cx, 0, count);
+            let follow_latest = workspace
+                .timeline()
+                .is_none_or(|timeline| timeline.scroll.at_end);
+            if count > 0
+                && self
+                    .scroll_tracker
+                    .restore_tail(follow_latest, user_travel, list.is_at_end())
+            {
+                // Font/layout reflow changes row heights without changing the
+                // item range. Honor the existing follow intent immediately;
+                // an unprocessed user gesture must never be overwritten.
+                list.set_tail_range(true);
+                if let Some(last) = UserScrollTracker::tail_anchor(list.first_id(), count) {
+                    list.set_first_id_and_scroll(last, 0.0);
+                }
+            }
             while let Some(index) = list.next_visible_item(cx) {
                 let presentation = project(
                     workspace,

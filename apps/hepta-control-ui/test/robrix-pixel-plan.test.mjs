@@ -45,7 +45,7 @@ test('capture contract keeps all static assertions and distinguishes counts',asy
   }
   for(const name of ['robrix-draft-before-theme','robrix-Obsidian-after-resize','robrix-Lunar-after-resize','robrix-theme-round-trip','robrix-console-round-trip'])assert.ok(plan.find(item=>item.name===name).draft);
   assert.ok(plan.find(item=>item.name==='robrix-theme-round-trip').kept);
-  if(fixtures){assert.equal(plan.filter(item=>item.jump).length,2);assert.ok(plan.at(-1).lastMessage);}
+  if(fixtures){assert.equal(plan.filter(item=>item.jump).length,2);assert.ok(plan.at(-1).lastMessage);assert.ok(plan[0].lastMessage);}
  }
 });
 test('unavailable, moved, and out-of-viewport rendered targets fail closed',async()=>{

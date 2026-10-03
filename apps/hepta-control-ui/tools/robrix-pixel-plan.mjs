@@ -2,7 +2,7 @@
 export function captureSchedule(initialWidth,fixtures){
  if(![640,1280].includes(initialWidth))throw new Error('Unsupported capture viewport');
  const captures=[];let width=initialWidth;let hasDraft=false;
- const add=(name,theme,assertTheme=false,consoleView=false)=>captures.push({name,viewport:{width,height:800},theme,assertTheme,consoleView,fixtures,draft:hasDraft&&!consoleView,kept:name==='robrix-theme-round-trip',jump:name==='robrix-user-scrollback'||name==='robrix-scrollback-after-resize',lastMessage:name==='robrix-jump-to-latest',cjk:fixtures&&!consoleView&&width>=1000});
+ const add=(name,theme,assertTheme=false,consoleView=false)=>captures.push({name,viewport:{width,height:800},theme,assertTheme,consoleView,fixtures,draft:hasDraft&&!consoleView,kept:name==='robrix-theme-round-trip',jump:name==='robrix-user-scrollback'||name==='robrix-scrollback-after-resize',lastMessage:name==='robrix-jump-to-latest'||(fixtures&&name===`robrix-Aurora-${initialWidth}`),cjk:fixtures&&!consoleView&&width>=1000});
  for(const theme of ['Aurora','Obsidian','Lunar']){
   add(`robrix-${theme}-${width}`,theme,true);
   width=width===1280?640:1280;

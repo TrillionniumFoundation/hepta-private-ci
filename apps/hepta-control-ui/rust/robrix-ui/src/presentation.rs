@@ -410,6 +410,18 @@ impl UserScrollTracker {
         self.last_travel = travel;
     }
 
+    /// Reflow may move the viewport away from its tail without user input.
+    /// A new, not-yet-observed gesture wins over the previous follow intent.
+    pub fn restore_tail(&self, follow_latest: bool, travel: f64, at_end: bool) -> bool {
+        follow_latest && !at_end && travel.is_finite() && travel == self.last_travel
+    }
+
+    /// Once the last item is the anchor, preserve its pixel offset. The item
+    /// can exceed the viewport; repeatedly zeroing its offset prevents settling.
+    pub fn tail_anchor(first_id: usize, total: usize) -> Option<usize> {
+        total.checked_sub(1).filter(|last| first_id < *last)
+    }
+
     /// `None` preserves the current intent during a layout-only movement.
     pub fn observe(&mut self, travel: f64, at_end: bool) -> Option<bool> {
         if !travel.is_finite() {
