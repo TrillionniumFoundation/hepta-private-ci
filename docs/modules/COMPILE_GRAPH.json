@@ -650,6 +650,10 @@
       "toModule": "learning.ledger"
     },
     {
+      "fromModule": "learning.eval",
+      "toModule": "neuron.runtime"
+    },
+    {
       "fromModule": "learning.ledger",
       "toModule": "cognitive.types"
     },
@@ -934,10 +938,6 @@
     {
       "fromModule": "learning.eval",
       "toModule": "kernel.evidence"
-    },
-    {
-      "fromModule": "learning.eval",
-      "toModule": "learning.artifacts"
     },
     {
       "fromModule": "learning.ledger",
@@ -2003,7 +2003,15 @@
     },
     {
       "fromModule": "learning.eval",
+      "toModule": "learning.artifacts"
+    },
+    {
+      "fromModule": "learning.eval",
       "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "neuron.runtime"
     },
     {
       "fromModule": "learning.eval",
@@ -3081,6 +3089,24 @@
       "toLayer": 0,
       "toModule": "platform.types",
       "toPackage": "codex-hepta-types"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-intelligence-eval",
+      "toLayer": 1,
+      "toModule": "learning.artifacts",
+      "toPackage": "codex-hepta-learning-artifacts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-intelligence-eval",
+      "toLayer": 2,
+      "toModule": "neuron.runtime",
+      "toPackage": "codex-hepta-neuron"
     },
     {
       "dependencyKind": "normal",
