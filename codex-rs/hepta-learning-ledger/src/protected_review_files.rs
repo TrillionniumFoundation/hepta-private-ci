@@ -1,23 +1,27 @@
 //! Host-authorized root custody. Read handles never follow untrusted path components.
 
 use std::fs::File;
+#[cfg(feature = "review-host")]
 use std::fs::OpenOptions;
 use std::io::Read;
+#[cfg(feature = "review-host")]
 use std::io::Write;
 use std::os::unix::fs::MetadataExt;
+#[cfg(feature = "review-host")]
 use std::os::unix::fs::OpenOptionsExt;
 use std::path::Component;
 use std::path::Path;
 
-pub(super) type ReviewResult<T> = Result<T, Box<dyn std::error::Error>>;
+pub(crate) type ReviewResult<T> = Result<T, Box<dyn std::error::Error>>;
 
 #[derive(Clone, Copy)]
-pub(super) enum Access {
+pub(crate) enum Access {
+    #[cfg(feature = "review-host")]
     Private,
     Immutable,
 }
 
-pub(super) fn root_directory(path: &Path) -> ReviewResult<File> {
+pub(crate) fn root_directory(path: &Path) -> ReviewResult<File> {
     if !path.is_absolute()
         || path
             .components()
@@ -39,11 +43,12 @@ pub(super) fn root_directory(path: &Path) -> ReviewResult<File> {
     Ok(directory)
 }
 
-pub(super) fn root_file(path: &Path, access: Access) -> ReviewResult<File> {
+pub(crate) fn root_file(path: &Path, access: Access) -> ReviewResult<File> {
     let parent = path.parent().ok_or("custody file has no parent")?;
     root_directory(parent)?;
     let before = std::fs::symlink_metadata(path)?;
     let mask = match access {
+        #[cfg(feature = "review-host")]
         Access::Private => 0o077,
         Access::Immutable => 0o022,
     };
@@ -64,7 +69,7 @@ pub(super) fn root_file(path: &Path, access: Access) -> ReviewResult<File> {
     Ok(file)
 }
 
-pub(super) fn read_root(path: &Path, maximum: u64, access: Access) -> ReviewResult<Vec<u8>> {
+pub(crate) fn read_root(path: &Path, maximum: u64, access: Access) -> ReviewResult<Vec<u8>> {
     let file = root_file(path, access)?;
     if file.metadata()?.len() > maximum {
         return Err("custody file exceeds its bound".into());
@@ -77,7 +82,8 @@ pub(super) fn read_root(path: &Path, maximum: u64, access: Access) -> ReviewResu
     Ok(bytes)
 }
 
-pub(super) fn mutable_file(path: &Path) -> ReviewResult<File> {
+#[cfg(feature = "review-host")]
+pub(crate) fn mutable_file(path: &Path) -> ReviewResult<File> {
     let before = root_file(path, Access::Private)?.metadata()?;
     let file = OpenOptions::new().read(true).write(true).open(path)?;
     let after = file.metadata()?;
@@ -92,7 +98,8 @@ pub(super) fn mutable_file(path: &Path) -> ReviewResult<File> {
     Ok(file)
 }
 
-pub(super) fn create_private(path: &Path, bytes: &[u8]) -> ReviewResult<File> {
+#[cfg(feature = "review-host")]
+pub(crate) fn create_private(path: &Path, bytes: &[u8]) -> ReviewResult<File> {
     let parent = path.parent().ok_or("custody file has no parent")?;
     let directory = root_directory(parent)?;
     let mut file = OpenOptions::new()

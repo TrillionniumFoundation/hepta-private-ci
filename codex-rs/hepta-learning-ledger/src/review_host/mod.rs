@@ -11,7 +11,7 @@ mod events;
 pub use cycle_transfer::CalibrationCycleScopeWireV2;
 pub use cycle_transfer::FixedCalibrationPublicationV2;
 mod execution_service;
-mod files;
+use crate::protected_review_files as files;
 mod generator_wire;
 mod independent;
 mod independent_trust;
@@ -458,11 +458,5 @@ pub fn admit_fixed_custody_program(policy: &Path) -> ReviewResult<ReviewTrustWir
     ))
 }
 
-/// Open an immutable root-owned review input for a read-only consumer.
-pub fn open_root_review_input(path: &Path) -> ReviewResult<std::fs::File> {
-    files::root_file(path, Access::Immutable)
-}
-/// Read a bounded immutable root-owned review input.
-pub fn read_root_review_input(path: &Path, maximum: u64) -> ReviewResult<Vec<u8>> {
-    files::read_root(path, maximum, Access::Immutable)
-}
+pub use crate::open_root_review_input;
+pub use crate::read_root_review_input;

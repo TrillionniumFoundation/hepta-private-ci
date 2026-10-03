@@ -221,13 +221,10 @@ pub use review_host::ReviewEvidenceWireV1;
 pub use review_host::ReviewSignerWireV1;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::ReviewTrustWireV1;
-#[cfg(all(target_os = "linux", feature = "review-host"))]
-pub use review_host::decode_review_payload_hex;
 
-#[cfg(all(target_os = "linux", feature = "review-host"))]
-pub use review_host::open_root_review_input;
-#[cfg(all(target_os = "linux", feature = "review-host"))]
-pub use review_host::read_root_review_input;
+
+
+
 
 mod calibration_cut;
 pub use calibration_cut::CalibrationCutBindingV1;
@@ -241,3 +238,14 @@ pub use calibration_cycle::calibration_cycle_cut_signing_payload_v2;
 pub use review_host::CalibrationCycleScopeWireV2;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::FixedCalibrationPublicationV2;
+
+mod review_payload;
+pub use review_payload::decode_review_payload_hex;
+#[cfg(target_os = "linux")]
+mod protected_review_files;
+#[cfg(target_os = "linux")]
+mod review_input;
+#[cfg(target_os = "linux")]
+pub use review_input::open_root_review_input;
+#[cfg(target_os = "linux")]
+pub use review_input::read_root_review_input;

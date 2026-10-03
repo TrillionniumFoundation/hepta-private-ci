@@ -3,6 +3,7 @@
 //! enters this path; quota and the original clock remain consumed.
 use super::*;
 use codex_hepta_agent_components::intelligence_eval::*;
+#[cfg(target_os = "linux")]
 use codex_hepta_agent_components::learning_ledger::read_root_review_input;
 use std::path::PathBuf;
 
@@ -16,6 +17,7 @@ pub struct AgentdSelfIterationPreparationTerminalV1 {
 impl AgentdSelfIterationPreparationTerminalV1 {
     /// This checks the original Root file custody and complete portable packet.
     /// The original runtime still authenticates E and matches its actual round.
+    #[cfg(target_os = "linux")]
     pub fn from_root_source(path: PathBuf, pin: Digest32) -> Result<Self, AgentdError> {
         if !path.is_absolute() || pin.is_zero() {
             return Err(invalid("preparation terminal Root source identity"));
@@ -36,6 +38,10 @@ impl AgentdSelfIterationPreparationTerminalV1 {
             facts,
             evaluator,
         })
+    }
+    #[cfg(not(target_os = "linux"))]
+    pub fn from_root_source(_path: PathBuf, _pin: Digest32) -> Result<Self, AgentdError> {
+        Err(invalid("Root preparation custody requires the Linux host"))
     }
     fn revalidate(&self) -> Result<(), AgentdError> {
         let current = Self::from_root_source(self.source_path.clone(), self.source_digest)?;
