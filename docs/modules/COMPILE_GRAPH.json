@@ -1537,6 +1537,10 @@
     },
     {
       "fromModule": "learning.eval",
+      "toModule": "learning.plasticity"
+    },
+    {
+      "fromModule": "learning.eval",
       "toModule": "platform.types"
     },
     {
@@ -2008,6 +2012,10 @@
     {
       "fromModule": "learning.eval",
       "toModule": "learning.ledger"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "learning.plasticity"
     },
     {
       "fromModule": "learning.eval",
@@ -3098,6 +3106,15 @@
       "toLayer": 1,
       "toModule": "learning.artifacts",
       "toPackage": "codex-hepta-learning-artifacts"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-intelligence-eval",
+      "toLayer": 1,
+      "toModule": "learning.plasticity",
+      "toPackage": "codex-hepta-plasticity"
     },
     {
       "dependencyKind": "normal",
