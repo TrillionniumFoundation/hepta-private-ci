@@ -216,6 +216,8 @@
     "codex-rs/hepta-memory/src/cognitive_store.rs",
     "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
     "codex-rs/hepta-memory/src/lib.rs",
+    "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+    "codex-rs/hepta-memory/src/production_writer.rs",
     "codex-rs/hepta-prompt-optimizer/Cargo.toml",
     "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
     "codex-rs/hepta-prompt-optimizer/src/canonical_adversarial_tests.rs",
@@ -246,13 +248,14 @@
     "scripts/test_hepta_ci_exec.py",
     "scripts/test_hepta_ci_exec_deadline.py",
     "scripts/test_hepta_ci_exec_output.py",
+    "scripts/test_hepta_kg_product_evidence.py",
     "scripts/test_hepta_knowledge_graph_qualification.py",
     "scripts/verify_hepta_callers.py"
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "d6dbfd2c9e5b52d68dd1550a5fd26dd012ba1d2d",
-    "tree": "1f66dd5cec7468049db7034338aae33a3e4088d0"
+    "commit": "35283a5f2a1889a27a8e8fb308fa67f195454f44",
+    "tree": "e56fd5b6f5ae9a9809fe2ea3e7555021cf94f854"
   },
   "observedSourcePaths": [
     ".github/actions/hepta-synthetic-merge/action.yml",
@@ -303,6 +306,8 @@
     "codex-rs/hepta-memory/src/cognitive_store.rs",
     "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
     "codex-rs/hepta-memory/src/lib.rs",
+    "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+    "codex-rs/hepta-memory/src/production_writer.rs",
     "codex-rs/hepta-prompt-optimizer/Cargo.toml",
     "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
     "codex-rs/hepta-prompt-optimizer/src/canonical_adversarial_tests.rs",
@@ -334,6 +339,7 @@
     "scripts/test_hepta_ci_exec.py",
     "scripts/test_hepta_ci_exec_deadline.py",
     "scripts/test_hepta_ci_exec_output.py",
+    "scripts/test_hepta_kg_product_evidence.py",
     "scripts/test_hepta_knowledge_graph_qualification.py",
     "scripts/verify_hepta_callers.py"
   ],
@@ -356,7 +362,7 @@
     },
     {
       "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
-      "object": "cfbee133f326d6ef200f126113fff14f770520eb"
+      "object": "e55666377b7f346cbddd6b397942b3449cff0999"
     },
     {
       "path": "CALLERS.toml",
@@ -416,7 +422,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
-      "object": "3d6c567a32cb8486702690778f9afdb292a3bda0"
+      "object": "d017dbf2fea201274347d9d151826c8c307a9e20"
     },
     {
       "path": "codex-rs/hepta-contracts/CALLERS.toml",
@@ -488,7 +494,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
-      "object": "91036dcbfc7dea48224c4df60abd04639b34e9f4"
+      "object": "baa6889a251c47e710a912333fc68b6f241e0922"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_intelligence_writer_tests.rs",
@@ -541,6 +547,14 @@
     {
       "path": "codex-rs/hepta-memory/src/lib.rs",
       "object": "8d70d05e03095908d324be4bdac396ec681991b4"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "object": "93aef85620e753a6f49d486eaee436f8ac3edde1"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "object": "fd9fa46e14576f78a872a5aee524b46d04cde593"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer/Cargo.toml",
@@ -620,7 +634,7 @@
     },
     {
       "path": "docs/modules/knowledge.graph/TECHNICAL.md",
-      "object": "cfde48f1099534ad2cf9dc71e25b14c5c0c221ad"
+      "object": "d1348bc68c5d3b57932424ae396506c9a81d295d"
     },
     {
       "path": "justfile",
@@ -648,7 +662,7 @@
     },
     {
       "path": "scripts/hepta_knowledge_graph_qualification.py",
-      "object": "c6a4e077ae73e5393342a1fb3224e6273cef6aa2"
+      "object": "b5c62b37b8d03dd3a16c329be788d491869c14ef"
     },
     {
       "path": "scripts/just-shell.py",
@@ -665,6 +679,10 @@
     {
       "path": "scripts/test_hepta_ci_exec_output.py",
       "object": "f92628ad9b15cdad591dbc30b6c90e2074a501aa"
+    },
+    {
+      "path": "scripts/test_hepta_kg_product_evidence.py",
+      "object": "64da19830893636a5d9fb53f816b3c4de705cd58"
     },
     {
       "path": "scripts/test_hepta_knowledge_graph_qualification.py",
