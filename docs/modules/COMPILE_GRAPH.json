@@ -1568,6 +1568,10 @@
       "toModule": "platform.types"
     },
     {
+      "fromModule": "neuron.runtime",
+      "toModule": "learning.plasticity"
+    },
+    {
       "fromModule": "platform.types",
       "toModule": "kernel.authority"
     },
@@ -2064,6 +2068,10 @@
     {
       "fromModule": "neuron.runtime",
       "toModule": "inference.control"
+    },
+    {
+      "fromModule": "neuron.runtime",
+      "toModule": "learning.plasticity"
     },
     {
       "fromModule": "neuron.runtime",
@@ -2728,6 +2736,15 @@
       "toLayer": 1,
       "toModule": "inference.control",
       "toPackage": "codex-hepta-infer-core"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 2,
+      "fromModule": "neuron.runtime",
+      "fromPackage": "codex-hepta-neuron",
+      "toLayer": 1,
+      "toModule": "learning.plasticity",
+      "toPackage": "codex-hepta-plasticity"
     },
     {
       "dependencyKind": "normal",

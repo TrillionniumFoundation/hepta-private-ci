@@ -1,6 +1,5 @@
 //! Exact governed Q32 deltas on the existing sparse Q24 parameter layer.
 //! Structural, tensor, authority and calibration edits are outside this compiler.
-use std::collections::BTreeSet;
 
 use codex_hepta_agent_components::intelligence::ParameterPlasticityDispositionV1;
 use codex_hepta_agent_components::intelligence::ParameterPlasticityProductReceiptV1;
@@ -24,67 +23,13 @@ pub(super) fn apply_sparse_deltas(
     generation: Generation,
     deltas: &[ParameterDeltaV2],
 ) -> Result<SparseConfig, AgentdError> {
-    baseline
-        .digest()
-        .map_err(|value| error(value.to_string()))?;
-    if baseline.generation.next() != Ok(generation) || deltas.is_empty() || deltas.len() > 8 {
-        return Err(error("sparse compiler generation or delta count"));
-    }
-    let mut result = baseline.clone();
-    result.generation = generation;
-    let mut seen = BTreeSet::new();
-    for delta in deltas {
-        if delta.layer_id.as_str() != PARAMETER_LAYER
-            || !seen.insert(delta.parameter_id.clone())
-            || delta.evidence_digest.is_zero()
-            || delta.delta.raw() == 0
-            || delta.delta < delta.lower_bound
-            || delta.delta > delta.upper_bound
-            || delta.delta.raw() % 256 != 0
-        {
-            return Err(error("sparse compiler unbound or inexact Q32 delta"));
-        }
-        let target = match delta.parameter_id.as_str() {
-            "temporal_decay_q24" => &mut result.temporal_decay_q24,
-            "inhibition_gain_q24" => &mut result.inhibition_gain_q24,
-            "activity_decay_q24" => &mut result.activity_decay_q24,
-            "target_activity_q24" => &mut result.target_activity_q24,
-            "threshold_rate_q24" => &mut result.threshold_rate_q24,
-            "threshold_min_q24" => &mut result.threshold_min_q24,
-            "threshold_max_q24" => &mut result.threshold_max_q24,
-            "eligibility_decay_q24" => &mut result.eligibility_decay_q24,
-            _ => {
-                return Err(error(
-                    "sparse compiler parameter is outside installed grammar",
-                ));
-            }
-        };
-        *target = target
-            .checked_add(delta.delta.raw() / 256)
-            .ok_or_else(|| error("sparse compiler parameter overflow"))?;
-    }
-    result.digest().map_err(|value| error(value.to_string()))?;
-    Ok(result)
+    codex_hepta_neuron::apply_sparse_parameter_deltas_v1(baseline, generation, deltas)
+        .map_err(|value| error(value.to_string()))
 }
 
 pub(super) fn norm_denominator(baseline: &SparseConfig) -> Result<u128, AgentdError> {
-    [
-        baseline.temporal_decay_q24,
-        baseline.inhibition_gain_q24,
-        baseline.activity_decay_q24,
-        baseline.target_activity_q24,
-        baseline.threshold_rate_q24,
-        baseline.threshold_min_q24,
-        baseline.threshold_max_q24,
-        baseline.eligibility_decay_q24,
-    ]
-    .into_iter()
-    .try_fold(0_u128, |total, value| {
-        let q32 = i128::from(value) * 256;
-        total
-            .checked_add(q32.unsigned_abs().pow(2))
-            .ok_or_else(|| error("sparse compiler norm overflow"))
-    })
+    codex_hepta_neuron::sparse_parameter_norm_denominator_v1(baseline)
+        .map_err(|value| error(value.to_string()))
 }
 
 pub(super) fn validate_frozen_model(
