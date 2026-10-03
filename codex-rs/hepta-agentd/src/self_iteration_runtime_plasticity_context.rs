@@ -5,8 +5,17 @@ use super::*;
 pub(crate) struct RoundContextFence {
     runtime: AgentdSelfIterationHandleV1,
     view: AgentdSelfIterationCurrentRoundV1,
+    learning_trust: Arc<ActivatedLearningTrustV1>,
 }
 impl RoundContextFence {
+    pub(crate) fn revalidate_learning_trust(&self, now: u64) -> Result<(), AgentdError> {
+        self.learning_trust
+            .revalidate_at(now)
+            .map_err(|e| invalid(format!("original learning trust: {e}")))
+    }
+    pub(crate) fn learning_objective(&self) -> Digest32 {
+        self.learning_trust.verifier().objective_digest()
+    }
     pub(crate) fn same_owner(&self, installed: &AgentdSelfIterationHandleV1) -> bool {
         self.runtime.sender.same_channel(&installed.sender)
     }
@@ -67,7 +76,14 @@ impl SelfIterationOwner {
             ));
         }
         handle
-            .prepare_context_while_round_owned(RoundContextFence { runtime, view }, request)
+            .prepare_context_while_round_owned(
+                RoundContextFence {
+                    runtime,
+                    view,
+                    learning_trust: self.trust.clone(),
+                },
+                request,
+            )
             .map_err(|e| invalid(format!("protected parameter preparation unavailable: {e}")))
     }
     pub(super) fn refresh_plasticity_context(
@@ -95,7 +111,59 @@ impl SelfIterationOwner {
         // run() retains the sole owner mutex in this blocking worker until the
         // actual plasticity owner replies, even when the external caller leaves.
         handle
-            .refresh_while_round_owned(RoundContextFence { runtime, view }, path, pin)
+            .refresh_while_round_owned(
+                RoundContextFence {
+                    runtime,
+                    view,
+                    learning_trust: self.trust.clone(),
+                },
+                path,
+                pin,
+            )
             .map_err(|e| invalid(format!("whole plasticity context unavailable: {e}")))
+    }
+}
+
+impl AgentdSelfIterationHandleV1 {
+    pub(crate) async fn prepare_plasticity_dataset_v1(
+        &self,
+        handle: crate::PlasticityRuntimeHandleV1,
+        request: crate::plasticity_runtime::parameter_dataset::ProtectedParameterDatasetV1,
+    ) -> Result<crate::PreparedParameterDatasetV1, AgentdError> {
+        let (response, receive) = oneshot::channel();
+        self.send(
+            Command::PreparePlasticityDataset(handle, self.clone(), request, response),
+            receive,
+        )
+        .await
+    }
+}
+impl SelfIterationOwner {
+    pub(super) fn prepare_plasticity_dataset(
+        &self,
+        handle: crate::PlasticityRuntimeHandleV1,
+        runtime: AgentdSelfIterationHandleV1,
+        request: crate::plasticity_runtime::parameter_dataset::ProtectedParameterDatasetV1,
+    ) -> Result<crate::PreparedParameterDatasetV1, AgentdError> {
+        let view = self
+            .inspect_current_round()?
+            .ok_or_else(|| invalid("dataset preparation requires original Round"))?;
+        if view.status.terminal
+            || !crate::plasticity_runtime::input_context::permits_refresh(&view, &request.round)
+        {
+            return Err(invalid(
+                "dataset preparation requires exact reserved Round before effects",
+            ));
+        }
+        handle
+            .prepare_dataset_while_round_owned(
+                RoundContextFence {
+                    runtime,
+                    view,
+                    learning_trust: self.trust.clone(),
+                },
+                request,
+            )
+            .map_err(|e| invalid(format!("original dataset preparation unavailable: {e}")))
     }
 }

@@ -29,6 +29,17 @@ impl PlasticityRuntimeBootstrapV1 {
 }
 
 impl PlasticityCurrentArtifactsV1 {
+    pub(super) fn read_current_at(
+        &self,
+        now: u64,
+    ) -> Result<
+        codex_hepta_agent_components::learning_artifacts::VerifiedCurrentRegistryViewV1,
+        AgentdError,
+    > {
+        self.source.read_at(now).map_err(|error| {
+            AgentdError::Invalid(format!("plasticity CURRENT unavailable: {error}"))
+        })
+    }
     pub(crate) fn new(
         source: CurrentArtifactRegistrySourceV1,
         policy_ids: [StableId; 3],

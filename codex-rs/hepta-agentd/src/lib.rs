@@ -729,3 +729,6 @@ pub use learning_withdrawal::HostLearningWithdrawalPhaseV1;
 pub use learning_withdrawal::HostLearningWithdrawalReceiptV1;
 #[cfg(all(feature = "server", target_os = "linux"))]
 pub use learning_withdrawal::withdraw_learning_dataset_v1;
+
+#[cfg(feature = "server")]
+pub use plasticity_runtime::parameter_dataset::PreparedParameterDatasetV1;

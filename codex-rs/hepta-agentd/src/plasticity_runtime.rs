@@ -60,6 +60,13 @@ impl fmt::Display for PlasticityRuntimeCallErrorV1 {
 impl StdError for PlasticityRuntimeCallErrorV1 {}
 
 enum PlasticityRuntimeCommandV1 {
+    PrepareParameterDataset {
+        fence: crate::self_iteration::runtime::plasticity_context::RoundContextFence,
+        request: parameter_dataset::ProtectedParameterDatasetV1,
+        response: oneshot::Sender<
+            Result<parameter_dataset::PreparedParameterDatasetV1, PlasticityRuntimeCallErrorV1>,
+        >,
+    },
     PrepareParameterInputFromContext {
         fence: crate::self_iteration::runtime::plasticity_context::RoundContextFence,
         request: parameter_preparation::ProtectedParameterPreparationV2,
@@ -427,6 +434,21 @@ impl PlasticityRuntimeOwnerV1 {
                 && state.plasticity_admission_ready()?
                 && state.current_generation()? == owner_generation;
             match command {
+                PlasticityRuntimeCommandV1::PrepareParameterDataset {
+                    fence,
+                    request,
+                    response,
+                } => {
+                    let result = self.prepare_parameter_dataset(
+                        &state,
+                        &cancellation,
+                        owner_generation,
+                        ready,
+                        fence,
+                        request,
+                    );
+                    let _ = response.send(result);
+                }
                 PlasticityRuntimeCommandV1::PrepareParameterInputFromContext {
                     fence,
                     request,
@@ -643,3 +665,6 @@ pub(crate) mod input_context;
 pub(crate) mod parameter_preparation;
 #[path = "plasticity_runtime_protected_preparation.rs"]
 mod protected_preparation;
+
+#[path = "plasticity_runtime_parameter_dataset.rs"]
+pub(crate) mod parameter_dataset;

@@ -250,6 +250,7 @@ impl SelfIterationRuntime {
                             | Command::RejectProposal(..)
                             | Command::CompletePreparation(..)
                             | Command::PreparePlasticityInputFromContext(..)
+                            | Command::PreparePlasticityDataset(..)
                             | Command::RefreshPlasticityContext(..)
                     )
                 );
@@ -294,6 +295,10 @@ impl SelfIterationRuntime {
                 }
                 if let Some(command) = command {
                     match command {
+                        Command::PreparePlasticityDataset(handle, runtime, request, response) => {
+                            let _ = response
+                                .send(owner.prepare_plasticity_dataset(handle, runtime, request));
+                        }
                         Command::PreparePlasticityInputFromContext(
                             handle,
                             runtime,

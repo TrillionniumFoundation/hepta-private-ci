@@ -2,6 +2,12 @@
 use super::*;
 
 pub(super) enum Command {
+    PreparePlasticityDataset(
+        crate::PlasticityRuntimeHandleV1,
+        AgentdSelfIterationHandleV1,
+        crate::plasticity_runtime::parameter_dataset::ProtectedParameterDatasetV1,
+        oneshot::Sender<Result<crate::PreparedParameterDatasetV1, AgentdError>>,
+    ),
     PreparePlasticityInputFromContext(
         crate::PlasticityRuntimeHandleV1,
         AgentdSelfIterationHandleV1,
@@ -91,6 +97,9 @@ pub(super) enum Command {
 impl Command {
     pub(super) fn reject(self, error: AgentdError) {
         match self {
+            Self::PreparePlasticityDataset(_, _, _, response) => {
+                let _ = response.send(Err(error));
+            }
             Self::Freeze(_, response)
             | Self::Evaluate(_, _, response)
             | Self::Select(_, _, response)

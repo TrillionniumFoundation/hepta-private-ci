@@ -939,3 +939,7 @@ mod parameter_preparation;
 #[cfg(feature = "server")]
 #[path = "client_parameter_protected_preparation.rs"]
 mod parameter_protected_preparation;
+
+#[cfg(feature = "server")]
+#[path = "client_parameter_dataset.rs"]
+mod parameter_dataset;

@@ -917,3 +917,6 @@ mod parameter_context_refresh;
 mod parameter_preparation;
 #[path = "state_parameter_protected_preparation.rs"]
 mod parameter_protected_preparation;
+
+#[path = "state_parameter_dataset.rs"]
+mod parameter_dataset;
