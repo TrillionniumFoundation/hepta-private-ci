@@ -303,6 +303,8 @@ CI exposed line wrapping in the newly registered test-only `codex-rs/hepta-agent
 
 The 2026-10-03 qualification wiring repair adds narrowly triggered exact-source and deterministic-merge execution with retained command/log hashes and mandatory nonzero test counts. The explicitly ignored crash-window test is selected separately in both lanes; the full 256-write/20-query/5-reopen PERF-LIBRARY measurement remains source-lane-only and uses a bounded, dedicated measurement profile. Required map, formatting, test or lint failures remain aggregate failures while later diagnostic commands retain their own outcomes. This is evidence collection, not a new native pass, host-latency acceptance, production qualification or activation claim. See [the bounded change record](../../../qualification/knowledge-graph/retained-commands-20261003.md).
 
+The first retained run at `f3effae2` now proves the exact-source and merge kernel/owner suites and crash-window test, plus the source full-capacity workload. It retains one qualification-writer E2E failure in a legacy-storage evidence query and two private Memory argument-count lint failures. The [compact fixture follow-up](../../../qualification/knowledge-graph/compact-fixture-20261003.md) records exact artifact identities and repairs only that fixture query and private parameter grouping; its own native execution remains pending. Production-host custody and all acceptance flags remain unchanged.
+
 ## 13. Implementation sequence and work packages
 
 Applicable work packages:
