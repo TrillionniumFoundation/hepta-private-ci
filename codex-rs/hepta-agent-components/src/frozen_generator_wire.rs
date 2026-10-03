@@ -11,6 +11,10 @@ pub const MAX_FROZEN_GENERATOR_RESPONSE_BYTES_V1: usize = 16 * 1024;
 
 type WireResult<T> = Result<T, Box<dyn std::error::Error + Send + Sync>>;
 
+#[path = "frozen_model_failure_wire.rs"]
+mod model_failure;
+pub use model_failure::*;
+
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct FrozenGeneratorRequestV1 {
@@ -102,6 +106,7 @@ impl FrozenGeneratorObservationRequestV2 {
 pub enum FrozenGeneratorOperationV1 {
     Issue(FrozenGeneratorRequestV1),
     Observe(FrozenGeneratorObservationRequestV2),
+    ObserveModelFailure(SelfIterationModelFailureObservationRequestV1),
 }
 
 pub fn encode_frozen_generator_observation_request_v2(
@@ -135,6 +140,9 @@ pub fn decode_frozen_generator_operation_v1(
         )),
         2 => Ok(FrozenGeneratorOperationV1::Observe(
             decode_frozen_generator_observation_request_v2(bytes)?,
+        )),
+        4 => Ok(FrozenGeneratorOperationV1::ObserveModelFailure(
+            decode_self_iteration_model_failure_observation_request_v1(bytes)?,
         )),
         _ => Err("frozen Generator operation schema".into()),
     }
