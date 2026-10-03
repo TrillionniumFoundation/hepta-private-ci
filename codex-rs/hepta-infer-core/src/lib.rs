@@ -288,3 +288,6 @@ pub use self_iteration_model::SelfIterationModelErrorV1;
 pub use self_iteration_model::SelfIterationModelPortV1;
 pub use self_iteration_model::SelfIterationModelRequestV1;
 pub use self_iteration_model::SelfIterationModelRoleV1;
+
+mod self_iteration_failure;
+pub use self_iteration_failure::*;

@@ -105,4 +105,15 @@ pub trait SelfIterationModelPortV1: Send {
         &mut self,
         request: SelfIterationModelRequestV1,
     ) -> impl Future<Output = Result<SelfIterationModelAssessmentV1, SelfIterationModelErrorV1>> + Send;
+
+    /// Observe a settled original native failure plus independently protected
+    /// provider facts. Absence or lost transport remains unknown, never retry.
+    fn observe_failed(
+        &mut self,
+        _request: &SelfIterationModelRequestV1,
+    ) -> impl Future<
+        Output = Result<Option<crate::SelfIterationModelFailureV1>, SelfIterationModelErrorV1>,
+    > + Send {
+        std::future::ready(Ok(None))
+    }
 }
