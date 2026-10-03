@@ -25,6 +25,18 @@ impl RootModelOutcomeReceiptV1 {
         subject: &str,
         request_id: &str,
     ) -> anyhow::Result<Self> {
+        Self::read_original_protected_with_bytes(directory, subject, request_id)
+            .map(|(outcome, _bytes)| outcome)
+    }
+
+    /// Retain the complete original terminal publication for a bounded factual
+    /// transport. Validation and the stable two-publication read are identical
+    /// to `read_original_protected`; the bytes are never reconstructed.
+    pub fn read_original_protected_with_bytes(
+        directory: &Path,
+        subject: &str,
+        request_id: &str,
+    ) -> anyhow::Result<(Self, Vec<u8>)> {
         ensure!(
             rustix::process::geteuid().as_raw() == 0,
             "original model facts require the actual Root reader"
@@ -100,7 +112,7 @@ impl RootModelOutcomeReceiptV1 {
                 && read_fact(&terminal_path)? == terminal_bytes,
             "original model publications changed during observation"
         );
-        Ok(outcome)
+        Ok((outcome, terminal_bytes))
     }
 }
 

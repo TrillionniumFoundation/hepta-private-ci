@@ -1,6 +1,24 @@
 //! Root-only transport borrows the already-installed original bounded owner.
 use super::*;
 impl AgentdState {
+    pub(crate) async fn self_iteration_current_round(
+        &self,
+    ) -> Result<crate::AgentdPayload, AgentdError> {
+        let handle = self
+            .self_iteration_handle
+            .get()
+            .ok_or_else(|| AgentdError::Invalid("original iteration runtime unavailable".into()))?;
+        let current = handle.inspect_current_round().await?;
+        Ok(crate::AgentdPayload::SelfIterationCurrentRound {
+            round_status_json: current
+                .as_ref()
+                .map(|value| value.status.to_json())
+                .transpose()?,
+            has_pending_model_requests: current
+                .is_some_and(|value| value.has_pending_model_requests),
+        })
+    }
+
     pub(crate) async fn self_iteration_round_status(
         &self,
         goal_id: String,

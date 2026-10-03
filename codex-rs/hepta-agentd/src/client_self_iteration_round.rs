@@ -1,5 +1,37 @@
 use super::*;
 impl AgentdClient {
+    /// Observe the sole cold reservation and all admitted model stages through
+    /// the same Root-only channel. The response opens or reconciles no store.
+    pub async fn self_iteration_current_round(
+        &self,
+    ) -> Result<(u64, Option<crate::AgentdSelfIterationCurrentRoundV1>), AgentdError> {
+        let response = self
+            .send(AgentdRequest {
+                schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: self.request_id(),
+                spawn_generation: self.spawn_generation,
+                method: crate::AgentdMethod::SelfIterationCurrentRound,
+            })
+            .await?;
+        match response.payload {
+            AgentdPayload::SelfIterationCurrentRound {
+                round_status_json: Some(json),
+                has_pending_model_requests,
+            } => Ok((
+                response.current_generation,
+                Some(crate::AgentdSelfIterationCurrentRoundV1 {
+                    status: crate::AgentdSelfIterationRoundStatusV1::from_json(&json)?,
+                    has_pending_model_requests,
+                }),
+            )),
+            AgentdPayload::SelfIterationCurrentRound {
+                round_status_json: None,
+                has_pending_model_requests: false,
+            } => Ok((response.current_generation, None)),
+            payload => unexpected(payload),
+        }
+    }
+
     /// The original server requires UID0; the client additionally pins the
     /// actual Agent process with with_peer_process. This grants no authority.
     pub async fn self_iteration_round_status(

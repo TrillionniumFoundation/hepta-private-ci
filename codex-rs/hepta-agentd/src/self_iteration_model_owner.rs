@@ -7,6 +7,7 @@ use tokio_util::sync::CancellationToken;
 use super::AgentdConfig;
 use crate::AgentdError;
 use crate::AgentdNeuronRuntimeV2Host;
+use crate::AgentdSelfIterationHandleV1;
 use crate::AgentdState;
 use crate::PlasticityRuntimeHandleV1;
 
@@ -16,6 +17,7 @@ use crate::PlasticityRuntimeHandleV1;
 pub struct AgentdSelfIterationModelOwnerContextV2 {
     neuron: Option<Arc<AgentdNeuronRuntimeV2Host>>,
     plasticity: Option<PlasticityRuntimeHandleV1>,
+    iteration: Option<AgentdSelfIterationHandleV1>,
 }
 
 impl AgentdSelfIterationModelOwnerContextV2 {
@@ -23,6 +25,7 @@ impl AgentdSelfIterationModelOwnerContextV2 {
         Self {
             neuron: state.neuron_runtime_v2.get().cloned(),
             plasticity: state.plasticity_runtime_handle(),
+            iteration: state.self_iteration_handle.get().cloned(),
         }
     }
 
@@ -34,6 +37,12 @@ impl AgentdSelfIterationModelOwnerContextV2 {
     /// A bounded sender to the sole governed plasticity owner, when present.
     pub fn plasticity_handle(&self) -> Option<PlasticityRuntimeHandleV1> {
         self.plasticity.clone()
+    }
+
+    /// The sole durable round owner, already started by the daemon task host.
+    /// This clone opens no journal and grants no additional iteration quota.
+    pub fn iteration_handle(&self) -> Option<AgentdSelfIterationHandleV1> {
+        self.iteration.clone()
     }
 }
 

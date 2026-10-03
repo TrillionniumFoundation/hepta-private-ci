@@ -135,15 +135,37 @@ fn actual_root_writer_reader_retains_full_escaped_prompt_and_original_failure() 
         RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST)?,
         expected
     );
+    let (whole, original_bytes) = RootModelOutcomeReceiptV1::read_original_protected_with_bytes(
+        directory.path(),
+        SUBJECT,
+        REQUEST,
+    )?;
+    assert_eq!(whole, expected);
+    assert_eq!(
+        original_bytes,
+        store::read_protected(
+            &terminal(directory.path())?,
+            MAX_ORIGINAL_MODEL_FACT_BYTES,
+            /*private*/ true,
+        )?
+    );
     let failed_directory = self::directory()?;
     let original = reserved(failed_directory.path(), "original real refusal input")?;
     let failure = RootModelFailureV1::HttpRejection { status: 503 };
     original.fail(failure.clone(), 150)?;
-    let actual = RootModelOutcomeReceiptV1::read_original_protected(
+    let (actual, original_bytes) = RootModelOutcomeReceiptV1::read_original_protected_with_bytes(
         failed_directory.path(),
         SUBJECT,
         REQUEST,
     )?;
+    assert_eq!(
+        original_bytes,
+        store::read_protected(
+            &terminal(failed_directory.path())?,
+            MAX_ORIGINAL_MODEL_FACT_BYTES,
+            /*private*/ true,
+        )?
+    );
     let RootModelOutcomeReceiptV1::Failed {
         failure: observed,
         observed_at_ms,

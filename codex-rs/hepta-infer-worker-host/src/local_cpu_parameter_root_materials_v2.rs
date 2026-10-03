@@ -183,6 +183,10 @@ impl CpuNeuronParameterRootMaterialsV2 {
     pub fn baseline(&self) -> &CpuNeuronGenerationPlanV1 {
         &self.baseline
     }
+    /// Independently pinned original executable; this reference is no launch grant.
+    pub fn worker_source(&self) -> &InstalledCpuSourceV1 {
+        self.worker.source()
+    }
     pub fn rollback(&self) -> &CpuNeuronGenerationPlanV1 {
         &self.rollback
     }

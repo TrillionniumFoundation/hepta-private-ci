@@ -681,6 +681,7 @@ pub enum AgentdMethod {
         goal_id: String,
         canonical_policy_digest: String,
     },
+    SelfIterationCurrentRound,
     SecretsConsumeOriginal {
         original_id: String,
         budget_ms: u64,
@@ -886,6 +887,10 @@ pub enum AgentdPayload {
         goal_id: String,
         canonical_policy_digest: String,
         round_status_json: String,
+    },
+    SelfIterationCurrentRound {
+        round_status_json: Option<String>,
+        has_pending_model_requests: bool,
     },
     CanaryOperationReceipt {
         query: CanaryOperationQueryV2,

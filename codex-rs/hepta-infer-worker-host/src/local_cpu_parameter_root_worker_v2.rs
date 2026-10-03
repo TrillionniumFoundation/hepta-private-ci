@@ -24,6 +24,9 @@ pub(super) struct VerifiedWorker {
     identity: Identity,
 }
 impl VerifiedWorker {
+    pub(super) fn source(&self) -> &InstalledCpuSourceV1 {
+        &self.source
+    }
     pub(super) fn open(
         source: &InstalledCpuSourceV1,
         expected: Digest32,

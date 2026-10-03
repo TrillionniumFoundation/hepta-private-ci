@@ -119,6 +119,7 @@ async fn serve_connection(
         crate::AgentdMethod::NativeModelReceipt { .. }
             | crate::AgentdMethod::PreparedGenerationV2 { .. }
             | crate::AgentdMethod::SelfIterationRoundStatus { .. }
+            | crate::AgentdMethod::SelfIterationCurrentRound
             | crate::AgentdMethod::CanaryOperationReceipt { .. }
             | crate::AgentdMethod::PlasticityCompletedProposal { .. }
     );
@@ -163,6 +164,7 @@ async fn serve_connection(
             } else if matches!(
                 &request.method,
                 crate::AgentdMethod::SelfIterationRoundStatus { .. }
+                    | crate::AgentdMethod::SelfIterationCurrentRound
             ) {
                 "round inspection requires the actual Root kernel peer"
             } else {
