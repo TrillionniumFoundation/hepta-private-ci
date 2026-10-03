@@ -1,0 +1,5 @@
+# Only the explicitly selected full-capacity measurement uses this profile.
+# 256 real writes, 20 queries and 5 reopens are retained, never sampled down.
+[profile.kg-capacity]
+retries = 0
+slow-timeout = { period = "60s", terminate-after = 35 }

@@ -301,6 +301,8 @@ CI exposed line wrapping in the newly registered test-only `codex-rs/hepta-agent
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
+The 2026-10-03 qualification wiring repair adds narrowly triggered exact-source and deterministic-merge execution with retained command/log hashes and mandatory nonzero test counts. The explicitly ignored crash-window test is selected separately in both lanes; the full 256-write/20-query/5-reopen PERF-LIBRARY measurement remains source-lane-only and uses a bounded, dedicated measurement profile. Required map, formatting, test or lint failures remain aggregate failures while later diagnostic commands retain their own outcomes. This is evidence collection, not a new native pass, host-latency acceptance, production qualification or activation claim. See [the bounded change record](../../../qualification/knowledge-graph/retained-commands-20261003.md).
+
 ## 13. Implementation sequence and work packages
 
 Applicable work packages:
@@ -321,7 +323,7 @@ Compatibility adapters are temporary. Retirement requires all named callers migr
 
 Documentation completion requires this guide, exact registry references and closed-world validation. Source completion requires code in the declared root and candidate tests. Composition requires a named caller. Qualification requires current exact-candidate evidence. Acceptance, selection, promotion and release are separate externally governed states.
 
-For `knowledge.graph`, the cognitive knowledge read path is product-composed. This candidate also makes scoped cognitive mutation the default **Agentd** product profile and fails Agentd startup closed when the cognitive owner store is unavailable; ordinary Codex/App Server binaries remain default-off. The separate `qualification-cognitive-write` feature adds only the qualification turn-witness seam. This candidate writer is not treated as established until current exact-head and deterministic synthetic-merge evidence are green.
+For `knowledge.graph`, the cognitive knowledge read path is product-composed. The default **Agentd** feature enables the cognitive-write configuration profile and fails startup closed when the cognitive owner store is unavailable; ordinary Codex/App Server binaries remain default-off. Actual production mutation tools still require the sealed, live-verified capability supplied by an independently recovered `AgentdProductionWriterHost`. The default feature does not provision that host. The explicit `qualification-cognitive-write` feature permits qualification store writes as well as the turn-witness seam; its remember/restart/correct/forget E2E is ignored in the default profile. Passing that feature test does not establish production-writer custody through the real daemon. The independently recovered capability through that daemon path remains a separate test and host-evidence gap.
 
 The three selected real product E2E cases produced one pass for unavailable-store startup rejection and two failures while binding the Unix control socket with `EPERM`, before readiness. The positive remember/restart/correction/forget chain and server-isolation cases therefore have no passing execution result on this host. The full-capacity component probe's success does not close this product-environment blocker.
 
