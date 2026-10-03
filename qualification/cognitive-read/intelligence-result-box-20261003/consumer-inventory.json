@@ -1,0 +1,41 @@
+{
+  "scope": "all tracked Rust source; exact-name references include declarations, exports and matches",
+  "files": [
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "previousNamedUses": 5,
+      "currentNamedUses": 5
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "previousNamedUses": 24,
+      "currentNamedUses": 24
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+      "previousNamedUses": 1,
+      "currentNamedUses": 1
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "previousNamedUses": 3,
+      "currentNamedUses": 5
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "previousNamedUses": 3,
+      "currentNamedUses": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "previousNamedUses": 3,
+      "currentNamedUses": 3
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "previousNamedUses": 7,
+      "currentNamedUses": 7
+    }
+  ],
+  "runnerBodyChanges": "two Box allocations and single-expression match-arm formatting only"
+}
