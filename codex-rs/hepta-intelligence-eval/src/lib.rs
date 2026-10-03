@@ -690,6 +690,10 @@ mod operational_registered_model_v3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod operational_registered_program_v3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_registered_measurement_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod operational_registered_policy_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use operational_registered_model_v3::RegisteredArtifactCurrentFactsV3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use operational_registered_model_v3::RegisteredOperationalModelBindingV3;
