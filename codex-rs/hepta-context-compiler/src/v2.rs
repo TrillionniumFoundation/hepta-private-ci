@@ -97,7 +97,6 @@ pub trait ContextProviderDeliveryVerifierV2 {
     /// Authenticate provider-owned attempt evidence against this exact
     /// pre-dispatch preparation. The provider witness remains provider-owned;
     /// context.compiler does not reinterpret it as a raw preparation digest.
-
     fn verify_delivery(
         &self,
         receipt: &ProviderInvocationReceipt,
@@ -1992,16 +1991,32 @@ impl ContextDeliveryReceiptV2 {
     }
 }
 
+/// Borrowed artifacts supplied for a delivery observation, not verified authority.
+/// Validation still occurs inside `observe_delivery` before the verifier is called.
+pub struct ContextDeliveryInputsV2<'a> {
+    pub preparation: &'a ContextDeliveryPreparationV2,
+    pub attachment: &'a ContextAttachmentV2,
+    pub serialization: &'a SerializedContextV2,
+    pub profile: &'a ContextModelProfileV2,
+}
+
+/// Observe delivery using explicit borrowed inputs and the independent verifier.
+///
+/// Rust callers group the former first four arguments in their original order.
+/// The carrier grants nothing; all validation and receipt derivation remain here.
 pub fn observe_delivery(
-    preparation: &ContextDeliveryPreparationV2,
-    attachment: &ContextAttachmentV2,
-    serialization: &SerializedContextV2,
-    profile: &ContextModelProfileV2,
+    inputs: ContextDeliveryInputsV2<'_>,
     delivery_id: StableId,
     provider_receipt: &ProviderInvocationReceipt,
     delivery_verifier: &impl ContextProviderDeliveryVerifierV2,
     observed_unix_ms: u64,
 ) -> Result<ContextDeliveryReceiptV2, ContextCompilerV2Error> {
+    let ContextDeliveryInputsV2 {
+        preparation,
+        attachment,
+        serialization,
+        profile,
+    } = inputs;
     preparation.validate_for(attachment, serialization, profile)?;
     provider_receipt
         .validate()
