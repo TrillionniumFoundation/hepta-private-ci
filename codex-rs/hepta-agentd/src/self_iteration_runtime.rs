@@ -5,8 +5,34 @@ use tokio_util::sync::CancellationToken;
 use super::*;
 use std::path::PathBuf;
 
+use codex_hepta_agent_components::infer_core::SelfIterationModelAssessmentV1;
+use codex_hepta_agent_components::infer_core::SelfIterationModelRequestV1;
+use codex_hepta_agent_components::types::StableId;
+
 type Response = oneshot::Sender<Result<AgentdSelfIterationRecordV1, AgentdError>>;
 enum Command {
+    InspectRound(
+        StableId,
+        Digest32,
+        oneshot::Sender<Result<AgentdSelfIterationRoundStatusV1, AgentdError>>,
+    ),
+    Reserve(
+        StableId,
+        crate::CanonicalIterationEnvelopeV1,
+        IterationEnvelopeV1,
+        oneshot::Sender<Result<AgentdSelfIterationRoundV1, AgentdError>>,
+    ),
+    Begin(
+        AgentdSelfIterationRoundV1,
+        SelfIterationModelRequestV1,
+        oneshot::Sender<Result<AgentdSelfIterationModelAdmissionV1, AgentdError>>,
+    ),
+    Complete(
+        AgentdSelfIterationRoundV1,
+        SelfIterationModelRequestV1,
+        SelfIterationModelAssessmentV1,
+        oneshot::Sender<Result<(), AgentdError>>,
+    ),
     Freeze(Box<AgentdSelfIterationCandidateV1>, Response),
     Evaluate(Digest32, Box<AgentdSignedEvaluationV1>, Response),
     Select(Digest32, SignedLearningEvidenceV1, Response),
@@ -20,13 +46,26 @@ enum Command {
 
 impl Command {
     fn reject(self, error: AgentdError) {
-        let response = match self {
+        match self {
             Self::Freeze(_, response)
             | Self::Evaluate(_, _, response)
             | Self::Select(_, _, response)
-            | Self::Observe(_, _, _, response) => response,
-        };
-        let _ = response.send(Err(error));
+            | Self::Observe(_, _, _, response) => {
+                let _ = response.send(Err(error));
+            }
+            Self::InspectRound(_, _, response) => {
+                let _ = response.send(Err(error));
+            }
+            Self::Reserve(_, _, _, response) => {
+                let _ = response.send(Err(error));
+            }
+            Self::Begin(_, _, response) => {
+                let _ = response.send(Err(error));
+            }
+            Self::Complete(_, _, _, response) => {
+                let _ = response.send(Err(error));
+            }
+        }
     }
 }
 
@@ -37,6 +76,55 @@ pub struct AgentdSelfIterationHandleV1 {
     sender: mpsc::Sender<Command>,
 }
 impl AgentdSelfIterationHandleV1 {
+    pub async fn inspect_round(
+        &self,
+        goal: StableId,
+        canonical_policy: Digest32,
+    ) -> Result<AgentdSelfIterationRoundStatusV1, AgentdError> {
+        let (response, receive) = oneshot::channel();
+        self.send(
+            Command::InspectRound(goal, canonical_policy, response),
+            receive,
+        )
+        .await
+    }
+    /// Debit the original policy window before any model or generation effect.
+    pub async fn reserve_round(
+        &self,
+        goal: StableId,
+        canonical: crate::CanonicalIterationEnvelopeV1,
+        envelope: IterationEnvelopeV1,
+    ) -> Result<AgentdSelfIterationRoundV1, AgentdError> {
+        let (response, receive) = oneshot::channel();
+        self.send(
+            Command::Reserve(goal, canonical, envelope, response),
+            receive,
+        )
+        .await
+    }
+    pub async fn begin_model(
+        &self,
+        round: AgentdSelfIterationRoundV1,
+        request: SelfIterationModelRequestV1,
+    ) -> Result<AgentdSelfIterationModelAdmissionV1, AgentdError> {
+        let (response, receive) = oneshot::channel();
+        self.send(Command::Begin(round, request, response), receive)
+            .await
+    }
+    pub async fn complete_model(
+        &self,
+        round: AgentdSelfIterationRoundV1,
+        request: SelfIterationModelRequestV1,
+        assessment: SelfIterationModelAssessmentV1,
+    ) -> Result<(), AgentdError> {
+        let (response, receive) = oneshot::channel();
+        self.send(
+            Command::Complete(round, request, assessment, response),
+            receive,
+        )
+        .await
+    }
+
     pub async fn freeze(
         &self,
         candidate: AgentdSelfIterationCandidateV1,
@@ -79,11 +167,11 @@ impl AgentdSelfIterationHandleV1 {
         )
         .await
     }
-    async fn send(
+    async fn send<T>(
         &self,
         command: Command,
-        receive: oneshot::Receiver<Result<AgentdSelfIterationRecordV1, AgentdError>>,
-    ) -> Result<AgentdSelfIterationRecordV1, AgentdError> {
+        receive: oneshot::Receiver<Result<T, AgentdError>>,
+    ) -> Result<T, AgentdError> {
         self.sender
             .try_send(command)
             .map_err(|error| invalid(format!("self-iteration admission: {error}")))?;
@@ -175,7 +263,25 @@ impl SelfIterationRuntime {
                 let mut owner = owner
                     .lock()
                     .map_err(|_| invalid("self-iteration owner poisoned"))?;
-                match owner.expire(now) {
+                if !matches!(
+                    &command,
+                    Some(Command::Complete(..) | Command::InspectRound(..))
+                ) && let Err(error) = owner.journal.observe_clock(now, command.is_some())
+                {
+                    if let Some(command) = command {
+                        command.reject(error);
+                    }
+                    return Ok(());
+                }
+                let expiry = if matches!(
+                    &command,
+                    Some(Command::Complete(..) | Command::InspectRound(..))
+                ) {
+                    Ok(())
+                } else {
+                    owner.expire(now)
+                };
+                match expiry {
                     Ok(()) => {}
                     Err(error @ AgentdError::Overloaded { .. }) => {
                         if let Some(command) = command {
@@ -186,21 +292,88 @@ impl SelfIterationRuntime {
                     Err(error) => return Err(error),
                 }
                 if let Some(command) = command {
-                    let (result, response) = match command {
+                    match command {
+                        Command::InspectRound(goal, policy, response) => {
+                            let result = owner
+                                .journal
+                                .rounds
+                                .as_ref()
+                                .ok_or_else(|| invalid("round not reserved"))
+                                .and_then(|rounds| rounds.status(&goal, policy));
+                            let _ = response.send(result);
+                        }
+                        Command::Reserve(goal, canonical, envelope, response) => {
+                            let result = (|| {
+                                if !owner.trust.is_current_at(now)
+                                    || canonical
+                                        .policy()
+                                        .objective_digest
+                                        .parse::<Digest32>()
+                                        .map_err(|e| invalid(e.to_string()))?
+                                        != owner.trust.verifier().objective_digest()
+                                {
+                                    return Err(invalid(
+                                        "round policy lacks current original learning trust",
+                                    ));
+                                }
+                                if owner.journal.rounds.is_none() && owner.journal.pending() {
+                                    return Err(invalid(
+                                        "legacy pending candidate requires exact recovery",
+                                    ));
+                                }
+                                let mut rounds = owner.journal.rounds.clone().unwrap_or_default();
+                                let permit = rounds.reserve(goal, &canonical, &envelope, now)?;
+                                owner.journal.persist_rounds(rounds)?;
+                                Ok(permit)
+                            })();
+                            let _ = response.send(result);
+                        }
+                        Command::Begin(round, request, response) => {
+                            let result = (|| {
+                                if !owner.trust.is_current_at(now) {
+                                    return Err(invalid(
+                                        "model admission lacks current original learning trust",
+                                    ));
+                                }
+                                let mut rounds = owner
+                                    .journal
+                                    .rounds
+                                    .clone()
+                                    .ok_or_else(|| invalid("round not reserved"))?;
+                                let admission = rounds.begin(&round, &request, now)?;
+                                owner.journal.persist_rounds(rounds)?;
+                                Ok(admission)
+                            })();
+                            let _ = response.send(result);
+                        }
+                        Command::Complete(round, request, assessment, response) => {
+                            let result = (|| {
+                                // A real terminal receipt is retained even after the policy expires;
+                                // recording it grants no result-use or selection authority.
+                                let mut rounds = owner
+                                    .journal
+                                    .rounds
+                                    .clone()
+                                    .ok_or_else(|| invalid("round not reserved"))?;
+                                rounds.retain_terminal_clock(now);
+                                rounds.complete(&round, &request, &assessment)?;
+                                owner.journal.persist_rounds(rounds)
+                            })();
+                            let _ = response.send(result);
+                        }
                         Command::Freeze(candidate, response) => {
-                            (owner.freeze(*candidate, now), response)
+                            let _ = response.send(owner.freeze(*candidate, now));
                         }
                         Command::Evaluate(frozen, signed, response) => {
-                            (owner.evaluate(frozen, *signed, now), response)
+                            let _ = response.send(owner.evaluate(frozen, *signed, now));
                         }
                         Command::Select(frozen, signed, response) => {
-                            (owner.select(frozen, signed, now), response)
+                            let _ = response.send(owner.select(frozen, signed, now));
                         }
                         Command::Observe(frozen, verdict, signed, response) => {
-                            (owner.observe(frozen, verdict, signed, now), response)
+                            let _ = response.send(owner.observe(frozen, verdict, signed, now));
                         }
-                    };
-                    let _ = response.send(result);
+                    }
                 }
                 Ok::<_, AgentdError>(())
             })
@@ -209,3 +382,7 @@ impl SelfIterationRuntime {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "self_iteration_runtime_tests.rs"]
+mod tests;
