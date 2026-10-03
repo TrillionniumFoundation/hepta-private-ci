@@ -85,3 +85,16 @@ name = "hepta-native-chat-bridge"
 path = "src/bin/hepta-native-chat-bridge.rs"
 required-features = ["native-chat-bridge"]
 test = false
+
+# One actual enrolled G executable combines finite original owner purposes.
+[[bin]]
+name = "hepta-native-role-generator"
+path = "src/bin/hepta-native-role-generator.rs"
+required-features = ["fixed-initial-cpu-host"]
+test = false
+
+[[bin]]
+name = "hepta-native-role-observer"
+path = "src/bin/hepta-native-role-observer.rs"
+required-features = ["fixed-initial-cpu-host"]
+test = false

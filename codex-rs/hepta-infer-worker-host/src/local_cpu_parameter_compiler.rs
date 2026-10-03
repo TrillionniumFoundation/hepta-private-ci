@@ -136,6 +136,12 @@ impl CpuNeuronGovernedParameterCompilerV1 {
     pub fn physical_generation_reader(&self) -> crate::CpuNeuronGenerationCompositionReaderV2 {
         self.physical_generations.clone()
     }
+    /// Reuse the original actual Fleet resource owner; no reservation is issued.
+    #[cfg(target_os = "linux")]
+    pub fn original_resource_port_v2(&self) -> Option<Arc<crate::FleetWorkerResourcePortV2>> {
+        self.owners.resources.clone()
+    }
+
     pub fn new(
         plan: CpuNeuronParameterCompilerPlanV1,
         owners: CpuNeuronParameterCompilerOwnersV1,
