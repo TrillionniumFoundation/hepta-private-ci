@@ -11,7 +11,6 @@ use anyhow::Context;
 use anyhow::Result;
 use app_test_support::MockResponsesConfig;
 use app_test_support::TestAppServer;
-use app_test_support::create_command_execution_sse_response;
 use app_test_support::create_final_assistant_message_sse_response;
 use app_test_support::create_mock_responses_server_sequence_unchecked;
 use codex_app_server_protocol::ClientRequest;
@@ -739,7 +738,7 @@ async fn same_process_ephemeral_interrupted_turn_recovers_from_listener_state() 
 async fn configured_app(server: &MockServer) -> Result<(TestAppServer, TempDir)> {
     let codex_home = TempDir::new()?;
     MockResponsesConfig::new(&server.uri())
-        .with_approval_policy("untrusted")
+        .with_approval_policy("on-request")
         .enable_feature(Feature::HeptaTurnRecovery)
         .with_root_config(r#"approvals_reviewer = "user""#)
         .write(codex_home.path())?;
@@ -754,7 +753,7 @@ async fn configured_app(server: &MockServer) -> Result<(TestAppServer, TempDir)>
 async fn configured_app_with_resume_hook(server: &MockServer) -> Result<(TestAppServer, TempDir)> {
     let codex_home = TempDir::new()?;
     MockResponsesConfig::new(&server.uri())
-        .with_approval_policy("untrusted")
+        .with_approval_policy("on-request")
         .enable_feature(Feature::HeptaTurnRecovery)
         .with_root_config(r#"approvals_reviewer = "user""#)
         .write(codex_home.path())?;
@@ -968,16 +967,18 @@ async fn model_requests(server: &MockServer) -> Result<Vec<wiremock::Request>> {
 }
 
 fn blocked_turn_response(call_id: &str) -> Result<String> {
-    create_command_execution_sse_response(
-        vec![
-            "python3".to_string(),
-            "-c".to_string(),
-            "import time; time.sleep(10)".to_string(),
-        ],
-        /*workdir*/ None,
-        /*timeout_ms*/ Some(10_000),
-        call_id,
-    )
+    // OnRequest asks for explicit escalation. A sandbox-safe sleep command
+    // alone no longer creates the original fixture's approval barrier.
+    let arguments = serde_json::to_string(&serde_json::json!({
+        "cmd": "python3 -c 'import time; time.sleep(10)'",
+        "sandbox_permissions": "require_escalated",
+        "justification": "Hold the recovery fixture at its original approval barrier.",
+    }))?;
+    Ok(test_responses::sse(vec![
+        test_responses::ev_response_created("recovery-blocked-response"),
+        test_responses::ev_function_call(call_id, "exec_command", &arguments),
+        test_responses::ev_completed("recovery-blocked-response"),
+    ]))
 }
 
 fn text(value: &str) -> UserInput {
