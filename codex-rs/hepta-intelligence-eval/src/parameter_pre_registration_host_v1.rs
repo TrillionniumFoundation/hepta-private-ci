@@ -339,7 +339,7 @@ pub fn run_parameter_pre_registration_evaluator_v1(path: &Path) -> HostResult<()
     }
     inspect(&config, final_now)?
         .baseline
-        .revalidate_current(final_now)?;
+        .revalidate(final_now)?;
     if read_root_review_input(path, 64 * 1024)? != bytes {
         return Err("E1 final source changed".into());
     }
