@@ -6,6 +6,9 @@ use codex_hepta_learning_ledger::AppendDisposition;
 use codex_hepta_learning_ledger::LedgerAnchor;
 use codex_hepta_learning_ledger::LedgerRecovery;
 
+#[path = "support/intuition_service_error_contract.rs"]
+mod service_error_contract;
+
 #[derive(Debug)]
 struct TestIntuitionClock {
     now: AtomicU64,
@@ -270,6 +273,11 @@ fn v3_product_host_commits_once_replays_idempotently_and_reopens() {
         assert_eq!(first_append.chain_digest, replay_append.chain_digest);
         assert_eq!(first_append.sequence, replay_append.sequence);
         assert_eq!(first.production_record_id, replay.production_record_id);
+
+        // Exercise the public Rust error fields with complete, genuinely
+        // acknowledged receipts for both append and idempotent replay.
+        service_error_contract::assert_owned_receipt_contract(first.clone());
+        service_error_contract::assert_owned_receipt_contract(replay.clone());
 
         let anchor = LedgerAnchor {
             sequence: first_append.sequence.get(),

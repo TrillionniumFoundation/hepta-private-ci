@@ -28,6 +28,13 @@ mod admission;
 pub(crate) use admission::CanonicalIntuitionAdmissionV2;
 pub(crate) use admission::finish_canonical_admission;
 
+/// Typed service failure with owned recovery evidence when policy commit succeeded.
+///
+/// The two acknowledged `receipt` fields are boxed to bound the error's inline
+/// size. This is a pre-release Rust constructor-field migration: construct them
+/// with `Box::new(receipt)` and move the receipt back out with `*receipt`.
+/// Borrowing through `acknowledged_policy_receipt` still returns the complete
+/// receipt, and stable codes, sources and wire error text are unchanged.
 #[derive(Debug)]
 pub enum AgentdIntuitionServiceErrorV1 {
     NotConfigured,
@@ -35,12 +42,12 @@ pub enum AgentdIntuitionServiceErrorV1 {
     Agentd(AgentdError),
     Policy(AgentdIntuitionPolicyError),
     GenerationChangedAfterCommit {
-        receipt: AgentdIntuitionDecisionReceiptV2,
+        receipt: Box<AgentdIntuitionDecisionReceiptV2>,
     },
     /// The policy phase succeeded, but a later canonical admission boundary
     /// failed. Preserve both facts; an error must not imply that no append ran.
     AdmissionFailedAfterPolicy {
-        receipt: AgentdIntuitionDecisionReceiptV2,
+        receipt: Box<AgentdIntuitionDecisionReceiptV2>,
         source: Box<AgentdError>,
     },
 }
@@ -68,7 +75,7 @@ impl AgentdIntuitionServiceErrorV1 {
     pub fn acknowledged_policy_receipt(&self) -> Option<&AgentdIntuitionDecisionReceiptV2> {
         match self {
             Self::GenerationChangedAfterCommit { receipt }
-            | Self::AdmissionFailedAfterPolicy { receipt, .. } => Some(receipt),
+            | Self::AdmissionFailedAfterPolicy { receipt, .. } => Some(receipt.as_ref()),
             Self::NotConfigured | Self::NotReady | Self::Agentd(_) | Self::Policy(_) => None,
         }
     }
@@ -158,10 +165,6 @@ pub(crate) fn run_start_deadline_ms(
 
 impl AgentdState {
     #[allow(clippy::too_many_arguments)]
-    #[allow(
-        clippy::result_large_err,
-        reason = "Keep the public service error payload compatible and retain complete acknowledged receipts"
-    )]
     pub(crate) fn prepare_intuition_policy_v3(
         &self,
         request: CalibratedDecisionRequestV1,
@@ -196,10 +199,6 @@ impl AgentdState {
         .map_err(Into::into)
     }
 
-    #[allow(
-        clippy::result_large_err,
-        reason = "Keep the public service error payload compatible and retain complete acknowledged receipts"
-    )]
     pub(crate) fn commit_intuition_policy_v4_checked<F>(
         &self,
         prepared: PreparedAgentdIntuitionDecisionV3,
@@ -234,10 +233,12 @@ impl AgentdState {
         retain_committed_receipt(self.automation_admission_ready(), receipt).map_err(
             |(receipt, source)| match source {
                 Some(source) => AgentdIntuitionServiceErrorV1::AdmissionFailedAfterPolicy {
-                    receipt,
+                    receipt: Box::new(receipt),
                     source: Box::new(source),
                 },
-                None => AgentdIntuitionServiceErrorV1::GenerationChangedAfterCommit { receipt },
+                None => AgentdIntuitionServiceErrorV1::GenerationChangedAfterCommit {
+                    receipt: Box::new(receipt),
+                },
             },
         )
     }

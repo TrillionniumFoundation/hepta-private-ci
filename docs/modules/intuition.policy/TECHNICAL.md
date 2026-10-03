@@ -209,6 +209,26 @@ The V2 scorer and assignment commitment payloads have separate fields, but the h
 
 Rust types and canonical JSON must represent identical semantics. Required tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes. The current deterministic V2 commitment fixture additionally has an independently implemented Python encoder; it does not establish coverage for every protocol or assignment mode.
 
+### Pre-release Rust service-error field migration
+
+`AgentdIntuitionServiceErrorV1::GenerationChangedAfterCommit` and
+`AdmissionFailedAfterPolicy` own their complete acknowledged
+`AgentdIntuitionDecisionReceiptV2` in `Box` fields. Direct Rust constructors must
+use `receipt: Box::new(receipt)`; consumers moving a receipt out of a matched
+variant use `*receipt`. This is a source-breaking constructor-field migration
+in the pre-release Rust API, not a claim of source compatibility.
+
+The service enum and callback error type remain unchanged.
+`acknowledged_policy_receipt()` still returns
+`Option<&AgentdIntuitionDecisionReceiptV2>`. Boxing changes only inline ownership
+layout: it preserves all receipt fields, append/replay acknowledgement, stable
+error codes, source chains and `AgentdError` conversion. The control wire still
+uses the same stable error text; policy decisions, signed evidence, receipt
+digests and serialized schemas are unchanged. The signed product-host test
+exercises both variants with actual append and idempotent-replay receipts,
+including owned extraction and the typed admission cause. Exact native
+compilation and strict lint qualification remain required.
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
