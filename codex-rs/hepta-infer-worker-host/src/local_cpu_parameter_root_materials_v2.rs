@@ -74,7 +74,7 @@ impl CpuNeuronParameterRootMaterialsV2 {
         let mut sources = vec![(source.clone(), MAX_DESCRIPTOR_BYTES)];
         let canonical = CanonicalIterationEnvelopeV1::decode(&read_retained(
             &descriptor.canonical_envelope,
-            16 * 1024,
+            262_144,
             &mut sources,
         )?)
         .map_err(invalid)?;
