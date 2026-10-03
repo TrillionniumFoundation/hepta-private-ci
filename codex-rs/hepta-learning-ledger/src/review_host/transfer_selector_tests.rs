@@ -135,7 +135,6 @@ fn selector_transport_keeps_original_roster_and_root_authentication_mandatory() 
         .trust
         .signers
         .push(duplicate.distribution.trust.signers.last().unwrap().clone());
-    resign(&mut duplicate);
     assert!(
         ReviewTrustWireV1::from_native(&root, &duplicate)
             .native()
@@ -143,7 +142,6 @@ fn selector_transport_keeps_original_roster_and_root_authentication_mandatory() 
     );
     let mut missing_evaluator = signed.clone();
     missing_evaluator.distribution.trust.signers.remove(3);
-    resign(&mut missing_evaluator);
     assert!(
         ReviewTrustWireV1::from_native(&root, &missing_evaluator)
             .native()
