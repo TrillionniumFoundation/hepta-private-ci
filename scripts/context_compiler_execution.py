@@ -95,7 +95,7 @@ def bind_test_count(log: str | Iterable[str], spec: dict, result: dict) -> None:
     result["succeeded"] = result["succeeded"] and count >= spec["minimumTests"]
 
 
-def specs(legacy):
+def specs(legacy, output_dir: Path | None = None):
     commands = []
     for original in legacy.command_specs():
         spec = dict(original)
@@ -376,6 +376,78 @@ def specs(legacy):
             ],
         },
     ]
+    import context_compiler_canonical as canonical
+
+    additions = [
+        (
+            "automation-authorized-effect-regressions",
+            "codex-hepta-automation",
+            ["--test", "authorized_effect"],
+            [
+                "wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant",
+                "async_provider_effect_binds_exact_wire_bytes_before_burning_grant",
+                "async_provider_unknown_is_quarantined_and_lookup_not_found_is_proven_absent",
+                "final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant",
+                "successful_effect_is_at_most_once_for_one_durable_step_attempt",
+                "crash_after_provider_contact_before_observation_requires_recovery_without_redispatch",
+                "indeterminate_effect_reopens_without_redispatch_then_reconciles_terminally",
+                "proven_pre_contact_failure_never_blindly_redispatches_same_attempt",
+                "revocation_race_is_fenced_across_the_physical_provider_call",
+                "compensation_crash_preserves_intent_identity_and_requires_reconciliation",
+            ],
+        ),
+        (
+            "automation-neural-circuit-regressions",
+            "codex-hepta-automation",
+            ["--lib", "neural_circuit::tests"],
+            [
+                "neural_circuit::tests::circuit_compiles_to_existing_taskflow_without_authority",
+                "neural_circuit::tests::successor_binds_exact_predecessor_and_can_change_route_and_parameters",
+                "neural_circuit::tests::structural_successor_cannot_rebind_predecessor_or_widen_capabilities",
+                "neural_circuit::tests::circuit_reuses_taskflow_cycle_and_terminal_rejection",
+            ],
+        ),
+        (
+            "agentd-automation-effect-host-regression",
+            "codex-hepta-agentd",
+            ["--lib", "automation_effect_host::tests"],
+            [
+                "automation_effect_host::tests::host_dispatches_exact_wire_payload_once",
+            ],
+        ),
+        (
+            "core-websocket-connection-identity-regression",
+            "codex-core",
+            [
+                "--lib",
+                "websocket_connection_identity_binds_provider_and_stable_handshake_semantics",
+            ],
+            [
+                "client::tests::websocket_connection_identity_binds_provider_and_stable_handshake_semantics",
+            ],
+        ),
+    ]
+    for name, package, selector, required in additions:
+        commands.append(
+            {
+                "name": name,
+                "cwd": legacy.CODEX_RS,
+                "argv": [
+                    "just",
+                    "test",
+                    "--locked",
+                    "-p",
+                    package,
+                    *selector,
+                    "--status-level",
+                    "pass",
+                    "--success-output",
+                    "immediate",
+                ],
+                "minimumTests": len(required),
+                "requiredNativeTests": required,
+            }
+        )
     for spec in commands:
         if spec.get("minimumTests") is not None:
             # The repository's `just test` recipe invokes cargo nextest run.
@@ -383,6 +455,27 @@ def specs(legacy):
             if spec["argv"][:2] != ["just", "test"]:
                 raise ValueError("test count requires an explicit runner contract")
             spec["testRunner"] = "nextest"
+    evidence = output_dir or (legacy.ROOT.parent / "context-compiler-qualification")
+    for stage in ("baseline", "candidate"):
+        commands.append(
+            {
+                "name": f"automation-canonical-{stage}",
+                "cwd": legacy.ROOT,
+                "argv": [
+                    sys.executable,
+                    "-B",
+                    "scripts/context_compiler_canonical.py",
+                    "--stage",
+                    stage,
+                    "--output-dir",
+                    str(evidence),
+                ],
+                "minimumTests": 1,
+                "testRunner": "nextest",
+                "requiredNativeTests": [canonical.NATIVE_TEST],
+                "canonicalStage": stage,
+            }
+        )
     return commands
 
 
@@ -506,7 +599,7 @@ def main() -> int:
     failure_context = None
     phase = "verify_initial_candidate"
     active_command = None
-    command_specs = specs(legacy)
+    command_specs = specs(legacy, output)
     try:
         candidate.verify(root, record_document)
         phase = "write_initial_receipt"

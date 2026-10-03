@@ -1,4 +1,7 @@
+import hashlib
+import json
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
@@ -192,6 +195,31 @@ class ExecutionSummaryTests(unittest.TestCase):
             with self.subTest(log=log), self.assertRaises(ValueError):
                 observed_tests(log, runner="libtest")
 
+    def test_original_27_specs_remain_identical_and_native_additions_are_named(self):
+        commands = specs(legacy, Path("/qualification-evidence"))
+        prefix = json.dumps(commands[:27], default=str, sort_keys=True)
+        prefix = prefix.replace(str(legacy.ROOT), "$ROOT").replace(
+            sys.executable, "$PYTHON"
+        )
+        self.assertEqual(
+            hashlib.sha256(prefix.encode()).hexdigest(),
+            "cc7ec3fc1e2bf12aa599a89c73ed6ceda2317c9c003345c505c23b8f72e2267e",
+        )
+        self.assertEqual(
+            [x["minimumTests"] for x in commands[27:]], [10, 4, 1, 1, 1, 1]
+        )
+        for command in commands[27:]:
+            self.assertEqual(
+                len(command["requiredNativeTests"]), command["minimumTests"]
+            )
+        for command, stage in zip(commands[-2:], ("baseline", "candidate")):
+            self.assertEqual(command["canonicalStage"], stage)
+            self.assertEqual(
+                command["argv"][-4:],
+                ["--stage", stage, "--output-dir", "/qualification-evidence"],
+            )
+            self.assertEqual(command["testRunner"], "nextest")
+
     def test_runner_contract_is_required_and_not_inferred_from_output(self):
         with self.assertRaises(ValueError):
             observed_tests(libtest(), runner="unknown")
@@ -199,7 +227,8 @@ class ExecutionSummaryTests(unittest.TestCase):
             observed_tests("Summary [1s] 1 test run: 1 passed", runner="libtest")
         for spec in specs(legacy):
             if "minimumTests" in spec:
-                self.assertEqual(spec["argv"][:2], ["just", "test"])
+                if not spec.get("canonicalStage"):
+                    self.assertEqual(spec["argv"][:2], ["just", "test"])
                 self.assertEqual(spec["testRunner"], "nextest")
 
 
