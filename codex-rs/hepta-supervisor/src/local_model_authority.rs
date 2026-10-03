@@ -69,6 +69,10 @@ mod startup;
 mod store;
 use executable::ExecutableCache;
 use executable::MAX_ENROLLED_EXECUTABLES;
+#[path = "local_model_authority_peer.rs"]
+mod peer_admission;
+pub use peer_admission::RootAdmittedFleetPeerV1;
+pub use peer_admission::RootFleetPeerAdmissionV1;
 use store::ProtectedClock;
 use store::ProtectedFrontier;
 use store::protected_directory;
