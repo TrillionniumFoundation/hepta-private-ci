@@ -251,7 +251,7 @@ jobs:
         run: |
           set -euo pipefail
           if [ -d "$RUNNER_TEMP/context-evidence" ]; then
-            find "$RUNNER_TEMP/context-evidence" -type f -print0 | sort -z | xargs -0 sha256sum \
+            find "$RUNNER_TEMP/context-evidence" -type f ! -path "$RUNNER_TEMP/context-evidence/artifact-files.sha256" -print0 | sort -z | xargs -0 -r sha256sum \
               > "$RUNNER_TEMP/context-evidence/artifact-files.sha256"
           fi
       - name: Retain candidate, partial failures and command receipts
