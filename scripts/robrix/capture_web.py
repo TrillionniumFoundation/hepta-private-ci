@@ -13,6 +13,7 @@ from playwright.sync_api import sync_playwright
 from qualify import APP, OUT, digest
 from package_resources import package_inventory
 from render_checks import login_pixels
+from web_usability import capture_login_usability
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -153,12 +154,14 @@ def main():
                             (OUT / f'web-{scene}-{label}-runtime.json').write_text(json.dumps(
                                 {'failures': failures, 'responses': responses, 'wasm': wasm}, indent=2))
                         context.close()
+                usability = capture_login_usability(browser, origin, OUT)
             finally:
                 browser.close()
     finally:
         server.shutdown()
         server.server_close()
     (OUT / 'web-capture-passed.json').write_text(json.dumps(records, indent=2) + '\n')
+    assert usability['passed'], 'Actual short-window usability checks failed; inspect web-login-short-usability.json'
 
 
 if __name__ == '__main__':

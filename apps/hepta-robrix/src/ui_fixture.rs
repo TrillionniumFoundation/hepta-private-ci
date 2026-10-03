@@ -2,6 +2,10 @@
 //! Startup returns before keyring, filesystem state, Matrix and console owners.
 use super::*;
 
+#[cfg(any(target_arch = "wasm32", test))]
+#[path = "ui_fixture_observation.rs"]
+pub(super) mod observation;
+
 #[derive(Default)]
 struct FixtureState {
     active: bool,
@@ -30,6 +34,8 @@ pub(super) fn start(app: &mut App, cx: &mut Cx) -> bool {
     let host = cx.global::<crate::hepta_console::ConsoleHost>();
     host.set_fixture_unconfigured();
     app.update_login_visibility(cx);
+    #[cfg(target_arch = "wasm32")]
+    if mode == "login-usability" { observation::start(cx); }
     cx.redraw_all();
     true
 }
@@ -104,7 +110,7 @@ fn browser_mode(query: &str) -> Result<Option<String>, &'static str> {
         return Err("fixture cannot be combined with other browser parameters");
     }
     let mode = selected[0].1;
-    if !matches!(mode, "login" | "console") {
+    if !matches!(mode, "login" | "console" | "login-usability") {
         return Err("unsupported fixture mode");
     }
     Ok(Some(mode.to_owned()))
@@ -141,6 +147,10 @@ mod tests {
         assert_eq!(
             browser_mode("?hepta-ui-fixture=console").unwrap(),
             Some("console".into())
+        );
+        assert_eq!(
+            browser_mode("?hepta-ui-fixture=login-usability").unwrap(),
+            Some("login-usability".into())
         );
         for query in [
             "?hepta-ui-fixture",

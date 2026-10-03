@@ -762,6 +762,8 @@ impl AppMain for App {
         let scope = &mut Scope::with_data(&mut self.app_state);
         self.ui.handle_event(cx, event, scope);
         self.handle_lifecycle_event(cx, event);
+        #[cfg(all(feature = "ui-fixture", target_arch = "wasm32"))]
+        ui_fixture::observation::observe(self, cx, event);
 
     }
 }

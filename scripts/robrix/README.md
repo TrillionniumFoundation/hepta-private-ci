@@ -1,6 +1,39 @@
 # Actual Robrix hosted qualification
 
-## Latest scoped rendering evidence
+## Verified rendering and pending bounded usability check
+
+At exact head `0878c792113c97bbfd8e94131fe3df0c97fb6e33`, run 37085068250
+passed both native and browser jobs. All 16 actual PNGs were inspected, including
+three-size login/Console captures on both targets and browser type/clear.
+The footer and font-centering defects are corrected. All six browser contexts
+had 79 successful responses, actual WASM, no request/page/logged errors, and the
+seven delayed fonts were fetched once. Exact uploaded sets (48 browser and 37
+native included files), source identities, ZIP and file hashes were verified.
+This account-free rendering pass remains separate from the usability check below.
+
+The explicit `login-usability` browser fixture adds a read-only observation timer
+compiled only with `ui-fixture` (also type-checked in native fixture tests). It
+reports fixed control IDs, genuine `Cx` key focus, valid areas and clipped bounds,
+plus only a boolean comparing the user field with a fixed synthetic test draft.
+No field contents, hashes, account data or tokens are emitted. The observer never
+sets focus, changes widgets or dispatches actions; normal builds have no hook.
+
+The actual browser test checks Tab from the untouched initial state separately
+from pointer-focusing the first input, typing a dummy draft, bounded Tab and
+Shift+Tab traversal, wheel visibility of six SSO tiles and signup, and preservation
+of the draft while returning upward. It sends no Enter/Space or activation click,
+rejects navigation/popups/external traffic, and retains all real focus/geometry
+observations and screenshots. The hidden HTML textarea's focus is never treated
+as Rust-widget focus. Unchanged pixels cannot count as keyboard reachability.
+
+All original rendering, font, resource and console-error gates remain mandatory.
+The original six-scene render receipt is retained even if the later usability
+checks fail; the job then fails separately with `web-login-short-usability.json`.
+Missing/stalled/skipped focus, clipped lower controls and draft loss cannot pass.
+No keyboard/navigation fix is included here: expected gaps must be established
+by the actual interaction receipt first. This is not accessibility certification.
+
+## Preceding scoped rendering evidence
 
 Run 37083290014 at `571588e1e3ecea6b150d15747fd1f05a72d3371a`
 passed 20 native application/Console tests, four framework regressions, native
