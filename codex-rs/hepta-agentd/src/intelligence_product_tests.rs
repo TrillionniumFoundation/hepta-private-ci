@@ -662,7 +662,7 @@ fn fixture() -> Fixture {
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_owner_product_path_records_decision_outcome_and_reopens() {
-    let fixture = fixture();
+    let (fixture, trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -670,8 +670,10 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("host-root trust");
     let mut coordinator = product_test_coordinator();
     let outcome = runner
         .prepare_and_admit(&mut coordinator, fixture.request, fixture.inputs)
@@ -710,6 +712,18 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         .open(&ledger_path)
         .expect("create ledger");
     let mut ledger = DurableLedger::create(file, binding, 16).expect("ledger");
+    let prepared_before = prepared.clone();
+    let expected_decision = LedgerEvent::Decision(EpisodeDecision {
+        record_id: prepared.envelope.run_id.clone(),
+        episode_id: id("episode.agentd"),
+        objective_digest: prepared.envelope.objective_digest,
+        policy_id: id("intuition.policy"),
+        candidate_ids: vec![id("abstain"), id("action.read")],
+        selected_candidate_id: id("action.read"),
+        selected_propensity: ProbabilityQ32::ONE,
+        completeness: CandidateSetCompleteness::Complete,
+        support_digest: prepared.dispatch_proposal_digest,
+    });
     let decision = runner
         .append_decision(
             &mut ledger,
@@ -720,6 +734,12 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         )
         .expect("decision append");
     assert_eq!(decision.disposition, AppendDisposition::Appended);
+    assert_eq!(prepared, prepared_before);
+    assert_eq!(prepared.candidate_ids, vec![id("action.read")]);
+    assert_eq!(
+        ledger.records().expect("records")[0].event,
+        expected_decision
+    );
 
     let outcome = runner
         .append_outcome(
@@ -751,10 +771,10 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         Some(prepared.envelope.envelope_digest.to_string().as_str())
     );
     assert_eq!(ledger.records().expect("records").len(), 2);
-    assert!(matches!(
+    assert_eq!(
         ledger.records().expect("records")[0].event,
-        LedgerEvent::Decision(_)
-    ));
+        expected_decision
+    );
     assert!(matches!(
         ledger.records().expect("records")[1].event,
         LedgerEvent::Outcome(_)
@@ -777,6 +797,10 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
     )
     .expect("recover");
     assert_eq!(recovered.records().expect("recovered records").len(), 2);
+    assert_eq!(
+        recovered.records().expect("recovered records")[0].event,
+        expected_decision
+    );
 
     let replay = runner
         .append_outcome(
@@ -829,7 +853,7 @@ async fn unsigned_currentness_substitution_fails_before_owner_use() {
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn final_use_revocation_race_fails_before_decision_publication() {
-    let fixture = fixture();
+    let (fixture, trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -838,7 +862,9 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
         fixture.request.snapshot.revocation_frontier_digest(),
     );
     let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone(), authority_verifier())
-        .expect("runner");
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("host-root trust");
     let outcome = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await

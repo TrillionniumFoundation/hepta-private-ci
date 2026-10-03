@@ -17,6 +17,51 @@ def libtest(passed=1, failed=0, ignored=0):
 
 
 class ExecutionSummaryTests(unittest.TestCase):
+    def test_legacy_projection_commands_require_every_native_case(self):
+        from context_compiler_named_evidence import bind_named_tests
+
+        expected = {
+            "agentd-legacy-candidate-projection": (
+                "intelligence_learning_candidates::tests",
+                3,
+            ),
+            "agentd-legacy-product-conservation": ("intelligence_product::tests", 4),
+        }
+        for command, (selector, count) in expected.items():
+            spec = next(value for value in specs(legacy) if value["name"] == command)
+            self.assertEqual(spec["argv"][:2], ["just", "test"])
+            self.assertIn(selector, spec["argv"])
+            self.assertEqual(
+                spec["argv"][spec["argv"].index("--features") + 1],
+                "qualification-legacy-learning-write",
+            )
+            self.assertEqual(spec["minimumTests"], count)
+            self.assertEqual(len(spec["requiredNativeTests"]), count)
+            for missing in [None, *spec["requiredNativeTests"]]:
+                with self.subTest(command=command, missing=missing):
+                    observed = [
+                        name if name != missing else "unrelated::green_test"
+                        for name in spec["requiredNativeTests"]
+                    ]
+                    summary = f"Summary [1s] {count} tests run: {count} passed"
+                    result = {"succeeded": True}
+                    bind_test_count(summary, spec, result)
+                    with tempfile.TemporaryDirectory() as directory:
+                        path = Path(directory) / "native.log"
+                        path.write_text(
+                            "".join(
+                                f"PASS [0.1s] codex-hepta-agentd {name}\n"
+                                for name in observed
+                            )
+                            + summary
+                            + "\n"
+                        )
+                        named = bind_named_tests(path, spec["requiredNativeTests"])
+                    self.assertEqual(
+                        result["succeeded"] and named["namedNativeTestsPassed"],
+                        missing is None,
+                    )
+
     def test_boxed_pending_replay_requires_feature_and_actual_native_case(self):
         from context_compiler_named_evidence import bind_named_tests
 

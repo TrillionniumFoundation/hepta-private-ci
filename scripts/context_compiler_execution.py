@@ -122,6 +122,53 @@ def specs(legacy):
     # context compiler crate in isolation.
     commands[2:2] = [
         {
+            "name": "agentd-legacy-candidate-projection",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
+                "--lib",
+                "--features",
+                "qualification-legacy-learning-write",
+                "intelligence_learning_candidates::tests",
+                "--status-level",
+                "pass",
+            ],
+            "minimumTests": 3,
+            "requiredNativeTests": [
+                "intelligence_learning_candidates::tests::action_projection_is_canonical_without_changing_policy_actions",
+                "intelligence_learning_candidates::tests::action_projection_rejects_empty_duplicate_and_reserved_actions",
+                "intelligence_learning_candidates::tests::action_projection_preserves_the_ledger_capacity_bound",
+            ],
+        },
+        {
+            "name": "agentd-legacy-product-conservation",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
+                "--lib",
+                "--features",
+                "qualification-legacy-learning-write",
+                "intelligence_product::tests",
+                "--status-level",
+                "pass",
+            ],
+            "minimumTests": 4,
+            "requiredNativeTests": [
+                "intelligence_product::tests::real_owner_product_path_records_decision_outcome_and_reopens",
+                "intelligence_product::tests::final_use_revocation_race_fails_before_decision_publication",
+                "intelligence_product::tests::signed::randomized_selected_decision_preserves_intrinsic_abstain_and_exact_propensity",
+                "intelligence_product::tests::boxed_pending_append_preserves_owned_replay_and_error_mapping",
+            ],
+        },
+        {
             "name": "agentd-boxed-pending-replay-regression",
             "cwd": legacy.CODEX_RS,
             "argv": [
