@@ -9,7 +9,7 @@ use std::os::unix::fs::OpenOptionsExt;
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
 
-pub(super) fn prepare_effect_directory(path: &Path) -> Result<()> {
+pub(in crate::root_frozen_generator) fn prepare_effect_directory(path: &Path) -> Result<()> {
     let parent = path.parent().context("original round parent absent")?;
     execution::protected_directory(parent)?;
     match std::fs::DirBuilder::new().mode(0o700).create(path) {
@@ -77,7 +77,7 @@ pub(super) fn root_existing(
     })
 }
 
-pub(super) fn publish_consumer(
+pub(in crate::root_frozen_generator) fn publish_consumer(
     config: &RoundConfiguration,
     bytes: &[u8],
     frozen: Digest32,

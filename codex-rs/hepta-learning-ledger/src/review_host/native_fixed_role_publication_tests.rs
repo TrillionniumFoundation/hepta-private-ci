@@ -1,6 +1,22 @@
 use super::*;
 use std::os::unix::process::CommandExt;
 
+struct OriginalSlotDirectory(std::path::PathBuf);
+impl OriginalSlotDirectory {
+    fn new() -> std::io::Result<Self> {
+        static NEXT: std::sync::atomic::AtomicU64 = std::sync::atomic::AtomicU64::new(0);
+        let parent = if root(None).is_ok() { std::path::PathBuf::from("/run") } else { std::env::temp_dir() };
+        let path = parent.join(format!("hepta-original-fixed-role-test-{}-{}", std::process::id(), NEXT.fetch_add(1, std::sync::atomic::Ordering::Relaxed)));
+        std::fs::create_dir(&path)?;
+        std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o700))?;
+        Ok(Self(path))
+    }
+    fn path(&self) -> &std::path::Path { &self.0 }
+}
+impl Drop for OriginalSlotDirectory {
+    fn drop(&mut self) { let _ = std::fs::remove_dir_all(&self.0); }
+}
+
 #[test]
 #[ignore = "requires actual UID0 parent and kernel child enrolled nonzero Group"]
 fn actual_root_original_frozen_group_survives_shared_slot_and_new_purpose_denies() {
@@ -41,7 +57,7 @@ fn actual_root_original_frozen_group_survives_shared_slot_and_new_purpose_denies
     assert!(root(None).is_ok());
     assert!(root(Some(OriginalFixedRolePurposeV1::FrozenGenerator)).is_ok());
     assert!(root(Some(OriginalFixedRolePurposeV1::CycleSelector)).is_err());
-    let directory = tempfile::tempdir().unwrap();
+    let directory = OriginalSlotDirectory::new().unwrap();
     let output = directory.path().join("original-g.output");
     let request = Digest32::of_bytes(b"original exact group request");
     let program = Digest32::of_bytes(b"original real terminal program");
@@ -83,10 +99,10 @@ use std::os::unix::fs::PermissionsExt;
 
 #[test]
 fn ordinary_agent_cannot_consume_any_fixed_role_slot() {
-    if rustix::process::geteuid().as_raw() == 0 {
+    if root(None).is_ok() {
         return;
     }
-    let directory = tempfile::tempdir().unwrap();
+    let directory = OriginalSlotDirectory::new().unwrap();
     let output = directory.path().join("out.json");
     assert!(reserve_original_fixed_role_output_v1(&output).is_err());
     assert!(!output.exists());
@@ -97,7 +113,7 @@ fn ordinary_agent_cannot_consume_any_fixed_role_slot() {
 fn actual_root_fixed_role_completion_is_cold_exact_and_unknown_never_relaunches() -> ReviewResult<()>
 {
     root(Some(OriginalFixedRolePurposeV1::PairedEvaluator))?;
-    let directory = tempfile::tempdir()?;
+    let directory = OriginalSlotDirectory::new()?;
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
     let output = directory.path().join("original-e.json");
     let request = Digest32::of_bytes(b"actual fixed E request");

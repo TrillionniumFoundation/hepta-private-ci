@@ -35,8 +35,8 @@ fn protected_native_prompt_uses_the_exact_original_request_preimage() {
         let prompt = bound_prompt(&original).unwrap();
         let decoded = self_iteration_model_request_from_native_prompt_v1(&prompt).unwrap();
         assert_eq!(
-            serde_json::to_vec(&decoded).unwrap(),
-            serde_json::to_vec(&original).unwrap()
+            codex_hepta_infer_core::encode_self_iteration_model_request_v1(&decoded).unwrap(),
+            codex_hepta_infer_core::encode_self_iteration_model_request_v1(&original).unwrap()
         );
         assert_eq!(bound_prompt(&decoded).unwrap(), prompt);
         assert!(

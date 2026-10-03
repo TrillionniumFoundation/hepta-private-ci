@@ -209,6 +209,9 @@ async fn actual_root_process_and_route_binding_returns_only_original_evidence() 
                 FrozenGeneratorOperationV1::IndependentOwner(_) => {
                     panic!("original G/failure purpose changed")
                 }
+                FrozenGeneratorOperationV1::PrepareRound(_) => {
+                    panic!("original G/failure fixture received a round preparation request")
+                }
             };
             assert_eq!(decoded, payload);
             stream.write_all(&response).await.unwrap();

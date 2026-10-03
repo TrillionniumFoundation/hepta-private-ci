@@ -36,6 +36,8 @@ mod failure;
 mod independent_owners;
 #[path = "root_frozen_generator_prepared.rs"]
 mod prepared;
+#[path = "root_round_preparation.rs"]
+mod preparation;
 #[path = "root_frozen_generator_recipe.rs"]
 pub(crate) mod recipe;
 #[path = "root_frozen_generator_server.rs"]

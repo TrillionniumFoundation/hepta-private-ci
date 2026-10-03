@@ -87,7 +87,7 @@ pub(super) fn verify_publication(input: &RoleInput, bytes: &[u8]) -> Result<()> 
                 input,
                 &configuration::source(
                     &completed_evaluation(input)?,
-                    MAX_SELF_ITERATION_EVALUATION_TRANSPORT_BYTES as u64,
+                    MAX_SELF_ITERATION_EVALUATION_TRANSPORT_BYTES,
                 )?,
             )?;
             ensure!(

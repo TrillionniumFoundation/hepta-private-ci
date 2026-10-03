@@ -6,7 +6,7 @@ use codex_hepta_neuron::*;
 use std::path::PathBuf;
 use std::sync::Arc;
 
-#[derive(Clone, Debug, Deserialize, serde::Serialize)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, serde::Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct InstalledCpuSourceV1 {
     pub path: PathBuf,

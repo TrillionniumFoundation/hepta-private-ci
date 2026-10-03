@@ -87,6 +87,9 @@ async fn connection(mut stream: UnixStream, host: Arc<RootFrozenGeneratorService
     })
     .await??;
     let response = match request {
+        FrozenGeneratorOperationV1::PrepareRound(request) => encode_round_preparation_response_v1(
+            &host.prepare_round(&stream, &peer, request).await,
+        ),
         FrozenGeneratorOperationV1::Issue(request) => encode_frozen_generator_response_v1(
             &host
                 .dispatch(&stream, &peer, GeneratorPublication::Issue(request))

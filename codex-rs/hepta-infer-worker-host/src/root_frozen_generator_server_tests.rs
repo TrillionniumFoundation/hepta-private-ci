@@ -67,6 +67,17 @@ async fn exact_shared_frame_requires_eof_even_for_buffered_whitespace() -> Resul
             .map_err(|error| anyhow::anyhow!("{error}"))?,
         b"original frozen candidate"
     );
+    let preparation = RoundPreparationRequestV1::from_round_bytes(b"whole original reserved round")
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let mut preparation = encode_round_preparation_request_v1(&preparation)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    preparation.push(b'\n');
+    let FrozenGeneratorOperationV1::PrepareRound(request) = parse_frame(preparation.clone()).await? else {
+        anyhow::bail!("preparation was reclassified as another effect purpose");
+    };
+    assert_eq!(request.round_bytes().map_err(|error| anyhow::anyhow!("{error}"))?, b"whole original reserved round");
+    preparation.extend_from_slice(&bytes);
+    assert!(parse_frame(preparation).await.is_err());
     let mut second_request = bytes.clone();
     second_request.extend_from_slice(&bytes);
     assert!(parse_frame(second_request).await.is_err());
