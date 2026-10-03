@@ -19,10 +19,7 @@ pub(crate) fn original_publication_write_paths(
     if !metadata.is_dir() || metadata.uid() != 0 || metadata.mode() & 0o077 != 0 {
         return Err("original Owner state must remain private Root custody".into());
     }
-    let paths = vec![
-        profile.owner_root.clone(),
-        profile.original_owner_state,
-    ];
+    let paths = vec![profile.owner_root.clone(), profile.original_owner_state];
     if original_owner.read(32 * 1024)? != deployment_bytes
         || deployment.profile.read(64 * 1024)? != profile_bytes
     {
