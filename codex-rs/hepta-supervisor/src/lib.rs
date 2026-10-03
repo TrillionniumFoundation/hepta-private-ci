@@ -306,9 +306,9 @@ mod local_model_authority;
     any(test, feature = "local-host", feature = "local-model-authority")
 ))]
 mod workload_principal;
-#[cfg(all(unix, feature = "local-model-relay"))]
+#[cfg(all(target_os = "linux", feature = "local-model-relay"))]
 pub use local_model_authority::RootModelFailureV1;
-#[cfg(all(unix, feature = "local-model-relay"))]
+#[cfg(all(target_os = "linux", feature = "local-model-relay"))]
 pub use local_model_authority::RootModelOutcomeReceiptV1;
 #[cfg(all(target_os = "linux", feature = "local-model-relay"))]
 pub use local_model_authority::RootModelTerminalReceiptV1;
