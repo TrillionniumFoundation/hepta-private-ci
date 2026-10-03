@@ -6,7 +6,7 @@ use codex_hepta_agent_components::learning_artifacts::DatasetWithdrawalSnapshotR
 use codex_hepta_agent_components::learning_artifacts::TrustedArtifactSignerV1;
 use codex_hepta_agent_components::learning_artifacts::read_dataset_withdrawal_snapshot;
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct CurrentArtifactOwnerDescriptorV1 {
     owner_root: PathBuf,
@@ -20,7 +20,7 @@ pub(super) struct CurrentArtifactOwnerDescriptorV1 {
     withdrawals: WithdrawalSnapshotDescriptorV1,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct ArtifactSignerDescriptorV1 {
     signer_id: String,
@@ -32,7 +32,7 @@ struct ArtifactSignerDescriptorV1 {
     revoked_at: Option<u64>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct WithdrawalSnapshotDescriptorV1 {
     path: PathBuf,

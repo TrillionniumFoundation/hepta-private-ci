@@ -45,6 +45,7 @@ use codex_hepta_agent_components::types::FixedQ32;
 use codex_hepta_agent_components::types::Generation;
 use codex_hepta_agent_components::types::StableId;
 use serde::Deserialize;
+use serde::Serialize;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
@@ -90,7 +91,7 @@ struct ProcessBootstrapDescriptorV1 {
     topology_registry: RegistryDescriptorV1,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct ArtifactSnapshotDescriptorV1 {
     path: PathBuf,
@@ -104,7 +105,7 @@ struct ArtifactSnapshotDescriptorV1 {
     current_owner: Option<CurrentArtifactOwnerDescriptorV1>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct ArtifactSnapshotReceiptDescriptorV1 {
     binding: String,
@@ -124,7 +125,7 @@ struct LedgerDescriptorV1 {
     anchor_chain_digest: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct PrincipalDescriptorV1 {
     principal_id: String,
@@ -136,7 +137,7 @@ struct PrincipalDescriptorV1 {
     expires_at: u64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct DatasetSnapshotDescriptorV1 {
     snapshot_id: String,
@@ -150,7 +151,7 @@ struct DatasetSnapshotDescriptorV1 {
     dataset_digest: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct DatasetReceiptDescriptorV1 {
     snapshot: DatasetSnapshotDescriptorV1,
@@ -160,7 +161,7 @@ struct DatasetReceiptDescriptorV1 {
     inclusion_policy_digest: String,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct NduDescriptorV1 {
     journal_path: PathBuf,
@@ -169,7 +170,7 @@ struct NduDescriptorV1 {
     modulator_values_raw_q32: Vec<i64>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct InhibitoryEdgeDescriptorV1 {
     source: usize,
@@ -177,7 +178,7 @@ struct InhibitoryEdgeDescriptorV1 {
     weight_q24: i64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct SparseConfigDescriptorV1 {
     model_digest: String,
@@ -196,7 +197,7 @@ struct SparseConfigDescriptorV1 {
     eligibility_decay_q24: i64,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct NeuronDescriptorV1 {
     journal_path: PathBuf,
@@ -209,7 +210,7 @@ struct NeuronDescriptorV1 {
     config: SparseConfigDescriptorV1,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct SignalBindingDescriptorV1 {
     layer_id: String,
@@ -218,7 +219,7 @@ struct SignalBindingDescriptorV1 {
     modulator_weights_raw_q32: Vec<i64>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct TrustedSignerDescriptorV1 {
     principal: PrincipalDescriptorV1,
@@ -228,7 +229,7 @@ struct TrustedSignerDescriptorV1 {
     revoked_at: Option<u64>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct TrustDescriptorV1 {
     scope_digest: String,
@@ -237,7 +238,7 @@ struct TrustDescriptorV1 {
     signers: Vec<TrustedSignerDescriptorV1>,
 }
 
-#[derive(Debug, Deserialize)]
+#[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct OwnerPolicyDescriptorV1 {
     dataset_owner_id: String,
@@ -973,7 +974,9 @@ mod tests {
 
 #[path = "plasticity_input_context_v2.rs"]
 mod input_context;
+pub use input_context::ParameterInputContextProjectionV2;
 pub(crate) use input_context::load_input_context_v2;
+pub use input_context::project_parameter_input_context_v2;
 pub(crate) use input_context::protected_context_bytes;
 #[cfg(test)]
 pub(crate) use input_context::validate_context_baseline_artifact;

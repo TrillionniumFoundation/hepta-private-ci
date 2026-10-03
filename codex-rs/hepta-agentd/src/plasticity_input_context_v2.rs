@@ -6,7 +6,7 @@ use crate::plasticity_runtime::input_context::PlasticityInputContextV2;
 use codex_hepta_agent_components::neuron::MAX_NEURON_GENERATION_MATERIAL_BYTES_V2;
 use codex_hepta_agent_components::neuron::decode_neuron_generation_material_v2;
 
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct ContextDescriptor {
     schema: String,
@@ -26,7 +26,7 @@ struct ContextDescriptor {
     trust: TrustDescriptorV1,
     owner_policy: OwnerPolicyDescriptorV1,
 }
-#[derive(Deserialize)]
+#[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct ContextSource {
     path: PathBuf,
@@ -331,3 +331,8 @@ pub(crate) fn validate_context_baseline_artifact(
     }
     Ok(())
 }
+
+#[path = "plasticity_input_context_projection_v2.rs"]
+mod projection;
+pub use projection::ParameterInputContextProjectionV2;
+pub use projection::project_parameter_input_context_v2;
