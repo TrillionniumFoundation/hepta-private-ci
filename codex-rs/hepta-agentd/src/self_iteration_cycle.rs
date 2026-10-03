@@ -10,6 +10,10 @@ use codex_hepta_agent_components::infer_core::SelfIterationModelRoleV1;
 use codex_hepta_agent_components::types::StableId;
 
 use super::*;
+#[path = "self_iteration_cycle_reserved.rs"]
+mod reserved;
+#[path = "self_iteration_cycle_terminal.rs"]
+mod terminal;
 
 /// Constructs actual durable +1 and rollback +2 generations from bounded model
 /// output. The host owns the compiler, durable inference control and Generator
@@ -146,19 +150,8 @@ where
             .runtime
             .reserve_round(goal, canonical.clone(), envelope.clone())
             .await?;
-        if self.round.as_ref() != Some(&round) {
-            if self.pending_candidate.is_some() {
-                return Err(invalid("original candidate task still owned"));
-            }
-            self.constructed_candidate = None;
-            self.actual_description = None;
-        }
-        if let Some(assembler) = &mut self.assembler {
-            assembler.bind_round(round.clone(), canonical.clone())?;
-        }
-        self.round = Some(round);
-        self.canonical = Some(canonical);
-        self.run_inner(envelope, objective_prompt).await
+        self.run_reserved_round(round, canonical, envelope, objective_prompt)
+            .await
     }
 
     pub async fn run(
@@ -324,6 +317,16 @@ where
                 .begin_model(round.clone(), request.clone())
                 .await?;
             match admission {
+                AgentdSelfIterationModelAdmissionV1::Failed(failure) => {
+                    terminal::retire_failed_task(
+                        &mut self.pending_model,
+                        &mut self.model,
+                        &request,
+                        &failure,
+                    )
+                    .await?;
+                    return Err(terminal::failure_error(&failure));
+                }
                 AgentdSelfIterationModelAdmissionV1::Completed(assessment) => {
                     if self
                         .pending_model
@@ -353,6 +356,23 @@ where
                         .as_ref()
                         .is_none_or(|pending| pending.request_id != request.request_id)
                     {
+                        let model = self
+                            .model
+                            .as_mut()
+                            .ok_or_else(|| invalid("original model adapter unavailable"))?;
+                        if let Some(failure) =
+                            model.observe_failed(&request).await.map_err(|error| {
+                                invalid(format!("readonly model failure observation: {error}"))
+                            })?
+                        {
+                            failure
+                                .validate(&request)
+                                .map_err(|e| invalid(e.to_string()))?;
+                            self.runtime
+                                .complete_failed_model(round.clone(), request, failure.clone())
+                                .await?;
+                            return Err(terminal::failure_error(&failure));
+                        }
                         return Err(invalid(
                             "original admitted model request remains unknown; it will not be reissued",
                         ));
@@ -370,23 +390,12 @@ where
                     let admitted_round = round.clone();
                     let admitted_request = request.clone();
                     let task = tokio::spawn(async move {
-                        let result = async {
-                            let assessment = model
-                                .assess(admitted_request.clone())
-                                .await
-                                .map_err(|error| invalid(format!("model assessment: {error}")))?;
-                            assessment
-                                .validate(&admitted_request)
-                                .map_err(|error| invalid(error.to_string()))?;
-                            runtime
-                                .complete_model(
-                                    admitted_round,
-                                    admitted_request,
-                                    assessment.clone(),
-                                )
-                                .await?;
-                            Ok(assessment)
-                        }
+                        let result = terminal::assess(
+                            &mut model,
+                            &runtime,
+                            admitted_round,
+                            admitted_request,
+                        )
                         .await;
                         (model, result)
                     });

@@ -1,5 +1,7 @@
 //! Controlled model fixture; actual original journal and retained task lifecycle.
 use super::*;
+#[path = "self_iteration_runtime_failure_tests.rs"]
+mod failure_tests;
 use codex_hepta_agent_components::infer_core::SelfIterationModelErrorV1;
 use codex_hepta_agent_components::infer_core::SelfIterationModelPortV1;
 use codex_hepta_agent_components::types::AuthorityPosture;

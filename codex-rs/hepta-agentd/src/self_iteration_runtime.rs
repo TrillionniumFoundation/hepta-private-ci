@@ -6,6 +6,7 @@ use super::*;
 use std::path::PathBuf;
 
 use codex_hepta_agent_components::infer_core::SelfIterationModelAssessmentV1;
+use codex_hepta_agent_components::infer_core::SelfIterationModelFailureV1;
 use codex_hepta_agent_components::infer_core::SelfIterationModelRequestV1;
 use codex_hepta_agent_components::types::StableId;
 
@@ -34,6 +35,12 @@ enum Command {
         AgentdSelfIterationRoundV1,
         SelfIterationModelRequestV1,
         SelfIterationModelAssessmentV1,
+        oneshot::Sender<Result<(), AgentdError>>,
+    ),
+    CompleteFailure(
+        AgentdSelfIterationRoundV1,
+        SelfIterationModelRequestV1,
+        SelfIterationModelFailureV1,
         oneshot::Sender<Result<(), AgentdError>>,
     ),
     BeginCandidateEffects(
@@ -79,7 +86,7 @@ impl Command {
             Self::Begin(_, _, response) => {
                 let _ = response.send(Err(error));
             }
-            Self::Complete(_, _, _, response) => {
+            Self::Complete(_, _, _, response) | Self::CompleteFailure(_, _, _, response) => {
                 let _ = response.send(Err(error));
             }
             Self::BeginCandidateEffects(_, _, response) => {
@@ -141,15 +148,6 @@ impl AgentdSelfIterationHandleV1 {
             receive,
         )
         .await
-    }
-    pub async fn begin_model(
-        &self,
-        round: AgentdSelfIterationRoundV1,
-        request: SelfIterationModelRequestV1,
-    ) -> Result<AgentdSelfIterationModelAdmissionV1, AgentdError> {
-        let (response, receive) = oneshot::channel();
-        self.send(Command::Begin(round, request, response), receive)
-            .await
     }
     pub async fn complete_model(
         &self,
@@ -327,6 +325,7 @@ impl SelfIterationRuntime {
                     &command,
                     Some(
                         Command::Complete(..)
+                            | Command::CompleteFailure(..)
                             | Command::InspectRound(..)
                             | Command::InspectCurrentRound(..)
                             | Command::RejectProposal(..)
@@ -342,6 +341,7 @@ impl SelfIterationRuntime {
                     &command,
                     Some(
                         Command::Complete(..)
+                            | Command::CompleteFailure(..)
                             | Command::InspectRound(..)
                             | Command::InspectCurrentRound(..)
                             | Command::RejectProposal(..)
@@ -420,18 +420,14 @@ impl SelfIterationRuntime {
                             let _ = response.send(result);
                         }
                         Command::Complete(round, request, assessment, response) => {
-                            let result = (|| {
-                                // A real terminal receipt is retained even after the policy expires;
-                                // recording it grants no result-use or selection authority.
-                                let mut rounds = owner
-                                    .journal
-                                    .rounds
-                                    .clone()
-                                    .ok_or_else(|| invalid("round not reserved"))?;
-                                rounds.retain_terminal_clock(now);
-                                rounds.complete(&round, &request, &assessment)?;
-                                owner.journal.persist_rounds(rounds)
-                            })();
+                            let result =
+                                terminal::complete(&mut owner, &round, &request, &assessment, now);
+                            let _ = response.send(result);
+                        }
+                        Command::CompleteFailure(round, request, failure, response) => {
+                            let result = terminal::complete_failed(
+                                &mut owner, &round, &request, &failure, now,
+                            );
                             let _ = response.send(result);
                         }
                         Command::BeginCandidateEffects(round, assessment, response) => {
@@ -486,3 +482,5 @@ mod effects;
 
 #[path = "self_iteration_runtime_current.rs"]
 mod current;
+#[path = "self_iteration_runtime_terminal.rs"]
+mod terminal;
