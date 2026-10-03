@@ -13,10 +13,25 @@ def event_paths(text, event):
     match = re.search(r'^  ' + event + r':\n(.*?)(?=^  [a-z_]+:|^permissions:)', text, re.M | re.S)
     if not match:
         return []
-    return re.findall(r"^      - '([^']+)'$", match.group(1), re.M)
+    return [
+        value
+        for _, value in re.findall(r'''^      - (['"])([^'"\n]+)\1$''', match.group(1), re.M)
+    ]
 
 
 class WorkflowCoverageTests(unittest.TestCase):
+    def test_path_quotes_preserve_event_boundaries(self):
+        for quote in ("'", '"'):
+            text = (
+                "on:\n  push:\n    paths:\n"
+                f"      - {quote}codex-rs/**{quote}\n"
+                "  pull_request:\n    paths:\n"
+                f"      - {quote}scripts/**{quote}\npermissions:\n"
+            )
+            self.assertEqual(event_paths(text, "push"), ["codex-rs/**"])
+            self.assertEqual(event_paths(text, "pull_request"), ["scripts/**"])
+            self.assertEqual(event_paths(text, "workflow_dispatch"), [])
+
     def test_lightweight_source_gates_cover_every_mapped_path_and_build_input(self):
         manifest = json.loads((ROOT / 'qualification/kernel-authority/convergence_manifest.json').read_text())
         critical = manifest['trackedSourcePaths'] + [

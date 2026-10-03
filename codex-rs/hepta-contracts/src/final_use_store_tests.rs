@@ -123,6 +123,16 @@ fn fifo_snapshot_and_claim_journal_are_rejected_without_waiting_for_a_writer() {
     for name in ["authority.json", "authority.claims"] {
         let directory = private_tempdir().unwrap();
         let root = prepare_directory(directory.path()).unwrap();
+        #[cfg(target_vendor = "apple")]
+        assert!(
+            std::process::Command::new("mkfifo")
+                .args(["-m", "600"])
+                .arg(directory.path().join(name))
+                .status()
+                .expect("create FIFO fixture")
+                .success()
+        );
+        #[cfg(not(target_vendor = "apple"))]
         rustix::fs::mknodat(
             &root,
             name,
@@ -131,6 +141,11 @@ fn fifo_snapshot_and_claim_journal_are_rejected_without_waiting_for_a_writer() {
             0,
         )
         .unwrap();
+        assert!(std::os::unix::fs::FileTypeExt::is_fifo(
+            &std::fs::symlink_metadata(directory.path().join(name))
+                .unwrap()
+                .file_type()
+        ));
         let (tx, rx) = std::sync::mpsc::channel();
         let worker = std::thread::spawn(move || {
             let result = open_private(&root, name, Access::Read).map(|_| ());

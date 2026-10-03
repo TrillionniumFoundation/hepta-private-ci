@@ -8,6 +8,16 @@ fn fifo_snapshot_is_rejected_without_waiting_for_a_writer() {
     let directory = tempfile::tempdir().unwrap();
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let root = prepare_directory(directory.path()).unwrap();
+    #[cfg(target_vendor = "apple")]
+    assert!(
+        std::process::Command::new("mkfifo")
+            .args(["-m", "600"])
+            .arg(directory.path().join("authority-leases.json"))
+            .status()
+            .expect("create FIFO fixture")
+            .success()
+    );
+    #[cfg(not(target_vendor = "apple"))]
     rustix::fs::mknodat(
         &root,
         "authority-leases.json",
@@ -16,6 +26,11 @@ fn fifo_snapshot_is_rejected_without_waiting_for_a_writer() {
         0,
     )
     .unwrap();
+    assert!(std::os::unix::fs::FileTypeExt::is_fifo(
+        &std::fs::symlink_metadata(directory.path().join("authority-leases.json"))
+            .unwrap()
+            .file_type()
+    ));
     let (tx, rx) = mpsc::channel();
     let worker = std::thread::spawn(move || {
         let result = open_private(&root, "authority-leases.json", Access::Read).map(|_| ());

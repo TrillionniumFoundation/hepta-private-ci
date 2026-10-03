@@ -5,46 +5,46 @@ on:
     branches:
       - work/kernel-authority-convergence-20260925
     paths:
-      - 'codex-rs/hepta-contracts/**'
-      - 'codex-rs/hepta-fleet/**'
-      - 'codex-rs/hepta-agentd/**'
-      - 'codex-rs/hepta-agent-protocol/**'
-      - 'codex-rs/hepta-automation/**'
-      - 'codex-rs/model-provider/**'
-      - 'codex-rs/Cargo.*'
-      - 'codex-rs/rust-toolchain*'
-      - 'codex-rs/.cargo/**'
-      - 'codex-rs/.config/**'
-      - 'justfile'
-      - 'scripts/just-shell.py'
-      - 'CALLERS.toml'
-      - 'qualification/kernel-authority/prepare_candidate.py'
-      - 'qualification/kernel-authority/product_process_recovery.py'
-      - 'qualification/kernel-authority/test_product_process_recovery.py'
-      - 'qualification/kernel-authority/test_product_process_workflow.py'
-      - 'docs/modules/kernel.authority/PRODUCT_PROCESS_RECOVERY.md'
-      - '.github/workflows/kernel-authority-product-process-recovery.yml'
+      - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-fleet/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/model-provider/**"
+      - "codex-rs/Cargo.*"
+      - "codex-rs/rust-toolchain*"
+      - "codex-rs/.cargo/**"
+      - "codex-rs/.config/**"
+      - "justfile"
+      - "scripts/just-shell.py"
+      - "CALLERS.toml"
+      - "qualification/kernel-authority/prepare_candidate.py"
+      - "qualification/kernel-authority/product_process_recovery.py"
+      - "qualification/kernel-authority/test_product_process_recovery.py"
+      - "qualification/kernel-authority/test_product_process_workflow.py"
+      - "docs/modules/kernel.authority/PRODUCT_PROCESS_RECOVERY.md"
+      - ".github/workflows/kernel-authority-product-process-recovery.yml"
   pull_request:
     paths:
-      - 'codex-rs/hepta-contracts/**'
-      - 'codex-rs/hepta-fleet/**'
-      - 'codex-rs/hepta-agentd/**'
-      - 'codex-rs/hepta-agent-protocol/**'
-      - 'codex-rs/hepta-automation/**'
-      - 'codex-rs/model-provider/**'
-      - 'codex-rs/Cargo.*'
-      - 'codex-rs/rust-toolchain*'
-      - 'codex-rs/.cargo/**'
-      - 'codex-rs/.config/**'
-      - 'justfile'
-      - 'scripts/just-shell.py'
-      - 'CALLERS.toml'
-      - 'qualification/kernel-authority/prepare_candidate.py'
-      - 'qualification/kernel-authority/product_process_recovery.py'
-      - 'qualification/kernel-authority/test_product_process_recovery.py'
-      - 'qualification/kernel-authority/test_product_process_workflow.py'
-      - 'docs/modules/kernel.authority/PRODUCT_PROCESS_RECOVERY.md'
-      - '.github/workflows/kernel-authority-product-process-recovery.yml'
+      - "codex-rs/hepta-contracts/**"
+      - "codex-rs/hepta-fleet/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-agent-protocol/**"
+      - "codex-rs/hepta-automation/**"
+      - "codex-rs/model-provider/**"
+      - "codex-rs/Cargo.*"
+      - "codex-rs/rust-toolchain*"
+      - "codex-rs/.cargo/**"
+      - "codex-rs/.config/**"
+      - "justfile"
+      - "scripts/just-shell.py"
+      - "CALLERS.toml"
+      - "qualification/kernel-authority/prepare_candidate.py"
+      - "qualification/kernel-authority/product_process_recovery.py"
+      - "qualification/kernel-authority/test_product_process_recovery.py"
+      - "qualification/kernel-authority/test_product_process_workflow.py"
+      - "docs/modules/kernel.authority/PRODUCT_PROCESS_RECOVERY.md"
+      - ".github/workflows/kernel-authority-product-process-recovery.yml"
   workflow_dispatch:
 
 permissions:
