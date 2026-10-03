@@ -62,7 +62,7 @@ const MAX_PROVIDER_HEADERS: usize = 64;
 
 #[derive(Clone, Debug)]
 pub(crate) enum AgentdAutomationEffectReconcileOutcome {
-    Observed(TaskFlowStepReceipt),
+    Observed(Box<TaskFlowStepReceipt>),
     Indeterminate,
     ProvenAbsent,
 }
@@ -336,7 +336,7 @@ impl AgentdAutomationEffectHost {
                             )
                         ) =>
                 {
-                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(*receipt));
+                    return Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt));
                 }
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     return Ok(AgentdAutomationEffectReconcileOutcome::ProvenAbsent);
@@ -380,7 +380,7 @@ impl AgentdAutomationEffectHost {
                         Ok(AgentdAutomationEffectReconcileOutcome::Indeterminate)
                     }
                     Ok(AuthorizedEffectRecoveryResult::Observed(receipt)) => {
-                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(*receipt))
+                        Ok(AgentdAutomationEffectReconcileOutcome::Observed(receipt))
                     }
                     Ok(AuthorizedEffectRecoveryResult::ProvenAbsent) => Err(AgentdError::Protocol(
                         "status lookup cannot manufacture provider absence".to_string(),
