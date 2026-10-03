@@ -24,6 +24,7 @@ pub enum OriginalFixedRolePurposeV1 {
     PairedCustodyFinish,
     PairedEvaluator,
     ParameterEvaluator,
+    DatasetWindowEvaluatorV3,
     PreparationEvaluator,
     ServingScopeEvaluator,
     PreRegistrationEvaluator,
@@ -47,6 +48,7 @@ impl OriginalFixedRolePurposeV1 {
             Self::PairedCustodyExecution => "hepta.native-paired-custody-numeric-execution.v1",
             Self::PairedCustodyFinish => "hepta.native-paired-custody-finish-execution.v1",
             Self::PairedEvaluator => "hepta.native-paired-evaluator-execution.v1",
+            Self::DatasetWindowEvaluatorV3 => "hepta.native-dataset-window-evaluator-execution.v3",
             Self::ParameterEvaluator => "hepta.native-parameter-evaluator-execution.v1",
             Self::PreparationEvaluator => "hepta.native-parameter-preparation-execution.v1",
             Self::ServingScopeEvaluator => "hepta.native-serving-scope-incompatible-execution.v1",
@@ -68,6 +70,7 @@ impl OriginalFixedRolePurposeV1 {
             | Self::PairedCustodyExecution => 128 * 1024 * 1024,
             Self::PairedEvaluator | Self::PairedCustodyFinish => 3 * 1024 * 1024,
             Self::PreRegistrationEvaluator => 576 * 1024,
+            Self::DatasetWindowEvaluatorV3 => 512 * 1024,
             _ => 16 * 1024 * 1024,
         }
     }
