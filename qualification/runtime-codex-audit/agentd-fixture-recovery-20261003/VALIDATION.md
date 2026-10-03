@@ -59,3 +59,13 @@ Actual repaired Linux/macOS execution remains pending the existing hosted
 workflow. This change does not establish aggregate CI, product qualification,
 independent acceptance, activation or release. Historical source anchors and
 unrelated ancestry failures are not repaired by this fixture/selector change.
+
+The fixture/selector source is published commit
+`63bdb149d430289d64f93c50751ebcb1234faa7f`, tree
+`a0260e8dc4b141596cef1ade68da5461a1ed2aaa`. The four directly affected existing
+exact-blob maps (runtime.supervisor, runtime.agentd, kernel.operations and
+memory.retrieval) refresh their current observations to this source. Their
+original sourceBase identities, historical fields, complete closure inventories
+and all status/evidence flags remain identical. Other maps, including the
+unrelated nonancestor cognitive.read record, are untouched. This observation
+refresh does not assert that the repaired tests have executed.
