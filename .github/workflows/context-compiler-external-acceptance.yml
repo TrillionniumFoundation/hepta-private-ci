@@ -1,0 +1,209 @@
+name: context-compiler-external-acceptance
+
+on:
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: Acceptance level to validate
+        required: true
+        type: choice
+        options:
+          - independent
+          - activation
+          - release
+      artifact_id:
+        description: Actions artifact containing external-acceptance.json and external-acceptance.sig
+        required: true
+        type: string
+      source_sha:
+        description: Immutable source commit
+        required: true
+        type: string
+      source_tree:
+        description: Immutable source tree
+        required: true
+        type: string
+      base_sha:
+        description: Reviewed base commit
+        required: true
+        type: string
+      merge_sha:
+        description: Deterministic synthetic-merge commit
+        required: true
+        type: string
+      merge_tree:
+        description: Deterministic synthetic-merge tree
+        required: true
+        type: string
+
+permissions:
+  contents: read
+  actions: read
+
+concurrency:
+  group: context-compiler-external-${{ inputs.source_sha }}-${{ inputs.mode }}
+  cancel-in-progress: false
+
+jobs:
+  validate:
+    environment:
+      name: context-compiler-${{ inputs.mode }}
+    runs-on: [self-hosted, hepta-context-acceptance]
+    timeout-minutes: 60
+    env:
+      GH_TOKEN: ${{ github.token }}
+      MODE: ${{ inputs.mode }}
+      ARTIFACT_ID: ${{ inputs.artifact_id }}
+      SOURCE_SHA: ${{ inputs.source_sha }}
+      SOURCE_TREE: ${{ inputs.source_tree }}
+      BASE_SHA: ${{ inputs.base_sha }}
+      MERGE_SHA: ${{ inputs.merge_sha }}
+      MERGE_TREE: ${{ inputs.merge_tree }}
+      TRUST_ROOT_PEM: ${{ secrets.CONTEXT_COMPILER_ACCEPTANCE_TRUST_ROOT_PEM }}
+      TRUST_ROOT_SHA256: ${{ vars.CONTEXT_COMPILER_ACCEPTANCE_TRUST_ROOT_SHA256 }}
+    steps:
+      - name: Checkout exact source validator
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ inputs.source_sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify immutable Git identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$SOURCE_TREE" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$MERGE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$MERGE_TREE" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$ARTIFACT_ID" =~ ^[0-9]+$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test "$(git rev-parse HEAD^{tree})" = "$SOURCE_TREE"
+          test "$(git cat-file -t "$BASE_SHA")" = commit
+          test "$(git cat-file -t "$MERGE_SHA")" = commit
+          test "$(git rev-parse "$MERGE_SHA^{tree}")" = "$MERGE_TREE"
+          test "$(git show -s --format=%P "$MERGE_SHA")" = "$BASE_SHA $SOURCE_SHA"
+          test -z "$(git status --porcelain=v1 --untracked-files=all)"
+      - name: Download independently produced receipt artifact
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/context-external-acceptance"
+          mkdir -p "$root/artifact" "$root/report"
+          gh api "/repos/$GITHUB_REPOSITORY/actions/artifacts/$ARTIFACT_ID/zip" > "$root/artifact.zip"
+          test "$(stat -c '%s' "$root/artifact.zip")" -le 16777216
+          ROOT="$root" python3 -B - <<'PY'
+          import json
+          import os
+          from pathlib import Path, PurePosixPath
+          import stat
+          import zipfile
+
+          root = Path(os.environ["ROOT"])
+          archive = root / "artifact.zip"
+          destination = root / "artifact"
+          wanted = {
+              "external-acceptance.json": 2 * 1024 * 1024,
+              "external-acceptance.sig": 64 * 1024,
+          }
+          observed = {}
+          entries = []
+          total = 0
+          with zipfile.ZipFile(archive) as source:
+              for info in source.infolist():
+                  if info.is_dir():
+                      continue
+                  path = PurePosixPath(info.filename)
+                  if path.is_absolute() or ".." in path.parts:
+                      raise SystemExit("unsafe artifact path")
+                  mode = (info.external_attr >> 16) & 0o170000
+                  if mode and not stat.S_ISREG(mode):
+                      raise SystemExit("non-regular artifact entry")
+                  name = path.name
+                  if name not in wanted or name in observed:
+                      raise SystemExit("unexpected or duplicate artifact entry")
+                  if info.file_size <= 0 or info.file_size > wanted[name]:
+                      raise SystemExit("artifact entry size rejected")
+                  total += info.file_size
+                  if total > 3 * 1024 * 1024:
+                      raise SystemExit("artifact expansion limit exceeded")
+                  data = source.read(info)
+                  if len(data) != info.file_size:
+                      raise SystemExit("artifact entry length mismatch")
+                  target = destination / name
+                  target.write_bytes(data)
+                  observed[name] = str(target)
+                  entries.append({"name": name, "bytes": len(data)})
+          if set(observed) != set(wanted):
+              raise SystemExit("acceptance artifact must contain exactly receipt and signature")
+          (root / "receipt-path").write_text(observed["external-acceptance.json"] + "\n")
+          (root / "signature-path").write_text(observed["external-acceptance.sig"] + "\n")
+          (root / "report/artifact-entries.json").write_text(
+              json.dumps(sorted(entries, key=lambda item: item["name"]), indent=2) + "\n"
+          )
+          PY
+          printf '%s\n' "$ARTIFACT_ID" > "$root/report/artifact-id.txt"
+          sha256sum "$root/artifact.zip" > "$root/report/artifact-archive.sha256"
+      - name: Verify environment-owned detached signature
+        shell: bash
+        run: |
+          set -euo pipefail
+          umask 077
+          root="$RUNNER_TEMP/context-external-acceptance"
+          test -n "$TRUST_ROOT_PEM"
+          [[ "$TRUST_ROOT_SHA256" =~ ^[0-9a-f]{64}$ ]]
+          printf '%s' "$TRUST_ROOT_PEM" > "$root/trust-root.pem"
+          printf '%s  %s\n' "$TRUST_ROOT_SHA256" "$root/trust-root.pem" | sha256sum --check
+          receipt="$(cat "$root/receipt-path")"
+          signature="$(cat "$root/signature-path")"
+          openssl dgst -sha256 -verify "$root/trust-root.pem" -signature "$signature" "$receipt"
+          printf '%s\n' "$TRUST_ROOT_SHA256" > "$root/report/trust-root.sha256"
+      - name: Validate external evidence, failpoints, and approvals
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/context-external-acceptance"
+          receipt="$(cat "$root/receipt-path")"
+          python3 -B scripts/context_compiler_external_acceptance.py \
+            --receipt "$receipt" \
+            --mode "$MODE" \
+            --expected-source "$SOURCE_SHA" \
+            --expected-source-tree "$SOURCE_TREE" \
+            --expected-base "$BASE_SHA" \
+            --expected-merge "$MERGE_SHA" \
+            --expected-merge-tree "$MERGE_TREE" \
+            --output "$root/report/validation.json"
+          python3 -B - <<'PY'
+          import json
+          import os
+          from pathlib import Path
+
+          root = Path(os.environ["RUNNER_TEMP"]) / "context-external-acceptance"
+          path = root / "report/validation.json"
+          value = json.loads(path.read_text())
+          value["signatureVerified"] = True
+          value["trustRootSha256"] = (root / "report/trust-root.sha256").read_text().strip()
+          path.write_text(json.dumps(value, sort_keys=True, indent=2) + "\n")
+          PY
+      - name: Bind read-only validation report
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          root="$RUNNER_TEMP/context-external-acceptance"
+          manifest="$root/report/artifact-files.sha256"
+          temporary="$root/report/artifact-files.sha256.tmp"
+          find "$root/report" -type f \
+            ! -name 'artifact-files.sha256' \
+            ! -name 'artifact-files.sha256.tmp' \
+            -print0 | sort -z | xargs -0 sha256sum > "$temporary"
+          mv "$temporary" "$manifest"
+      - name: Retain validation report
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: context-external-validation-${{ inputs.source_sha }}-${{ inputs.mode }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/context-external-acceptance/report
+          if-no-files-found: error
+          retention-days: 365

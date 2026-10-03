@@ -33,9 +33,16 @@ use codex_hepta_codex_adapter::PromptRuntimePrepareRequest;
 use codex_hepta_codex_adapter::PromptRuntimeRecordFuture;
 use codex_hepta_codex_adapter::PromptRuntimeTerminalOutcomeV1;
 use codex_hepta_codex_adapter::PromptRuntimeTerminalRecordV1;
+use codex_hepta_intelligence::PromptExactTokenizerV3;
+#[cfg(feature = "legacy-prompt-context-v1")]
 use codex_hepta_intelligence::PromptRegistryCompilationRequestV2;
+use codex_hepta_intelligence::PromptRegistryCompilationRequestV3;
+#[cfg(feature = "legacy-prompt-context-v1")]
 use codex_hepta_intelligence::PromptRegistryCompiledContextV2;
+use codex_hepta_intelligence::PromptRegistryCompiledContextV3;
+#[cfg(feature = "legacy-prompt-context-v1")]
 use codex_hepta_intelligence::compile_prompt_registry_v2;
+use codex_hepta_intelligence::compile_prompt_registry_v3;
 use codex_hepta_prompt_optimizer::canonical::EnumeratedPromptCandidatesV1;
 use codex_hepta_prompt_optimizer::canonical::PromptEnumerationRequestV1;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
@@ -50,13 +57,23 @@ use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
 
+use crate::exact_context_delivery::AgentdExactContextDeliveryOwner;
+use crate::exact_context_delivery::ExactContextDeliveryError;
+use crate::exact_context_delivery::metrics::Phase;
+
+#[path = "prompt_runtime_errors.rs"]
+mod errors;
+pub use errors::AgentdExactContextDeliveryError;
+pub use errors::AgentdPromptPipelineError;
+
 pub const AGENTD_PROMPT_REGISTRY_MAX_RECORDS: usize = 16_384;
 const MAX_STAGED_TURNS: usize = 256;
 const MAX_DISPATCH_RECORDS: usize = 1024;
 const MAX_TERMINAL_RECORDS: usize = 1024;
 const MAX_DURABLE_STATE_BYTES: u64 = 8 * 1024 * 1024;
 const PROMPT_RUNTIME_CAPABILITY_ID: &str = "agentd.prompt-runtime";
-const PROMPT_RUNTIME_SCHEMA: u32 = 1;
+const PROMPT_RUNTIME_SCHEMA: u32 = 2;
+const TERMINAL_RESERVE_BYTES: u64 = 128 * 1024;
 const STATE_FILE: &str = "prompt-runtime.json";
 const NEXT_FILE: &str = "prompt-runtime.next";
 const LOCK_FILE: &str = "prompt-runtime.lock";
@@ -67,7 +84,7 @@ pub enum PromptRuntimeStageDisposition {
     Unchanged,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub enum AgentdPromptRuntimeError {
     InvalidTurnId,
     InvalidModel,
@@ -92,15 +109,8 @@ pub enum AgentdPromptRuntimeError {
     Adapter(String),
 }
 
-impl fmt::Display for AgentdPromptRuntimeError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
-    }
-}
-
-impl std::error::Error for AgentdPromptRuntimeError {}
-
-#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(deny_unknown_fields)]
 struct PromptRuntimeKey {
     thread_id: String,
     turn_id: String,
@@ -109,6 +119,7 @@ struct PromptRuntimeKey {
 #[derive(Clone, Debug, Default, Eq, PartialEq)]
 struct PromptRuntimeState {
     staged: BTreeMap<PromptRuntimeKey, PromptRuntimeAttachmentV1>,
+    retired: BTreeSet<PromptRuntimeKey>,
     dispatch_records: BTreeMap<String, PromptRuntimeDispatchRecordV1>,
     dispatch_order: VecDeque<String>,
     terminal_records: BTreeMap<String, PromptRuntimeTerminalRecordV1>,
@@ -167,8 +178,9 @@ impl AgentdPromptRuntimeOwner {
         self.poisoned.load(Ordering::Acquire)
     }
 
-    /// Stage one exact optimizer-exercised/registry-dereferenced context for a
-    /// real Codex turn. Only DeveloperInstruction is activated in this profile.
+    /// Compatibility-only V2 staging. It cannot arm the authoritative
+    /// registry-owned V3 exact-body proof path and is default-off.
+    #[cfg(feature = "legacy-prompt-context-v1")]
     pub fn stage_compiled_prompt_context(
         &self,
         thread_id: &str,
@@ -191,7 +203,6 @@ impl AgentdPromptRuntimeOwner {
         }
 
         let mut effective_deadline_ms = requested_deadline_ms;
-        let mut fragments = Vec::with_capacity(compiled.selected_deliveries.len());
         for delivery in &compiled.selected_deliveries {
             if delivery.binding.role != PromptRoleV2::DeveloperInstruction {
                 return Err(AgentdPromptRuntimeError::UnsupportedPromptRole);
@@ -202,13 +213,13 @@ impl AgentdPromptRuntimeOwner {
                 }
                 effective_deadline_ms = effective_deadline_ms.min(expires_unix_ms);
             }
-            let text = std::str::from_utf8(&delivery.payload)
-                .map_err(|_| AgentdPromptRuntimeError::PayloadNotUtf8)?;
-            fragments.push(
-                PromptRuntimeDeveloperFragmentV1::new(text.to_owned())
-                    .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))?,
-            );
         }
+        let canonical_bundle = std::str::from_utf8(&compiled.serialized_payload)
+            .map_err(|_| AgentdPromptRuntimeError::PayloadNotUtf8)?;
+        let fragments = vec![
+            PromptRuntimeDeveloperFragmentV1::new(canonical_bundle.to_owned())
+                .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))?,
+        ];
 
         let attachment = PromptRuntimeAttachmentV1::new(
             compiled.compiled.receipt().compilation_id().clone(),
@@ -220,6 +231,83 @@ impl AgentdPromptRuntimeOwner {
         )
         .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))?;
 
+        let key = PromptRuntimeKey {
+            thread_id: thread_id.to_owned(),
+            turn_id: turn_id.to_owned(),
+        };
+        self.commit_state(|state| {
+            if let Some(existing) = state.staged.get(&key) {
+                return if existing == &attachment {
+                    Ok(PromptRuntimeStageDisposition::Unchanged)
+                } else {
+                    Err(AgentdPromptRuntimeError::StageConflict)
+                };
+            }
+            if state
+                .dispatch_records
+                .values()
+                .any(|record| dispatch_key(record) == key)
+            {
+                return Err(AgentdPromptRuntimeError::StageConflict);
+            }
+            if state.staged.len() >= MAX_STAGED_TURNS {
+                return Err(AgentdPromptRuntimeError::CapacityExceeded);
+            }
+            state.staged.insert(key, attachment);
+            Ok(PromptRuntimeStageDisposition::Inserted)
+        })
+    }
+
+    /// Stage the registry-owned V3 context consumed by the exact encoded-body
+    /// provider observer. The product profile currently accepts only the exact
+    /// developer-policy slot; unsupported roles fail during V3 compilation.
+    pub fn stage_compiled_prompt_context_v3(
+        &self,
+        thread_id: &str,
+        turn_id: &str,
+        model: &str,
+        requested_deadline_ms: u64,
+        compiled: &PromptRegistryCompiledContextV3,
+    ) -> Result<PromptRuntimeStageDisposition, AgentdPromptRuntimeError> {
+        validate_thread_id(thread_id)?;
+        validate_turn_id(turn_id)?;
+        validate_model(model)?;
+        if requested_deadline_ms == 0 || model != compiled.execution_profile.provider_model {
+            return Err(AgentdPromptRuntimeError::InvalidDeadline);
+        }
+        compiled
+            .validate()
+            .map_err(|_| AgentdPromptRuntimeError::SourceValidationFailed)?;
+        if compiled.selected_deliveries.is_empty() || compiled.payload().is_empty() {
+            return Err(AgentdPromptRuntimeError::EmptySelection);
+        }
+        let mut effective_deadline_ms =
+            requested_deadline_ms.min(compiled.portfolio_valid_until_unix_ms());
+        for delivery in &compiled.selected_deliveries {
+            if delivery.binding.role != PromptRoleV2::DeveloperInstruction {
+                return Err(AgentdPromptRuntimeError::UnsupportedPromptRole);
+            }
+            if let Some(expires_unix_ms) = delivery.binding.expires_unix_ms {
+                if expires_unix_ms == 0 {
+                    return Err(AgentdPromptRuntimeError::InvalidDeadline);
+                }
+                effective_deadline_ms = effective_deadline_ms.min(expires_unix_ms);
+            }
+        }
+        let canonical_bundle = std::str::from_utf8(compiled.payload())
+            .map_err(|_| AgentdPromptRuntimeError::PayloadNotUtf8)?;
+        let attachment = PromptRuntimeAttachmentV1::new(
+            compiled.compiled.receipt().compilation_id().clone(),
+            compiled.attachment.attachment_digest(),
+            compiled.attachment.payload_digest(),
+            model.to_owned(),
+            effective_deadline_ms,
+            vec![
+                PromptRuntimeDeveloperFragmentV1::new(canonical_bundle.to_owned())
+                    .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))?,
+            ],
+        )
+        .map_err(|error| AgentdPromptRuntimeError::Adapter(error.to_string()))?;
         let key = PromptRuntimeKey {
             thread_id: thread_id.to_owned(),
             turn_id: turn_id.to_owned(),
@@ -264,7 +352,16 @@ impl AgentdPromptRuntimeOwner {
             if has_unresolved_dispatch(state, &key) {
                 return Err(AgentdPromptRuntimeError::IndeterminatePending);
             }
-            Ok(state.staged.remove(&key).is_some())
+            let removed = state.staged.remove(&key).is_some();
+            if removed
+                && state
+                    .dispatch_records
+                    .values()
+                    .any(|record| dispatch_key(record) == key)
+            {
+                state.retired.insert(key);
+            }
+            Ok(removed)
         })
     }
 
@@ -349,7 +446,16 @@ impl AgentdPromptRuntimeOwner {
         validate_state(&next)?;
         if next != *current {
             if let Some(store) = &self.store {
-                match store.persist(&next) {
+                let pending = pending_completion_count(&next);
+                let reserve = if pending < pending_completion_count(&current) {
+                    0
+                } else {
+                    u64::try_from(pending)
+                        .ok()
+                        .and_then(|count| count.checked_mul(TERMINAL_RESERVE_BYTES))
+                        .ok_or(AgentdPromptRuntimeError::CapacityExceeded)?
+                };
+                match store.persist(&next, reserve) {
                     Ok(()) => {}
                     Err(AgentdPromptRuntimeError::IndeterminateDurability) => {
                         self.poisoned.store(true, Ordering::Release);
@@ -430,6 +536,11 @@ impl AgentdPromptRuntimeOwner {
         record.validate().map_err(|error| {
             PromptRuntimeHostError::new("agentd_prompt_runtime_terminal_invalid", error.to_string())
         })?;
+        let terminal_bytes = serde_json::to_vec(&stored_terminal(&record))
+            .map_err(|_| host_error(AgentdPromptRuntimeError::Unavailable))?;
+        if u64::try_from(terminal_bytes.len()).unwrap_or(u64::MAX) >= TERMINAL_RESERVE_BYTES {
+            return Err(host_error(AgentdPromptRuntimeError::CapacityExceeded));
+        }
         self.commit_state(|state| {
             let Some(dispatch) = state.dispatch_records.get(&record.attempt_id) else {
                 return Err(AgentdPromptRuntimeError::TerminalWithoutDispatch);
@@ -478,7 +589,7 @@ impl AgentdPromptRuntimeOwner {
     }
 
     #[cfg(test)]
-    fn fail_directory_sync_after_rename_once(&self) {
+    pub(crate) fn fail_directory_sync_after_rename_once(&self) {
         if let Some(store) = &self.store {
             store
                 .fail_directory_sync_after_rename_once
@@ -486,24 +597,6 @@ impl AgentdPromptRuntimeOwner {
         }
     }
 }
-
-#[derive(Debug)]
-pub enum AgentdPromptPipelineError {
-    RegistryOpen(String),
-    RuntimeOpen(AgentdPromptRuntimeError),
-    StatePoisoned,
-    CandidateSource(String),
-    Compilation(String),
-    Stage(AgentdPromptRuntimeError),
-}
-
-impl fmt::Display for AgentdPromptPipelineError {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
-    }
-}
-
-impl std::error::Error for AgentdPromptPipelineError {}
 
 /// Named Agentd composition owner for the canonical prompt-intervention path.
 ///
@@ -513,8 +606,9 @@ impl std::error::Error for AgentdPromptPipelineError {}
 /// \`compile_prompt_registry_v2\`, and stages the resulting exact realization
 /// bytes into the same PromptRuntimeHost consumed by the embedded App Server.
 pub struct AgentdPromptPipelineOwner {
-    registry: Mutex<DurablePromptRegistry>,
+    registry: Arc<Mutex<DurablePromptRegistry>>,
     runtime: Arc<AgentdPromptRuntimeOwner>,
+    exact: Arc<AgentdExactContextDeliveryOwner>,
 }
 
 impl fmt::Debug for AgentdPromptPipelineOwner {
@@ -535,17 +629,72 @@ impl AgentdPromptPipelineOwner {
         let registry =
             DurablePromptRegistry::open_state_dir(registry_directory, maximum_registry_records)
                 .map_err(|error| AgentdPromptPipelineError::RegistryOpen(error.to_string()))?;
+        let registry = Arc::new(Mutex::new(registry));
         let runtime = AgentdPromptRuntimeOwner::open_state_dir(runtime_directory)
             .map_err(AgentdPromptPipelineError::RuntimeOpen)?;
+        let exact_directory = runtime_directory.join("context-delivery-v2");
+        let exact = AgentdExactContextDeliveryOwner::open(&exact_directory, Arc::clone(&registry))
+            .map_err(|error| AgentdPromptPipelineError::ExactOpen(error.into()))?;
         Ok(Self {
-            registry: Mutex::new(registry),
+            registry,
             runtime: Arc::new(runtime),
+            exact: Arc::new(exact),
         })
     }
 
     #[must_use]
     pub fn runtime_owner(&self) -> Arc<AgentdPromptRuntimeOwner> {
         Arc::clone(&self.runtime)
+    }
+
+    pub fn host(&self) -> Result<PromptRuntimeHost, AgentdPromptPipelineError> {
+        let request_owner = Arc::clone(&self.exact);
+        let terminal_owner = Arc::clone(&self.exact);
+        let host = self
+            .runtime
+            .host()
+            .map_err(AgentdPromptPipelineError::Stage)?
+            .with_final_request_observer(move |request| {
+                let owner = Arc::clone(&request_owner);
+                Box::pin(async move {
+                    owner
+                        .observe_final_request(request)
+                        .await
+                        .map_err(exact_host_error)
+                })
+            })
+            .with_final_terminal_observer(move |terminal| {
+                let owner = Arc::clone(&terminal_owner);
+                Box::pin(async move {
+                    owner
+                        .observe_final_terminal(terminal)
+                        .await
+                        .map_err(exact_host_error)
+                })
+            });
+        Ok(host)
+    }
+
+    /// Release an aborted turn only before preparation or after all attempts
+    /// are final. The exact owner and runtime projection retire together.
+    pub fn clear_turn(
+        &self,
+        thread_id: &str,
+        turn_id: &str,
+    ) -> Result<bool, AgentdPromptPipelineError> {
+        self.exact.clear_turn_with(thread_id, turn_id, || {
+            self.runtime
+                .clear_turn(thread_id, turn_id)
+                .map_err(AgentdPromptPipelineError::Stage)
+        })
+    }
+
+    /// Bounded, raw-free, process-local diagnostics. These observations grant
+    /// no authority and are not selected-host performance acceptance.
+    pub fn context_diagnostics(&self) -> Result<serde_json::Value, AgentdPromptPipelineError> {
+        self.exact
+            .diagnostics()
+            .map_err(AgentdPromptPipelineError::from)
     }
 
     /// Enumerate candidates from this owner's exact current durable registry.
@@ -564,6 +713,7 @@ impl AgentdPromptPipelineOwner {
             .map_err(|error| AgentdPromptPipelineError::CandidateSource(error.to_string()))
     }
 
+    #[cfg(feature = "legacy-prompt-context-v1")]
     #[allow(clippy::too_many_arguments)]
     pub fn compile_and_stage(
         &self,
@@ -592,6 +742,51 @@ impl AgentdPromptPipelineOwner {
                 &compiled,
             )
             .map_err(AgentdPromptPipelineError::Stage)
+    }
+
+    /// Canonical source-composed product entrypoint. The supplied capability
+    /// must execute the exact tokenizer identity declared by the V3 execution
+    /// profile over the provided bytes; digest lookup tables do not satisfy the
+    /// trait contract.
+    #[allow(clippy::too_many_arguments)]
+    pub fn compile_and_stage_v3<T: PromptExactTokenizerV3>(
+        &self,
+        thread_id: &str,
+        turn_id: &str,
+        model: &str,
+        requested_deadline_ms: u64,
+        portfolio: &SelectedPromptPortfolioV1,
+        exercise_request: &PromptExerciseRequestV1,
+        compilation_request: PromptRegistryCompilationRequestV3,
+        tokenizer: &T,
+    ) -> Result<PromptRuntimeStageDisposition, AgentdPromptPipelineError> {
+        let compiled = {
+            let _compilation_time = self.exact.measure(Phase::CompileSerialize);
+            let registry = self
+                .registry
+                .lock()
+                .map_err(|_| AgentdPromptPipelineError::StatePoisoned)?;
+            compile_prompt_registry_v3(
+                &registry,
+                portfolio,
+                exercise_request,
+                compilation_request,
+                tokenizer,
+            )
+            .map_err(|error| AgentdPromptPipelineError::Compilation(error.to_string()))?
+        };
+        self.exact
+            .stage_with(thread_id, turn_id, compiled.clone(), || {
+                self.runtime
+                    .stage_compiled_prompt_context_v3(
+                        thread_id,
+                        turn_id,
+                        model,
+                        requested_deadline_ms,
+                        &compiled,
+                    )
+                    .map_err(AgentdPromptPipelineError::Stage)
+            })
     }
 }
 
@@ -652,8 +847,21 @@ fn has_unresolved_dispatch(state: &PromptRuntimeState, key: &PromptRuntimeKey) -
     })
 }
 
+fn pending_completion_count(state: &PromptRuntimeState) -> usize {
+    state
+        .dispatch_records
+        .keys()
+        .filter(|attempt| {
+            state.terminal_records.get(*attempt).is_none_or(|terminal| {
+                terminal.outcome == PromptRuntimeTerminalOutcomeV1::Indeterminate
+            })
+        })
+        .count()
+}
+
 fn validate_state(state: &PromptRuntimeState) -> Result<(), AgentdPromptRuntimeError> {
     if state.staged.len() > MAX_STAGED_TURNS
+        || state.retired.len() > MAX_DISPATCH_RECORDS
         || state.dispatch_records.len() > MAX_DISPATCH_RECORDS
         || state.terminal_records.len() > MAX_TERMINAL_RECORDS
         || state.dispatch_order.len() != state.dispatch_records.len()
@@ -691,11 +899,25 @@ fn validate_state(state: &PromptRuntimeState) -> Result<(), AgentdPromptRuntimeE
         return Err(AgentdPromptRuntimeError::CorruptState);
     }
 
+    for key in &state.retired {
+        validate_thread_id(&key.thread_id)?;
+        validate_turn_id(&key.turn_id)?;
+        if state.staged.contains_key(key)
+            || has_unresolved_dispatch(state, key)
+            || !state
+                .dispatch_records
+                .values()
+                .any(|record| dispatch_key(record) == *key)
+        {
+            return Err(AgentdPromptRuntimeError::CorruptState);
+        }
+    }
     let finalized_keys = state
         .terminal_records
         .values()
         .filter(|terminal| terminal_clears_stage(terminal))
         .map(terminal_key)
+        .chain(state.retired.iter().cloned())
         .collect::<BTreeSet<_>>();
     let mut unresolved_keys = BTreeSet::new();
     for dispatch in state.dispatch_records.values() {
@@ -755,6 +977,8 @@ fn validate_state(state: &PromptRuntimeState) -> Result<(), AgentdPromptRuntimeE
 struct StoredPromptRuntimeState {
     schema: u32,
     staged: Vec<StoredStage>,
+    #[serde(default)]
+    retired: Vec<PromptRuntimeKey>,
     dispatches: Vec<StoredDispatch>,
     terminals: Vec<StoredTerminal>,
 }
@@ -870,11 +1094,19 @@ impl PromptRuntimeStore {
         Ok((store, state))
     }
 
-    fn persist(&self, state: &PromptRuntimeState) -> Result<(), AgentdPromptRuntimeError> {
+    fn persist(
+        &self,
+        state: &PromptRuntimeState,
+        reserved_bytes: u64,
+    ) -> Result<(), AgentdPromptRuntimeError> {
         let stored = stored_state(state);
         let bytes =
             serde_json::to_vec(&stored).map_err(|_| AgentdPromptRuntimeError::Unavailable)?;
-        if u64::try_from(bytes.len()).unwrap_or(u64::MAX) > MAX_DURABLE_STATE_BYTES {
+        if u64::try_from(bytes.len())
+            .ok()
+            .and_then(|length| length.checked_add(reserved_bytes))
+            .is_none_or(|required| required > MAX_DURABLE_STATE_BYTES)
+        {
             return Err(AgentdPromptRuntimeError::CapacityExceeded);
         }
         let next_path = self.root.join(NEXT_FILE);
@@ -904,6 +1136,7 @@ impl PromptRuntimeStore {
 fn stored_state(state: &PromptRuntimeState) -> StoredPromptRuntimeState {
     StoredPromptRuntimeState {
         schema: PROMPT_RUNTIME_SCHEMA,
+        retired: state.retired.iter().cloned().collect(),
         staged: state
             .staged
             .iter()
@@ -931,7 +1164,9 @@ fn stored_state(state: &PromptRuntimeState) -> StoredPromptRuntimeState {
 fn restore_state(
     stored: StoredPromptRuntimeState,
 ) -> Result<PromptRuntimeState, AgentdPromptRuntimeError> {
-    if stored.schema != PROMPT_RUNTIME_SCHEMA
+    if !matches!(stored.schema, 1 | PROMPT_RUNTIME_SCHEMA)
+        || (stored.schema == 1 && !stored.retired.is_empty())
+        || stored.retired.len() > MAX_DISPATCH_RECORDS
         || stored.staged.len() > MAX_STAGED_TURNS
         || stored.dispatches.len() > MAX_DISPATCH_RECORDS
         || stored.terminals.len() > MAX_TERMINAL_RECORDS
@@ -939,6 +1174,11 @@ fn restore_state(
         return Err(AgentdPromptRuntimeError::CorruptState);
     }
     let mut state = PromptRuntimeState::default();
+    for key in stored.retired {
+        if !state.retired.insert(key) {
+            return Err(AgentdPromptRuntimeError::CorruptState);
+        }
+    }
     for stored_stage in stored.staged {
         let key = PromptRuntimeKey {
             thread_id: stored_stage.thread_id,
@@ -1236,10 +1476,18 @@ fn validate_model(model: &str) -> Result<(), AgentdPromptRuntimeError> {
     Ok(())
 }
 
+fn exact_host_error(error: ExactContextDeliveryError) -> PromptRuntimeHostError {
+    PromptRuntimeHostError::new(error.reason_code(), error.to_string())
+}
+
 fn host_error(error: AgentdPromptRuntimeError) -> PromptRuntimeHostError {
     PromptRuntimeHostError::new("agentd_prompt_runtime_error", error.to_string())
 }
 
-#[cfg(test)]
+#[cfg(all(test, feature = "legacy-prompt-context-v1"))]
 #[path = "prompt_runtime_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "prompt_runtime_lifecycle_tests.rs"]
+mod lifecycle_tests;

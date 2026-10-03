@@ -1,0 +1,33 @@
+{
+  "schema": "hepta.context-compiler-local-tool-slice.v1",
+  "scope": "Standalone candidate-identity and execution-summary parser tests, using the exact recorded Git blob bytes. Not a full repository checkout, Rust build, provider execution, deployment or independent acceptance.",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "branch": "codex/context-compiler-full-closure-review-20260927",
+  "runtimeSourceAnchor": "0acd6e0c9889e67beeb25e1b1885de6807daa3ca",
+  "subjects": [
+    {"repositoryPath": "scripts/context_compiler_candidate.py", "bytes": 7975, "gitBlobSha": "13664a6aead349bf08156b2a3807f359e8a84d4f", "sha256": "45a6590638a4d99c3ad307dff7169ec140f78775ee062bf77c4fe7626605e603"},
+    {"repositoryPath": "scripts/context_compiler_execution.py", "bytes": 5033, "gitBlobSha": "6c48c1e6d6af6fddbea1e744cb3bfe33aedd2878", "sha256": "3d3d6e336524a469d9dd41739cbb9f834214faaac12b74458493508e51502a93"},
+    {"repositoryPath": "scripts/test_context_compiler_candidate.py", "bytes": 6785, "gitBlobSha": "64d7910e1f939875aa7cab8fd39fe6e693c589f5", "sha256": "4eb929438b2b1d9c98ac7cae1a4ded55a7f1f9e2839f399e5e69783dad0d7d6e"},
+    {"repositoryPath": "scripts/test_context_compiler_execution.py", "bytes": 1084, "gitBlobSha": "dcaed7305bec752a2db46641dd9efb79bc164f7f", "sha256": "08a15a1e3d59707d44a6a7750aff857d76284c4f9c655cd5e63d74324d112ed6"}
+  ],
+  "command": ["/opt/pyvenv/bin/python3", "-B", "-m", "unittest", "-v", "test_context_compiler_candidate", "test_context_compiler_execution"],
+  "startedAt": "2026-09-27T04:37:10.673921+00:00",
+  "finishedAt": "2026-09-27T04:37:17.690819+00:00",
+  "durationMs": 7018,
+  "exitCode": 0,
+  "passed": true,
+  "testFunctions": 20,
+  "realGitTestFunctions": 14,
+  "summaryParserTestFunctions": 6,
+  "logFile": "qualification-python-tests.log",
+  "logBytes": 2737,
+  "logSha256": "344969555dafd78c746deef5c1c4b093fc0452c75f0a1dc5b6bd41e4d9533a3c",
+  "pythonVersion": "3.13.5",
+  "gitVersion": "git version 2.47.3",
+  "nativeRustExecuted": false,
+  "fullExactHeadQualified": false,
+  "syntheticMergeProductQualified": false,
+  "independentAcceptance": false,
+  "activation": false,
+  "release": false
+}

@@ -10,6 +10,15 @@ name = "codex_hepta_intelligence"
 path = "src/lib.rs"
 doctest = false
 
+[features]
+default = ["prompt-context-v3"]
+prompt-context-v3 = ["codex-hepta-prompt-registry/prompt-context-v3"]
+legacy-prompt-context-v1 = []
+qualification-context-fixtures = [
+    "prompt-context-v3",
+    "codex-hepta-prompt-registry/qualification-context-fixtures",
+]
+
 [lints]
 workspace = true
 
@@ -17,6 +26,7 @@ workspace = true
 codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
+codex-hepta-contracts = { path = "../hepta-contracts" }
 codex-hepta-intelligence-eval = { path = "../hepta-intelligence-eval" }
 codex-hepta-intuition = { path = "../hepta-intuition" }
 codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
@@ -25,12 +35,13 @@ codex-hepta-ndu = { path = "../hepta-ndu" }
 codex-hepta-neuron = { path = "../hepta-neuron" }
 codex-hepta-objective = { path = "../hepta-objective" }
 codex-hepta-prompt-optimizer = { path = "../hepta-prompt-optimizer" }
-codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
+codex-hepta-prompt-registry = { path = "../hepta-prompt-registry", default-features = false }
 codex-hepta-plasticity = { path = "../hepta-plasticity" }
 codex-hepta-types = { path = "../hepta-types" }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
 
 [dev-dependencies]
-codex-hepta-contracts = { path = "../hepta-contracts" }
 codex-hepta-neuron = { path = "../hepta-neuron" }
 codex-hepta-plasticity = { path = "../hepta-plasticity" }
 codex-hepta-prompt-optimizer = { path = "../hepta-prompt-optimizer" }

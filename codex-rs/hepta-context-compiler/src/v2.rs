@@ -19,14 +19,33 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error as StdError;
 use std::fmt;
+use std::str::FromStr;
+use std::sync::Arc;
 
 use codex_hepta_contracts::ProviderInvocationReceipt;
 use codex_hepta_contracts::ProviderTerminal;
+use codex_hepta_contracts::ProviderTransport;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
+
+#[path = "v2/delivery_evidence.rs"]
+mod delivery_evidence;
+#[path = "v2/preparation_archive.rs"]
+mod preparation_archive;
+#[path = "v2/recovery.rs"]
+mod recovery;
+#[path = "v2/redaction.rs"]
+mod redaction;
+
+pub use recovery::ContextDeliveryRecoveryBindingV2;
+pub use recovery::build_delivery_recovery_binding_v2;
+pub use recovery::observe_recovered_final_provider_delivery_v2;
+
+/// Maximum raw-context-free preparation or recovery archive admitted to decoding.
+pub const MAX_CONTEXT_ARCHIVE_BYTES_V2: usize = 64 * 1024;
 
 pub const MAX_CONTEXT_CANDIDATES_V2: usize = 4_096;
 pub const MAX_CONTEXT_GROUPS_V2: usize = 256;
@@ -97,7 +116,6 @@ pub trait ContextProviderDeliveryVerifierV2 {
     /// Authenticate provider-owned attempt evidence against this exact
     /// pre-dispatch preparation. The provider witness remains provider-owned;
     /// context.compiler does not reinterpret it as a raw preparation digest.
-
     fn verify_delivery(
         &self,
         receipt: &ProviderInvocationReceipt,
@@ -389,6 +407,7 @@ impl ContextAdmissionSnapshotV2 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct VerifiedAdmissionSnapshotV2 {
     snapshot: ContextAdmissionSnapshotV2,
+    revocation_frontier: Arc<[StableId]>,
     verifier_digest: Digest32,
     verification_digest: Digest32,
 }
@@ -446,6 +465,7 @@ fn finish_verified_snapshot(
     push_digest(&mut bytes, snapshot.snapshot_digest);
     push_digest(&mut bytes, verifier_digest);
     VerifiedAdmissionSnapshotV2 {
+        revocation_frontier: Arc::from(snapshot.revoked_admission_ids.clone()),
         snapshot,
         verifier_digest,
         verification_digest: Digest32::of_bytes(&bytes),
@@ -492,27 +512,14 @@ pub fn verify_admission_snapshot_successor_v2(
     {
         return Err(ContextCompilerV2Error::SnapshotDomainMismatch);
     }
-    if snapshot.observed_unix_ms < predecessor.observed_unix_ms()
-        || snapshot.revocation_epoch < predecessor.revocation_epoch()
-    {
-        return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
-    }
-    if snapshot.revocation_epoch == predecessor.revocation_epoch()
-        && snapshot.revoked_admission_ids != predecessor.snapshot.revoked_admission_ids
-    {
-        return Err(ContextCompilerV2Error::RevocationFrontierMismatch);
-    }
-    for admission_id in &predecessor.snapshot.revoked_admission_ids {
-        if snapshot
-            .revoked_admission_ids
-            .binary_search(admission_id)
-            .is_err()
-        {
-            return Err(ContextCompilerV2Error::RevocationResurrection(
-                admission_id.to_string(),
-            ));
-        }
-    }
+    validate_revocation_progress(
+        snapshot.observed_unix_ms,
+        snapshot.revocation_epoch,
+        &snapshot.revoked_admission_ids,
+        predecessor.observed_unix_ms(),
+        predecessor.revocation_epoch(),
+        &predecessor.revocation_frontier,
+    )?;
     Ok(finish_verified_snapshot(snapshot, verifier_digest))
 }
 
@@ -532,6 +539,7 @@ pub struct VerifiedAdmissionV2 {
     verified_snapshot_digest: Digest32,
     verified_snapshot_verification_digest: Digest32,
     verified_revocation_epoch: u64,
+    verified_revocation_frontier: Arc<[StableId]>,
     verified_at_unix_ms: u64,
     record_digest: Digest32,
     verification_digest: Digest32,
@@ -705,6 +713,7 @@ pub fn verify_admission_v2(
         verified_snapshot_digest: snapshot.snapshot_digest(),
         verified_snapshot_verification_digest: snapshot.verification_digest(),
         verified_revocation_epoch: snapshot.revocation_epoch(),
+        verified_revocation_frontier: Arc::clone(&snapshot.revocation_frontier),
         verified_at_unix_ms: snapshot.observed_unix_ms(),
         record_digest: record.record_digest,
         verification_digest: Digest32::ZERO,
@@ -1248,7 +1257,7 @@ pub fn compile_v2(
     Ok(compiled)
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct ContextRealizedItemV2 {
     pub item_id: StableId,
     pub role: ContextRoleV2,
@@ -1386,7 +1395,7 @@ impl ContextSerializationReceiptV2 {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub struct SerializedContextV2 {
     receipt: ContextSerializationReceiptV2,
     payload: Vec<u8>,
@@ -1499,6 +1508,7 @@ pub struct ContextAttachmentV2 {
     admission_snapshot_verification_digest: Digest32,
     admission_snapshot_observed_unix_ms: u64,
     revocation_epoch: u64,
+    revocation_frontier: Arc<[StableId]>,
     model_profile_digest: Digest32,
     payload_digest: Digest32,
     selected_item_ids: Vec<StableId>,
@@ -1622,6 +1632,7 @@ pub fn build_attachment(
         admission_snapshot_verification_digest: current_snapshot.verification_digest(),
         admission_snapshot_observed_unix_ms: current_snapshot.observed_unix_ms(),
         revocation_epoch: current_snapshot.revocation_epoch(),
+        revocation_frontier: Arc::clone(&current_snapshot.revocation_frontier),
         model_profile_digest: compiled.receipt.model_profile_digest,
         payload_digest: serialization.receipt.payload_digest,
         selected_item_ids: compiled.receipt.selected_item_ids.clone(),
@@ -1764,12 +1775,15 @@ pub fn prepare_delivery_v2(
     preparation_id: StableId,
 ) -> Result<ContextDeliveryPreparationV2, ContextCompilerV2Error> {
     attachment.validate_for(compiled, serialization, profile)?;
-    if current_snapshot.revocation_epoch() < attachment.revocation_epoch
-        || current_snapshot.observed_unix_ms() < attachment.admission_snapshot_observed_unix_ms
-    {
-        return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
-    }
     revalidate_selected_admissions(compiled, current_snapshot)?;
+    validate_revocation_progress(
+        current_snapshot.observed_unix_ms(),
+        current_snapshot.revocation_epoch(),
+        &current_snapshot.revocation_frontier,
+        attachment.admission_snapshot_observed_unix_ms,
+        attachment.revocation_epoch,
+        &attachment.revocation_frontier,
+    )?;
     let actual_payload_digest = Digest32::of_bytes(&serialization.payload);
     if actual_payload_digest != attachment.payload_digest {
         return Err(ContextCompilerV2Error::DeliveryMismatch);
@@ -1992,6 +2006,8 @@ impl ContextDeliveryReceiptV2 {
     }
 }
 
+// Keep the published V2 call shape; each argument binds a distinct evidence owner.
+#[allow(clippy::too_many_arguments)]
 pub fn observe_delivery(
     preparation: &ContextDeliveryPreparationV2,
     attachment: &ContextAttachmentV2,
@@ -2025,6 +2041,135 @@ pub fn observe_delivery(
     };
     let expected_provider_input = Sha256Digest::for_bytes(serialization.payload());
     if provider_input != &expected_provider_input {
+        return Err(ContextCompilerV2Error::DeliveryMismatch);
+    }
+
+    let provider_id_digest =
+        Digest32::of_bytes(provider_receipt.intent.binding.provider_id.as_bytes());
+    let provider_model_digest =
+        Digest32::of_bytes(provider_receipt.intent.binding.model.as_bytes());
+    if provider_id_digest != preparation.provider_id_digest
+        || provider_model_digest != preparation.provider_model_digest
+    {
+        return Err(ContextCompilerV2Error::ProviderModelProfileMismatch);
+    }
+
+    let provider_evidence_verifier_digest = delivery_verifier.verifier_digest();
+    ensure_digest(
+        "provider_evidence_verifier",
+        provider_evidence_verifier_digest,
+    )?;
+    let delivery_evidence = delivery_verifier
+        .verify_delivery(provider_receipt, preparation)
+        .map_err(ContextCompilerV2Error::ProviderEvidenceInvalid)?;
+    ensure_digest("provider_evidence", delivery_evidence.evidence_digest)?;
+
+    if delivery_evidence.recorded_at_unix_ms < preparation.admission_snapshot_observed_unix_ms
+        || observed_unix_ms < delivery_evidence.recorded_at_unix_ms
+    {
+        return Err(ContextCompilerV2Error::InvalidObservationTime);
+    }
+
+    let provider_request_binding_digest =
+        Digest32::of_bytes(provider_receipt.request_binding_id.as_str().as_bytes());
+    let provider_attempt_digest =
+        Digest32::of_bytes(provider_receipt.attempt_id.as_str().as_bytes());
+    let provider_receipt_digest = Digest32::of_bytes(
+        &provider_receipt
+            .canonical_wire_bytes()
+            .map_err(ContextCompilerV2Error::ProviderReceiptInvalid)?,
+    );
+    let provider_terminal_digest = Digest32::of_bytes(
+        &provider_receipt
+            .terminal
+            .canonical_wire_bytes()
+            .map_err(ContextCompilerV2Error::ProviderReceiptInvalid)?,
+    );
+    let (terminal_observed, disposition) = match &provider_receipt.terminal {
+        ProviderTerminal::Completed { .. } | ProviderTerminal::CompletedUnary { .. } => {
+            (true, ContextDeliveryDispositionV2::Delivered)
+        }
+        ProviderTerminal::Rejected { .. } => (true, ContextDeliveryDispositionV2::Rejected),
+        ProviderTerminal::NotDispatched { .. } => {
+            (true, ContextDeliveryDispositionV2::NotDispatched)
+        }
+        ProviderTerminal::Indeterminate { .. } => {
+            (false, ContextDeliveryDispositionV2::Indeterminate)
+        }
+    };
+
+    let mut receipt = ContextDeliveryReceiptV2 {
+        delivery_id,
+        preparation_digest: preparation.preparation_digest,
+        attachment_digest: attachment.attachment_digest,
+        serialization_receipt_digest: serialization.receipt.receipt_digest,
+        payload_digest: preparation.payload_digest,
+        model_profile_digest: preparation.model_profile_digest,
+        provider_id_digest,
+        provider_model_digest,
+        provider_request_binding_digest,
+        provider_attempt_digest,
+        provider_receipt_digest,
+        provider_terminal_digest,
+        provider_evidence_verifier_digest,
+        provider_evidence_digest: delivery_evidence.evidence_digest,
+        provider_recorded_at_unix_ms: delivery_evidence.recorded_at_unix_ms,
+        admission_snapshot_digest: preparation.admission_snapshot_digest,
+        admission_snapshot_verification_digest: preparation.admission_snapshot_verification_digest,
+        admission_snapshot_observed_unix_ms: preparation.admission_snapshot_observed_unix_ms,
+        revocation_epoch: preparation.revocation_epoch,
+        terminal_observed,
+        disposition,
+        observed_unix_ms,
+        receipt_digest: Digest32::ZERO,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    receipt.receipt_digest = receipt.compute_receipt_digest();
+    receipt.validate_for(preparation, attachment, serialization, profile)?;
+    Ok(receipt)
+}
+
+/// Observe a provider terminal against the exact canonical request bytes that
+/// crossed the pre-compression HTTP boundary.
+///
+/// Unlike the legacy compatibility entrypoint, this path does not pretend that
+/// a developer-fragment context bundle was an ephemeral-input attachment. The
+/// construction-closed final-request proof binds the preparation payload,
+/// complete byte coverage, exact tokenizer identity/count, provider/model, and
+/// wire semantic digest. The provider-owned receipt remains independently
+/// authenticated by `delivery_verifier`.
+#[allow(clippy::too_many_arguments)]
+pub fn observe_final_provider_delivery_v2(
+    preparation: &ContextDeliveryPreparationV2,
+    attachment: &ContextAttachmentV2,
+    serialization: &SerializedContextV2,
+    profile: &ContextModelProfileV2,
+    final_request_proof: &crate::provider_closure::FinalProviderRequestProofV2,
+    delivery_id: StableId,
+    provider_receipt: &ProviderInvocationReceipt,
+    delivery_verifier: &impl ContextProviderDeliveryVerifierV2,
+    observed_unix_ms: u64,
+) -> Result<ContextDeliveryReceiptV2, ContextCompilerV2Error> {
+    preparation.validate_for(attachment, serialization, profile)?;
+    final_request_proof
+        .validate_for(preparation, profile)
+        .map_err(|error| ContextCompilerV2Error::ProviderEvidenceInvalid(error.to_string()))?;
+    provider_receipt
+        .validate()
+        .map_err(ContextCompilerV2Error::ProviderReceiptInvalid)?;
+
+    if provider_receipt.intent.binding.transport != ProviderTransport::Http {
+        return Err(ContextCompilerV2Error::DeliveryMismatch);
+    }
+    let provider_wire_semantic_digest = Digest32::from_str(
+        provider_receipt
+            .intent
+            .binding
+            .wire_semantic_sha256
+            .as_str(),
+    )
+    .map_err(|error| ContextCompilerV2Error::ProviderReceiptInvalid(error.to_string()))?;
+    if provider_wire_semantic_digest != final_request_proof.provider_wire_semantic_digest() {
         return Err(ContextCompilerV2Error::DeliveryMismatch);
     }
 
@@ -2164,17 +2309,66 @@ fn validate_realizations(
     Ok(ordered)
 }
 
+// A separately authenticated root still has to preserve the frontier already
+// consumed by this proof chain. Authentication alone is not continuity.
+fn validate_revocation_progress(
+    observed_unix_ms: u64,
+    revocation_epoch: u64,
+    revoked: &[StableId],
+    previous_observed_unix_ms: u64,
+    previous_revocation_epoch: u64,
+    previous_revoked: &[StableId],
+) -> Result<(), ContextCompilerV2Error> {
+    if observed_unix_ms < previous_observed_unix_ms || revocation_epoch < previous_revocation_epoch
+    {
+        return Err(ContextCompilerV2Error::StaleAdmissionSnapshot);
+    }
+    if revocation_epoch == previous_revocation_epoch {
+        if revoked != previous_revoked {
+            return Err(ContextCompilerV2Error::RevocationFrontierMismatch);
+        }
+    } else {
+        for admission_id in previous_revoked {
+            if revoked.binary_search(admission_id).is_err() {
+                return Err(ContextCompilerV2Error::RevocationResurrection(
+                    admission_id.to_string(),
+                ));
+            }
+        }
+    }
+    Ok(())
+}
+
 fn revalidate_selected_admissions(
     compiled: &CompiledContextV2,
     current_snapshot: &VerifiedAdmissionSnapshotV2,
 ) -> Result<(), ContextCompilerV2Error> {
+    if current_snapshot.scope_digest() != compiled.receipt.scope_digest
+        || current_snapshot.authority_domain_digest() != compiled.receipt.authority_domain_digest
+    {
+        return Err(ContextCompilerV2Error::SnapshotDomainMismatch);
+    }
     if current_snapshot.verifier_digest() != compiled.receipt.admission_verifier_digest {
         return Err(ContextCompilerV2Error::AdmissionVerifierMismatch(
             "current_snapshot".to_string(),
         ));
     }
+    // Candidates admitted together share one immutable bounded frontier. Check
+    // each baseline once instead of rescanning it for every selected candidate.
+    let mut checked_snapshots = BTreeSet::new();
     for candidate in &compiled.selected_candidates {
         candidate.admission.revalidate(current_snapshot)?;
+        let admission = &candidate.admission;
+        if checked_snapshots.insert(admission.verified_snapshot_digest) {
+            validate_revocation_progress(
+                current_snapshot.observed_unix_ms(),
+                current_snapshot.revocation_epoch(),
+                &current_snapshot.revocation_frontier,
+                admission.verified_at_unix_ms,
+                admission.verified_revocation_epoch,
+                &admission.verified_revocation_frontier,
+            )?;
+        }
     }
     Ok(())
 }
@@ -2255,7 +2449,7 @@ fn value_per_token_order(left: &ContextCandidateV2, right: &ContextCandidateV2) 
         .then_with(|| left.item_id.cmp(&right.item_id))
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Eq, PartialEq)]
 pub enum ContextCompilerV2Error {
     EmptyDigest(&'static str),
     DigestMismatch(&'static str),
@@ -2330,13 +2524,15 @@ pub enum ContextCompilerV2Error {
     MissingTerminalObservation,
     InvalidDeliveryDisposition,
     InvalidObservationTime,
+    DeliveryEvidenceEncodingFailed,
+    RecoveryEvidenceInvalid,
     AuthorityGranted,
     Arithmetic,
 }
 
 impl fmt::Display for ContextCompilerV2Error {
     fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
+        formatter.write_str(self.code())
     }
 }
 

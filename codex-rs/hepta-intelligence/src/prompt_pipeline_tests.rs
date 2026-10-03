@@ -79,7 +79,12 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
     );
     assert!(!prepared.materialization.authority.grants_any());
 
-    let serialized_payload = b"provider-prefix|payload:a|provider-suffix".to_vec();
+    let serialized_payload = canonical_context_bundle_bytes_v2(&[ContextRealizedItemV2 {
+        item_id: id("realization:verify"),
+        role: ContextRoleV2::TrustedInstruction,
+        content: b"payload:a".to_vec(),
+    }])
+    .expect("canonical prompt bundle");
     let payload_digest = Digest32::of_bytes(&serialized_payload);
     let delivery = prepare_prompt_delivery_v1(
         &registry,
@@ -165,10 +170,7 @@ fn serialization_without_selected_prompt_bytes_fails_closed() {
         },
     )
     .expect_err("missing selected prompt bytes must fail");
-    assert_eq!(
-        error,
-        PromptPipelineErrorV1::SerializedPayloadMissing("realization:verify".to_string())
-    );
+    assert_eq!(error, PromptPipelineErrorV1::SerializationProofDrift);
 }
 
 #[test]

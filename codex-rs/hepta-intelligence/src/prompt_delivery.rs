@@ -10,12 +10,23 @@ use std::collections::BTreeMap;
 use std::fmt;
 
 use codex_hepta_context_compiler::CompiledContextV2;
+use codex_hepta_context_compiler::ContextAdmissionRecordV2;
+use codex_hepta_context_compiler::ContextAdmissionSnapshotV2;
+use codex_hepta_context_compiler::ContextAdmissionVerifierV2;
 use codex_hepta_context_compiler::ContextAttachmentV2;
 use codex_hepta_context_compiler::ContextCompilerV2Error;
+use codex_hepta_context_compiler::ContextDeliveryPreparationV2;
 use codex_hepta_context_compiler::ContextModelProfileV2;
+use codex_hepta_context_compiler::ContextRealizedItemV2;
+use codex_hepta_context_compiler::ContextRoleV2;
 use codex_hepta_context_compiler::ContextSerializationReceiptV2;
 use codex_hepta_context_compiler::MandatoryContextGroupV2;
 use codex_hepta_context_compiler::SerializedContextV2;
+use codex_hepta_context_compiler::VerifiedAdmissionSnapshotSuccessorV2;
+use codex_hepta_context_compiler::VerifiedAdmissionSnapshotV2;
+use codex_hepta_context_compiler::canonical_context_bundle_bytes_v2;
+use codex_hepta_context_compiler::prepare_delivery_from_successor_v2;
+use codex_hepta_context_compiler::verify_admission_snapshot_successor_typed_v2;
 use codex_hepta_prompt_registry::CompatibleRealizationSetV2;
 use codex_hepta_prompt_registry::DurablePromptRegistry;
 use codex_hepta_prompt_registry::DurableRegistryError;
@@ -26,16 +37,16 @@ use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
-use crate::PromptContextCompileRequestV1;
-use crate::PromptDeliveryPrepareRequestV1;
-use crate::PromptPipelineErrorV1;
-use crate::compile_exercised_prompt_context_v1;
-use crate::prepare_prompt_delivery_v1;
+use crate::prompt_pipeline::PromptContextCompileRequestV1;
+use crate::prompt_pipeline::PromptDeliveryPrepareRequestV1;
+use crate::prompt_pipeline::PromptPipelineErrorV1;
+use crate::prompt_pipeline::compile_exercised_prompt_context_v1;
+use crate::prompt_pipeline::prepare_prompt_delivery_v1;
+use crate::prompt_pipeline::prompt_payload_bundle_digest;
 use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
 use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
 
 const COMPILED_DELIVERY_DOMAIN: &[u8] = b"hepta.prompt-registry.compiled-context.v3";
-const SERIALIZED_PAYLOAD_DOMAIN: &[u8] = b"hepta.prompt-registry.serialized-context.v3";
 const SELECTED_PROMPT_GROUP_ID: &str = "prompt:exercise-selected";
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -57,6 +68,8 @@ pub struct PromptRegistryCompiledContextV2 {
     pub portfolio_receipt_digest: Digest32,
     pub compiled: CompiledContextV2,
     pub model_profile: ContextModelProfileV2,
+    pub registry_model_tuple: PromptModelTupleV2,
+    pub admission_snapshot: VerifiedAdmissionSnapshotV2,
     pub selected_deliveries: Vec<RealizationDeliveryV2>,
     pub serialized_payload: Vec<u8>,
     pub serialization: ContextSerializationReceiptV2,
@@ -76,6 +89,13 @@ impl PromptRegistryCompiledContextV2 {
             .validate()
             .map_err(PromptRegistryCompilationErrorV2::Context)?;
         if self.authority.grants_any()
+            || self.registry_model_tuple.digest() != self.compatible.model_tuple_digest
+            || self.registry_model_tuple.model_digest != self.model_profile.model_digest
+            || self.registry_model_tuple.tokenizer_digest != self.model_profile.tokenizer_digest
+            || self.registry_model_tuple.template_digest != self.model_profile.template_digest
+            || self.registry_model_tuple.tool_schema_digest != self.model_profile.tool_schema_digest
+            || self.admission_snapshot.snapshot_digest()
+                != self.attachment.admission_snapshot_digest()
             || self.delivery_set_digest.is_zero()
             || self.exercise_receipt_digest.is_zero()
             || self.portfolio_receipt_digest.is_zero()
@@ -198,7 +218,7 @@ pub fn compile_prompt_registry_v2(
                 .ok_or(PromptRegistryCompilationErrorV2::Integrity)
         })
         .collect::<Result<Vec<_>, _>>()?;
-    let serialized_payload = serialize_selected_deliveries(&selected_deliveries);
+    let serialized_payload = serialize_selected_deliveries(&selected_deliveries)?;
     let delivery = prepare_prompt_delivery_v1(
         registry,
         portfolio,
@@ -229,8 +249,10 @@ pub fn compile_prompt_registry_v2(
         compatible,
         exercise_receipt_digest: delivery.exercise.receipt_digest,
         portfolio_receipt_digest: portfolio.receipt.receipt_digest,
+        admission_snapshot: prepared.admission_snapshot.clone(),
         compiled: prepared.compiled,
         model_profile,
+        registry_model_tuple: request.registry_model_tuple.clone(),
         selected_deliveries,
         serialized_payload,
         serialization: delivery.serialization,
@@ -244,40 +266,176 @@ pub fn compile_prompt_registry_v2(
     Ok(output)
 }
 
-fn serialize_selected_deliveries(deliveries: &[RealizationDeliveryV2]) -> Vec<u8> {
-    let mut bytes = SERIALIZED_PAYLOAD_DOMAIN.to_vec();
-    bytes.extend_from_slice(
-        &u64::try_from(deliveries.len())
-            .unwrap_or(u64::MAX)
-            .to_be_bytes(),
-    );
-    for delivery in deliveries {
-        let realization_id = delivery.binding.realization_id.as_str().as_bytes();
-        bytes.extend_from_slice(
-            &u64::try_from(realization_id.len())
-                .unwrap_or(u64::MAX)
-                .to_be_bytes(),
-        );
-        bytes.extend_from_slice(realization_id);
-        bytes.push(prompt_role_code(delivery.binding.role));
-        bytes.extend_from_slice(delivery.binding.digest().as_array());
-        bytes.extend_from_slice(
-            &u64::try_from(delivery.payload.len())
-                .unwrap_or(u64::MAX)
-                .to_be_bytes(),
-        );
-        bytes.extend_from_slice(&delivery.payload);
-    }
-    bytes
+fn serialize_selected_deliveries(
+    deliveries: &[RealizationDeliveryV2],
+) -> Result<Vec<u8>, PromptRegistryCompilationErrorV2> {
+    let realizations = deliveries
+        .iter()
+        .map(|delivery| ContextRealizedItemV2 {
+            item_id: delivery.binding.realization_id.clone(),
+            role: match delivery.binding.role {
+                PromptRoleV2::ToolSchemaFragment => ContextRoleV2::Schema,
+                PromptRoleV2::SystemInstruction
+                | PromptRoleV2::DeveloperInstruction
+                | PromptRoleV2::UserTemplate => ContextRoleV2::TrustedInstruction,
+            },
+            content: delivery.payload.clone(),
+        })
+        .collect::<Vec<_>>();
+    canonical_context_bundle_bytes_v2(&realizations)
+        .map_err(|_| PromptRegistryCompilationErrorV2::Integrity)
 }
 
-const fn prompt_role_code(role: PromptRoleV2) -> u8 {
-    match role {
-        PromptRoleV2::SystemInstruction => 0,
-        PromptRoleV2::DeveloperInstruction => 1,
-        PromptRoleV2::UserTemplate => 2,
-        PromptRoleV2::ToolSchemaFragment => 3,
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct PromptRegistryDeliveryPreparationV2 {
+    pub registry_snapshot_digest: Digest32,
+    pub final_use_materialization_digest: Digest32,
+    pub successor: VerifiedAdmissionSnapshotSuccessorV2,
+    pub preparation: ContextDeliveryPreparationV2,
+    pub authority: AuthorityPosture,
+}
+
+impl PromptRegistryDeliveryPreparationV2 {
+    pub fn validate_for(
+        &self,
+        compiled: &PromptRegistryCompiledContextV2,
+    ) -> Result<(), PromptRegistryCompilationErrorV2> {
+        if self.registry_snapshot_digest.is_zero()
+            || self.final_use_materialization_digest.is_zero()
+            || self.final_use_materialization_digest
+                != prompt_payload_bundle_digest(&compiled.selected_deliveries)
+            || self.successor.predecessor_snapshot_digest()
+                != compiled.admission_snapshot.snapshot_digest()
+            || self.preparation.admission_snapshot_digest()
+                != self.successor.successor_snapshot_digest()
+            || self.authority.grants_any()
+        {
+            return Err(PromptRegistryCompilationErrorV2::Integrity);
+        }
+        self.preparation
+            .validate_for(
+                &compiled.attachment,
+                &compiled.serialized_context,
+                &compiled.model_profile,
+            )
+            .map_err(PromptRegistryCompilationErrorV2::Context)
     }
+}
+
+#[derive(Clone, Debug)]
+struct DeliverySnapshotVerifierV2 {
+    verifier_digest: Digest32,
+    scope_digest: Digest32,
+    authority_domain_digest: Digest32,
+}
+
+impl ContextAdmissionVerifierV2 for DeliverySnapshotVerifierV2 {
+    fn verifier_digest(&self) -> Digest32 {
+        self.verifier_digest
+    }
+
+    fn verify_record(&self, record: &ContextAdmissionRecordV2) -> bool {
+        record.scope_digest == self.scope_digest
+            && record.authority_domain_digest == self.authority_domain_digest
+            && !record.contains_secret
+            && record.validate_shape().is_ok()
+    }
+
+    fn verify_snapshot(&self, snapshot: &ContextAdmissionSnapshotV2) -> bool {
+        snapshot.scope_digest == self.scope_digest
+            && snapshot.authority_domain_digest == self.authority_domain_digest
+            && snapshot.revocation_set_complete
+            && snapshot.validate_shape().is_ok()
+    }
+}
+
+/// Re-read the exact durable registry immediately before a provider send. Every
+/// selected realization must still dereference to the same binding and payload;
+/// expiry, retirement, revocation, replacement, or byte drift fails closed.
+pub fn prepare_prompt_registry_delivery_v2(
+    registry: &DurablePromptRegistry,
+    compiled: &PromptRegistryCompiledContextV2,
+    now_unix_ms: u64,
+    snapshot_id: StableId,
+    preparation_id: StableId,
+) -> Result<PromptRegistryDeliveryPreparationV2, PromptRegistryCompilationErrorV2> {
+    compiled.validate()?;
+    if now_unix_ms == 0 {
+        return Err(PromptRegistryCompilationErrorV2::Integrity);
+    }
+    let generation_vector_digest = compiled.compiled.receipt().generation_vector_digest();
+    let registry_snapshot = registry
+        .snapshot_v2(generation_vector_digest, &compiled.registry_model_tuple)
+        .map_err(PromptRegistryCompilationErrorV2::Registry)?;
+    let mut fresh_deliveries = Vec::with_capacity(compiled.selected_deliveries.len());
+    for expected in &compiled.selected_deliveries {
+        let actual = registry
+            .dereference_realization_v2(
+                &expected.binding.realization_id,
+                &registry_snapshot,
+                generation_vector_digest,
+                &compiled.registry_model_tuple,
+                now_unix_ms,
+            )
+            .map_err(PromptRegistryCompilationErrorV2::Registry)?;
+        if &actual != expected {
+            return Err(PromptRegistryCompilationErrorV2::FinalUseDrift);
+        }
+        fresh_deliveries.push(actual);
+    }
+    let final_use_materialization_digest = prompt_payload_bundle_digest(&fresh_deliveries);
+    if final_use_materialization_digest
+        != prompt_payload_bundle_digest(&compiled.selected_deliveries)
+    {
+        return Err(PromptRegistryCompilationErrorV2::FinalUseDrift);
+    }
+
+    let verifier = DeliverySnapshotVerifierV2 {
+        verifier_digest: compiled.admission_snapshot.verifier_digest(),
+        scope_digest: compiled.admission_snapshot.scope_digest(),
+        authority_domain_digest: compiled.admission_snapshot.authority_domain_digest(),
+    };
+    let observed_unix_ms = now_unix_ms.max(compiled.admission_snapshot.observed_unix_ms());
+    let revocation_epoch = compiled
+        .admission_snapshot
+        .revocation_epoch()
+        .checked_add(1)
+        .ok_or(PromptRegistryCompilationErrorV2::Integrity)?;
+    let raw_successor = ContextAdmissionSnapshotV2::new(
+        snapshot_id,
+        compiled.admission_snapshot.scope_digest(),
+        compiled.admission_snapshot.authority_domain_digest(),
+        observed_unix_ms,
+        revocation_epoch,
+        Vec::new(),
+        true,
+        Some(compiled.admission_snapshot.snapshot_digest()),
+    )
+    .map_err(PromptRegistryCompilationErrorV2::Context)?;
+    let successor = verify_admission_snapshot_successor_typed_v2(
+        raw_successor,
+        &compiled.admission_snapshot,
+        &verifier,
+    )
+    .map_err(|error| PromptRegistryCompilationErrorV2::Closure(error.to_string()))?;
+    let preparation = prepare_delivery_from_successor_v2(
+        &compiled.compiled,
+        &compiled.serialized_context,
+        &compiled.attachment,
+        &compiled.model_profile,
+        &successor,
+        preparation_id,
+    )
+    .map_err(|error| PromptRegistryCompilationErrorV2::Closure(error.to_string()))?;
+    let output = PromptRegistryDeliveryPreparationV2 {
+        registry_snapshot_digest: registry_snapshot.snapshot_digest,
+        final_use_materialization_digest,
+        successor,
+        preparation,
+        authority: AuthorityPosture::DENY_ALL,
+    };
+    output.validate_for(compiled)?;
+    Ok(output)
 }
 
 #[derive(Debug)]
@@ -285,7 +443,9 @@ pub enum PromptRegistryCompilationErrorV2 {
     Registry(DurableRegistryError),
     Pipeline(PromptPipelineErrorV1),
     Context(ContextCompilerV2Error),
+    Closure(String),
     ProfileMismatch,
+    FinalUseDrift,
     Integrity,
 }
 
