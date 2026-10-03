@@ -91,3 +91,41 @@ V1 histories and generation-local rollover retain their historical semantics.
 
 No source change here adds trust, reservation/index storage, compiler policy,
 activation, migration, new credentials, merge or deployment authority.
+
+## Follow-up source review: existing integration ownership
+
+Selected integration sources were reviewed at
+`520a2d96a5dc5728eb9876ca54a597add3653246` (PR1303), 2026-10-03. Their presence
+must not be confused with their installation or with this branch's source:
+
+- `local_cpu_parameter_policy.rs::CpuNeuronParameterPolicyV2` retains the full
+  canonical envelope, exact operand/check profile and a host pin; it validates
+  the execution projection, original round, actual diff, current Fleet ceilings
+  and remaining deadline. Its constructor accepting a digest is not itself
+  independent pin provisioning.
+- `self_iteration_round.rs::RoundJournal::reserve` debits aggregate canonical
+  policy candidate counts across Goals and keeps one original wall deadline.
+  Pending model requests preserve the exact round through restarts; candidate
+  rejection does not refund that reservation. It is therefore inaccurate to
+  describe that source as having no budget-owning runtime seam.
+- The same journal retains only its current round and at most 32 policy windows.
+  It removes expired windows during a later reservation. It is not a complete
+  auditable proposal/consumption inventory, an independently acknowledged
+  Plasticity generation transition or a replacement for the V2 prerequisites
+  above. These observations do not establish a budget bypass: normal admission
+  still rejects expired policy and regressed time.
+- `local_cpu_round_materials_v3.rs` is explicitly a pure projection. Its
+  self-matching canonical digest is a structural check, not a new trust source.
+  It must not be repurposed as proof of independent host authorization.
+
+The source-local follow-up on this branch closes a separate retry durability
+asymmetry in both parameter and topology registries: after the final-admission
+callback, an unchanged retry now revalidates live bytes before returning its
+original receipt. Two real package regressions failed before the repair and
+pass after it, alongside the full 80-test Plasticity package. Each covers all
+seven existing file-corruption variants, including changed historical bodies
+with recomputed checksums, truncation and growth. The tests deliberately use the
+same out-of-contract callback-phase mutation model as the existing postwrite
+tests. New append ordering and all historical V1 rollover bytes/semantics remain
+unchanged. This is neither a conserving rollover implementation nor evidence
+that a live Generator/Evaluator/Selector cycle has been installed.

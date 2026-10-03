@@ -377,3 +377,110 @@ fn topology_postwrite_verification_rejects_callback_phase_corruption() {
     );
     assert_eq!(image(&mut file), after);
 }
+
+// As with the postwrite cases above, these phase faults deliberately violate
+// exclusive file-description ownership. An unchanged retry still must not turn
+// the now-invalid retained history into a positive durability observation.
+#[test]
+fn parameter_unchanged_retry_rechecks_callback_phase_history_and_stays_poisoned() {
+    for mutation in MUTATIONS {
+        let (_fixture, mut file) = TestFile::create();
+        let mut registry = DurableProposalRegistry::open_bootstrap_empty(
+            file.try_clone().expect("registry clone"),
+            digest("scope"),
+            /*writer_fence*/ 17,
+            /*maximum_records*/ 2,
+        )
+        .expect("registry");
+        let first = parameter("first");
+        let receipt = registry
+            .append_v2(Digest32::ZERO, first.clone())
+            .expect("first");
+        registry
+            .append_v2(receipt.frame_digest, parameter("second"))
+            .expect("fill registry");
+        let mut calls = 0;
+        let mut corrupted = Vec::new();
+        assert_eq!(
+            registry.append_v2_with_final_admission(Digest32::ZERO, first.clone(), || {
+                calls += 1;
+                mutate(&mut file, mutation);
+                corrupted = image(&mut file);
+                Ok::<(), AdmissionFailure>(())
+            }),
+            Err(AdmissionFailure::Parameter(
+                DurableProposalRegistryError::Corrupt
+            ))
+        );
+        assert_eq!(calls, 1);
+        assert_eq!(image(&mut file), corrupted);
+        assert!(registry.is_poisoned());
+        assert_eq!(
+            registry.current_anchor(),
+            Err(DurableProposalRegistryError::Poisoned)
+        );
+        assert_eq!(
+            registry.append_v2_with_final_admission(Digest32::ZERO, first, || {
+                calls += 1;
+                Ok::<(), AdmissionFailure>(())
+            }),
+            Err(AdmissionFailure::Parameter(
+                DurableProposalRegistryError::Poisoned
+            ))
+        );
+        assert_eq!(calls, 1);
+        assert_eq!(image(&mut file), corrupted);
+    }
+}
+
+#[test]
+fn topology_unchanged_retry_rechecks_callback_phase_history_and_stays_poisoned() {
+    for mutation in MUTATIONS {
+        let (_fixture, mut file) = TestFile::create();
+        let mut registry = DurableTopologyProposalRegistryV1::bootstrap_empty(
+            file.try_clone().expect("registry clone"),
+            digest("scope"),
+            /*writer_fence*/ 17,
+            /*maximum_records*/ 2,
+        )
+        .expect("registry");
+        let first = topology("first");
+        let receipt = registry
+            .append(Digest32::ZERO, first.clone())
+            .expect("first");
+        registry
+            .append(receipt.frame_digest, topology("second"))
+            .expect("fill registry");
+        let mut calls = 0;
+        let mut corrupted = Vec::new();
+        assert_eq!(
+            registry.append_with_final_admission(Digest32::ZERO, first.clone(), || {
+                calls += 1;
+                mutate(&mut file, mutation);
+                corrupted = image(&mut file);
+                Ok::<(), AdmissionFailure>(())
+            }),
+            Err(AdmissionFailure::Topology(
+                DurableTopologyRegistryErrorV1::Corrupt
+            ))
+        );
+        assert_eq!(calls, 1);
+        assert_eq!(image(&mut file), corrupted);
+        assert!(registry.is_poisoned());
+        assert_eq!(
+            registry.current_anchor(),
+            Err(DurableTopologyRegistryErrorV1::Poisoned)
+        );
+        assert_eq!(
+            registry.append_with_final_admission(Digest32::ZERO, first, || {
+                calls += 1;
+                Ok::<(), AdmissionFailure>(())
+            }),
+            Err(AdmissionFailure::Topology(
+                DurableTopologyRegistryErrorV1::Poisoned
+            ))
+        );
+        assert_eq!(calls, 1);
+        assert_eq!(image(&mut file), corrupted);
+    }
+}

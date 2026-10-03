@@ -114,6 +114,10 @@ impl DurableProposalRegistry {
     ) -> Result<DurableProposalAppendReceiptV1, DurableProposalRegistryError> {
         let PreparedParameterAppend { receipt, write } = prepared;
         let Some(write) = write else {
+            // The final-admission callback ran after read-only preparation.
+            // A cached receipt is still a positive durability observation, so
+            // verify the retained bytes again before returning it.
+            self.ensure_live_integrity()?;
             return Ok(receipt);
         };
         self.poisoned.store(true, Ordering::Release);

@@ -320,7 +320,10 @@ header, trusted frame digests and expected physical EOF before cached record/cou
 or anchor results, identical retries, topology canary binding and appends. They
 check every frame's bounds, prefix, complete body digest and footer. After a
 successful write they repeat the check before returning a positive append
-receipt. An integrity or read-I/O failure poisons that live handle; cached
+receipt. An unchanged retry also repeats the check after its final-admission
+callback and before returning its cached receipt. This no-write recheck leaves
+the new-append final-admission/write ordering intact. An integrity or read-I/O
+failure poisons that live handle; cached
 proposal objects cannot substitute for its current file bytes. Recovery requires
 explicit anchored reopen rather than repair through the live handle.
 
@@ -335,6 +338,15 @@ shared descriptor is outside that contract. Header scope/fence getters describe
 immutable enrolled metadata and do not themselves certify current file history.
 Byte verification is not distributed storage atomicity or evidence of physically
 independent rollback domains.
+
+The two `unchanged_retry_rechecks_callback_phase_history_and_stays_poisoned`
+regressions use actual full registries and an older exact retry. They inject
+seven classes of callback-phase mutation through the existing real-file fault
+helpers, require failure without a registry write, and prove that later retries
+cannot re-enter final admission through a poisoned handle. Like the existing
+postwrite phase-fault cases, these intentionally violate the host's exclusive
+file-description contract; they qualify this defensive durability check, not
+concurrent-host custody, cross-generation consumption or product activation.
 
 The registry poison getter reports a cached sticky failure latch without scanning
 the file. `AnchoredPlasticityWriterV1::state()` combines its own state with that

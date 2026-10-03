@@ -17,6 +17,29 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class WorkflowCommandTests(unittest.TestCase):
+    def test_plasticity_integrity_requires_the_full_real_registry_package(self):
+        workflow = (
+            ROOT / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text()
+        self.assertIn(
+            [
+                "python3",
+                "scripts/hepta_ci_exec.py",
+                "--output",
+                "$RUNNER_TEMP/hepta-command-records/plasticity-registry-integrity.json",
+                "--minimum-tests",
+                "80",
+                "--",
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-plasticity",
+                "--lib",
+            ],
+            workflow_commands(workflow),
+        )
+
     def test_rollover_boundary_requires_real_agentd_and_six_executed_tests(self):
         workflow = (
             ROOT / ".github/workflows/hepta-architecture-convergence.yml"

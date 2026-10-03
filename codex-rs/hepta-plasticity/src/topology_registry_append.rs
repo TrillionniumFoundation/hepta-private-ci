@@ -129,6 +129,9 @@ impl DurableTopologyProposalRegistryV1 {
     ) -> Result<DurableTopologyAppendReceiptV1, DurableTopologyRegistryErrorV1> {
         let PreparedTopologyAppend { receipt, write } = prepared;
         let Some(write) = write else {
+            // Match postwrite verification on the no-write path: the final
+            // callback must not turn changed history into a cached success.
+            self.ensure_live_integrity()?;
             return Ok(receipt);
         };
         self.poisoned.store(true, Ordering::Release);
