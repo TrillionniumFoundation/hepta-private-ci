@@ -166,6 +166,14 @@ impl IterationJournal {
         self.write_state(Some(record.clone()), rounds)
     }
 
+    /// Pure admission clock check; observation neither persists nor expires.
+    pub(super) fn check_clock(&self, now: u64) -> Result<(), AgentdError> {
+        if let Some(mut rounds) = self.rounds.clone() {
+            rounds.observe_clock(now, false)?;
+        }
+        Ok(())
+    }
+
     pub(super) fn observe_clock(&mut self, now: u64, command: bool) -> Result<(), AgentdError> {
         let Some(mut rounds) = self.rounds.clone() else {
             return Ok(());

@@ -245,6 +245,8 @@ impl SelfIterationRuntime {
                             | Command::CompleteFailure(..)
                             | Command::InspectRound(..)
                             | Command::InspectCurrentRound(..)
+                            | Command::PrepareParameterCheckpoint(..)
+                            | Command::InspectParameterServingScope(..)
                             | Command::RejectProposal(..)
                             | Command::CompletePreparation(..)
                             | Command::PreparePlasticityInputFromContext(..)
@@ -318,6 +320,14 @@ impl SelfIterationRuntime {
                                 path,
                                 pin,
                             ));
+                        }
+                        Command::InspectParameterServingScope(host, round, response) => {
+                            let _ =
+                                response.send(owner.inspect_parameter_serving_scope(host, round));
+                        }
+                        Command::PrepareParameterCheckpoint(host, round, path, pin, response) => {
+                            let _ = response
+                                .send(owner.prepare_parameter_checkpoint(host, round, path, pin));
                         }
                         Command::InspectCurrentRound(response) => {
                             let _ = response.send(owner.inspect_current_round());
@@ -451,3 +461,6 @@ mod terminal;
 
 #[path = "self_iteration_runtime_plasticity_context.rs"]
 pub(crate) mod plasticity_context;
+
+#[path = "self_iteration_runtime_parameter_checkpoint.rs"]
+mod parameter_checkpoint;

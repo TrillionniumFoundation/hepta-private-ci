@@ -88,3 +88,50 @@ async fn client_preserves_overload_and_bounded_frame_rejection() -> TestResult {
     }
     Ok(())
 }
+
+#[tokio::test]
+async fn retained_original_response_keeps_wire_whitespace_and_one_request_identity() -> TestResult {
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("original-response.sock");
+    let mut listener = UnixListener::bind(&path).await?;
+    let owner = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dd3")?;
+    let client = AgentdClient::new(path, owner.clone(), 7)?;
+    let server = tokio::spawn(async move {
+        let stream = listener.accept().await?;
+        let (reader, mut writer) = tokio::io::split(stream);
+        let mut request_bytes = Vec::new();
+        BufReader::new(reader)
+            .read_until(b'\n', &mut request_bytes)
+            .await?;
+        let request: AgentdRequest =
+            serde_json::from_slice(&request_bytes).map_err(std::io::Error::other)?;
+        let response = AgentdResponse {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: request.request_id,
+            agent_id: owner,
+            spawn_generation: request.spawn_generation,
+            current_generation: 8,
+            payload: AgentdPayload::RunStatus { run: None },
+        };
+        let mut exact = b"  ".to_vec();
+        exact.extend_from_slice(&serde_json::to_vec(&response).map_err(std::io::Error::other)?);
+        exact.extend_from_slice(b" \t\n");
+        writer.write_all(&exact).await?;
+        Ok::<_, std::io::Error>(exact)
+    });
+    let (response, exact) = client
+        .send_original_response(AgentdRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: client.request_id(),
+            spawn_generation: 7,
+            method: crate::AgentdMethod::RunStatus {
+                run_id: "absent-run".into(),
+            },
+        })
+        .await?;
+    assert_eq!(response.request_id, 1);
+    assert_eq!(response.current_generation, 8);
+    assert_eq!(exact, server.await??);
+    assert_ne!(exact, frame(response));
+    Ok(())
+}

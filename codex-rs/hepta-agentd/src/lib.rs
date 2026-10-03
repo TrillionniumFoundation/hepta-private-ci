@@ -81,7 +81,13 @@ mod objective_runtime;
 #[cfg(feature = "server")]
 mod parameter_admission_query;
 #[cfg(feature = "server")]
+mod parameter_checkpoint;
+#[cfg(feature = "server")]
 pub use objective_runtime::objective_ingress_signing_claims_v1;
+#[cfg(feature = "server")]
+pub use parameter_checkpoint::ParameterServingScopeV1;
+#[cfg(feature = "server")]
+pub use parameter_checkpoint::PreparedParameterCheckpointV1;
 #[cfg(all(unix, feature = "server"))]
 mod operator_namespace;
 #[cfg(feature = "server")]

@@ -326,7 +326,7 @@ pub(crate) fn runtime_fixture_for_subject_and_objective(
     subject_id: StableId,
     objective_digest: Digest32,
 ) -> RuntimeFixture {
-    runtime_fixture_with_material(
+    runtime_fixture_material_inner(
         generation_value,
         provider_delay,
         witness_delay,
@@ -337,32 +337,45 @@ pub(crate) fn runtime_fixture_for_subject_and_objective(
     .0
 }
 
-/// Complete material fixture for the real protected context reader. Existing
-/// lock-metric fixtures keep their original body identity unchanged.
-pub(crate) fn runtime_fixture_for_parameter_preparation(
-    subject_id: StableId,
-    objective_digest: Digest32,
+pub(crate) fn parameter_checkpoint_fixture_for_subject_and_objective(
+    generation: u64,
+    subject: StableId,
+    objective: Digest32,
 ) -> (
     RuntimeFixture,
     codex_hepta_agent_components::neuron::NeuronGenerationMaterialV2,
 ) {
-    runtime_fixture_with_material(
-        1,
+    runtime_fixture_material_inner(
+        generation,
         Duration::ZERO,
         Duration::ZERO,
-        subject_id,
-        objective_digest,
+        subject,
+        objective,
         true,
     )
 }
 
-fn runtime_fixture_with_material(
+pub(crate) fn parameter_checkpoint_fixture() -> (
+    RuntimeFixture,
+    codex_hepta_agent_components::neuron::NeuronGenerationMaterialV2,
+) {
+    runtime_fixture_material_inner(
+        1,
+        Duration::ZERO,
+        Duration::ZERO,
+        subject(),
+        objective(),
+        true,
+    )
+}
+
+fn runtime_fixture_material_inner(
     generation_value: u64,
     provider_delay: Duration,
     witness_delay: Duration,
     subject_id: StableId,
     objective_digest: Digest32,
-    complete_body: bool,
+    complete_material: bool,
 ) -> (
     RuntimeFixture,
     codex_hepta_agent_components::neuron::NeuronGenerationMaterialV2,
@@ -372,7 +385,7 @@ fn runtime_fixture_with_material(
     let native = native_config(generation);
     let config = runtime_config(&native);
     let mut body = body_bundle(generation);
-    if complete_body {
+    if complete_material {
         body.effective_parameter_digest = checked(config.execution_profile_digest_v1());
     }
     let scope = checked(NeuronTickInputV1::journal_scope_for_subject(
@@ -840,6 +853,13 @@ fn neuron_runtime_v2_hol_diagnostic_matrix() {
             concurrency,
         ));
     }
+}
+
+/// Original context preparation uses the same complete material fixture.
+pub(crate) fn runtime_fixture_for_parameter_preparation(
+    subject_id: StableId, objective_digest: Digest32,
+) -> (RuntimeFixture, codex_hepta_agent_components::neuron::NeuronGenerationMaterialV2) {
+    parameter_checkpoint_fixture_for_subject_and_objective(1, subject_id, objective_digest)
 }
 
 pub(crate) fn commit_parameter_preparation_checkpoint(fixture: &RuntimeFixture) {

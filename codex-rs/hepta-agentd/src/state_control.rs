@@ -131,6 +131,23 @@ impl AgentdState {
                 self.prepare_parameter_input_payload(round_hex, search_source, search_digest)
                     .await?
             }
+            crate::AgentdMethod::InspectParameterServingScopeV1 { round_hex } => {
+                self.inspect_parameter_serving_scope(current_generation, round_hex)
+                    .await?
+            }
+            crate::AgentdMethod::PrepareParameterCheckpointV1 {
+                round_hex,
+                material_source,
+                material_digest,
+            } => {
+                self.prepare_parameter_checkpoint(
+                    current_generation,
+                    round_hex,
+                    material_source,
+                    material_digest,
+                )
+                .await?
+            }
             crate::AgentdMethod::ResolveParameterAdmissionV1 { query } => {
                 self.resolve_parameter_admission(query).await?
             }

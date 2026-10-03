@@ -116,7 +116,9 @@ async fn serve_connection(
     let requested_response_limit = crate::canary_operation_receipt::response_limit(&request.method);
     let root_only = matches!(
         &request.method,
-        crate::AgentdMethod::NativeModelReceipt { .. }
+        crate::AgentdMethod::InspectParameterServingScopeV1 { .. }
+            | crate::AgentdMethod::PrepareParameterCheckpointV1 { .. }
+            | crate::AgentdMethod::NativeModelReceipt { .. }
             | crate::AgentdMethod::ResolveParameterAdmissionV1 { .. }
             | crate::AgentdMethod::RefreshParameterInputContextV2 { .. }
             | crate::AgentdMethod::PrepareParameterInputFromContextV2 { .. }
@@ -138,7 +140,9 @@ async fn serve_connection(
     let canary_permit = if authorized_root
         && matches!(
             &request.method,
-            crate::AgentdMethod::CanaryOperationReceipt { .. }
+            crate::AgentdMethod::InspectParameterServingScopeV1 { .. }
+                | crate::AgentdMethod::PrepareParameterCheckpointV1 { .. }
+                | crate::AgentdMethod::CanaryOperationReceipt { .. }
                 | crate::AgentdMethod::PreparedGenerationV2 { .. }
                 | crate::AgentdMethod::PlasticityCompletedProposal { .. }
         ) {

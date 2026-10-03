@@ -13,7 +13,10 @@ const TEST_SEED: [u8; 32] = [31; 32];
 fn id(value: &str) -> StableId {
     StableId::new(value).expect("test id")
 }
-fn trust() -> Arc<ActivatedLearningTrustV1> {
+pub(super) fn trust() -> Arc<ActivatedLearningTrustV1> {
+    trust_at(NOW, Digest32::of_bytes(b"test objective"))
+}
+pub(super) fn trust_at(now: u64, objective: Digest32) -> Arc<ActivatedLearningTrustV1> {
     let key = SigningKey::from_bytes(&TEST_SEED);
     let scope = Digest32::of_bytes(b"test installed scope");
     let principal = AuthenticatedPrincipalV1 {
@@ -22,12 +25,12 @@ fn trust() -> Arc<ActivatedLearningTrustV1> {
         signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
         scope_digest: scope,
         authority_epoch: 1,
-        authenticated_at: NOW - 100,
-        expires_at: NOW + 60_000,
+        authenticated_at: now - 100,
+        expires_at: now + 60_000,
     };
     let definition = LearningEvidenceTrustV1 {
         scope_digest: scope,
-        objective_digest: Digest32::of_bytes(b"test objective"),
+        objective_digest: objective,
         authority_epoch: 1,
         signers: vec![TrustedLearningSignerV1 {
             principal,
@@ -42,26 +45,26 @@ fn trust() -> Arc<ActivatedLearningTrustV1> {
         root_id: id("test.root"),
         scope_digest: scope,
         verifying_key: root_key.verifying_key().to_bytes(),
-        valid_from: NOW - 200,
-        expires_at: NOW + 60_000,
+        valid_from: now - 200,
+        expires_at: now + 60_000,
         revoked_at: None,
     };
     let mut distribution = SignedLearningTrustDistributionV1 {
         distribution: LearningTrustDistributionV1 {
             distribution_id: id("test.distribution"),
             generation: 1,
-            effective_at: NOW - 100,
+            effective_at: now - 100,
             trust: definition,
         },
         root_id: root.root_id.clone(),
-        issued_at: NOW - 150,
-        expires_at: NOW + 60_000,
+        issued_at: now - 150,
+        expires_at: now + 60_000,
         signature: [0; 64],
     };
     distribution.signature = root_key
         .sign(&distribution.signing_bytes().expect("distribution bytes"))
         .to_bytes();
-    Arc::new(activate_learning_trust(&root, distribution, None, NOW).expect("test trust"))
+    Arc::new(activate_learning_trust(&root, distribution, None, now).expect("test trust"))
 }
 fn directory() -> tempfile::TempDir {
     let mut builder = tempfile::Builder::new();

@@ -87,27 +87,24 @@ fn sole_product_host_rolls_two_compiled_goals_without_changing_the_model_generat
     let identity =
         crate::canonical_abstain_provider::tests::identity(directory.path(), generation - 1);
     let subject = StableId::new(identity.agent_id.as_str()).expect("subject");
-    let old = lock_metrics_tests::runtime_fixture_for_subject_and_objective(
-        generation,
-        Duration::ZERO,
-        Duration::ZERO,
-        subject.clone(),
-        Digest32::of_bytes(b"installed historical goal"),
-    );
-    let first = lock_metrics_tests::runtime_fixture_for_subject_and_objective(
-        generation,
-        Duration::ZERO,
-        Duration::ZERO,
-        subject.clone(),
-        one.request.snapshot.objective_digest(),
-    );
-    let second = lock_metrics_tests::runtime_fixture_for_subject_and_objective(
-        generation,
-        Duration::ZERO,
-        Duration::ZERO,
-        subject,
-        two.request.snapshot.objective_digest(),
-    );
+    let (old, training_material) =
+        lock_metrics_tests::parameter_checkpoint_fixture_for_subject_and_objective(
+            generation,
+            subject.clone(),
+            Digest32::of_bytes(b"installed historical goal"),
+        );
+    let (first, first_material) =
+        lock_metrics_tests::parameter_checkpoint_fixture_for_subject_and_objective(
+            generation,
+            subject.clone(),
+            one.request.snapshot.objective_digest(),
+        );
+    let (second, second_material) =
+        lock_metrics_tests::parameter_checkpoint_fixture_for_subject_and_objective(
+            generation,
+            subject,
+            two.request.snapshot.objective_digest(),
+        );
     let first_scope = AgentdNeuronGoalScopeV3::capture(2, &first.handle).expect("first scope");
     let provider = Arc::new(StageProvider {
         template: first.input.clone(),
@@ -153,6 +150,32 @@ fn sole_product_host_rolls_two_compiled_goals_without_changing_the_model_generat
             .active_scope,
         first_scope
     );
+    assert!(
+        host.prepare_parameter_checkpoint_observation(&training_material)
+            .is_err(),
+        "registered training scope is not rewritten into actual Goal1"
+    );
+    let first_facts = host
+        .parameter_serving_scope_observation()
+        .expect("original Goal1 facts");
+    assert_eq!(first_facts.3, first_material.scope);
+    assert_eq!(first_facts.4, Some(2));
+    assert_ne!(
+        first_facts.3.objective_digest,
+        training_material.scope.objective_digest
+    );
+    assert_eq!(
+        host.prepare_parameter_checkpoint_observation(&first_material)
+            .expect("Goal1 checkpoint")
+            .0,
+        first_receipt.next_anchor
+    );
+    assert_eq!(
+        host.prepare_parameter_checkpoint_observation(&first_material)
+            .expect("Goal1 ordinal")
+            .2,
+        first_facts.4
+    );
     let (run, stage) = invocation(two, &host, identity, body);
     let second_receipt = run
         .execute(&stage, &mut Allow)
@@ -164,6 +187,52 @@ fn sole_product_host_rolls_two_compiled_goals_without_changing_the_model_generat
         AgentdNeuronGoalScopeV3::capture(3, &second.handle).expect("second scope")
     );
     assert_eq!(state.active_scope.identity.model_generation, generation);
+    let before = [
+        std::fs::read(&second_material.generation_store).expect("store"),
+        std::fs::read(&second_material.runtime_index).expect("index"),
+        std::fs::read(&second_material.witness).expect("witness"),
+        std::fs::read(directory.path().join("controller.json")).expect("controller"),
+    ];
+    let second_facts = host
+        .parameter_serving_scope_observation()
+        .expect("original Goal2 facts");
+    assert_eq!(second_facts.3, second_material.scope);
+    assert_eq!(second_facts.4, Some(3));
+    assert_ne!(
+        second_facts.3.objective_digest,
+        first_facts.3.objective_digest
+    );
+    assert!(
+        host.prepare_parameter_checkpoint_observation(&training_material)
+            .is_err()
+    );
+    assert!(
+        host.prepare_parameter_checkpoint_observation(&first_material)
+            .is_err(),
+        "retired Goal1 cannot supply current Goal2 eligibility"
+    );
+    assert_eq!(
+        host.prepare_parameter_checkpoint_observation(&second_material)
+            .expect("whole Goal2 checkpoint")
+            .0,
+        second_receipt.next_anchor
+    );
+    assert_eq!(
+        host.prepare_parameter_checkpoint_observation(&second_material)
+            .expect("Goal2 ordinal")
+            .2,
+        second_facts.4
+    );
+    assert_eq!(
+        [
+            std::fs::read(&second_material.generation_store).expect("store"),
+            std::fs::read(&second_material.runtime_index).expect("index"),
+            std::fs::read(&second_material.witness).expect("witness"),
+            std::fs::read(directory.path().join("controller.json")).expect("controller")
+        ],
+        before
+    );
+
     assert_eq!(
         host.controller
             .query_goal_scope_operation_v3(

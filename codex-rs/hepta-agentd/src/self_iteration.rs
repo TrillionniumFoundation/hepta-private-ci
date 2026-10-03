@@ -42,6 +42,8 @@ pub use measurement::measure_self_iteration_qualification_v1;
 #[path = "self_iteration_signer.rs"]
 mod signer;
 pub use signer::AgentdSelfIterationLocalSignerV1;
+#[cfg(test)]
+pub(crate) use signer::checkpoint_test_trust;
 
 #[path = "self_iteration_contracts.rs"]
 mod contracts;

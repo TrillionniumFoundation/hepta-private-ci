@@ -39,3 +39,7 @@ pub(crate) mod lock_metrics_tests;
 #[cfg(test)]
 #[path = "neuron_runtime_v2_tick_context_tests.rs"]
 mod tick_context_tests;
+
+#[cfg(test)]
+#[path = "neuron_runtime_v2_parameter_checkpoint_tests.rs"]
+pub(crate) mod parameter_checkpoint_tests;

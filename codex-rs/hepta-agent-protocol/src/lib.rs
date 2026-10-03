@@ -54,7 +54,7 @@ use codex_hepta_fleet::AgentLifecycle;
 use serde::Deserialize;
 use serde::Serialize;
 
-pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
+pub use codex_hepta_contracts::ORIGINAL_AGENTD_CONTROL_SCHEMA_VERSION as AGENTD_CONTROL_SCHEMA_VERSION;
 /// Version for the transport-only host turn authority witness.  This type is
 /// deliberately not an authority grant and is not consumed by the Agentd
 /// runtime yet; it gives a future host/supervisor seam one strict wire shape.
@@ -697,6 +697,14 @@ pub enum AgentdMethod {
         search_source: String,
         search_digest: String,
     },
+    InspectParameterServingScopeV1 {
+        round_hex: String,
+    },
+    PrepareParameterCheckpointV1 {
+        round_hex: String,
+        material_source: std::path::PathBuf,
+        material_digest: String,
+    },
     ResolveParameterAdmissionV1 {
         query: ParameterAdmissionQueryV1,
     },
@@ -896,16 +904,7 @@ pub struct AutomationEffectReconcileSnapshot {
     pub effect: Option<AutomationEffectSnapshot>,
 }
 
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct AgentdResponse {
-    pub schema_version: u32,
-    pub request_id: u64,
-    pub agent_id: AgentId,
-    pub spawn_generation: u64,
-    pub current_generation: u64,
-    pub payload: AgentdPayload,
-}
+pub type AgentdResponse = codex_hepta_contracts::OriginalAgentdResponseV1<AgentdPayload>;
 
 /// Read-only source facts from the original admitted plasticity context.
 /// The receiver must independently authenticate CURRENT and the protected source.
@@ -959,6 +958,21 @@ pub enum AgentdPayload {
         query: ParameterAdmissionQueryV1,
         admission_hex: String,
         baseline: ParameterPreparationBaselineV1,
+    },
+    ParameterServingScopeV1(codex_hepta_contracts::ParameterServingScopeV1),
+    PreparedParameterCheckpointV1 {
+        round_hex: String,
+        neuron_generation: u64,
+        configuration_digest: String,
+        body_bundle_digest: String,
+        scope_digest: String,
+        objective_digest: String,
+        goal_ordinal: Option<u64>,
+        anchor_sequence: u64,
+        anchor_checkpoint_digest: String,
+        baseline_material_digest: String,
+        checkpoint_hex: String,
+        checkpoint_source_digest: String,
     },
     ParameterAdmissionV1 {
         query: ParameterAdmissionQueryV1,

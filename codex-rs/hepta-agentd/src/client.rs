@@ -52,6 +52,10 @@ mod automation_listing;
 #[cfg(feature = "server")]
 mod canary_operation_receipt;
 
+#[cfg(feature = "server")]
+#[path = "client_parameter_checkpoint.rs"]
+mod parameter_checkpoint;
+
 #[path = "client_native_model_receipt.rs"]
 mod native_model_receipt;
 #[cfg(feature = "server")]
@@ -827,6 +831,15 @@ impl AgentdClient {
     }
 
     async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
+        self.send_original_response(request)
+            .await
+            .map(|(response, _bytes)| response)
+    }
+
+    async fn send_original_response(
+        &self,
+        request: AgentdRequest,
+    ) -> Result<(AgentdResponse, Vec<u8>), AgentdError> {
         let expected_request_id = request.request_id;
         #[cfg(feature = "server")]
         let response_limit = crate::canary_operation_receipt::response_limit(&request.method);
@@ -880,7 +893,7 @@ impl AgentdClient {
                 "agentd response identity does not match request".to_string(),
             ));
         }
-        Ok(response)
+        Ok((response, response_bytes))
     }
 
     fn request_id(&self) -> u64 {

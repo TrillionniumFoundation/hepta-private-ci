@@ -125,3 +125,11 @@ impl AgentdSelfIterationLocalSignerV1 {
 #[cfg(test)]
 #[path = "self_iteration_signer_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+pub(crate) fn checkpoint_test_trust(
+    now: u64,
+    objective: Digest32,
+) -> Arc<ActivatedLearningTrustV1> {
+    tests::trust_at(now, objective)
+}

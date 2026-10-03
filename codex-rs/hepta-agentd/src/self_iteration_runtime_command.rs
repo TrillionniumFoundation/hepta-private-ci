@@ -10,6 +10,18 @@ pub(super) enum Command {
             Result<crate::plasticity_runtime::parameter_preparation::Prepared, AgentdError>,
         >,
     ),
+    InspectParameterServingScope(
+        Arc<crate::AgentdNeuronRuntimeV2Host>,
+        AgentdSelfIterationRoundV1,
+        oneshot::Sender<Result<crate::ParameterServingScopeV1, AgentdError>>,
+    ),
+    PrepareParameterCheckpoint(
+        Arc<crate::AgentdNeuronRuntimeV2Host>,
+        AgentdSelfIterationRoundV1,
+        PathBuf,
+        Digest32,
+        oneshot::Sender<Result<crate::PreparedParameterCheckpointV1, AgentdError>>,
+    ),
     RefreshPlasticityContext(
         crate::PlasticityRuntimeHandleV1,
         AgentdSelfIterationHandleV1,
@@ -89,6 +101,12 @@ impl Command {
                 let _ = response.send(Err(error));
             }
             Self::RefreshPlasticityContext(_, _, _, _, _, response) => {
+                let _ = response.send(Err(error));
+            }
+            Self::InspectParameterServingScope(_, _, response) => {
+                let _ = response.send(Err(error));
+            }
+            Self::PrepareParameterCheckpoint(_, _, _, _, response) => {
                 let _ = response.send(Err(error));
             }
             Self::InspectRound(_, _, response) => {
