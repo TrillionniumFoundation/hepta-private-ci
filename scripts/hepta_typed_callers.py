@@ -37,7 +37,9 @@ def _raw_identifiers(code: str) -> str:
     # Literals/comments are removed by the caller before this lexical pass.
     # A raw identifier names the same symbol as its unprefixed spelling. Strip
     # only the token prefix so alias discovery cannot mistake r#Gate for `r`.
-    return unicodedata.normalize("NFC", re.sub(r"\br#(?=[^\W\d])", "", code))
+    if "r#" in code:
+        code = re.sub(r"\br#(?=[^\W\d])", "", code)
+    return code if code.isascii() else unicodedata.normalize("NFC", code)
 
 
 def _identifier_tokens(code: str):
@@ -57,6 +59,8 @@ def _identifier_tokens(code: str):
 
 def _declared_aliases(code: str, target: str) -> set[str]:
     code = _raw_identifiers(code)
+    if target not in code:
+        return set()
     aliases = set()
     # Restrict `as` to use declarations: a function cast `callee as fn()`
     # must not turn the Rust keyword `fn` into a spurious import alias.
@@ -90,7 +94,7 @@ def _normalize_aliases(
 ) -> str:
     code = _raw_identifiers(code)
     aliases = aliases | _declared_aliases(code, target)
-    if not aliases:
+    if not aliases or not any(alias in code for alias in aliases):
         return code
     parts = []
     cursor = 0
@@ -393,7 +397,10 @@ def has_authority_call(
     # in a parent module. A typed variable/impl must name either the authority
     # or an indexed field owner. Avoid parsing unrelated crates' homonyms.
     type_names = {target, *(owner for owner, _ in fields)}
-    if not any(re.search(rf"\b{re.escape(name)}\b", code) for name in type_names):
+    if not any(
+        name in code and re.search(rf"\b{re.escape(name)}\b", code)
+        for name in type_names
+    ):
         return False
     method_name = rf"(?:r#)?{re.escape(method)}"
     qualified = rf"::\s*{method_name}\b"
