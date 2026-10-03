@@ -40,7 +40,8 @@
           "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
           "symbol": "canonical_generation_from_projection"
         }
-      ]
+      ],
+      "sourceBlob": "fedc698d6ebeaea06cf3ecf6eb67bd38c36519d2"
     },
     {
       "operation": "apply_incremental_delta",
@@ -55,7 +56,8 @@
       "sourcePathExists": true,
       "designOperation": "apply_incremental_delta",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "fedc698d6ebeaea06cf3ecf6eb67bd38c36519d2"
     },
     {
       "operation": "publish_generation",
@@ -84,7 +86,8 @@
           "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
           "symbol": "refresh_scope_projection_tx"
         }
-      ]
+      ],
+      "sourceBlob": "fedc698d6ebeaea06cf3ecf6eb67bd38c36519d2"
     },
     {
       "operation": "query_relations",
@@ -115,7 +118,8 @@
           "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
           "symbol": "optimize_with_factor_graph"
         }
-      ]
+      ],
+      "sourceBlob": "fedc698d6ebeaea06cf3ecf6eb67bd38c36519d2"
     },
     {
       "operation": "build_prompt_factor_projection_v1",
@@ -143,7 +147,8 @@
           "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
           "symbol": "optimize_with_factor_graph"
         }
-      ]
+      ],
+      "sourceBlob": "415a128dfc1c5b9897f81a02d518b147b4ed3a8d"
     }
   ],
   "repositoryControlledGaps": [
@@ -170,6 +175,7 @@
     "codex-rs/hepta-kg"
   ],
   "compositionRoots": [
+    ".github/actions/hepta-synthetic-merge/action.yml",
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
     "CALLERS.toml",
     "codex-rs/Cargo.lock",
@@ -228,17 +234,28 @@
     "codex-rs/hepta-prompt-registry/src/factor_relation.rs",
     "codex-rs/hepta-prompt-registry/src/lib.rs",
     "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+    "codex-rs/rust-toolchain.toml",
+    "justfile",
     "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
     "qa/b4-no-bypass/test_verify_hepta_callers.py",
     "qa/vertical-slice/test_vertical_slice.py",
+    "qualification/knowledge-graph/nextest.toml",
+    "scripts/hepta_ci_exec.py",
+    "scripts/hepta_knowledge_graph_qualification.py",
+    "scripts/just-shell.py",
+    "scripts/test_hepta_ci_exec.py",
+    "scripts/test_hepta_ci_exec_deadline.py",
+    "scripts/test_hepta_ci_exec_output.py",
+    "scripts/test_hepta_knowledge_graph_qualification.py",
     "scripts/verify_hepta_callers.py"
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "e5f7755fec463050fda183a6f79913749722a8dd",
-    "tree": "8e508a8dae0b62ad8f30f554af076e8f75a7266f"
+    "commit": "d6dbfd2c9e5b52d68dd1550a5fd26dd012ba1d2d",
+    "tree": "1f66dd5cec7468049db7034338aae33a3e4088d0"
   },
   "observedSourcePaths": [
+    ".github/actions/hepta-synthetic-merge/action.yml",
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
     "CALLERS.toml",
     "codex-rs/Cargo.lock",
@@ -263,6 +280,10 @@
     "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
     "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
     "codex-rs/hepta-kg",
+    "codex-rs/hepta-kg/src/generation.rs",
+    "codex-rs/hepta-kg/src/generation_tests.rs",
+    "codex-rs/hepta-kg/src/prompt_factor.rs",
+    "codex-rs/hepta-kg/src/prompt_factor_tests.rs",
     "codex-rs/hepta-kg/src/validated_generation.rs",
     "codex-rs/hepta-kg/src/validated_generation_tests.rs",
     "codex-rs/hepta-memory/Cargo.toml",
@@ -300,9 +321,20 @@
     "codex-rs/hepta-prompt-registry/src/factor_relation.rs",
     "codex-rs/hepta-prompt-registry/src/lib.rs",
     "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+    "codex-rs/rust-toolchain.toml",
+    "docs/modules/knowledge.graph/TECHNICAL.md",
+    "justfile",
     "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
     "qa/b4-no-bypass/test_verify_hepta_callers.py",
     "qa/vertical-slice/test_vertical_slice.py",
+    "qualification/knowledge-graph/nextest.toml",
+    "scripts/hepta_ci_exec.py",
+    "scripts/hepta_knowledge_graph_qualification.py",
+    "scripts/just-shell.py",
+    "scripts/test_hepta_ci_exec.py",
+    "scripts/test_hepta_ci_exec_deadline.py",
+    "scripts/test_hepta_ci_exec_output.py",
+    "scripts/test_hepta_knowledge_graph_qualification.py",
     "scripts/verify_hepta_callers.py"
   ],
   "productCallers": [
@@ -319,8 +351,12 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/actions/hepta-synthetic-merge/action.yml",
+      "object": "905fc5039016ac7aaadbb857c0a7b94bb594f7ce"
+    },
+    {
       "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
-      "object": "6447ac075871b81ca9043bfc77c915a8ab754cae"
+      "object": "cfbee133f326d6ef200f126113fff14f770520eb"
     },
     {
       "path": "CALLERS.toml",
@@ -579,8 +615,16 @@
       "object": "7dec1d918cdbce1c4bef99f3f4de76e1528ce793"
     },
     {
+      "path": "codex-rs/rust-toolchain.toml",
+      "object": "910c65114ec128a8317ee8257428451f3cd28230"
+    },
+    {
       "path": "docs/modules/knowledge.graph/TECHNICAL.md",
-      "object": "118f15cf45d5e77271d5aeddfce1c9752387af75"
+      "object": "cfde48f1099534ad2cf9dc71e25b14c5c0c221ad"
+    },
+    {
+      "path": "justfile",
+      "object": "a215a76cf407ace9715bca39c20497014e7dd4dc"
     },
     {
       "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
@@ -595,11 +639,44 @@
       "object": "344e431a7023d545d82ec8ece2bad292787febfe"
     },
     {
+      "path": "qualification/knowledge-graph/nextest.toml",
+      "object": "28ebd96ba2dfbc3d641cdad501acef320d9ee022"
+    },
+    {
+      "path": "scripts/hepta_ci_exec.py",
+      "object": "c9434b3a4afb31f80e323d543936386a2fa738de"
+    },
+    {
+      "path": "scripts/hepta_knowledge_graph_qualification.py",
+      "object": "c6a4e077ae73e5393342a1fb3224e6273cef6aa2"
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "object": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec.py",
+      "object": "881799269f6cfbe322b746565e51cd90c5b0db9d"
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec_deadline.py",
+      "object": "221b0535de670c8248898460af51fb719fb14f36"
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec_output.py",
+      "object": "f92628ad9b15cdad591dbc30b6c90e2074a501aa"
+    },
+    {
+      "path": "scripts/test_hepta_knowledge_graph_qualification.py",
+      "object": "bb9bd4a5c49da33cb1d25d621da2ba767c9b11eb"
+    },
+    {
       "path": "scripts/verify_hepta_callers.py",
       "object": "d2460ad20da700de96adc98a34d90bd078219cb6"
     }
   ],
   "technicalSupplements": [
     "docs/modules/knowledge.graph/ADVERSARIAL_AUDIT_20261002.md"
-  ]
+  ],
+  "mappingSourceIdentityMode": "exact_blob"
 }
