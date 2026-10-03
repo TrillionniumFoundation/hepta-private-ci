@@ -128,6 +128,8 @@ pub use self_iteration_model::NativeReferenceObservationV1;
 pub use self_iteration_model::RootNativeAssessmentScopeV1;
 #[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
 pub use self_iteration_model::validate_root_native_assessment_facts_v1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use self_iteration_model::validate_root_native_failure_facts_v1;
 
 use std::error::Error as StdError;
 use std::fmt;

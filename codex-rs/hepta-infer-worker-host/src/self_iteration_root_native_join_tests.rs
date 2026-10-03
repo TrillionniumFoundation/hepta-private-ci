@@ -26,6 +26,17 @@ fn fixture() -> (
     NativeRunRecord,
     RootModelTerminalReceiptV1,
 ) {
+    fixture_with_status(NativeRunStatus::Completed, NativeBoundaryStatus::Succeeded)
+}
+
+fn fixture_with_status(
+    status: NativeRunStatus,
+    boundary_status: NativeBoundaryStatus,
+) -> (
+    SelfIterationModelRequestV1,
+    NativeRunRecord,
+    RootModelTerminalReceiptV1,
+) {
     let request = SelfIterationModelRequestV1 {
         request_id: StableId::new("original-model-request").unwrap(),
         role: SelfIterationModelRoleV1::Generator,
@@ -98,8 +109,8 @@ fn fixture() -> (
                 turn_id: "original-turn".into(),
                 model: scope.model.into(),
                 model_provider: scope.model_provider.into(),
-                status: NativeRunStatus::Completed,
-                boundary_status: NativeBoundaryStatus::Succeeded,
+                status,
+                boundary_status,
                 output: text.into(),
                 observed_output_tokens: None,
                 terminal_observed: true,
@@ -130,6 +141,9 @@ fn fixture() -> (
     })).unwrap();
     (request, record, witness)
 }
+
+#[path = "self_iteration_root_native_failure_tests.rs"]
+mod failure_tests;
 
 #[test]
 fn complete_original_advice_after_reopen_needs_no_intelligence_ack() {
