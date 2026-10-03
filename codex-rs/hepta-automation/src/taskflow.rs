@@ -1192,7 +1192,9 @@ impl AutomationStore {
         let command_digest = command.digest()?;
         let mut tx = self
             .taskflow_pool()
-            .begin()
+            // Reserve the writer before loading mutable run/event state.
+            // A deferred WAL snapshot cannot upgrade after a timer commits.
+            .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(|_| TaskFlowError::Unavailable)?;
         let row =

@@ -98,6 +98,23 @@ history and immutable conflict/fence checks. The existing successor-absence
 integration test also verifies discovery exclusion without another provider call.
 These are regression locations, not current execution or acceptance receipts.
 
+AF-38 (P1): step and run recovery mutations opened deferred transactions before
+reading mutable projections. A concurrent timer writer could commit before the
+recovery append, making SQLite reject that snapshot's writer upgrade. The narrow
+writer reservation from kernel-owner commit `1da08d55` is now applied at the
+run-command and step-write entrypoints. Read-only step verification and paged
+discovery retain read transactions. `taskflow_concurrent_reconcile.rs` exercises
+one-shot step/run reconciliation against the actual same-store timer writer,
+then verifies retained state after reopen.
+
+This source convergence does not merge kernel-owner history. Its migration20
+creates authority witnesses; this branch's migration20 records retirement drain,
+followed by provider migrations21–23. The frozen authority20 fixture verifies
+that schema23's real opener rejects that incompatible lineage without relabelling
+checksums or extending it. The authority-witness adapter and any future migration
+remain separate integration work. Existing Operations post-writer clock sampling,
+exact intent fences and provider admission continuity are preserved.
+
 ## Repeat-review method
 
 Compare documentation and registries to actual callers, then review identity/authority, durable lifecycle, progression and host execution independently.

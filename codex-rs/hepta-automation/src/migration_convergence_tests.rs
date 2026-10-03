@@ -1,4 +1,6 @@
 use sqlx::migrate::Migrate;
+use sqlx::migrate::Migration;
+use sqlx::migrate::MigrationType;
 use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
@@ -126,6 +128,63 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
         assert_eq!(versions, vec![1, 2, 3, 4, 5]);
         pool.close().await;
     }
+}
+
+#[tokio::test]
+async fn authority_schema20_is_rejected_without_relabelling_or_extending_history() {
+    let pool = historical_pool(/*displaced*/ false).await;
+    let mut connection = pool.acquire().await.expect("historical connection");
+    for migration in MIGRATOR
+        .iter()
+        .filter(|migration| (6..=19).contains(&migration.version))
+    {
+        connection
+            .apply("_sqlx_migrations", migration)
+            .await
+            .expect("shared history");
+    }
+    // Exact SQL from kernel-owner 2210f3d47c. Its version 20 is not this
+    // branch's retirement-drain migration and must not be renamed to 24.
+    let authority = Migration::new(
+        /*version*/ 20,
+        "effect dispatch authority witness".into(),
+        MigrationType::Simple,
+        include_str!("../tests/fixtures/kernel_authority_schema20.sql").into(),
+        /*no_tx*/ false,
+    );
+    connection
+        .apply("_sqlx_migrations", &authority)
+        .await
+        .expect("authority lineage");
+    drop(connection);
+    let before: Vec<(i64, Vec<u8>)> =
+        sqlx::query_as("SELECT version, checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&pool)
+            .await
+            .expect("original lineage");
+    assert!(matches!(
+        reconcile_legacy_migration_ids(&pool).await,
+        Err(AutomationError::Corrupt)
+    ));
+    let after: Vec<(i64, Vec<u8>)> =
+        sqlx::query_as("SELECT version, checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&pool)
+            .await
+            .expect("retained lineage");
+    assert_eq!(before, after);
+    let temp = tempfile::tempdir().expect("private owner root");
+    let root = temp.path().canonicalize().expect("canonical root");
+    sqlx::query("VACUUM INTO ?")
+        .bind(root.join(AUTOMATION_DB_FILENAME).to_str().expect("path"))
+        .execute(&pool)
+        .await
+        .expect("persist exact incompatible lineage");
+    pool.close().await;
+    let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner");
+    assert!(matches!(
+        AutomationStore::open_root(root, owner).await,
+        Err(AutomationError::Corrupt)
+    ));
 }
 
 async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
