@@ -214,7 +214,7 @@
         }
       ],
       "productCompositionState": "configured_agentd_async_http_effect_control_prepared_steps_only_independent_qualification_pending",
-      "sourceBlob": "0fea241ce4a760a6d4e4d70581cac953aed50238"
+      "sourceBlob": "905ee94b3a37f6768bca0d46bc8e6492f5250de4"
     }
   ],
   "repositoryControlledGaps": [],
@@ -261,8 +261,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "3e86d6ff29e3593fb7d33af29228b3414f1602d0",
-    "tree": "a7156da9e47d916971586aa17896dd29c01a3a7f"
+    "commit": "f0f08f85ef0656787906928db8ac0d5a83b57dc4",
+    "tree": "0323e638f2249f9fde55607fe0e58583ca2de4ab"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -282,7 +282,7 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "0fea241ce4a760a6d4e4d70581cac953aed50238"
+        "blobSha": "905ee94b3a37f6768bca0d46bc8e6492f5250de4"
       },
       {
         "path": "codex-rs/app-server-client/src/lib.rs",
@@ -351,6 +351,9 @@
     "codex-rs/hepta-automation",
     "codex-rs/hepta-automation/src/authorized_effect.rs",
     "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+    "codex-rs/hepta-automation/src/effect_recovery_frontier_tests.rs",
+    "codex-rs/hepta-automation/src/effect_recovery_scan.rs",
+    "codex-rs/hepta-automation/src/effect_recovery_scan_tests.rs",
     "codex-rs/hepta-automation/src/lifecycle.rs",
     "codex-rs/hepta-automation/src/queue_contact.rs",
     "codex-rs/hepta-automation/src/queue_contact_tests.rs",
@@ -467,15 +470,27 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "f3baca6a88289b0edb13a3674f3ca1fa54ce8974"
+      "object": "bf0d7aecb42693298e92f5b0bfdeb2c257350fc1"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "0fea241ce4a760a6d4e4d70581cac953aed50238"
+      "object": "905ee94b3a37f6768bca0d46bc8e6492f5250de4"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
-      "object": "fea1677bcb9baf8c84016e7e255e9155cda3ae20"
+      "object": "166c8a93a1db589acfa4272f3776d1591f59bb88"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_recovery_frontier_tests.rs",
+      "object": "49c04044a475209d1aacd50b14d34a92a268285d"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_recovery_scan.rs",
+      "object": "176c4241333ea59a6449ef81319d1299fe177f5f"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_recovery_scan_tests.rs",
+      "object": "3d3d55a748ea70029d6039570ca1f6cc59e34b2c"
     },
     {
       "path": "codex-rs/hepta-automation/src/lifecycle.rs",
@@ -507,7 +522,7 @@
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
-      "object": "6439264d016b4c7bcd16dacd9ada162f2151e9d9"
+      "object": "c37aaac821f6a6b538b6caa2e1b42f2da3c13774"
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
@@ -539,7 +554,7 @@
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "object": "c68fc5148a35bdcc34c36fa01135ebe93f132502"
+      "object": "2ea8a144238e1ef53519dc53dbfce3254302182b"
     }
   ],
   "navigationProvenanceRepair": {
