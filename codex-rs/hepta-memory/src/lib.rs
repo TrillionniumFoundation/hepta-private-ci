@@ -60,6 +60,7 @@ pub use lane_c_snapshot::MAX_LANE_C_PAGE_CITATIONS;
 pub use lane_c_snapshot::MAX_LANE_C_SNAPSHOT_PAGE_HEADS;
 
 pub use codex_hepta_memory_retrieval::RetrievalCandidateIdentityV1;
+pub use cognitive_compact::COGNITIVE_COMPACT_CHECKPOINT_SCHEMA_VERSION;
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_NAMESPACE;
 pub use cognitive_compact::COGNITIVE_COMPACT_HOOK_SCHEMA_VERSION;
 pub use cognitive_compact::CognitiveCompactError;

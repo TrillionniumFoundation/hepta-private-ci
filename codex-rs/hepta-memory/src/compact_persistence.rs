@@ -603,7 +603,7 @@ pub fn checkpoint_digest(
     let mut hasher = Sha256::new();
     frame_part(
         &mut hasher,
-        b"hepta-memory:compact-persistence:checkpoint:v1",
+        b"hepta-memory:compact-persistence:checkpoint:v2",
     );
     frame_part(&mut hasher, &checkpoint.schema_version.to_be_bytes());
     frame_part(&mut hasher, checkpoint.namespace.as_bytes());
@@ -662,6 +662,14 @@ pub fn checkpoint_digest(
     frame_part(
         &mut hasher,
         checkpoint.summary.summary_sha256.as_str().as_bytes(),
+    );
+    frame_part(
+        &mut hasher,
+        checkpoint.summary.model_receipt_sha256.as_str().as_bytes(),
+    );
+    frame_part(
+        &mut hasher,
+        checkpoint.summary.policy_digest.as_str().as_bytes(),
     );
     frame_part(
         &mut hasher,
