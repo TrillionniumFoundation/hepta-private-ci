@@ -247,8 +247,11 @@ def candidate_state(receipt: dict[str, Any], kind: str, root: Path) -> str:
         log = directory / f"{name}.log"
         if log.is_symlink() or not log.is_file() or sha256(log) != check["logSha256"]:
             return "failed"
-        if name in contract.MINIMUM_PASSED_TESTS and not contract.test_execution_satisfied(
-            name, log.read_text(errors="replace")
+        if (
+            name in contract.MINIMUM_PASSED_TESTS
+            and not contract.test_execution_satisfied(
+                name, log.read_text(errors="replace")
+            )
         ):
             return "failed"
     return "passed"

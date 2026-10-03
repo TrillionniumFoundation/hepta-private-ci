@@ -35,7 +35,9 @@ def read(path: Path) -> str:
     try:
         return path.read_text(encoding="utf-8")
     except OSError as error:
-        raise ConsistencyError(f"cannot read {path.relative_to(ROOT)}: {error}") from error
+        raise ConsistencyError(
+            f"cannot read {path.relative_to(ROOT)}: {error}"
+        ) from error
 
 
 def load_json(path: Path) -> dict[str, Any]:
@@ -203,15 +205,17 @@ def verify_registry() -> None:
 
 def verify_metadata() -> None:
     mapping = load_json(MAP)
-    need(mapping.get("module") == "objective.compiler", "implementation-map identity drifted")
+    need(
+        mapping.get("module") == "objective.compiler",
+        "implementation-map identity drifted",
+    )
     need(
         mapping.get("executionSpecification")
         == "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
         "implementation map points at a non-normative execution specification",
     )
     need(
-        mapping.get("technicalGuide")
-        == "docs/modules/objective.compiler/TECHNICAL.md",
+        mapping.get("technicalGuide") == "docs/modules/objective.compiler/TECHNICAL.md",
         "implementation map technical-guide pointer drifted",
     )
 
@@ -238,7 +242,10 @@ def verify_metadata() -> None:
 
 def self_test() -> None:
     sample = f"x{BEGIN}canonical{END}y"
-    need(extract_product_path(sample) == "canonical", "marker extraction self-test failed")
+    need(
+        extract_product_path(sample) == "canonical",
+        "marker extraction self-test failed",
+    )
     for malformed in (BEGIN, END, BEGIN + BEGIN + END, END + BEGIN):
         try:
             extract_product_path(malformed)

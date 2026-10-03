@@ -532,9 +532,12 @@ class EvidenceProjectionTest(unittest.TestCase):
             phase.mkdir()
             for name in MODULE.qualification_commands():
                 (phase / f"{name}.log").write_bytes(exact_log_bytes(name))
-            self.assertEqual(MODULE.candidate_state(receipt, "source-head", root), "passed")
+            self.assertEqual(
+                MODULE.candidate_state(receipt, "source-head", root), "passed"
+            )
             check = next(
-                item for item in receipt["candidates"][0]["checks"]
+                item
+                for item in receipt["candidates"][0]["checks"]
                 if item["name"] == "agentd-signed-product"
             )
             for output in (
