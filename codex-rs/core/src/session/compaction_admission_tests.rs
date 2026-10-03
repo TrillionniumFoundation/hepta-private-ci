@@ -354,6 +354,28 @@ impl PausedRetirement {
             .await
             .expect("exact terminalizer should retire");
     }
+
+    fn hold_active_turn(&self) -> (std::sync::mpsc::Sender<()>, std::thread::JoinHandle<()>) {
+        let session = Arc::clone(&self.session);
+        let (acquired_tx, acquired_rx) = std::sync::mpsc::channel();
+        let (release_tx, release_rx) = std::sync::mpsc::channel();
+        let owner = std::thread::spawn(move || {
+            let _active = session
+                .active_turn
+                .try_lock()
+                .expect("fixture active turn lock should be available");
+            acquired_tx
+                .send(())
+                .expect("fixture should await the owner");
+            // Dropping the sender also releases the owner if the test panics.
+            let _ = release_rx.recv();
+        });
+        // A synchronous handshake cannot auto-advance the paused fixture clock.
+        acquired_rx
+            .recv_timeout(self.deadline.saturating_duration_since(Instant::now()))
+            .expect("active turn lock owner should start within the fixture budget");
+        (release_tx, owner)
+    }
 }
 
 #[tokio::test]
@@ -545,7 +567,7 @@ async fn retirement_observation_deadline_bounds_capture_lock() {
     // Expire the observer before the existing 2s terminalizer watchdog.
     let now = Instant::now();
     let deadline = now + fixture.deadline.saturating_duration_since(now) / 2;
-    let active = fixture.session.active_turn.lock().await;
+    let (active_release, active_owner) = fixture.hold_active_turn();
     let mut observation = Box::pin(wait_for_session_turn_retirement(&fixture.session, deadline));
     assert!(futures::poll!(observation.as_mut()).is_pending());
     tokio::time::advance(deadline.saturating_duration_since(Instant::now())).await;
@@ -553,7 +575,10 @@ async fn retirement_observation_deadline_bounds_capture_lock() {
         observation.await,
         Err(TurnRetirementObservationError::Deadline)
     );
-    drop(active);
+    drop(active_release);
+    active_owner
+        .join()
+        .expect("active turn lock owner should exit");
     fixture.store.flush_release.notify_one();
     fixture.idle.release.notify_one();
     timeout_at(fixture.deadline, fixture.completion.wait())
@@ -571,14 +596,17 @@ async fn retirement_observation_deadline_bounds_recheck_lock() {
     let mut observation = Box::pin(wait_for_session_turn_retirement(&fixture.session, deadline));
     assert!(futures::poll!(observation.as_mut()).is_pending());
     fixture.retire().await;
-    let active = fixture.session.active_turn.lock().await;
+    let (active_release, active_owner) = fixture.hold_active_turn();
     assert!(futures::poll!(observation.as_mut()).is_pending());
     tokio::time::advance(deadline.saturating_duration_since(Instant::now())).await;
     assert_eq!(
         observation.await,
         Err(TurnRetirementObservationError::Deadline)
     );
-    drop(active);
+    drop(active_release);
+    active_owner
+        .join()
+        .expect("active turn lock owner should exit");
     assert!(!fixture.session.has_pending_admission_fence());
 }
 
