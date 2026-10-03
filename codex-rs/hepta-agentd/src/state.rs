@@ -907,3 +907,6 @@ mod plasticity_observation;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "state_prepared_generation_tests.rs"]
 mod prepared_generation_tests;
+
+#[path = "state_parameter_preparation.rs"]
+mod parameter_preparation;

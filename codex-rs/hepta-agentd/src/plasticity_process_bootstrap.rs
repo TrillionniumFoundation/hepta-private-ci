@@ -973,6 +973,9 @@ mod tests {
 #[path = "plasticity_input_context_v2.rs"]
 mod input_context;
 pub(crate) use input_context::load_input_context_v2;
+pub(crate) use input_context::protected_context_bytes;
+#[cfg(test)]
+pub(crate) use input_context::validate_context_baseline_artifact;
 
 #[path = "plasticity_process_bootstrap_v2.rs"]
 mod v2;

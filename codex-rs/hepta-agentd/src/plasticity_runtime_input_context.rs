@@ -10,6 +10,9 @@ pub(crate) struct PlasticityInputContextV2 {
     pub(crate) source: (PathBuf, Digest32),
     pub(crate) predecessor: Digest32,
     pub(crate) baseline: StableId,
+    pub(crate) baseline_source: Option<(PathBuf, Digest32)>,
+    pub(crate) baseline_material:
+        Option<codex_hepta_agent_components::neuron::NeuronGenerationMaterialV2>,
     pub(crate) artifacts: ArtifactRegistry,
     pub(crate) current_artifacts: PlasticityCurrentArtifactsV1,
     pub(crate) resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,

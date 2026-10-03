@@ -158,6 +158,13 @@ impl ConcretePlasticityOwnerEvidenceResolverV1 {
 }
 
 impl PlasticityOwnerEvidenceResolverV1 for ConcretePlasticityOwnerEvidenceResolverV1 {
+    fn prepare_parameter_input(
+        &self,
+        input: crate::AgentdPlasticityAdmissionInputV1,
+        now: u64,
+    ) -> Result<crate::AgentdPlasticityAdmissionInputV1, PlasticityOwnerEvidenceErrorV1> {
+        self.prepare_parameter_input_current(input, now)
+    }
     fn resolve(
         &self,
         query: &PlasticityOwnerEvidenceQueryV1,
@@ -504,6 +511,13 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
 }
 
 impl PlasticityOwnerEvidenceResolverV1 for PlasticityDynamicOwnerEvidenceResolverV1 {
+    fn prepare_parameter_input(
+        &self,
+        input: crate::AgentdPlasticityAdmissionInputV1,
+        now: u64,
+    ) -> Result<crate::AgentdPlasticityAdmissionInputV1, PlasticityOwnerEvidenceErrorV1> {
+        self.prepare_parameter_input_current(input, now)
+    }
     fn resolve(
         &self,
         query: &PlasticityOwnerEvidenceQueryV1,
@@ -1462,4 +1476,10 @@ mod tests {
             Err(PlasticityOwnerEvidenceErrorV1::Unavailable)
         );
     }
+    mod preparation_tests {
+        include!("plasticity_owner_parameter_preparation_tests.rs");
+    }
 }
+
+#[path = "plasticity_owner_parameter_preparation.rs"]
+mod parameter_preparation;

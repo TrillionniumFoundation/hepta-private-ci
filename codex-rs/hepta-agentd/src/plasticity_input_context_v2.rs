@@ -58,8 +58,7 @@ pub(crate) fn load_input_context_v2(
     )?)
     .map_err(|e| AgentdError::Invalid(format!("full context baseline: {e}")))?;
     let baseline = stable_id(&d.baseline_id, "context baseline")?;
-    if material.runtime.model_id != baseline
-        || material.scope.objective_digest != objective
+    if material.scope.objective_digest != objective
         || material
             .native
             .digest()
@@ -80,6 +79,15 @@ pub(crate) fn load_input_context_v2(
             .min(64 * 1024 * 1024),
     )?;
     let artifacts = load_artifacts(&d.artifacts)?;
+    let selected = artifacts
+        .manifest(&baseline)
+        .ok_or_else(|| AgentdError::Invalid("context baseline artifact missing".into()))?;
+    validate_context_baseline_artifact(
+        selected,
+        material.runtime.generation,
+        material.native.model_digest,
+        material.scope.objective_digest,
+    )?;
     let dataset = build_dataset_receipt(&d.dataset)?;
     if dataset.snapshot.objective_digest != objective
         || dataset.snapshot.ledger_head_digest
@@ -198,6 +206,11 @@ pub(crate) fn load_input_context_v2(
     )
     .map_err(|e| AgentdError::Invalid(e.to_string()))?;
     let verifier = build_verifier(&d.trust, objective)?;
+    if verifier.scope_digest() != material.scope.scope_digest
+        || verifier.objective_digest() != material.scope.objective_digest
+    {
+        return invalid("whole learning trust differs from actual training material scope");
+    }
     if protected_context_bytes(path, pin, MAX_DESCRIPTOR_BYTES)? != bytes {
         return invalid("protected plasticity context changed");
     }
@@ -206,6 +219,11 @@ pub(crate) fn load_input_context_v2(
         source: (path.to_path_buf(), pin),
         predecessor: digest(&d.predecessor_registry_head_digest, "context predecessor")?,
         baseline,
+        baseline_source: Some((
+            d.baseline_material.path,
+            digest(&d.baseline_material.digest, "baseline material source")?,
+        )),
+        baseline_material: Some(material),
         artifacts,
         current_artifacts,
         resolver: Box::new(resolver),
@@ -236,7 +254,7 @@ fn decode_round(hex: &str) -> Result<Vec<u8>, AgentdError> {
         .collect()
 }
 
-pub(super) fn protected_context_bytes(
+pub(crate) fn protected_context_bytes(
     path: &Path,
     pin: Digest32,
     max: u64,
@@ -291,4 +309,25 @@ pub(super) fn protected_context_bytes(
         return invalid("Root context whole source changed");
     }
     Ok(bytes)
+}
+
+// Runtime model identity remains stable across sparse generations. The selected
+// artifact is independently versioned by the original CURRENT registry.
+pub(crate) fn validate_context_baseline_artifact(
+    selected: &codex_hepta_agent_components::learning_artifacts::ArtifactManifest,
+    generation: codex_hepta_agent_components::types::Generation,
+    head: Digest32,
+    objective: Digest32,
+) -> Result<(), AgentdError> {
+    use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
+    if !matches!(
+        selected.kind,
+        ArtifactKind::Parameters | ArtifactKind::Model
+    ) || selected.generation != generation
+        || selected.content_digest != head
+        || selected.objective_digest != objective
+    {
+        return invalid("context CURRENT model artifact differs from actual full material");
+    }
+    Ok(())
 }

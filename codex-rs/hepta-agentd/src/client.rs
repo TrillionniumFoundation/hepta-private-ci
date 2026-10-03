@@ -916,3 +916,7 @@ mod transport_tests;
 #[cfg(all(test, target_os = "linux"))]
 #[path = "client_peer_tests.rs"]
 mod peer_process_tests;
+
+#[cfg(feature = "server")]
+#[path = "client_parameter_preparation.rs"]
+mod parameter_preparation;
