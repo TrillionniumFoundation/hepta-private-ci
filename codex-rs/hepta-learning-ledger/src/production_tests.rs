@@ -1043,3 +1043,6 @@ mod retrieval_preparation;
 
 #[path = "production_binding_audit_tests.rs"]
 mod binding_audit;
+
+#[path = "production_dataset_window_v3_tests.rs"]
+mod dataset_window;

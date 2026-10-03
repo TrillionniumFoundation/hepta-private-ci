@@ -58,8 +58,18 @@ use crate::verify_dataset_snapshot_receipt_v3;
 
 #[path = "production_active_trust.rs"]
 mod active_trust;
+#[path = "production_dataset_window_v3.rs"]
+mod dataset_window;
 #[path = "production_unlearning.rs"]
 mod unlearning;
+pub use dataset_window::DatasetWindowFreezePlanV3;
+pub use dataset_window::DatasetWindowSnapshotReceiptV3;
+pub use dataset_window::DatasetWindowSnapshotWireV3;
+pub use dataset_window::MAX_DATASET_WINDOW_ENCODED_BYTES_V3;
+pub use dataset_window::MAX_DATASET_WINDOW_SOURCE_RECORDS_V3;
+pub use dataset_window::dataset_window_freeze_signing_payload_v3;
+pub use dataset_window::freeze_dataset_window_from_ledger_v3;
+pub use dataset_window::verify_dataset_window_snapshot_against_ledger_v3;
 pub use unlearning::UnlearningLineagePreviewV1;
 
 const MAX_PRODUCTION_CANDIDATES: usize = 128;
@@ -977,6 +987,14 @@ fn derive_dataset(
         return Err(ProductionLedgerError::AuthenticatedDecisionRequired);
     }
 
+    derive_dataset_for_episodes(snapshot, &active, &episodes)
+}
+
+fn derive_dataset_for_episodes(
+    snapshot: &LedgerSnapshot,
+    active: &[&LedgerRecord],
+    episodes: &BTreeSet<StableId>,
+) -> Result<DerivedDataset, ProductionLedgerError> {
     let mut source_record_digests = Vec::new();
     let mut correction_digests = Vec::new();
     let mut revocation_digests = Vec::new();
@@ -985,7 +1003,7 @@ fn derive_dataset(
     let mut censored_outcomes = 0_u32;
     let mut outcome_episodes = BTreeSet::new();
 
-    for record in &active {
+    for record in active {
         match &record.event {
             LedgerEvent::AuthenticatedDecisionV2(value) if episodes.contains(&value.episode_id) => {
                 source_record_digests.push(record.event_digest);
