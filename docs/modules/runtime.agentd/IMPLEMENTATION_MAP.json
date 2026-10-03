@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "bf0941d1df7a86e0d72a21978ff07f998f67dfa4",
-    "tree": "11da89a244340ac4df2b835274c49cc2ac79a01a"
+    "commit": "1b764eea5b326c10a54b4e7f5415d98062a2eb80",
+    "tree": "7957d082a0845ce0030aeb87fbefbd49fdf620d5"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -344,7 +344,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "7bd52bbc90d16b0ce4abc841f00ea3aecd0efd57"
+      "object": "3fcc8e4703d3745b5a9d4b3563eff724bb9d956a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -380,7 +380,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
+      "object": "d861151acf005511e0362c8d69b2b17d01436316"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
@@ -421,6 +421,15 @@
       "sourceBase": {
         "commit": "e2d1c12855e7f598c317b83b76cecab79b6e1d4a",
         "tree": "e93854c35e2deb4e7a8ef4c4b0d67574ceeeb33b"
+      },
+      "observedAtHead": null,
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "bf0941d1df7a86e0d72a21978ff07f998f67dfa4",
+        "tree": "11da89a244340ac4df2b835274c49cc2ac79a01a"
       },
       "observedAtHead": null,
       "disposition": "historical_source_navigation_only",
