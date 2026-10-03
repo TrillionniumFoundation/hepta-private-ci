@@ -84,8 +84,19 @@ mod read_checkpoints;
 #[path = "owner_admissions.rs"]
 mod admissions;
 
+#[cfg(target_os = "linux")]
+#[path = "owner_public_trust.rs"]
+mod public_trust;
 #[path = "owner_registry_replay.rs"]
 mod registry_replay;
+#[cfg(target_os = "linux")]
+pub use public_trust::ArtifactReadOnlyOwnerSourcesV1;
+#[cfg(target_os = "linux")]
+pub use public_trust::MAX_ARTIFACT_PUBLIC_TRUST_BYTES_V1;
+#[cfg(target_os = "linux")]
+pub use public_trust::decode_artifact_public_trust_v1;
+#[cfg(target_os = "linux")]
+pub use public_trust::encode_artifact_public_trust_v1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TrustedArtifactSignerV1 {

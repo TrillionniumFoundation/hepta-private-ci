@@ -139,9 +139,45 @@ fn root_readonly_current_preserves_the_real_writer_and_closes_on_withdrawal_and_
     let reader =
         ReadOnlyArtifactCurrentOwnerV1::open(&root, trust.clone(), withdrawals.clone(), now)
             .fixture("Root protected reader");
+    let public_trust = super::super::public_trust::encode_artifact_public_trust_v1(&trust)
+        .fixture("complete public trust bytes");
+    let trust_path = root.join("public-trust.bin");
+    fs::write(&trust_path, &public_trust).fixture("Root public trust");
+    fs::set_permissions(&trust_path, fs::Permissions::from_mode(0o600))
+        .fixture("Root public trust mode");
+    let withdrawal_path = root.join("public-withdrawals.bin");
+    let withdrawal_receipt = crate::write_dataset_withdrawal_snapshot_beneath(
+        &root,
+        "public-withdrawals.bin",
+        &withdrawals,
+        digest("actual public withdrawal snapshot"),
+    )
+    .fixture("original full withdrawal snapshot");
+    let sources = super::super::public_trust::ArtifactReadOnlyOwnerSourcesV1 {
+        root: root.clone(),
+        trust_path,
+        trust_digest: Digest32::of_bytes(&public_trust),
+        withdrawal_path,
+        withdrawal_receipt,
+    };
+    let from_sources = ReadOnlyArtifactCurrentOwnerV1::from_protected_sources(&sources, now)
+        .fixture("same original reader through full protected public material");
+    assert_eq!(
+        from_sources
+            .protected_current_head(now)
+            .fixture("actual signed head"),
+        head
+    );
     let view = reader
         .current_registry_view(now)
         .fixture("complete read while writer remains held");
+    assert_eq!(
+        from_sources
+            .current_registry_view(now)
+            .fixture("same actual snapshot")
+            .receipt(),
+        view.receipt()
+    );
     assert_eq!(view.receipt().head_digest, registry.head_digest());
     assert!(view.is_eligible(&id("candidate")));
     assert!(view.supports_dataset(
