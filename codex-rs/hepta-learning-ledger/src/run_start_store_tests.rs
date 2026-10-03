@@ -695,11 +695,17 @@ fn writer_lease_fences_another_process_during_rotation() {
 fn non_regular_directory_writer_lease_is_rejected_before_history_mutation() {
     let fixture = Fixture::new("writer-not-regular");
     must(fs::create_dir(fixture.root.join(super::WRITER_FILE)));
+    // Windows rejects create_new on the directory before open_regular can
+    // inspect its type. Require that exact denial and unchanged history.
+    #[cfg(windows)]
+    let expected = RunStartStoreError::Io(std::io::ErrorKind::PermissionDenied);
+    #[cfg(not(windows))]
+    let expected = RunStartStoreError::NotRegular;
     assert_eq!(
         fixture
             .open(1, MemoryCheckpoint::new(RunStartAnchor::ZERO))
             .err(),
-        Some(RunStartStoreError::NotRegular)
+        Some(expected)
     );
     assert!(!fixture.root.join("active.bin").exists());
     assert!(!fixture.root.join("segments").exists());
