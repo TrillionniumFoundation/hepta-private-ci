@@ -93,6 +93,7 @@ pub fn validate_root_native_assessment_facts_v1(
         || output.thread_id != dispatch.thread_id
         || output.model != scope.model
         || output.model_provider != scope.model_provider
+        || !digest_present(output.codex_terminal_correlation_digest.as_deref())
         || witness.schema != "hepta.root-model-terminal.v1"
         || witness.subject != scope.subject
         || witness.model != scope.model

@@ -206,7 +206,7 @@ fn historical_process_facts_remain_complete_but_late_or_backwards_use_is_denied(
 #[test]
 fn provider_success_does_not_replace_original_runtime_release_or_identity() {
     let (request, record, witness) = fixture();
-    for mutation in 0..6 {
+    for mutation in 0..8 {
         let mut changed = record.clone();
         match mutation {
             0 => changed.state = NativeReservationState::Indeterminate,
@@ -229,7 +229,21 @@ fn provider_success_does_not_replace_original_runtime_release_or_identity() {
                     .unwrap()
                     .codex_source_admission_digest = None
             }
-            _ => changed.observation.as_mut().unwrap().model_provider = "another-provider".into(),
+            5 => changed.observation.as_mut().unwrap().model_provider = "another-provider".into(),
+            6 => {
+                changed
+                    .observation
+                    .as_mut()
+                    .unwrap()
+                    .codex_terminal_correlation_digest = Some(Digest32::zero().to_string())
+            }
+            _ => {
+                changed
+                    .observation
+                    .as_mut()
+                    .unwrap()
+                    .codex_terminal_correlation_digest = Some("not-a-digest".into())
+            }
         }
         assert!(
             validate_root_native_assessment_facts_v1(&request, &changed, &witness, &scope(), 3000)
