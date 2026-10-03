@@ -19,11 +19,11 @@ concurrency:
   group: intuition-source-preflight-${{ github.ref }}
   cancel-in-progress: true
 env:
-  PYTHONDONTWRITEBYTECODE: '1'
-  CARGO_INCREMENTAL: '0'
-  CARGO_PROFILE_DEV_DEBUG: '0'
-  CARGO_PROFILE_TEST_DEBUG: '0'
-  CARGO_BUILD_JOBS: '2'
+  PYTHONDONTWRITEBYTECODE: "1"
+  CARGO_INCREMENTAL: "0"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_BUILD_JOBS: "2"
 jobs:
   windows-lock:
     name: Windows immutable lock, policy and source-state preflight
@@ -36,7 +36,7 @@ jobs:
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
-          toolchain: '1.95.0'
+          toolchain: "1.95.0"
           components: rustfmt,clippy
       - name: Record immutable source identity and verify documentation projection
         shell: bash
@@ -90,7 +90,7 @@ jobs:
           persist-credentials: false
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
-          toolchain: '1.95.0'
+          toolchain: "1.95.0"
           components: rustfmt,clippy
       - name: Run the full POSIX evidence suite without excluding failing tests
         run: python3 -m unittest discover -s scripts/tests -p 'test_intuition*.py' -v
@@ -110,6 +110,7 @@ jobs:
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
           git diff --exit-code
           test -z "$(git ls-files --others --exclude-standard)"
+
 # These platform preflights never replace the required Ubuntu x86 exact-source,
 # deterministic-merge, independent execution or ledger qualification artifacts.
 # No step edits, commits, pushes, promotes or signs acceptance for its candidate.
