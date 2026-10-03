@@ -175,6 +175,31 @@ class KnowledgeGraphQualificationTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             kg.commands("unknown")
 
+    def test_changed_private_owners_each_have_a_nonempty_recorded_group(self):
+        inventory = {
+            label: (argv, minimum)
+            for label, argv, minimum, _ in kg.commands("source-head")
+        }
+        for label, selector in {
+            "agentd-browser": "browser_servo::tests::",
+            "agentd-context": "cognitive_context::tests::",
+            "agentd-learning-sink": "cognitive_retrieval_learning::tests::",
+            "agentd-effect-host": "automation_effect_host::tests::",
+            "agentd-effect-snapshot": "state::control::effect_snapshot_tests::",
+        }.items():
+            with self.subTest(label=label):
+                argv, minimum = inventory[label]
+                self.assertEqual(argv[argv.index("-E") + 1], f"test({selector})")
+                self.assertIn("--lib", argv)
+                self.assertGreater(minimum, 0)
+        control = (ROOT / "codex-rs/hepta-agentd/src/state_control.rs").read_text()
+        self.assertIn('#[path = "state_effect_snapshot_tests.rs"]', control)
+        self.assertIn("mod effect_snapshot_tests;", control)
+        browser = (ROOT / "codex-rs/hepta-agentd/src/browser_servo.rs").read_text()
+        self.assertIn(
+            "fn rejected_sequence_keeps_the_next_expected_frame_unchanged(", browser
+        )
+
     def test_workflow_reaches_suite_and_retains_failures_without_permission_expansion(
         self,
     ):

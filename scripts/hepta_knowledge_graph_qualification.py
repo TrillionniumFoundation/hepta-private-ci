@@ -105,6 +105,81 @@ def commands(lane: str) -> list[tuple[str, list[str], int, int]]:
             1,
             600,
         ),
+        (
+            "agentd-browser",
+            test
+            + [
+                "-p",
+                "codex-hepta-agentd",
+                "--lib",
+                "-E",
+                "test(browser_servo::tests::)",
+                "--test-threads",
+                "1",
+            ],
+            1,
+            2400,
+        ),
+        (
+            "agentd-context",
+            test
+            + [
+                "-p",
+                "codex-hepta-agentd",
+                "--lib",
+                "-E",
+                "test(cognitive_context::tests::)",
+                "--test-threads",
+                "1",
+            ],
+            1,
+            2400,
+        ),
+        (
+            "agentd-learning-sink",
+            test
+            + [
+                "-p",
+                "codex-hepta-agentd",
+                "--lib",
+                "-E",
+                "test(cognitive_retrieval_learning::tests::)",
+                "--test-threads",
+                "1",
+            ],
+            1,
+            2400,
+        ),
+        (
+            "agentd-effect-host",
+            test
+            + [
+                "-p",
+                "codex-hepta-agentd",
+                "--lib",
+                "-E",
+                "test(automation_effect_host::tests::)",
+                "--test-threads",
+                "1",
+            ],
+            1,
+            2400,
+        ),
+        (
+            "agentd-effect-snapshot",
+            test
+            + [
+                "-p",
+                "codex-hepta-agentd",
+                "--lib",
+                "-E",
+                "test(state::control::effect_snapshot_tests::)",
+                "--test-threads",
+                "1",
+            ],
+            1,
+            2400,
+        ),
         # The default profile does not install a production authority host.
         (
             "default-product-profile",
