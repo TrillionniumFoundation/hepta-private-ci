@@ -3,7 +3,7 @@
 use crate::CpuNeuronGenerationPlanV1;
 use crate::CpuNeuronParameterMaterialCandidateV2;
 use crate::CpuNeuronParameterMaterialPlanV2;
-use crate::InstalledCpuSourceV1;
+use crate::initial_cpu_anchor::InstalledCpuSourceV1;
 use codex_hepta_agent_components::intelligence::*;
 use codex_hepta_agent_components::learning_ledger::read_root_review_input;
 use codex_hepta_agentd::AgentdError;
@@ -269,7 +269,7 @@ fn plan(
         path: plan.model_manifest.clone(),
         digest: plan.model_manifest_digest.to_string(),
     };
-    let manifest: crate::CpuNeuronManifestV1 =
+    let manifest: crate::local_cpu_model::CpuNeuronManifestV1 =
         serde_json::from_slice(&read_retained(&manifest_source, 64 * 1024, sources)?)?;
     if manifest.version != 1
         || manifest.model_id != plan.runtime.model_id.as_str()
