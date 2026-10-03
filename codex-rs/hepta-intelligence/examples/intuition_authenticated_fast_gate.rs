@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "this local qualification example uses fixed fixtures and does not grant production authority"
+)]
+
 use std::time::Duration;
 use std::time::Instant;
 

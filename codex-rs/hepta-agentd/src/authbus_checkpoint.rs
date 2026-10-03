@@ -19,6 +19,7 @@ use crate::AgentdIdentity;
 use crate::authbus_trust::invalid;
 
 const CHECKPOINT_SCHEMA_VERSION: u32 = 1;
+#[cfg(unix)]
 const MAX_CHECKPOINT_BYTES: u64 = 4096;
 
 #[derive(Deserialize, Serialize)]

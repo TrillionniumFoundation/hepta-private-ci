@@ -1022,7 +1022,9 @@ def normalize_source() -> bool:
     return workspace_changed or ndu_changed or registry_changed or metadata_changed
 
 
-def verify() -> list[str]:
+def verify(profile: str = "qualification") -> list[str]:
+    if profile not in {"development", "qualification"}:
+        return ["unknown verification profile"]
     failures: list[str] = []
     try:
         workspace_manifest = tomllib.loads(CARGO_MANIFEST.read_text(encoding="utf-8"))
@@ -1127,7 +1129,13 @@ def verify() -> list[str]:
 
     # Source presence cannot hide stale guides or a broken full module index.
     document_check = subprocess.run(
-        [sys.executable, str(ROOT / "scripts/hepta-module-docs.py"), "verify"],
+        [
+            sys.executable,
+            str(ROOT / "scripts/hepta-module-docs.py"),
+            "verify",
+            "--profile",
+            profile,
+        ],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -1155,7 +1163,7 @@ def verify() -> list[str]:
     return failures
 
 
-def emit_status() -> None:
+def emit_status(profile: str) -> None:
     print(
         json.dumps(
             {
@@ -1163,6 +1171,8 @@ def emit_status() -> None:
                 "candidate_identity": STATIC_CANDIDATE_IDENTITY,
                 "implemented_modules": sorted(RUST_PACKAGES),
                 "status": "verified_source_inventory",
+                "verificationProfile": profile,
+                "historicalEvidenceRevalidated": profile == "qualification",
             },
             sort_keys=True,
         )
@@ -1203,7 +1213,10 @@ def main() -> int:
     parser = argparse.ArgumentParser()
     subparsers = parser.add_subparsers(dest="command", required=True)
     subparsers.add_parser("normalize")
-    subparsers.add_parser("verify")
+    source_parser = subparsers.add_parser("verify")
+    source_parser.add_argument(
+        "--profile", choices=("development", "qualification"), default="qualification"
+    )
     receipt_parser = subparsers.add_parser("identity-receipt")
     _add_identity_arguments(receipt_parser)
     receipt_parser.add_argument("--output", required=True)
@@ -1223,7 +1236,8 @@ def main() -> int:
         print(error, file=sys.stderr)
         return 1
 
-    failures = verify()
+    profile = args.profile if args.command == "verify" else "qualification"
+    failures = verify(profile)
     if failures:
         for failure in failures:
             print(f"- {failure}", file=sys.stderr)
@@ -1257,7 +1271,7 @@ def main() -> int:
         )
         return 0
 
-    emit_status()
+    emit_status(profile)
     if args.command == "normalize":
         print(json.dumps({"source_changed": changed}, sort_keys=True))
     return 0

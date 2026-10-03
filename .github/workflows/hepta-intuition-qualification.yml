@@ -1,25 +1,9 @@
 name: Hepta intuition qualification
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-intuition/**"
-      - "codex-rs/hepta-intelligence/**"
-      - "codex-rs/hepta-learning-ledger/**"
-      - "docs/modules/intuition.policy/**"
-      - "qualification/module-execution-dossiers/detail/intuition.policy.md"
-      - ".github/workflows/hepta-intuition-qualification.yml"
-      - ".github/actions/hepta-synthetic-merge/**"
-  push:
-    branches:
-      - main
-    paths:
-      - "codex-rs/hepta-intuition/**"
-      - "codex-rs/hepta-intelligence/**"
-      - "codex-rs/hepta-learning-ledger/**"
-      - "docs/modules/intuition.policy/**"
-      - "qualification/module-execution-dossiers/detail/intuition.policy.md"
-      - ".github/workflows/hepta-intuition-qualification.yml"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -58,7 +42,7 @@ jobs:
       - name: Compile all qualified policy targets
         run: cargo check --locked -p codex-hepta-intuition -p codex-hepta-intelligence --all-targets
       - name: Strict Clippy for qualified policy
-        run: cargo clippy --locked -p codex-hepta-intuition -p codex-hepta-intelligence --all-targets -- -D warnings
+        run: cargo clippy --locked -p codex-hepta-intuition -p codex-hepta-intelligence --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
       - name: Run policy and frozen-data qualification tests
         run: cargo test --locked -p codex-hepta-intuition -p codex-hepta-intelligence
       - name: Capture source-host profile

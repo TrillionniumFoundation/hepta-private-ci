@@ -1,26 +1,9 @@
 name: Lane A foundation truth and native qualification
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-*/**"
-      - "codex-rs/kernel-*/**"
-      - "docs/contracts/**"
-      - "docs/lane-a-foundation/**"
-      - "docs/modules/platform.types/**"
-      - "qualification/module-execution-dossiers/**"
-      - "scripts/lane_a_foundation_core.py"
-      - "scripts/lane_a_foundation_lib.py"
-      - "scripts/verify_lane_a_foundation.py"
-      - "scripts/verify_lane_a_pr_tuple.py"
-      - "scripts/verify_hepta_callers.py"
-      - "scripts/verify_kernel_authority_map_freshness.py"
-      - "qualification/kernel-authority/**"
-      - ".github/workflows/lane-a-foundation.yml"
-      - ".github/actions/hepta-synthetic-merge/action.yml"
-  push:
-    branches:
-      - main
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
   workflow_dispatch:
 
 permissions:

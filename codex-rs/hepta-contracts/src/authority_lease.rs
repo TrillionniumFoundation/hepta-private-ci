@@ -1246,6 +1246,7 @@ mod tests {
         }
     }
 
+    #[allow(clippy::unwrap_used)]
     fn fixture() -> (AuthorityLeaseRegistry, tempfile::TempDir) {
         let directory =
             tempfile::tempdir().unwrap_or_else(|error| panic!("authority test fixture: {error:?}"));

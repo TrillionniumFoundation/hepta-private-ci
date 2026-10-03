@@ -24,9 +24,7 @@ pub struct AuthBusAuthorityStore {
 
 impl AuthBusAuthorityStore {
     pub async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
-        let pool = crate::sqlite_owner::open_durable_pool(path)
-            .await
-            .map_err(storage)?;
+        let pool = crate::sqlite::open_durable_pool(path).await?;
         let quick_check: String = sqlx::query_scalar("PRAGMA quick_check")
             .fetch_one(&pool)
             .await

@@ -3,6 +3,7 @@ use pretty_assertions::assert_eq;
 #[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 
+#[allow(clippy::unwrap_used)]
 fn private_tempdir() -> tempfile::TempDir {
     let directory =
         tempfile::tempdir().unwrap_or_else(|error| panic!("store test fixture: {error:?}"));

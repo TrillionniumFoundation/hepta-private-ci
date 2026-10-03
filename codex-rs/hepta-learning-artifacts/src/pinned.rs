@@ -273,7 +273,18 @@ impl RevalidatingCandidate {
         current: RegistrySnapshotReceipt,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
-        let registry = read_registry_snapshot(snapshot, current)?;
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        // Mirror a host that removes its cache before acquiring the verified
+        // current view: acquisition errors must not leave a usable backup.
+        let registry = match read_registry_snapshot(snapshot, current) {
+            Ok(registry) => registry,
+            Err(error) => {
+                self.unavailable = true;
+                return Err(error.into());
+            }
+        };
         self.with_verified_registry(current, registry, consume)
     }
 }

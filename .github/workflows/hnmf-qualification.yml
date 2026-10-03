@@ -57,6 +57,7 @@ on:
       - "scripts/hepta-hnmf.py"
       - ".github/workflows/hnmf-qualification.yml"
       - "README.md"
+  workflow_call:
 
 permissions:
   contents: read

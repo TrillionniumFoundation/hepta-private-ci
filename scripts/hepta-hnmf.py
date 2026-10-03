@@ -5,6 +5,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import re
 from pathlib import Path
 from typing import Any
 
@@ -16,6 +17,21 @@ except ModuleNotFoundError as error:
     from hepta_metadata import AUTHORITY_KEYS, has_schema_version
 
 ROOT = Path(__file__).resolve().parents[1]
+
+
+def verify_automatic_schedule(workflow: str) -> None:
+    """Require direct automatic coverage until an aggregate caller is proved."""
+    trigger = re.search(r"(?ms)^on:\n(.*?)(?=^\S|\Z)", workflow)
+    need(trigger is not None, "HNMF automatic trigger block")
+    events = trigger.group(1)
+    need(
+        "  pull_request:\n    paths:\n" in events,
+        "HNMF automatic pull-request coverage",
+    )
+    need(
+        "  push:\n    branches:\n      - main\n" in events,
+        "HNMF automatic main coverage",
+    )
 
 
 MODALITIES = [
@@ -557,6 +573,7 @@ def verify() -> int:
     workflow = (ROOT / ".github/workflows/hnmf-qualification.yml").read_text(
         encoding="utf-8"
     )
+    verify_automatic_schedule(workflow)
     for command in [
         "python3 scripts/hepta-hnmf.py verify",
         "cargo fmt --manifest-path qualification/hnmf-reference/Cargo.toml -- --check",
