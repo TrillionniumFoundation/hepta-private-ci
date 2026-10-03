@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "332b6a1c33167046c12d1ec41eba5b4b9b6abd4b",
-    "tree": "6893f0cf76e42444c7414b6fba740386bcafaebe"
+    "commit": "f1d9fda55967a3c88ce856586ee91463f7333994",
+    "tree": "188800e6bd58cbebb9a086b6e7205e65763364cb"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -320,8 +320,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "332b6a1c33167046c12d1ec41eba5b4b9b6abd4b",
-    "tree": "6893f0cf76e42444c7414b6fba740386bcafaebe"
+    "commit": "f1d9fda55967a3c88ce856586ee91463f7333994",
+    "tree": "188800e6bd58cbebb9a086b6e7205e65763364cb"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
@@ -363,6 +363,18 @@
       "observedAtHead": {
         "commit": "1a5587fe7ed8dd1078ba35bc846492369abffd6d",
         "tree": "46f353b60d6a29df1b9090070c23aa237f962883"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "332b6a1c33167046c12d1ec41eba5b4b9b6abd4b",
+        "tree": "6893f0cf76e42444c7414b6fba740386bcafaebe"
+      },
+      "observedAtHead": {
+        "commit": "332b6a1c33167046c12d1ec41eba5b4b9b6abd4b",
+        "tree": "6893f0cf76e42444c7414b6fba740386bcafaebe"
       },
       "disposition": "historical_source_navigation_only",
       "executionEvidenceTransferred": false
