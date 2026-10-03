@@ -57,6 +57,7 @@ jobs:
           python3 -m unittest \
             scripts/test_platform_types_convergence_gates.py \
             scripts/test_platform_types_generated_artifacts.py \
+            scripts/test_platform_types_consumer_paths.py \
             scripts/test_platform_types_candidate_support.py
 
       - name: Verify documentation authority contract
