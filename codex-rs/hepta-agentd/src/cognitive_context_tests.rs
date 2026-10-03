@@ -83,12 +83,14 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
     let current = revalidate(
         &store,
         &owner,
-        &context.snapshot_digest,
-        &context.read_digest,
-        context.omitted_records,
-        &context.items,
-        context.plan.as_ref(),
-        None,
+        crate::cognitive_context::ContextRevalidationInput {
+            snapshot_digest: &context.snapshot_digest,
+            read_digest: &context.read_digest,
+            omitted_records: context.omitted_records,
+            items: &context.items,
+            plan: context.plan.as_ref(),
+        },
+        /*ranker*/ None,
     )
     .await
     .unwrap();
@@ -104,12 +106,14 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
         revalidate(
             &store,
             &owner,
-            &context.snapshot_digest,
-            &context.read_digest,
-            context.omitted_records,
-            &context.items,
-            Some(&tampered_plan),
-            None,
+            crate::cognitive_context::ContextRevalidationInput {
+                snapshot_digest: &context.snapshot_digest,
+                read_digest: &context.read_digest,
+                omitted_records: context.omitted_records,
+                items: &context.items,
+                plan: Some(&tampered_plan)
+            },
+            /*ranker*/ None,
         )
         .await
         .is_err(),
@@ -119,12 +123,14 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
         revalidate(
             &store,
             &owner,
-            &context.snapshot_digest,
-            &"11".repeat(32),
-            context.omitted_records,
-            &context.items,
-            context.plan.as_ref(),
-            None,
+            crate::cognitive_context::ContextRevalidationInput {
+                snapshot_digest: &context.snapshot_digest,
+                read_digest: &"11".repeat(32),
+                omitted_records: context.omitted_records,
+                items: &context.items,
+                plan: context.plan.as_ref()
+            },
+            /*ranker*/ None,
         )
         .await
         .is_err(),
@@ -148,12 +154,14 @@ async fn context_reads_real_owner_content_and_removes_committed_tombstones() {
         revalidate(
             &store,
             &owner,
-            &context.snapshot_digest,
-            &context.read_digest,
-            context.omitted_records,
-            &context.items,
-            context.plan.as_ref(),
-            None,
+            crate::cognitive_context::ContextRevalidationInput {
+                snapshot_digest: &context.snapshot_digest,
+                read_digest: &context.read_digest,
+                omitted_records: context.omitted_records,
+                items: &context.items,
+                plan: context.plan.as_ref()
+            },
+            /*ranker*/ None,
         )
         .await
         .is_err(),
@@ -248,12 +256,14 @@ async fn final_use_binds_complete_owner_cut_not_only_memory_snapshot() {
         revalidate(
             &store,
             &owner,
-            &context.snapshot_digest,
-            &context.read_digest,
-            context.omitted_records,
-            &context.items,
-            context.plan.as_ref(),
-            None,
+            crate::cognitive_context::ContextRevalidationInput {
+                snapshot_digest: &context.snapshot_digest,
+                read_digest: &context.read_digest,
+                omitted_records: context.omitted_records,
+                items: &context.items,
+                plan: context.plan.as_ref()
+            },
+            /*ranker*/ None,
         )
         .await
         .is_err(),

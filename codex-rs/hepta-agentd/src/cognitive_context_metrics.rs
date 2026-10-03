@@ -162,7 +162,7 @@ fn increment_window_failure_count(window: u64) -> u64 {
 fn record_windowed_revalidation_alert(reason: &'static str) {
     let failures_in_window = increment_window_failure_count(current_alert_window());
     if failures_in_window >= REVALIDATION_ALERT_THRESHOLD_PER_MINUTE
-        && failures_in_window % REVALIDATION_ALERT_THRESHOLD_PER_MINUTE == 0
+        && failures_in_window.is_multiple_of(REVALIDATION_ALERT_THRESHOLD_PER_MINUTE)
     {
         saturating_add(&REVALIDATION_ALERTS, 1);
         emit_counter(REVALIDATION_ALERTS_METRIC, 1, &[("reason", reason)]);

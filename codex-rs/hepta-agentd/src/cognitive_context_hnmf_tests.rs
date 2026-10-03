@@ -258,13 +258,15 @@ async fn final_use_revalidation_rejects_changed_hnmf_context() {
     let accepted = crate::cognitive_context::revalidate_with_retrieval_context(
         &store,
         &owner,
-        &snapshot.snapshot_digest,
-        &snapshot.read_digest,
-        snapshot.omitted_records,
-        &snapshot.items,
-        snapshot.plan.as_ref(),
-        None,
-        1,
+        crate::cognitive_context::ContextRevalidationInput {
+            snapshot_digest: &snapshot.snapshot_digest,
+            read_digest: &snapshot.read_digest,
+            omitted_records: snapshot.omitted_records,
+            items: &snapshot.items,
+            plan: snapshot.plan.as_ref(),
+        },
+        /*ranker*/ None,
+        /*body_generation*/ 1,
         Some(&stable),
     )
     .await
@@ -283,13 +285,15 @@ async fn final_use_revalidation_rejects_changed_hnmf_context() {
     let rejected = crate::cognitive_context::revalidate_with_retrieval_context(
         &store,
         &owner,
-        &snapshot.snapshot_digest,
-        &snapshot.read_digest,
-        snapshot.omitted_records,
-        &snapshot.items,
-        snapshot.plan.as_ref(),
-        None,
-        1,
+        crate::cognitive_context::ContextRevalidationInput {
+            snapshot_digest: &snapshot.snapshot_digest,
+            read_digest: &snapshot.read_digest,
+            omitted_records: snapshot.omitted_records,
+            items: &snapshot.items,
+            plan: snapshot.plan.as_ref(),
+        },
+        /*ranker*/ None,
+        /*body_generation*/ 1,
         Some(&changed),
     )
     .await;
