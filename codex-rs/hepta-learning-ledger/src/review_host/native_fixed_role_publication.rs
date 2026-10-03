@@ -76,9 +76,12 @@ pub(super) struct FixedRoleExecutionStatusV1 {
     pub output_digest: String,
 }
 
-fn root() -> ReviewResult<()> {
+fn root(purpose: Option<OriginalFixedRolePurposeV1>) -> ReviewResult<()> {
     let status = std::fs::read_to_string("/proc/self/status")?;
     for field in ["Uid:", "Gid:"] {
+        if field == "Gid:" && purpose.is_none_or(|value| value == OriginalFixedRolePurposeV1::FrozenGenerator) {
+            continue;
+        }
         let ids = status
             .lines()
             .find_map(|line| line.strip_prefix(field))
@@ -95,7 +98,7 @@ fn root() -> ReviewResult<()> {
 /// Sole original create_new consumption, durable before any role effect. A
 /// second caller cannot obtain these descriptors or dispatch this same slot.
 pub fn reserve_original_fixed_role_output_v1(output: &Path) -> ReviewResult<(File, File)> {
-    root()?;
+    root(None)?;
     let output_file = create_private(output, &[])?;
     let error_file = create_private(&output.with_extension("stderr.log"), &[])?;
     Ok((output_file, error_file))
@@ -106,7 +109,7 @@ pub fn observe_original_fixed_role_publication_v1(
     request_digest: Digest32,
     program_digest: Digest32,
 ) -> ReviewResult<Option<Vec<u8>>> {
-    root()?;
+    root(Some(purpose))?;
     if request_digest.is_zero() || program_digest.is_zero() {
         return Err("fixed role original identity absent".into());
     }
@@ -151,7 +154,7 @@ pub fn execute_original_fixed_role_publication_v1(
     dispatch: impl FnOnce(File, File) -> ReviewResult<ExitStatus>,
     verify: impl Fn(&[u8]) -> ReviewResult<()>,
 ) -> ReviewResult<Option<Vec<u8>>> {
-    root()?;
+    root(Some(purpose))?;
     if request_digest.is_zero() || program_digest.is_zero() {
         return Err("fixed role original identity absent".into());
     }

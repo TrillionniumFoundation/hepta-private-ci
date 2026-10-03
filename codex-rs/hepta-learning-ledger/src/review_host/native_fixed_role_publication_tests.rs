@@ -1,4 +1,41 @@
 use super::*;
+use std::os::unix::process::CommandExt;
+
+#[test]
+#[ignore = "requires actual UID0 parent and kernel child enrolled nonzero Group"]
+fn actual_root_original_frozen_group_survives_shared_slot_and_new_purpose_denies() {
+    const CHILD: &str = "HEPTA_FROZEN_SLOT_ENROLLED_GROUP_FIXTURE_CHILD";
+    if std::env::var_os(CHILD).is_none() {
+        let output = std::process::Command::new(std::env::current_exe().unwrap())
+            .args(["--exact", "review_host::native_fixed_role_publication::tests::actual_root_original_frozen_group_survives_shared_slot_and_new_purpose_denies", "--ignored", "--nocapture"])
+            .env(CHILD, "1")
+            .gid(65534)
+            .output().unwrap();
+        assert!(output.status.success(), "{}{}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
+        return;
+    }
+    let status = std::fs::read_to_string("/proc/self/status").unwrap();
+    assert!(status.lines().find(|line| line.starts_with("Uid:")).unwrap().split_whitespace().skip(1).all(|value| value == "0"));
+    assert!(status.lines().find(|line| line.starts_with("Gid:")).unwrap().split_whitespace().skip(1).all(|value| value == "65534"));
+    assert!(root(None).is_ok());
+    assert!(root(Some(OriginalFixedRolePurposeV1::FrozenGenerator)).is_ok());
+    assert!(root(Some(OriginalFixedRolePurposeV1::CycleSelector)).is_err());
+    let directory = tempfile::tempdir().unwrap();
+    let output = directory.path().join("original-g.output");
+    let request = Digest32::of_bytes(b"original exact group request");
+    let program = Digest32::of_bytes(b"original real terminal program");
+    let completed = execute_original_fixed_role_publication_v1(
+        OriginalFixedRolePurposeV1::FrozenGenerator, &output, request, program,
+        |mut stdout, _stderr| {
+            use std::io::Write;
+            stdout.write_all(b"original full frozen group publication")?;
+            stdout.sync_all()?;
+            Ok(std::process::Command::new("/usr/bin/true").status()?)
+        }, |bytes| if bytes == b"original full frozen group publication" { Ok(()) } else { Err("whole original bytes changed".into()) },
+    ).unwrap().unwrap();
+    assert_eq!(completed, b"original full frozen group publication");
+    assert_eq!(observe_original_fixed_role_publication_v1(OriginalFixedRolePurposeV1::FrozenGenerator, &output, request, program).unwrap(), Some(completed));
+}
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
 
@@ -17,7 +54,7 @@ fn ordinary_agent_cannot_consume_any_fixed_role_slot() {
 #[ignore = "requires actual UID/GID 0; original output slot only, no role signing claim"]
 fn actual_root_fixed_role_completion_is_cold_exact_and_unknown_never_relaunches() -> ReviewResult<()>
 {
-    root()?;
+    root(Some(OriginalFixedRolePurposeV1::PairedEvaluator))?;
     let directory = tempfile::tempdir()?;
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
     let output = directory.path().join("original-e.json");
