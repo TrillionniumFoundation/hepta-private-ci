@@ -90,7 +90,7 @@ impl RegisteredOperationalModelBindingV3 {
         Ok(Digest32::of_bytes(&bytes))
     }
 }
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct OwnerSources {
     pub root: PathBuf,
@@ -125,13 +125,13 @@ impl OwnerSources {
         )?)
     }
 }
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct ManifestSource {
     pub source: Source,
     pub admission_digest: String,
 }
-#[derive(Deserialize)]
+#[derive(Serialize, Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Registration {
     pub subject: String,
@@ -245,6 +245,37 @@ pub fn inspect_registered_artifact_current_material_v3(
     }
     facts.revalidate_current(now)?;
     Ok(facts)
+}
+
+/// Project the complete protected registration with the actual CURRENT ACK.
+/// The original reader still authenticates every manifest and material field;
+/// this returns public bytes without publishing, repairing or signing them.
+pub fn project_registered_artifact_current_configuration_v3(
+    path: &Path,
+    pin: Digest32,
+    plan: &NeuronGenerationMaterialV2,
+    subject: &StableId,
+    now: u64,
+) -> HostResult<Vec<u8>> {
+    let source = Source {
+        path: path.to_owned(),
+        digest: pin.to_string(),
+    };
+    let bytes = source.read(64 * 1024)?;
+    let mut registration: Registration = serde_json::from_slice(&bytes)?;
+    let owner = registration.owner.open(now)?;
+    let acknowledgement = owner.current_publication_acknowledgement(now)?;
+    registration.publication_operation_id = acknowledgement.operation_id.to_string();
+    let facts = inspect_current_material(&registration, plan, subject, now)?;
+    if facts.acknowledgement != acknowledgement || source.read(64 * 1024)? != bytes {
+        return Err("whole current registration projection changed".into());
+    }
+    facts.revalidate_current(now)?;
+    let projected = serde_json::to_vec(&registration)?;
+    if projected.len() > 64 * 1024 {
+        return Err("complete current registration exceeds original bound".into());
+    }
+    Ok(projected)
 }
 fn inspect_current_material(
     registration: &Registration,

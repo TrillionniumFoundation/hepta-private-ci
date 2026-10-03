@@ -753,6 +753,8 @@ pub use operational_registered_model_v3::RegisteredOperationalModelBindingV3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use operational_registered_model_v3::inspect_registered_artifact_current_material_v3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use operational_registered_model_v3::project_registered_artifact_current_configuration_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use operational_registered_program_v3::verify_registered_operational_program_v3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use operational_registered_reader_v3::VerifiedRegisteredOperationalEvaluationV3;

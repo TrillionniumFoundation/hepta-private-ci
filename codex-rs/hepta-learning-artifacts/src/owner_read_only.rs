@@ -27,6 +27,40 @@ impl ReadOnlyArtifactCurrentOwnerV1 {
         Ok((context.registry_snapshot_path(receipt), receipt))
     }
 
+    /// Discover the complete original ACK for this exact protected CURRENT.
+    /// Registry event names cannot substitute for the publication operation.
+    pub fn current_publication_acknowledgement(
+        &self,
+        now: u64,
+    ) -> Result<ArtifactOwnerPublicationCheckpointV1, ArtifactOwnerHostError> {
+        let receipt = self.current_registry_view(now)?.receipt();
+        let head = self.protected_current_head(now)?;
+        let context = ArtifactOwnerReadContext {
+            root: &self.root,
+            verifier: &self.verifier,
+            required_current_head: &self.required,
+        };
+        let mut acknowledged = None;
+        for checkpoint in records::all_checkpoints(&context)? {
+            if checkpoint.phase == ArtifactPublicationPhaseV1::Acknowledged
+                && checkpoint.registry_receipt == Some(receipt)
+            {
+                let original = self
+                    .acknowledged_publication(&checkpoint.operation_id, &head, now)?
+                    .ok_or(ArtifactOwnerHostError::CheckpointMissing)?;
+                if original != checkpoint || acknowledged.replace(original).is_some() {
+                    return Err(ArtifactOwnerHostError::CheckpointMismatch);
+                }
+            }
+        }
+        if self.current_registry_view(now)?.receipt() != receipt
+            || self.protected_current_head(now)? != head
+        {
+            return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+        }
+        acknowledged.ok_or(ArtifactOwnerHostError::CheckpointMissing)
+    }
+
     /// Inspect exact V2 dataset membership in an authenticated historical
     /// registry prefix. Historical membership never restores eligibility.
     pub fn historical_dataset_members(

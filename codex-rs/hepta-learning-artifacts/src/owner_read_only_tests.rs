@@ -630,6 +630,20 @@ fn root_readonly_completed_ancestor_ack_survives_real_successor_publication_and_
     let reader =
         ReadOnlyArtifactCurrentOwnerV1::open(&root, trust.clone(), withdrawals.clone(), now)
             .fixture("actual current reader");
+    let current_ack = owner
+        .recover_publication(&id("root-native-history-successor"))
+        .fixture("actual complete successor recovery")
+        .fixture("existing successor operation")
+        .checkpoint;
+    for _ in 0..2 {
+        assert_eq!(
+            reader
+                .current_publication_acknowledgement(now)
+                .fixture("discover full actual CURRENT ACK without assuming operation"),
+            current_ack
+        );
+    }
+    assert!(reader.current_publication_acknowledgement(now + 60001).is_err());
     assert_eq!(
         reader
             .acknowledged_publication(&id("root-native-history-baseline"), &old_head, now)
@@ -665,6 +679,7 @@ fn root_readonly_completed_ancestor_ack_survives_real_successor_publication_and_
     let current_frontier = fs::read(root.join("READ-CURRENT")).fixture("new frontier");
     fs::write(root.join("READ-CURRENT"), &old_frontier)
         .fixture("isolated real rollback counterexample");
+    assert!(reader.current_publication_acknowledgement(now).is_err());
     assert!(
         ReadOnlyArtifactCurrentOwnerV1::open(&root, trust.clone(), withdrawals.clone(), now)
             .is_err()
@@ -679,6 +694,11 @@ fn root_readonly_completed_ancestor_ack_survives_real_successor_publication_and_
         cold.acknowledged_publication(&id("root-native-history-baseline"), &old_head, now)
             .fixture("cold actual historical ACK"),
         Some(old_ack)
+    );
+    assert_eq!(
+        cold.current_publication_acknowledgement(now)
+            .fixture("cold current ACK differs from retained historical ACK"),
+        current_ack
     );
     drop(cold);
     fs::remove_dir_all(&root).fixture("isolated cleanup");
