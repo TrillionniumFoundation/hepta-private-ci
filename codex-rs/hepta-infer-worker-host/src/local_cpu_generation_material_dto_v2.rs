@@ -239,10 +239,10 @@ mod digest {
 mod generation {
     use super::*;
     pub fn serialize<S: serde::Serializer>(
-        value: &Generation,
+        value: impl std::borrow::Borrow<Generation>,
         serializer: S,
     ) -> Result<S::Ok, S::Error> {
-        serializer.serialize_u64(value.get())
+        serializer.serialize_u64(value.borrow().get())
     }
     pub fn deserialize<'de, D: serde::Deserializer<'de>>(
         deserializer: D,
