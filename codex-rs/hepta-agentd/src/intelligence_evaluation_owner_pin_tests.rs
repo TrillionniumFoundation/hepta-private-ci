@@ -87,7 +87,7 @@ async fn evaluator_session_rejects_a_different_snapshot_pin_before_worker_admiss
             )
             .await,
         Err(AgentdIntelligenceProductError::Canonical(
-            CanonicalIntelligenceError::StaleOwner(owner)
+            CanonicalIntelligenceError::KeyDrift(owner)
         )) if owner == id("learning.eval")
     ));
 }
@@ -139,7 +139,7 @@ async fn restoring_manifest_a_cannot_admit_evaluator_b_proof_bound_to_context_a(
             &mut restoring,
             &id("learning.eval"),
         ),
-        Err(CanonicalIntelligenceError::StaleOwner(id("learning.eval")))
+        Err(CanonicalIntelligenceError::KeyDrift(id("learning.eval")))
     );
     assert!(restoring.restored);
     source

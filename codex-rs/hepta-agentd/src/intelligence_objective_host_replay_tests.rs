@@ -332,7 +332,7 @@ async fn compiler_explicit_abstain_parallel_and_reopened_replays_keep_original_p
     expired.expires_at_ms = 0;
     assert!(matches!(
         reopened.submit(&fixture.state, expired, /*current_generation*/ 2).await,
-        Err(AgentdError::Invalid(message)) if message == "objective expiry must be within five minutes"
+        Err(AgentdError::Invalid(message)) if message == "AuthBus text: objective expiry must be within five minutes"
     ));
     let trust_path = identity.home_root.join("objective-trust.json");
     let mut trust: serde_json::Value =
@@ -342,7 +342,7 @@ async fn compiler_explicit_abstain_parallel_and_reopened_replays_keep_original_p
     write_private(&trust_path, &trust);
     assert!(matches!(
         reopened.submit(&fixture.state, request.clone(), /*current_generation*/ 2).await,
-        Err(AgentdError::Invalid(message)) if message.starts_with("objective signature:")
+        Err(AgentdError::Invalid(message)) if message.starts_with("AuthBus text: objective signature:")
     ));
     trust["revoked"] = serde_json::json!(false);
     write_private(&trust_path, &trust);
@@ -359,7 +359,7 @@ async fn compiler_explicit_abstain_parallel_and_reopened_replays_keep_original_p
         .expect("Draining 3");
     assert!(matches!(
         reopened.submit(&fixture.state, request, /*current_generation*/ 2).await,
-        Err(AgentdError::Invalid(message)) if message == "Agent generation is not ready"
+        Err(AgentdError::Invalid(message)) if message == "AuthBus text: Agent generation is not ready"
     ));
     assert_eq!(fixture.provider.calls.load(Ordering::Acquire), 0);
     assert_eq!(

@@ -93,7 +93,6 @@ use codex_hepta_prompt_optimizer::OptimizationRequest;
 use codex_hepta_prompt_optimizer::optimize;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::Verifier;
