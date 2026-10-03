@@ -89,15 +89,15 @@ The native store is `DurablePromptRegistry`; `PromptRegistry` is its determinist
 in-memory state image. Use the durable API for owner publication. The internal
 `register_realization_v2` metadata helper is not a production payload writer.
 
-| Component | Implemented surface | Invariant |
-| --- | --- | --- |
-| `lib.rs` | Factor identity, lifecycle, relations, graph-source image | Immutable factor semantics; terminal retirement/revocation; one revision per change |
-| `admission.rs` | Reviewer signature verification and final-use binding | Exact factor/scope/evidence; separately configured trust; expiring single-use mutation grants |
-| `v2.rs` | Model tuple, snapshot, compatible set | Exact model ID/version and all profile digests; canonical bounded set; required factor coverage |
-| `delivery.rs` | Payload registration, supersession, dereference | Exact stored bytes/digest; one active realization per complete profile; current snapshot/lifecycle |
-| `durable.rs` / `durable_payloads.rs` | V1/V2 migration, V3 publication and reopen | Single owner lock; semantic replay validation; immutable committed extents |
-| `durable_recovery.rs` | Exact-cut recovery anchor and anchored reopen | Independently supplied current cut must match before migration or payload-tail cleanup |
-| `protocol.rs` | `PromptFactorV1` / `PromptRealizationV1` JSON codecs | Bounded input, canonical dimensions, unknown/duplicate critical member rejection |
+| Component                            | Implemented surface                                       | Invariant                                                                                          |
+| ------------------------------------ | --------------------------------------------------------- | -------------------------------------------------------------------------------------------------- |
+| `lib.rs`                             | Factor identity, lifecycle, relations, graph-source image | Immutable factor semantics; terminal retirement/revocation; one revision per change                |
+| `admission.rs`                       | Reviewer signature verification and final-use binding     | Exact factor/scope/evidence; separately configured trust; expiring single-use mutation grants      |
+| `v2.rs`                              | Model tuple, snapshot, compatible set                     | Exact model ID/version and all profile digests; canonical bounded set; required factor coverage    |
+| `delivery.rs`                        | Payload registration, supersession, dereference           | Exact stored bytes/digest; one active realization per complete profile; current snapshot/lifecycle |
+| `durable.rs` / `durable_payloads.rs` | V1/V2 migration, V3 publication and reopen                | Single owner lock; semantic replay validation; immutable committed extents                         |
+| `durable_recovery.rs`                | Exact-cut recovery anchor and anchored reopen             | Independently supplied current cut must match before migration or payload-tail cleanup             |
+| `protocol.rs`                        | `PromptFactorV1` / `PromptRealizationV1` JSON codecs      | Bounded input, canonical dimensions, unknown/duplicate critical member rejection                   |
 
 1. Register an immutable draft factor. Validate bounded semantics before insertion;
    registration alone grants no instruction or selection authority.
@@ -258,6 +258,15 @@ uncertain post-rename durability also retains the marker. This cleanup addresses
 observed pre-publication failures, not automatic repair after an arbitrary crash.
 Missing committed metadata behind an existing owner marker remains corrupt.
 
+While an owner is open, authoritative entry points also verify the exact selected
+metadata bytes and every selected payload extent. Missing, truncated or changed
+bytes poison that owner before it returns a view, acknowledges an unchanged
+retry, invokes a mutation, or claims a final-use grant. The failed check performs
+no repair. Restoring bytes does not clear poison; explicit reopen is required.
+An unselected payload tail remains outside the committed image and is not trimmed
+by reads or unchanged retries. This process-local check does not establish that
+an independently restored backup is current.
+
 ## 7. Runtime, concurrency and transaction model
 
 The [current native implementation](../../../qualification/module-execution-dossiers/detail/prompt.registry.md#8-current-native-implementation) identifies the actual state owner, in-memory versus persistent surfaces, and lock/transaction boundary. Use that implementation scope when composing the module; target state-machine operations are identified in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md).
@@ -323,6 +332,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/prompt.registry.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-prompt-registry/src/lib.rs](../../../codex-rs/hepta-prompt-registry/src/lib.rs) and the linked implementation components.
 
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
+
+Live integrity verification streams with 32-KiB hash scratch space and reads at
+most the bounded metadata file plus selected payload prefix (each capped at
+32 MiB, with the payload header and one metadata overflow-probe byte in addition). It is linear in selected bytes,
+not a constant-time hot read. No payload rewrite is introduced. The
+[live-integrity audit](LIVE_INTEGRITY_AUDIT_2026-10-03.md) records the local fixture
+and preserves target-host latency and scale acceptance as open gates.
 
 ## 11. Observability and operations
 
@@ -647,23 +663,23 @@ Ordinary authorized coding identifies the Git baseline, relevant contracts, owne
 
 This receipt records repository source bindings for the current documentation candidate. It is navigation evidence only; it does not claim product composition, deployment, or external effect authority.
 
-| Operation | Native symbol | Source path | Tests |
-|---|---|---|---|
-| `durablepromptregistry` | `DurablePromptRegistry` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
-| `register_factor` | `register_factor` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
-| `admit_factor_final_use` | `admit_factor_final_use` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
-| `register_realization_payload_final_use_v2` | `register_realization_payload_final_use_v2` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
-| `retire_factor_final_use` | `retire_factor_final_use` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
-| `revoke_factor_final_use` | `revoke_factor_final_use` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
-| `snapshot_v2` | `snapshot_v2` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/v2_tests.rs` |
-| `read_compatible_v2` | `read_compatible_v2` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/v2_tests.rs` |
-| `dereference_realization_v2` | `dereference_realization_v2` | `codex-rs/hepta-prompt-registry/src/durable.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
-| `promptfactorv1` | `PromptFactorV1` | `codex-rs/hepta-prompt-registry/src/protocol.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
-| `promptrealizationv1` | `PromptRealizationV1` | `codex-rs/hepta-prompt-registry/src/protocol.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
-| `factor_graph_source_v1` | `factor_graph_source_v1` | `codex-rs/hepta-prompt-registry/src/lib.rs` | `codex-rs/hepta-prompt-registry/src/durable.rs` |
-| `promptregistryrecoveryanchor` | `PromptRegistryRecoveryAnchor` | `codex-rs/hepta-prompt-registry/src/durable_recovery.rs` | `codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs` |
-| `recovery_anchor` | `recovery_anchor` | `codex-rs/hepta-prompt-registry/src/durable_recovery.rs` | `codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs` |
-| `open_state_dir_with_recovery_anchor` | `open_state_dir_with_recovery_anchor` | `codex-rs/hepta-prompt-registry/src/durable_recovery.rs` | `codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs` |
+| Operation                                   | Native symbol                               | Source path                                              | Tests                                                          |
+| ------------------------------------------- | ------------------------------------------- | -------------------------------------------------------- | -------------------------------------------------------------- |
+| `durablepromptregistry`                     | `DurablePromptRegistry`                     | `codex-rs/hepta-prompt-registry/src/durable.rs`          | `codex-rs/hepta-prompt-registry/src/durable.rs`                |
+| `register_factor`                           | `register_factor`                           | `codex-rs/hepta-prompt-registry/src/durable.rs`          | `codex-rs/hepta-prompt-registry/src/durable.rs`                |
+| `admit_factor_final_use`                    | `admit_factor_final_use`                    | `codex-rs/hepta-prompt-registry/src/durable.rs`          | `codex-rs/hepta-prompt-registry/src/durable.rs`                |
+| `register_realization_payload_final_use_v2` | `register_realization_payload_final_use_v2` | `codex-rs/hepta-prompt-registry/src/durable.rs`          | `codex-rs/hepta-prompt-registry/src/durable.rs`                |
+| `retire_factor_final_use`                   | `retire_factor_final_use`                   | `codex-rs/hepta-prompt-registry/src/durable.rs`          | `codex-rs/hepta-prompt-registry/src/durable.rs`                |
+| `revoke_factor_final_use`                   | `revoke_factor_final_use`                   | `codex-rs/hepta-prompt-registry/src/durable.rs`          | `codex-rs/hepta-prompt-registry/src/durable.rs`                |
+| `snapshot_v2`                               | `snapshot_v2`                               | `codex-rs/hepta-prompt-registry/src/durable.rs`          | `codex-rs/hepta-prompt-registry/src/v2_tests.rs`               |
+| `read_compatible_v2`                        | `read_compatible_v2`                        | `codex-rs/hepta-prompt-registry/src/durable.rs`          | `codex-rs/hepta-prompt-registry/src/v2_tests.rs`               |
+| `dereference_realization_v2`                | `dereference_realization_v2`                | `codex-rs/hepta-prompt-registry/src/durable.rs`          | `codex-rs/hepta-prompt-registry/src/durable.rs`                |
+| `promptfactorv1`                            | `PromptFactorV1`                            | `codex-rs/hepta-prompt-registry/src/protocol.rs`         | `codex-rs/hepta-prompt-registry/src/durable.rs`                |
+| `promptrealizationv1`                       | `PromptRealizationV1`                       | `codex-rs/hepta-prompt-registry/src/protocol.rs`         | `codex-rs/hepta-prompt-registry/src/durable.rs`                |
+| `factor_graph_source_v1`                    | `factor_graph_source_v1`                    | `codex-rs/hepta-prompt-registry/src/lib.rs`              | `codex-rs/hepta-prompt-registry/src/durable.rs`                |
+| `promptregistryrecoveryanchor`              | `PromptRegistryRecoveryAnchor`              | `codex-rs/hepta-prompt-registry/src/durable_recovery.rs` | `codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs` |
+| `recovery_anchor`                           | `recovery_anchor`                           | `codex-rs/hepta-prompt-registry/src/durable_recovery.rs` | `codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs` |
+| `open_state_dir_with_recovery_anchor`       | `open_state_dir_with_recovery_anchor`       | `codex-rs/hepta-prompt-registry/src/durable_recovery.rs` | `codex-rs/hepta-prompt-registry/src/durable_recovery_tests.rs` |
 
 - Source identity: `sourceBase` is recorded in `IMPLEMENTATION_MAP.json`.
 - Consumer callsites and durable owner stores remain explicit follow-up evidence when not listed above.
