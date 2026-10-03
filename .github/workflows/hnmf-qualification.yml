@@ -111,6 +111,12 @@ jobs:
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: python3 qualification/cognitive-types-v2/verify_vectors.py
 
+      - name: Install workspace-pinned Rust components
+        id: workspace_toolchain_install
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: python3 ../qualification/cognitive-types-v1/install_workspace_toolchain.py
+
       - name: Verify workspace-pinned Rust toolchain
         id: check_05
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
@@ -410,6 +416,12 @@ jobs:
           CANDIDATE_KIND: ${{ matrix.candidate }}
         run: python3 qualification/cognitive-types-v1/verify_candidate.py
 
+      - name: Install workspace-pinned Rust components
+        id: workspace_toolchain_install
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: python3 ../qualification/cognitive-types-v1/install_workspace_toolchain.py
+
       - name: Verify workspace-pinned Rust toolchain
         id: workspace_toolchain
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
@@ -511,6 +523,12 @@ jobs:
           BASE_REF: ${{ github.base_ref || github.ref_name }}
           CANDIDATE_KIND: ${{ matrix.candidate }}
         run: python3 qualification/cognitive-types-v1/verify_candidate.py
+
+      - name: Install workspace-pinned Rust components
+        id: workspace_toolchain_install
+        if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
+        working-directory: codex-rs
+        run: python3 ../qualification/cognitive-types-v1/install_workspace_toolchain.py
 
       - name: Verify workspace-pinned Rust toolchain
         id: workspace_toolchain
