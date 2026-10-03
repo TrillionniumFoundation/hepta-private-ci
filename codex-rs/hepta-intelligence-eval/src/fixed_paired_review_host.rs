@@ -37,6 +37,16 @@ struct Config {
     distribution_generation: u64,
     authority_epoch: u64,
     inaccessible_paths: Vec<PathBuf>,
+    #[serde(default)]
+    self_iteration_consumer: Option<IterationConsumer>,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct IterationConsumer {
+    path: PathBuf,
+    generator_uid: u32,
+    canonical_envelope_digest: String,
 }
 
 /// Run the fixed independently admitted E program on an immutable original G/O
@@ -142,7 +152,7 @@ pub fn run_fixed_paired_review_evaluator(path: &Path) -> HostResult<()> {
         unlearning_receipt_digest: execution.observations.cut.unlearning_receipt_digest,
     };
     let bundle = crate::paired_supervised_qualification::paired_bundle(&execution, &context)?;
-    let roles = execution
+    let roles: Vec<_> = execution
         .registration
         .plan
         .metrics
@@ -153,7 +163,7 @@ pub fn run_fixed_paired_review_evaluator(path: &Path) -> HostResult<()> {
         })
         .collect();
     let payload = paired_evaluation_signing_payload_v1(&execution, &context)?;
-    let decision = decide_independently_v2(bundle.clone(), roles, now_ms()?)?;
+    let decision = decide_independently_v2(bundle.clone(), roles.clone(), now_ms()?)?;
     // Final source and clock checks precede the one signing effect. No caller
     // success field substitutes for the Root runner's original held-CAS check.
     if read_root_review_input(path, 32 * 1024)? != config_bytes
@@ -206,26 +216,122 @@ pub fn run_fixed_paired_review_evaluator(path: &Path) -> HostResult<()> {
             .verifier()
             .verify(LearningEvidenceRoleV1::Evaluator, &evidence, &payload, now)?;
     codex_hepta_learning_ledger::verify_signed_independent_roles_v1(&observer, &evaluator, now)?;
-    println!(
-        "{}",
-        serde_json::json!({
-            "schema":"hepta.fixed-paired-independent-review.v1",
-            "policy_config_digest":Digest32::of_bytes(&config_bytes).to_string(),
-            "publication_digest":Digest32::of_bytes(&publication_bytes).to_string(),
-            "execution_digest":execution.execution_digest().to_string(),
-            "profile_digest":execution.registration.plan.profile_digest().to_string(),
-            "decision_digest":decision.evidence_digest.to_string(),
-            "disposition":match decision.disposition {
-                IndependentEvaluationDispositionV1::EligibleForIndependentSelection=>"eligible_for_original_owner_review",
-                IndependentEvaluationDispositionV1::Ineligible=>"rejected",
-                IndependentEvaluationDispositionV1::InsufficientEvidence=>"insufficient_evidence",
-            },
-            "failed_metrics":decision.failed_metrics.iter().map(ToString::to_string).collect::<Vec<_>>(),
-            "evaluator_signed_evidence":ReviewEvidenceWireV1::from_native(&evidence),
-            "evaluator_uid":config.uid,"evaluator_gid":config.gid,"evaluator_cgroup":cgroup,
-            "original_custody_verification_required":true,"qualified":false,
-            "authority_grants_any":false,"production_activation":false,
-        })
-    );
+    let cycle_transport = if let Some(port) = &config.self_iteration_consumer {
+        if port.generator_uid == config.uid {
+            return Err("independent E cannot own the Generator publication port".into());
+        }
+        let consumer_bytes = read_self_iteration_role_input_v1(
+            &port.path,
+            port.generator_uid,
+            MAX_SELF_ITERATION_FROZEN_CONSUMER_BYTES,
+        )?;
+        let consumer =
+            decode_self_iteration_frozen_consumer_v1(&consumer_bytes, &bundle, &trust, now)?;
+        if consumer.canonical_envelope_digest() != Some(port.canonical_envelope_digest.parse()?) {
+            return Err("original independently installed canonical window changed".into());
+        }
+        codex_hepta_learning_ledger::verify_signed_independent_roles_v1(
+            consumer.generator(),
+            &evaluator,
+            now,
+        )?;
+        let frozen = consumer.frozen_digest();
+        let expires_at = consumer.expires_at();
+        // The stable installed port carries the original G's exact signed
+        // bytes. Root need not rewrite this policy after each model turn.
+        let mut current = || -> HostResult<u64> {
+            if read_root_review_input(path, 32 * 1024)? != config_bytes
+                || read_root_review_input(&config.publication_path, MAX_REVIEW_PUBLICATION_BYTES)?
+                    != publication_bytes
+            {
+                return Err("original paired cycle inputs changed before signing".into());
+            }
+            if read_self_iteration_role_input_v1(
+                &port.path,
+                port.generator_uid,
+                MAX_SELF_ITERATION_FROZEN_CONSUMER_BYTES,
+            )? != consumer_bytes
+            {
+                return Err("original G frozen consumer changed before signing".into());
+            }
+            let current_now = clock.sample_registered(&trust, &execution.registration)?;
+            execution.verify_current(trust.verifier(), current_now)?;
+            decode_self_iteration_frozen_consumer_v1(
+                &consumer_bytes,
+                &bundle,
+                &trust,
+                current_now,
+            )?;
+            Ok(current_now)
+        };
+        let mut bundle_evidence = evidence.clone();
+        bundle_evidence.evidence_id = StableId::new(format!("fixed.paired.cycle.bundle.{frozen}"))?;
+        bundle_evidence.payload_digest =
+            Digest32::of_bytes(&evaluation_signing_payload_v2(&bundle, &roles)?);
+        bundle_evidence.issued_at = current()?;
+        bundle_evidence.expires_at = evidence.expires_at.min(expires_at);
+        bundle_evidence.signature = signing.sign(&bundle_evidence.signing_bytes()).to_bytes();
+        let signed = SignedEvaluationEvidenceV1 {
+            generator_plan: execution.registration.generator_evidence.clone(),
+            evaluator_bundle: bundle_evidence,
+        };
+        let admission = admit_signed_eligibility_v2(
+            bundle.clone(),
+            roles.clone(),
+            &signed,
+            trust.verifier(),
+            frozen,
+            current()?,
+        )?;
+        let mut use_attestation = evidence.clone();
+        use_attestation.evidence_id = StableId::new(format!("fixed.paired.cycle.use.{frozen}"))?;
+        use_attestation.payload_digest =
+            Digest32::of_bytes(&self_iteration_evaluation_use_payload_v1(
+                frozen,
+                admission.decision.authentication_digest,
+            ));
+        use_attestation.issued_at = current()?;
+        use_attestation.expires_at = evidence.expires_at.min(expires_at);
+        use_attestation.signature = signing.sign(&use_attestation.signing_bytes()).to_bytes();
+        let encoded_at = current()?;
+        Some(
+            encode_self_iteration_evaluation_transport_v1(
+                frozen,
+                bundle,
+                roles,
+                signed,
+                use_attestation,
+                &trust,
+                encoded_at,
+            )?
+            .iter()
+            .map(|byte| format!("{byte:02x}"))
+            .collect::<String>(),
+        )
+    } else {
+        None
+    };
+    let mut report = serde_json::json!({
+        "schema":"hepta.fixed-paired-independent-review.v1",
+        "policy_config_digest":Digest32::of_bytes(&config_bytes).to_string(),
+        "publication_digest":Digest32::of_bytes(&publication_bytes).to_string(),
+        "execution_digest":execution.execution_digest().to_string(),
+        "profile_digest":execution.registration.plan.profile_digest().to_string(),
+        "decision_digest":decision.evidence_digest.to_string(),
+        "disposition":match decision.disposition {
+            IndependentEvaluationDispositionV1::EligibleForIndependentSelection=>"eligible_for_original_owner_review",
+            IndependentEvaluationDispositionV1::Ineligible=>"rejected",
+            IndependentEvaluationDispositionV1::InsufficientEvidence=>"insufficient_evidence",
+        },
+        "failed_metrics":decision.failed_metrics.iter().map(ToString::to_string).collect::<Vec<_>>(),
+        "evaluator_signed_evidence":ReviewEvidenceWireV1::from_native(&evidence),
+        "evaluator_uid":config.uid,"evaluator_gid":config.gid,"evaluator_cgroup":cgroup,
+        "original_custody_verification_required":true,"qualified":false,
+        "authority_grants_any":false,"production_activation":false,
+    });
+    if let Some(transport) = cycle_transport {
+        report["self_iteration_evaluation_transport_hex"] = serde_json::Value::String(transport);
+    }
+    println!("{report}");
     Ok(())
 }
