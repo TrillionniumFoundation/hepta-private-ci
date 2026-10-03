@@ -124,6 +124,40 @@ class EvidenceTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.verify()
 
+    def test_modified_agentd_fixtures_are_required_exact_execution(self):
+        commands = dict(q.COMMANDS)
+        fixtures = {
+            "agentd-automation-fixture-test": "automation_effect_host::tests::host_dispatches_exact_wire_payload_once",
+            "agentd-cognitive-tombstone-fixture-test": "cognitive_context::tests::context_reads_real_owner_content_and_removes_committed_tombstones",
+            "agentd-cognitive-owner-cut-fixture-test": "cognitive_context::tests::final_use_binds_complete_owner_cut_not_only_memory_snapshot",
+        }
+        for name, case in fixtures.items():
+            with self.subTest(name=name):
+                self.assertEqual(
+                    commands.get(name),
+                    q.cargo_test("codex-hepta-agentd", "--lib", case, "--", "--exact"),
+                )
+
+    def test_zero_modified_fixture_rejected_even_after_rehash(self):
+        record = json.loads((self.standard / "command-record.json").read_text())
+        fixtures = [
+            row for row in record["commands"] if row["name"].endswith("fixture-test")
+        ]
+        self.assertEqual(len(fixtures), 3)
+        for row in fixtures:
+            with self.subTest(name=row["name"]):
+                log = self.standard / row["log"]
+                original = log.read_bytes()
+                log.write_text("test result: ok. 0 passed; 0 failed;\n")
+                row["logSha256"] = q.sha256(log)
+                self.mutate("commands", record["commands"], self.standard)
+                with self.assertRaises(ValueError):
+                    self.verify()
+                log.write_bytes(original)
+                row["logSha256"] = q.sha256(log)
+                self.mutate("commands", record["commands"], self.standard)
+                self.verify()
+
     def test_log_tampering_rejected(self):
         (self.independent / "independent-product.log").write_text("tampered\n")
         with self.assertRaises(ValueError):
