@@ -192,7 +192,7 @@ script_mod! {
                 let prism = max(0.0, 1.0-abs(self.hepta_material-1.0))
                 let ceramic = max(0.0, self.hepta_material-1.0)
                 let selected = mix(self.color_selected_surface, mix(self.color_active, self.color_2_active, self.pos.y), prism)
-                sdf.box_y(1.0, 1.0, self.rect_size.x-2.0, self.rect_size.y, 5.0+prism*3.0, 0.5)
+                sdf.box_y(1.0, 1.0, self.rect_size.x-2.0, self.rect_size.y, (5.0+prism*3.0)*0.5, 0.5)
                 sdf.fill_keep(mix(mix(self.color, self.color_hover, self.hover), selected, self.active))
                 sdf.stroke(mix(self.color_edge, self.color_active, self.active*(1.0-prism)*0.45), 0.7)
                 if self.hepta_material < 0.5 {

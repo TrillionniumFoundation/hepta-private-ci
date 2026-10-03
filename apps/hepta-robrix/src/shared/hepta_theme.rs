@@ -172,7 +172,8 @@ script_mod! {
             hepta_material: uniform(1.0)
             pixel: fn() {
                 let sdf = Sdf2d.viewport(self.pos * self.rect_size)
-                sdf.box(0.5, 0.5, self.rect_size.x - 1.0, self.rect_size.y - 1.0, self.hepta_radius)
+                // hepta_radius is a visual-pixel token; Sdf2d.box doubles its r argument.
+                sdf.box(0.5, 0.5, self.rect_size.x - 1.0, self.rect_size.y - 1.0, self.hepta_radius * 0.5)
                 let prism = max(0.0, 1.0 - abs(self.hepta_material - 1.0))
                 let ceramic = max(0.0, self.hepta_material - 1.0)
                 let sheen = pow(max(0.0, 1.0 - self.pos.y), 3.0) * (0.25 + prism * 0.34 - ceramic * 0.14)

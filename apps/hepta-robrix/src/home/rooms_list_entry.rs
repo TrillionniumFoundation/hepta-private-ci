@@ -155,7 +155,7 @@ script_mod! {
                 let p = self.pos * self.rect_size
                 let sdf = Sdf2d.viewport(p)
                 let prism = max(0.0, 1.0-abs(self.hepta_material-1.0))
-                sdf.box(0.8, 0.8, self.rect_size.x-1.6, self.rect_size.y-1.6, 5.0+prism*6.0)
+                sdf.box(0.8, 0.8, self.rect_size.x-1.6, self.rect_size.y-1.6, (5.0+prism*6.0)*0.5)
                 let sheen = (1.0-self.pos.y)*0.14*self.active
                 sdf.fill_keep(mix(self.get_color(), self.color_selected_hover, sheen))
                 sdf.stroke(vec4(self.color_accent.rgb, self.active*(0.35+prism*0.45)), 0.8)
