@@ -186,6 +186,11 @@
           "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
           "kind": "configured_http_exact_wire_restart_expiry_configuration_drift_local_terminal_source_regression",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/taskflow_concurrent_reconcile.rs",
+          "kind": "same_store_timer_writer_recovery_snapshot",
+          "command": "just test -p codex-hepta-automation --test taskflow_concurrent_reconcile"
         }
       ],
       "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding with a current dispatch lease before provider entry, appends an immutable provider-attempt row before contact, supports synchronous and async provider-effect drivers with exact wire-payload binding, and composes the optional configured Agentd HTTP execute/reconcile control for already claimed/prepared steps. Version 2 provider keys bind the owning Agent plus TaskFlow run/step under the registered provider scope/destination; stored version 1 attempts retain their historical lookup key. Initial and terminal/proven-absent reconciliation evidence is recorded without blind redispatch; historical exact-attempt observation does not grant new dispatch authority. Generic scheduled-effect/DAG execution and independent host/provider qualification remain separate. New configured HTTP attempts persist an immutable optional provider contract binding before physical dispatch; mismatched remote recovery rejects after local known terminal evidence is settled. Legacy/generic unbound attempts retain their continuity limitations.",
@@ -261,8 +266,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "f0f08f85ef0656787906928db8ac0d5a83b57dc4",
-    "tree": "0323e638f2249f9fde55607fe0e58583ca2de4ab"
+    "commit": "6e17956fbd2ec7d4a6568df82d9e76e3302f80b8",
+    "tree": "a37acb9885ce35aa70cae1e51df7708815019fa0"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -373,7 +378,10 @@
     "codex-rs/hepta-operations/src/exact_claim.rs",
     "codex-rs/hepta-types",
     "codex-rs/model-provider/src/provider_effect.rs",
-    "docs/modules/automation.taskflow/TECHNICAL.md"
+    "docs/modules/automation.taskflow/TECHNICAL.md",
+    "codex-rs/hepta-automation/tests/taskflow_concurrent_reconcile.rs",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+    "codex-rs/hepta-automation/tests/fixtures/kernel_authority_schema20.sql"
   ],
   "repositoryControlledProductCompositionGaps": [
     "Configured Agentd HTTP execute/reconcile control requires already registered, claimed and prepared TaskFlow steps. General scheduled external-effect/DAG/Neural Circuit execution remains an implementation target; selected-host provider/authority qualification is separate.",
@@ -414,7 +422,7 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/automation-taskflow-focused.yml",
-      "object": "b30b52105c5bccf2928746a81a4147813a60a32d"
+      "object": "7ba0b39f6d2273be0b2d7cccf539f4a25d3fadb2"
     },
     {
       "path": "codex-rs/app-server-client/BUILD.bazel",
@@ -470,7 +478,7 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "bf0d7aecb42693298e92f5b0bfdeb2c257350fc1"
+      "object": "4ecfa4f7527087b1a96227ed2595eaaeec8d4ff4"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -518,7 +526,7 @@
     },
     {
       "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
-      "object": "c576c70146077abc6d0d2849c306c5aab79653ec"
+      "object": "dd46a185583808ac0f41ecfc9ce6256822a74fa8"
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
@@ -555,6 +563,18 @@
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
       "object": "2ea8a144238e1ef53519dc53dbfce3254302182b"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/taskflow_concurrent_reconcile.rs",
+      "object": "638f3797bfae275264f27a9125a5652e1a649f0f"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "object": "dcd4270723eeda6f43cad7d3628e11c9a0e017d4"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/fixtures/kernel_authority_schema20.sql",
+      "object": "a0ef0bd9e5dc9c547587f4a8246de85249da8b98"
     }
   ],
   "navigationProvenanceRepair": {

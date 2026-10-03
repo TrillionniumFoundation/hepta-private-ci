@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "6e17956fbd2ec7d4a6568df82d9e76e3302f80b8",
+    "tree": "a37acb9885ce35aa70cae1e51df7708815019fa0"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.evidence",
@@ -73,7 +73,8 @@
       "state": "source_implemented_product_consumed",
       "authority": "read_only_recovery_snapshot",
       "tests": [
-        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs"
+        "codex-rs/hepta-agentd/tests/kernel_evidence_product.rs",
+        "codex-rs/hepta-evidence/src/recovery_frontier_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "recovery_snapshot",
@@ -159,7 +160,7 @@
     },
     {
       "path": "codex-rs/hepta-evidence",
-      "object": "c64498a611cfdf3044d897a870d3398c205b48e3"
+      "object": "f862a6bc45110152f2ff286ac2d37ab726517615"
     },
     {
       "path": "codex-rs/hepta-evidence/src/provider_effect_store.rs",
@@ -175,15 +176,23 @@
     },
     {
       "path": "codex-rs/hepta-evidence/src/qualification_tests.rs",
-      "object": "cf8ff628aebfb7cc64ef28e4b33b36c28c7f73f0"
+      "object": "26778fb017262c211967b075f2e11d5131e0927c"
     },
     {
       "path": "codex-rs/hepta-evidence/src/recovery_frontier.rs",
-      "object": "aff8cdd21913699d6081949b4fa912e4d8aae86e"
+      "object": "ff43f839ef50af25a3ecd1eea3e0a5f180d1eccc"
     },
     {
       "path": "docs/modules/kernel.evidence/TECHNICAL.md",
-      "object": "9e6543e32181d385de16565949449dd026b4343e"
+      "object": "ffe3ec2c4f26ec230431ef417b77ee67f81dfb47"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/recovery_frontier_tests.rs",
+      "object": "69ddb454f6598591599c1b0a47ce0feb43ecf1ef"
+    },
+    {
+      "path": "codex-rs/hepta-evidence/src/authbus_outbox_tests.rs",
+      "object": "17cce5cd08c8bdc902966193deb1786f1493ce69"
     }
   ]
 }
