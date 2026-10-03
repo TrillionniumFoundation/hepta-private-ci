@@ -1,7 +1,7 @@
 # context.compiler execution dossier
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `6308e07f6db8e2b85c4b616a25e0909d666cc9ce2662a3fbaa8d8b0b601ed2b0`. Source anchor: `2ccd370fa1b0c156dc8995e259db0616b8abd4eb`.
+State SHA-256: `5ec474d26b2abfaee802798f0cd1ab86c3fe61c6ae2a3cc573a5b82352ac66fc`. Source anchor: `569c2f171d47a019cd98b872c090a5ca3b9902c5`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
@@ -61,6 +61,7 @@ The source anchor is provenance, not the final tested head. Only external execut
 - Converge legacy wire token accounting with the reviewed V2 bridge and repair the actual opaque-diagnostic caller.
 - The default-off legacy learning qualification adapter now projects frozen action IDs plus the intrinsic abstain outcome already committed by Intuition V2 into a complete Ledger Decision. Empty, duplicate, reserved-name and over-capacity action sets are rejected; signed action inputs, prepared objects, selected propensity, support and exact pending replay remain unchanged. Positive owner fixtures use actual signed evaluation and explicit test host trust. Required named coverage includes capacity, randomized propensity conservation, full recorded/recovered events and revocation-before-write; native execution belongs to the new exact candidate, not the source change.
 - ContextDeliveryInputsV2 groups the first four contiguous borrowed observe_delivery inputs. The carrier is unverified, grants no authority and has no serialized shape. This is an explicit pre-release public Rust source migration. It removes an inherited argument-count suppression while preserving all seven caller expression sequences and the complete newer validation/revocation/receipt body byte-for-byte; all seven migrated native cases are separately required. The original Evidence lineage result does not qualify this adaptation.
+- The first ContextDeliveryInputsV2 adaptation missed the compiled Intelligence V3 observation caller: exact-head E0061/E0277 prevented the new Agentd qualification tests from executing. A subsequent scoped API inventory across Context, Intelligence and Agentd migrates that compiled consumer and the retained unregistered Agentd V3 source caller. Both complete files reverse exactly to their previous bytes after expanding the borrowed carrier and removing its import. The dormant file remains unregistered; seven owner-test call sites were not a complete consumer inventory, and new native compilation/execution remains required.
 
 ## 3. Current product call path
 
@@ -111,6 +112,7 @@ Stage publication uses exact-state -> runtime-state lock order, with no await or
 - Unix descriptor-relative storage defenses do not establish Windows parity, target-host power-loss durability or resistance to a privileged same-user replace-and-restore adversary.
 - Two seeded remote-v1 compaction policy fixtures have failed intermittently before their required request or terminal counts. Core delivers TurnComplete before terminal flush and admission-fence retirement. Source diagnostics now separately hold flush and idle publication and capture correlated start errors, but exact-head native diagnostic execution and the failing integration Error event are still required before attributing those failures. Retirement alone is neither durable-success proof nor an admission reservation; no lifecycle ordering or admission policy is changed by these diagnostics.
 - The Agentd dependency repair and the subsequent qualification candidate projection require fresh exact-head native evidence. The adapter now explicitly represents the already committed intrinsic abstain outcome without changing signed policy actions; its owner fixtures are not ordinary host-trust installation, a factory or production-write authority. Three dormant Plasticity producer/state diagnostic groups retain the production lifetime sender; the documented non-test coordinator remains missing and is not fabricated or suppressed. The compaction assertion import and borrowed Context delivery carrier likewise require their own actual native cases; none of these source changes grants global acceptance.
+- The fbfa source/prospective-merge qualification failed at the V3 consumer API boundary (17/35 and 16/35 commands). New Agentd candidate-projection commands had zero executed tests. The two-file consumer correction requires fresh exact-head feature/consumer compilation and native evidence before any claim for the new qualification adapter. The separate test-support retirement observer remains outside this source checkpoint.
 
 ## 6. Verification
 
