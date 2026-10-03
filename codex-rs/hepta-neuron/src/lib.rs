@@ -181,6 +181,7 @@ pub use semantic_v2::NeuronCommitDispositionV1;
 pub use semantic_v2::NeuronOperationKeyV2;
 pub use semantic_v2::NeuronSemanticV2Error;
 pub use sparse::InhibitoryEdge;
+pub use sparse::MAX_SPARSE_CHECKPOINT_OBSERVATION_BYTES_V1;
 pub use sparse::SparseCheckpoint;
 pub use sparse::SparseConfig;
 pub use sparse::SparseError;

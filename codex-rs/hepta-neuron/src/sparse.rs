@@ -269,6 +269,10 @@ impl SparseCheckpoint {
     }
 
     fn calculate_digest(&self) -> Digest32 {
+        Digest32::of_bytes(&self.canonical_preimage())
+    }
+
+    fn canonical_preimage(&self) -> Vec<u8> {
         let mut bytes = b"hepta.neuron.sparse-checkpoint.q24.v1".to_vec();
         for value in [
             self.config,
@@ -293,9 +297,13 @@ impl SparseCheckpoint {
                 bytes.extend_from_slice(&value.to_be_bytes());
             }
         }
-        Digest32::of_bytes(&bytes)
+        bytes
     }
 }
+
+#[path = "sparse_checkpoint_observation_v1.rs"]
+mod checkpoint_observation;
+pub use checkpoint_observation::MAX_SPARSE_CHECKPOINT_OBSERVATION_BYTES_V1;
 
 /// Same byte binding used by both native replay and owner-result verification.
 pub(crate) fn tick_input_binding_digest(input: &SparseTick) -> Digest32 {
