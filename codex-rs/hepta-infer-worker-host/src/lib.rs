@@ -26,6 +26,12 @@ pub mod initial_cpu_anchor;
 mod frozen_generator_client;
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 pub use frozen_generator_client::CpuNeuronFrozenGeneratorClientV1;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use frozen_generator_client::InstalledSelfIterationIndependentOwnersConfigV1;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use frozen_generator_client::InstalledSelfIterationIndependentOwnersV1;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use frozen_generator_client::self_iteration_independent_owner_materials_digest_v1;
 
 #[cfg(feature = "agentd-host")]
 mod local_cpu_control;
