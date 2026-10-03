@@ -48,6 +48,8 @@ mod secrets;
 mod secrets_tests;
 
 pub(crate) struct AgentdState {
+    pub(crate) prepared_generation_reader:
+        std::sync::OnceLock<Arc<dyn crate::AgentdPreparedGenerationReaderV2>>,
     #[cfg(target_os = "linux")]
     pub(crate) secrets_host: std::sync::OnceLock<Arc<crate::secrets_host::AgentdSecretsHost>>,
     pub(crate) retrieval_executor: crate::retrieval_executor::RetrievalExecutor,
@@ -160,6 +162,7 @@ impl AgentdState {
             intelligence_product: std::sync::OnceLock::new(),
             neuron_runtime_v2: std::sync::OnceLock::new(),
             native_model_receipt_reader: std::sync::OnceLock::new(),
+            prepared_generation_reader: std::sync::OnceLock::new(),
             self_iteration_handle: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
             evidence: std::sync::OnceLock::new(),
@@ -899,3 +902,6 @@ pub(crate) struct PlasticityFinalAdmissionGuardV1<'a> {
 
 #[path = "state_plasticity_observation.rs"]
 mod plasticity_observation;
+#[cfg(all(test, target_os = "linux"))]
+#[path = "state_prepared_generation_tests.rs"]
+mod prepared_generation_tests;

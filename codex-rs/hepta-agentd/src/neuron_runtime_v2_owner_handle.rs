@@ -28,6 +28,33 @@ where
 }
 
 impl AgentdNeuronHandleV2 {
+    /// Exact administrative fresh facts. This grants no execution or use.
+    pub fn export_prepared_generation_v2(
+        &self,
+        expected: &codex_hepta_agent_components::neuron::NeuronGenerationMaterialV2,
+    ) -> Result<
+        codex_hepta_agent_components::neuron::NeuronPreparedGenerationV2,
+        AgentdNeuronControlErrorV2,
+    > {
+        if self.generation()? != expected.runtime.generation.get()
+            || self.configuration_digest()
+                != expected
+                    .runtime
+                    .semantic_digest()
+                    .map_err(|_| AgentdNeuronControlErrorV2::GenerationConflict)?
+            || self.body_bundle_digest()
+                != Some(
+                    expected
+                        .body
+                        .semantic_digest()
+                        .map_err(|_| AgentdNeuronControlErrorV2::GenerationConflict)?,
+                )
+        {
+            return Err(AgentdNeuronControlErrorV2::GenerationConflict);
+        }
+        self.owner.export_prepared_control(expected)
+    }
+
     pub(crate) fn current_tick_anchor(
         &self,
     ) -> Result<

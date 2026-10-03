@@ -74,14 +74,14 @@ use codex_hepta_agent_components::memory::LocalLeaseHeadDisposition;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
-struct RuntimeFixture {
+pub(crate) struct RuntimeFixture {
     _temp: tempfile::TempDir,
-    state: Arc<AgentdState>,
+    pub(crate) state: Arc<AgentdState>,
     registry: FleetRegistry,
-    identity: AgentdIdentity,
+    pub(crate) identity: AgentdIdentity,
 }
 
-fn runtime_fixture() -> RuntimeFixture {
+pub(crate) fn runtime_fixture() -> RuntimeFixture {
     let temp = tempfile::tempdir().expect("temporary root");
     let root = temp
         .path()

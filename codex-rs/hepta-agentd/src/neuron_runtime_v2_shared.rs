@@ -412,6 +412,20 @@ where
         locked.owner.runtime.capacity_snapshot()
     }
 
+    fn export_prepared_control(
+        &self,
+        expected: &codex_hepta_agent_components::neuron::NeuronGenerationMaterialV2,
+    ) -> Result<
+        codex_hepta_agent_components::neuron::NeuronPreparedGenerationV2,
+        AgentdNeuronControlErrorV2,
+    > {
+        self.lock_control()?
+            .owner
+            .runtime
+            .export_prepared_generation_v2(expected)
+            .map_err(AgentdNeuronControlErrorV2::Runtime)
+    }
+
     fn export_operation_control(
         &self,
         tick_id: &StableId,

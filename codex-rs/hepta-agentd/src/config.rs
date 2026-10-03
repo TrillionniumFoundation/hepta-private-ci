@@ -15,6 +15,10 @@ use crate::AgentdError;
 
 #[path = "native_model_receipt.rs"]
 mod native_model_receipt;
+#[path = "prepared_generation_reader.rs"]
+mod prepared_generation_reader;
+pub use prepared_generation_reader::AgentdPreparedGenerationReaderV2;
+pub(crate) use prepared_generation_reader::response_limit as prepared_generation_response_limit;
 #[path = "self_iteration_model_owner.rs"]
 mod self_iteration_model_owner;
 pub use native_model_receipt::AgentdNativeModelReceiptReaderV1;
@@ -92,6 +96,7 @@ fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrie
 }
 
 pub struct AgentdConfig {
+    prepared_generation_reader: Option<std::sync::Arc<dyn AgentdPreparedGenerationReaderV2>>,
     native_model_receipt_reader: Option<std::sync::Arc<dyn AgentdNativeModelReceiptReaderV1>>,
     self_iteration_model_owner: Option<SelfIterationModelOwner>,
     self_iteration_runtime: Option<crate::AgentdSelfIterationRuntimeConfigV1>,
@@ -252,6 +257,7 @@ impl AgentdConfig {
             self_iteration_runtime: None,
             self_iteration_model_owner: None,
             native_model_receipt_reader: None,
+            prepared_generation_reader: None,
             intelligence_invocation_provider: None,
         })
     }

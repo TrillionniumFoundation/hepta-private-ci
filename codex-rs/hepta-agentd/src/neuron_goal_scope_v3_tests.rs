@@ -1,5 +1,8 @@
 use super::*;
 
+#[cfg(target_os = "linux")]
+#[path = "neuron_runtime_v2_canary_control_tests.rs"]
+mod canary_control_tests;
 #[path = "neuron_runtime_v2_operation_observation_tests.rs"]
 mod operation_observation_tests;
 

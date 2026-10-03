@@ -281,6 +281,16 @@ where
 }
 
 trait ProductNeuronOwnerV2: Send + Sync {
+    fn export_prepared_control(
+        &self,
+        _expected: &codex_hepta_agent_components::neuron::NeuronGenerationMaterialV2,
+    ) -> Result<
+        codex_hepta_agent_components::neuron::NeuronPreparedGenerationV2,
+        AgentdNeuronControlErrorV2,
+    > {
+        Err(AgentdNeuronControlErrorV2::PendingRecovery)
+    }
+
     fn check_scope_control(&self) -> Result<(), AgentdNeuronControlErrorV2> {
         Err(AgentdNeuronControlErrorV2::GenerationConflict)
     }

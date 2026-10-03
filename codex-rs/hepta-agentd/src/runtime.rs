@@ -103,6 +103,7 @@ pub async fn run(
         .map(crate::AgentdSelfIterationRuntimeConfigV1::handle);
     let self_iteration_model_owner = config.take_self_iteration_model_owner();
     let native_model_receipt_reader = config.take_native_model_receipt_reader();
+    let prepared_generation_reader = config.take_prepared_generation_reader();
     let iteration_recovery = self_iteration_config
         .as_ref()
         .is_some_and(crate::AgentdSelfIterationRuntimeConfigV1::unresolved_apply);
@@ -137,6 +138,11 @@ pub async fn run(
         EVENT_CAPACITY,
         &run_store_restart,
     )?);
+    if let Some(reader) = prepared_generation_reader {
+        state.prepared_generation_reader.set(reader).map_err(|_| {
+            AgentdError::Invalid("original prepared reader already attached".into())
+        })?;
+    }
     if let Some(reader) = native_model_receipt_reader {
         state.native_model_receipt_reader.set(reader).map_err(|_| {
             AgentdError::Invalid("original native receipt reader already attached".into())
@@ -661,4 +667,4 @@ async fn shutdown_signal() -> Result<(), AgentdError> {
 
 #[cfg(test)]
 #[path = "runtime_tests.rs"]
-mod tests;
+pub(crate) mod tests;

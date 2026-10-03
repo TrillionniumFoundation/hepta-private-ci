@@ -139,3 +139,27 @@ impl CpuNeuronGenerationCompositionV2 {
         self.handle
     }
 }
+
+impl codex_hepta_agentd::AgentdPreparedGenerationReaderV2
+    for CpuNeuronGenerationCompositionReaderV2
+{
+    fn read(
+        &self,
+        generation: u64,
+        configuration: Digest32,
+        body: Digest32,
+    ) -> Result<Option<Vec<u8>>, AgentdError> {
+        let generation = codex_hepta_types::Generation::new(generation)
+            .map_err(|e| AgentdError::Invalid(e.to_string()))?;
+        let Some(composition) = self.resolve(generation, configuration, body)? else {
+            return Ok(None);
+        };
+        let actual = composition
+            .handle()
+            .export_prepared_generation_v2(composition.plan())
+            .map_err(|e| {
+                AgentdError::Protocol(format!("original prepared physical generation: {e}"))
+            })?;
+        Ok(Some(actual.bytes().to_vec()))
+    }
+}
