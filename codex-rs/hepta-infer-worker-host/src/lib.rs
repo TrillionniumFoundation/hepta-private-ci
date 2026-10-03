@@ -22,6 +22,11 @@ pub use fleet_worker_resource_port_v2::FleetWorkerResourcePortV2;
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 pub mod initial_cpu_anchor;
 
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+mod frozen_generator_client;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use frozen_generator_client::CpuNeuronFrozenGeneratorClientV1;
+
 #[cfg(feature = "agentd-host")]
 mod local_cpu_control;
 #[cfg(feature = "agentd-host")]
