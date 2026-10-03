@@ -141,3 +141,30 @@ fn workload_owned_files_are_not_root_terminal_custody() {
     assert!(create_fact(&path, b"workload-projection").is_err());
     assert!(!path.exists());
 }
+
+#[test]
+#[ignore = "requires an actual Root process and isolated protected /run directory"]
+fn actual_root_custody_publishes_complete_bytes_once_without_replacement() {
+    use std::os::unix::fs::MetadataExt;
+    assert_eq!(rustix::process::geteuid().as_raw(), 0);
+    let directory = tempfile::Builder::new()
+        .prefix("hepta-model-terminal-test-")
+        .tempdir_in("/run")
+        .unwrap();
+    let path = directory.path().join("original.intent.json");
+    let original = b"complete original durable fact";
+    create_fact(&path, original).unwrap();
+    assert_eq!(store::read_protected(&path, 1024, true).unwrap(), original);
+    let error = create_fact(&path, b"cannot overwrite original").unwrap_err();
+    assert_eq!(
+        error.downcast_ref::<std::io::Error>().unwrap().kind(),
+        std::io::ErrorKind::AlreadyExists
+    );
+    assert_eq!(store::read_protected(&path, 1024, true).unwrap(), original);
+    let metadata = std::fs::symlink_metadata(&path).unwrap();
+    assert_eq!(
+        (metadata.uid(), metadata.mode() & 0o777, metadata.nlink()),
+        (0, 0o600, 1)
+    );
+    assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1);
+}

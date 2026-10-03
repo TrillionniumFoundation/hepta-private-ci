@@ -130,16 +130,29 @@ pub(super) struct Observation {
 fn create_fact(path: &Path, bytes: &[u8]) -> anyhow::Result<()> {
     let parent = path.parent().context("terminal fact has no parent")?;
     store::protected_directory(parent)?;
+    let temporary = parent.join(format!(".model-fact-{}", uuid::Uuid::new_v4()));
     let mut file = File::options()
         .write(true)
         .create_new(true)
         .mode(0o600)
         .custom_flags(libc::O_NOFOLLOW)
-        .open(path)?;
-    file.write_all(bytes)?;
-    file.sync_all()?;
-    File::open(parent)?.sync_all()?;
-    Ok(())
+        .open(&temporary)?;
+    let result = (|| -> anyhow::Result<()> {
+        file.write_all(bytes)?;
+        file.sync_all()?;
+        // Publish complete durable bytes without replacing any old intent or
+        // terminal. Protected readers reject the temporary two-link state.
+        std::fs::hard_link(&temporary, path)?;
+        std::fs::remove_file(&temporary)?;
+        File::open(parent)?.sync_all()?;
+        Ok(())
+    })();
+    if result.is_err() {
+        // Only this call's unpublished temporary is removable. A published
+        // outcome remains reserved even if directory fsync failed.
+        let _ = std::fs::remove_file(&temporary);
+    }
+    result
 }
 
 impl Observation {
