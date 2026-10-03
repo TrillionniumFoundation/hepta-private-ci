@@ -202,6 +202,20 @@ impl Fixture {
     }
 
     fn directory(&self) -> File {
+        #[cfg(windows)]
+        {
+            use std::os::windows::fs::OpenOptionsExt;
+
+            // Windows requires a directory handle and write access for flushing.
+            // Production still synchronizes this actual handle and propagates errors.
+            OpenOptions::new()
+                .read(true)
+                .write(true)
+                .custom_flags(0x0200_0000) // FILE_FLAG_BACKUP_SEMANTICS
+                .open(&self.root)
+                .unwrap()
+        }
+        #[cfg(not(windows))]
         File::open(&self.root).unwrap()
     }
 

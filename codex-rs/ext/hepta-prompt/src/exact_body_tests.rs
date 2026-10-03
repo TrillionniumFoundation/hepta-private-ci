@@ -72,16 +72,16 @@ fn concurrent_body_callbacks_have_one_exclusive_claim() {
     let observer = Arc::new(observer());
     observer.bind_attempt(attempt()).expect("bind");
     let barrier = Arc::new(Barrier::new(2));
-    let handles = (0..2)
-        .map(|_| {
-            let observer = Arc::clone(&observer);
-            let barrier = Arc::clone(&barrier);
-            std::thread::spawn(move || {
-                barrier.wait();
-                observer.begin_body(Digest32::of_bytes(BODY)).is_ok()
-            })
+    // Start both threads before joining either one: a lazy spawn/join iterator
+    // would block the first participant before the second reaches the barrier.
+    let handles: [std::thread::JoinHandle<bool>; 2] = std::array::from_fn(|_| {
+        let observer = Arc::clone(&observer);
+        let barrier = Arc::clone(&barrier);
+        std::thread::spawn(move || {
+            barrier.wait();
+            observer.begin_body(Digest32::of_bytes(BODY)).is_ok()
         })
-        .collect::<Vec<_>>();
+    });
     let claimed = handles
         .into_iter()
         .map(|handle| usize::from(handle.join().expect("thread")))
