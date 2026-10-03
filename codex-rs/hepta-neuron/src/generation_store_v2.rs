@@ -66,7 +66,8 @@ pub struct NeuronGenerationStoreContextV2 {
 }
 
 impl NeuronGenerationStoreContextV2 {
-    fn validate(&self) -> Result<(), GenerationStoreError> {
+    /// Check original immutable context limits without opening or granting a store.
+    pub fn validate(&self) -> Result<(), GenerationStoreError> {
         if self.scope.scope_digest.is_zero()
             || self.scope.objective_digest.is_zero()
             || self.runtime_config_digest.is_zero()

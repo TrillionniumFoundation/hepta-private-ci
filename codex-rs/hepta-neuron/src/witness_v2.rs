@@ -43,7 +43,8 @@ pub struct NeuronWitnessContextV2 {
 }
 
 impl NeuronWitnessContextV2 {
-    fn validate(&self) -> Result<(), WitnessStoreError> {
+    /// Check original immutable context limits without opening or granting a store.
+    pub fn validate(&self) -> Result<(), WitnessStoreError> {
         if self.scope.scope_digest.is_zero()
             || self.scope.objective_digest.is_zero()
             || self.key_epoch == 0

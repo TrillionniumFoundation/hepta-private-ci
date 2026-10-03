@@ -72,6 +72,10 @@ pub use local_cpu_parameter_compiler::CpuNeuronParameterMaterialCandidateV2;
 pub use local_cpu_parameter_compiler::CpuNeuronParameterMaterialPlanV2;
 #[cfg(feature = "agentd-host")]
 pub use local_cpu_parameter_compiler::describe_cpu_neuron_parameter_choices_v2;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub use local_cpu_parameter_compiler::sparse_cpu_neuron_parameter_diff_v2;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub use local_cpu_parameter_compiler::validate_cpu_neuron_generation_material_v2;
 #[cfg(feature = "agentd-host")]
 pub use local_cpu_parameter_compiler::validate_cpu_neuron_parameter_advice_v2;
 #[cfg(feature = "agentd-host")]
@@ -370,3 +374,13 @@ mod tests;
 
 #[cfg(feature = "agentd-host")]
 pub mod evolving_agentd;
+
+#[cfg(feature = "fixed-initial-cpu-host")]
+#[path = "local_cpu_generation_material_codec_v2.rs"]
+mod cpu_generation_material;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub use cpu_generation_material::MAX_CPU_NEURON_GENERATION_MATERIAL_BYTES_V2;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub use cpu_generation_material::decode_cpu_neuron_generation_material_v2;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub use cpu_generation_material::encode_cpu_neuron_generation_material_v2;

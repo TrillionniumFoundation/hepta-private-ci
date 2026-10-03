@@ -43,6 +43,8 @@ pub use materials::CpuNeuronParameterAdviceContextV2;
 pub use materials::CpuNeuronParameterMaterialCandidateV2;
 pub use materials::CpuNeuronParameterMaterialPlanV2;
 pub use materials::describe_cpu_neuron_parameter_choices_v2;
+pub use materials::sparse_cpu_neuron_parameter_diff_v2;
+pub use materials::validate_cpu_neuron_generation_material_v2;
 pub use materials::validate_cpu_neuron_parameter_advice_v2;
 pub use materials::validate_cpu_neuron_parameter_materials_v2;
 pub use materials::validate_cpu_neuron_parameter_receipt_v2;
@@ -334,18 +336,12 @@ impl AgentdGovernedParameterGenerationCompilerV1 for CpuNeuronGovernedParameterC
             .iter()
             .find(|value| value.candidate_id == id)
             .ok_or_else(|| error("CPU compiler admitted candidate missing"))?;
-        let semantic_diff = format!(
-            "profile={}\nbaseline={}\ncandidate={}\nmodel_advice_receipt={}\ndeltas={:?}\n",
-            validation::PARAMETER_LAYER,
-            self.plan
-                .baseline_native
-                .digest()
-                .map_err(|value| error(value.to_string()))?,
-            id,
+        let semantic_diff = materials::sparse_cpu_neuron_parameter_diff_v2(
+            &self.plan.baseline_native,
+            &id,
             proposal.native_run_digest,
-            update.parameter_deltas
-        )
-        .into_bytes();
+            &update.parameter_deltas,
+        )?;
         #[cfg(target_os = "linux")]
         if let Some(policy) = &self.policy {
             policy.check_diff(&semantic_diff)?;

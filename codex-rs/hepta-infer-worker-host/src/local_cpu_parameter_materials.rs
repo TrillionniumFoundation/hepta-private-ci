@@ -5,6 +5,7 @@ use super::validation;
 use codex_hepta_agent_components::intelligence::ParameterPlasticityProductReceiptV1;
 use codex_hepta_agent_components::intelligence::ParameterPlasticityProductRequestV1;
 use codex_hepta_agent_components::plasticity::ParameterCandidateKindV2;
+use codex_hepta_agent_components::plasticity::ParameterDeltaV2;
 use codex_hepta_agent_components::plasticity::verify_generated_parameter_candidates_v3;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::AgentdSelfIterationRoundV1;
@@ -217,4 +218,66 @@ pub fn validate_cpu_neuron_parameter_advice_v2(
         ));
     }
     Ok(id)
+}
+
+/// Exact original factual diff used by both compiler and independent Root join.
+/// Validation/admission of the full request and receipt precede this projection.
+pub fn sparse_cpu_neuron_parameter_diff_v2(
+    baseline: &SparseConfig,
+    candidate: &StableId,
+    native_run_digest: Digest32,
+    deltas: &[ParameterDeltaV2],
+) -> Result<Vec<u8>, AgentdError> {
+    Ok(format!(
+        "profile={}\nbaseline={}\ncandidate={}\nmodel_advice_receipt={}\ndeltas={:?}\n",
+        validation::PARAMETER_LAYER,
+        baseline
+            .digest()
+            .map_err(|value| validation::error(value.to_string()))?,
+        candidate,
+        native_run_digest,
+        deltas,
+    )
+    .into_bytes())
+}
+
+/// Validate complete immutable generation material through the original owners.
+/// A valid tuple grants no file access, worker, current use or admission.
+pub fn validate_cpu_neuron_generation_material_v2(
+    plan: &crate::CpuNeuronGenerationPlanV1,
+) -> Result<(), AgentdError> {
+    plan.runtime
+        .validate_native(&plan.native)
+        .map_err(|value| validation::error(value.to_string()))?;
+    validation::validate_generation_plan(&plan.body, plan)?;
+    plan.store_context
+        .validate()
+        .map_err(|value| validation::error(value.to_string()))?;
+    plan.index_context
+        .validate()
+        .map_err(|value| validation::error(value.to_string()))?;
+    plan.witness_context
+        .validate()
+        .map_err(|value| validation::error(value.to_string()))?;
+    for path in [
+        &plan.model_manifest,
+        &plan.generation_store,
+        &plan.runtime_index,
+        &plan.witness,
+    ] {
+        if !path.is_absolute() || path.file_name().is_none() {
+            return Err(validation::error(
+                "generation material paths must be absolute files",
+            ));
+        }
+    }
+    if plan.generation_store == plan.runtime_index
+        || plan.generation_store == plan.witness
+        || plan.runtime_index == plan.witness
+    {
+        return Err(validation::error(
+            "generation material stores must be distinct",
+        ));
+    }
+    Ok(())
 }
