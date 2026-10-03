@@ -66,6 +66,16 @@ enum PlasticityRuntimeCommandV1 {
             Result<ParameterPlasticityProductReceiptV1, PlasticityRuntimeCallErrorV1>,
         >,
     },
+    ObserveParameter {
+        request: Box<ParameterPlasticityProductRequestV1>,
+        response: oneshot::Sender<
+            Result<Option<ParameterPlasticityProductReceiptV1>, PlasticityRuntimeCallErrorV1>,
+        >,
+    },
+    ObserveProposal {
+        proposal_id: codex_hepta_agent_components::types::StableId,
+        response: oneshot::Sender<Result<Option<Vec<u8>>, PlasticityRuntimeCallErrorV1>>,
+    },
     Topology {
         request: Box<TopologyPlasticityProductRequestV1>,
         response: oneshot::Sender<
@@ -398,6 +408,29 @@ impl PlasticityRuntimeOwnerV1 {
                     };
                     let _ = response.send(result);
                 }
+                PlasticityRuntimeCommandV1::ObserveParameter { request, response } => {
+                    let result = self.observe_completed_parameter(
+                        &state,
+                        &cancellation,
+                        owner_generation,
+                        ready,
+                        &request,
+                    );
+                    let _ = response.send(result);
+                }
+                PlasticityRuntimeCommandV1::ObserveProposal {
+                    proposal_id,
+                    response,
+                } => {
+                    let result = self.observe_completed_proposal(
+                        &state,
+                        &cancellation,
+                        owner_generation,
+                        ready,
+                        &proposal_id,
+                    );
+                    let _ = response.send(result);
+                }
                 PlasticityRuntimeCommandV1::Topology { request, response } => {
                     if !ready {
                         let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
@@ -460,14 +493,8 @@ impl PlasticityRuntimeOwnerV1 {
 mod lifetime_tests;
 
 #[cfg(test)]
-mod tests {
-    use super::*;
+#[path = "plasticity_runtime_queue_tests.rs"]
+mod tests;
 
-    #[test]
-    fn runtime_queue_capacity_is_bounded() {
-        assert!(validate_plasticity_runtime_capacity(1).is_ok());
-        assert!(validate_plasticity_runtime_capacity(MAX_PLASTICITY_RUNTIME_QUEUE).is_ok());
-        assert!(validate_plasticity_runtime_capacity(0).is_err());
-        assert!(validate_plasticity_runtime_capacity(MAX_PLASTICITY_RUNTIME_QUEUE + 1).is_err());
-    }
-}
+#[path = "plasticity_runtime_observation.rs"]
+mod observation;

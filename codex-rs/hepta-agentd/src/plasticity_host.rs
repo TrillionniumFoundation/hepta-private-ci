@@ -1245,3 +1245,5 @@ mod tests {
 #[path = "plasticity_host_final_time.rs"]
 mod final_time;
 pub(crate) use final_time::propose_agentd_plasticity_with_clock_v1;
+
+pub(crate) use final_time::observe_completed_agentd_plasticity_with_clock_v1;
