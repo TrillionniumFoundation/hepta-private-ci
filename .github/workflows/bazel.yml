@@ -399,6 +399,15 @@ jobs:
             bazel_targets+=("${target}")
           done <<< "${bazel_target_lines}"
 
+          # Preserve each selected label exactly; do not record environment or credentials.
+          if (( ${#bazel_targets[@]} > 0 )); then
+            printf '%s\0' "${bazel_targets[@]}" > "$RUNNER_TEMP/bazel-execution-logs/clippy-requested-targets.nul" ||
+              printf '%s\n' '::warning::Could not retain the Clippy target label inventory' >&2
+          else
+            : > "$RUNNER_TEMP/bazel-execution-logs/clippy-requested-targets.nul" ||
+              printf '%s\n' '::warning::Could not retain the empty Clippy target label inventory' >&2
+          fi
+
           ./.github/scripts/run-bazel-ci.sh \
             --print-failed-action-summary \
             "${bazel_wrapper_args[@]}" \
