@@ -34,15 +34,37 @@ def main(argv: list[str] | None = None) -> int:
     if arguments and arguments[0] not in {"fmt", "check", "clippy", "test"}:
         raise ValueError("only workspace fmt/check/clippy/test commands are allowed")
     verify_working_directory(Path.cwd())
-    pin = tomllib.loads(Path("rust-toolchain.toml").read_text())["toolchain"]["channel"]
+    settings = tomllib.loads(Path("rust-toolchain.toml").read_text())["toolchain"]
+    pin = settings["channel"]
     if not isinstance(pin, str) or re.fullmatch(r"\d+\.\d+\.\d+", pin) is None:
         raise ValueError("workspace requires an exact numeric toolchain pin")
-    environment = {**os.environ, "RUSTUP_TOOLCHAIN": pin}
+    components = settings.get("components", [])
+    if not isinstance(components, list) or any(
+        not isinstance(item, str) or re.fullmatch(r"[a-z][a-z0-9_-]*", item) is None
+        for item in components
+    ):
+        raise ValueError("toolchain components must be a list of component names")
+    # Only the explicit setup invocation may install; proxies must fail closed.
+    environment = {**os.environ, "RUSTUP_TOOLCHAIN": pin, "RUSTUP_AUTO_INSTALL": "0"}
+    if not arguments:
+        install = ["rustup", "toolchain", "install", pin, "--profile", "minimal", "--no-self-update"]
+        for component in components:
+            install.extend(["--component", component])
+        subprocess.run(install, env=environment, check=True)
     active = subprocess.check_output(["rustup", "show", "active-toolchain"], text=True, env=environment)
     rustc = subprocess.check_output(["rustc", "--version", "--verbose"], text=True, env=environment)
     cargo = subprocess.check_output(["cargo", "--version", "--verbose"], text=True, env=environment)
     clippy = subprocess.check_output(["cargo", "clippy", "--version"], text=True, env=environment)
     verify_identity(pin, active, rustc, cargo)
+    if components:
+        listing = subprocess.check_output(
+            ["rustup", "component", "list", "--installed", "--toolchain", pin],
+            text=True, env=environment,
+        )
+        installed = {line.split()[0] for line in listing.splitlines() if line.strip()}
+        host = active.split()[0].removeprefix(pin + "-")
+        if any(item not in installed and item + "-" + host not in installed for item in components):
+            raise ValueError("declared toolchain component is not installed")
     print(json.dumps({"declared_pin": pin, "active_toolchain": active.strip(),
                       "rustc": rustc.strip(), "cargo": cargo.strip(),
                       "clippy": clippy.strip(), "workspace_pin_verified": True}, sort_keys=True), flush=True)
