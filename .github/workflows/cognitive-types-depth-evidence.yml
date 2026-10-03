@@ -118,27 +118,26 @@ jobs:
           esac
           echo "package=$package" >> "$GITHUB_OUTPUT"
 
-      - name: Record the selected Rust toolchain
+      - name: Install and verify the workspace-pinned Rust toolchain
         id: toolchain
         if: ${{ !cancelled() && steps.select.outcome == 'success' }}
         continue-on-error: true
+        working-directory: codex-rs
         run: |
           set -euo pipefail
-          {
-            rustc --version --verbose
-            cargo --version --verbose
-            cargo clippy --version
-          } 2>&1 | tee "$RUNNER_TEMP/cognitive-types-depth/toolchain.log"
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-types-depth/toolchain.log"
 
       - name: Check consumer formatting
         id: format
         if: ${{ !cancelled() && steps.select.outcome == 'success' }}
         continue-on-error: true
+        working-directory: codex-rs
         run: |
           set -o pipefail
           {
             status=0
-            cargo fmt --manifest-path codex-rs/Cargo.toml \
+            python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py fmt --manifest-path Cargo.toml \
               --package "${{ steps.select.outputs.package }}" -- --check || status=$?
             printf 'cargo fmt exit=%s\n' "$status"
             exit "$status"
@@ -148,9 +147,10 @@ jobs:
         id: check
         if: ${{ !cancelled() && steps.select.outcome == 'success' }}
         continue-on-error: true
+        working-directory: codex-rs
         run: |
           set -o pipefail
-          cargo check --manifest-path codex-rs/Cargo.toml --locked --all-targets \
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py check --manifest-path Cargo.toml --locked --all-targets \
             -p "${{ steps.select.outputs.package }}" \
             2>&1 | tee "$RUNNER_TEMP/cognitive-types-depth/check.log"
 
@@ -158,9 +158,10 @@ jobs:
         id: clippy
         if: ${{ !cancelled() && steps.select.outcome == 'success' }}
         continue-on-error: true
+        working-directory: codex-rs
         run: |
           set -o pipefail
-          cargo clippy --manifest-path codex-rs/Cargo.toml --locked --all-targets \
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py clippy --manifest-path Cargo.toml --locked --all-targets \
             -p "${{ steps.select.outputs.package }}" -- -D warnings \
             2>&1 | tee "$RUNNER_TEMP/cognitive-types-depth/clippy.log"
 
@@ -168,9 +169,10 @@ jobs:
         id: test
         if: ${{ !cancelled() && steps.select.outcome == 'success' }}
         continue-on-error: true
+        working-directory: codex-rs
         run: |
           set -o pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked \
             -p "${{ steps.select.outputs.package }}" \
             2>&1 | tee "$RUNNER_TEMP/cognitive-types-depth/tests.log"
 
@@ -260,18 +262,24 @@ jobs:
           --kind '${{ matrix.candidate }}'
           --output "$RUNNER_TEMP/cognitive-types-owner-depth/candidate.json"
 
-      - name: Prepare owner evidence directory
+      - name: Prepare owner evidence and verify the workspace-pinned toolchain
         id: prepare
         if: ${{ !cancelled() && steps.identity.outcome == 'success' }}
-        run: test -s "$RUNNER_TEMP/cognitive-types-owner-depth/candidate.json"
+        working-directory: codex-rs
+        run: |
+          set -euo pipefail
+          test -s "$RUNNER_TEMP/cognitive-types-owner-depth/candidate.json"
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py \
+            2>&1 | tee "$RUNNER_TEMP/cognitive-types-owner-depth/toolchain.log"
 
       - name: Lint the existing owners strictly
         id: clippy
         if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
         continue-on-error: true
+        working-directory: codex-rs
         run: |
           set -o pipefail
-          cargo clippy --manifest-path codex-rs/Cargo.toml --locked --all-targets \
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py clippy --manifest-path Cargo.toml --locked --all-targets \
             -p codex-hepta-memory -p codex-hepta-agentd -- -D warnings \
             2>&1 | tee "$RUNNER_TEMP/cognitive-types-owner-depth/clippy.log"
 
@@ -279,9 +287,10 @@ jobs:
         id: store
         if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
         continue-on-error: true
+        working-directory: codex-rs
         run: |
           set -o pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked \
             -p codex-hepta-agentd --test cognitive_store_product_writer \
             2>&1 | tee "$RUNNER_TEMP/cognitive-types-owner-depth/store-writer.log"
 
@@ -289,9 +298,10 @@ jobs:
         id: recall
         if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
         continue-on-error: true
+        working-directory: codex-rs
         run: |
           set -o pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked \
             -p codex-hepta-agentd --lib canonical_recall_tests \
             2>&1 | tee "$RUNNER_TEMP/cognitive-types-owner-depth/canonical-recall.log"
 
@@ -299,9 +309,10 @@ jobs:
         id: shared
         if: ${{ !cancelled() && steps.prepare.outcome == 'success' }}
         continue-on-error: true
+        working-directory: codex-rs
         run: |
           set -o pipefail
-          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked \
             -p codex-hepta-memory shared_experience \
             2>&1 | tee "$RUNNER_TEMP/cognitive-types-owner-depth/shared-experience.log"
 
