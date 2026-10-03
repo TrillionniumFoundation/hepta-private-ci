@@ -10,6 +10,10 @@ use crate::framing::frame_part;
 /// Schema version for the local-development compact hook handshake.
 pub const COGNITIVE_COMPACT_HOOK_SCHEMA_VERSION: u32 = 1;
 
+/// Checkpoint envelopes bind complete summary provenance and validated loss data.
+/// Hook/lease v1 and journal/event v2 retain their existing byte identities.
+pub const COGNITIVE_COMPACT_CHECKPOINT_SCHEMA_VERSION: u32 = 2;
+
 /// Namespace for this validation-only seam. It is deliberately not a
 /// production authority or a persisted-event namespace.
 pub const COGNITIVE_COMPACT_HOOK_NAMESPACE: &str = "local_development_only";
@@ -81,19 +85,35 @@ impl CompactParentSnapshot {
         expected_state_sha256: Sha256Digest,
         fence: CompactFence,
     ) -> Result<Self, CognitiveCompactError> {
-        if parent_event_start > parent_event_end {
-            return Err(invalid("compact parent event range is inverted"));
-        }
-        let context_id = context_id.into();
-        validate_text(&context_id, "context id", /*max_bytes*/ 512)?;
-        Ok(Self {
-            context_id,
+        let value = Self {
+            context_id: context_id.into(),
             parent_event_start,
             parent_event_end,
             expected_parent_revision,
             expected_state_sha256,
             fence,
-        })
+        };
+        value.validate_payload()?;
+        Ok(value)
+    }
+
+    fn validate_payload(&self) -> Result<(), CognitiveCompactError> {
+        validate_text(&self.context_id, "context id", /*max_bytes*/ 512)?;
+        if self.parent_event_start > self.parent_event_end {
+            return Err(invalid("compact parent event range is inverted"));
+        }
+        if self.fence.authority_epoch == 0
+            || self.fence.owner_epoch == 0
+            || self.fence.generation == 0
+        {
+            return Err(invalid("compact fence epochs must be non-zero"));
+        }
+        validate_text(
+            &self.fence.fencing_token,
+            "fencing token",
+            /*max_bytes*/ 256,
+        )?;
+        validate_digest(&self.expected_state_sha256, "parent state")
     }
 
     fn digest(&self) -> Sha256Digest {
@@ -152,6 +172,12 @@ impl CompactLease {
     /// digest-bound envelopes, not authority grants; callers must reject a
     /// payload whose stored id or digest no longer matches its snapshot.
     pub fn validate_integrity(&self) -> Result<(), CognitiveCompactError> {
+        if self.schema_version != COGNITIVE_COMPACT_HOOK_SCHEMA_VERSION
+            || self.namespace != COGNITIVE_COMPACT_HOOK_NAMESPACE
+        {
+            return Err(invalid("unsupported compact lease schema or namespace"));
+        }
+        self.snapshot.validate_payload()?;
         let expected_digest = digest_parts(
             b"compact-lease",
             &[self.snapshot.digest().as_str().as_bytes()],
@@ -271,6 +297,36 @@ impl CompactLossReport {
             report_sha256,
         })
     }
+
+    fn validate_integrity(&self) -> Result<(), CognitiveCompactError> {
+        if self.semantic_loss_score_ppm > 1_000_000 {
+            return Err(invalid("semantic loss score must be <= 1_000_000 ppm"));
+        }
+        for (values, label) in [
+            (&self.omitted_event_ids, "omitted event id"),
+            (&self.protected_refs_lost, "lost protected reference id"),
+        ] {
+            for value in values {
+                validate_text(value, label, /*max_bytes*/ 512)?;
+            }
+            if values.windows(2).any(|pair| pair[0] >= pair[1]) {
+                return Err(invalid("compact loss lists must be sorted and unique"));
+            }
+        }
+        let expected = digest_parts(
+            b"compact-loss-report",
+            &[
+                &self.omitted_span_count.to_be_bytes(),
+                &self.semantic_loss_score_ppm.to_be_bytes(),
+                &joined_parts(&self.omitted_event_ids),
+                &joined_parts(&self.protected_refs_lost),
+            ],
+        );
+        if self.report_sha256 != expected {
+            return Err(invalid("compact loss digest does not match its payload"));
+        }
+        Ok(())
+    }
 }
 
 /// Checkpoint handed from the compact operation to the post hook.
@@ -295,30 +351,18 @@ impl CompactCheckpoint {
         loss_report: CompactLossReport,
         checkpoint_revision: u64,
     ) -> Result<Self, CognitiveCompactError> {
-        let checkpoint_id = checkpoint_id.into();
-        validate_text(&checkpoint_id, "checkpoint id", /*max_bytes*/ 512)?;
-        if summary.fact_admission() {
-            return Err(CognitiveCompactError::SummaryFactAdmission);
-        }
-        if !loss_report.protected_refs_lost.is_empty() {
-            return Err(CognitiveCompactError::ProtectedReferenceLoss);
-        }
-        let mut seen = std::collections::BTreeSet::new();
-        for protected_ref in &protected_refs {
-            if !seen.insert(protected_ref.ref_id.as_str()) {
-                return Err(invalid("duplicate protected reference id"));
-            }
-        }
-        Ok(Self {
-            schema_version: COGNITIVE_COMPACT_HOOK_SCHEMA_VERSION,
+        let value = Self {
+            schema_version: COGNITIVE_COMPACT_CHECKPOINT_SCHEMA_VERSION,
             namespace: COGNITIVE_COMPACT_HOOK_NAMESPACE.to_string(),
-            checkpoint_id,
+            checkpoint_id: checkpoint_id.into(),
             lease,
             protected_refs,
             summary,
             loss_report,
             checkpoint_revision,
-        })
+        };
+        value.validate_payload()?;
+        Ok(value)
     }
 
     pub fn rehydration_plan(
@@ -381,19 +425,44 @@ impl CompactCheckpoint {
     }
 
     fn validate_payload(&self) -> Result<(), CognitiveCompactError> {
-        if self.schema_version != COGNITIVE_COMPACT_HOOK_SCHEMA_VERSION
+        if self.schema_version != COGNITIVE_COMPACT_CHECKPOINT_SCHEMA_VERSION
             || self.namespace != COGNITIVE_COMPACT_HOOK_NAMESPACE
             || self.lease.schema_version != COGNITIVE_COMPACT_HOOK_SCHEMA_VERSION
             || self.lease.namespace != COGNITIVE_COMPACT_HOOK_NAMESPACE
         {
             return Err(invalid("unsupported compact hook schema or namespace"));
         }
+        validate_text(&self.checkpoint_id, "checkpoint id", /*max_bytes*/ 512)?;
         self.lease.validate_integrity()?;
         if self.summary.fact_admission() {
             return Err(CognitiveCompactError::SummaryFactAdmission);
         }
+        for (digest, label) in [
+            (&self.summary.summary_sha256, "summary"),
+            (&self.summary.model_receipt_sha256, "model receipt"),
+            (&self.summary.policy_digest, "policy"),
+        ] {
+            validate_digest(digest, label)?;
+        }
         if !self.loss_report.protected_refs_lost.is_empty() {
             return Err(CognitiveCompactError::ProtectedReferenceLoss);
+        }
+        self.loss_report.validate_integrity()?;
+        let mut seen = std::collections::BTreeSet::new();
+        for protected_ref in &self.protected_refs {
+            validate_text(
+                &protected_ref.ref_id,
+                "protected reference id",
+                /*max_bytes*/ 512,
+            )?;
+            validate_text(
+                &protected_ref.kind,
+                "protected reference kind",
+                /*max_bytes*/ 128,
+            )?;
+            if !seen.insert(protected_ref.ref_id.as_str()) {
+                return Err(invalid("duplicate protected reference id"));
+            }
         }
         Ok(())
     }
@@ -457,6 +526,18 @@ fn validate_text(value: &str, label: &str, max_bytes: usize) -> Result<(), Cogni
         return Err(invalid(format!(
             "{label} must contain 1..={max_bytes} non-NUL bytes"
         )));
+    }
+    Ok(())
+}
+
+fn validate_digest(value: &Sha256Digest, label: &str) -> Result<(), CognitiveCompactError> {
+    let digest = value.as_str();
+    if digest.len() != 64
+        || !digest
+            .bytes()
+            .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    {
+        return Err(invalid(format!("{label} digest must be canonical SHA-256")));
     }
     Ok(())
 }

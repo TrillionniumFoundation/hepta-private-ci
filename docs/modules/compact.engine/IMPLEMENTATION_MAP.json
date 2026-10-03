@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "bdaab7f7ce1cea5707ea0ed25dc1c4360e5cf7de",
-    "tree": "93e9b2ea87f1e151560d8e4008738f3a65cfa4b3"
+    "commit": "215b292b32f9ad94df94bb1be57e70a9a3925f93",
+    "tree": "0b786be7e309660aeb025b259ca8f84232e15352"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
@@ -186,5 +186,125 @@
   },
   "sourceRoot": [
     "codex-rs/hepta-compact-engine"
-  ]
+  ],
+  "sourceObjects": [
+    {
+      "path": ".gitattributes",
+      "object": "20fbe6f83f656a5b4a576db7f7e1849845c363e1"
+    },
+    {
+      "path": ".github/workflows/compact-checkpoint-regression.yml",
+      "object": "37b3444a84deb59cfbd5eb62bef0b645852ee399"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine",
+      "object": "bacd1470af05c171f7362ba774837d7acaa0d9ae"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/authenticated.rs",
+      "object": "65d7c3df18e086f053e0d3b92123ba5aaf7bfa88"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/authenticated_tests.rs",
+      "object": "8d80de98c7ac5660899488bcf8a4caa93931a11a"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/candidate.rs",
+      "object": "01a828bf044dd56ad67417449584ed46d19811c8"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/lib.rs",
+      "object": "2996b44c4dbd9a71cf5bf1fcc621804d5e2c0d1c"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/lib_tests.rs",
+      "object": "d1068cee79702e754c8b7bfdb31b3c1177f83a34"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/publication.rs",
+      "object": "8bdae041487d5abb2a32f17e41c283574fbcdbee"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/publication_body.rs",
+      "object": "46c9f1082e735c8c2cf323e14dc98145682d9eca"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/publication_body_codec.rs",
+      "object": "0d2c84341e0e920b8d7e99f8bed4a58200e0b8d3"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/publication_body_restore.rs",
+      "object": "9816e79a1084ab69014861fa267a5842dcacb797"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/publication_body_tests.rs",
+      "object": "60d8c30eaab15e9cfd768a4d5ed5b48a75092d6b"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/publication_tests.rs",
+      "object": "512440b0f4767bcbc6f11c70db88a822bdb7d5b5"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/qualified.rs",
+      "object": "6bab9faf3dfdbe871b39fc2f13a929771800a08a"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/qualified_tests.rs",
+      "object": "bd60d86ae156994b6202e7a2c5263893ae17bdfe"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_compact.rs",
+      "object": "74b730f6410ecd28d6e1100e35fbba808fca9fbd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "object": "da72483192728ae45824bd0febe14c86806d2bd8"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+      "object": "11306805bca685a18758b50c16659a75092e0077"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/compact_checkpoint_integrity_tests.rs",
+      "object": "f5bde568ac4c2f3d5651442697708d0449221398"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/compact_persistence.rs",
+      "object": "70589a4918de1a17c4240d835a0161eb64d94421"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/compact_persistence_tests.rs",
+      "object": "344708484f298182442c66c4ced3fd85df846c5f"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/h7_trajectory_store_tests.rs",
+      "object": "20de494e79f17f104e4b649df8b41d006f9162bd"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lib.rs",
+      "object": "dda8e7e96ed51c7cd1992c26bfdd02e38f08cb47"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_turn_binding.rs",
+      "object": "f2f37b372d376da85455e318646caaaa79d2fb92"
+    },
+    {
+      "path": "docs/modules/compact.engine/RESUMED_AUDIT_2026-10-03.md",
+      "object": "ec23cae11938b974509665938a0e551f04764e69"
+    },
+    {
+      "path": "docs/modules/compact.engine/TECHNICAL.md",
+      "object": "c400cddcaba3f808058652b624a4fbb05129df26"
+    }
+  ],
+  "legacyLocalCheckpointIntegrity": {
+    "scope": "local_development_only; not native production checkpoint publication",
+    "checkpointEnvelopeVersion": 2,
+    "checkpointDigestDomain": "hepta-memory:compact-persistence:checkpoint:v2",
+    "journalEventSchemaVersion": 2,
+    "leaseSchemaVersion": 1,
+    "historicalEventRewrite": false,
+    "legacyTypedReplay": "rejected; no automatic backfill",
+    "executionQualification": false
+  }
 }

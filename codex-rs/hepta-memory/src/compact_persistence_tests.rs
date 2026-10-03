@@ -18,6 +18,9 @@ use crate::CompactReconcileOutcome;
 use crate::CompactSummaryReceipt;
 use crate::checkpoint_digest;
 
+#[path = "compact_checkpoint_integrity_tests.rs"]
+mod checkpoint_integrity;
+
 fn fence() -> CompactFence {
     CompactFence::new(3, 8, 19, "fence:19").expect("fence")
 }

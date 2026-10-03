@@ -1,5 +1,9 @@
 # compact.engine technical development guide
 
+The [2026-10-03 checkpoint integrity continuation](RESUMED_AUDIT_2026-10-03.md)
+documents the legacy local-memory checkpoint envelope/hash v2, unchanged
+historical journal/event v2, and the remaining production publisher boundary.
+
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
 **Module:** `compact.engine`

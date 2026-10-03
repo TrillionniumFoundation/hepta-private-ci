@@ -1,0 +1,71 @@
+name: Compact exact-source checkpoint regression
+
+on:
+  pull_request:
+    paths:
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - ".github/workflows/compact-checkpoint-regression.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: compact-checkpoint-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  exact-source:
+    name: Compact exact source (${{ matrix.os }})
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, macos-14, windows-2022]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    env:
+      RUSTUP_TOOLCHAIN: "1.95.0"
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          persist-credentials: false
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - name: Install pinned Rust checks
+        shell: bash
+        run: rustup toolchain install 1.95.0 --profile minimal --component clippy,rustfmt
+      - name: Record immutable source identity
+        shell: bash
+        run: |
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git rev-parse HEAD HEAD^{tree}
+      - name: Resolve verified V8 build inputs
+        shell: bash
+        env:
+          CODEX_REPO_ROOT: ${{ github.workspace }}
+          PYTHONPATH: scripts
+        run: python scripts/hepta_ci_v8.py
+      - name: Test complete memory and native compact packages
+        shell: bash
+        run: just test --locked -p codex-hepta-memory -p codex-hepta-compact-engine --test-threads 2
+      - name: Check all package targets and unchanged source
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory -p codex-hepta-compact-engine -- --check
+          cargo check --manifest-path codex-rs/Cargo.toml --locked --all-targets -p codex-hepta-memory -p codex-hepta-compact-engine
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
