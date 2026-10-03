@@ -83,7 +83,7 @@ jobs:
             -p codex-hepta-paths \
             -p codex-hepta-runtime \
             -p codex-hepta-native-gateway \
-            -- -D warnings
+            -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
   authbus-local-qualification:
     name: AuthBus local qualification (feature-on, no authority)

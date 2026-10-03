@@ -58,7 +58,9 @@ class HeaderParserBuildTest(unittest.TestCase):
         local_env = {**original, "BUILDBUDDY_API_KEY": ""}
         for call in run.call_args_list:
             self.assertEqual(call.kwargs["env"], local_env)
-            self.assertEqual(call.kwargs["cwd"], Path(smoke.__file__).resolve().parents[2])
+            self.assertEqual(
+                call.kwargs["cwd"], Path(smoke.__file__).resolve().parents[2]
+            )
             self.assertTrue(call.kwargs["check"])
 
     def test_missing_or_ambiguous_executable_fails_before_execution(self) -> None:

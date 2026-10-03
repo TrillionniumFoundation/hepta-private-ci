@@ -11,12 +11,66 @@ from hepta_workflow_commands import (
     verify_synthetic_merge,
     verify_owner_self_tests,
     workflow_commands,
+    load_workflow,
+    workflow_events,
+    workflow_needs,
 )
 
 ROOT = Path(__file__).resolve().parents[1]
 
 
 class WorkflowCommandTests(unittest.TestCase):
+    def test_equivalent_yaml_needs_preserve_exact_owner_membership(self):
+        expected = {
+            "derived-projections",
+            "owner-formatting",
+            "catalog-admission",
+            "process-qualification",
+        }
+        for declaration in (
+            "needs: [derived-projections, owner-formatting, catalog-admission, process-qualification]",
+            "needs:\n  [derived-projections, owner-formatting, catalog-admission, process-qualification,]",
+            '"needs":\n  - "derived-projections"\n  - owner-formatting\n  - catalog-admission\n  - process-qualification',
+        ):
+            with self.subTest(declaration=declaration):
+                self.assertEqual(workflow_needs(load_workflow(declaration)), expected)
+        for declaration in (
+            "needs: [derived-projections, owner-formatting, catalog-admission]",
+            "needs: [derived-projections, owner-formatting, catalog-admission, wrong-owner]",
+        ):
+            self.assertNotEqual(workflow_needs(load_workflow(declaration)), expected)
+
+    def test_yaml_on_key_is_not_coerced_into_boolean(self):
+        for declaration in (
+            "on: [workflow_call, workflow_dispatch]",
+            '"on": {workflow_call: {}, workflow_dispatch: {}}',
+        ):
+            self.assertEqual(
+                workflow_events(load_workflow(declaration)),
+                {"workflow_call", "workflow_dispatch"},
+            )
+
+    def test_yaml_parser_rejects_ambiguous_or_unbounded_inputs(self):
+        for text in (
+            "needs: [first]\nneeds: [second]",
+            "jobs: &loop {job: *loop}",
+            "jobs: {<<: {hidden: command}}",
+            "!!python/object/apply:os.system [echo unexpected]",
+            "[not, a, workflow]",
+            "jobs: [" + "[" * 65 + "value" + "]" * 66,
+            "jobs: [" + "[" * 500 + "value" + "]" * 501,
+            "#" * 262145,
+            "jobs: [" + "a," * 16385 + "]",
+        ):
+            with self.subTest(text=text[:60]), self.assertRaises(ValueError):
+                load_workflow(text)
+
+    def test_yaml_workflow_shape_rejects_malformed_needs_and_duplicate_events(self):
+        with self.assertRaises(ValueError):
+            workflow_needs(load_workflow("needs: {unexpected: owner}"))
+        with self.assertRaises(ValueError):
+            workflow_events(load_workflow("on: [workflow_call, workflow_call]"))
+
     def test_only_run_scalars_are_commands(self):
         self.assertEqual(
             workflow_commands("""name: cargo test
@@ -40,7 +94,12 @@ steps:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             workflow = root / "owner.yml"
-            registry = [{"validator": "python3 scripts/owner.py verify", "workflow": "owner.yml"}]
+            registry = [
+                {
+                    "validator": "python3 scripts/owner.py verify",
+                    "workflow": "owner.yml",
+                }
+            ]
             workflow.write_text("steps:\n  - run: python3 scripts/owner.py self-test\n")
             verify_owner_self_tests(registry, root)
             for line in (
@@ -48,14 +107,19 @@ steps:
                 "echo python3 scripts/owner.py self-test",
                 "python3 scripts/owner.py verify",
             ):
-                with self.subTest(line=line), self.assertRaisesRegex(ValueError, "must invoke"):
+                with (
+                    self.subTest(line=line),
+                    self.assertRaisesRegex(ValueError, "must invoke"),
+                ):
                     workflow.write_text(f"steps:\n  - run: |\n      {line}\n")
                     verify_owner_self_tests(registry, root)
 
     def test_real_subordinate_workflows_own_their_self_tests(self):
         import json
 
-        registry = json.loads((ROOT / "docs/governance/DOCUMENT_SYSTEM.json").read_text())
+        registry = json.loads(
+            (ROOT / "docs/governance/DOCUMENT_SYSTEM.json").read_text()
+        )
         verify_owner_self_tests(registry["subordinateRegistries"], ROOT)
 
     def test_real_workflow_resolves_composite_action(self):

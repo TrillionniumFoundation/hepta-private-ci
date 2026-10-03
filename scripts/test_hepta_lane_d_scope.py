@@ -433,6 +433,10 @@ class LaneDTruthBoundaryTests(unittest.TestCase):
         LANE_D.verify_truth_boundary(self.row, self.mapping)
         real_map = LANE_D.load(LANE_D.MAPS["utility.ndu"])
         LANE_D.verify_truth_boundary(self.row, real_map)
+        # Exercise caller validation with an explicit fixture claim; the live
+        # source map may truthfully leave current-candidate execution pending.
+        real_map["claimBoundary"]["requestLocalReadOnlyProductExecutionProved"] = True
+        LANE_D.verify_truth_boundary(self.row, real_map)
         real_map["productCallers"][0]["nativeSymbol"] = "missing_read_only_caller"
         with self.assertRaisesRegex(SystemExit, "missing read-only caller symbol"):
             LANE_D.verify_truth_boundary(self.row, real_map)

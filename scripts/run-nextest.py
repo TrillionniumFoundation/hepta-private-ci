@@ -14,6 +14,143 @@ import sys
 import tempfile
 
 
+class GraphFreeFilter:
+    """Recognize a bounded, graph-free subset of nextest's filterset grammar.
+
+    This only selects a metadata strategy. Nextest still parses and evaluates
+    the original expression. Unknown predicates, default-filter expansion and
+    opaque syntax keep full metadata. Matcher contents are never predicates.
+    """
+
+    matchers = {"test", "package", "binary", "binary_id", "kind", "platform"}
+
+    def __init__(self, expression):
+        self.expression = expression
+        self.offset = 0
+
+    def skip_space(self):
+        while (
+            self.offset < len(self.expression)
+            and self.expression[self.offset].isspace()
+        ):
+            self.offset += 1
+
+    def token(self, token):
+        self.skip_space()
+        if not self.expression.startswith(token, self.offset):
+            return False
+        end = self.offset + len(token)
+        if token.isalpha() and end < len(self.expression):
+            if self.expression[end].isalnum() or self.expression[end] == "_":
+                return False
+        self.offset = end
+        return True
+
+    def expression_node(self, depth=0):
+        if depth > 64 or not self.atom(depth):
+            return False
+        while any(
+            self.token(operator) for operator in ("&", "|", "+", "-", "and", "or")
+        ):
+            if not self.atom(depth):
+                return False
+        return True
+
+    def atom(self, depth):
+        if self.token("!") or self.token("not"):
+            return self.atom(depth + 1) if depth < 64 else False
+        if self.token("("):
+            return self.expression_node(depth + 1) and self.token(")")
+        self.skip_space()
+        start = self.offset
+        while self.offset < len(self.expression) and (
+            self.expression[self.offset].isalnum()
+            or self.expression[self.offset] == "_"
+        ):
+            self.offset += 1
+        name = self.expression[start : self.offset]
+        if name not in self.matchers | {"all", "none"} or not self.token("("):
+            return False
+        if name in {"all", "none"}:
+            return self.token(")")
+        return self.matcher() and self.token(")")
+
+    def matcher(self):
+        self.skip_space()
+        start = self.offset
+        if self.offset < len(self.expression) and self.expression[self.offset] == "/":
+            # Regex parentheses, commas and words such as deps are matcher data.
+            self.offset += 1
+            escaped = False
+            while self.offset < len(self.expression):
+                char = self.expression[self.offset]
+                self.offset += 1
+                if escaped:
+                    escaped = False
+                elif char == "\\":
+                    escaped = True
+                elif char == "/":
+                    return self.offset > start + 2
+            return False
+        while self.offset < len(self.expression):
+            char = self.expression[self.offset]
+            if char == ")":
+                return bool(self.expression[start : self.offset].strip().lstrip("=~#"))
+            if char in "(,":
+                return False
+            self.offset += 1
+            if char != "\\":
+                continue
+            if self.offset >= len(self.expression):
+                return False
+            escape = self.expression[self.offset]
+            self.offset += 1
+            if escape in "nrt\\/),":
+                continue
+            if escape != "u" or not self.expression.startswith("{", self.offset):
+                return False
+            end = self.expression.find("}", self.offset + 1)
+            digits = self.expression[self.offset + 1 : end] if end >= 0 else ""
+            if not re.fullmatch(r"[0-9a-fA-F]{1,6}", digits):
+                return False
+            scalar = int(digits, 16)
+            if scalar > 0x10FFFF or 0xD800 <= scalar <= 0xDFFF:
+                return False
+            self.offset = end + 1
+        return False
+
+    def recognized(self):
+        if not self.expression or len(self.expression) > 16384:
+            return False
+        if not self.expression_node():
+            return False
+        self.skip_space()
+        return self.offset == len(self.expression)
+
+
+def graph_free_filter(expression):
+    return GraphFreeFilter(expression).recognized()
+
+
+def filtersets(args):
+    """Extract explicit -E forms without interpreting arguments after --."""
+    expressions = []
+    index = 0
+    while index < len(args) and args[index] != "--":
+        arg = args[index]
+        if arg in {"-E", "--filterset"}:
+            index += 1
+            if index >= len(args) or args[index] == "--":
+                return None
+            expressions.append(args[index])
+        elif arg.startswith("--filterset="):
+            expressions.append(arg.split("=", 1)[1])
+        elif arg.startswith("-E"):
+            expressions.append(arg[2:].removeprefix("="))
+        index += 1
+    return expressions
+
+
 def scoped_packages(args):
     packages = []
     for index, arg in enumerate(args):
@@ -35,18 +172,20 @@ def use_scoped_metadata(args, cwd):
         return False
     if not scoped_packages(args):
         return False
+    expressions = filtersets(args)
+    if expressions is None or not all(
+        graph_free_filter(expression) for expression in expressions
+    ):
+        return False
     full_metadata_options = {
         "--workspace",
         "--all",
         "--all-features",
         "--exclude",
-        "-E",
-        "--filterset",
         "--cargo-metadata",
         "--binaries-metadata",
         "--archive-file",
         "--workspace-remap",
-        "--manifest-path",
         "--config-file",
         "--tool-config-file",
         "--user-config-file",
@@ -56,9 +195,14 @@ def use_scoped_metadata(args, cwd):
         "-h",
         "--unit-graph",
     }
-    for arg in args[: args.index("--") if "--" in args else len(args)]:
+    cargo_args = args[: args.index("--") if "--" in args else len(args)]
+    for index, arg in enumerate(cargo_args):
         option = arg.split("=", 1)[0]
-        if option in full_metadata_options or arg.startswith(("-E", "-Z")):
+        if option in full_metadata_options or arg.startswith("-Z"):
+            return False
+        if arg == "--manifest-path" and (
+            index + 1 == len(cargo_args) or cargo_args[index + 1].startswith("-")
+        ):
             return False
     # Graph-based overrides need resolved dependencies, even without -E.
     repo_config = Path(__file__).resolve().parents[1] / "codex-rs/.config/nextest.toml"
@@ -109,6 +253,20 @@ def run(args):
         # ordinary selection semantics rather than approximating them here.
         if not all(package in names for package in scoped_packages(args)):
             return subprocess.call(command)
+        # Nextest derives its build manifest from the supplied metadata and
+        # rejects combining --manifest-path with --cargo-metadata. Keep the
+        # original arguments for fallback; remove only this resolved selector.
+        build_args = []
+        arguments = iter(args)
+        for arg in arguments:
+            if arg == "--":
+                build_args.extend([arg, *arguments])
+                break
+            if arg == "--manifest-path":
+                next(arguments)
+            elif not arg.startswith("--manifest-path="):
+                build_args.append(arg)
+        command = ["cargo", "nextest", "run", "--no-fail-fast", *build_args]
         separator = command.index("--") if "--" in command else len(command)
         command[separator:separator] = ["--cargo-metadata", str(metadata_path)]
         return subprocess.call(command)

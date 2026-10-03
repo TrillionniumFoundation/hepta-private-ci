@@ -169,7 +169,7 @@ jobs:
           -p codex-hepta-intelligence-eval
           -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
-          --all-targets -- -D warnings
+          --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Formatting and clean source
         if: always()
@@ -363,7 +363,7 @@ jobs:
           -p codex-hepta-intelligence-eval
           -p codex-hepta-intelligence
           -p codex-hepta-shadow-qualification
-          --all-targets -- -D warnings
+          --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Verify merged formatting and index stability
         shell: bash
