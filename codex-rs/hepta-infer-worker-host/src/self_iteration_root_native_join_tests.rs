@@ -165,7 +165,7 @@ fn full_prompt_socket_timeout_and_utf8_output_must_join_original_sources() {
         validate_root_native_assessment_facts_v1(&request, &record, &witness, &changed, 3000)
             .is_err()
     );
-    let mut changed = record.clone();
+    let mut changed = record;
     changed.observation.as_mut().unwrap().output = "原始text🙂".into();
     assert!(
         validate_root_native_assessment_facts_v1(&request, &changed, &witness, &scope(), 3000)
