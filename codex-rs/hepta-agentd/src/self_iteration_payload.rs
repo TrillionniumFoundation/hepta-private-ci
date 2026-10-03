@@ -114,10 +114,10 @@ pub fn self_iteration_stage_payload_v1(
     frozen_digest: Digest32,
     evaluation_digest: Digest32,
 ) -> Vec<u8> {
-    let mut bytes = b"hepta.agentd.self-iteration-stage.v1\0".to_vec();
-    bytes.extend_from_slice(frozen_digest.as_array());
-    bytes.extend_from_slice(evaluation_digest.as_array());
-    bytes
+    codex_hepta_agent_components::intelligence_eval::self_iteration_evaluation_use_payload_v1(
+        frozen_digest,
+        evaluation_digest,
+    )
 }
 
 pub fn self_iteration_canary_payload_v1(

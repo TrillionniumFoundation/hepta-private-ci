@@ -35,6 +35,29 @@ pub struct AgentdSignedEvaluationV1 {
     pub use_attestation: SignedLearningEvidenceV1,
 }
 
+impl AgentdSignedEvaluationV1 {
+    /// Read original independently signed cycle evidence. Raw wire values stay
+    /// inside Eval until its current trust and exact frozen use are verified.
+    pub fn from_self_iteration_transport(
+        bytes: &[u8],
+        frozen_candidate: Digest32,
+        trust: &ActivatedLearningTrustV1,
+        now_unix_ms: u64,
+    ) -> Result<Self, crate::AgentdError> {
+        let verified = codex_hepta_agent_components::intelligence_eval::decode_self_iteration_evaluation_transport_v1(
+            bytes, frozen_candidate, trust, now_unix_ms,
+        )
+        .map_err(|error| crate::AgentdError::Invalid(error.to_string()))?;
+        let (bundle, roles, evidence, use_attestation) = verified.into_parts();
+        Ok(Self {
+            bundle,
+            roles,
+            evidence,
+            use_attestation,
+        })
+    }
+}
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentdEvaluationBindingV1 {
     pub run_id: StableId,
