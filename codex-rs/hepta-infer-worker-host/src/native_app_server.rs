@@ -97,7 +97,11 @@ mod control;
 #[path = "native_control_maintenance.rs"]
 mod maintenance;
 pub use control::NativeAdmission;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub(crate) use control::NativeDeadlinePolicy;
 pub use control::NativeIntelligenceRunBinding;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub(crate) use control::native_source_payload_digest;
 pub use maintenance::NativeControlMaintenanceReceipt;
 use tokio::time::Instant;
 use tokio::time::timeout;

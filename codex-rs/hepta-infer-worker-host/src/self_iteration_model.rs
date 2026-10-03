@@ -26,6 +26,13 @@ use control_owner::ModelControlOwner;
 mod receipt_reader;
 #[cfg(feature = "agentd-host")]
 pub use receipt_reader::NativeModelReceiptReaderV1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+#[path = "self_iteration_root_native_join.rs"]
+mod root_native_join;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_native_join::RootNativeAssessmentScopeV1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_native_join::validate_root_native_assessment_facts_v1;
 
 const NATIVE_PROMPT_LIMIT: usize = 32 * 1024;
 

@@ -11,6 +11,7 @@ agentd-host = ["codex-hepta-agentd/server", "codex-hepta-agentd/production-cogni
 test-support = []
 native-chat-bridge = ["dep:anyhow", "dep:codex-hepta-fleet", "dep:codex-hepta-matrixd", "dep:codex-hepta-paths", "dep:codex-hepta-supervisor", "codex-hepta-supervisor/local-host"]
 fixed-initial-cpu-host = ["agentd-host", "codex-hepta-agent-components/fixed-eval-host"]
+root-frozen-generator = ["native-chat-bridge", "fixed-initial-cpu-host", "codex-hepta-supervisor/local-model-relay"]
 
 [lib]
 name = "codex_hepta_infer_worker_host"

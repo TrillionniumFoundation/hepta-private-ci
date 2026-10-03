@@ -145,7 +145,7 @@ fn runtime_codex_sha256_hex(value: &str) -> bool {
 }
 
 #[derive(Clone, Copy)]
-pub(super) enum NativeDeadlinePolicy {
+pub(crate) enum NativeDeadlinePolicy {
     Profile,
     Absolute(u64),
 }
@@ -382,7 +382,7 @@ impl AppServerModelDriver {
     }
 }
 
-fn native_source_payload_digest(
+pub(crate) fn native_source_payload_digest(
     prompt: &str,
     context_query: &Option<String>,
     socket: &std::path::Path,
