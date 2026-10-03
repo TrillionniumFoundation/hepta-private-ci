@@ -122,6 +122,24 @@ pub(super) fn publish(inputs: Inputs) -> HostResult<Value> {
         receipts.push(serde_json::json!({"artifact_id":inputs.artifacts[index].artifact_id.as_str(),"original_operation_id":receipt.operation_id.as_str(),
             "registry_head":signed.witness.head_digest.to_string(),"original_head_issued_at":signed.witness.issued_at,"acknowledged":true}));
     }
+    expose_original_public_artifacts(&inputs.profile.owner_root)?;
+    inputs.revalidate()?;
+    let current = inputs.current()?.current_registry_view(now_ms()?)?;
+    if inputs
+        .artifacts
+        .iter()
+        .any(|manifest| !current.is_eligible(&manifest.artifact_id))
+    {
+        return Err("initial CURRENT lacks eligible exact artifacts".into());
+    }
+    Ok(
+        serde_json::json!({"schema":if inputs.evidence.operational_lease().is_some() {"hepta.cpu-neuron.continued-installed-model-publication.v2"} else if inputs.first_installation_successor {"hepta.cpu-neuron.first-installed-profile-publication.v1"} else if inputs.renewal.is_some() {"hepta.cpu-neuron.fresh-operational-publication.v1"} else {"hepta.cpu-neuron.initial-root-publication.v1"},"profile_digest":inputs.profile_source.digest,
+        "independent_evidence_digest":inputs.evidence.authentication_digest().to_string(),"generation":1,"qualified_predecessor":null,
+        "current_head":current.receipt().head_digest.to_string(),"publications":receipts,"primary_superiority":false,"holdout_consumed":false,"production_activation":false}),
+    )
+}
+/// Expose only the same bounded immutable public Owner protocol records.
+pub(super) fn expose_original_public_artifacts(root: &Path) -> HostResult<()> {
     // These seven protocol directories contain public immutable state only.
     // Signing keys and the independent restart floor stay in private role homes.
     use std::os::unix::fs::MetadataExt;
@@ -135,7 +153,7 @@ pub(super) fn publish(inputs: Inputs) -> HostResult<Value> {
         "heads",
         "admissions",
     ] {
-        let directory = inputs.profile.owner_root.join(name);
+        let directory = root.join(name);
         let metadata = std::fs::symlink_metadata(&directory)?;
         if !metadata.is_dir() || metadata.uid() != 0 || directory.canonicalize()? != directory {
             return Err("Root public artifact directory boundary".into());
@@ -170,21 +188,9 @@ pub(super) fn publish(inputs: Inputs) -> HostResult<Value> {
             std::fs::File::open(directory)?.sync_all()?;
         }
     }
-    inputs.revalidate()?;
-    let current = inputs.current()?.current_registry_view(now_ms()?)?;
-    if inputs
-        .artifacts
-        .iter()
-        .any(|manifest| !current.is_eligible(&manifest.artifact_id))
-    {
-        return Err("initial CURRENT lacks eligible exact artifacts".into());
-    }
-    Ok(
-        serde_json::json!({"schema":if inputs.evidence.operational_lease().is_some() {"hepta.cpu-neuron.continued-installed-model-publication.v2"} else if inputs.first_installation_successor {"hepta.cpu-neuron.first-installed-profile-publication.v1"} else if inputs.renewal.is_some() {"hepta.cpu-neuron.fresh-operational-publication.v1"} else {"hepta.cpu-neuron.initial-root-publication.v1"},"profile_digest":inputs.profile_source.digest,
-        "independent_evidence_digest":inputs.evidence.authentication_digest().to_string(),"generation":1,"qualified_predecessor":null,
-        "current_head":current.receipt().head_digest.to_string(),"publications":receipts,"primary_superiority":false,"holdout_consumed":false,"production_activation":false}),
-    )
+    Ok(())
 }
+
 fn lease(inputs: &Inputs, time: &OriginalTimeSignature) -> HostResult<SignedArtifactWriterLeaseV1> {
     Ok(SignedArtifactWriterLeaseV1 {
         lease_id: id(&format!("initial-cpu:{}", inputs.profile_source.digest))?,

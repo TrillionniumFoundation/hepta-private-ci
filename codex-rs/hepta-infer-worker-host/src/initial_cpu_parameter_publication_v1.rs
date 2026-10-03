@@ -188,6 +188,7 @@ pub fn publish_parameter_pre_registered_artifacts_v1(
             current_head: signed.witness.head_digest.to_string(),
         });
     }
+    publication::expose_original_public_artifacts(&inputs.profile.owner_root)?;
     let observed = materials::evaluation(&config, true)?;
     materials::revalidate(&observed, true)?;
     let owner = inputs.current()?;
