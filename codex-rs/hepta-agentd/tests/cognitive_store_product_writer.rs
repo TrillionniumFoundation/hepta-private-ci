@@ -143,7 +143,7 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
     let expected = store.recovery_anchor().await?;
-    drop(store);
+    store.close().await;
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
