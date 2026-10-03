@@ -75,7 +75,13 @@ profile explicitly declares and enforces that bound.
 
 ## 2. Canonical document system and historical cleanup
 
-Read in this order:
+For an ordinary change, start with the affected module's `module.toml`, its
+technical guide, and the applicable source instructions. Run its owning tests
+and checks. Follow another owner's contract when crossing that boundary. A
+developer does not need to read or reproduce the global qualification document
+set before editing source.
+
+For architecture work or an actual qualification boundary, the reference order is:
 
 1. `docs/CURRENT.json` — static source-selection policy and explicit prohibition on cached dynamic candidate facts;
 2. this document — global requirements and delivery policy;
@@ -154,7 +160,11 @@ intelligence.control  # composition façade only
 
 `trajectory.store` is replaced by the more complete append-only `learning.ledger`. `learning.shadow` becomes the narrower `learning.eval`. The former broad `intelligence.control` no longer owns learning facts, prompt facts, artifacts or model execution.
 
-Each module has a primary owner, deputy, exclusive roots, dependencies, data authority, forbidden authority and bounded work packages. One developer or agent receives a work envelope, not broad repository ownership. Cross-module changes require explicit co-ownership or a separate integration package.
+Each module declares its source roots, dependencies and durable-data owner.
+Owner and deputy names identify technical accountability. An authorized source
+change needs no separately issued lane envelope or integration package.
+Cross-module changes preserve those ownership boundaries and test the affected
+owners and consumers; they may be implemented and reviewed together.
 
 ## 5A. Closed-world module implementation guides
 
