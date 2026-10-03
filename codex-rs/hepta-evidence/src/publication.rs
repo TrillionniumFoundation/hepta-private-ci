@@ -14,6 +14,8 @@ use crate::EvidenceRecoverySnapshotV1;
 use crate::HeptaEvidenceStore;
 use crate::canonical::canonical_json;
 use crate::frontier_acceptance::accept_in_transaction;
+use crate::publication_time::now_millis;
+use crate::publication_time::require_time_floor;
 use crate::recovery_frontier::authenticated_snapshot_in_transaction;
 use crate::schema_validation::classify_sqlx_error;
 
@@ -110,34 +112,40 @@ impl HeptaEvidenceStore {
     /// Acquire the single durable publication owner. A live owner cannot be
     /// replaced. An expired owner is replaced by exactly the next generation;
     /// in-flight batches keep their identity and are reconciled by the successor.
+    /// Time is sampled internally after writer admission. The former caller-time
+    /// argument is removed from all five publication write APIs.
+    ///
+    /// ```compile_fail
+    /// use codex_hepta_evidence::HeptaEvidenceStore;
+    /// async fn obsolete_caller_timestamp(store: &HeptaEvidenceStore) {
+    ///     let _ = store.claim_publication_owner("publisher:old", u64::MAX, 1000).await;
+    /// }
+    /// ```
     pub async fn claim_publication_owner(
         &self,
         owner_id: &str,
-        now_unix_ms: u64,
         lease_duration_ms: u64,
     ) -> Result<EvidencePublicationOwnerLeaseV1, EvidenceError> {
         validate_stable_id(owner_id, "publication owner")?;
-        if now_unix_ms == 0
-            || lease_duration_ms == 0
-            || lease_duration_ms > MAX_PUBLICATION_LEASE_MS
-        {
+        if lease_duration_ms == 0 || lease_duration_ms > MAX_PUBLICATION_LEASE_MS {
             return Err(invalid(
                 "publication owner lease duration must be between one millisecond and 24 hours",
             ));
         }
-        let expires = now_unix_ms
-            .checked_add(lease_duration_ms)
-            .ok_or_else(|| invalid("publication owner lease timestamp overflow"))?;
-        let now = to_i64(now_unix_ms, "publication owner timestamp")?;
-        let expires_i64 = to_i64(expires, "publication owner lease expiry")?;
         let mut transaction = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        let now_unix_ms = now_millis(self)?;
+        let expires = now_unix_ms
+            .checked_add(lease_duration_ms)
+            .ok_or_else(|| invalid("publication owner lease timestamp overflow"))?;
+        let now = to_i64(now_unix_ms, "publication owner timestamp")?;
+        let expires_i64 = to_i64(expires, "publication owner lease expiry")?;
         let store_id = enrolled_store_id(&mut transaction).await?;
         let row = sqlx::query(
-            "SELECT owner_id, owner_generation, lease_expires_at_ms
+            "SELECT owner_id, owner_generation, lease_expires_at_ms, updated_at_ms
              FROM evidence_publication_owner WHERE store_id = ?",
         )
         .bind(&store_id)
@@ -171,6 +179,13 @@ impl HeptaEvidenceStore {
                     row.try_get("lease_expires_at_ms")
                         .map_err(classify_sqlx_error)?,
                     "publication owner lease expiry",
+                )?;
+                require_time_floor(
+                    now_unix_ms,
+                    positive_u64_from_i64(
+                        row.try_get("updated_at_ms").map_err(classify_sqlx_error)?,
+                        "publication owner timestamp",
+                    )?,
                 )?;
                 if current_owner == owner_id && current_expiry > now_unix_ms {
                     let extended = current_expiry.max(expires);
@@ -237,7 +252,6 @@ impl HeptaEvidenceStore {
     pub async fn prepare_publication_batch(
         &self,
         lease: &EvidencePublicationOwnerLeaseV1,
-        now_unix_ms: u64,
         maximum_intents: usize,
     ) -> Result<Option<EvidencePublicationBatchV1>, EvidenceError> {
         if maximum_intents == 0 || maximum_intents > MAX_PUBLICATION_BATCH_INTENTS {
@@ -245,12 +259,13 @@ impl HeptaEvidenceStore {
                 "publication batch must contain between one and 512 intents",
             ));
         }
-        let now = to_i64(now_unix_ms, "publication preparation timestamp")?;
         let mut transaction = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        let now_unix_ms = now_millis(self)?;
+        let now = to_i64(now_unix_ms, "publication preparation timestamp")?;
         require_publication_owner(&mut transaction, lease, now_unix_ms).await?;
         if let Some(row) = sqlx::query(
             "SELECT * FROM evidence_publication_batches
@@ -263,6 +278,7 @@ impl HeptaEvidenceStore {
         .map_err(classify_sqlx_error)?
         {
             let batch = decode_batch(&row)?;
+            require_time_floor(now_unix_ms, batch.updated_at_unix_ms)?;
             transaction.commit().await.map_err(classify_sqlx_error)?;
             return Ok(Some(batch));
         }
@@ -315,6 +331,9 @@ impl HeptaEvidenceStore {
             .map_err(|error| EvidenceError::Serialization(error.to_string()))?;
         let snapshot_sha256 = Sha256Digest::for_bytes(snapshot_json.as_bytes());
         let accepted = latest_accepted_in_transaction(&mut transaction, &lease.store_id).await?;
+        if let Some(accepted) = &accepted {
+            require_time_floor(now_unix_ms, accepted.accepted_at_unix_ms)?;
+        }
         let expected_frontier_generation = accepted.as_ref().map(|value| value.frontier_generation);
         let expected_frontier_sha256 = accepted.as_ref().map(|value| value.frontier_sha256.clone());
         let expected_backend_identity_sha256 = accepted
@@ -411,18 +430,19 @@ impl HeptaEvidenceStore {
         batch_id: &str,
         proposed_frontier_sha256: &Sha256Digest,
         backend_identity_sha256: &Sha256Digest,
-        now_unix_ms: u64,
     ) -> Result<EvidencePublicationBatchV1, EvidenceError> {
         validate_stable_id(batch_id, "publication batch")?;
-        let now = to_i64(now_unix_ms, "publication dispatch timestamp")?;
         let mut transaction = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        let now_unix_ms = now_millis(self)?;
+        let now = to_i64(now_unix_ms, "publication dispatch timestamp")?;
         require_publication_owner(&mut transaction, lease, now_unix_ms).await?;
         let row = load_batch(&mut transaction, batch_id).await?;
         let batch = decode_batch(&row)?;
+        require_time_floor(now_unix_ms, batch.updated_at_unix_ms)?;
         if batch.store_id != lease.store_id {
             return Err(invalid("publication batch belongs to another store"));
         }
@@ -475,16 +495,17 @@ impl HeptaEvidenceStore {
         &self,
         lease: &EvidencePublicationOwnerLeaseV1,
         batch_id: &str,
-        now_unix_ms: u64,
     ) -> Result<EvidencePublicationBatchV1, EvidenceError> {
-        let now = to_i64(now_unix_ms, "publication indeterminate timestamp")?;
         let mut transaction = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        let now_unix_ms = now_millis(self)?;
+        let now = to_i64(now_unix_ms, "publication indeterminate timestamp")?;
         require_publication_owner(&mut transaction, lease, now_unix_ms).await?;
         let batch = decode_batch(&load_batch(&mut transaction, batch_id).await?)?;
+        require_time_floor(now_unix_ms, batch.updated_at_unix_ms)?;
         match batch.state {
             EvidencePublicationBatchStateV1::Dispatching => {
                 sqlx::query(
@@ -568,16 +589,17 @@ impl HeptaEvidenceStore {
         lease: &EvidencePublicationOwnerLeaseV1,
         batch_id: &str,
         acknowledgement: &EvidenceFrontierDurableAckV1,
-        now_unix_ms: u64,
     ) -> Result<EvidencePublicationAckDisposition, EvidenceError> {
-        let now = to_i64(now_unix_ms, "publication acknowledgement timestamp")?;
         let mut transaction = self
             .pool
             .begin_with("BEGIN IMMEDIATE")
             .await
             .map_err(classify_sqlx_error)?;
+        let now_unix_ms = now_millis(self)?;
+        let now = to_i64(now_unix_ms, "publication acknowledgement timestamp")?;
         require_publication_owner(&mut transaction, lease, now_unix_ms).await?;
         let batch = decode_batch(&load_batch(&mut transaction, batch_id).await?)?;
+        require_time_floor(now_unix_ms, batch.updated_at_unix_ms)?;
         if acknowledgement.store_id != batch.store_id
             || acknowledgement.frontier_generation != batch.proposed_frontier_generation
             || batch.proposed_frontier_sha256.as_ref() != Some(&acknowledgement.frontier_sha256)
@@ -717,7 +739,7 @@ async fn require_publication_owner(
         ));
     }
     let row = sqlx::query(
-        "SELECT owner_id, owner_generation, lease_expires_at_ms
+        "SELECT owner_id, owner_generation, lease_expires_at_ms, updated_at_ms
          FROM evidence_publication_owner WHERE store_id = ?",
     )
     .bind(&lease.store_id)
@@ -743,6 +765,41 @@ async fn require_publication_owner(
     {
         return Err(EvidenceError::Unavailable(
             "evidence publication owner was fenced by a newer generation".to_string(),
+        ));
+    }
+    require_time_floor(
+        now_unix_ms,
+        positive_u64_from_i64(
+            row.try_get("updated_at_ms").map_err(classify_sqlx_error)?,
+            "publication owner timestamp",
+        )?,
+    )?;
+    // The existing owner timestamp is the bounded durable admission floor.
+    // A pre-commit validation failure or cancellation rolls this update back
+    // too. An interruption overlapping COMMIT requires durable-state recovery.
+    let advanced = sqlx::query(
+        "UPDATE evidence_publication_owner SET updated_at_ms = ?
+         WHERE store_id = ? AND owner_id = ? AND owner_generation = ?
+           AND lease_expires_at_ms = ? AND updated_at_ms <= ?",
+    )
+    .bind(to_i64(now_unix_ms, "publication owner timestamp")?)
+    .bind(&lease.store_id)
+    .bind(&lease.owner_id)
+    .bind(to_i64(
+        lease.owner_generation,
+        "publication owner generation",
+    )?)
+    .bind(to_i64(
+        lease.lease_expires_at_unix_ms,
+        "publication owner lease expiry",
+    )?)
+    .bind(to_i64(now_unix_ms, "publication owner timestamp")?)
+    .execute(&mut **transaction)
+    .await
+    .map_err(classify_sqlx_error)?;
+    if advanced.rows_affected() != 1 {
+        return Err(EvidenceError::Unavailable(
+            "evidence publication owner changed during admission".to_string(),
         ));
     }
     Ok(())

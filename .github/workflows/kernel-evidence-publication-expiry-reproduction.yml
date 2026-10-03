@@ -1,4 +1,4 @@
-name: Kernel evidence publication expiry reproduction
+name: Kernel evidence publication clock regression
 
 on:
   pull_request:
@@ -36,43 +36,60 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Bind unchanged production implementation
+      - name: Bind exact repair source and frozen migration history
         shell: bash
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           test -z "$(git status --porcelain)"
-          changed=$(git diff --name-only "$BASELINE_SHA" "$SOURCE_SHA")
-          test "$changed" = $'.github/workflows/kernel-evidence-publication-expiry-reproduction.yml\ncodex-rs/hepta-evidence/src/publication_tests.rs'
+          git merge-base --is-ancestor "$BASELINE_SHA" "$SOURCE_SHA"
+          git diff --exit-code "$BASELINE_SHA" "$SOURCE_SHA" -- codex-rs/hepta-evidence/migrations
           mkdir -p "$RUNNER_TEMP/evidence-publication-expiry"
           git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/evidence-publication-expiry/candidate-before.txt"
           git rev-parse "$BASELINE_SHA" "$BASELINE_SHA^{tree}" > "$RUNNER_TEMP/evidence-publication-expiry/baseline.txt"
-          git diff "$BASELINE_SHA" "$SOURCE_SHA" -- codex-rs/hepta-evidence/src/publication_tests.rs > "$RUNNER_TEMP/evidence-publication-expiry/regression.patch"
+          git diff "$BASELINE_SHA" "$SOURCE_SHA" > "$RUNNER_TEMP/evidence-publication-expiry/repair.patch"
       - uses: ./.github/actions/setup-ci
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
+          components: rustfmt, clippy
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: cargo-nextest@0.9.103
-      - name: Require the actual native expired-owner failure
+      - name: Verify native repair and known caller migration
         shell: bash
         run: |
           python3 - <<'PY'
           import hashlib, json, os, re, subprocess
           from pathlib import Path
           records = Path(os.environ['RECORDS'])
-          command = ['just', 'test', '--locked', '-p', 'codex-hepta-evidence', '--lib', '-E', 'test(=publication::tests::dispatch_rejects_owner_expired_while_waiting_for_writer)', '--no-tests', 'fail']
-          log = records / 'native-expiry.log'
-          with log.open('wb') as output:
-              result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT)
-          output = log.read_text(errors='replace')
-          reproduced = result.returncode == 100 and bool(re.search(r'Summary[^\n]*1 test run: 0 passed, 1 failed', output)) and 'EXPIRED_PUBLICATION_DISPATCH_ACCEPTED:' in output
-          receipt = {'source': os.environ['SOURCE_SHA'], 'baseline': os.environ['BASELINE_SHA'], 'command': command, 'exitCode': result.returncode, 'nativeExpiryDefectReproduced': reproduced, 'productionImplementationChanged': False, 'independentAcceptance': False, 'activation': False, 'logSha256': hashlib.sha256(log.read_bytes()).hexdigest()}
-          (records / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
-          print(output[-20000:])
-          if not reproduced:
-              raise SystemExit('native expiry defect was not reproduced; compilation/setup/zero-test failures do not qualify')
+          commands = {
+              'expiry-regression': ['just', 'test', '--locked', '-p', 'codex-hepta-evidence', '--lib', '-E', 'test(=publication::tests::dispatch_rejects_owner_expired_while_waiting_for_writer)', '--no-tests', 'fail'],
+              'clock-contract-tests': ['just', 'test', '--locked', '-p', 'codex-hepta-evidence', '--lib', '-E', 'test(publication::tests::clock_tests::)', '--no-tests', 'fail'],
+              'evidence-tests': ['just', 'test', '--locked', '-p', 'codex-hepta-evidence', '--no-tests', 'fail'],
+              'agentd-publication-tests': ['just', 'test', '--locked', '-p', 'codex-hepta-agentd', '--lib', '--test', 'kernel_evidence_publication_cli', '--no-tests', 'fail'],
+              'evidence-clippy': ['cargo', 'clippy', '--manifest-path', 'codex-rs/Cargo.toml', '--locked', '-p', 'codex-hepta-evidence', '--all-targets', '--', '-D', 'warnings'],
+              'evidence-fix': ['just', 'fix', '--locked', '-p', 'codex-hepta-evidence'],
+              'format': ['just', 'fmt', '--base', os.environ['BASELINE_SHA']],
+          }
+          outcomes = {}
+          for name, command in commands.items():
+              log = records / f'{name}.log'
+              with log.open('wb') as output:
+                  result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT)
+              output = log.read_text(errors='replace')
+              count_ok = name != 'expiry-regression' or bool(re.search(r'Summary[^\n]*1 test run: 1 passed', output))
+              if name == 'clock-contract-tests':
+                  count_ok = bool(re.search(r'Summary[^\n]*6 tests run: 6 passed', output))
+              receipt = {'source': os.environ['SOURCE_SHA'], 'baseline': os.environ['BASELINE_SHA'], 'command': command, 'exitCode': result.returncode, 'requiredNamedCountPassed': count_ok, 'independentAcceptance': False, 'activation': False, 'logSha256': hashlib.sha256(log.read_bytes()).hexdigest()}
+              (records / f'{name}.json').write_text(json.dumps(receipt, indent=2) + '\n')
+              outcomes[name] = result.returncode if count_ok else 1
+              print(f'::group::{name}', flush=True)
+              print(output[-20000:], flush=True)
+              print('::endgroup::', flush=True)
+          (records / 'outcomes.json').write_text(json.dumps(outcomes, indent=2) + '\n')
+          if any(outcomes.values()):
+              raise SystemExit('publication clock repair checks failed; no qualification granted')
           PY
       - name: Retain exact source and diagnostic-only claim
         if: always()
@@ -82,7 +99,7 @@ jobs:
           mkdir -p "$RECORDS"
           git rev-parse HEAD HEAD^{tree} > "$RECORDS/candidate-after.txt"
           git status --porcelain > "$RECORDS/source-after.txt"
-          printf '%s\n' 'Expected native RED on unchanged production code; no repair, provider effect, acceptance or activation claim.' > "$RECORDS/SCOPE.txt"
+          printf '%s\n' 'Bounded publication writer-clock repair only. Historical RED: run37150733001/source7f7d72a5. No independent clock attestation, provider effect, global legacy backfill, acceptance or activation claim.' > "$RECORDS/SCOPE.txt"
           (cd "$RECORDS" && sha256sum *.txt *.json *.log *.patch > SHA256SUMS)
           cmp "$RECORDS/candidate-before.txt" "$RECORDS/candidate-after.txt"
           test ! -s "$RECORDS/source-after.txt"
