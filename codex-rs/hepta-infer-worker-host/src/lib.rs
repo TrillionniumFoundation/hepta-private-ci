@@ -21,10 +21,6 @@ pub use fleet_worker_resource_port_v2::FleetWorkerResourcePortV2;
 
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 pub mod initial_cpu_anchor;
-#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
-mod parameter_role_execution;
-#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
-pub use parameter_role_execution::*;
 
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 mod frozen_generator_client;
@@ -439,3 +435,5 @@ pub use parameter_role_execution::ParameterRoleExecutionPurposeV1;
 pub use parameter_role_execution::ParameterRoleExecutionV1;
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 pub use parameter_role_execution::execute_parameter_role_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use parameter_role_execution::execute_retained_parameter_role_v1;

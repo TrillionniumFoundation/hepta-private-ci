@@ -342,7 +342,7 @@ async fn cold_unknown_is_not_reissued_and_actual_failure_reconciliation_is_idemp
 async fn reserved_cycle_rechecks_whole_original_identity_and_never_reserves_twice() {
     let directory = directory();
     let path = directory.path().join("original.json");
-    let (runtime, stop, _, owner) = start_owner(path);
+    let (runtime, stop, _, owner) = start_owner(path.clone());
     let (canonical, envelope) = inputs();
     let round = runtime
         .reserve_round(
@@ -354,6 +354,9 @@ async fn reserved_cycle_rechecks_whole_original_identity_and_never_reserves_twic
         .expect("original one debit");
     let (model, calls, _, _, _) = failed_model(true, None);
     let mut cycle = AgentdSelfIterationModelCycleV1::new(model, Assembler, Owners, runtime.clone());
+    let original_bytes = std::fs::read(&path).expect("original reservation bytes");
+    assert!(cycle.take_model_after_terminal_round().await.is_err());
+    assert_eq!(std::fs::read(&path).expect("unchanged reservation"), original_bytes);
     let mut changed: serde_json::Value =
         serde_json::from_slice(&round.canonical_bytes().expect("codec")).expect("json");
     changed["goal"] = serde_json::Value::String("goal.forged".into());
@@ -395,6 +398,12 @@ async fn reserved_cycle_rechecks_whole_original_identity_and_never_reserves_twic
     assert_eq!(current.status.admitted_policy_candidates, 2);
     assert_eq!(current.status.round.ordinal(), 1);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
+    assert!(current.can_admit_next_round());
+    let terminal_bytes = std::fs::read(&path).expect("actual original terminal");
+    let returned = cycle.take_model_after_terminal_round().await.expect("same settled adapter");
+    assert!(Arc::ptr_eq(&returned.calls, &calls));
+    assert!(cycle.take_model_after_terminal_round().await.is_err());
+    assert_eq!(std::fs::read(&path).expect("unchanged terminal"), terminal_bytes);
     drop(cycle);
     stop.cancel();
     owner.await.expect("actual retirement");

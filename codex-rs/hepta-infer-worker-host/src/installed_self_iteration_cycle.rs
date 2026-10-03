@@ -177,8 +177,13 @@ pub(crate) async fn run(
                 RoundPreparationResultV1::Refused { error } => return Err(invalid(format!("original Root preparation: {error:?}"))),
             };
             let bundle: InstalledRoundBundleV1 = serde_json::from_slice(&read(&bundle_source, 64 * 1024)?)?;
-            if bundle.schema != "hepta.installed-round-bundle.v1" || bundle.round != round {
-                return Err(invalid("Root bundle changed whole original round"));
+            let unique_candidates: std::collections::BTreeSet<_> = bundle.candidates.iter()
+                .map(|candidate| candidate.candidate_id.as_str()).collect();
+            if bundle.schema != "hepta.installed-round-bundle.v1" || bundle.round != round
+                || unique_candidates.len() != bundle.candidates.len()
+                || !unique_candidates.contains(bundle.rollback.candidate_id.as_str())
+            {
+                return Err(invalid("Root bundle changed whole original round or candidate frontier"));
             }
             let materials = CpuNeuronParameterRootMaterialsV2::from_protected_source(&bundle.materials, config.worker_executable_digest.parse().map_err(invalid)?)?;
             if materials.canonical_envelope().digest() != canonical.digest()

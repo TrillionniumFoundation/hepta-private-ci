@@ -47,6 +47,7 @@ impl RoundPreparationSourceV1 {
             || self.path.components().any(|part| {
                 matches!(part, Component::CurDir | Component::ParentDir)
             })
+            || self.path.components().collect::<PathBuf>().as_os_str() != self.path.as_os_str()
             || self.path.as_os_str().len() > 4096
             || digest.is_zero()
             || digest.to_string() != self.digest

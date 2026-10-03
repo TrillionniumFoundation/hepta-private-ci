@@ -5,6 +5,8 @@ use super::*;
 use codex_hepta_agent_components::intelligence::CanonicalStageV1;
 use codex_hepta_agent_components::plasticity::ParameterCandidateKindV2;
 use codex_hepta_agent_components::plasticity::verify_generated_parameter_candidates_v3;
+#[cfg(feature = "fixed-initial-cpu-host")]
+use codex_hepta_neuron::encode_neuron_generation_material_v2;
 use codex_hepta_neuron::validate_neuron_generation_material_v2;
 use std::path::Component;
 use std::path::Path;
@@ -60,6 +62,65 @@ impl CpuNeuronRoundMaterialsV3 {
     }
     pub fn rollback(&self) -> &CpuNeuronGenerationPlanV1 {
         &self.rollback
+    }
+    /// Replace prospective calibration only with the exact complete materials
+    /// already checked by the original E1 reader. This grants no registration.
+    #[cfg(feature = "fixed-initial-cpu-host")]
+    pub(crate) fn install_evaluated_materials(
+        mut self,
+        candidates: &[codex_hepta_agent_components::intelligence_eval::VerifiedParameterPreRegistrationEvaluationV1],
+        rollback: &codex_hepta_agent_components::intelligence_eval::VerifiedParameterPreRegistrationEvaluationV1,
+    ) -> Result<Self, AgentdError> {
+        use codex_hepta_agent_components::intelligence_eval::ParameterPreRegistrationPurposeV1;
+        use codex_hepta_agent_components::intelligence_eval::finalize_parameter_pre_registration_material_v1;
+        let payload_digest = Digest32::of_bytes(&self.round.canonical_bytes()?);
+        let same_round = |evaluation: &codex_hepta_agent_components::intelligence_eval::VerifiedParameterPreRegistrationEvaluationV1| {
+            let original = evaluation.round();
+            original.round_digest == self.round.identity_digest().to_string()
+                && original.round_payload_digest == payload_digest.to_string()
+                && original.canonical_policy_digest == self.canonical.digest().to_string()
+                && original.execution_digest == self_iteration_envelope_digest_v1(&self.execution).to_string()
+                && original.admitted_at_ms == self.round.admitted_at_ms()
+                && original.deadline_ms == self.round.deadline_ms()
+                && evaluation.baseline_head_artifact_id() == &self.request.admission.baseline_id
+                && evaluation.baseline_registry_head() == self.request.admission.artifact_registry_head_digest
+        };
+        if candidates.len() != self.candidates.len()
+            || rollback.purpose() != ParameterPreRegistrationPurposeV1::ExactRollback
+            || !same_round(rollback)
+            || !self.candidates.iter().any(|candidate| &candidate.candidate_id == rollback.candidate_id())
+        {
+            return Err(error("complete measured candidate/rollback frontier changed"));
+        }
+        let replace = |prospective: &CpuNeuronGenerationPlanV1, evaluation: &codex_hepta_agent_components::intelligence_eval::VerifiedParameterPreRegistrationEvaluationV1| -> Result<CpuNeuronGenerationPlanV1, AgentdError> {
+            evaluation.revalidate_after_registration().map_err(material_error)?;
+            let actual = evaluation.material().ok_or_else(|| error("original E1 rejected preparation"))?;
+            let expected = finalize_parameter_pre_registration_material_v1(
+                prospective,
+                actual.runtime.calibration.measured_ece_ppm,
+                actual.runtime.calibration.measured_false_acceptance_ppm,
+            ).map_err(material_error)?;
+            if encode_neuron_generation_material_v2(&expected).map_err(material_error)?
+                != encode_neuron_generation_material_v2(actual).map_err(material_error)?
+            {
+                return Err(error("E1 material changed prospective policy, topology or original paths"));
+            }
+            Ok(actual.clone())
+        };
+        for candidate in &mut self.candidates {
+            let mut matching = candidates.iter().filter(|evaluation| evaluation.candidate_id() == &candidate.candidate_id);
+            let evaluation = matching.next().ok_or_else(|| error("whole original measured candidate absent"))?;
+            if matching.next().is_some()
+                || evaluation.purpose() != ParameterPreRegistrationPurposeV1::Candidate
+                || !same_round(evaluation)
+            {
+                return Err(error("duplicate, foreign or wrong-purpose E1 candidate"));
+            }
+            candidate.generation = replace(&candidate.generation, evaluation)?;
+        }
+        self.rollback = replace(&self.rollback, rollback)?;
+        self.with_plan(validate_cpu_neuron_parameter_materials_v2)?;
+        Ok(self)
     }
     pub fn with_plan<T>(
         &self,

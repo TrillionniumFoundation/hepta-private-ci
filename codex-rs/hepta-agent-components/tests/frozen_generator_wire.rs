@@ -5,6 +5,9 @@ use serde_json::json;
 #[path = "common/self_iteration_owners_wire.rs"]
 mod independent_owners;
 
+#[path = "common/round_preparation_wire.rs"]
+mod round_preparation;
+
 #[test]
 fn preserves_full_payload_at_the_exact_bound_and_refuses_one_extra_byte() {
     let payload = vec![0xab; MAX_FROZEN_GENERATOR_PAYLOAD_BYTES_V1];
@@ -125,6 +128,7 @@ fn observation_has_a_separate_finite_purpose_without_changing_issue_bytes() {
             }
             FrozenGeneratorOperationV1::ObserveModelFailure(_) => panic!("legacy purpose changed"),
             FrozenGeneratorOperationV1::IndependentOwner(_) => panic!("legacy purpose changed"),
+            FrozenGeneratorOperationV1::PrepareRound(_) => panic!("legacy purpose changed"),
         };
         assert_eq!(decoded, payload);
     }
