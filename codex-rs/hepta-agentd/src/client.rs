@@ -917,10 +917,12 @@ mod transport_tests;
 #[path = "client_peer_tests.rs"]
 mod peer_process_tests;
 
+#[cfg(feature = "server")]
 #[path = "client_parameter_context_refresh.rs"]
 mod parameter_context_refresh;
 #[cfg(feature = "server")]
 #[path = "client_parameter_preparation.rs"]
 mod parameter_preparation;
+#[cfg(feature = "server")]
 #[path = "client_parameter_protected_preparation.rs"]
 mod parameter_protected_preparation;
