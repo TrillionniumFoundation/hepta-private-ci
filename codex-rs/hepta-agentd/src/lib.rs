@@ -63,6 +63,8 @@ mod intelligence_run_identity;
 #[cfg(feature = "server")]
 mod intuition_policy;
 #[cfg(feature = "server")]
+mod iteration_envelope_wire;
+#[cfg(feature = "server")]
 mod lane_b_runtime;
 #[cfg(feature = "server")]
 mod module_selection;
@@ -351,6 +353,8 @@ pub use intuition_policy::AgentdIntuitionPolicyError;
 pub use intuition_policy::AgentdIntuitionPolicyHostV1;
 #[cfg(feature = "server")]
 pub use intuition_policy::AgentdIntuitionPolicyPinsV1;
+#[cfg(feature = "server")]
+pub use iteration_envelope_wire::CanonicalIterationEnvelopeV1;
 #[cfg(feature = "server")]
 pub use lane_b_runtime::AgentRunCoordinator;
 #[cfg(feature = "server")]
