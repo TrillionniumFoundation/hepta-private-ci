@@ -216,7 +216,7 @@ mod tests {
             request.profile_name().expect("profile parse"),
             Some("mandatory_tests_reviewed")
         );
-        let mut with_roles = request.clone();
+        let mut with_roles = request;
         with_roles.required_roles.push("generator".to_string());
         assert!(with_roles.profile_name().is_err());
         let malformed = KernelEvidenceVerifyV1 {
