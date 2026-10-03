@@ -1,0 +1,143 @@
+name: Kernel evidence operational schema regression
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "codex-rs/hepta-evidence/**"
+      - ".github/workflows/kernel-evidence-operational-schema.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  operational-schema:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      RUSTUP_TOOLCHAIN: 1.95.0
+      CARGO_TERM_COLOR: never
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+    steps:
+      - name: Initialize diagnostic directory on the runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/evidence-operational-schema"
+          echo "RECORDS=$RUNNER_TEMP/evidence-operational-schema" >> "$GITHUB_ENV"
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind immutable candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          git rev-parse HEAD HEAD^{tree} > "$RECORDS/candidate-before.txt"
+          printf '%s\n' "$BASE_SHA" > "$RECORDS/base.txt"
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.103
+      - name: Require native negative control and restore exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, re, subprocess
+          from pathlib import Path
+          records = Path(os.environ['RECORDS'])
+          source = Path('codex-rs/hepta-evidence/src/operational_schema.rs')
+          original = source.read_bytes()
+          needle = b'        oracle::verify_definition(required.name, required.kind, &sql)?;\n'
+          if original.count(needle) != 1:
+              raise SystemExit('negative control requires exactly one full-definition gate')
+          names = [
+              'read_only_reopen_rejects_disabled_and_commented_operational_guards',
+              'read_only_reopen_rejects_comment_preserved_table_check',
+          ]
+          expression = ' | '.join(f'test(=operational_schema::oracle_tests::{name})' for name in names)
+          command = ['just', 'test', '--locked', '-p', 'codex-hepta-evidence', '--lib', '-E', expression]
+          log = records / 'negative-control.log'
+          try:
+              source.write_bytes(original.replace(needle, b''))
+              with log.open('wb') as output:
+                  result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT)
+          finally:
+              source.write_bytes(original)
+          output = log.read_text(errors='replace')
+          print(output[-20000:])
+          passed = result.returncode == 100 and bool(re.search(r'Summary[^\n]*2 tests run: 0 passed, 2 failed', output))
+          restored = source.read_bytes() == original
+          receipt = {'command': command, 'exitCode': result.returncode, 'expectedFailures': 2, 'negativeControlPassed': passed, 'sourceRestored': restored, 'sourceFileSha256': hashlib.sha256(original).hexdigest(), 'logSha256': hashlib.sha256(log.read_bytes()).hexdigest()}
+          (records / 'negative-control.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          if not passed or not restored:
+              raise SystemExit('negative control did not demonstrate both native acceptance defects')
+          PY
+      - name: Verify repaired package then run scoped fix and format
+        if: ${{ always() && !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PY'
+          import hashlib, json, os, subprocess
+          from pathlib import Path
+          records = Path(os.environ['RECORDS'])
+          records.mkdir(parents=True, exist_ok=True)
+          commands = {
+              'evidence-tests': ['just', 'test', '--locked', '-p', 'codex-hepta-evidence'],
+              'evidence-clippy': ['cargo', 'clippy', '--manifest-path', 'codex-rs/Cargo.toml', '--locked', '-p', 'codex-hepta-evidence', '--all-targets', '--', '-D', 'warnings'],
+              'evidence-fix': ['just', 'fix', '--locked', '-p', 'codex-hepta-evidence'],
+              'format': ['just', 'fmt', '--base', os.environ['BASE_SHA']],
+          }
+          outcomes = {}
+          for name, command in commands.items():
+              path = records / f'{name}.log'
+              with path.open('wb') as output:
+                  result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT)
+              receipt = {'command': command, 'exitCode': result.returncode, 'source': os.environ['SOURCE_SHA'], 'logSha256': hashlib.sha256(path.read_bytes()).hexdigest()}
+              (records / f'{name}.json').write_text(json.dumps(receipt, indent=2) + '\n')
+              outcomes[name] = result.returncode
+              print(f'::group::{name}', flush=True)
+              print(path.read_text(errors='replace')[-16000:], flush=True)
+              print('::endgroup::', flush=True)
+          (records / 'outcomes.json').write_text(json.dumps(outcomes, indent=2) + '\n')
+          if any(outcomes.values()):
+              raise SystemExit('one or more scoped checks failed')
+          PY
+      - name: Retain exact candidate and bounded claim
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          git rev-parse HEAD HEAD^{tree} > "$RECORDS/candidate-after.txt"
+          git status --porcelain > "$RECORDS/source-after.txt"
+          git diff --binary > "$RECORDS/source-after.diff"
+          printf '%s\n' 'Local schema integrity regression only; no independent trust, anti-rollback, deployment or acceptance claim.' > "$RECORDS/SCOPE.txt"
+          (cd "$RECORDS" && sha256sum *.txt *.json *.log *.diff > SHA256SUMS)
+          cmp "$RECORDS/candidate-before.txt" "$RECORDS/candidate-after.txt"
+          test ! -s "$RECORDS/source-after.txt"
+      - name: Upload observed diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kernel-evidence-operational-schema-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/evidence-operational-schema/
+          if-no-files-found: error
+          retention-days: 14

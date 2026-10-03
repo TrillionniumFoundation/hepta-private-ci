@@ -306,7 +306,7 @@ pub trait EvidenceTrustSnapshotView: sealed::Sealed {
     fn validate_store(&self, store: &HeptaEvidenceStore) -> Result<(), EvidenceError>;
 }
 
-/// Raw registrations are intentionally not implementors in product builds.
+/// Raw registrations intentionally do not implement this trait in product builds.
 ///
 /// ```compile_fail
 /// use codex_hepta_authbus::IssuerRegistration;

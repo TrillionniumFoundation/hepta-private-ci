@@ -8,6 +8,9 @@ use crate::EvidenceError;
 use crate::qualification::QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES;
 use crate::schema_validation::classify_sqlx_error;
 
+#[path = "operational_schema_oracle.rs"]
+mod oracle;
+
 const MAX_QUALIFICATION_STARTUP_ROWS: i64 = 1_000_000;
 const MAX_QUALIFICATION_STARTUP_ENVELOPE_BYTES: i64 = 512 * 1024 * 1024;
 const AUTHBUS_SIGNATURE_BYTES: i64 = 64;
@@ -195,11 +198,15 @@ pub(crate) async fn verify_operational_schema(pool: &SqlitePool) -> Result<(), E
 
 async fn verify_required_objects(pool: &SqlitePool) -> Result<(), EvidenceError> {
     for required in REQUIRED_OPERATIONAL_OBJECTS {
-        let rows = sqlx::query("SELECT type, tbl_name, sql FROM sqlite_schema WHERE name = ?")
-            .bind(required.name)
-            .fetch_all(pool)
-            .await
-            .map_err(classify_sqlx_error)?;
+        let rows = sqlx::query(
+            "SELECT type, tbl_name,
+                    CASE WHEN length(CAST(sql AS BLOB)) <= 65536 THEN sql END AS sql
+             FROM sqlite_schema WHERE name = ?",
+        )
+        .bind(required.name)
+        .fetch_all(pool)
+        .await
+        .map_err(classify_sqlx_error)?;
         if rows.len() != 1 {
             return Err(corrupt(&format!(
                 "required operational schema object {} is missing or duplicated",
@@ -210,8 +217,10 @@ async fn verify_required_objects(pool: &SqlitePool) -> Result<(), EvidenceError>
         let kind: String = row.try_get("type").map_err(classify_sqlx_error)?;
         let table_name: String = row.try_get("tbl_name").map_err(classify_sqlx_error)?;
         let sql: Option<String> = row.try_get("sql").map_err(classify_sqlx_error)?;
+        let sql = sql.ok_or_else(|| {
+            corrupt("required operational schema object has no bounded SQL definition")
+        })?;
         let normalized = sql
-            .ok_or_else(|| corrupt("required operational schema object has no SQL"))?
             .to_ascii_lowercase()
             .split_whitespace()
             .collect::<Vec<_>>()
@@ -235,18 +244,21 @@ async fn verify_required_objects(pool: &SqlitePool) -> Result<(), EvidenceError>
                 )));
             }
         }
+        oracle::verify_definition(required.name, required.kind, &sql)?;
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "operational_schema_oracle_tests.rs"]
+mod oracle_tests;
 
 /// Bound the later canonical row reconstruction before it materializes rows.
 ///
 /// The detailed decoder still verifies every row, digest and lineage edge. This
 /// aggregate preflight ensures a syntactically valid but oversized SQLite image
 /// cannot force startup to allocate an unbounded result set first.
-async fn verify_qualification_startup_capacity(
-    pool: &SqlitePool,
-) -> Result<(), EvidenceError> {
+async fn verify_qualification_startup_capacity(pool: &SqlitePool) -> Result<(), EvidenceError> {
     let row = sqlx::query(
         "SELECT COUNT(*) AS row_count,
                 COALESCE(MAX(length(CAST(envelope_json AS BLOB))), 0) AS largest_envelope,
@@ -266,8 +278,7 @@ async fn verify_qualification_startup_capacity(
         row.try_get("row_count").map_err(classify_sqlx_error)?,
         row.try_get("largest_envelope")
             .map_err(classify_sqlx_error)?,
-        row.try_get("envelope_bytes")
-            .map_err(classify_sqlx_error)?,
+        row.try_get("envelope_bytes").map_err(classify_sqlx_error)?,
         row.try_get("largest_signature")
             .map_err(classify_sqlx_error)?,
         row.try_get("signature_bytes")
@@ -513,13 +524,7 @@ mod tests {
     #[test]
     fn qualification_startup_capacity_rejects_resource_and_shape_overflow() {
         assert!(matches!(
-            validate_qualification_startup_capacity(
-                MAX_QUALIFICATION_STARTUP_ROWS + 1,
-                1,
-                1,
-                0,
-                0,
-            ),
+            validate_qualification_startup_capacity(MAX_QUALIFICATION_STARTUP_ROWS + 1, 1, 1, 0, 0,),
             Err(EvidenceError::Unavailable(_))
         ));
         assert!(matches!(

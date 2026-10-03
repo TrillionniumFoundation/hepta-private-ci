@@ -31,6 +31,16 @@ Unknown, missing, failed, reordered or checksum-mismatched migrations cause open
 to fail closed. Production never treats an unknown lineage as empty or
 repairable and never runs migrations through the restricted runtime handle.
 
+The ordinary open paths also compare all 17 publication/trust schema objects
+from migrations `0014` and `0015` with their complete compiled definitions,
+including trigger bodies, conditions and table constraints. Matching invariant
+words in comments or a disabled `WHEN 0` trigger is insufficient. Each stored
+definition is bounded to 64 KiB before materialization. Only unquoted layout
+whitespace and the terminal semicolon are normalized; quoted content and
+comments are retained. Migration bytes and migration checksums are unchanged.
+This check concerns local schema integrity, not authenticated external truth
+or protection against rollback of the entire database and its local metadata.
+
 ## Qualification and authenticated provenance
 
 Migration `0011` owns the append-only qualification lineage, immutable
