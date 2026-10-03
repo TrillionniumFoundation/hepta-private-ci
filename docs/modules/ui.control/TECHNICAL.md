@@ -2,6 +2,12 @@
 
 > Generated from `qualification/ui-control/UI_CONTROL_MANIFEST.json`. Edit the manifest or generator, not this file.
 
+**Source status:** `existing_bound`
+
+**Bootstrap work package:** `UI-V5`
+
+These registry facts identify present, bound source. They do not establish host execution, production composition or independent acceptance.
+
 ## 1. Scope and current truth
 
 `ui.control` is an authority-free shared chat presentation core and secondary runtime Console. Conversations, message timeline and composer are the primary product interaction; both hosts follow apps/hepta-control-ui/CHAT_DESIGN.md. It owns presentation state, authenticated session metadata, bounded local recovery records, and user interaction. Runtime owners retain authorization, durable operation identity, mutation authority, and terminal facts.
@@ -38,6 +44,10 @@ The active convergence branch is `work/ui-chat-convergence-20261002`. The reposi
 - `docs/modules/ui.control/THREAT_MODEL.md`: trust boundaries and mitigations.
 - `docs/modules/ui.control/SERVER_IDEMPOTENCY.md`: normative backend operation ledger contract.
 - `docs/modules/ui.control/OPERATIONS.md`: deployment, monitoring, incident, and rollback runbook.
+
+Declared roots not yet present:
+
+None.
 
 ## 3. Public boundaries
 
@@ -211,3 +221,13 @@ Use the [parallel development plan](../../readiness/PARALLEL_DEVELOPMENT.md) and
 for lane ownership, execution-receipt fields and external evidence requirements.
 These are specification and navigation references. They do not qualify the new
 Makepad host, close the remaining integration gates or grant release authority.
+
+## 17. Source implementation receipt
+
+This section records the source-location obligation of `UI-V5`, not an execution or acceptance receipt. The registered source roots are:
+
+- `apps/hepta-control-ui`
+
+The Rust controller and Robrix-derived Makepad widgets are present in that source tree. [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) binds the mapped paths and exact source objects; its source observation must be checked against the candidate by `python3 scripts/ui-control-source-map.py`.
+
+The current chat host has no qualified production principal/signer/bridge, operational Console composition remains pending, and transient chat drafts do not imply durable reload recovery. Actual execution outcomes belong only to source-bound external CI receipts. This source-location record grants no runtime authority, production-writer authority, independent acceptance, merge or release authorization.

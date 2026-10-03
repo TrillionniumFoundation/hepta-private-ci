@@ -26,6 +26,12 @@ const technical = `# ui.control technical development guide
 
 > Generated from ${q("qualification/ui-control/UI_CONTROL_MANIFEST.json")}. Edit the manifest or generator, not this file.
 
+**Source status:** ${q("existing_bound")}
+
+**Bootstrap work package:** ${q("UI-V5")}
+
+These registry facts identify present, bound source. They do not establish host execution, production composition or independent acceptance.
+
 ## 1. Scope and current truth
 
 ${q("ui.control")} is an authority-free shared chat presentation core and secondary runtime Console. Conversations, message timeline and composer are the primary product interaction; both hosts follow apps/hepta-control-ui/CHAT_DESIGN.md. It owns presentation state, authenticated session metadata, bounded local recovery records, and user interaction. Runtime owners retain authorization, durable operation identity, mutation authority, and terminal facts.
@@ -46,6 +52,10 @@ ${statusRows}
 - ${q("docs/modules/ui.control/THREAT_MODEL.md")}: trust boundaries and mitigations.
 - ${q("docs/modules/ui.control/SERVER_IDEMPOTENCY.md")}: normative backend operation ledger contract.
 - ${q("docs/modules/ui.control/OPERATIONS.md")}: deployment, monitoring, incident, and rollback runbook.
+
+Declared roots not yet present:
+
+None.
 
 ## 3. Public boundaries
 
@@ -173,6 +183,16 @@ Use the [parallel development plan](../../readiness/PARALLEL_DEVELOPMENT.md) and
 for lane ownership, execution-receipt fields and external evidence requirements.
 These are specification and navigation references. They do not qualify the new
 Makepad host, close the remaining integration gates or grant release authority.
+
+## 17. Source implementation receipt
+
+This section records the source-location obligation of ${q("UI-V5")}, not an execution or acceptance receipt. The registered source roots are:
+
+${manifest.sourceRoots.map(value => `- ${q(value)}`).join("\n")}
+
+The Rust controller and Robrix-derived Makepad widgets are present in that source tree. [IMPLEMENTATION_MAP.json](IMPLEMENTATION_MAP.json) binds the mapped paths and exact source objects; its source observation must be checked against the candidate by ${q("python3 scripts/ui-control-source-map.py")}.
+
+The current chat host has no qualified production principal/signer/bridge, operational Console composition remains pending, and transient chat drafts do not imply durable reload recovery. Actual execution outcomes belong only to source-bound external CI receipts. This source-location record grants no runtime authority, production-writer authority, independent acceptance, merge or release authorization.
 `;
 
 const map = {
@@ -260,18 +280,22 @@ const map = {
   sourceRoot: manifest.sourceRoots,
 };
 
-const dossier = `# ui.control execution dossier
+const dossier = `# ui.control: implementation design
 
 > Generated from ${q("qualification/ui-control/UI_CONTROL_MANIFEST.json")}.
 
-## Candidate identity
+## 1. Source and work envelope
+
+Roots: ${manifest.sourceRoots.map(q).join(", ")}. Work package: ${q("UI-V5")}. Lane: ${q(manifest.laneId)}.
+
+### Candidate identity
 
 - authoritative development branch: ${q(manifest.authoritativeDevelopmentBranch)}
 - convergence baseline: ${q(manifest.baseline.commit)} / ${q(manifest.baseline.tree)}
 - exact candidate SHA/tree: derived by the qualification workflow
 - release authorization: absent
 
-## Current repository boundary
+## 2. Public operations and contract details
 
 - Actual Robrix-derived Makepad widgets shared by native and WASM; source provenance and MIT notices recorded.
 - Existing Rust authority-free control/chat/owner contracts; no new execution or durable recovery owner.
@@ -281,7 +305,30 @@ const dossier = `# ui.control execution dossier
 - Strict-CSP packaging with a source-bound WASM clock patch and static ABI generation.
 - Explicit historical Node oracle and semantic-DOM compatibility checks, excluded from product exports.
 
-## Evidence scope
+The [technical guide](../../../docs/modules/ui.control/TECHNICAL.md) distinguishes retained owner adapters from the unqualified Makepad host composition. Source presence and old controller/DOM checks do not establish a production chat or Console operation.
+
+## 3. State records and transaction design
+
+Rust owns presentation state and local room/draft actions. Chat drafts are transient; they are not a durable recovery claim. Retained control adapters hold bounded pending/recovery identities, while authenticated backend owners retain authorization, durable operation uniqueness and terminal facts. A local queue acknowledgement, timeout or disconnect cannot establish successful external execution.
+
+## 4. Deterministic algorithm and scheduling
+
+The shared Rust widgets render conversation navigation, the observed timeline and the composer. Fenced local actions update presentation state; send remains denied without the external principal/signer/bridge. Console is an internal tab with unported operational widgets. Generated Makepad JavaScript is platform/ABI glue, not a second application or execution owner.
+
+## 5. Capacity and performance profile
+
+Use the bounded Rust owner/timeline contracts and source-bound host qualification plan. Host frame/resize observations and drawing-buffer dimensions are diagnostic evidence, not calibrated GPU measurements or platform capacity acceptance. Native display, OS IME, assistive technology, mobile input and target-host performance remain unqualified.
+
+## 6. Concrete verification cases
+
+- UI-01: incompatible protocol versions must block mutating controls with an explicit explanation.
+- UI-02: stale confirmation must not authorize a changed target, payload or revision.
+- UI-03: reconnect must reconcile pending identities without duplicate requests or inferred success.
+- UI-04: keyboard-only and screen-reader users must be able to inspect uncertainty, request an authorized stop and recover focus after errors.
+
+These remain product test designs, not executed-test receipts. Retained adapter tests can cover only their recorded subjects; the Makepad host and external composition require their own exact-input/output, oracle and independent acceptance evidence.
+
+### Evidence scope
 
 The existing controller/DOM unit, transport, recovery, axe and Lane-B cases qualify
 only their recorded subjects. They do not establish Makepad host behavior.
@@ -291,11 +338,15 @@ smoke still requires human pixel review and additional input, IME, accessibility
 scroll, reconnect and live owner-composition acceptance. No percentage or full
 completion claim is inferred from source presence.
 
-## Qualification commands
+### Qualification commands
 
 ${commandLines}
 
-## Evidence and receipt semantics
+## 7. Integration, rollback and capability ceiling
+
+Integration must preserve the shared Rust authority boundary and all external gates. A host rollback must preserve compatible owner contracts and authenticated identity/revision fencing; it cannot substitute legacy DOM results for Makepad acceptance or introduce another recovery/runtime owner.
+
+### Evidence and receipt semantics
 
 - **Observed outcome:** ${manifest.evidenceSemantics.observedOutcome}
 - **Accepted evidence:** ${manifest.evidenceSemantics.acceptedEvidence}
@@ -305,7 +356,7 @@ ${receiptSchemaLines}
 
 The CI repository receipt records exact SHA/tree, runner/Node identity, check outcomes, and browser build-manifest digest. It sets production deployment, identity-provider, deployed CSP, independent acceptance, and release authorization to false unless separately observed and accepted. The tracked repository does not pre-claim those facts.
 
-## Remaining non-repository evidence
+### Remaining non-repository evidence
 
 ${gateLines}
 `;
