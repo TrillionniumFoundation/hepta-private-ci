@@ -10,7 +10,7 @@ from urllib.parse import urlsplit
 
 from PIL import Image
 from playwright.sync_api import sync_playwright
-from qualify import APP, OUT, digest
+from qualify import APP, OUT, digest, require_no_scene_failures
 from package_resources import package_inventory
 from render_checks import login_pixels
 from web_usability import capture_login_usability
@@ -35,6 +35,7 @@ def main():
     threading.Thread(target=server.serve_forever, daemon=True).start()
     origin = f'http://127.0.0.1:{server.server_port}'
     records = []
+    scene_failures = []
     try:
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(args=['--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
@@ -147,7 +148,10 @@ def main():
                                         == 1
                                     ), "Repeated font request during input redraw"
                             if scene == 'chat-prism' and label == 'wide':
-                                capture_theme_switches(page, messages, OUT)
+                                try:
+                                    capture_theme_switches(page, messages, OUT)
+                                except AssertionError as error:
+                                    scene_failures.append(str(error))
                             assert not failures, failures
                             assert not any(
                                 message.startswith("error:") for message in messages
@@ -164,6 +168,8 @@ def main():
     finally:
         server.shutdown()
         server.server_close()
+    (OUT / 'web-scene-failures.json').write_text(json.dumps(scene_failures, indent=2))
+    require_no_scene_failures(scene_failures)
     (OUT / 'web-capture-passed.json').write_text(json.dumps(records, indent=2) + '\n')
     assert usability['passed'], 'Actual short-window usability checks failed; inspect web-login-short-usability.json'
 

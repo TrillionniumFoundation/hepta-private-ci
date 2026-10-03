@@ -50,11 +50,35 @@ script_mod! {
                 hepta_owned_avatar: uniform(1.0)
                 hepta_color_avatar: uniform(COLOR_BG_PREVIEW)
                 color: vec4(-1.0)
+                fixture_shape: instance(0.0)
                 pixel: fn() {
                     let sdf = Sdf2d.viewport(self.pos * self.rect_size)
                     let c = self.rect_size * 0.5
                     sdf.circle(c.x, c.y, min(c.x, c.y) - 0.5)
-                    return sdf.fill(if self.color.x < -0.5 self.hepta_color_avatar else self.color)
+                    sdf.fill(if self.color.x < -0.5 self.hepta_color_avatar else self.color)
+                    if self.fixture_shape > 0.5 {
+                        let r = min(c.x, c.y) * 0.58
+                        if self.fixture_shape < 1.5 {
+                            sdf.move_to(c.x, c.y - r)
+                            sdf.line_to(c.x + r, c.y)
+                            sdf.line_to(c.x, c.y + r)
+                            sdf.line_to(c.x - r, c.y)
+                            sdf.close_path()
+                        } else if self.fixture_shape < 2.5 {
+                            sdf.circle(c.x, c.y, r)
+                        } else if self.fixture_shape < 3.5 {
+                            sdf.move_to(c.x, c.y - r)
+                            sdf.line_to(c.x + r, c.y + r)
+                            sdf.line_to(c.x - r, c.y + r)
+                            sdf.close_path()
+                        } else {
+                            sdf.box(c.x - r, c.y - r, r * 2.0, r * 2.0, 2.0)
+                            sdf.move_to(c.x - r, c.y)
+                            sdf.line_to(c.x + r, c.y)
+                        }
+                        sdf.stroke(vec4(self.hepta_color_avatar.rgb * 2.6, 1.0), 1.2)
+                    }
+                    return sdf.result
                 }
             }
 
@@ -108,6 +132,7 @@ enum AvatarDisplayState {
 
 #[derive(Script, Widget)]
 pub struct Avatar {
+    #[rust] fixture_shape: f32,
     #[source] source: ScriptObjectRef,
     #[deref] view: View,
 
@@ -182,6 +207,18 @@ impl Avatar {
     ///
     /// Specifically does NOT change the avatar's display state or image/text view visibility.
     fn set_text_label(&mut self, cx: &mut Cx, v: &str) {
+        #[cfg(feature = "ui-fixture")]
+        {
+            let shape = if crate::app::ui_fixture::chat_active(cx) {
+                match v { "◇" => 1.0, "◯" => 2.0, "△" => 3.0, "◈" | "≋" | "◒" => 4.0, _ => 0.0 }
+            } else { 0.0 };
+            if self.fixture_shape != shape {
+                self.fixture_shape = shape;
+                let mut view = self.view(cx, ids!(text_view));
+                script_apply_eval!(cx, view, {draw_bg.fixture_shape: #(shape)});
+                self.view.widget(cx, ids!(text_view.text)).set_visible(cx, shape == 0.0);
+            }
+        }
         let f = utils::user_name_first_letter(v)
             .unwrap_or("?").to_uppercase();
         self.label(cx, ids!(text_view.text)).set_text(cx, &f);

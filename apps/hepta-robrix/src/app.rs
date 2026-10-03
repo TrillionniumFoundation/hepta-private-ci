@@ -164,6 +164,9 @@ script_mod! {
     }
 }
 
+#[path = "theme_pointer_focus.rs"]
+mod theme_pointer_focus;
+
 app_main!(App);
 
 #[derive(Script)]
@@ -172,6 +175,7 @@ pub struct App {
     /// The top-level app state, shared across various parts of the app.
     #[rust] app_state: AppState,
     #[rust] lifecycle: AppLifecycle,
+    #[rust] theme_pointer_focus: Option<theme_pointer_focus::Pending>,
     /// The details of a room we're waiting on to be loaded so that we can navigate to it.
     /// This can be either a room we're waiting to join, or one we're waiting to be invited to.
     /// Also includes an optional room ID to be closed once the awaited room has been loaded.
@@ -762,6 +766,7 @@ impl AppMain for App {
 
         // Forward events to the MatchEvent trait implementation.
         self.match_event(cx, event);
+        self.remember_theme_pointer(cx, event);
         let scope = &mut Scope::with_data(&mut self.app_state);
         self.ui.handle_event(cx, event, scope);
         self.handle_lifecycle_event(cx, event);
@@ -773,6 +778,8 @@ impl AppMain for App {
                 (ids!(theme_c), HeptaTheme::ObsidianCeramic),
             ] {
                 if self.ui.button(cx, path).clicked(actions) {
+                    let button_uid = self.ui.button(cx, path).widget_uid();
+                    self.restore_theme_pointer(cx, button_uid);
                     self.app_state.app_prefs.hepta_theme = choice;
                     self.app_state.app_prefs.on_hepta_theme_changed(cx);
                     #[cfg(feature = "ui-fixture")]

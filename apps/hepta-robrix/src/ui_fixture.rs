@@ -138,6 +138,37 @@ mod tests {
     use super::*;
 
     #[test]
+    fn actual_chat_fixture_draw_resolves_dynamic_material_and_image_values() {
+        let _ = makepad_widgets::makepad_platform::shader_error::take();
+        let mut cx = Cx::new(Box::new(|_, _| {}));
+        cx.global::<FixtureState>().chat = true;
+        let mut room = cx.with_vm(|vm| {
+            vm.bx.captured_errors = Some(Vec::new());
+            let _ = <App as AppMain>::script_mod(vm);
+            let value = script_eval!(vm, { mod.widgets.RoomScreen {} });
+            WidgetRef::script_from_value(vm, value)
+        });
+        let pass = DrawPass::new(&mut cx);
+        pass.set_size(&mut cx, dvec2(800.0, 600.0));
+        let mut list = DrawList::new(&mut cx);
+        let event = DrawEvent::default();
+        let mut draw = CxDraw::new(&mut cx, &event);
+        draw.begin_pass(&pass, None);
+        list.begin_always(&mut draw);
+        {
+            let mut cx = Cx2d::new(&mut draw);
+            cx.begin_root_turtle(dvec2(800.0, 600.0), Layout::flow_down());
+            room.draw_all(&mut cx, &mut Scope::with_data(&mut AppState::default()));
+            cx.end_turtle();
+        }
+        list.end(&mut draw);
+        draw.end_pass(&pass);
+        drop(draw);
+        cx.with_vm(|vm| { let errors = vm.take_errors(); assert!(errors.is_empty(), "fixture dynamic script errors: {errors:#?}"); });
+        assert_eq!(makepad_widgets::makepad_platform::shader_error::take(), None);
+    }
+
+    #[test]
     fn actual_app_templates_compile_without_script_errors() {
         let _ = makepad_widgets::makepad_platform::shader_error::take();
         let mut cx = Cx::new(Box::new(|_, _| {}));

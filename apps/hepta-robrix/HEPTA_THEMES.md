@@ -79,3 +79,29 @@ Browser theme checks separately cover pointer-retained composer focus and
 keyboard-retained selector focus, while comparing real editor identity, draft,
 room/tab, fixture account and Console authority. No active SDK reply/edit claim is
 made. New exact-source native/web captures and pixel comparison remain required.
+
+
+## Second runtime review
+
+`qualification/themes-d39edeae.json` records the exact d39 run. The splitter
+shader is fixed. Browser forward/reverse traversal reaches every SSO/control,
+but initial Tab selects the footer. Its Fit layout registers before the deferred
+Fill login form. Initial selection now uses top-left geometry within the existing
+active nav scope; established traversal and scroll-to-focus remain unchanged.
+A real deferred-order test is red on the previous code and green on the repair.
+
+A pointer theme click preserved real draft/editor/room/tab/account/Console state
+but stole focus. The pinned Button's second unconditional focus assignment is
+removed. The real App theme action also preserves a pointer-origin editor only
+while room/tab/user/editor identity and current visible area remain valid, with
+no modal lock or intervening keyboard/navigation/account event. Keyboard theme
+activation keeps its own selector focus. Fixtures use Rust SDF symbols instead
+of unsupported decorative font glyphs; previews and the real image widget have
+bounded geometry. Actual rendered acceptance remains pending.
+
+Native's tightened gate now exposes an older stale draw-list generation during
+Console resizing. Its caller is not yet established. The exact-source patch adds
+at most three truncated backtraces and retains the original error and failing
+gate. Independent later scenes may still be captured for diagnosis, but any
+recorded failure prevents a qualification pass. Ceramic was not reached in the
+d39 browser run and has no accepted current pixel evidence.

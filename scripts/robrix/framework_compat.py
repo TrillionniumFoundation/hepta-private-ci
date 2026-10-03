@@ -5,6 +5,7 @@ import subprocess
 from pathlib import Path
 
 BEFORE = {
+    'platform/src/draw_list.rs': '32475b53c3e38dd82b33c24f7a3e6b3c9137773493ac1a36c3668eaf4ad23c92',
     'widgets/src/nav_control.rs': '56830fb21636ebbcaeda7e3394021fda9a5342c4d3f784b869839e0cf7c7350b',
     'widgets/src/button.rs': '3e45061fb0a12036a6480306df89a4ebc918b7995e73c70041f9c485ce8ac7db',
     'widgets/src/text_input.rs': 'cc8ca79929a1410b014e3dc9bc193c38884a1d500e9a46d5e2ab5d8966500b19',
@@ -34,6 +35,15 @@ def verify_web_input_dispatch(source):
             raise ValueError('Web input notification is not explicitly consumed: ' + pattern)
 
 
+def verify_button_focus(source):
+    start = source.index('Hit::FingerDown(fe) if self.enabled && fe.is_primary_hit() => {')
+    end = source.index('Hit::FingerHoverIn', start)
+    pointer = source[start:end]
+    guarded = 'if self.grab_key_focus {\n                    cx.set_key_focus(self.draw_bg.area());\n                }'
+    if pointer.count(guarded) != 1 or 'set_key_focus' in pointer.replace(guarded, ''):
+        raise ValueError('Button pointer focus ignores grab_key_focus')
+
+
 def apply(source):
     patch = Path(__file__).with_name('patches') / 'makepad-493d23a-web-startup.patch'
     added = 'widgets/src/hepta_font_tests.rs'
@@ -51,6 +61,7 @@ def apply(source):
     subprocess.run(['git', 'apply', str(patch.resolve())], cwd=source, check=True)
     subprocess.run(['git', 'apply', str(nav_patch.resolve())], cwd=source, check=True)
     verify_web_input_dispatch((source / 'platform/src/os/web/web.rs').read_text())
+    verify_button_focus((source / 'widgets/src/button.rs').read_text())
     assert hashlib.sha256((source / 'platform/src/os/web/web.js').read_bytes()).hexdigest() == BEFORE['platform/src/os/web/web.js']
     return {'revision': '493d23a7630f487d29912dd73f2cbb5b639b74ca',
             'patchSha256': hashlib.sha256(patch.read_bytes()).hexdigest(),

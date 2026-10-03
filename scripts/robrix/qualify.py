@@ -108,11 +108,11 @@ def native_tests():
     checked_tests(['cargo', '+1.96.0', 'test', '--locked', '-p', 'makepad-widgets',
                    '--lib', 'hepta_font_tests', '--', '--nocapture'], 'makepad-font-cache-tests.log', 1)
     checked_tests(['cargo', '+1.96.0', 'test', '--locked', '-p', 'makepad-widgets',
-                   '--lib', 'hepta_nav_tests', '--', '--nocapture'], 'makepad-nav-tests.log', 3)
+                   '--lib', 'hepta_nav_tests', '--', '--nocapture'], 'makepad-nav-tests.log', 4)
     for module, minimum in [('shared::hepta_theme::tests', 6),
                             ('hepta_console::tests', 4),
                             ('home::main_desktop_ui::hepta_dock_tests', 3),
-                            ('app::ui_fixture::tests', 4),
+                            ('app::ui_fixture::tests', 5),
                             ('ui_dispatch::tests', 3),
                             ('timeline_channel::tests', 3)]:
         checked_tests(['cargo', '+1.96.0', 'test', '--locked', '--features', 'ui-fixture',
@@ -307,11 +307,16 @@ def validate_native_log(output):
         re.I,
     ), errors
 
+def require_no_scene_failures(failures):
+    assert not failures, f'Capture qualification failed: {failures}'
+
+
 def native_capture():
     from PIL import Image
     from render_checks import login_pixels
     binary = APP / 'target/debug/robrix'
     run(['cargo', '+1.96.0', 'build', '--locked', '--features', 'ui-fixture', '--bin', 'robrix'], log='native-build.log')
+    scene_failures = []
     for scene in ('login', 'console', 'chat-titanium', 'chat-prism', 'chat-ceramic'):
         with (OUT / f'native-{scene}.log').open('w') as log:
             resource_name = f'hepta-fixture-{os.getpid()}-{scene}'
@@ -352,7 +357,12 @@ def native_capture():
                     process.kill()
                     process.wait()
         errors = (OUT / f'native-{scene}.log').read_text()
-        validate_native_log(errors)
+        try:
+            validate_native_log(errors)
+        except AssertionError:
+            scene_failures.append(scene)
+    (OUT / 'native-scene-failures.json').write_text(json.dumps(scene_failures, indent=2))
+    require_no_scene_failures(scene_failures)
 
 
 if __name__ == '__main__':

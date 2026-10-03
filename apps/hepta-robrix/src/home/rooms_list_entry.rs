@@ -103,6 +103,7 @@ script_mod! {
             }
             plaintext_view +: {
                 pt_label +: {
+                    padding: 0
                     max_lines: 2
                     text_overflow: Ellipsis
                     draw_text +: {
@@ -229,7 +230,7 @@ script_mod! {
                 avatar := Avatar {}
                 View {
                     flow: Down
-                    width: Fill, height: 56
+                    width: Fill, height: Fit{min: FitBound.Abs(56.0)}
                     align: Align{ x: 0.0, y: 0.0 }
                     // Don't clip (cut-off) the unread badge's glow
                     clip_x: false, clip_y: false
@@ -241,7 +242,7 @@ script_mod! {
                         timestamp := mod.widgets.RoomsListEntryTimestamp { }
                     }
                     bottom := View {
-                        width: Fill, height: Fill,
+                        width: Fill, height: Fit,
                         spacing: 2,
                         flow: Right,
                         // Don't clip (cut-off) the unread badge's glow

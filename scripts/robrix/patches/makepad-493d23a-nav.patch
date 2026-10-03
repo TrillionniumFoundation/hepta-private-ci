@@ -54,7 +54,7 @@
          }
      }
  
-@@ -101,3 +68,36 @@
+@@ -101,3 +68,42 @@
          self.draw_list.end(cx);
      }
  }
@@ -82,7 +82,13 @@
 +        (Some(index), true) => (index + areas.len() - 1) % areas.len(),
 +        (Some(index), false) => (index + 1) % areas.len(),
 +        (None, true) => areas.len() - 1,
-+        (None, false) => 0,
++        (None, false) => areas.iter().enumerate().min_by(|(_, a), (_, b)| {
++            // Deferred Fill children may register after a visually later footer.
++            // Only initial focus uses layout order; traversal retains tree order.
++            let a = a.rect(cx).pos;
++            let b = b.rect(cx).pos;
++            a.y.total_cmp(&b.y).then(a.x.total_cmp(&b.x))
++        }).map(|(index, _)| index).unwrap(),
 +    };
 +    let target = areas[index];
 +    CxDraw::iterate_nav_stops(cx, root, |_, stop| (stop.area == target).then_some(target))
@@ -93,6 +99,15 @@
 +mod hepta_nav_tests;
 --- a/widgets/src/button.rs
 +++ b/widgets/src/button.rs
+@@ -639,7 +639,7 @@
+                     );
+                 }
+                 self.animator_play(cx, ids!(hover.down));
+-                self.set_key_focus(cx);
++                // grab_key_focus above is authoritative for pointer input.
+             }
+             Hit::FingerHoverIn(_) => {
+                 if self.enabled {
 @@ -707,7 +707,9 @@
          self.draw_text
              .draw_walk(cx, self.label_walk, Align::default(), self.text.as_ref());
@@ -104,9 +119,27 @@
          DrawStep::done()
      }
  
+--- a/platform/src/draw_list.rs
++++ b/platform/src/draw_list.rs
+@@ -366,9 +366,13 @@
+     fn index(&self, index: DrawListId) -> &Self::Output {
+         let d = &self.0.pool[index.0];
+         if d.generation != index.1 {
++            static TRACES: std::sync::atomic::AtomicUsize = std::sync::atomic::AtomicUsize::new(0);
++            let trace = if TRACES.fetch_add(1, std::sync::atomic::Ordering::Relaxed) < 3 {
++                std::backtrace::Backtrace::force_capture().to_string().chars().take(12_000).collect::<String>()
++            } else { String::new() };
+             error!(
+-                "Drawlist id generation wrong index: {} current gen:{} in pointer:{}",
+-                index.0, d.generation, index.1
++                "Drawlist id generation wrong index: {} current gen:{} in pointer:{}\n{}",
++                index.0, d.generation, index.1, trace
+             )
+         }
+         &d.item
 --- /dev/null
 +++ b/widgets/src/hepta_nav_tests.rs
-@@ -0,0 +1,71 @@
+@@ -0,0 +1,80 @@
 +use super::*;
 +use crate::*;
 +
@@ -177,4 +210,13 @@
 +    assert!(tab_target(&mut cx, list.id(), areas[0], true).is_none());
 +    cx.unblock_scrolling();
 +    assert_eq!(tab_target(&mut cx, list.id(), areas[0], false).unwrap().0, areas[1]);
++}
++
++#[test]
++fn deferred_footer_does_not_take_initial_focus() {
++    let (mut cx, _pass, list, areas) = scene();
++    let tree = cx.get_global::<makepad_draw::nav::CxNavTreeRc>().clone();
++    tree.0.borrow_mut()[list.id()].nav_list.rotate_right(1);
++    assert_eq!(tab_target(&mut cx, list.id(), Area::Empty, false).unwrap().0, areas[0]);
++    assert_eq!(tab_target(&mut cx, list.id(), areas[2], false).unwrap().0, areas[0]);
 +}

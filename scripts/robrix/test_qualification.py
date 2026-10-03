@@ -375,3 +375,24 @@ class TestFrameworkCompatibility(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class TestPointerFocusContract(unittest.TestCase):
+    def test_duplicate_pointer_focus_assignment_is_rejected(self):
+        from framework_compat import verify_button_focus
+        guarded = 'if self.grab_key_focus {\n                    cx.set_key_focus(self.draw_bg.area());\n                }'
+        start = 'Hit::FingerDown(fe) if self.enabled && fe.is_primary_hit() => {'
+        end = '} Hit::FingerHoverIn'
+        verify_button_focus(start + guarded + end)
+        for defect in [start + guarded + 'self.set_key_focus(cx);' + end,
+                       start + 'cx.set_key_focus(self.draw_bg.area());' + end]:
+            with self.assertRaises(ValueError):
+                verify_button_focus(defect)
+
+
+class TestSceneFailureCollection(unittest.TestCase):
+    def test_later_evidence_never_turns_an_earlier_failure_into_pass(self):
+        qualify.require_no_scene_failures([])
+        for failures in [['console'], ['editor focus lost', 'initial Tab wrong']]:
+            with self.assertRaises(AssertionError):
+                qualify.require_no_scene_failures(failures)

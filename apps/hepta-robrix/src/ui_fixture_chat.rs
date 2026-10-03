@@ -5,7 +5,7 @@ use crate::{
     app::SelectedRoom,
     home::rooms_list::{enqueue_rooms_list_update, JoinedRoomInfo, RoomsListAction, RoomsListRef, RoomsListUpdate},
     room::FetchedRoomAvatar,
-    shared::{html_or_plaintext::HtmlOrPlaintextWidgetRefExt, text_or_image::TextOrImageWidgetRefExt},
+    shared::{avatar::AvatarWidgetRefExt, html_or_plaintext::HtmlOrPlaintextWidgetRefExt, text_or_image::TextOrImageWidgetRefExt},
     home::event_reaction_list::ReactionListWidgetRefExt,
     utils::RoomNameId,
 };
@@ -74,7 +74,7 @@ pub(crate) fn draw(view: &mut View, cx: &mut Cx2d, scope: &mut Scope, walk: Walk
             let item = list.item(cx, index, if index == 0 { id!(ImageMessage) } else { id!(Message) });
             item.label(cx, ids!(username)).set_text(cx, name);
             item.label(cx, ids!(timestamp.ts_label)).set_text(cx, time);
-            item.label(cx, ids!(avatar.text_view.text)).set_text(cx, ["◇", "◯", "△", "◈", "H"][index]);
+            item.avatar(cx, ids!(avatar)).show_text(cx, None, None, ["◇", "◯", "△", "◈", "H"][index]);
             if index == 0 {
                 item.view(cx, ids!(caption_view)).set_visible(cx, true);
                 item.html_or_plaintext(cx, ids!(caption)).show_plaintext(cx, body);
@@ -83,6 +83,14 @@ pub(crate) fn draw(view: &mut View, cx: &mut Cx2d, scope: &mut Scope, walk: Walk
             }
             if cx.global::<FixtureDrawState>().initialized.insert(item.widget_uid()) {
                 if index == 0 {
+                    let mut image_view = item.widget(cx, ids!(content.message.image));
+                    script_apply_eval!(cx, image_view, {
+                        width: mod.turtle.Fit{max: mod.turtle.FitBound.Abs(320.0)}
+                        image_view +: {
+                            width: mod.turtle.Fit{max: mod.turtle.FitBound.Abs(320.0)}
+                            image +: {width: mod.turtle.Fit{max: mod.turtle.FitBound.Abs(320.0)}, height: mod.turtle.Fit{max: mod.turtle.FitBound.Abs(96.0)}}
+                        }
+                    });
                     // A small procedural material swatch, carried by the real
                     // ImageMessage/TextOrImage path. No files or media requests.
                     let texture = if let Some(texture) = cx.global::<FixtureDrawState>().image.clone() { texture } else {

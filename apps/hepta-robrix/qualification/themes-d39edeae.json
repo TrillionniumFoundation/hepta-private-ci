@@ -1,0 +1,111 @@
+{
+  "candidate": "d39edeae7f1f60915b3ef72d3e3c65f05a2c8ea3",
+  "tree": "379ecfa14d7386584b255f6d39ec8b2199ffb262",
+  "run": 37095628038,
+  "artifacts": {
+    "browser": {
+      "id": 11264526250,
+      "zipSha256": "576729f82bbbc0451c5e280e74226e2c11ef88c3910aa4cbf955dfb786753b85",
+      "verifiedFiles": 67,
+      "exactSet": true
+    },
+    "native": {
+      "id": 11264282792,
+      "zipSha256": "58dc5b420ce14e9da73fac1216bfef6b1e5727fc2ede87bd409035f50b80b485",
+      "verifiedFiles": 39,
+      "exactSet": true
+    }
+  },
+  "reviewedThemePngs": {
+    "web-chat-titanium-short.png": "5376194ae46c401dd5cbd6259153098873fdfc103c6d66ec561f7171799e6d4b",
+    "web-theme-switch-DeepSpaceTitanium.png": "8c9587e4d1fcf988a2356a25df96dd9b62a74299cc1513edbfc647aafb152aec",
+    "web-chat-titanium-wide.png": "85796d22da869341401465d04751f343335253afc167601eb0795795f4d71175",
+    "web-chat-prism-wide.png": "238ad1caffea8d4f897b4b1d66f6b1383c70336e8030b466c914895f087c0877",
+    "web-chat-titanium-narrow.png": "19ec0bb463f74c7b78b14786dea32e24a3b9406725c8c9c6ff13d146aec947f5"
+  },
+  "usability": {
+    "checks": {
+      "initialTabStartsAtFirstInput": false,
+      "forwardTabReachesAllControls": true,
+      "reverseTabReachesAllControls": true,
+      "wheelShowsAllLowerControls": true,
+      "draftPreserved": true,
+      "noSubmission": true,
+      "fontsFetchedOnce": true
+    },
+    "focusTrace": {
+      "initial": null,
+      "initialTab": "open_hepta_console",
+      "forward": [
+        "user_id_input",
+        "password_input",
+        "show_password_button",
+        "homeserver_input",
+        "login_button",
+        "apple_button",
+        "facebook_button",
+        "github_button",
+        "gitlab_button",
+        "google_button",
+        "twitter_button",
+        "signup_button",
+        "open_hepta_console",
+        "user_id_input",
+        "password_input"
+      ],
+      "reverse": [
+        "user_id_input",
+        "open_hepta_console",
+        "signup_button",
+        "twitter_button",
+        "google_button",
+        "gitlab_button",
+        "github_button",
+        "facebook_button",
+        "apple_button",
+        "login_button",
+        "homeserver_input",
+        "show_password_button",
+        "password_input",
+        "user_id_input"
+      ]
+    },
+    "passed": false
+  },
+  "themeSwitch": {
+    "fixture": true,
+    "liveAccounts": false,
+    "submissionKeysSent": false,
+    "checks": [
+      {
+        "theme": "DeepSpaceTitanium",
+        "selected": true,
+        "draft": true,
+        "editor_identity": true,
+        "input_mode_focus": false,
+        "room": true,
+        "tab": true,
+        "account_fixture": true,
+        "console_authority": true
+      }
+    ],
+    "activeSdkReplyEditQualified": false
+  },
+  "nativeFailure": "Original error retained: Drawlist id generation wrong index:21 current gen:3 in pointer:2 during Console resizing. Caller unresolved; bounded diagnostic backtrace added.",
+  "visualReview": {
+    "improved": [
+      "header and subtitle visible",
+      "inline author/time",
+      "multiline composer",
+      "real mobile chat selection"
+    ],
+    "gaps": [
+      "room previews clipped",
+      "unsupported fixture glyphs in web font",
+      "image swatch expanded beyond intended320x96",
+      "material/reference fidelity remains incomplete"
+    ],
+    "ceramic": "not reached in this run",
+    "accepted": false
+  }
+}
