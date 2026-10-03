@@ -214,3 +214,26 @@ and mapped paths were validated; all existing completion/claim/gate fields were
 preserved. Other affected valid-ancestor observations were refreshed separately.
 The original records remain reviewable in Git history. This correction records
 what source exists and does not certify execution or independent acceptance.
+## Resumed exact-head review — 2026-10-03
+
+Run 36807584358 for `be90645f24ffde13bac6f181cafde791309120cd` is terminal,
+not pending. Its Linux source-head package command passed 495 test-function
+invocations. The macOS source command passed 420 and failed the Fleet
+workspace-sweep fixture: `/var/folders/...` was supplied to canonical path
+admission without resolving macOS's `/private/var` alias. Both platforms
+retained 14 Agentd strict-lint errors. Green continue-on-error step labels do
+not override the actual failed command receipts or failed final aggregation.
+
+The bounded correction canonicalizes each freshly created sweep path before
+constructing WorkspaceBinding, as the other Fleet fixtures already do. It
+does not relax production path validation, alter planner behavior, change
+assertions, skip tests or alter deadlines. A Linux TMPDIR symlink reproduced
+the original failure; with the correction all 41 Fleet cases pass under that
+same alias. All 41 also pass under the ordinary temporary root. Scoped fix,
+formatting and strict all-target Fleet Clippy pass. The separate read-only
+Linux/macOS source-head Fleet gate retains this alias case for hosted review.
+
+This remains a stacked continuation of the audited source. Main integration
+conflicts, Agentd strict lint, actual effect-owner/recovery composition and
+independent installed-host acceptance are separate unresolved requirements.
+No completion, activation, merge or release field is advanced.
