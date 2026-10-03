@@ -114,7 +114,7 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
     let _ = codex_hepta_intelligence_eval::longitudinal_evaluation_signing_payload_v3;
     let _ = codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1::<NoCasStore>::initialize;
-    let _ = codex_hepta_intelligence_eval::ProductEvaluationRunnerV1::<NoCasStore>::new;
+    let _ = codex_hepta_intelligence_eval::RecordedProductEvaluationRunnerV1::<NoCasStore>::new;
     let _ = codex_hepta_intelligence_eval::freeze_product_evaluation_plan_v1;
     let _ = codex_hepta_intelligence_eval::ProductQualificationReceiptV1::validate_integrity;
     let _ = codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1::create;

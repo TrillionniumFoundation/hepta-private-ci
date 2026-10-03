@@ -164,6 +164,8 @@ jobs:
               --evidence "$out/$label.json"
           }
           require codex-hepta-intelligence-eval signed_qualification_e2e owner-signed-e2e
+          require codex-hepta-shadow-qualification lane_e_causal_candidate_chain_is_digest_bound_and_deny_all shadow-recorded-numerical-fixture
+          require codex-hepta-shadow-qualification lane_e_public_operation_surface_is_linkable shadow-recorded-api-contract
           require codex-hepta-intelligence evaluated_shadow intelligence-shadow-consumer
           require codex-hepta-intelligence plasticity_product intelligence-plasticity-consumer
           require codex-hepta-agentd signed_candidate_passes_only_with_bound_owner_run_context_and_root_trust agentd-current-owner-context-root-trust

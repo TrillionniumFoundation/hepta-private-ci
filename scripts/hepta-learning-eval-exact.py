@@ -4,6 +4,7 @@
 This proves only the commands actually run against one immutable checkout. It
 never edits source/status, issues operator acceptance, or manufactures host data.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -56,7 +57,9 @@ def validate_checkout(
     parents = git(root, "show", "-s", "--format=%P", "HEAD").split()
     if kind == "merge":
         if base is None or parents != [base, candidate]:
-            raise ValueError("merge must have ordered parents [exact base, exact candidate]")
+            raise ValueError(
+                "merge must have ordered parents [exact base, exact candidate]"
+            )
     elif kind != "head" or source != candidate:
         raise ValueError("head qualification must test the exact candidate")
     return {
@@ -174,6 +177,34 @@ def commands(output: Path) -> list[tuple[str, list[str], str]]:
                 "-p",
                 "codex-hepta-intelligence-eval",
                 "signed_qualification_e2e",
+                "--test-threads=1",
+            ],
+            "codex-rs",
+        ),
+        (
+            "shadow-recorded-numerical-fixture",
+            [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-shadow-qualification",
+                "lane_e_causal_candidate_chain_is_digest_bound_and_deny_all",
+                "--test-threads=1",
+            ],
+            "codex-rs",
+        ),
+        (
+            "shadow-recorded-api-contract",
+            [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-shadow-qualification",
+                "--test",
+                "lane_e_api_contract",
+                "lane_e_public_operation_surface_is_linkable",
                 "--test-threads=1",
             ],
             "codex-rs",
@@ -371,7 +402,9 @@ def validate_outputs(output: Path) -> dict[str, Any]:
         or profile["holdout"]["anchorPreserved"] is not True
         or profile["holdout"]["afterBytes"] >= profile["holdout"]["beforeBytes"]
     ):
-        raise ValueError("storage profile does not satisfy the preregistered source profile")
+        raise ValueError(
+            "storage profile does not satisfy the preregistered source profile"
+        )
     return {
         "defaultProductionCoverage": {
             "count": count,

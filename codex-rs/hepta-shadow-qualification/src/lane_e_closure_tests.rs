@@ -1,8 +1,13 @@
+//! Numerical cross-crate fixtures, not selected-host qualification evidence.
+//! Fixture keys, the disk anchor and publication sink do not authenticate a real
+//! host or grant authority. Evaluation uses the default recorded/typed API.
+
 use codex_hepta_bellman_operator::BellmanReferenceCellV1;
 use codex_hepta_bellman_operator::BellmanReferencePlanV1;
 use codex_hepta_bellman_operator::WorldModelSampleV1;
 use codex_hepta_bellman_operator::evaluate_bellman_reference;
 use codex_hepta_bellman_operator::fit_transition_model;
+use codex_hepta_intelligence_eval::AnchoredProductEvaluationAttemptJournalV1;
 use codex_hepta_intelligence_eval::ClusterAssignment;
 use codex_hepta_intelligence_eval::ClusterConfidencePlan;
 use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
@@ -24,7 +29,8 @@ use codex_hepta_intelligence_eval::OpeAction;
 use codex_hepta_intelligence_eval::OpePlan;
 use codex_hepta_intelligence_eval::OpeRow;
 use codex_hepta_intelligence_eval::OutcomeTrainingSample;
-use codex_hepta_intelligence_eval::ProductEvaluationRunnerV1;
+use codex_hepta_intelligence_eval::ProductEvaluationAttemptJournalV1;
+use codex_hepta_intelligence_eval::ProductEvaluationAttemptPhaseV1;
 use codex_hepta_intelligence_eval::ProductEvidenceSinkErrorV1;
 use codex_hepta_intelligence_eval::ProductMetricSourceContractV1;
 use codex_hepta_intelligence_eval::ProductMetricSourceV1;
@@ -32,6 +38,8 @@ use codex_hepta_intelligence_eval::ProductProviderErrorV1;
 use codex_hepta_intelligence_eval::ProductQualificationContextV1;
 use codex_hepta_intelligence_eval::ProductQualificationEvidenceSinkV1;
 use codex_hepta_intelligence_eval::ProductTimingEvidenceV1;
+use codex_hepta_intelligence_eval::RecordedProductEvaluationErrorV1;
+use codex_hepta_intelligence_eval::RecordedProductEvaluationRunnerV1;
 use codex_hepta_intelligence_eval::SignedEvaluationDecisionV1;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
 use codex_hepta_intelligence_eval::TemporalComparisonInputsV1;
@@ -70,6 +78,10 @@ use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
+
+#[path = "lane_e_eval_storage_fixture.rs"]
+mod eval_storage;
 
 fn id(value: &str) -> StableId {
     match StableId::new(value.to_owned()) {
@@ -179,7 +191,11 @@ impl codex_hepta_intelligence_eval::FinalHoldoutProviderV1 for EvalProvider {
     }
 }
 
-struct EvalSink;
+// This existing numerical sink does not represent a durable publication owner.
+#[derive(Default)]
+struct EvalSink {
+    publications: Vec<(Digest32, SignedEvaluationDecisionV1)>,
+}
 
 impl ProductQualificationEvidenceSinkV1 for EvalSink {
     fn persist(
@@ -187,6 +203,7 @@ impl ProductQualificationEvidenceSinkV1 for EvalSink {
         execution_digest: Digest32,
         decision: &SignedEvaluationDecisionV1,
     ) -> Result<Digest32, ProductEvidenceSinkErrorV1> {
+        self.publications.push((execution_digest, decision.clone()));
         let mut bytes = b"lane-e.product-qualification-publication.v1".to_vec();
         bytes.extend_from_slice(execution_digest.as_array());
         bytes.extend_from_slice(decision.decision.evidence_digest.as_array());
@@ -572,15 +589,29 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
         Ok(value) => value,
         Err(error) => panic!("fenced holdout owner failed: {error}"),
     };
-    let mut runner = ProductEvaluationRunnerV1::new(owner);
+    let mut runner = RecordedProductEvaluationRunnerV1::new(owner);
+    let root = tempfile::tempdir().unwrap_or_else(|error| panic!("fixture directory: {error}"));
+    let journal_path = root.path().join("attempt.journal");
+    let anchor_root = root.path().join("anchor");
+    let artifact_root = root.path().join("artifacts");
+    let attempt_id = id("lane-e-recorded-attempt");
+    let journal_binding = digest("lane-e-attempt-journal");
+    let mut journal = AnchoredProductEvaluationAttemptJournalV1::create(
+        eval_storage::create(&journal_path),
+        journal_binding,
+        eval_storage::DiskAnchorFixture::new(&anchor_root),
+    )
+    .unwrap_or_else(|error| panic!("anchored fixture journal: {error}"));
     let mut provider = EvalProvider {
         inputs: Some(evaluation_inputs(outcome_digest)),
     };
     let temporal = match runner.evaluate_temporal_comparison(
+        attempt_id.clone(),
         &frozen_plan,
         &candidate_plan,
         &baseline_plan,
         &mut provider,
+        &mut journal,
     ) {
         Ok(value) => value,
         Err(error) => panic!("temporal product evaluation failed: {error}"),
@@ -608,7 +639,7 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
         ],
     }) {
         Ok(value) => value,
-        Err(error) => panic!("host-owned evaluation trust failed: {error}"),
+        Err(error) => panic!("fixture evaluation trust failed: {error}"),
     };
     let context = ProductQualificationContextV1 {
         generator: generator.clone(),
@@ -642,14 +673,18 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
             &evaluation_payload,
         ),
     };
-    let mut sink = EvalSink;
-    let qualification = match runner.qualify_and_persist(
+    let mut sink = EvalSink::default();
+    let qualification = match runner.qualify_and_persist_with_artifacts(
+        &attempt_id,
         &temporal,
         &context,
         &evidence,
         ProductTimingEvidenceV1::Qualification,
         &verifier,
-        50,
+        /*now*/ 50,
+        &mut journal,
+        &artifact_root,
+        digest("lane-e-fixture-artifact-binding"),
         &mut sink,
     ) {
         Ok(value) => value,
@@ -660,6 +695,81 @@ fn lane_e_causal_candidate_chain_is_digest_bound_and_deny_all() {
         IndependentEvaluationDispositionV1::EligibleForIndependentSelection
     );
     assert!(!qualification.authority.grants_any());
+    assert_eq!(
+        sink.publications,
+        vec![(temporal.execution_digest, qualification.decision.clone())]
+    );
+    let history = journal
+        .history(&attempt_id)
+        .unwrap_or_else(|error| panic!("recorded lifecycle: {error}"));
+    use ProductEvaluationAttemptPhaseV1 as Phase;
+    assert_eq!(
+        history
+            .iter()
+            .map(|row| row.transition.phase)
+            .collect::<Vec<_>>(),
+        vec![
+            Phase::IntentPersisted,
+            Phase::HoldoutConsumed,
+            Phase::ComparisonSealed,
+            Phase::QualificationArtifactsPersisted,
+            Phase::QualificationDecided,
+            Phase::PublicationPending,
+            Phase::Published,
+        ]
+    );
+    let artifacts = std::fs::read_dir(&artifact_root)
+        .unwrap_or_else(|error| panic!("typed archive directory: {error}"))
+        .collect::<Result<Vec<_>, _>>()
+        .unwrap_or_else(|error| panic!("typed archive entries: {error}"));
+    assert_eq!(artifacts.len(), 1);
+    let archive = std::fs::read(artifacts[0].path())
+        .unwrap_or_else(|error| panic!("typed archive bytes: {error}"));
+    assert_eq!(
+        history[3].transition.terminal_digest,
+        Digest32::of_bytes(&archive)
+    );
+    assert_eq!(
+        history[2].transition.terminal_digest,
+        temporal.execution_digest
+    );
+    assert_eq!(
+        history[6].transition.terminal_digest,
+        qualification.publication_digest
+    );
+    let retained = journal
+        .anchor()
+        .unwrap_or_else(|error| panic!("retained anchor: {error}"));
+    drop(journal);
+    let mut journal = AnchoredProductEvaluationAttemptJournalV1::recover(
+        eval_storage::reopen(&journal_path),
+        journal_binding,
+        eval_storage::DiskAnchorFixture::new(&anchor_root),
+    )
+    .unwrap_or_else(|error| panic!("reopen recorded history: {error}"));
+    assert_eq!(journal.anchor(), Ok(retained));
+    assert_eq!(journal.history(&attempt_id), Ok(history.clone()));
+
+    // Reopening a complete attempt does not authorize consuming another fixture
+    // holdout or invoking the provider again.
+    let holdout_before_replay = runner.holdout_anchor();
+    let mut replay_provider = EvalProvider {
+        inputs: Some(evaluation_inputs(outcome_digest)),
+    };
+    assert!(matches!(
+        runner.evaluate_temporal_comparison(
+            attempt_id.clone(),
+            &frozen_plan,
+            &candidate_plan,
+            &baseline_plan,
+            &mut replay_provider,
+            &mut journal,
+        ),
+        Err(RecordedProductEvaluationErrorV1::AttemptRequiresRecovery { .. })
+    ));
+    assert!(replay_provider.inputs.is_some());
+    assert_eq!(runner.holdout_anchor(), holdout_before_replay);
+    assert_eq!(journal.history(&attempt_id), Ok(history));
 
     let trained_event = ArtifactLifecycleEventV1 {
         event_id: id("lifecycle-trained"),

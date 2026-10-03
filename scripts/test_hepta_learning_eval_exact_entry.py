@@ -18,18 +18,26 @@ SPEC.loader.exec_module(MODULE)
 class ExactEntrypointTests(unittest.TestCase):
     def command_map(self):
         with tempfile.TemporaryDirectory() as directory:
-            return {name: (argv, cwd) for name, argv, cwd in MODULE.commands(Path(directory))}
+            return {
+                name: (argv, cwd)
+                for name, argv, cwd in MODULE.commands(Path(directory))
+            }
 
     def test_every_filtered_qualification_command_is_discovery_guarded(self):
         commands = self.command_map()
-        self.assertEqual(set(MODULE.REQUIRED_FILTERS), {
-            "signed-e2e",
-            "shadow-consumer",
-            "plasticity-consumer",
-            "agentd-consumer",
-            "agentd-outcome-consumer",
-            "cold-recovery-e2e",
-        })
+        self.assertEqual(
+            set(MODULE.REQUIRED_FILTERS),
+            {
+                "signed-e2e",
+                "shadow-recorded-numerical-fixture",
+                "shadow-recorded-api-contract",
+                "shadow-consumer",
+                "plasticity-consumer",
+                "agentd-consumer",
+                "agentd-outcome-consumer",
+                "cold-recovery-e2e",
+            },
+        )
         for name, spec in MODULE.REQUIRED_FILTERS.items():
             argv, cwd = commands[name]
             self.assertEqual(cwd, ".")
@@ -39,6 +47,25 @@ class ExactEntrypointTests(unittest.TestCase):
             for target in spec.get("tests", []):
                 self.assertIn("--test", argv)
                 self.assertIn(target, argv)
+
+    def test_shadow_numerical_and_api_consumers_are_nonempty_default_surface_runs(self):
+        commands = self.command_map()
+        for name in (
+            "shadow-recorded-numerical-fixture",
+            "shadow-recorded-api-contract",
+        ):
+            argv, cwd = commands[name]
+            self.assertEqual(cwd, ".")
+            self.assertEqual(argv[1], "scripts/hepta-nextest-require.py")
+            self.assertEqual(
+                argv[argv.index("--package") + 1], "codex-hepta-shadow-qualification"
+            )
+            self.assertNotIn("--features", argv)
+            self.assertNotIn("--all-features", argv)
+            self.assertNotIn("--list-only", argv)
+            self.assertNotIn("--no-locked", argv)
+        api, _ = commands["shadow-recorded-api-contract"]
+        self.assertEqual(api[api.index("--test") + 1], "lane_e_api_contract")
 
     def test_stale_agentd_filter_is_absent(self):
         commands = self.command_map()
@@ -61,9 +88,13 @@ class ExactEntrypointTests(unittest.TestCase):
 
     def test_original_command_order_is_preserved(self):
         with tempfile.TemporaryDirectory() as directory:
-            original = [name for name, _, _ in MODULE.ORIGINAL_COMMANDS(Path(directory))]
+            original = [
+                name for name, _, _ in MODULE.ORIGINAL_COMMANDS(Path(directory))
+            ]
             guarded = [name for name, _, _ in MODULE.commands(Path(directory))]
-        without_fixture = [name for name in guarded if name != "trusted-compatibility-fixture"]
+        without_fixture = [
+            name for name in guarded if name != "trusted-compatibility-fixture"
+        ]
         self.assertEqual(without_fixture, original)
 
 
