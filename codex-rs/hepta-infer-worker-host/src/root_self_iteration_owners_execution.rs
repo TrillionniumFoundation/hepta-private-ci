@@ -129,8 +129,7 @@ pub(super) fn execute(
         template["canary"] = serde_json::to_value(source)?;
         let selection =
             publication::root_existing(&input.directory, "cycle-selector.output", 32 * 1024)?;
-        template["selection"] =
-            serde_json::json!({"path":selection.path,"uid":config.selector.uid});
+        template["selection"] = serde_json::to_value(selection)?;
     }
     let label = match input.purpose {
         SelfIterationOwnerPurposeV1::Evaluate => "cycle-evaluator",
