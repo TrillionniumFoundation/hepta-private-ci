@@ -36,34 +36,15 @@ use codex_hepta_plasticity::ParameterGeneratorErrorV3;
 use codex_hepta_plasticity::ParameterGeneratorProfileV3;
 use codex_hepta_plasticity::ParameterProposalRequestV2;
 use codex_hepta_plasticity::ParameterProposalV2;
-use codex_hepta_plasticity::ProposalWindowV2;
 use codex_hepta_plasticity::parameter_generator_signing_payload_v3;
 use codex_hepta_plasticity::propose_v2;
 use codex_hepta_plasticity::verify_generated_parameter_candidates_v3;
 use codex_hepta_types::Digest32;
+#[cfg(test)]
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PlasticityAdmissionEvidenceV1 {
-    pub baseline_id: StableId,
-    pub objective_digest: Digest32,
-    pub selected_artifact_digest: Digest32,
-    pub artifact_registry_binding: Digest32,
-    pub artifact_registry_head_digest: Digest32,
-    pub qualification_evidence_head_digest: Digest32,
-    /// Canonical digest of host-resolved, context-bound owner evidence receipts.
-    pub owner_evidence_set_digest: Digest32,
-    pub window: ProposalWindowV2,
-    pub baseline_generation: Generation,
-    pub candidate_generation: Generation,
-    pub dataset_digest: Digest32,
-    pub update_rule_digest: Digest32,
-    pub modulator_digest: Digest32,
-    pub modulator_broadcast_digest: Digest32,
-    pub eligibility_digest: Digest32,
-    pub generator_digest: Digest32,
-}
+pub use codex_hepta_plasticity::PlasticityAdmissionEvidenceV1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CandidateEvaluationAdmissionV1 {
@@ -284,64 +265,15 @@ impl AnchoredPlasticityWriterV1 {
     }
 }
 
-/// Canonical bytes attested by the trusted Observer evidence role. The verifier's
-/// own validity/revocation window provides freshness; the payload binds the exact
-/// artifact/evidence frontiers and all proposal lineage digests.
-pub fn plasticity_admission_signing_payload_v1(
-    evidence: &PlasticityAdmissionEvidenceV1,
-) -> Vec<u8> {
-    let mut bytes = b"hepta.intelligence.plasticity-admission.v1\0".to_vec();
-    push_id(&mut bytes, &evidence.baseline_id);
-    for digest in [
-        evidence.objective_digest,
-        evidence.selected_artifact_digest,
-        evidence.artifact_registry_binding,
-        evidence.artifact_registry_head_digest,
-        evidence.qualification_evidence_head_digest,
-        evidence.owner_evidence_set_digest,
-    ] {
-        bytes.extend_from_slice(digest.as_array());
-    }
-    push_id(&mut bytes, &evidence.window.window_id);
-    bytes.extend_from_slice(evidence.window.window_digest.as_array());
-    bytes.extend_from_slice(&evidence.baseline_generation.get().to_be_bytes());
-    bytes.extend_from_slice(&evidence.candidate_generation.get().to_be_bytes());
-    for digest in [
-        evidence.dataset_digest,
-        evidence.update_rule_digest,
-        evidence.modulator_digest,
-        evidence.modulator_broadcast_digest,
-        evidence.eligibility_digest,
-        evidence.generator_digest,
-    ] {
-        bytes.extend_from_slice(digest.as_array());
-    }
-    bytes
-}
+pub use codex_hepta_plasticity::plasticity_admission_signing_payload_v1;
 
-/// Canonical terminal payload used only when the deterministic V3 generator
-/// produces the explicit no-change candidate and no admissible update candidate.
-/// Signing this payload is an independent evaluation of the terminal disposition;
-/// it is not selection, activation or authority to mutate the current artifact.
+/// Preserve the original product error while delegating identical signing bytes.
 pub fn no_change_disposition_signing_payload_v1(
     generated: &GeneratedParameterCandidateSetV3,
     admission: &PlasticityAdmissionEvidenceV1,
 ) -> Result<Vec<u8>, ParameterPlasticityProductErrorV1> {
-    let no_change = generated
-        .candidates
-        .iter()
-        .find(|candidate| candidate.kind == ParameterCandidateKindV2::NoChange)
-        .ok_or(ParameterPlasticityProductErrorV1::NoUpdateCandidate)?;
-    let mut bytes = b"hepta.intelligence.plasticity-no-admissible-update.v1\0".to_vec();
-    bytes.extend_from_slice(generated.generator_digest.as_array());
-    bytes.extend_from_slice(admission.owner_evidence_set_digest.as_array());
-    bytes.extend_from_slice(admission.selected_artifact_digest.as_array());
-    push_id(&mut bytes, &admission.window.window_id);
-    bytes.extend_from_slice(admission.window.window_digest.as_array());
-    bytes.extend_from_slice(&admission.baseline_generation.get().to_be_bytes());
-    bytes.extend_from_slice(&admission.candidate_generation.get().to_be_bytes());
-    push_id(&mut bytes, &no_change.candidate_id);
-    Ok(bytes)
+    codex_hepta_plasticity::no_change_disposition_signing_payload_v1(generated, admission)
+        .map_err(|_| ParameterPlasticityProductErrorV1::NoUpdateCandidate)
 }
 
 pub fn propose_authenticated_parameter_plasticity_v1(
@@ -364,48 +296,12 @@ pub fn propose_authenticated_parameter_plasticity_v1(
 fn validate_admission_binding(
     request: &ParameterPlasticityProductRequestV1,
 ) -> Result<(), ParameterPlasticityProductErrorV1> {
-    use ParameterPlasticityProductErrorV1 as E;
-    let evidence = &request.admission;
-    for (label, digest) in [
-        ("objective", evidence.objective_digest),
-        ("selected artifact", evidence.selected_artifact_digest),
-        (
-            "artifact registry binding",
-            evidence.artifact_registry_binding,
-        ),
-        (
-            "artifact registry head",
-            evidence.artifact_registry_head_digest,
-        ),
-        (
-            "qualification evidence head",
-            evidence.qualification_evidence_head_digest,
-        ),
-        ("owner evidence set", evidence.owner_evidence_set_digest),
-        ("dataset", evidence.dataset_digest),
-        ("update rule", evidence.update_rule_digest),
-        ("modulator", evidence.modulator_digest),
-        ("modulator broadcast", evidence.modulator_broadcast_digest),
-        ("eligibility", evidence.eligibility_digest),
-        ("generator", evidence.generator_digest),
-    ] {
-        if digest.is_zero() {
-            return Err(E::Binding(label));
-        }
-    }
-    if evidence.baseline_generation.next() != Ok(evidence.candidate_generation) {
-        return Err(E::Binding("generation successor"));
-    }
-    if evidence.selected_artifact_digest != request.generated.selected_artifact_digest
-        || evidence.window != request.generated.window
-        || evidence.generator_digest != request.generated.generator_digest
-        || request.generator_profile.selected_artifact_digest
-            != request.generated.selected_artifact_digest
-        || request.generator_profile.window != request.generated.window
-    {
-        return Err(E::Binding("generator/admission"));
-    }
-    Ok(())
+    codex_hepta_plasticity::validate_parameter_admission_binding_v1(
+        &request.generator_profile,
+        &request.generated,
+        &request.admission,
+    )
+    .map_err(|e| ParameterPlasticityProductErrorV1::Binding(e.0))
 }
 
 fn plasticity_evaluation_consumer_binding_digest(
@@ -447,6 +343,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use codex_hepta_plasticity::ProposalWindowV2;
     use std::io::Seek;
     use std::io::SeekFrom;
     use std::io::Write;

@@ -161,3 +161,24 @@ pub fn read_versioned_proposal(
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+mod parameter_admission_v1;
+mod parameter_material_wire;
+mod parameter_materials;
+mod parameter_profile_wire_v3;
+pub use parameter_admission_v1::PlasticityAdmissionEvidenceV1;
+pub use parameter_admission_v1::no_change_disposition_signing_payload_v1;
+pub use parameter_admission_v1::plasticity_admission_signing_payload_v1;
+pub use parameter_material_wire::ParameterMaterialCodecErrorV1;
+pub use parameter_materials::MAX_PARAMETER_ROLE_MATERIAL_BYTES_V1;
+pub use parameter_materials::decode_parameter_generator_profile_body_prefix_v3;
+pub use parameter_materials::decode_plasticity_admission_body_prefix_v1;
+pub use parameter_materials::decode_untrusted_parameter_generator_profile_v3;
+pub use parameter_materials::decode_untrusted_plasticity_admission_v1;
+pub use parameter_materials::encode_parameter_generator_profile_body_v3;
+pub use parameter_materials::encode_plasticity_admission_body_v1;
+pub use parameter_materials::encode_untrusted_parameter_generator_profile_v3;
+pub use parameter_materials::encode_untrusted_plasticity_admission_v1;
+
+pub use parameter_admission_v1::ParameterAdmissionBindingErrorV1;
+pub use parameter_admission_v1::validate_parameter_admission_binding_v1;

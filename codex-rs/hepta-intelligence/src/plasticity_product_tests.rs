@@ -331,8 +331,9 @@ impl Fixture {
             LearningEvidenceRoleV1::Observer,
             &plasticity_admission_signing_payload_v1(&admission),
         );
-        let terminal_payload = no_change_disposition_signing_payload_v1(&generated, &admission)
-            .expect("terminal payload");
+        let terminal_payload =
+            super::no_change_disposition_signing_payload_v1(&generated, &admission)
+                .expect("terminal payload");
         let no_change_attestation =
             self.sign(2, LearningEvidenceRoleV1::Evaluator, &terminal_payload);
 

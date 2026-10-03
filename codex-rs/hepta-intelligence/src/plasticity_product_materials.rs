@@ -174,49 +174,12 @@ pub fn decode_parameter_plasticity_receipt_v1(
 }
 
 fn write_admission(a: &PlasticityAdmissionEvidenceV1, w: &mut Writer) -> Result<()> {
-    w.id(&a.baseline_id)?;
-    for d in [
-        a.objective_digest,
-        a.selected_artifact_digest,
-        a.artifact_registry_binding,
-        a.artifact_registry_head_digest,
-        a.qualification_evidence_head_digest,
-        a.owner_evidence_set_digest,
-    ] {
-        w.digest(d)?;
-    }
-    w.window(&a.window)?;
-    w.u64(a.baseline_generation.get())?;
-    w.u64(a.candidate_generation.get())?;
-    for d in [
-        a.dataset_digest,
-        a.update_rule_digest,
-        a.modulator_digest,
-        a.modulator_broadcast_digest,
-        a.eligibility_digest,
-        a.generator_digest,
-    ] {
-        w.digest(d)?;
-    }
-    Ok(())
+    w.put(&codex_hepta_plasticity::encode_plasticity_admission_body_v1(a).map_err(|_| invalid())?)
 }
 fn read_admission(r: &mut Reader<'_>) -> Result<PlasticityAdmissionEvidenceV1> {
-    Ok(PlasticityAdmissionEvidenceV1 {
-        baseline_id: r.id()?,
-        objective_digest: r.digest()?,
-        selected_artifact_digest: r.digest()?,
-        artifact_registry_binding: r.digest()?,
-        artifact_registry_head_digest: r.digest()?,
-        qualification_evidence_head_digest: r.digest()?,
-        owner_evidence_set_digest: r.digest()?,
-        window: r.window()?,
-        baseline_generation: Generation::new(r.u64()?).map_err(|_| invalid())?,
-        candidate_generation: Generation::new(r.u64()?).map_err(|_| invalid())?,
-        dataset_digest: r.digest()?,
-        update_rule_digest: r.digest()?,
-        modulator_digest: r.digest()?,
-        modulator_broadcast_digest: r.digest()?,
-        eligibility_digest: r.digest()?,
-        generator_digest: r.digest()?,
-    })
+    let (a, n) =
+        codex_hepta_plasticity::decode_plasticity_admission_body_prefix_v1(r.remaining_bytes())
+            .map_err(|_| invalid())?;
+    r.take(n)?;
+    Ok(a)
 }
