@@ -35,6 +35,7 @@ fn observation() -> Observation {
             scope_sha256: [2; 32],
             payload_sha256: [3; 32],
             model: "actual.model".to_string(),
+            native_prompt: prompt("Generator", None),
             admitted_at_ms: 100,
             completed_at_ms: 0,
             response_id: String::new(),
@@ -183,6 +184,7 @@ fn actual_root_custody_publishes_complete_bytes_once_without_replacement() {
         panic!("actual completed receipt absent")
     };
     assert!(receipt.completed_at_ms >= receipt.binding.deadline_ms);
+    assert_eq!(receipt.native_prompt, prompt("Generator", None));
     assert_eq!(
         receipt.model_output_sha256,
         <[u8; 32]>::from(Sha256::digest(b"original late output"))

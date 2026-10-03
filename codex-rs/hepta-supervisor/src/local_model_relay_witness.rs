@@ -110,6 +110,9 @@ pub struct RootModelTerminalReceiptV1 {
     pub scope_sha256: [u8; 32],
     pub payload_sha256: [u8; 32],
     pub model: String,
+    /// Original bounded prompt observed independently at provider dispatch.
+    /// Kept privately so the native request preimage can be checked in full.
+    pub native_prompt: String,
     pub admitted_at_ms: u64,
     pub completed_at_ms: u64,
     pub response_id: String,
@@ -213,11 +216,15 @@ impl Observation {
                 };
                 if let Some(value) = RootModelAssessmentBindingV1::parse(text, now)? {
                     anyhow::ensure!(observed.is_none(), "ambiguous native assessment bindings");
-                    observed = Some(value);
+                    anyhow::ensure!(
+                        text.len() <= 32 * 1024,
+                        "native assessment prompt byte bound"
+                    );
+                    observed = Some((value, text.to_owned()));
                 }
             }
         }
-        let Some(native) = observed else {
+        let Some((native, native_prompt)) = observed else {
             return Ok(None);
         };
         let identity = Digest32::of_bytes(&serde_json::to_vec(&(
@@ -238,6 +245,7 @@ impl Observation {
             scope_sha256: binding.scope_sha256,
             payload_sha256: binding.payload_sha256,
             model: request.model.clone(),
+            native_prompt,
             admitted_at_ms: now,
             completed_at_ms: 0,
             response_id: String::new(),
