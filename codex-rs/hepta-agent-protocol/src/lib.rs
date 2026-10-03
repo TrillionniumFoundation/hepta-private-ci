@@ -23,6 +23,7 @@ pub use capabilities::NegotiatedAgentdCapabilities;
 pub use capabilities::negotiate_capabilities;
 pub use evidence::KernelEvidenceAppendIngress;
 pub use evidence::KernelEvidenceCandidateV1;
+pub use evidence::KernelEvidencePageSelector;
 pub use evidence::KernelEvidenceQueryV1;
 pub use evidence::KernelEvidenceResult;
 pub use evidence::KernelEvidenceVerifyV1;
