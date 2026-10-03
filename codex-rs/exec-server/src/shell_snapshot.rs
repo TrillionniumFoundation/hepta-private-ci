@@ -199,6 +199,13 @@ impl ShellSnapshotCache {
             "{startup}if ! eval \"unset {state_variables}\n{state_expansion}\" >/dev/null; then printf 'failed to restore shell snapshot\\n' >&2; fi\n{}",
             params.argv[2]
         );
+        // Bash can load rc files for a remote invocation even with -p. The
+        // captured state replaces startup files, including their side effects.
+        if shell_type == ShellType::Bash {
+            prepared
+                .command
+                .insert(shell_start + 1, "--norc".to_string());
+        }
 
         Ok(())
     }
