@@ -81,6 +81,10 @@ pub use lifecycle::NeuronOperationStatusV2;
 
 #[path = "runtime_v2_archive.rs"]
 mod archive;
+#[path = "runtime_v2_operation_observation.rs"]
+mod operation_observation;
+pub use operation_observation::MAX_NEURON_OPERATION_OBSERVATION_BYTES_V2;
+pub use operation_observation::NeuronAcknowledgedOperationV2;
 
 #[path = "runtime_v2_tick_context.rs"]
 mod tick_context;

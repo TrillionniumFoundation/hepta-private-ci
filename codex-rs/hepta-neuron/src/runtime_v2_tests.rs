@@ -1,5 +1,8 @@
 use super::*;
 
+#[path = "runtime_v2_operation_observation_tests.rs"]
+mod operation_observation_tests;
+
 use std::fs;
 use std::path::PathBuf;
 use std::sync::Arc;
