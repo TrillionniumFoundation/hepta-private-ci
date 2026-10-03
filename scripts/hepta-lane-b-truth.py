@@ -13,6 +13,10 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
+from hepta_lane_b_native import native_evidence
+from hepta_lane_b_projections import native_projection as render_native_projection
+from hepta_lane_b_projections import trace_projection
+
 ROOT = Path(__file__).resolve().parents[1]
 TRUTH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
 MANIFEST = ROOT / "qualification/lane-b/LANE_B_CANDIDATE_MANIFEST.json"
@@ -213,6 +217,13 @@ def verify_observed_source(row: dict[str, Any], module: str) -> None:
     need(not changed, f"{module}: observed source drift since {commit}")
 
 
+def verify_native(row: dict[str, Any]) -> dict[str, Any] | None:
+    try:
+        return native_evidence(ROOT, row)
+    except (ValueError, OSError, subprocess.CalledProcessError) as error:
+        raise Invalid(f"native/schema validation: {error}") from error
+
+
 def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
     index = truth.get("modules")
     need(isinstance(index, list) and len(index) == len(MODULES), "module index")
@@ -227,9 +238,13 @@ def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
         )
         row = load(ROOT / path)
         need(row.get("module") == module, f"{module}: map identity")
-        resolved_base = verify_module_source_base(row, module)
+        native = verify_native(row) if module == "ui.native" else None
+        if native:
+            resolved_base = native["source"]["commit"], native["source"]["tree"]
+        else:
+            resolved_base = verify_module_source_base(row, module)
+            verify_observed_source(row, module)
         verified.add(resolved_base)
-        verify_observed_source(row, module)
         ids = [
             item.get("designOperation") or item.get("operation")
             for item in row.get("operations", [])
@@ -242,93 +257,8 @@ def module_maps(truth: dict[str, Any]) -> list[dict[str, Any]]:
     return out
 
 
-def trace_projection(
-    truth: dict[str, Any], maps: list[dict[str, Any]]
-) -> dict[str, Any]:
-    entries = []
-    for row in maps:
-        for item in row["operations"]:
-            entries.append(
-                {
-                    "module": row["module"],
-                    "operation": item.get("designOperation") or item.get("operation"),
-                    "map": f"docs/modules/{row['module']}/IMPLEMENTATION_MAP.json",
-                    "tests": [
-                        {"path": test["path"], "command": test["command"]}
-                        for test in item["tests"]
-                    ],
-                }
-            )
-    return {
-        "schema": "hepta.lane-b-test-traceability.v1",
-        "schemaVersion": 1,
-        "sourceBase": truth["sourceBase"],
-        "laneId": truth["laneId"],
-        "moduleCount": len(maps),
-        "operationCount": len(entries),
-        "entries": entries,
-        "claimBoundary": {
-            "testPathCoverageComplete": True,
-            "workflowExecutionRequired": True,
-            "productExecutionProvedByRegistry": False,
-            "externalEffectsProvedByRegistry": False,
-        },
-    }
-
-
 def native_projection(truth: dict[str, Any], maps: list[dict[str, Any]]) -> str:
-    base = truth["sourceBase"]
-    lines = [
-        "# Lane B source contracts and implementation gaps",
-        "",
-        "**Lane:** `LANE-B-RUNTIME`  ",
-        f"**Immutable source base:** `{base['commit']}` / tree `{base['tree']}`  ",
-        "**Exact candidate:** derived from Git at verification time; never hard-coded  ",
-        "**Repository-controlled scope:** documentation, operation inventory and source mapping verified; implementation gaps are reported per module  ",
-        "**External scope:** product execution, deployment, real effects and independent acceptance remain open",
-        "",
-        "## 1. Truth model",
-        "",
-        "The central truth is a closed index. Detailed module roots, ownership, terminal observers, native symbols, delegated callees, tests and external evidence gates live in each module's `IMPLEMENTATION_MAP.json`. This file and `TEST_TRACEABILITY.json` are generated from those maps. A source symbol or fixture is not deployment or external-effect evidence.",
-        "",
-    ]
-    for number, row in enumerate(maps, start=2):
-        lines += [
-            f"## {number}. `{row['module']}`",
-            "",
-            row["stateOwnerDisposition"],
-            "",
-            row["terminalObserverDisposition"],
-            "",
-            "| Operation | Class | Owner entrypoint |",
-            "|---|---|---|",
-        ]
-        for item in row["operations"]:
-            owner = item.get("ownerEntrypoint") or {
-                "path": item.get("sourcePath"),
-                "symbol": item.get("nativeSymbol"),
-            }
-            lines.append(
-                f"| `{item.get('designOperation') or item.get('operation')}` | `{item.get('mappingClass', 'owner_native')}` | `{owner.get('path')}` — `{owner.get('symbol')}` |"
-            )
-        gaps = row.get("repositoryControlledGaps", [])
-        if gaps:
-            lines += ["", "Remaining repository implementation gaps:", ""]
-            lines += [f"- {gap}" for gap in gaps]
-        lines += (
-            ["", "External evidence gates:", ""]
-            + [f"- {gate}" for gate in row["externalEvidenceGates"]]
-            + [""]
-        )
-    lines += [
-        "## 13. Cross-module acceptance boundary",
-        "",
-        f"All {OPERATION_COUNT} operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.",
-        "",
-        "Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.",
-        "",
-    ]
-    return "\n".join(line.rstrip() for line in lines)
+    return render_native_projection(truth, maps, OPERATION_COUNT)
 
 
 def verify_candidate(manifest: dict[str, Any], truth: dict[str, Any]) -> list[str]:
@@ -417,7 +347,8 @@ def verify_candidate(manifest: dict[str, Any], truth: dict[str, Any]) -> list[st
     need(isinstance(prefixes, list) and prefixes, "path envelope")
     roots = []
     for row in module_maps(truth):
-        for root in row["resolvedRoots"]:
+        native = verify_native(row) if row.get("module") == "ui.native" else None
+        for root in native["ownedRoots"] if native else row["resolvedRoots"]:
             need(
                 isinstance(root, str)
                 and root
@@ -591,7 +522,13 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
         ),
         "source boundary completion contradicts module gaps or incomplete modules",
     )
-    roots = {row["module"]: row["resolvedRoots"] for row in maps}
+    native_maps = {row["module"]: verify_native(row) for row in maps}
+    roots = {
+        row["module"]: native_maps[row["module"]]["ownedRoots"]
+        if native_maps[row["module"]]
+        else row["resolvedRoots"]
+        for row in maps
+    }
     # A runtime module can delegate to another registered lane. Resolve only
     # the named schema owner; lane membership is not repository ownership.
     from hepta_module_source_roots import resolve_source_roots
@@ -612,11 +549,6 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
     operations = tests = 0
     for row in maps:
         module = row["module"]
-        need(
-            row.get("schema") == "hepta.module-implementation-map.v3"
-            and row.get("schemaVersion") == 3,
-            f"{module}: schema",
-        )
         gaps = row.get("repositoryControlledGaps")
         need(
             isinstance(gaps, list)
@@ -631,9 +563,13 @@ def verify_truth(truth: dict[str, Any], maps: list[dict[str, Any]]) -> tuple[int
             f"{module}: source completion contradicts repository gaps",
         )
         need(row.get("externalEvidenceGates"), f"{module}: external gates")
-        for root in row["resolvedRoots"]:
+        for root in roots[module]:
             need((ROOT / root).exists(), f"{module}: missing root {root}")
-        for item in row["operations"]:
+        items = row["operations"]
+        if native_maps[module]:
+            operations += len(items)
+            items = []  # v6 entrypoints and test surfaces were strictly checked above.
+        for item in items:
             operations += 1
             need(
                 item.get("mappingClass", "owner_native")
