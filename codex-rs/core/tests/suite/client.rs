@@ -220,7 +220,13 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
     let test = test_codex().build(&server).await.unwrap();
 
     test.submit_turn("turn one").await.unwrap();
+    let first_durable = super::durable_metadata::read_items(&test.codex)
+        .await
+        .expect("original first-turn rollout");
     test.submit_turn("turn two").await.unwrap();
+    let second_durable = super::durable_metadata::read_items(&test.codex)
+        .await
+        .expect("original second-turn rollout");
 
     let requests = response_mock.requests();
     assert_eq!(requests.len(), 2);
@@ -236,15 +242,23 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
 
     let first_input = first["input"].as_array().expect("first input");
     let second_input = second["input"].as_array().expect("second input");
+    // The actual Mock endpoint is custom even though its friendly name is OpenAI.
+    // Keep all original local metadata durable and strip the whole wire field.
+    super::durable_metadata::assert_wire_has_no_local_metadata(first_input);
+    super::durable_metadata::assert_wire_has_no_local_metadata(second_input);
     assert_eq!(&second_input[..first_input.len()], first_input.as_slice());
-    for item in first_input {
+    assert_eq!(
+        &second_durable[..first_durable.len()],
+        first_durable.as_slice()
+    );
+    for item in &first_durable {
         assert_eq!(
             item["internal_chat_message_metadata_passthrough"]["turn_id"].as_str(),
             Some(first_turn_id)
         );
     }
     for role in ["user", "developer"] {
-        assert!(first_input.iter().any(|item| {
+        assert!(first_durable.iter().any(|item| {
             item["role"].as_str() == Some(role)
                 && item["internal_chat_message_metadata_passthrough"]["create_time"]
                     .as_f64()
@@ -253,7 +267,7 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
     }
 
     let item_turn_id = |text: &str| {
-        second_input
+        second_durable
             .iter()
             .find(|item| {
                 item["content"].as_array().is_some_and(|content| {
@@ -269,7 +283,7 @@ async fn openai_stateless_responses_requests_preserve_item_turn_metadata_across_
     assert_eq!(item_turn_id("turn two"), Some(second_turn_id));
 
     let item_create_time = |text: &str| {
-        second_input
+        second_durable
             .iter()
             .find(|item| {
                 item["content"].as_array().is_some_and(|content| {
@@ -385,7 +399,9 @@ async fn sends_audio_urls_to_responses() {
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.audio"]));
+    super::durable_metadata::assert_content_kinds(&codex, &request, &["user.audio"])
+        .await
+        .expect("original durable audio classification");
     let user_message = request
         .input()
         .into_iter()
@@ -430,7 +446,12 @@ async fn sends_local_audio_to_responses() -> anyhow::Result<()> {
     wait_for_event(&codex, |event| matches!(event, EventMsg::TurnComplete(_))).await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.text", "user.audio", "user.text"]));
+    super::durable_metadata::assert_content_kinds(
+        &codex,
+        &request,
+        &["user.text", "user.audio", "user.text"],
+    )
+    .await?;
     let user_message = request
         .input()
         .into_iter()

@@ -2049,7 +2049,7 @@ async fn code_mode_exec_surfaces_handler_errors_as_exceptions() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
     let server = responses::start_mock_server().await;
-    let (_test, second_mock) = run_code_mode_turn(
+    let (test, second_mock) = run_code_mode_turn(
         &server,
         "surface nested tool handler failures as script exceptions",
         r#"
@@ -2064,12 +2064,17 @@ try {
     .await?;
 
     let request = second_mock.single_request();
-    assert_eq!(
-        request.custom_tool_call_output("call-1")["internal_chat_message_metadata_passthrough"]["executed_tool_calls"],
-        serde_json::json!([
-            {"name": "exec_command", "arguments": {}},
-        ]),
-        "failed nested tool attempts remain private request metadata",
+    super::durable_metadata::assert_wire_has_no_local_metadata(&request.input());
+    let durable = super::durable_metadata::read_items(&test.codex).await?;
+    let durable_output = durable
+        .iter()
+        .find(|item| item["type"] == "custom_tool_call_output" && item["call_id"] == "call-1")
+        .expect("original durable custom tool output");
+    assert!(
+        durable_output
+            .pointer("/internal_chat_message_metadata_passthrough/executed_tool_calls")
+            .is_none(),
+        "attempt metadata is attached only to the prompt and must not be invented in the durable record",
     );
     let (output, success) = custom_tool_output_body_and_success(&request, "call-1");
     assert_ne!(

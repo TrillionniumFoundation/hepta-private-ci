@@ -153,37 +153,34 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
         }],
         phase: None,
         internal_chat_message_metadata_passthrough: Some(InternalChatMessageMetadataPassthrough {
+            turn_id: Some("original-durable-turn".to_string()),
+            create_time: Some(
+                serde_json::Number::from_f64(1_785_276_138.422709).expect("finite creation time"),
+            ),
             content_item_kinds: Some(vec![ContentItemKind("user.text".to_string())]),
-            ..Default::default()
+            executed_tool_calls: Some(vec![codex_protocol::models::ExecutedToolCall::new(
+                "original_tool".to_string(),
+                serde_json::json!({"argument": "whole value"}),
+            )]),
         }),
     };
+    let original = item_with_metadata();
+    let mut stripped = original.clone();
+    stripped.clear_internal_chat_message_metadata_passthrough();
 
     let mut chatgpt_item = item_with_metadata();
     client.prepare_response_items_for_request(
         std::slice::from_mut(&mut chatgpt_item),
         &chatgpt_provider,
     );
-    let chatgpt_wire = serde_json::to_value(&chatgpt_item).expect("item should serialize");
-    assert!(
-        chatgpt_wire
-            .get("internal_chat_message_metadata_passthrough")
-            .is_none()
-    );
+    assert_eq!(chatgpt_item, stripped);
 
     let mut openai_item = item_with_metadata();
     client.prepare_response_items_for_request(
         std::slice::from_mut(&mut openai_item),
         &openai_provider,
     );
-    let openai_wire = serde_json::to_value(&openai_item).expect("item should serialize");
-    assert_eq!(
-        openai_wire
-            .get("internal_chat_message_metadata_passthrough")
-            .and_then(|metadata| metadata.get("content_item_kinds"))
-            .and_then(|kinds| kinds.as_array())
-            .map(Vec::len),
-        Some(1)
-    );
+    assert_eq!(openai_item, original);
 
     // The wire policy follows the resolved endpoint, not the friendly name.
     // A custom provider name using the first-party OpenAI URL keeps metadata.
@@ -198,12 +195,7 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
         std::slice::from_mut(&mut custom_name_item),
         &custom_name_provider,
     );
-    assert!(
-        serde_json::to_value(&custom_name_item)
-            .expect("item should serialize")
-            .get("internal_chat_message_metadata_passthrough")
-            .is_some()
-    );
+    assert_eq!(custom_name_item, original);
 
     // Conversely, an `OpenAI`-named provider on a non-standard endpoint is
     // treated conservatively and does not receive local-only metadata.
@@ -218,12 +210,25 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
         std::slice::from_mut(&mut nonstandard_item),
         &nonstandard_provider,
     );
-    assert!(
-        serde_json::to_value(&nonstandard_item)
-            .expect("item should serialize")
-            .get("internal_chat_message_metadata_passthrough")
-            .is_none()
+    assert_eq!(nonstandard_item, stripped);
+
+    let mut disabled_client = test_model_client(SessionSource::Exec);
+    std::sync::Arc::get_mut(&mut disabled_client.state)
+        .expect("original client state is unique")
+        .content_item_kinds_enabled = false;
+    let mut disabled_item = original.clone();
+    disabled_client.prepare_response_items_for_request(
+        std::slice::from_mut(&mut disabled_item),
+        &openai_provider,
     );
+    let mut without_kinds = original;
+    without_kinds.clear_content_item_kinds();
+    assert_eq!(disabled_item, without_kinds);
+    disabled_client.prepare_response_items_for_request(
+        std::slice::from_mut(&mut disabled_item),
+        &nonstandard_provider,
+    );
+    assert_eq!(disabled_item, stripped);
 }
 
 struct TransportSelectionEphemeralContributor {

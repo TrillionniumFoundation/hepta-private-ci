@@ -281,7 +281,12 @@ async fn assert_user_turn_local_image_resizes_to(
     .await;
 
     let request = mock.single_request();
-    assert!(request.has_content_kinds(&["user.text", "user.image", "user.text"]));
+    super::durable_metadata::assert_content_kinds(
+        &test.codex,
+        &request,
+        &["user.text", "user.image", "user.text"],
+    )
+    .await?;
     let body = request.body_json();
     let input = body
         .get("input")
@@ -305,7 +310,12 @@ async fn assert_user_turn_local_image_resizes_to(
             assert_eq!(resize_notice_indices, Vec::<usize>::new());
         }
         ResizeNoticeExpectation::Enabled => {
-            assert!(request.has_content_kinds(&["images.resize_notice"]));
+            super::durable_metadata::assert_content_kinds(
+                &test.codex,
+                &request,
+                &["images.resize_notice"],
+            )
+            .await?;
             assert_eq!(resize_notice_indices, vec![image_message_index + 1]);
             assert_developer_text_message(
                 &input[image_message_index + 1],
