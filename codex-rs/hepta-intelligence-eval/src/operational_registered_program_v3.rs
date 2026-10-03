@@ -97,7 +97,11 @@ mod tests {
     #[test]
     #[ignore = "requires actual kernel UID0 and protected Root ancestors"]
     fn actual_root_verifies_large_whole_program_and_rejects_wrong_pin_magic_and_link() {
-        assert_eq!(rustix::process::geteuid().as_raw(), 0);
+        let status = std::fs::read_to_string("/proc/self/status").expect("actual kernel UID facts");
+        assert!(status.lines().any(|line| {
+            line.strip_prefix("Uid:")
+                .is_some_and(|ids| ids.split_whitespace().eq(["0", "0", "0", "0"]))
+        }));
         let directory = Directory::new(Path::new("/root"));
         std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))
             .expect("Root directory");
