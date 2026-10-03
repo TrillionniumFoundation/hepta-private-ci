@@ -187,7 +187,12 @@ class SourceObservationTests(unittest.TestCase):
             "claimBoundary": {"productExecutionProved": False},
         }
         self.write(f"docs/modules/{mid}/IMPLEMENTATION_MAP.json", json.dumps(row))
-        return {"id": mid, "rootBindings": [{"path": root}]}
+        return {
+            "id": mid,
+            "rootBindings": [{"path": root}],
+            "source_root_present": True,
+            "production_implementation": False,
+        }
 
     def verify_maps(self, modules):
         def load_fixture(relative):

@@ -229,7 +229,7 @@ impl CognitiveStore {
             .bind(memory.content_sha256.as_str()).bind(request.consumer.agent_id().as_str()).bind(request.consumer.workspace_sha256().as_str())
             .bind(purpose).bind(scope).bind(recipient).bind(request.expires_at_unix_seconds)
             .execute(&mut *tx).await.map_err(unavailable)?;
-        tx.commit().await.map_err(unavailable)?;
+        crate::cognitive_store::commit_admitted(tx).await?;
         Ok(SharedExperienceUseV1 {
             policy_id: key,
             policy_revision: revision as u64,
@@ -341,8 +341,9 @@ impl CognitiveStore {
     }
 
     /// Revocation appends a successor and does not claim parameter unlearning.
-    /// The last ordinary revision can always enter its reserved terminal slot.
-    /// Grant capacity is never a reason to reject withdrawal of an active grant.
+    /// Local policy revision exhaustion does not reject the terminal successor.
+    /// The global owner budget can still reject this append; reserving capacity
+    /// for withdrawal across owner domains requires a separate policy.
     pub async fn revoke_shared_experience(
         &self,
         owner: &CognitiveAccess,
@@ -390,7 +391,7 @@ impl CognitiveStore {
         }
         sqlx::query("INSERT INTO shared_experience_use_events SELECT policy_id,revision+1,1,memory_id,memory_revision,content_sha256,consumer_agent_id,consumer_workspace_sha256,purpose,parameter_scope,artifact_consumer_id,expires_at FROM shared_experience_use_events WHERE policy_id=? AND revision=?")
             .bind(receipt.policy_id.as_str()).bind(receipt.policy_revision as i64).execute(&mut *tx).await.map_err(unavailable)?;
-        tx.commit().await.map_err(unavailable)?;
+        crate::cognitive_store::commit_admitted(tx).await?;
         Ok(())
     }
 }

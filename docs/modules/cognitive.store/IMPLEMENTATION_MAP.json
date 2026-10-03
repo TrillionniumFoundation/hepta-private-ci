@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "addae413d676a1e1914411a3f3fef9291ff65db9",
+    "tree": "9c5cfba5a56b7cdbbedd114a41c0f86246a7f098"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -67,7 +67,12 @@
       "sourcePathExists": true,
       "designOperation": "open_snapshot",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [
+        {
+          "symbol": "CognitiveStore::lane_c_snapshot_ids",
+          "path": "codex-rs/hepta-memory/src/lane_c_snapshot_selected.rs"
+        }
+      ]
     },
     {
       "operation": "writable_recovery",
@@ -292,20 +297,52 @@
       "object": "5e38587ea8d0a41e936f6d4e771abc151571981c"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "object": "de03f73af7111524ff68c8d046785abedfdcdd75"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_concurrency_tests.rs",
+      "object": "322d03f33e126b00a7340a7283399edd3f3d4178"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "object": "51f58a722282f49b82a83a881d3d82ee34ecdfd7"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+      "object": "e7a77b992e1f5b32a356afa7e62933d6b572b124"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+      "object": "41ee171f98472aa4fa127f17e256884461c923db"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_test_support.rs",
+      "object": "2d6f30db17efa5d7b7dcfde21a0fc6fb50db99d0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "object": "0122580c303dfcbfe87ffa15c3b1c09331f4a779"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
-      "object": "dbf3f0729e336ed0a4d4ce3ce1ec90eced4f5c91"
+      "object": "9741f4c778247d567af58f873bf85ac1e3e5d3b8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/production_writer_host_tests.rs",
+      "object": "790ef9a7d46dc1b93a98a522f9523065409a6658"
     },
     {
       "path": "codex-rs/hepta-agentd/src/runtime.rs",
-      "object": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
+      "object": "71344a80eaf24aae3290bfe7023ddbe057c33fbb"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
-      "object": "4ca370fcc2760aa21f9abd3582cbf34532083fe8"
+      "object": "1b9ebbf857836fc44705427950d27ab783a8843b"
     },
     {
       "path": "codex-rs/hepta-cognitive-store",
-      "object": "b321d1157ea310845ed7642e2692ef829ee3e0f8"
+      "object": "7df7adc05e772645512710b35613f3fa6e1e083f"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/durable.rs",
@@ -313,55 +350,251 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/v2.rs",
-      "object": "e9ec79e983aa4a125536f688e480293c8b7d3131"
+      "object": "36a5348c3312108e536f3fcd59e26fdc4040a14d"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
-      "object": "d5c8aa47d3c9dfb86b9022ba786ae7b09cdea5c8"
+      "object": "4d068c69ae81be56c08c82d70cb83b4afb0c6872"
+    },
+    {
+      "path": "codex-rs/hepta-memory/examples/cognitive_store_perf.rs",
+      "object": "a5a589328baf455299268fd237a76bed2929a85e"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0016_memory_citations_source_lookup.sql",
+      "object": "f3d90a0ca5479a6f732868df9e15f90d72674611"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0017_kg_storage_count_admission.sql",
+      "object": "d47c4cb20b90fffa4dd22bf5e86747572c8488b8"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0018_memory_revisions_scope_frontier.sql",
+      "object": "3960772fe0c5f0c68b93491607a287072eba45ae"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0019_source_ledger_scope_frontier.sql",
+      "object": "ad6b6c1d2e7c97c30931df7517b0822d5a46e693"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
+      "object": "e815fec0fe88a8f84c718e600985b1420ea8cafa"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_kg_head_digest_tests.rs",
+      "object": "68ecba1843fba6f4e53b80bd5c671af07277ee62"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
+      "object": "adf3980ed1be7f78c74ef07acd54dad0f924fe4f"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_kg_source_frontier_tests.rs",
+      "object": "fdda7b3704ac3d8390dfe53a99caf6b7e293f10d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
+      "object": "d4c5fc866d034c5a60060e2e6dd8a95c53b169f0"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_model_legacy_tests.rs",
+      "object": "0003d4aa7ad138b5fc01a7c4c783570392b5ed51"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
-      "object": "b52e3a1aa275c178a075677f5df9faa832173b41"
+      "object": "b75784addf2c0138800b525341ed449e0c28d387"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_budget.rs",
+      "object": "5767e6489be712317e0159deeb298916b4aa2218"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_budget_plan.rs",
+      "object": "1f7c204227fdf7b8f2c8030d244b074e97186a83"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_budget_plan_tests.rs",
+      "object": "00281c6562a4ffdaef78cb9da33e6a2f3a2bcfeb"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_budget_tests.rs",
+      "object": "97d8cfac9f4217d80a8d409acd82c5659e90e949"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_files.rs",
+      "object": "753c35d7903f9d791d319d3cb2bb869b21a55326"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_integrity.rs",
+      "object": "c0a0d19e668058a63637f4ce4ae0ec9fda2afcd2"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_integrity_tests.rs",
+      "object": "6e03ba1602c8978614a4d74835af5b02ecc1ad32"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
-      "object": "b04217a0de797501c61262b20b8c52d2bd1b1822"
+      "object": "55aece7dd1264a87b102e78faa101a06251f6b82"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only.rs",
+      "object": "d47637cec03bf5981049465b2599c563628b2ce5"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
+      "object": "190d5fab2fa453812133a83674728794dd07221f"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
-      "object": "72eaa499826321a2564614706a38d91dff149b72"
+      "object": "e1d9fd7560118ac99679411bb8408c482e982b8c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_schema.rs",
+      "object": "0b4c3f63c447c9325bd208ac6289395e0edbcb62"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_schema_admission.rs",
+      "object": "88a8f2eaa409031681074023c9f7c33aeab51c33"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_schema_admission_tests.rs",
+      "object": "8c3d359e379adf7380551188b8fda236876f97ff"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_schema_catalog_tests.rs",
+      "object": "ac718ea2bbc5b992675ba3ca451583eeaae3b251"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_schema_ownership_tests.rs",
+      "object": "99c3752910ddd2ea66616e1f68084d6859b01ad9"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_schema_tests.rs",
+      "object": "4e44536edf979d640e83bf127630e59c40a9737e"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-      "object": "b5462745d335c2115144ddc161d242b3205fdc06"
+      "object": "5a3aefbc63b87e85ab911cc864d521dd48e627e6"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_verification.rs",
+      "object": "a79ce8468d5d9a5e8eb47e9da0fb3544b32c2cad"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_store_verification_tests.rs",
+      "object": "d9c9a4574a9bc77e318a2b5f83951a0c23d35fc2"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+      "object": "ff7e8440ec8266730e6b0421229bab41639ebb2c"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
-      "object": "af66a5195f8a65635abe6c2abaf7b8e265bb6e9d"
+      "object": "d1de339a828b9fa15b81a99344ff5763a5b3c2fa"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/lane_c_snapshot_selected.rs",
+      "object": "4580b07340e95ca60dcd10557f9e7e6f9d063507"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
-      "object": "94422ac7f6ac92064608f178d4a6b7879bd8c9ba"
+      "object": "455c369d32b902c64b11e254fe39a92979314a82"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_compact_executor.rs",
+      "object": "1b87b61c182469301991b3884d7e991d099153c6"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_compact_executor_capacity_tests.rs",
+      "object": "0e60f61f601b99758d18820b385a33976d47c30e"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "object": "764fdf8bf8fc194c42798fc72d6b4ca126663f3b"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox_capacity_tests.rs",
+      "object": "ad4d51a715f377c1fefc9350b90f490fbd796b3b"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox_dispatch_settlement.rs",
+      "object": "4b5952f515474f5ce22b7009effc6cbb71a31f6a"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox_observer_origin.rs",
+      "object": "9dc201ae36173d3e56a5725504518c4f40021580"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox_observer_origin_tests.rs",
+      "object": "8093b3fcea5877cf9d989c12233e8721c1366818"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/logical_turn_registry.rs",
+      "object": "b913626f56ac2ba5192897cd220097e7af853d8d"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/logical_turn_registry_capacity_tests.rs",
+      "object": "1f1b91b4a606dc102dad6f370455dd9df660adc9"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+      "object": "51104b01191f129d53b6a718fa0a6c69258193d2"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+      "object": "22d82383ebf094fcecc92e1a0e6dc98bb75f8c6c"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_operation_claim_clock_tests.rs",
+      "object": "13b00d52d3f9328e7499f267228fc9a93fe1bc5f"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_reconciliation.rs",
+      "object": "26686d27a62ce4742b8d957166b7975e418a9684"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_reconciliation_race_tests.rs",
+      "object": "9d9709f56036f872c62723ab3b5355dd3b3cc52e"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_reconciliation_tests.rs",
+      "object": "0d88a307462d622d12c9e5c24ecbf8b8ea1efdf5"
     },
     {
       "path": "codex-rs/hepta-memory/src/production_writer.rs",
-      "object": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+      "object": "0de79a39f32b8e5742bda813b5fbffd93de0be94"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer_authority_tests.rs",
+      "object": "1c1c8ce8e685472f4455924dc4f52e91d72aab59"
     },
     {
       "path": "codex-rs/hepta-memory/src/shared_experience.rs",
-      "object": "e1dc7dda1084a83a3c7110984568c0be224c297f"
+      "object": "4a557378f2db6965a727d298519dac06fe464635"
     },
     {
       "path": "codex-rs/hepta-memory/src/shared_experience_tests.rs",
       "object": "44519863c30d7ad5067b50a371c932441f302e7a"
     },
     {
+      "path": "codex-rs/state/src/sqlite_recovery.rs",
+      "object": "7093f94b445e0cf468f1528ceb8a827beaf2d4af"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image.rs",
+      "object": "76a0305faf5fbe96761490ece32d76b79a1e7344"
+    },
+    {
+      "path": "codex-rs/state/src/sqlite_recovery_image_tests.rs",
+      "object": "689add7ce53380cf148c418b7f14b055b4d97faf"
+    },
+    {
       "path": "codex-rs/state/src/sqlite_recovery_tests.rs",
-      "object": "1d7a466d80bb7056ccccd60340bcf33d9eac39ef"
+      "object": "c039a1b56cfbb53ff4d90d0fe1fbd6018f4be370"
     },
     {
       "path": "docs/modules/cognitive.store/TECHNICAL.md",
-      "object": "df2b85789980b950511d8d7ac3ff56403095fe79"
+      "object": "ae1fdf7f0c33ac0e98f3a866d3a6193cfd4166b0"
     }
   ]
 }

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "7144dfd20ba9af8b9897ed32439610ce84146e38",
+    "tree": "f0590f9283d6048b9361bf4de7a53f564cce2d06"
   },
   "laneId": "LANE-G-ENGINEERING",
   "module": "control.engineering",
@@ -930,7 +930,7 @@
   "sourceRoot": [
     "tools/hepta-engineering-control"
   ],
-  "sourceBaseRole": "integration_baseline",
+  "sourceBaseRole": "current_source_navigation_anchor",
   "currentCandidateIdentityAuthority": {
     "repository": "TrillionniumFoundation/hepta-private-ci",
     "authority": "exact-head-and-deterministic-synthetic-merge execution receipts",
@@ -944,8 +944,8 @@
     "tree": "0b67403646bb9ba576b39edd88607eb54aa121db"
   },
   "observedAtHead": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "7144dfd20ba9af8b9897ed32439610ce84146e38",
+    "tree": "f0590f9283d6048b9361bf4de7a53f564cce2d06"
   },
   "observedSourcePaths": [
     "tools/hepta-engineering-control"
@@ -1087,5 +1087,20 @@
       "path": "tools/hepta-engineering-control/test_worker_lifecycle.py",
       "object": "caa8a8f49cd8b671010632e616dcdcfac2000e87"
     }
-  ]
+  ],
+  "historicalEvidence": {
+    "preRebind20261001": {
+      "sourceBase": {
+        "commit": "1133f7e5a5afd348e6fbed5694144572dda59a9a",
+        "tree": "0cae5e6f633248513e343f7776a88bdad22cb19c"
+      },
+      "observedAtHead": {
+        "commit": "55e8b38debd6333f376b77889e689c9b4825b9e8",
+        "tree": "35d20fa0c9d0589e7d0abbf0abeb8b98db004548"
+      },
+      "sourceBaseRole": "integration_baseline",
+      "scope": "retained pre-rebind source provenance; not current-candidate execution evidence",
+      "currentCandidateQualificationTransferred": false
+    }
+  }
 }

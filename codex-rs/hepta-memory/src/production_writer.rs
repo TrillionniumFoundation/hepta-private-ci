@@ -12,6 +12,7 @@ use std::fmt;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::future::Future;
+use std::path::Path;
 use std::path::PathBuf;
 use std::pin::Pin;
 use std::sync::Arc;
@@ -56,6 +57,9 @@ use crate::local_lease_outbox::dispatch_operation_digest;
 use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
+
+#[path = "production_reconciliation.rs"]
+mod reconciliation;
 
 /// Schema version of the externally-authorized H4 writer boundary.
 pub const PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION: u32 = 1;
@@ -393,6 +397,7 @@ pub struct ProductionDurableWriter {
     lease: LocalLeaseOutbox,
     lease_id: Arc<str>,
     live_verifier: Option<Arc<dyn ProductionAuthorityVerifier>>,
+    reconciliation_progress: Arc<reconciliation::ReconciliationProgress>,
     // Retain the OS-level lock for the lifetime of the writer.  SQLite's
     // transaction lock serializes individual mutations, but it does not
     // establish the H4 single-writer boundary: two processes could otherwise
@@ -441,28 +446,68 @@ impl DurableWriterLock {
             ".hepta-production-writer-{}.lock",
             lock_digest.as_str()
         ));
-        let file = OpenOptions::new()
-            .read(true)
-            .write(true)
-            .create(true)
-            .truncate(false)
-            .open(&path)
-            .map_err(|error| {
-                ProductionWriterError::Durability(format!(
-                    "cannot open writer lock {}: {error}",
-                    path.display()
-                ))
-            })?;
+        let mut options = OpenOptions::new();
+        options.read(true).write(true).create(true).truncate(false);
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::OpenOptionsExt;
+            options
+                .mode(0o600)
+                .custom_flags(libc::O_CLOEXEC | libc::O_NOFOLLOW | libc::O_NONBLOCK);
+        }
+        let file = options.open(&path).map_err(|error| {
+            ProductionWriterError::Durability(format!(
+                "cannot open writer lock {}: {error}",
+                path.display()
+            ))
+        })?;
+        Self::verify_file(&file, &path)?;
         match file.try_lock() {
-            Ok(()) => Ok(Arc::new(Self {
-                _file: file,
-                _path: path,
-            })),
+            Ok(()) => {
+                Self::verify_file(&file, &path)?;
+                Ok(Arc::new(Self {
+                    _file: file,
+                    _path: path,
+                }))
+            }
             Err(std::fs::TryLockError::WouldBlock) => Err(ProductionWriterError::WriterBusy),
             Err(std::fs::TryLockError::Error(error)) => Err(ProductionWriterError::Durability(
                 format!("cannot acquire writer lock {}: {error}", path.display()),
             )),
         }
+    }
+
+    fn verify_file(file: &File, path: &Path) -> Result<(), ProductionWriterError> {
+        let retained = file.metadata().map_err(|error| {
+            ProductionWriterError::Durability(format!("cannot inspect writer lock: {error}"))
+        })?;
+        let named = std::fs::symlink_metadata(path).map_err(|error| {
+            ProductionWriterError::Durability(format!("cannot inspect writer-lock path: {error}"))
+        })?;
+        if !retained.is_file() || !named.is_file() {
+            return Err(ProductionWriterError::Durability(
+                "writer lock must be a regular file without redirection".to_string(),
+            ));
+        }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+            // Older writers created 0644 locks under the ordinary umask. Read
+            // bits disclose no contents or capability; preserve that format
+            // without chmodding existing files. Extra writers, executable or
+            // special modes and aliases cannot identify a private lock owner.
+            let permissions = retained.mode() & 0o7777;
+            if retained.nlink() != 1
+                || permissions & !0o044 != 0o600
+                || retained.dev() != named.dev()
+                || retained.ino() != named.ino()
+            {
+                return Err(ProductionWriterError::Durability(
+                    "writer lock must retain one nonredirected owner-writable file".to_string(),
+                ));
+            }
+        }
+        Ok(())
     }
 }
 
@@ -611,6 +656,7 @@ impl ProductionDurableWriter {
             lease,
             lease_id: Arc::from(lease_id),
             live_verifier: None,
+            reconciliation_progress: Arc::default(),
             _writer_lock: writer_lock,
         })
     }
@@ -639,6 +685,23 @@ impl ProductionDurableWriter {
             return Err(ProductionWriterError::LiveVerifierRequired);
         }
         self.verify_authority().await
+    }
+
+    // Composite mutations call this after acquiring the SQLite write lock and
+    // immediately before commit. Checking only before BEGIN IMMEDIATE permits
+    // a grant revoked while the transaction waits for that lock to write.
+    // This check deliberately uses no pool connection while a caller-owned
+    // transaction holds the write lock.
+    fn verify_retained_authority(&self) -> Result<(), ProductionWriterError> {
+        let verifier = self
+            .live_verifier
+            .as_ref()
+            .ok_or(ProductionWriterError::LiveVerifierRequired)?;
+        verifier
+            .verify(&self.authority, self.store.owner_agent_id())
+            .map_err(ProductionWriterError::AuthorityRejected)?;
+        self.authority
+            .validate_for_agent(self.store.owner_agent_id())
     }
 
     /// Mint the only production cognitive mutation capability. A legacy writer
@@ -806,7 +869,7 @@ impl ProductionDurableWriter {
             &receipt.occurrence_key,
             self.generation(),
             self.lease.fencing_token(),
-            now_unix_ms()?,
+            resolve_dispatch_claim_time,
             lease_duration_ms,
         )
         .await?)
@@ -825,7 +888,13 @@ impl ProductionDurableWriter {
         {
             return Err(ProductionWriterError::StaleReceipt);
         }
-        Ok(operation_claims::renew(&self.store, claim, now_unix_ms()?, lease_duration_ms).await?)
+        Ok(operation_claims::renew(
+            &self.store,
+            claim,
+            resolve_dispatch_claim_time,
+            lease_duration_ms,
+        )
+        .await?)
     }
 
     pub async fn recover(
@@ -887,7 +956,8 @@ impl ProductionDurableWriter {
 
     /// Discover and reconcile a bounded batch of operations whose latest
     /// durable source state is indeterminate. Discovery is destination-scoped
-    /// and reconciliation calls only the target observer, never dispatch.
+    /// and rotates past unavailable observations within this writer's lifetime.
+    /// Reconciliation calls only the target observer, never dispatch.
     pub async fn reconcile_target_batch<T>(
         &self,
         target: &T,
@@ -896,62 +966,7 @@ impl ProductionDurableWriter {
     where
         T: FinalUseProductionOutboxTarget + ?Sized,
     {
-        self.verify_authority().await?;
-        if !(1..=256).contains(&limit) {
-            return Err(ProductionWriterError::Invalid(
-                "reconcile batch limit must be 1..=256".to_string(),
-            ));
-        }
-        let operation_ids = sqlx::query_scalar::<_, String>(
-            "SELECT o.operation_id
-             FROM cognitive_operation_ledger o
-             WHERE o.lease_id = ? AND o.destination_id = ?
-               AND (
-                   SELECT e.event_kind
-                   FROM cognitive_local_events e
-                   WHERE e.lease_id = o.lease_id
-                     AND e.occurrence_key = o.operation_id
-                   ORDER BY e.event_sequence DESC
-                   LIMIT 1
-               ) IN ('indeterminate', 'reconcile_still_indeterminate')
-             ORDER BY o.prepared_at_unix_seconds, o.operation_id
-             LIMIT ?",
-        )
-        .bind(self.lease_id())
-        .bind(target.destination_id())
-        .bind(i64::try_from(limit).map_err(|_| {
-            ProductionWriterError::Invalid("reconcile batch limit overflow".to_string())
-        })?)
-        .fetch_all(&self.store.pool)
-        .await
-        .map_err(|error| ProductionWriterError::Durability(error.to_string()))?;
-
-        let mut reconciled = 0_usize;
-        for operation_id in operation_ids {
-            let request = self
-                .reconciliation_request(&operation_id, target.destination_id())
-                .await?;
-            match target.observe_terminal(&request).await {
-                ProductionTerminalObservation::Applied { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::Committed)
-                        .await?;
-                    reconciled += 1;
-                }
-                ProductionTerminalObservation::NotApplied { .. }
-                | ProductionTerminalObservation::Quarantined { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::Rejected)
-                        .await?;
-                    reconciled += 1;
-                }
-                ProductionTerminalObservation::Indeterminate { .. } => {
-                    self.reconcile(&operation_id, LocalReconcileOutcome::StillIndeterminate)
-                        .await?;
-                    reconciled += 1;
-                }
-                ProductionTerminalObservation::Unavailable { .. } => {}
-            }
-        }
-        Ok(reconciled)
+        self.reconcile_target_round_robin(target, limit).await
     }
 
     async fn reconciliation_request(
@@ -1297,7 +1312,8 @@ impl ProductionDurableWriter {
         })?
         .event_id;
         let entered_claim =
-            operation_claims::mark_entered(&self.store, &owner_claim, now_unix_ms()?).await?;
+            operation_claims::mark_entered(&self.store, &owner_claim, resolve_dispatch_claim_time)
+                .await?;
 
         // Then consume the single-use grant and revalidate it immediately at
         // target entry. If either check fails before the adapter is entered we
@@ -1317,16 +1333,42 @@ impl ProductionDurableWriter {
                     let _ = operation_claims::mark_settled(
                         &self.store,
                         &entered_claim,
-                        now_unix_ms().unwrap_or(1),
+                        resolve_dispatch_claim_time,
                     )
                     .await;
                 }
                 return Err(ProductionWriterError::FinalUse(error));
             }
         };
-        let future = match final_use
-            .with_verified_use(token, expected, || target.dispatch(request.clone()))
-        {
+        // The retained verifier is external synchronous code. Run it before
+        // the final grant check so a slow verifier or a revocation it triggers
+        // cannot invalidate an already-checked grant before target entry.
+        let retained_authority = self.live_verifier.as_ref().map_or(Ok(()), |verifier| {
+            verifier
+                .verify(&self.authority, self.store.owner_agent_id())
+                .map_err(ProductionWriterError::AuthorityRejected)
+        });
+        let entry = retained_authority.and_then(|()| {
+            final_use
+                .with_verified_use(token, expected, || {
+                    // Grant persistence can outlast either owner deadline. Keep
+                    // these synchronous checks next to the actual target call;
+                    // the already-entered generation remains its durable fence.
+                    self.authority
+                        .validate_for_agent(self.store.owner_agent_id())?;
+                    if now_unix_ms()? >= entered_claim.lease_expires_at_unix_ms {
+                        return Err(ProductionWriterError::Local(
+                            LocalLeaseOutboxError::StaleFence(
+                                "dispatch claim expired before target entry".to_string(),
+                            ),
+                        ));
+                    }
+                    Ok(target.dispatch(request.clone()))
+                })
+                .map_err(ProductionWriterError::FinalUse)
+                .and_then(std::convert::identity)
+        });
+        let future = match entry {
             Ok(future) => future,
             Err(error) => {
                 if self
@@ -1341,11 +1383,11 @@ impl ProductionDurableWriter {
                     let _ = operation_claims::mark_settled(
                         &self.store,
                         &entered_claim,
-                        now_unix_ms().unwrap_or(1),
+                        resolve_dispatch_claim_time,
                     )
                     .await;
                 }
-                return Err(ProductionWriterError::FinalUse(error));
+                return Err(error);
             }
         };
         let outcome = future.await;
@@ -1375,7 +1417,7 @@ impl ProductionDurableWriter {
             let _ = operation_claims::mark_settled(
                 &self.store,
                 &entered_claim,
-                now_unix_ms().unwrap_or(1),
+                resolve_dispatch_claim_time,
             )
             .await;
         }
@@ -1469,7 +1511,13 @@ impl ProductionDurableWriter {
             ProductionTargetOutcome::Committed {
                 receipt: target_receipt,
             } => {
-                let applied = self.apply(occurrence_key, target_receipt.clone()).await;
+                let applied = self
+                    .settle_terminal_dispatch(
+                        occurrence_key,
+                        LocalOutcomeState::Committed,
+                        &target_receipt,
+                    )
+                    .await;
                 match applied {
                     Ok(local) => Ok(ProductionDispatchReceipt {
                         request,
@@ -1486,7 +1534,9 @@ impl ProductionDurableWriter {
                 }
             }
             ProductionTargetOutcome::NotApplied { reason } => {
-                let local = self.reject(occurrence_key, &reason).await?;
+                let local = self
+                    .settle_terminal_dispatch(occurrence_key, LocalOutcomeState::Rejected, &reason)
+                    .await?;
                 Ok(ProductionDispatchReceipt {
                     request,
                     state: LocalOutcomeState::Rejected,
@@ -1498,7 +1548,9 @@ impl ProductionDurableWriter {
                 })
             }
             ProductionTargetOutcome::Rejected { reason } => {
-                let local = self.reject(occurrence_key, &reason).await?;
+                let local = self
+                    .settle_terminal_dispatch(occurrence_key, LocalOutcomeState::Rejected, &reason)
+                    .await?;
                 Ok(ProductionDispatchReceipt {
                     request,
                     state: LocalOutcomeState::Rejected,
@@ -1519,6 +1571,20 @@ impl ProductionDurableWriter {
                 external_effect: false,
             }),
         }
+    }
+
+    async fn settle_terminal_dispatch(
+        &self,
+        occurrence_key: &str,
+        state: LocalOutcomeState,
+        payload: &str,
+    ) -> Result<ProductionOutcomeReceipt, ProductionWriterError> {
+        self.verify_authority().await?;
+        Ok(self
+            .lease
+            .settle_dispatch_terminal(occurrence_key, state, payload)
+            .await?
+            .into())
     }
 }
 
@@ -1566,6 +1632,8 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
             let receipt = self
                 .finish_prepared_mutation(&mut transaction, prepared, queued, write)
                 .await?;
+            crate::cognitive_store::admit_commit_state(&mut transaction).await?;
+            self.writer.verify_retained_authority()?;
             transaction
                 .commit()
                 .await
@@ -1618,6 +1686,8 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
             let receipt = self
                 .finish_prepared_mutation(&mut transaction, prepared, queued, write)
                 .await?;
+            crate::cognitive_store::admit_commit_state(&mut transaction).await?;
+            self.writer.verify_retained_authority()?;
             transaction
                 .commit()
                 .await
@@ -1668,6 +1738,8 @@ impl ProductionCognitiveMutation for ProductionCognitiveMutationCapability {
             let receipt = self
                 .finish_prepared_mutation(&mut transaction, prepared, queued, write)
                 .await?;
+            crate::cognitive_store::admit_commit_state(&mut transaction).await?;
+            self.writer.verify_retained_authority()?;
             transaction
                 .commit()
                 .await
@@ -1739,6 +1811,7 @@ impl ProductionCognitiveMutationCapability {
         transaction: &mut sqlx::Transaction<'_, sqlx::Sqlite>,
         prepared: &PreparedProductionCognitiveMutation,
     ) -> Result<QueuedReceipt, ProductionCognitiveMutationError> {
+        self.writer.verify_retained_authority()?;
         let admission = self
             .writer
             .lease
@@ -1808,6 +1881,10 @@ impl ProductionCognitiveMutationCapability {
             external_effect: false,
         };
         receipt.receipt_sha256 = receipt.compute_receipt_sha256();
+        // The semantic write, source/facts/projection, and provenance markers
+        // are still uncommitted. A revocation during any awaited write must
+        // roll all of them back rather than publish a stale authority receipt.
+        self.writer.verify_retained_authority()?;
         Ok(receipt)
     }
 }
@@ -2432,6 +2509,10 @@ fn validate_text(value: &str, label: &str, max_bytes: usize) -> Result<(), Produ
     Ok(())
 }
 
+fn resolve_dispatch_claim_time() -> Result<u64, LocalLeaseOutboxError> {
+    now_unix_ms().map_err(|error| LocalLeaseOutboxError::Clock(error.to_string()))
+}
+
 fn now_unix_ms() -> Result<u64, ProductionWriterError> {
     let millis = SystemTime::now()
         .duration_since(UNIX_EPOCH)
@@ -2448,6 +2529,18 @@ fn now_unix_seconds() -> Result<u64, ProductionWriterError> {
         .map(|duration| duration.as_secs())
         .map_err(|error| ProductionWriterError::Invalid(format!("system clock failed: {error}")))
 }
+
+#[cfg(all(test, unix))]
+#[path = "production_writer_lock_tests.rs"]
+mod lock_tests;
+
+#[cfg(test)]
+#[path = "production_writer_authority_tests.rs"]
+mod authority_tests;
+
+#[cfg(test)]
+#[path = "production_operation_claim_clock_tests.rs"]
+mod operation_claim_clock_tests;
 
 #[cfg(test)]
 mod tests {
@@ -3477,6 +3570,10 @@ mod takeover_regression_tests {
 }
 
 #[cfg(all(test, unix))]
+#[expect(
+    clippy::expect_used,
+    reason = "private final-use fixtures and assertions must fail the test when their expected setup or outcome is absent"
+)]
 mod final_use_dispatch_tests {
     use super::*;
     use codex_hepta_contracts::FinalUseGrant;

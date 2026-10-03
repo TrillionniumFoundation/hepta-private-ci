@@ -1862,8 +1862,21 @@ async fn compact_reopen_rejects_orphan_bound_lease_head() {
 
     // Test-only tamper: preserve the row's shape but point its immutable
     // binding at a lease head that was never granted by this owner/fence.
+    // Keep the original trigger visible to every other connection throughout
+    // the tamper, including connections running their initialization hooks.
+    let mut transaction = store
+        .pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .expect("atomic fixture tamper");
+    let trigger_sql: String = sqlx::query_scalar(
+        "SELECT sql FROM sqlite_schema WHERE name = 'cognitive_compact_events_no_update'",
+    )
+    .fetch_one(&mut *transaction)
+    .await
+    .expect("original compiled immutable trigger");
     sqlx::query("DROP TRIGGER cognitive_compact_events_no_update")
-        .execute(&store.pool)
+        .execute(&mut *transaction)
         .await
         .expect("drop test trigger");
     sqlx::query(
@@ -1872,9 +1885,17 @@ async fn compact_reopen_rejects_orphan_bound_lease_head() {
          WHERE journal_id = ? AND sequence = 1",
     )
     .bind(executor.journal_id())
-    .execute(&store.pool)
+    .execute(&mut *transaction)
     .await
     .expect("orphan lease id");
+    sqlx::query(sqlx::AssertSqlSafe(trigger_sql.as_str()))
+        .execute(&mut *transaction)
+        .await
+        .expect("restore exact compiled immutable trigger");
+    transaction
+        .commit()
+        .await
+        .expect("commit orphan lease fixture with restored schema");
 
     let audit = crate::local_compact_executor::verify_local_compact_events(
         &store.pool,
@@ -1882,7 +1903,8 @@ async fn compact_reopen_rejects_orphan_bound_lease_head() {
     )
     .await;
     assert!(
-        matches!(audit, Err(crate::CognitiveStoreError::Corrupt(message)) if message.contains("historical lease head"))
+        matches!(&audit, Err(crate::CognitiveStoreError::Corrupt(message)) if message.contains("historical lease head")),
+        "expected orphan historical lease-head rejection, got {audit:?}"
     );
 }
 

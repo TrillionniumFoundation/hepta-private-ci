@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "addae413d676a1e1914411a3f3fef9291ff65db9",
+    "tree": "9c5cfba5a56b7cdbbedd114a41c0f86246a7f098"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -204,8 +204,8 @@
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "addae413d676a1e1914411a3f3fef9291ff65db9",
+    "tree": "9c5cfba5a56b7cdbbedd114a41c0f86246a7f098"
   },
   "observedSourcePaths": [
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
@@ -279,16 +279,24 @@
       "object": "017fe5d9983a0e7a984948d66ac2c91a16b26279"
     },
     {
+      "path": "codex-rs/hepta-memory/migrations/0019_source_ledger_scope_frontier.sql",
+      "object": "ad6b6c1d2e7c97c30931df7517b0822d5a46e693"
+    },
+    {
       "path": "codex-rs/hepta-memory/src/cognitive_kg_benchmark_tests.rs",
       "object": "cfb84c235e1c98a5b968db12009ef5d5e5e6d24c"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_kg_oracle_tests.rs",
-      "object": "2298a8a467918d0f484618a803019e38ed6ae358"
+      "object": "adf3980ed1be7f78c74ef07acd54dad0f924fe4f"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_kg_source_frontier_tests.rs",
+      "object": "fdda7b3704ac3d8390dfe53a99caf6b7e293f10d"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
-      "object": "14702d68d7f9e5c25ac76d2605bdb958cecc0803"
+      "object": "d4c5fc866d034c5a60060e2e6dd8a95c53b169f0"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_retrieval.rs",
@@ -296,7 +304,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-      "object": "b5462745d335c2115144ddc161d242b3205fdc06"
+      "object": "5a3aefbc63b87e85ab911cc864d521dd48e627e6"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",

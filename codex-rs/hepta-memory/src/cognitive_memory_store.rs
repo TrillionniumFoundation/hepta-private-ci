@@ -90,7 +90,7 @@ impl CognitiveStore {
             .await?;
         self.publish_legacy_zero_fact_projection_tx(&mut transaction, &record)
             .await?;
-        transaction.commit().await.map_err(unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(record)
     }
 
@@ -160,7 +160,7 @@ impl CognitiveStore {
             .await?;
         self.publish_legacy_zero_fact_projection_tx(&mut transaction, &record)
             .await?;
-        transaction.commit().await.map_err(unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(record)
     }
 

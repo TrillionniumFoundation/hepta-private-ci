@@ -19,6 +19,8 @@ use codex_hepta_types::StableId;
 
 pub struct CognitiveRetrievalLearningSink {
     writer: Mutex<LedgerWriter>,
+    #[cfg(test)]
+    append_entered: Option<std::sync::Arc<tokio::sync::Notify>>,
 }
 
 impl CognitiveRetrievalLearningSink {
@@ -26,6 +28,8 @@ impl CognitiveRetrievalLearningSink {
     pub fn new(writer: LedgerWriter) -> Self {
         Self {
             writer: Mutex::new(writer),
+            #[cfg(test)]
+            append_entered: None,
         }
     }
 
@@ -44,29 +48,6 @@ impl CognitiveRetrievalLearningSink {
             &[],
             false,
             None,
-            None,
-            ProbabilityQ32::ONE,
-        )
-    }
-
-    pub(crate) fn append_with_delivery(
-        &self,
-        owner: &AgentId,
-        body_generation: u64,
-        request_id: u64,
-        observation: &RetrievalAssignmentObservationV1,
-        delivered_candidates: &[RetrievalCandidateIdentityV1],
-        context_exposed: bool,
-        published_context_digest: Option<Digest32>,
-    ) -> Result<AppendReceipt, String> {
-        self.append_with_delivery_policy(
-            owner,
-            body_generation,
-            request_id,
-            observation,
-            delivered_candidates,
-            context_exposed,
-            published_context_digest,
             None,
             ProbabilityQ32::ONE,
         )
@@ -118,6 +99,10 @@ impl CognitiveRetrievalLearningSink {
             delivery_propensity,
         )
         .map_err(|error| error.to_string())?;
+        #[cfg(test)]
+        if let Some(entered) = &self.append_entered {
+            entered.notify_one();
+        }
         let mut writer = self
             .writer
             .lock()
@@ -130,6 +115,10 @@ impl CognitiveRetrievalLearningSink {
             .map_err(|error| error.to_string())
     }
 }
+
+#[cfg(test)]
+#[path = "cognitive_retrieval_learning_test_support.rs"]
+pub(crate) mod test_support;
 
 #[cfg(test)]
 #[path = "cognitive_retrieval_learning_tests.rs"]

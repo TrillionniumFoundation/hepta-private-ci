@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "addae413d676a1e1914411a3f3fef9291ff65db9",
+    "tree": "9c5cfba5a56b7cdbbedd114a41c0f86246a7f098"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.codex",
@@ -349,11 +349,21 @@
     },
     {
       "path": "codex-rs/hepta-codex-adapter",
-      "object": "5643ca35d5a347bd53bf6a5f9bcd0dfbe964d90b"
+      "object": "e7d805241fdd5798e0ef70b4276b60c056989930"
     },
     {
       "path": "docs/modules/runtime.codex/TECHNICAL.md",
       "object": "28590a009a9a3b47042547bb5c6fe23f60bdffad"
     }
-  ]
+  ],
+  "historicalEvidence": {
+    "priorSquashMainNavigation": {
+      "sourceBase": {
+        "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+        "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+      },
+      "scope": "prior_branch_source_navigation_provenance_only; not_current_candidate_execution_evidence",
+      "currentCandidateQualificationTransferred": false
+    }
+  }
 }

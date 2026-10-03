@@ -82,7 +82,7 @@ impl CognitiveStore {
         let receipt = self
             .remember_with_kg_tx(&mut transaction, access, source, draft, facts)
             .await?;
-        transaction.commit().await.map_err(unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(receipt)
     }
 
@@ -149,10 +149,14 @@ impl CognitiveStore {
                 facts,
             )
             .await?;
-        transaction.commit().await.map_err(unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(receipt)
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "the shared transaction, access, CAS predecessor, source, memory draft and KG facts remain explicit at the atomic correction boundary"
+    )]
     pub(crate) async fn correct_with_kg_tx(
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
@@ -224,7 +228,7 @@ impl CognitiveStore {
                 draft,
             )
             .await?;
-        transaction.commit().await.map_err(unavailable)?;
+        crate::cognitive_store::commit_admitted(transaction).await?;
         Ok(receipt)
     }
 
@@ -481,6 +485,8 @@ pub(crate) async fn verify_revision_fact_digests(
     pool: &SqlitePool,
     owner: &codex_hepta_contracts::AgentId,
 ) -> Result<(), CognitiveStoreError> {
+    let mut transaction = pool.begin().await.map_err(unavailable)?;
+    crate::cognitive_store::verify_schema_snapshot(&mut transaction).await?;
     let rows = sqlx::query(
         "SELECT s.memory_id, s.memory_revision, s.extractor_contract,
                 s.fact_set_sha256, s.source_id, s.source_revision,
@@ -493,7 +499,7 @@ pub(crate) async fn verify_revision_fact_digests(
          ORDER BY s.memory_id, s.memory_revision",
     )
     .bind(owner.as_str())
-    .fetch_all(pool)
+    .fetch_all(&mut *transaction)
     .await
     .map_err(unavailable)?;
     for row in rows {
@@ -525,7 +531,7 @@ pub(crate) async fn verify_revision_fact_digests(
         )
         .bind(&memory_id)
         .bind(memory_revision_i64)
-        .fetch_all(pool)
+        .fetch_all(&mut *transaction)
         .await
         .map_err(unavailable)?;
         let declared_entities: i64 = row.try_get("entity_count").map_err(unavailable)?;
@@ -574,7 +580,7 @@ pub(crate) async fn verify_revision_fact_digests(
         )
         .bind(&memory_id)
         .bind(memory_revision_i64)
-        .fetch_all(pool)
+        .fetch_all(&mut *transaction)
         .await
         .map_err(unavailable)?;
         let declared_relations: i64 = row.try_get("relation_count").map_err(unavailable)?;
@@ -666,7 +672,7 @@ pub(crate) async fn verify_revision_fact_digests(
          ORDER BY r.scope_kind, r.workspace_sha256, e.canonical_entity_id",
     )
     .bind(owner.as_str())
-    .fetch_all(pool)
+    .fetch_all(&mut *transaction)
     .await
     .map_err(unavailable)?;
     let mut shapes = BTreeMap::<(String, String), (String, String)>::new();
@@ -694,6 +700,7 @@ pub(crate) async fn verify_revision_fact_digests(
             )));
         }
     }
+    transaction.commit().await.map_err(unavailable)?;
     Ok(())
 }
 

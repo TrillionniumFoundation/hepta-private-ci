@@ -298,10 +298,7 @@ async fn write_local_rehydration_witness_inner(
             "compact journal accepted witness but returned none".to_string(),
         )
     })?;
-    transaction
-        .commit()
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    crate::cognitive_store::commit_admitted(transaction).await?;
 
     let receipt = LocalRehydrationWitnessReceipt {
         schema_version: LOCAL_ATOMIC_WITNESS_SCHEMA_VERSION,
