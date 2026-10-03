@@ -41,6 +41,9 @@ pub use calibration_reference_batch::CalibrationReferenceBatchConfigV1;
 mod rejected_calibration_feedback;
 pub use rejected_calibration_feedback::RejectedCalibrationFeedbackConfigV1;
 use rejected_calibration_feedback::RejectedFeedback;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+#[path = "installed_self_iteration_cycle.rs"]
+pub(crate) mod installed_cycle;
 
 /// A checksum-pinned installer descriptor. The environment is supplied by the
 /// immutable installed release manifest, never model/request data.
@@ -72,6 +75,9 @@ pub struct SelfIterationHostConfigV1 {
     #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
     #[serde(default)]
     pub cpu_neuron: Option<crate::initial_cpu_anchor::InstalledCpuSourceV1>,
+    #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+    #[serde(default)]
+    pub installed_cycle: Option<crate::initial_cpu_anchor::InstalledCpuSourceV1>,
 }
 
 pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfig, AgentdError> {
@@ -105,6 +111,8 @@ pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfi
     ))?;
     let cpu_status = serde_json::json!({"state":"disabled", "actual_neuron_tick":false});
     #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+    let mut cycle_composition = None;
+    #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
     let (config, cpu_status) = if let Some(source) = installed.cpu_neuron.as_ref() {
         match crate::initial_cpu_anchor::InstalledCpuComposition::prepare(
             source,
@@ -112,12 +120,17 @@ pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfi
             &installed.final_use_authority_config,
             control.clone(),
         ) {
-            Ok(cpu) => (
-                cpu.attach(config)?,
-                serde_json::json!({
+            Ok(cpu) => {
+                if let Some(resolver) = cpu.model_resolver() {
+                    cycle_composition = Some(installed_cycle::Composition {
+                        resolver, reader:cpu.original_generation_reader(),
+                        resources:cpu.original_resource_port(), control:control.clone(),
+                    });
+                }
+                (cpu.attach(config)?, serde_json::json!({
                     "state":"attached_pending_first_tick", "actual_neuron_tick":false,
-                }),
-            ),
+                }))
+            },
             Err(error) => (
                 config,
                 serde_json::json!({
@@ -129,7 +142,7 @@ pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfi
     } else {
         (config, cpu_status)
     };
-    config.with_self_iteration_model_owner(move |cancellation| async move {
+    config.with_self_iteration_model_owner_context(move |context, cancellation| async move {
         let mut model = AppServerSelfIterationModelPortV1::new_shared(
             driver,
             control,
@@ -137,6 +150,20 @@ pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfi
             cancellation.clone(),
         )
         .map_err(|error| invalid(error.to_string()))?;
+        #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+        if let Some(source) = installed.installed_cycle.clone() {
+            if let Some(composition) = cycle_composition {
+                return installed_cycle::run(model, installed, identity, source, composition, context, cancellation).await;
+            }
+            publish_status(&installed.status_file, &serde_json::json!({
+                "version":1,"state":"pending_original_cpu_composition",
+                "generation_ready":false,"authority_grants":false,"cpu_neuron":cpu_status,
+            }))?;
+            cancellation.cancelled().await;
+            return Ok(());
+        }
+        #[cfg(not(all(target_os = "linux", feature = "fixed-initial-cpu-host")))]
+        let _ = context;
         run_model_owner(
             &mut model,
             installed,
@@ -523,7 +550,7 @@ fn write_proposal(
     status["diagnostic"] = serde_json::Value::Null;
     publish_status(path, status)
 }
-fn publish_status(path: &Path, value: &serde_json::Value) -> Result<(), AgentdError> {
+pub(crate) fn publish_status(path: &Path, value: &serde_json::Value) -> Result<(), AgentdError> {
     private_parent(path)?;
     let bytes = serde_json::to_vec_pretty(value).map_err(|error| invalid(error.to_string()))?;
     if bytes.len() > 64 * 1024 {

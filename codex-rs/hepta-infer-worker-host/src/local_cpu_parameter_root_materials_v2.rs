@@ -84,30 +84,10 @@ impl CpuNeuronParameterRootMaterialsV2 {
             &mut sources,
         )?)
         .map_err(|error| invalid(error.to_string()))?;
-        let policy = canonical.policy();
-        // Compatibility is explicit. Full canonical policy is retained separately
-        // and checked by its original policy owner before any effect.
-        let envelope = IterationEnvelopeV1 {
-            envelope_id: StableId::new(policy.envelope_id)
+        let envelope = canonical.execution_envelope(
+            u16::try_from(request.generated.candidates.len())
                 .map_err(|error| invalid(error.to_string()))?,
-            base_commit: Digest32::of_bytes(policy.base_commit.as_bytes()),
-            base_tree: Digest32::of_bytes(policy.base_tree.as_bytes()),
-            objective_digest: digest(policy.objective_digest)?,
-            grammar_digest: digest(policy.grammar_digest)?,
-            maximum_files: u16::try_from(policy.maximum_files)
-                .map_err(|error| invalid(error.to_string()))?,
-            maximum_diff_bytes: policy.maximum_bytes,
-            maximum_candidates: u16::try_from(request.generated.candidates.len())
-                .map_err(|error| invalid(error.to_string()))?,
-            maximum_parallel_sandboxes: policy.compute_budget.maximum_parallel_sandboxes,
-            expiry_unix_seconds: policy.expires_unix_ms / 1000,
-        };
-        envelope.validate().map_err(invalid)?;
-        if u32::from(envelope.maximum_candidates) > policy.maximum_candidates {
-            return Err(invalid(
-                "actual frontier exceeds protected canonical window",
-            ));
-        }
+        ).map_err(invalid)?;
         let baseline = plan(&descriptor.baseline, &mut sources)?;
         let rollback = plan(&descriptor.rollback, &mut sources)?;
         let mut candidates = Vec::new();

@@ -25,6 +25,8 @@ mod routing;
 use routing::Route;
 #[path = "installed_self_iteration_owners.rs"]
 mod independent_owners;
+#[path = "installed_round_preparation_client.rs"]
+pub(crate) mod round_preparation;
 #[path = "frozen_model_failure_client.rs"]
 mod model_failure;
 pub use independent_owners::*;

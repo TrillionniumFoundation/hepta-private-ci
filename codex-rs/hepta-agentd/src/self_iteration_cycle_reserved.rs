@@ -7,6 +7,20 @@ where
     A: AgentdSelfIterationCandidateAssemblerV1 + 'static,
     O: AgentdSelfIterationIndependentOwnersV1,
 {
+    /// Return this same adapter only after the sole owner has settled the exact
+    /// round and every original model task. No new model client is constructed.
+    pub async fn take_model_after_terminal_round(&mut self) -> Result<M, AgentdError> {
+        let current = self.runtime.inspect_current_round().await?
+            .ok_or_else(|| invalid("original terminal reservation absent"))?;
+        if self.round.as_ref() != Some(&current.status.round)
+            || !current.can_admit_next_round()
+            || self.pending_model.is_some() || self.pending_candidate.is_some()
+        {
+            return Err(invalid("original cycle still owns unresolved effects"));
+        }
+        self.model.take().ok_or_else(|| invalid("original model adapter unavailable"))
+    }
+
     pub async fn run_reserved_round(
         &mut self,
         round: AgentdSelfIterationRoundV1,

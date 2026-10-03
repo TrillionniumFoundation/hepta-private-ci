@@ -20,6 +20,7 @@ pub(crate) struct Composition {
     provider: Arc<dyn AgentdIntelligenceInvocationProviderV1>,
     resolver: Option<Arc<dyn goal_factory::model_capability::RegisteredCpuModelResolverV3>>,
     original_generations: goal_factory::model_capability::CpuNeuronOriginalGenerationReaderV3,
+    resources: Arc<crate::FleetWorkerResourcePortV2>,
 }
 
 impl Composition {
@@ -108,7 +109,7 @@ impl Composition {
         let mut provider: Arc<dyn AgentdIntelligenceInvocationProviderV1> = Arc::new(provider);
         let model_generation = plan.runtime.generation;
         let worker = crate::CpuNeuronControlConfigV2 {
-            resources,
+            resources: resources.clone(),
             model_generation,
             maximum_request_duration: Duration::from_millis(installed.maximum_request_duration_ms),
         };
@@ -151,6 +152,7 @@ impl Composition {
             provider,
             resolver: installed_resolver,
             original_generations,
+            resources,
         })
     }
 
@@ -164,6 +166,10 @@ impl Composition {
         &self,
     ) -> goal_factory::model_capability::CpuNeuronOriginalGenerationReaderV3 {
         self.original_generations.clone()
+    }
+
+    pub(crate) fn original_resource_port(&self) -> Arc<crate::FleetWorkerResourcePortV2> {
+        self.resources.clone()
     }
 
     pub(crate) fn attach(self, config: AgentdConfig) -> Result<AgentdConfig, AgentdError> {

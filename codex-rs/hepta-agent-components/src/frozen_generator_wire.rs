@@ -17,6 +17,9 @@ pub use model_failure::*;
 #[path = "frozen_self_iteration_owners_wire.rs"]
 mod independent_owners;
 pub use independent_owners::*;
+#[path = "frozen_round_preparation_wire.rs"]
+mod round_preparation;
+pub use round_preparation::*;
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -111,6 +114,7 @@ pub enum FrozenGeneratorOperationV1 {
     Observe(FrozenGeneratorObservationRequestV2),
     ObserveModelFailure(SelfIterationModelFailureObservationRequestV1),
     IndependentOwner(SelfIterationOwnerRequestV1),
+    PrepareRound(RoundPreparationRequestV1),
 }
 
 pub fn encode_frozen_generator_observation_request_v2(
@@ -150,6 +154,9 @@ pub fn decode_frozen_generator_operation_v1(
         )),
         5..=7 => Ok(FrozenGeneratorOperationV1::IndependentOwner(
             decode_self_iteration_owner_request_v1(bytes)?,
+        )),
+        8 => Ok(FrozenGeneratorOperationV1::PrepareRound(
+            decode_round_preparation_request_v1(bytes)?,
         )),
         _ => Err("frozen Generator operation schema".into()),
     }

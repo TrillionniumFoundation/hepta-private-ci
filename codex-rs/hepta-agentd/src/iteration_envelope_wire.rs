@@ -121,6 +121,32 @@ impl CanonicalIterationEnvelopeV1 {
         self.digest
     }
 
+    /// Project the existing execution identity while retaining this complete
+    /// policy separately. This value supplies no path or execution authority.
+    pub fn execution_envelope(
+        &self,
+        maximum_candidates: u16,
+    ) -> Result<crate::IterationEnvelopeV1, String> {
+        let policy = self.policy();
+        if u32::from(maximum_candidates) > policy.maximum_candidates {
+            return Err("actual frontier exceeds protected canonical window".into());
+        }
+        let envelope = crate::IterationEnvelopeV1 {
+            envelope_id: StableId::new(policy.envelope_id).map_err(|error| error.to_string())?,
+            base_commit: Digest32::of_bytes(policy.base_commit.as_bytes()),
+            base_tree: Digest32::of_bytes(policy.base_tree.as_bytes()),
+            objective_digest: policy.objective_digest.parse().map_err(|error| format!("{error}"))?,
+            grammar_digest: policy.grammar_digest.parse().map_err(|error| format!("{error}"))?,
+            maximum_files: u16::try_from(policy.maximum_files).map_err(|error| error.to_string())?,
+            maximum_diff_bytes: policy.maximum_bytes,
+            maximum_candidates,
+            maximum_parallel_sandboxes: policy.compute_budget.maximum_parallel_sandboxes,
+            expiry_unix_seconds: policy.expires_unix_ms / 1000,
+        };
+        envelope.validate()?;
+        Ok(envelope)
+    }
+
     pub fn policy(&self) -> CanonicalIterationPolicyV1<'_> {
         let envelope = &self.envelope;
         CanonicalIterationPolicyV1 {
