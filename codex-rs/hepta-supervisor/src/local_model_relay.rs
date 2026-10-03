@@ -35,6 +35,8 @@ mod http;
 
 #[path = "local_model_relay_witness.rs"]
 mod witness;
+pub use witness::RootModelFailureV1;
+pub use witness::RootModelOutcomeReceiptV1;
 pub use witness::RootModelTerminalReceiptV1;
 
 pub(super) async fn start(issuer: Arc<Issuer>) -> anyhow::Result<Option<JoinHandle<()>>> {
@@ -121,6 +123,12 @@ async fn exchange(issuer: &Issuer, stream: &mut UnixStream) -> anyhow::Result<()
     let mut response = request.send().await?;
     let status = response.status().as_u16();
     if !response.status().is_success() {
+        if let Some(observation) = observation {
+            observation.fail(
+                witness::RootModelFailureV1::HttpRejection { status },
+                issuer.clock.now_unix_ms()?,
+            )?;
+        }
         http::error(stream, status).await?;
         return Ok(());
     }
@@ -134,8 +142,17 @@ async fn exchange(issuer: &Issuer, stream: &mut UnixStream) -> anyhow::Result<()
             delivered <= http::MAX_RESPONSE_BYTES,
             "model response byte bound"
         );
-        if let Some(observation) = &mut observation {
-            observation.observe(&bytes)?;
+        if let Some(observed) = &mut observation
+            && let Err(error) = observed.observe(&bytes)
+        {
+            // Only an actual provider failure terminal qualifies this fact.
+            // I/O loss, malformed streams and local timeouts remain unknown.
+            if let Some(failure) = observed.failure().cloned()
+                && let Some(observed) = observation.take()
+            {
+                observed.fail(failure, issuer.clock.now_unix_ms()?)?;
+            }
+            return Err(error);
         }
         http::chunk(stream, &bytes).await?;
     }

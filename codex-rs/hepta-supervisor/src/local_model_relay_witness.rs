@@ -118,6 +118,31 @@ pub struct RootModelTerminalReceiptV1 {
     pub model_output_bytes: usize,
 }
 
+/// Provider observations alone never establish native release or permit retry.
+/// The original native owner must independently publish its terminal and ACK.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "kind", rename_all = "snake_case", deny_unknown_fields)]
+pub enum RootModelFailureV1 {
+    HttpRejection { status: u16 },
+    ProviderFailed { response_id: Option<String> },
+    ProviderIncomplete { response_id: Option<String> },
+    ProviderError,
+}
+
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "outcome", rename_all = "snake_case", deny_unknown_fields)]
+pub enum RootModelOutcomeReceiptV1 {
+    Completed {
+        receipt: RootModelTerminalReceiptV1,
+    },
+    Failed {
+        admission: RootModelTerminalReceiptV1,
+        observed_at_ms: u64,
+        stream_sha256: [u8; 32],
+        failure: RootModelFailureV1,
+    },
+}
+
 pub(super) struct Observation {
     directory: PathBuf,
     identity: String,
@@ -125,6 +150,7 @@ pub(super) struct Observation {
     stream: Sha256,
     pending: Vec<u8>,
     completed: Option<(String, String)>,
+    failure: Option<RootModelFailureV1>,
 }
 
 fn create_fact(path: &Path, bytes: &[u8]) -> anyhow::Result<()> {
@@ -232,6 +258,7 @@ impl Observation {
             stream: Sha256::new(),
             pending: Vec::new(),
             completed: None,
+            failure: None,
         }))
     }
 
@@ -263,7 +290,23 @@ impl Observation {
         }
         let value: Value = serde_json::from_str(&data)?;
         match value.get("type").and_then(Value::as_str) {
-            Some("response.failed" | "response.incomplete" | "error") => {
+            Some(kind @ ("response.failed" | "response.incomplete" | "error")) => {
+                let response_id = value
+                    .get("response")
+                    .and_then(|response| response.get("id"))
+                    .and_then(Value::as_str)
+                    .map(str::to_owned);
+                anyhow::ensure!(
+                    response_id
+                        .as_ref()
+                        .is_none_or(|id| !id.is_empty() && id.len() <= 1024),
+                    "provider failure ID bound"
+                );
+                self.failure = Some(match kind {
+                    "response.failed" => RootModelFailureV1::ProviderFailed { response_id },
+                    "response.incomplete" => RootModelFailureV1::ProviderIncomplete { response_id },
+                    _ => RootModelFailureV1::ProviderError,
+                });
                 anyhow::bail!("provider did not complete")
             }
             Some("response.completed") => {
@@ -334,10 +377,8 @@ impl Observation {
 
     pub(super) fn finish(mut self, now: u64) -> anyhow::Result<()> {
         anyhow::ensure!(
-            self.pending.is_empty()
-                && now >= self.fact.admitted_at_ms
-                && now < self.fact.binding.deadline_ms,
-            "provider terminal or preserved budget incomplete"
+            self.pending.is_empty() && self.failure.is_none() && now >= self.fact.admitted_at_ms,
+            "provider terminal observation incomplete"
         );
         let (id, output) = self
             .completed
@@ -348,11 +389,36 @@ impl Observation {
         self.fact.stream_sha256 = self.stream.finalize().into();
         self.fact.model_output_sha256 = Sha256::digest(output.as_bytes()).into();
         self.fact.model_output_bytes = output.len();
+        // A late successful response remains an observation of consumed work.
+        // Consumers must deny authority at or after the original deadline.
         create_fact(
             &self
                 .directory
                 .join(format!("{}.terminal.json", self.identity)),
-            &serde_json::to_vec(&self.fact)?,
+            &serde_json::to_vec(&RootModelOutcomeReceiptV1::Completed { receipt: self.fact })?,
+        )
+    }
+
+    pub(super) fn failure(&self) -> Option<&RootModelFailureV1> {
+        self.failure.as_ref()
+    }
+
+    pub(super) fn fail(self, failure: RootModelFailureV1, now: u64) -> anyhow::Result<()> {
+        anyhow::ensure!(
+            now >= self.fact.admitted_at_ms,
+            "provider observation clock rollback"
+        );
+        let outcome = RootModelOutcomeReceiptV1::Failed {
+            admission: self.fact,
+            observed_at_ms: now,
+            stream_sha256: self.stream.finalize().into(),
+            failure,
+        };
+        create_fact(
+            &self
+                .directory
+                .join(format!("{}.terminal.json", self.identity)),
+            &serde_json::to_vec(&outcome)?,
         )
     }
 }

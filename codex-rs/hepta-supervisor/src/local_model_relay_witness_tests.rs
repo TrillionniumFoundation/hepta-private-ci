@@ -45,6 +45,7 @@ fn observation() -> Observation {
         stream: Sha256::new(),
         pending: Vec::new(),
         completed: None,
+        failure: None,
     }
 }
 
@@ -167,4 +168,49 @@ fn actual_root_custody_publishes_complete_bytes_once_without_replacement() {
         (0, 0o600, 1)
     );
     assert_eq!(std::fs::read_dir(directory.path()).unwrap().count(), 1);
+    let mut late = observation();
+    late.directory = directory.path().to_path_buf();
+    late.observe(&completed(serde_json::json!([
+        {"type":"message","role":"assistant","content":[{"type":"output_text","text":"original late output"}]}
+    ]))).unwrap();
+    late.finish(201).unwrap();
+    let outcome: RootModelOutcomeReceiptV1 = serde_json::from_slice(
+        &store::read_protected(&directory.path().join("unused.terminal.json"), 16_384, true)
+            .unwrap(),
+    )
+    .unwrap();
+    let RootModelOutcomeReceiptV1::Completed { receipt } = outcome else {
+        panic!("actual completed receipt absent")
+    };
+    assert!(receipt.completed_at_ms >= receipt.binding.deadline_ms);
+    assert_eq!(
+        receipt.model_output_sha256,
+        <[u8; 32]>::from(Sha256::digest(b"original late output"))
+    );
+    let mut failed = observation();
+    failed.directory = directory.path().to_path_buf();
+    failed.identity = "failed".to_string();
+    assert!(
+        failed
+            .observe(
+                b"data: {\"type\":\"response.failed\",\"response\":{\"id\":\"actual.failed\"}}\n\n"
+            )
+            .is_err()
+    );
+    let actual_failure = failed.failure().cloned().unwrap();
+    failed.fail(actual_failure.clone(), 202).unwrap();
+    let outcome: RootModelOutcomeReceiptV1 = serde_json::from_slice(
+        &store::read_protected(&directory.path().join("failed.terminal.json"), 16_384, true)
+            .unwrap(),
+    )
+    .unwrap();
+    let RootModelOutcomeReceiptV1::Failed {
+        failure,
+        observed_at_ms,
+        ..
+    } = outcome
+    else {
+        panic!("actual failure receipt absent")
+    };
+    assert_eq!((failure, observed_at_ms), (actual_failure, 202));
 }
