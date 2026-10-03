@@ -258,6 +258,14 @@ impl VerifiedCurrentRegistryViewV1 {
     pub(crate) fn registry(&self) -> &ArtifactRegistry {
         &self.registry
     }
+
+    /// Whole registered historical identity from this authenticated prefix.
+    /// Registration history does not restore eligibility, selection or use;
+    /// current consumers must separately call `eligible_manifest`.
+    #[must_use]
+    pub fn registered_manifest(&self, artifact: &StableId) -> Option<&ArtifactManifest> {
+        self.registry.manifest(artifact)
+    }
 }
 
 impl fmt::Debug for VerifiedCurrentRegistryViewV1 {
