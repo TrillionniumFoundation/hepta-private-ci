@@ -58,7 +58,12 @@ def document(offset: int = 0, *, add_function: bool = False) -> dict:
                                     "resolved_path": {
                                         "name": "Foo",
                                         "id": foo,
-                                        "args": {"angle_bracketed": {"args": [], "constraints": []}},
+                                        "args": {
+                                            "angle_bracketed": {
+                                                "args": [],
+                                                "constraints": [],
+                                            }
+                                        },
                                     }
                                 },
                             ]
@@ -103,13 +108,21 @@ def document(offset: int = 0, *, add_function: bool = False) -> dict:
     }
     paths = {
         str(root): {"crate_id": 0, "path": ["codex_hepta_types"], "kind": "module"},
-        str(foo): {"crate_id": 0, "path": ["codex_hepta_types", "Foo"], "kind": "struct"},
+        str(foo): {
+            "crate_id": 0,
+            "path": ["codex_hepta_types", "Foo"],
+            "kind": "struct",
+        },
         str(function): {
             "crate_id": 0,
             "path": ["codex_hepta_types", "consume"],
             "kind": "function",
         },
-        str(bar): {"crate_id": 0, "path": ["codex_hepta_types", "Bar"], "kind": "struct"},
+        str(bar): {
+            "crate_id": 0,
+            "path": ["codex_hepta_types", "Bar"],
+            "kind": "struct",
+        },
     }
     if add_function:
         root_items.append(extra)
@@ -343,7 +356,9 @@ class RustdocApiTests(unittest.TestCase):
         changed = {row["path"] for row in result["changed"]}
         self.assertIn("codex_hepta_types::Foo", changed)
 
-    def test_function_parameter_type_change_is_breaking_without_recursive_fingerprints(self):
+    def test_function_parameter_type_change_is_breaking_without_recursive_fingerprints(
+        self,
+    ):
         base_document = document()
         candidate_document = copy.deepcopy(base_document)
         candidate_document["index"]["2"]["inner"]["function"]["sig"]["inputs"][0][1][

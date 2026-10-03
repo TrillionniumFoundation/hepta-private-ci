@@ -1,4 +1,5 @@
 """No Rust is executed by these parser regressions."""
+
 import unittest
 
 from platform_types_nonempty_tests import executed_tests

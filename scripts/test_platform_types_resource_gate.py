@@ -1,4 +1,5 @@
 """Verifier regressions use synthetic samples; they are not performance evidence."""
+
 import copy
 import unittest
 
@@ -20,12 +21,25 @@ def fixture():
         if name.startswith(("registry-identity", "registry-digest")):
             calls, size = 0, 0
         for sample in range(17):
-            rows.append(dict(case=name, sample=sample, iterations=64,
-                             elapsedNs=64000 + sample, allocationCalls=calls,
-                             reallocations=0, requestedBytes=size))
-    return dict(schema="hepta.platform-types.semantic-benchmark.v1", samplesPerCase=17,
-                iterationsPerSample=64, allocationMetric="successful-global-allocation-and-reallocation-requested-bytes",
-                timingAuthority="diagnostic-only", rows=rows)
+            rows.append(
+                dict(
+                    case=name,
+                    sample=sample,
+                    iterations=64,
+                    elapsedNs=64000 + sample,
+                    allocationCalls=calls,
+                    reallocations=0,
+                    requestedBytes=size,
+                )
+            )
+    return dict(
+        schema="hepta.platform-types.semantic-benchmark.v1",
+        samplesPerCase=17,
+        iterationsPerSample=64,
+        allocationMetric="successful-global-allocation-and-reallocation-requested-bytes",
+        timingAuthority="diagnostic-only",
+        rows=rows,
+    )
 
 
 def check(raw, **kwargs):
@@ -86,7 +100,9 @@ class ResourceGateTests(unittest.TestCase):
         for row in raw["rows"]:
             if row["case"] == "registry-identity-256":
                 row["elapsedNs"] *= 8
-        with self.assertRaisesRegex(ValueError, "complexity regression: registry-identity"):
+        with self.assertRaisesRegex(
+            ValueError, "complexity regression: registry-identity"
+        ):
             check(raw)
 
     def test_constant_time_noise_floor_ignores_submicrosecond_ratio_jitter(self):
@@ -99,12 +115,14 @@ class ResourceGateTests(unittest.TestCase):
         report = check(raw)
         self.assertEqual(report["complexityGate"], "passed")
 
-
     def test_latency_requires_context_methodology_and_explicit_threshold(self):
         baseline = check(fixture())
         report = check(fixture(), baseline=baseline, maximum_ratio=1.15)
         self.assertEqual(report["latencyGate"], "passed")
-        for key, value in (("environmentDigest", "0" * 64), ("harnessDigest", "0" * 64)):
+        for key, value in (
+            ("environmentDigest", "0" * 64),
+            ("harnessDigest", "0" * 64),
+        ):
             changed = copy.deepcopy(baseline)
             changed[key] = value
             with self.assertRaises(ValueError):

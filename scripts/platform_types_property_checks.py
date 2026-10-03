@@ -128,7 +128,11 @@ def run_checks() -> dict[str, Any]:
         baseline_digest = oracle.semantic_digest(baseline_value)
         path, replacement = rng.choice(mutation_table[kind])
         candidate = copy.deepcopy(baseline_value)
-        if isinstance(replacement, str) and len(path) == 1 and path[0].endswith("_digest"):
+        if (
+            isinstance(replacement, str)
+            and len(path) == 1
+            and path[0].endswith("_digest")
+        ):
             replacement = digest(f"{kind}:{'.'.join(path)}:{index}")
         elif isinstance(replacement, str) and path in {
             ("manifest_id",),
@@ -164,9 +168,7 @@ def run_checks() -> dict[str, Any]:
         "generatedMapOperationCount": generated_map["operationCount"],
         "generatedMapCandidateCommit": binding["commit"],
         "generatedMapCandidateTree": binding["tree"],
-        "generatedMapPublicApiInventorySha256": binding[
-            "publicApiInventorySha256"
-        ],
+        "generatedMapPublicApiInventorySha256": binding["publicApiInventorySha256"],
         "generatedMapDetailedImplementationMapSha256": binding[
             "detailedImplementationMapSha256"
         ],

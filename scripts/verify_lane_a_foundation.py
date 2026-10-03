@@ -10,7 +10,9 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parent))
 from lane_a_foundation_lib import *  # noqa: F403
 from platform_types_public_api import PublicApiInventoryError
-from platform_types_public_api import verify_repository as verify_platform_types_public_api
+from platform_types_public_api import (
+    verify_repository as verify_platform_types_public_api,
+)
 
 
 def main() -> int:

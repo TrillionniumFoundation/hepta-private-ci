@@ -209,13 +209,13 @@ jobs:
           set -euo pipefail
           out="$RUNNER_TEMP/hepta-long-horizon-measurement"
           data="$RUNNER_TEMP/hepta-long-horizon-data"
-          mkdir -p "$out"
+          mkdir -p "$out" "$data"
           { git rev-parse HEAD HEAD^{tree}; rustc --version; uname -sm; } > "$out/environment.txt"
           cargo build --locked --release -p codex-hepta-learning-ledger --example target_host_qualification
           sha256sum target/release/examples/target_host_qualification > "$out/binary.sha256"
           HEPTA_LEDGER_QUAL_ROOT="$data" \
           HEPTA_LEDGER_RECORDS=100000 \
-          HEPTA_LEDGER_SEGMENT_LIMIT=1000 \
+          HEPTA_LEDGER_SEGMENT_RECORDS=1000 \
           HEPTA_TARGET_HOST_ID="github-ubuntu-24.04-arm-${{ matrix.lane }}" \
           HEPTA_KEEP_ARTIFACTS=1 \
             timeout 600s target/release/examples/target_host_qualification \

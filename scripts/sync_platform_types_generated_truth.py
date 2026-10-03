@@ -192,8 +192,7 @@ def sync_contract_registry(catalog: dict[str, Any]) -> None:
 
 def generated_block(catalog: dict[str, Any]) -> str:
     protocols = ", ".join(
-        f"`{row['id']}` V{row['version']}"
-        for row in catalog["protocols"]
+        f"`{row['id']}` V{row['version']}" for row in catalog["protocols"]
     )
     return f"""{MARKER_START}
 
@@ -266,7 +265,11 @@ def sync_global_truth() -> None:
     if not isinstance(rows, list):
         raise SyncError("global truth matrix has no modules")
     module = next(
-        (row for row in rows if isinstance(row, dict) and row.get("module") == "platform.types"),
+        (
+            row
+            for row in rows
+            if isinstance(row, dict) and row.get("module") == "platform.types"
+        ),
         None,
     )
     if module is None:
@@ -307,4 +310,6 @@ if __name__ == "__main__":
     try:
         raise SystemExit(main())
     except SyncError as error:
-        raise SystemExit(f"platform.types generated truth sync failed: {error}") from error
+        raise SystemExit(
+            f"platform.types generated truth sync failed: {error}"
+        ) from error

@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Validate completed libtest executions, not compiler success or log substrings."""
+
 from __future__ import annotations
 
 import json

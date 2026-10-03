@@ -43,7 +43,9 @@ def repo_file(root: Path, value: Any, label: str) -> Path:
     try:
         candidate.relative_to(root_resolved)
     except ValueError as error:
-        raise CompatibilityMatrixError(f"{label} escapes the repository: {value}") from error
+        raise CompatibilityMatrixError(
+            f"{label} escapes the repository: {value}"
+        ) from error
     if not candidate.is_file():
         raise CompatibilityMatrixError(f"{label} is missing: {value}")
     return candidate
@@ -72,7 +74,10 @@ def validate_consumer_matrix(
     root: Path,
     consumer_matrix: dict[str, Any],
 ) -> dict[str, dict[str, Any]]:
-    if consumer_matrix.get("schema") != "hepta.platform-types.consumer-qualification.v2":
+    if (
+        consumer_matrix.get("schema")
+        != "hepta.platform-types.consumer-qualification.v2"
+    ):
         raise CompatibilityMatrixError("consumer matrix schema mismatch")
     if consumer_matrix.get("module") != "platform.types":
         raise CompatibilityMatrixError("consumer matrix module mismatch")
@@ -234,9 +239,7 @@ def validate_values(
 
         semantic_id = nonempty_text(row, "semanticTypeId", label)
         if semantic_id in semantic_ids:
-            raise CompatibilityMatrixError(
-                f"duplicate semanticTypeId: {semantic_id}"
-            )
+            raise CompatibilityMatrixError(f"duplicate semanticTypeId: {semantic_id}")
         semantic_ids.add(semantic_id)
 
         for version_key in ("wireVersion", "semanticVersion"):

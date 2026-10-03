@@ -17,7 +17,9 @@ from scripts.platform_types_rama_lock_guard import (
 STABLE_VERSION = "0.3.0"
 
 
-def manifest_text(*, omit: str | None = None, override: dict[str, str] | None = None) -> str:
+def manifest_text(
+    *, omit: str | None = None, override: dict[str, str] | None = None
+) -> str:
     rows = ["[dependencies]"]
     override = override or {}
     for package in DIRECT_MANIFEST_PACKAGES:
@@ -104,9 +106,7 @@ class RamaLockGuardTests(unittest.TestCase):
     def test_nonexact_direct_constraint_is_rejected(self):
         with self.assertRaises(RamaLockError):
             self.validate_fixture(
-                manifest_text(
-                    override={"rama-core": f"{EXPECTED_VERSION}, <0.4.0"}
-                ),
+                manifest_text(override={"rama-core": f"{EXPECTED_VERSION}, <0.4.0"}),
                 lock_text(),
             )
 

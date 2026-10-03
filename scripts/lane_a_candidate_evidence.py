@@ -135,9 +135,13 @@ def write_diagnostics(args: argparse.Namespace) -> None:
         "candidateIdentitySha256": hashlib.sha256(canonical(identity)).hexdigest(),
         "generatedAtUtc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         "outcomes": outcomes,
-        "allRequiredChecksPassed": all(value == "success" for value in outcomes.values()),
+        "allRequiredChecksPassed": all(
+            value == "success" for value in outcomes.values()
+        ),
         "authoritativeQualification": False,
-        "receiptEmissionExpected": all(value == "success" for value in outcomes.values()),
+        "receiptEmissionExpected": all(
+            value == "success" for value in outcomes.values()
+        ),
         "provenanceFiles": files,
         "github": {
             "runId": os.environ.get("GITHUB_RUN_ID"),
@@ -223,11 +227,15 @@ def self_test() -> None:
         except EvidenceError:
             pass
         else:
-            raise EvidenceError("self-test accepted an interchangeable or overclaiming receipt")
+            raise EvidenceError(
+                "self-test accepted an interchangeable or overclaiming receipt"
+            )
 
 
 def add_identity_arguments(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--candidate-kind", choices=sorted(CANDIDATE_KINDS), required=True)
+    parser.add_argument(
+        "--candidate-kind", choices=sorted(CANDIDATE_KINDS), required=True
+    )
     parser.add_argument("--expected-sha", required=True)
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--base-sha")

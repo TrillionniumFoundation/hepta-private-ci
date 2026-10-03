@@ -18,7 +18,9 @@ from platform_types_candidate_support import CandidateBundleError, parse_named_v
 
 
 def add_identity_arguments(parser: argparse.ArgumentParser) -> None:
-    parser.add_argument("--candidate-kind", choices=sorted(CANDIDATE_KINDS), required=True)
+    parser.add_argument(
+        "--candidate-kind", choices=sorted(CANDIDATE_KINDS), required=True
+    )
     parser.add_argument("--expected-sha", required=True)
     parser.add_argument("--source-sha", required=True)
     parser.add_argument("--base-sha")

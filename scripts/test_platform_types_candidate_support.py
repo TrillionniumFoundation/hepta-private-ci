@@ -61,7 +61,9 @@ class EvidenceContainmentTests(unittest.TestCase):
                 root=self.root,
             )
 
-    @unittest.skipIf(os.name == "nt", "symlink creation is not portable on Windows runners")
+    @unittest.skipIf(
+        os.name == "nt", "symlink creation is not portable on Windows runners"
+    )
     def test_rejects_symlink_evidence(self) -> None:
         link = self.root / "evidence" / "linked.json"
         link.symlink_to(self.outside)

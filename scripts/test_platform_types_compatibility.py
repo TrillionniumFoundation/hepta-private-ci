@@ -1,4 +1,5 @@
 """Compatibility verifier regressions use synthetic metadata only."""
+
 from __future__ import annotations
 
 import copy

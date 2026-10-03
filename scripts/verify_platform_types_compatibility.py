@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Verify the closed platform.types compatibility and mandatory-consumer matrix."""
+
 from __future__ import annotations
 
 import argparse
@@ -44,7 +45,9 @@ def strings(value: Any, name: str, *, nonempty: bool = True) -> list[str]:
     require(
         isinstance(value, list)
         and all(isinstance(item, str) and item for item in value),
-        f"{name} must be a non-empty string array" if nonempty else f"{name} must be a string array",
+        f"{name} must be a non-empty string array"
+        if nonempty
+        else f"{name} must be a string array",
     )
     if nonempty:
         require(bool(value), f"{name} must not be empty")
@@ -58,7 +61,9 @@ def evidence_path(root: Path, relative: str) -> Path:
     try:
         candidate.relative_to(root.resolve())
     except ValueError as error:
-        raise CompatibilityError(f"evidence path escapes repository: {relative}") from error
+        raise CompatibilityError(
+            f"evidence path escapes repository: {relative}"
+        ) from error
     require(candidate.is_file(), f"compatibility evidence missing: {relative}")
     return candidate
 
@@ -119,35 +124,66 @@ def verify(
 
     consumer_ids = _consumer_ids(consumer_matrix)
     mandatory = strings(matrix.get("mandatoryConsumers"), "mandatoryConsumers")
-    optional = strings(matrix.get("optionalConsumers"), "optionalConsumers", nonempty=False)
-    require(mandatory == consumer_ids, "mandatory consumer set/order differs from consumer matrix")
-    require(optional == [], "optional consumers must be explicitly empty for this qualification")
+    optional = strings(
+        matrix.get("optionalConsumers"), "optionalConsumers", nonempty=False
+    )
+    require(
+        mandatory == consumer_ids,
+        "mandatory consumer set/order differs from consumer matrix",
+    )
+    require(
+        optional == [],
+        "optional consumers must be explicitly empty for this qualification",
+    )
 
     rows = matrix.get("protocols")
     require(isinstance(rows, list), "compatibility protocol rows required")
     catalog_ids = [row.get("id") for row in catalog_rows if isinstance(row, dict)]
     matrix_ids = [row.get("id") for row in rows if isinstance(row, dict)]
-    require(matrix_ids == catalog_ids, "compatibility protocol set/order differs from Rust catalog")
+    require(
+        matrix_ids == catalog_ids,
+        "compatibility protocol set/order differs from Rust catalog",
+    )
 
     covered_consumers: set[str] = set()
     report_rows = []
     for catalog_row, row in zip(catalog_rows, rows, strict=True):
-        require(isinstance(catalog_row, dict) and isinstance(row, dict), "protocol row must be an object")
+        require(
+            isinstance(catalog_row, dict) and isinstance(row, dict),
+            "protocol row must be an object",
+        )
         identifier = catalog_row.get("id")
-        require(isinstance(identifier, str) and identifier, "catalog protocol id required")
+        require(
+            isinstance(identifier, str) and identifier, "catalog protocol id required"
+        )
         for key in ("semanticTypeId", "codecOwner", "compatibility"):
             require(row.get(key) == catalog_row.get(key), f"{identifier}: {key} drift")
         version = catalog_row.get("version")
-        require(type(version) is int and version > 0, f"{identifier}: invalid catalog version")
-        require(row.get("semanticVersion") == version, f"{identifier}: semantic version drift")
+        require(
+            type(version) is int and version > 0,
+            f"{identifier}: invalid catalog version",
+        )
+        require(
+            row.get("semanticVersion") == version,
+            f"{identifier}: semantic version drift",
+        )
         wire_version = row.get("wireVersion")
-        require(type(wire_version) is int and wire_version > 0, f"{identifier}: wire version required")
+        require(
+            type(wire_version) is int and wire_version > 0,
+            f"{identifier}: wire version required",
+        )
         for key in ("migration", "rollbackStrategy"):
             value = row.get(key)
-            require(isinstance(value, str) and len(value.strip()) >= 24, f"{identifier}: {key} is incomplete")
+            require(
+                isinstance(value, str) and len(value.strip()) >= 24,
+                f"{identifier}: {key} is incomplete",
+            )
 
         consumers = strings(row.get("consumers"), f"{identifier}.consumers")
-        require(set(consumers) <= set(mandatory), f"{identifier}: unknown/non-mandatory consumer")
+        require(
+            set(consumers) <= set(mandatory),
+            f"{identifier}: unknown/non-mandatory consumer",
+        )
         covered_consumers.update(consumers)
 
         vectors = strings(row.get("goldenVectors"), f"{identifier}.goldenVectors")
@@ -164,14 +200,25 @@ def verify(
             )
 
         assurances = row.get("assurances")
-        require(isinstance(assurances, dict), f"{identifier}: assurances object required")
-        require(tuple(assurances) == REQUIRED_ASSURANCES, f"{identifier}: assurance dimensions/order drifted")
+        require(
+            isinstance(assurances, dict), f"{identifier}: assurances object required"
+        )
+        require(
+            tuple(assurances) == REQUIRED_ASSURANCES,
+            f"{identifier}: assurance dimensions/order drifted",
+        )
         assurance_report = {}
         for dimension in REQUIRED_ASSURANCES:
             assurance = assurances[dimension]
-            require(isinstance(assurance, dict), f"{identifier}.{dimension}: object required")
+            require(
+                isinstance(assurance, dict),
+                f"{identifier}.{dimension}: object required",
+            )
             status = assurance.get("status")
-            require(status in ("evidenced", "not_applicable"), f"{identifier}.{dimension}: invalid status")
+            require(
+                status in ("evidenced", "not_applicable"),
+                f"{identifier}.{dimension}: invalid status",
+            )
             if status == "evidenced":
                 assurance_consumers = strings(
                     assurance.get("consumers"),
@@ -248,7 +295,9 @@ def main() -> int:
     try:
         report = verify(
             read_object(args.catalog),
-            read_object(root / args.matrix if not args.matrix.is_absolute() else args.matrix),
+            read_object(
+                root / args.matrix if not args.matrix.is_absolute() else args.matrix
+            ),
             read_object(
                 root / args.consumer_matrix
                 if not args.consumer_matrix.is_absolute()

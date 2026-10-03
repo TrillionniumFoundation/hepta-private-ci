@@ -51,7 +51,9 @@ def _git(*arguments: str) -> str:
             timeout=30,
         )
     except (OSError, subprocess.SubprocessError) as error:
-        raise ImplementationMapError(f"git {' '.join(arguments)} failed: {error}") from error
+        raise ImplementationMapError(
+            f"git {' '.join(arguments)} failed: {error}"
+        ) from error
     if result.returncode:
         raise ImplementationMapError(
             f"git {' '.join(arguments)} failed: {result.stderr.strip()}"
@@ -70,10 +72,14 @@ def _candidate_binding(expected_sha: str | None) -> dict[str, str]:
     commit = _git("rev-parse", "HEAD")
     tree = _git("rev-parse", "HEAD^{tree}")
     if SHA_RE.fullmatch(commit) is None or SHA_RE.fullmatch(tree) is None:
-        raise ImplementationMapError("Git did not return exact SHA-1 candidate identity")
+        raise ImplementationMapError(
+            "Git did not return exact SHA-1 candidate identity"
+        )
     if expected_sha is not None:
         if SHA_RE.fullmatch(expected_sha) is None:
-            raise ImplementationMapError("--expected-sha must be an exact 40-character commit")
+            raise ImplementationMapError(
+                "--expected-sha must be an exact 40-character commit"
+            )
         if commit != expected_sha:
             raise ImplementationMapError(
                 f"candidate commit mismatch: expected {expected_sha}, got {commit}"
@@ -185,7 +191,10 @@ def _validate_detailed_map(generated: dict[str, Any]) -> None:
         raise ImplementationMapError("detailed public API reference is stale")
 
     claim = detailed.get("claimBoundary")
-    if not isinstance(claim, dict) or claim.get("publicApiInventoryComplete") is not True:
+    if (
+        not isinstance(claim, dict)
+        or claim.get("publicApiInventoryComplete") is not True
+    ):
         raise ImplementationMapError(
             "detailed map must claim publicApiInventoryComplete only after verification"
         )

@@ -50,8 +50,7 @@ def digest(label: str) -> str:
 def reverse_objects(value: Any) -> Any:
     if isinstance(value, dict):
         return {
-            key: reverse_objects(item)
-            for key, item in reversed(list(value.items()))
+            key: reverse_objects(item) for key, item in reversed(list(value.items()))
         }
     if isinstance(value, list):
         return [reverse_objects(item) for item in value]
@@ -148,7 +147,9 @@ def leaf_paths(value: dict[str, Any]) -> list[tuple[str, ...]]:
     return result
 
 
-def changed(value: dict[str, Any], path: tuple[str, ...], replacement: Any) -> dict[str, Any]:
+def changed(
+    value: dict[str, Any], path: tuple[str, ...], replacement: Any
+) -> dict[str, Any]:
     result = copy.deepcopy(value)
     set_path(result, path, replacement)
     return result

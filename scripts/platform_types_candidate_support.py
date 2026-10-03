@@ -96,7 +96,9 @@ def require_outcome_set(outcomes: dict[str, str]) -> None:
     if actual != REQUIRED_OUTCOMES:
         missing = sorted(REQUIRED_OUTCOMES - actual)
         extra = sorted(actual - REQUIRED_OUTCOMES)
-        raise CandidateBundleError(f"outcome set mismatch; missing={missing}, extra={extra}")
+        raise CandidateBundleError(
+            f"outcome set mismatch; missing={missing}, extra={extra}"
+        )
 
 
 def _contained_evidence_path(supplied: str, *, root: Path) -> tuple[Path, str]:

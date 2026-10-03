@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Check the compiled Prompt V2 capacity against schema and frozen HPTC V1."""
+
 import argparse
 import hashlib
 import json
@@ -7,15 +8,21 @@ from pathlib import Path
 
 
 def verify(catalog, schema):
-    protocols = [p for p in catalog["protocols"] if p["id"] == "PromptDeliveryObservationV2"]
+    protocols = [
+        p for p in catalog["protocols"] if p["id"] == "PromptDeliveryObservationV2"
+    ]
     if len(protocols) != 1:
         raise ValueError("exactly one Prompt V2 descriptor required")
-    fields = [f for f in protocols[0]["fields"] if f["name"] == "observed_token_positions"]
+    fields = [
+        f for f in protocols[0]["fields"] if f["name"] == "observed_token_positions"
+    ]
     if len(fields) != 1 or fields[0]["wireType"] != "required_nullable_u32_array":
         raise ValueError("Prompt positions field descriptor")
     maximum = fields[0].get("maximumEncodedBytes")
     if type(maximum) is not int or maximum != 4096 * 4:
-        raise ValueError("Prompt decoded-u32 payload must fit the frozen 4096-item array")
+        raise ValueError(
+            "Prompt decoded-u32 payload must fit the frozen 4096-item array"
+        )
     shapes = schema["properties"]["observed_token_positions"]["oneOf"]
     arrays = [s for s in shapes if s.get("type") == "array"]
     if len(arrays) != 1:
@@ -31,8 +38,12 @@ def verify(catalog, schema):
         raise ValueError("position ordering invariant missing")
     if "observed_token_positions" not in schema["required"]:
         raise ValueError("nullable is not optional")
-    return {"maximumPositions": maximum // 4, "maximumDecodedU32Bytes": maximum,
-            "hptcContainerMaximum": 4096, "status": "passed"}
+    return {
+        "maximumPositions": maximum // 4,
+        "maximumDecodedU32Bytes": maximum,
+        "hptcContainerMaximum": 4096,
+        "status": "passed",
+    }
 
 
 def main():
@@ -41,11 +52,15 @@ def main():
     parser.add_argument("--report", type=Path, required=True)
     args = parser.parse_args()
     root = Path(__file__).resolve().parents[1]
-    path = root / "codex-rs/hepta-types/schemas/prompt-delivery-observation-v2.schema.json"
+    path = (
+        root / "codex-rs/hepta-types/schemas/prompt-delivery-observation-v2.schema.json"
+    )
     result = verify(json.loads(args.catalog.read_text()), json.loads(path.read_text()))
-    result.update(schema="hepta.platform-types.semantic-bounds.v1",
-                  schemaSha256=hashlib.sha256(path.read_bytes()).hexdigest(),
-                  catalogSha256=hashlib.sha256(args.catalog.read_bytes()).hexdigest())
+    result.update(
+        schema="hepta.platform-types.semantic-bounds.v1",
+        schemaSha256=hashlib.sha256(path.read_bytes()).hexdigest(),
+        catalogSha256=hashlib.sha256(args.catalog.read_bytes()).hexdigest(),
+    )
     args.report.write_text(json.dumps(result, indent=2) + "\n")
     print("Prompt V2 compiled catalog/schema/HPTC capacity parity: passed")
 

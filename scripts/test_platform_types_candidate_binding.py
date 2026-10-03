@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Regression tests using real Git objects; no mocked ref resolution."""
+
 from __future__ import annotations
 
 import json
@@ -43,7 +44,10 @@ class CandidateBindingTests(unittest.TestCase):
         self.git("tag", "-a", "frozen", "-m", "candidate tag")
         for ref in (self.source, "frozen"):
             with self.subTest(ref=ref):
-                self.assertEqual(binding.resolve_binding(self.root, ref, self.base)["source_sha"], self.source)
+                self.assertEqual(
+                    binding.resolve_binding(self.root, ref, self.base)["source_sha"],
+                    self.source,
+                )
 
     def test_checkout_mismatch_rejected(self) -> None:
         with self.assertRaisesRegex(ValueError, "checkout"):
@@ -54,7 +58,13 @@ class CandidateBindingTests(unittest.TestCase):
             binding.resolve_binding(self.root, "not-a-ref", "main")
 
     def test_invalid_refs_rejected(self) -> None:
-        for ref in ("", "--help", "candidate\ninjected=x", "candidate\x00", "candidate\x7f"):
+        for ref in (
+            "",
+            "--help",
+            "candidate\ninjected=x",
+            "candidate\x00",
+            "candidate\x7f",
+        ):
             with self.subTest(ref=ref), self.assertRaises(ValueError):
                 binding.resolve_binding(self.root, ref, "main")
 
@@ -68,7 +78,10 @@ class CandidateBindingTests(unittest.TestCase):
 
     def test_untracked_evidence_is_not_a_source_change(self) -> None:
         (self.root / "diagnostic.json").write_text("{}\n", encoding="utf-8")
-        self.assertEqual(binding.verify_checkout(self.root, self.source, self.base)["source_sha"], self.source)
+        self.assertEqual(
+            binding.verify_checkout(self.root, self.source, self.base)["source_sha"],
+            self.source,
+        )
 
     def test_verifier_requires_full_commit_ids(self) -> None:
         tree = self.git("rev-parse", "HEAD^{tree}")
@@ -81,7 +94,9 @@ class CandidateBindingTests(unittest.TestCase):
         self.git("checkout", "--detach", self.source)
         self.git("branch", "-f", "main", self.source)
         self.git("branch", "-f", "candidate", self.base)
-        actual = binding.verify_checkout(self.root, result["source_sha"], result["base_sha"])
+        actual = binding.verify_checkout(
+            self.root, result["source_sha"], result["base_sha"]
+        )
         self.assertEqual(actual["base_sha"], self.base)
         with self.assertRaisesRegex(ValueError, "checkout"):
             binding.resolve_binding(self.root, "candidate", "main")
@@ -93,19 +108,38 @@ class CandidateBindingTests(unittest.TestCase):
 
     def cli(self, source: str) -> subprocess.CompletedProcess[str]:
         return subprocess.run(
-            [sys.executable, str(Path(binding.__file__).resolve()), "--repo-root", str(self.root),
-             "resolve", "--source-ref", source, "--base-ref", "main",
-             "--output", str(self.root / "binding.json"),
-             "--github-output", str(self.root / "github-output")],
-            text=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE, check=False,
+            [
+                sys.executable,
+                str(Path(binding.__file__).resolve()),
+                "--repo-root",
+                str(self.root),
+                "resolve",
+                "--source-ref",
+                source,
+                "--base-ref",
+                "main",
+                "--output",
+                str(self.root / "binding.json"),
+                "--github-output",
+                str(self.root / "github-output"),
+            ],
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.PIPE,
+            check=False,
         )
 
     def test_successful_cli_emits_only_validated_object_ids(self) -> None:
         result = self.cli("candidate")
         self.assertEqual(result.returncode, 0, result.stderr)
         payload = json.loads((self.root / "binding.json").read_text(encoding="utf-8"))
-        outputs = dict(line.split("=", 1) for line in (self.root / "github-output").read_text().splitlines())
-        self.assertEqual(set(outputs), {"source_sha", "source_tree", "base_sha", "base_tree"})
+        outputs = dict(
+            line.split("=", 1)
+            for line in (self.root / "github-output").read_text().splitlines()
+        )
+        self.assertEqual(
+            set(outputs), {"source_sha", "source_tree", "base_sha", "base_tree"}
+        )
         for key, value in outputs.items():
             self.assertRegex(value, binding.SHA_RE)
             self.assertEqual(value, payload[key])

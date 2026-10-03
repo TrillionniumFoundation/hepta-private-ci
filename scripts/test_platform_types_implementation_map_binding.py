@@ -52,10 +52,7 @@ class ExactImplementationMapBindingTests(unittest.TestCase):
             value["coveragePolicy"],
             "closed_world_exact_pub_use_and_pub_mod_exports",
         )
-        by_operation = {
-            row["operation"]: row
-            for row in value["operations"]
-        }
+        by_operation = {row["operation"]: row for row in value["operations"]}
         expected = {
             "registered_numeric_conversion_v2": (
                 "numeric_registry_v2",

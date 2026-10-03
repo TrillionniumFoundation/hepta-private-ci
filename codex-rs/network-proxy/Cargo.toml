@@ -65,3 +65,8 @@ windows-sys = { version = "0.52", features = [
 
 [target.'cfg(windows)'.dev-dependencies]
 codex-windows-sandbox = { path = "../windows-sandbox-rs" }
+
+# Exact transitive constraints prevent incompatible stable Rama support upgrades.
+# scripts/platform_types_rama_lock_guard.py checks these deliberate dependencies.
+[package.metadata.cargo-shear]
+ignored = ["rama-error", "rama-macros", "rama-utils"]

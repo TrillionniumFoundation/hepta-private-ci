@@ -201,7 +201,9 @@ def candidate_identity(
         raise VerificationError(f"unsupported candidate kind: {candidate_kind!r}")
     candidate_sha = _exact_commit(candidate_sha, "candidate SHA")
     if SHA1.fullmatch(candidate_tree) is None:
-        raise VerificationError("candidate tree must be an exact 40-character Git tree id")
+        raise VerificationError(
+            "candidate tree must be an exact 40-character Git tree id"
+        )
     if git_value("rev-parse", f"{candidate_sha}^{{tree}}") != candidate_tree:
         raise VerificationError("candidate SHA/tree mismatch")
     source_sha = _exact_commit(source_sha, "source SHA")
@@ -377,9 +379,7 @@ def self_test() -> None:
             raise VerificationError("self-test accepted invalid capability evidence")
 
     current, tree = exact_source(None)
-    identity = candidate_identity(
-        "source-head", current, tree, source_sha=current
-    )
+    identity = candidate_identity("source-head", current, tree, source_sha=current)
     if identity["kind"] != "source-head" or identity["sourceSha"] != current:
         raise VerificationError("source-head identity self-test failed")
     for invalid in (
@@ -395,4 +395,6 @@ def self_test() -> None:
         except VerificationError:
             pass
         else:
-            raise VerificationError("self-test accepted interchangeable candidate identity")
+            raise VerificationError(
+                "self-test accepted interchangeable candidate identity"
+            )

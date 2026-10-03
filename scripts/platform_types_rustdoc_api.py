@@ -82,13 +82,19 @@ class _Normalizer:
         index = document.get("index")
         paths = document.get("paths")
         root = str(document.get("root"))
-        if not isinstance(index, dict) or not isinstance(paths, dict) or root not in index:
+        if (
+            not isinstance(index, dict)
+            or not isinstance(paths, dict)
+            or root not in index
+        ):
             raise RustdocApiError("rustdoc JSON is missing root/index/paths")
         self.document = document
         self.index: dict[str, Any] = {str(key): value for key, value in index.items()}
         self.paths: dict[str, Any] = {str(key): value for key, value in paths.items()}
         root_item = self.index[root]
-        if not isinstance(root_item, dict) or not isinstance(root_item.get("crate_id"), int):
+        if not isinstance(root_item, dict) or not isinstance(
+            root_item.get("crate_id"), int
+        ):
             raise RustdocApiError("rustdoc root has no crate_id")
         self.crate_id = root_item["crate_id"]
         self.all_paths: dict[str, str] = {}
@@ -191,7 +197,9 @@ class _Normalizer:
                 {
                     "path": path,
                     "kind": kind,
-                    "fingerprintSha256": hashlib.sha256(_canonical(signature)).hexdigest(),
+                    "fingerprintSha256": hashlib.sha256(
+                        _canonical(signature)
+                    ).hexdigest(),
                 }
             )
         if not items:
@@ -225,10 +233,9 @@ def diff(old: dict[str, Any], new: dict[str, Any]) -> dict[str, Any]:
     for path in sorted(set(old_by_path) & set(new_by_path)):
         before = old_by_path[path]
         after = new_by_path[path]
-        if (
-            before.get("kind") != after.get("kind")
-            or before.get("fingerprintSha256") != after.get("fingerprintSha256")
-        ):
+        if before.get("kind") != after.get("kind") or before.get(
+            "fingerprintSha256"
+        ) != after.get("fingerprintSha256"):
             changed.append(
                 {
                     "path": path,

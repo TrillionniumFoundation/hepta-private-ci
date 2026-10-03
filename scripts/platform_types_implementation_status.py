@@ -60,12 +60,12 @@ This is the single current entry point for implementation and qualification stat
 ## Current checked-in posture
 
 ```yaml
-spec_version: {source['spec_version']}
+spec_version: {source["spec_version"]}
 source_sha: generated-by-ci
 main_sha: generated-by-ci
 owner_migration: {owner_migration}
 required_workflow_runs: generated-by-ci
-qualification: {source['qualification']}
+qualification: {source["qualification"]}
 approval_sha: null
 activation: false
 generated_at: generated-by-ci
@@ -153,7 +153,9 @@ def git_output(*args: str) -> str:
 
 
 def exact_status(source: dict[str, Any]) -> dict[str, Any]:
-    source_sha = os.environ.get("PLATFORM_TYPES_SOURCE_SHA") or git_output("rev-parse", "HEAD")
+    source_sha = os.environ.get("PLATFORM_TYPES_SOURCE_SHA") or git_output(
+        "rev-parse", "HEAD"
+    )
     main_sha = os.environ.get("PLATFORM_TYPES_MAIN_SHA")
     if not main_sha:
         try:

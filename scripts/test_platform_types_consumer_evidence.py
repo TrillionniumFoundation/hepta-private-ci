@@ -1,10 +1,15 @@
 """Synthetic command logs exercise evidence binding; no native tests are run."""
+
 import json
 from pathlib import Path
 import tempfile
 import unittest
 
-from platform_types_consumer_evidence import EXPECTED_CHECKS, TEST_CHECKS, collect_checks
+from platform_types_consumer_evidence import (
+    EXPECTED_CHECKS,
+    TEST_CHECKS,
+    collect_checks,
+)
 
 
 class ConsumerEvidenceTests(unittest.TestCase):
@@ -38,8 +43,7 @@ class ConsumerEvidenceTests(unittest.TestCase):
         self.assertEqual(len(tests), 8)
         self.assertTrue(
             all(
-                row["executedTests"] == 2
-                and len(row["testCountSha256"]) == 64
+                row["executedTests"] == 2 and len(row["testCountSha256"]) == 64
                 for row in tests
             )
         )
@@ -100,11 +104,9 @@ class ConsumerEvidenceTests(unittest.TestCase):
         self.assertEqual(errors, [])
         self.assertEqual(len(checks), 24)
         self.assertEqual(
-            next(
-                row
-                for row in checks
-                if row["name"] == "consumer-compile"
-            )["exitCode"],
+            next(row for row in checks if row["name"] == "consumer-compile")[
+                "exitCode"
+            ],
             19,
         )
         self.assertEqual(checks[-1]["name"], "ndu-lint")

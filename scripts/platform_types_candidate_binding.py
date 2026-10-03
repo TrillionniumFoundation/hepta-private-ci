@@ -5,6 +5,7 @@ This is read-only with respect to tracked source. Output files are evidence,
 not qualification receipts. No shell expansion, fallback ref, or moving branch
 is used after resolution. A failed invocation never emits GitHub job outputs.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -22,8 +23,11 @@ SHA_RE = re.compile(r"[0-9a-f]{40}(?:[0-9a-f]{24})?\Z")
 
 def git(root: Path, *args: str) -> str:
     result = subprocess.run(
-        ["git", "-C", str(root), *args], check=False, text=True,
-        stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+        ["git", "-C", str(root), *args],
+        check=False,
+        text=True,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
     )
     if result.returncode:
         raise ValueError(f"git {args[0]} failed: {result.stderr.strip()}")
@@ -31,14 +35,22 @@ def git(root: Path, *args: str) -> str:
 
 
 def checked_ref(value: str) -> str:
-    if not value or value.startswith("-") or any(ord(c) < 32 or ord(c) == 127 for c in value):
-        raise ValueError("reference must be nonempty and contain no option prefix or control characters")
+    if (
+        not value
+        or value.startswith("-")
+        or any(ord(c) < 32 or ord(c) == 127 for c in value)
+    ):
+        raise ValueError(
+            "reference must be nonempty and contain no option prefix or control characters"
+        )
     return value
 
 
 def resolve_commit(root: Path, reference: str) -> str:
     reference = checked_ref(reference)
-    commit = git(root, "rev-parse", "--verify", "--end-of-options", reference + "^{commit}")
+    commit = git(
+        root, "rev-parse", "--verify", "--end-of-options", reference + "^{commit}"
+    )
     if not SHA_RE.fullmatch(commit):
         raise ValueError("Git did not return one full commit object ID")
     return commit
@@ -46,7 +58,13 @@ def resolve_commit(root: Path, reference: str) -> str:
 
 def clean_tracked_source(root: Path) -> None:
     # --ignore-submodules=none prevents a changed submodule from being hidden.
-    if git(root, "status", "--porcelain", "--untracked-files=no", "--ignore-submodules=none"):
+    if git(
+        root,
+        "status",
+        "--porcelain",
+        "--untracked-files=no",
+        "--ignore-submodules=none",
+    ):
         raise ValueError("tracked source is dirty; refusing candidate binding")
 
 
@@ -75,7 +93,10 @@ def verify_checkout(root: Path, source_sha: str, base_sha: str) -> dict[str, str
     clean_tracked_source(root)
     if resolve_commit(root, "HEAD") != source_sha:
         raise ValueError("checkout differs from the frozen source candidate")
-    if resolve_commit(root, source_sha) != source_sha or resolve_commit(root, base_sha) != base_sha:
+    if (
+        resolve_commit(root, source_sha) != source_sha
+        or resolve_commit(root, base_sha) != base_sha
+    ):
         raise ValueError("frozen commit object is unavailable")
     return {
         "source_sha": source_sha,
@@ -89,7 +110,9 @@ def atomic_json(path: Path, payload: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     name: str | None = None
     try:
-        with tempfile.NamedTemporaryFile("w", encoding="utf-8", dir=path.parent, delete=False) as stream:
+        with tempfile.NamedTemporaryFile(
+            "w", encoding="utf-8", dir=path.parent, delete=False
+        ) as stream:
             name = stream.name
             json.dump(payload, stream, sort_keys=True, indent=2)
             stream.write("\n")

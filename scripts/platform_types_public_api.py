@@ -62,18 +62,30 @@ SYMBOL_OWNERS: dict[str, tuple[str, str]] = {
     "MAX_MANIFEST_TIMESTAMP_BYTES_V1": ("manifests", "manifest_contract_primitives_v1"),
     "MAX_MANIFEST_VERSION_BYTES_V1": ("manifests", "manifest_contract_primitives_v1"),
     "MAX_OPERATING_UNIT_BYTES_V1": ("manifests", "manifest_contract_primitives_v1"),
-    "MAX_PROMPT_REJECTION_REASON_BYTES_V1": ("prompt_delivery", "prompt_delivery_observation_v1"),
-    "MAX_PROMPT_TOKEN_POSITIONS_V1": ("prompt_delivery", "prompt_delivery_observation_v1"),
+    "MAX_PROMPT_REJECTION_REASON_BYTES_V1": (
+        "prompt_delivery",
+        "prompt_delivery_observation_v1",
+    ),
+    "MAX_PROMPT_TOKEN_POSITIONS_V1": (
+        "prompt_delivery",
+        "prompt_delivery_observation_v1",
+    ),
     "MAX_REGISTRY_AGGREGATE_DEFINITION_BYTES_V1": ("registry", "contract_registry_v1"),
     "MAX_REGISTRY_DEFINITION_BYTES_V1": ("registry", "contract_registry_v1"),
     "MAX_REGISTRY_ENTRIES_V1": ("registry", "contract_registry_v1"),
     "ManifestContractErrorV1": ("manifests", "manifest_contract_primitives_v1"),
-    "NUMERIC_PROFILE_DEFINITION_VERSION_V1": ("numeric_profile", "numeric_profile_definition_v1"),
+    "NUMERIC_PROFILE_DEFINITION_VERSION_V1": (
+        "numeric_profile",
+        "numeric_profile_definition_v1",
+    ),
     "NonAuthorizingPosture": ("identity", "raw_authority_ingress"),
     "NumericConversionError": ("numeric_profile", "numeric_profile_definition_v1"),
     "NumericConversionReceiptV1": ("numeric_conversion", "rescale_signal"),
     "NumericErrorBoundV1": ("numeric_conversion", "rescale_signal"),
-    "NumericProfileDefinitionError": ("numeric_profile", "numeric_profile_definition_v1"),
+    "NumericProfileDefinitionError": (
+        "numeric_profile",
+        "numeric_profile_definition_v1",
+    ),
     "NumericProfileDefinitionV1": ("numeric_profile", "numeric_profile_definition_v1"),
     "NumericProfileV1": ("numeric_profile", "numeric_profile_definition_v1"),
     "NumericRoundingV1": ("numeric_profile", "numeric_profile_definition_v1"),
@@ -81,10 +93,19 @@ SYMBOL_OWNERS: dict[str, tuple[str, str]] = {
     "NumericSignalV1": ("numeric_conversion", "rescale_signal"),
     "ProbabilityQ32": ("fixed", "fixed_q32"),
     "PromptDeliveryErrorV1": ("prompt_delivery", "prompt_delivery_observation_v1"),
-    "PromptDeliveryObservationV1": ("prompt_delivery", "prompt_delivery_observation_v1"),
-    "PromptDeliveryRejectReasonV1": ("prompt_delivery", "prompt_delivery_observation_v1"),
+    "PromptDeliveryObservationV1": (
+        "prompt_delivery",
+        "prompt_delivery_observation_v1",
+    ),
+    "PromptDeliveryRejectReasonV1": (
+        "prompt_delivery",
+        "prompt_delivery_observation_v1",
+    ),
     "RandomStreamManifestV1": ("manifests", "random_stream_manifest_v1"),
-    "RegisteredNumericConversionReceiptV1": ("numeric_conversion", "rescale_signal_registered"),
+    "RegisteredNumericConversionReceiptV1": (
+        "numeric_conversion",
+        "rescale_signal_registered",
+    ),
     "RegistryDefinitionV1": ("registry", "contract_registry_v1"),
     "RegistryError": ("registry", "contract_registry_v1"),
     "RegistryKindV1": ("registry", "contract_registry_v1"),
@@ -222,10 +243,7 @@ def expected_inventory() -> dict[str, Any]:
                 "sourceModule": module,
                 "sourcePath": f"codex-rs/hepta-types/src/{module}.rs",
                 "exportCount": len(owned),
-                "exports": {
-                    row["symbol"]: row["operation"]
-                    for row in owned
-                },
+                "exports": {row["symbol"]: row["operation"] for row in owned},
             }
         )
     return {
@@ -271,11 +289,15 @@ def _validate_implementation_map(inventory: dict[str, Any]) -> None:
             "implementation map publicApiInventory reference is missing or stale"
         )
     operations = value.get("operations")
-    present = {
-        row.get("operation")
-        for row in operations
-        if isinstance(row, dict) and isinstance(row.get("operation"), str)
-    } if isinstance(operations, list) else set()
+    present = (
+        {
+            row.get("operation")
+            for row in operations
+            if isinstance(row, dict) and isinstance(row.get("operation"), str)
+        }
+        if isinstance(operations, list)
+        else set()
+    )
     required = {
         operation
         for module in inventory["sourceModules"]
@@ -288,7 +310,10 @@ def _validate_implementation_map(inventory: dict[str, Any]) -> None:
             + ", ".join(missing)
         )
     claim = value.get("claimBoundary")
-    if not isinstance(claim, dict) or claim.get("publicApiInventoryComplete") is not True:
+    if (
+        not isinstance(claim, dict)
+        or claim.get("publicApiInventoryComplete") is not True
+    ):
         raise PublicApiInventoryError(
             "implementation map must machine-claim publicApiInventoryComplete=true"
         )
@@ -318,10 +343,14 @@ def _validate_truth_matrix(inventory: dict[str, Any]) -> None:
         raise PublicApiInventoryError("invalid platform.types qualification state")
     anchors = value.get("evidenceAnchors")
     if not isinstance(anchors, list) or not anchors:
-        raise PublicApiInventoryError("platform.types truth matrix needs evidence anchors")
+        raise PublicApiInventoryError(
+            "platform.types truth matrix needs evidence anchors"
+        )
     for path in anchors:
         if not isinstance(path, str) or not (ROOT / path).is_file():
-            raise PublicApiInventoryError(f"missing truth-matrix evidence anchor: {path}")
+            raise PublicApiInventoryError(
+                f"missing truth-matrix evidence anchor: {path}"
+            )
 
 
 def _validate_prose_references() -> None:
@@ -374,7 +403,9 @@ def main() -> int:
             write_inventory()
         inventory = verify_repository()
     except PublicApiInventoryError as error:
-        print(f"platform.types public API verification failed: {error}", file=sys.stderr)
+        print(
+            f"platform.types public API verification failed: {error}", file=sys.stderr
+        )
         return 1
     print(
         "platform.types public API inventory: "

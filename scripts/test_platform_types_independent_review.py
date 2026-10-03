@@ -60,9 +60,7 @@ class IndependentReviewTests(unittest.TestCase):
         )
 
     def test_pr_author_and_candidate_commit_actor_cannot_approve(self):
-        result = self.evaluate(
-            [review(1, "pr-author"), review(2, "implementer")]
-        )
+        result = self.evaluate([review(1, "pr-author"), review(2, "implementer")])
         self.assertEqual(result["status"], "failed")
         reasons = {
             row["reviewer"]: row["rejectionReason"]
@@ -72,9 +70,7 @@ class IndependentReviewTests(unittest.TestCase):
         self.assertIn(reasons["implementer"], {"commit_author", "commit_committer"})
 
     def test_approval_must_bind_exact_current_head(self):
-        result = self.evaluate(
-            [review(1, "independent-reviewer", commit_id=OLD)]
-        )
+        result = self.evaluate([review(1, "independent-reviewer", commit_id=OLD)])
         self.assertEqual(result["status"], "failed")
         self.assertEqual(
             result["rejectedDecisiveReviews"][0]["rejectionReason"],

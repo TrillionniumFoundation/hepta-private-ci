@@ -150,7 +150,9 @@ def _request_json(url: str, token: str) -> tuple[Any, dict[str, str]]:
             headers = {key: value for key, value in response.headers.items()}
             return json.loads(response.read().decode("utf-8")), headers
     except (urllib.error.URLError, TimeoutError, json.JSONDecodeError) as error:
-        raise IndependentReviewError(f"GitHub API request failed for {url}: {error}") from error
+        raise IndependentReviewError(
+            f"GitHub API request failed for {url}: {error}"
+        ) from error
 
 
 def _collection(url: str, token: str) -> list[dict[str, Any]]:
@@ -159,7 +161,9 @@ def _collection(url: str, token: str) -> list[dict[str, Any]]:
     while True:
         separator = "&" if "?" in url else "?"
         value, _ = _request_json(f"{url}{separator}per_page=100&page={page}", token)
-        if not isinstance(value, list) or not all(isinstance(row, dict) for row in value):
+        if not isinstance(value, list) or not all(
+            isinstance(row, dict) for row in value
+        ):
             raise IndependentReviewError(f"GitHub API collection required for {url}")
         rows.extend(value)
         if len(value) < 100:
@@ -184,7 +188,9 @@ def main() -> int:
         if args.pr_number <= 0:
             raise IndependentReviewError("pull request number must be positive")
         if SHA1.fullmatch(args.head_sha) is None:
-            raise IndependentReviewError("head SHA must be an exact lowercase commit id")
+            raise IndependentReviewError(
+                "head SHA must be an exact lowercase commit id"
+            )
         token = os.environ.get("GITHUB_TOKEN")
         if not token:
             raise IndependentReviewError("GITHUB_TOKEN is required")
@@ -217,9 +223,7 @@ def main() -> int:
         json.dumps(result, indent=2, sort_keys=True) + "\n", encoding="utf-8"
     )
     if result.get("status") == "passed":
-        reviewers = ", ".join(
-            row["reviewer"] for row in result["qualifyingApprovals"]
-        )
+        reviewers = ", ".join(row["reviewer"] for row in result["qualifyingApprovals"])
         print(f"platform.types independent review: passed ({reviewers})")
         return 0
     print(

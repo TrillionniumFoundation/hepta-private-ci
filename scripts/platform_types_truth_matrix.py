@@ -230,9 +230,7 @@ def verify_truth(root: Path = ROOT) -> dict[str, Any]:
         )
     canonical = json.dumps(actual, indent=2, ensure_ascii=False) + "\n"
     if path.read_text(encoding="utf-8") != canonical:
-        raise TruthMatrixError(
-            "TRUTH_MATRIX_V2.json is not canonical JSON"
-        )
+        raise TruthMatrixError("TRUTH_MATRIX_V2.json is not canonical JSON")
     return expected
 
 

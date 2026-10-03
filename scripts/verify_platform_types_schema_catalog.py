@@ -69,9 +69,13 @@ def _validate_closed_objects(value: Any, location: str) -> None:
         return
     if value.get("type") == "object" and isinstance(value.get("properties"), dict):
         if value.get("additionalProperties") is not False:
-            raise SchemaCatalogError(f"{location}: object must deny additional properties")
+            raise SchemaCatalogError(
+                f"{location}: object must deny additional properties"
+            )
         properties = set(value["properties"])
-        required = set(_unique_strings(value.get("required", []), f"{location}.required"))
+        required = set(
+            _unique_strings(value.get("required", []), f"{location}.required")
+        )
         if not required <= properties:
             missing = sorted(required - properties)
             raise SchemaCatalogError(
@@ -87,7 +91,9 @@ def _schema_path(relative: str) -> Path:
     try:
         candidate.relative_to(root)
     except ValueError as error:
-        raise SchemaCatalogError(f"schema path escapes crate root: {relative}") from error
+        raise SchemaCatalogError(
+            f"schema path escapes crate root: {relative}"
+        ) from error
     if not candidate.is_file():
         raise SchemaCatalogError(f"schema file missing: {relative}")
     return candidate
@@ -140,7 +146,9 @@ def _identity_metadata(
     return declared
 
 
-def _resolve_local_ref(schema: dict[str, Any], node: Any, location: str) -> dict[str, Any]:
+def _resolve_local_ref(
+    schema: dict[str, Any], node: Any, location: str
+) -> dict[str, Any]:
     if not isinstance(node, dict):
         raise SchemaCatalogError(f"{location}: schema node must be an object")
     seen: set[str] = set()
@@ -148,13 +156,17 @@ def _resolve_local_ref(schema: dict[str, Any], node: Any, location: str) -> dict
         ref = node["$ref"]
         prefix = "#/$defs/"
         if not ref.startswith(prefix):
-            raise SchemaCatalogError(f"{location}: only local $defs references are supported")
-        name = ref[len(prefix):]
+            raise SchemaCatalogError(
+                f"{location}: only local $defs references are supported"
+            )
+        name = ref[len(prefix) :]
         if name in seen:
             raise SchemaCatalogError(f"{location}: recursive identity schema reference")
         seen.add(name)
         definitions = schema.get("$defs")
-        if not isinstance(definitions, dict) or not isinstance(definitions.get(name), dict):
+        if not isinstance(definitions, dict) or not isinstance(
+            definitions.get(name), dict
+        ):
             raise SchemaCatalogError(f"{location}: unresolved schema reference {ref}")
         node = definitions[name]
     return node
@@ -170,10 +182,14 @@ def _schema_node_for_identity_path(
         is_array = raw_segment.endswith("[]")
         segment = raw_segment[:-2] if is_array else raw_segment
         if not segment:
-            raise SchemaCatalogError(f"{identifier}: invalid identity path {identity_path!r}")
+            raise SchemaCatalogError(
+                f"{identifier}: invalid identity path {identity_path!r}"
+            )
         node = _resolve_local_ref(schema, node, f"{identifier}.{identity_path}")
         properties = node.get("properties")
-        if not isinstance(properties, dict) or not isinstance(properties.get(segment), dict):
+        if not isinstance(properties, dict) or not isinstance(
+            properties.get(segment), dict
+        ):
             raise SchemaCatalogError(
                 f"{identifier}: identity path does not resolve: {identity_path}"
             )
@@ -195,7 +211,9 @@ def _schema_node_for_identity_path(
     return _resolve_local_ref(schema, node, f"{identifier}.{identity_path}")
 
 
-def _schema_accepts_string(schema: dict[str, Any], node: dict[str, Any], location: str) -> bool:
+def _schema_accepts_string(
+    schema: dict[str, Any], node: dict[str, Any], location: str
+) -> bool:
     node = _resolve_local_ref(schema, node, location)
     if node.get("type") == "string":
         return True
@@ -219,7 +237,9 @@ def _validate_protocol(protocol: dict[str, Any]) -> dict[str, Any] | None:
     if not isinstance(fields, list) or not fields:
         raise SchemaCatalogError(f"{identifier}: descriptor fields required")
 
-    identity_paths = _identity_metadata(identifier, fields, protocol.get("identityFields"))
+    identity_paths = _identity_metadata(
+        identifier, fields, protocol.get("identityFields")
+    )
 
     field_names: list[str] = []
     required_fields: set[str] = set()
@@ -244,8 +264,13 @@ def _validate_protocol(protocol: dict[str, Any]) -> dict[str, Any] | None:
     schema = _read_object(path)
     if schema.get("$schema") != JSON_SCHEMA_DIALECT:
         raise SchemaCatalogError(f"{identifier}: JSON Schema dialect mismatch")
-    if schema.get("type") != "object" or schema.get("additionalProperties") is not False:
-        raise SchemaCatalogError(f"{identifier}: top-level schema must be a closed object")
+    if (
+        schema.get("type") != "object"
+        or schema.get("additionalProperties") is not False
+    ):
+        raise SchemaCatalogError(
+            f"{identifier}: top-level schema must be a closed object"
+        )
     properties = schema.get("properties")
     if not isinstance(properties, dict):
         raise SchemaCatalogError(f"{identifier}: properties object required")
@@ -294,6 +319,7 @@ def _validate_protocol(protocol: dict[str, Any]) -> dict[str, Any] | None:
         "identityProfiles": sorted(set(identity_paths.values())),
         "status": "passed",
     }
+
 
 def verify_catalog(catalog: dict[str, Any]) -> dict[str, Any]:
     protocols = catalog.get("protocols")
@@ -368,7 +394,9 @@ def self_test() -> None:
         }
         if set(candidate["required"]) != expected_required:
             raise SchemaCatalogError("self-test required drift")
-        if candidate["properties"]["kind"].get("const") != _transport_kind(protocol["id"]):
+        if candidate["properties"]["kind"].get("const") != _transport_kind(
+            protocol["id"]
+        ):
             raise SchemaCatalogError("self-test kind drift")
         _validate_closed_objects(candidate, "self-test")
 
