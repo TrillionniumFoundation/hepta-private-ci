@@ -118,22 +118,22 @@ script_mod! {
         width: Fit, height: Fit
         spacing: 4
         padding: Inset{ top: 4, bottom: 4, left: 8, right: 8 }
-        draw_icon +: { color: #666666 }
+        draw_icon +: { color: (mod.widgets.COLOR_TEXT_SECONDARY) }
         icon_walk: Walk{ width: 10, height: 10 }
         draw_text +: {
             text_style: theme.font_regular { font_size: 10.0, line_spacing: 1.2 }
-            color: #666666
-            color_hover: #666666
-            color_down: #666666
+            color: (mod.widgets.COLOR_TEXT_SECONDARY)
+            color_hover: (mod.widgets.COLOR_TEXT_SECONDARY)
+            color_down: (mod.widgets.COLOR_TEXT_SECONDARY)
         }
         draw_bg +: {
             color: (COLOR_BG_PREVIEW)
             color_hover: (COLOR_BG_PREVIEW_HOVER)
-            color_down: #A8DBBF
+            color_down: (mod.widgets.COLOR_BG_PREVIEW_HOVER)
             border_size: 1.0
-            border_color: #CCCCCC
-            border_color_hover: #CCCCCC
-            border_color_down: #CCCCCC
+            border_color: (mod.widgets.COLOR_SECONDARY_DARKER)
+            border_color_hover: (mod.widgets.COLOR_SECONDARY_DARKER)
+            border_color_down: (mod.widgets.COLOR_SECONDARY_DARKER)
             border_radius: 4.0
         }
     }

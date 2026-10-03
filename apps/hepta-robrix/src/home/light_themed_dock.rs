@@ -12,7 +12,8 @@ script_mod! {
         // max_vertical: theme.splitter_max_vertical
 
         draw_bg +: {
-            color: COLOR_SECONDARY
+            hepta_owned_material: uniform(1.0)
+            color: COLOR_PRIMARY_DARKER
             color_hover: COLOR_ROBRIX_PURPLE
             color_drag: COLOR_ROBRIX_PURPLE
 
@@ -23,7 +24,7 @@ script_mod! {
                 // `color_bg_app`), transitions to purple on hover/drag.
                 // Mildly rounded corners soften the edges where panels meet.
                 let body_color = mix(
-                    #4D4D4D
+                    self.color
                     mix(self.color_hover, self.color_drag, self.drag)
                     self.hover
                 )
@@ -57,7 +58,7 @@ script_mod! {
                 }
 
                 // Grab bar: white when hovered/dragged, otherwise matches body
-                let grab_color = mix(self.color, #fff, self.hover)
+                let grab_color = mix(self.color, COLOR_TEXT, self.hover)
                 return sdf.fill_keep(grab_color)
             }
         }
@@ -103,9 +104,9 @@ script_mod! {
         width: 10.0
         margin: Inset{ right: theme.space_2, left: -1 }
         draw_button +: {
-            color: #0
-            color_hover: #FE8610
-            color_active: COLOR_PRIMARY
+            color: COLOR_TEXT
+            color_hover: COLOR_FG_DANGER_RED
+            color_active: COLOR_BUTTON_INK
         }
 
         animator: Animator{
@@ -134,32 +135,33 @@ script_mod! {
         height: Fill
 
         align: Align{x: 0.0, y: 0.5}
-        padding: 9
+        padding: Inset{left: 18, right: 18, top: 10, bottom: 10}
         margin: 0
 
         close_button: mod.widgets.RobrixTabCloseButton {}
         draw_text +: {
             text_style: theme.font_regular {}
 
-            color: #000
-            color_hover: #fe8610
-            color_active: COLOR_PRIMARY
+            color: COLOR_TEXT
+            color_hover: COLOR_ACTIVE_PRIMARY
+            color_active: COLOR_BUTTON_INK
         }
 
         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
             // Light blue-ish color, de-saturated from COLOR_ACTIVE_PRIMARY
-            color: #E1EEFA
-            color_2: #E1EEFA
+            color: COLOR_PRIMARY
+            color_2: COLOR_PRIMARY
             // A slightly darker shade of the tab color for hover visibility
-            color_hover: #C8DDEF
-            color_2_hover: #C8DDEF
+            color_hover: COLOR_SECONDARY
+            color_2_hover: COLOR_SECONDARY
             // Active (selected) tabs are a deeper blue, with a vertical gradient
             // to a slightly lighter blue.
-            color_active: #0660FE
-            color_2_active: #398CFE
+            color_active: COLOR_ACTIVE_PRIMARY
+            color_2_active: COLOR_ACTIVE_PRIMARY_DARKER
             // Remove the border and rounded corners from the default Tab style
-            border_size: 0.0
-            border_radius: 3.0
+            border_size: 1.0
+            border_radius: 8.0
         }
 
         animator: Animator{
@@ -212,17 +214,18 @@ script_mod! {
 
         draw_drag +: {
             draw_depth: 10
-            color: #x0
+            color: (mod.widgets.COLOR_TEXT)
         }
         draw_fill +: {
-            color: COLOR_PRIMARY * 0.96
+            color: COLOR_PRIMARY_DARKER
         }
         draw_bg +: {
-            color: COLOR_PRIMARY * 0.96
+            hepta_owned_material: uniform(1.0)
+            color: COLOR_PRIMARY_DARKER
         }
 
         width: Fill
-        height: max(theme.tab_height, 25.)
+        height: 42.0
 
         scroll_bars: ScrollBarsTabs {
             show_scroll_x: true

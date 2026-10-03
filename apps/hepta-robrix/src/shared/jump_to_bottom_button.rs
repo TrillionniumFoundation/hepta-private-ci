@@ -27,11 +27,11 @@ script_mod! {
                 margin: Inset{bottom: 8},
                 draw_icon +: {
                     svg: (mod.widgets.ICO_JUMP_TO_BOTTOM),
-                    color: #888,
+                    color: (mod.widgets.COLOR_TEXT_SECONDARY),
                     // TODO: once Makepad button support draw_icon hover/down animated states, reenable this.
                     // color: #BBB,
-                    // color_hover: #000,
-                    // color_down: #000,
+                    // color_hover: (mod.widgets.COLOR_TEXT),
+                    // color_down: (mod.widgets.COLOR_TEXT),
                     // get_color: fn() -> vec4 {
                     //     return mix(self.color, self.color_hover, self.hover)
                     // }

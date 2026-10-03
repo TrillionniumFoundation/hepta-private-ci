@@ -98,6 +98,8 @@ def framework_compat():
     (OUT / 'makepad-framework-compat.json').write_text(json.dumps(receipt, indent=2))
     shutil.copyfile(ROOT / 'scripts/robrix/patches/makepad-493d23a-web-startup.patch',
                     OUT / 'makepad-framework-compat.patch')
+    shutil.copyfile(ROOT / 'scripts/robrix/patches/makepad-493d23a-nav.patch',
+                    OUT / 'makepad-nav.patch')
 
 
 def native_tests():
@@ -105,9 +107,12 @@ def native_tests():
                    'hepta_web_startup_tests', '--', '--nocapture'], 'makepad-web-startup-tests.log', 3)
     checked_tests(['cargo', '+1.96.0', 'test', '--locked', '-p', 'makepad-widgets',
                    '--lib', 'hepta_font_tests', '--', '--nocapture'], 'makepad-font-cache-tests.log', 1)
-    for module, minimum in [('hepta_console::tests', 4),
+    checked_tests(['cargo', '+1.96.0', 'test', '--locked', '-p', 'makepad-widgets',
+                   '--lib', 'hepta_nav_tests', '--', '--nocapture'], 'makepad-nav-tests.log', 3)
+    for module, minimum in [('shared::hepta_theme::tests', 5),
+                            ('hepta_console::tests', 4),
                             ('home::main_desktop_ui::hepta_dock_tests', 3),
-                            ('app::ui_fixture::tests', 2),
+                            ('app::ui_fixture::tests', 4),
                             ('ui_dispatch::tests', 3),
                             ('timeline_channel::tests', 3)]:
         checked_tests(['cargo', '+1.96.0', 'test', '--locked', '--features', 'ui-fixture',
@@ -288,7 +293,7 @@ def native_capture():
     from render_checks import login_pixels
     binary = APP / 'target/debug/robrix'
     run(['cargo', '+1.96.0', 'build', '--locked', '--features', 'ui-fixture', '--bin', 'robrix'], log='native-build.log')
-    for scene in ('login', 'console'):
+    for scene in ('login', 'console', 'chat-titanium', 'chat-prism', 'chat-ceramic'):
         with (OUT / f'native-{scene}.log').open('w') as log:
             resource_name = f'hepta-fixture-{os.getpid()}-{scene}'
             process = subprocess.Popen([str(binary), '--hepta-ui-fixture', scene], cwd=APP,

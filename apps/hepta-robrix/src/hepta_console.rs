@@ -7,12 +7,13 @@ script_mod! {
     use mod.widgets.*
 
     mod.widgets.HeptaConsole = #(HeptaConsole::register_widget(vm)) {
+        ..mod.widgets.HeptaPanel
         width: Fill, height: Fill
         flow: Down
         padding: 24
         spacing: 16
         show_bg: true
-        draw_bg.color: (COLOR_PRIMARY)
+        draw_bg +: { hepta_owned_material: uniform(1.0), color: (COLOR_PRIMARY) }
         scroll_bars: mod.widgets.ScrollBars {
             show_scroll_x: false, show_scroll_y: true
         }
@@ -20,7 +21,7 @@ script_mod! {
             text: "Console"
             draw_text +: {color: (COLOR_TEXT), text_style: theme.font_bold {font_size: 22}}
         }
-        refresh := Button { text: "Refresh authenticated status" }
+        refresh := RobrixNeutralIconButton { text: "Refresh authenticated status" }
         status := Label {
             width: Fill, height: Fit
             text: "Console is not configured."

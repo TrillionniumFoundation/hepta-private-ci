@@ -15,7 +15,8 @@ script_mod! {
     mod.widgets.ICON_EYE_OPEN   = crate_resource("self://resources/icons/eye_open.svg")
     mod.widgets.ICON_EYE_CLOSED = crate_resource("self://resources/icons/eye_closed.svg")
 
-    mod.widgets.SsoButton = RoundedView {
+    mod.widgets.SsoButton = #(SsoButton::register_widget(vm)) {
+        ..mod.widgets.RoundedView
         width: Fit,
         height: Fit,
         cursor: MouseCursor.Hand,
@@ -23,8 +24,9 @@ script_mod! {
         padding: 10,
         margin: Inset{ left: 16.6, right: 16.6, top: 10, bottom: 10}
         draw_bg +: {
-            border_size: 0.5
-            border_color: #6c6c6c
+            hepta_owned_material: uniform(1.0)
+            border_size: 1.0
+            border_color: (COLOR_SECONDARY_DARKER)
             color: (COLOR_PRIMARY)
         }
     }
@@ -50,6 +52,7 @@ script_mod! {
         align: Align{x: 0.5, y: 0.5}
         show_bg: true,
         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
             color: COLOR_SECONDARY
         }
 
@@ -58,7 +61,7 @@ script_mod! {
             flow: Down, // Required for vertical scrolling to work.
             align: Align{x: 0.5, y: 0.5}
             show_bg: true,
-            draw_bg.color: (COLOR_SECONDARY)
+            draw_bg +: { hepta_owned_material: uniform(1.0), color: (COLOR_SECONDARY) }
 
             // allow the view to be scrollable but hide the actual scroll bar
             scroll_bars: {
@@ -79,6 +82,7 @@ script_mod! {
 
                 show_bg: true,
                 draw_bg +: {
+            hepta_owned_material: uniform(1.0)
                     color: (COLOR_SECONDARY)
                     border_radius: 6.0
                 }
@@ -144,11 +148,12 @@ script_mod! {
                                 spacing: 0
                                 margin: 0
                                 draw_bg +: {
+            hepta_owned_material: uniform(1.0)
                                     color: (COLOR_SECONDARY * 1.05)
                                 }
                                 draw_icon +: {
                                     svg: (mod.widgets.ICON_EYE_CLOSED),
-                                    color: #8C8C8C,
+                                    color: (COLOR_TEXT_SECONDARY),
                                 }
                                 icon_walk: Walk{width: 18, height: 18, margin: 0}
                                 text: ""
@@ -162,11 +167,12 @@ script_mod! {
                                 spacing: 0
                                 margin: 0
                                 draw_bg +: {
+            hepta_owned_material: uniform(1.0)
                                     color: (COLOR_SECONDARY * 1.05)
                                 }
                                 draw_icon +: {
                                     svg: (mod.widgets.ICON_EYE_OPEN),
-                                    color: #8C8C8C,
+                                    color: (COLOR_TEXT_SECONDARY),
                                 }
                                 icon_walk: Walk{width: 18, height: 18, margin: 0}
                                 text: ""
@@ -200,19 +206,19 @@ script_mod! {
                             spacing: 0.0,
                             align: Align{x: 0.5, y: 0.5} // center horizontally and vertically
 
-                            LineH { draw_bg.color: #C8C8C8 }
+                            LineH { draw_bg.color: (COLOR_SECONDARY_DARKER) }
 
                             Label {
                                 width: Fit, height: Fit
                                 padding: 0
                                 draw_text +: {
-                                    color: #8C8C8C
+                                    color: (COLOR_TEXT_SECONDARY)
                                     text_style: REGULAR_TEXT {font_size: 9}
                                 }
                                 text: "Homeserver URL (optional)"
                             }
 
-                            LineH { draw_bg.color: #C8C8C8 }
+                            LineH { draw_bg.color: (COLOR_SECONDARY_DARKER) }
                         }
                     }
                     
@@ -229,7 +235,7 @@ script_mod! {
                     LineH {
                         width: 275
                         margin: Inset{bottom: -5}
-                        draw_bg.color: #C8C8C8
+                        draw_bg.color: (COLOR_SECONDARY_DARKER)
                     }
 
                     Label {
@@ -286,19 +292,19 @@ script_mod! {
                         spacing: 0.0,
                         align: Align{x: 0.5, y: 0.5} // center horizontally and vertically
 
-                        LineH { draw_bg.color: #C8C8C8 }
+                        LineH { draw_bg.color: (COLOR_SECONDARY_DARKER) }
 
                         Label {
                             width: Fit, height: Fit
                             padding: Inset{left: 1, right: 1, top: 0, bottom: 0}
                             draw_text +: {
-                                color: #x6c6c6c
+                                color: (COLOR_TEXT_SECONDARY)
                                 text_style: REGULAR_TEXT {}
                             }
                             text: "Don't have an account?"
                         }
 
-                        LineH { draw_bg.color: #C8C8C8 }
+                        LineH { draw_bg.color: (COLOR_SECONDARY_DARKER) }
                     }
                     
                     signup_button := RobrixIconButton {
@@ -317,6 +323,50 @@ script_mod! {
                     content := mod.widgets.LoginStatusModal {}
                 }
             }
+        }
+    }
+}
+
+/// An image-bearing SSO tile participating in Makepad's existing navigation tree.
+#[derive(Script, ScriptHook, Widget)]
+pub struct SsoButton {
+    #[deref] view: View,
+    #[live(true)] enabled: bool,
+}
+
+impl Widget for SsoButton {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        match event.hits(cx, self.view.area()) {
+            Hit::KeyFocus(_) | Hit::KeyFocusLost(_) => {
+                let border = if cx.has_key_focus(self.view.area()) {
+                    crate::shared::styles::COLOR_ACTIVE_PRIMARY
+                } else { crate::shared::hepta_theme::rgba(0x4c4269ff) };
+                script_apply_eval!(cx, self.view, { draw_bg +: { border_color: #(border) } });
+                self.view.redraw(cx);
+            }
+            _ => {}
+        }
+        self.view.handle_event(cx, event, scope);
+    }
+
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        self.view.draw_walk(cx, scope, walk)?;
+        if self.enabled && self.view.visible {
+            cx.add_nav_stop(self.view.area(), NavRole::TextInput, Inset::default());
+        }
+        DrawStep::done()
+    }
+}
+
+impl SsoButtonRef {
+    fn activated(&self, actions: &Actions) -> bool {
+        let Some(inner) = self.borrow() else { return false; };
+        if !inner.enabled { return false; }
+        match actions.find_widget_action(inner.view.widget_uid()).cast() {
+            ViewAction::FingerUp(event) => event.is_over && event.is_primary_hit() && event.was_tap(),
+            // Key-up avoids repeated activation while a key is held down.
+            ViewAction::KeyUp(event) => matches!(event.key_code, KeyCode::ReturnKey | KeyCode::Space),
+            _ => false,
         }
     }
 }
@@ -465,13 +515,15 @@ impl MatchEvent for LoginScreen {
                 Some(LoginAction::SsoPending(pending)) => {
                     let mask = if *pending { 1.0 } else { 0.0 };
                     let cursor = if *pending { MouseCursor::NotAllowed } else { MouseCursor::Hand };
-                    for view_ref in self.view_set(cx, button_set).iter() {
-                        let Some(mut view_mut) = view_ref.borrow_mut() else { continue };
+                    for path in button_set {
+                        let tile = self.view.sso_button(cx, path);
+                        let Some(mut view_mut) = tile.borrow_mut() else { continue };
+                        view_mut.enabled = !pending;
                         let mut image = view_mut.image(cx, ids!(image));
                         script_apply_eval!(cx, image, {
                             draw_bg.mask: #(mask)
                         });
-                        view_mut.cursor = Some(cursor);
+                        view_mut.view.cursor = Some(cursor);
                     }
                     self.sso_pending = *pending;
                     self.redraw(cx);
@@ -506,8 +558,9 @@ impl MatchEvent for LoginScreen {
         }
 
         // Handle any of the SSO login buttons being clicked
-        for (view_ref, brand) in self.view_set(cx, button_set).iter().zip(&provider_brands) {
-            if view_ref.finger_up(actions).is_some() && !self.sso_pending {
+        for (path, brand) in button_set.iter().zip(&provider_brands) {
+            let tile = self.view.sso_button(cx, path);
+            if tile.activated(actions) && !self.sso_pending {
                 submit_async_request(MatrixRequest::SpawnSSOServer{
                     identity_provider_id: format!("oidc-{}",brand),
                     brand: brand.to_string(),

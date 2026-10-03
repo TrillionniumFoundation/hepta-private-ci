@@ -313,7 +313,7 @@ script_mod! {
                 width: 16,
                 height: 16,
                 margin: Inset{ left: -6, right: 4 }
-                draw_bg.color: #888
+                draw_bg.color: (mod.widgets.COLOR_TEXT_SECONDARY)
                 draw_bg.border_radius: 1.5 // less rounded
             }
 
@@ -498,7 +498,7 @@ script_mod! {
                 height: Fit,
                 draw_text +: {
                     text_style: REGULAR_TEXT {font_size: 9},
-                    color: #888,
+                    color: (mod.widgets.COLOR_TEXT_SECONDARY),
                 }
                 text: "Loading..."
             }

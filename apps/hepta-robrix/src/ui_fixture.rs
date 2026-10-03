@@ -2,6 +2,9 @@
 //! Startup returns before keyring, filesystem state, Matrix and console owners.
 use super::*;
 
+#[path = "ui_fixture_chat.rs"]
+pub(crate) mod chat;
+
 #[cfg(any(target_arch = "wasm32", test))]
 #[path = "ui_fixture_observation.rs"]
 pub(super) mod observation;
@@ -10,6 +13,7 @@ pub(super) mod observation;
 struct FixtureState {
     active: bool,
     console: bool,
+    chat: bool,
     select_timer: Timer,
 }
 
@@ -26,8 +30,18 @@ pub(super) fn start(app: &mut App, cx: &mut Cx) -> bool {
     let state = cx.global::<FixtureState>();
     state.active = true;
     state.console = mode == "console";
+    state.chat = mode.starts_with("chat-");
     state.select_timer = timer;
-    app.app_state.logged_in = mode == "console";
+    app.app_state.logged_in = mode == "console" || mode.starts_with("chat-");
+    if mode.starts_with("chat-") {
+        use crate::shared::hepta_theme::{select, HeptaTheme};
+        select(cx, match mode.as_str() {
+            "chat-titanium" => HeptaTheme::DeepSpaceTitanium,
+            "chat-ceramic" => HeptaTheme::ObsidianCeramic,
+            _ => HeptaTheme::PolarPrism,
+        });
+        chat::populate();
+    }
     app.ui
         .window(cx, ids!(main_window))
         .set_title(cx, "Hepta · UI fixture · no live accounts");
@@ -52,15 +66,18 @@ fn opaque_color_shader(cx: &mut Cx, view: &View) -> bool {
     color.iter().all(|value| value.is_finite()) && color[3] == 1.0
 }
 
-pub(super) fn active(cx: &mut Cx) -> bool {
+pub(crate) fn active(cx: &mut Cx) -> bool {
     cx.global::<FixtureState>().active
 }
 
+pub(crate) fn chat_active(cx: &mut Cx) -> bool { cx.global::<FixtureState>().chat }
+
 pub(super) fn event(cx: &mut Cx, event: &Event) {
     let state = cx.global::<FixtureState>();
-    if state.active && state.console && state.select_timer.is_event(event).is_some() {
+    if state.active && state.select_timer.is_event(event).is_some() {
         state.select_timer = Timer::default();
-        cx.action(NavigationBarAction::OpenConsole);
+        if state.console { cx.action(NavigationBarAction::OpenConsole); }
+        else if state.chat { chat::select_room(cx); }
         cx.redraw_all();
     }
 }
@@ -75,7 +92,7 @@ fn selected_mode() -> Result<Option<String>, &'static str> {
         return Err("fixture cannot be combined with real owner configuration");
     }
     let mode = args.get(1).ok_or("fixture mode missing")?;
-    if !matches!(mode.as_str(), "login" | "console") {
+    if !matches!(mode.as_str(), "login" | "console" | "chat-titanium" | "chat-prism" | "chat-ceramic") {
         return Err("unsupported fixture mode");
     }
     Ok(Some(mode.clone()))
@@ -110,7 +127,7 @@ fn browser_mode(query: &str) -> Result<Option<String>, &'static str> {
         return Err("fixture cannot be combined with other browser parameters");
     }
     let mode = selected[0].1;
-    if !matches!(mode, "login" | "console" | "login-usability") {
+    if !matches!(mode, "login" | "console" | "login-usability" | "chat-titanium" | "chat-prism" | "chat-ceramic") {
         return Err("unsupported fixture mode");
     }
     Ok(Some(mode.to_owned()))
@@ -119,6 +136,38 @@ fn browser_mode(query: &str) -> Result<Option<String>, &'static str> {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn actual_app_templates_compile_without_script_errors() {
+        let mut cx = Cx::new(Box::new(|_, _| {}));
+        cx.with_vm(|vm| {
+            vm.bx.captured_errors = Some(Vec::new());
+            let value = <App as AppMain>::script_mod(vm);
+            let _app = App::script_from_value(vm, value);
+            let errors = vm.take_errors();
+            assert!(errors.is_empty(), "actual app template errors: {errors:#?}");
+        });
+    }
+
+    #[test]
+    fn theme_preferences_migrate_and_round_trip_in_existing_app_state() {
+        use crate::shared::hepta_theme::HeptaTheme;
+        for input in ["{}", r#"{"hepta_theme":"unknown-future-theme"}"#] {
+            let prefs: AppPreferences = serde_json::from_str(input).unwrap();
+            assert_eq!(prefs.hepta_theme, HeptaTheme::PolarPrism);
+        }
+        for choice in [HeptaTheme::DeepSpaceTitanium, HeptaTheme::PolarPrism, HeptaTheme::ObsidianCeramic] {
+            let mut state = AppState::default();
+            state.app_prefs.hepta_theme = choice;
+            let saved = persistence::serialize_app_state(&state).unwrap();
+            let restored: AppState = serde_json::from_slice(&saved).unwrap();
+            assert_eq!(restored.app_prefs, state.app_prefs);
+            let mut cx = Cx::new(Box::new(|_, _| {}));
+            restored.app_prefs.on_hepta_theme_changed(&mut cx);
+            assert_eq!(*cx.global::<HeptaTheme>(), choice);
+            assert!(!restored.logged_in);
+        }
+    }
 
     #[test]
     fn prelogin_background_requires_real_color_shader() {

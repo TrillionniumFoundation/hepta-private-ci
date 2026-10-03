@@ -42,7 +42,7 @@ script_mod! {
             padding: 0,
             flow: Flow.Right { wrap: false },
             draw_text +: {
-                color: #x0,
+                color: (mod.widgets.COLOR_TEXT),
                 text_style: TITLE_TEXT { font_size: 10}
             }
             text: ""

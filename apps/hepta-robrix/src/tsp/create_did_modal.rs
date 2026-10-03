@@ -40,7 +40,7 @@ script_mod! {
                 padding: 10,
                 draw_text +: {
                     text_style: REGULAR_TEXT {font_size: 12},
-                    color: #000
+                    color: (mod.widgets.COLOR_TEXT)
                 }
                 empty_text: "Identity Username",
                 autocapitalize: None,
@@ -53,7 +53,7 @@ script_mod! {
                 padding: 10,
                 draw_text +: {
                     text_style: REGULAR_TEXT {font_size: 12},
-                    color: #000
+                    color: (mod.widgets.COLOR_TEXT)
                 }
                 empty_text: "Enter an alias (optional)",
             }

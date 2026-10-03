@@ -12,7 +12,7 @@ script_mod! {
         flow: Flow.Right{wrap: true},
         draw_text +: {
             text_style: TITLE_TEXT {font_size: 15},
-            color: #000
+            color: (COLOR_TEXT)
         }
     }
 
@@ -33,7 +33,7 @@ script_mod! {
         margin: 0.0,
         padding: 0.0, spacing: 0.0
         show_bg: true
-        draw_bg.color: (COLOR_DIVIDER_DARK)
+        draw_bg +: { hepta_owned_material: uniform(1.0), color: (COLOR_DIVIDER_DARK) }
     }
 
     mod.widgets.Filler = View { width: Fill, height: Fill }
@@ -59,6 +59,7 @@ script_mod! {
 
         show_bg: true
         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
             color: (COLOR_PRIMARY)
             border_radius: 4.0
         }
@@ -71,7 +72,7 @@ script_mod! {
         margin: Inset{bottom: 25}
         draw_text +: {
             text_style: TITLE_TEXT {font_size: 13},
-            color: #000
+            color: (COLOR_TEXT)
         }
     }
 
@@ -81,7 +82,7 @@ script_mod! {
         flow: Flow.Right{wrap: true}
         draw_text +: {
             text_style: REGULAR_TEXT {font_size: 11.5},
-            color: #000
+            color: (COLOR_TEXT)
         }
     }
 

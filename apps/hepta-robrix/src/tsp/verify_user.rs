@@ -32,7 +32,7 @@ script_mod! {
                 flow: Flow.Right{wrap: true}
                 draw_text +: {
                     text_style: USERNAME_TEXT_STYLE { font_size: 11.5 },
-                    color: #000
+                    color: (mod.widgets.COLOR_TEXT)
                 }
                 text: "TSP User Verification"
             }

@@ -16,6 +16,7 @@ script_mod! {
 
         show_bg: true,
         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
             color: (COLOR_PRIMARY)
             border_radius: 4.0
             border_color: (COLOR_SECONDARY)

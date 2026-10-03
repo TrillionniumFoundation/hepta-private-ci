@@ -38,7 +38,7 @@ def main():
         with sync_playwright() as playwright:
             browser = playwright.chromium.launch(args=['--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
             try:
-                for scene in ('login', 'console'):
+                for scene in ('login', 'console', 'chat-titanium', 'chat-prism', 'chat-ceramic'):
                     for label, width, height in [('wide', 1180, 760), ('narrow', 520, 760), ('short', 800, 560)]:
                         context = browser.new_context(viewport={'width': width, 'height': height}, device_scale_factor=1)
                         failures, messages, wasm, responses = [], [], [], []

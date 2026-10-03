@@ -33,12 +33,12 @@ script_mod! {
             main_window := Window {
                 window.inner_size: vec2(1280, 800)
                 window.title: "Hepta"
-                pass.clear_color: #FFFFFF00
+                pass.clear_color: #x07111c
                 caption_bar +: {
-                    draw_bg.color: #F3F3F3
+                    draw_bg +: {hepta_owned_material: uniform(1.0), color: COLOR_PRIMARY_DARKER}
                     caption_label +: {
                         label +: {
-                            draw_text +: { color: #0 }
+                            draw_text +: { color: COLOR_TEXT }
                             text: "Hepta"
                         }
                     }
@@ -57,6 +57,9 @@ script_mod! {
                     }
                     keyboard_min_shift: 12.0
 
+                    flow: Down
+                    theme_bar := HeptaThemeBar {}
+
                     overlay_container := View {
                         width: Fill, height: Fill,
                         flow: Overlay,
@@ -72,7 +75,7 @@ script_mod! {
                             visible: true
                             flow: Down
                             show_bg: true
-                            draw_bg.color: COLOR_PRIMARY
+                            draw_bg +: {hepta_owned_material: uniform(1.0), color: COLOR_PRIMARY}
                             login_screen := LoginScreen {}
                             open_hepta_console := Button { text: "Console setup" }
                         }
@@ -80,7 +83,7 @@ script_mod! {
                             visible: false
                             flow: Down
                             show_bg: true
-                            draw_bg.color: COLOR_PRIMARY
+                            draw_bg +: {hepta_owned_material: uniform(1.0), color: COLOR_PRIMARY}
                             back_to_matrix := Button { text: "Back to chat sign-in" }
                             CachedWidget { hepta_console_screen := mod.widgets.HeptaConsole {} }
                         }
@@ -194,7 +197,7 @@ impl ScriptHook for App {
 
 #[cfg(feature = "ui-fixture")]
 #[path = "ui_fixture.rs"]
-mod ui_fixture;
+pub(crate) mod ui_fixture;
 
 impl MatchEvent for App {
     fn handle_startup(&mut self, cx: &mut Cx) {
@@ -707,7 +710,7 @@ impl AppMain for App {
         // Order matters: base widgets first, then app widgets, then app UI.
         makepad_widgets::theme_mod(vm);
         script_eval!(vm, {
-            mod.theme = mod.themes.light
+            mod.theme = mod.themes.dark
         });
         makepad_widgets::widgets_mod(vm);
         makepad_code_editor::script_mod(vm);
@@ -762,6 +765,27 @@ impl AppMain for App {
         let scope = &mut Scope::with_data(&mut self.app_state);
         self.ui.handle_event(cx, event, scope);
         self.handle_lifecycle_event(cx, event);
+        if let Event::Actions(actions) = event {
+            use crate::shared::hepta_theme::HeptaTheme;
+            for (path, choice) in [
+                (ids!(theme_a), HeptaTheme::DeepSpaceTitanium),
+                (ids!(theme_b), HeptaTheme::PolarPrism),
+                (ids!(theme_c), HeptaTheme::ObsidianCeramic),
+            ] {
+                if self.ui.button(cx, path).clicked(actions) {
+                    self.app_state.app_prefs.hepta_theme = choice;
+                    self.app_state.app_prefs.on_hepta_theme_changed(cx);
+                    #[cfg(feature = "ui-fixture")]
+                    let persist = !ui_fixture::active(cx);
+                    #[cfg(not(feature = "ui-fixture"))]
+                    let persist = true;
+                    if persist { self.persist_runtime_state(cx, "theme selection"); }
+                }
+            }
+        }
+        if matches!(event, Event::Draw(_)) {
+            crate::shared::hepta_theme::paint(cx);
+        }
         #[cfg(all(feature = "ui-fixture", target_arch = "wasm32"))]
         ui_fixture::observation::observe(self, cx, event);
 
@@ -987,6 +1011,7 @@ impl App {
                 .modal(cx, ids!(login_screen_view.login_screen.login_status_modal))
                 .close(cx);
         }
+        self.ui.view(cx, ids!(theme_bar)).set_visible(cx, self.app_state.logged_in);
         self.ui.view(cx, ids!(login_screen_view)).set_visible(cx, show_login);
         self.ui.view(cx, ids!(home_screen_view)).set_visible(cx, self.app_state.logged_in);
         self.ui.view(cx, ids!(login_console_view)).set_visible(cx, show_console);

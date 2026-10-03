@@ -110,7 +110,7 @@ script_mod! {
         }
         draw_icon +: {
             svg: (ICON_ZOOM_OUT),
-            color: #000
+            color: (mod.widgets.COLOR_TEXT)
         }
         icon_walk: Walk{width: 27, height: 27}
     }

@@ -21,6 +21,7 @@ pub mod room_filter_input_bar;
 pub mod room_input_popup_menu;
 pub mod slash_commands;
 pub mod styles;
+pub mod hepta_theme;
 pub mod text_or_image;
 pub mod timestamp;
 pub mod bouncing_dots;
@@ -33,6 +34,7 @@ pub mod image_viewer;
 pub fn script_mod(vm: &mut ScriptVm) {
     // Order matters here, as some widget definitions depend on others.
     styles::script_mod(vm);
+    hepta_theme::script_mod(vm);
     helpers::script_mod(vm);
     icon_button::script_mod(vm);
     context_menu::script_mod(vm);

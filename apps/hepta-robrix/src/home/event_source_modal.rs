@@ -21,7 +21,7 @@ script_mod! {
         align: Align{x: 0.5, y: 0.5}
         icon_walk: Walk{width: 14, height: 14, margin: 0}
         draw_icon.svg: (ICON_COPY)
-        draw_icon.color: #666
+        draw_icon.color: (mod.widgets.COLOR_TEXT_SECONDARY)
         draw_bg +: {
             border_size: 0,
             color: #0000
@@ -63,7 +63,7 @@ script_mod! {
                 width: Fill, height: Fit,
                 draw_text +: {
                     text_style: TITLE_TEXT {font_size: 16},
-                    color: #000
+                    color: (mod.widgets.COLOR_TEXT)
                 }
                 text: "View Event Source"
             }
@@ -75,7 +75,7 @@ script_mod! {
                 align: Align{x: 0.5, y: 0.5}
                 icon_walk: Walk{width: 18, height: 18, margin: 0}
                 draw_icon.svg: (ICON_CLOSE)
-                draw_icon.color: #666
+                draw_icon.color: (mod.widgets.COLOR_TEXT_SECONDARY)
                 draw_bg +: {
                     border_size: 0
                     color: #0000
@@ -97,7 +97,7 @@ script_mod! {
                 width: Fit, height: Fit,
                 draw_text +: {
                     text_style: REGULAR_TEXT {font_size: 11},
-                    color: #666
+                    color: (mod.widgets.COLOR_TEXT_SECONDARY)
                 }
                 text: "Room ID:"
             }
@@ -107,7 +107,7 @@ script_mod! {
                 margin: Inset{top: 1, left: 4}
                 draw_text +: {
                     text_style: theme.font_code {font_size: 10},
-                    color: #000
+                    color: (mod.widgets.COLOR_TEXT)
                 }
                 text: "<Unknown Room ID>"
             }
@@ -128,7 +128,7 @@ script_mod! {
                 width: Fit, height: Fit,
                 draw_text +: {
                     text_style: REGULAR_TEXT {font_size: 11},
-                    color: #666
+                    color: (mod.widgets.COLOR_TEXT_SECONDARY)
                 }
                 text: "Event ID:"
             }
@@ -138,7 +138,7 @@ script_mod! {
                 margin: Inset{top: 1, left: 4}
                 draw_text +: {
                     text_style: theme.font_code {font_size: 10},
-                    color: #000
+                    color: (mod.widgets.COLOR_TEXT)
                 }
                 text: "<Unknown Event ID>"
             }
@@ -163,7 +163,7 @@ script_mod! {
                 width: Fill, height: Fit,
                 draw_text +: {
                     text_style: TITLE_TEXT {font_size: 13},
-                    color: #000
+                    color: (mod.widgets.COLOR_TEXT)
                 }
                 text: "Latest event source"
             }

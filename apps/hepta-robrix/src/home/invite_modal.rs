@@ -21,7 +21,7 @@ script_mod! {
         user_id_input := RobrixTextInput {
             draw_text +: {
                 text_style: REGULAR_TEXT {font_size: 11},
-                color: #000
+                color: (mod.widgets.COLOR_TEXT)
             }
             empty_text: "@user:example.org",
             autocapitalize: None,
@@ -72,7 +72,7 @@ script_mod! {
                 margin: Inset{top: 10}
                 draw_text +: {
                     text_style: REGULAR_TEXT {font_size: 11},
-                    color: #000
+                    color: (mod.widgets.COLOR_TEXT)
                 }
                 text: ""
             }

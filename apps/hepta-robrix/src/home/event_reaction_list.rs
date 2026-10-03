@@ -89,7 +89,7 @@ script_mod! {
             }
             draw_text +: {
                 text_style: REGULAR_TEXT {font_size: 10},
-                color: #000000
+                color: (mod.widgets.COLOR_TEXT)
                 get_color: fn() -> vec4 {
                     return self.color;
                 }

@@ -35,7 +35,7 @@ script_mod! {
 
             show_bg: true,
             draw_bg +: {
-                color: #000
+                color: (COLOR_TEXT)
                 border_radius: 6.0
             }
 
@@ -45,7 +45,7 @@ script_mod! {
                 // pill's black background.
                 img_view +: {
                     show_bg: true,
-                    draw_bg +: { color: #fff }
+                    draw_bg +: { color: (mod.widgets.COLOR_SECONDARY) }
                 }
                 text_view +: {
                     text +: {
@@ -135,8 +135,8 @@ script_mod! {
         draw_block +: {
             line_color: (MESSAGE_TEXT_COLOR)
             sep_color: (MESSAGE_TEXT_COLOR)
-            code_color: (#EDEDED)
-            quote_bg_color: (#EDEDED)
+            code_color: ((COLOR_SECONDARY))
+            quote_bg_color: ((COLOR_SECONDARY))
             quote_fg_color: (MESSAGE_TEXT_COLOR)
         }
 
@@ -419,7 +419,7 @@ impl MatrixLinkPill {
             if is_room_mention || is_self_mention {
                 script_apply_eval!(cx, pill_bg, { draw_bg +: { color: #d91b38 } });
             } else {
-                script_apply_eval!(cx, pill_bg, { draw_bg +: { color: #000 } });
+                script_apply_eval!(cx, pill_bg, { draw_bg +: { color: (COLOR_TEXT) } });
             }
         }
 

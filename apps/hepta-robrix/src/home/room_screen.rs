@@ -80,10 +80,10 @@ const MAX_BACKWARDS_PAGINATIONS_WITHOUT_PROGRESS: usize = 5;
 
 static UNNAMED_ROOM: &str = "Unnamed Room";
 
-/// #FFF4E5
-const COLOR_THREAD_SUMMARY_BG: Vec4 = vec4(1.0, 0.957, 0.898, 1.0);
-/// #FFEACC
-const COLOR_THREAD_SUMMARY_BG_HOVER: Vec4 = vec4(1.0, 0.918, 0.8, 1.0);
+/// #x382e55
+const COLOR_THREAD_SUMMARY_BG: Vec4 = crate::shared::hepta_theme::rgba(0x382e55ff);
+/// #x463666
+const COLOR_THREAD_SUMMARY_BG_HOVER: Vec4 = crate::shared::hepta_theme::rgba(0x463666ff);
 
 
 script_mod! {
@@ -91,16 +91,16 @@ script_mod! {
     use mod.widgets.*
 
 
-    mod.widgets.COLOR_BG = #xfff8ee
+    mod.widgets.COLOR_BG = #x171329
     mod.widgets.COLOR_OVERLAY_BG = #x000000d8
     mod.widgets.COLOR_READ_MARKER = #xeb2733
 
-    mod.widgets.REACTION_TEXT_COLOR = #4c00b0
+    mod.widgets.REACTION_TEXT_COLOR = #x72e5dd
 
-    mod.widgets.COLOR_THREAD_SUMMARY_BG = #FFF4E5
-    mod.widgets.COLOR_THREAD_SUMMARY_BG_HOVER = #FFEACC
-    mod.widgets.COLOR_THREAD_SUMMARY_BORDER = #E8C99A
-    mod.widgets.COLOR_THREAD_SUMMARY_REPLY_COUNT = #A35A00
+    mod.widgets.COLOR_THREAD_SUMMARY_BG = #x382e55
+    mod.widgets.COLOR_THREAD_SUMMARY_BG_HOVER = #x463666
+    mod.widgets.COLOR_THREAD_SUMMARY_BORDER = #x4c4269
+    mod.widgets.COLOR_THREAD_SUMMARY_REPLY_COUNT = #xbba6ff
 
     // An empty view that takes up no space in the portal list.
     mod.widgets.Empty = View { }
@@ -241,6 +241,8 @@ script_mod! {
 
         show_bg: true
         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
+            color_highlight: instance(COLOR_BG_PREVIEW)
             highlight: instance(0.0)
             hover: instance(0.0)
             color: instance((COLOR_PRIMARY)) // default color)
@@ -250,17 +252,16 @@ script_mod! {
             mentions_bar_width: instance(4.0)
 
             pixel: fn() {
-                // Multiply rather than replace, so a mention-highlighted message
-                // keeps its yellow on hover, just darker.
+                // Preserve a subtle surface lift on hover in each dark material.
                 let base_color = mix(
                     self.color,
-                    self.color * self.color_hover,
+                    self.color_hover,
                     self.hover
                 );
 
                 let with_highlight = mix(
                     base_color,
-                    #c5d6fa,
+                    self.color_highlight,
                     self.highlight
                 );
 
@@ -323,17 +324,17 @@ script_mod! {
             width: Fill,
             height: Fit
             flow: Right,
-            padding: Inset{top: 0, bottom: 10, left: 10, right: 10},
+            padding: Inset{top: 14, bottom: 12, left: 22, right: 24},
 
             profile := View {
                 align: Align{x: 0.5, y: 0.0} // centered horizontally, top aligned
-                width: 65.0,
+                width: 44.0,
                 height: Fit,
                 margin: Inset{top: 4.5, right: 10}
                 flow: Down,
                 avatar := Avatar {
-                    width: 48,
-                    height: 48,
+                    width: 38,
+                    height: 38,
                 }
                 timestamp := Timestamp {
                     margin: Inset{ top: 5.9 }
@@ -356,7 +357,7 @@ script_mod! {
                         width: Fill,
                         flow: Flow.Right { wrap: false },
                         padding: 0,
-                        margin: Inset{bottom: 9.0, top: 20.0, right: 10.0,}
+                        margin: Inset{bottom: 7.0, top: 7.0, right: 10.0,}
                         max_lines: 1
                         text_overflow: Ellipsis
                         draw_text +: {
@@ -633,7 +634,7 @@ script_mod! {
         align: Align{x: 0.5, y: 0}
         flow: Right,
         show_bg: true,
-        draw_bg.color: #xDAF5E5F0, // mostly opaque light green
+        draw_bg.color: #x173834, // mostly opaque light green
 
         label := Label {
             width: Fill,
@@ -703,7 +704,7 @@ script_mod! {
             flow: Overlay,
 
             show_bg: true
-            draw_bg.color: (COLOR_PRIMARY_DARKER)
+            draw_bg +: {hepta_owned_material: uniform(1.0), color: (COLOR_PRIMARY_DARKER)}
 
             restore_status_view := RestoreStatusView {}
 
@@ -713,6 +714,13 @@ script_mod! {
                 width: Fill, height: Fill,
                 flow: Down,
 
+                HeptaPanel {
+                    width: Fill, height: 64
+                    padding: Inset{left: 24, right: 18, top: 12, bottom: 12}
+                    flow: Down, spacing: 5
+                    room_heading := Label { text: "Room" draw_text +: {color: COLOR_TEXT, text_style: theme.font_bold {font_size: 16}} }
+                    room_subtitle := Label { text: "Conversation" draw_text +: {color: COLOR_TEXT_SECONDARY, text_style: theme.font_regular {font_size: 10}} }
+                }
                 // First, display the timeline of all messages/events.
                 timeline := mod.widgets.Timeline { }
 
@@ -958,6 +966,11 @@ impl ScriptHook for RoomScreen {
 impl Widget for RoomScreen {
     // Handle events and actions for the RoomScreen widget and its inner Timeline view.
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, _scope: &mut Scope) {
+        #[cfg(feature = "ui-fixture")]
+        if crate::app::ui_fixture::chat_active(cx) {
+            self.view.handle_event(cx, event, _scope);
+            return;
+        }
         // Skip event handling if this RoomScreen is uninitialized (a background dock tab after dock restore).
         if self.tl_state.is_none() && self.room_name_id.is_none() {
             return;
@@ -1405,6 +1418,10 @@ impl Widget for RoomScreen {
     }
 
     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        #[cfg(feature = "ui-fixture")]
+        if crate::app::ui_fixture::chat_active(cx) {
+            return crate::app::ui_fixture::chat::draw(&mut self.view, cx, scope, walk);
+        }
         // If the room isn't loaded yet, we show the restore status label only.
         if !self.is_loaded {
             let Some(room_name) = &self.room_name_id else {
@@ -3357,6 +3374,15 @@ impl RoomScreen {
         room_name_id: &RoomNameId,
         thread_root_event_id: Option<OwnedEventId>,
     ) {
+        #[cfg(feature = "ui-fixture")]
+        if crate::app::ui_fixture::chat_active(cx) {
+            self.room_name_id = Some(room_name_id.clone());
+            self.view.label(cx, ids!(room_heading)).set_text(cx, &room_name_id.to_string());
+            self.view.label(cx, ids!(room_subtitle)).set_text(cx, "Synthetic fixture · no account or delivery");
+            self.redraw(cx);
+            return;
+        }
+        self.view.label(cx, ids!(room_heading)).set_text(cx, &room_name_id.to_string());
         let timeline_kind = if let Some(thread_root_event_id) = thread_root_event_id {
             TimelineKind::Thread {
                 room_id: room_name_id.room_id().clone(),

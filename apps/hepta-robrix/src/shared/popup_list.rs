@@ -160,7 +160,7 @@ script_mod! {
             width: Fill,
             height: Fit,
             draw_text +: {
-                color: #000
+                color: (mod.widgets.COLOR_TEXT)
                 text_style: mod.widgets.MESSAGE_TEXT_STYLE { font_size: 10.5 },
             }
         }
@@ -484,7 +484,7 @@ impl RobrixPopupNotification {
             PopupKind::Warning => {
                 script_apply_eval!(cx, popup_icon, {
                     draw_icon.svg: mod.widgets.ICON_WARNING,
-                    draw_icon.color: #000000,
+                    draw_icon.color: (mod.widgets.COLOR_TEXT),
                 });
             }
             PopupKind::Blank => {}
@@ -510,7 +510,7 @@ impl RobrixPopupNotification {
             }
             PopupKind::Warning | PopupKind::Blank => {
                 script_apply_eval!(cx, popup_label, {
-                    draw_text +: { color: #000000 },
+                    draw_text +: { color: (mod.widgets.COLOR_TEXT) },
                 });
                 script_apply_eval!(cx, close_button, {
                     draw_bg +: {

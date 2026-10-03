@@ -42,7 +42,7 @@ script_mod! {
         max_lines: 1
         text_overflow: Ellipsis
         draw_text +: {
-            color: #000,
+            color: (COLOR_TEXT),
             text_style: USERNAME_TEXT_STYLE { font_size: 10. }
         }
         text: "[Room name unknown]"
@@ -78,7 +78,8 @@ script_mod! {
                                 pill_bg +: {
                                     margin: Inset{top: 1}
                                     padding: Inset{ left: 4.5, right: 3.0, bottom: -3.5, top: -3.5 }
-                                    draw_bg +: { border_radius: 4.5 }
+                                    draw_bg +: {
+            hepta_owned_material: uniform(1.0) border_radius: 4.5 }
                                     avatar +: {
                                         width: 13.0, height: 13.0,
                                         text_view +: {
@@ -123,15 +124,16 @@ script_mod! {
 
         show_bg: true
         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
             active: instance(0.0)
             hover: instance(0.0)
             color: instance(#0000)
             color_hover: instance(COLOR_LIST_ITEM_BG_HOVER)
-            color_selected: instance(COLOR_ACTIVE_PRIMARY)
-            color_selected_hover: instance(COLOR_ACTIVE_PRIMARY_DARKER)
+            color_selected: instance(COLOR_BG_PREVIEW)
+            color_selected_hover: instance(COLOR_BG_PREVIEW_HOVER)
             border_color: instance(#0000)
             border_size: uniform(0.0)
-            border_radius: uniform(4.0)
+            border_radius: uniform(10.0)
             border_inset: uniform(vec4(0.0))
 
             get_color: fn() -> vec4 {
@@ -505,7 +507,7 @@ impl RoomsListEntryContent {
             if is_selected {
                 None
             } else {
-                Some(HTML_LINK_COLOR)
+                Some(crate::shared::styles::COLOR_ACTIVE_PRIMARY)
             });
 
         // Skip redrawing if nothing changed.
@@ -519,18 +521,11 @@ impl RoomsListEntryContent {
         let timestamp_color;
         let code_bg_color;
 
-        // TODO: use script-defined theme color instead of redefining constants below
-        if is_selected {
-            message_text_color = vec4(1., 1., 1., 1.); // COLOR_PRIMARY
-            room_name_color = vec4(1., 1., 1., 1.); // COLOR_PRIMARY
-            timestamp_color = vec4(1., 1., 1., 1.); // COLOR_PRIMARY
-            code_bg_color = vec4(0.3, 0.3, 0.3, 1.0); // a darker gray used for the background of code blocks and quote blocks
-        } else {
-            message_text_color = vec4(0.267, 0.267, 0.267, 1.0); // MESSAGE_TEXT_COLOR
-            room_name_color = vec4(0., 0., 0., 1.0);
-            timestamp_color = vec4(0.6, 0.6, 0.6, 1.0);
-            code_bg_color = vec4(0.929, 0.929, 0.929, 1.0); // #EDEDED
-        }
+        // Selection changes the surface, never the legibility of the text.
+        message_text_color = crate::shared::hepta_theme::rgba(0xb9b0cbff);
+        room_name_color = crate::shared::styles::COLOR_TEXT;
+        timestamp_color = crate::shared::hepta_theme::rgba(0x9589afff);
+        code_bg_color = crate::shared::hepta_theme::rgba(0x231e39ff);
 
         // Toggle the background color via the animator (handles selected/deselected bg).
         self.animator_toggle(cx, is_selected, Animate::No, ids!(selected.on), ids!(selected.off));

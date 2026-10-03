@@ -1,0 +1,180 @@
+--- a/widgets/src/nav_control.rs
++++ b/widgets/src/nav_control.rs
+@@ -50,46 +50,13 @@
+     }
+ 
+     pub fn handle_event(&mut self, cx: &mut Cx, event: &Event, root: DrawListId) {
+-        match event {
+-            Event::KeyDown(ke) => match ke.key_code {
+-                KeyCode::Tab => {
+-                    if ke.modifiers.shift {
+-                        let mut prev_area = Area::Empty;
+-                        if let Some((prev_area, scroll_stack)) =
+-                            CxDraw::iterate_nav_stops(cx, root, |cx, stop| {
+-                                if cx.has_key_focus(stop.area) {
+-                                    return Some(prev_area);
+-                                }
+-                                prev_area = stop.area;
+-                                None
+-                            })
+-                        {
+-                            if !prev_area.is_empty() {
+-                                Self::send_trigger_to_scroll_stack(cx, scroll_stack);
+-                                cx.set_key_focus(prev_area);
+-                            }
+-                        }
+-                    } else {
+-                        let mut next_stop = false;
+-                        if let Some((next_area, scroll_stack)) =
+-                            CxDraw::iterate_nav_stops(cx, root, |cx, stop| {
+-                                if next_stop {
+-                                    return Some(stop.area);
+-                                }
+-                                if cx.has_key_focus(stop.area) {
+-                                    next_stop = true;
+-                                }
+-                                None
+-                            })
+-                        {
+-                            Self::send_trigger_to_scroll_stack(cx, scroll_stack);
+-                            cx.set_key_focus(next_area);
+-                        }
+-                    }
+-                }
+-                _ => (),
+-            },
+-            _ => (),
++        let Event::KeyDown(key) = event else { return; };
++        if key.key_code != KeyCode::Tab || key.modifiers.control || key.modifiers.alt || key.modifiers.logo {
++            return;
++        }
++        if let Some((area, scroll_stack)) = tab_target(cx, root, cx.key_focus(), key.modifiers.shift) {
++            Self::send_trigger_to_scroll_stack(cx, scroll_stack);
++            cx.set_key_focus(area);
+         }
+     }
+ 
+@@ -101,3 +68,36 @@
+         self.draw_list.end(cx);
+     }
+ }
++
++// Use the same real nav tree and scroll trigger path as pointer-focused traversal.
++// The existing modal scrolling constraint also bounds keyboard navigation.
++fn tab_target(cx: &mut Cx, root: DrawListId, focus: Area, reverse: bool) -> Option<(Area, Vec<Area>)> {
++    let root = if let Some(scope) = cx.fingers.blocked_scrolling_exception_area() {
++        if !scope.is_valid(cx) { return None; }
++        scope.draw_list_id()?
++    } else { root };
++    let mut areas = Vec::new();
++    CxDraw::iterate_nav_stops(cx, root, |cx, stop| {
++        if stop.area.is_valid(cx) {
++            let size = stop.area.rect(cx).size;
++            // Off-screen scroll children remain reachable through scroll-to-focus.
++            // Hidden/deferred zero-sized controls are not navigation stops.
++            if size.x > 0.0 && size.y > 0.0 { areas.push(stop.area); }
++        }
++        None
++    });
++    if areas.is_empty() { return None; }
++    let current = areas.iter().position(|area| *area == focus);
++    let index = match (current, reverse) {
++        (Some(index), true) => (index + areas.len() - 1) % areas.len(),
++        (Some(index), false) => (index + 1) % areas.len(),
++        (None, true) => areas.len() - 1,
++        (None, false) => 0,
++    };
++    let target = areas[index];
++    CxDraw::iterate_nav_stops(cx, root, |_, stop| (stop.area == target).then_some(target))
++}
++
++#[cfg(test)]
++#[path = "hepta_nav_tests.rs"]
++mod hepta_nav_tests;
+--- a/widgets/src/button.rs
++++ b/widgets/src/button.rs
+@@ -707,7 +707,9 @@
+         self.draw_text
+             .draw_walk(cx, self.label_walk, Align::default(), self.text.as_ref());
+         self.draw_bg.end(cx);
+-        cx.add_nav_stop(self.draw_bg.area(), NavRole::TextInput, Inset::default());
++        if self.enabled {
++            cx.add_nav_stop(self.draw_bg.area(), NavRole::TextInput, Inset::default());
++        }
+         DrawStep::done()
+     }
+ 
+--- /dev/null
++++ b/widgets/src/hepta_nav_tests.rs
+@@ -0,0 +1,71 @@
++use super::*;
++use crate::*;
++
++fn scene() -> (Cx, DrawPass, DrawList, Vec<Area>) {
++    let mut cx = Cx::new(Box::new(|_, _| {}));
++    let mut views = cx.with_vm(|vm| {
++        crate::script_mod(vm);
++        (0..3).map(|_| {
++            let value = script_eval!(vm, { mod.widgets.SolidView {width: 40, height: 30, draw_bg.color: #fff} });
++            View::script_from_value(vm, value)
++        }).collect::<Vec<_>>()
++    });
++    let pass = DrawPass::new(&mut cx);
++    pass.set_size(&mut cx, dvec2(320.0, 240.0));
++    let mut list = DrawList::new(&mut cx);
++    let event = DrawEvent::default();
++    let mut draw = CxDraw::new(&mut cx, &event);
++    draw.begin_pass(&pass, None);
++    list.begin_always(&mut draw);
++    {
++        let mut cx = Cx2d::new(&mut draw);
++        cx.begin_root_turtle(dvec2(320.0, 240.0), Layout::flow_down());
++        for view in &mut views {
++            view.draw_all(&mut cx, &mut Scope::empty());
++            cx.add_nav_stop(view.area(), NavRole::TextInput, Inset::default());
++        }
++        cx.end_turtle();
++    }
++    list.end(&mut draw);
++    draw.end_pass(&pass);
++    drop(draw);
++    let areas = views.iter().map(|view| view.area()).collect();
++    (cx, pass, list, areas)
++}
++
++#[test]
++fn initial_forward_reverse_and_wrap_use_actual_drawn_stops() {
++    let (mut cx, _pass, list, areas) = scene();
++    let root = list.id();
++    assert_eq!(tab_target(&mut cx, root, Area::Empty, false).unwrap().0, areas[0]);
++    assert_eq!(tab_target(&mut cx, root, Area::Empty, true).unwrap().0, areas[2]);
++    for index in 0..3 {
++        assert_eq!(tab_target(&mut cx, root, areas[index], false).unwrap().0, areas[(index + 1) % 3]);
++        assert_eq!(tab_target(&mut cx, root, areas[index], true).unwrap().0, areas[(index + 2) % 3]);
++    }
++    assert!(cx.key_focus().is_empty(), "target selection itself must not steal focus");
++}
++
++#[test]
++fn empty_tree_has_no_target() {
++    let (mut cx, pass, mut list, _) = scene();
++    let event = DrawEvent::default();
++    let mut draw = CxDraw::new(&mut cx, &event);
++    draw.begin_pass(&pass, None);
++    list.begin_always(&mut draw);
++    list.end(&mut draw);
++    draw.end_pass(&pass);
++    drop(draw);
++    assert!(tab_target(&mut cx, list.id(), Area::Empty, false).is_none());
++    assert!(tab_target(&mut cx, list.id(), Area::Empty, true).is_none());
++}
++
++#[test]
++fn stale_modal_scope_never_falls_through_to_background_controls() {
++    let (mut cx, _pass, list, areas) = scene();
++    cx.block_scrolling_except_within(Area::Empty);
++    assert!(tab_target(&mut cx, list.id(), areas[0], false).is_none());
++    assert!(tab_target(&mut cx, list.id(), areas[0], true).is_none());
++    cx.unblock_scrolling();
++    assert_eq!(tab_target(&mut cx, list.id(), areas[0], false).unwrap().0, areas[1]);
++}

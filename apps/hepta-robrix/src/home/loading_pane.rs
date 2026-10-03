@@ -47,7 +47,7 @@ script_mod! {
                     text: "Loading content..."
                     draw_text +: {
                         text_style: TITLE_TEXT {font_size: 13},
-                        color: #000
+                        color: (mod.widgets.COLOR_TEXT)
                     }
                 }
             }
@@ -66,7 +66,7 @@ script_mod! {
                         text_style: REGULAR_TEXT {
                             font_size: 11.5,
                         },
-                        color: #000
+                        color: (mod.widgets.COLOR_TEXT)
                     }
                 }
 

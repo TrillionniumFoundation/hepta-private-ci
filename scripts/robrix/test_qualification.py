@@ -113,17 +113,17 @@ class TestLoginPixelGate(unittest.TestCase):
         from render_checks import login_pixels
 
         for defect in ("none", "transparent-footer", "stale-font"):
-            image = Image.new("RGB", (520, 760), (226, 226, 226))
+            image = Image.new("RGB", (520, 760), (35, 30, 57))
             draw = ImageDraw.Draw(image)
             draw.rectangle(
                 (0, 732, 519, 759),
-                fill="white" if defect != "transparent-footer" else "black",
+                fill=(23, 19, 41) if defect != "transparent-footer" else "black",
             )
-            draw.rectangle((8, 739, 85, 748), fill=(102, 102, 102))
+            draw.rectangle((8, 739, 85, 748), fill=(185, 176, 203))
             for top, bottom in ((198, 230), (251, 283), (304, 324)):
-                draw.rectangle((123, top, 396, bottom), fill="white")
+                draw.rectangle((123, top, 396, bottom), fill=(23, 19, 41))
                 y = (top + bottom) // 2 - 4 + (8 if defect == "stale-font" else 0)
-                draw.rectangle((135, y, 175, y + 8), fill=(187, 187, 187))
+                draw.rectangle((135, y, 175, y + 8), fill=(185, 176, 203))
             if defect == "none":
                 self.assertGreater(login_pixels(image)["footerContrast"], 4.5)
             else:

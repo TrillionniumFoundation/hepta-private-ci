@@ -9,6 +9,9 @@ use serde::{Deserialize, Serialize};
 /// App-wide user preferences controlled by the App Settings UI.
 #[derive(Clone, Debug, PartialEq, Serialize, Deserialize)]
 pub struct AppPreferences {
+    /// Shared native/browser material, without changing the chat widget owners.
+    #[serde(default, deserialize_with = "crate::utils::deserialize_or_default")]
+    pub hepta_theme: crate::shared::hepta_theme::HeptaTheme,
     /// Forces the HomeScreen `AdaptiveView` into a particular layout,
     /// or falls back to the default automatic width-based layout.
     #[serde(default, deserialize_with = "crate::utils::deserialize_or_default")]
@@ -42,6 +45,7 @@ pub struct AppPreferences {
 impl Default for AppPreferences {
     fn default() -> Self {
         Self {
+            hepta_theme: Default::default(),
             view_mode: ViewModeOverride::default(),
             send_on_enter: true,
             thumbnail_max_height: ThumbnailMaxHeight::default(),
@@ -54,6 +58,12 @@ impl Default for AppPreferences {
 }
 
 impl AppPreferences {
+    /// Apply only the shared material without reapplying widget state.
+    pub fn on_hepta_theme_changed(&self, cx: &mut Cx) {
+        cx.global::<AppPreferencesGlobal>().0.hepta_theme = self.hepta_theme;
+        crate::shared::hepta_theme::select(cx, self.hepta_theme);
+    }
+
     /// Broadcasts the current `view_mode` to listening widgets.
     ///
     /// Call this whenever the `view_mode` preference has just changed.
@@ -166,6 +176,7 @@ impl AppPreferences {
     /// after every `Event::LiveEdit` so a hot-reloaded `script_mod!` block
     /// doesn't clobber our runtime heap overrides.
     pub fn broadcast_all(&self, cx: &mut Cx) {
+        self.on_hepta_theme_changed(cx);
         self.on_view_mode_changed(cx);
         self.on_send_on_enter_changed(cx);
         self.on_thumbnail_max_height_changed(cx);

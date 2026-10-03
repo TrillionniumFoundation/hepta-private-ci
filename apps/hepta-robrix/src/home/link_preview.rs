@@ -73,16 +73,16 @@ script_mod! {
                 padding: Inset{top: 4, bottom: 4, left: 8, right: 8},
                 draw_icon +: {
                     svg: (ICON_TRIANGLE_DOWN)
-                    color: #666666
+                    color: (mod.widgets.COLOR_TEXT_SECONDARY)
                 }
                 icon_walk: Walk{width: 10, height: 10}
                 draw_text +: {
                     text_style: mod.widgets.LINK_PREVIEW_MESSAGE_TEXT_STYLE {
                         font_size: 10.0,
                     },
-                    color: #666666,
-                    color_hover: #666666,
-                    color_down: #666666,
+                    color: (mod.widgets.COLOR_TEXT_SECONDARY),
+                    color_hover: (mod.widgets.COLOR_TEXT_SECONDARY),
+                    color_down: (mod.widgets.COLOR_TEXT_SECONDARY),
                 }
                 draw_bg +: {
                     color: (COLOR_BG_PREVIEW)
@@ -104,16 +104,16 @@ script_mod! {
                 padding: Inset{top: 4, bottom: 4, left: 8, right: 8},
                 draw_icon +: {
                     svg: (ICON_TRIANGLE_UP)
-                    color: #666666
+                    color: (mod.widgets.COLOR_TEXT_SECONDARY)
                 }
                 icon_walk: Walk{width: 10, height: 10}
                 draw_text +: {
                     text_style: mod.widgets.LINK_PREVIEW_MESSAGE_TEXT_STYLE {
                         font_size: 10.0,
                     },
-                    color: #666666,
-                    color_hover: #666666,
-                    color_down: #666666,
+                    color: (mod.widgets.COLOR_TEXT_SECONDARY),
+                    color_hover: (mod.widgets.COLOR_TEXT_SECONDARY),
+                    color_down: (mod.widgets.COLOR_TEXT_SECONDARY),
                 }
                 draw_bg +: {
                     color: (COLOR_BG_PREVIEW)
@@ -188,7 +188,7 @@ script_mod! {
                             text_style: mod.widgets.LINK_PREVIEW_MESSAGE_TEXT_STYLE {
                                 font_size: 12.0,
                             },
-                            color: #666666,
+                            color: (mod.widgets.COLOR_TEXT_SECONDARY),
                         }
                     }
                 }
@@ -204,7 +204,7 @@ script_mod! {
                         text_style: mod.widgets.LINK_PREVIEW_MESSAGE_TEXT_STYLE {
                             font_size: 11.0,
                         },
-                        color: #666666,
+                        color: (mod.widgets.COLOR_TEXT_SECONDARY),
                     }
                 }
             }

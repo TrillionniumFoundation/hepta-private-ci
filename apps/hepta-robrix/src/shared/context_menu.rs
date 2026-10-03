@@ -23,23 +23,25 @@ script_mod! {
         icon_walk: Walk{width: 18, height: 18}
 
         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
             color: (COLOR_PRIMARY)
-            color_hover: #EBEBEB
-            color_down: #DCDCDC
+            color_hover: (COLOR_LIST_ITEM_BG_HOVER)
+            color_down: (COLOR_BG_PREVIEW)
             border_radius: 4.0
         }
-        draw_icon.color: #000
+        draw_icon.color: (COLOR_TEXT)
         draw_text +: {
-            color: #000, color_hover: #000, color_down: #000
+            color: (COLOR_TEXT), color_hover: (COLOR_TEXT), color_down: (COLOR_TEXT)
             text_style: REGULAR_TEXT {font_size: 11}
         }
     }
 
     mod.widgets.ContextMenuDangerButton = mod.widgets.ContextMenuButton {
         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
             color: (COLOR_BG_DANGER_RED)
-            color_hover: #F0D4D4
-            color_down: #E0B8B8
+            color_hover: #x52303f
+            color_down: #x61394b
         }
         draw_icon.color: (COLOR_FG_DANGER_RED)
         draw_text +: {
@@ -65,10 +67,11 @@ script_mod! {
 
         show_bg: true
         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
             color: (COLOR_PRIMARY)
             border_radius: 5.0
             border_size: 0.5
-            border_color: #888
+            border_color: (COLOR_SECONDARY_DARKER)
         }
     }
 }

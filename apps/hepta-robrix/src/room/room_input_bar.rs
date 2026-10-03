@@ -39,7 +39,7 @@ script_mod! {
 
 
     mod.widgets.RoomInputBar = set_type_default() do #(RoomInputBar::register_widget(vm)) {
-        ..mod.widgets.RoundedView
+        ..mod.widgets.HeptaPanel
 
         width: Fill,
         height: Fit{max: FitBound.Rel{base: Base.Full, factor: 0.75}}
@@ -50,13 +50,13 @@ script_mod! {
         // line up with the boundaries of its parent widgets.
         // This only works if the border_color is the same as its parents,
         // which is currently `COLOR_SECONDARY`.
-        margin: Inset{left: -4, right: -4, bottom: -4 }
+        margin: Inset{left: 12, right: 12, bottom: 12, top: 8 }
         show_bg: true,
         draw_bg +: {
             color: (COLOR_PRIMARY)
             border_radius: 5.0
             border_color: (COLOR_SECONDARY)
-            border_size: 2.0
+            border_size: 1.0
             // shadow_color: #0006
             // shadow_radius: 0.0
             // shadow_offset: vec2(0.0,0.0)
@@ -101,8 +101,8 @@ script_mod! {
                     },
                     draw_bg +: {
                         color: (COLOR_BG_PREVIEW)
-                        color_hover: #xE0E8F0
-                        color_down: #xD0D8E8
+                        color_hover: (COLOR_BG_PREVIEW_HOVER)
+                        color_down: (COLOR_SECONDARY)
                     }
                     icon_walk: Walk{width: 21, height: 21}
                 }

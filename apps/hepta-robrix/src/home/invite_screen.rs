@@ -73,7 +73,7 @@ script_mod! {
                     text_style: TITLE_TEXT {
                         font_size: 15,
                     },
-                    color: #000
+                    color: (mod.widgets.COLOR_TEXT)
                 }
             }
 
@@ -87,7 +87,7 @@ script_mod! {
                     text_style: TITLE_TEXT {
                         font_size: 10,
                     },
-                    color: #888
+                    color: (mod.widgets.COLOR_TEXT_SECONDARY)
                 }
             }
 
@@ -107,7 +107,7 @@ script_mod! {
                 text_style: REGULAR_TEXT {
                     font_size: 15,
                 },
-                color: #000
+                color: (mod.widgets.COLOR_TEXT)
             }
         }
 
@@ -140,7 +140,7 @@ script_mod! {
                     text_style: TITLE_TEXT {
                         font_size: 18,
                     },
-                    color: #000
+                    color: (mod.widgets.COLOR_TEXT)
                 }
             }
         }

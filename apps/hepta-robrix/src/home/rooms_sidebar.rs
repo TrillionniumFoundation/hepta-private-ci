@@ -19,12 +19,12 @@ script_mod! {
 
 
     mod.widgets.RoomsSideBar = #(RoomsSideBar::register_widget(vm)) {
-        Desktop := SolidView {
-            padding: Inset{top: 20, left: 10, right: 10}
+        Desktop := HeptaPanel {
+            padding: Inset{top: 16, left: 8, right: 8}
             flow: Down, spacing: 5
             width: Fill, height: Fill
 
-            draw_bg.color: (COLOR_PRIMARY_DARKER)
+            draw_bg +: { hepta_owned_material: uniform(1.0), color: (COLOR_PRIMARY) }
 
             CachedWidget {
                 rooms_list_header := RoomsListHeader {}
@@ -45,6 +45,7 @@ script_mod! {
 
                 show_bg: true
                 draw_bg +: {
+            hepta_owned_material: uniform(1.0)
                     color: (COLOR_PRIMARY_DARKER)
                     border_radius: 4.0
                     border_size: 0.0

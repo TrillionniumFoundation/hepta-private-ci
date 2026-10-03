@@ -77,7 +77,7 @@ script_mod! {
                 width: Fill, height: Fit,
                 draw_text +: {
                     text_style: TITLE_TEXT { font_size: 16 },
-                    color: #000
+                    color: (mod.widgets.COLOR_TEXT)
                 }
                 text: "Upload File"
             }
@@ -89,7 +89,7 @@ script_mod! {
                 align: Align{x: 0.5, y: 0.5}
                 icon_walk: Walk{width: 18, height: 18, margin: 0}
                 draw_icon.svg: (ICON_CLOSE)
-                draw_icon.color: #666
+                draw_icon.color: (mod.widgets.COLOR_TEXT_SECONDARY)
                 draw_bg +: {
                     border_size: 0
                     color: #0000

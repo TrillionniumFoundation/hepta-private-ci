@@ -43,7 +43,7 @@ script_mod! {
             text_overflow: Ellipsis,
             text: "All Rooms"
             draw_text +: {
-                color: #x0
+                color: (COLOR_TEXT)
                 text_style: TITLE_TEXT {}
             }
         },
@@ -58,6 +58,7 @@ script_mod! {
                 width: 20,
                 height: 20,
                 draw_bg +: {
+            hepta_owned_material: uniform(1.0)
                     color: (COLOR_ACTIVE_PRIMARY)
                     border_size: 3.0
                 }
@@ -185,9 +186,9 @@ impl Widget for RoomsListHeader {
 
         // Show tooltips for the sync status icons.
         for (view, text, bg_color) in [
-            (self.view.view(cx, ids!(loading_spinner)), "Syncing...",   vec4(0.059, 0.533, 0.996, 1.0)), // COLOR_ACTIVE_PRIMARY #0f88fe
-            (self.view.view(cx, ids!(offline_icon)),    "Offline",      vec4(0.863, 0.0, 0.020, 1.0)),   // COLOR_FG_DANGER_RED #DC0005
-            (self.view.view(cx, ids!(synced_icon)),     "Fully synced", vec4(0.075, 0.533, 0.031, 1.0)), // COLOR_FG_ACCEPT_GREEN #138808
+            (self.view.view(cx, ids!(loading_spinner)), "Syncing...",   crate::shared::styles::COLOR_ACTIVE_PRIMARY), // COLOR_ACTIVE_PRIMARY #0f88fe
+            (self.view.view(cx, ids!(offline_icon)),    "Offline",      crate::shared::styles::COLOR_FG_DANGER_RED),   // COLOR_FG_DANGER_RED #DC0005
+            (self.view.view(cx, ids!(synced_icon)),     "Fully synced", crate::shared::styles::COLOR_FG_ACCEPT_GREEN), // COLOR_FG_ACCEPT_GREEN #138808
         ] {
             if !view.visible() {
                 continue;

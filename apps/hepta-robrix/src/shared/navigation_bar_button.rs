@@ -51,6 +51,7 @@ script_mod! {
 
         show_bg: true
         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
             hover: instance(0.0)
             active: instance(0.0)
 

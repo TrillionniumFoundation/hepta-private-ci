@@ -34,7 +34,7 @@ script_mod! {
     // and places its own screen widget inside the body.
     mod.widgets.RobrixStackNavigationView = StackNavigationView {
         width: Fill, height: Fill
-        draw_bg.color: (COLOR_PRIMARY)
+        draw_bg +: { hepta_owned_material: uniform(1.0), color: (COLOR_PRIMARY) }
         header +: {
             height: (mod.widgets.STACK_VIEW_HEADER_HEIGHT),
             padding: 0
@@ -45,6 +45,7 @@ script_mod! {
             clip_y: false,
             show_bg: true,
             draw_bg +: {
+            hepta_owned_material: uniform(1.0)
                 color: instance((COLOR_PRIMARY_DARKER))
                 color_dither: uniform(1.0)
                 gradient_border_horizontal: uniform(0.0)
@@ -177,6 +178,7 @@ script_mod! {
         }
         show_bg: true
         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
             color: (COLOR_PRIMARY_DARKER)
             border_radius: 4.0
             border_size: 0.0
@@ -219,12 +221,13 @@ script_mod! {
                 width: Fill, height: Fill
                 flow: Right
                 align: Align{x: 0.0, y: 0.0}
-                padding: 0,
+                padding: 8,
                 margin: 0,
 
                 show_bg: true
                 draw_bg +: {
-                    color: (COLOR_SECONDARY)
+            hepta_owned_material: uniform(1.0)
+                    color: (COLOR_PRIMARY_DARKER)
                 }
 
                 // On the left, show the navigation tab bar vertically.
@@ -283,6 +286,7 @@ script_mod! {
                         margin: Inset{top: 3, left: 1, right: 0, bottom: 0}
                         show_bg: true,
                         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
                             color: (COLOR_PRIMARY)
                             border_radius: 4.0
                         }
@@ -298,6 +302,7 @@ script_mod! {
                         margin: Inset{top: 3, left: 1, right: 0, bottom: 0}
                         show_bg: true,
                         draw_bg +: {
+            hepta_owned_material: uniform(1.0)
                             color: (COLOR_PRIMARY)
                             border_radius: 4.0
                         }
@@ -314,7 +319,7 @@ script_mod! {
                 flow: Down
 
                 show_bg: true
-                draw_bg.color: (COLOR_PRIMARY)
+                draw_bg +: { hepta_owned_material: uniform(1.0), color: (COLOR_PRIMARY) }
 
                 view_stack := StackNavigation {
                     root_view +: {
