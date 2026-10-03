@@ -219,7 +219,7 @@
         }
       ],
       "productCompositionState": "configured_agentd_async_http_effect_control_prepared_steps_only_independent_qualification_pending",
-      "sourceBlob": "905ee94b3a37f6768bca0d46bc8e6492f5250de4"
+      "sourceBlob": "8b6fe9767d15feae4525de77aded206fc18f03ca"
     }
   ],
   "repositoryControlledGaps": [],
@@ -266,8 +266,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "6e17956fbd2ec7d4a6568df82d9e76e3302f80b8",
-    "tree": "a37acb9885ce35aa70cae1e51df7708815019fa0"
+    "commit": "522a8eeb7c758028279ffae7b719825fefbdeccf",
+    "tree": "0376142a0defb92a780bd2ecd25cf6690921fcbf"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -287,7 +287,7 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "905ee94b3a37f6768bca0d46bc8e6492f5250de4"
+        "blobSha": "8b6fe9767d15feae4525de77aded206fc18f03ca"
       },
       {
         "path": "codex-rs/app-server-client/src/lib.rs",
@@ -360,6 +360,7 @@
     "codex-rs/hepta-automation/src/effect_recovery_scan.rs",
     "codex-rs/hepta-automation/src/effect_recovery_scan_tests.rs",
     "codex-rs/hepta-automation/src/lifecycle.rs",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
     "codex-rs/hepta-automation/src/queue_contact.rs",
     "codex-rs/hepta-automation/src/queue_contact_tests.rs",
     "codex-rs/hepta-automation/src/schedule_v2.rs",
@@ -370,6 +371,8 @@
     "codex-rs/hepta-automation/tests/automation.rs",
     "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
     "codex-rs/hepta-automation/tests/durable_causal_chain/observer_recovery_tests.rs",
+    "codex-rs/hepta-automation/tests/fixtures/kernel_authority_schema20.sql",
+    "codex-rs/hepta-automation/tests/taskflow_concurrent_reconcile.rs",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-operations",
     "codex-rs/hepta-operations/src/durable_clock_tests.rs",
@@ -379,9 +382,7 @@
     "codex-rs/hepta-types",
     "codex-rs/model-provider/src/provider_effect.rs",
     "docs/modules/automation.taskflow/TECHNICAL.md",
-    "codex-rs/hepta-automation/tests/taskflow_concurrent_reconcile.rs",
-    "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
-    "codex-rs/hepta-automation/tests/fixtures/kernel_authority_schema20.sql"
+    "codex-rs/hepta-automation/src/effect_execution_request.rs"
   ],
   "repositoryControlledProductCompositionGaps": [
     "Configured Agentd HTTP execute/reconcile control requires already registered, claimed and prepared TaskFlow steps. General scheduled external-effect/DAG/Neural Circuit execution remains an implementation target; selected-host provider/authority qualification is separate.",
@@ -422,7 +423,7 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/automation-taskflow-focused.yml",
-      "object": "7ba0b39f6d2273be0b2d7cccf539f4a25d3fadb2"
+      "object": "a5fe66c7b748f4960eec69c9499036c165438aec"
     },
     {
       "path": "codex-rs/app-server-client/BUILD.bazel",
@@ -450,7 +451,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
-      "object": "8d4ab8174ae22639924ef62fee10209d2091337e"
+      "object": "04fe5b177a74b22a72e7ec572829d89857204ab9"
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_recovery.rs",
@@ -478,11 +479,11 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "4ecfa4f7527087b1a96227ed2595eaaeec8d4ff4"
+      "object": "bd4345d0f80243f894f92d392701988ca4486007"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "905ee94b3a37f6768bca0d46bc8e6492f5250de4"
+      "object": "8b6fe9767d15feae4525de77aded206fc18f03ca"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
@@ -503,6 +504,10 @@
     {
       "path": "codex-rs/hepta-automation/src/lifecycle.rs",
       "object": "36f8c51a87d102c87d560110197b567a1febc2e7"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "object": "00b769ffe411447cbff5e7b7f3f2311407ef718e"
     },
     {
       "path": "codex-rs/hepta-automation/src/queue_contact.rs",
@@ -530,7 +535,7 @@
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
-      "object": "c37aaac821f6a6b538b6caa2e1b42f2da3c13774"
+      "object": "2df83dff58a781fda055b93ba7dbae45e9cd2b5b"
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
@@ -543,6 +548,14 @@
     {
       "path": "codex-rs/hepta-automation/tests/durable_causal_chain/observer_recovery_tests.rs",
       "object": "b9ccc4e9643bd1bee122030229ab8711e039d2a0"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/fixtures/kernel_authority_schema20.sql",
+      "object": "a0ef0bd9e5dc9c547587f4a8246de85249da8b98"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/taskflow_concurrent_reconcile.rs",
+      "object": "638f3797bfae275264f27a9125a5652e1a649f0f"
     },
     {
       "path": "codex-rs/hepta-operations/src/durable_clock_tests.rs",
@@ -565,16 +578,8 @@
       "object": "2ea8a144238e1ef53519dc53dbfce3254302182b"
     },
     {
-      "path": "codex-rs/hepta-automation/tests/taskflow_concurrent_reconcile.rs",
-      "object": "638f3797bfae275264f27a9125a5652e1a649f0f"
-    },
-    {
-      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
-      "object": "dcd4270723eeda6f43cad7d3628e11c9a0e017d4"
-    },
-    {
-      "path": "codex-rs/hepta-automation/tests/fixtures/kernel_authority_schema20.sql",
-      "object": "a0ef0bd9e5dc9c547587f4a8246de85249da8b98"
+      "path": "codex-rs/hepta-automation/src/effect_execution_request.rs",
+      "object": "e811418a0e76af8075c12fc62d3e3d118552a47e"
     }
   ],
   "navigationProvenanceRepair": {
