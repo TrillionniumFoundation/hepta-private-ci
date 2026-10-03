@@ -56,6 +56,20 @@ continuation PR. The dedicated read-only gate executes the actual memory and
 native compact packages on immutable source with existing ignored markers
 retained. It does not bypass repository-wide lint or qualification failures.
 
+At `ec5df7cf`, Linux executed all 374 native compact/memory tests successfully
+(seven pre-existing ignored cases), including the real SQLite historical reopen
+regression, then passed all-target compilation and formatting. macOS and Windows
+failed early in inherited fixture setup: their temporary-root aliases were not
+canonicalized before strict store admission. The shared fixture now canonicalizes
+the directory it creates; production redirection rejection remains unchanged.
+
+Windows also reproduced a migration line-ending defect. Independently applying
+the 128-object schema inventory to LF migrations produces the required oracle
+`046f23ba...`; CRLF checkout produces exactly the failing Windows oracle
+`0d4c6e5e...`. A narrow Git attribute pins only this memory crate's SQL migrations
+to LF. The required oracle, SQL content, migration versions and runtime checks
+are not altered. Renewed final-head platform results remain a separate gate.
+
 This closes local-development integrity defects only. A normal production
 compact publisher, complete current-input membership in the owner's transaction,
 immutable checkpoint body persistence/loading, selected CAS, final-use recovery,
