@@ -105,8 +105,7 @@ async fn ready(
 ) -> Result<(AgentdClient, SupervisordAgentStatus)> {
     timeout(Duration::from_secs(30), async {
         loop {
-            let status = client
-                .snapshot(agent.clone())
+            let status = snapshot_after_busy(client, agent)
                 .await
                 .context("snapshot while awaiting selected Agentd readiness")?;
             if let Some(generation) = status
@@ -173,9 +172,35 @@ async fn exercise(
         tasks.len() == 1 && tasks[0].task_id == created.task_id,
         "selected product must retain one task without duplicate owner effects"
     );
-    let selection = client
-        .runtime_module_selection("automation.taskflow".to_string())
-        .await?;
+    // Preserve the client's original two-second read budget. The Restart has
+    // already committed; contention permits another read, never another effect.
+    let selection = timeout(Duration::from_secs(2), async {
+        loop {
+            let before = snapshot_after_busy(client, agent).await?;
+            ensure!(
+                same_restart_intent(&second, &before),
+                "selected process changed before module read"
+            );
+            match client
+                .runtime_module_selection("automation.taskflow".to_string())
+                .await
+            {
+                Ok(selection) => {
+                    let after = snapshot_after_busy(client, agent).await?;
+                    ensure!(
+                        same_restart_intent(&second, &after),
+                        "selected process changed during module read"
+                    );
+                    return Ok::<_, anyhow::Error>(selection);
+                }
+                Err(SupervisorError::NotAdmittedBusy) => sleep(Duration::from_millis(25)).await,
+                Err(error) => return Err(error.into()),
+            }
+        }
+    })
+    .await
+    .context("selected module read original deadline")?
+    .context("read selected module after committed Restart")?;
     ensure!(
         selection.selected.context("selected module")?.generation == 7,
         "process restart cannot reinterpret the selected module generation"
@@ -193,6 +218,21 @@ enum ProfileCase {
     RetiredSelected,
 }
 
+// The enclosing original deadline covers every read, busy response and wait.
+// Reads never submit a lifecycle mutation; other error classes fail immediately.
+async fn snapshot_after_busy(
+    client: &SupervisordClient,
+    agent: &AgentId,
+) -> Result<SupervisordAgentStatus> {
+    loop {
+        match client.snapshot(agent.clone()).await {
+            Ok(status) => return Ok(status),
+            Err(SupervisorError::NotAdmittedBusy) => sleep(Duration::from_millis(25)).await,
+            Err(error) => return Err(error.into()),
+        }
+    }
+}
+
 async fn start_allowed_release(
     client: &SupervisordClient,
     agent: &AgentId,
@@ -201,7 +241,9 @@ async fn start_allowed_release(
     // Only an explicit no-admission response can retry. All snapshots, reads,
     // sleeps and RPCs share one two-second deadline, preserving the first intent.
     timeout(Duration::from_secs(2), async {
-        let intent = client.snapshot(agent.clone()).await?;
+        let intent = snapshot_after_busy(client, agent)
+            .await
+            .context("snapshot before original mutation intent")?;
         let mut before = intent.clone();
         loop {
             ensure!(
@@ -213,7 +255,9 @@ async fn start_allowed_release(
                 Ok(_) => return Ok::<_, anyhow::Error>(()),
                 Err(SupervisorError::NotAdmittedBusy | SupervisorError::StaleControlFence) => {
                     sleep(Duration::from_millis(25)).await;
-                    before = client.snapshot(agent.clone()).await?;
+                    before = snapshot_after_busy(client, agent)
+                        .await
+                        .context("read unadmitted Start intent")?;
                 }
                 Err(error) => return Err(error.into()),
             }
@@ -258,7 +302,9 @@ fn same_restart_intent(
 
 async fn restart_same_process(client: &SupervisordClient, agent: &AgentId) -> Result<()> {
     timeout(Duration::from_secs(2), async {
-        let intent = client.snapshot(agent.clone()).await?;
+        let intent = snapshot_after_busy(client, agent)
+            .await
+            .context("snapshot before original mutation intent")?;
         let mut current = intent.clone();
         loop {
             ensure!(
@@ -269,7 +315,9 @@ async fn restart_same_process(client: &SupervisordClient, agent: &AgentId) -> Re
                 Ok(_) => return Ok::<_, anyhow::Error>(()),
                 Err(SupervisorError::StaleControlFence | SupervisorError::NotAdmittedBusy) => {
                     sleep(Duration::from_millis(25)).await;
-                    current = client.snapshot(agent.clone()).await?;
+                    current = snapshot_after_busy(client, agent)
+                        .await
+                        .context("read unadmitted Restart intent")?;
                 }
                 Err(error) => return Err(error.into()),
             }
@@ -387,7 +435,9 @@ async fn run_product_case(case: ProfileCase) -> Result<()> {
             // binary above. The separate owner tests assert the exact error class.
             timeout(Duration::from_secs(15), async {
                 loop {
-                    let status = client.snapshot(agent.clone()).await?;
+                    let status = snapshot_after_busy(&client, &agent)
+                        .await
+                        .context("snapshot while awaiting original rejection")?;
                     ensure!(
                         !status.healthy,
                         "rejected {case:?} became a healthy product"
