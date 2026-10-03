@@ -1,5 +1,6 @@
 use super::*;
 use codex_app_server_protocol::ProjectReadByIdempotencyKeyParams;
+use pretty_assertions::assert_eq;
 
 #[tokio::test]
 async fn cold_project_key_read_observes_only_the_existing_binding() -> Result<()> {

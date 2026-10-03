@@ -10,6 +10,7 @@ use codex_app_server_protocol::ThreadQueueObserveParams;
 use codex_app_server_protocol::ThreadQueueObserveResponse;
 use codex_app_server_protocol::ThreadSource;
 use codex_utils_absolute_path::AbsolutePathBuf;
+use pretty_assertions::assert_eq;
 
 async fn observed_fixture() -> Result<(TestAppServer, TempDir, MockServer, ThreadQueueObserveParams)>
 {
