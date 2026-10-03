@@ -507,6 +507,10 @@ pub use plasticity_owner_evidence::PlasticityDynamicOwnerEvidenceResolverV1;
 #[cfg(feature = "server")]
 pub use plasticity_owner_evidence::PlasticityDynamicSignalBindingV1;
 #[cfg(feature = "server")]
+pub use plasticity_owner_evidence::PlasticityNeuronEligibilityReaderV1;
+#[cfg(feature = "server")]
+pub use plasticity_owner_evidence::PlasticityNeuronEligibilityReaderV2;
+#[cfg(feature = "server")]
 pub use plasticity_owner_evidence::plasticity_eligibility_digest_v1;
 #[cfg(feature = "server")]
 pub use plasticity_owner_evidence::plasticity_modulator_broadcast_digest_v1;

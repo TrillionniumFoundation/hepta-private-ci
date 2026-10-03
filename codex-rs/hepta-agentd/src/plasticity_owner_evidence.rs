@@ -30,6 +30,12 @@ use crate::PlasticityOwnerEvidenceQueryV1;
 use crate::PlasticityOwnerEvidenceResolverV1;
 use crate::VerifiedPlasticityOwnerEvidenceV1;
 
+#[path = "plasticity_neuron_eligibility_reader.rs"]
+mod neuron_eligibility;
+pub use neuron_eligibility::PlasticityNeuronEligibilityReaderV1;
+pub use neuron_eligibility::PlasticityNeuronEligibilityReaderV2;
+use neuron_eligibility::SparseJournalEligibilityReaderV1;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PlasticityArtifactOwnerBindingV1 {
     pub kind: PlasticityOwnerEvidenceKindV1,
@@ -193,7 +199,7 @@ pub struct PlasticityDynamicOwnerEvidenceResolverV1 {
     ndu_journal: Arc<RwLock<NduProjectionJournalV1>>,
     ndu_prefix: Vec<Digest32>,
     modulator_values: Vec<FixedQ32>,
-    neuron_journal: Arc<Mutex<SparseJournal>>,
+    neuron_reader: Arc<dyn PlasticityNeuronEligibilityReaderV1>,
     acknowledged_neuron_anchor: JournalAnchor,
     broadcast_artifacts: ArtifactRegistry,
     broadcast_artifact_id: StableId,
@@ -212,6 +218,44 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
         ndu_journal: Arc<RwLock<NduProjectionJournalV1>>,
         modulator_values: Vec<FixedQ32>,
         neuron_journal: Arc<Mutex<SparseJournal>>,
+        acknowledged_neuron_anchor: JournalAnchor,
+        broadcast_artifacts: ArtifactRegistry,
+        broadcast_artifact_id: StableId,
+        bindings: Vec<PlasticityDynamicSignalBindingV1>,
+        observed_at: u64,
+        expires_at: u64,
+    ) -> Result<Self, PlasticityOwnerEvidenceErrorV1> {
+        Self::with_neuron_reader(
+            objective_digest,
+            ndu_subject_digest,
+            ndu_owner_id,
+            neuron_owner_id,
+            ndu_journal,
+            modulator_values,
+            Arc::new(SparseJournalEligibilityReaderV1 {
+                journal: neuron_journal,
+            }),
+            acknowledged_neuron_anchor,
+            broadcast_artifacts,
+            broadcast_artifact_id,
+            bindings,
+            observed_at,
+            expires_at,
+        )
+    }
+
+    /// Use the same authoritative dynamic fact calculations with a deployment's
+    /// current acknowledged Neuron owner. The reader must verify the original
+    /// owner and retained anchor, never return a caller-authored checkpoint.
+    #[allow(clippy::too_many_arguments)]
+    pub fn with_neuron_reader(
+        objective_digest: Digest32,
+        ndu_subject_digest: Digest32,
+        ndu_owner_id: StableId,
+        neuron_owner_id: StableId,
+        ndu_journal: Arc<RwLock<NduProjectionJournalV1>>,
+        modulator_values: Vec<FixedQ32>,
+        neuron_reader: Arc<dyn PlasticityNeuronEligibilityReaderV1>,
         acknowledged_neuron_anchor: JournalAnchor,
         broadcast_artifacts: ArtifactRegistry,
         broadcast_artifact_id: StableId,
@@ -250,13 +294,7 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
         }
 
         {
-            let journal = neuron_journal
-                .lock()
-                .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?;
-            let checkpoint = journal
-                .current()
-                .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?
-                .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
+            let checkpoint = neuron_reader.read(acknowledged_neuron_anchor)?;
             if checkpoint.digest() != acknowledged_neuron_anchor.checkpoint_digest {
                 return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
             }
@@ -310,7 +348,7 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
             ndu_journal,
             ndu_prefix,
             modulator_values,
-            neuron_journal,
+            neuron_reader,
             acknowledged_neuron_anchor,
             broadcast_artifacts,
             broadcast_artifact_id,
@@ -352,22 +390,11 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
     fn current_eligibility(
         &self,
     ) -> Result<(Digest32, Digest32, Vec<i64>), PlasticityOwnerEvidenceErrorV1> {
-        let journal = self
-            .neuron_journal
-            .lock()
-            .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?;
-        let checkpoint = journal
-            .current()
-            .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?
-            .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
-        if checkpoint.digest().is_zero()
-            || !journal
-                .contains_anchor(self.acknowledged_neuron_anchor)
-                .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?
-        {
+        let checkpoint = self.neuron_reader.read(self.acknowledged_neuron_anchor)?;
+        if checkpoint.digest().is_zero() {
             return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
         }
-        let digest = plasticity_eligibility_digest_v1(checkpoint)?;
+        let digest = plasticity_eligibility_digest_v1(&checkpoint)?;
         Ok((
             digest,
             checkpoint.digest(),
