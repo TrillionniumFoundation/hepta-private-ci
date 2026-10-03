@@ -1,4 +1,3 @@
-use std::num::NonZeroU32;
 use std::path::Path;
 
 use codex_hepta_types::Digest32;
@@ -25,10 +24,7 @@ pub struct AuthBusAuthorityStore {
 
 impl AuthBusAuthorityStore {
     pub async fn open(path: &Path) -> Result<Self, AuthBusAuthorityError> {
-        let connections = NonZeroU32::try_from(5_u32).map_err(storage)?;
-        let pool = codex_state::open_durable_sqlite_pool(path, connections)
-            .await
-            .map_err(storage)?;
+        let pool = crate::sqlite::open_durable_pool(path).await?;
         let quick_check: String = sqlx::query_scalar("PRAGMA quick_check")
             .fetch_one(&pool)
             .await

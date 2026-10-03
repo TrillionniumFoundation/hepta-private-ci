@@ -1,6 +1,6 @@
 #![allow(
     clippy::unwrap_used,
-    reason = "integration fixtures and owner assertions deliberately fail the test on invalid setup or unexpected results"
+    reason = "integration assertions and fixture setup must fail the test immediately"
 )]
 
 use codex_hepta_bellman_operator::*;

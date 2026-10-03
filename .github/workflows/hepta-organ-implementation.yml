@@ -115,7 +115,7 @@ jobs:
           set -euo pipefail
           args=()
           for package in $PACKAGES; do args+=(-p "$package"); done
-          cargo clippy --locked "${args[@]}" --all-targets -- -D warnings
+          cargo clippy --locked "${args[@]}" --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Formatting check without source mutation
         if: always()

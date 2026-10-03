@@ -155,6 +155,7 @@ WHERE websocket_url = ? AND account_id = ? AND app_server_client_name = ?
 mod tests {
     use super::RemoteControlEnrollmentRecord;
     use super::StateRuntime;
+    use super::test_support::create_private_test_directory;
     use super::test_support::unique_temp_dir;
     use crate::migrations::STATE_MIGRATOR;
     use codex_utils_absolute_path::test_support::PathExt;
@@ -331,9 +332,7 @@ mod tests {
     #[tokio::test]
     async fn migration_preserves_legacy_remote_control_preference_as_null() {
         let codex_home = unique_temp_dir();
-        tokio::fs::create_dir_all(&codex_home)
-            .await
-            .expect("create codex home");
+        create_private_test_directory(&codex_home).expect("create private codex home");
         let old_state_migrator = Migrator {
             migrations: Cow::Owned(
                 STATE_MIGRATOR

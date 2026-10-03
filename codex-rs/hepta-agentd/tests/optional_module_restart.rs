@@ -5,7 +5,7 @@
 //! or deployed-host performance claim is made by this fixture.
 #![allow(
     clippy::expect_used,
-    reason = "the process qualification fixture deliberately fails on setup and assertion errors"
+    reason = "integration assertions and fixture setup must fail the test immediately"
 )]
 
 use std::fs::File;

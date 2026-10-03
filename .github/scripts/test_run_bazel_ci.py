@@ -18,32 +18,49 @@ import os
 import sys
 from pathlib import Path
 
-with Path(os.environ['BAZEL_PROBE_LOG']).open('a', encoding='utf-8') as output:
-    output.write(json.dumps(sys.argv[1:]) + '\\n')
-pattern_files = [arg.split('=', 1)[1] for arg in sys.argv[1:]
-                 if arg.startswith('--target_pattern_file=')]
-if pattern_files:
-    assert len(pattern_files) == 1
-    native_path = pattern_files[0]
+raw_args = sys.argv[1:]
+if os.environ.get('BAZEL_PROBE_TRANSPORT_LOG'):
+    with Path(os.environ['BAZEL_PROBE_TRANSPORT_LOG']).open('a', encoding='utf-8') as output:
+        output.write(json.dumps(raw_args) + '\\n')
+if os.environ.get('BAZEL_PROBE_ARGV_LIMIT') and sum(len(arg.encode('utf-16-le')) // 2 + 3 for arg in raw_args) > int(os.environ['BAZEL_PROBE_ARGV_LIMIT']):
+    print('recorded native command line exceeded the Windows argument limit')
+    sys.exit(126)
+
+patterns = next((arg for arg in raw_args if arg.startswith('--target_pattern_file=')), None)
+if patterns:
+    native_path = patterns.split('=', 1)[1]
     path = native_path
     mapping = Path(os.environ['BAZEL_PROBE_PATH_MAPPING'])
     if mapping.exists():
-        path = json.loads(mapping.read_text(encoding='utf-8'))[native_path]
+        path = json.loads(mapping.read_text(encoding='utf-8')).get(native_path, native_path)
     contents = Path(path).read_bytes().decode('utf-8')
+    effective_patterns = [pattern for line in contents.split('\\n')
+                          if (pattern := line.split('#', 1)[0].strip(
+                              ''.join(chr(value) for value in range(33))))]
     Path(os.environ['BAZEL_PROBE_TARGET_FILE_LOG']).write_text(json.dumps({
         'native_path': native_path,
         'path': path,
+        'native_argv': raw_args,
         'contents': contents,
-        'effective_patterns': [pattern for line in contents.split('\\n')
-                               if (pattern := line.split('#', 1)[0].strip(
-                                   ''.join(chr(value) for value in range(33))))],
+        'effective_patterns': effective_patterns,
         'msys_arg_conv_excl': os.environ.get('MSYS2_ARG_CONV_EXCL'),
     }), encoding='utf-8')
+    prefix = [arg for arg in raw_args if arg != patterns]
+    if prefix and prefix[-1] == '--':
+        prefix.pop()
+    sys.argv[1:] = prefix + ['--', *effective_patterns]
+with Path(os.environ['BAZEL_PROBE_LOG']).open('a', encoding='utf-8') as output:
+    output.write(json.dumps(sys.argv[1:]) + '\\n')
 command = next(arg for arg in sys.argv[1:] if not arg.startswith('-'))
 if command == 'info':
     print(os.environ['BAZEL_PROBE_TESTLOGS'])
 elif command == 'query':
-    print('//codex-rs/fake:library')
+    if os.environ.get('BAZEL_PROBE_QUERY_FILE'):
+        sys.stdout.buffer.write(Path(os.environ['BAZEL_PROBE_QUERY_FILE']).read_bytes())
+    elif os.environ.get('BAZEL_PROBE_QUERY_CRLF') == '1':
+        sys.stdout.buffer.write(b'//codex-rs/fake:library\\r\\n')
+    else:
+        print('//codex-rs/fake:library')
 elif os.environ.get('BAZEL_PROBE_FAIL') == '1':
     print('ERROR: fake/BUILD.bazel:1:1: Linking //fake:target failed: (Exit 37)')
     print('error: linking with rust-lld failed: exit code: 37')
@@ -95,9 +112,12 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             cygpath_probe.write_text(
                 "import json, os, sys\n"
                 "from pathlib import Path\n"
-                "assert sys.argv[1] == '-m' and len(sys.argv) == 3\n"
+                "assert sys.argv[1] in ('-m', '-w') and len(sys.argv) == 3\n"
                 "if os.environ.get('BAZEL_PROBE_CYGPATH_FAIL') == '1':\n"
                 "    sys.exit(23)\n"
+                "if sys.argv[1] == '-w':\n"
+                "    print(sys.argv[2])\n"
+                "    sys.exit(0)\n"
                 "native = 'C:/Bazel target patterns/' + Path(sys.argv[2]).name\n"
                 "Path(os.environ['BAZEL_PROBE_PATH_MAPPING']).write_text(\n"
                 "    json.dumps({native: sys.argv[2]}), encoding='utf-8')\n"
@@ -205,10 +225,12 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             observed["contents"], "".join(target + "\n" for target in targets)
         )
         self.assertEqual(observed["effective_patterns"], targets)
-        self.assertIn(f"--target_pattern_file={observed['native_path']}", args)
-        self.assertRegex(observed["native_path"], r"^[A-Za-z]:[/\\]")
+        self.assertIn(
+            f"--target_pattern_file={observed['native_path']}", observed["native_argv"]
+        )
+        self.assertTrue(Path(observed["native_path"]).is_absolute())
         self.assertEqual(observed["msys_arg_conv_excl"], "*")
-        self.assertEqual(args[args.index("--") + 1 :], [])
+        self.assertEqual(args[args.index("--") + 1 :], targets)
         for flag in (
             "--config=clippy",
             "--config=ci-windows",
@@ -236,7 +258,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
         self.assertEqual(len(calls), 2)
         build, info = calls
-        self.assertTrue(any(arg.startswith("--target_pattern_file=") for arg in build))
+        self.assertEqual(build[build.index("--") + 1 :], self.long_targets())
         self.assertFalse(any(arg.startswith("--target_pattern_file=") for arg in info))
         for flag in (
             "--config=ci-windows",
@@ -298,8 +320,6 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
             "//fixture:trailing ",
             "\x07//fixture:leading-control",
             "//fixture:trailing-control\x07",
-            "//fixture:new\nline",
-            "//fixture:carriage\rreturn",
             "",
         ):
             with self.subTest(pattern=pattern):
@@ -369,6 +389,91 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         )
         self.assertEqual(args[args.index("--") + 1 :], ["//fake:target"])
 
+    def test_large_windows_build_preserves_all_targets_without_a_large_native_command(
+        self,
+    ) -> None:
+        targets = [
+            f"//long_package_{index:04d}/native_component:clippy_target"
+            for index in range(900)
+        ]
+        targets.extend(["-//excluded:target", "//路径 with spaces:target"])
+        arguments = ["--", "build", "--config=clippy", "--", *targets]
+        invocation = self.root / "ci-arguments.nul"
+        invocation.write_bytes(
+            b"\0".join(arg.encode("utf-8") for arg in arguments) + b"\0"
+        )
+        driver = self.root / "driver.sh"
+        driver.write_text(
+            "if type mapfile >/dev/null 2>&1; then enable -n mapfile; fi\n"
+            "ci_args=()\n"
+            'while IFS= read -r -d "" ci_arg; do ci_args+=("$ci_arg"); done < "$1"\n'
+            'source "$2" "${ci_args[@]}"\n',
+            encoding="utf-8",
+        )
+        physical = self.root / "physical-arguments.jsonl"
+        self.env.update(
+            BAZEL_PROBE_TRANSPORT_LOG=str(physical),
+            BAZEL_PROBE_ARGV_LIMIT="32767",
+        )
+        result = subprocess.run(
+            [self.bash, str(driver), str(invocation), str(SCRIPTS / "run-bazel-ci.sh")],
+            env=self.env,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        calls = [
+            json.loads(line)
+            for line in self.log.read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertEqual(calls[0][calls[0].index("--") + 1 :], targets)
+        self.assertIn("--config=clippy", calls[0])
+        native_args = json.loads(physical.read_text(encoding="utf-8").splitlines()[0])
+        self.assertLess(
+            sum(len(arg.encode("utf-16-le")) // 2 + 3 for arg in native_args), 32767
+        )
+        pattern_file = next(
+            arg.split("=", 1)[1]
+            for arg in native_args
+            if arg.startswith("--target_pattern_file=")
+        )
+        self.assertFalse(
+            Path(pattern_file).exists(), "retired Bazel must release its target file"
+        )
+
+    def test_windows_target_files_preserve_test_and_coverage_failures(self) -> None:
+        self.env["BAZEL_PROBE_FAIL"] = "1"
+        physical = self.root / "physical-arguments.jsonl"
+        self.env["BAZEL_PROBE_TRANSPORT_LOG"] = str(physical)
+        targets = self.long_targets() + ["//路径 with spaces:target"]
+        for command in ("test", "coverage"):
+            with self.subTest(command=command):
+                if self.log.exists():
+                    self.log.unlink()
+                if physical.exists():
+                    physical.unlink()
+                result, calls = self.run_wrapper(
+                    "--", command, "--keep_going", targets=targets
+                )
+                self.assertEqual(result.returncode, 37, result.stdout + result.stderr)
+                self.assertIn(command, calls[0])
+                self.assertIn("--keep_going", calls[0])
+                self.assertEqual(calls[0][calls[0].index("--") + 1 :], targets)
+                native_args = json.loads(
+                    physical.read_text(encoding="utf-8").splitlines()[0]
+                )
+                pattern_file = next(
+                    arg.split("=", 1)[1]
+                    for arg in native_args
+                    if arg.startswith("--target_pattern_file=")
+                )
+                self.assertFalse(
+                    Path(pattern_file).exists(),
+                    "failed Bazel must release its target file",
+                )
+
     def test_native_windows_forwards_required_msvc_environment(self) -> None:
         result, calls = self.run_wrapper(
             "--windows-msvc-host-platform",
@@ -432,19 +537,8 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         )
 
     def test_windows_argument_lint_uses_the_shared_split_abi_wrapper(self) -> None:
-        result = subprocess.run(
-            [
-                self.bash,
-                str(SCRIPTS / "run-argument-comment-lint-bazel.sh"),
-                "--config=argument-comment-lint",
-                "--platforms=//:local_windows",
-            ],
-            env=self.env,
-            check=False,
-            capture_output=True,
-            text=True,
-            timeout=60,
-        )
+        self.env["BAZEL_PROBE_QUERY_CRLF"] = "1"
+        result = self.run_argument_lint()
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         calls = [
             json.loads(line)
@@ -461,6 +555,54 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertNotIn("--platforms=//:local_windows", build)
         self.assertIn("--skip_incompatible_explicit_targets", build)
         self.assertEqual(build[build.index("--") + 1 :], ["//codex-rs/fake:library"])
+
+    def run_argument_lint(self) -> subprocess.CompletedProcess[str]:
+        return subprocess.run(
+            [
+                self.bash,
+                str(SCRIPTS / "run-argument-comment-lint-bazel.sh"),
+                "--config=argument-comment-lint",
+                "--platforms=//:local_windows",
+            ],
+            env=self.env,
+            check=False,
+            capture_output=True,
+            text=True,
+            timeout=60,
+        )
+
+    def test_windows_argument_lint_preserves_the_entire_large_crlf_query_roster(
+        self,
+    ) -> None:
+        targets = [
+            f"//long_package_{index:04d}/native_component:library"
+            for index in range(900)
+        ]
+        targets.append("//路径:library")
+        roster = self.root / "query labels.txt"
+        roster.write_bytes(("\r\n".join(targets) + "\r\n").encode("utf-8"))
+        physical = self.root / "physical-arguments.jsonl"
+        self.env.update(
+            BAZEL_PROBE_QUERY_FILE=str(roster),
+            BAZEL_PROBE_TRANSPORT_LOG=str(physical),
+            BAZEL_PROBE_ARGV_LIMIT="32767",
+        )
+        result = self.run_argument_lint()
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        calls = [
+            json.loads(line)
+            for line in self.log.read_text(encoding="utf-8").splitlines()
+        ]
+        self.assertEqual(len(calls), 2)
+        build = calls[1]
+        self.assertEqual(build[build.index("--") + 1 :], targets)
+        native_args = json.loads(physical.read_text(encoding="utf-8").splitlines()[1])
+        pattern_file = next(
+            arg.split("=", 1)[1]
+            for arg in native_args
+            if arg.startswith("--target_pattern_file=")
+        )
+        self.assertFalse(Path(pattern_file).exists())
 
     def test_authenticated_cross_keeps_linux_build_actions_and_windows_tests(
         self,

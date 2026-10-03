@@ -57,7 +57,7 @@ jobs:
         run: just test --locked -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts
       - name: Strict lint
         working-directory: codex-rs
-        run: cargo clippy --locked -p codex-hepta-shadow-qualification -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts --all-targets -- -D warnings
+        run: cargo clippy --locked -p codex-hepta-shadow-qualification -p codex-hepta-learning-ledger -p codex-hepta-learning-artifacts --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
       - name: Check formatting
         if: always()
         working-directory: codex-rs

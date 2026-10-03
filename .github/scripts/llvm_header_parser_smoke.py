@@ -141,7 +141,9 @@ class HeaderParserSmokeTest(unittest.TestCase):
                     result = self.invoke()
                     self.assertEqual(result.returncode, 2)
                     self.assertEqual(result.stdout, "")
-                    self.assertIn(f"required env var {variable} is not set", result.stderr)
+                    self.assertIn(
+                        f"required env var {variable} is not set", result.stderr
+                    )
 
     def test_invalid_stamp_rejects_before_compiler(self) -> None:
         self.env["PARSE_HEADER"] = str(self.root)

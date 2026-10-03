@@ -38,6 +38,18 @@ pub(crate) fn unique_temp_dir() -> PathBuf {
 }
 
 #[cfg(test)]
+pub(crate) fn create_private_test_directory(path: &Path) -> std::io::Result<()> {
+    let mut builder = std::fs::DirBuilder::new();
+    builder.recursive(true);
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::DirBuilderExt;
+        builder.mode(0o700);
+    }
+    builder.create(path)
+}
+
+#[cfg(test)]
 pub(super) fn test_thread_metadata(
     codex_home: &Path,
     thread_id: ThreadId,

@@ -21,6 +21,7 @@ use crate::operator_namespace::OperatorNamespace;
 use crate::operator_namespace::configure_protected_open;
 
 const CHECKPOINT_SCHEMA_VERSION: u32 = 1;
+#[cfg(unix)]
 const MAX_CHECKPOINT_BYTES: u64 = 4096;
 
 #[derive(Deserialize, Serialize)]

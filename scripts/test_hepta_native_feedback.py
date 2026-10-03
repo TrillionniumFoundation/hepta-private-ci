@@ -20,6 +20,8 @@ import sys
 import tempfile
 import unittest
 
+from scripts.hepta_workflow_commands import load_workflow, workflow_events
+
 ROOT = Path(__file__).resolve().parents[1]
 WORKFLOW = ROOT / ".github/workflows/hepta-consolidated-source.yml"
 
@@ -161,6 +163,43 @@ class NativeFeedbackPolicyTests(unittest.TestCase):
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json", pattern))
             self.assertTrue(fnmatch.fnmatchcase("owner-test.json.1234.log", pattern))
 
+    def test_build_inputs_reach_the_unfiltered_aggregate_scope(self):
+        from scripts.hepta_ci_scope import select
+
+        document = load_workflow(WORKFLOW.read_text(encoding="utf-8"))
+
+        self.assertIn("workflow_call", workflow_events(document))
+        self.assertNotIn("pull_request", workflow_events(document))
+        aggregate = load_workflow(
+            (ROOT / ".github/workflows/blocking-ci.yml").read_text()
+        )
+        self.assertIn("pull_request", workflow_events(aggregate))
+        self.assertIsInstance(aggregate.get("on", {}).get("pull_request"), dict)
+        self.assertFalse(
+            {"paths", "paths-ignore"} & set(aggregate["on"]["pull_request"])
+        )
+        for path in (
+            ".cargo/config.toml",
+            "codex-rs/.cargo/config.toml",
+            "rust-toolchain",
+            "rust-toolchain.toml",
+            "codex-rs/rust-toolchain",
+            "codex-rs/rust-toolchain.toml",
+        ):
+            with self.subTest(path=path):
+                selected = select([path])
+                self.assertTrue(selected["full_repo"])
+                self.assertTrue(selected["native"])
+        for path in (
+            "scripts/hepta_workspace.py",
+            "scripts/test_hepta_native_feedback.py",
+        ):
+            with self.subTest(path=path):
+                self.assertTrue(select([path])["derived"])
+
+
+class NativeFeedbackExecutionTests(unittest.TestCase):
+
     def test_build_inputs_reach_automatic_scope_and_dependency_selection(self):
         try:
             from scripts.hepta_ci_dependencies import Graph, select_packages
@@ -246,6 +285,10 @@ class NativeFeedbackExecutionTests(unittest.TestCase):
         shutil.copyfile(
             ROOT / "scripts/hepta_ci_dependencies.py",
             self.repo / "scripts/hepta_ci_dependencies.py",
+        )
+        shutil.copyfile(
+            ROOT / "scripts/hepta_ci_git_objects.py",
+            self.repo / "scripts/hepta_ci_git_objects.py",
         )
         (self.repo / "scripts/hepta-gap-closure.py").write_text(
             'import os\nprint("document diagnostic sentinel")\nraise SystemExit(int(os.environ.get("DOC_RC", "0")))\n'
@@ -458,7 +501,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                     "--all-targets",
                     "--",
                     "-D",
-                    "warnings",
+                    "clippy::correctness",
                 ],
             ],
         )
@@ -532,7 +575,7 @@ raise SystemExit(int(os.environ.get("FAIL_" + phase.upper(), "0")))
                     "--all-targets",
                     "--",
                     "-D",
-                    "warnings",
+                    "clippy::correctness",
                 ],
             ],
         )
