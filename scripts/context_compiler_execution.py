@@ -109,6 +109,23 @@ def specs(legacy):
     # context compiler crate in isolation.
     commands[2:2] = [
         {
+            "name": "core-websocket-connection-identity-regression",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-core",
+                "--lib",
+                "client::tests::websocket_connection_identity_binds_provider_and_stable_handshake_semantics",
+            ],
+            "minimumTests": 1,
+            "requiredNativeTests": [
+                "client::tests::websocket_connection_identity_binds_provider_and_stable_handshake_semantics",
+            ],
+        },
+        {
             "name": "agent-protocol-effect-wire-regression",
             "cwd": legacy.CODEX_RS,
             "argv": [

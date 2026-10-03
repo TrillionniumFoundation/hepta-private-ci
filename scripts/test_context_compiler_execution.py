@@ -17,6 +17,38 @@ def libtest(passed=1, failed=0, ignored=0):
 
 
 class ExecutionSummaryTests(unittest.TestCase):
+    def test_websocket_identity_regression_requires_actual_named_nonzero_execution(
+        self,
+    ):
+        from context_compiler_named_evidence import bind_named_tests
+
+        spec = next(
+            value
+            for value in specs(legacy)
+            if value["name"] == "core-websocket-connection-identity-regression"
+        )
+        self.assertIn("codex-core", spec["argv"])
+        self.assertIn("--lib", spec["argv"])
+        self.assertEqual(spec["minimumTests"], 1)
+        name = "client::tests::websocket_connection_identity_binds_provider_and_stable_handshake_semantics"
+        self.assertEqual(spec["requiredNativeTests"], [name])
+        for count, observed, expected in [
+            (0, name, False),
+            (1, "client::tests::unrelated", False),
+            (1, name, True),
+        ]:
+            with self.subTest(count=count, observed=observed):
+                result = {"succeeded": True}
+                log = f"Summary [1s] {count} tests run: {count} passed"
+                bind_test_count(log, spec, result)
+                with tempfile.TemporaryDirectory() as directory:
+                    path = Path(directory) / "native.log"
+                    path.write_text(f"PASS [0.1s] (1/1) codex-core {observed}\n{log}\n")
+                    named = bind_named_tests(path, spec["requiredNativeTests"])
+                self.assertEqual(
+                    result["succeeded"] and named["namedNativeTestsPassed"], expected
+                )
+
     def test_protocol_wire_regression_requires_actual_named_nonzero_execution(self):
         from context_compiler_named_evidence import bind_named_tests
 
