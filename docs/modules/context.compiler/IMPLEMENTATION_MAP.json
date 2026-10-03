@@ -3,7 +3,7 @@
   "module": "context.compiler",
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "5ec474d26b2abfaee802798f0cd1ab86c3fe61c6ae2a3cc573a5b82352ac66fc",
+    "stateSha256": "b71a2ae06c5c670edab2597af75e3f421b92b72103c342a7dedda62a4bac3b85",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
@@ -92,7 +92,9 @@
     "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
     "codex-rs/hepta-agentd/src/intelligence_learning_candidates.rs",
     "codex-rs/hepta-agentd/src/intelligence_learning_candidates_tests.rs",
-    "codex-rs/hepta-agentd/src/lib.rs"
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/core/src/test_support.rs",
+    "codex-rs/core/src/test_support/turn_retirement.rs"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -284,14 +286,14 @@
     "Execute all seventeen lifecycle/capacity/metrics Rust regressions on the final source and merge candidates, including their named-output and bounded-profile validation. Local toolchain availability and local passing tests do not replace immutable CI lane receipts.",
     "Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations.",
     "Unix descriptor-relative storage defenses do not establish Windows parity, target-host power-loss durability or resistance to a privileged same-user replace-and-restore adversary.",
-    "Two seeded remote-v1 compaction policy fixtures have failed intermittently before their required request or terminal counts. Core delivers TurnComplete before terminal flush and admission-fence retirement. Source diagnostics now separately hold flush and idle publication and capture correlated start errors, but exact-head native diagnostic execution and the failing integration Error event are still required before attributing those failures. Retirement alone is neither durable-success proof nor an admission reservation; no lifecycle ordering or admission policy is changed by these diagnostics.",
+    "Historical 29781b75 source and merge receipts directly reproduce the correlated terminalizing rejection in both seeded remote-v1 compaction fixtures and pass the held-fence diagnostic. The new test-support observer only stabilizes the fixture admission observation; current native stability remains unverified, including its deliberate conservative Busy result during legitimate registry contention. Visible TurnComplete, successful durability, fence retirement and an atomic admission reservation remain distinct. No production completion-readiness API or lifecycle-order fix is provided.",
     "The Agentd dependency repair and the subsequent qualification candidate projection require fresh exact-head native evidence. The adapter now explicitly represents the already committed intrinsic abstain outcome without changing signed policy actions; its owner fixtures are not ordinary host-trust installation, a factory or production-write authority. Three dormant Plasticity producer/state diagnostic groups retain the production lifetime sender; the documented non-test coordinator remains missing and is not fabricated or suppressed. The compaction assertion import and borrowed Context delivery carrier likewise require their own actual native cases; none of these source changes grants global acceptance.",
-    "The fbfa source/prospective-merge qualification failed at the V3 consumer API boundary (17/35 and 16/35 commands). New Agentd candidate-projection commands had zero executed tests. The two-file consumer correction requires fresh exact-head feature/consumer compilation and native evidence before any claim for the new qualification adapter. The separate test-support retirement observer remains outside this source checkpoint."
+    "The fbfa V3 consumer compile failure left the new Agentd candidate-projection commands unexecuted. Its two-file correction at 82cda6a9 passed all ten exact source/merge feature and downstream cargo-check profiles with verified artifacts, but that compilation evidence does not qualify native adapter execution or subsequent observer sources. Each current candidate still requires its own native evidence and independent product acceptance."
   ],
   "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
   "integrationBranch": "codex/context-compiler-v3-closure-20260928",
-  "runtimeSourceAnchor": "569c2f171d47a019cd98b872c090a5ca3b9902c5",
-  "runtimeSourceTree": "3bb5739312bd6fa70af2c300097afe885add9c45",
+  "runtimeSourceAnchor": "8ac8a1e09c40f9bfa376f6c3898191af1c6709a3",
+  "runtimeSourceTree": "89f4240472f0a36ee1918e8a3e3a9dafa5fabee7",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -461,7 +463,7 @@
     },
     {
       "path": "scripts/context_compiler_execution.py",
-      "blobSha": "efe6cfdf74eb71f8ebb98830ffea9b82d3f63c43"
+      "blobSha": "6a4b1265af64fab8a28df98733c622eab387c3e9"
     },
     {
       "path": "scripts/context_compiler_named_evidence.py",
@@ -533,7 +535,7 @@
     },
     {
       "path": "scripts/test_context_compiler_execution.py",
-      "blobSha": "7b70bd2e51d993259c71b64d9bee43d76c43f65d"
+      "blobSha": "9ab1475b484ecd4188ca2a73674bfebc77271e4a"
     },
     {
       "path": "scripts/test_context_compiler_execution_boundary.py",
@@ -569,11 +571,11 @@
     },
     {
       "path": "codex-rs/core/src/session/compaction_admission_tests.rs",
-      "blobSha": "d219796b5048d6db1b1442214b01ef5abca495c8"
+      "blobSha": "faf42c6eee6a44155263b736cea759dd99981993"
     },
     {
       "path": "codex-rs/core/tests/suite/model_provider_policy_compaction.rs",
-      "blobSha": "fe8aa763d0a687eb6164ba2fd4380bee59f33a7f"
+      "blobSha": "b219cd3d58d215d1ae459ba16cdfbb9001df97a0"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
@@ -602,6 +604,14 @@
     {
       "path": "codex-rs/hepta-agentd/src/lib.rs",
       "blobSha": "e811093230067916d643a6bfab8e437e83d3e597"
+    },
+    {
+      "path": "codex-rs/core/src/test_support.rs",
+      "blobSha": "39e0db0dfc7c4be8014ac8cb1e07057520938e15"
+    },
+    {
+      "path": "codex-rs/core/src/test_support/turn_retirement.rs",
+      "blobSha": "7725da21a8adad9277e65f7adac94d349a7315a3"
     }
   ],
   "consumerExecution": [
@@ -1049,12 +1059,12 @@
     "currentHeadQualification": "absent"
   },
   "sourceBase": {
-    "commit": "569c2f171d47a019cd98b872c090a5ca3b9902c5",
-    "tree": "3bb5739312bd6fa70af2c300097afe885add9c45"
+    "commit": "8ac8a1e09c40f9bfa376f6c3898191af1c6709a3",
+    "tree": "89f4240472f0a36ee1918e8a3e3a9dafa5fabee7"
   },
   "observedAtHead": {
-    "commit": "569c2f171d47a019cd98b872c090a5ca3b9902c5",
-    "tree": "3bb5739312bd6fa70af2c300097afe885add9c45"
+    "commit": "8ac8a1e09c40f9bfa376f6c3898191af1c6709a3",
+    "tree": "89f4240472f0a36ee1918e8a3e3a9dafa5fabee7"
   },
   "observedSourcePaths": [
     "codex-rs/hepta-context-compiler",
@@ -1309,11 +1319,19 @@
     },
     {
       "path": "codex-rs/core/src/session/compaction_admission_tests.rs",
-      "object": "d219796b5048d6db1b1442214b01ef5abca495c8"
+      "object": "faf42c6eee6a44155263b736cea759dd99981993"
     },
     {
       "path": "codex-rs/core/src/session/tests.rs",
       "object": "9b03a390aba8ceeaf2ed24a5e27ad6c5da41e737"
+    },
+    {
+      "path": "codex-rs/core/src/test_support.rs",
+      "object": "39e0db0dfc7c4be8014ac8cb1e07057520938e15"
+    },
+    {
+      "path": "codex-rs/core/src/test_support/turn_retirement.rs",
+      "object": "7725da21a8adad9277e65f7adac94d349a7315a3"
     },
     {
       "path": "codex-rs/core/tests/suite/model_provider_policy.rs",
@@ -1321,7 +1339,7 @@
     },
     {
       "path": "codex-rs/core/tests/suite/model_provider_policy_compaction.rs",
-      "object": "fe8aa763d0a687eb6164ba2fd4380bee59f33a7f"
+      "object": "b219cd3d58d215d1ae459ba16cdfbb9001df97a0"
     },
     {
       "path": "codex-rs/hepta-agentd/src/context_security_runtime.rs",
@@ -1425,11 +1443,11 @@
     },
     {
       "path": "scripts/context_compiler_execution.py",
-      "object": "efe6cfdf74eb71f8ebb98830ffea9b82d3f63c43"
+      "object": "6a4b1265af64fab8a28df98733c622eab387c3e9"
     },
     {
       "path": "scripts/test_context_compiler_execution.py",
-      "object": "7b70bd2e51d993259c71b64d9bee43d76c43f65d"
+      "object": "9ab1475b484ecd4188ca2a73674bfebc77271e4a"
     }
   ],
   "claimBoundary": {
