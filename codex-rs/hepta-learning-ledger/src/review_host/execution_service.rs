@@ -77,9 +77,9 @@ pub(super) fn launch_generator(
     request: &Path,
     output: &Path,
 ) -> ReviewResult<ExitStatus> {
-    let output_file = create_private(output, &[])?;
+    let (output_file, error_file) =
+        super::native_fixed_role_publication::reserve_original_fixed_role_output_v1(output)?;
     let error_path = output.with_extension("stderr.log");
-    let error_file = create_private(&error_path, &[])?;
     // systemd first bounds the service; the only initial capabilities permit
     // fixed setpriv to drop UID/groups and then every capability before exec.
     let unit = format!(

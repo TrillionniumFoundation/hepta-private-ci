@@ -189,15 +189,23 @@ pub use review_host::run_local_calibration_review;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::NativeFrozenGeneratorRequestV1;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::OriginalFixedRolePurposeV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::admit_fixed_custody_program;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::execute_original_fixed_role_publication_v1;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::execute_root_approved_frozen_generator;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::initialize_native_generator_key;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::observe_original_fixed_role_publication_v1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::observe_root_approved_frozen_generator;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::original_numeric_input_causes_v1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::reserve_original_fixed_role_output_v1;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::run_fixed_custody_evaluator;
 #[cfg(all(target_os = "linux", feature = "review-host"))]

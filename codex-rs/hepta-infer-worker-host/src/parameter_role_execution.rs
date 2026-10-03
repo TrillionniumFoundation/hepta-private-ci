@@ -13,6 +13,82 @@ use std::process::Stdio;
 
 type HostResult<T> = Result<T, Box<dyn std::error::Error>>;
 
+/// Original exclusive output consumption and cold observation, with the same
+/// finite program runner. The Root caller verifies the actual signed whole
+/// result before publication; a consumed unknown slot never dispatches again.
+pub fn execute_retained_parameter_role_v1(
+    request: &ParameterRoleExecutionV1,
+    output: &std::path::Path,
+    verify: impl Fn(&[u8]) -> HostResult<()>,
+) -> HostResult<Option<Vec<u8>>> {
+    use codex_hepta_agent_components::learning_ledger::*;
+    require_root_caller()?;
+    let purpose = match request.purpose {
+        ParameterRoleExecutionPurposeV1::GeneratorProfile => {
+            OriginalFixedRolePurposeV1::ParameterGenerator
+        }
+        ParameterRoleExecutionPurposeV1::GeneratorPairedRegistration => {
+            OriginalFixedRolePurposeV1::PairedGeneratorRegistration
+        }
+        ParameterRoleExecutionPurposeV1::ObserverAdmission => {
+            OriginalFixedRolePurposeV1::ParameterObserver
+        }
+        ParameterRoleExecutionPurposeV1::ObserverPairedAdmission => {
+            OriginalFixedRolePurposeV1::PairedCustodyAdmission
+        }
+        ParameterRoleExecutionPurposeV1::ObserverPairedExecution => {
+            OriginalFixedRolePurposeV1::PairedCustodyExecution
+        }
+        ParameterRoleExecutionPurposeV1::ObserverPairedFinish => {
+            OriginalFixedRolePurposeV1::PairedCustodyFinish
+        }
+        ParameterRoleExecutionPurposeV1::ObserverCanary => {
+            OriginalFixedRolePurposeV1::CanaryObserver
+        }
+        ParameterRoleExecutionPurposeV1::EvaluatorNoChange
+        | ParameterRoleExecutionPurposeV1::EvaluatorParameterReview => {
+            OriginalFixedRolePurposeV1::ParameterEvaluator
+        }
+        ParameterRoleExecutionPurposeV1::EvaluatorPairedReview => {
+            OriginalFixedRolePurposeV1::PairedEvaluator
+        }
+        ParameterRoleExecutionPurposeV1::EvaluatorPreparation => {
+            OriginalFixedRolePurposeV1::PreparationEvaluator
+        }
+        ParameterRoleExecutionPurposeV1::EvaluatorPreRegistration => {
+            OriginalFixedRolePurposeV1::PreRegistrationEvaluator
+        }
+        ParameterRoleExecutionPurposeV1::SelectorPreRegistration => {
+            OriginalFixedRolePurposeV1::PreRegistrationSelector
+        }
+        ParameterRoleExecutionPurposeV1::SelectorCycleStage => {
+            OriginalFixedRolePurposeV1::CycleSelector
+        }
+    };
+    let bytes = serde_json::to_vec(
+        &serde_json::json!({"schema":"hepta.root-fixed-role-effect.v1","purpose":format!("{:?}",request.purpose),
+        "program":request.program,"configuration":request.configuration,"uid":request.uid,"gid":request.gid,"original_effect_digest":request.original_effect_digest.to_string(),"inaccessible_paths":request.inaccessible_paths}),
+    )?;
+    let request_digest = Digest32::of_bytes(&bytes);
+    let program_digest = request.program.digest.parse()?;
+    let configuration = request.configuration.read(64 * 1024)?;
+    verify_registered_operational_program_v3(&request.program.path, program_digest)?;
+    execute_original_fixed_role_publication_v1(
+        purpose,
+        output,
+        request_digest,
+        program_digest,
+        |stdout, stderr| execute_parameter_role_v1(request, stdout, stderr),
+        |bytes| {
+            if request.configuration.read(64 * 1024)? != configuration {
+                return Err("same retained role configuration changed".into());
+            }
+            verify_registered_operational_program_v3(&request.program.path, program_digest)?;
+            verify(bytes)
+        },
+    )
+}
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ParameterRoleExecutionPurposeV1 {
     GeneratorProfile,

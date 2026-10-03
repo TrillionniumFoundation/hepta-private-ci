@@ -15,18 +15,9 @@ use crate::LearningEvidenceRoleV1;
 use crate::SignedLearningEvidenceV1;
 use crate::activate_learning_trust;
 use codex_hepta_types::Digest32;
-use serde::Deserialize;
-use serde::Serialize;
 use std::path::Path;
 
-#[derive(Debug, Deserialize, Serialize, PartialEq, Eq)]
-#[serde(deny_unknown_fields)]
-struct FrozenExecutionStatus {
-    schema: String,
-    request_digest: String,
-    program_digest: String,
-    output_digest: String,
-}
+type FrozenExecutionStatus = super::native_fixed_role_publication::FixedRoleExecutionStatusV1;
 
 /// Execute an immutable request already constructed by the original Root
 /// window owner after full round, model and native-owner validation. This
@@ -198,35 +189,12 @@ fn read_completed_output(
     request_digest: Digest32,
     program_digest: Digest32,
 ) -> ReviewResult<Option<Vec<u8>>> {
-    let status_path = output.with_extension("status.json");
-    for path in [output, &status_path] {
-        match std::fs::symlink_metadata(path) {
-            Ok(_) => {}
-            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
-            Err(error) => return Err(error.into()),
-        }
-    }
-    let bytes = read_root(output, 16 * 1024, Access::Private)?;
-    let status_bytes = read_root(&status_path, 4096, Access::Private)?;
-    let Ok(status) = serde_json::from_slice::<FrozenExecutionStatus>(&status_bytes) else {
-        return Ok(None);
-    };
-    let expected = FrozenExecutionStatus {
-        schema: "hepta.native-frozen-generator-execution.v1".to_string(),
-        request_digest: request_digest.to_string(),
-        program_digest: program_digest.to_string(),
-        output_digest: Digest32::of_bytes(&bytes).to_string(),
-    };
-    if status != expected {
-        return Ok(None);
-    }
-    // Verify the same immutable completion bytes after the whole output read.
-    if read_root(&status_path, 4096, Access::Private)? != status_bytes
-        || read_root(output, 16 * 1024, Access::Private)? != bytes
-    {
-        return Err("original frozen Generator publication changed during observation".into());
-    }
-    Ok(Some(bytes))
+    super::native_fixed_role_publication::observe_original_fixed_role_publication_v1(
+        super::native_fixed_role_publication::OriginalFixedRolePurposeV1::FrozenGenerator,
+        output,
+        request_digest,
+        program_digest,
+    )
 }
 
 #[cfg(test)]
