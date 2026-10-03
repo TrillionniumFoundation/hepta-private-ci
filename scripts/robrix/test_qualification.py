@@ -319,6 +319,29 @@ class TestActualPackageResources(unittest.TestCase):
 
 
 class TestFrameworkCompatibility(unittest.TestCase):
+    def test_web_input_notifications_stay_out_of_unsupported_error_arm(self):
+        from framework_compat import verify_web_input_dispatch
+
+        dispatch = '''    fn handle_platform_ops(&mut self) {
+            match op {
+                CxOsOp::SyncImeState { .. } => {}
+                CxOsOp::HideClipboardActions => {}
+                e => {
+                    crate::error!("Not implemented on this platform: CxOsOp::{:?}", e);
+                }
+            }
+        }'''
+        verify_web_input_dispatch(dispatch)
+        for changed in (
+            dispatch.replace('CxOsOp::SyncImeState { .. } => {}', ''),
+            dispatch.replace('CxOsOp::HideClipboardActions => {}', ''),
+            dispatch.replace('CxOsOp::SyncImeState { .. } => {}',
+                             'CxOsOp::SyncImeState { .. } => { transmit(); }'),
+            dispatch.replace('crate::error!', 'crate::log!'),
+        ):
+            with self.subTest(changed=changed), self.assertRaises(ValueError):
+                verify_web_input_dispatch(changed)
+
     def test_changed_framework_source_cannot_be_patched(self):
         import framework_compat
         with tempfile.TemporaryDirectory() as directory:

@@ -1,5 +1,40 @@
 # Actual Robrix hosted qualification
 
+## Latest scoped rendering evidence
+
+Run 37083290014 at `571588e1e3ecea6b150d15747fd1f05a72d3371a`
+passed 20 native application/Console tests, four framework regressions, native
+captures, all 14 browser regressions and packaging. Actual browser wide-login
+pixels now show the SolidView footer (contrast 5.74) and centered input text.
+The delayed-font, type `pixel-fixture`, and clear captures also passed their pixel
+gates, with all seven fonts fetched exactly once and no request/page failures.
+The strict console-error gate then failed on `SyncImeState` and
+`HideClipboardActions`; later browser sizes and Console captures did not run.
+This is scoped evidence, not a complete current browser capture pass.
+
+The pinned Web dispatch omitted these two native-buffer/toolbar notifications.
+Linux, macOS and Windows already consume them as no-ops. Web's unchanged hidden
+textarea sends incremental keyboard/composition events; it is not a mirrored
+native IME buffer and there is no native clipboard toolbar to dismiss. The
+compatibility patch explicitly consumes only these two operations, without
+forwarding clipboard data, overwriting the textarea, or changing any keyboard,
+selection or composition handling. The JS bridge bytes are additionally pinned
+and checked unchanged. A source-dispatch regression rejects missing/nonempty
+handlers and altered unsupported-operation error reporting. The full-app
+type/clear exercise and all console-error, font and pixel gates remain mandatory.
+New hosted captures are required before accepting this follow-on fix; mobile
+keyboards and broader IME/clipboard behavior remain unqualified.
+
+Both uploaded manifests matched their ZIP contents and all included SHA-256
+values. Only validated screenshots, logs and manifests were present; compiled
+tools and hidden metadata were excluded before manifest creation.
+- Browser artifact 11260310553 ZIP SHA-256:
+  `11605739c56064a059add877f045a66153194e0da1e58f72453cb52f2e9a6ea0`
+- Native artifact 11259951311 ZIP SHA-256:
+  `f3db61299ae8c7fe4a910b2c4f984f1412e0ab0bc8e7a995b5c2a0b64d7e552c`
+
+## Qualification contract
+
 The `hepta-robrix-qualification.yml` workflow checks out the immutable PR head
 (or dispatch commit), with read-only repository permissions and no persisted Git
 credentials. It never publishes a production app, signs a release, imports
