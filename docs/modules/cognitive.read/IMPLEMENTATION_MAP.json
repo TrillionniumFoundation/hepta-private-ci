@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e8734a0382a057a632e2ca5e7ab4dd35efec31fd",
-    "tree": "db7d78eece785294d58a80ab86c5f57604723a4b"
+    "commit": "5810d6c1537799e3b97e2bbe3e3aabba807cbb9a",
+    "tree": "1f8e85cf2e73ac7c2ec05534743fe4fa1a653935"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -201,7 +201,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-      "object": "4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"
+      "object": "ef90d7f993365627c4fcbc69d3b75b380958738d"
     },
     {
       "path": "codex-rs/hepta-agentd/src/test_support.rs",
@@ -273,7 +273,7 @@
     },
     {
       "path": "scripts/hepta-implementation-maps.py",
-      "object": "63670048258bbfcd351332416c1925761f1ed8fd"
+      "object": "dd1e3c5910bd2d97b0e124cf35c8606fdd754613"
     }
   ],
   "productCallers": [
@@ -320,8 +320,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "e8734a0382a057a632e2ca5e7ab4dd35efec31fd",
-    "tree": "db7d78eece785294d58a80ab86c5f57604723a4b"
+    "commit": "5810d6c1537799e3b97e2bbe3e3aabba807cbb9a",
+    "tree": "1f8e85cf2e73ac7c2ec05534743fe4fa1a653935"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
@@ -341,5 +341,19 @@
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-cognitive-read"
+  ],
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "e8734a0382a057a632e2ca5e7ab4dd35efec31fd",
+        "tree": "db7d78eece785294d58a80ab86c5f57604723a4b"
+      },
+      "observedAtHead": {
+        "commit": "e8734a0382a057a632e2ca5e7ab4dd35efec31fd",
+        "tree": "db7d78eece785294d58a80ab86c5f57604723a4b"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    }
   ]
 }
