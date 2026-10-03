@@ -7,12 +7,18 @@ use codex_hepta_agent_components::intelligence::ParameterPlasticityProductReques
 use codex_hepta_agent_components::plasticity::ParameterCandidateKindV2;
 use codex_hepta_agent_components::plasticity::verify_generated_parameter_candidates_v3;
 use codex_hepta_agentd::AgentdError;
+use codex_hepta_agentd::AgentdSelfIterationRoundV1;
 use codex_hepta_agentd::IterationEnvelopeV1;
+use codex_hepta_agentd::self_iteration_envelope_digest_v1;
+use codex_hepta_infer_core::SelfIterationModelAssessmentV1;
+use codex_hepta_infer_core::SelfIterationModelRoleV1;
 use codex_hepta_neuron::NeuronBodyBundleIdentityV1;
 use codex_hepta_neuron::NeuronRuntimeConfigV1;
 use codex_hepta_neuron::SparseConfig;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
+use serde::Deserialize;
 
 pub struct CpuNeuronParameterMaterialCandidateV2<'a> {
     pub candidate_id: &'a StableId,
@@ -130,4 +136,85 @@ pub fn validate_cpu_neuron_parameter_receipt_v2(
     receipt: &ParameterPlasticityProductReceiptV1,
 ) -> Result<(), AgentdError> {
     validation::validate_receipt(request, receipt)
+}
+
+/// Original frozen description; it neither loads current state nor reselects
+/// a baseline. Root authenticates these immutable inputs before using it.
+pub fn describe_cpu_neuron_parameter_choices_v2(
+    model_manifest_digest: Digest32,
+    baseline_generation: Generation,
+    request: &ParameterPlasticityProductRequestV1,
+) -> Result<String, AgentdError> {
+    let ids: Vec<_> = request
+        .generated
+        .candidates
+        .iter()
+        .filter(|value| value.kind == ParameterCandidateKindV2::Update)
+        .map(|value| value.candidate_id.as_str())
+        .collect();
+    let text = format!(
+        "Frozen CPU model {model_manifest_digest}; baseline generation {}; sparse parameter layer {}. Choose exactly one installed governed update as JSON {{\"candidate_id\":\"ID\"}}. Available IDs: {}. No tensor, topology, calibration or authority edits.",
+        baseline_generation.get(),
+        validation::PARAMETER_LAYER,
+        ids.join(",")
+    );
+    if text.len() > 2 * 1024 {
+        return Err(validation::error("CPU compiler description budget"));
+    }
+    Ok(text)
+}
+
+pub struct CpuNeuronParameterAdviceContextV2<'a> {
+    pub envelope: &'a IterationEnvelopeV1,
+    pub original_round: Option<&'a AgentdSelfIterationRoundV1>,
+}
+
+/// Pure validation of model advice against the same original frozen choices.
+/// A valid choice confers no candidate-effect or signing authority.
+pub fn validate_cpu_neuron_parameter_advice_v2(
+    context: CpuNeuronParameterAdviceContextV2<'_>,
+    expected_envelope: &IterationEnvelopeV1,
+    request: &ParameterPlasticityProductRequestV1,
+    proposal: &SelfIterationModelAssessmentV1,
+) -> Result<StableId, AgentdError> {
+    use validation::error;
+    #[derive(Deserialize)]
+    #[serde(deny_unknown_fields)]
+    struct Advice {
+        candidate_id: String,
+    }
+    if context.envelope != expected_envelope
+        || proposal.role != SelfIterationModelRoleV1::Generator
+        || proposal.envelope_digest != self_iteration_envelope_digest_v1(context.envelope)
+        || proposal.candidate_digest.is_some()
+        || proposal.native_run_digest.is_zero()
+        || proposal.authority.grants_any()
+        || proposal.model_output.len() > 4 * 1024
+    {
+        return Err(error(
+            "CPU compiler model advice changed its frozen context",
+        ));
+    }
+    if let Some(round) = context.original_round
+        && proposal.request_id
+            != round.model_request_id(SelfIterationModelRoleV1::Generator, None)?
+    {
+        return Err(error(
+            "sparse advice is not the original reserved Generator request",
+        ));
+    }
+    let advice: Advice = serde_json::from_str(&proposal.model_output)
+        .map_err(|value| error(format!("bounded candidate advice: {value}")))?;
+    let id = StableId::new(advice.candidate_id).map_err(|value| error(value.to_string()))?;
+    if !request
+        .generated
+        .candidates
+        .iter()
+        .any(|value| value.candidate_id == id && value.kind == ParameterCandidateKindV2::Update)
+    {
+        return Err(error(
+            "CPU compiler advice did not name an installed update candidate",
+        ));
+    }
+    Ok(id)
 }

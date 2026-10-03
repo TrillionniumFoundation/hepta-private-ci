@@ -8,7 +8,6 @@ use codex_hepta_agent_components::intelligence::ParameterPlasticityProductReceip
 use codex_hepta_agent_components::intelligence::ParameterPlasticityProductRequestV1;
 use codex_hepta_agent_components::learning_artifacts::IterationCandidateStateV1;
 use codex_hepta_agent_components::learning_artifacts::IterationCandidateV1;
-use codex_hepta_agent_components::plasticity::ParameterCandidateKindV2;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::AgentdGovernedParameterGenerationCompilerV1;
 use codex_hepta_agentd::AgentdNeuronArtifactAdmissionV1;
@@ -22,14 +21,12 @@ use codex_hepta_agentd::self_iteration_envelope_digest_v1;
 use codex_hepta_agentd::self_iteration_frozen_candidate_payload_v1;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_infer_core::SelfIterationModelAssessmentV1;
-use codex_hepta_infer_core::SelfIterationModelRoleV1;
 use codex_hepta_neuron::NeuronBodyBundleIdentityV1;
 use codex_hepta_neuron::NeuronRuntimeConfigV1;
 use codex_hepta_neuron::NeuronTickInputV1;
 use codex_hepta_neuron::SparseConfig;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
-use serde::Deserialize;
 use tokio::task::JoinHandle;
 
 use crate::CpuNeuronControlConfigV1;
@@ -42,8 +39,11 @@ use validation::error;
 
 #[path = "local_cpu_parameter_materials.rs"]
 mod materials;
+pub use materials::CpuNeuronParameterAdviceContextV2;
 pub use materials::CpuNeuronParameterMaterialCandidateV2;
 pub use materials::CpuNeuronParameterMaterialPlanV2;
+pub use materials::describe_cpu_neuron_parameter_choices_v2;
+pub use materials::validate_cpu_neuron_parameter_advice_v2;
 pub use materials::validate_cpu_neuron_parameter_materials_v2;
 pub use materials::validate_cpu_neuron_parameter_receipt_v2;
 
@@ -230,47 +230,15 @@ impl CpuNeuronGovernedParameterCompilerV1 {
         proposal: &SelfIterationModelAssessmentV1,
     ) -> Result<StableId, AgentdError> {
         self.check_policy()?;
-        #[derive(Deserialize)]
-        #[serde(deny_unknown_fields)]
-        struct Advice {
-            candidate_id: String,
-        }
-        if envelope != &self.plan.envelope
-            || proposal.role != SelfIterationModelRoleV1::Generator
-            || proposal.envelope_digest != self_iteration_envelope_digest_v1(envelope)
-            || proposal.candidate_digest.is_some()
-            || proposal.native_run_digest.is_zero()
-            || proposal.authority.grants_any()
-            || proposal.model_output.len() > 4 * 1024
-        {
-            return Err(error(
-                "CPU compiler model advice changed its frozen context",
-            ));
-        }
-        if let Some(round) = &self.round
-            && proposal.request_id
-                != round.model_request_id(SelfIterationModelRoleV1::Generator, None)?
-        {
-            return Err(error(
-                "sparse advice is not the original reserved Generator request",
-            ));
-        }
-        let advice: Advice = serde_json::from_str(&proposal.model_output)
-            .map_err(|value| error(format!("bounded candidate advice: {value}")))?;
-        let id = StableId::new(advice.candidate_id).map_err(|value| error(value.to_string()))?;
-        if !self
-            .plan
-            .request
-            .generated
-            .candidates
-            .iter()
-            .any(|value| value.candidate_id == id && value.kind == ParameterCandidateKindV2::Update)
-        {
-            return Err(error(
-                "CPU compiler advice did not name an installed update candidate",
-            ));
-        }
-        Ok(id)
+        validate_cpu_neuron_parameter_advice_v2(
+            CpuNeuronParameterAdviceContextV2 {
+                envelope,
+                original_round: self.round.as_ref(),
+            },
+            &self.plan.envelope,
+            &self.plan.request,
+            proposal,
+        )
     }
 }
 
@@ -307,26 +275,11 @@ impl AgentdGovernedParameterGenerationCompilerV1 for CpuNeuronGovernedParameterC
         if envelope != &self.plan.envelope {
             return Err(error("CPU compiler envelope mismatch"));
         }
-        let ids: Vec<_> = self
-            .plan
-            .request
-            .generated
-            .candidates
-            .iter()
-            .filter(|value| value.kind == ParameterCandidateKindV2::Update)
-            .map(|value| value.candidate_id.as_str())
-            .collect();
-        let text = format!(
-            "Frozen CPU model {}; baseline generation {}; sparse parameter layer {}. Choose exactly one installed governed update as JSON {{\"candidate_id\":\"ID\"}}. Available IDs: {}. No tensor, topology, calibration or authority edits.",
+        describe_cpu_neuron_parameter_choices_v2(
             self.plan.baseline_runtime.model_manifest_digest,
-            self.plan.baseline_runtime.generation.get(),
-            validation::PARAMETER_LAYER,
-            ids.join(",")
-        );
-        if text.len() > 2 * 1024 {
-            return Err(error("CPU compiler description budget"));
-        }
-        Ok(text)
+            self.plan.baseline_runtime.generation,
+            &self.plan.request,
+        )
     }
 
     async fn prepare(

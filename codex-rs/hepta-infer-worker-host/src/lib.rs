@@ -59,6 +59,8 @@ pub use local_cpu_generation::open_shared_cpu_neuron_goal_scope_v3;
 #[cfg(feature = "agentd-host")]
 pub use local_cpu_parameter_compiler::CpuNeuronGovernedParameterCompilerV1;
 #[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterAdviceContextV2;
+#[cfg(feature = "agentd-host")]
 pub use local_cpu_parameter_compiler::CpuNeuronParameterCandidatePlanV1;
 #[cfg(feature = "agentd-host")]
 pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerOwnersV1;
@@ -68,6 +70,10 @@ pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerPlanV1;
 pub use local_cpu_parameter_compiler::CpuNeuronParameterMaterialCandidateV2;
 #[cfg(feature = "agentd-host")]
 pub use local_cpu_parameter_compiler::CpuNeuronParameterMaterialPlanV2;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::describe_cpu_neuron_parameter_choices_v2;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::validate_cpu_neuron_parameter_advice_v2;
 #[cfg(feature = "agentd-host")]
 pub use local_cpu_parameter_compiler::validate_cpu_neuron_parameter_materials_v2;
 #[cfg(feature = "agentd-host")]
