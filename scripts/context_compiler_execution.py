@@ -122,6 +122,23 @@ def specs(legacy):
     # context compiler crate in isolation.
     commands[2:2] = [
         {
+            "name": "core-compaction-admission-diagnostic",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-core",
+                "--lib",
+                "session::tests::compaction_admission_tests::compact_after_turn_complete_rejects_while_terminalization_pending",
+            ],
+            "minimumTests": 1,
+            "requiredNativeTests": [
+                "session::tests::compaction_admission_tests::compact_after_turn_complete_rejects_while_terminalization_pending",
+            ],
+        },
+        {
             "name": "core-response-stream-regressions",
             "cwd": legacy.CODEX_RS,
             "argv": [
