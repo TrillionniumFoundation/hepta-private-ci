@@ -253,7 +253,28 @@ def _bindings(
             bindings[name] = inferred
 
     for parameter in re.finditer(r"\b(\w+)\s*:\s*([^,;={}]+)", scope):
-        record(parameter.group(1), _type(parameter.group(2), target))
+        raw_type = parameter.group(2)
+        inferred = _type(raw_type, target)
+        if inferred != target:
+            # This lexical match can stop at a comma inside a generic/tuple
+            # type. A partial type is not proof of an unrelated receiver: a
+            # later argument may be the authority behind an alias or Deref.
+            stack = []
+            pairs = {">": "<", ")": "(", "]": "["}
+            for index, char in enumerate(raw_type):
+                if char in "<([":
+                    stack.append(char)
+                elif char in ">)]" and not (
+                    char == ">" and index > 0 and raw_type[index - 1] == "-"
+                ):
+                    if not stack:
+                        break  # End of the enclosing function parameter list.
+                    if stack.pop() != pairs[char]:
+                        inferred = None
+                        break
+            if stack:
+                inferred = None
+        record(parameter.group(1), inferred)
     for assignment in re.finditer(
         r"\blet\s+(?:mut\s+)?(\w+)(?:\s*:\s*([^=;]+))?\s*=\s*([^;]+)", scope
     ):
