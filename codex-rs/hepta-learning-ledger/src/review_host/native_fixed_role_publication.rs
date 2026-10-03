@@ -79,7 +79,9 @@ pub(super) struct FixedRoleExecutionStatusV1 {
 fn root(purpose: Option<OriginalFixedRolePurposeV1>) -> ReviewResult<()> {
     let status = std::fs::read_to_string("/proc/self/status")?;
     for field in ["Uid:", "Gid:"] {
-        if field == "Gid:" && purpose.is_none_or(|value| value == OriginalFixedRolePurposeV1::FrozenGenerator) {
+        if field == "Gid:"
+            && purpose.is_none_or(|value| value == OriginalFixedRolePurposeV1::FrozenGenerator)
+        {
             continue;
         }
         let ids = status

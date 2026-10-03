@@ -11,12 +11,33 @@ fn actual_root_original_frozen_group_survives_shared_slot_and_new_purpose_denies
             .env(CHILD, "1")
             .gid(65534)
             .output().unwrap();
-        assert!(output.status.success(), "{}{}", String::from_utf8_lossy(&output.stdout), String::from_utf8_lossy(&output.stderr));
+        assert!(
+            output.status.success(),
+            "{}{}",
+            String::from_utf8_lossy(&output.stdout),
+            String::from_utf8_lossy(&output.stderr)
+        );
         return;
     }
     let status = std::fs::read_to_string("/proc/self/status").unwrap();
-    assert!(status.lines().find(|line| line.starts_with("Uid:")).unwrap().split_whitespace().skip(1).all(|value| value == "0"));
-    assert!(status.lines().find(|line| line.starts_with("Gid:")).unwrap().split_whitespace().skip(1).all(|value| value == "65534"));
+    assert!(
+        status
+            .lines()
+            .find(|line| line.starts_with("Uid:"))
+            .unwrap()
+            .split_whitespace()
+            .skip(1)
+            .all(|value| value == "0")
+    );
+    assert!(
+        status
+            .lines()
+            .find(|line| line.starts_with("Gid:"))
+            .unwrap()
+            .split_whitespace()
+            .skip(1)
+            .all(|value| value == "65534")
+    );
     assert!(root(None).is_ok());
     assert!(root(Some(OriginalFixedRolePurposeV1::FrozenGenerator)).is_ok());
     assert!(root(Some(OriginalFixedRolePurposeV1::CycleSelector)).is_err());
@@ -25,16 +46,37 @@ fn actual_root_original_frozen_group_survives_shared_slot_and_new_purpose_denies
     let request = Digest32::of_bytes(b"original exact group request");
     let program = Digest32::of_bytes(b"original real terminal program");
     let completed = execute_original_fixed_role_publication_v1(
-        OriginalFixedRolePurposeV1::FrozenGenerator, &output, request, program,
+        OriginalFixedRolePurposeV1::FrozenGenerator,
+        &output,
+        request,
+        program,
         |mut stdout, _stderr| {
             use std::io::Write;
             stdout.write_all(b"original full frozen group publication")?;
             stdout.sync_all()?;
             Ok(std::process::Command::new("/usr/bin/true").status()?)
-        }, |bytes| if bytes == b"original full frozen group publication" { Ok(()) } else { Err("whole original bytes changed".into()) },
-    ).unwrap().unwrap();
+        },
+        |bytes| {
+            if bytes == b"original full frozen group publication" {
+                Ok(())
+            } else {
+                Err("whole original bytes changed".into())
+            }
+        },
+    )
+    .unwrap()
+    .unwrap();
     assert_eq!(completed, b"original full frozen group publication");
-    assert_eq!(observe_original_fixed_role_publication_v1(OriginalFixedRolePurposeV1::FrozenGenerator, &output, request, program).unwrap(), Some(completed));
+    assert_eq!(
+        observe_original_fixed_role_publication_v1(
+            OriginalFixedRolePurposeV1::FrozenGenerator,
+            &output,
+            request,
+            program
+        )
+        .unwrap(),
+        Some(completed)
+    );
 }
 use std::io::Write;
 use std::os::unix::fs::PermissionsExt;
