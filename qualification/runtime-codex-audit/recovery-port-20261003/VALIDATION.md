@@ -64,3 +64,13 @@ workflow, selector and SQL-oracle tests passed. An initial local command named a
 nonexistent Python deadline module; the corrected invocation and final results
 are retained. No production or independent qualification, activation or release
 is inferred from fixture repairs or historical receipts.
+
+Published source `5beae7bf0831403043302fcfba45e014fb2166d3`, tree
+`64fa091db7db91dd68bdb9430a09b7f6c7709ee3`, is the observation target for the
+four directly affected existing exact-blob maps: runtime.supervisor,
+runtime.agentd, kernel.operations and cognitive.store. The memory.retrieval
+observation remains unchanged because none of its declared closure paths changed.
+Original
+sourceBase identities, source semantics, historical evidence, closure paths and
+all status/qualification flags remain unchanged. Other maps are byte-identical.
+This records source content only; fresh executable receipts remain required.
