@@ -71,7 +71,7 @@ pub fn execute_retained_parameter_role_v1(
     )?;
     let request_digest = Digest32::of_bytes(&bytes);
     let program_digest = request.program.digest.parse()?;
-    let configuration = request.configuration.read(64 * 1024)?;
+    let configuration = read_configuration(&request.configuration)?;
     verify_registered_operational_program_v3(&request.program.path, program_digest)?;
     execute_original_fixed_role_publication_v1(
         purpose,
@@ -80,7 +80,7 @@ pub fn execute_retained_parameter_role_v1(
         program_digest,
         |stdout, stderr| execute_parameter_role_v1(request, stdout, stderr),
         |bytes| {
-            if request.configuration.read(64 * 1024)? != configuration {
+            if read_configuration(&request.configuration)? != configuration {
                 return Err("same retained role configuration changed".into());
             }
             verify_registered_operational_program_v3(&request.program.path, program_digest)?;
@@ -228,7 +228,7 @@ pub fn execute_parameter_role_v1(
     }
     let program_pin: Digest32 = request.program.digest.parse()?;
     verify_registered_operational_program_v3(&request.program.path, program_pin)?;
-    let configuration = request.configuration.read(64 * 1024)?;
+    let configuration = read_configuration(&request.configuration)?;
     let output_guard = output.try_clone()?;
     let error_guard = error.try_clone()?;
     for file in [&output_guard, &error_guard] {
@@ -324,7 +324,7 @@ pub fn execute_parameter_role_v1(
     output_guard.sync_all()?;
     error_guard.sync_all()?;
     verify_registered_operational_program_v3(&request.program.path, program_pin)?;
-    if request.configuration.read(64 * 1024)? != configuration {
+    if read_configuration(&request.configuration)? != configuration {
         return Err("finite role program/configuration changed during actual effect".into());
     }
     Ok(status)
@@ -343,4 +343,15 @@ fn require_root_caller() -> HostResult<()> {
         }
     }
     Ok(())
+}
+
+fn read_configuration(source: &ParameterRoleSourceV3) -> HostResult<Vec<u8>> {
+    let bytes = codex_hepta_agent_components::learning_ledger::read_root_review_input(
+        &source.path, 64 * 1024,
+    )?;
+    let expected: Digest32 = source.digest.parse()?;
+    if expected.is_zero() || Digest32::of_bytes(&bytes) != expected {
+        return Err("Root parameter role source pin changed".into());
+    }
+    Ok(bytes)
 }
