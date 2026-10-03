@@ -71,12 +71,16 @@ script_mod! {
                         login_screen_view := View {
                             visible: true
                             flow: Down
+                            show_bg: true
+                            draw_bg.color: COLOR_PRIMARY
                             login_screen := LoginScreen {}
                             open_hepta_console := Button { text: "Console setup" }
                         }
                         login_console_view := View {
                             visible: false
                             flow: Down
+                            show_bg: true
+                            draw_bg.color: COLOR_PRIMARY
                             back_to_matrix := Button { text: "Back to chat sign-in" }
                             CachedWidget { hepta_console_screen := mod.widgets.HeptaConsole {} }
                         }

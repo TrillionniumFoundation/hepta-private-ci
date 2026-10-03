@@ -103,6 +103,8 @@ def framework_compat():
 def native_tests():
     checked_tests(['cargo', '+1.96.0', 'test', '--locked', '-p', 'makepad-platform', '--lib',
                    'hepta_web_startup_tests', '--', '--nocapture'], 'makepad-web-startup-tests.log', 3)
+    checked_tests(['cargo', '+1.96.0', 'test', '--locked', '-p', 'makepad-widgets',
+                   '--lib', 'hepta_font_tests', '--', '--nocapture'], 'makepad-font-cache-tests.log', 1)
     for module, minimum in [('hepta_console::tests', 4),
                             ('home::main_desktop_ui::hepta_dock_tests', 3),
                             ('app::ui_fixture::tests', 1),
@@ -283,6 +285,7 @@ def capture_short_login_scroll(window, process):
 
 def native_capture():
     from PIL import Image
+    from render_checks import login_pixels
     binary = APP / 'target/debug/robrix'
     run(['cargo', '+1.96.0', 'build', '--locked', '--features', 'ui-fixture', '--bin', 'robrix'], log='native-build.log')
     for scene in ('login', 'console'):
@@ -306,6 +309,8 @@ def native_capture():
                     with Image.open(png) as image:
                         assert image.size == (width, height), image.size
                         assert len(image.convert('RGB').getcolors(width * height)) > 32, 'Blank fixture image'
+                        if scene == 'login':
+                            (OUT / f'native-login-{label}-pixels.json').write_text(json.dumps(login_pixels(image), indent=2))
                 if scene == 'login':
                     capture_short_login_scroll(window, process)
             finally:

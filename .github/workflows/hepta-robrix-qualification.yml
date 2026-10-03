@@ -98,12 +98,15 @@ jobs:
       - name: Capture real browser canvas at three viewport sizes
         if: matrix.platform == 'browser'
         run: python scripts/robrix/capture_web.py
+      - name: Select screenshots, text diagnostics and manifests for upload
+        if: always()
+        run: python scripts/robrix/stage_evidence.py
       - name: Preserve evidence even when qualification fails
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: actual-robrix-${{ matrix.platform }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
           # Generated packages/fonts remain local until redistribution review.
-          path: robrix-evidence/
+          path: robrix-upload-evidence/
           if-no-files-found: error
           retention-days: 14

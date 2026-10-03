@@ -141,3 +141,114 @@
          let _mp_n = handles.len();
          for handle in handles {
              self.load_script_resource_impl(
+diff --git a/widgets/src/text_input.rs b/widgets/src/text_input.rs
+index 1d57de61..3213969f 100644
+--- a/widgets/src/text_input.rs
++++ b/widgets/src/text_input.rs
+@@ -605,13 +605,6 @@ pub struct TextInput {
+     #[rust]
+     laidout_text: Option<Rc<LaidoutText>>,
+     #[rust]
+-    laidout_width: Option<f32>,
+-    /// `draw_text.max_lines` as of the cached layout. Part of the cache key:
+-    /// clamping a field to one row is a runtime change (collapse/expand), and
+-    /// without this the cached multi-row layout survives it.
+-    #[rust]
+-    laidout_max_lines: usize,
+-    #[rust]
+     text_area: Area,
+     #[rust]
+     selection: Selection,
+@@ -1036,12 +1029,10 @@ fn layout_text(&mut self, cx: &mut Cx2d) {
+         } else {
+             None
+         };
+-        if self.laidout_text.is_some()
+-            && self.laidout_width == max_width_in_lpxs
+-            && self.laidout_max_lines == self.draw_text.max_lines
+-        {
+-            return;
+-        }
++        // Resource loading is asynchronous on the web. A widget-local Rc can
++        // retain empty font metrics after the shared font cache is invalidated.
++        // Reacquire through DrawText's bounded cache each draw; keep the Rc for
++        // cursor, selection and IME queries between draws.
+         let text = if self.is_password {
+             self.password_text.clear();
+             for grapheme in self.text.graphemes(true) {
+@@ -1054,8 +1045,6 @@ fn layout_text(&mut self, cx: &mut Cx2d) {
+         };
+
+         let wrap = self.is_multiline && cx.turtle().layout().flow == Flow::right_wrap();
+-        self.laidout_width = max_width_in_lpxs;
+-        self.laidout_max_lines = self.draw_text.max_lines;
+         self.laidout_text = Some(self.draw_text.layout(
+             cx,
+             0.0,
+@@ -3753,3 +3742,7 @@ fn uses_apple_text_boundary_modifier(modifiers: KeyModifiers) -> bool {
+ fn is_apple_text_platform() -> bool {
+     cfg!(target_vendor = "apple")
+ }
++
++#[cfg(test)]
++#[path = "hepta_font_tests.rs"]
++mod hepta_font_tests;
+diff --git a/widgets/src/hepta_font_tests.rs b/widgets/src/hepta_font_tests.rs
+new file mode 100644
+index 00000000..907ba1dd
+--- /dev/null
++++ b/widgets/src/hepta_font_tests.rs
+@@ -0,0 +1,53 @@
++use super::*;
++use makepad_draw::text::{font::FontId, fonts::Fonts, loader::{FontDefinition, FontFamilyDefinition}};
++use std::cell::RefCell;
++
++#[test]
++fn delayed_font_refreshes_empty_input_metrics_and_preserves_editing() {
++    let mut cx = Cx::new(Box::new(|_, _| {}));
++    let mut input = cx.with_vm(|vm| {
++        crate::script_mod(vm);
++        TextInput::script_new_with_default(vm)
++    });
++    CxDraw::lazy_construct_fonts(&mut cx);
++    let family = input.draw_text.text_style.font_family_id();
++    let fonts = cx.get_global::<Rc<RefCell<Fonts>>>().clone();
++    // Model the state before an asynchronous resource response, with no font yet.
++    fonts.borrow_mut().set_font_family_definition(family, FontFamilyDefinition {
++        font_ids: vec![], expected_member_count: 0,
++    });
++    let event = DrawEvent::default();
++    let mut draw = CxDraw::new(&mut cx, &event);
++    let mut cx = Cx2d::new(&mut draw);
++    cx.begin_root_turtle(dvec2(275.0, 100.0), Layout::default());
++    input.layout_text(&mut cx);
++    let stale = input.laidout_text.as_ref().unwrap().clone();
++    assert_eq!(stale.size_in_lpxs.height, 0.0);
++    let font: FontId = 0x4845505441_u64.into();
++    fonts.borrow_mut().define_font(font, FontDefinition {
++        data: SharedBytes::from_file_mmap_or_read(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("resources/IBMPlexSans-Text.ttf")).unwrap(),
++        index: 0, ascender_fudge_in_ems: -0.1, descender_fudge_in_ems: 0.0,
++        weight: None, variations: vec![],
++    });
++    fonts.borrow_mut().set_font_family_definition(family, FontFamilyDefinition {
++        font_ids: vec![font], expected_member_count: 1,
++    });
++    let selection = input.selection;
++    input.layout_text(&mut cx);
++    let refreshed = input.laidout_text.as_ref().unwrap().clone();
++    assert!(refreshed.size_in_lpxs.height > 0.0, "empty input retained pre-resource metrics");
++    assert_eq!((input.selection.anchor, input.selection.cursor), (selection.anchor, selection.cursor));
++    input.layout_text(&mut cx);
++    assert!(Rc::ptr_eq(&refreshed, input.laidout_text.as_ref().unwrap()), "complete fonts should reuse the shared bounded layout cache");
++    input.set_text(&mut cx, "draft");
++    input.set_cursor(&mut cx, Cursor { index: 3, prefer_next_row: false }, false);
++    let selection = input.selection;
++    input.layout_text(&mut cx);
++    assert_eq!(input.text, "draft");
++    assert_eq!((input.selection.anchor, input.selection.cursor), (selection.anchor, selection.cursor));
++    assert!(input.cursor_to_position(input.cursor()).is_ok());
++    input.set_text(&mut cx, "");
++    input.layout_text(&mut cx);
++    assert_eq!(input.laidout_text.as_ref().unwrap().size_in_lpxs.height, refreshed.size_in_lpxs.height);
++    cx.end_turtle();
++}

@@ -10,6 +10,7 @@ from browser_test_runner import passing_summary
 from x11_title import decode_title
 from makepad_test_bridge import patch_test_glue, load_pinned_bridge, glue_shape
 from package_resources import CORE_ASSETS, package_inventory, validate_pinned_resources, verify_relative_urls, patch_packager
+from stage_evidence import stage
 
 
 class TestExecutionGate(unittest.TestCase):
@@ -52,6 +53,78 @@ class TestExecutionGate(unittest.TestCase):
         with patch.object(qualify, 'run', side_effect=subprocess.CalledProcessError(1, 'test')):
             with self.assertRaises(subprocess.CalledProcessError):
                 qualify.checked_tests(['not-executed'], 'unused', 1)
+
+
+class TestEvidenceUploadScope(unittest.TestCase):
+    def test_compiled_tool_and_fonts_are_hashed_but_never_uploaded(self):
+        from PIL import Image
+
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            source, target = root / "input", root / "output"
+            (source / "makepad-tool/bin").mkdir(parents=True)
+            (source / "makepad-tool/bin/cargo-makepad").write_bytes(
+                b"\x7fELF\0executable"
+            )
+            (source / "font.ttf").write_bytes(b"\0font")
+            (source / "partial.log").write_text("build failed\n")
+            (source / "identity.json").write_text('{"candidate":"fixture"}')
+            (source / "framework.patch").write_text("diagnostic patch\n")
+            Image.new("RGB", (2, 2), "white").save(source / "fixture.png")
+            receipt = stage(source, target)
+            self.assertEqual(
+                set(receipt["excluded"]), {"makepad-tool/bin/cargo-makepad", "font.ttf"}
+            )
+            self.assertEqual(
+                {p.name for p in target.iterdir()},
+                {
+                    "partial.log",
+                    "identity.json",
+                    "framework.patch.log",
+                    "fixture.png",
+                    "upload-scope.json",
+                },
+            )
+            self.assertEqual(
+                (target / "framework.patch.log").read_bytes(),
+                (source / "framework.patch").read_bytes(),
+            )
+
+    def test_binary_masquerading_as_text_and_symlinks_are_rejected(self):
+        for kind in ("binary", "symlink"):
+            with self.subTest(kind=kind), tempfile.TemporaryDirectory() as directory:
+                source = Path(directory) / "input"
+                source.mkdir()
+                if kind == "binary":
+                    (source / "fake.log").write_bytes(b"\x7fELF\0payload")
+                else:
+                    (source / "fake.log").symlink_to(Path(directory) / "unread-target")
+                with self.assertRaises(ValueError):
+                    stage(source, Path(directory) / "output")
+
+
+class TestLoginPixelGate(unittest.TestCase):
+    def test_unpainted_footer_and_stale_font_centering_are_rejected(self):
+        from PIL import Image, ImageDraw
+        from render_checks import login_pixels
+
+        for defect in ("none", "transparent-footer", "stale-font"):
+            image = Image.new("RGB", (520, 760), (226, 226, 226))
+            draw = ImageDraw.Draw(image)
+            draw.rectangle(
+                (0, 732, 519, 759),
+                fill="white" if defect != "transparent-footer" else "black",
+            )
+            draw.rectangle((8, 739, 85, 748), fill=(102, 102, 102))
+            for top, bottom in ((198, 230), (251, 283), (304, 324)):
+                draw.rectangle((123, top, 396, bottom), fill="white")
+                y = (top + bottom) // 2 - 4 + (8 if defect == "stale-font" else 0)
+                draw.rectangle((135, y, 175, y + 8), fill=(187, 187, 187))
+            if defect == "none":
+                self.assertGreater(login_pixels(image)["footerContrast"], 4.5)
+            else:
+                with self.assertRaises(AssertionError):
+                    login_pixels(image)
 
 
 class TestNativeWindowIdentity(unittest.TestCase):

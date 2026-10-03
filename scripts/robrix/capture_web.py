@@ -12,6 +12,7 @@ from PIL import Image
 from playwright.sync_api import sync_playwright
 from qualify import APP, OUT, digest
 from package_resources import package_inventory
+from render_checks import login_pixels
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -40,12 +41,16 @@ def main():
                     for label, width, height in [('wide', 1180, 760), ('narrow', 520, 760), ('short', 800, 560)]:
                         context = browser.new_context(viewport={'width': width, 'height': height}, device_scale_factor=1)
                         failures, messages, wasm, responses = [], [], [], []
+                        delayed_fonts = []
                         def route(request_route):
                             url = request_route.request.url
                             if urlsplit(url).path == '/$report_error':
                                 failures.append('Automatic panic telemetry was attempted')
                                 request_route.abort()
                             elif url.startswith(origin + '/') or url.startswith(('data:', 'blob:')):
+                                if scene == 'login' and label == 'wide' and url.endswith(('.ttf', '.otf')):
+                                    delayed_fonts.append(urlsplit(url).path)
+                                    time.sleep(0.15)
                                 request_route.continue_()
                             else:
                                 failures.append('Forbidden external request: ' + urlsplit(url).netloc)
@@ -78,6 +83,8 @@ def main():
                             with Image.open(png) as image:
                                 assert image.size == (width, height)
                                 assert len(image.convert('RGB').getcolors(width * height)) > 32, 'Blank canvas screenshot'
+                                if scene == 'login':
+                                    (OUT / f'web-login-{label}-pixels.json').write_text(json.dumps(login_pixels(image), indent=2))
                             log = '\n'.join(messages)
                             (OUT / f'web-{scene}-{label}.log').write_text(log)
                             assert not failures, failures
@@ -85,6 +92,62 @@ def main():
                             records.append({'scene': scene, 'viewport': [width, height], 'png': png.name,
                                             'sha256': digest(png), 'wasmFetched': True, 'fixture': True,
                                             'visualReview': 'pending human or image inspection; pixels alone are not layout acceptance'})
+                            if scene == "login" and label == "wide":
+                                assert len(delayed_fonts) >= 7, (
+                                    "Delayed-font exercise did not load the actual font resources"
+                                )
+                                page.mouse.click(width // 2 - 80, 215)
+                                page.keyboard.type("pixel-fixture")
+                                page.wait_for_timeout(250)
+                                typed = OUT / "web-login-wide-typed.png"
+                                page.screenshot(path=str(typed))
+                                from PIL import ImageChops
+
+                                with (
+                                    Image.open(png) as before,
+                                    Image.open(typed) as after,
+                                ):
+                                    diff = ImageChops.difference(
+                                        before.convert("RGB"), after.convert("RGB")
+                                    )
+                                    crop = diff.crop(
+                                        (width // 2 - 127, 200, width // 2 + 115, 230)
+                                    )
+                                    assert (
+                                        sum(max(pixel) > 25 for pixel in crop.getdata())
+                                        > 120
+                                    ), "Typing did not visibly change the actual input"
+                                page.keyboard.press("ControlOrMeta+A")
+                                page.keyboard.press("Backspace")
+                                page.wait_for_timeout(250)
+                                cleared = OUT / "web-login-wide-cleared.png"
+                                page.screenshot(path=str(cleared))
+                                with Image.open(cleared) as image:
+                                    pixels = login_pixels(image)
+                                (OUT / "web-login-font-input-exercise.json").write_text(
+                                    json.dumps(
+                                        {
+                                            "delayedFontResponses": delayed_fonts,
+                                            "submissionKeysSent": False,
+                                            "typedSha256": digest(typed),
+                                            "clearedSha256": digest(cleared),
+                                            "clearedPixels": pixels,
+                                        },
+                                        indent=2,
+                                    )
+                                )
+                                for font_url in delayed_fonts:
+                                    assert (
+                                        sum(
+                                            urlsplit(response["url"]).path == font_url
+                                            for response in responses
+                                        )
+                                        == 1
+                                    ), "Repeated font request during input redraw"
+                            assert not failures, failures
+                            assert not any(
+                                message.startswith("error:") for message in messages
+                            ), "\n".join(messages)
                         finally:
                             (OUT / f'web-{scene}-{label}.log').write_text('\n'.join(messages))
                             (OUT / f'web-{scene}-{label}-runtime.json').write_text(json.dumps(

@@ -11,7 +11,7 @@ Two independent Ubuntu jobs produce evidence named for that exact commit:
 - Native: execute the actual Console lifecycle/dock/fixture tests, link the real
   Robrix binary, and capture its login and Console widgets under Xvfb at
   1180×760, 520×760 and 800×560.
-- Browser: execute the actual application wasm-bindgen tests (all thirteen named
+- Browser: execute the actual application wasm-bindgen tests (all fourteen named
   storage/session/account-epoch tests must appear as passing), link/package via
   the pinned Makepad tool, and capture the real WASM canvas in a fresh context
   for each scene/viewport. External requests during capture fail the test.
@@ -213,3 +213,42 @@ browser regression executes that clock and elapsed across an actual browser
 executor delay; mandatory canvas capture exercises the real resource-load call.
 The prior font mapping warning is recorded separately and is not attributed as
 the cause of this time panic. No error gate or telemetry protection is relaxed.
+
+## First dual-platform canvas pass and narrow parity correction
+
+Run 37076513218 at 7ab43ab9959603f6df119b95725367137689296d passed the
+14 actual browser tests, 19 scoped native application tests and three real
+framework startup tests. Both artifact ZIP hashes were verified against GitHub:
+native `8c20b49eb276e65709decc9c17332f534389f65eae75a20a0be843daed420973`,
+browser `70c8bc3cb16c234cc1e9d4e41b149d4128cf8ee7a5de426652fa121b26029001`.
+The six browser screenshots match their manifest hashes; all six captures fetched
+the actual WASM, had 79 successful responses and no runtime request/page failures.
+Their source manifests match tree 4f263436209d8b9190f488bf075c0d2667afe3b1 and
+app tree 1ece5b58465cf7bee918b9371842b6d285458b3a, including lock/license hashes.
+
+Pixel review of all three viewport sizes found readable shared Console layouts,
+but browser login placeholders were 8.8 px too low and the Console setup footer
+showed through to the black HTML background. The pre-login wrappers now explicitly
+paint the existing COLOR_PRIMARY; the application's transparent pass and theme
+are unchanged. Makepad TextInput's local layout cache retained an empty-font Rc
+after asynchronous fonts loaded, unlike DrawText's invalidated bounded cache.
+The pinned framework correction reacquires that shared cached layout each draw,
+retaining the Rc for between-draw cursor/selection/IME use. An actual native
+TextInput/Cx/Cx2d font-transition regression failed on the original shortcut and
+passed after its removal, also checking draft, cursor, selection, clear and Rc reuse.
+Resource Loading/Loaded guards continue to prevent repeated HTTP requests.
+
+Capture now gates opaque footer contrast and centered placeholders on both targets.
+The browser wide-login case delays actual font responses, captures type/clear
+without submitting, and rejects repeat font fetches. These narrow pixel gates do
+not certify visual design or accessibility. Final new-head hosted captures and
+pixel inspection remain mandatory; old passing artifacts do not qualify this fix.
+The unused default-font path warning remains separate: all requested font files
+returned 200 with verified source hashes in the earlier successful captures.
+
+The earlier browser ZIP inadvertently included the compiled cargo-makepad build
+tool (4,720,304 bytes; no application package or font files). Uploads now pass
+through strict PNG/text/JSON staging. Exact patch/helper source is retained as
+diagnostic logs; excluded build tools receive only SHA-256/size records. Existing
+uploaded artifacts are not deleted. Account/Matrix end-to-end, font redistribution,
+installed acceptance, premium redesign and production readiness remain unqualified.
