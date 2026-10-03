@@ -28,6 +28,7 @@ use codex_hepta_agent_components::fleet::WorkspaceBinding;
 use codex_hepta_agent_components::paths::HeptaAgentLayout;
 use codex_hepta_agent_components::paths::HeptaFleetRoot;
 use codex_hepta_agentd::AgentdClient;
+use codex_hepta_supervisor::SupervisorError;
 use codex_hepta_supervisor::SupervisordAgentStatus;
 use codex_hepta_supervisor::SupervisordClient;
 use codex_hepta_supervisor::SupervisordControlFence;
@@ -256,12 +257,26 @@ async fn five_real_agents_survive_daemon_restart_and_isolate_one_agent_release_c
         (Ok(accepted), Err(rejected)) | (Err(rejected), Ok(accepted)) => (accepted, rejected),
         _ => bail!("same-fence winner cardinality changed after validation"),
     };
-    ensure!(
-        concurrent_rejected
-            .to_string()
-            .contains("(stale_control_fence)"),
-        "the losing same-fence client did not receive stale_control_fence: {concurrent_rejected}"
-    );
+    tokio::time::timeout(DAEMON_TIMEOUT, async {
+        let mut rejected = concurrent_rejected;
+        loop {
+            match rejected {
+                SupervisorError::StaleControlFence => return Ok::<_, anyhow::Error>(()),
+                SupervisorError::NotAdmittedBusy => {
+                    // Busy proves no mutation was admitted. Keep the original
+                    // Restart fence; the winner must make this exact intent stale.
+                    tokio::time::sleep(Duration::from_millis(25)).await;
+                    rejected = match client.restart(concurrent_fence.clone()).await {
+                        Err(error) => error,
+                        Ok(_) => bail!("the losing same-fence Restart was admitted twice"),
+                    };
+                }
+                error => bail!("same-fence Restart rejection is not retryable: {error}"),
+            }
+        }
+    })
+    .await
+    .context("original same-fence Restart rejection deadline")??;
     assert_mutation_accepted(
         SupervisordMutation::Restart,
         &concurrent_fence,
