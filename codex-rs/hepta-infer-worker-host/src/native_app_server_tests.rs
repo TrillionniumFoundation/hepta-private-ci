@@ -46,7 +46,12 @@ fn observe_for_test(
     notification: ServerNotification,
 ) -> std::result::Result<bool, String> {
     let binding = binding();
-    observe_event(output, &observed(notification), &binding)
+    observe_event(
+        output,
+        &mut ObservedAgentMessages::default(),
+        &observed(notification),
+        &binding,
+    )
 }
 
 fn output() -> NativeRunOutput {
@@ -186,8 +191,24 @@ fn observed_terminal_summary_fills_absent_deltas_without_duplication_or_overflow
     );
 
     let mut streamed = output();
-    streamed.output = "already observed".into();
-    assert!(observe_for_test(&mut streamed, summary("already observed".into())).unwrap());
+    let mut messages = ObservedAgentMessages::default();
+    let binding = binding();
+    let delta = ServerNotification::AgentMessageDelta(AgentMessageDeltaNotification {
+        thread_id: streamed.thread_id.clone(),
+        turn_id: streamed.turn_id.clone(),
+        item_id: "message-a".into(),
+        delta: "already observed".into(),
+    });
+    observe_event(&mut streamed, &mut messages, &observed(delta), &binding).unwrap();
+    assert!(
+        observe_event(
+            &mut streamed,
+            &mut messages,
+            &observed(summary("already observed".into())),
+            &binding,
+        )
+        .unwrap()
+    );
     assert_eq!(streamed.output, "already observed");
 
     let mut bounded = output();
@@ -207,13 +228,16 @@ fn output_is_observed_bounded_and_never_predeclares_success() {
             delta: text,
         })
     };
-    observe_for_test(&mut output, delta("unrelated", "discard".to_string())).unwrap();
-    observe_for_test(&mut output, delta("thread-a", "model output".to_string())).unwrap();
+    let mut messages = ObservedAgentMessages::default();
+    let binding = binding();
+    let mut observe = |output: &mut NativeRunOutput, notification| {
+        observe_event(output, &mut messages, &observed(notification), &binding)
+    };
+    observe(&mut output, delta("unrelated", "discard".to_string())).unwrap();
+    observe(&mut output, delta("thread-a", "model output".to_string())).unwrap();
     assert_eq!(output.output, "model output");
     assert_eq!(output.status, NativeRunStatus::Indeterminate);
-    assert!(
-        observe_for_test(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err()
-    );
+    assert!(observe(&mut output, delta("thread-a", "x".repeat(MAX_OUTPUT_BYTES))).is_err());
     assert_eq!(output.output, "model output");
     assert!(!output.terminal_observed);
 }
@@ -787,3 +811,6 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         .is_err()
     );
 }
+
+#[path = "native_output_messages_tests.rs"]
+mod output_message_tests;

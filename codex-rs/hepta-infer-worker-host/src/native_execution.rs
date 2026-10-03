@@ -753,10 +753,11 @@ impl AppServerModelDriver {
             + execution_clock
                 .remaining(unix_time_ms()?)
                 .unwrap_or(Duration::ZERO);
+        let mut messages = ObservedAgentMessages::default();
         let result = self
             .observe(
                 &mut client,
-                &mut output,
+                (&mut output, &mut messages),
                 deadline,
                 cancellation,
                 Some(&owner),
@@ -793,7 +794,7 @@ impl AppServerModelDriver {
             let _ = self
                 .observe(
                     &mut client,
-                    &mut output,
+                    (&mut output, &mut messages),
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,

@@ -3,6 +3,10 @@
 //! This profile observes real turn events and token usage. It makes no claim
 //! about local weights, accelerator memory, artifact selection or training.
 
+#[path = "native_output_messages.rs"]
+mod output_messages;
+use output_messages::ObservedAgentMessages;
+
 #[path = "native_cleanup_authorization.rs"]
 mod cleanup_authorization;
 pub(crate) use cleanup_authorization::cleanup_claim_matches_control;
@@ -461,7 +465,7 @@ impl AppServerModelDriver {
     async fn observe(
         &self,
         client: &mut RemoteAppServerClient,
-        output: &mut NativeRunOutput,
+        (output, messages): (&mut NativeRunOutput, &mut ObservedAgentMessages),
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
@@ -483,7 +487,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, messages, &event, binding)? {
                         return Ok(());
                     }
                 }
@@ -1045,6 +1049,7 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 
 fn observe_event(
     output: &mut NativeRunOutput,
+    messages: &mut ObservedAgentMessages,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
@@ -1055,10 +1060,21 @@ fn observe_event(
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
+            messages.delta(&mut output.output, &delta.item_id, &delta.delta)?;
+        }
+        ServerNotification::ItemStarted(started)
+            if started.thread_id == output.thread_id && started.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &started.item {
+                messages.start(&mut output.output, id, text)?;
             }
-            output.output.push_str(&delta.delta);
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &completed.item {
+                messages.complete(&mut output.output, id, text)?;
+            }
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
@@ -1079,20 +1095,13 @@ fn observe_event(
             let receipt = adapt_observed_event(&binding.intent, &binding.turn_id, observed)
                 .map_err(|error| format!("invalid App Server terminal witness: {error}"))?
                 .ok_or_else(|| "turn/completed did not produce terminal receipt".to_string())?;
-            // App Server may deliver a completed message without streaming text
-            // deltas. Its exact-turn terminal summary is observed output, not a
-            // new provider call. Do not append it again after streamed output.
-            if output.output.is_empty() {
-                let mut text = String::new();
-                for item in &completed.turn.items {
-                    if let ThreadItem::AgentMessage { text: message, .. } = item {
-                        if message.len() > MAX_OUTPUT_BYTES.saturating_sub(text.len()) {
-                            return Err("output byte limit exceeded".to_string());
-                        }
-                        text.push_str(message);
-                    }
+            // The exact-turn summary supplies authoritative item snapshots.
+            // Reconcile them by identity even after partial streaming, retaining
+            // other observed items and never starting another provider request.
+            for item in &completed.turn.items {
+                if let ThreadItem::AgentMessage { id, text, .. } = item {
+                    messages.complete(&mut output.output, id, text)?;
                 }
-                output.output = text;
             }
             let physical_boundary = match receipt.status {
                 AdapterStatus::Succeeded => {
