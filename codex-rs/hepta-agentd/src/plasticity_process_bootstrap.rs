@@ -605,6 +605,7 @@ fn build_verifier(
                         "generator" => Ok(LearningEvidenceRoleV1::Generator),
                         "observer" => Ok(LearningEvidenceRoleV1::Observer),
                         "evaluator" => Ok(LearningEvidenceRoleV1::Evaluator),
+                        "selector" => Ok(LearningEvidenceRoleV1::Selector),
                         _ => invalid("unknown learning evidence role"),
                     })
                     .collect::<Result<Vec<_>, AgentdError>>()?,
@@ -980,3 +981,7 @@ pub(crate) use input_context::validate_context_baseline_artifact;
 #[path = "plasticity_process_bootstrap_v2.rs"]
 mod v2;
 pub use v2::load_plasticity_process_bootstrap_v2;
+
+#[cfg(test)]
+#[path = "plasticity_process_bootstrap_trust_tests.rs"]
+mod whole_trust_tests;
