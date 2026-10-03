@@ -49,6 +49,18 @@ pub use materials::validate_cpu_neuron_parameter_advice_v2;
 pub use materials::validate_cpu_neuron_parameter_materials_v2;
 pub use materials::validate_cpu_neuron_parameter_receipt_v2;
 
+#[cfg(target_os = "linux")]
+#[path = "local_cpu_round_materials_v3.rs"]
+mod round_materials;
+#[cfg(target_os = "linux")]
+pub use round_materials::CpuNeuronRoundMaterialBlueprintV3;
+#[cfg(target_os = "linux")]
+pub use round_materials::CpuNeuronRoundMaterialCandidateV3;
+#[cfg(target_os = "linux")]
+pub use round_materials::CpuNeuronRoundMaterialsV3;
+#[cfg(target_os = "linux")]
+pub use round_materials::derive_cpu_neuron_round_materials_v3;
+
 pub struct CpuNeuronParameterCandidatePlanV1<W = CpuNeuronControlConfigV1> {
     pub candidate_id: StableId,
     pub generation: CpuNeuronGenerationPlanV1,
@@ -119,6 +131,11 @@ pub struct CpuNeuronGovernedParameterCompilerV1 {
 }
 
 impl CpuNeuronGovernedParameterCompilerV1 {
+    /// Clone the same bounded physical pair reader before the compiler is held
+    /// by the Goal driver. This exposes no writer or generation admission.
+    pub fn physical_generation_reader(&self) -> crate::CpuNeuronGenerationCompositionReaderV2 {
+        self.physical_generations.clone()
+    }
     pub fn new(
         plan: CpuNeuronParameterCompilerPlanV1,
         owners: CpuNeuronParameterCompilerOwnersV1,

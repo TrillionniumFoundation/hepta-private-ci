@@ -97,6 +97,14 @@ pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerOwnersV2;
 pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerPlanV2;
 #[cfg(all(target_os = "linux", feature = "agentd-host"))]
 pub use local_cpu_parameter_compiler::CpuNeuronParameterPolicyV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronRoundMaterialBlueprintV3;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronRoundMaterialCandidateV3;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronRoundMaterialsV3;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::derive_cpu_neuron_round_materials_v3;
 
 pub mod final_use_authorizer;
 mod final_use_trust_port;
