@@ -19,21 +19,25 @@ NUMERIC_PROFILES = MappingProxyType({
 CANONICAL_DIGEST_V1 = MappingProxyType(dict(_SPEC["canonicalDigestV1"]))
 
 def numeric_profile(profile_id: str) -> dict:
+    if type(profile_id) is not str:
+        raise ValueError("unknown numeric profile")
     row = NUMERIC_PROFILES.get(profile_id)
     if row is None:
         raise ValueError("unknown numeric profile")
     return dict(row)
 
 def admit_authority_wire_v1(raw: bytes) -> None:
-    if len(raw) != AUTHORITY_WIRE_V1["encodedBytes"]:
+    if type(raw) not in (bytes, bytearray) or len(raw) != AUTHORITY_WIRE_V1["encodedBytes"]:
         raise ValueError("authority wire V1 must be exactly one byte")
     if raw[0] != AUTHORITY_WIRE_V1["trustedMask"]:
         raise ValueError("authority grant bits are not representable by platform.types")
 
 def validate_id_profile(value: str, variant: str) -> str:
-    encoded = value.encode("utf-8")
-    if not encoded or len(encoded) > STABLE_ID_MAX_BYTES or "\0" in value:
+    # Every admitted profile is ASCII, so its character and UTF-8 byte bounds agree.
+    if type(value) is not str or not value or len(value) > STABLE_ID_MAX_BYTES or "\0" in value:
         raise ValueError("identifier bound")
+    if type(variant) is not str:
+        raise ValueError("unknown identifier profile")
     row = ID_PROFILES.get(variant)
     if row is None:
         raise ValueError("unknown identifier profile")

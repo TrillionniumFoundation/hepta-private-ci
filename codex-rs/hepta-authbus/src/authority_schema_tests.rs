@@ -28,6 +28,10 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
             std::fs::copy(&fixture_path, &path).unwrap();
             std::fs::File::open(&path).unwrap().sync_all().unwrap();
             let store = AuthBusAuthorityStore::open(&path).await.unwrap();
+            // Keep DDL on one connection: a different pooled connection may
+            // still hold the pre-DROP schema cache while preparing CREATE.
+            // This is fixture mutation, not permission for runtime repair.
+            let mut connection = store.pool.acquire().await.unwrap();
             // These identifiers come from the freshly migrated reference.
             // Quote and escape them before forming identifier-only DDL; no
             // data or untrusted SQL fragments are interpolated.
@@ -48,10 +52,19 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
             }
             mutation.commit().await.unwrap();
             let check: String = sqlx::query_scalar("PRAGMA quick_check")
-                .fetch_one(&store.pool)
+                .fetch_one(&mut *connection)
                 .await
                 .unwrap();
             assert_eq!(check, "ok");
+            let remaining: i64 = sqlx::query_scalar(
+                "SELECT COUNT(*) FROM sqlite_schema WHERE type = 'trigger' AND name = ?",
+            )
+            .bind(&name)
+            .fetch_one(&mut *connection)
+            .await
+            .unwrap();
+            assert_eq!(remaining, i64::from(replace));
+            drop(connection);
             store.pool.close().await;
             assert!(
                 matches!(

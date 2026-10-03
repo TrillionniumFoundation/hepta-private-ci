@@ -2,14 +2,23 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "90a831adb220fb6c2e0eb83ebea183a0b4c88efb",
+    "tree": "4e293815394891fae3792f1ad699cfd2da698365"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.types",
   "owner": "kernel-contracts",
   "deputy": "architecture",
   "technicalGuide": "docs/modules/platform.types/TECHNICAL.md",
+  "formalTechnicalSupplement": "docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md",
+  "moduleTruthMatrix": "docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json",
+  "executionDossier": "qualification/module-execution-dossiers/detail/platform.types.md",
+  "publicApiInventory": {
+    "path": "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json",
+    "coveragePolicy": "closed_world_exact_pub_use_and_pub_mod_exports",
+    "exportCount": 81,
+    "operationCount": 20
+  },
   "declaredRoots": [
     "codex-rs/hepta-types"
   ],
@@ -18,16 +27,16 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
+  "productCallerState": "capability_specific_source_consumers_composed_product_qualification_pending",
   "productionWriterState": "not_established",
-  "stateOwnerDisposition": "Stateless authority-free values; immutable registry generations are caller-owned inputs.",
-  "terminalObserverDisposition": "No effects or terminal observer; candidate qualification proves deterministic value semantics only.",
+  "stateOwnerDisposition": "Stateless authority-free values; immutable registry generations are caller-owned inputs and registered admission is proven by a distinct receipt.",
+  "terminalObserverDisposition": "No effect owner; prompt delivery and topology values are observations/proposals consumed by their named owners.",
   "operations": [
     {
       "operation": "bounded_values",
       "nativeSymbol": "BoundedText",
       "sourcePath": "codex-rs/hepta-types/src/bounded.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-types/src/bounded_tests.rs"
@@ -36,16 +45,13 @@
       "designOperation": "bounded_values",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "BoundedText",
-        "BoundedBytes"
-      ]
+      "sourceBlob": "3847fa4084711f07b594dc60000c68c411ea75ec"
     },
     {
       "operation": "validate_id",
       "nativeSymbol": "validate_id",
       "sourcePath": "codex-rs/hepta-types/src/identity.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-types/src/identity_tests.rs"
@@ -54,18 +60,13 @@
       "designOperation": "validate_id",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "StableId",
-        "IdProfileV1",
-        "IdNamespaceV1",
-        "validate_id"
-      ]
+      "sourceBlob": "37b69bb821bf4996a52638ea8e420b9095db50b8"
     },
     {
       "operation": "raw_authority_ingress",
       "nativeSymbol": "AuthorityPosture::try_from_wire_bytes",
       "sourcePath": "codex-rs/hepta-types/src/identity.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-types/src/identity_tests.rs"
@@ -74,17 +75,28 @@
       "designOperation": "raw_authority_ingress",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "AuthorityFlagsV1",
-        "AuthorityPosture",
-        "NonAuthorizingPosture"
-      ]
+      "sourceBlob": "37b69bb821bf4996a52638ea8e420b9095db50b8"
+    },
+    {
+      "operation": "digest32",
+      "nativeSymbol": "Digest32",
+      "sourcePath": "codex-rs/hepta-types/src/digest.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/digest_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "digest32",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "4b6fe231f9faa717067818f509ebb4b150dbfbce"
     },
     {
       "operation": "canonical_digest_v1",
       "nativeSymbol": "canonical_digest_v1",
       "sourcePath": "codex-rs/hepta-types/src/canonical_digest.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-types/src/canonical_digest_tests.rs",
@@ -95,16 +107,13 @@
       "designOperation": "canonical_digest_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "canonical_encode_v1",
-        "canonical_digest_v1"
-      ]
+      "sourceBlob": "c9859f5407ed28c0933ee4a377629a242e75aa9c"
     },
     {
       "operation": "canonical_validate_v1",
       "nativeSymbol": "canonical_validate_v1",
       "sourcePath": "codex-rs/hepta-types/src/canonical_digest.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-types/src/canonical_digest_tests.rs",
@@ -115,15 +124,13 @@
       "designOperation": "canonical_validate_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "canonical_validate_v1"
-      ]
+      "sourceBlob": "c9859f5407ed28c0933ee4a377629a242e75aa9c"
     },
     {
       "operation": "fixed_q32",
       "nativeSymbol": "FixedQ32",
       "sourcePath": "codex-rs/hepta-types/src/fixed.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-types/src/fixed_tests.rs"
@@ -132,17 +139,13 @@
       "designOperation": "fixed_q32",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "FixedQ32",
-        "ProbabilityQ32",
-        "FIXED_Q32_ARITHMETIC_PROFILE_V1"
-      ]
+      "sourceBlob": "3c2674dce405fd20f254f5f1816654aae99d7c13"
     },
     {
       "operation": "contract_registry_v1",
       "nativeSymbol": "ContractRegistryV1",
       "sourcePath": "codex-rs/hepta-types/src/registry.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-types/src/registry_tests.rs"
@@ -151,17 +154,13 @@
       "designOperation": "contract_registry_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "ContractRegistryV1",
-        "RegistryDefinitionV1",
-        "RegistryKindV1"
-      ]
+      "sourceBlob": "88526505a75f1c072ea12dcf29c535e80f276187"
     },
     {
       "operation": "numeric_profile_definition_v1",
       "nativeSymbol": "NumericProfileDefinitionV1",
       "sourcePath": "codex-rs/hepta-types/src/numeric_profile.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-types/src/numeric_profile_tests.rs"
@@ -170,16 +169,13 @@
       "designOperation": "numeric_profile_definition_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "NumericProfileV1",
-        "NumericProfileDefinitionV1"
-      ]
+      "sourceBlob": "383ef3eb7a62873b74faa50f097f7aa11130b18a"
     },
     {
       "operation": "rescale_signal",
       "nativeSymbol": "rescale_signal",
       "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
@@ -188,17 +184,13 @@
       "designOperation": "rescale_signal",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "NumericSignalV1",
-        "NumericConversionReceiptV1",
-        "rescale_signal"
-      ]
+      "sourceBlob": "a515b8c0b793d15a98ffb933dcacced3993f44e1"
     },
     {
       "operation": "rescale_signal_registered",
       "nativeSymbol": "rescale_signal_registered",
       "sourcePath": "codex-rs/hepta-types/src/numeric_conversion.rs",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-types/src/numeric_conversion_tests.rs"
@@ -207,15 +199,166 @@
       "designOperation": "rescale_signal_registered",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "rescale_signal_registered"
-      ]
+      "sourceBlob": "a515b8c0b793d15a98ffb933dcacced3993f44e1"
+    },
+    {
+      "operation": "registered_numeric_conversion_v2",
+      "nativeSymbol": "RegisteredNumericConversionReceiptV2",
+      "sourcePath": "codex-rs/hepta-types/src/numeric_registry_v2.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/numeric_registry_v2.rs",
+        "codex-rs/hepta-ndu/src/owner_numeric_snapshot_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "registered_numeric_conversion_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "4c36a154be0c6890d23b7215a376b58fbafa02a1"
+    },
+    {
+      "operation": "prompt_delivery_observation_v1",
+      "nativeSymbol": "PromptDeliveryObservationV1",
+      "sourcePath": "codex-rs/hepta-types/src/prompt_delivery.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/prompt_delivery_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prompt_delivery_observation_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "11494905ff09b30a51e0131d81364df87cd41475"
+    },
+    {
+      "operation": "prompt_delivery_observation_v2",
+      "nativeSymbol": "PromptDeliveryObservationV2",
+      "sourcePath": "codex-rs/hepta-types/src/prompt_delivery_v2.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/prompt_delivery_v2.rs",
+        "codex-rs/hepta-types/tests/prompt_v2_hashability.rs",
+        "codex-rs/hepta-wire/src/platform_types_json.rs",
+        "codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py",
+        "codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prompt_delivery_observation_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "c530d201e8d62f1890f87fb519a57c64e173424f"
+    },
+    {
+      "operation": "runtime_topology_candidate_v1",
+      "nativeSymbol": "RuntimeTopologyCandidateV1",
+      "sourcePath": "codex-rs/hepta-types/src/topology.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/topology.rs",
+        "codex-rs/hepta-supervisor/src/module_runtime_safety_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "runtime_topology_candidate_v1",
+      "mappingClass": "owner_native",
+      "delegatedCalleees": [],
+      "delegatedCallees": [],
+      "sourceBlob": "c6a877d8a798ac169c18497f2038f34107d6b599"
+    },
+    {
+      "operation": "manifest_contract_primitives_v1",
+      "nativeSymbol": "ManifestContractErrorV1",
+      "sourcePath": "codex-rs/hepta-types/src/manifests.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/manifests_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "manifest_contract_primitives_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "5dd2ef6a42f5c43214ca30c6cfc3a37cbce55900"
+    },
+    {
+      "operation": "random_stream_manifest_v1",
+      "nativeSymbol": "RandomStreamManifestV1",
+      "sourcePath": "codex-rs/hepta-types/src/manifests.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/manifests_tests.rs",
+        "codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json",
+        "codex-rs/hepta-types/schemas/random-stream-manifest-v1.schema.json"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "random_stream_manifest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCalleees": [],
+      "delegatedCallees": [],
+      "sourceBlob": "5dd2ef6a42f5c43214ca30c6cfc3a37cbce55900"
+    },
+    {
+      "operation": "external_system_manifest_v1",
+      "nativeSymbol": "ExternalSystemManifestV1",
+      "sourcePath": "codex-rs/hepta-types/src/manifests.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/manifests_tests.rs",
+        "codex-rs/hepta-types/schemas/external-system-manifest-v1.schema.json",
+        "codex-rs/hepta-types/conformance/verify_manifest_vectors.py",
+        "codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "external_system_manifest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "5dd2ef6a42f5c43214ca30c6cfc3a37cbce55900"
+    },
+    {
+      "operation": "sensor_calibration_manifest_v1",
+      "nativeSymbol": "SensorCalibrationManifestV1",
+      "sourcePath": "codex-rs/hepta-types/src/manifests.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/manifests_tests.rs",
+        "codex-rs/hepta-types/schemas/sensor-calibration-manifest-v1.schema.json",
+        "codex-rs/hepta-types/tests/manifest_protocol_consumer.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "sensor_calibration_manifest_v1",
+      "mappingClass": "owner_native",
+      "delegatedCalleees": [],
+      "delegatedCallees": [],
+      "sourceBlob": "5dd2ef6a42f5c43214ca30c6cfc3a37cbce55900"
+    },
+    {
+      "operation": "protocol_catalog_v2",
+      "nativeSymbol": "PLATFORM_TYPES_PROTOCOL_CATALOG_V2",
+      "sourcePath": "codex-rs/hepta-types/src/protocol_catalog_v2.rs",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/src/bin/platform-types-protocol-codegen.rs",
+        "scripts/verify_platform_types_schema_catalog.py",
+        "scripts/run_platform_types_schema_qualification.sh"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "protocol_catalog_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "4ae802d55b1525eecda6f99108cf166aa1095395"
     },
     {
       "operation": "generated_bindings_v1",
       "nativeSymbol": "generate_bindings.py",
       "sourcePath": "codex-rs/hepta-types/bindings/generate_bindings.py",
-      "state": "source_implemented_not_product_composed",
+      "state": "source_implemented_not_product_qualified",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-types/bindings/verify_generated.py",
@@ -225,64 +368,481 @@
       "designOperation": "generated_bindings_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "publicSymbols": [
-        "generated/python/hepta_platform_types_v1.py",
-        "generated/javascript/hepta_platform_types_v1.mjs",
-        "generated/typescript/hepta_platform_types_v1.d.ts"
-      ]
+      "sourceBlob": "dc0ac79fa8b0b71b49558de47fc414ea9d58b42e"
+    },
+    {
+      "operation": "public_api_inventory_v1",
+      "nativeSymbol": "platform_types_public_api.py",
+      "sourcePath": "scripts/platform_types_public_api.py",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json",
+        "docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json",
+        "scripts/verify_lane_a_foundation.py"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "public_api_inventory_v1",
+      "mappingClass": "owner_native",
+      "delegatedCalleees": [],
+      "delegatedCallees": [],
+      "sourceBlob": "c5a8218829019e304904e58ed05644fc2d84de98"
+    },
+    {
+      "operation": "consumer_qualification_v1",
+      "nativeSymbol": "run_platform_types_consumer_qualification.sh",
+      "sourcePath": "scripts/run_platform_types_consumer_qualification.sh",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-types/CONSUMER_QUALIFICATION_V1.json",
+        "scripts/verify_platform_types_consumers.py",
+        "scripts/test_platform_types_consumer_qualification.py"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "consumer_qualification_v1",
+      "mappingClass": "owner_native",
+      "delegatedCalleees": [],
+      "delegatedCallees": [],
+      "sourceBlob": "c64df613ba1a23f9e6704fea83311dbec64a7140"
+    },
+    {
+      "operation": "protocol_qualification_documentation_v1",
+      "nativeSymbol": "PROTOCOL_AND_QUALIFICATION_V1.md",
+      "sourcePath": "docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md",
+      "state": "source_implemented_not_product_qualified",
+      "authority": "none",
+      "tests": [
+        "docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md",
+        "qualification/module-execution-dossiers/detail/platform.types.md"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "protocol_qualification_documentation_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "4fbb32e96c631a8aec7c82488178b254c658264e"
     }
   ],
   "ownedTargetProtocols": [
     {
       "protocol": "RandomStreamManifestV1",
-      "state": "source_pending"
+      "state": "source_implemented"
     },
     {
       "protocol": "ExternalSystemManifestV1",
-      "state": "source_pending"
+      "state": "source_implemented"
     },
     {
       "protocol": "SensorCalibrationManifestV1",
-      "state": "source_pending"
+      "state": "source_implemented"
     }
   ],
   "repositoryControlledGaps": [
-    "Run exact-head and deterministic synthetic-merge Lane A qualification for this exact candidate.",
-    "Implement native source for RandomStreamManifestV1, ExternalSystemManifestV1 and SensorCalibrationManifestV1 before claiming full owned-target-protocol source completion."
+    "Run exact-head source-tree and deterministic synthetic-merge Lane A qualification for the final candidate.",
+    "Retain current candidate diagnostics and authoritative receipts; diagnostics alone do not qualify.",
+    "Run the declared MSRV, Miri and fuzz/property lanes before expanding the qualification claim."
   ],
   "externalEvidenceGates": [
-    "named authenticated product composition and full consumer compile matrix",
-    "independent semantic review and target-host/product qualification",
-    "operator acceptance, canary, promotion and release"
+    "authenticated registry-generation provisioning and target-host product qualification",
+    "independent semantic review and external wire parity where required",
+    "operator acceptance canary promotion and release"
   ],
   "claimBoundary": {
     "implementedOperationMappingComplete": true,
-    "ownedTargetProtocolSourceComplete": false,
-    "nativeSourceMappingComplete": false,
+    "ownedTargetProtocolSourceComplete": true,
+    "nativeSourceMappingComplete": true,
+    "publicApiInventoryComplete": true,
     "repositoryControlledDocumentationGapsClosed": true,
     "repositoryControlledMappingGapsClosed": true,
-    "repositoryControlledSourceBoundaryGapsClosed": false,
-    "productExecutionComplete": false,
-    "deploymentQualificationComplete": false,
-    "independentAcceptanceComplete": false,
+    "repositoryControlledSourceBoundaryGapsClosed": true,
     "sourceRootPresent": true,
     "productionImplementation": false,
     "productExecutionProved": false,
+    "deploymentQualificationComplete": false,
     "independentAcceptance": false,
     "activation": false,
     "release": false
   },
-  "sourceRoot": [
-    "codex-rs/hepta-types"
-  ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "90a831adb220fb6c2e0eb83ebea183a0b4c88efb",
+    "tree": "4e293815394891fae3792f1ad699cfd2da698365"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
     "codex-rs/hepta-types"
+  ],
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-ndu/src/numeric_admission.rs",
+      "nativeSymbol": "NduNumericRegistryV1::admit_utility_signal",
+      "state": "registered_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-ndu/src/owner.rs",
+      "nativeSymbol": "NduAuthenticatedOwnerV1::admit_utility_signal",
+      "state": "authenticated_owner_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-ndu/src/owner_numeric_snapshot.rs",
+      "nativeSymbol": "NduAuthenticatedOwnerV1::verify_utility_signal_v2",
+      "state": "owner_pinned_numeric_v2_final_use_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-ndu/src/random_stream_owner.rs",
+      "nativeSymbol": "admit_ndu_random_stream_manifest_v1",
+      "state": "random_stream_manifest_owner"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+      "nativeSymbol": "LedgerWriter::append_runtime_prompt_delivery_v1",
+      "state": "durable_prompt_delivery_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-supervisor/src/module_runtime.rs",
+      "nativeSymbol": "RuntimeModuleSupervisorV1::register_selected_topology_candidate",
+      "state": "runtime_topology_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-supervisor/src/platform_manifest_admission.rs",
+      "nativeSymbol": "admit_external_system_manifest_v1",
+      "state": "external_system_manifest_owner"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-supervisor/src/platform_manifest_admission.rs",
+      "nativeSymbol": "admit_sensor_calibration_manifest_v1",
+      "state": "sensor_calibration_manifest_owner"
+    }
+  ],
+  "exactSourceEvidenceMode": "lane_a_runtime_head_tree_and_registered_callers",
+  "sourceRoot": [
+    "codex-rs/hepta-types"
+  ],
+  "sourceBaseRole": "historical integration provenance only; it is not the self-referential candidate commit and is never accepted as a qualification receipt",
+  "observedAtHeadRole": "historical committed observation only; authoritative currentness is emitted at runtime from the exact checked-out Git commit/tree and document digests",
+  "exactCandidateBinding": {
+    "policy": "runtime_exact_git_candidate_v1",
+    "generator": "scripts/platform_types_implementation_map.py",
+    "bindingFields": [
+      "commit",
+      "tree",
+      "publicApiInventorySha256",
+      "detailedImplementationMapSha256"
+    ],
+    "requiredFor": [
+      "source-head",
+      "synthetic-merge"
+    ],
+    "interchangeability": "forbidden"
+  },
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+      "object": "d043d06c49312f75a023f8d0766ea088fbdc60db"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/numeric_admission.rs",
+      "object": "c8c1eaa1adfc05c0f3cfc8488dd03495e6897fc0"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner.rs",
+      "object": "bd6bf5aa7ba1f3542fc1fed56e72fcd11645104d"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_numeric_snapshot.rs",
+      "object": "f65edb7814224bbe1b46adb05725827c1e0ff5ed"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/owner_numeric_snapshot_tests.rs",
+      "object": "5e0d266b1e362b3c331037c1611cb446d0ee94ba"
+    },
+    {
+      "path": "codex-rs/hepta-ndu/src/random_stream_owner.rs",
+      "object": "adf8b05980bbddacc9433d8dca7ab51a87443659"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/module_runtime.rs",
+      "object": "e7174771aaaea76c795ebb844f09b1f2eb3f4c78"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/module_runtime_safety_tests.rs",
+      "object": "bd6215f416af2115696e945a8bf48f1b0767fefd"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/platform_manifest_admission.rs",
+      "object": "da5cac090312405cb1448cb4fe65986534212954"
+    },
+    {
+      "path": "codex-rs/hepta-types",
+      "object": "d97504906801f87ebae9a26fb55687c099014df7"
+    },
+    {
+      "path": "codex-rs/hepta-types/CONSUMER_QUALIFICATION_V1.json",
+      "object": "de0328464b51d646936445ba8272af811cf13660"
+    },
+    {
+      "path": "codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json",
+      "object": "06513ab331c58c27fee0a4642d9aae3d8f5d0490"
+    },
+    {
+      "path": "codex-rs/hepta-types/bindings/generate_bindings.py",
+      "object": "dc0ac79fa8b0b71b49558de47fc414ea9d58b42e"
+    },
+    {
+      "path": "codex-rs/hepta-types/bindings/verify_generated.mjs",
+      "object": "ffb88ae154eb545444c16ee0c7928ddb7b302136"
+    },
+    {
+      "path": "codex-rs/hepta-types/bindings/verify_generated.py",
+      "object": "1dbbf0d24f97071fbc9db0c7232db75334c7a56e"
+    },
+    {
+      "path": "codex-rs/hepta-types/conformance/verify_manifest_vectors.mjs",
+      "object": "f388eb38aea559bcc300de18e7a9b48021e5c0ab"
+    },
+    {
+      "path": "codex-rs/hepta-types/conformance/verify_manifest_vectors.py",
+      "object": "161ff75444896901eb97b7879df7de230889d3f5"
+    },
+    {
+      "path": "codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs",
+      "object": "51d568dba622f80d7d65357cbe7e9629a17e5f8c"
+    },
+    {
+      "path": "codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py",
+      "object": "deb6e79638ea273414f61bd374432136b4455f7e"
+    },
+    {
+      "path": "codex-rs/hepta-types/conformance/verify_rejections.mjs",
+      "object": "8ed39a8988bd8e8da33192714139556879450133"
+    },
+    {
+      "path": "codex-rs/hepta-types/conformance/verify_rejections.py",
+      "object": "fdfc3e44000763596749ca887d9d87aa59968326"
+    },
+    {
+      "path": "codex-rs/hepta-types/conformance/verify_vectors.py",
+      "object": "b1f6e2dc89e6ed61290e1b75f1f8e89913638d24"
+    },
+    {
+      "path": "codex-rs/hepta-types/conformance/verify_vectors.ts",
+      "object": "d7a1fff002c3452c53bfdf7c008f75c17841ef4b"
+    },
+    {
+      "path": "codex-rs/hepta-types/schemas/external-system-manifest-v1.schema.json",
+      "object": "744f7138167d5a41b84e9aaff8f38d09183d3e67"
+    },
+    {
+      "path": "codex-rs/hepta-types/schemas/random-stream-manifest-v1.schema.json",
+      "object": "fbc93fc821aea217b71ccd492fea984e658061bf"
+    },
+    {
+      "path": "codex-rs/hepta-types/schemas/sensor-calibration-manifest-v1.schema.json",
+      "object": "74925839607c646967b4d47779436958704ebecc"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/bin/platform-types-protocol-codegen.rs",
+      "object": "ad58e3d23895464dfac54804921c2c6aee9ef31c"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/bounded.rs",
+      "object": "3847fa4084711f07b594dc60000c68c411ea75ec"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/bounded_tests.rs",
+      "object": "b82714a659ef1bc0505a9aa2fb1ebd2f443a9589"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/canonical_digest.rs",
+      "object": "c9859f5407ed28c0933ee4a377629a242e75aa9c"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/canonical_digest_tests.rs",
+      "object": "3f85f0d52ad0198b83476d051d36f0992ac6c106"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/digest.rs",
+      "object": "4b6fe231f9faa717067818f509ebb4b150dbfbce"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/digest_tests.rs",
+      "object": "9479823a601803f9c43c4e9a465907f4d466fc2b"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/fixed.rs",
+      "object": "3c2674dce405fd20f254f5f1816654aae99d7c13"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/fixed_tests.rs",
+      "object": "0b6194dd7ec6f14c966faa951abbbc8289e3ffdb"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/identity.rs",
+      "object": "37b69bb821bf4996a52638ea8e420b9095db50b8"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/identity_tests.rs",
+      "object": "358ba5a548eeefc8e960cb413dd43892c08cafad"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/manifests.rs",
+      "object": "5dd2ef6a42f5c43214ca30c6cfc3a37cbce55900"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/manifests_tests.rs",
+      "object": "ada9e10ac1f42a7d9b1c4ed915cf749ca814dc23"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
+      "object": "a515b8c0b793d15a98ffb933dcacced3993f44e1"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
+      "object": "6d9bbd33eba0075185624846e9e738c3ee19c7dd"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_profile.rs",
+      "object": "383ef3eb7a62873b74faa50f097f7aa11130b18a"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_profile_tests.rs",
+      "object": "e27a915dbe5b0abec0affde29f22681b1bdeab88"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/numeric_registry_v2.rs",
+      "object": "4c36a154be0c6890d23b7215a376b58fbafa02a1"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/prompt_delivery.rs",
+      "object": "11494905ff09b30a51e0131d81364df87cd41475"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/prompt_delivery_tests.rs",
+      "object": "a87cfe27c12292278e4db2a7b3fc13c860255cf9"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/prompt_delivery_v2.rs",
+      "object": "c530d201e8d62f1890f87fb519a57c64e173424f"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/protocol_catalog_v2.rs",
+      "object": "4ae802d55b1525eecda6f99108cf166aa1095395"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/registry.rs",
+      "object": "88526505a75f1c072ea12dcf29c535e80f276187"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/registry_tests.rs",
+      "object": "4bd055615e91f665ecc599ce9e7e344c0a88fccb"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/topology.rs",
+      "object": "c6a877d8a798ac169c18497f2038f34107d6b599"
+    },
+    {
+      "path": "codex-rs/hepta-types/tests/manifest_protocol_consumer.rs",
+      "object": "78d96c28853e19b793d4e36b5044a429f34c8ac3"
+    },
+    {
+      "path": "codex-rs/hepta-types/tests/prompt_v2_hashability.rs",
+      "object": "1f6d1985b68d0119e4ded59de46b3acb7391f294"
+    },
+    {
+      "path": "codex-rs/hepta-wire/src/platform_types_json.rs",
+      "object": "05b0095ed4a8e4eea73216861f8147a98036611b"
+    },
+    {
+      "path": "docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md",
+      "object": "a34e61ed50e5911f144a9fef9e0d8bb5154c175a"
+    },
+    {
+      "path": "docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json",
+      "object": "f98dd8a920a52b97db9581442ec1756f048787bf"
+    },
+    {
+      "path": "docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md",
+      "object": "4fbb32e96c631a8aec7c82488178b254c658264e"
+    },
+    {
+      "path": "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json",
+      "object": "a41c99da31d5615e0a59fefcda3c1b8a6c4f0ea3"
+    },
+    {
+      "path": "docs/modules/platform.types/TECHNICAL.md",
+      "object": "d6dd7c14ad6c476c1a6aef477f38076888bcad8c"
+    },
+    {
+      "path": "qualification/module-execution-dossiers/detail/platform.types.md",
+      "object": "c3b6c486334c125ecc510bd94da0179c28fb282b"
+    },
+    {
+      "path": "scripts/platform_types_public_api.py",
+      "object": "c5a8218829019e304904e58ed05644fc2d84de98"
+    },
+    {
+      "path": "scripts/run_platform_types_consumer_qualification.sh",
+      "object": "c64df613ba1a23f9e6704fea83311dbec64a7140"
+    },
+    {
+      "path": "scripts/run_platform_types_schema_qualification.sh",
+      "object": "df19bdaa174b99dce548c46bc88f2e6bb9ddeb9d"
+    },
+    {
+      "path": "scripts/test_platform_types_consumer_qualification.py",
+      "object": "d59616d46ff548ba1824e63bda63062976b908cd"
+    },
+    {
+      "path": "scripts/verify_lane_a_foundation.py",
+      "object": "54d76801589321a3a835ab728df8c6bf0783dd11"
+    },
+    {
+      "path": "scripts/verify_platform_types_consumers.py",
+      "object": "0508df9782a0b7ef2d833f1ed386bd5aa0d74c9c"
+    },
+    {
+      "path": "scripts/verify_platform_types_schema_catalog.py",
+      "object": "d631c66623d987392a644e60b1d0d0bce149cce2"
+    }
+  ],
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "56db98219c75491aeb5ce93a660b9b23109a045d",
+        "tree": "c03d4cb5724095e06fa22ad85cf94ea650196bce"
+      },
+      "observedAtHead": {
+        "commit": "e17a6c8a07abb21946a9fb1ac064a7a2a0464128",
+        "tree": "ff689c10b285a635116e6b305cbea97b0f94f8c0"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "12f665e6e014ebad012c108dcf4948e7ebd4ce3b",
+        "tree": "1ded61fa3c8590cbf363fc563ed959e33a242ff1"
+      },
+      "observedAtHead": {
+        "commit": "2b73b76cdb67f4e2abe32417e42f75e7528de3df",
+        "tree": "f6cc0978bf3cc5bb0c700135929beed2d40cac49"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "967a9cc9b743f54771614d8b1a46735fa354121f",
+        "tree": "5bf6fb8fe327a3087cbcb5aaa291994c8e705884"
+      },
+      "observedAtHead": {
+        "commit": "967a9cc9b743f54771614d8b1a46735fa354121f",
+        "tree": "5bf6fb8fe327a3087cbcb5aaa291994c8e705884"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    }
   ]
 }

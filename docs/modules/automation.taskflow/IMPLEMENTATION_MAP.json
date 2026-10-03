@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "967a9cc9b743f54771614d8b1a46735fa354121f",
+    "tree": "5bf6fb8fe327a3087cbcb5aaa291994c8e705884"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -231,8 +231,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "967a9cc9b743f54771614d8b1a46735fa354121f",
+    "tree": "5bf6fb8fe327a3087cbcb5aaa291994c8e705884"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -316,7 +316,7 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "0a936d2353e7e39ef95da3c861992ece27481243"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -352,15 +352,41 @@
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
-      "object": "59e1f81d0efb3633a32edfbe37bdf599852919c2"
+      "object": "2d465dd4fb81e2d81ac32a7a7515386889d533aa"
     },
     {
       "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
-      "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
+      "object": "967c69e9754735aa163bcc1f1697a93b697d8c2e"
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
       "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
+    }
+  ],
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "e17a6c8a07abb21946a9fb1ac064a7a2a0464128",
+        "tree": "ff689c10b285a635116e6b305cbea97b0f94f8c0"
+      },
+      "observedAtHead": {
+        "commit": "e17a6c8a07abb21946a9fb1ac064a7a2a0464128",
+        "tree": "ff689c10b285a635116e6b305cbea97b0f94f8c0"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "2b73b76cdb67f4e2abe32417e42f75e7528de3df",
+        "tree": "f6cc0978bf3cc5bb0c700135929beed2d40cac49"
+      },
+      "observedAtHead": {
+        "commit": "2b73b76cdb67f4e2abe32417e42f75e7528de3df",
+        "tree": "f6cc0978bf3cc5bb0c700135929beed2d40cac49"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
     }
   ]
 }

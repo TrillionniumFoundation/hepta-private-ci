@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "lane": "LANE-A-FOUNDATION",
   "closureScope": "current executable capabilities only",
-  "entryCount": 42,
+  "entryCount": 45,
   "entries": [
     {
       "capabilityId": "platform.types.bounded-identity.v1",
@@ -156,13 +156,13 @@
         {
           "path": "codex-rs/hepta-types/conformance/verify_rejections.py",
           "mustContain": [
-            "rejection oracle accepted invalid case"
+            "raw-byte rejection oracle accepted invalid bytes"
           ]
         },
         {
           "path": "codex-rs/hepta-types/conformance/verify_rejections.mjs",
           "mustContain": [
-            "rejection oracle accepted invalid case"
+            "raw-byte rejection oracle accepted invalid bytes"
           ]
         }
       ],
@@ -238,12 +238,13 @@
     {
       "capabilityId": "platform.types.numeric-conversion-q32.v1",
       "module": "platform.types",
-      "summary": "checked numeric conversion with registered profiles and explicit Q32 arithmetic split",
+      "summary": "checked numeric conversion with distinct registry-admission receipt and explicit Q32 arithmetic split",
       "publicSymbols": [
         "FixedQ32",
         "FIXED_Q32_ARITHMETIC_PROFILE_V1",
         "NumericSignalV1",
         "NumericConversionReceiptV1",
+        "RegisteredNumericConversionReceiptV1",
         "rescale_signal",
         "rescale_signal_registered"
       ],
@@ -259,8 +260,26 @@
         {
           "path": "codex-rs/hepta-types/src/numeric_conversion.rs",
           "mustContain": [
+            "pub struct RegisteredNumericConversionReceiptV1",
             "pub fn rescale_signal_registered(",
-            "NonAuthorizingPosture::DENY_ALL"
+            "registered_admission_digest",
+            "registry_digest"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/numeric_admission.rs",
+          "mustContain": [
+            "pub struct NduNumericRegistryV1",
+            "pub struct NduRegisteredUtilitySignalV1",
+            "rescale_signal_registered"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner.rs",
+          "mustContain": [
+            "open_with_numeric_registry",
+            "pub fn admit_utility_signal",
+            "production_policy_digest_with_numeric_registry"
           ]
         }
       ],
@@ -269,13 +288,21 @@
           "path": "codex-rs/hepta-types/src/numeric_conversion_tests.rs",
           "mustContain": [
             "signed_half_ties_round_to_even_target_bins",
-            "registered_conversion_requires_normalization_and_both_profile_definitions"
+            "registered_conversion_requires_normalization_and_both_profile_definitions",
+            "registered_receipt.registry_digest"
           ]
         },
         {
-          "path": "codex-rs/hepta-types/src/numeric_profile_tests.rs",
+          "path": "codex-rs/hepta-ndu/src/numeric_admission_tests.rs",
           "mustContain": [
-            "q32_raw_scale_compatibility_does_not_imply_arithmetic_compatibility"
+            "registered_utility_signal_binds_registry_normalization_and_axis_order",
+            "registry_generation_changes_admission_but_not_pure_arithmetic"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "mustContain": [
+            "authenticated_owner_freezes_and_consumes_registered_numeric_generation"
           ]
         }
       ],
@@ -285,6 +312,19 @@
           "mustContain": [
             "NumericConversionError::UnregisteredProfile",
             "NumericConversionError::UnknownNormalization"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/numeric_admission_tests.rs",
+          "mustContain": [
+            "normalization_unit_and_axis_mismatch_reject_before_owner_use"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
+          "mustContain": [
+            "unconfigured_owner_cannot_claim_registry_admission",
+            "RegistryNotConfigured"
           ]
         }
       ],
@@ -296,7 +336,7 @@
     {
       "capabilityId": "platform.types.generated-bindings.v1",
       "module": "platform.types",
-      "summary": "deterministically generated Python/JavaScript runtime bindings and TypeScript declarations",
+      "summary": "deterministically generated Python/JavaScript runtime bindings and TypeScript declarations with own-property lookup",
       "publicSymbols": [
         "hepta_platform_types_v1.py",
         "hepta_platform_types_v1.mjs",
@@ -316,7 +356,9 @@
           "mustContain": [
             "--check",
             "generated/python/hepta_platform_types_v1.py",
-            "generated/javascript/hepta_platform_types_v1.mjs"
+            "generated/javascript/hepta_platform_types_v1.mjs",
+            "Object.hasOwn(NUMERIC_PROFILES",
+            "Object.hasOwn(ID_PROFILES"
           ]
         }
       ],
@@ -338,13 +380,175 @@
         {
           "path": "codex-rs/hepta-types/bindings/verify_generated.py",
           "mustContain": [
-            "generated Python binding admitted authority grant bits"
+            "generated Python binding admitted authority grant bits",
+            "constructor",
+            "__proto__"
           ]
         },
         {
           "path": "codex-rs/hepta-types/bindings/verify_generated.mjs",
           "mustContain": [
-            "generated JavaScript binding admitted authority grant bits"
+            "generated JavaScript binding admitted authority grant bits",
+            "admitted unknown numeric profile",
+            "admitted unknown ID profile",
+            "__proto__"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-types/src/numeric_profile_tests.rs",
+          "mustContain": [
+            "unknown_profile_names_reject_including_javascript_prototype_names"
+          ]
+        }
+      ],
+      "durability": "none",
+      "activation": "library_only",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "platform.types.prompt-delivery-observation.v1",
+      "module": "platform.types",
+      "summary": "bounded PromptDeliveryObservationV1 with exact semantic digest and current runtime/ledger callsites",
+      "publicSymbols": [
+        "PromptDeliveryObservationV1",
+        "PromptDeliveryRejectReasonV1"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-types/src/prompt_delivery.rs",
+          "mustContain": [
+            "pub struct PromptDeliveryObservationV1",
+            "pub fn validate(&self)",
+            "pub fn semantic_digest(&self)"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
+          "mustContain": [
+            "PromptDeliveryObservationV1"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-learning-ledger/src/ledger.rs",
+          "mustContain": [
+            "append_runtime_prompt_delivery_v1",
+            "semantic_digest()"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-types/src/prompt_delivery_tests.rs",
+          "mustContain": [
+            "semantic_digest_is_deterministic_and_field_complete",
+            "token_positions_are_optional_bounded_and_canonical"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-types/src/prompt_delivery_tests.rs",
+          "mustContain": [
+            "delivered_and_rejected_are_mutually_exclusive",
+            "rejection_reason_is_open_but_bounded"
+          ]
+        }
+      ],
+      "durability": "none",
+      "activation": "library_only",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "platform.types.runtime-topology-candidate.v1",
+      "module": "platform.types",
+      "summary": "digest-bound RuntimeTopologyCandidateV1 with current supervisor admission callsite",
+      "publicSymbols": [
+        "RuntimeTopologyCandidateV1",
+        "RuntimeTopologyDeltaV1",
+        "RuntimeTopologyOperationV1"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-types/src/topology.rs",
+          "mustContain": [
+            "pub struct RuntimeTopologyCandidateV1",
+            "pub fn validate(&self)",
+            "pub fn content_digest(&self)"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/module_runtime.rs",
+          "mustContain": [
+            "register_selected_topology_candidate",
+            "candidate.validate()?",
+            "TopologyBaselineMismatch"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-types/src/topology.rs",
+          "mustContain": [
+            "split_requires_individually_bound_add_participants"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-types/src/topology.rs",
+          "mustContain": [
+            "selected_digest_cannot_hide_substituted_delta_content",
+            "related_module_bounds_are_checked_before_digest_allocation"
+          ]
+        }
+      ],
+      "durability": "none",
+      "activation": "library_only",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "platform.types.owned-manifests.v1",
+      "module": "platform.types",
+      "summary": "bounded RandomStream, ExternalSystem and SensorCalibration manifest contracts with stable semantic digests",
+      "publicSymbols": [
+        "RandomStreamManifestV1",
+        "ExternalSystemManifestV1",
+        "SensorCalibrationManifestV1",
+        "UtcTimestampV1"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-types/src/manifests.rs",
+          "mustContain": [
+            "pub struct RandomStreamManifestV1",
+            "pub struct ExternalSystemManifestV1",
+            "pub struct SensorCalibrationManifestV1",
+            "pub fn semantic_digest(&self)",
+            "fn parse_utc_timestamp"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-types/src/manifests_tests.rs",
+          "mustContain": [
+            "random_stream_manifest_binds_every_semantic_field",
+            "external_system_manifest_digest_is_stable_and_binds_inventory",
+            "sensor_calibration_manifest_binds_generation_range_and_uncertainty"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-types/src/manifests_tests.rs",
+          "mustContain": [
+            "random_stream_manifest_rejects_zero_seed_invalid_range_and_enum_tokens",
+            "external_system_manifest_rejects_unknown_classes_timestamps_and_zero_witnesses",
+            "sensor_calibration_manifest_rejects_invalid_ranges_windows_and_enums",
+            "utc_timestamp_is_strict_bounded_and_chronological"
           ]
         }
       ],
@@ -1177,7 +1381,7 @@
             "pub struct FleetAuthorityPort",
             "pub fn issue(",
             ".verify_use(",
-            ".with_verified_use(",
+            "dispatch_authority_lease_with_witness",
             "allocation_binding"
           ]
         },
@@ -1369,7 +1573,8 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "production-operation-reconciler",
+            "tasks.spawn_required("
           ]
         }
       ],
@@ -1424,7 +1629,8 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "production-operation-reconciler",
+            "tasks.spawn_required("
           ]
         }
       ],
@@ -1489,7 +1695,8 @@
           "mustContain": [
             "run_production_operation_reconciler",
             "attach_production_operations",
-            "CompletedRuntimeTask::Operations"
+            "production-operation-reconciler",
+            "tasks.spawn_required("
           ]
         }
       ],
@@ -1520,7 +1727,7 @@
       "summary": "explicit Agentd daemon lifecycle composition with observer-only reconciler and fail-closed default",
       "publicSymbols": [
         "AgentdConfig::with_production_operations",
-        "AgentdProductionOperationRuntimeConfig::open"
+        "AgentdProductionOperationRuntimeConfig::new"
       ],
       "sourceEvidence": [
         {
@@ -1532,12 +1739,20 @@
           ]
         },
         {
+          "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+          "mustContain": [
+            "pub struct AgentdProductionOperationRuntimeConfig",
+            "pub fn new(",
+            "pub(crate) async fn attach("
+          ]
+        },
+        {
           "path": "codex-rs/hepta-agentd/src/runtime.rs",
           "mustContain": [
-            "AgentdProductionOperationRuntimeConfig::open",
             "attach_production_operations",
             "run_production_operation_reconciler",
-            "CompletedRuntimeTask::Operations"
+            "production-operation-reconciler",
+            "tasks.spawn_required("
           ]
         },
         {
@@ -1551,10 +1766,10 @@
       ],
       "positiveTests": [
         {
-          "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+          "path": "codex-rs/hepta-agentd/src/runtime_tasks_tests.rs",
           "mustContain": [
-            "cleanup_never_polls_the_join_handle_already_consumed_by_select",
-            "operations_task.is_finished()"
+            "cancelled_observation_keeps_completion_identity",
+            "cooperative_shutdown_precedes_forced_abort"
           ]
         }
       ],

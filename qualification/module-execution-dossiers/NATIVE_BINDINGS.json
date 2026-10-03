@@ -140,12 +140,14 @@
     {
       "module": "runtime.codex",
       "path": "codex-rs/hepta-codex-adapter/src/lib.rs",
-      "blobSha": "c81c3ec10dd11a85ed28cf71207ff0f973329c17",
+      "blobSha": "521526bebf785104d714432cbf9613e71b233afc",
       "exports": [
         "CodexOperationIntent",
-        "AppServerObservation",
+        "AppServerRequestBinding",
         "CodexAdapterReceipt",
-        "adapt"
+        "adapt_request",
+        "adapt_observed_event",
+        "adapt_observed_thread_read_reconciliation"
       ]
     },
     {

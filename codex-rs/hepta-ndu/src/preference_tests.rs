@@ -76,8 +76,15 @@ fn damped_preference_update_emits_local_solver_receipts() {
             .map(|receipt| receipt.residual_raw)
             .max()
             .expect("maximum residual")
-            .max(initial_residual_raw)
     );
+    // The local termination maximum covers emitted post-step receipts, not
+    // the pre-iteration input. With eta=1/4, residual 1 becomes 3/4.
+    assert_eq!(initial_residual_raw, FixedQ32::ONE.raw());
+    assert_eq!(
+        receipts.first().expect("first iteration").residual_raw,
+        3_i64 << 30
+    );
+    assert!(termination.maximum_residual_raw < initial_residual_raw);
     assert!(receipts.iter().all(|receipt| receipt.validate().is_ok()));
 }
 

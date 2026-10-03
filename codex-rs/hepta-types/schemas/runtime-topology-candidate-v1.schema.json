@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://hepta.invalid/schemas/platform.types/runtime-topology-candidate-v1.schema.json",
+  "title": "RuntimeTopologyCandidateV1 strict JSON transport",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "kind",
+    "proposal_digest",
+    "candidate_id",
+    "candidate_digest",
+    "baseline_generation",
+    "candidate_generation",
+    "selected_topology_digest",
+    "evaluation_digest",
+    "rollback_predecessor_digest",
+    "changed",
+    "deltas"
+  ],
+  "properties": {
+    "kind": { "const": "runtime_topology_candidate_v1" },
+    "proposal_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "candidate_id": { "$ref": "#/$defs/stableId" },
+    "candidate_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "baseline_generation": { "$ref": "#/$defs/positiveU64String" },
+    "candidate_generation": { "$ref": "#/$defs/positiveU64String" },
+    "selected_topology_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "evaluation_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "rollback_predecessor_digest": { "$ref": "#/$defs/nonzeroDigest" },
+    "changed": { "type": "boolean" },
+    "deltas": {
+      "type": "array",
+      "maxItems": 256,
+      "items": { "$ref": "#/$defs/delta" },
+      "x-hepta-invariant": "strictly_increasing_module_id_and_candidate_digest_recomputed"
+    }
+  },
+  "$defs": {
+    "stableId": { "type": "string", "minLength": 1, "maxLength": 128, "pattern": "^[A-Za-z0-9._:-]+$" },
+    "digest": { "type": "string", "minLength": 64, "maxLength": 64, "pattern": "^[0-9a-f]{64}$" },
+    "nonzeroDigest": { "type": "string", "minLength": 64, "maxLength": 64, "pattern": "^(?!0{64}$)[0-9a-f]{64}$" },
+    "positiveU64String": { "type": "string", "minLength": 1, "maxLength": 20, "pattern": "^[1-9][0-9]*$" },
+    "delta": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "module_id",
+        "operation",
+        "related_module_ids",
+        "predecessor_digest",
+        "candidate_digest",
+        "evidence_digest"
+      ],
+      "properties": {
+        "module_id": { "$ref": "#/$defs/stableId" },
+        "operation": { "enum": ["add", "replace", "retire", "rewire", "split", "merge"] },
+        "related_module_ids": {
+          "type": "array",
+          "maxItems": 256,
+          "items": { "$ref": "#/$defs/stableId" },
+          "x-hepta-invariant": "strictly_increasing_no_self_reference"
+        },
+        "predecessor_digest": { "$ref": "#/$defs/digest" },
+        "candidate_digest": { "$ref": "#/$defs/digest" },
+        "evidence_digest": { "$ref": "#/$defs/nonzeroDigest" }
+      }
+    }
+  }
+}
