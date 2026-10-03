@@ -9,6 +9,16 @@ use pretty_assertions::assert_eq;
 fn snapshot_fifo_is_rejected_without_a_writer() {
     let directory = tempfile::tempdir().unwrap();
     let path = directory.path().join("lease-registry.json");
+    #[cfg(target_vendor = "apple")]
+    assert!(
+        std::process::Command::new("mkfifo")
+            .args(["-m", "600"])
+            .arg(&path)
+            .status()
+            .expect("create FIFO fixture")
+            .success()
+    );
+    #[cfg(not(target_vendor = "apple"))]
     rustix::fs::mknodat(
         rustix::fs::CWD,
         &path,
@@ -17,6 +27,9 @@ fn snapshot_fifo_is_rejected_without_a_writer() {
         0,
     )
     .unwrap();
+    assert!(std::os::unix::fs::FileTypeExt::is_fifo(
+        &std::fs::symlink_metadata(&path).unwrap().file_type()
+    ));
     let (tx, rx) = std::sync::mpsc::channel();
     let worker = std::thread::spawn(move || {
         tx.send(DurableLeaseRegistryV1::open(path).map(|_| ()))
