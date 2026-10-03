@@ -33,6 +33,10 @@ use super::store;
 #[path = "local_model_relay_http.rs"]
 mod http;
 
+#[path = "local_model_relay_witness.rs"]
+mod witness;
+pub use witness::RootModelTerminalReceiptV1;
+
 pub(super) async fn start(issuer: Arc<Issuer>) -> anyhow::Result<Option<JoinHandle<()>>> {
     use std::os::unix::fs::FileTypeExt;
     use std::os::unix::fs::MetadataExt;
@@ -45,6 +49,9 @@ pub(super) async fn start(issuer: Arc<Issuer>) -> anyhow::Result<Option<JoinHand
         .parent()
         .context("model relay socket parent")?;
     store::protected_directory(parent)?;
+    if let Some(directory) = &policy.terminal_receipt_directory {
+        store::protected_directory(directory)?;
+    }
     if let Ok(metadata) = std::fs::symlink_metadata(&policy.socket) {
         anyhow::ensure!(
             metadata.file_type().is_socket() && metadata.uid() == 0,
@@ -100,7 +107,7 @@ async fn exchange(issuer: &Issuer, stream: &mut UnixStream) -> anyhow::Result<()
         .as_ref()
         .context("model relay disabled")?;
     let prepared = prepare(issuer, policy, stream).await;
-    let (request, binding, token) = match prepared {
+    let (request, binding, token, mut observation) = match prepared {
         Ok(prepared) => prepared,
         Err(_) => {
             http::error(stream, 503).await?;
@@ -127,9 +134,16 @@ async fn exchange(issuer: &Issuer, stream: &mut UnixStream) -> anyhow::Result<()
             delivered <= http::MAX_RESPONSE_BYTES,
             "model response byte bound"
         );
+        if let Some(observation) = &mut observation {
+            observation.observe(&bytes)?;
+        }
         http::chunk(stream, &bytes).await?;
     }
-    http::finish(stream).await
+    http::finish(stream).await?;
+    if let Some(observation) = observation {
+        observation.finish(issuer.clock.now_unix_ms()?)?;
+    }
+    Ok(())
 }
 
 async fn prepare(
@@ -140,6 +154,7 @@ async fn prepare(
     codex_http_client::RequestBuilder,
     FinalUseBinding,
     codex_hepta_contracts::VerifiedUseToken,
+    Option<witness::Observation>,
 )> {
     let peer = capture_peer(
         &issuer.config,
@@ -230,11 +245,6 @@ async fn prepare(
         scope_sha256: Sha256::digest(scope).into(),
         payload_sha256: body_digest,
     };
-    let outgoing = client
-        .post(upstream)
-        .headers(headers)
-        .body(request.body)
-        .timeout(Duration::from_millis(policy.call_timeout_ms));
     let head = issuer.synchronize_head()?;
     anyhow::ensure!(
         capture_peer(
@@ -268,5 +278,17 @@ async fn prepare(
             == peer,
         "model caller changed after durable nonce admission"
     );
-    Ok((outgoing, binding, token))
+    let observation = witness::Observation::reserve(
+        policy,
+        &request,
+        &peer,
+        &binding,
+        issuer.clock.now_unix_ms()?,
+    )?;
+    let outgoing = client
+        .post(upstream)
+        .headers(headers)
+        .body(request.body)
+        .timeout(Duration::from_millis(policy.call_timeout_ms));
+    Ok((outgoing, binding, token, observation))
 }

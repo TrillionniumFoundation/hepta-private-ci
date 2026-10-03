@@ -9,6 +9,8 @@ use serde::Deserialize;
 #[serde(deny_unknown_fields)]
 pub(super) struct ModelRelayPolicy {
     pub socket: PathBuf,
+    #[serde(default)]
+    pub terminal_receipt_directory: Option<PathBuf>,
     pub credential_profile_home: PathBuf,
     pub credential_uid: u32,
     pub credential_gid: u32,
@@ -83,6 +85,15 @@ impl ModelRelayPolicy {
                         .components()
                         .any(|part| { matches!(part, std::path::Component::ParentDir) }),
                 "model relay paths must be absolute and normalized"
+            );
+        }
+        if let Some(path) = &self.terminal_receipt_directory {
+            anyhow::ensure!(
+                path.is_absolute()
+                    && !path
+                        .components()
+                        .any(|part| matches!(part, std::path::Component::ParentDir)),
+                "model terminal custody must use an absolute protected directory"
             );
         }
         anyhow::ensure!(

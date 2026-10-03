@@ -44,6 +44,8 @@ mod credentials;
 #[cfg(feature = "local-model-relay")]
 #[path = "local_model_relay.rs"]
 mod relay;
+#[cfg(feature = "local-model-relay")]
+pub use relay::RootModelTerminalReceiptV1;
 #[path = "local_model_relay_policy.rs"]
 mod relay_policy;
 #[cfg(feature = "local-model-relay")]

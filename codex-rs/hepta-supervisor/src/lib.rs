@@ -307,6 +307,8 @@ mod local_model_authority;
 ))]
 mod workload_principal;
 #[cfg(all(target_os = "linux", feature = "local-model-relay"))]
+pub use local_model_authority::RootModelTerminalReceiptV1;
+#[cfg(all(target_os = "linux", feature = "local-model-relay"))]
 pub use local_model_authority::run_credential_worker;
 #[cfg(all(target_os = "linux", feature = "local-model-authority"))]
 pub use local_model_authority::run_local_model_authority;

@@ -108,6 +108,17 @@ pub(super) fn inspect_body(
     body: &[u8],
     headers: &BTreeMap<String, String>,
 ) -> anyhow::Result<String> {
+    Ok(body_object(body, headers)?
+        .get("model")
+        .and_then(serde_json::Value::as_str)
+        .context("model missing")?
+        .to_owned())
+}
+
+pub(super) fn body_object(
+    body: &[u8],
+    headers: &BTreeMap<String, String>,
+) -> anyhow::Result<BTreeMap<String, serde_json::Value>> {
     let mut decoded = Vec::new();
     let json = match headers.get("content-encoding").map(String::as_str) {
         None | Some("identity") => body,
@@ -131,11 +142,7 @@ pub(super) fn inspect_body(
             && object.get("input").is_some_and(serde_json::Value::is_array),
         "model relay requires stateless streaming Responses"
     );
-    Ok(object
-        .get("model")
-        .and_then(serde_json::Value::as_str)
-        .context("model missing")?
-        .to_owned())
+    Ok(object)
 }
 
 // Responses evolves frequently, so accept its fields while rejecting
