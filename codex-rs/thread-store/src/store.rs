@@ -288,6 +288,18 @@ pub trait ThreadStore: Any + Send + Sync {
         })
     }
 
+    /// Read an existing original idempotency binding; never create a project.
+    fn read_project_by_idempotency_key(
+        &self,
+        _key: String,
+    ) -> ThreadStoreFuture<'_, Option<StoredProject>> {
+        Box::pin(async {
+            Err(ThreadStoreError::Unsupported {
+                operation: "project/readByIdempotencyKey",
+            })
+        })
+    }
+
     fn create_project(
         &self,
         _params: CreateProjectParams,

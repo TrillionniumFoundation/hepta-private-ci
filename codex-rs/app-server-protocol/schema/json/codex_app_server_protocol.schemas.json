@@ -21671,6 +21671,118 @@
         "title": "ThreadQueueChangedNotification",
         "type": "object"
       },
+      "ThreadQueueObserveOutcome": {
+        "oneOf": [
+          {
+            "properties": {
+              "queuedSubmissionId": {
+                "type": [
+                  "string",
+                  "null"
+                ]
+              },
+              "type": {
+                "enum": [
+                  "pending"
+                ],
+                "title": "PendingThreadQueueObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "PendingThreadQueueObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "terminal": {
+                "anyOf": [
+                  {
+                    "$ref": "#/definitions/v2/ThreadQueueObservedTerminal"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "turnId": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "persisted"
+                ],
+                "title": "PersistedThreadQueueObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "turnId",
+              "type"
+            ],
+            "title": "PersistedThreadQueueObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "type": {
+                "enum": [
+                  "missing"
+                ],
+                "title": "MissingThreadQueueObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "MissingThreadQueueObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "type": {
+                "enum": [
+                  "unknown"
+                ],
+                "title": "UnknownThreadQueueObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "UnknownThreadQueueObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "type": {
+                "enum": [
+                  "cancelled"
+                ],
+                "title": "CancelledThreadQueueObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "CancelledThreadQueueObserveOutcome",
+            "type": "object"
+          }
+        ]
+      },
+      "ThreadQueueObservedTerminal": {
+        "enum": [
+          "completed",
+          "failed",
+          "interrupted"
+        ],
+        "type": "string"
+      },
       "ThreadQueueReconcileMode": {
         "enum": [
           "allowIfAbsent",

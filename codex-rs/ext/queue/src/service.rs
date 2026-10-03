@@ -159,6 +159,11 @@ struct OwnedDispatchAuthority {
 }
 
 impl QueuedItemService {
+    /// A read-only view of this same durable queue, with no dispatch authority.
+    pub fn historical_observer(&self) -> QueueHistoricalObserver {
+        QueueHistoricalObserver::new(Arc::clone(&self.queue))
+    }
+
     pub fn new(
         queue: Arc<dyn QueueStore>,
         thread_manager: Weak<ThreadManager>,

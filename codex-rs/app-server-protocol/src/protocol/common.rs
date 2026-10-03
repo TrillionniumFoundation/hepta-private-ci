@@ -608,6 +608,12 @@ client_request_definitions! {
         serialization: thread_id(params.thread_id),
         response: v2::ThreadQueueReconcileResponse,
     },
+    #[experimental("thread/queue/observe")]
+    ThreadQueueObserve => "thread/queue/observe" {
+        params: v2::ThreadQueueObserveParams,
+        serialization: thread_id(params.thread_id),
+        response: v2::ThreadQueueObserveResponse,
+    },
     #[experimental("thread/queue/list")]
     ThreadQueueList => "thread/queue/list" {
         params: v2::ThreadQueueListParams,
@@ -733,6 +739,13 @@ client_request_definitions! {
     ProjectRead => "project/read" {
         params: v2::ProjectReadParams,
         serialization: global_shared_read("projects"),
+        response: v2::ProjectReadResponse,
+    },
+    #[experimental("project/readByIdempotencyKey")]
+    ProjectReadByIdempotencyKey => "project/readByIdempotencyKey" {
+        params: v2::ProjectReadByIdempotencyKeyParams,
+        serialization: global_shared_read("projects"),
+        manual_payload_conversion: manual,
         response: v2::ProjectReadResponse,
     },
     #[experimental("project/create")]

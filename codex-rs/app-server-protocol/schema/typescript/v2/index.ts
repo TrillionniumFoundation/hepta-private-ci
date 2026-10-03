@@ -496,6 +496,8 @@ export type { ThreadMetadataUpdateResponse } from "./ThreadMetadataUpdateRespons
 export type { ThreadNameUpdatedNotification } from "./ThreadNameUpdatedNotification";
 export type { ThreadProjectUpdatedNotification } from "./ThreadProjectUpdatedNotification";
 export type { ThreadQueueChangedNotification } from "./ThreadQueueChangedNotification";
+export type { ThreadQueueObserveOutcome } from "./ThreadQueueObserveOutcome";
+export type { ThreadQueueObservedTerminal } from "./ThreadQueueObservedTerminal";
 export type { ThreadQueueReconcileMode } from "./ThreadQueueReconcileMode";
 export type { ThreadQueueReconcileOutcome } from "./ThreadQueueReconcileOutcome";
 export type { ThreadReadParams } from "./ThreadReadParams";

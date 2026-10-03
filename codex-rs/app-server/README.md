@@ -2744,3 +2744,18 @@ requires the original control record and its required terminal-publication ACK.
 The server process cannot preserve live memory across a process death; durable
 control and cleanup obligations remain the recovery source. Persistent threads
 and clients that do not opt in keep their existing idle policy.
+
+The experimental `project/readByIdempotencyKey` method reads an existing local
+project by its original creation key. It returns `ProjectReadResponse`; an absent
+or deleted binding fails without creating or repairing a project. Remote stores
+that do not support this read fail with method-not-found.
+
+The experimental `thread/queue/observe` method reads an exact durable
+`clientUserMessageId` and `expectedPayloadSha256`. The caller supplies the protected
+`expectedProjectId`, `expectedCwd`, and `expectedThreadSource`; the local owner
+checks the original thread scope before and after the bounded observation.
+The response distinguishes `pending`, `persisted` (with any explicit terminal
+record), `cancelled`, `missing`, and `unknown`. Missing, incomplete history, and
+end-of-file do not prove completion. Observation does not load or resume a thread,
+reserve or settle a queue row, dispatch input, or publish queue notifications.
+Remote or ephemeral threads without the original local durable row are unavailable.

@@ -68,6 +68,17 @@ pub(super) async fn create_project(
         .map_err(project_idempotency_error)
 }
 
+pub(super) async fn read_project_by_idempotency_key(
+    store: &LocalThreadStore,
+    key: String,
+) -> ThreadStoreResult<Option<StoredProject>> {
+    state(store)?
+        .get_project_by_idempotency_key(&key)
+        .await
+        .map(|project| project.map(stored_project))
+        .map_err(internal)
+}
+
 pub(super) async fn update_project(
     store: &LocalThreadStore,
     params: UpdateProjectParams,

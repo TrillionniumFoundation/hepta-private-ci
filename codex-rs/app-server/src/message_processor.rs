@@ -539,6 +539,7 @@ impl MessageProcessor {
             Arc::clone(&thread_store),
             outgoing.clone(),
             queue_service,
+            state_db.clone(),
         );
         let project_processor = ProjectRequestProcessor::new(
             Arc::clone(&thread_store),
@@ -1328,6 +1329,11 @@ impl MessageProcessor {
                 .reconcile(params)
                 .await
                 .map(|response| Some(response.into())),
+            ClientRequest::ThreadQueueObserve { params, .. } => processor
+                .thread_queue_processor
+                .observe(params)
+                .await
+                .map(|response| Some(response.into())),
             ClientRequest::ThreadQueueList { params, .. } => processor
                 .thread_queue_processor
                 .list(params)
@@ -1428,6 +1434,9 @@ impl MessageProcessor {
             },
             ClientRequest::ProjectRead { params, .. } => {
                 processor.project_processor.project_read(params).await
+            },
+            ClientRequest::ProjectReadByIdempotencyKey { params, .. } => {
+                processor.project_processor.project_read_by_idempotency_key(params).await
             },
             ClientRequest::ProjectCreate { params, .. } => {
                 processor.project_processor.project_create(params).await

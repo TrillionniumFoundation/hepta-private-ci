@@ -583,6 +583,13 @@ impl ThreadStore for LocalThreadStore {
         Box::pin(async move { projects::read_project(self, project_id).await })
     }
 
+    fn read_project_by_idempotency_key(
+        &self,
+        key: String,
+    ) -> ThreadStoreFuture<'_, Option<StoredProject>> {
+        Box::pin(async move { projects::read_project_by_idempotency_key(self, key).await })
+    }
+
     fn create_project(&self, params: CreateProjectParams) -> ThreadStoreFuture<'_, CreatedProject> {
         Box::pin(async move { projects::create_project(self, params).await })
     }
