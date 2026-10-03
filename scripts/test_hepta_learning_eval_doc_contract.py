@@ -8,7 +8,9 @@ import unittest
 
 
 def load(name: str, filename: str):
-    spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(filename))
+    spec = importlib.util.spec_from_file_location(
+        name, Path(__file__).with_name(filename)
+    )
     module = importlib.util.module_from_spec(spec)
     assert spec.loader is not None
     spec.loader.exec_module(module)
@@ -20,6 +22,48 @@ MARKDOWN = load("learning_eval_markdown_links", "hepta-learning-eval-markdown-li
 
 
 class DocumentationContractTests(unittest.TestCase):
+    def test_actual_reporter_uses_the_hardened_entry_boundary(self):
+        workflow = (
+            CONTRACT.ROOT / ".github/workflows/hepta-learning-eval-trusted-report.yml"
+        ).read_text(encoding="utf-8")
+        CONTRACT.validate_trusted_reporter_workflow(workflow)
+
+    def test_reporter_rejects_missing_entry_and_control_plane_identity(self):
+        workflow = (
+            CONTRACT.ROOT / ".github/workflows/hepta-learning-eval-trusted-report.yml"
+        ).read_text(encoding="utf-8")
+        for command in (
+            "python3 scripts/hepta-learning-eval-trusted-entry.py",
+            "python3 scripts/hepta-learning-eval-control-plane-identity.py",
+        ):
+            with (
+                self.subTest(command=command),
+                self.assertRaisesRegex(ValueError, "missing"),
+            ):
+                CONTRACT.validate_trusted_reporter_workflow(
+                    workflow.replace(command, "python3 removed.py")
+                )
+
+    def test_reporter_rejects_direct_lower_level_execution(self):
+        workflow = (
+            CONTRACT.ROOT / ".github/workflows/hepta-learning-eval-trusted-report.yml"
+        ).read_text(encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "hardened entrypoint"):
+            CONTRACT.validate_trusted_reporter_workflow(
+                workflow
+                + "\n          python3 scripts/hepta-learning-eval-trusted-report.py\n"
+            )
+
+    def test_reporter_rejects_candidate_source_checkout(self):
+        workflow = (
+            CONTRACT.ROOT / ".github/workflows/hepta-learning-eval-trusted-report.yml"
+        ).read_text(encoding="utf-8")
+        with self.assertRaisesRegex(ValueError, "checkout candidate source"):
+            CONTRACT.validate_trusted_reporter_workflow(
+                workflow
+                + "\n          ref: ${{ github.event.workflow_run.head_sha }}\n"
+            )
+
     def test_bare_verified_is_rejected_at_any_depth(self):
         with self.assertRaises(ValueError):
             CONTRACT.reject_bare_verified({"nested": {"verified": True}})
@@ -42,7 +86,7 @@ class DocumentationContractTests(unittest.TestCase):
             root = Path(directory)
             target = root / "target.md"
             target.write_text(
-                "# Repeated heading\n\n## Repeated heading\n\n<span id=\"explicit\"></span>\n",
+                '# Repeated heading\n\n## Repeated heading\n\n<span id="explicit"></span>\n',
                 encoding="utf-8",
             )
             source = root / "source.md"
