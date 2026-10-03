@@ -32,6 +32,12 @@ pub(super) enum BaselineFactsV1 {
     Historical(crate::HistoricalRegisteredArtifactFactsV1),
 }
 impl BaselineFactsV1 {
+    pub fn artifact_root(&self) -> &std::path::Path {
+        match self {
+            Self::Current(f) => f.artifact_root(),
+            Self::Historical(f) => f.artifact_root(),
+        }
+    }
     pub fn current_head(&self) -> &codex_hepta_learning_artifacts::SignedCurrentArtifactHeadV1 {
         match self {
             Self::Current(f) => f.current_head(),
@@ -76,6 +82,7 @@ pub(super) struct Inputs {
     pub plan: NeuronGenerationMaterialV2,
     pub baseline: BaselineFactsV1,
     pub admission: PlasticityAdmissionEvidenceV1,
+    pub head_manifest: codex_hepta_learning_artifacts::ValidatedArtifactManifestV2,
     pub trust: ActivatedLearningTrustV1,
     pub reviewer: TrustedLearningSignerV1,
     pub selectors: Vec<TrustedLearningSignerV1>,
@@ -186,12 +193,18 @@ pub(super) fn inspect_frontier(
     };
     if baseline.current_head().binding != admission.artifact_registry_binding
         || baseline.current_head().witness.head_digest != admission.artifact_registry_head_digest
-        || baseline.manifests()[0].manifest.artifact_id != admission.baseline_id
     {
         return Err(
             "actual original baseline CURRENT id/generation/head differs from O admission".into(),
         );
     }
+    let head_manifest = super::parameter_pre_registration_head_v1::inspect_head(
+        &config,
+        &baseline,
+        &baseline_material,
+        &admission,
+        now,
+    )?;
     let wire: ReviewTrustWireV1 =
         serde_json::from_slice(&config.current_learning_trust.read(128 * 1024)?)?;
     if wire.root_verifying_key_hex != config.root_verifying_key_hex
@@ -268,6 +281,7 @@ pub(super) fn inspect_frontier(
         plan,
         baseline,
         admission,
+        head_manifest,
         trust,
         reviewer,
         selectors,

@@ -546,3 +546,14 @@ pub fn open_initial_cpu_neuron(
     selected.read(16 * 1024)?;
     Ok(handle)
 }
+
+#[path = "initial_cpu_parameter_registration_v1.rs"]
+mod parameter_registration;
+pub use parameter_registration::ParameterPreRegisteredPredecessorV1;
+pub use parameter_registration::ParameterPreRegisteredSelectorConfigV1;
+pub use parameter_registration::ParameterPreRegistrationEvaluationSourcesV1;
+pub use parameter_registration::VerifiedParameterPreRegisteredAdmissionV1;
+pub use parameter_registration::inspect_parameter_pre_registered_admission_v1;
+pub use parameter_registration::select_parameter_pre_registered_artifacts_v1;
+pub use profile::Role as CpuIndependentRoleV1;
+pub use profile::Source as CpuProtectedSourceV1;

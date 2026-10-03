@@ -66,6 +66,8 @@ pub struct FixedParameterPreRegistrationConfigV1 {
     pub current_learning_trust: ParameterRoleSourceV3,
     pub baseline_material: ParameterRoleSourceV3,
     pub baseline_registration: ParameterRoleSourceV3,
+    pub baseline_head_manifest: ParameterRoleSourceV3,
+    pub baseline_head_admission_digest: String,
     pub prospective_material: ParameterRoleSourceV3,
     pub profile: ParameterRoleSourceV3,
     pub admission: ParameterRoleSourceV3,

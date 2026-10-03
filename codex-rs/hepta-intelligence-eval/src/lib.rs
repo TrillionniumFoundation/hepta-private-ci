@@ -816,3 +816,9 @@ pub use operational_registered_model_v3::inspect_historical_registered_artifact_
 
 #[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
 pub use parameter_pre_registration_reader_v1::inspect_parameter_pre_registration_history_v1;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod parameter_pre_registration_head_v1;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use parameter_pre_registration_head_v1::inspect_registered_parameter_head_material_v1;

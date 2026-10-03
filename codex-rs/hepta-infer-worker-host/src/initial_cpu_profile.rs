@@ -13,7 +13,7 @@ use std::path::PathBuf;
 
 #[derive(Clone, Deserialize, Serialize, Eq, PartialEq)]
 #[serde(deny_unknown_fields)]
-pub(super) struct Source {
+pub struct Source {
     pub path: PathBuf,
     pub digest: String,
 }
@@ -28,7 +28,7 @@ impl Source {
 }
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
-pub(super) struct Role {
+pub struct Role {
     pub id: String,
     pub uid: u32,
     pub gid: u32,

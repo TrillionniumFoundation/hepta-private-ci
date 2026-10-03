@@ -421,3 +421,11 @@ mod root_parameter_role_inputs_v3;
 pub use root_parameter_role_inputs_v3::prepare_root_parameter_generator_inputs_v3;
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 pub use root_parameter_role_inputs_v3::prepare_root_parameter_observer_inputs_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+mod parameter_role_execution;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use parameter_role_execution::ParameterRoleExecutionPurposeV1;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use parameter_role_execution::ParameterRoleExecutionV1;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use parameter_role_execution::execute_parameter_role_v1;

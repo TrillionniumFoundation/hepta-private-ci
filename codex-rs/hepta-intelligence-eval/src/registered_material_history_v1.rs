@@ -7,6 +7,9 @@ pub struct HistoricalRegisteredArtifactFactsV1 {
     current_head: SignedCurrentArtifactHeadV1,
 }
 impl HistoricalRegisteredArtifactFactsV1 {
+    pub fn artifact_root(&self) -> &Path {
+        self.facts.artifact_root()
+    }
     pub fn original_head(&self) -> &SignedCurrentArtifactHeadV1 {
         &self.facts.head
     }

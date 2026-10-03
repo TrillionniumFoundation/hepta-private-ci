@@ -31,9 +31,13 @@ pub struct VerifiedParameterPreRegistrationEvaluationV1 {
     subject: StableId,
     candidate: StableId,
     baseline_artifact: StableId,
+    baseline_head_artifact: StableId,
+    baseline_head_manifest: Digest32,
     baseline_head: Digest32,
     baseline_operation: StableId,
     evaluator: VerifiedLearningEvidenceV1,
+    generator: VerifiedLearningEvidenceV1,
+    observer: VerifiedLearningEvidenceV1,
     material: Option<NeuronGenerationMaterialV2>,
     authentication_digest: Digest32,
     publication_digest: Digest32,
@@ -62,6 +66,12 @@ impl VerifiedParameterPreRegistrationEvaluationV1 {
     pub fn baseline_artifact_id(&self) -> &StableId {
         &self.baseline_artifact
     }
+    pub fn baseline_head_artifact_id(&self) -> &StableId {
+        &self.baseline_head_artifact
+    }
+    pub fn baseline_head_manifest_digest(&self) -> Digest32 {
+        self.baseline_head_manifest
+    }
     pub fn baseline_registry_head(&self) -> Digest32 {
         self.baseline_head
     }
@@ -70,6 +80,12 @@ impl VerifiedParameterPreRegistrationEvaluationV1 {
     }
     pub fn evaluator(&self) -> &VerifiedLearningEvidenceV1 {
         &self.evaluator
+    }
+    pub fn generator(&self) -> &VerifiedLearningEvidenceV1 {
+        &self.generator
+    }
+    pub fn observer(&self) -> &VerifiedLearningEvidenceV1 {
+        &self.observer
     }
     pub fn material(&self) -> Option<&NeuronGenerationMaterialV2> {
         self.material.as_ref()
@@ -331,6 +347,21 @@ fn inspect_at(
     }
     config.round.validate(settled_now)?;
     inputs.baseline.revalidate(settled_now)?;
+    let baseline_material = codex_hepta_neuron::decode_neuron_generation_material_v2(
+        &config
+            .baseline_material
+            .read(codex_hepta_neuron::MAX_NEURON_GENERATION_MATERIAL_BYTES_V2 as u64)?,
+    )?;
+    let current_head = super::parameter_pre_registration_head_v1::inspect_head(
+        &config,
+        &inputs.baseline,
+        &baseline_material,
+        &inputs.admission,
+        settled_now,
+    )?;
+    if current_head != inputs.head_manifest {
+        return Err("E1 original parameter head changed during measurement".into());
+    }
     inputs.trust.revalidate_at(settled_now)?;
     inputs.trust.verifier().verify(
         LearningEvidenceRoleV1::Evaluator,
@@ -352,9 +383,13 @@ fn inspect_at(
         subject: StableId::new(config.subject)?,
         candidate: StableId::new(config.candidate_id)?,
         baseline_artifact: StableId::new(body.baseline_model_artifact_id.clone())?,
+        baseline_head_artifact: StableId::new(body.baseline_head_artifact_id.clone())?,
+        baseline_head_manifest: body.baseline_head_manifest_digest.parse()?,
         baseline_head: body.baseline_registry_head.parse()?,
         baseline_operation: StableId::new(body.baseline_publication_operation.clone())?,
         evaluator,
+        generator: inputs.generator,
+        observer: inputs.observer,
         material,
         authentication_digest: Digest32::of_bytes(&report_bytes),
         publication_digest: Digest32::of_bytes(&serde_json::to_vec(&output.publication)?),

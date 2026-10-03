@@ -42,6 +42,9 @@ pub(super) struct Body {
     pub baseline_material_digest: String,
     pub baseline_registration_digest: String,
     pub baseline_model_artifact_id: String,
+    pub baseline_head_artifact_id: String,
+    pub baseline_head_manifest_digest: String,
+    pub baseline_head_payload_digest: String,
     pub baseline_registry_head: String,
     pub baseline_signed_head_hex: String,
     pub baseline_current_witness: String,
@@ -165,6 +168,9 @@ pub(super) fn measure_body(
         candidate_id: config.candidate_id.clone(),
         baseline_material_digest: config.baseline_material.digest.clone(),
         baseline_registration_digest: config.baseline_registration.digest.clone(),
+        baseline_head_artifact_id: inputs.head_manifest.manifest.artifact_id.to_string(),
+        baseline_head_manifest_digest: inputs.head_manifest.manifest_digest.to_string(),
+        baseline_head_payload_digest: inputs.head_manifest.manifest.bytes_digest.to_string(),
         baseline_model_artifact_id: inputs.baseline.manifests()[0]
             .manifest
             .artifact_id
