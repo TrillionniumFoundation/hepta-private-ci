@@ -8,9 +8,18 @@ pub(super) fn populate_original_dataset_ledger(
     trust: &Arc<ActivatedLearningTrustV1>,
     now: u64,
 ) {
+    populate_original_dataset_ledger_count(fixture, root, trust, now, 1);
+}
+pub(super) fn populate_original_dataset_ledger_count(
+    fixture: &mut ClockFixture,
+    root: &Path,
+    trust: &Arc<ActivatedLearningTrustV1>,
+    now: u64,
+    episodes: usize,
+) {
     let path = root.join("authenticated-dataset-ledger.bin");
     let binding = digest("actual root production dataset ledger");
-    let ledger = DurableLedger::create(new_file(&path), binding, 64)
+    let ledger = DurableLedger::create(new_file(&path), binding, 64.max(episodes * 2))
         .expect("fixture explicit initial ledger");
     let witness = LedgerWitnessStore::create(
         new_file(&root.join("authenticated-dataset-witness.bin")),
@@ -21,92 +30,100 @@ pub(super) fn populate_original_dataset_ledger(
     let mut writer =
         LedgerWriter::from_durable(ledger, witness, (**trust).clone(), &directory, &directory)
             .expect("sole original production writer");
-    let candidates = vec![id("dataset.action"), id("abstain")];
-    let decision = ProductionDecisionV2 {
-        record_id: id("dataset.decision"),
-        episode_id: id("dataset.episode"),
-        run_snapshot_digest: digest("dataset run"),
-        objective_digest: trust.verifier().objective_digest(),
-        policy_digest: digest("dataset policy"),
-        selected_candidate_id: candidates[0].clone(),
-        selected_propensity: ProbabilityQ32::ONE,
-        completeness: CandidateSetCompletenessReceiptV1 {
-            set_id: id("dataset.frontier"),
-            state_digest: digest("dataset state"),
-            generator_id: id("fixture.signer.0"),
-            generator_code_digest: digest("fixture generator"),
-            grammar_digest: digest("dataset grammar"),
-            hard_filter_digest: digest("dataset filter"),
-            truncation_digest: digest("dataset truncation"),
-            candidates_digest: candidate_ids_digest_v2(&candidates),
-            candidate_count: 2,
-            omitted_count_bound: 0,
-            canonical_order_digest: candidate_order_digest_v2(&candidates),
-            complete_for_generator: true,
-        },
-        candidate_ids: candidates,
-        support_digest: digest("dataset decision support"),
-    };
-    let generator = sign(
-        trust,
-        0,
-        LearningEvidenceRoleV1::Generator,
-        &decision_signing_payload_v2(&decision).expect("original decision bytes"),
-        now,
-    );
-    writer
-        .append_decision(Digest32::ZERO, decision, &generator, now)
-        .expect("actual original G admission");
-    let observer = trust
-        .verifier()
-        .verify(
-            LearningEvidenceRoleV1::Observer,
-            &sign(
-                trust,
-                1,
+    for episode in 0..episodes {
+        let name = |label: &str| id(&format!("{label}.{episode}"));
+        let candidates = vec![id("dataset.action"), id("abstain")];
+        let decision = ProductionDecisionV2 {
+            record_id: name("dataset.decision"),
+            episode_id: name("dataset.episode"),
+            run_snapshot_digest: digest("dataset run"),
+            objective_digest: trust.verifier().objective_digest(),
+            policy_digest: digest("dataset policy"),
+            selected_candidate_id: candidates[0].clone(),
+            selected_propensity: ProbabilityQ32::ONE,
+            completeness: CandidateSetCompletenessReceiptV1 {
+                set_id: id("dataset.frontier"),
+                state_digest: digest("dataset state"),
+                generator_id: id("fixture.signer.0"),
+                generator_code_digest: digest("fixture generator"),
+                grammar_digest: digest("dataset grammar"),
+                hard_filter_digest: digest("dataset filter"),
+                truncation_digest: digest("dataset truncation"),
+                candidates_digest: candidate_ids_digest_v2(&candidates),
+                candidate_count: 2,
+                omitted_count_bound: 0,
+                canonical_order_digest: candidate_order_digest_v2(&candidates),
+                complete_for_generator: true,
+            },
+            candidate_ids: candidates,
+            support_digest: digest("dataset decision support"),
+        };
+        let generator = sign(
+            trust,
+            0,
+            LearningEvidenceRoleV1::Generator,
+            &decision_signing_payload_v2(&decision).expect("original decision bytes"),
+            now,
+        );
+        writer
+            .append_decision(
+                writer.snapshot().expect("actual predecessor").head_digest,
+                decision,
+                &generator,
+                now,
+            )
+            .expect("actual original G admission");
+        let observer = trust
+            .verifier()
+            .verify(
                 LearningEvidenceRoleV1::Observer,
+                &sign(
+                    trust,
+                    1,
+                    LearningEvidenceRoleV1::Observer,
+                    b"fixture principal observation",
+                    now,
+                ),
                 b"fixture principal observation",
                 now,
-            ),
-            b"fixture principal observation",
+            )
+            .expect("original independent O")
+            .principal()
+            .clone();
+        let outcome = AuthenticatedOutcomeV1 {
+            record_id: name("dataset.outcome.record"),
+            outcome_id: name("dataset.outcome"),
+            episode_id: name("dataset.episode"),
+            observer,
+            observed_at: Some(now),
+            value: Some(FixedQ32::ONE),
+            unit_profile_digest: digest("dataset units"),
+            support_digest: digest("dataset outcome support"),
+            watermark: OutcomeWatermarkV1 {
+                latest_observable_at: now,
+                expected_delay_profile_digest: digest("dataset delay"),
+                terminality: OutcomeTerminalityV1::Terminal,
+                censoring_reason: None,
+                correction_predecessor: None,
+                finalized_at: Some(now),
+            },
+        };
+        let evidence = sign(
+            trust,
+            1,
+            LearningEvidenceRoleV1::Observer,
+            &outcome_signing_payload_v2(&outcome),
             now,
-        )
-        .expect("original independent O")
-        .principal()
-        .clone();
-    let outcome = AuthenticatedOutcomeV1 {
-        record_id: id("dataset.outcome.record"),
-        outcome_id: id("dataset.outcome"),
-        episode_id: id("dataset.episode"),
-        observer,
-        observed_at: Some(now),
-        value: Some(FixedQ32::ONE),
-        unit_profile_digest: digest("dataset units"),
-        support_digest: digest("dataset outcome support"),
-        watermark: OutcomeWatermarkV1 {
-            latest_observable_at: now,
-            expected_delay_profile_digest: digest("dataset delay"),
-            terminality: OutcomeTerminalityV1::Terminal,
-            censoring_reason: None,
-            correction_predecessor: None,
-            finalized_at: Some(now),
-        },
-    };
-    let evidence = sign(
-        trust,
-        1,
-        LearningEvidenceRoleV1::Observer,
-        &outcome_signing_payload_v2(&outcome),
-        now,
-    );
-    writer
-        .append_outcome(
-            writer.snapshot().expect("predecessor").head_digest,
-            outcome,
-            &evidence,
-            now,
-        )
-        .expect("actual original O outcome admission");
+        );
+        writer
+            .append_outcome(
+                writer.snapshot().expect("predecessor").head_digest,
+                outcome,
+                &evidence,
+                now,
+            )
+            .expect("actual original O outcome admission");
+    }
     let anchor = writer
         .witness_frontier()
         .expect("original complete acknowledgment")
@@ -118,7 +135,7 @@ pub(super) fn populate_original_dataset_ledger(
     fixture.owner.ledger = DurableLedger::recover(
         existing_file(&path),
         binding,
-        64,
+        64.max(episodes * 2),
         LedgerRecovery::Acknowledged(anchor),
     )
     .expect("initial complete original custody");
@@ -158,7 +175,7 @@ fn original_parameter_dataset_fixture_admits_real_generator_and_observer_records
                 && !outcome.authentication_digest.is_zero()
     ));
 }
-fn sign(
+pub(super) fn sign(
     trust: &ActivatedLearningTrustV1,
     index: usize,
     role: LearningEvidenceRoleV1,

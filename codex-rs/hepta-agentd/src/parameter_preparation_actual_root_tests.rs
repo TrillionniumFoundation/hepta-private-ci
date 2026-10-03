@@ -51,6 +51,15 @@ impl crate::AgentdNeuronGoalScopeFactoryV3 for UnusedGoalFactory {
 #[ignore = "requires actual UID0 and independently protected complete fixture sources"]
 async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_owner_without_writes()
  {
+    run_actual_root_preparation(false).await;
+}
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "requires actual UID0 and independently protected complete fixture sources"]
+async fn actual_root_peer_reads_complete_window_source_over_original_whole_transport_without_writes()
+ {
+    run_actual_root_preparation(true).await;
+}
+async fn run_actual_root_preparation(window: bool) {
     assert_eq!(unsafe { libc::geteuid() }, 0, "actual kernel Root peer");
     let root = tempfile::Builder::new()
         .prefix("hepta-prepare-root-")
@@ -106,7 +115,13 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
         .set(host.clone())
         .unwrap_or_else(|_| panic!("one installed V2 host"));
     let (trust, trust_json) = learning_trust(material.scope, now, expires);
-    populate_original_dataset_ledger(&mut fixture, root.path(), &trust, now);
+    populate_original_dataset_ledger_count(
+        &mut fixture,
+        root.path(),
+        &trust,
+        now,
+        if window { 64 } else { 1 },
+    );
     let dataset_witness_before = fs::read(root.path().join("authenticated-dataset-witness.bin"))
         .expect("same original acknowledged Ledger witness");
     let expected_dataset_snapshot = fixture
@@ -114,6 +129,7 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
         .ledger
         .snapshot()
         .expect("same production ledger");
+    let expected_ledger_bytes = fs::read(&fixture.files.ledger).expect("same held source");
     let (runtime, iteration) =
         crate::AgentdSelfIterationRuntimeConfigV1::new(root.path().join("iteration.json"), trust)
             .expect("original sole iteration journal");
@@ -228,6 +244,18 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
         initial_installed_artifact_head,
     )
     .await;
+    if window {
+        window_support::verify_actual_window_socket(
+            &client,
+            &round,
+            &context,
+            root.path(),
+            &expected_dataset_snapshot,
+            &expected_ledger_bytes,
+        )
+        .await;
+    }
+
     let context = projection_support::project_and_check_context(
         &context,
         root.path(),
@@ -602,3 +630,6 @@ fn learning_trust(
         json!({"scope_digest":scope.scope_digest.to_string(),"objective_digest":scope.objective_digest.to_string(),"authority_epoch":7,"signers":encoded}),
     )
 }
+
+#[path = "parameter_dataset_window_tests.rs"]
+mod window_support;
