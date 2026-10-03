@@ -32,8 +32,8 @@ script_mod! {
    rooms_sidebar_tab := DockTab {kind: @rooms_sidebar template: @PermanentTab}
    home_tab := DockTab {name: "Conversation" kind: @room_screen template: @PermanentTab}
    console_tab := DockTab {name: "Console" kind: @console_screen template: @PermanentTab}
-   rooms_sidebar := mod.widgets.RoomsSideBar {}
-   room_screen := mod.widgets.RoomScreen {}
+   rooms_sidebar := CachedWidget {rooms_sidebar := mod.widgets.RoomsSideBar {}}
+   room_screen := CachedWidget {room_screen := mod.widgets.RoomScreen {}}
    console_screen := View {
     flow: Down padding: 24 spacing: 12
     Label {text: "Console" draw_text.color: COLOR_TEXT}

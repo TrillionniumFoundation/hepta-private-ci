@@ -10,6 +10,8 @@ use hepta_control_core::{
     chat::{ChatWorkspace, ComposeStatus},
     chat_timeline::Role,
 };
+#[cfg(feature = "ui-fixtures")]
+use makepad_widgets::makepad_platform::script::res::CxScriptResourceData;
 use makepad_widgets::*;
 script_mod! {
  use mod.prelude.widgets.*
@@ -78,7 +80,12 @@ script_mod! {
 struct RoomViewMemory {
     #[cfg(feature = "ui-fixtures")]
     diagnostic_frames: usize,
+    #[cfg(feature = "ui-fixtures")]
+    font_samples:
+        std::collections::HashSet<(makepad_draw::text::font_family::FontFamilyId, usize, bool)>,
     positions: std::collections::HashMap<RoomKey, (usize, f64, bool)>,
+    message_styles:
+        std::collections::HashMap<WidgetUid, (crate::visual_theme::VisualTheme, bool, u64)>,
     last_widget: Option<WidgetUid>,
     epoch: Option<u64>,
 }
@@ -135,6 +142,7 @@ impl Widget for RoomScreen {
                 let memory = cx.global::<RoomViewMemory>();
                 if memory.epoch != Some(key.epoch) {
                     memory.positions.clear();
+                    memory.message_styles.clear();
                     memory.epoch = Some(key.epoch);
                 }
                 let saved = memory.positions.get(&key).copied();
@@ -231,7 +239,7 @@ impl Widget for RoomScreen {
                 let Some(message) = presentation.timeline.messages.first() else {
                     continue;
                 };
-                let mut item = list.item(cx, index, id!(Message));
+                let item = list.item(cx, index, id!(Message));
                 let (name, initial) = match message.role {
                     Role::User => ("You", "Y"),
                     Role::Assistant => ("Assistant", "H"),
@@ -253,13 +261,28 @@ impl Widget for RoomScreen {
                 let align = if own { 1.0 } else { 0.0 };
                 let color = if own { tokens.selected } else { tokens.surface };
                 let border = tokens.border;
-                script_apply_eval!(cx,item,{
-                    body +: {align: Align{x: #(align), y: 0.0}
-                        profile +: {visible: #(!own)}
-                        content +: {width: #(content_width) show_bg: #(bubble) padding: #(padding)
-                            draw_bg +: {color: #(color) border_color: #(border)}}
+                let style = (theme, own, content_width.to_bits());
+                if cx
+                    .global::<RoomViewMemory>()
+                    .message_styles
+                    .get(&item.widget_uid())
+                    != Some(&style)
+                {
+                    // Eval intentionally does not recurse into child widgets in
+                    // this SDK. Address each actual child; keep geometry typed.
+                    if let Some(mut body) = item.view(cx, ids!(body)).borrow_mut() {
+                        body.layout.align.x = align;
                     }
-                });
+                    item.widget(cx, ids!(profile)).set_visible(cx, !own);
+                    let mut content = item.widget(cx, ids!(content));
+                    script_apply_eval!(cx,content,{
+                        width: #(content_width) show_bg: #(bubble) padding: #(padding)
+                        draw_bg +: {color: #(color) border_color: #(border)}
+                    });
+                    cx.global::<RoomViewMemory>()
+                        .message_styles
+                        .insert(item.widget_uid(), style);
+                }
                 item.label(cx, ids!(username)).set_text(cx, name);
                 item.label(cx, ids!(avatar)).set_text(cx, initial);
                 item.label(cx, ids!(message)).set_text(cx, message.text);
@@ -271,19 +294,91 @@ impl Widget for RoomScreen {
             }
         }
         #[cfg(feature = "ui-fixtures")]
-        if !diagnostic_items.is_empty() && cx.global::<RoomViewMemory>().diagnostic_frames < 12 {
+        for (index, item) in &diagnostic_items {
+            let label = item.label(cx, ids!(message));
+            if let Some(label) = label.borrow() {
+                let members: Vec<_> = label
+                    .draw_text
+                    .text_style
+                    .font_family
+                    .member_ids()
+                    .collect();
+                type FontStore = std::rc::Rc<std::cell::RefCell<makepad_draw::text::fonts::Fonts>>;
+                if cx.has_global::<FontStore>() {
+                    let font_id = label.draw_text.text_style.font_family_id();
+                    let store = cx.get_global::<FontStore>().clone();
+                    let (family, complete) = {
+                        let mut fonts = store.borrow_mut();
+                        let complete = fonts.is_font_family_complete(font_id, members.len());
+                        (
+                            fonts
+                                .is_font_family_known(font_id)
+                                .then(|| fonts.get_or_load_font_family(font_id)),
+                            complete,
+                        )
+                    };
+                    if let Some(family) = family {
+                        let loaded = family.fonts().len();
+                        if cx
+                            .global::<RoomViewMemory>()
+                            .font_samples
+                            .insert((font_id, loaded, complete))
+                        {
+                            cx.global::<RoomViewMemory>().diagnostic_frames = 0;
+                            log!(
+                                "HEPTA_FIXTURE_FONT_STATE index={} loaded_fonts={} complete={} members={:?}",
+                                index,
+                                loaded,
+                                complete,
+                                members
+                            );
+                            for resource in cx.script_data.resources.resources.borrow().iter() {
+                                if !resource.abs_path.ends_with(".ttf") {
+                                    continue;
+                                }
+                                let state = match &resource.data {
+                                    CxScriptResourceData::NotLoaded => "not_loaded",
+                                    CxScriptResourceData::Loading => "loading",
+                                    CxScriptResourceData::Loaded(_) => "loaded",
+                                    CxScriptResourceData::Error(_) => "error",
+                                };
+                                log!(
+                                    "HEPTA_FIXTURE_FONT_RESOURCE path={} dependency={:?} state={} loaded_len={}",
+                                    resource.abs_path,
+                                    resource.dependency_path,
+                                    state,
+                                    resource.loaded_len()
+                                );
+                            }
+                            if loaded == 0 {
+                                continue;
+                            }
+                            for (probe, sample) in
+                                [("plain", "中文输入😀"), ("mixed", "Fixture 59 中文输入😀")]
+                            {
+                                let shaped = family.get_or_shape(sample.into());
+                                let glyphs: Vec<_> = shaped
+                                    .glyphs
+                                    .iter()
+                                    .map(|glyph| (glyph.id, glyph.font.id()))
+                                    .collect();
+                                log!(
+                                    "HEPTA_FIXTURE_SHAPING probe={} loaded_fonts={} glyphs={:?}",
+                                    probe,
+                                    loaded,
+                                    glyphs
+                                );
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        #[cfg(feature = "ui-fixtures")]
+        if cx.global::<RoomViewMemory>().diagnostic_frames < 12 {
             cx.global::<RoomViewMemory>().diagnostic_frames += 1;
             for (index, item) in diagnostic_items {
                 let label = item.label(cx, ids!(message));
-                if let Some(label) = label.borrow() {
-                    let members: Vec<_> = label
-                        .draw_text
-                        .text_style
-                        .font_family
-                        .member_ids()
-                        .collect();
-                    log!("HEPTA_FIXTURE_FONT index={} members={:?}", index, members);
-                }
                 let area = label.area();
                 // PortalList probes include culled rows with no glyph instances.
                 // Do not ask the renderer for geometry that was not drawn.

@@ -6,14 +6,14 @@ import {readFile} from 'node:fs/promises';
 const run=promisify(execFile);
 export async function readScreenshotText(path,{language='eng'}={}){
  assert.ok(['eng','eng+chi_sim'].includes(language),'Only pinned QA OCR languages are accepted');
- const {stdout}=await run('tesseract',[path,'stdout','-l',language,'--psm','11'],{timeout:20000,maxBuffer:65536});
+ const {stdout}=await run('tesseract',[path,'stdout','-l',language,'--psm','11'],{env:{...process.env,OMP_THREAD_LIMIT:'1'},timeout:20000,maxBuffer:65536});
  return stdout;
 }
 export async function screenshotWordCenter(path,word,viewportWidth,{topOnly=false}={}){
  const bytes=await readFile(path);
  assert.equal(bytes.subarray(1,4).toString(),'PNG');
  const ratio=bytes.readUInt32BE(16)/viewportWidth;
- const {stdout}=await run('tesseract',[path,'stdout','-l','eng','--psm','11','tsv'],{timeout:20000,maxBuffer:256*1024});
+ const {stdout}=await run('tesseract',[path,'stdout','-l','eng','--psm','11','tsv'],{env:{...process.env,OMP_THREAD_LIMIT:'1'},timeout:20000,maxBuffer:256*1024});
  const rows=stdout.trim().split('\n').slice(1).map(line=>line.split('\t'));
  const row=rows.find(c=>c.length>=12&&c[11].toLowerCase()===word.toLowerCase()&&(!topOnly||Number(c[7])/ratio<90));
  assert.ok(row,`Actual rendered control ${word} must be readable before activation`);

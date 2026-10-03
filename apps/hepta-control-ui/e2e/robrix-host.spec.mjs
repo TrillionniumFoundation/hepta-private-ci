@@ -5,12 +5,13 @@ import {readScreenshotText,requireChatText,screenshotWordCenter} from '../tools/
 for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
  test(`Robrix host starts under strict CSP ${viewport.width}`,async({page,browserName},testInfo)=>{
   let phase='application';
-  const errors=[];const logs=[];const uploads=[];const fonts=[];const pendingFonts=new Set();
+  const errors=[];const logs=[];const rustFontStates=[];const uploads=[];const fonts=[];const pendingFonts=new Set();
   const isFont=request=>/\.(?:ttf|otf|woff2?)(?:[?#]|$)/i.test(request.url());
   page.on('pageerror',error=>errors.push({phase,message:error.message}));
   page.on('console',message=>{
    if(message.type()==='error') errors.push({phase,message:message.text()});
    if(logs.length<500) logs.push({phase,type:message.type(),text:message.text().slice(0,2000)});
+   if(rustFontStates.length<96&&/HEPTA_FIXTURE_(?:SHAPING|FONT_STATE|FONT_RESOURCE)/.test(message.text())) rustFontStates.push(message.text().slice(0,4000));
   });
   page.on('request',request=>{
    if(/\/(?:api\/crash|\$report_error)/.test(request.url())) uploads.push(request.url());
@@ -99,13 +100,16 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    expect(await page.locator('canvas').evaluate(canvas=>canvas.width>0&&canvas.height>0)).toBe(true);
    expect(await page.locator('meta[name=viewport]').getAttribute('content')).not.toContain('user-scalable=no');
    let captured;
+   const themeControlPoints=new Map();
    for(const theme of ['Aurora','Obsidian','Lunar']){
     await expect.poll(()=>pendingFonts.size,{timeout:60000}).toBe(0);
     captured=await capture(`robrix-${theme}-${page.viewportSize().width}`);
-    expect(captured.text.toLowerCase()).toContain(theme.toLowerCase());
+    expect.soft(captured.text.toLowerCase()).toContain(theme.toLowerCase());
+    if(theme==='Aurora') themeControlPoints.set(page.viewportSize().width,await screenshotWordCenter(captured.path,'Aurora',page.viewportSize().width));
     await page.setViewportSize({width:page.viewportSize().width===1280?640:1280,height:800});
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     captured=await capture(`robrix-${theme}-after-resize`);
+    if(theme==='Aurora') themeControlPoints.set(page.viewportSize().width,await screenshotWordCenter(captured.path,'Aurora',page.viewportSize().width));
     if(theme==='Aurora'){
      await page.mouse.click(page.viewportSize().width*0.65,720);
      await page.keyboard.insertText('Theme round trip draft 🚀');
@@ -115,7 +119,13 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     }else{
      expect(captured.text).toMatch(/Theme round trip draft/i);
     }
-    await clickRenderedWord(captured,theme);
+    // Both viewport positions came from this run's actual Aurora pixels.
+    // The shared theme control stays in that same fixed navigation region.
+    // Label OCR remains a failing assertion even when we continue collecting.
+    const point=themeControlPoints.get(page.viewportSize().width);
+    expect(point).toBeTruthy();
+    await page.mouse.click(point.x,point.y);
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     await page.keyboard.type(' kept');
    }
    captured=await capture('robrix-theme-round-trip');
@@ -136,7 +146,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
   } finally {
    const observed=await page.evaluate(()=>({violations:window.__cspViolations??[],snapshotStyles:window.__snapshotStyles??[],bootPhase:document.documentElement.dataset.heptaBootPhase??'unobserved',wasmStages:window.__wasmStages??[],readyState:document.readyState,canvas:[...document.querySelectorAll('canvas')].map(canvas=>({width:canvas.width,height:canvas.height})),resources:performance.getEntriesByType('resource').map(item=>({name:item.name,duration:item.duration,bytes:item.transferSize}))})).catch(()=>({}));
    const diagnostics=testInfo.outputPath('host-diagnostics.json');
-   await writeFile(diagnostics,JSON.stringify({errors,logs,uploads,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),...observed},null,2));
+   await writeFile(diagnostics,JSON.stringify({errors,logs,rustFontStates,uploads,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),...observed},null,2));
    await testInfo.attach('host-diagnostics',{path:diagnostics,contentType:'application/json'});
   }
  });
