@@ -17,6 +17,7 @@ mod automation_taskflow;
 mod dispatch_recovery;
 mod effect_dispatch_ledger;
 mod effect_execution_request;
+mod effect_preparation_evidence;
 mod effect_recovery_scan;
 mod lifecycle;
 mod model;
@@ -162,4 +163,4 @@ pub use taskflow_step::TaskFlowStepState;
 pub use timer_lifecycle::TimerDrainStatus;
 pub use timer_lifecycle::TimerPhase;
 
-pub const AUTOMATION_SCHEMA_VERSION: u32 = 23;
+pub const AUTOMATION_SCHEMA_VERSION: u32 = 24;

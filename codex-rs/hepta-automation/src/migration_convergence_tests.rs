@@ -6,6 +6,77 @@ use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
+#[tokio::test]
+async fn preparation_schema24_preserves_exact_schema23_history_without_backfill() {
+    let temp = tempfile::tempdir().expect("historical owner");
+    let root = temp.path().join("owner");
+    std::fs::create_dir(&root).expect("owner directory");
+    let root = root.canonicalize().expect("canonical owner");
+    create_private_directory(&root).expect("private owner");
+    let sqlite = SqliteConfig::from_sqlite_home(
+        AbsolutePathBuf::try_from(root.clone()).expect("absolute owner"),
+    );
+    let pool = sqlite
+        .open_durable_evidence_pool(&root.join(AUTOMATION_DB_FILENAME))
+        .await
+        .expect("historical pool");
+    initialize_historical_pool(&pool, /*displaced*/ false).await;
+    let mut connection = pool.acquire().await.expect("history writer");
+    for migration in MIGRATOR
+        .iter()
+        .filter(|migration| (6..=23).contains(&migration.version))
+    {
+        connection
+            .apply("_sqlx_migrations", migration)
+            .await
+            .expect("schema23 history");
+    }
+    drop(connection);
+    let before: Vec<(i64, Vec<u8>)> =
+        sqlx::query_as("SELECT version, checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&pool)
+            .await
+            .expect("before journal");
+    let objects: Vec<(String, String, String)> = sqlx::query_as(
+        "SELECT type, name, sql FROM sqlite_master WHERE sql IS NOT NULL ORDER BY type, name",
+    )
+    .fetch_all(&pool)
+    .await
+    .expect("before schema");
+    assert_eq!(before.len(), 23);
+    pool.close().await;
+    let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner");
+    let store = AutomationStore::open_root(root, owner)
+        .await
+        .expect("schema24 append");
+    let after: Vec<(i64, Vec<u8>)> =
+        sqlx::query_as("SELECT version, checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&store.pool)
+            .await
+            .expect("after journal");
+    assert_eq!(after.len(), 24);
+    assert_eq!(&after[..23], before.as_slice());
+    let new_objects: Vec<(String, String, String)> = sqlx::query_as(
+        "SELECT type, name, sql FROM sqlite_master WHERE sql IS NOT NULL ORDER BY type, name",
+    )
+    .fetch_all(&store.pool)
+    .await
+    .expect("after schema");
+    for object in objects {
+        assert!(
+            new_objects.contains(&object),
+            "changed schema23 object: {object:?}"
+        );
+    }
+    let count: i64 =
+        sqlx::query_scalar("SELECT count(*) FROM taskflow_effect_preparation_evidence")
+            .fetch_one(&store.pool)
+            .await
+            .expect("no backfill");
+    assert_eq!(count, 0);
+    store.close().await;
+}
+
 // Legacy migration setup needs one in-memory connection without current owner
 // initialization; production and reopened owner pools still use the state shim.
 #[allow(clippy::disallowed_methods)]

@@ -2003,7 +2003,7 @@ fn digest32(digest: &Sha256Digest) -> Result<Digest32, TaskFlowError> {
         .map_err(|_| TaskFlowError::Invalid("non-canonical sha256 digest".to_string()))
 }
 
-fn digest_bytes(digest: &Sha256Digest) -> Result<[u8; 32], AuthorizedEffectError> {
+pub(super) fn digest_bytes(digest: &Sha256Digest) -> Result<[u8; 32], AuthorizedEffectError> {
     let value = digest.as_str().as_bytes();
     if value.len() != 64 {
         return Err(AuthorizedEffectError::BindingMismatch);

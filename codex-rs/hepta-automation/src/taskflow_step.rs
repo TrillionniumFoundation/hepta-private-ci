@@ -34,6 +34,10 @@ use crate::taskflow::load_taskflow_definition_tx;
 use crate::taskflow::load_taskflow_run_tx;
 use crate::taskflow_guard::reject_unresolved_steps;
 
+#[path = "taskflow_step_identity.rs"]
+mod identity;
+pub(crate) use identity::StepAuthoringIdentity;
+
 /// Qualification APIs remain available, while the same durable ledger is
 /// now installed by the normal automation schema and used by the composed
 /// automation caller. Composition is intentionally separate from authority.
@@ -1662,7 +1666,7 @@ fn validate_common(
     validate_digest(payload_digest, "step payload digest")
 }
 
-fn validate_common_without_digests(
+pub(super) fn validate_common_without_digests(
     run_id: &str,
     step_id: &str,
     attempt: u32,

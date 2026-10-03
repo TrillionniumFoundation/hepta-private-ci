@@ -1084,6 +1084,7 @@ async fn v1_store_migrates_atomically_to_dispatch_outcome_schema() {
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_reconciliations",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_observations",
         "DROP TABLE IF EXISTS taskflow_effect_provider_acceptances",
+        "DROP TABLE IF EXISTS taskflow_effect_preparation_evidence",
         "DROP TABLE IF EXISTS taskflow_effect_dispatch_attempts",
         "DROP TABLE IF EXISTS automation_calendar_schedule_versions",
         "DROP TABLE IF EXISTS automation_occurrence_events",
