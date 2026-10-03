@@ -1143,6 +1143,13 @@ impl ProductionDurableWriter {
     }
 
     async fn verify_authority(&self) -> Result<(), ProductionWriterError> {
+        self.verify_external_authority()?;
+        verify_durable_store(&self.store).await?;
+        self.lease.verify_current_hot_path().await?;
+        Ok(())
+    }
+
+    fn verify_external_authority(&self) -> Result<(), ProductionWriterError> {
         self.authority
             .validate_for_agent(self.store.owner_agent_id())?;
         if let Some(verifier) = &self.live_verifier {
@@ -1150,8 +1157,10 @@ impl ProductionDurableWriter {
                 .verify(&self.authority, self.store.owner_agent_id())
                 .map_err(ProductionWriterError::AuthorityRejected)?;
         }
-        verify_durable_store(&self.store).await?;
-        self.lease.verify_current_hot_path().await?;
+        // A synchronous verifier may itself take time; it cannot renew the
+        // original lease while checking the external grant.
+        self.authority
+            .validate_for_agent(self.store.owner_agent_id())?;
         Ok(())
     }
 
@@ -1978,6 +1987,10 @@ impl ProductionCognitiveMutationCapability {
             external_effect: false,
         };
         receipt.receipt_sha256 = receipt.compute_receipt_sha256();
+        // Every semantic mutation reaches this shared seam after its actual
+        // SQL work. Refuse authority withdrawn while those awaits were pending
+        // before admitting COMMIT; rejection drops the original transaction.
+        self.writer.verify_external_authority()?;
         Ok(receipt)
     }
 }
@@ -2622,6 +2635,10 @@ fn now_unix_seconds() -> Result<u64, ProductionWriterError> {
 #[cfg(all(test, unix))]
 #[path = "production_writer_lock_tests.rs"]
 mod lock_tests;
+
+#[cfg(test)]
+#[path = "production_cognitive_commit_authority_tests.rs"]
+mod commit_authority_tests;
 
 #[cfg(test)]
 mod tests {
