@@ -34,6 +34,7 @@ use std::process::Stdio;
 #[path = "native_frozen_generator.rs"]
 mod frozen;
 pub use frozen::NativeFrozenGeneratorRequestV1;
+pub(super) use frozen::frozen_payload as validate_frozen_payload;
 pub(super) use frozen::run as run_frozen;
 
 fn boundary(uid: u32) -> ReviewResult<String> {

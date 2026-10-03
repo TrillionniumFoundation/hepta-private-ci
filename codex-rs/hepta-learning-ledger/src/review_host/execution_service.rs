@@ -9,7 +9,13 @@ use super::independent_trust::IndependentTrust;
 use codex_hepta_types::Digest32;
 use std::path::Path;
 use std::process::Command;
+use std::process::ExitStatus;
 use std::process::Stdio;
+
+pub(super) enum GeneratorPurpose {
+    Calibration,
+    FrozenIteration,
+}
 
 pub(super) fn generate(
     trust: &IndependentTrust,
@@ -33,6 +39,44 @@ pub(super) fn generate(
         }
         return Ok(());
     }
+    let status = launch_generator(
+        trust.config.generator_uid,
+        &trust.config.generator_program_path,
+        trust.config_digest,
+        GeneratorPurpose::Calibration,
+        contract,
+        output,
+    )?;
+    if !status.success() {
+        return Err(format!("fixed native generator failed: {status}").into());
+    }
+    if program_digest(&trust.config.generator_program_path)? != trust.generator_program
+        || program_digest(&trust.config.scorer_path)?
+            != trust.config.scorer_digest.parse::<Digest32>()?
+    {
+        return Err("generator/scorer changed during bounded execution".into());
+    }
+    super::files::mutable_file(output)?.sync_all()?;
+    let output_digest = Digest32::of_bytes(&read_root(output, 4 * 1024 * 1024, Access::Private)?);
+    create_private(
+        &status_path,
+        &serde_json::to_vec(
+            &serde_json::json!({"succeeded":true,"output_digest":output_digest.to_string(),"generator_program_digest":trust.generator_program.to_string(),"contract_digest":Digest32::of_bytes(&read_root(contract,32*1024,Access::Immutable)?).to_string(),"no_new_privileges":true,"groups_and_capabilities":"all_dropped_before_generator_exec","memory_max_bytes":268435456,"tasks_max":16,"cpu_quota_percent":100}),
+        )?,
+    )?;
+    Ok(())
+}
+
+/// Both fixed purposes use the original bounded process and consume the
+/// output slot before dispatch. A partial slot is never removed or rerun.
+pub(super) fn launch_generator(
+    uid: u32,
+    program: &Path,
+    execution_digest: Digest32,
+    purpose: GeneratorPurpose,
+    request: &Path,
+    output: &Path,
+) -> ReviewResult<ExitStatus> {
     let output_file = create_private(output, &[])?;
     let error_path = output.with_extension("stderr.log");
     let error_file = create_private(&error_path, &[])?;
@@ -40,7 +84,7 @@ pub(super) fn generate(
     // fixed setpriv to drop UID/groups and then every capability before exec.
     let unit = format!(
         "hepta-native-generator-{}-{}",
-        &trust.config_digest.to_string()[..16],
+        &execution_digest.to_string()[..16],
         std::process::id()
     );
     let status = Command::new("/usr/bin/systemd-run")
@@ -62,8 +106,8 @@ pub(super) fn generate(
             "--property=LimitCORE=0",
         ])
         .arg("/usr/bin/setpriv")
-        .arg(format!("--reuid={}", trust.config.generator_uid))
-        .arg(format!("--regid={}", trust.config.generator_uid))
+        .arg(format!("--reuid={uid}"))
+        .arg(format!("--regid={uid}"))
         .args([
             "--clear-groups",
             "--inh-caps=-all",
@@ -71,31 +115,19 @@ pub(super) fn generate(
             "--ambient-caps=-all",
             "--no-new-privs",
         ])
-        .arg(&trust.config.generator_program_path)
-        .arg("--request")
-        .arg(contract)
+        .arg(program)
+        .arg(match purpose {
+            GeneratorPurpose::Calibration => "--request",
+            GeneratorPurpose::FrozenIteration => "--freeze-iteration",
+        })
+        .arg(request)
         .stdin(Stdio::null())
         .stdout(Stdio::from(output_file))
         .stderr(Stdio::from(error_file))
         .status()?;
-    if !status.success() {
-        return Err(format!("fixed native generator failed: {status}").into());
-    }
-    if program_digest(&trust.config.generator_program_path)? != trust.generator_program
-        || program_digest(&trust.config.scorer_path)?
-            != trust.config.scorer_digest.parse::<Digest32>()?
-    {
-        return Err("generator/scorer changed during bounded execution".into());
-    }
     super::files::mutable_file(output)?.sync_all()?;
-    let output_digest = Digest32::of_bytes(&read_root(output, 4 * 1024 * 1024, Access::Private)?);
-    create_private(
-        &status_path,
-        &serde_json::to_vec(
-            &serde_json::json!({"succeeded":true,"output_digest":output_digest.to_string(),"generator_program_digest":trust.generator_program.to_string(),"contract_digest":Digest32::of_bytes(&read_root(contract,32*1024,Access::Immutable)?).to_string(),"no_new_privileges":true,"groups_and_capabilities":"all_dropped_before_generator_exec","memory_max_bytes":268435456,"tasks_max":16,"cpu_quota_percent":100}),
-        )?,
-    )?;
-    Ok(())
+    super::files::mutable_file(&error_path)?.sync_all()?;
+    Ok(status)
 }
 pub(super) fn score(
     trust: &IndependentTrust,

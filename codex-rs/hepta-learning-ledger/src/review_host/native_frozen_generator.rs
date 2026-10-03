@@ -46,7 +46,7 @@ pub struct NativeFrozenGeneratorRequestV1 {
     pub expires_at_ms: u64,
 }
 
-fn frozen_payload(bytes: &[u8], expected: Digest32) -> ReviewResult<()> {
+pub(in crate::review_host) fn frozen_payload(bytes: &[u8], expected: Digest32) -> ReviewResult<()> {
     if bytes.len() as u64 > MAX_FROZEN_BYTES
         || bytes.len() <= FROZEN_PREFIX.len()
         || !bytes.starts_with(FROZEN_PREFIX)

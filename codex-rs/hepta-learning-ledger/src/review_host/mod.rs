@@ -19,6 +19,8 @@ mod independent_unlearning;
 pub use independent_unlearning::sign_root_learning_unlearning_v1;
 mod native_generator;
 pub use native_generator::NativeFrozenGeneratorRequestV1;
+mod native_frozen_generator_execution;
+pub use native_frozen_generator_execution::execute_root_approved_frozen_generator;
 mod observations;
 pub use observations::original_numeric_input_causes_v1;
 mod transfer;
