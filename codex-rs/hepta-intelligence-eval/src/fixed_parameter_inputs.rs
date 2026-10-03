@@ -25,6 +25,7 @@ pub fn encode_fixed_parameter_evaluator_config_v1(
         "hepta.fixed-parameter-no-change-config.v1",
         "hepta.fixed-parameter-preparation-config.v1",
         "hepta.fixed-parameter-serving-scope-config.v1",
+        "hepta.fixed-dataset-window-evaluator-config.v3",
     ]
     .contains(&config.schema.as_str())
         || config.uid == 0

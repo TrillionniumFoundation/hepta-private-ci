@@ -868,3 +868,18 @@ pub use paired_parameter_configuration::OriginalPairedParameterConfigurationV1;
 pub use paired_parameter_configuration::project_original_paired_parameter_configuration_v1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use paired_parameter_configuration::project_original_paired_parameter_generator_inputs_v1;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_dataset_window_evaluator_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_dataset_window_evaluator_v3::FixedDatasetWindowEvaluationV3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_dataset_window_evaluator_v3::FixedDatasetWindowEvaluatorInputsV3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_dataset_window_evaluator_v3::MAX_FIXED_DATASET_WINDOW_OUTPUT_BYTES_V3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_dataset_window_evaluator_v3::decode_fixed_dataset_window_evaluator_output_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_dataset_window_evaluator_v3::encode_fixed_dataset_window_evaluator_inputs_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_dataset_window_evaluator_v3::run_fixed_dataset_window_evaluator_v3;
