@@ -1,3 +1,4 @@
+use crate::FixtureResult;
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -32,8 +33,8 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn id(value: &str) -> StableId {
-    StableId::new(value).expect("fixture identity")
+fn id(value: &str) -> Result<StableId, codex_hepta_types::IdentityError> {
+    StableId::new(value)
 }
 
 pub struct FixtureClock {
@@ -62,16 +63,16 @@ pub fn principal(
     name: &str,
     key: &SigningKey,
     scope: Digest32,
-) -> AuthenticatedPrincipalV1 {
-    AuthenticatedPrincipalV1 {
-        principal_id: id(name),
+) -> FixtureResult<AuthenticatedPrincipalV1> {
+    Ok(AuthenticatedPrincipalV1 {
+        principal_id: id(name)?,
         credential_chain_digest: digest(&format!("{name}-credential")),
         signing_key_digest: Digest32::of_bytes(&key.verifying_key().to_bytes()),
         scope_digest: scope,
         authority_epoch: 9,
         authenticated_at: 10,
         expires_at: 100,
-    }
+    })
 }
 
 fn sign(
@@ -81,9 +82,9 @@ fn sign(
     role: LearningEvidenceRoleV1,
     objective_digest: Digest32,
     payload: &[u8],
-) -> SignedLearningEvidenceV1 {
+) -> FixtureResult<SignedLearningEvidenceV1> {
     let mut evidence = SignedLearningEvidenceV1 {
-        evidence_id: id(&format!("{}-evidence", principal.principal_id)),
+        evidence_id: id(&format!("{}-evidence", principal.principal_id))?,
         principal_id: principal.principal_id.clone(),
         role,
         trust_digest: verifier.trust_digest(),
@@ -96,7 +97,7 @@ fn sign(
         signature: [0; 64],
     };
     evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
-    evidence
+    Ok(evidence)
 }
 
 pub fn verifier_and_evidence(
@@ -104,7 +105,7 @@ pub fn verifier_and_evidence(
     roles: &[MetricRoleContractV2],
     generator_key: &SigningKey,
     evaluator_key: &SigningKey,
-) -> (ActivatedLearningTrustV1, SignedEvaluationEvidenceV1) {
+) -> FixtureResult<(ActivatedLearningTrustV1, SignedEvaluationEvidenceV1)> {
     let trust = LearningEvidenceTrustV1 {
         scope_digest: bundle.generator.scope_digest,
         objective_digest: bundle.objective_digest,
@@ -128,7 +129,7 @@ pub fn verifier_and_evidence(
     };
     let root_key = SigningKey::from_bytes(&[89; 32]);
     let root = LearningTrustRootV1 {
-        root_id: id("selected-host-test-root"),
+        root_id: id("selected-host-test-root")?,
         scope_digest: bundle.generator.scope_digest,
         verifying_key: root_key.verifying_key().to_bytes(),
         valid_from: 1,
@@ -137,7 +138,7 @@ pub fn verifier_and_evidence(
     };
     let mut signed = SignedLearningTrustDistributionV1 {
         distribution: LearningTrustDistributionV1 {
-            distribution_id: id("selected-host-test-distribution"),
+            distribution_id: id("selected-host-test-distribution")?,
             generation: 1,
             effective_at: 10,
             trust,
@@ -147,12 +148,10 @@ pub fn verifier_and_evidence(
         expires_at: 90,
         signature: [0; 64],
     };
-    signed.signature = root_key
-        .sign(&signed.signing_bytes().expect("distribution payload"))
-        .to_bytes();
-    let activated = activate_learning_trust(&root, signed, None, 50).expect("activated trust");
+    signed.signature = root_key.sign(&signed.signing_bytes()?).to_bytes();
+    let activated = activate_learning_trust(&root, signed, None, 50)?;
     let verifier = activated.verifier();
-    let payload = evaluation_signing_payload_v2(bundle, roles).expect("evaluation payload");
+    let payload = evaluation_signing_payload_v2(bundle, roles)?;
     let evidence = SignedEvaluationEvidenceV1 {
         generator_plan: sign(
             verifier,
@@ -161,7 +160,7 @@ pub fn verifier_and_evidence(
             LearningEvidenceRoleV1::Generator,
             bundle.objective_digest,
             bundle.frozen_plan.plan_digest.as_array(),
-        ),
+        )?,
         evaluator_bundle: sign(
             verifier,
             &bundle.evaluator,
@@ -169,9 +168,9 @@ pub fn verifier_and_evidence(
             LearningEvidenceRoleV1::Evaluator,
             bundle.objective_digest,
             &payload,
-        ),
+        )?,
     };
-    (activated, evidence)
+    Ok((activated, evidence))
 }
 
 #[derive(Clone)]
@@ -201,7 +200,10 @@ impl ProductEvaluationAttemptAnchorStoreV1 for FaultingAnchorStore {
         binding: Digest32,
     ) -> Result<Option<ProductEvaluationAttemptAnchorV1>, ProductEvaluationAttemptJournalErrorV1>
     {
-        let state = self.state.lock().expect("anchor state");
+        let state = self
+            .state
+            .lock()
+            .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Indeterminate)?;
         if state.retained.is_some_and(|value| value.binding != binding) {
             return Err(ProductEvaluationAttemptJournalErrorV1::Binding);
         }
@@ -214,7 +216,10 @@ impl ProductEvaluationAttemptAnchorStoreV1 for FaultingAnchorStore {
         expected: Option<ProductEvaluationAttemptAnchorV1>,
         next: ProductEvaluationAttemptAnchorV1,
     ) -> Result<(), ProductEvaluationAttemptJournalErrorV1> {
-        let mut state = self.state.lock().expect("anchor state");
+        let mut state = self
+            .state
+            .lock()
+            .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Indeterminate)?;
         if next.binding != binding || state.retained != expected {
             return Err(ProductEvaluationAttemptJournalErrorV1::Conflict);
         }

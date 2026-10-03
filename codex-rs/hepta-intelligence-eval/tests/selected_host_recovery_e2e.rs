@@ -33,27 +33,24 @@ use security::clock;
 use security::principal;
 use security::verifier_and_evidence;
 
+type FixtureResult<T> = Result<T, Box<dyn std::error::Error>>;
+
 static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
 
-fn create(path: &Path) -> File {
+fn create(path: &Path) -> std::io::Result<File> {
     OpenOptions::new()
         .read(true)
         .write(true)
         .create_new(true)
         .open(path)
-        .expect("create test file")
 }
 
-fn reopen(path: &Path) -> File {
-    OpenOptions::new()
-        .read(true)
-        .write(true)
-        .open(path)
-        .expect("reopen test file")
+fn reopen(path: &Path) -> std::io::Result<File> {
+    OpenOptions::new().read(true).write(true).open(path)
 }
 
 #[test]
-fn selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss() {
+fn selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss() -> FixtureResult<()> {
     use ProductEvaluationAttemptPhaseV1 as Phase;
     let ordinal = NEXT_ROOT.fetch_add(1, Ordering::Relaxed);
     let root = std::env::temp_dir().join(format!(
@@ -66,13 +63,13 @@ fn selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss() {
     let artifact_root = root.join("artifacts");
     let publication_root = root.join("publications");
     let namespace = digest("selected-host-holdout-namespace");
-    let store = LockedFileFinalHoldoutCasStoreV1::create(create(&holdout_path), namespace)
+    let store = LockedFileFinalHoldoutCasStoreV1::create(create(&holdout_path)?, namespace)
         .expect("holdout store");
     let owner = FencedFinalHoldoutOwnerV1::initialize(
         store,
         namespace,
         HoldoutWriterFenceV1 {
-            owner_id: id("selected-host-owner"),
+            owner_id: id("selected-host-owner")?,
             generation: 1,
             lease_digest: digest("selected-host-lease"),
         },
@@ -83,15 +80,15 @@ fn selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss() {
     // Event four binds the complete typed archive; event five is the decision.
     let anchor_store = FaultingAnchorStore::new(5);
     let mut journal = AnchoredProductEvaluationAttemptJournalV1::create(
-        create(&attempt_path),
+        create(&attempt_path)?,
         attempt_binding,
         anchor_store.clone(),
     )
     .expect("anchored journal");
-    let attempt_id = id("attempt:selected-host-recovery");
-    let (plan, candidate, baseline) = product_plan();
+    let attempt_id = id("attempt:selected-host-recovery")?;
+    let (plan, candidate, baseline) = product_plan()?;
     let mut provider = Provider {
-        inputs: Some(inputs()),
+        inputs: Some(inputs()?),
     };
     let temporal = runner
         .evaluate_temporal_comparison(
@@ -107,8 +104,8 @@ fn selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss() {
     let generator_key = SigningKey::from_bytes(&[41; 32]);
     let evaluator_key = SigningKey::from_bytes(&[53; 32]);
     let context = ProductQualificationContextV1 {
-        generator: principal("generator", &generator_key, scope),
-        evaluator: principal("evaluator", &evaluator_key, scope),
+        generator: principal("generator", &generator_key, scope)?,
+        evaluator: principal("evaluator", &evaluator_key, scope)?,
         retention_receipt_digests: vec![digest("retention-receipt")],
         unlearning_receipt_digest: digest("unlearning-receipt"),
     };
@@ -116,8 +113,7 @@ fn selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss() {
         .qualification_bundle(&temporal, &context)
         .expect("qualification bundle");
     let roles = temporal.product_plan.metric_roles.clone();
-    let (trust, evidence) =
-        verifier_and_evidence(&bundle, &roles, &generator_key, &evaluator_key);
+    let (trust, evidence) = verifier_and_evidence(&bundle, &roles, &generator_key, &evaluator_key)?;
     let selected_host_binding = digest("selected-host-binding");
     let mut current_clock = clock(50);
     let interrupted = runner.qualify_and_persist_on_selected_host(
@@ -140,9 +136,7 @@ fn selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss() {
         ))
     ));
     assert_eq!(
-        fs::read_dir(&artifact_root)
-            .expect("artifact root")
-            .count(),
+        fs::read_dir(&artifact_root).expect("artifact root").count(),
         1
     );
     assert_eq!(
@@ -156,7 +150,7 @@ fn selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss() {
     drop((temporal, context, bundle, roles, evidence, provider));
     drop(journal);
     let mut recovered = AnchoredProductEvaluationAttemptJournalV1::recover(
-        reopen(&attempt_path),
+        reopen(&attempt_path)?,
         attempt_binding,
         anchor_store.clone(),
     )
@@ -298,7 +292,7 @@ fn selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss() {
     );
     drop(recovered);
     let mut reopened = AnchoredProductEvaluationAttemptJournalV1::recover(
-        reopen(&attempt_path),
+        reopen(&attempt_path)?,
         attempt_binding,
         anchor_store,
     )
@@ -322,4 +316,5 @@ fn selected_host_complete_signed_artifacts_resume_after_anchor_ack_loss() {
     );
     drop((reopened, runner));
     fs::remove_dir_all(root).expect("remove test root");
+    Ok(())
 }
