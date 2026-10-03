@@ -30,6 +30,8 @@ pub struct RootSelfIterationOwnersRoundConfigurationV1 {
     pub client_configuration: InstalledCpuSourceV1,
     pub materials: InstalledCpuSourceV1,
     pub paired_custody_execution: InstalledCpuSourceV1,
+    /// Root-owned public immutable configuration area, separate from private effect slots.
+    pub public_source_directory: PathBuf,
     pub consumer_directory: PathBuf,
     pub evaluation_directory: PathBuf,
     pub generator_uid: u32,

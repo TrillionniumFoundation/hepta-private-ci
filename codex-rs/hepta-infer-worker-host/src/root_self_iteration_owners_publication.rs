@@ -40,8 +40,11 @@ fn role_directory(directory: &Path, uid: u32, gid: u32) -> Result<()> {
     {
         let metadata = std::fs::symlink_metadata(ancestor)?;
         ensure!(
-            metadata.is_dir() && metadata.uid() == 0 && metadata.mode() & 0o022 == 0,
-            "original role input ancestor must remain Root protected"
+            metadata.is_dir()
+                && metadata.uid() == 0
+                && metadata.mode() & 0o022 == 0
+                && metadata.mode() & 0o001 != 0,
+            "original role input ancestor must remain Root protected and traversable"
         );
     }
     Ok(())
@@ -165,3 +168,7 @@ pub(super) fn role_source(
         digest: Digest32::of_bytes(bytes).to_string(),
     })
 }
+
+#[path = "root_self_iteration_owners_public_sources.rs"]
+mod public_sources;
+pub(super) use public_sources::public_root_source;

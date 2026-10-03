@@ -95,13 +95,21 @@ pub(super) fn execute(
         .into();
     match input.purpose {
         SelfIterationOwnerPurposeV1::Evaluate => {
-            template["publication_path"] = config
-                .paired_custody_execution
-                .path
-                .display()
-                .to_string()
-                .into();
-            template["publication_digest"] = config.paired_custody_execution.digest.clone().into();
+            // The original O publication is already a declared E input. Copy
+            // exactly those whole public signed bytes, never private Gold or keys.
+            let maximum = codex_hepta_agent_components::intelligence::MAX_PARAMETER_PLASTICITY_MATERIAL_BYTES_V1;
+            let bytes = configuration::source(&config.paired_custody_execution, maximum)?;
+            let public_execution = publication::public_root_source(
+                &config.public_source_directory,
+                &format!(
+                    "paired-custody-{}.json",
+                    config.paired_custody_execution.digest
+                ),
+                &bytes,
+                maximum,
+            )?;
+            template["publication_path"] = public_execution.path.display().to_string().into();
+            template["publication_digest"] = public_execution.digest.into();
             template["self_iteration_consumer"] = serde_json::json!({"path":input.consumer.path,
                 "generator_uid":config.generator_uid,"canonical_envelope_digest":input.original_round.canonical_policy_digest().to_string()});
             template
@@ -136,9 +144,23 @@ pub(super) fn execute(
         SelfIterationOwnerPurposeV1::Select => "cycle-selector",
         SelfIterationOwnerPurposeV1::Observe => "cycle-observer",
     };
-    let configuration = publication::root_source(
-        &input.directory,
-        &format!("{label}.json"),
+    let configuration_directory = if route.uid == 0 {
+        &input.directory
+    } else {
+        &config.public_source_directory
+    };
+    let name = if route.uid == 0 {
+        format!("{label}.json")
+    } else {
+        format!("{label}-{}.json", input.frozen_digest)
+    };
+    let configuration = if route.uid == 0 {
+        publication::root_source
+    } else {
+        publication::public_root_source
+    }(
+        configuration_directory,
+        &name,
         &serde_json::to_vec(&template)?,
         64 * 1024,
     )?;
