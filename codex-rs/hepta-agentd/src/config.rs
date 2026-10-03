@@ -13,8 +13,11 @@ use codex_hepta_agent_components::paths::HeptaFleetRoot;
 
 use crate::AgentdError;
 
+#[path = "native_model_receipt.rs"]
+mod native_model_receipt;
 #[path = "self_iteration_model_owner.rs"]
 mod self_iteration_model_owner;
+pub use native_model_receipt::AgentdNativeModelReceiptReaderV1;
 pub use self_iteration_model_owner::AgentdSelfIterationModelOwnerContextV2;
 use self_iteration_model_owner::SelfIterationModelOwner;
 
@@ -89,6 +92,7 @@ fn cognitive_retrieval_mode_from_process_environment() -> Result<CognitiveRetrie
 }
 
 pub struct AgentdConfig {
+    native_model_receipt_reader: Option<std::sync::Arc<dyn AgentdNativeModelReceiptReaderV1>>,
     self_iteration_model_owner: Option<SelfIterationModelOwner>,
     self_iteration_runtime: Option<crate::AgentdSelfIterationRuntimeConfigV1>,
     neuron_runtime_v2: Option<crate::AgentdNeuronRuntimeV2Config>,
@@ -247,6 +251,7 @@ impl AgentdConfig {
             neuron_runtime_v2: None,
             self_iteration_runtime: None,
             self_iteration_model_owner: None,
+            native_model_receipt_reader: None,
             intelligence_invocation_provider: None,
         })
     }

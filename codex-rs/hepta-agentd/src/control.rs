@@ -94,6 +94,7 @@ impl Drop for AgentdControlServer {
 }
 
 async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
+    let root_peer = stream.ensure_peer_user(0);
     let (reader, mut writer) = tokio::io::split(stream);
     let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
@@ -104,7 +105,19 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
         ));
     }
     let request: AgentdRequest = serde_json::from_slice(&frame)?;
-    let response = if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
+    let response = if matches!(
+        &request.method,
+        crate::AgentdMethod::NativeModelReceipt { .. }
+    ) && root_peer.is_err()
+    {
+        error_response(
+            &state,
+            request.request_id,
+            request.spawn_generation,
+            "root_peer_required",
+            "native receipt inspection requires the actual Root kernel peer",
+        )
+    } else if request.schema_version != AGENTD_CONTROL_SCHEMA_VERSION {
         error_response(
             &state,
             request.request_id,

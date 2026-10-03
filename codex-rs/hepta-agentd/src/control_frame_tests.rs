@@ -56,3 +56,21 @@ fn encoder_never_buffers_more_than_one_control_frame() -> TestResult {
     assert!(buffer.bytes.len() < MAX_CONTROL_FRAME_BYTES as usize);
     Ok(())
 }
+
+#[test]
+fn full_native_receipt_is_never_truncated_to_fit_an_escaped_control_frame() -> TestResult {
+    let json = serde_json::to_string(&"\n".repeat(24_000))?;
+    assert!((json.len() as u64) < MAX_CONTROL_FRAME_BYTES);
+    let mut original = response(String::new())?;
+    original.payload = AgentdPayload::NativeModelReceipt {
+        request_id: "assessment-1".into(),
+        native_record_json: Some(json),
+    };
+    let bytes = encode_response(original)?;
+    let decoded: AgentdResponse = serde_json::from_slice(&bytes)?;
+    assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+    assert!(
+        matches!(decoded.payload, AgentdPayload::Error { code, .. } if code == "response_too_large")
+    );
+    Ok(())
+}

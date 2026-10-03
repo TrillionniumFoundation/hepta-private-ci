@@ -283,6 +283,8 @@ pub use config::AgentdConfig;
 #[cfg(feature = "server")]
 pub use config::AgentdIdentity;
 #[cfg(feature = "server")]
+pub use config::AgentdNativeModelReceiptReaderV1;
+#[cfg(feature = "server")]
 pub use config::AgentdSelfIterationModelOwnerContextV2;
 #[cfg(feature = "server")]
 pub use config::CognitiveRetrievalMode;

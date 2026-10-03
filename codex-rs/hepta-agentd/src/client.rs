@@ -48,6 +48,8 @@ use crate::SessionIngress;
 #[path = "client_automation_listing.rs"]
 mod automation_listing;
 
+#[path = "client_native_model_receipt.rs"]
+mod native_model_receipt;
 #[path = "client_secrets.rs"]
 mod secrets;
 

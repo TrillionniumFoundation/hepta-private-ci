@@ -47,6 +47,9 @@ use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
 use super::AgentdIdentity;
+#[cfg(target_os = "linux")]
+#[path = "native_model_receipt_control_tests.rs"]
+mod native_model_receipt_control;
 use super::AgentdState;
 use super::EVENT_CAPACITY;
 use super::drain_runtime;

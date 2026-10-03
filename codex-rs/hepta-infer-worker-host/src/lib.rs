@@ -71,6 +71,8 @@ pub mod runtime_codex_quarantine;
 mod self_iteration_model;
 mod sqlite;
 pub use self_iteration_model::AppServerSelfIterationModelPortV1;
+#[cfg(feature = "agentd-host")]
+pub use self_iteration_model::NativeModelReceiptReaderV1;
 pub use self_iteration_model::NativeReferenceObservationV1;
 
 use std::error::Error as StdError;

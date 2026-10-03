@@ -21,6 +21,11 @@ use crate::native_app_server::NativeAdmission;
 #[path = "model_control_owner.rs"]
 mod control_owner;
 use control_owner::ModelControlOwner;
+#[cfg(feature = "agentd-host")]
+#[path = "native_model_receipt_reader.rs"]
+mod receipt_reader;
+#[cfg(feature = "agentd-host")]
+pub use receipt_reader::NativeModelReceiptReaderV1;
 
 const NATIVE_PROMPT_LIMIT: usize = 32 * 1024;
 

@@ -622,6 +622,9 @@ impl AgentdState {
                     .map(wire_run_receipt);
                 AgentdPayload::RunStatus { run }
             }
+            crate::AgentdMethod::NativeModelReceipt { request_id } => {
+                self.native_model_receipt(request_id).await?
+            }
             crate::AgentdMethod::RunReleaseClosed {
                 run_id,
                 expected_revision,

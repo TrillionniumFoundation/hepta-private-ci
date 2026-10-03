@@ -49,6 +49,8 @@ pub(crate) struct AgentdState {
     pub(crate) secrets_host: std::sync::OnceLock<Arc<crate::secrets_host::AgentdSecretsHost>>,
     pub(crate) retrieval_executor: crate::retrieval_executor::RetrievalExecutor,
     pub(crate) neuron_runtime_v2: std::sync::OnceLock<Arc<crate::AgentdNeuronRuntimeV2Host>>,
+    pub(crate) native_model_receipt_reader:
+        std::sync::OnceLock<Arc<dyn crate::AgentdNativeModelReceiptReaderV1>>,
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
@@ -153,6 +155,7 @@ impl AgentdState {
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
             neuron_runtime_v2: std::sync::OnceLock::new(),
+            native_model_receipt_reader: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),

@@ -100,6 +100,9 @@ pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfi
         DurableInferenceControl::open(&installed.native_journal, installed.native_record_capacity)
             .map_err(|error| invalid(error.to_string()))?;
     let control = Arc::new(tokio::sync::Mutex::new(control));
+    let config = config.with_native_model_receipt_reader(Arc::new(
+        crate::NativeModelReceiptReaderV1::new_shared(control.clone()),
+    ))?;
     let cpu_status = serde_json::json!({"state":"disabled", "actual_neuron_tick":false});
     #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
     let (config, cpu_status) = if let Some(source) = installed.cpu_neuron.as_ref() {

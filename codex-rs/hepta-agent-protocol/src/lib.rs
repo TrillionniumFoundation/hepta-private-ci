@@ -649,6 +649,9 @@ impl AgentdRequest {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
+    NativeModelReceipt {
+        request_id: String,
+    },
     SecretsConsumeOriginal {
         original_id: String,
         budget_ms: u64,
@@ -861,6 +864,10 @@ pub enum AgentdPayload {
     RunCancellation(AgentRunCancellation),
     RunStatus {
         run: Option<AgentRunReceipt>,
+    },
+    NativeModelReceipt {
+        request_id: String,
+        native_record_json: Option<String>,
     },
     AutomationTask(AutomationTask),
     AutomationEffect(AutomationEffectSnapshot),
