@@ -1,4 +1,5 @@
 """Real-Git tests of candidate identity; these are not native Rust qualification."""
+
 import copy
 import importlib.util
 import os
@@ -8,7 +9,9 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-spec = importlib.util.spec_from_file_location("candidate", Path(__file__).with_name("context_compiler_candidate.py"))
+spec = importlib.util.spec_from_file_location(
+    "candidate", Path(__file__).with_name("context_compiler_candidate.py")
+)
 candidate = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(candidate)
 
@@ -31,7 +34,13 @@ class CandidateTests(unittest.TestCase):
         self.temp.cleanup()
 
     def git(self, *args):
-        result = subprocess.run(["git", *args], cwd=self.root, env=candidate.git_env(), capture_output=True, text=True)
+        result = subprocess.run(
+            ["git", *args],
+            cwd=self.root,
+            env=candidate.git_env(),
+            capture_output=True,
+            text=True,
+        )
         self.assertEqual(result.returncode, 0, result.stderr)
         return result.stdout.strip()
 
@@ -78,7 +87,13 @@ class CandidateTests(unittest.TestCase):
             self.source_record()
 
     def test_alias_and_short_oid_rejected(self):
-        for value in ["HEAD", self.source[:12], self.source + "^{commit}", "-h", self.source.upper()]:
+        for value in [
+            "HEAD",
+            self.source[:12],
+            self.source + "^{commit}",
+            "-h",
+            self.source.upper(),
+        ]:
             with self.subTest(value=value), self.assertRaises(ValueError):
                 candidate.prepare(self.root, value, self.base, "source-head")
 
@@ -102,8 +117,16 @@ class CandidateTests(unittest.TestCase):
                 candidate.verify(self.root, record)
 
         record = candidate.prepare(self.root, self.source, self.base, "synthetic-merge")
-        substituted = self.git("commit-tree", record["testedTreeSha"], "-p", self.base,
-                               "-p", self.source, "-m", "substituted metadata")
+        substituted = self.git(
+            "commit-tree",
+            record["testedTreeSha"],
+            "-p",
+            self.base,
+            "-p",
+            self.source,
+            "-m",
+            "substituted metadata",
+        )
         self.git("checkout", "-q", "--detach", substituted)
         record["testedHeadSha"] = substituted
         with self.assertRaises(ValueError):
@@ -135,14 +158,25 @@ class CandidateTests(unittest.TestCase):
         self.assertEqual((self.root / "base").read_text(), "source conflict\n")
 
     def test_git_environment_cannot_redirect_repository(self):
-        with patch.dict(os.environ, {"GIT_DIR": "/nonexistent", "GIT_INDEX_FILE": "/nonexistent/index", "GIT_CONFIG_COUNT": "1", "GIT_CONFIG_KEY_0": "core.bare", "GIT_CONFIG_VALUE_0": "true"}):
+        with patch.dict(
+            os.environ,
+            {
+                "GIT_DIR": "/nonexistent",
+                "GIT_INDEX_FILE": "/nonexistent/index",
+                "GIT_CONFIG_COUNT": "1",
+                "GIT_CONFIG_KEY_0": "core.bare",
+                "GIT_CONFIG_VALUE_0": "true",
+            },
+        ):
             self.source_record()
 
     def test_replace_refs_do_not_change_identity(self):
         self.git("replace", self.source, self.base)
         record = self.source_record()
         self.assertEqual(record["parents"], [self.base])
-        self.assertNotEqual(record["testedTreeSha"], self.git("rev-parse", self.base + "^{tree}"))
+        self.assertNotEqual(
+            record["testedTreeSha"], self.git("rev-parse", self.base + "^{tree}")
+        )
 
 
 if __name__ == "__main__":

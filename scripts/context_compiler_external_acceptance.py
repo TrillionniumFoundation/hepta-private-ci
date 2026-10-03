@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Fail-closed validator for externally signed context.compiler acceptance receipts."""
+
 import argparse
 import datetime as dt
 import hashlib
@@ -14,35 +15,90 @@ MAX_RECEIPT_BYTES = 2 * 1024 * 1024
 OID = re.compile(r"[0-9a-f]{40}\Z")
 SHA = re.compile(r"[0-9a-f]{64}\Z")
 SID = re.compile(r"[A-Za-z0-9][A-Za-z0-9._:/@+-]{0,511}\Z")
-SENSITIVE = ("secret", "credential", "privatekey", "private_key", "access_token", "api_key")
+SENSITIVE = (
+    "secret",
+    "credential",
+    "privatekey",
+    "private_key",
+    "access_token",
+    "api_key",
+)
 
 BASE_EVIDENCE = (
-    "sourceHeadQualification", "syntheticMergeQualification", "authoritySigner",
-    "tokenizerCustody", "distributedLease", "appendOnlyJournal",
-    "providerTerminalAttestation", "filesystemRestore", "multiHostDuplicateDenial",
-    "providerE2E", "targetHostProfile", "failureInjection", "independentSecurityReview",
+    "sourceHeadQualification",
+    "syntheticMergeQualification",
+    "authoritySigner",
+    "tokenizerCustody",
+    "distributedLease",
+    "appendOnlyJournal",
+    "providerTerminalAttestation",
+    "filesystemRestore",
+    "multiHostDuplicateDenial",
+    "providerE2E",
+    "targetHostProfile",
+    "failureInjection",
+    "independentSecurityReview",
 )
 EVIDENCE_BY_MODE = {
     "independent": BASE_EVIDENCE,
     "activation": (*BASE_EVIDENCE, "canaryRollback"),
     "release": (*BASE_EVIDENCE, "canaryRollback"),
 }
-TOP = {"schema", "mode", "identities", "environment", "evidence", "failpoints",
-       "approvals", "independentAcceptance", "activationApproved", "releaseApproved",
-       "receiptSha256"}
+TOP = {
+    "schema",
+    "mode",
+    "identities",
+    "environment",
+    "evidence",
+    "failpoints",
+    "approvals",
+    "independentAcceptance",
+    "activationApproved",
+    "releaseApproved",
+    "receiptSha256",
+}
 IDS = {"sourceCommit", "sourceTree", "baseCommit", "mergeCommit", "mergeTree"}
-ENV = {"environmentId", "runnerIdentity", "runnerImageDigest", "hostImageDigest",
-       "kernelIdentity", "filesystemIdentity", "providerTenant", "createdAt", "expiresAt"}
-EVIDENCE = {"status", "artifactSha256", "issuer", "issuedAt", "expiresAt",
-            "sourceCommit", "sourceTree", "mergeCommit", "mergeTree"}
+ENV = {
+    "environmentId",
+    "runnerIdentity",
+    "runnerImageDigest",
+    "hostImageDigest",
+    "kernelIdentity",
+    "filesystemIdentity",
+    "providerTenant",
+    "createdAt",
+    "expiresAt",
+}
+EVIDENCE = {
+    "status",
+    "artifactSha256",
+    "issuer",
+    "issuedAt",
+    "expiresAt",
+    "sourceCommit",
+    "sourceTree",
+    "mergeCommit",
+    "mergeTree",
+}
 FP_RESULT = {"status", "observedState", "artifactSha256"}
 APPROVAL = {"status", "approverId", "approvalSha256", "issuedAt", *IDS}
 APPROVAL_NAMES = {"security", "operator", "release"}
 MATRIX_TOP = {"schema", "module", "rules", "points"}
-MATRIX_RULES = {"everyPointRequired", "status", "unresolvedIsNeverFinal",
-                "blindReplayForbidden", "identityBinding"}
-MATRIX_BINDINGS = {"sourceCommit", "sourceTree", "mergeCommit", "mergeTree",
-                   "hostImageDigest", "providerTenant"}
+MATRIX_RULES = {
+    "everyPointRequired",
+    "status",
+    "unresolvedIsNeverFinal",
+    "blindReplayForbidden",
+    "identityBinding",
+}
+MATRIX_BINDINGS = {
+    "sourceCommit",
+    "sourceTree",
+    "mergeCommit",
+    "mergeTree",
+    "hostImageDigest",
+    "providerTenant",
+}
 
 
 class AcceptanceError(ValueError):
@@ -121,22 +177,31 @@ def reject_sensitive(value, path="receipt"):
 
 
 def decode(path):
-    return json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique,
-                      parse_constant=reject_constant)
+    return json.loads(
+        path.read_text(encoding="utf-8"),
+        object_pairs_hook=unique,
+        parse_constant=reject_constant,
+    )
 
 
 def load_matrix(path=MATRIX_PATH):
     value = decode(path)
     exact(value, MATRIX_TOP, "failpoint matrix")
-    if value["schema"] != "hepta.context-compiler.failpoint-matrix.v1" or value["module"] != "context.compiler":
+    if (
+        value["schema"] != "hepta.context-compiler.failpoint-matrix.v1"
+        or value["module"] != "context.compiler"
+    ):
         raise AcceptanceError("unsupported failpoint matrix")
     rules = exact(value["rules"], MATRIX_RULES, "failpoint rules")
-    if (rules["everyPointRequired"] is not True or rules["status"] != "passed" or
-        rules["unresolvedIsNeverFinal"] is not True or
-        rules["blindReplayForbidden"] is not True or
-        not isinstance(rules["identityBinding"], list) or
-        set(rules["identityBinding"]) != MATRIX_BINDINGS or
-        len(rules["identityBinding"]) != len(MATRIX_BINDINGS)):
+    if (
+        rules["everyPointRequired"] is not True
+        or rules["status"] != "passed"
+        or rules["unresolvedIsNeverFinal"] is not True
+        or rules["blindReplayForbidden"] is not True
+        or not isinstance(rules["identityBinding"], list)
+        or set(rules["identityBinding"]) != MATRIX_BINDINGS
+        or len(rules["identityBinding"]) != len(MATRIX_BINDINGS)
+    ):
         raise AcceptanceError("failpoint matrix rules are not fail-closed")
     if not isinstance(value["points"], list) or not value["points"]:
         raise AcceptanceError("empty failpoint matrix")
@@ -146,9 +211,15 @@ def load_matrix(path=MATRIX_PATH):
         point_id = sid(point["id"], "failpoint id")
         sid(point["phase"], "failpoint phase")
         states = point["allowedObservedStates"]
-        if (not isinstance(states, list) or not states or
-            any(not isinstance(item, str) or not SID.fullmatch(item) for item in states) or
-            len(states) != len(set(states)) or point_id in out):
+        if (
+            not isinstance(states, list)
+            or not states
+            or any(
+                not isinstance(item, str) or not SID.fullmatch(item) for item in states
+            )
+            or len(states) != len(set(states))
+            or point_id in out
+        ):
             raise AcceptanceError(f"invalid failpoint: {point_id}")
         out[point_id] = set(states)
     return out
@@ -174,20 +245,37 @@ def validate_approval(name, value, identities, required, now):
     return approver
 
 
-def validate_receipt(receipt, *, mode, expected_source, expected_source_tree,
-                     expected_base, expected_merge, expected_merge_tree, now=None):
+def validate_receipt(
+    receipt,
+    *,
+    mode,
+    expected_source,
+    expected_source_tree,
+    expected_base,
+    expected_merge,
+    expected_merge_tree,
+    now=None,
+):
     exact(receipt, TOP, "receipt")
     reject_sensitive(receipt)
-    if receipt["schema"] != "hepta.context-compiler.external-acceptance.v1" or receipt["mode"] != mode or mode not in EVIDENCE_BY_MODE:
+    if (
+        receipt["schema"] != "hepta.context-compiler.external-acceptance.v1"
+        or receipt["mode"] != mode
+        or mode not in EVIDENCE_BY_MODE
+    ):
         raise AcceptanceError("receipt schema or mode mismatch")
     sha(receipt["receiptSha256"], "receipt digest")
     if receipt["receiptSha256"] != canonical_sha256(receipt):
         raise AcceptanceError("receipt canonical digest mismatch")
 
     identities = exact(receipt["identities"], IDS, "identities")
-    expected = {"sourceCommit": expected_source, "sourceTree": expected_source_tree,
-                "baseCommit": expected_base, "mergeCommit": expected_merge,
-                "mergeTree": expected_merge_tree}
+    expected = {
+        "sourceCommit": expected_source,
+        "sourceTree": expected_source_tree,
+        "baseCommit": expected_base,
+        "mergeCommit": expected_merge,
+        "mergeTree": expected_merge_tree,
+    }
     for field, wanted in expected.items():
         oid(wanted, f"expected {field}")
         oid(identities[field], f"identities.{field}")
@@ -196,7 +284,13 @@ def validate_receipt(receipt, *, mode, expected_source, expected_source_tree,
 
     current = (now or dt.datetime.now(dt.timezone.utc)).astimezone(dt.timezone.utc)
     environment = exact(receipt["environment"], ENV, "environment")
-    for field in ("environmentId", "runnerIdentity", "kernelIdentity", "filesystemIdentity", "providerTenant"):
+    for field in (
+        "environmentId",
+        "runnerIdentity",
+        "kernelIdentity",
+        "filesystemIdentity",
+        "providerTenant",
+    ):
         sid(environment[field], f"environment.{field}")
     sha(environment["runnerImageDigest"], "runner image digest")
     sha(environment["hostImageDigest"], "host image digest")
@@ -238,22 +332,36 @@ def validate_receipt(receipt, *, mode, expected_source, expected_source_tree,
     release = mode == "release"
     approvers = [
         validate_approval("security", approvals["security"], identities, True, current),
-        validate_approval("operator", approvals["operator"], identities, activation, current),
-        validate_approval("release", approvals["release"], identities, release, current),
+        validate_approval(
+            "operator", approvals["operator"], identities, activation, current
+        ),
+        validate_approval(
+            "release", approvals["release"], identities, release, current
+        ),
     ]
     present = [item for item in approvers if item is not None]
     if len(present) != len(set(present)):
         raise AcceptanceError("approvals must be independent")
     if receipt["independentAcceptance"] is not True:
         raise AcceptanceError("independent acceptance missing")
-    if receipt["activationApproved"] is not activation or receipt["releaseApproved"] is not release:
+    if (
+        receipt["activationApproved"] is not activation
+        or receipt["releaseApproved"] is not release
+    ):
         raise AcceptanceError("approval flags do not match mode")
 
-    return {"schema": "hepta.context-compiler.external-acceptance-validation.v1",
-            "status": "passed", "mode": mode, **identities,
-            "receiptSha256": receipt["receiptSha256"], "evidenceCount": len(evidence),
-            "failpointCount": len(failpoints), "sourceStateMutationAuthorized": False,
-            "activationApproved": activation, "releaseApproved": release}
+    return {
+        "schema": "hepta.context-compiler.external-acceptance-validation.v1",
+        "status": "passed",
+        "mode": mode,
+        **identities,
+        "receiptSha256": receipt["receiptSha256"],
+        "evidenceCount": len(evidence),
+        "failpointCount": len(failpoints),
+        "sourceStateMutationAuthorized": False,
+        "activationApproved": activation,
+        "releaseApproved": release,
+    }
 
 
 def load_receipt(path):
@@ -275,18 +383,29 @@ def main():
     parser.add_argument("--output", type=Path)
     args = parser.parse_args()
     try:
-        report = validate_receipt(load_receipt(args.receipt), mode=args.mode,
-            expected_source=args.expected_source, expected_source_tree=args.expected_source_tree,
-            expected_base=args.expected_base, expected_merge=args.expected_merge,
+        report = validate_receipt(
+            load_receipt(args.receipt),
+            mode=args.mode,
+            expected_source=args.expected_source,
+            expected_source_tree=args.expected_source_tree,
+            expected_base=args.expected_base,
+            expected_merge=args.expected_merge,
             expected_merge_tree=args.expected_merge_tree,
-            now=timestamp(args.now, "--now") if args.now else None)
+            now=timestamp(args.now, "--now") if args.now else None,
+        )
         encoded = json.dumps(report, sort_keys=True, indent=2) + "\n"
         if args.output:
             args.output.parent.mkdir(parents=True, exist_ok=True)
             args.output.write_text(encoded, encoding="utf-8")
         sys.stdout.write(encoded)
         return 0
-    except (AcceptanceError, OSError, KeyError, TypeError, json.JSONDecodeError) as error:
+    except (
+        AcceptanceError,
+        OSError,
+        KeyError,
+        TypeError,
+        json.JSONDecodeError,
+    ) as error:
         print(f"external acceptance rejected: {error}", file=sys.stderr)
         return 1
 

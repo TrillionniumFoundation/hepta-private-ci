@@ -6,6 +6,7 @@ provider's input serialization. It is an operator input, not guessed from a mode
 name. No downloaded encodings, character estimates or provider usage fallback.
 A provider template still needs independent semantic/golden qualification.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -48,9 +49,13 @@ def object_pairs(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 def read_json(raw: bytes) -> Any:
     def nonfinite(_: str) -> None:
         raise Rejected("nonfinite_json")
+
     try:
-        value = json.loads(raw.decode("utf-8"), object_pairs_hook=object_pairs,
-                           parse_constant=nonfinite)
+        value = json.loads(
+            raw.decode("utf-8"),
+            object_pairs_hook=object_pairs,
+            parse_constant=nonfinite,
+        )
         pending = [value]
         visited = 0
         while pending:
@@ -71,8 +76,14 @@ def read_json(raw: bytes) -> Any:
         raise Rejected("invalid_json") from None
 
 
-def keys(value: Any, required: set[str], optional: set[str] = frozenset()) -> dict[str, Any]:
-    if not isinstance(value, dict) or not required <= value.keys() or value.keys() - required - optional:
+def keys(
+    value: Any, required: set[str], optional: set[str] = frozenset()
+) -> dict[str, Any]:
+    if (
+        not isinstance(value, dict)
+        or not required <= value.keys()
+        or value.keys() - required - optional
+    ):
         raise Rejected("schema_fields")
     return value
 
@@ -110,8 +121,20 @@ class Encoding:
     def from_bytes(cls, raw: bytes) -> "Encoding":
         if not raw or len(raw) > MAX_ARTIFACT_BYTES:
             raise Rejected("artifact_limit")
-        value = keys(read_json(raw), {"schema", "provider", "model", "version", "normalization",
-                                     "pattern", "mergeable_ranks", "special_tokens", "framing"})
+        value = keys(
+            read_json(raw),
+            {
+                "schema",
+                "provider",
+                "model",
+                "version",
+                "normalization",
+                "pattern",
+                "mergeable_ranks",
+                "special_tokens",
+                "framing",
+            },
+        )
         if value["schema"] != SCHEMA or value["normalization"] != "none":
             raise Rejected("unsupported_artifact")
         ranks: dict[bytes, int] = {}
@@ -122,11 +145,18 @@ class Encoding:
         for entry in entries:
             keys(entry, {"bytes_base64", "rank"})
             try:
-                piece = base64.b64decode(text(entry["bytes_base64"], 4 * MAX_PIECE_BYTES), validate=True)
+                piece = base64.b64decode(
+                    text(entry["bytes_base64"], 4 * MAX_PIECE_BYTES), validate=True
+                )
             except (ValueError, binascii.Error):
                 raise Rejected("invalid_vocabulary_bytes") from None
             rank = integer(entry["rank"])
-            if not piece or len(piece) > MAX_PIECE_BYTES or piece in ranks or rank in token_ids:
+            if (
+                not piece
+                or len(piece) > MAX_PIECE_BYTES
+                or piece in ranks
+                or rank in token_ids
+            ):
                 raise Rejected("duplicate_or_invalid_vocabulary")
             ranks[piece] = rank
             token_ids.add(rank)
@@ -146,8 +176,17 @@ class Encoding:
             pattern = regex.compile(pattern_text)
         except regex.error:
             raise Rejected("invalid_pattern") from None
-        framing = keys(value["framing"], {"request_prefix", "request_suffix", "roles", "instructions_role", "ignored_fields"},
-                       {"tools", "structured_items"})
+        framing = keys(
+            value["framing"],
+            {
+                "request_prefix",
+                "request_suffix",
+                "roles",
+                "instructions_role",
+                "ignored_fields",
+            },
+            {"tools", "structured_items"},
+        )
         if not isinstance(framing["roles"], dict) or not framing["roles"]:
             raise Rejected("missing_role_framing")
         for role, rule in framing["roles"].items():
@@ -157,13 +196,27 @@ class Encoding:
         if framing["instructions_role"] not in framing["roles"]:
             raise Rejected("invalid_instructions_role")
         ignored = framing["ignored_fields"]
-        if not isinstance(ignored, list) or any(
-            type(key) is not str or key in {"model", "input", "instructions", "tools"} for key in ignored
-        ) or len(ignored) != len(set(ignored)):
+        if (
+            not isinstance(ignored, list)
+            or any(
+                type(key) is not str
+                or key in {"model", "input", "instructions", "tools"}
+                for key in ignored
+            )
+            or len(ignored) != len(set(ignored))
+        ):
             raise Rejected("invalid_ignored_fields")
-        encoding = cls(ranks, specials, pattern, framing,
-                       text(value["provider"], 512), text(value["model"], 512),
-                       text(value["version"], 256), "none", hashlib.sha256(raw).hexdigest())
+        encoding = cls(
+            ranks,
+            specials,
+            pattern,
+            framing,
+            text(value["provider"], 512),
+            text(value["model"], 512),
+            text(value["version"], 256),
+            "none",
+            hashlib.sha256(raw).hexdigest(),
+        )
         if not encoding.provider or not encoding.model or not encoding.version:
             raise Rejected("empty_identity")
         # Eagerly validate framing atoms before any input is counted.
@@ -185,7 +238,11 @@ class Encoding:
                     raise Rejected("invalid_structured_kind")
                 keys(rule, {"fields", "prefix", "suffix"})
                 fields = rule["fields"]
-                if not isinstance(fields, list) or not fields or any(type(key) is not str for key in fields):
+                if (
+                    not isinstance(fields, list)
+                    or not fields
+                    or any(type(key) is not str for key in fields)
+                ):
                     raise Rejected("invalid_structured_fields")
                 if len(fields) != len(set(fields)) or "type" in fields:
                     raise Rejected("invalid_structured_fields")
@@ -231,14 +288,19 @@ class Encoding:
                 return
             rank = self.ranks.get(parts[left] + parts[right])
             if rank is not None:
-                heapq.heappush(heap, (rank, left, right, versions[left], versions[right]))
+                heapq.heappush(
+                    heap, (rank, left, right, versions[left], versions[right])
+                )
 
         for index in range(count):
             add(index)
         while heap:
             _, left, right, left_version, right_version = heapq.heappop(heap)
-            if not alive[left] or not alive[right] or following[left] != right or (
-                versions[left] != left_version or versions[right] != right_version
+            if (
+                not alive[left]
+                or not alive[right]
+                or following[left] != right
+                or (versions[left] != left_version or versions[right] != right_version)
             ):
                 continue
             parts[left] += parts[right]
@@ -293,8 +355,11 @@ class Encoding:
     def provider_tokens(self, raw: bytes) -> int:
         if not raw or len(raw) > MAX_REQUEST_BYTES:
             raise Rejected("request_limit")
-        request = keys(read_json(raw), {"model", "input"},
-                       {"instructions", "tools", *self.framing["ignored_fields"]})
+        request = keys(
+            read_json(raw),
+            {"model", "input"},
+            {"instructions", "tools", *self.framing["ignored_fields"]},
+        )
         if request["model"] != self.model:
             raise Rejected("model_mismatch")
         atoms = self.atoms(self.framing["request_prefix"])
@@ -316,7 +381,15 @@ class Encoding:
                 raise Rejected("tool_limit")
             rule = self.framing["tools"]
             atoms.extend(self.atoms(rule["prefix"]))
-            atoms.append(json.dumps(request["tools"], ensure_ascii=False, sort_keys=True, separators=(",", ":"), allow_nan=False))
+            atoms.append(
+                json.dumps(
+                    request["tools"],
+                    ensure_ascii=False,
+                    sort_keys=True,
+                    separators=(",", ":"),
+                    allow_nan=False,
+                )
+            )
             atoms.extend(self.atoms(rule["suffix"]))
         inputs = request["input"]
         if isinstance(inputs, str):
@@ -335,7 +408,11 @@ class Encoding:
                         pieces: list[str] = []
                         for part in content:
                             keys(part, {"type", "text"})
-                            expected = "output_text" if item["role"] == "assistant" else "input_text"
+                            expected = (
+                                "output_text"
+                                if item["role"] == "assistant"
+                                else "input_text"
+                            )
                             if part["type"] != expected:
                                 raise Rejected("unqualified_content_type")
                             pieces.append(text(part["text"]))
@@ -348,8 +425,15 @@ class Encoding:
                         raise Rejected("unqualified_structured_item")
                     keys(item, {"type", *rule["fields"]})
                     atoms.extend(self.atoms(rule["prefix"]))
-                    atoms.append(json.dumps({key: item[key] for key in rule["fields"]}, ensure_ascii=False,
-                                            sort_keys=True, separators=(",", ":"), allow_nan=False))
+                    atoms.append(
+                        json.dumps(
+                            {key: item[key] for key in rule["fields"]},
+                            ensure_ascii=False,
+                            sort_keys=True,
+                            separators=(",", ":"),
+                            allow_nan=False,
+                        )
+                    )
                     atoms.extend(self.atoms(rule["suffix"]))
         else:
             raise Rejected("input_limit_or_type")
@@ -367,19 +451,28 @@ def main() -> int:
     parser.add_argument("--version", required=True)
     parser.add_argument("--vocabulary", required=True, type=Path)
     parser.add_argument("--normalization", required=True)
-    parser.add_argument("--mode", choices=("provider-request", "text"), default="provider-request")
+    parser.add_argument(
+        "--mode", choices=("provider-request", "text"), default="provider-request"
+    )
     args = parser.parse_args()
     try:
         with args.vocabulary.open("rb") as stream:
             encoding = Encoding.from_bytes(stream.read(MAX_ARTIFACT_BYTES + 1))
         if (args.provider, args.model, args.version, args.normalization) != (
-            encoding.provider, encoding.model, encoding.version, encoding.normalization
+            encoding.provider,
+            encoding.model,
+            encoding.version,
+            encoding.normalization,
         ):
             raise Rejected("artifact_identity_mismatch")
         raw = sys.stdin.buffer.read(MAX_REQUEST_BYTES + 1)
         if not raw or len(raw) > MAX_REQUEST_BYTES:
             raise Rejected("request_limit")
-        count = encoding.provider_tokens(raw) if args.mode == "provider-request" else len(encoding.ordinary_tokens(raw.decode("utf-8")))
+        count = (
+            encoding.provider_tokens(raw)
+            if args.mode == "provider-request"
+            else len(encoding.ordinary_tokens(raw.decode("utf-8")))
+        )
         if count <= 0:
             raise Rejected("empty_model_input")
         print(count)

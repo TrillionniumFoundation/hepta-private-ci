@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Static source-topology regressions for the one context delivery owner."""
+
 from pathlib import Path
 import unittest
 
@@ -15,9 +16,13 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
         registry = read("codex-rs/hepta-prompt-registry/src/lib.rs")
         intelligence = read("codex-rs/hepta-intelligence/src/lib.rs")
         self.assertEqual(registry.count("mod context_authority;"), 1)
-        self.assertIn("pub use context_authority::PromptContextAuthoritySnapshotV3;", registry)
+        self.assertIn(
+            "pub use context_authority::PromptContextAuthoritySnapshotV3;", registry
+        )
         self.assertEqual(intelligence.count("mod prompt_product_v3;"), 1)
-        self.assertIn("pub use prompt_product_v3::compile_prompt_registry_v3;", intelligence)
+        self.assertIn(
+            "pub use prompt_product_v3::compile_prompt_registry_v3;", intelligence
+        )
 
     def test_v3_is_default_legacy_is_explicit_and_fixtures_are_qualification_only(self):
         registry = read("codex-rs/hepta-prompt-registry/Cargo.toml")
@@ -61,9 +66,13 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
         self.assertIn(".with_final_request_observer", runtime)
         self.assertIn(".with_final_terminal_observer", runtime)
         self.assertIn(".stage_with(thread_id, turn_id, compiled.clone(), ||", runtime)
-        lifecycle = read("codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs")
-        self.assertLess(lifecycle.index("let result = publish()?;"),
-                        lifecycle.index("state.staged.insert(key, Arc::new(compiled))"))
+        lifecycle = read(
+            "codex-rs/hepta-agentd/src/exact_context_delivery/lifecycle.rs"
+        )
+        self.assertLess(
+            lifecycle.index("let result = publish()?;"),
+            lifecycle.index("state.staged.insert(key, Arc::new(compiled))"),
+        )
         self.assertIn("self.exact.clear_turn_with", runtime)
         self.assertIn("retire_completed_stage", lifecycle)
 
@@ -98,10 +107,16 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
             text = path.read_text(encoding="utf-8")
             for token in forbidden:
                 self.assertNotIn(token, text, f"{path}: {token}")
-        self.assertFalse((ROOT / ".github/workflows/context-compiler-source-promotion.yml").exists())
-        self.assertFalse((ROOT / ".github/workflows/context-compiler-v3-source-bundle.yml").exists())
+        self.assertFalse(
+            (ROOT / ".github/workflows/context-compiler-source-promotion.yml").exists()
+        )
+        self.assertFalse(
+            (ROOT / ".github/workflows/context-compiler-v3-source-bundle.yml").exists()
+        )
         self.assertFalse(list((ROOT / "scripts").glob("apply_context_compiler_*.py")))
-        self.assertFalse(list((ROOT / "scripts").glob("remediate_context_compiler_*.py")))
+        self.assertFalse(
+            list((ROOT / "scripts").glob("remediate_context_compiler_*.py"))
+        )
 
     def test_profile_matrix_covers_both_git_lanes_and_feature_profiles(self):
         workflow = read(".github/workflows/context-compiler-profile-matrix.yml")

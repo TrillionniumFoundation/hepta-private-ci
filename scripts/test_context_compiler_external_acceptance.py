@@ -81,7 +81,9 @@ def receipt(mode="release"):
         },
         "approvals": {
             "security": approval("security-reviewer:v1"),
-            "operator": approval("operator:v1") if mode in {"activation", "release"} else None,
+            "operator": approval("operator:v1")
+            if mode in {"activation", "release"}
+            else None,
             "release": approval("release-manager:v1") if mode == "release" else None,
         },
         "independentAcceptance": True,
@@ -141,7 +143,9 @@ class ExternalAcceptanceTests(unittest.TestCase):
         with self.assertRaises(acceptance.AcceptanceError):
             validate(value)
         value = receipt()
-        value["failpoints"]["transport.commit.before"]["observedState"] = "lease_settled"
+        value["failpoints"]["transport.commit.before"]["observedState"] = (
+            "lease_settled"
+        )
         value["receiptSha256"] = acceptance.canonical_sha256(value)
         with self.assertRaises(acceptance.AcceptanceError):
             validate(value)
@@ -169,7 +173,9 @@ class ExternalAcceptanceTests(unittest.TestCase):
 
     def test_approval_roles_must_be_independent(self):
         value = receipt()
-        value["approvals"]["operator"]["approverId"] = value["approvals"]["security"]["approverId"]
+        value["approvals"]["operator"]["approverId"] = value["approvals"]["security"][
+            "approverId"
+        ]
         value["receiptSha256"] = acceptance.canonical_sha256(value)
         with self.assertRaises(acceptance.AcceptanceError):
             validate(value)
