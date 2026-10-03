@@ -397,6 +397,7 @@
       "tests": [
         "codex-rs/hepta-types/CONSUMER_QUALIFICATION_V1.json",
         "scripts/verify_platform_types_consumers.py",
+        "scripts/test_platform_types_consumer_paths.py",
         "scripts/test_platform_types_consumer_qualification.py"
       ],
       "sourcePathExists": true,
@@ -465,8 +466,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "e17a6c8a07abb21946a9fb1ac064a7a2a0464128",
-    "tree": "ff689c10b285a635116e6b305cbea97b0f94f8c0"
+    "commit": "a1ea113a3b98c5e71b956950631630d5341fb9ca",
+    "tree": "a148f4a468bbcaf54ce199b57f346c8c56516b35"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -487,7 +488,7 @@
     {
       "sourcePath": "codex-rs/hepta-ndu/src/owner_numeric_snapshot.rs",
       "nativeSymbol": "NduAuthenticatedOwnerV1::verify_utility_signal_v2",
-      "state": "owner_pinned_numeric_v2_final_use_consumer"
+      "state": "owner_pinned_numeric_v2_verification_consumer"
     },
     {
       "sourcePath": "codex-rs/hepta-ndu/src/random_stream_owner.rs",
@@ -791,6 +792,10 @@
       "object": "df19bdaa174b99dce548c46bc88f2e6bb9ddeb9d"
     },
     {
+      "path": "scripts/test_platform_types_consumer_paths.py",
+      "object": "bdadb0b965b1a210b28d6ff7130a4d44c781fab5"
+    },
+    {
       "path": "scripts/test_platform_types_consumer_qualification.py",
       "object": "010c4bb4613981e571538cab2e2907489507a37d"
     },
@@ -800,7 +805,7 @@
     },
     {
       "path": "scripts/verify_platform_types_consumers.py",
-      "object": "0508df9782a0b7ef2d833f1ed386bd5aa0d74c9c"
+      "object": "3f08426f4aa37031a4f88e37afcd418f23fe7bd2"
     },
     {
       "path": "scripts/verify_platform_types_schema_catalog.py",

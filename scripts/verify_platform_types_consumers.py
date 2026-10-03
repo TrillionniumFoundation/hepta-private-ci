@@ -3,7 +3,8 @@
 
 from __future__ import annotations
 import json
-from pathlib import Path
+from pathlib import Path, PureWindowsPath
+import stat
 
 ROOT = Path(__file__).resolve().parents[1]
 MATRIX = ROOT / "codex-rs/hepta-types/CONSUMER_QUALIFICATION_V1.json"
@@ -40,6 +41,43 @@ REQUIRED_EXECUTION = [
     "runtime_topology_admission_tests",
     "strict_utility_ndu_library_lint",
 ]
+
+
+def consumer_source_path(relative: str) -> Path:
+    """Require canonical, repository-relative regular source without symlinks."""
+    if (
+        not isinstance(relative, str)
+        or not relative
+        or "\\" in relative
+        or "\0" in relative
+        or PureWindowsPath(relative).drive
+        or any(part in ("", ".", "..") for part in relative.split("/"))
+    ):
+        raise SystemExit(
+            f"consumer source must be a canonical relative path: {relative!r}"
+        )
+    root = ROOT.resolve()
+    candidate = root
+    parts = relative.split("/")
+    try:
+        for index, part in enumerate(parts):
+            candidate = candidate / part
+            mode = candidate.lstat().st_mode
+            if stat.S_ISLNK(mode):
+                raise SystemExit(
+                    f"consumer source must not traverse symlinks: {relative!r}"
+                )
+            required_type = stat.S_ISREG if index == len(parts) - 1 else stat.S_ISDIR
+            if not required_type(mode):
+                raise SystemExit(
+                    f"consumer source must be a regular repository file: {relative!r}"
+                )
+        candidate.resolve(strict=True).relative_to(root)
+    except (OSError, ValueError) as error:
+        raise SystemExit(
+            f"invalid repository consumer source: {relative!r}: {error}"
+        ) from error
+    return candidate
 
 
 def main() -> int:
@@ -88,9 +126,7 @@ def main() -> int:
         relative_path = row.get("path")
         if not isinstance(relative_path, str) or not relative_path:
             raise SystemExit(f"{identifier}: source path required")
-        path = ROOT / relative_path
-        if not path.is_file():
-            raise SystemExit(f"missing consumer source: {relative_path}")
+        path = consumer_source_path(relative_path)
         text = path.read_text(encoding="utf-8")
         anchors = row.get("mustContain")
         if not isinstance(anchors, list) or not anchors:

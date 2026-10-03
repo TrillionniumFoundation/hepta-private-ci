@@ -48,6 +48,50 @@ The declared source-consumer list is maintained in [`CONSUMER_QUALIFICATION_V1.j
 
 Candidate evidence is self-contained by construction. Qualification evidence paths must resolve to regular files inside the checked-out repository tree; absolute paths outside that tree, parent traversal, and symlink evidence are rejected before a receipt can be emitted. This prevents a runner-local path from becoming part of a supposedly portable positive fixture.
 
+### Current admission and final-use boundaries
+
+The declared consumer ledger checks source presence and named anchors, not a
+production call graph. Its paths must be canonical repository-relative paths;
+absolute paths, parent traversal, symlink components and non-regular source files
+cannot supply consumer evidence. The verifier regression suite exercises these
+filesystem rules separately from product execution.
+
+The current tracked Rust call sites establish these narrower boundaries:
+
+- `admit_ndu_random_stream_manifest_v1` validates the pinned seed, namespace,
+  generator/version, episode, decision and bounded counter span. Its callers are
+  tests; there is no manifest-to-generator execution, counter reservation or
+  replay-exclusion chain.
+- `admit_external_system_manifest_v1` checks equality against the policy's host
+  identity and authorization-witness digests. Its callers are tests; digest
+  equality neither authenticates the witness nor checks `observed_at` freshness.
+- `admit_sensor_calibration_manifest_v1` checks the policy's calibration generation
+  and clock-domain string. Its callers are tests; native timestamp validation
+  proves a well-formed ordered validity window, not that a trusted current clock
+  is inside that window or that the pinned generation is still current.
+- `NduAuthenticatedOwnerV1::evaluate` really composes configured numeric V2
+  admission into contribution support. The snapshot opener and received-receipt
+  verifier currently have only test callers. The pin is caller-provisioned for an
+  immutable owner lifetime; it does not authenticate, publish, persist or advance
+  the current registry generation.
+
+These admission receipts retain `NonAuthorizingPosture::DENY_ALL`. Separately,
+NDU `apply_mutation` consumes `FinalUseAuthority::with_verified_use` and binds the
+configured numeric snapshot through the production policy digest. That actual
+mutation-authority path does not consume the three manifest receipts and cannot
+substitute for their missing production final-use chains.
+
+Authenticated registry lifecycle, trusted current-generation/clock checks at the
+actual effect boundary, target-host qualification and independent acceptance
+remain open owner obligations. Local path tests, static anchors and a pinned
+receipt do not satisfy them.
+
+Source anchors: `codex-rs/hepta-ndu/src/random_stream_owner.rs`,
+`codex-rs/hepta-ndu/src/owner.rs`,
+`codex-rs/hepta-ndu/src/owner_numeric_snapshot.rs`,
+`codex-rs/hepta-supervisor/src/platform_manifest_admission.rs` and
+`codex-rs/hepta-types/src/manifests.rs`.
+
 ## Identity-profile convergence
 
 The V2 protocol catalog is the field-level source of truth for identity-bearing wire paths. Existing identity fields retain the legacy `stable-v1` grammar in this migration so catalog ownership does not silently tighten or reinterpret accepted identifiers. Product decoders resolve the profile from the catalog before constructing `StableId`; a missing protocol/path mapping fails closed. Any future move to `module-v1`, `execution-id-v1`, or another stricter profile is a versioned compatibility change with its own schema and migration evidence.
