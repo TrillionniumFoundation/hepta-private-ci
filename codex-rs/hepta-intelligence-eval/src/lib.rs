@@ -76,7 +76,9 @@ mod paired_review_plan;
 mod paired_review_transport;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use paired_review_plan::PairedReviewSourcePlanV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use paired_review_plan::decode_original_paired_review_source_plan_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use paired_review_plan::encode_original_paired_review_source_plan_v1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use paired_review_transport::encode_paired_review_publication_v1;
@@ -773,7 +775,9 @@ pub use operational_registered_model_v3::RegisteredOperationalModelBindingV3;
 pub use operational_registered_model_v3::inspect_registered_artifact_current_material_v3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use operational_registered_model_v3::project_registered_artifact_current_configuration_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use operational_registered_model_v3::project_registered_artifact_manifest_configuration_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use operational_registered_model_v3::read_registered_artifact_manifest_sources_v3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use operational_registered_program_v3::verify_registered_operational_program_v3;
