@@ -64,6 +64,10 @@ pub type RumaApiError = UiaaResponse;
 /// converting the raw HTTP response into a Matrix response.
 #[derive(Error, Debug)]
 pub enum HttpError {
+    /// The bundled HTTP client requires TLS certificate verification.
+    #[error("TLS certificate verification is required")]
+    TlsCertificateVerificationRequired,
+
     /// Error at the HTTP layer.
     #[error(transparent)]
     Reqwest(#[from] ReqwestError),

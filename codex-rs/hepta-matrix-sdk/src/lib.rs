@@ -18,6 +18,8 @@ mod sdk;
 #[path = "sdk_context_tests.rs"]
 mod sdk_context_tests;
 mod sync;
+#[cfg(all(test, not(target_family = "wasm")))]
+mod transport_security_tests;
 
 pub use config::MatrixSdkPaths;
 pub use config::MatrixSidecarConfig;

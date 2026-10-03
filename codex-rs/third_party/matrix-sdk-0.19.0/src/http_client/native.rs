@@ -28,7 +28,7 @@ use http::header::CONTENT_LENGTH;
 use reqwest::Certificate;
 use reqwest::tls;
 use ruma::api::{IncomingResponseExt as _, OutgoingRequest, error::FromHttpResponseError};
-use tracing::{debug, info, warn};
+use tracing::{debug, info};
 
 use super::{DEFAULT_REQUEST_TIMEOUT, HttpClient, TransmissionProgress, response_to_http_response};
 use crate::{
@@ -200,6 +200,10 @@ impl Default for HttpSettings {
 impl HttpSettings {
     /// Build a client with the specified configuration.
     pub(crate) fn make_client(&self) -> Result<reqwest::Client, HttpError> {
+        if self.disable_ssl_verification {
+            return Err(HttpError::TlsCertificateVerificationRequired);
+        }
+
         let user_agent = self.user_agent.clone().unwrap_or_else(|| "matrix-rust-sdk".to_owned());
         let mut http_client = reqwest::Client::builder()
             .user_agent(user_agent)
@@ -213,11 +217,6 @@ impl HttpSettings {
 
         if let Some(read_timeout) = self.read_timeout {
             http_client = http_client.read_timeout(read_timeout);
-        }
-
-        if self.disable_ssl_verification {
-            warn!("SSL verification disabled in the HTTP client!");
-            http_client = http_client.danger_accept_invalid_certs(true);
         }
 
         http_client = if self.disable_built_in_root_certificates {

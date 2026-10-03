@@ -85,19 +85,16 @@ use crate::{
 ///
 /// ```
 /// use matrix_sdk::Client;
-/// // To pass all the request through mitmproxy set the proxy and disable SSL
-/// // verification
+/// // Route requests through an HTTP proxy while retaining certificate validation.
 ///
 /// let client_builder = Client::builder()
-///     .proxy("http://localhost:8080")
-///     .disable_ssl_verification();
+///     .proxy("http://localhost:8080");
 /// ```
 ///
 /// # Example for using a custom http client
 ///
-/// Note: setting a custom http client will ignore `user_agent`, `proxy`, and
-/// `disable_ssl_verification` - you'd need to set these yourself if you want
-/// them.
+/// A custom HTTP client supplies its own user agent, proxy and certificate
+/// settings; the builder's HTTP settings do not configure it.
 ///
 /// ```
 /// use std::sync::Arc;
@@ -445,7 +442,13 @@ impl ClientBuilder {
         self
     }
 
-    /// Disable SSL verification for the HTTP requests.
+    /// Request disabled SSL verification for the HTTP requests.
+    ///
+    /// This bundled SDK requires certificate verification for its HTTP settings.
+    /// Calling this setter makes [`Self::build`] return
+    /// [`ClientBuildError::Http`] with
+    /// [`HttpError::TlsCertificateVerificationRequired`] before creating the
+    /// HTTP client or opening a store. The setter remains source compatible.
     #[cfg(not(target_family = "wasm"))]
     pub fn disable_ssl_verification(mut self) -> Self {
         self.http_settings().disable_ssl_verification = true;
