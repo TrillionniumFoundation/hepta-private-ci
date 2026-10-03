@@ -47,3 +47,6 @@ mod private_state_test_support;
 
 #[cfg(any(target_os = "macos", target_os = "windows", test))]
 mod native_pipe;
+
+#[cfg(all(feature = "robrix-preview", target_os = "linux"))]
+pub mod native_assets;

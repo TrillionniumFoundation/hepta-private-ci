@@ -59,7 +59,7 @@ pub(super) fn app_fixture(root: &std::path::Path) -> HeptaNativeApp {
         file_input_focus: None,
         tasks: TaskController::default(),
         shutdown: Shutdown::default(),
-        repaint: Arc::new(Mutex::new(None)),
+        repaint: Arc::new(Mutex::new(super::NativeWake::default())),
         last_error: None,
         operation_subject_id: String::new(),
         operation_id: String::new(),

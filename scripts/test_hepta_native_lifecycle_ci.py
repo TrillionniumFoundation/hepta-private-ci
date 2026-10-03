@@ -311,5 +311,124 @@ class SubjectTests(unittest.TestCase):
                 ci.verify_record({**record, key: value}, bound, directory, "compile")
 
 
+class AssetInputTests(unittest.TestCase):
+    """Receipt boundary fixtures; these do not execute or qualify a renderer."""
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name) / "source"
+        self.out = Path(temporary.name) / "evidence"
+        self.out.mkdir()
+        native = self.root / "apps/hepta-native"
+        self.sources = {
+            "manifestSha256": native / "Cargo.toml",
+            "lockSha256": native / "Cargo.lock",
+            "catalogSha256": native / "resources/NATIVE-ASSETS.json",
+            "generatorSha256": native / "tools/generate-native-assets.py",
+            "helperSha256": native / "tools/build-robrix-native.py",
+        }
+        for path in self.sources.values():
+            path.parent.mkdir(parents=True, exist_ok=True)
+            path.write_text("source identity fixture")
+        self.catalog = {
+            "makepadRevision": "a" * 40,
+            "assets": [
+                {
+                    "logical": f"fixture/{i}",
+                    "bytes": 1,
+                    "sha256": ci.sha(bytes([i])),
+                    "license_group": "fixture",
+                }
+                for i in range(28)
+            ],
+            "noticeFileSha256": [],
+            "liberationSource": {
+                "file": "fixture.tar.gz",
+                "bytes": 7,
+                "sha256": "b" * 64,
+            },
+        }
+        self.sources["catalogSha256"].write_text(json.dumps(self.catalog))
+        self.rust = b"representative compiler-input fixture, never executed"
+        (self.out / "native-assets.rs").write_bytes(self.rust)
+        self.inputs = {
+            "schema": "hepta.native-assets-build-input.v1",
+            "makepadRevision": self.catalog["makepadRevision"],
+            "catalogSha256": ci.sha(self.sources["catalogSha256"].read_bytes()),
+            "generatedRustSha256": ci.sha(self.rust),
+            "assets": copy.deepcopy(self.catalog["assets"]),
+            "noticeFiles": [],
+            "liberationSource": copy.deepcopy(self.catalog["liberationSource"]),
+        }
+        self.receipt = {
+            "schema": "hepta.native-assets-verification.v1",
+            "sdkRevision": self.catalog["makepadRevision"],
+            "sourceRoot": str(self.root),
+            "regeneratedBytesMatch": True,
+            "rendererQualified": False,
+            "assetRustSha256": ci.sha(self.rust),
+            "liberationSourceSha256": self.catalog["liberationSource"]["sha256"],
+            **{key: ci.sha(path.read_bytes()) for key, path in self.sources.items()},
+        }
+        self.save()
+
+    def save(self):
+        raw = json.dumps(self.inputs).encode()
+        (self.out / "native-assets-input.json").write_bytes(raw)
+        self.receipt["assetInputJsonSha256"] = ci.sha(raw)
+        (self.out / "native-assets-verification.json").write_text(
+            json.dumps(self.receipt)
+        )
+
+    def test_matching_source_and_regenerated_input_are_bound(self):
+        result = ci.verify_asset_inputs(self.out, self.root)
+        self.assertEqual(
+            (
+                result["assetCount"],
+                result["assetBytes"],
+                result["nativeRendererObserved"],
+            ),
+            (28, 28, False),
+        )
+
+    def test_changed_compiler_rust_is_rejected(self):
+        (self.out / "native-assets.rs").write_bytes(self.rust + b"unreviewed code")
+        with self.assertRaises(ValueError):
+            ci.verify_asset_inputs(self.out, self.root)
+
+    def test_stale_helper_or_other_source_root_is_rejected(self):
+        for key, value in (
+            ("helperSha256", "0" * 64),
+            ("sourceRoot", "/another/source"),
+        ):
+            with self.subTest(key=key):
+                before = self.receipt[key]
+                self.receipt[key] = value
+                self.save()
+                with self.assertRaises(ValueError):
+                    ci.verify_asset_inputs(self.out, self.root)
+                self.receipt[key] = before
+
+    def test_missing_asset_rejects_even_with_refreshed_json_hash(self):
+        self.inputs["assets"].pop()
+        self.save()
+        with self.assertRaises(ValueError):
+            ci.verify_asset_inputs(self.out, self.root)
+
+    def test_changed_corresponding_source_is_rejected(self):
+        self.inputs["liberationSource"]["sha256"] = "c" * 64
+        self.receipt["liberationSourceSha256"] = "c" * 64
+        self.save()
+        with self.assertRaises(ValueError):
+            ci.verify_asset_inputs(self.out, self.root)
+
+    def test_asset_preparation_cannot_claim_renderer_acceptance(self):
+        self.receipt["rendererQualified"] = True
+        self.save()
+        with self.assertRaises(ValueError):
+            ci.verify_asset_inputs(self.out, self.root)
+
+
 if __name__ == "__main__":
     unittest.main()

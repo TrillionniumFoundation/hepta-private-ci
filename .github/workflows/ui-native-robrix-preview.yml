@@ -1,0 +1,175 @@
+name: Native Robrix Linux developer preview
+on:
+  pull_request:
+    branches: [work/ui-rust-scifi-audit-20261002]
+    paths:
+      - apps/hepta-native/**
+      - apps/hepta-control-ui/rust/robrix-ui/**
+      - apps/hepta-control-ui/rust/core/**
+      - apps/hepta-control-ui/rust/Cargo.toml
+      - codex-rs/**
+      - scripts/test_hepta_native_robrix_preview.py
+      - scripts/hepta_ci_exec.py
+      - scripts/hepta_native_lifecycle_ci.py
+      - scripts/just-shell.py
+      - justfile
+      - .cargo/**
+      - .github/config/native-lifecycle-nextest.toml
+      - .github/actions/hepta-synthetic-merge/**
+      - .github/workflows/ui-native-robrix-preview.yml
+permissions:
+  contents: read
+concurrency:
+  group: native-robrix-preview-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+jobs:
+  preview:
+    if: github.event.pull_request.number == 1338
+    name: Native Robrix preview / Linux / ${{ matrix.lane }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      WORKFLOW_SHA: ${{ github.workflow_sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: '1'
+      CARGO_PROFILE_DEV_DEBUG: '0'
+      CARGO_TERM_COLOR: never
+      RUST_BACKTRACE: '1'
+      PYTHONDONTWRITEBYTECODE: '1'
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.WORKFLOW_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select immutable PR source
+        run: |
+          set -euo pipefail
+          git checkout --detach "$SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+      - name: Construct separately identified canonical merge
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: '1338'
+          author-name: Native Robrix preview CI
+          author-email: native-robrix-preview@invalid
+          message: Synthetic native Robrix preview merge
+      - name: Bind runtime subject and output paths
+        run: |
+          set -euo pipefail
+          printf 'TESTED_SHA=%s\n' "$(git rev-parse HEAD)" >> "$GITHUB_ENV"
+          printf 'PREVIEW_BUILD=%s\nPREVIEW_OUT=%s\n' "$RUNNER_TEMP/robrix-native-build" "$RUNNER_TEMP/robrix-native-observations" >> "$GITHUB_ENV"
+          mkdir "$RUNNER_TEMP/robrix-native-commands"
+          git show --no-patch --format='commit=%H%ntree=%T%nparents=%P' HEAD > "$RUNNER_TEMP/robrix-native-commands/source.txt"
+      - name: Install ordinary Linux build and isolated display tools
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y libx11-dev libxcursor-dev libxi-dev \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+            libgl1-mesa-dev libssl-dev libasound2-dev libpulse-dev libudev-dev pkg-config \
+            xvfb xauth dbus-x11 gnome-keyring xdotool x11-utils \
+            python3-cryptography imagemagick tesseract-ocr tesseract-ocr-eng
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Verify harness rejection cases
+        run: python3 -m unittest discover -s scripts -p test_hepta_native_robrix_preview.py -v
+      - name: Build isolated single-binary preview and existing credential utility
+        run: |
+          set -euo pipefail
+          python3 apps/hepta-native/tools/build-robrix-native.py build-preview \
+            --source-root "$GITHUB_WORKSPACE" --out "$PREVIEW_BUILD" --download-font-source \
+            2>&1 | tee "$RUNNER_TEMP/robrix-native-commands/build-preview.log"
+          export CARGO_TARGET_DIR="$PREVIEW_BUILD/target"
+          export HEPTA_NATIVE_ASSET_INPUT="$PREVIEW_BUILD/assets/native-assets.rs"
+          cargo +1.95.0 build --locked --manifest-path "$PREVIEW_BUILD/source/apps/hepta-native/Cargo.toml" \
+            --features robrix-preview --bin hepta-native-credential \
+            2>&1 | tee "$RUNNER_TEMP/robrix-native-commands/build-credential.log"
+      - name: Inventory and execute all native preview tests on the owned overlay
+        run: |
+          set -euo pipefail
+          export CARGO_TARGET_DIR="$PREVIEW_BUILD/target"
+          export HEPTA_NATIVE_ASSET_INPUT="$PREVIEW_BUILD/assets/native-assets.rs"
+          export RUSTUP_TOOLCHAIN=1.95.0
+          manifest="$PREVIEW_BUILD/source/apps/hepta-native/Cargo.toml"
+          config="$GITHUB_WORKSPACE/.github/config/native-lifecycle-nextest.toml"
+          junit="$PREVIEW_BUILD/source/apps/hepta-native/target/nextest/native-lifecycle/junit.xml"
+          test ! -e "$junit"
+          test ! -L "$junit"
+          cargo +1.95.0 nextest list --manifest-path "$manifest" --locked --workspace --all-targets \
+            --features robrix-preview --config-file "$config" --profile native-lifecycle --message-format json \
+            > "$RUNNER_TEMP/robrix-native-commands/preview-inventory.json" \
+            2> "$RUNNER_TEMP/robrix-native-commands/preview-inventory.stderr.log"
+          set +e
+          just test --manifest-path "$manifest" --locked --workspace --all-targets \
+            --features robrix-preview --config-file "$config" --profile native-lifecycle --retries 0 \
+            > "$RUNNER_TEMP/robrix-native-commands/preview-tests.log" 2>&1
+          result=$?
+          set -e
+          if test -f "$junit"; then cp "$junit" "$RUNNER_TEMP/robrix-native-commands/preview-junit.xml"; fi
+          cat "$RUNNER_TEMP/robrix-native-commands/preview-tests.log"
+          test "$result" -eq 0
+          python3 apps/hepta-native/tools/linux_robrix_preview.py --verify-tests-only \
+            --source-root "$GITHUB_WORKSPACE" \
+            --test-inventory "$RUNNER_TEMP/robrix-native-commands/preview-inventory.json" \
+            --test-junit "$RUNNER_TEMP/robrix-native-commands/preview-junit.xml" \
+            --test-receipt "$RUNNER_TEMP/robrix-native-commands/preview-tests.json"
+      - name: Verify exact generated preview asset inputs
+        run: |
+          set -euo pipefail
+          python3 apps/hepta-native/tools/build-robrix-native.py verify-assets \
+            --source-root "$PREVIEW_BUILD/source" --out "$PREVIEW_BUILD/assets" \
+            --liberation-source "$PREVIEW_BUILD/liberation-fonts-1.04.93.devel.src.tar.gz" \
+            --receipt "$RUNNER_TEMP/robrix-native-commands/preview-assets-verification.json"
+      - name: Build the existing runtime gateway
+        run: |
+          set -euo pipefail
+          CARGO_TARGET_DIR="$PREVIEW_BUILD/gateway-target" cargo +1.95.0 build \
+            --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-native-gateway --bin hepta-native-gateway \
+            2>&1 | tee "$RUNNER_TEMP/robrix-native-commands/build-gateway.log"
+      - name: Exercise real shared widgets and safe close outside checkout
+        run: |
+          set -euo pipefail
+          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- \
+            python3 apps/hepta-native/tools/linux_robrix_preview.py \
+            --source-root "$GITHUB_WORKSPACE" --build-root "$PREVIEW_BUILD" \
+            --gateway "$PREVIEW_BUILD/gateway-target/debug/hepta-native-gateway" --out "$PREVIEW_OUT" \
+            --test-inventory "$RUNNER_TEMP/robrix-native-commands/preview-inventory.json" \
+            --test-junit "$RUNNER_TEMP/robrix-native-commands/preview-junit.xml" \
+            --test-receipt "$RUNNER_TEMP/robrix-native-commands/preview-tests.json" \
+            2>&1 | tee "$RUNNER_TEMP/robrix-native-commands/runtime.log"
+          test "$(git rev-parse HEAD)" = "$TESTED_SHA"
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Preserve source-bound observations including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: native-robrix-preview-${{ matrix.lane }}-${{ github.event.pull_request.head.sha }}
+          if-no-files-found: error
+          path: |
+            ${{ runner.temp }}/robrix-native-commands/*
+            ${{ runner.temp }}/robrix-native-build/native-preview-build-input.json
+            ${{ runner.temp }}/robrix-native-build/assets/native-assets-input.json
+            ${{ runner.temp }}/robrix-native-build/assets/native-assets.rs
+            ${{ runner.temp }}/robrix-native-observations/*.json
+            ${{ runner.temp }}/robrix-native-observations/*.log
+            ${{ runner.temp }}/robrix-native-observations/*.png
+            ${{ runner.temp }}/robrix-native-observations/*.txt

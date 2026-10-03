@@ -1,0 +1,65 @@
+diff --git a/src/cx_api.rs b/src/cx_api.rs
+index 75c246e..7d0b5be 100644
+--- a/src/cx_api.rs
++++ b/src/cx_api.rs
+@@ -1023,8 +1023,8 @@ impl Cx {
+ 
+     /// Get resource data intended for font parsing.
+     ///
+-    /// This reads local file-backed resources directly, then falls back to
+-    /// already-loaded resource bytes (required for wasm/network-backed assets).
++    /// The owned native build uses already-loaded embedded resource bytes only.
++    /// Missing resources fail closed without a filesystem/dependency fallback.
+     pub fn get_resource_font_bytes(&mut self, heap_key: usize, handle: ScriptHandle) -> Option<SharedBytes> {
+         let path = self.get_resource_abs_path(heap_key, handle)?;
+         self.get_resource_font_bytes_by_path(&path)
+@@ -1033,18 +1033,16 @@ impl Cx {
+     /// Font identity captured in its owning script heap. A local handle alone
+     /// cannot identify a resource once a draw object leaves that heap.
+     pub fn get_resource_font_bytes_by_path(&self, path: &str) -> Option<SharedBytes> {
+-        if let Ok(bytes) = SharedBytes::from_file_mmap_or_read(path) {
+-            return Some(bytes);
+-        }
++        // This owned native build admits only bytes preloaded from its fixed,
++        // verified embedded inventory. Never inspect a same-named filesystem
++        // path, a stale checkout or a packaged sidecar for a font.
+         let resources = self.script_data.resources.resources.borrow();
+         let res = resources.iter().find(|res| res.abs_path == path)?;
+         if let crate::script::res::CxScriptResourceData::Loaded(data) = &res.data {
+-            return Some(SharedBytes::from_owned(data.clone()));
++            Some(SharedBytes::from_owned(data.clone()))
++        } else {
++            None
+         }
+-        res.dependency_path
+-            .as_deref()
+-            .and_then(|path| self.get_dependency(path).ok())
+-            .map(SharedBytes::from_owned)
+     }
+ 
+     pub fn null_texture(&self) -> Texture {
+diff --git a/src/script/res.rs b/src/script/res.rs
+index fef110a..d74195f 100644
+--- a/src/script/res.rs
++++ b/src/script/res.rs
+@@ -366,6 +366,20 @@ impl Cx {
+         path: &str,
+         #[cfg(target_arch = "wasm32")] crate_manifests: &HashMap<String, String>,
+     ) {
++        #[cfg(not(target_arch = "wasm32"))]
++        if !self.script_data.resources.resources.borrow().iter().any(|resource| {
++            resource.abs_path == path && matches!(resource.data, CxScriptResourceData::Loaded(_))
++        }) {
++            // Do not use a local file, package root, bundle or network request
++            // to repair an incomplete embedded-resource inventory.
++            if let Some(resource) = self.script_data.resources.resources.borrow_mut()
++                .iter_mut().find(|resource| resource.abs_path == path)
++            {
++                resource.data = CxScriptResourceData::Error("native resource is not embedded".to_owned());
++            }
++            return;
++        }
++
+         // On wasm, skip loading if we haven't received ToWasmInit yet (os_type is Unknown).
+         #[cfg(target_arch = "wasm32")]
+         if matches!(self.os_type(), crate::cx::OsType::Unknown) {

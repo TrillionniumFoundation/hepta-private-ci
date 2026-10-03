@@ -5,6 +5,9 @@ on:
     branches: [work/ui-rust-scifi-audit-20261002]
     paths:
       - apps/hepta-native/**
+      - apps/hepta-control-ui/rust/robrix-ui/**
+      - apps/hepta-control-ui/rust/core/**
+      - apps/hepta-control-ui/rust/Cargo.toml
       - codex-rs/hepta-contracts/**
       - codex-rs/keyring-store/**
       - codex-rs/hepta-private-state/**
@@ -19,6 +22,7 @@ on:
       - scripts/hepta_ci_exec.py
       - scripts/hepta_native_lifecycle_ci.py
       - scripts/test_hepta_native_lifecycle_ci.py
+      - scripts/test_hepta_native_robrix_build.py
       - scripts/hepta_ui_native_format.py
       - .github/config/native-lifecycle-nextest.toml
       - .github/actions/hepta-synthetic-merge/**
@@ -106,6 +110,17 @@ jobs:
           set -euo pipefail
           { rustc +1.95.0 -vV; cargo +1.95.0 -V; just --version; cargo nextest --version; } \
             > "$NATIVE_EVIDENCE/tools.txt"
+      - name: Prepare pinned preview assets for all-feature source checks
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p test_hepta_native_robrix_build.py -v
+          python3 apps/hepta-native/tools/build-robrix-native.py prepare-assets \
+            --source-root "$GITHUB_WORKSPACE" \
+            --out "$RUNNER_TEMP/native-source-assets" --download-font-source
+          printf 'HEPTA_NATIVE_ASSET_INPUT=%s\n' \
+            "$RUNNER_TEMP/native-source-assets/native-assets.rs" >> "$GITHUB_ENV"
+          cp "$RUNNER_TEMP/native-source-assets/native-assets-input.json" \
+            "$NATIVE_EVIDENCE/native-assets-input.json"
       - name: Compile every native application and test target
         run: |
           python3 scripts/hepta_ci_exec.py --output "$NATIVE_EVIDENCE/compile.json" -- \
@@ -137,6 +152,12 @@ jobs:
         run: |
           set -euo pipefail
           cp apps/hepta-native/target/nextest/native-lifecycle/junit.xml "$NATIVE_EVIDENCE/junit.xml"
+          python3 apps/hepta-native/tools/build-robrix-native.py verify-assets \
+            --source-root "$GITHUB_WORKSPACE" --out "$RUNNER_TEMP/native-source-assets" \
+            --liberation-source "$RUNNER_TEMP/native-source-assets/liberation-fonts-1.04.93.devel.src.tar.gz" \
+            --receipt "$NATIVE_EVIDENCE/native-assets-verification.json"
+          cp "$RUNNER_TEMP/native-source-assets/native-assets.rs" "$NATIVE_EVIDENCE/native-assets.rs"
+          cp "$RUNNER_TEMP/native-source-assets/native-assets-input.json" "$NATIVE_EVIDENCE/native-assets-input.json"
           python3 scripts/hepta_native_lifecycle_ci.py seal --out "$NATIVE_EVIDENCE"
       - name: Retain complete or partial source validation evidence
         if: always()

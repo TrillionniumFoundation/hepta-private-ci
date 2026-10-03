@@ -1,6 +1,10 @@
 mod binding_prepare;
 mod history_page;
 mod native_picker;
+#[cfg(all(feature = "robrix-preview", target_os = "linux"))]
+mod robrix_host;
+#[cfg(all(feature = "robrix-preview", target_os = "linux"))]
+pub use robrix_host::run_robrix;
 mod operations_view;
 mod path_input;
 mod runtime_status;
@@ -11,9 +15,11 @@ mod task_supervisor;
 mod theme;
 mod update_views;
 
-pub use self::startup_recovery::{
-    StartupDecision, StartupFailure, StartupRetry, StartupStage, show_startup_recovery,
-};
+pub use self::startup_recovery::StartupDecision;
+pub use self::startup_recovery::StartupFailure;
+pub use self::startup_recovery::StartupRetry;
+pub use self::startup_recovery::StartupStage;
+pub use self::startup_recovery::show_startup_recovery;
 
 use self::binding_prepare::PreparedBinding;
 use self::history_page::HISTORY_PAGE_SIZE;
@@ -188,9 +194,15 @@ fn lock_runtime_for_task<'a>(
         .map_err(|message| ShellError::State(message.to_owned()))
 }
 
+#[derive(Clone, Default)]
+struct NativeWake {
+    context: Option<egui::Context>,
+    signal: Option<Arc<dyn Fn() + Send + Sync>>,
+}
+
 fn spawn_ui_task<F>(
     kind: UiTaskKind,
-    repaint: Arc<Mutex<Option<egui::Context>>>,
+    repaint: Arc<Mutex<NativeWake>>,
     task: F,
 ) -> std::io::Result<PendingUiTask>
 where
@@ -200,10 +212,13 @@ where
         kind,
         kind.thread_name(),
         move || {
-            if let Ok(context) = repaint.lock()
-                && let Some(context) = context.as_ref()
-            {
-                context.request_repaint();
+            if let Ok(wake) = repaint.lock() {
+                if let Some(context) = &wake.context {
+                    context.request_repaint();
+                }
+                if let Some(signal) = &wake.signal {
+                    signal();
+                }
             }
         },
         move |admission| task(admission).map_err(|error| error.to_string()),
@@ -230,7 +245,7 @@ pub struct HeptaNativeApp {
     /// the bounded native picker remains independent until safe shutdown.
     tasks: TaskController<UiTaskKind, Result<UiTaskOutput, String>>,
     shutdown: Shutdown,
-    repaint: Arc<Mutex<Option<egui::Context>>>,
+    repaint: Arc<Mutex<NativeWake>>,
     last_error: Option<String>,
     operation_subject_id: String,
     operation_id: String,
@@ -282,7 +297,7 @@ impl HeptaNativeApp {
             file_input_focus: None,
             tasks: TaskController::default(),
             shutdown: Shutdown::default(),
-            repaint: Arc::new(Mutex::new(None)),
+            repaint: Arc::new(Mutex::new(NativeWake::default())),
             last_error: None,
             operation_subject_id: "operator.local".to_owned(),
             operation_id: format!("native.ui.{}.{}", std::process::id(), now_unix_ms()?.max(1)),
@@ -323,10 +338,21 @@ impl HeptaNativeApp {
     }
 
     fn fail_readiness(&mut self, message: String) {
+        let context = self
+            .repaint
+            .lock()
+            .ok()
+            .and_then(|wake| wake.context.clone());
+        // Keep cancellation in the shared shutdown owner, before marking the
+        // request. Waiting Ready/picker work must not be admitted after failure;
+        // already-admitted work remains owned until its normal completion.
+        self.request_shutdown_owner(|| {
+            if let Some(context) = context {
+                task_supervisor::cancel_file_input(&context);
+            }
+        });
         self.shutdown.failure = Some(message.clone());
         self.shutdown.update_requested = false;
-        self.shutdown.request(Instant::now());
-        self.activate_update_on_exit.store(false, Ordering::Release);
         self.connected = false;
         self.ready_view = None;
         self.view_revision = None;
@@ -336,25 +362,30 @@ impl HeptaNativeApp {
     }
 
     fn confirm_rendered_update(&mut self, ui: &egui::Ui) {
+        if self.confirm_rendered_update_owner() {
+            ui.ctx().request_repaint();
+        }
+    }
+
+    fn confirm_rendered_update_owner(&mut self) -> bool {
         if self.runtime_busy()
             || self.status_rendered.is_none()
             || self.last_error.is_some()
             || (self.startup_recorder.is_none() && self.update_handoff.is_none())
         {
-            return;
+            return false;
         }
         let Some(view) = self.ready_view.as_ref() else {
-            return;
+            return false;
         };
         let witness = match self.readiness_frames.observe(self.gui_frame, view) {
             Ok(Some(witness)) => witness,
             Ok(None) => {
-                ui.ctx().request_repaint();
-                return;
+                return true;
             }
             Err(error) => {
                 self.fail_readiness(error.to_string());
-                return;
+                return false;
             }
         };
         let recorder = self.startup_recorder.take();
@@ -384,6 +415,7 @@ impl HeptaNativeApp {
                     .unwrap_or_else(|| "cannot start readiness worker".into()),
             );
         }
+        false
     }
 
     /// Start a mutation-owner task. A history read must finish first; this keeps
@@ -529,7 +561,11 @@ impl HeptaNativeApp {
                 self.last_error = None;
             }
             Ok(UiTaskOutput::PickedFile { ticket, path }) => {
-                let context = self.repaint.lock().ok().and_then(|context| context.clone());
+                let context = self
+                    .repaint
+                    .lock()
+                    .ok()
+                    .and_then(|wake| wake.context.clone());
                 if let Some(context) = context {
                     self.finish_picker_result(&context, ticket, path);
                 } else {
@@ -561,7 +597,11 @@ impl HeptaNativeApp {
                 } else if kind == UiTaskKind::StageUpdate {
                     self.update_message = None;
                 } else if kind == UiTaskKind::PickFile
-                    && let Some(context) = self.repaint.lock().ok().and_then(|value| value.clone())
+                    && let Some(context) = self
+                        .repaint
+                        .lock()
+                        .ok()
+                        .and_then(|wake| wake.context.clone())
                 {
                     task_supervisor::cancel_file_input(&context);
                 }
@@ -654,15 +694,28 @@ impl HeptaNativeApp {
             })
         });
     }
+
+    fn finish_renderer_exit(&mut self) {
+        let closed = self.shutdown.runtime_closed && self.all_tasks_idle();
+        self.activate_update_on_exit.store(
+            closed && self.shutdown.activation_allowed(),
+            Ordering::Release,
+        );
+        if !closed {
+            eprintln!(
+                "hepta-native interrupted exit: runtime close is unconfirmed; update activation denied; recover unknown operations without replay"
+            );
+        }
+    }
 }
 
 impl eframe::App for HeptaNativeApp {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         theme::ensure_initialized(ui.ctx());
         if let Ok(mut repaint) = self.repaint.lock()
-            && repaint.is_none()
+            && repaint.context.is_none()
         {
-            *repaint = Some(ui.ctx().clone());
+            repaint.context = Some(ui.ctx().clone());
         }
         match self.gui_frame.checked_add(1) {
             Some(frame) => self.gui_frame = frame,
@@ -683,16 +736,7 @@ impl eframe::App for HeptaNativeApp {
     }
 
     fn on_exit(&mut self, _gl: Option<&eframe::glow::Context>) {
-        let closed = self.shutdown.runtime_closed && self.all_tasks_idle();
-        self.activate_update_on_exit.store(
-            closed && self.shutdown.activation_allowed(),
-            Ordering::Release,
-        );
-        if !closed {
-            eprintln!(
-                "hepta-native interrupted exit: runtime close is unconfirmed; update activation denied; recover unknown operations without replay"
-            );
-        }
+        self.finish_renderer_exit();
     }
 }
 

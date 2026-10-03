@@ -89,6 +89,10 @@ IGNORED = {
 REQUIRED = {
     (
         "hepta-native",
+        "ui::tests::readiness_failure_cancels_waiting_task_and_retains_admitted_task",
+    ),
+    (
+        "hepta-native",
         "host_lifecycle::readiness::tests::readiness_requires_later_callback_and_resets",
     ),
     (
@@ -330,6 +334,68 @@ def verify_record(record: dict, bound: dict, directory: Path, label: str) -> Non
         raise ValueError("execution log missing or changed")
 
 
+def verify_asset_inputs(directory: Path, root: Path) -> dict:
+    """Bind additional all-feature compiler input to deterministic regeneration."""
+    receipt = json.loads((directory / "native-assets-verification.json").read_text())
+    inputs = json.loads((directory / "native-assets-input.json").read_text())
+    rust = (directory / "native-assets.rs").read_bytes()
+    native = root / "apps/hepta-native"
+    catalog_path = native / "resources/NATIVE-ASSETS.json"
+    catalog = json.loads(catalog_path.read_text())
+    sources = {
+        "manifestSha256": native / "Cargo.toml",
+        "lockSha256": native / "Cargo.lock",
+        "catalogSha256": catalog_path,
+        "generatorSha256": native / "tools/generate-native-assets.py",
+        "helperSha256": native / "tools/build-robrix-native.py",
+    }
+    if (
+        receipt.get("schema") != "hepta.native-assets-verification.v1"
+        or receipt.get("regeneratedBytesMatch") is not True
+        or receipt.get("rendererQualified") is not False
+        or receipt.get("sourceRoot") != str(root)
+        or receipt.get("sdkRevision") != catalog["makepadRevision"]
+        or any(
+            receipt.get(key) != sha(path.read_bytes()) for key, path in sources.items()
+        )
+    ):
+        raise ValueError("asset regeneration receipt differs from the bound source")
+    if (
+        receipt.get("assetRustSha256") != sha(rust)
+        or receipt.get("assetInputJsonSha256")
+        != sha((directory / "native-assets-input.json").read_bytes())
+        or inputs.get("schema") != "hepta.native-assets-build-input.v1"
+        or inputs.get("generatedRustSha256") != sha(rust)
+        or inputs.get("catalogSha256") != sha(catalog_path.read_bytes())
+        or inputs.get("makepadRevision") != catalog["makepadRevision"]
+        or inputs.get("noticeFiles") != catalog["noticeFileSha256"]
+    ):
+        raise ValueError("retained compiler asset input was missing or changed")
+    projected = [
+        {key: asset[key] for key in ("logical", "bytes", "sha256", "license_group")}
+        for asset in inputs["assets"]
+    ]
+    if projected != catalog["assets"] or len({a["logical"] for a in projected}) != 28:
+        raise ValueError("embedded asset inventory differs from the fixed catalog")
+    source = catalog["liberationSource"]
+    if (
+        any(
+            inputs["liberationSource"].get(key) != value
+            for key, value in source.items()
+        )
+        or receipt.get("liberationSourceSha256") != source["sha256"]
+    ):
+        raise ValueError("embedded corresponding source archive differs")
+    return {
+        "assetCount": len(projected),
+        "assetBytes": sum(asset["bytes"] for asset in projected),
+        "assetRustSha256": sha(rust),
+        "correspondingSourceSha256": source["sha256"],
+        "regeneratedInputVerified": True,
+        "nativeRendererObserved": False,
+    }
+
+
 def main() -> None:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("action", choices=("bind", "seal"))
@@ -353,6 +419,7 @@ def main() -> None:
     coverage = verify_tests(
         json.loads((args.out / "inventory.json").read_text()), args.out / "junit.xml"
     )
+    asset_inputs = verify_asset_inputs(args.out, root)
     tests = json.loads((args.out / "tests.json").read_text())
     if (
         tests["observed_passed_tests"] != coverage["passed"]
@@ -364,6 +431,9 @@ def main() -> None:
         "inventory.json",
         "junit.xml",
         "tools.txt",
+        "native-assets-verification.json",
+        "native-assets-input.json",
+        "native-assets.rs",
         *(f"{label}.json" for label in CHECKS),
     ]
     write(
@@ -373,6 +443,7 @@ def main() -> None:
             **bound,
             "ordinaryNativeSourceValidationPassed": True,
             "tests": coverage,
+            "assetInputs": asset_inputs,
             "files": {name: sha((args.out / name).read_bytes()) for name in files},
             "nativeGuiObserved": False,
             "installedPackageObserved": False,

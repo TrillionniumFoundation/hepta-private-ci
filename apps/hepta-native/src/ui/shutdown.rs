@@ -3,16 +3,24 @@ use super::*;
 impl HeptaNativeApp {
     /// The GUI remains alive until all three lanes and the runtime owner close.
     pub(super) fn request_shutdown(&mut self, ctx: &egui::Context) {
-        let first_request = !self.shutdown.requested();
+        self.request_shutdown_owner(|| {
+            task_supervisor::cancel_file_input(ctx);
+        });
+        ctx.request_repaint();
+    }
+
+    pub(super) fn request_shutdown_owner(&mut self, cancel_input: impl FnOnce()) {
         self.shutdown.request(Instant::now());
         self.activate_update_on_exit.store(false, Ordering::Release);
         self.view_revision = None;
         self.operation_binding = None;
-        task_supervisor::cancel_file_input(ctx);
-        if first_request {
+        cancel_input();
+        // A failure may reach an already-requested owner with ordinary work
+        // still waiting. Cancellation is idempotent until the close worker is
+        // started; never cancel that final cleanup worker on a repeat request.
+        if !self.shutdown.close_started {
             self.tasks.cancel_waiting();
         }
-        ctx.request_repaint();
     }
 
     pub(super) fn shutdown_view(&mut self, ui: &mut egui::Ui) -> bool {
@@ -28,31 +36,7 @@ impl HeptaNativeApp {
             ctx.send_viewport_cmd(egui::ViewportCommand::Close);
             return true;
         }
-        self.shutdown.check_deadline(Instant::now());
-        if self.all_tasks_idle() && !self.shutdown.close_started {
-            let runtime = Arc::clone(&self.runtime);
-            // Shutdown is the only mutation admitted after closing is requested.
-            let repaint = Arc::clone(&self.repaint);
-            match self.tasks.start_close(&self.shutdown, || {
-                spawn_ui_task(UiTaskKind::Shutdown, repaint, move |admission| {
-                    let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
-                    admission
-                        .begin()
-                        .map_err(|message| ShellError::State(message.to_owned()))?;
-                    runtime.close()?;
-                    Ok(UiTaskOutput::Shutdown)
-                })
-            }) {
-                Ok(()) => {
-                    self.shutdown.close_started = true;
-                }
-                Err(error) => {
-                    self.shutdown.close_started = true;
-                    self.shutdown.failure = Some(format!("Cannot start shutdown worker: {error}"));
-                    self.shutdown.update_requested = false;
-                }
-            }
-        }
+        self.advance_shutdown_owner();
         egui::CentralPanel::default().show(ui, |ui| {
             ui.heading(self.locale.text("Closing safely", "正在安全关闭"));
             ui.label(self.locale.text(
@@ -81,5 +65,32 @@ impl HeptaNativeApp {
             ctx.request_repaint_after(Duration::from_millis(250));
         }
         true
+    }
+    pub(super) fn advance_shutdown_owner(&mut self) {
+        self.shutdown.check_deadline(Instant::now());
+        if self.all_tasks_idle() && !self.shutdown.close_started {
+            let runtime = Arc::clone(&self.runtime);
+            // Shutdown is the only mutation admitted after closing is requested.
+            let repaint = Arc::clone(&self.repaint);
+            match self.tasks.start_close(&self.shutdown, || {
+                spawn_ui_task(UiTaskKind::Shutdown, repaint, move |admission| {
+                    let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
+                    admission
+                        .begin()
+                        .map_err(|message| ShellError::State(message.to_owned()))?;
+                    runtime.close()?;
+                    Ok(UiTaskOutput::Shutdown)
+                })
+            }) {
+                Ok(()) => {
+                    self.shutdown.close_started = true;
+                }
+                Err(error) => {
+                    self.shutdown.close_started = true;
+                    self.shutdown.failure = Some(format!("Cannot start shutdown worker: {error}"));
+                    self.shutdown.update_requested = false;
+                }
+            }
+        }
     }
 }

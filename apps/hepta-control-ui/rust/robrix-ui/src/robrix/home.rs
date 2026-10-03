@@ -3,8 +3,12 @@
 // Sources: home/main_desktop_ui.rs:15–81; home/home_screen.rs:145–210.
 // Retains Robrix sidebar/main Dock split, fixed sidebar tab, persistent chat/Console
 // tabs and AdaptiveView/CachedWidget ownership. Matrix room factories removed.
-use crate::presentation::{PresentationAction, PresentationCommand, RoomKey, apply_action};
-use hepta_control_core::chat::{ChatWorkspace, WorkspaceTab};
+use crate::presentation::PresentationAction;
+use crate::presentation::PresentationCommand;
+use crate::presentation::RoomKey;
+use crate::presentation::apply_action;
+use hepta_control_core::chat::ChatWorkspace;
+use hepta_control_core::chat::WorkspaceTab;
 use makepad_widgets::*;
 script_mod! {
  use mod.prelude.widgets.*
@@ -37,7 +41,7 @@ script_mod! {
    console_screen := View {
     flow: Down padding: 24 spacing: 12
     Label {text: "Console" draw_text.color: COLOR_TEXT}
-    Label {width: Fill flow: Flow.Right{wrap: true} text: "Runtime controls are not yet composed into this Robrix host. No operation is dispatched from this view." draw_text.color: COLOR_TEXT}
+    console_status := Label {width: Fill flow: Flow.Right{wrap: true} text: "Runtime controls are not yet composed into this Robrix host. No operation is dispatched from this view." draw_text.color: COLOR_TEXT}
    }
   }
  }
@@ -65,7 +69,7 @@ script_mod! {
       CachedWidget {rooms_sidebar := mod.widgets.RoomsSideBar {}}
      }
      console_page := View {flow: Down padding: 16
-      Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Console controls are awaiting composition. No runtime operation is dispatched here."}
+      mobile_console_status := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Console controls are awaiting composition. No runtime operation is dispatched here."}
      }
     }
    }

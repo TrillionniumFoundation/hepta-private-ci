@@ -1,0 +1,17 @@
+{
+  "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
+  "scope": "owned native-only platform overlay; no filesystem/package/network resource fallback",
+  "patchSha256": "7f235c2c49148f3dfe38484bd341a3993d66f6a8013d006f20624cc69a0b581e",
+  "files": [
+    {
+      "path": "src/cx_api.rs",
+      "beforeSha256": "b13547415ee0f9ad855a668ef6c749566d3caa7285d90ee275bf4cfc70004d99",
+      "afterSha256": "77dcb2fa2261d3c1310167fb9f06e10460c021993cfae026235b89f883645642"
+    },
+    {
+      "path": "src/script/res.rs",
+      "beforeSha256": "30f5ea8653a393db7eb6547613c60f901ff0a2b01bb4d229b5fd3f09db797879",
+      "afterSha256": "63a00f447d3b7ddd7ba2ddfdcf8c3c29beaacd4e8c5173111c1dd59dea3d9034"
+    }
+  ]
+}
