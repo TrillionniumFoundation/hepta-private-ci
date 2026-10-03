@@ -1,0 +1,12 @@
+# This profile belongs only to lifecycle source verification. It does not
+# mutate the historical ui.native qualification or its storage/GUI subjects.
+[profile.default]
+retries = 0
+slow-timeout = { period = "30s", terminate-after = 2 }
+
+[profile.native-lifecycle]
+
+[profile.native-lifecycle.junit]
+path = "junit.xml"
+store-success-output = true
+store-failure-output = true
