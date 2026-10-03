@@ -20,6 +20,34 @@ def libtest(passed=1, failed=0, ignored=0):
 
 
 class ExecutionSummaryTests(unittest.TestCase):
+    def test_protocol_wire_regression_requires_actual_named_nonzero_execution(self):
+        from context_compiler_named_evidence import bind_named_tests
+
+        spec = next(
+            value
+            for value in specs(legacy)
+            if value["name"] == "agent-protocol-effect-wire-regression"
+        )
+        self.assertIn("codex-hepta-agent-protocol", spec["argv"])
+        self.assertIn("--lib", spec["argv"])
+        self.assertEqual(spec["minimumTests"], 1)
+        name = "tests::automation_effect_wire_round_trip_is_strict_and_bounded"
+        self.assertEqual(spec["requiredNativeTests"], [name])
+        for count, observed in [(0, name), (1, "tests::unrelated")]:
+            with self.subTest(count=count, observed=observed):
+                result = {"succeeded": True}
+                log = f"Summary [1s] {count} tests run: {count} passed"
+                bind_test_count(log, spec, result)
+                with tempfile.TemporaryDirectory() as directory:
+                    path = Path(directory) / "native.log"
+                    path.write_text(
+                        f"PASS [0.1s] (1/1) codex-hepta-agent-protocol {observed}\n{log}\n"
+                    )
+                    named = bind_named_tests(path, spec["requiredNativeTests"])
+                self.assertFalse(
+                    result["succeeded"] and named["namedNativeTestsPassed"]
+                )
+
     def test_nextest_immediate_output_cannot_satisfy_larger_minimum(self):
         log = "\n".join(
             [
@@ -206,13 +234,13 @@ class ExecutionSummaryTests(unittest.TestCase):
             "cc7ec3fc1e2bf12aa599a89c73ed6ceda2317c9c003345c505c23b8f72e2267e",
         )
         self.assertEqual(
-            [x["minimumTests"] for x in commands[27:]], [10, 4, 1, 1, 1, 1]
+            [x["minimumTests"] for x in commands[27:]], [10, 4, 1, 1, 1, 1, 1]
         )
         for command in commands[27:]:
             self.assertEqual(
                 len(command["requiredNativeTests"]), command["minimumTests"]
             )
-        for command, stage in zip(commands[-2:], ("baseline", "candidate")):
+        for command, stage in zip(commands[31:33], ("baseline", "candidate")):
             self.assertEqual(command["canonicalStage"], stage)
             self.assertEqual(
                 command["argv"][-4:],

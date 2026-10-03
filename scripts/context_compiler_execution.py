@@ -476,6 +476,30 @@ def specs(legacy, output_dir: Path | None = None):
                 "canonicalStage": stage,
             }
         )
+    commands.append(
+        {
+            "name": "agent-protocol-effect-wire-regression",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agent-protocol",
+                "--lib",
+                "tests::automation_effect_wire_round_trip_is_strict_and_bounded",
+                "--status-level",
+                "pass",
+                "--success-output",
+                "immediate",
+            ],
+            "minimumTests": 1,
+            "testRunner": "nextest",
+            "requiredNativeTests": [
+                "tests::automation_effect_wire_round_trip_is_strict_and_bounded",
+            ],
+        }
+    )
     return commands
 
 
