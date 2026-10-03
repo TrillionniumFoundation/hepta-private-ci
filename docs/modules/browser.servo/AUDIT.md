@@ -169,7 +169,6 @@ Starting source: `36b23f6c292dafb9655606bcbfd70a83e0833efc` (draft PR #1309). Th
 
 Local verification: Node 24.19.0 full suite **186/186 passed**, zero failures/cancellations/skips; all Browser source/test JavaScript syntax checks, diff checks, and all 40 development implementation maps passed. The 11 new regressions were exercised against the prior source: transport and envelope cases failed or timed out; the two writer-lock barrier cases failed; the three stalled-I/O cases timed out. Required `just fmt` was attempted but the current shell initially lacked `just`; that is not a formatting or native-check pass. Exact-head hosted results are recorded separately in PR #1309. Local Node tests exercise real owner/journal/stream code with deterministic worker fixtures, not the native Servo renderer. Existing production/qualification flags and the remaining implementation priorities above remain unchanged.
 
-
 ### Follow-up native and CI prerequisite verification
 
 The follow-up source candidate `7a476e34f766daba8f55bb2af9ae6bc21c0148c8` (tree `f47cfcd46c0d46a1a2231430a7a65a041c1d5722`) also backports the canonical main-branch exact-history helper and its five tests. A main-branch architecture workflow was running against this older PR checkout and failed before compilation because that helper was absent. The existing `runtime_executable` filter also named an unregistered module: the reviewed normal private-module declaration and named public utility exports are restored, with no test-only registration, alternate owner or reduced minimum-test guard. The utility is not installed in production startup; its observation does not attest or activate code. Touched JavaScript formatting is normalized.
@@ -217,3 +216,33 @@ The worker now carries `DownloadUnavailable(Url)` through bounded URL preparatio
 The reproducible renderer-free harness extracts the actual worker dispatch/reconcile methods, helpers and constants and includes the real document-authority module. Four new Rust tests cover same/cross-origin terminal reservation/replay, canonical target admission, denied/mismatched/non-web origins, stale observation/expiry and malformed/oversized URLs. With the pre-fix source, two new tests fail and the owner-to-Rust fixture cannot obtain terminal failure. With the revised source, **17/17 Rust source tests pass** (13 existing document-authority tests plus four new cases); the real Node owner-to-extracted-Rust fixture passes same- and cross-origin dispatch, reconciliation, historical replay and profile close, each with one authority entry/dispatch and one terminal journal identity. The full Node suite remains **202/202 passing**, zero skips.
 
 Harness execution used Rust 1.95.0 and cached registry dependencies `serde_json 1.0.149`, `url 2.5.8`, `sha2 0.10.9`. It is not a native Servo build: renderer methods are stubs that panic if executed, and the fixture transport is not the production framed channel. No Cargo manifest/lock was changed, no heavyweight Servo build was attempted, and the exact-pin/renderer/target qualification gates remain open. Harness generation and execution instructions are in the package README.
+
+## 2026-10-03 follow-up: malformed admitted-history fencing
+
+Starting source is PR #1320 at `93cb15fa3e98c2d248e74e9c08eef89015a500f2`.
+Four actual Node regressions reproduce a validation-order gap: a loaded owner
+observes a malformed rewrite of already-admitted bytes, rejects replay, but drops
+its writer-lock before reaching the admitted-prefix comparison. Restoring the
+bytes then revives that same owner without recovery. Invalid UTF-8, malformed
+JSON, checksum damage and truncation all reproduce both the missing fence and
+the successful implicit revival before the fix.
+
+The existing raw-prefix comparison now runs after the bounded stable read and
+before decoding. It uses the same admitted prefix digest and existing poison /
+retained-lock path. No format, checksum, append ordering, writer identity,
+filesystem permission or effect authority changes. Fresh readers without an
+admitted prefix still perform strict UTF-8/JSON/checksum replay; a strengthened
+UTF-8 fixture covers that rejection separately from the loaded-owner fence.
+Valid external appends, identical retries and unrelated input rejection retain
+their existing behavior. No new full-file scan is added to cache hits.
+
+Local Node 24.19.0 execution: four regressions fail on unchanged source, all
+60 journal tests pass after correction, and the complete Browser suite passes
+206/206 with zero failures, cancellations or skips. Corrupted bytes remain
+unchanged by rejection; restoring them cannot revive the poisoned instance or
+allow another instance past the retained recovery lock. Hosted exact-head
+receipts are recorded separately after publication.
+
+Native exact-pin Servo, renderer pipeline/deadline atomicity, persistent product
+sessions, live revocation, authorized brokers and target-host/independent
+acceptance remain open. This source-local journal repair does not qualify them.
