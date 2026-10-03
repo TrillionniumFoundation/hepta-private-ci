@@ -105,6 +105,7 @@ pub(super) struct Materialized {
     pub rollback: AgentdNeuronHandleV2,
     pub canary_tick: NeuronTickInputV1,
     pub canary_port: CanonicalPortInputV1,
+    pub physical_generations: Vec<crate::CpuNeuronGenerationCompositionV2>,
 }
 
 pub(super) fn map_workers<W, V>(
@@ -144,17 +145,24 @@ pub(super) fn open_generation(
     clock: Arc<dyn AuthorityClock>,
     worker: Worker,
     admission: AgentdNeuronArtifactAdmissionV1,
-) -> Result<AgentdNeuronHandleV2, AgentdError> {
+) -> Result<
+    (
+        AgentdNeuronHandleV2,
+        Option<crate::CpuNeuronGenerationCompositionV2>,
+    ),
+    AgentdError,
+> {
     match (control, worker) {
         (Control::Legacy(control), Worker::Legacy(worker)) => {
-            crate::open_installed_cpu_neuron_generation_v1(
+            let handle = crate::open_installed_cpu_neuron_generation_v1(
                 plan,
                 CpuNeuronGenerationOpenModeV1::Create,
                 control,
                 clock,
                 worker,
                 admission,
-            )
+            )?;
+            Ok((handle, None))
         }
         #[cfg(target_os = "linux")]
         (Control::Current(control), Worker::Current(worker)) => {
@@ -163,9 +171,11 @@ pub(super) fn open_generation(
                 &plan.runtime_index,
                 &plan.witness,
             ])?;
-            crate::local_cpu_generation::open_guarded_cpu_neuron_generation_v2(
-                plan, mode, control, clock, worker, admission,
-            )
+            let composition =
+                crate::local_cpu_generation::compose_guarded_cpu_neuron_generation_v2(
+                    plan, mode, control, clock, worker, admission,
+                )?;
+            Ok((composition.handle().clone(), Some(composition)))
         }
         #[cfg(target_os = "linux")]
         _ => Err(error(
@@ -290,14 +300,14 @@ pub(super) fn start_generation(
     rollback_admission: AgentdNeuronArtifactAdmissionV1,
 ) -> JoinHandle<Result<Materialized, AgentdError>> {
     tokio::task::spawn_blocking(move || {
-        let successor = open_generation(
+        let (successor, successor_composition) = open_generation(
             selected.generation,
             control.clone(),
             Arc::clone(&clock),
             selected.worker,
             selected.admission,
         )?;
-        let rollback = open_generation(
+        let (rollback, rollback_composition) = open_generation(
             rollback,
             control,
             clock,
@@ -309,6 +319,18 @@ pub(super) fn start_generation(
             rollback,
             canary_tick: selected.canary_tick,
             canary_port: selected.canary_port,
+            physical_generations: successor_composition
+                .into_iter()
+                .chain(rollback_composition)
+                .collect(),
         })
     })
+}
+
+impl CpuNeuronGovernedParameterCompilerV1 {
+    /// Return only a composition actually constructed by this original owner.
+    /// Root registration and operational admission remain separate requirements.
+    pub fn materialized_generations_v2(&self) -> crate::CpuNeuronGenerationCompositionReaderV2 {
+        self.physical_generations.clone()
+    }
 }

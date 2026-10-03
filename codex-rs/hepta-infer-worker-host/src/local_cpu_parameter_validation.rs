@@ -5,9 +5,7 @@ use std::collections::BTreeSet;
 use codex_hepta_agent_components::intelligence::ParameterPlasticityDispositionV1;
 use codex_hepta_agent_components::intelligence::ParameterPlasticityProductReceiptV1;
 use codex_hepta_agent_components::intelligence::ParameterPlasticityProductRequestV1;
-use codex_hepta_agent_components::plasticity::ParameterCandidateKindV2;
 use codex_hepta_agent_components::plasticity::ParameterDeltaV2;
-use codex_hepta_agent_components::plasticity::verify_generated_parameter_candidates_v3;
 use codex_hepta_agent_components::plasticity::verify_parameter_proposal_v2;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_neuron::NeuronBodyBundleIdentityV1;
@@ -229,14 +227,7 @@ pub(super) fn validate_generation_plan(
 pub(super) fn validate_compiler_plan(
     plan: &super::CpuNeuronParameterCompilerPlanV1<super::owners::Worker>,
 ) -> Result<(), AgentdError> {
-    plan.envelope.validate().map_err(error)?;
-    verify_generated_parameter_candidates_v3(
-        plan.request.generator_profile.clone(),
-        &plan.request.generated,
-    )
-    .map_err(|value| error(value.to_string()))?;
     let current = &plan.baseline_runtime;
-    let admission = &plan.request.admission;
     if plan
         .baseline
         .generation()
@@ -246,95 +237,41 @@ pub(super) fn validate_compiler_plan(
             != current
                 .semantic_digest()
                 .map_err(|value| error(value.to_string()))?
-        || current.native_config_digest
-            != plan
-                .baseline_native
-                .digest()
-                .map_err(|value| error(value.to_string()))?
-        || current.generation != plan.baseline_native.generation
         || plan.baseline.body_bundle_digest()
             != Some(
                 plan.baseline_body
                     .semantic_digest()
                     .map_err(|value| error(value.to_string()))?,
             )
-        || admission.baseline_generation != current.generation
-        || admission.candidate_generation
-            != current
-                .generation
-                .next()
-                .map_err(|value| error(value.to_string()))?
-        || admission.baseline_id != plan.baseline_candidate_id
-        || admission.objective_digest != plan.envelope.objective_digest
-        || plan.test_plan_digest.is_zero()
-        || plan.request.generated.candidates.len() > plan.envelope.maximum_candidates as usize
         || plan.rollback_admission.is_none()
-    {
-        return Err(error("CPU compiler baseline or frozen envelope changed"));
-    }
-    let layers = &plan.request.generator_profile.norm_layers;
-    if layers.len() != 1
-        || layers[0].layer_id.as_str() != PARAMETER_LAYER
-        || layers[0].baseline_squared_l2_raw_q64 != norm_denominator(&plan.baseline_native)?
+        || plan.candidates.iter().any(|candidate| {
+            candidate.worker.generation() != plan.request.admission.candidate_generation.get()
+        })
+        || plan.rollback_worker.generation() != plan.rollback.runtime.generation.get()
     {
         return Err(error(
-            "CPU compiler norm denominator is not the original parameters",
+            "CPU compiler original handle, worker or admission changed",
         ));
     }
-    let updates: Vec<_> = plan
-        .request
-        .generated
+    let candidates: Vec<_> = plan
         .candidates
         .iter()
-        .filter(|value| value.kind == ParameterCandidateKindV2::Update)
+        .map(|candidate| super::CpuNeuronParameterMaterialCandidateV2 {
+            candidate_id: &candidate.candidate_id,
+            generation: &candidate.generation,
+        })
         .collect();
-    if updates.is_empty() || updates.len() != plan.candidates.len() {
-        return Err(error(
-            "CPU compiler must materialize the complete admitted search space",
-        ));
-    }
-    for update in updates {
-        let mut matching = plan
-            .candidates
-            .iter()
-            .filter(|value| value.candidate_id == update.candidate_id);
-        let candidate = matching
-            .next()
-            .ok_or_else(|| error("CPU compiler missing generated candidate"))?;
-        if matching.next().is_some()
-            || candidate.generation.native
-                != apply_sparse_deltas(
-                    &plan.baseline_native,
-                    admission.candidate_generation,
-                    &update.parameter_deltas,
-                )?
-        {
-            return Err(error(
-                "CPU compiler generation differs from actual governed deltas",
-            ));
-        }
-        validate_frozen_model(current, &candidate.generation.runtime)?;
-        validate_generation_plan(&plan.baseline_body, &candidate.generation)?;
-        if candidate.worker.generation() != admission.candidate_generation.get() {
-            return Err(error("CPU compiler successor worker generation changed"));
-        }
-    }
-    let mut original = plan.baseline_native.clone();
-    original.generation = admission
-        .candidate_generation
-        .next()
-        .map_err(|value| error(value.to_string()))?;
-    if plan.rollback.native != original {
-        return Err(error(
-            "CPU compiler rollback changed original sparse parameters",
-        ));
-    }
-    validate_frozen_model(current, &plan.rollback.runtime)?;
-    validate_generation_plan(&plan.baseline_body, &plan.rollback)?;
-    if plan.rollback_worker.generation() != original.generation.get() {
-        return Err(error("CPU compiler rollback worker generation changed"));
-    }
-    Ok(())
+    super::validate_cpu_neuron_parameter_materials_v2(&super::CpuNeuronParameterMaterialPlanV2 {
+        envelope: &plan.envelope,
+        baseline_runtime: &plan.baseline_runtime,
+        baseline_native: &plan.baseline_native,
+        baseline_body: &plan.baseline_body,
+        baseline_candidate_id: &plan.baseline_candidate_id,
+        request: &plan.request,
+        test_plan_digest: plan.test_plan_digest,
+        candidates: &candidates,
+        rollback: &plan.rollback,
+    })
 }
 
 #[cfg(test)]

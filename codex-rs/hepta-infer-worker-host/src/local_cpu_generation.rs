@@ -26,6 +26,11 @@ use crate::CpuNeuronControlConfigV1;
 use crate::CpuNeuronInferenceControlV1;
 use crate::SharedCpuNeuronInferenceControlV3;
 
+#[path = "local_cpu_generation_composition_v2.rs"]
+mod composition;
+pub use composition::CpuNeuronGenerationCompositionReaderV2;
+pub use composition::CpuNeuronGenerationCompositionV2;
+
 pub enum CpuNeuronGenerationOpenModeV1 {
     Create,
     Recover,
@@ -140,6 +145,24 @@ pub(crate) fn open_guarded_cpu_neuron_generation_v2<G>(
 where
     G: codex_hepta_neuron::NeuronAdmissionGuard + Send + 'static,
 {
+    Ok(
+        compose_guarded_cpu_neuron_generation_v2(plan, mode, control, clock, worker, admission)?
+            .into_handle(),
+    )
+}
+
+#[cfg(target_os = "linux")]
+pub(crate) fn compose_guarded_cpu_neuron_generation_v2<G>(
+    plan: CpuNeuronGenerationPlanV1,
+    mode: CpuNeuronGenerationOpenModeV1,
+    control: Arc<tokio::sync::Mutex<DurableInferenceControl>>,
+    clock: Arc<dyn AuthorityClock>,
+    worker: crate::CpuNeuronControlConfigV2,
+    admission: G,
+) -> Result<CpuNeuronGenerationCompositionV2, AgentdError>
+where
+    G: codex_hepta_neuron::NeuronAdmissionGuard + Send + 'static,
+{
     for path in [
         &plan.model_manifest,
         &plan.generation_store,
@@ -172,7 +195,11 @@ where
     physical.validate_runtime(&plan.runtime).map_err(|error| {
         AgentdError::Invalid(format!("installed Neuron runtime tuple changed: {error}"))
     })?;
-    finish_generation(plan, mode, physical, admission)
+    let physical = SharedCpuNeuronInferenceControlV3::new(physical);
+    let handle = finish_generation(plan.clone(), mode, physical.clone(), admission)?;
+    Ok(CpuNeuronGenerationCompositionV2::new(
+        plan, handle, physical,
+    ))
 }
 
 /// Open a new or recovered Goal scope around the same loaded CPU worker. The

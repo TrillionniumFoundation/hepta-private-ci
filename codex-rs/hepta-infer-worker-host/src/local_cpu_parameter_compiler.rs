@@ -40,6 +40,13 @@ use crate::CpuNeuronGenerationPlanV1;
 mod validation;
 use validation::error;
 
+#[path = "local_cpu_parameter_materials.rs"]
+mod materials;
+pub use materials::CpuNeuronParameterMaterialCandidateV2;
+pub use materials::CpuNeuronParameterMaterialPlanV2;
+pub use materials::validate_cpu_neuron_parameter_materials_v2;
+pub use materials::validate_cpu_neuron_parameter_receipt_v2;
+
 pub struct CpuNeuronParameterCandidatePlanV1<W = CpuNeuronControlConfigV1> {
     pub candidate_id: StableId,
     pub generation: CpuNeuronGenerationPlanV1,
@@ -106,6 +113,7 @@ pub struct CpuNeuronGovernedParameterCompilerV1 {
     creation: Option<JoinHandle<Result<Materialized, AgentdError>>>,
     issuance: Option<owners::Issuance>,
     materialized: Option<AgentdSelfIterationCandidateV1>,
+    physical_generations: crate::CpuNeuronGenerationCompositionReaderV2,
 }
 
 impl CpuNeuronGovernedParameterCompilerV1 {
@@ -168,6 +176,7 @@ impl CpuNeuronGovernedParameterCompilerV1 {
             creation: None,
             issuance: None,
             materialized: None,
+            physical_generations: crate::CpuNeuronGenerationCompositionReaderV2::default(),
         })
     }
 
@@ -443,6 +452,8 @@ impl AgentdGovernedParameterGenerationCompilerV1 for CpuNeuronGovernedParameterC
         self.creation = None;
         let generation =
             completed.map_err(|value| error(format!("CPU compiler worker: {value}")))??;
+        self.physical_generations
+            .retain(generation.physical_generations)?;
         self.check_policy()?;
         let provisional = self.plan.request.generator_attestation.clone();
         let candidate = AgentdSelfIterationCandidateV1 {
