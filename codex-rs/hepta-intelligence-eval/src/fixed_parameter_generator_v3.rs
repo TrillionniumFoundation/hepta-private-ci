@@ -97,7 +97,7 @@ fn validate_policy(
 ) -> Result<()> {
     if config.schema != "hepta.fixed-parameter-generator-config.v3"
         || config.uid == 0
-        || config.uid != config.gid
+        || config.gid == 0
         || config.inaccessible_paths.len() != 5
         || config.distribution_generation == 0
         || config.authority_epoch == 0
