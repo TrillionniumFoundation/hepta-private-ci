@@ -26,28 +26,15 @@ fn full_port_roundtrip_preserves_every_stage_and_original_identity() {
             decode_canonical_port_input_material_v1(&bytes).unwrap(),
             port
         );
-        for field in [
-            "run_id",
-            "snapshot_digest",
-            "objective_digest",
-            "candidate_set_digest",
-            "predecessor_digest",
-            "budget_micros",
-            "stage",
-        ] {
-            let mut partial: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
-            partial["port"].as_object_mut().unwrap().remove(field);
-            assert!(
-                decode_canonical_port_input_material_v1(&serde_json::to_vec(&partial).unwrap())
-                    .is_err()
-            );
+        for prefix in 0..bytes.len() {
+            assert!(decode_canonical_port_input_material_v1(&bytes[..prefix]).is_err());
         }
-        let mut widened: serde_json::Value = serde_json::from_slice(&bytes).unwrap();
-        widened["port"]["execution_authority"] = serde_json::json!(true);
-        assert!(
-            decode_canonical_port_input_material_v1(&serde_json::to_vec(&widened).unwrap())
-                .is_err()
-        );
+        let mut widened = bytes.clone();
+        widened.extend_from_slice(b"execution_authority=true");
+        assert!(decode_canonical_port_input_material_v1(&widened).is_err());
+        let mut unknown_stage = bytes;
+        *unknown_stage.last_mut().unwrap() = 7;
+        assert!(decode_canonical_port_input_material_v1(&unknown_stage).is_err());
     }
     assert!(
         decode_canonical_port_input_material_v1(&vec![
