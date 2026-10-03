@@ -39,6 +39,33 @@ pub fn execute_root_approved_frozen_generator(
     request_path: &Path,
     output: &Path,
 ) -> ReviewResult<SignedLearningEvidenceV1> {
+    execute_or_observe(program, request_path, output, PublicationMode::Dispatch)?
+        .ok_or_else(|| "incomplete retained frozen Generator execution".into())
+}
+
+/// Observe only an already completed immutable output for the original Root
+/// request. It never dispatches a process, consumes a new output slot or writes
+/// a completion marker. Missing or partial publication remains unknown.
+pub fn observe_root_approved_frozen_generator(
+    program: &Path,
+    request_path: &Path,
+    output: &Path,
+) -> ReviewResult<Option<SignedLearningEvidenceV1>> {
+    execute_or_observe(program, request_path, output, PublicationMode::Observe)
+}
+
+#[derive(Clone, Copy)]
+enum PublicationMode {
+    Dispatch,
+    Observe,
+}
+
+fn execute_or_observe(
+    program: &Path,
+    request_path: &Path,
+    output: &Path,
+    mode: PublicationMode,
+) -> ReviewResult<Option<SignedLearningEvidenceV1>> {
     let status = std::fs::read_to_string("/proc/self/status")?;
     if status
         .lines()
@@ -102,7 +129,7 @@ pub fn execute_root_approved_frozen_generator(
     let trust = activate_learning_trust(&root, distribution, None, now)?;
     let status_path = output.with_extension("status.json");
     let retained = output.exists() || status_path.exists();
-    if !retained {
+    if !retained && matches!(mode, PublicationMode::Dispatch) {
         let exit = launch_generator(
             request.uid,
             program,
@@ -126,21 +153,25 @@ pub fn execute_root_approved_frozen_generator(
     {
         return Err("original frozen Generator sources changed during execution".into());
     }
-    let output_bytes = read_root(output, 16 * 1024, Access::Private)?;
-    let output_digest = Digest32::of_bytes(&output_bytes);
+    let output_bytes = if retained || matches!(mode, PublicationMode::Observe) {
+        let Some(bytes) = read_completed_output(output, request_digest, program_before)? else {
+            return match mode {
+                PublicationMode::Observe => Ok(None),
+                PublicationMode::Dispatch => {
+                    Err("incomplete or changed retained frozen Generator execution".into())
+                }
+            };
+        };
+        bytes
+    } else {
+        read_root(output, 16 * 1024, Access::Private)?
+    };
     let expected_status = FrozenExecutionStatus {
         schema: "hepta.native-frozen-generator-execution.v1".to_string(),
         request_digest: request_digest.to_string(),
         program_digest: program_before.to_string(),
-        output_digest: output_digest.to_string(),
+        output_digest: Digest32::of_bytes(&output_bytes).to_string(),
     };
-    if retained {
-        let status: FrozenExecutionStatus =
-            serde_json::from_slice(&read_root(&status_path, 4096, Access::Private)?)?;
-        if status != expected_status {
-            return Err("incomplete or changed retained frozen Generator execution".into());
-        }
-    }
     let evidence: ReviewEvidenceWireV1 = serde_json::from_slice(&output_bytes)?;
     let evidence = evidence.native()?;
     if evidence.principal_id.as_str() != request.principal_id
@@ -156,10 +187,46 @@ pub fn execute_root_approved_frozen_generator(
         &payload,
         observed,
     )?;
-    if !retained {
+    if !retained && matches!(mode, PublicationMode::Dispatch) {
         create_private(&status_path, &serde_json::to_vec(&expected_status)?)?;
     }
-    Ok(evidence)
+    Ok(Some(evidence))
+}
+
+fn read_completed_output(
+    output: &Path,
+    request_digest: Digest32,
+    program_digest: Digest32,
+) -> ReviewResult<Option<Vec<u8>>> {
+    let status_path = output.with_extension("status.json");
+    for path in [output, &status_path] {
+        match std::fs::symlink_metadata(path) {
+            Ok(_) => {}
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => return Ok(None),
+            Err(error) => return Err(error.into()),
+        }
+    }
+    let bytes = read_root(output, 16 * 1024, Access::Private)?;
+    let status_bytes = read_root(&status_path, 4096, Access::Private)?;
+    let Ok(status) = serde_json::from_slice::<FrozenExecutionStatus>(&status_bytes) else {
+        return Ok(None);
+    };
+    let expected = FrozenExecutionStatus {
+        schema: "hepta.native-frozen-generator-execution.v1".to_string(),
+        request_digest: request_digest.to_string(),
+        program_digest: program_digest.to_string(),
+        output_digest: Digest32::of_bytes(&bytes).to_string(),
+    };
+    if status != expected {
+        return Ok(None);
+    }
+    // Verify the same immutable completion bytes after the whole output read.
+    if read_root(&status_path, 4096, Access::Private)? != status_bytes
+        || read_root(output, 16 * 1024, Access::Private)? != bytes
+    {
+        return Err("original frozen Generator publication changed during observation".into());
+    }
+    Ok(Some(bytes))
 }
 
 #[cfg(test)]
