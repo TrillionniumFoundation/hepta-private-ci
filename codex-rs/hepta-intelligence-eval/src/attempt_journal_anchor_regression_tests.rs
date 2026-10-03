@@ -227,12 +227,15 @@ fn anchored_near_capacity_rejects_new_work_but_preserves_the_reserved_lifecycle(
     assert!(journal.pending(None, 1).expect("pending").is_empty());
 
     drop(journal);
-    let mut recovered = AnchoredProductEvaluationAttemptJournalV1::recover(
-        temp.reopen().expect("reopen"),
-        binding,
-        authority,
-    )
-    .expect("recover exact full-capacity history");
+    let mut recovered =
+        AnchoredProductEvaluationAttemptJournalV1::recover_with_qualification_limits(
+            temp.reopen().expect("reopen"),
+            binding,
+            authority,
+            COMPLETE_LIFECYCLE_BYTES,
+            COMPLETE_LIFECYCLE_EVENTS,
+        )
+        .expect("recover exact full-capacity history");
     assert_eq!(
         recovered.history(&id("a")).expect("history").len(),
         COMPLETE_LIFECYCLE_EVENTS
@@ -246,6 +249,62 @@ fn anchored_near_capacity_rejects_new_work_but_preserves_the_reserved_lifecycle(
             .pending(None, 1)
             .expect("owner remains readable")
             .is_empty()
+    );
+}
+
+#[test]
+fn bounded_anchored_recovery_still_rejects_invalid_limits_and_a_forged_floor() {
+    let temp = NamedTempFile::new().expect("temporary journal");
+    let binding = digest("bounded-recovery-floor");
+    let authority = AnchorAuthority::default();
+    let mut journal = AnchoredProductEvaluationAttemptJournalV1::create_with_qualification_limits(
+        temp.reopen().expect("reopen"),
+        binding,
+        authority.clone(),
+        COMPLETE_LIFECYCLE_BYTES,
+        COMPLETE_LIFECYCLE_EVENTS,
+    )
+    .expect("create bounded journal");
+    journal
+        .append(lifecycle("a", digest("plan:a"), binding)[0].clone())
+        .expect("retain intent");
+    let retained = journal.anchor().expect("retained anchor");
+    drop(journal);
+    let original = std::fs::read(temp.path()).expect("original bytes");
+
+    let invalid_limits =
+        LockedFileProductEvaluationAttemptJournalV1::recover_with_anchor_and_qualification_limits(
+            temp.reopen().expect("reopen"),
+            binding,
+            retained,
+            COMPLETE_LIFECYCLE_BYTES - 1,
+            COMPLETE_LIFECYCLE_EVENTS,
+        );
+    assert!(matches!(
+        invalid_limits,
+        Err(ProductEvaluationAttemptJournalErrorV1::Capacity)
+    ));
+
+    let forged = ProductEvaluationAttemptAnchorV1 {
+        state_digest: digest("not-the-retained-prefix"),
+        ..retained
+    };
+    authority.0.borrow_mut().value = Some(forged);
+    let recovery = AnchoredProductEvaluationAttemptJournalV1::recover_with_qualification_limits(
+        temp.reopen().expect("reopen"),
+        binding,
+        authority.clone(),
+        COMPLETE_LIFECYCLE_BYTES,
+        COMPLETE_LIFECYCLE_EVENTS,
+    );
+    assert!(matches!(
+        recovery,
+        Err(ProductEvaluationAttemptJournalErrorV1::Corrupt)
+    ));
+    assert_eq!(authority.0.borrow().value, Some(forged));
+    assert_eq!(
+        std::fs::read(temp.path()).expect("unchanged bytes"),
+        original
     );
 }
 

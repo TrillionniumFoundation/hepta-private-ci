@@ -110,6 +110,35 @@ impl<A: ProductEvaluationAttemptAnchorStoreV1> AnchoredProductEvaluationAttemptJ
         })
     }
 
+    /// Test companion to the reduced-limit constructor. Limits are fixture
+    /// inputs, not persisted deployment configuration; ordinary recovery uses
+    /// the backend's unchanged production hard ceilings.
+    #[cfg(test)]
+    pub(super) fn recover_with_qualification_limits(
+        file: File,
+        binding: Digest32,
+        mut authority: A,
+        maximum_bytes: u64,
+        maximum_events: usize,
+    ) -> Result<Self, ProductEvaluationAttemptJournalErrorV1> {
+        let retained = authority
+            .load(binding)?
+            .ok_or(ProductEvaluationAttemptJournalErrorV1::Binding)?;
+        let journal = LockedFileProductEvaluationAttemptJournalV1::recover_with_anchor_and_qualification_limits(
+            file, binding, retained, maximum_bytes, maximum_events,
+        )?;
+        let recovered = journal.anchor()?;
+        if recovered != retained {
+            authority.compare_and_swap(binding, Some(retained), recovered)?;
+        }
+        Ok(Self {
+            journal,
+            authority,
+            retained: recovered,
+            poisoned: false,
+        })
+    }
+
     /// Recover from an independently retained checkpoint and replay only the
     /// later journal tail. The normal journal anchor remains authoritative; the
     /// checkpoint authority is a separate derived namespace in the supplied
@@ -182,10 +211,8 @@ impl<A: ProductEvaluationAttemptAnchorStoreV1> ProductEvaluationAttemptJournalV1
         // wrapper: a deterministic rejection must not strand reservations held
         // by already admitted attempts.
         self.poisoned = true;
-        let receipt = match ProductEvaluationAttemptJournalV1::append(
-            &mut self.journal,
-            transition,
-        ) {
+        let receipt = match ProductEvaluationAttemptJournalV1::append(&mut self.journal, transition)
+        {
             Ok(receipt) => receipt,
             Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate) => {
                 return Err(ProductEvaluationAttemptJournalErrorV1::Indeterminate);
