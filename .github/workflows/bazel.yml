@@ -117,12 +117,23 @@ jobs:
             --test_verbose_timeout_warnings
             --build_metadata=COMMIT_SHA=${GITHUB_SHA}
           )
+          traceability_status=0
+          ./.github/scripts/run-bazel-ci.sh \
+            "${bazel_wrapper_args[@]}" \
+            -- \
+            "${bazel_test_args[@]}" \
+            --test_output=all \
+            -- \
+            //codex-rs/hepta-cognitive-types:hepta-cognitive-types-traceability-test \
+            || traceability_status=$?
+
           ./.github/scripts/run-bazel-ci.sh \
             "${bazel_wrapper_args[@]}" \
             -- \
             "${bazel_test_args[@]}" \
             -- \
             "${bazel_targets[@]}"
+          test "$traceability_status" -eq 0
 
       - name: Upload Bazel execution logs
         if: always() && !cancelled()
