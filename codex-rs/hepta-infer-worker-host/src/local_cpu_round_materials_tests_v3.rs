@@ -5,6 +5,87 @@ use codex_hepta_neuron::encode_neuron_generation_material_v2;
 mod fixture;
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
+#[cfg(feature = "root-frozen-generator")]
+#[test]
+#[ignore = "requires actual Root and isolated protected /run custody"]
+fn actual_root_retains_complete_pure_recipe_and_refuses_context_substitution() -> TestResult {
+    use crate::initial_cpu_anchor::InstalledCpuSourceV1;
+    use crate::root_frozen_generator::recipe;
+    use std::os::unix::fs::PermissionsExt;
+    assert_eq!(rustix::process::geteuid().as_raw(), 0);
+    let directory = tempfile::Builder::new()
+        .prefix("hepta-round-recipe-")
+        .tempdir_in("/run")?;
+    let fixture = fixture::Fixture::new(directory.path().join("physical"))?;
+    let round = fixture.round("actual.goal.one", 1)?;
+    let materials = fixture.derive(&round)?;
+    let context_bytes = br#"{"original_context":"pure-publication-vector"}"#;
+    let context_path = directory.path().join("context.json");
+    std::fs::write(&context_path, context_bytes)?;
+    std::fs::set_permissions(&context_path, std::fs::Permissions::from_mode(0o444))?;
+    let context = InstalledCpuSourceV1 {
+        path: context_path,
+        digest: Digest32::of_bytes(context_bytes).to_string(),
+    };
+    // Only pure publication is tested. These unverified inputs cannot pass the
+    // original Root material reader, create a worker or confer signed authority.
+    let worker = InstalledCpuSourceV1 {
+        path: directory.path().join("unverified-worker-vector"),
+        digest: Digest32::of_bytes(b"unverified worker vector").to_string(),
+    };
+    let published = recipe::publish(directory.path(), &materials, &worker, &context)?;
+    let repeated = recipe::publish(directory.path(), &materials, &worker, &context)?;
+    assert_eq!(
+        serde_json::to_value(&published)?,
+        serde_json::to_value(&repeated)?
+    );
+    let bytes = std::fs::read(&published.path)?;
+    assert_eq!(Digest32::of_bytes(&bytes).to_string(), published.digest);
+    let recipe: recipe::PublishedRoundRecipeV3 = serde_json::from_slice(&bytes)?;
+    assert_eq!(recipe.round, round);
+    let retained = recipe::retained(directory.path(), &round)?;
+    assert_eq!(
+        serde_json::to_value(&retained)?,
+        serde_json::to_value(&recipe)?
+    );
+    assert!(recipe::retained(directory.path(), &fixture.round("actual.goal.two", 1)?).is_err());
+    assert_eq!(
+        serde_json::to_value(&recipe.plasticity_context)?,
+        serde_json::to_value(&context)?
+    );
+    let descriptor: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&recipe.materials.path)?)?;
+    let read = |field: &str| -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+        let input: InstalledCpuSourceV1 = serde_json::from_value(descriptor[field].clone())?;
+        let bytes = std::fs::read(&input.path)?;
+        assert_eq!(Digest32::of_bytes(&bytes).to_string(), input.digest);
+        Ok(bytes)
+    };
+    assert_eq!(
+        read("baseline")?,
+        encode_neuron_generation_material_v2(materials.baseline())?
+    );
+    assert_eq!(
+        read("parameter_request")?,
+        encode_parameter_plasticity_request_v1(materials.request())?
+    );
+    assert_eq!(
+        read("rollback")?,
+        encode_neuron_generation_material_v2(materials.rollback())?
+    );
+    let other_path = directory.path().join("other-context.json");
+    std::fs::write(&other_path, context_bytes)?;
+    std::fs::set_permissions(&other_path, std::fs::Permissions::from_mode(0o444))?;
+    let other = InstalledCpuSourceV1 {
+        path: other_path,
+        digest: context.digest,
+    };
+    assert!(recipe::publish(directory.path(), &materials, &worker, &other).is_err());
+    assert_eq!(std::fs::read(&published.path)?, bytes);
+    assert!(!directory.path().join("physical").exists());
+    Ok(())
+}
+
 #[test]
 fn identical_original_round_retains_every_signed_request_byte_and_writes_no_physical_store()
 -> TestResult {

@@ -131,6 +131,11 @@ pub use self_iteration_model::validate_root_native_assessment_facts_v1;
 #[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
 pub use self_iteration_model::validate_root_native_failure_facts_v1;
 
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+mod root_frozen_generator;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_frozen_generator::RootFrozenGeneratorServiceV1;
+
 use std::error::Error as StdError;
 use std::fmt;
 

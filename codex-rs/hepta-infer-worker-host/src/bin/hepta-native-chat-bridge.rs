@@ -7,8 +7,23 @@ mod root;
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
     let mut args = std::env::args_os().skip(1);
+    let option = args.next();
+    #[cfg(feature = "root-frozen-generator")]
+    if option.as_deref() == Some(std::ffi::OsStr::new("--generator-configuration")) {
+        let path = args
+            .next()
+            .ok_or_else(|| anyhow::anyhow!("missing Generator configuration"))?;
+        anyhow::ensure!(
+            args.next().is_none(),
+            "unsupported Generator bridge argument"
+        );
+        return codex_hepta_infer_worker_host::RootFrozenGeneratorServiceV1::open(path.into())
+            .await?
+            .serve()
+            .await;
+    }
     anyhow::ensure!(
-        args.next().as_deref() == Some(std::ffi::OsStr::new("--configuration")),
+        option.as_deref() == Some(std::ffi::OsStr::new("--configuration")),
         "expected --configuration ROOT_CONFIG"
     );
     let path = args
