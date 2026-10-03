@@ -33,7 +33,8 @@
       "sourcePathExists": true,
       "designOperation": "append_event_append_correction_forget_open_snapshot",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "e9ec79e983aa4a125536f688e480293c8b7d3131"
     },
     {
       "operation": "durable_owner",
@@ -53,7 +54,8 @@
           "symbol": "hepta-memory::CognitiveStore",
           "path": "codex-rs/hepta-memory/src/cognitive_store.rs"
         }
-      ]
+      ],
+      "sourceBlob": "6ace80385bed98c5306a00b63898214887e435bb"
     },
     {
       "operation": "lane_c_snapshot",
@@ -67,7 +69,8 @@
       "sourcePathExists": true,
       "designOperation": "open_snapshot",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "af66a5195f8a65635abe6c2abaf7b8e265bb6e9d"
     },
     {
       "operation": "writable_recovery",
@@ -82,7 +85,8 @@
       "sourcePathExists": true,
       "designOperation": "open_with_recovery",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "b04217a0de797501c61262b20b8c52d2bd1b1822"
     },
     {
       "operation": "product_writer_host",
@@ -109,7 +113,8 @@
           "symbol": "cognitive.store::ProductionCognitiveMutationCapability",
           "path": "codex-rs/hepta-memory/src/production_writer.rs"
         }
-      ]
+      ],
+      "sourceBlob": "dbf3f0729e336ed0a4d4ce3ce1ec90eced4f5c91"
     },
     {
       "operation": "production_mutation_capability",
@@ -130,7 +135,8 @@
           "symbol": "hepta-memory::CognitiveStore",
           "path": "codex-rs/hepta-memory/src/cognitive_store.rs"
         }
-      ]
+      ],
+      "sourceBlob": "fd9fa46e14576f78a872a5aee524b46d04cde593"
     },
     {
       "operation": "canonical_memory_event_shadow",
@@ -149,7 +155,8 @@
           "symbol": "AdmittedCognitiveStoreV2::append_admitted",
           "path": "codex-rs/hepta-cognitive-store/src/v2.rs"
         }
-      ]
+      ],
+      "sourceBlob": "e9ec79e983aa4a125536f688e480293c8b7d3131"
     },
     {
       "operation": "canonical_durable_memory_event_binding",
@@ -168,7 +175,8 @@
           "symbol": "ProductionCognitiveMutationReceiptV1",
           "path": "codex-rs/hepta-memory/src/production_writer.rs"
         }
-      ]
+      ],
+      "sourceBlob": "e9ec79e983aa4a125536f688e480293c8b7d3131"
     },
     {
       "operation": "grant_shared_experience",
@@ -182,7 +190,8 @@
       ],
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "e1dc7dda1084a83a3c7110984568c0be224c297f"
     },
     {
       "operation": "read_shared_experience",
@@ -196,7 +205,8 @@
       ],
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "e1dc7dda1084a83a3c7110984568c0be224c297f"
     },
     {
       "operation": "revalidate_shared_experience",
@@ -210,7 +220,8 @@
       ],
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "e1dc7dda1084a83a3c7110984568c0be224c297f"
     },
     {
       "operation": "revoke_shared_experience",
@@ -224,7 +235,8 @@
       ],
       "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
       "authority": "none",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "e1dc7dda1084a83a3c7110984568c0be224c297f"
     }
   ],
   "repositoryControlledGaps": [
@@ -288,6 +300,14 @@
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/Cargo.lock",
+      "object": "d49719e948aecaf3633ae94cc0d5320799a9277a"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "2201b9118d97ce6d9b79e06647ec999bc84dc990"
+    },
+    {
       "path": "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
       "object": "5e38587ea8d0a41e936f6d4e771abc151571981c"
     },
@@ -345,7 +365,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/production_writer.rs",
-      "object": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+      "object": "fd9fa46e14576f78a872a5aee524b46d04cde593"
     },
     {
       "path": "codex-rs/hepta-memory/src/shared_experience.rs",
@@ -363,5 +383,34 @@
       "path": "docs/modules/cognitive.store/TECHNICAL.md",
       "object": "df2b85789980b950511d8d7ac3ff56403095fe79"
     }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "f2661efafcd4bef72ec22c37ed4947f19ca1e1de",
+    "tree": "645b9fa2c684c9bb5dd01a3b271aa994620c55ab"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
+    "codex-rs/hepta-agentd/src/production_writer_host.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
+    "codex-rs/hepta-cognitive-store",
+    "codex-rs/hepta-cognitive-store/src/durable.rs",
+    "codex-rs/hepta-cognitive-store/src/v2.rs",
+    "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_store.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+    "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+    "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+    "codex-rs/hepta-memory/src/production_writer.rs",
+    "codex-rs/hepta-memory/src/shared_experience.rs",
+    "codex-rs/hepta-memory/src/shared_experience_tests.rs",
+    "codex-rs/state/src/sqlite_recovery_tests.rs",
+    "docs/modules/cognitive.store/TECHNICAL.md"
   ]
 }

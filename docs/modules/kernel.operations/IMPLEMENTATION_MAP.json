@@ -36,7 +36,8 @@
       "sourcePathExists": true,
       "designOperation": "prepare_intent",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "d952060c81eca0d64d7091ebca928c8740c00ed7"
     },
     {
       "operation": "prepare_operation",
@@ -57,7 +58,8 @@
           "module": "cognitive.store",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "fd9fa46e14576f78a872a5aee524b46d04cde593"
     },
     {
       "operation": "claim_outbox",
@@ -77,7 +79,8 @@
           "module": "cognitive.store",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "c5c6f0aa8ee3a630857e1232b5b054817dd715f7"
     },
     {
       "operation": "authorized_dispatch",
@@ -103,7 +106,8 @@
           "module": "cognitive.store",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "fd9fa46e14576f78a872a5aee524b46d04cde593"
     },
     {
       "operation": "observe_cognitive_terminal",
@@ -123,7 +127,8 @@
           "module": "cognitive.store",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "d32961e6bddbd020658f3b60fb1d66d15c0f2e37"
     },
     {
       "operation": "agentd_final_use_host",
@@ -143,7 +148,8 @@
           "module": "runtime.agentd",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "dbf3f0729e336ed0a4d4ce3ce1ec90eced4f5c91"
     },
     {
       "operation": "agentd_runtime_composition",
@@ -163,7 +169,8 @@
           "module": "runtime.agentd",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "fefc59bd975f3c4422fd56ce19afa15207eaf628"
     },
     {
       "operation": "automation_operation_consumer",
@@ -183,7 +190,8 @@
           "module": "automation.taskflow",
           "role": "declared_module_dependency_not_callsite_proof"
         }
-      ]
+      ],
+      "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
     },
     {
       "operation": "reference_operationledger",
@@ -197,7 +205,8 @@
       "sourcePathExists": true,
       "designOperation": "reference_operationledger",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "e6ed053a86608f30e63c703a6ed6e3cdb049abfd"
     },
     {
       "operation": "reference_outbox",
@@ -211,7 +220,8 @@
       "sourcePathExists": true,
       "designOperation": "reference_outbox",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "1f172748e56e2fdffa403b485ec0145af66a99f8"
     }
   ],
   "repositoryControlledGaps": [
@@ -263,7 +273,7 @@
       },
       {
         "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
-        "blobSha": "1c07918ae14e7d7a8c635d1574178424ba3407b4"
+        "blobSha": "93aef85620e753a6f49d486eaee436f8ac3edde1"
       },
       {
         "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
@@ -275,7 +285,7 @@
       },
       {
         "path": "codex-rs/hepta-memory/src/production_writer.rs",
-        "blobSha": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+        "blobSha": "fd9fa46e14576f78a872a5aee524b46d04cde593"
       },
       {
         "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
@@ -320,13 +330,41 @@
     ]
   },
   "observedAtHead": {
-    "commit": "532471eebc6c784b873afa4b02700c08abba87c4",
-    "tree": "659f6a0d0401251093b5057b572db85888e2a415"
+    "commit": "f2661efafcd4bef72ec22c37ed4947f19ca1e1de",
+    "tree": "645b9fa2c684c9bb5dd01a3b271aa994620c55ab"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-operations"
+    "codex-rs/hepta-agentd",
+    "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs",
+    "codex-rs/hepta-agentd/src/config.rs",
+    "codex-rs/hepta-agentd/src/config_tests.rs",
+    "codex-rs/hepta-agentd/src/production_writer_host.rs",
+    "codex-rs/hepta-agentd/src/runtime.rs",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/state.rs",
+    "codex-rs/hepta-automation",
+    "codex-rs/hepta-automation/src/authorized_effect.rs",
+    "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+    "codex-rs/hepta-automation/tests/authorized_effect.rs",
+    "codex-rs/hepta-cognitive-store",
+    "codex-rs/hepta-contracts",
+    "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+    "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+    "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+    "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+    "codex-rs/hepta-memory/src/operation_claims.rs",
+    "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+    "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+    "codex-rs/hepta-memory/src/production_writer.rs",
+    "codex-rs/hepta-operations",
+    "codex-rs/hepta-operations/src/ledger.rs",
+    "codex-rs/hepta-operations/src/ledger_tests.rs",
+    "codex-rs/hepta-operations/src/model.rs",
+    "codex-rs/hepta-operations/src/outbox.rs",
+    "codex-rs/hepta-operations/src/outbox_tests.rs",
+    "docs/modules/kernel.operations/TECHNICAL.md"
   ],
   "productCallers": [
     {
@@ -337,12 +375,28 @@
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/Cargo.lock",
+      "object": "d49719e948aecaf3633ae94cc0d5320799a9277a"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "2201b9118d97ce6d9b79e06647ec999bc84dc990"
+    },
+    {
       "path": "codex-rs/hepta-agentd",
       "object": "226c1e22854d45870bcb0339a2d551f02497c284"
     },
     {
       "path": "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs",
       "object": "72d7262b40fe7970ae0cead431aae5d32f68295f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "object": "afb9cac35db1c57d58edb3b31c6beee31bab2560"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config_tests.rs",
+      "object": "e1f3fa191bd46090380a338134ffd84c0a44a5e3"
     },
     {
       "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
@@ -357,12 +411,20 @@
       "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/state.rs",
+      "object": "b2981675ddb7f56dd36c5ff7deb525afec280928"
+    },
+    {
       "path": "codex-rs/hepta-automation",
       "object": "90409d9839266b2992986bb98343f41f40bed4ae"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "object": "2f0a8cea98cecc940a785dae606861ab2053a109"
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
@@ -374,7 +436,19 @@
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "ed5cc643157e33a323693954aab0cdc784be19ec"
+      "object": "9a00da45387d7dabbb18e676fbf6902d32579332"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+      "object": "918195da1b30ce7ebb432df54a7bc247f5154a63"
+    },
+    {
+      "path": "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+      "object": "b8d06d5ca867f6d5b32d78f5276f9a1b4f11f5cc"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "object": "93aef85620e753a6f49d486eaee436f8ac3edde1"
     },
     {
       "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
@@ -394,7 +468,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/production_writer.rs",
-      "object": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+      "object": "fd9fa46e14576f78a872a5aee524b46d04cde593"
     },
     {
       "path": "codex-rs/hepta-operations",
@@ -424,5 +498,6 @@
       "path": "docs/modules/kernel.operations/TECHNICAL.md",
       "object": "744afc7479736a81e075a6bce83cb0323f1e8f45"
     }
-  ]
+  ],
+  "mappingSourceIdentityMode": "exact_blob"
 }
