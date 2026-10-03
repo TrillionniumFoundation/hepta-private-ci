@@ -218,6 +218,8 @@ pub struct MainDesktopUI {
     view: View,
     #[rust]
     rendered: Option<RoomKey>,
+    #[rust]
+    layout_theme: Option<crate::visual_theme::VisualTheme>,
 }
 impl Widget for MainDesktopUI {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
@@ -264,6 +266,22 @@ impl Widget for MainDesktopUI {
         }
     }
     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        // A cached desktop can become visible after a theme changed in the
+        // compact host. Apply layout before its first paint, not in App's
+        // post-event recolour traversal after the old splitter was drawn.
+        let theme = cx.global::<crate::visual_theme::ThemeState>().selected;
+        if self.layout_theme != Some(theme)
+            && self.view.dock(cx, ids!(dock)).set_splitter_align(
+                cx,
+                id!(root),
+                SplitterAlign::FromA(theme.sidebar_width()),
+                false,
+            )
+        {
+            // The SDK setter always requests redraw, including equal values.
+            // Run once per theme/instance, preserving manual splitter changes.
+            self.layout_theme = Some(theme);
+        }
         if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
             self.rendered = Some(RoomKey {
                 epoch: workspace.presentation_epoch(),

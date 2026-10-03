@@ -116,6 +116,9 @@ impl Widget for RoomScreen {
             return;
         };
         let input = self.view.text_input(cx, ids!(message_input));
+        let follow_latest = workspace
+            .timeline()
+            .is_none_or(|timeline| timeline.scroll.at_end);
         let mut apply = |command| apply_action(workspace, PresentationAction { source, command });
         apply(PresentationCommand::SetComposing(input.is_composing()));
         if let Event::Actions(actions) = event {
@@ -137,6 +140,23 @@ impl Widget for RoomScreen {
                     // The list action arrives after its own redraw. Repaint the
                     // parent too so the sibling Jump control reflects the new intent.
                     self.view.redraw(cx);
+                } else if let Some(inner) = list.borrow()
+                    && inner.area().is_valid(cx)
+                {
+                    let size = inner.area().rect(cx).size;
+                    if self.scroll_tracker.request_tail_redraw(
+                        follow_latest,
+                        travel,
+                        inner.is_at_end(),
+                        inner.first_id(),
+                        inner.first_scroll(),
+                        [size.x, size.y],
+                    ) {
+                        // The list's own redraw can leave the parent batch cached.
+                        // Re-enter the existing tail correction once per meaningful
+                        // layout state; real gestures and unchanged states win.
+                        self.view.redraw(cx);
+                    }
                 }
                 #[cfg(feature = "ui-fixtures")]
                 log!(

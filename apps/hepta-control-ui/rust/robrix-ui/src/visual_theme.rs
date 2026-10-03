@@ -24,6 +24,13 @@ impl VisualTheme {
             Self::AuroraGraphite => "Aurora Graphite",
         }
     }
+    pub fn sidebar_width(self) -> f64 {
+        match self {
+            Self::ObsidianIce => 300.0,
+            Self::LunarTitanium => 280.0,
+            Self::AuroraGraphite => 248.0,
+        }
+    }
     pub fn tokens(self) -> Tokens {
         let values = match self {
             Self::ObsidianIce => [
@@ -174,11 +181,7 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
         {
             script_apply_eval!(cx,widget,{draw_bg +: {color_hover: #(surface) color_selected: #(selected) color_selected_hover: #(selected)}});
         } else if widget.borrow::<Dock>().is_some() {
-            let width = match theme {
-                VisualTheme::ObsidianIce => 300.0,
-                VisualTheme::LunarTitanium => 280.0,
-                VisualTheme::AuroraGraphite => 248.0,
-            };
+            let width = theme.sidebar_width();
             widget.as_dock().set_splitter_align(
                 cx,
                 id!(root),

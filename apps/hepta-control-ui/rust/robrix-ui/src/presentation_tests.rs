@@ -611,3 +611,21 @@ fn tail_anchor_leaves_empty_lists_and_oversized_last_item_offsets_alone() {
     // A new room/range gets its own terminal index; no previous-room offset is used.
     assert_eq!(UserScrollTracker::tail_anchor(0, 12), Some(11));
 }
+
+#[test]
+fn parent_tail_redraw_deduplicates_layout_and_does_not_replace_user_intent() {
+    let mut tracker = UserScrollTracker::default();
+    let size = [640.0, 600.0];
+    assert!(tracker.request_tail_redraw(true, 0.0, false, 59, -102.0, size));
+    assert!(!tracker.request_tail_redraw(true, 0.0, false, 59, -102.0, size));
+    assert!(!tracker.request_tail_redraw(true, 0.0, false, 59, -102.00003, size));
+    assert!(tracker.request_tail_redraw(true, 0.0, false, 60, -140.0, size));
+    assert!(!tracker.request_tail_redraw(true, 10.0, false, 60, -140.0, size));
+    tracker.observe(10.0, false);
+    assert!(!tracker.request_tail_redraw(false, 10.0, false, 60, -140.0, size));
+    tracker.observe(10.0, true);
+    assert!(!tracker.request_tail_redraw(true, 10.0, true, 60, -140.0, size));
+    assert!(tracker.request_tail_redraw(true, 10.0, false, 60, -140.0, [1280.0, 600.0]));
+    assert!(!tracker.request_tail_redraw(true, 10.0, false, 60, f64::NAN, size));
+    assert!(!tracker.request_tail_redraw(true, 10.0, false, 60, -140.0, [0.0, 0.0]));
+}

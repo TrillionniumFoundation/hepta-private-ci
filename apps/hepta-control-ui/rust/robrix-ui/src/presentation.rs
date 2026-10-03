@@ -403,11 +403,13 @@ mod tests;
 #[derive(Default)]
 pub struct UserScrollTracker {
     last_travel: f64,
+    last_reflow: Option<(usize, i64, i64, i64)>,
 }
 
 impl UserScrollTracker {
     pub fn reset(&mut self, travel: f64) {
         self.last_travel = travel;
+        self.last_reflow = None;
     }
 
     /// Reflow may move the viewport away from its tail without user input.
@@ -422,6 +424,40 @@ impl UserScrollTracker {
         total.checked_sub(1).filter(|last| first_id < *last)
     }
 
+    /// Request a parent-batch refresh only for a new, meaningful layout state.
+    /// The SDK tail correction uses a half-pixel threshold; smaller numerical
+    /// jitter must not create a self-sustaining redraw loop.
+    pub fn request_tail_redraw(
+        &mut self,
+        follow_latest: bool,
+        travel: f64,
+        at_end: bool,
+        first: usize,
+        offset: f64,
+        viewport: [f64; 2],
+    ) -> bool {
+        if !self.restore_tail(follow_latest, travel, at_end)
+            || !offset.is_finite()
+            || viewport
+                .iter()
+                .any(|value| !value.is_finite() || *value <= 0.0)
+        {
+            return false;
+        }
+        let quantize = |value: f64| (value * 2.0).round() as i64;
+        let sample = (
+            first,
+            quantize(offset),
+            quantize(viewport[0]),
+            quantize(viewport[1]),
+        );
+        if self.last_reflow == Some(sample) {
+            return false;
+        }
+        self.last_reflow = Some(sample);
+        true
+    }
+
     /// `None` preserves the current intent during a layout-only movement.
     pub fn observe(&mut self, travel: f64, at_end: bool) -> Option<bool> {
         if !travel.is_finite() {
@@ -429,6 +465,9 @@ impl UserScrollTracker {
         }
         let user_moved = travel != self.last_travel;
         self.last_travel = travel;
+        if user_moved || at_end {
+            self.last_reflow = None;
+        }
         (user_moved || at_end).then_some(at_end)
     }
 }
