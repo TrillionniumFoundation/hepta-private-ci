@@ -85,7 +85,12 @@ fn v3_and_v4_configuration_is_rejected_before_opening_payload_extents() {
             })
         }
         .must("manifest");
-        std::fs::write(path.join("registry.json"), &bytes).must("selected metadata");
+        use std::io::Write;
+        let mut manifest = open_private(&root, "registry.json", Access::CreateNew)
+            .must("private selected metadata");
+        manifest.write_all(&bytes).must("selected metadata");
+        manifest.sync_all().must("selected metadata durability");
+        drop(manifest);
         drop(root);
         assert!(matches!(
             DurablePromptRegistry::open_state_dir(&path, 8),

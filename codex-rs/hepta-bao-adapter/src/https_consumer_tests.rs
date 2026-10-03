@@ -756,9 +756,13 @@ async fn authbus_host_with_lifetime(
         checkpoint_root.path(),
         std::fs::Permissions::from_mode(0o700),
     )?;
-    let database = database_root.path().join("authbus-authority.sqlite");
+    let database = database_root
+        .path()
+        .canonicalize()?
+        .join("authbus-authority.sqlite");
     let checkpoint = checkpoint_root
         .path()
+        .canonicalize()?
         .join("authbus-authority-checkpoint.json");
 
     let raw = AuthBusAuthorityStore::open(&database).await?;
