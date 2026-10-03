@@ -795,4 +795,24 @@ pub use parameter_pre_registration_reader_v1::VerifiedParameterPreRegistrationEv
 #[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
 pub use parameter_pre_registration_reader_v1::inspect_parameter_pre_registration_evaluation_v1;
 #[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
-pub use parameter_pre_registration_v1::*;
+pub use parameter_pre_registration_v1::FixedParameterPreRegistrationConfigV1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use parameter_pre_registration_v1::MAX_PARAMETER_PRE_REGISTRATION_REPORT_BYTES_V1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use parameter_pre_registration_v1::PARAMETER_PRE_REGISTRATION_CLAIM_V1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use parameter_pre_registration_v1::ParameterPreRegistrationPurposeV1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use parameter_pre_registration_v1::ParameterPreRegistrationRoundV1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use parameter_pre_registration_v1::finalize_parameter_pre_registration_material_v1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use parameter_pre_registration_v1::validate_parameter_pre_registration_material_v1;
+
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use operational_registered_model_v3::HistoricalRegisteredArtifactFactsV1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use operational_registered_model_v3::inspect_historical_registered_artifact_material_v1;
+
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use parameter_pre_registration_reader_v1::inspect_parameter_pre_registration_history_v1;

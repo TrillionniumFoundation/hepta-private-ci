@@ -473,3 +473,213 @@ fn root_readonly_current_preserves_the_real_writer_and_closes_on_withdrawal_and_
     drop(service);
     fs::remove_dir_all(root).fixture("isolated native fixture cleanup");
 }
+
+#[test]
+#[ignore = "Run explicitly as Root against isolated original /var/lib custody"]
+fn root_readonly_completed_ancestor_ack_survives_real_successor_publication_and_cold_read() {
+    let now = u64::try_from(
+        std::time::SystemTime::now()
+            .duration_since(std::time::UNIX_EPOCH)
+            .fixture("real clock")
+            .as_millis(),
+    )
+    .fixture("clock width");
+    let root = PathBuf::from(format!(
+        "/var/lib/hepta/native-readonly-history-tests/{}-{now}",
+        std::process::id()
+    ));
+    fs::create_dir_all(&root).fixture("isolated Root fixture");
+    fs::set_permissions(&root, fs::Permissions::from_mode(0o700)).fixture("Root fixture mode");
+    let key = signer();
+    let scope = withdrawal_scope();
+    let mut withdrawals = DatasetWithdrawalRegistry::new_scoped(scope.clone());
+    let mut trust = trust(&key, scope.digest());
+    for signer in trust
+        .writer_signers
+        .iter_mut()
+        .chain(trust.head_signers.iter_mut())
+    {
+        signer.valid_from = now - 1000;
+        signer.expires_at = now + 60000;
+    }
+    let mut lease = lease(&key, scope.digest());
+    lease.issued_at = now;
+    lease.expires_at = now + 60000;
+    lease.signature = key.sign(&lease.signing_bytes()).to_bytes();
+    let owner = LearningArtifactOwnerHost::open(&root, trust.clone(), lease.clone(), now)
+        .fixture("actual Root writer");
+    let mut model = manifest();
+    model.created_at = now;
+    model.expires_at = now + 60000;
+    let dataset = model.source_dataset_digests[0];
+    let admission =
+        admit_manifest_at_withdrawal_head_v3(&withdrawals, withdrawals.head_digest(), model, now)
+            .fixture("native fixture admission");
+    let mut registry = ArtifactRegistry::new();
+    let mut transaction = owner
+        .begin_publication(
+            id("root-native-history-baseline"),
+            admission,
+            &withdrawals,
+            &registry,
+            Digest32::ZERO,
+            now,
+        )
+        .fixture("actual Prepared");
+    owner
+        .stage_compatibility_registration(&transaction, &mut registry, now)
+        .fixture("actual registry projection");
+    owner
+        .ensure_payload_durable(&mut transaction, &registry, b"payload", now)
+        .fixture("payload fsync");
+    let binding = digest("root-native-readonly-storage");
+    owner
+        .ensure_registry_durable(&mut transaction, &registry, &withdrawals, binding, now)
+        .fixture("registry fsync");
+    let mut head = SignedCurrentArtifactHeadV1 {
+        withdrawal_scope_digest: scope.digest(),
+        binding,
+        witness: RegistryHeadWitnessV1 {
+            registry_id: trust.registry_id.clone(),
+            generation: Generation::new(1).fixture("generation"),
+            head_digest: registry.head_digest(),
+            predecessor_head_digest: Digest32::ZERO,
+            authority_epoch: 1,
+            signer_id: id("owner-authority"),
+            signing_key_digest: Digest32::of_bytes(key.verifying_key().as_bytes()),
+            issued_at: now,
+            expires_at: now + 60000,
+        },
+        signature: [0; 64],
+    };
+    head.signature = key.sign(&head.signing_bytes()).to_bytes();
+    owner
+        .ensure_witness_durable(&mut transaction, &head, &withdrawals, now)
+        .fixture("actual CURRENT fsync");
+    assert!(matches!(
+        owner.publish_root_read_frontier(&withdrawals, now),
+        Err(ArtifactOwnerHostError::CheckpointMissing)
+    ));
+    owner
+        .acknowledge(&mut transaction, &withdrawals, now)
+        .fixture("actual ACK fsync");
+    owner
+        .publish_root_read_frontier(&withdrawals, now)
+        .fixture("Root current read grant");
+
+    let old_head = head.clone();
+    let old_ack = owner
+        .recover_publication(&id("root-native-history-baseline"))
+        .fixture("original completed baseline")
+        .fixture("baseline operation")
+        .checkpoint;
+    let old_receipt = old_ack.registry_receipt.fixture("complete old registry");
+    let old_frontier = fs::read(root.join("READ-CURRENT")).fixture("old protected frontier");
+    let mut successor = manifest();
+    successor.artifact_id = id("actual-second-artifact");
+    successor.generation = Generation::new(2).fixture("model successor");
+    successor.created_at = now;
+    successor.expires_at = now + 60000;
+    successor.bytes_digest = Digest32::of_bytes(b"nextpayload");
+    successor.encoded_size_bytes = b"nextpayload".len() as u64;
+    successor.predecessor_ids = vec![id("candidate")];
+    let admission = admit_manifest_at_withdrawal_head_v3(
+        &withdrawals,
+        withdrawals.head_digest(),
+        successor,
+        now,
+    )
+    .fixture("real successor admission");
+    let predecessor = registry.head_digest();
+    let mut next = owner
+        .begin_publication(
+            id("root-native-history-successor"),
+            admission,
+            &withdrawals,
+            &registry,
+            predecessor,
+            now,
+        )
+        .fixture("same writer successor intent");
+    owner
+        .stage_compatibility_registration(&next, &mut registry, now)
+        .fixture("successor registry");
+    owner
+        .ensure_payload_durable(&mut next, &registry, b"nextpayload", now)
+        .fixture("successor payload");
+    owner
+        .ensure_registry_durable(&mut next, &registry, &withdrawals, binding, now)
+        .fixture("successor durable snapshot");
+    head.witness.generation = head
+        .witness
+        .generation
+        .next()
+        .fixture("registry generation");
+    head.witness.predecessor_head_digest = predecessor;
+    head.witness.head_digest = registry.head_digest();
+    head.signature = key.sign(&head.signing_bytes()).to_bytes();
+    owner
+        .ensure_witness_durable(&mut next, &head, &withdrawals, now)
+        .fixture("same real signed chain");
+    owner
+        .acknowledge(&mut next, &withdrawals, now)
+        .fixture("actual successor ACK");
+    owner
+        .publish_root_read_frontier(&withdrawals, now)
+        .fixture("actual current protected frontier");
+    let reader =
+        ReadOnlyArtifactCurrentOwnerV1::open(&root, trust.clone(), withdrawals.clone(), now)
+            .fixture("actual current reader");
+    assert_eq!(
+        reader
+            .acknowledged_publication(&id("root-native-history-baseline"), &old_head, now)
+            .fixture("actual historical ACK"),
+        Some(old_ack.clone())
+    );
+    assert_eq!(
+        reader
+            .historical_dataset_members(old_receipt, dataset, now)
+            .fixture("original acknowledged prefix"),
+        vec![id("candidate")]
+    );
+    assert!(
+        reader
+            .acknowledged_publication(&id("root-native-history-baseline"), &head, now)
+            .is_err()
+    );
+    let encoded = encode_untrusted_signed_artifact_head_v1(&old_head);
+    assert_eq!(
+        decode_untrusted_signed_artifact_head_v1(&encoded).fixture("original canonical head bytes"),
+        old_head
+    );
+    let mut noncanonical = encoded.clone();
+    noncanonical.pop();
+    assert!(decode_untrusted_signed_artifact_head_v1(&noncanonical).is_err());
+    let mut forged = old_head.clone();
+    forged.signature[0] ^= 1;
+    assert!(
+        reader
+            .acknowledged_publication(&id("root-native-history-baseline"), &forged, now)
+            .is_err()
+    );
+    let current_frontier = fs::read(root.join("READ-CURRENT")).fixture("new frontier");
+    fs::write(root.join("READ-CURRENT"), &old_frontier)
+        .fixture("isolated real rollback counterexample");
+    assert!(
+        ReadOnlyArtifactCurrentOwnerV1::open(&root, trust.clone(), withdrawals.clone(), now)
+            .is_err()
+    );
+    fs::write(root.join("READ-CURRENT"), current_frontier)
+        .fixture("restore exact isolated fixture");
+    drop(reader);
+    drop(owner);
+    let cold = ReadOnlyArtifactCurrentOwnerV1::open(&root, trust, withdrawals, now)
+        .fixture("cold exact owner");
+    assert_eq!(
+        cold.acknowledged_publication(&id("root-native-history-baseline"), &old_head, now)
+            .fixture("cold actual historical ACK"),
+        Some(old_ack)
+    );
+    drop(cold);
+    fs::remove_dir_all(&root).fixture("isolated cleanup");
+}

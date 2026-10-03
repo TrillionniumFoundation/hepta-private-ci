@@ -7,7 +7,8 @@ use crate::parameter_pre_registration_host_v1::Output;
 use crate::parameter_pre_registration_host_v1::measure_body;
 use crate::parameter_pre_registration_host_v1::payload;
 use crate::parameter_pre_registration_host_v1::preparation_facts;
-use crate::parameter_pre_registration_policy_v1::inspect;
+use crate::parameter_pre_registration_policy_v1::BaselineUseV1;
+use crate::parameter_pre_registration_policy_v1::inspect_frontier;
 use crate::parameter_pre_registration_policy_v1::validate_reviewer;
 use crate::parameter_pre_registration_v1::*;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
@@ -43,6 +44,7 @@ pub struct VerifiedParameterPreRegistrationEvaluationV1 {
     selectors: Vec<TrustedLearningSignerV1>,
     source_dataset_digests: [Digest32; 2],
     preparation_terminal: Option<Vec<u8>>,
+    historical: bool,
 }
 impl VerifiedParameterPreRegistrationEvaluationV1 {
     pub fn round(&self) -> &ParameterPreRegistrationRoundV1 {
@@ -98,12 +100,42 @@ impl VerifiedParameterPreRegistrationEvaluationV1 {
     pub fn preparation_terminal_bytes(&self) -> Option<&[u8]> {
         self.preparation_terminal.as_deref()
     }
+    pub fn revalidate_after_registration(&self) -> HostResult<()> {
+        if !self.historical {
+            return Err(
+                "live E1 must be freshly inspected under completed publication history".into(),
+            );
+        }
+        let now = now_ms()?;
+        if now < self.clock_floor.fetch_max(now, Ordering::AcqRel) {
+            return Err("E1 historical clock rollback".into());
+        }
+        let actual = inspect_at(&self.config, &self.report, now, E1ObservationV1::Historical)?;
+        if actual.authentication_digest != self.authentication_digest
+            || actual.evaluator != self.evaluator
+            || actual.round != self.round
+            || now >= self.expires_at
+        {
+            return Err("completed E1 original history/current eligibility changed".into());
+        }
+        self.clock_floor
+            .fetch_max(actual.clock_floor.load(Ordering::Acquire), Ordering::AcqRel);
+        Ok(())
+    }
     pub fn revalidate_before_registration(&self) -> HostResult<()> {
         let now = now_ms()?;
         if now < self.clock_floor.fetch_max(now, Ordering::AcqRel) {
             return Err("E1 retained clock rollback".into());
         }
-        let actual = inspect_at(&self.config, &self.report, now)?;
+        if self.historical {
+            return Err("historical E1 is not a live before-registration baseline".into());
+        }
+        let actual = inspect_at(
+            &self.config,
+            &self.report,
+            now,
+            E1ObservationV1::BeforeRegistration,
+        )?;
         if actual.authentication_digest != self.authentication_digest
             || actual.evaluator != self.evaluator
             || actual.round != self.round
@@ -111,6 +143,8 @@ impl VerifiedParameterPreRegistrationEvaluationV1 {
         {
             return Err("E1 original current evidence changed/expired before publication".into());
         }
+        self.clock_floor
+            .fetch_max(actual.clock_floor.load(Ordering::Acquire), Ordering::AcqRel);
         Ok(())
     }
 }
@@ -130,6 +164,7 @@ pub fn inspect_parameter_pre_registration_evaluation_v1(
             digest: report_digest.to_string(),
         },
         now_ms()?,
+        E1ObservationV1::BeforeRegistration,
     )
 }
 fn unhex(value: &str, maximum: usize) -> HostResult<Vec<u8>> {
@@ -147,17 +182,54 @@ fn unhex(value: &str, maximum: usize) -> HostResult<Vec<u8>> {
         .map(|pair| Ok(u8::from_str_radix(std::str::from_utf8(pair)?, 16)?))
         .collect()
 }
+#[derive(Clone, Copy)]
+enum E1ObservationV1 {
+    BeforeRegistration,
+    Historical,
+}
+/// Completed E1 evidence is verified under the original protected ancestor ACK
+/// and current dataset eligibility. This never calls the old baseline live.
+pub fn inspect_parameter_pre_registration_history_v1(
+    config: &Path,
+    config_digest: Digest32,
+    report: &Path,
+    report_digest: Digest32,
+) -> HostResult<VerifiedParameterPreRegistrationEvaluationV1> {
+    inspect_at(
+        &ParameterRoleSourceV3 {
+            path: config.to_owned(),
+            digest: config_digest.to_string(),
+        },
+        &ParameterRoleSourceV3 {
+            path: report.to_owned(),
+            digest: report_digest.to_string(),
+        },
+        now_ms()?,
+        E1ObservationV1::Historical,
+    )
+}
 fn inspect_at(
     config_source: &ParameterRoleSourceV3,
     report_source: &ParameterRoleSourceV3,
     now: u64,
+    purpose: E1ObservationV1,
 ) -> HostResult<VerifiedParameterPreRegistrationEvaluationV1> {
     let config_bytes = config_source.read(64 * 1024)?;
     let report_bytes = report_source.read(MAX_PARAMETER_PRE_REGISTRATION_REPORT_BYTES_V1 as u64)?;
     let config: FixedParameterPreRegistrationConfigV1 = serde_json::from_slice(&config_bytes)?;
     let output: Output = serde_json::from_slice(&report_bytes)?;
     let body = &output.publication.body;
-    let inputs = inspect(&config, now)?;
+    let original_head = codex_hepta_learning_artifacts::decode_untrusted_signed_artifact_head_v1(
+        &unhex(&body.baseline_signed_head_hex, 4096)?,
+    )?;
+    let inputs = inspect_frontier(
+        &config,
+        now,
+        match purpose {
+            E1ObservationV1::BeforeRegistration => BaselineUseV1::BeforeRegistration,
+            E1ObservationV1::Historical => BaselineUseV1::Historical(&original_head),
+        },
+    )?;
     validate_reviewer(&config, &inputs)?;
     if body.schema != "hepta.parameter-pre-registration-evaluation.v1"
         || body.claim_scope != PARAMETER_PRE_REGISTRATION_CLAIM_V1
@@ -246,7 +318,7 @@ fn inspect_at(
         None if material.is_some() => None,
         _ => return Err("E1 rejection must retain actual terminal evidence".into()),
     };
-    inputs.baseline.revalidate_current(now)?;
+    inputs.baseline.revalidate(now)?;
     if config_source.read(64 * 1024)? != config_bytes
         || report_source.read(MAX_PARAMETER_PRE_REGISTRATION_REPORT_BYTES_V1 as u64)?
             != report_bytes
@@ -258,6 +330,7 @@ fn inspect_at(
         return Err("E1 final observation clock rollback".into());
     }
     config.round.validate(settled_now)?;
+    inputs.baseline.revalidate(settled_now)?;
     inputs.trust.revalidate_at(settled_now)?;
     inputs.trust.verifier().verify(
         LearningEvidenceRoleV1::Evaluator,
@@ -313,5 +386,6 @@ fn inspect_at(
                 .dataset_digest,
         ],
         preparation_terminal,
+        historical: matches!(purpose, E1ObservationV1::Historical),
     })
 }

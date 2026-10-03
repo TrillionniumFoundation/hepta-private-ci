@@ -2240,3 +2240,8 @@ mod transaction_binding_tests;
 #[cfg(test)]
 #[path = "owner_generation_tests.rs"]
 mod generation_tests;
+
+#[path = "owner_signed_head_material.rs"]
+mod signed_head_material;
+pub use signed_head_material::decode_untrusted_signed_artifact_head_v1;
+pub use signed_head_material::encode_untrusted_signed_artifact_head_v1;

@@ -43,6 +43,7 @@ pub(super) struct Body {
     pub baseline_registration_digest: String,
     pub baseline_model_artifact_id: String,
     pub baseline_registry_head: String,
+    pub baseline_signed_head_hex: String,
     pub baseline_current_witness: String,
     pub baseline_publication_operation: String,
     pub baseline_publication_state: String,
@@ -170,11 +171,22 @@ pub(super) fn measure_body(
             .to_string(),
         baseline_registry_head: inputs
             .baseline
-            .current_view()
-            .receipt()
+            .current_head()
+            .witness
             .head_digest
             .to_string(),
-        baseline_current_witness: inputs.baseline.current_view().witness_digest().to_string(),
+        baseline_signed_head_hex: hex(
+            &codex_hepta_learning_artifacts::encode_untrusted_signed_artifact_head_v1(
+                inputs.baseline.current_head(),
+            ),
+        ),
+        baseline_current_witness: inputs
+            .baseline
+            .acknowledgement()
+            .witness_receipt
+            .ok_or("original baseline witness ACK")?
+            .witness_digest
+            .to_string(),
         baseline_publication_operation: inputs.baseline.acknowledgement().operation_id.to_string(),
         baseline_publication_state: inputs.baseline.acknowledgement().state_digest.to_string(),
         generator_digest: inputs.admission.generator_digest.to_string(),
@@ -298,7 +310,7 @@ pub fn run_parameter_pre_registration_evaluator_v1(path: &Path) -> HostResult<()
     }
     body.measured_at_ms = measured;
     let current = inspect(&config, measured)?;
-    inputs.baseline.revalidate_current(measured)?;
+    inputs.baseline.revalidate(measured)?;
     if read_root_review_input(path, 64 * 1024)? != bytes {
         return Err("E1 protected config changed".into());
     }

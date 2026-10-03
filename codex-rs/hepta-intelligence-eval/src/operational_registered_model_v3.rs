@@ -233,6 +233,21 @@ fn inspect_current_material(
     subject: &StableId,
     now: u64,
 ) -> HostResult<RegisteredArtifactCurrentFactsV3> {
+    inspect_material_frontier(
+        registration,
+        plan,
+        subject,
+        now,
+        material_inspection::MaterialHeadV1::Current,
+    )
+}
+fn inspect_material_frontier(
+    registration: &Registration,
+    plan: &NeuronGenerationMaterialV2,
+    subject: &StableId,
+    now: u64,
+    frontier: material_inspection::MaterialHeadV1<'_>,
+) -> HostResult<RegisteredArtifactCurrentFactsV3> {
     validate_neuron_generation_material_v2(plan)?;
     if registration.subject != subject.as_str()
         || NeuronTickInputV1::journal_scope_for_subject(subject, plan.scope.objective_digest)?
@@ -242,12 +257,18 @@ fn inspect_current_material(
     }
     let owner = registration.owner.open(now)?;
     let view = owner.current_registry_view(now)?;
-    let head = owner.protected_current_head(now)?;
+    let current_head = owner.protected_current_head(now)?;
+    let head = match frontier {
+        material_inspection::MaterialHeadV1::Current => current_head.clone(),
+        material_inspection::MaterialHeadV1::Historical(head) => head.clone(),
+    };
     let operation = StableId::new(registration.publication_operation_id.clone())?;
     let acknowledgement = owner
         .acknowledged_publication(&operation, &head, now)?
         .ok_or("registered CURRENT has no complete original publication ACK")?;
-    if acknowledgement.registry_receipt != Some(view.receipt()) {
+    if matches!(frontier, material_inspection::MaterialHeadV1::Current)
+        && acknowledgement.registry_receipt != Some(view.receipt())
+    {
         return Err("registered whole current/ACK mismatch".into());
     }
     let predecessor = registration
@@ -275,75 +296,27 @@ fn inspect_current_material(
         }
         _ => return Err("complete exact initial/successor predecessor facts".into()),
     }
-    let profile = plan.runtime.execution_profile_digest_v1()?;
-    let expected = [
-        (ArtifactKind::Model, plan.runtime.weights_digest),
-        (
-            ArtifactKind::Policy,
-            plan.runtime.calibration.calibration_artifact_digest,
-        ),
-        (
-            ArtifactKind::Policy,
-            plan.runtime.calibration.ood_artifact_digest,
-        ),
-    ];
-    let mut manifests: Vec<ValidatedArtifactManifestV2> = Vec::new();
-    let mut expiry = head.witness.expires_at;
-    for (source, (kind, payload)) in registration.manifests.iter().zip(expected) {
-        source.source.read(128 * 1024)?;
-        let admission = read_artifact_admission_by_digest(
-            codex_hepta_learning_ledger::open_root_review_input(&source.source.path)?,
-            source.admission_digest.parse()?,
-        )?;
-        let full = validate_artifact_manifest_v2(admission.validated_manifest.manifest, now)?;
-        let manifest = &full.manifest;
-        let current = view
-            .eligible_manifest(&manifest.artifact_id)
-            .ok_or("registered three-artifact CURRENT eligibility")?;
-        if admission.withdrawal_scope_digest != head.withdrawal_scope_digest
-            || manifest.kind != kind
-            || manifest.generation != plan.runtime.generation
-            || manifest.bytes_digest != payload
-            || manifest.runtime_tuple_digest != profile
-            || manifest.compatibility_digest != profile
-            || manifest.device_profile_digest != plan.runtime.device_digest
-            || manifest.normalization_digest != plan.runtime.normalization_digest
-            || manifest.objective_class_digest != plan.scope.objective_digest
-            || current.kind != kind
-            || current.generation != manifest.generation
-            || current.content_digest != payload
-            || current.encoded_size_bytes != manifest.encoded_size_bytes
-            || current.support_digest != full.manifest_digest
-            || current.compatibility_digest != profile
-            || current.objective_digest != manifest.objective_class_digest
-            || current.producer_id != manifest.producer_id
-            || current.predecessor_id.as_ref() != manifest.predecessor_ids.first()
-            || manifest.predecessor_ids.len() != usize::from(predecessor.is_some())
-            || manifests
-                .iter()
-                .any(|m| m.manifest.artifact_id == manifest.artifact_id)
-            || manifest
-                .source_dataset_digests
-                .iter()
-                .any(|dataset| !view.supports_dataset(current, *dataset))
-        {
-            return Err(
-                "full independently current registered manifest/runtime/source tuple".into(),
-            );
+    let (manifests, expiry) =
+        material_inspection::manifests(registration, plan, &view, &head, &predecessor, now)?;
+    if matches!(frontier, material_inspection::MaterialHeadV1::Historical(_)) {
+        let receipt = acknowledgement
+            .registry_receipt
+            .ok_or("historical original ACK registry receipt")?;
+        for manifest in &manifests {
+            for dataset in &manifest.manifest.source_dataset_digests {
+                if !owner
+                    .historical_dataset_members(receipt, *dataset, now)?
+                    .contains(&manifest.manifest.artifact_id)
+                {
+                    return Err(
+                        "historical baseline manifest is not in original acknowledged prefix"
+                            .into(),
+                    );
+                }
+            }
         }
-        if kind == ArtifactKind::Model
-            && (manifest.predecessor_ids.first() != predecessor.as_ref()
-                || !manifest
-                    .lineage_digests
-                    .contains(&plan.runtime.model_manifest_digest))
-        {
-            return Err("actual model predecessor/whole model source".into());
-        }
-        source.source.read(128 * 1024)?;
-        expiry = expiry.min(manifest.expires_at);
-        manifests.push(full);
     }
-    if owner.protected_current_head(now)? != head
+    if owner.protected_current_head(now)? != current_head
         || owner.current_registry_view(now)?.receipt() != view.receipt()
     {
         return Err("registered original CURRENT changed during inspection".into());
@@ -377,7 +350,9 @@ fn inspect_current_material(
         )
         .collect(),
     };
-    if plan.runtime.generation.get() >= 2 {
+    if matches!(frontier, material_inspection::MaterialHeadV1::Current)
+        && plan.runtime.generation.get() >= 2
+    {
         facts.operational_binding = Some(registered_binding(registration, plan, &facts)?);
     }
     Ok(facts)
@@ -465,3 +440,10 @@ fn input_profile_digest(plan: &NeuronGenerationMaterialV2) -> HostResult<Digest3
 #[cfg(test)]
 #[path = "operational_registered_model_v3_tests.rs"]
 mod tests;
+
+#[path = "registered_material_history_v1.rs"]
+mod material_history;
+#[path = "registered_material_inspection_v1.rs"]
+mod material_inspection;
+pub use material_history::HistoricalRegisteredArtifactFactsV1;
+pub use material_history::inspect_historical_registered_artifact_material_v1;

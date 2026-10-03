@@ -27,10 +27,54 @@ use codex_hepta_plasticity::validate_parameter_admission_binding_v1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+pub(super) enum BaselineFactsV1 {
+    Current(RegisteredArtifactCurrentFactsV3),
+    Historical(crate::HistoricalRegisteredArtifactFactsV1),
+}
+impl BaselineFactsV1 {
+    pub fn current_head(&self) -> &codex_hepta_learning_artifacts::SignedCurrentArtifactHeadV1 {
+        match self {
+            Self::Current(f) => f.current_head(),
+            Self::Historical(f) => f.original_head(),
+        }
+    }
+    pub fn current_view(&self) -> &codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1 {
+        match self {
+            Self::Current(f) => f.current_view(),
+            Self::Historical(f) => f.current_view(),
+        }
+    }
+    pub fn manifests(&self) -> &[codex_hepta_learning_artifacts::ValidatedArtifactManifestV2; 3] {
+        match self {
+            Self::Current(f) => f.manifests(),
+            Self::Historical(f) => f.manifests(),
+        }
+    }
+    pub fn acknowledgement(
+        &self,
+    ) -> &codex_hepta_learning_artifacts::ArtifactOwnerPublicationCheckpointV1 {
+        match self {
+            Self::Current(f) => f.acknowledgement(),
+            Self::Historical(f) => f.acknowledgement(),
+        }
+    }
+    pub fn expires_at(&self) -> u64 {
+        match self {
+            Self::Current(f) => f.expires_at(),
+            Self::Historical(f) => f.expires_at(),
+        }
+    }
+    pub fn revalidate(&self, now: u64) -> HostResult<()> {
+        match self {
+            Self::Current(f) => f.revalidate_current(now),
+            Self::Historical(f) => f.revalidate_historical(now),
+        }
+    }
+}
 pub(super) struct Inputs {
     pub source: SourceInputs,
     pub plan: NeuronGenerationMaterialV2,
-    pub baseline: RegisteredArtifactCurrentFactsV3,
+    pub baseline: BaselineFactsV1,
     pub admission: PlasticityAdmissionEvidenceV1,
     pub trust: ActivatedLearningTrustV1,
     pub reviewer: TrustedLearningSignerV1,
@@ -42,6 +86,17 @@ pub(super) struct Inputs {
 pub(super) fn inspect(
     config: &FixedParameterPreRegistrationConfigV1,
     now: u64,
+) -> HostResult<Inputs> {
+    inspect_frontier(config, now, BaselineUseV1::BeforeRegistration)
+}
+pub(super) enum BaselineUseV1<'a> {
+    BeforeRegistration,
+    Historical(&'a codex_hepta_learning_artifacts::SignedCurrentArtifactHeadV1),
+}
+pub(super) fn inspect_frontier(
+    config: &FixedParameterPreRegistrationConfigV1,
+    now: u64,
+    purpose: BaselineUseV1<'_>,
 ) -> HostResult<Inputs> {
     config.round.validate(now)?;
     if config.schema != "hepta.fixed-parameter-pre-registration-evaluator-config.v1"
@@ -108,15 +163,29 @@ pub(super) fn inspect(
             "runtime calibration gates differ from actual authenticated head measurement".into(),
         );
     }
-    let baseline = inspect_registered_artifact_current_material_v3(
-        &config.baseline_registration.path,
-        config.baseline_registration.digest.parse()?,
-        &baseline_material,
-        &StableId::new(config.subject.clone())?,
-        now,
-    )?;
+    let baseline = match purpose {
+        BaselineUseV1::BeforeRegistration => {
+            BaselineFactsV1::Current(inspect_registered_artifact_current_material_v3(
+                &config.baseline_registration.path,
+                config.baseline_registration.digest.parse()?,
+                &baseline_material,
+                &StableId::new(config.subject.clone())?,
+                now,
+            )?)
+        }
+        BaselineUseV1::Historical(head) => {
+            BaselineFactsV1::Historical(crate::inspect_historical_registered_artifact_material_v1(
+                &config.baseline_registration.path,
+                config.baseline_registration.digest.parse()?,
+                &baseline_material,
+                &StableId::new(config.subject.clone())?,
+                head,
+                now,
+            )?)
+        }
+    };
     if baseline.current_head().binding != admission.artifact_registry_binding
-        || baseline.current_view().receipt().head_digest != admission.artifact_registry_head_digest
+        || baseline.current_head().witness.head_digest != admission.artifact_registry_head_digest
         || baseline.manifests()[0].manifest.artifact_id != admission.baseline_id
     {
         return Err(

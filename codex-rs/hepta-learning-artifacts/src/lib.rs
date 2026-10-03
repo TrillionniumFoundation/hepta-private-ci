@@ -173,3 +173,6 @@ pub use storage_hygiene::cleanup_zero_length_orphan_beneath;
 
 pub use owner_service::LearningArtifactPublicationStatusV1;
 pub use pinned::VerifiedCurrentRegistryUseWindowV1;
+
+pub use owner_host::decode_untrusted_signed_artifact_head_v1;
+pub use owner_host::encode_untrusted_signed_artifact_head_v1;
