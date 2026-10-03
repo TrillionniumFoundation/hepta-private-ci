@@ -1,10 +1,10 @@
-use super::*;
 use super::super::FinalUseBinding;
 use super::super::ModelRelayPolicy;
 use super::super::Observation;
 use super::super::Peer;
 use super::super::RootModelFailureV1;
 use super::super::http;
+use super::*;
 use codex_hepta_types::Digest32;
 use pretty_assertions::assert_eq;
 use std::os::unix::fs::PermissionsExt;
@@ -102,8 +102,9 @@ fn workload_reader_cannot_treat_its_projection_as_root_model_custody() {
     if rustix::process::geteuid().as_raw() == 0 {
         return;
     }
-    let error = RootModelOutcomeReceiptV1::read_original_protected(Path::new("/"), SUBJECT, REQUEST)
-        .expect_err("workload must be refused before file reads");
+    let error =
+        RootModelOutcomeReceiptV1::read_original_protected(Path::new("/"), SUBJECT, REQUEST)
+            .expect_err("workload must be refused before file reads");
     assert_eq!(
         error.to_string(),
         "original model facts require the actual Root reader"
@@ -112,7 +113,8 @@ fn workload_reader_cannot_treat_its_projection_as_root_model_custody() {
 
 #[test]
 #[ignore = "requires an actual Root process and isolated protected /run directory"]
-fn actual_root_writer_reader_retains_full_escaped_prompt_and_original_failure() -> anyhow::Result<()> {
+fn actual_root_writer_reader_retains_full_escaped_prompt_and_original_failure() -> anyhow::Result<()>
+{
     let directory = directory()?;
     // A valid original 32KiB prompt can exceed a 16KiB JSON read bound by an
     // order of magnitude. The reader keeps its whole admission intact.
@@ -125,7 +127,9 @@ fn actual_root_writer_reader_retains_full_escaped_prompt_and_original_failure() 
     // Preserve a late completion as a provider observation, not current use.
     original.finish(201)?;
     let expected: RootModelOutcomeReceiptV1 = serde_json::from_slice(&store::read_protected(
-        &terminal(directory.path())?, MAX_ORIGINAL_MODEL_FACT_BYTES, /*private*/ true,
+        &terminal(directory.path())?,
+        MAX_ORIGINAL_MODEL_FACT_BYTES,
+        /*private*/ true,
     )?)?;
     assert_eq!(
         RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST)?,
@@ -136,9 +140,16 @@ fn actual_root_writer_reader_retains_full_escaped_prompt_and_original_failure() 
     let failure = RootModelFailureV1::HttpRejection { status: 503 };
     original.fail(failure.clone(), 150)?;
     let actual = RootModelOutcomeReceiptV1::read_original_protected(
-        failed_directory.path(), SUBJECT, REQUEST,
+        failed_directory.path(),
+        SUBJECT,
+        REQUEST,
     )?;
-    let RootModelOutcomeReceiptV1::Failed { failure: observed, observed_at_ms, .. } = actual else {
+    let RootModelOutcomeReceiptV1::Failed {
+        failure: observed,
+        observed_at_ms,
+        ..
+    } = actual
+    else {
         anyhow::bail!("original failure was converted to completion")
     };
     assert_eq!((observed, observed_at_ms), (failure, 150));
@@ -150,7 +161,10 @@ fn actual_root_writer_reader_retains_full_escaped_prompt_and_original_failure() 
 fn actual_root_reader_denies_whole_admission_tamper_and_unsettled_files() -> anyhow::Result<()> {
     let directory = directory()?;
     let mut original = reserved(directory.path(), "original")?;
-    assert!(RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST).is_err());
+    assert!(
+        RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST)
+            .is_err()
+    );
     assert_eq!(std::fs::read_dir(directory.path())?.count(), 1);
     complete(&mut original)?;
     original.finish(150)?;
@@ -160,12 +174,22 @@ fn actual_root_reader_denies_whole_admission_tamper_and_unsettled_files() -> any
         let mut changed: serde_json::Value = serde_json::from_slice(&original_bytes)?;
         changed["receipt"][field] = serde_json::json!("substituted");
         std::fs::write(&path, serde_json::to_vec(&changed)?)?;
-        assert!(RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST).is_err(), "{field}");
+        assert!(
+            RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST)
+                .is_err(),
+            "{field}"
+        );
     }
     std::fs::write(&path, b"{\"outcome\":\"completed\",\"receipt\":")?;
-    assert!(RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST).is_err());
+    assert!(
+        RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST)
+            .is_err()
+    );
     std::fs::write(&path, vec![b' '; MAX_ORIGINAL_MODEL_FACT_BYTES + 1])?;
-    assert!(RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST).is_err());
+    assert!(
+        RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST)
+            .is_err()
+    );
     assert_eq!(std::fs::read_dir(directory.path())?.count(), 2);
     Ok(())
 }
@@ -180,15 +204,24 @@ fn actual_root_reader_denies_other_links_modes_and_replaced_file_kinds() -> anyh
     let path = terminal(directory.path())?;
     let link = directory.path().join("fixture-alias");
     std::fs::hard_link(&path, &link)?;
-    assert!(RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST).is_err());
+    assert!(
+        RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST)
+            .is_err()
+    );
     std::fs::remove_file(&link)?;
     for mode in [0o640, 0o400] {
         std::fs::set_permissions(&path, std::fs::Permissions::from_mode(mode))?;
-        assert!(RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST).is_err());
+        assert!(
+            RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST)
+                .is_err()
+        );
     }
     std::fs::set_permissions(&path, std::fs::Permissions::from_mode(0o600))?;
     std::fs::rename(&path, &link)?;
     std::os::unix::fs::symlink(&link, &path)?;
-    assert!(RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST).is_err());
+    assert!(
+        RootModelOutcomeReceiptV1::read_original_protected(directory.path(), SUBJECT, REQUEST)
+            .is_err()
+    );
     Ok(())
 }

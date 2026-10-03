@@ -122,7 +122,10 @@ impl RootFleetPeerAdmissionV1 {
                     == self.policy_bytes
                 && current.subject() == subject
                 && self.config.admitted_subject(current.uid(), cgroup)? == subject
-                && self.config.allowed_executable_sha256.contains(executable_sha256),
+                && self
+                    .config
+                    .allowed_executable_sha256
+                    .contains(executable_sha256),
             "historical native observation differs from original model enrollment"
         );
         Ok(())
