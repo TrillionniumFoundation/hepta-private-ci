@@ -80,7 +80,9 @@
     "codex-rs/hepta-context-compiler/src/wire_tests.rs",
     "codex-rs/hepta-context-compiler/src/lib.rs",
     "scripts/test_context_compiler_execution.py",
-    "scripts/test_context_compiler_execution_boundary.py"
+    "scripts/test_context_compiler_execution_boundary.py",
+    "codex-rs/core/src/client_tests.rs",
+    "codex-rs/core/src/responses_metadata.rs"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -270,13 +272,13 @@
   ],
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "ea176dd0e2e69d7b701158fc39b6108359541cbb80f8c0cbaaf581d15c084135",
+    "stateSha256": "d993e1dc19e25104b6ee4192656c9a88119c577d05e84a566f59b211d397d1cd",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
   },
-  "runtimeSourceAnchor": "e3767e1bc88a680a6db931746a2b1b74044afeea",
-  "runtimeSourceTree": "e797e95a243dc8d7ffa0c89a2b0f855470fc85e9",
+  "runtimeSourceAnchor": "78c68bf76436ef4e5d41a10ade76ddfe924d92d4",
+  "runtimeSourceTree": "339eec26b417d0de11bf49b7a541c9c34e5d1407",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -446,7 +448,7 @@
     },
     {
       "path": "scripts/context_compiler_execution.py",
-      "blobSha": "6e80a37e7de6deb315cae362d69a6a3d5276faad"
+      "blobSha": "040ff0457678337b0daa52d0213cd3f7b8eb219b"
     },
     {
       "path": "scripts/context_compiler_named_evidence.py",
@@ -518,11 +520,23 @@
     },
     {
       "path": "scripts/test_context_compiler_execution.py",
-      "blobSha": "7625af08a8c7166cc2dcb3f76fbd86f2906acd7a"
+      "blobSha": "bd49844c22fb2cb6e8bff45c51d93a613510aa31"
     },
     {
       "path": "scripts/test_context_compiler_execution_boundary.py",
       "blobSha": "58e32d4892936bf819258c080b86d8f30cbb3fd5"
+    },
+    {
+      "path": "codex-rs/core/src/client.rs",
+      "blobSha": "b56c62cbda00cbc75b506fb4c72c18c8eaf6ea68"
+    },
+    {
+      "path": "codex-rs/core/src/client_tests.rs",
+      "blobSha": "f718ceec109f94d02651b132865479c8dbde17d1"
+    },
+    {
+      "path": "codex-rs/core/src/responses_metadata.rs",
+      "blobSha": "da91fab68cd0b29d05ed0c8cb109d9f8bf7765c4"
     }
   ],
   "consumerExecution": [
