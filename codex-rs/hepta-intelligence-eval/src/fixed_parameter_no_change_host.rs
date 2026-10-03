@@ -86,13 +86,10 @@ fn run_evaluator(path: &Path, measured_rejection: bool) -> HostResult<()> {
         return Err("fixed parameter E enrollment policy".into());
     }
     boundary(config.uid, config.gid)?;
-    let program = Digest32::of_bytes(&read_root_review_input(
+    let program = crate::verify_registered_operational_program_v3(
         &std::env::current_exe()?,
-        128 * 1024 * 1024,
-    )?);
-    if program != config.program_digest.parse()? {
-        return Err("fixed parameter E program pin".into());
-    }
+        config.program_digest.parse()?,
+    )?;
     for inaccessible in &config.inaccessible_paths {
         match File::open(inaccessible) {
             Err(error) if error.kind() == std::io::ErrorKind::PermissionDenied => (),
@@ -181,10 +178,8 @@ fn run_evaluator(path: &Path, measured_rejection: bool) -> HostResult<()> {
         if read_root_review_input(path, MAX_CONFIG_BYTES)? != config_bytes
             || read_root_review_input(&config.trust_path, 128 * 1024)? != trust_bytes
             || read_root_review_input(&config.inputs_path, MAX_INPUT_BYTES)? != inputs_bytes
-            || Digest32::of_bytes(&read_root_review_input(
-                &std::env::current_exe()?,
-                128 * 1024 * 1024,
-            )?) != program
+            || crate::verify_registered_operational_program_v3(&std::env::current_exe()?, program)?
+                != program
         {
             return Err("parameter E immutable inputs changed".into());
         }
