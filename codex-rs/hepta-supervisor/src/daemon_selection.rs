@@ -36,7 +36,9 @@ impl SelectionServer {
         use std::os::unix::fs::PermissionsExt;
         prepare_socket(&socket_path).await?;
         let listener = UnixListener::bind(&socket_path).await?;
-        let parent = socket_path.parent().expect("prepared socket parent");
+        let parent = socket_path
+            .parent()
+            .ok_or_else(|| SupervisorError::Invalid("prepared socket parent is absent".into()))?;
         if uids != std::collections::BTreeSet::from([unsafe { libc::geteuid() }]) {
             use std::ffi::CString;
             for path in [parent, socket_path.as_path()] {

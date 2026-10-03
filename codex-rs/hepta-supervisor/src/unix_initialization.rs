@@ -37,6 +37,9 @@ fn remember_fault(failure: &mut Option<String>, result: Result<(), ProcessDriver
     }
 }
 
+// An acquired OS child cannot be returned without custody. Its positive PID
+// and bounded generated ASCII incarnation satisfy the original constructor.
+#[allow(clippy::expect_used)]
 pub(super) fn finish_child(
     mut child: Child,
     generation: u64,

@@ -33,9 +33,7 @@ impl SupervisorObserverClient {
                 "observer requires an absolute socket path".into(),
             ));
         }
-        let random = uuid::Uuid::new_v4();
-        let request_seed =
-            u64::from_be_bytes(random.as_bytes()[..8].try_into().expect("UUID prefix"));
+        let request_seed = uuid::Uuid::new_v4().as_u64_pair().0;
         Ok(Self {
             socket_path,
             owner_uid,

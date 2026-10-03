@@ -532,13 +532,7 @@ impl SupervisordClient {
 }
 
 fn random_request_seed() -> u64 {
-    let bytes = *uuid::Uuid::new_v4().as_bytes();
-    let seed = u64::from_be_bytes(
-        bytes[..8]
-            .try_into()
-            .expect("UUID prefix is exactly eight bytes"),
-    );
-    seed.max(1)
+    uuid::Uuid::new_v4().as_u64_pair().0.max(1)
 }
 
 fn unexpected<T>(payload: SupervisordPayload) -> Result<T, SupervisorError> {

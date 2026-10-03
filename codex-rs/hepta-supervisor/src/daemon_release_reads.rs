@@ -124,6 +124,9 @@ impl ReleaseReads {
         }
     }
 
+    // Retain the sole receiver under the async mutex across cancellation. The
+    // enclosing prevalidate deadline bounds this wait, and no writer is held.
+    #[allow(clippy::await_holding_invalid_type)]
     async fn read(&self, release_id: ReleaseId, purpose: ReadPurpose) -> ReadResult {
         // The same 250ms budget includes both lock acquisition and read wait.
         let mut pending = self.pending.lock().await;

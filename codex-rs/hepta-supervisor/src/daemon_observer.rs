@@ -39,7 +39,9 @@ impl ObserverServer {
         // connect but cannot redirect or replace this socket or the admin one.
         if principal.uid != unsafe { libc::geteuid() } {
             use std::ffi::CString;
-            let parent = socket_path.parent().expect("prepared observer parent");
+            let parent = socket_path.parent().ok_or_else(|| {
+                SupervisorError::Invalid("prepared socket parent is absent".into())
+            })?;
             for path in [parent, socket_path.as_path()] {
                 let path = CString::new(path.as_os_str().as_encoded_bytes())
                     .map_err(|_| SupervisorError::Invalid("invalid observer path".into()))?;
