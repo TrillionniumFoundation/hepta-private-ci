@@ -122,6 +122,9 @@ impl Widget for RoomScreen {
                 let travel = list.user_scroll_travel();
                 if let Some(at_end) = self.scroll_tracker.observe(travel, list.is_at_end()) {
                     apply(PresentationCommand::UserScrolled { at_end });
+                    // The list action arrives after its own redraw. Repaint the
+                    // parent too so the sibling Jump control reflects the new intent.
+                    self.view.redraw(cx);
                 }
                 #[cfg(feature = "ui-fixtures")]
                 log!(

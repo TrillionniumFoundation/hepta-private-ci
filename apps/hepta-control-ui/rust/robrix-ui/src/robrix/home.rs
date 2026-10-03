@@ -79,7 +79,7 @@ pub struct HomeScreen {
     #[rust]
     rendered: Option<RoomKey>,
     #[rust]
-    theme_return_focus: Option<(RoomKey, Area)>,
+    theme_return_focus: Option<(RoomKey, TextInputRef)>,
 }
 impl ScriptHook for HomeScreen {
     fn on_after_new(&mut self, vm: &mut ScriptVm) {
@@ -101,8 +101,15 @@ impl Widget for HomeScreen {
         if let Event::MouseDown(mouse) = event {
             self.theme_return_focus = None;
             let focus = cx.key_focus();
-            let editor = self.view.text_input(cx, ids!(message_input)).area();
-            let search = self.view.text_input(cx, ids!(room_filter)).area();
+            let editor = self.view.text_input(cx, ids!(message_input));
+            let search = self.view.text_input(cx, ids!(room_filter));
+            let target = if focus == editor.area() {
+                Some(editor)
+            } else if focus == search.area() {
+                Some(search)
+            } else {
+                None
+            };
             let on_theme = [ids!(theme_switch), ids!(mobile_theme_switch)]
                 .into_iter()
                 .any(|id| {
@@ -111,10 +118,10 @@ impl Widget for HomeScreen {
                 });
             if on_theme
                 && focus.is_valid(cx)
-                && (focus == editor || focus == search)
+                && let Some(target) = target
                 && let Some(key) = self.rendered
             {
-                self.theme_return_focus = Some((key, focus));
+                self.theme_return_focus = Some((key, target));
             }
         } else if matches!(event, Event::KeyDown(_)) {
             // A keyboard-activated theme control keeps its own navigation focus.
@@ -134,13 +141,15 @@ impl Widget for HomeScreen {
                 && !workspace.composing
             {
                 crate::visual_theme::cycle(cx);
-                if let Some((key, focus)) = self.theme_return_focus.take()
+                if let Some((key, input)) = self.theme_return_focus.take()
                     && key == source
                     && key.epoch == workspace.presentation_epoch()
                     && key.local_id == workspace.active_id()
-                    && focus.is_valid(cx)
+                    && input.area().is_valid(cx)
                 {
-                    cx.set_key_focus(focus);
+                    // A press may span redraws; resolve the live field's current
+                    // area instead of restoring a stale draw-instance address.
+                    input.take_key_focus(cx);
                 }
             }
             let command = if self.view.button(cx, ids!(conversations)).clicked(actions) {

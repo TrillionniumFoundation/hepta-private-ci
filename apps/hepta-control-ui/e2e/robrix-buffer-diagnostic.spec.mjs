@@ -1,10 +1,14 @@
 // Diagnostic comparison only. The unmodified host's strict OCR acceptance runs separately.
 import {test,expect} from '@playwright/test';
 import {writeFile} from 'node:fs/promises';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
+import {fileURLToPath} from 'node:url';
 import {readScreenshotText} from '../tools/verify-robrix-pixels.mjs';
+const run=promisify(execFile);
 
 test('compare the same WASM with default and retained drawing buffers',async({browser},testInfo)=>{
- const observations=[];
+ const observations=[];const diagnosticErrors=[];
  for(const preserve of [false,true]){
   const context=await browser.newContext({viewport:{width:1280,height:800}});
   const page=await context.newPage();const events=[];const pending=new Set();
@@ -38,11 +42,22 @@ test('compare the same WASM with default and retained drawing buffers',async({br
      return{available:true,width,height,contextLost:gl.isContextLost(),attributes:gl.getContextAttributes(),glError:gl.getError(),sampleColors:colors.size,nonzeroSamples:nonzero};
     });
     const name=`buffer-${preserve?'retained':'default'}-${stage}`;
-    const path=testInfo.outputPath(name+'.png');await page.screenshot({path,caret:'initial'});
+    // Capture the actual isolated X display immediately around Playwright's
+    // page capture. They are adjacent observations, not claimed atomic frames.
+    const captureStarted=Date.now();
+    for(const position of ['before','after']){
+     if(position==='after')await page.screenshot({path:testInfo.outputPath(name+'.png'),caret:'initial'});
+     const displayPath=testInfo.outputPath(name+`-display-${position}.png`);
+     await run('python3',[fileURLToPath(new URL('../tools/capture-xvfb-display.py',import.meta.url)),displayPath],{timeout:10000,maxBuffer:65536});
+     await writeFile(testInfo.outputPath(name+`-display-${position}-ocr.txt`),await readScreenshotText(displayPath));
+    }
+    const path=testInfo.outputPath(name+'.png');
     const ocr=await readScreenshotText(path);await writeFile(testInfo.outputPath(name+'-ocr.txt'),ocr);
-    observations.push({preserve,stage,pixels,ocr});
+    observations.push({preserve,stage,pixels,ocr,captureStarted,captureFinished:Date.now()});
    }
-  }finally{observations.push({preserve,events});await context.close();}
+  }catch(error){diagnosticErrors.push({preserve,message:String(error)});}
+  finally{observations.push({preserve,events});await context.close();}
  }
- await writeFile(testInfo.outputPath('host-diagnostics.json'),JSON.stringify({scope:'diagnostic-only; does not qualify either product host',observations},null,2));
+ await writeFile(testInfo.outputPath('host-diagnostics.json'),JSON.stringify({scope:'diagnostic-only; does not qualify either product host',observations,diagnosticErrors},null,2));
+ expect(diagnosticErrors).toEqual([]);
 });

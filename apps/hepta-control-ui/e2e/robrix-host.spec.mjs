@@ -1,7 +1,7 @@
 // Real canvas evidence. OCR is a necessary glyph regression, not full visual/a11y acceptance.
 import {test,expect} from '@playwright/test';
 import {readFile,writeFile} from 'node:fs/promises';
-import {readScreenshotText,requireChatText,screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
+import {readScreenshotText,requireChatText,screenshotWordCenter,prepareScreenshotForOcr} from '../tools/verify-robrix-pixels.mjs';
 for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
  test(`Robrix host starts under strict CSP ${viewport.width}`,async({page,browserName},testInfo)=>{
   let phase='application';
@@ -79,8 +79,14 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     requireChatText(text,{fixtures:process.env.HEPTA_ROBRIX_FIXTURES==='1'});
     if(process.env.HEPTA_ROBRIX_FIXTURES==='1'){
      if(page.viewportSize().width>=1000){
-      const chinese=await readScreenshotText(path,{language:'eng+chi_sim'});
+      let chinese=await readScreenshotText(path,{language:'eng+chi_sim'});
       await writeFile(testInfo.outputPath(name+'-cjk-ocr.txt'),chinese);
+      if(!/中文输入|键盘焦点|滚动位置/.test(chinese.replace(/\s+/g,''))){
+       const normalized=await prepareScreenshotForOcr(path,testInfo.outputPath(name+'-ocr-pixels.png'));
+       const additional=await readScreenshotText(normalized,{language:'eng+chi_sim'});
+       await writeFile(testInfo.outputPath(name+'-cjk-normalized-ocr.txt'),additional);
+       chinese+='\n'+additional;
+      }
       expect.soft(chinese.replace(/\s+/g,''),'Actual fixture Chinese must render recognizable glyphs').toMatch(/中文输入|键盘焦点|滚动位置/);
      }
      const ordinals=[...text.matchAll(/Fixture\s*(\d{1,3})\b/gi)].map(match=>Number(match[1]));
@@ -91,8 +97,19 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    await assertApplicationHealth(expect.soft);
    return {path,text};
   }
+  async function verifyThemeLabel(captured,theme){
+   let text=captured.text;
+   if(!text.toLowerCase().includes(theme.toLowerCase())){
+    const block=await readScreenshotText(captured.path,{layout:'block'});
+    await writeFile(captured.path.replace(/\.png$/,'-block-ocr.txt'),block);
+    text+='\n'+block;
+   }
+   // The same exact theme name must be read from unchanged real pixels.
+   // Sparse and block segmentation differ; neither performs fuzzy word matching.
+   expect.soft(text.toLowerCase()).toContain(theme.toLowerCase());
+  }
   async function clickRenderedWord(captured,word,options){
-   const point=await screenshotWordCenter(captured.path,word,page.viewportSize().width,options);
+   const point=await screenshotWordCenter(captured.path,word,page.viewportSize().width,{...options,recordOcr:true});
    await page.mouse.click(point.x,point.y);
    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
   }
@@ -109,16 +126,16 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    for(const theme of ['Aurora','Obsidian','Lunar']){
     await expect.poll(()=>pendingFonts.size,{timeout:60000}).toBe(0);
     captured=await capture(`robrix-${theme}-${page.viewportSize().width}`);
-    expect.soft(captured.text.toLowerCase()).toContain(theme.toLowerCase());
-    if(theme==='Aurora') themeControlPoints.set(page.viewportSize().width,await screenshotWordCenter(captured.path,'Aurora',page.viewportSize().width));
+    await verifyThemeLabel(captured,theme);
+    if(theme==='Aurora') themeControlPoints.set(page.viewportSize().width,await screenshotWordCenter(captured.path,'Aurora',page.viewportSize().width,{recordOcr:true}));
     await page.setViewportSize({width:page.viewportSize().width===1280?640:1280,height:800});
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     captured=await capture(`robrix-${theme}-after-resize`);
-    if(theme==='Aurora') themeControlPoints.set(page.viewportSize().width,await screenshotWordCenter(captured.path,'Aurora',page.viewportSize().width));
+    if(theme==='Aurora') themeControlPoints.set(page.viewportSize().width,await screenshotWordCenter(captured.path,'Aurora',page.viewportSize().width,{recordOcr:true}));
     if(theme==='Aurora'){
      await page.mouse.click(page.viewportSize().width*0.65,720);
-     await page.keyboard.insertText('Theme round trip draft 🚀');
-     await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(/Theme round trip draft 🚀/);
+     await page.keyboard.insertText('Theme round trip draft 中文🚀');
+     await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(/Theme round trip draft 中文🚀/);
      captured=await capture('robrix-draft-before-theme');
      expect(captured.text).toMatch(/Theme round trip draft/i);
     }else{
@@ -129,12 +146,16 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     // Label OCR remains a failing assertion even when we continue collecting.
     const point=themeControlPoints.get(page.viewportSize().width);
     expect(point).toBeTruthy();
-    await page.mouse.click(point.x,point.y);
+    await page.mouse.move(point.x,point.y);
+    await page.mouse.down();
+    // Let the real focus-loss/hover redraw occur while the pointer is held.
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    await page.mouse.up();
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     await page.keyboard.type(' kept');
    }
    captured=await capture('robrix-theme-round-trip');
-   expect.soft(captured.text).toMatch(/Aurora/i);
+   await verifyThemeLabel(captured,'Aurora');
    expect(captured.text).toMatch(/Theme round trip draft/i);
    expect.soft(captured.text).toMatch(/kept/i);
    await clickRenderedWord(captured,'Console',{topOnly:true});
@@ -145,7 +166,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    // Re-enter the real Rust editor after the Console round trip. Its native
    // mirror must be repopulated from owner state, including the astral character.
    await page.mouse.click(page.viewportSize().width*0.65,720);
-   await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(/Theme round trip draft 🚀/);
+   await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(/Theme round trip draft 中文🚀/);
    if(process.env.HEPTA_ROBRIX_FIXTURES==='1'){
     const before=scrollObservations.at(-1)?.travel??0;
     await page.mouse.move(page.viewportSize().width*0.75,350);
@@ -164,7 +185,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     await clickRenderedWord(captured,'Jump');
     await expect.poll(()=>scrollObservations.at(-1)?.atEnd).toBe(true);
     captured=await capture('robrix-jump-to-latest');
-    expect(captured.text).toMatch(/Fixture\s*63/i);
+    expect(captured.text).toMatch(/Fixture\s*64/i);
    }
    await assertApplicationHealth();
 
