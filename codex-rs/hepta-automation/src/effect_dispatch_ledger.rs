@@ -7,6 +7,7 @@
 //! ever inferring terminality from process-local control flow.
 
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_contracts::VerifiedUseTokenWitnessV1;
 use sqlx::Row;
 
 use crate::AutomationStore;
@@ -341,6 +342,123 @@ impl AutomationStore {
             Err(_) => Err(TaskFlowError::Unavailable),
         }
     }
+
+    pub(crate) async fn record_effect_dispatch_authority_witness(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+        witness: &VerifiedUseTokenWitnessV1,
+    ) -> Result<VerifiedUseTokenWitnessV1, TaskFlowError> {
+        witness.validate().map_err(|_| {
+            TaskFlowError::Invalid("effect authority witness is invalid".to_string())
+        })?;
+        let witness_json = serde_json::to_vec(witness)
+            .map_err(|_| TaskFlowError::Invalid("effect authority witness JSON".to_string()))?;
+        if witness_json.len() > 16_384 {
+            return Err(TaskFlowError::Invalid(
+                "effect authority witness exceeds its bound".to_string(),
+            ));
+        }
+        let witness_digest = authority_witness_digest(&witness_json);
+        let inserted = sqlx::query(
+            "INSERT INTO taskflow_effect_dispatch_authority_witnesses (
+                owner_agent_id, run_id, step_id, attempt, witness_json,
+                witness_sha256, verified_at_unix_ms
+             ) VALUES (?, ?, ?, ?, ?, ?, ?)",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .bind(step_id)
+        .bind(i64::from(attempt))
+        .bind(&witness_json)
+        .bind(witness_digest.as_str())
+        .bind(to_i64(witness.verified_at_unix_ms)?)
+        .execute(self.taskflow_pool())
+        .await;
+
+        // A failed write is not evidence of database corruption or absence.
+        // Only a constraint conflict permits inspecting an existing receipt.
+        if let Err(error) = &inserted
+            && !is_constraint(error)
+        {
+            return Err(TaskFlowError::Unavailable);
+        }
+        let stored = self
+            .effect_dispatch_authority_witness(run_id, step_id, attempt)
+            .await?
+            .ok_or_else(|| {
+                TaskFlowError::Corrupt("effect authority witness vanished after insert".to_string())
+            })?;
+        match inserted {
+            Ok(_) => Ok(stored),
+            Err(error) if is_constraint(&error) && stored == *witness => Ok(stored),
+            Err(error) if is_constraint(&error) => Err(TaskFlowError::Conflict(
+                "effect dispatch already has a different authority witness".to_string(),
+            )),
+            Err(_) => Err(TaskFlowError::Unavailable),
+        }
+    }
+
+    pub(crate) async fn effect_dispatch_authority_witness(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+    ) -> Result<Option<VerifiedUseTokenWitnessV1>, TaskFlowError> {
+        let row = sqlx::query(
+            "SELECT witness_json, witness_sha256, verified_at_unix_ms
+             FROM taskflow_effect_dispatch_authority_witnesses
+             WHERE owner_agent_id = ? AND run_id = ? AND step_id = ? AND attempt = ?",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(run_id)
+        .bind(step_id)
+        .bind(i64::from(attempt))
+        .fetch_optional(self.taskflow_pool())
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        row.map(|row| {
+            let bytes: Vec<u8> = row.try_get("witness_json").map_err(|_| {
+                TaskFlowError::Corrupt("effect authority witness bytes".to_string())
+            })?;
+            let digest =
+                Sha256Digest::parse(row.try_get::<String, _>("witness_sha256").map_err(|_| {
+                    TaskFlowError::Corrupt("effect authority witness digest".to_string())
+                })?)
+                .map_err(|_| {
+                    TaskFlowError::Corrupt("effect authority witness digest".to_string())
+                })?;
+            if authority_witness_digest(&bytes) != digest {
+                return Err(TaskFlowError::Corrupt(
+                    "effect authority witness digest mismatch".to_string(),
+                ));
+            }
+            let witness: VerifiedUseTokenWitnessV1 = serde_json::from_slice(&bytes)
+                .map_err(|_| TaskFlowError::Corrupt("effect authority witness JSON".to_string()))?;
+            witness.validate().map_err(|_| {
+                TaskFlowError::Corrupt("effect authority witness semantics".to_string())
+            })?;
+            let recorded_at = to_u64(row.try_get("verified_at_unix_ms").map_err(|_| {
+                TaskFlowError::Corrupt("effect authority witness timestamp".to_string())
+            })?)?;
+            if witness.verified_at_unix_ms != recorded_at
+                || serde_json::to_vec(&witness).ok().as_deref() != Some(bytes.as_slice())
+            {
+                return Err(TaskFlowError::Corrupt(
+                    "effect authority witness is not canonical".to_string(),
+                ));
+            }
+            Ok(witness)
+        })
+        .transpose()
+    }
+}
+
+fn authority_witness_digest(bytes: &[u8]) -> Sha256Digest {
+    let mut domain = b"hepta.automation.effect-authority-witness.v1\0".to_vec();
+    domain.extend_from_slice(bytes);
+    Sha256Digest::for_bytes(&domain)
 }
 
 fn effect_attempt_from_row(

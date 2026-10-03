@@ -37,6 +37,42 @@ async fn store() -> (TempDir, AuthBusAuthorityStore) {
 }
 
 #[tokio::test]
+async fn relative_database_path_preserves_durable_policy_on_reopen() {
+    let root = TempDir::new_in(".").expect("relative fixture root");
+    let absolute_root = std::path::absolute(root.path()).expect("absolute fixture path");
+    let cwd = std::env::current_dir().expect("current directory");
+    let path = absolute_root
+        .strip_prefix(cwd)
+        .expect("fixture lies within current directory")
+        .join("authbus.sqlite");
+    assert!(path.is_relative());
+    let store = AuthBusAuthorityStore::open(&path)
+        .await
+        .expect("relative open");
+    let created = store
+        .create_policy(policy(PolicyEffect::Allow), sample(1, 1_100))
+        .await
+        .expect("durable policy");
+    store.pool.close().await;
+    let reopened = AuthBusAuthorityStore::open(&path)
+        .await
+        .expect("relative reopen");
+    let result = reopened
+        .authorize(
+            &created.principal,
+            &created.action,
+            created.scope_digest,
+            created.revision,
+            sample(2, 1_200),
+        )
+        .await
+        .expect("reopened authorization");
+    assert!(result.allowed());
+    assert!(!result.authority().grants_any());
+    reopened.pool.close().await;
+}
+
+#[tokio::test]
 async fn authorization_is_revision_bound_and_explicit_deny_grants_no_authority() {
     let (_root, store) = store().await;
     let created = store

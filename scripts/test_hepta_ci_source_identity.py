@@ -369,6 +369,38 @@ class ImplementationMapSourceIdentityTests(unittest.TestCase):
 
 
 class SourceConformanceTests(unittest.TestCase):
+    def test_associated_rust_anchor_resolves_the_named_owner_declaration(self):
+        source = """
+            impl<'a, T> EffectHost<'a, T> where T: Send {
+                pub(crate) async fn open<U>(value: U) -> Self { todo!() }
+            }
+        """
+        self.assertTrue(
+            IMAPS.rust_associated_function_present(source, "EffectHost::open")
+        )
+        self.assertFalse(
+            IMAPS.rust_associated_function_present(source, "OtherHost::open")
+        )
+        self.assertFalse(
+            IMAPS.rust_associated_function_present(source, "EffectHost::missing")
+        )
+
+    def test_associated_rust_anchor_rejects_comments_literals_and_calls(self):
+        for source in [
+            "// impl EffectHost { fn open() {} }\n",
+            'const NOTE: &str = r#"impl EffectHost { fn open() {} }"#;',
+            "impl OtherHost { fn open() {} }",
+            "impl OtherHost<EffectHost<u8>> { fn open() {} }",
+            "impl EffectHost for OtherHost { fn open() {} }",
+            "impl EffectHost { fn other() { EffectHost::open(); } }",
+            "impl EffectHost { fn other() { fn open() {} } }",
+            "#[cfg(test)] mod tests { impl EffectHost { fn open() {} } }",
+        ]:
+            with self.subTest(source=source):
+                self.assertFalse(
+                    IMAPS.rust_associated_function_present(source, "EffectHost::open")
+                )
+
     def test_cli_self_test_runs_the_real_entrypoint(self) -> None:
         result = subprocess.run(
             [sys.executable, str(SCRIPTS / "hepta-lane-b-truth.py"), "self-test"],

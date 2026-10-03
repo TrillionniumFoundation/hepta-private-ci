@@ -1,6 +1,6 @@
 #![allow(
     clippy::expect_used,
-    reason = "integration assertions and fixture setup must fail the test immediately"
+    reason = "integration fixture setup must fail immediately on invalid input"
 )]
 
 use codex_hepta_automation::AutomationError;

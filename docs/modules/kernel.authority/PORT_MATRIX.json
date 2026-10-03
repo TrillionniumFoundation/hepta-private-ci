@@ -1,0 +1,135 @@
+{
+  "schema": "hepta.kernel-authority-target-port-matrix.v1",
+  "schemaVersion": 1,
+  "generatedFrom": "qualification/kernel-authority/status_manifest.json",
+  "sourceBase": {
+    "commit": "5992ae29f355454c1a17ce6428d536b186fe6902",
+    "tree": "f3824d4f38193ed84c6d1f98104cba1a33a4091e"
+  },
+  "inventoryScope": "produced ModulePort target contracts explicitly declared in TECHNICAL.md",
+  "ports": [
+    {
+      "id": "ModulePort::kernel.authority::auth.authbus",
+      "sourcePaths": [],
+      "note": "AuthBus retains its own signed admission/evidence owner; it is not relabelled as this generic authority port.",
+      "contractDefined": true,
+      "sourceCompositionPresent": false,
+      "normalProductInvocationProved": false,
+      "exactCandidateExecutionProved": false,
+      "targetHostQualified": false,
+      "independentAcceptance": false
+    },
+    {
+      "id": "ModulePort::kernel.authority::browser.servo",
+      "sourcePaths": [
+        "codex-rs/hepta-agentd/src/browser_servo.rs"
+      ],
+      "note": "BrowserServoPort contains the source-composed FinalUse local dispatch boundary. Native execution and deployed invocation are separate gates.",
+      "contractDefined": true,
+      "sourceCompositionPresent": true,
+      "normalProductInvocationProved": false,
+      "exactCandidateExecutionProved": false,
+      "targetHostQualified": false,
+      "independentAcceptance": false
+    },
+    {
+      "id": "ModulePort::kernel.authority::channel.matrix",
+      "sourcePaths": [],
+      "note": "No mapped generic-authority consumer is proved by this candidate; Matrix owner tests are a separate protocol.",
+      "contractDefined": true,
+      "sourceCompositionPresent": false,
+      "normalProductInvocationProved": false,
+      "exactCandidateExecutionProved": false,
+      "targetHostQualified": false,
+      "independentAcceptance": false
+    },
+    {
+      "id": "ModulePort::kernel.authority::inference.control",
+      "sourcePaths": [],
+      "note": "Inference control has its own journal and fences, which do not complete the registered generic-authority port.",
+      "contractDefined": true,
+      "sourceCompositionPresent": false,
+      "normalProductInvocationProved": false,
+      "exactCandidateExecutionProved": false,
+      "targetHostQualified": false,
+      "independentAcceptance": false
+    },
+    {
+      "id": "ModulePort::kernel.authority::inference.worker",
+      "sourcePaths": [],
+      "note": "Worker-host tests do not establish a kernel.authority product consumer.",
+      "contractDefined": true,
+      "sourceCompositionPresent": false,
+      "normalProductInvocationProved": false,
+      "exactCandidateExecutionProved": false,
+      "targetHostQualified": false,
+      "independentAcceptance": false
+    },
+    {
+      "id": "ModulePort::kernel.authority::memory.federation",
+      "sourcePaths": [],
+      "note": "The memory writer external-verifier contract is not silently converted into generic authority integration.",
+      "contractDefined": true,
+      "sourceCompositionPresent": false,
+      "normalProductInvocationProved": false,
+      "exactCandidateExecutionProved": false,
+      "targetHostQualified": false,
+      "independentAcceptance": false
+    },
+    {
+      "id": "ModulePort::kernel.authority::runtime.codex",
+      "sourcePaths": [],
+      "note": "Codex adapter tests alone do not prove this target port is composed.",
+      "contractDefined": true,
+      "sourceCompositionPresent": false,
+      "normalProductInvocationProved": false,
+      "exactCandidateExecutionProved": false,
+      "targetHostQualified": false,
+      "independentAcceptance": false
+    },
+    {
+      "id": "ModulePort::kernel.authority::runtime.fleet",
+      "sourcePaths": [
+        "codex-rs/hepta-fleet/src/authority_port.rs"
+      ],
+      "note": "One-shot exact allocation dispatch and signed revocation control-plane source exist. Wire fanout, process activation and independent acceptance remain open.",
+      "contractDefined": true,
+      "sourceCompositionPresent": true,
+      "normalProductInvocationProved": false,
+      "exactCandidateExecutionProved": false,
+      "targetHostQualified": false,
+      "independentAcceptance": false
+    },
+    {
+      "id": "ModulePort::kernel.authority::runtime.supervisor",
+      "sourcePaths": [],
+      "note": "The existing supervisor signed-grant protocol remains separate; a caller of that protocol is not a generic-lease consumer.",
+      "contractDefined": true,
+      "sourceCompositionPresent": false,
+      "normalProductInvocationProved": false,
+      "exactCandidateExecutionProved": false,
+      "targetHostQualified": false,
+      "independentAcceptance": false
+    },
+    {
+      "id": "ModulePort::kernel.authority::secrets.heptabao",
+      "sourcePaths": [
+        "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+      ],
+      "note": "Registered Bao source host exists, but no deployed process or target-host acceptance is established here.",
+      "contractDefined": true,
+      "sourceCompositionPresent": true,
+      "normalProductInvocationProved": false,
+      "exactCandidateExecutionProved": false,
+      "targetHostQualified": false,
+      "independentAcceptance": false
+    }
+  ],
+  "recoveryEvidence": {
+    "sameProcessOwnerReopen": "Named native source tests cover owner drop/reopen; current candidate execution receipt pending.",
+    "twoFreshProductProcesses": "Not established: no two normal product-process cold-start receipt is supplied by these unit tests.",
+    "targetHostCrashDrill": "Not established: target filesystem/boot/backup/provider fault evidence remains required."
+  },
+  "activationGranted": false,
+  "releaseGranted": false
+}

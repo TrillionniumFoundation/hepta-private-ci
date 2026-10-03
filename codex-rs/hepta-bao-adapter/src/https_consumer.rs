@@ -87,6 +87,14 @@ pub struct BaoAuthBusAdmission {
     pub expires_at_ms: u64,
 }
 
+/// Borrowed exact read and its external kernel authority inputs. The adapter
+/// still validates and consumes the grant at provider entry.
+pub struct BaoFinalUseRead<'a> {
+    pub authority: &'a FinalUseAuthority,
+    pub grant: &'a SignedFinalUseGrant,
+    pub request: &'a BaoReadRequest,
+}
+
 /// Independent evidence producer used by the product host. AuthBus verifies
 /// every returned signature; the Bao adapter never owns trusted-time or
 /// settlement signing keys.
@@ -234,12 +242,15 @@ impl BaoClient {
         &self,
         authbus: &AuthBusAuthorityHost,
         admission: &BaoAuthBusAdmission,
-        authority: &FinalUseAuthority,
-        grant: &SignedFinalUseGrant,
-        request: &BaoReadRequest,
+        read: BaoFinalUseRead<'_>,
         evidence: &mut E,
         consumer: impl FnOnce(&[u8]) -> Result<(), ()>,
     ) -> Result<BaoSecretReceipt, BaoAuthBusError> {
+        let BaoFinalUseRead {
+            authority,
+            grant,
+            request,
+        } = read;
         if admission.policy_revision == 0
             || admission.expected_quota_revision == 0
             || admission.amount == 0
