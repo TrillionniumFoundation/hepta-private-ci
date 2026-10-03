@@ -1,8 +1,75 @@
 name: Hepta knowledge.graph qualification
 
 on:
-  # Automatic pull-request and main-branch fan-out is owned by the two
-  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  pull_request:
+    paths:
+      - 'codex-rs/hepta-kg/**'
+      - 'codex-rs/hepta-memory/src/cognitive_kg*'
+      - 'codex-rs/hepta-memory/src/cognitive_intelligence_writer*'
+      - 'codex-rs/hepta-memory/src/cognitive_retrieval*'
+      - 'codex-rs/hepta-memory/src/cognitive_store*'
+      - 'codex-rs/hepta-memory/src/cognitive_schema_tests.rs'
+      - 'codex-rs/hepta-memory/src/production_writer.rs'
+      - 'codex-rs/hepta-memory/src/local_lease_outbox.rs'
+      - 'codex-rs/hepta-memory/migrations/**'
+      - 'codex-rs/hepta-prompt-registry/**'
+      - 'codex-rs/hepta-prompt-optimizer/**'
+      - 'codex-rs/ext/hepta-memory/src/cognitive/**'
+      - 'codex-rs/hepta-agentd/src/production_writer_host.rs'
+      - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
+      - 'codex-rs/hepta-agentd/src/browser_servo.rs'
+      - 'codex-rs/hepta-agentd/src/cognitive_context*'
+      - 'codex-rs/hepta-agentd/src/cognitive_retrieval_learning*'
+      - 'codex-rs/hepta-agentd/src/state_control.rs'
+      - 'codex-rs/hepta-agentd/src/state_effect_snapshot_tests.rs'
+      - 'codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/rust-toolchain*'
+      - 'justfile'
+      - 'scripts/hepta_knowledge_graph_qualification.py'
+      - 'scripts/test_hepta_knowledge_graph_qualification.py'
+      - 'scripts/test_hepta_kg_product_evidence.py'
+      - 'scripts/hepta_ci_exec.py'
+      - 'scripts/test_hepta_ci_exec*.py'
+      - 'qualification/knowledge-graph/nextest.toml'
+      - '.github/workflows/hepta-knowledge-graph-qualification.yml'
+      - '.github/actions/hepta-synthetic-merge/**'
+  push:
+    branches: [main]
+    paths:
+      - 'codex-rs/hepta-kg/**'
+      - 'codex-rs/hepta-memory/src/cognitive_kg*'
+      - 'codex-rs/hepta-memory/src/cognitive_intelligence_writer*'
+      - 'codex-rs/hepta-memory/src/cognitive_retrieval*'
+      - 'codex-rs/hepta-memory/src/cognitive_store*'
+      - 'codex-rs/hepta-memory/src/cognitive_schema_tests.rs'
+      - 'codex-rs/hepta-memory/src/production_writer.rs'
+      - 'codex-rs/hepta-memory/src/local_lease_outbox.rs'
+      - 'codex-rs/hepta-memory/migrations/**'
+      - 'codex-rs/hepta-prompt-registry/**'
+      - 'codex-rs/hepta-prompt-optimizer/**'
+      - 'codex-rs/ext/hepta-memory/src/cognitive/**'
+      - 'codex-rs/hepta-agentd/src/production_writer_host.rs'
+      - 'codex-rs/hepta-agentd/src/automation_effect_host.rs'
+      - 'codex-rs/hepta-agentd/src/browser_servo.rs'
+      - 'codex-rs/hepta-agentd/src/cognitive_context*'
+      - 'codex-rs/hepta-agentd/src/cognitive_retrieval_learning*'
+      - 'codex-rs/hepta-agentd/src/state_control.rs'
+      - 'codex-rs/hepta-agentd/src/state_effect_snapshot_tests.rs'
+      - 'codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs'
+      - 'codex-rs/Cargo.toml'
+      - 'codex-rs/Cargo.lock'
+      - 'codex-rs/rust-toolchain*'
+      - 'justfile'
+      - 'scripts/hepta_knowledge_graph_qualification.py'
+      - 'scripts/test_hepta_knowledge_graph_qualification.py'
+      - 'scripts/test_hepta_kg_product_evidence.py'
+      - 'scripts/hepta_ci_exec.py'
+      - 'scripts/test_hepta_ci_exec*.py'
+      - 'qualification/knowledge-graph/nextest.toml'
+      - '.github/workflows/hepta-knowledge-graph-qualification.yml'
+      - '.github/actions/hepta-synthetic-merge/**'
   workflow_call:
   workflow_dispatch:
 
@@ -15,18 +82,19 @@ concurrency:
 
 env:
   SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+  BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before || github.sha }}
 
 jobs:
   qualification:
     name: knowledge.graph (${{ matrix.lane }})
     runs-on: ubuntu-24.04
-    timeout-minutes: 60
+    timeout-minutes: 120
     strategy:
       fail-fast: false
       matrix:
         lane: ${{ fromJSON(github.event_name == 'pull_request' && '["source-head","base-merge"]' || '["source-head"]') }}
     env:
+      HEPTA_CI_LANE: ${{ matrix.lane }}
       CARGO_INCREMENTAL: "0"
       CARGO_BUILD_JOBS: "2"
       CARGO_PROFILE_TEST_DEBUG: "0"
@@ -47,6 +115,11 @@ jobs:
           git diff --quiet
           git diff --cached --quiet
           git rev-parse HEAD HEAD^{tree}
+          records="$RUNNER_TEMP/hepta-kg-${HEPTA_CI_LANE}"
+          mkdir -p "$records"
+          printf 'RECORDS_DIR=%s\n' "$records" >> "$GITHUB_ENV"
+          printf 'source=%s\nbase=%s\nlane=%s\nstatus=awaiting-candidate-binding\n' \
+            "$SOURCE_SHA" "$BASE_SHA" "$HEPTA_CI_LANE" > "$records/setup.txt"
 
       - name: Construct deterministic synthetic merge
         id: synthetic
@@ -61,40 +134,29 @@ jobs:
           message: Synthetic merge
 
       - name: Bind tested candidate identity
+        id: identity
         shell: bash
         env:
           TESTED_SHA: ${{ steps.synthetic.outputs.sha || env.SOURCE_SHA }}
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$TESTED_SHA"
-          git diff --quiet
-          git diff --cached --quiet
-          git rev-parse HEAD HEAD^{tree}
+          test -z "$(git status --porcelain --untracked-files=normal)"
+          printf 'TESTED_SHA=%s\n' "$TESTED_SHA" >> "$GITHUB_ENV"
+          git show -s --format='commit=%H%ntree=%T%nparents=%P' HEAD > "$RECORDS_DIR/candidate.txt"
+          cd codex-rs
+          toolchain="$(rustup show active-toolchain | cut -d ' ' -f 1)"
+          printf 'RUSTUP_TOOLCHAIN=%s\n' "$toolchain" >> "$GITHUB_ENV"
+          rustc --version --verbose > "$RECORDS_DIR/toolchain.txt"
+          cargo --version >> "$RECORDS_DIR/toolchain.txt"
 
-      - name: Verify knowledge.graph closed-world truth
-        shell: bash
-        run: |
-          set -euo pipefail
-          python3 scripts/hepta-implementation-maps.py verify --profile development
+      - name: Verify exact command and workflow failure semantics
+        run: python3 -m unittest discover -v -s scripts -p 'test_hepta_knowledge_graph_qualification.py'
 
-      - name: Observe repository-wide detailed-design health
-        continue-on-error: true
-        shell: bash
-        run: |
-          set -euo pipefail
-          # Global design health is still visible and remains enforced by its
-          # owning workflows. Unrelated module drift must not suppress the
-          # exact-candidate knowledge.graph executable evidence below.
-          python3 scripts/hepta-technical-closure.py verify
-
-      - name: Check KG-owned Rust formatting
-        working-directory: codex-rs
-        shell: bash
-        run: |
-          set -euo pipefail
-          cargo fmt --package codex-hepta-kg --package codex-hepta-prompt-registry \
-            --package codex-hepta-prompt-optimizer --package codex-hepta-memory \
-            --package codex-hepta-agentd -- --check
+      - name: Install pinned repository test runner
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
 
       - name: Prepare native test prerequisites
         shell: bash
@@ -113,62 +175,23 @@ jobs:
           PYTHONPATH: scripts
         run: python3 scripts/hepta_ci_v8.py
 
-      - name: Test canonical KG kernel
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-kg -- --nocapture
+      - name: Execute required KG commands and retain every outcome
+        id: qualification
+        env:
+          # Preserve the full declared workload; these are observations, not SLOs.
+          HEPTA_KG_BENCH_WRITES: '256'
+          HEPTA_KG_BENCH_QUERY_SAMPLES: '20'
+          HEPTA_KG_BENCH_REOPEN_SAMPLES: '5'
+        run: python3 scripts/hepta_knowledge_graph_qualification.py --records "$RECORDS_DIR/commands"
 
-      - name: Test prompt-factor owner, projection and real consumer
-        working-directory: codex-rs
+      - name: Observe repository-wide detailed-design health
+        if: always() && steps.identity.outcome == 'success'
+        continue-on-error: true
+        shell: bash
         run: |
           set -euo pipefail
-          cargo test --locked -p codex-hepta-prompt-registry -- --nocapture
-          cargo test --locked -p codex-hepta-prompt-optimizer -- --nocapture
-
-      - name: Test durable cognitive KG owner and recovery
-        working-directory: codex-rs
-        run: cargo test --locked -p codex-hepta-memory --lib -- --nocapture --test-threads=1
-
-      - name: Crash/reopen KG transaction windows
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-memory --lib \
-            cognitive_store_tests::qualification_kg_projection_crash_windows_restore_exact_predecessor \
-            -- --ignored --exact --nocapture --test-threads=1
-
-      - name: Measure PERF-LIBRARY pilot capacity
-        if: matrix.lane == 'source-head'
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-memory --lib \
-            cognitive_kg_benchmark_tests::qualification_knowledge_graph_capacity_receipt \
-            -- --ignored --exact --nocapture --test-threads=1
-
-      - name: Test default Agentd production cognitive-writer profile
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-agentd \
-            --test cognitive_product_e2e -- --nocapture --test-threads=1
-
-      - name: Test qualification witness on top of product writer
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo test --locked -p codex-hepta-agentd \
-            --features qualification-cognitive-write \
-            --test cognitive_product_e2e -- --nocapture --test-threads=1
-
-      - name: Strict KG lint
-        working-directory: codex-rs
-        run: |
-          set -euo pipefail
-          cargo clippy --locked \
-            -p codex-hepta-kg -p codex-hepta-prompt-registry \
-            -p codex-hepta-prompt-optimizer -p codex-hepta-memory -p codex-hepta-agentd \
-            --no-deps --all-targets --features codex-hepta-agentd/qualification-cognitive-write \
-            -- -D warnings
+          # This advisory remains separate from all required command results.
+          python3 scripts/hepta_ci_exec.py --output "$RECORDS_DIR/detailed-design.json" -- python3 scripts/hepta-technical-closure.py verify
 
       - name: Preserve exact tracked source
         if: always()
@@ -177,4 +200,13 @@ jobs:
           set -euo pipefail
           git diff --check
           git diff --exit-code
-          test -z "$(git status --porcelain --untracked-files=no)"
+          test -z "$(git status --porcelain --untracked-files=normal)"
+
+      - name: Retain exact source and merge outcomes, including failures
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-kg-${{ matrix.lane }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/hepta-kg-${{ matrix.lane }}/
+          if-no-files-found: error
+          retention-days: 30

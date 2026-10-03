@@ -1,0 +1,170 @@
+[
+  {
+    "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "function": "read_with_retrieval_context_and_learning",
+    "oldArguments": [
+      "store",
+      "owner",
+      "body_generation",
+      "query",
+      "limit",
+      "ranker",
+      "None",
+      "None",
+      "None"
+    ],
+    "newArguments": [
+      "store",
+      "owner",
+      "body_generation",
+      "crate::cognitive_context::ContextReadRequest { query, limit, request_id: None }",
+      "ranker",
+      "None",
+      "None"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "function": "read_with_retrieval_context_and_learning",
+    "oldArguments": [
+      "store",
+      "owner",
+      "body_generation",
+      "query",
+      "limit",
+      "ranker",
+      "current_retrieval",
+      "None",
+      "None"
+    ],
+    "newArguments": [
+      "store",
+      "owner",
+      "body_generation",
+      "crate::cognitive_context::ContextReadRequest { query, limit, request_id: None }",
+      "ranker",
+      "current_retrieval",
+      "None"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "function": "revalidate_with_retrieval_context",
+    "oldArguments": [
+      "store",
+      "owner",
+      "snapshot_digest",
+      "read_digest",
+      "omitted_records",
+      "items",
+      "plan",
+      "ranker",
+      "1",
+      "None"
+    ],
+    "newArguments": [
+      "store",
+      "owner",
+      "crate::cognitive_context::ContextRevalidationInput { snapshot_digest, read_digest, omitted_records, items, plan }",
+      "ranker",
+      "1",
+      "None"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+    "function": "revalidate_with_retrieval_context",
+    "oldArguments": [
+      "&store",
+      "&owner",
+      "&snapshot.snapshot_digest",
+      "&snapshot.read_digest",
+      "snapshot.omitted_records",
+      "&snapshot.items",
+      "snapshot.plan.as_ref()",
+      "None",
+      "1",
+      "Some(&stable)"
+    ],
+    "newArguments": [
+      "&store",
+      "&owner",
+      "crate::cognitive_context::ContextRevalidationInput { snapshot_digest: &snapshot.snapshot_digest, read_digest: &snapshot.read_digest, omitted_records: snapshot.omitted_records, items: &snapshot.items, plan: snapshot.plan.as_ref() }",
+      "None",
+      "1",
+      "Some(&stable)"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+    "function": "revalidate_with_retrieval_context",
+    "oldArguments": [
+      "&store",
+      "&owner",
+      "&snapshot.snapshot_digest",
+      "&snapshot.read_digest",
+      "snapshot.omitted_records",
+      "&snapshot.items",
+      "snapshot.plan.as_ref()",
+      "None",
+      "1",
+      "Some(&changed)"
+    ],
+    "newArguments": [
+      "&store",
+      "&owner",
+      "crate::cognitive_context::ContextRevalidationInput { snapshot_digest: &snapshot.snapshot_digest, read_digest: &snapshot.read_digest, omitted_records: snapshot.omitted_records, items: &snapshot.items, plan: snapshot.plan.as_ref() }",
+      "None",
+      "1",
+      "Some(&changed)"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/state_control.rs",
+    "function": "read_with_retrieval_context_and_learning",
+    "oldArguments": [
+      "&store",
+      "&self.identity.agent_id",
+      "self.identity.spawn_generation",
+      "&query",
+      "limit",
+      "self.cognitive_ranker.get()",
+      "self.cognitive_retrieval_context.get()",
+      "self.cognitive_retrieval_learning.get()",
+      "Some(request_id)"
+    ],
+    "newArguments": [
+      "&store",
+      "&self.identity.agent_id",
+      "self.identity.spawn_generation",
+      "crate::cognitive_context::ContextReadRequest { query: &query, limit, request_id: Some(request_id) }",
+      "self.cognitive_ranker.get()",
+      "self.cognitive_retrieval_context.get()",
+      "self.cognitive_retrieval_learning.get()"
+    ]
+  },
+  {
+    "path": "codex-rs/hepta-agentd/src/state_control.rs",
+    "function": "revalidate_with_retrieval_context",
+    "oldArguments": [
+      "store.as_ref()",
+      "&self.identity.agent_id",
+      "&snapshot_digest",
+      "&read_digest",
+      "omitted_records",
+      "&items",
+      "plan.as_ref()",
+      "self.cognitive_ranker.get()",
+      "self.identity.spawn_generation",
+      "self.cognitive_retrieval_context.get()"
+    ],
+    "newArguments": [
+      "store.as_ref()",
+      "&self.identity.agent_id",
+      "crate::cognitive_context::ContextRevalidationInput { snapshot_digest: &snapshot_digest, read_digest: &read_digest, omitted_records, items: &items, plan: plan.as_ref() }",
+      "self.cognitive_ranker.get()",
+      "self.identity.spawn_generation",
+      "self.cognitive_retrieval_context.get()"
+    ]
+  }
+]

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "0b92811224c06801524ba7c04b3b9c1c2f6ae07b",
-    "tree": "11c2487af21c2aa4736a93ead20c574150a74e39"
+    "commit": "e5f7755fec463050fda183a6f79913749722a8dd",
+    "tree": "8e508a8dae0b62ad8f30f554af076e8f75a7266f"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "knowledge.graph",
@@ -40,7 +40,8 @@
           "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
           "symbol": "canonical_generation_from_projection"
         }
-      ]
+      ],
+      "sourceBlob": "fedc698d6ebeaea06cf3ecf6eb67bd38c36519d2"
     },
     {
       "operation": "apply_incremental_delta",
@@ -55,7 +56,8 @@
       "sourcePathExists": true,
       "designOperation": "apply_incremental_delta",
       "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "fedc698d6ebeaea06cf3ecf6eb67bd38c36519d2"
     },
     {
       "operation": "publish_generation",
@@ -84,7 +86,8 @@
           "path": "codex-rs/hepta-memory/src/cognitive_kg_store.rs",
           "symbol": "refresh_scope_projection_tx"
         }
-      ]
+      ],
+      "sourceBlob": "fedc698d6ebeaea06cf3ecf6eb67bd38c36519d2"
     },
     {
       "operation": "query_relations",
@@ -115,7 +118,8 @@
           "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
           "symbol": "optimize_with_factor_graph"
         }
-      ]
+      ],
+      "sourceBlob": "fedc698d6ebeaea06cf3ecf6eb67bd38c36519d2"
     },
     {
       "operation": "build_prompt_factor_projection_v1",
@@ -143,7 +147,8 @@
           "path": "codex-rs/hepta-prompt-optimizer/src/graph.rs",
           "symbol": "optimize_with_factor_graph"
         }
-      ]
+      ],
+      "sourceBlob": "415a128dfc1c5b9897f81a02d518b147b4ed3a8d"
     }
   ],
   "repositoryControlledGaps": [
@@ -170,6 +175,7 @@
     "codex-rs/hepta-kg"
   ],
   "compositionRoots": [
+    ".github/actions/hepta-synthetic-merge/action.yml",
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
     "CALLERS.toml",
     "codex-rs/Cargo.lock",
@@ -179,12 +185,21 @@
     "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
     "codex-rs/hepta-agentd/Cargo.toml",
     "codex-rs/hepta-agentd/src/app_runtime.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "codex-rs/hepta-agentd/src/browser_servo.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
     "codex-rs/hepta-agentd/src/error.rs",
     "codex-rs/hepta-agentd/src/lib.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/state_control.rs",
+    "codex-rs/hepta-agentd/src/state_effect_snapshot_tests.rs",
     "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
     "codex-rs/hepta-contracts/CALLERS.toml",
     "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
@@ -207,9 +222,12 @@
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_store.rs",
     "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
     "codex-rs/hepta-memory/src/lib.rs",
+    "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+    "codex-rs/hepta-memory/src/production_writer.rs",
     "codex-rs/hepta-prompt-optimizer/Cargo.toml",
     "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
     "codex-rs/hepta-prompt-optimizer/src/canonical_adversarial_tests.rs",
@@ -228,17 +246,29 @@
     "codex-rs/hepta-prompt-registry/src/factor_relation.rs",
     "codex-rs/hepta-prompt-registry/src/lib.rs",
     "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+    "codex-rs/rust-toolchain.toml",
+    "justfile",
     "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
     "qa/b4-no-bypass/test_verify_hepta_callers.py",
     "qa/vertical-slice/test_vertical_slice.py",
+    "qualification/knowledge-graph/nextest.toml",
+    "scripts/hepta_ci_exec.py",
+    "scripts/hepta_knowledge_graph_qualification.py",
+    "scripts/just-shell.py",
+    "scripts/test_hepta_ci_exec.py",
+    "scripts/test_hepta_ci_exec_deadline.py",
+    "scripts/test_hepta_ci_exec_output.py",
+    "scripts/test_hepta_kg_product_evidence.py",
+    "scripts/test_hepta_knowledge_graph_qualification.py",
     "scripts/verify_hepta_callers.py"
   ],
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "0b92811224c06801524ba7c04b3b9c1c2f6ae07b",
-    "tree": "11c2487af21c2aa4736a93ead20c574150a74e39"
+    "commit": "0d34a28bffc34f2b2fa02b7db5b6f6e3be8ee110",
+    "tree": "0be35a87cce882b7bd76662901f817c2669a9a7b"
   },
   "observedSourcePaths": [
+    ".github/actions/hepta-synthetic-merge/action.yml",
     ".github/workflows/hepta-knowledge-graph-qualification.yml",
     "CALLERS.toml",
     "codex-rs/Cargo.lock",
@@ -248,12 +278,21 @@
     "codex-rs/ext/hepta-memory/src/cognitive/tools_tests.rs",
     "codex-rs/hepta-agentd/Cargo.toml",
     "codex-rs/hepta-agentd/src/app_runtime.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "codex-rs/hepta-agentd/src/browser_servo.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+    "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
     "codex-rs/hepta-agentd/src/error.rs",
     "codex-rs/hepta-agentd/src/lib.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime.rs",
     "codex-rs/hepta-agentd/src/prompt_runtime_tests.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/state_control.rs",
+    "codex-rs/hepta-agentd/src/state_effect_snapshot_tests.rs",
     "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
     "codex-rs/hepta-contracts/CALLERS.toml",
     "codex-rs/hepta-contracts/src/callers_manifest_tests.rs",
@@ -263,6 +302,10 @@
     "codex-rs/hepta-intelligence/src/prompt_delivery_tests.rs",
     "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
     "codex-rs/hepta-kg",
+    "codex-rs/hepta-kg/src/generation.rs",
+    "codex-rs/hepta-kg/src/generation_tests.rs",
+    "codex-rs/hepta-kg/src/prompt_factor.rs",
+    "codex-rs/hepta-kg/src/prompt_factor_tests.rs",
     "codex-rs/hepta-kg/src/validated_generation.rs",
     "codex-rs/hepta-kg/src/validated_generation_tests.rs",
     "codex-rs/hepta-memory/Cargo.toml",
@@ -279,9 +322,12 @@
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_observation_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_retrieval_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_store.rs",
     "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
     "codex-rs/hepta-memory/src/lib.rs",
+    "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+    "codex-rs/hepta-memory/src/production_writer.rs",
     "codex-rs/hepta-prompt-optimizer/Cargo.toml",
     "codex-rs/hepta-prompt-optimizer/src/canonical.rs",
     "codex-rs/hepta-prompt-optimizer/src/canonical_adversarial_tests.rs",
@@ -300,9 +346,21 @@
     "codex-rs/hepta-prompt-registry/src/factor_relation.rs",
     "codex-rs/hepta-prompt-registry/src/lib.rs",
     "codex-rs/hepta-prompt-registry/src/lib_tests.rs",
+    "codex-rs/rust-toolchain.toml",
+    "docs/modules/knowledge.graph/TECHNICAL.md",
+    "justfile",
     "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
     "qa/b4-no-bypass/test_verify_hepta_callers.py",
     "qa/vertical-slice/test_vertical_slice.py",
+    "qualification/knowledge-graph/nextest.toml",
+    "scripts/hepta_ci_exec.py",
+    "scripts/hepta_knowledge_graph_qualification.py",
+    "scripts/just-shell.py",
+    "scripts/test_hepta_ci_exec.py",
+    "scripts/test_hepta_ci_exec_deadline.py",
+    "scripts/test_hepta_ci_exec_output.py",
+    "scripts/test_hepta_kg_product_evidence.py",
+    "scripts/test_hepta_knowledge_graph_qualification.py",
     "scripts/verify_hepta_callers.py"
   ],
   "productCallers": [
@@ -319,8 +377,12 @@
   ],
   "sourceObjects": [
     {
+      "path": ".github/actions/hepta-synthetic-merge/action.yml",
+      "object": "905fc5039016ac7aaadbb857c0a7b94bb594f7ce"
+    },
+    {
       "path": ".github/workflows/hepta-knowledge-graph-qualification.yml",
-      "object": "6447ac075871b81ca9043bfc77c915a8ab754cae"
+      "object": "1943460779c8949817e004b309678f524bab211f"
     },
     {
       "path": "CALLERS.toml",
@@ -355,6 +417,34 @@
       "object": "b25375be9219be18baba2ab4d3488658d0040897"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "9d917973eec800de54f8ab5717a56cbbd06a3c67"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "object": "32112352f8393653a18d5f5287cf22787746f25c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context.rs",
+      "object": "7ea0a82a36544e101237cd45f6ae68fdc58f203b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
+      "object": "3bdf160a2407800eeaf640475c43b26c540f4fd5"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+      "object": "21b5cb0e03f66fc86645a73fd978626ce1e9638a"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning.rs",
+      "object": "a02b829431c99d649897150e1bf13e6bda88a0bb"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
+      "object": "32f0ac3fe848581ea60c2694dee4a2f52dda8f55"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/error.rs",
       "object": "2b8c8a85bcae1d91bc3f10a6bf8b468dbf55abdf"
     },
@@ -379,8 +469,16 @@
       "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "13d748042cca183c856e36e48e08518e30096f21"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_effect_snapshot_tests.rs",
+      "object": "619211bc083358be4b881b4b3b5208d307232ad2"
+    },
+    {
       "path": "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
-      "object": "3d6c567a32cb8486702690778f9afdb292a3bda0"
+      "object": "d017dbf2fea201274347d9d151826c8c307a9e20"
     },
     {
       "path": "codex-rs/hepta-contracts/CALLERS.toml",
@@ -412,11 +510,11 @@
     },
     {
       "path": "codex-rs/hepta-kg",
-      "object": "be40b31fe39d8a7a1ec4d3036adaa859edb32cbe"
+      "object": "fd412c5f865c500a2aabf5dda82926efea90d30b"
     },
     {
       "path": "codex-rs/hepta-kg/src/generation.rs",
-      "object": "5e68aa33252ef4cb483d4d96829569bd2bf9eb93"
+      "object": "fedc698d6ebeaea06cf3ecf6eb67bd38c36519d2"
     },
     {
       "path": "codex-rs/hepta-kg/src/generation_tests.rs",
@@ -452,7 +550,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs",
-      "object": "91036dcbfc7dea48224c4df60abd04639b34e9f4"
+      "object": "baa6889a251c47e710a912333fc68b6f241e0922"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_intelligence_writer_tests.rs",
@@ -495,6 +593,10 @@
       "object": "f878c92c89492df62a2cddcadcd8c18fd1c740d7"
     },
     {
+      "path": "codex-rs/hepta-memory/src/cognitive_schema_tests.rs",
+      "object": "3a1ea026574f1fa873cf11d61317d084f87b7cf2"
+    },
+    {
       "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
       "object": "48446d78db208a5e2a61365542540ca40c27580c"
     },
@@ -505,6 +607,14 @@
     {
       "path": "codex-rs/hepta-memory/src/lib.rs",
       "object": "8d70d05e03095908d324be4bdac396ec681991b4"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+      "object": "93aef85620e753a6f49d486eaee436f8ac3edde1"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/production_writer.rs",
+      "object": "aa14291395d493bf3a89585d2802f70f4f1bf77e"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer/Cargo.toml",
@@ -579,8 +689,16 @@
       "object": "7dec1d918cdbce1c4bef99f3f4de76e1528ce793"
     },
     {
+      "path": "codex-rs/rust-toolchain.toml",
+      "object": "910c65114ec128a8317ee8257428451f3cd28230"
+    },
+    {
       "path": "docs/modules/knowledge.graph/TECHNICAL.md",
-      "object": "a51ad0b88eefb790b2f936d3561859363ba2fc4a"
+      "object": "d1348bc68c5d3b57932424ae396506c9a81d295d"
+    },
+    {
+      "path": "justfile",
+      "object": "a215a76cf407ace9715bca39c20497014e7dd4dc"
     },
     {
       "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json",
@@ -595,8 +713,48 @@
       "object": "344e431a7023d545d82ec8ece2bad292787febfe"
     },
     {
+      "path": "qualification/knowledge-graph/nextest.toml",
+      "object": "28ebd96ba2dfbc3d641cdad501acef320d9ee022"
+    },
+    {
+      "path": "scripts/hepta_ci_exec.py",
+      "object": "c9434b3a4afb31f80e323d543936386a2fa738de"
+    },
+    {
+      "path": "scripts/hepta_knowledge_graph_qualification.py",
+      "object": "ce342f8639968d91b6220e7a032f4e8e49bc47e3"
+    },
+    {
+      "path": "scripts/just-shell.py",
+      "object": "bb2db6ebc4312a301ee39d2793fde16289d046d8"
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec.py",
+      "object": "881799269f6cfbe322b746565e51cd90c5b0db9d"
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec_deadline.py",
+      "object": "221b0535de670c8248898460af51fb719fb14f36"
+    },
+    {
+      "path": "scripts/test_hepta_ci_exec_output.py",
+      "object": "f92628ad9b15cdad591dbc30b6c90e2074a501aa"
+    },
+    {
+      "path": "scripts/test_hepta_kg_product_evidence.py",
+      "object": "64da19830893636a5d9fb53f816b3c4de705cd58"
+    },
+    {
+      "path": "scripts/test_hepta_knowledge_graph_qualification.py",
+      "object": "0396b514b2022a09ffbd8b9fc1c28336b3d8c30b"
+    },
+    {
       "path": "scripts/verify_hepta_callers.py",
       "object": "d2460ad20da700de96adc98a34d90bd078219cb6"
     }
-  ]
+  ],
+  "technicalSupplements": [
+    "docs/modules/knowledge.graph/ADVERSARIAL_AUDIT_20261002.md"
+  ],
+  "mappingSourceIdentityMode": "exact_blob"
 }
