@@ -599,7 +599,10 @@
       "tests": [
         "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::signed_bootstrap_persists_before_first_current_and_blocks_withdrawn_admission",
         "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::bootstrap_rejects_forged_and_stale_authorizations_without_rolling_back",
-        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::bootstrap_acknowledgement_cannot_recover_without_exact_snapshot"
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::bootstrap_acknowledgement_cannot_recover_without_exact_snapshot",
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::acknowledged_bootstrap_retries_survive_expiry_and_authority_floor_rotation",
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::bootstrap_historical_retry_preserves_exact_request_and_snapshot_checks",
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::bootstrap_new_operations_still_require_current_authorization_and_writer"
       ],
       "sourcePathExists": true,
       "designOperation": "owner_signed_withdrawal_bootstrap",
@@ -765,7 +768,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "e7db0b0a9b4c0d21caf1aa516f317ad872f0466b"
+      "object": "1d23795dbde366e0a41aac19a355d1ed6c828688"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/admission_closure_tests.rs",
@@ -841,7 +844,7 @@
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs",
-      "object": "5e901e473ccbc516d3fbc2f6549f470f40e0d258"
+      "object": "90c41961cb5353dd7ee1b4c9b50d137857bfd5d0"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_withdrawal_bootstrap_service.rs",
@@ -893,7 +896,7 @@
     },
     {
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
-      "object": "9d6f518b0620c5ac8f067e0b2c6f68e02df76369"
+      "object": "5dd90b0e6e6ce546afe0f506d5cf2fc90ad60009"
     }
   ],
   "compatibilitySnapshotConsumers": [
@@ -935,7 +938,7 @@
     "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
   },
   "observedAtHead": {
-    "commit": "5491ed577b9f8eba52c101f3fd447ea91bf6a5d0",
-    "tree": "81b277cb593b1799d401645c28c544cb977d6708"
+    "commit": "a4a3daf697df81f3dd29261e72a7fa8d1a814500",
+    "tree": "885bb7ac60524fb789544285af916f86605d9242"
   }
 }
