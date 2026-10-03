@@ -266,8 +266,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "d253de25c023e8d83fd6ec5f762c3985bd4a89b3",
-    "tree": "47717a2f9cf8e89b8155e23140f27f4cd087e785"
+    "commit": "5ec0745792b51a054902efa0eecfd8fb71eb7ef8",
+    "tree": "cd5920cc5f633c9a4922636ebcf3a721c084dead"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -382,7 +382,9 @@
     "codex-rs/hepta-operations/src/exact_claim.rs",
     "codex-rs/hepta-types",
     "codex-rs/model-provider/src/provider_effect.rs",
-    "docs/modules/automation.taskflow/TECHNICAL.md"
+    "docs/modules/automation.taskflow/TECHNICAL.md",
+    "scripts/hepta_ci_exec.py",
+    "scripts/test_taskflow_owner_workflow.py"
   ],
   "repositoryControlledProductCompositionGaps": [
     "Configured Agentd HTTP execute/reconcile control requires already registered, claimed and prepared TaskFlow steps. General scheduled external-effect/DAG/Neural Circuit execution remains an implementation target; selected-host provider/authority qualification is separate.",
@@ -423,7 +425,7 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/automation-taskflow-focused.yml",
-      "object": "b053448935f2e16e535d2bf73ab33e68b22ff15e"
+      "object": "d745566b09cb96e330a48a0e5021a20af7351cdb"
     },
     {
       "path": "codex-rs/app-server-client/BUILD.bazel",
@@ -580,6 +582,14 @@
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
       "object": "2ea8a144238e1ef53519dc53dbfce3254302182b"
+    },
+    {
+      "path": "scripts/hepta_ci_exec.py",
+      "object": "c9434b3a4afb31f80e323d543936386a2fa738de"
+    },
+    {
+      "path": "scripts/test_taskflow_owner_workflow.py",
+      "object": "232b2344d228d9254b518ddef253256f56b2a8e6"
     }
   ],
   "navigationProvenanceRepair": {
