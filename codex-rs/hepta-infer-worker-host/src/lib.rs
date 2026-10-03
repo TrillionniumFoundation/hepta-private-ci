@@ -21,6 +21,14 @@ pub use fleet_worker_resource_port_v2::FleetWorkerResourcePortV2;
 
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 pub mod initial_cpu_anchor;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+mod root_self_iteration_owners_configuration;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_self_iteration_owners_configuration::RootSelfIterationOwnersRoundConfigurationV1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_self_iteration_owners_configuration::RootSelfIterationRoleRouteV1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_self_iteration_owners_configuration::root_self_iteration_owners_configuration_path_v1;
 
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 mod frozen_generator_client;
@@ -132,6 +140,8 @@ pub use self_iteration_model::NativeModelReceiptReaderV1;
 pub use self_iteration_model::NativeReferenceObservationV1;
 #[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
 pub use self_iteration_model::RootNativeAssessmentScopeV1;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use self_iteration_model::self_iteration_model_request_from_native_prompt_v1;
 #[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
 pub use self_iteration_model::validate_root_native_assessment_facts_v1;
 #[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]

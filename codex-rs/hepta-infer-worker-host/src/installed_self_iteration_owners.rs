@@ -85,7 +85,7 @@ impl InstalledSelfIterationIndependentOwnersV1 {
         self.configuration.validate_roster(&self.trust, current)?;
         Ok(current)
     }
-    fn validate_consumer(
+    pub(crate) fn validate_consumer(
         &self,
         bytes: &[u8],
         record: &AgentdSelfIterationRecordV1,

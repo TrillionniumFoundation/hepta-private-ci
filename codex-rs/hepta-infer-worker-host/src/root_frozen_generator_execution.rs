@@ -59,7 +59,8 @@ fn publish_complete_source(temporary: &Path, destination: &Path) -> std::io::Res
 pub(super) fn immutable(path: &Path, bytes: &[u8], maximum: usize) -> Result<()> {
     ensure!(
         rustix::process::geteuid().as_raw() == 0
-            && (1..=codex_hepta_agent_components::intelligence::MAX_PARAMETER_PLASTICITY_MATERIAL_BYTES_V1)
+            && (1..=codex_hepta_agent_components::intelligence::MAX_PARAMETER_PLASTICITY_MATERIAL_BYTES_V1
+                .max(codex_hepta_neuron::MAX_NEURON_OPERATION_OBSERVATION_BYTES_V2))
                 .contains(&maximum)
             && !bytes.is_empty()
             && bytes.len() <= maximum,

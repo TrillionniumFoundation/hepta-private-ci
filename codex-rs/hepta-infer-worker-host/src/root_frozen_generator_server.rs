@@ -102,6 +102,15 @@ async fn connection(mut stream: UnixStream, host: Arc<RootFrozenGeneratorService
                 &host.observe_model_failure(&stream, &peer, request).await,
             )
         }
+        FrozenGeneratorOperationV1::IndependentOwner(request) => {
+            let purpose = request.purpose;
+            encode_self_iteration_owner_response_v1(
+                purpose,
+                &host
+                    .dispatch_independent_owner(&stream, &peer, request)
+                    .await,
+            )
+        }
     };
     let mut bytes = response.map_err(|error| anyhow::anyhow!("{error}"))?;
     bytes.push(b'\n');

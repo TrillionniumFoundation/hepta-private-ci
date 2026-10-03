@@ -32,6 +32,8 @@ mod execution;
 mod facts;
 #[path = "root_frozen_generator_failure.rs"]
 mod failure;
+#[path = "root_self_iteration_owners.rs"]
+mod independent_owners;
 #[path = "root_frozen_generator_prepared.rs"]
 mod prepared;
 #[path = "root_frozen_generator_recipe.rs"]
