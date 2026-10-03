@@ -1,7 +1,7 @@
 import { defineConfig, devices } from "@playwright/test";
 
 export default defineConfig({
-  testIgnore: ["robrix-host.spec.mjs"],
+  testIgnore: ["robrix-*.spec.mjs"],
   testDir: "./e2e",
   fullyParallel: false,
   // The fixture owns one ledger. Projects/files must not reset it concurrently.

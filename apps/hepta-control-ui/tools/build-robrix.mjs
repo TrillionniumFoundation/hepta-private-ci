@@ -7,6 +7,7 @@ import { fileURLToPath } from 'node:url';
 import {preparePlatform} from './prepare-makepad-platform.mjs';
 import {robrixSourceIdentity} from './robrix-source-identity.mjs';
 import {emitStaticBridge} from './emit-static-makepad-bridge.mjs';
+import {verifyImageFitApi} from './check-makepad-dsl.mjs';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const workspace = join(root, 'rust');
 let source;
@@ -21,6 +22,7 @@ if(!widgets?.source?.endsWith('#'+provenance.makepad.revision)) throw new Error(
 const makepadRoot=dirname(dirname(widgets.manifest_path));
 if(execFileSync('git',['-C',makepadRoot,'rev-parse','HEAD'],{encoding:'utf8'}).trim()!==provenance.makepad.revision) throw new Error('Wrong Makepad checkout');
 execFileSync('git',['-C',makepadRoot,'diff','--quiet','HEAD','--']);
+await verifyImageFitApi(join(workspace,'robrix-ui/src'),join(makepadRoot,'widgets/src/image_cache.rs'));
 const toolchainPatch=JSON.parse(await readFile(join(workspace,'robrix-ui/patches/cargo-makepad-toolchain.json'),'utf8'));
 const nightly=execFileSync('rustup',['run',toolchainPatch.toolchain,'rustc','--version'],{encoding:'utf8'}).trim();
 if(nightly!==toolchainPatch.rustcVersion) throw new Error('Unqualified nightly: '+nightly);

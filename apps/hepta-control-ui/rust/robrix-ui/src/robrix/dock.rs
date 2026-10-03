@@ -26,7 +26,7 @@ script_mod! {
                 // `color_bg_app`), transitions to purple on hover/drag.
                 // Mildly rounded corners soften the edges where panels meet.
                 let body_color = mix(
-                    COLOR_BORDER
+                    self.color
                     mix(self.color_hover, self.color_drag, self.drag)
                     self.hover
                 )

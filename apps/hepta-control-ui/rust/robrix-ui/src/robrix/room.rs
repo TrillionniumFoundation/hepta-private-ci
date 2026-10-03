@@ -56,7 +56,7 @@ script_mod! {
   room_actions := Label {width: Fill height: Fit padding: 12 text: "New conversation" draw_text.color: COLOR_TEXT}
   room_screen_wrapper := SolidView {
    width: Fill height: Fill flow: Overlay draw_bg.color: COLOR_PRIMARY_DARKER
-   lunar_background := Image {width: Fill height: Fill visible: false fit: ImageFit.Cover src: crate_resource("self:resources/lunar-titanium.png") draw_bg.image_pan: vec2(0.06, 0.0)}
+   lunar_background := Image {width: Fill height: Fill visible: false fit: ImageFit.CropToFill src: crate_resource("self:resources/lunar-titanium.png") draw_bg.image_pan: vec2(0.06, 0.0)}
    timeline_and_input_bar := View {
     width: Fill height: Fill flow: Down
     empty_state := Label {width: Fill height: Fit padding: 24 flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Start with a local draft. No authenticated conversation history is available."}
