@@ -4,8 +4,9 @@ import {promisify} from 'node:util';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 const run=promisify(execFile);
-export async function readScreenshotText(path){
- const {stdout}=await run('tesseract',[path,'stdout','-l','eng','--psm','11'],{timeout:20000,maxBuffer:65536});
+export async function readScreenshotText(path,{language='eng'}={}){
+ assert.ok(['eng','eng+chi_sim'].includes(language),'Only pinned QA OCR languages are accepted');
+ const {stdout}=await run('tesseract',[path,'stdout','-l',language,'--psm','11'],{timeout:20000,maxBuffer:65536});
  return stdout;
 }
 export async function screenshotWordCenter(path,word,viewportWidth,{topOnly=false}={}){

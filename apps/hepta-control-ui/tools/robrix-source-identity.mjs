@@ -15,7 +15,8 @@ export async function robrixSourceIdentity(root){
  for(const name of ['Cargo.toml','Cargo.lock'])await add(join(root,'rust',name));
  for(const name of ['core','robrix-ui']){await add(join(root,'rust',name,'Cargo.toml'));await walk(join(root,'rust',name,'src'));}
  await walk(join(root,'rust/robrix-ui/patches'));
+ await walk(join(root,'rust/robrix-ui/resources'));
  await add(join(root,'rust/robrix-ui/UPSTREAM.json'));
- for(const name of ['build-robrix.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs'])await add(join(root,'tools',name));
+ for(const name of ['build-robrix.mjs','check-makepad-dsl.mjs','prepare-makepad-platform.mjs','emit-static-makepad-bridge.mjs','robrix-source-identity.mjs'])await add(join(root,'tools',name));
  return {sha256:sha(JSON.stringify(files)),files};
 }

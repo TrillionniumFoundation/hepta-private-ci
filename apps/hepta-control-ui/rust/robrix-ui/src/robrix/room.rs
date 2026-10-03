@@ -18,7 +18,7 @@ script_mod! {
   width: Fill height: Fit margin: 0 flow: Down spacing: 0
   body := View {
    width: Fill height: Fit flow: Right
-   padding: Inset{top: 10, bottom: 14, left: 20, right: 20}
+   padding: Inset{top: 10, bottom: 10, left: 20, right: 20}
    profile := View {
     align: Align{x: 0.5, y: 0.0} width: 36 height: Fit
     margin: Inset{top: 0, right: 14} flow: Down
@@ -52,10 +52,17 @@ script_mod! {
  }
  mod.widgets.RoomScreen = #(RoomScreen::register_widget(vm)) {
   width: Fill height: Fill cursor: MouseCursor.Default flow: Down spacing: 0
-  presentation_note := Label {visible: false width: Fill height: Fit padding: 8 flow: Flow.Right{wrap:true} draw_text.color: COLOR_TEXT}
-  room_actions := Label {width: Fill height: Fit padding: 12 text: "New conversation" draw_text.color: COLOR_TEXT}
+  presentation_note := Label {visible: false width: Fill height: Fit padding: Inset{left: 20, right: 20, top: 2, bottom: 6} flow: Flow.Right{wrap:true} draw_text.color: COLOR_TEXT}
+  room_actions := Label {width: Fill height: Fit padding: Inset{left: 20, right: 20, top: 6, bottom: 8} text: "New conversation" draw_text.color: COLOR_TEXT}
   room_screen_wrapper := SolidView {
-   width: Fill height: Fill flow: Overlay draw_bg.color: COLOR_PRIMARY_DARKER
+   width: Fill height: Fill flow: Overlay
+   draw_bg +: {color: COLOR_PRIMARY_DARKER accent: uniform(COLOR_ROBRIX_PURPLE) secondary: uniform(COLOR_AURORA_CORAL)
+    pixel: fn() {
+     let left_glow = max(0.0, 1.0 - length((self.pos - vec2(0.0, 0.9)) * vec2(2.0, 1.0)))
+     let upper_glow = max(0.0, 1.0 - length((self.pos - vec2(0.9, 0.0)) * vec2(1.0, 2.0)))
+     let base = mix(self.color, self.accent, left_glow * left_glow * 0.045)
+     return mix(base, self.secondary, upper_glow * upper_glow * 0.018)
+    }}
    lunar_background := Image {width: Fill height: Fill visible: false fit: ImageFit.CropToFill src: crate_resource("self:resources/lunar-titanium.png") draw_bg.image_pan: vec2(0.06, 0.0)}
    timeline_and_input_bar := View {
     width: Fill height: Fill flow: Down
@@ -224,12 +231,35 @@ impl Widget for RoomScreen {
                 let Some(message) = presentation.timeline.messages.first() else {
                     continue;
                 };
-                let item = list.item(cx, index, id!(Message));
+                let mut item = list.item(cx, index, id!(Message));
                 let (name, initial) = match message.role {
                     Role::User => ("You", "Y"),
                     Role::Assistant => ("Assistant", "H"),
                     Role::System => ("System", "S"),
                 };
+                // Presentation order remains the owner's order. Only the row's
+                // alignment and surface vary with the observed author role.
+                let own = message.role == Role::User;
+                let available = cx.turtle().rect().size.x.max(160.0);
+                let content_width = if own {
+                    ((available - 40.0) * 0.82).clamp(100.0, 680.0)
+                } else {
+                    (available - 90.0).clamp(70.0, 780.0)
+                };
+                let theme = cx.global::<crate::visual_theme::ThemeState>().selected;
+                let tokens = theme.tokens();
+                let bubble = own || theme != crate::visual_theme::VisualTheme::AuroraGraphite;
+                let padding = if bubble { 12.0 } else { 0.0 };
+                let align = if own { 1.0 } else { 0.0 };
+                let color = if own { tokens.selected } else { tokens.surface };
+                let border = tokens.border;
+                script_apply_eval!(cx,item,{
+                    body +: {align: Align{x: #(align), y: 0.0}
+                        profile +: {visible: #(!own)}
+                        content +: {width: #(content_width) show_bg: #(bubble) padding: #(padding)
+                            draw_bg +: {color: #(color) border_color: #(border)}}
+                    }
+                });
                 item.label(cx, ids!(username)).set_text(cx, name);
                 item.label(cx, ids!(avatar)).set_text(cx, initial);
                 item.label(cx, ids!(message)).set_text(cx, message.text);
@@ -244,9 +274,50 @@ impl Widget for RoomScreen {
         if !diagnostic_items.is_empty() && cx.global::<RoomViewMemory>().diagnostic_frames < 12 {
             cx.global::<RoomViewMemory>().diagnostic_frames += 1;
             for (index, item) in diagnostic_items {
-                let rect = item.label(cx, ids!(message)).area().rect(cx);
+                let label = item.label(cx, ids!(message));
+                if let Some(label) = label.borrow() {
+                    let members: Vec<_> = label
+                        .draw_text
+                        .text_style
+                        .font_family
+                        .member_ids()
+                        .collect();
+                    log!("HEPTA_FIXTURE_FONT index={} members={:?}", index, members);
+                }
+                let area = label.area();
+                // PortalList probes include culled rows with no glyph instances.
+                // Do not ask the renderer for geometry that was not drawn.
+                if !area.is_valid(cx) {
+                    log!("HEPTA_FIXTURE_LAYOUT index={} drawn=false", index);
+                    continue;
+                }
+                let rect = area.clipped_rect_union(cx);
+                let row = item.area();
+                if row.is_valid(cx) {
+                    let rect = row.rect(cx);
+                    log!(
+                        "HEPTA_FIXTURE_ROW index={} x={} y={} width={} height={}",
+                        index,
+                        rect.pos.x,
+                        rect.pos.y,
+                        rect.size.x,
+                        rect.size.y
+                    );
+                }
+                let content = item.view(cx, ids!(content)).area();
+                if content.is_valid(cx) {
+                    let rect = content.rect(cx);
+                    log!(
+                        "HEPTA_FIXTURE_CONTENT index={} x={} y={} width={} height={}",
+                        index,
+                        rect.pos.x,
+                        rect.pos.y,
+                        rect.size.x,
+                        rect.size.y
+                    );
+                }
                 log!(
-                    "HEPTA_FIXTURE_LAYOUT index={} x={} y={} width={} height={}",
+                    "HEPTA_FIXTURE_VISIBLE_GLYPHS index={} x={} y={} width={} height={}",
                     index,
                     rect.pos.x,
                     rect.pos.y,
@@ -258,6 +329,21 @@ impl Widget for RoomScreen {
         if let Some(key) = self.active_key {
             let list = self.view.portal_list(cx, ids!(list));
             if let Some(inner) = list.borrow() {
+                #[cfg(feature = "ui-fixtures")]
+                if cx.global::<RoomViewMemory>().diagnostic_frames < 12 && inner.area().is_valid(cx)
+                {
+                    let viewport = inner.area().rect(cx);
+                    log!(
+                        "HEPTA_FIXTURE_VIEWPORT first={} offset={} at_end={} x={} y={} width={} height={}",
+                        inner.first_id(),
+                        inner.first_scroll(),
+                        inner.is_at_end(),
+                        viewport.pos.x,
+                        viewport.pos.y,
+                        viewport.size.x,
+                        viewport.size.y
+                    );
+                }
                 cx.global::<RoomViewMemory>().positions.insert(
                     key,
                     (inner.first_id(), inner.first_scroll(), inner.is_at_end()),

@@ -182,6 +182,16 @@ script_mod! {
             // Remove the border and rounded corners from the default Tab style
             border_size: 0.0
             border_radius: 3.0
+            accent: uniform(COLOR_ROBRIX_PURPLE)
+            secondary: uniform(COLOR_AURORA_CORAL)
+            pixel: fn() {
+                let sdf = Sdf2d.viewport(self.pos * self.rect_size)
+                sdf.rect(0.0, 0.0, self.rect_size.x, self.rect_size.y)
+                sdf.fill(mix(self.color, self.color_hover, self.hover * 0.35))
+                sdf.rect(10.0, self.rect_size.y - 2.0, self.rect_size.x - 20.0, 2.0)
+                let underline = mix(self.accent, self.secondary, self.pos.x)
+                return sdf.fill(underline * self.active)
+            }
         }
 
         animator: Animator{
@@ -245,14 +255,14 @@ script_mod! {
             color: #x0
         }
         draw_fill +: {
-            color: COLOR_PRIMARY * 0.96
+            color: #0000
         }
         draw_bg +: {
-            color: COLOR_PRIMARY * 0.96
+            color: #0000
         }
 
         width: Fill
-        height: 42.0
+        height: 38.0
 
         scroll_bars: ScrollBarsTabs {
             show_scroll_x: true

@@ -143,12 +143,15 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
                 draw_bg +: {color: #(surface) color_2: #(surface) color_hover: #(selected) color_2_hover: #(selected) color_focus: #(selected) color_disabled: #(panel) border_color: #(border) border_color_focus: #(accent) border_color_hover: #(accent)}
                 draw_text +: {text_style +: {font_family: mod.widgets.HEPTA_REGULAR.font_family} color: #(text) color_hover: #(text) color_focus: #(text) color_disabled: #(muted)}
             });
+            if name == id!(rail_chat) || name == id!(rail_console) {
+                script_apply_eval!(cx,widget,{draw_bg +: {ink: #(text)}});
+            }
             if name == id!(theme_switch) || name == id!(mobile_theme_switch) {
                 widget.as_button().set_text(cx, theme.label());
             }
         } else if widget.borrow::<Tab>().is_some() {
             script_apply_eval!(cx,widget,{
-                draw_bg +: {color: #(panel) color_2: #(panel) color_active: #(selected) color_2_active: #(selected) color_hover: #(surface) color_2_hover: #(surface)}
+                draw_bg +: {accent: #(accent) secondary: #(secondary) color: #(panel) color_2: #(panel) color_active: #(selected) color_2_active: #(selected) color_hover: #(surface) color_2_hover: #(surface)}
                 draw_text +: {color: #(muted) color_active: #(text)}
             });
         } else if widget
@@ -184,6 +187,12 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
                 panel
             };
             script_apply_eval!(cx,widget,{draw_bg +: {color: #(color)}});
+            if name == id!(room_screen_wrapper) {
+                script_apply_eval!(cx,widget,{draw_bg +: {accent: #(accent) secondary: #(secondary)}});
+            }
+            if name == id!(brand_mark) {
+                script_apply_eval!(cx,widget,{draw_bg +: {accent: #(accent)}});
+            }
             if name == id!(avatar_frame) {
                 script_apply_eval!(cx,widget,{draw_bg +: {color: #(selected) border_color: #(accent)}});
             }

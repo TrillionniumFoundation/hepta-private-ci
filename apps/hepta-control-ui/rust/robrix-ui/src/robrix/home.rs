@@ -13,9 +13,9 @@ script_mod! {
   flow: Right
   rail := SolidView {
    width: 64 height: Fill flow: Down spacing: 16 padding: 8 draw_bg.color: COLOR_PRIMARY
-   Label {width: Fill height: 56 align: Center text: "H" draw_text +: {color: COLOR_ROBRIX_PURPLE text_style: theme.font_bold{font_size: 20}}}
-   rail_chat := mod.widgets.AuroraButton {width: Fill height: 44 padding: 4 text: "Chat"}
-   rail_console := mod.widgets.AuroraButton {width: Fill height: 44 padding: 4 text: ">_"}
+   brand_mark := mod.widgets.HeptaMark {}
+   rail_chat := mod.widgets.RailButton {text: "Chat"}
+   rail_console := mod.widgets.RailButton {text: "Console" draw_bg.icon_kind: 1.0}
   }
   dock := mod.widgets.RobrixDock {
    width: Fill height: Fill padding: 0 spacing: 0 margin: 0

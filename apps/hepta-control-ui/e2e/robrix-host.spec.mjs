@@ -10,7 +10,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
   page.on('pageerror',error=>errors.push({phase,message:error.message}));
   page.on('console',message=>{
    if(message.type()==='error') errors.push({phase,message:message.text()});
-   if(logs.length<100) logs.push({phase,type:message.type(),text:message.text().slice(0,2000)});
+   if(logs.length<500) logs.push({phase,type:message.type(),text:message.text().slice(0,2000)});
   });
   page.on('request',request=>{
    if(/\/(?:api\/crash|\$report_error)/.test(request.url())) uploads.push(request.url());
@@ -40,13 +40,13 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    document.addEventListener('securitypolicyviolation',event=>window.__cspViolations.push({phase:window.__heptaTestPhase,directive:event.violatedDirective,blockedURI:event.blockedURI}));
    new MutationObserver(records=>{for(const record of records) for(const node of record.addedNodes) if(node.nodeName==='STYLE') window.__snapshotStyles.push({phase:window.__heptaTestPhase,text:node.textContent});}).observe(document,{childList:true,subtree:true});
   });
-  async function assertApplicationHealth(){
-   expect(errors.filter(item=>item.phase==='application')).toEqual([]);
-   expect(await page.evaluate(()=>window.__cspViolations.filter(item=>item.phase==='application'))).toEqual([]);
-   expect(uploads).toEqual([]);
+  async function assertApplicationHealth(assertion=expect){
+   assertion(errors.filter(item=>item.phase==='application')).toEqual([]);
+   assertion(await page.evaluate(()=>window.__cspViolations.filter(item=>item.phase==='application'))).toEqual([]);
+   assertion(uploads).toEqual([]);
   }
   async function capture(name,{consoleView=false}={}){
-   await assertApplicationHealth();
+   await assertApplicationHealth(expect.soft);
    phase='snapshot';await page.evaluate(()=>window.__heptaTestPhase='snapshot');
    const path=testInfo.outputPath(name+'.png');
    try {await page.screenshot({path,fullPage:true,caret:'initial'});}
@@ -72,12 +72,17 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    }else {
     requireChatText(text,{fixtures:process.env.HEPTA_ROBRIX_FIXTURES==='1'});
     if(process.env.HEPTA_ROBRIX_FIXTURES==='1'){
+     if(page.viewportSize().width>=1000){
+      const chinese=await readScreenshotText(path,{language:'eng+chi_sim'});
+      await writeFile(testInfo.outputPath(name+'-cjk-ocr.txt'),chinese);
+      expect.soft(chinese.replace(/\s+/g,''),'Actual fixture Chinese must render recognizable glyphs').toMatch(/中文输入|键盘焦点|滚动位置/);
+     }
      const ordinals=[...text.matchAll(/Fixture\s*(\d{1,3})\b/gi)].map(match=>Number(match[1]));
      expect(ordinals.length,'At least two real fixture messages must be visible').toBeGreaterThanOrEqual(2);
      expect(ordinals,'Rendered owner order must remain oldest to newest').toEqual([...ordinals].sort((a,b)=>a-b));
     }
    }
-   await assertApplicationHealth();
+   await assertApplicationHealth(expect.soft);
    return {path,text};
   }
   async function clickRenderedWord(captured,word,options){
@@ -103,7 +108,8 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     captured=await capture(`robrix-${theme}-after-resize`);
     if(theme==='Aurora'){
      await page.mouse.click(page.viewportSize().width*0.65,720);
-     await page.keyboard.type('Theme round trip draft');
+     await page.keyboard.insertText('Theme round trip draft 🚀');
+     await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(/Theme round trip draft 🚀/);
      captured=await capture('robrix-draft-before-theme');
      expect(captured.text).toMatch(/Theme round trip draft/i);
     }else{
@@ -121,6 +127,11 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    await clickRenderedWord(consoleCapture,page.viewportSize().width<760?'Chat':'Conversation',{topOnly:true});
    captured=await capture('robrix-console-round-trip');
    expect(captured.text).toMatch(/Theme round trip draft/i);
+   // Re-enter the real Rust editor after the Console round trip. Its native
+   // mirror must be repopulated from owner state, including the astral character.
+   await page.mouse.click(page.viewportSize().width*0.65,720);
+   await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(/Theme round trip draft 🚀/);
+   await assertApplicationHealth();
 
   } finally {
    const observed=await page.evaluate(()=>({violations:window.__cspViolations??[],snapshotStyles:window.__snapshotStyles??[],bootPhase:document.documentElement.dataset.heptaBootPhase??'unobserved',wasmStages:window.__wasmStages??[],readyState:document.readyState,canvas:[...document.querySelectorAll('canvas')].map(canvas=>({width:canvas.width,height:canvas.height})),resources:performance.getEntriesByType('resource').map(item=>({name:item.name,duration:item.duration,bytes:item.transferSize}))})).catch(()=>({}));

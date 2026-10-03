@@ -3,7 +3,8 @@
 // Source: src/home/rooms_list_entry.rs:37–143 and FullPreview layout:169–210.
 // Shader, title/preview hierarchy retained; Hepta local room inputs replace Matrix types.
 use crate::presentation::{
-    PresentationAction, PresentationCommand, RoomKey, TimelineWindow, apply_action, project,
+    PresentationAction, PresentationCommand, RoomKey, RoomSource, TimelineWindow, apply_action,
+    project,
 };
 use hepta_control_core::chat::ChatWorkspace;
 use makepad_widgets::*;
@@ -136,8 +137,11 @@ script_mod! {
   draw_bg +: {color: uniform(COLOR_SECONDARY) accent: uniform(COLOR_ROBRIX_PURPLE) pixel: fn() {
    let curve = 0.96 - 0.20 * self.pos.x * self.pos.x
    let light = max(0.0, 1.0 - abs(self.pos.y - curve) * 65.0)
+   let second_curve = 1.04 - 0.29 * self.pos.x * self.pos.x
+   let fine_edge = max(0.0, 1.0 - abs(self.pos.y - second_curve) * 130.0)
    let haze = max(0.0, 1.0 - length(self.pos - vec2(1.1, 0.85)))
-   return mix(self.color, self.accent, light * 0.22 + haze * haze * 0.16)
+   let upper_depth = max(0.0, 1.0 - length((self.pos - vec2(0.2, 0.0)) * vec2(0.8, 2.0)))
+   return mix(self.color, self.accent, light * 0.18 + fine_edge * 0.10 + haze * haze * 0.10 + upper_depth * 0.025)
   }}
   Label {height: Fit padding: Inset{top: 14, bottom: 18} text: "H E P T A" draw_text +: {color: COLOR_TEXT text_style: theme.font_regular{font_size: 15}}}
   room_filter := TextInput {width: Fill height: 40 padding: 10 empty_text: "Find a conversation"}
@@ -298,7 +302,10 @@ impl Widget for RoomsSideBar {
                 item.label(cx, ids!(preview)).set_text(
                     cx,
                     if room.preview.is_empty() {
-                        "Local draft"
+                        match room.source {
+                            RoomSource::ObservedHistory => "Observed history",
+                            RoomSource::LocalDraft => "Local draft",
+                        }
                     } else {
                         room.preview
                     },

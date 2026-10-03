@@ -24,6 +24,12 @@ export async function preparePlatform(workspace,makepadRoot,revision){
  for(const file of layoutIdentity.files) if(sha(await readFile(join(platform,file.path)))!==file.beforeSha256) throw new Error('Unexpected instance layout input: '+file.path);
  execFileSync('patch',['--batch','--forward','--fuzz=0','-p1','-d',platform,'-i',layoutPatch],{stdio:'inherit'});
  for(const file of layoutIdentity.files) if(sha(await readFile(join(platform,file.path)))!==file.afterSha256) throw new Error('Unexpected instance layout output: '+file.path);
+ const imeIdentity=JSON.parse(await readFile(join(patchRoot,'makepad-wasm-ime.json'),'utf8'));
+ const imePatch=join(patchRoot,'makepad-wasm-ime.patch');
+ if(imeIdentity.upstream!==revision||sha(await readFile(imePatch))!==imeIdentity.patchSha256) throw new Error('Unexpected Web IME patch identity');
+ for(const file of imeIdentity.files) if(sha(await readFile(join(platform,file.path)))!==file.beforeSha256) throw new Error('Unexpected Web IME input: '+file.path);
+ execFileSync('patch',['--batch','--forward','--fuzz=0','-p1','-d',platform,'-i',imePatch],{stdio:'inherit'});
+ for(const file of imeIdentity.files) if(sha(await readFile(join(platform,file.path)))!==file.afterSha256) throw new Error('Unexpected Web IME output: '+file.path);
  // The root platform crate's sibling path dependencies remain at the exact Git
  // revision, avoiding duplicate local copies of script/network/math types.
  let manifest=await readFile(join(platform,'Cargo.toml'),'utf8');
@@ -61,5 +67,5 @@ export async function preparePlatform(workspace,makepadRoot,revision){
  await cp(join(workspace,'Cargo.lock'),join(app,'Cargo.lock'));
  const sourceManifest=await readFile(join(workspace,'Cargo.toml'),'utf8');
  await writeFile(join(app,'Cargo.toml'),sourceManifest+'\n[patch."https://github.com/kevinaboos/makepad"]\nmakepad-platform = { path = "../makepad-platform" }\nmakepad-draw = { path = "../makepad-draw" }\n');
- return {workspace:app,identity,layoutIdentity,drawIdentity,platformManifestSha256:sha(manifest),drawManifestSha256:sha(drawManifest)};
+ return {workspace:app,identity,layoutIdentity,imeIdentity,drawIdentity,platformManifestSha256:sha(manifest),drawManifestSha256:sha(drawManifest)};
 }

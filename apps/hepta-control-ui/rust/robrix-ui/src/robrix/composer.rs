@@ -32,8 +32,9 @@ script_mod! {
     align: Align{y: 1.0}
     padding: 6
     message_input := TextInput {
-     width: Fill height: 64 padding: 10 is_multiline: true
-     margin: Inset{top: 3, bottom: 5.75, left: 3, right: 3}
+     width: Fill height: 52 padding: 8 is_multiline: true
+     margin: 0
+     draw_bg +: {border_size: 0.0 border_radius: 12.0}
      empty_text: "Write a local draft…"
     }
     send_message_button := mod.widgets.AuroraButton {
@@ -44,7 +45,7 @@ script_mod! {
   }
   cannot_send_notice := Label {
    width: Fill height: Fit flow: Flow.Right{wrap: true}
-   padding: 8 draw_text.color: TIMESTAMP_TEXT_COLOR
+   padding: Inset{left: 14, right: 14, top: 0, bottom: 8} draw_text +: {color: TIMESTAMP_TEXT_COLOR text_style: theme.font_regular{font_size: 9}}
    text: "Sending unavailable: no authenticated chat owner is configured. Draft stays local."
   }
  }
