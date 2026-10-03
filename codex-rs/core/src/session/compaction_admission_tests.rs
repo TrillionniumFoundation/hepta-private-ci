@@ -1,4 +1,5 @@
 use super::*;
+use pretty_assertions::assert_eq;
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn compact_after_turn_complete_rejects_while_terminalization_pending() {

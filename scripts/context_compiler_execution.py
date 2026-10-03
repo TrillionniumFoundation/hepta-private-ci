@@ -122,6 +122,25 @@ def specs(legacy):
     # context compiler crate in isolation.
     commands[2:2] = [
         {
+            "name": "agentd-boxed-pending-replay-regression",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
+                "--lib",
+                "--features",
+                "qualification-legacy-learning-write",
+                "intelligence_product::tests::boxed_pending_append_preserves_owned_replay_and_error_mapping",
+            ],
+            "minimumTests": 1,
+            "requiredNativeTests": [
+                "intelligence_product::tests::boxed_pending_append_preserves_owned_replay_and_error_mapping",
+            ],
+        },
+        {
             "name": "core-compaction-admission-diagnostic",
             "cwd": legacy.CODEX_RS,
             "argv": [

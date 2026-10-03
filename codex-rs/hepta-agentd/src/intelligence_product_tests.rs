@@ -693,7 +693,11 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         Some(prepared.envelope.envelope_digest.to_string().as_str())
     );
     let dispatched = coordinator
-        .mark_dispatched(&attached.run_id, attached.revision)
+        .mark_dispatched(
+            wall_clock_ms().expect("clock"),
+            &attached.run_id,
+            attached.revision,
+        )
         .expect("commit dispatch before physical effect");
     assert_eq!(dispatched.phase, RunPhase::Dispatched);
 
@@ -986,6 +990,109 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
         .spawn_owner_work(|| 7_u32)
         .expect("capacity restored");
     assert_eq!(ready.await.expect("new work completes"), 7);
+}
+
+#[cfg(feature = "qualification-legacy-learning-write")]
+#[test]
+fn boxed_pending_append_preserves_owned_replay_and_error_mapping() {
+    let fixture = fixture();
+    let directory = tempfile::tempdir().expect("directory");
+    let authority = directory.path().join("authority.json");
+    write_authority_file(
+        &authority,
+        &fixture.owners,
+        fixture.request.snapshot.revocation_frontier_digest(),
+    );
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone(), authority_verifier())
+        .expect("runner");
+    // Seed the real qualification journal directly. This tests owned recovery,
+    // not append_decision's candidate preparation or an injected I/O failure.
+    let event = LedgerEvent::Decision(EpisodeDecision {
+        record_id: fixture.request.run_id,
+        episode_id: id("episode.boxed-replay"),
+        objective_digest: fixture.request.snapshot.objective_digest(),
+        policy_id: id("intuition.policy"),
+        candidate_ids: vec![id("abstain"), id("action.read")],
+        selected_candidate_id: id("action.read"),
+        selected_propensity: ProbabilityQ32::ONE,
+        completeness: CandidateSetCompleteness::Complete,
+        support_digest: fixture.request.snapshot.digest(),
+    });
+    let ledger_path = directory.path().join("ledger");
+    let binding = digest("boxed-replay-binding");
+    let file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(&ledger_path)
+        .expect("create ledger");
+    let mut ledger = DurableLedger::create(file, binding, 16).expect("ledger");
+    let committed = ledger
+        .append_qualification(Digest32::ZERO, event)
+        .expect("qualification decision");
+    let expected = PendingIntelligenceLedgerAppendV1 {
+        expected_predecessor: Digest32::ZERO,
+        snapshot: fixture.request.snapshot,
+        event: ledger.records().expect("committed records")[0]
+            .event
+            .clone(),
+    };
+    let error = AgentdIntelligenceLedgerError::Indeterminate(Box::new(expected.clone()));
+    assert_eq!(error.to_string(), format!("Indeterminate({expected:?})"));
+    let AgentdIntelligenceLedgerError::Indeterminate(pending) = error else {
+        panic!("pending append changed variant");
+    };
+    assert_eq!(*pending, expected);
+    drop(ledger);
+    let before_replay = std::fs::read(&ledger_path).expect("persisted ledger bytes");
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(&ledger_path)
+        .expect("reopen ledger");
+    let mut recovered = DurableLedger::recover(
+        file,
+        binding,
+        16,
+        LedgerRecovery::Acknowledged(LedgerAnchor {
+            sequence: committed.sequence.get(),
+            chain_digest: committed.chain_digest,
+        }),
+    )
+    .expect("recover acknowledged decision");
+    let replay = runner
+        .reconcile_ledger_append(&mut recovered, *pending)
+        .expect("reconcile exact owned boxed payload");
+    assert_eq!(
+        replay,
+        AppendReceipt {
+            disposition: AppendDisposition::IdempotentReplay,
+            ..committed
+        }
+    );
+    let mut conflicting = expected.clone();
+    conflicting.expected_predecessor = digest("wrong-predecessor");
+    let Err(AgentdIntelligenceLedgerError::Ledger(error)) =
+        runner.reconcile_ledger_append(&mut recovered, conflicting)
+    else {
+        panic!("predecessor conflict must retain the ledger error");
+    };
+    assert_eq!(error, DurableLedgerError::Conflict);
+    write_authority_file(&authority, &fixture.owners, digest("revoked-frontier"));
+    let Err(AgentdIntelligenceLedgerError::Currentness(error)) =
+        runner.reconcile_ledger_append(&mut recovered, expected)
+    else {
+        panic!("revoked snapshot must retain the currentness error");
+    };
+    assert_eq!(
+        error,
+        CanonicalIntelligenceError::RevocationFrontierDrift(id("objective.compiler"))
+    );
+    drop(recovered);
+    assert_eq!(
+        std::fs::read(&ledger_path).expect("unchanged replay bytes"),
+        before_replay
+    );
 }
 
 #[path = "intelligence_product_signed_tests.rs"]

@@ -154,6 +154,14 @@ Every producer validates output before publication and binds semantic fields int
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
+### Pre-release Agentd Rust payload ownership migration
+
+`AgentdIntelligenceProductOutcomeV1::Ready`, the `prepared` field of `AgentdIntelligenceAdmittedOutcomeV1::Ready`, and `AgentdIntelligenceLedgerError::Indeterminate` now own `Box` payloads. This is a Rust source-breaking change: constructors use `Box::new`, and callers consuming the previous by-value type use `*prepared` or `*pending`; borrowed access still dereferences normally. Agentd is unpublished at workspace version `0.0.0`. This bounded migration adapts source `916785e374ea69e62a2c7f57f491ad0e815b2edf` (corrected lineage `889aa348fc58c17260d97d5be0ae86a78caabbd9`) without asserting compatibility for unknown external Rust consumers.
+
+These three enums have no serde representation. Public wire methods, wire converters, complete receipts and ledger events, digest inputs and persisted formats are unchanged. Both admission callers forward the prepared box directly. Context's existing boxed `CanonicalRunOutcomeV1::Ready` remains unchanged, with one dereference before constructing the Agentd payload. The existing signed admission test consumes the owned payload and checks the complete run receipt. Qualification replay coverage consumes the exact pending event through the existing by-value reconciliation API on a freshly recovered journal, checks complete replay and error values, and requires unchanged journal bytes. It seeds a valid qualification event and does not claim to exercise an actual ambiguous I/O write or repair legacy candidate preparation. Fresh native tests and strict-owner evidence for this adaptation remain pending; earlier lineage results do not qualify it.
+
+The older real-owner legacy fixture still lacks the signed evaluation required by the current path, and `append_decision` still forwards the action-only candidate set without the ledger's explicit abstain candidate. Those are separate semantic prerequisites. Its dispatch call is only updated to pass the existing fresh wall-clock helper required by the coordinator signature. Neither that compile-call repair nor the new recorded-event replay test qualifies the older production append path or the whole legacy feature.
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:

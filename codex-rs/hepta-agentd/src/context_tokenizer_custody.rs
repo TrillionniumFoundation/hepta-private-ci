@@ -75,7 +75,7 @@ impl ImmutableTokenizerBundleIdentityV3 {
             self.bundle_digest,
         ]
         .into_iter()
-        .any(|digest| digest.is_zero())
+        .any(Digest32::is_zero)
             || self.object_generation == 0
             || self.bundle_digest != self.compute_digest()
         {

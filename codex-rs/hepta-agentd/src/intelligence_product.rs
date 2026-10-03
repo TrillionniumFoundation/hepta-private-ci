@@ -67,8 +67,6 @@ use codex_hepta_intuition::CalibratedDecisionRequestV1;
 use codex_hepta_intuition::CalibratedDispositionV1;
 use codex_hepta_intuition::decide_calibrated_v2;
 #[cfg(feature = "qualification-legacy-learning-write")]
-use codex_hepta_learning_ledger::DurableLearningJournal;
-#[cfg(feature = "qualification-legacy-learning-write")]
 use codex_hepta_learning_ledger::DurableLedger;
 use codex_hepta_learning_ledger::DurableLedgerError;
 use codex_hepta_learning_ledger::LedgerEvent;
@@ -580,9 +578,11 @@ impl PreparedAgentdIntelligenceRunV1 {
     }
 }
 
+/// Pre-release Rust ownership surface: consume the Ready payload with `*prepared`.
+/// This enum is not a wire or persisted representation.
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AgentdIntelligenceProductOutcomeV1 {
-    Ready(PreparedAgentdIntelligenceRunV1),
+    Ready(Box<PreparedAgentdIntelligenceRunV1>),
     Abstained,
     SlowPath,
 }
@@ -592,7 +592,7 @@ pub enum AgentdIntelligenceProductOutcomeV1 {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AgentdIntelligenceAdmittedOutcomeV1 {
     Ready {
-        prepared: PreparedAgentdIntelligenceRunV1,
+        prepared: Box<PreparedAgentdIntelligenceRunV1>,
         run_receipt: crate::RunReceipt,
     },
     Abstained,
@@ -722,7 +722,7 @@ pub struct PendingIntelligenceLedgerAppendV1 {
 pub enum AgentdIntelligenceLedgerError {
     Currentness(CanonicalIntelligenceError),
     Ledger(DurableLedgerError),
-    Indeterminate(PendingIntelligenceLedgerAppendV1),
+    Indeterminate(Box<PendingIntelligenceLedgerAppendV1>),
     NotSelected,
     InvalidOutcome,
 }

@@ -65,10 +65,28 @@ async fn signed_evaluation_completes_existing_owner_preparation_and_run_admissio
     else {
         panic!("expected the signed existing path to reach ready");
     };
+    let prepared: PreparedAgentdIntelligenceRunV1 = *prepared;
     assert!(!prepared.envelope.evaluation_receipt_digest.is_zero());
     assert!(!prepared.envelope.authority.grants_any());
-    assert_eq!(run_receipt.run_id, prepared.run_snapshot().run_id);
-    assert_eq!(run_receipt.phase, crate::RunPhase::ContextAttached);
+    let snapshot = prepared.run_snapshot();
+    assert_eq!(
+        run_receipt,
+        crate::RunReceipt {
+            run_id: snapshot.run_id,
+            revision: 2,
+            phase: crate::RunPhase::ContextAttached,
+            context_digest: Some(prepared.envelope.context_receipt_digest.to_string()),
+            authority_epoch: snapshot.authority_epoch,
+            generation: snapshot.generation,
+            fence_digest: snapshot.fence_digest,
+            deadline_ms: snapshot.deadline_ms,
+            cancel_reason: None,
+            cancel_ack_deadline_ms: None,
+            compilation_receipt_digest: Some(prepared.envelope.envelope_digest.to_string()),
+            terminal_observed: false,
+            idempotent: false,
+        }
+    );
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

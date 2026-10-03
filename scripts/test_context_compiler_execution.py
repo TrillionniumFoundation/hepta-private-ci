@@ -17,6 +17,42 @@ def libtest(passed=1, failed=0, ignored=0):
 
 
 class ExecutionSummaryTests(unittest.TestCase):
+    def test_boxed_pending_replay_requires_feature_and_actual_native_case(self):
+        from context_compiler_named_evidence import bind_named_tests
+
+        spec = next(
+            value
+            for value in specs(legacy)
+            if value["name"] == "agentd-boxed-pending-replay-regression"
+        )
+        name = "intelligence_product::tests::boxed_pending_append_preserves_owned_replay_and_error_mapping"
+        self.assertEqual(spec["argv"][:2], ["just", "test"])
+        self.assertEqual(
+            spec["argv"][spec["argv"].index("--features") + 1],
+            "qualification-legacy-learning-write",
+        )
+        self.assertEqual(spec["argv"][-1], name)
+        self.assertEqual(spec["requiredNativeTests"], [name])
+        self.assertEqual(spec["minimumTests"], 1)
+        for count, observed, expected in [
+            (0, name, False),
+            (1, "intelligence_product::tests::unrelated", False),
+            (1, name, True),
+        ]:
+            with self.subTest(count=count, observed=observed):
+                summary = f"Summary [1s] {count} tests run: {count} passed"
+                result = {"succeeded": True}
+                bind_test_count(summary, spec, result)
+                with tempfile.TemporaryDirectory() as directory:
+                    path = Path(directory) / "native.log"
+                    path.write_text(
+                        f"PASS [0.1s] codex-hepta-agentd {observed}\n{summary}\n"
+                    )
+                    named = bind_named_tests(path, spec["requiredNativeTests"])
+                self.assertEqual(
+                    result["succeeded"] and named["namedNativeTestsPassed"], expected
+                )
+
     def test_compaction_admission_diagnostic_requires_its_actual_native_case(self):
         from context_compiler_named_evidence import bind_named_tests
 
