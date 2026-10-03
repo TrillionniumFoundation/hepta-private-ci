@@ -470,10 +470,9 @@ async fn bounded_capacity_prunes_only_terminal_history_and_keeps_replay_consumed
     };
     store.quarantine_authbus_issuer(&revoked).await.unwrap();
     for bucket in 0..8 {
-        let fixture_issuer = IssuerRegistration {
-            issuer_id: StableId::new(format!("fixture:issuer:{bucket}")).unwrap(),
-            ..revoked.clone()
-        };
+        let (mut fixture_issuer, _) = fixture(/*sequence*/ 1, u64::MAX);
+        fixture_issuer.issuer_id = StableId::new(format!("fixture:issuer:{bucket}")).unwrap();
+        fixture_issuer.revoked = true;
         store
             .quarantine_authbus_issuer(&fixture_issuer)
             .await

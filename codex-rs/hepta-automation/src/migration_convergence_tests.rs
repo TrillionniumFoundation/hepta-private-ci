@@ -15,6 +15,11 @@ async fn historical_pool(displaced: bool) -> SqlitePool {
         .connect("sqlite::memory:")
         .await
         .expect("SQLite owner");
+    initialize_historical_pool(&pool, displaced).await;
+    pool
+}
+
+async fn initialize_historical_pool(pool: &SqlitePool, displaced: bool) {
     let mut connection = pool.acquire().await.expect("owner connection");
     connection
         .ensure_migrations_table("_sqlx_migrations")
@@ -52,7 +57,6 @@ async fn historical_pool(displaced: bool) -> SqlitePool {
             .expect("historical branch migration");
     }
     drop(connection);
-    pool
 }
 
 #[tokio::test]
@@ -133,7 +137,23 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
 
 #[tokio::test]
 async fn authority_schema20_is_rejected_without_relabelling_or_extending_history() {
-    let pool = historical_pool(/*displaced*/ false).await;
+    let temp = tempfile::tempdir().expect("private historical owner root");
+    let root = temp.path().join("owner");
+    std::fs::create_dir(&root).expect("historical owner directory");
+    let root = root
+        .canonicalize()
+        .expect("canonical historical owner root");
+    create_private_directory(&root).expect("private owner directory");
+    let sqlite = SqliteConfig::from_sqlite_home(
+        AbsolutePathBuf::try_from(root.clone()).expect("absolute owner root"),
+    );
+    // Construct the predecessor in the real owner-backed file from the start.
+    // A memory-database export is not the reopen boundary under test here.
+    let pool = sqlite
+        .open_durable_evidence_pool(&root.join(AUTOMATION_DB_FILENAME))
+        .await
+        .expect("persisted historical pool");
+    initialize_historical_pool(&pool, /*displaced*/ false).await;
     let mut connection = pool.acquire().await.expect("historical connection");
     for migration in MIGRATOR
         .iter()
@@ -175,18 +195,8 @@ async fn authority_schema20_is_rejected_without_relabelling_or_extending_history
             .await
             .expect("retained lineage");
     assert_eq!(before, after);
-    let temp = tempfile::tempdir().expect("private owner root");
-    let root = temp.path().canonicalize().expect("canonical root");
-    sqlx::query("VACUUM INTO ?")
-        .bind(root.join(AUTOMATION_DB_FILENAME).to_str().expect("path"))
-        .execute(&pool)
-        .await
-        .expect("persist exact incompatible lineage");
     pool.close().await;
     let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner");
-    let sqlite = SqliteConfig::from_sqlite_home(
-        AbsolutePathBuf::try_from(root.clone()).expect("absolute owner root"),
-    );
     let image = sqlite
         .open_read_only_pool(&root.join(AUTOMATION_DB_FILENAME))
         .await
@@ -198,7 +208,7 @@ async fn authority_schema20_is_rejected_without_relabelling_or_extending_history
             .expect("persisted migration ledger");
     assert_eq!(
         persisted, before,
-        "VACUUM must retain the exact historical image"
+        "close/reopen must retain the exact historical image"
     );
     image.close().await;
     match AutomationStore::open_root(root, owner).await {

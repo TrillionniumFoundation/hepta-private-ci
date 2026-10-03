@@ -61,34 +61,47 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
           persist-credentials: false
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: just@1.51.0,nextest@0.9.103
       - name: Rustfmt changed automation owners
         run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-evidence -p codex-hepta-agentd -p codex-model-provider -p codex-app-server-client -- --check
-      - name: Check automation, operations, Agentd and queue transport
+      - name: Check durable owner packages first
         id: compile
-        run: cargo check --locked -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-evidence -p codex-hepta-agentd -p codex-model-provider -p codex-app-server-client
+        run: cargo check --locked -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-evidence
       - name: Test kernel operation contract
-        run: just test --locked -p codex-hepta-operations
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-owners/operations.json" --minimum-tests 1 -- just test --locked -p codex-hepta-operations
       - name: Test automation package
         if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
-        run: just test --locked -p codex-hepta-automation
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-owners/automation.json" --minimum-tests 1 -- just test --locked -p codex-hepta-automation
       - name: Test automation qualification profile
         if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
-        run: just test --locked -p codex-hepta-automation --features taskflow-structural-qualification
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-owners/structural.json" --minimum-tests 1 -- just test --locked -p codex-hepta-automation --features taskflow-structural-qualification
       - name: Test evidence owner recovery and admission
         if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
-        run: just test --locked -p codex-hepta-evidence
-      - name: Test provider-effect adapter
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-owners/evidence.json" --minimum-tests 1 -- just test --locked -p codex-hepta-evidence
+      - name: Retain early exact-source owner results
         if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: taskflow-owners-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/taskflow-owners/
+          if-no-files-found: error
+          retention-days: 90
+      - name: Check Agentd and provider transports
+        if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        id: host_compile
+        run: cargo check --locked -p codex-hepta-agentd -p codex-model-provider -p codex-app-server-client
+      - name: Test provider-effect adapter
+        if: ${{ !cancelled() && steps.host_compile.outcome == 'success' }}
         run: just test --locked -p codex-model-provider --lib
       - name: Test queue transport pre-send guard
-        if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.host_compile.outcome == 'success' }}
         run: just test --locked -p codex-app-server-client --lib -E 'test(remote_send_guard)'
       - name: Test Agentd library
-        if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        if: ${{ !cancelled() && steps.host_compile.outcome == 'success' }}
         run: just test --locked -p codex-hepta-agentd --lib
       - name: Strict Automation library lint
         if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
