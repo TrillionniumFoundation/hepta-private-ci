@@ -311,9 +311,8 @@ pub(crate) fn recover<J: DurableProductEvaluationAttemptJournalV1>(
     {
         return Err(reject());
     }
-    let decision = archive
-        .verify(verifier, now)
-        .map_err(RecordedProductEvaluationErrorV1::Evaluation)?;
+    let verified = archive.verify(verifier, now);
+    let decision = verified.map_err(RecordedProductEvaluationErrorV1::Evaluation)?;
     let request =
         ProductQualificationPublicationRequestV1::new(archive.execution_digest, &decision)
             .map_err(|error| {
