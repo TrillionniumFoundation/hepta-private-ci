@@ -49,7 +49,7 @@ pub(crate) fn hex(bytes: &[u8]) -> String {
     bytes.iter().map(|byte| format!("{byte:02x}")).collect()
 }
 pub(crate) fn unhex(value: &str, maximum: usize) -> HostResult<Vec<u8>> {
-    if value.len() % 2 != 0
+    if !value.len().is_multiple_of(2)
         || value.len() > maximum.checked_mul(2).ok_or("hex bound")?
         || !value
             .bytes()
