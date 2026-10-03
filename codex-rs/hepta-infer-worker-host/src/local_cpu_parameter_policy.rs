@@ -142,14 +142,15 @@ impl CpuNeuronParameterPolicyV2 {
         Ok(())
     }
 
-    pub(super) fn validate_plan(
+    /// Compare the complete original execution envelope and frozen search
+    /// against the independently pinned canonical policy. Pure factual checks
+    /// do not consume resource authority or open physical generation stores.
+    pub fn validate_execution(
         &self,
-        plan: &CpuNeuronParameterCompilerPlanV2,
-        owners: &CpuNeuronParameterCompilerOwnersV2,
+        execution: &IterationEnvelopeV1,
+        request: &ParameterPlasticityProductRequestV1,
     ) -> Result<(), AgentdError> {
-        self.check_current(owners.clock.as_ref(), owners.resources.as_ref())?;
         let policy = self.envelope.policy();
-        let execution = &plan.envelope;
         if execution.envelope_id.as_str() != policy.envelope_id
             || execution.base_commit != Digest32::of_bytes(policy.base_commit.as_bytes())
             || execution.base_tree != Digest32::of_bytes(policy.base_tree.as_bytes())
@@ -161,13 +162,23 @@ impl CpuNeuronParameterPolicyV2 {
             || execution.maximum_parallel_sandboxes
                 > policy.compute_budget.maximum_parallel_sandboxes
             || execution.expiry_unix_seconds > policy.expires_unix_ms / 1_000
-            || plan.request.generated.candidates.len() != usize::from(execution.maximum_candidates)
-            || plan.request.generated.candidates.len() > policy.maximum_candidates as usize
+            || request.generated.candidates.len() != usize::from(execution.maximum_candidates)
+            || request.generated.candidates.len() > policy.maximum_candidates as usize
         {
             return Err(error(
                 "sparse execution fields differ from complete canonical policy",
             ));
         }
+        Ok(())
+    }
+
+    pub(super) fn validate_plan(
+        &self,
+        plan: &CpuNeuronParameterCompilerPlanV2,
+        owners: &CpuNeuronParameterCompilerOwnersV2,
+    ) -> Result<(), AgentdError> {
+        self.check_current(owners.clock.as_ref(), owners.resources.as_ref())?;
+        self.validate_execution(&plan.envelope, &plan.request)?;
         for worker in plan
             .candidates
             .iter()
