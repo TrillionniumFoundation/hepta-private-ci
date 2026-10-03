@@ -48,6 +48,9 @@ pub fn execute_retained_parameter_role_v1(
         | ParameterRoleExecutionPurposeV1::ObserverRegisteredCanary => {
             OriginalFixedRolePurposeV1::CanaryObserver
         }
+        ParameterRoleExecutionPurposeV1::EvaluatorDatasetWindowV3 => {
+            OriginalFixedRolePurposeV1::DatasetWindowEvaluatorV3
+        }
         ParameterRoleExecutionPurposeV1::EvaluatorNoChange
         | ParameterRoleExecutionPurposeV1::EvaluatorParameterReview => {
             OriginalFixedRolePurposeV1::ParameterEvaluator
@@ -110,6 +113,7 @@ pub enum ParameterRoleExecutionPurposeV1 {
     ObserverPairedFinish,
     ObserverCanary,
     ObserverRegisteredCanary,
+    EvaluatorDatasetWindowV3,
     EvaluatorNoChange,
     EvaluatorPairedReview,
     EvaluatorParameterReview,
@@ -176,6 +180,12 @@ impl ParameterRoleExecutionPurposeV1 {
                 "--registered-canary-observation",
                 true,
                 true,
+            ),
+            Self::EvaluatorDatasetWindowV3 => (
+                "hepta-fixed-calibration-eval-",
+                "--dataset-window-freeze-v3",
+                false,
+                false,
             ),
             Self::EvaluatorNoChange => (
                 "hepta-fixed-calibration-eval-",
