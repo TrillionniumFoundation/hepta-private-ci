@@ -36,3 +36,13 @@ receipts. Earlier 287 memory and 226 Agentd passes, including exact-cut recovery
 remain results of the earlier source. They are not promoted by this lock repair.
 No full CI, independent acceptance, product activation, deployment or release is
 claimed; paused files and unrelated provenance remain unchanged.
+
+Source commit `164199fc256850fcbecca91eed751f72df126c14`, tree
+`28ffa036a8b823af70fc1a8ce563219bf0e3e903`, contains the frozen input and gate
+repair. The cognitive.read map now uses the already-supported v3 exact-blob mode
+with a separate current observation; its original sourceBase at c1f17d21 remains
+unchanged historical provenance with the same tree and ancestry checks. All
+original source/evidence paths remain covered, with explicit new lock/regression
+paths added. Previous observation and flags remain recoverable from the original
+map at 2e0b23f9; production, acceptance, activation and release flags are unchanged.
+No other module map or history is rewritten to obtain source qualification.
