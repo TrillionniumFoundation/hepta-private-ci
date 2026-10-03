@@ -485,3 +485,6 @@ fn first_observed_expiry_survives_restart_without_idle_writes_or_fresh_clock_all
     rounds.retain_terminal_clock(14_000);
     assert_eq!(rounds.watermark_ms, 14_000);
 }
+
+#[path = "self_iteration_round_plasticity_context_tests.rs"]
+mod plasticity_context_tests;

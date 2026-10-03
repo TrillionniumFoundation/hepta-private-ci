@@ -626,28 +626,45 @@ fn verify_owner_policy_bindings(
     artifacts: &ArtifactRegistry,
     dataset: &DatasetSnapshotReceiptV3,
 ) -> Result<(), AgentdError> {
-    let policy = &descriptor.owner_policy;
+    verify_fact_policy_bindings(
+        &descriptor.owner_policy,
+        &descriptor.artifacts,
+        &descriptor.ndu,
+        &descriptor.neuron,
+        artifacts,
+        dataset,
+    )
+}
+
+fn verify_fact_policy_bindings(
+    policy: &OwnerPolicyDescriptorV1,
+    artifact_sources: &ArtifactSnapshotDescriptorV1,
+    ndu: &NduDescriptorV1,
+    neuron: &NeuronDescriptorV1,
+    artifacts: &ArtifactRegistry,
+    dataset: &DatasetSnapshotReceiptV3,
+) -> Result<(), AgentdError> {
     if policy.dataset_owner_id != dataset.producer.principal_id.as_str()
-        || policy.modulator_owner_id != descriptor.ndu.owner_id
-        || policy.eligibility_owner_id != descriptor.neuron.owner_id
-        || policy.parameter_signal_owner_id != descriptor.neuron.owner_id
+        || policy.modulator_owner_id != ndu.owner_id
+        || policy.eligibility_owner_id != neuron.owner_id
+        || policy.parameter_signal_owner_id != neuron.owner_id
     {
         return invalid("plasticity owner policy does not match authoritative owner identity");
     }
 
     for (artifact_id, expected_owner, label) in [
         (
-            descriptor.artifacts.update_rule_artifact_id.as_str(),
+            artifact_sources.update_rule_artifact_id.as_str(),
             policy.update_rule_owner_id.as_str(),
             "update rule",
         ),
         (
-            descriptor.artifacts.mutation_policy_artifact_id.as_str(),
+            artifact_sources.mutation_policy_artifact_id.as_str(),
             policy.mutation_policy_owner_id.as_str(),
             "mutation policy",
         ),
         (
-            descriptor.artifacts.broadcast_artifact_id.as_str(),
+            artifact_sources.broadcast_artifact_id.as_str(),
             policy.modulator_broadcast_owner_id.as_str(),
             "modulator broadcast",
         ),
@@ -952,3 +969,11 @@ mod tests {
         assert!(existing_paths_alias(&left, &right).expect("identity check"));
     }
 }
+
+#[path = "plasticity_input_context_v2.rs"]
+mod input_context;
+pub(crate) use input_context::load_input_context_v2;
+
+#[path = "plasticity_process_bootstrap_v2.rs"]
+mod v2;
+pub use v2::load_plasticity_process_bootstrap_v2;

@@ -282,6 +282,10 @@ impl SelfIterationRuntime {
                 }
                 if let Some(command) = command {
                     match command {
+                        Command::RefreshPlasticityContext(handle, runtime, path, pin, response) => {
+                            let _ = response
+                                .send(owner.refresh_plasticity_context(handle, runtime, path, pin));
+                        }
                         Command::InspectCurrentRound(response) => {
                             let _ = response.send(owner.inspect_current_round());
                         }
@@ -411,3 +415,6 @@ mod current;
 mod preparation;
 #[path = "self_iteration_runtime_terminal.rs"]
 mod terminal;
+
+#[path = "self_iteration_runtime_plasticity_context.rs"]
+pub(crate) mod plasticity_context;

@@ -4,19 +4,36 @@ use crate::CurrentArtifactRegistrySourceV1;
 use codex_hepta_agent_components::learning_artifacts::VerifiedCurrentRegistryUseWindowV1;
 use codex_hepta_agent_components::types::StableId;
 
-pub(super) struct PlasticityCurrentArtifactsV1 {
+pub(crate) struct PlasticityCurrentArtifactsV1 {
     source: CurrentArtifactRegistrySourceV1,
     policy_ids: [StableId; 3],
 }
 
 impl PlasticityRuntimeBootstrapV1 {
     /// Bind the original update rule, mutation policy and broadcast to their
-    /// live read-only owner. A new registry head requires a new run composition;
+    /// live read-only owner. A new registry head requires explicit whole input-context admission;
     /// the current proposal's immutable admission is never silently rewritten.
     pub fn with_current_artifacts(
         mut self,
         source: CurrentArtifactRegistrySourceV1,
         policy_ids: [StableId; 3],
+    ) -> Result<Self, AgentdError> {
+        self.current_artifacts = Some(PlasticityCurrentArtifactsV1::new(
+            source,
+            policy_ids,
+            &self.artifacts,
+            &self.owner_evidence_policy,
+        )?);
+        Ok(self)
+    }
+}
+
+impl PlasticityCurrentArtifactsV1 {
+    pub(crate) fn new(
+        source: CurrentArtifactRegistrySourceV1,
+        policy_ids: [StableId; 3],
+        artifacts: &ArtifactRegistry,
+        policy: &PlasticityOwnerEvidencePolicyV1,
     ) -> Result<Self, AgentdError> {
         if policy_ids
             .iter()
@@ -28,10 +45,10 @@ impl PlasticityRuntimeBootstrapV1 {
                 crate::PlasticityOwnerEvidenceKindV1::MutationPolicy,
                 crate::PlasticityOwnerEvidenceKindV1::ModulatorBroadcast,
             ]).any(|(id, kind)| {
-                !self.artifacts.is_eligible(id)
-                    || self.artifacts.manifest(id).is_none_or(|manifest| {
+                !artifacts.is_eligible(id)
+                    || artifacts.manifest(id).is_none_or(|manifest| {
                         manifest.kind != codex_hepta_agent_components::learning_artifacts::ArtifactKind::Policy
-                            || !self.owner_evidence_policy.allows(kind, &manifest.producer_id)
+                            || !policy.allows(kind, &manifest.producer_id)
                     })
             })
         {
@@ -39,13 +56,10 @@ impl PlasticityRuntimeBootstrapV1 {
                 "plasticity CURRENT policy bindings".to_string(),
             ));
         }
-        self.current_artifacts = Some(PlasticityCurrentArtifactsV1 { source, policy_ids });
-        Ok(self)
+        Ok(Self { source, policy_ids })
     }
-}
 
-impl PlasticityCurrentArtifactsV1 {
-    pub(super) fn verify(
+    pub(crate) fn verify(
         &self,
         frozen: &ArtifactRegistry,
         baseline: &StableId,

@@ -89,7 +89,7 @@ pub use round::AgentdSelfIterationRoundV1;
 #[path = "self_iteration_journal.rs"]
 mod journal;
 #[path = "self_iteration_runtime.rs"]
-mod runtime;
+pub(crate) mod runtime;
 use journal::IterationJournal;
 pub use runtime::AgentdSelfIterationHandleV1;
 pub use runtime::AgentdSelfIterationRuntimeConfigV1;

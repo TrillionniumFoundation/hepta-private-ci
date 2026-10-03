@@ -2,6 +2,13 @@
 use super::*;
 
 pub(super) enum Command {
+    RefreshPlasticityContext(
+        crate::PlasticityRuntimeHandleV1,
+        AgentdSelfIterationHandleV1,
+        PathBuf,
+        Digest32,
+        oneshot::Sender<Result<(), AgentdError>>,
+    ),
     InspectCurrentRound(
         oneshot::Sender<Result<Option<AgentdSelfIterationCurrentRoundV1>, AgentdError>>,
     ),
@@ -67,6 +74,9 @@ impl Command {
             | Self::Evaluate(_, _, response)
             | Self::Select(_, _, response)
             | Self::Observe(_, _, _, response) => {
+                let _ = response.send(Err(error));
+            }
+            Self::RefreshPlasticityContext(_, _, _, _, response) => {
                 let _ = response.send(Err(error));
             }
             Self::InspectRound(_, _, response) => {

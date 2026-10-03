@@ -37,7 +37,7 @@ use crate::topology_plasticity_host::propose_agentd_topology_plasticity_with_clo
 
 const MAX_PLASTICITY_RUNTIME_QUEUE: usize = 64;
 #[path = "plasticity_current_artifacts.rs"]
-mod current_artifacts;
+pub(crate) mod current_artifacts;
 use current_artifacts::PlasticityCurrentArtifactsV1;
 #[path = "plasticity_runtime_final_admission.rs"]
 mod final_admission;
@@ -60,6 +60,21 @@ impl fmt::Display for PlasticityRuntimeCallErrorV1 {
 impl StdError for PlasticityRuntimeCallErrorV1 {}
 
 enum PlasticityRuntimeCommandV1 {
+    RefreshInputContext {
+        fence: crate::self_iteration::runtime::plasticity_context::RoundContextFence,
+        path: std::path::PathBuf,
+        pin: codex_hepta_agent_components::types::Digest32,
+        response: oneshot::Sender<Result<(), PlasticityRuntimeCallErrorV1>>,
+    },
+    ResolveParameterAdmission {
+        input: Box<crate::AgentdPlasticityAdmissionInputV1>,
+        response: oneshot::Sender<
+            Result<
+                codex_hepta_agent_components::intelligence::PlasticityAdmissionEvidenceV1,
+                PlasticityRuntimeCallErrorV1,
+            >,
+        >,
+    },
     Parameter {
         request: Box<ParameterPlasticityProductRequestV1>,
         response: oneshot::Sender<
@@ -143,7 +158,15 @@ impl PlasticityRuntimeHandleV1 {
 pub struct PlasticityRuntimeBootstrapV1 {
     capacity: usize,
     artifacts: ArtifactRegistry,
-    current_artifacts: Option<PlasticityCurrentArtifactsV1>,
+    pub(crate) current_artifacts: Option<PlasticityCurrentArtifactsV1>,
+    pub(crate) restore_input_context_on_start: bool,
+    pub(crate) input_context: Option<(
+        crate::AgentdSelfIterationRoundV1,
+        (
+            std::path::PathBuf,
+            codex_hepta_agent_components::types::Digest32,
+        ),
+    )>,
     ledger: DurableLedger,
     owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
     owner_evidence_policy: PlasticityOwnerEvidencePolicyV1,
@@ -173,6 +196,8 @@ impl PlasticityRuntimeBootstrapV1 {
             capacity,
             artifacts,
             current_artifacts: None,
+            restore_input_context_on_start: false,
+            input_context: None,
             ledger,
             owner_evidence_resolver,
             owner_evidence_policy,
@@ -200,6 +225,8 @@ impl PlasticityRuntimeBootstrapV1 {
             self.topology_anchor_store,
         )?;
         owner.current_artifacts = self.current_artifacts;
+        owner.input_context = self.input_context;
+        owner.restore_input_context_on_start = self.restore_input_context_on_start;
         Ok((handle, owner))
     }
 }
@@ -216,7 +243,15 @@ pub struct PlasticityRuntimeOwnerV1 {
     // The private real host monotonic reader never invokes external callbacks.
     guard_elapsed_ms: fn(&Instant) -> u128,
     artifacts: ArtifactRegistry,
-    current_artifacts: Option<PlasticityCurrentArtifactsV1>,
+    pub(crate) current_artifacts: Option<PlasticityCurrentArtifactsV1>,
+    pub(crate) restore_input_context_on_start: bool,
+    pub(crate) input_context: Option<(
+        crate::AgentdSelfIterationRoundV1,
+        (
+            std::path::PathBuf,
+            codex_hepta_agent_components::types::Digest32,
+        ),
+    )>,
     ledger: DurableLedger,
     owner_evidence_resolver: Box<dyn PlasticityOwnerEvidenceResolverV1 + Send>,
     owner_evidence_policy: PlasticityOwnerEvidencePolicyV1,
@@ -251,6 +286,8 @@ pub fn plasticity_runtime_channel_v1(
             guard_elapsed_ms: monotonic_elapsed_ms,
             artifacts,
             current_artifacts: None,
+            restore_input_context_on_start: false,
+            input_context: None,
             ledger,
             owner_evidence_resolver,
             owner_evidence_policy,
@@ -338,6 +375,21 @@ impl PlasticityRuntimeOwnerV1 {
             .ok_or_else(|| {
                 AgentdError::GenerationFenced("plasticity owner generation overflow".to_string())
             })?;
+        if self.restore_input_context_on_start
+            && let Some((round, _)) = &self.input_context
+        {
+            let handle = state.self_iteration_handle.get().ok_or_else(|| {
+                AgentdError::Invalid("cold plasticity context lacks original Round runtime".into())
+            })?;
+            let view = handle.inspect_current_round().await?.ok_or_else(|| {
+                AgentdError::Invalid("cold plasticity context lacks original reservation".into())
+            })?;
+            if &view.status.round != round {
+                return Err(AgentdError::Invalid(
+                    "cold plasticity context differs from original Round".into(),
+                ));
+            }
+        }
         loop {
             let command = tokio::select! {
                 _ = cancellation.cancelled() => return Ok(()),
@@ -354,6 +406,33 @@ impl PlasticityRuntimeOwnerV1 {
                 && state.plasticity_admission_ready()?
                 && state.current_generation()? == owner_generation;
             match command {
+                PlasticityRuntimeCommandV1::RefreshInputContext {
+                    fence,
+                    path,
+                    pin,
+                    response,
+                } => {
+                    let result = self.refresh_input_context_v2(
+                        &state,
+                        &cancellation,
+                        owner_generation,
+                        ready,
+                        fence,
+                        path,
+                        pin,
+                    );
+                    let _ = response.send(result);
+                }
+                PlasticityRuntimeCommandV1::ResolveParameterAdmission { input, response } => {
+                    let result = self.resolve_parameter_admission(
+                        &state,
+                        &cancellation,
+                        owner_generation,
+                        ready,
+                        &input,
+                    );
+                    let _ = response.send(result);
+                }
                 PlasticityRuntimeCommandV1::Parameter { request, response } => {
                     if !ready {
                         let _ = response.send(Err(PlasticityRuntimeCallErrorV1::Unavailable));
@@ -498,3 +577,9 @@ mod tests;
 
 #[path = "plasticity_runtime_observation.rs"]
 mod observation;
+
+#[path = "plasticity_runtime_parameter_admission.rs"]
+mod parameter_admission;
+
+#[path = "plasticity_runtime_input_context.rs"]
+pub(crate) mod input_context;

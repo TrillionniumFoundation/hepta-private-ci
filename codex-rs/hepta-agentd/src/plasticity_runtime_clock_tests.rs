@@ -13,6 +13,9 @@ use crate::plasticity_runtime::PlasticityRuntimeCommandV1;
 use crate::plasticity_runtime::PlasticityRuntimeHandleV1;
 use crate::plasticity_runtime::PlasticityRuntimeOwnerV1;
 
+#[path = "plasticity_runtime_parameter_admission_tests.rs"]
+mod parameter_admission_tests;
+
 struct ClockFixture {
     _daemon: AgentdFixture,
     _runtime_root: TempDir,
@@ -434,3 +437,6 @@ async fn real_monotonic_guard_interval_expires_evidence_before_the_first_write()
 
 #[path = "plasticity_runtime_current_tests.rs"]
 mod current_tests;
+
+#[path = "plasticity_runtime_input_context_tests.rs"]
+mod input_context_tests;

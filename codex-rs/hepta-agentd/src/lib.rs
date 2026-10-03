@@ -521,6 +521,8 @@ pub use plasticity_owner_evidence::plasticity_parameter_signal_digest_v1;
 #[cfg(feature = "server")]
 pub use plasticity_process_bootstrap::load_plasticity_process_bootstrap_v1;
 #[cfg(feature = "server")]
+pub use plasticity_process_bootstrap::load_plasticity_process_bootstrap_v2;
+#[cfg(feature = "server")]
 pub use plasticity_runtime::PlasticityRuntimeBootstrapV1;
 #[cfg(feature = "server")]
 pub use plasticity_runtime::PlasticityRuntimeCallErrorV1;

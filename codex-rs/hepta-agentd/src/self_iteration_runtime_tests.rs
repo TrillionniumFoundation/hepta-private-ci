@@ -150,6 +150,9 @@ async fn cancelled_caller_leaves_actual_model_task_to_persist_terminal_and_never
                 Command::InspectRound(goal, policy, response) => {
                     let _ = response.send(rounds.status(&goal, policy));
                 }
+                Command::RefreshPlasticityContext(_, _, _, _, response) => {
+                    let _ = response.send(Err(invalid("fixture does not refresh")));
+                }
                 Command::InspectCurrentRound(response) => {
                     let _ = response.send(rounds.current_status());
                 }
