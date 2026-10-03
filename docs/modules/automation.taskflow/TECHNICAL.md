@@ -356,6 +356,34 @@ Exact effect recovery starts with the owned immutable provider attempt and verif
 
 Timer handoff increments the durable writer epoch and leaves the compatible successor draining until the host installs and resumes it; predecessor handles cannot mutate the domain. Permanent retirement requires admitted/running/indeterminate occurrences to settle and the existing leased/uncertain drain to pass. Provider-proven-absent pending/claimed backlog may remain behind the permanent tombstone for audit, without new provider admission. A handoff can preserve admitted work for its successor; retirement cannot abandon its observer. Disabled/cancelled schedules and historical receipt identities survive recovery.
 
+### Paged effect recovery discovery
+
+`scan_authorized_taskflow_effects(cursor, limit)` replaces the unpaged
+`pending_authorized_taskflow_effects` source API. It inspects 1..=1024 immutable
+attempts per page in insertion order and returns effects, a scanned count and
+explicit `More(cursor)` or `Complete` progress. An empty effects list is not an
+end marker. Consume every continuation, settle local durable facts before any
+provider lookup, then begin a new scan for later attempts or settlement changes.
+This API has no product backlog caller yet and grants no resend authority.
+
+The first page fixes an immutable-attempt high-water mark. Cursor anchors bind
+the complete immutable attempt fields, owner and database path; anchor validation
+and candidate selection share one read transaction. Per-attempt settlement is
+verified through the existing Rust history readers before filtering. Terminal
+primary observations and reconciliations remain discoverable until matching step
+and run projection completes. Historical absence additionally requires its exact
+derived requeue command and proof, preserving later owners and attempts.
+
+The opaque Rust cursor has no deserialization API. It can survive reopening the
+same store while retained in memory; a process that loses it starts a fresh scan.
+Its path/owner digest is a binding label, not a credential or proof of physical
+database incarnation. Replacement or rowid remapping must preserve both exact
+anchors or continuation rejects explicitly. Normal attempt deletion/update is
+forbidden; timer retirement retains readable history. A contents-identical copy
+has the same logical history. There is no full cross-page snapshot: completion
+ends this scan only. Candidate counts are bounded, while existing per-attempt
+history verification cost still depends on retained history; no SLO is claimed.
+
 ## 9. Security, privacy and threat controls
 
 Authority is operation-bound, subject-bound, scope-bound, payload-bound, destination-bound, short-lived and revocation-aware. `authorized_effect.rs` computes the canonical effect-intent digest inside the owner and verifies that the signed final-use binding's subject, destination, request digest, scope digest and payload digest all match that exact intent before the effect driver can run. Automation never owns the signing key.

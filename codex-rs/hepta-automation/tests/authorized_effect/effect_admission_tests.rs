@@ -205,9 +205,10 @@ async fn effect_checks_lease_inside_the_authorized_consumer(async_dispatch: bool
     );
     assert!(
         store
-            .pending_authorized_taskflow_effects(/*limit*/ 8)
+            .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 8)
             .await
             .expect("settled absence")
+            .effects
             .is_empty()
     );
     let step = store

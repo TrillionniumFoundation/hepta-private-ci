@@ -78,6 +78,26 @@ Permanent retirement is stricter than compatible handoff, but does not erase a s
 Provider-proven-absent pending/claimed work can remain behind its tombstone after leased/uncertain drain; it cannot admit a new provider effect.
 Schema19's pre-existing migration convergence preserves recognized SQL/checksums and rejects unknown, dirty or conflicting historical identities.
 
+## Recovery-frontier correction
+
+AF-37 (P1): the previous pending-attempt query dropped a terminal primary
+observation or reconciliation before its separate step/run projection committed.
+A restart could therefore retain an exact recoverable effect but hide it from
+discovery. The paged `effect_recovery_scan.rs` path now retains unprojected facts
+and verifies exact historical settlement before excluding them. Empty filtered
+pages carry continuation; current settlement is read per page and later attempts
+require a new scan. No provider contact, authority, schema migration or new
+product caller is introduced.
+
+`effect_recovery_frontier_tests.rs` covers primary/reconciled success, failure
+and absence before step projection and after step/before run projection, reopen
+and repeated local settlement. `effect_recovery_scan_tests.rs` covers filtered
+pages, bounded ordering, new-attempt high-water exclusion, cursor replay,
+wrong-store/owner/anchor/limit rejection, replacement, VACUUM, retained retirement
+history and immutable conflict/fence checks. The existing successor-absence
+integration test also verifies discovery exclusion without another provider call.
+These are regression locations, not current execution or acceptance receipts.
+
 ## Repeat-review method
 
 Compare documentation and registries to actual callers, then review identity/authority, durable lifecycle, progression and host execution independently.

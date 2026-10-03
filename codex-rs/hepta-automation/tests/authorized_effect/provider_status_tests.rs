@@ -36,9 +36,10 @@ async fn lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absenc
         .await
         .expect("dispatch unknown");
     let pending = store
-        .pending_authorized_taskflow_effects(/*limit*/ 8)
+        .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 8)
         .await
         .expect("pending")
+        .effects
         .remove(0);
     assert_eq!(
         pending.provider_dispatch_status,
@@ -56,9 +57,10 @@ async fn lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absenc
         .await
         .expect("reopen");
     let pending = reopened
-        .pending_authorized_taskflow_effects(/*limit*/ 8)
+        .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 8)
         .await
         .expect("pending")
+        .effects
         .remove(0);
     assert_eq!(
         pending.provider_dispatch_status,
@@ -94,9 +96,10 @@ async fn lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absenc
     ));
     assert_eq!(
         reopened
-            .pending_authorized_taskflow_effects(/*limit*/ 8)
+            .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 8)
             .await
-            .expect("still pending"),
+            .expect("still pending")
+            .effects,
         vec![pending.clone()]
     );
     // The quarantined producer contract permits authoritative completion with
@@ -117,9 +120,10 @@ async fn lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absenc
     ));
     assert!(
         reopened
-            .pending_authorized_taskflow_effects(/*limit*/ 8)
+            .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 8)
             .await
             .expect("settled")
+            .effects
             .is_empty()
     );
     assert_eq!(driver.adapter().dispatch_calls.load(Ordering::Relaxed), 1);
@@ -187,9 +191,10 @@ async fn rejected_lookup_distinguishes_unknown_accepted_and_legacy_dispatch() {
                 .expect("opaque legacy dispatch");
         }
         let pending = store
-            .pending_authorized_taskflow_effects(/*limit*/ 8)
+            .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 8)
             .await
             .expect("pending")
+            .effects
             .remove(0);
         assert_eq!(pending.provider_dispatch_status, initial);
         let result = driver
@@ -206,18 +211,20 @@ async fn rejected_lookup_distinguishes_unknown_accepted_and_legacy_dispatch() {
             ));
             assert!(
                 store
-                    .pending_authorized_taskflow_effects(/*limit*/ 8)
+                    .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 8)
                     .await
                     .expect("settled")
+                    .effects
                     .is_empty()
             );
         } else {
             assert_eq!(result, AuthorizedProviderEffectLookup::Unresolved);
             assert_eq!(
                 store
-                    .pending_authorized_taskflow_effects(/*limit*/ 8)
+                    .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 8)
                     .await
-                    .expect("still pending"),
+                    .expect("still pending")
+                    .effects,
                 vec![pending]
             );
             // A generic owner failure can mean an admitted execution failed;
@@ -384,9 +391,10 @@ async fn terminal_step_evidence_rejects_conflicting_recovery_without_poisoning_l
         ));
         assert_eq!(
             store
-                .pending_authorized_taskflow_effects(/*limit*/ 1)
+                .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 1)
                 .await
                 .expect("pending")
+                .effects
                 .len(),
             1
         );
@@ -437,9 +445,10 @@ async fn unpinned_bridge_cannot_observe_a_pinned_driver_attempt() {
         .await
         .expect("pinned dispatch");
     let pending = store
-        .pending_authorized_taskflow_effects(/*limit*/ 8)
+        .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 8)
         .await
         .expect("pending")
+        .effects
         .remove(0);
     let adapter = RecordingProviderEffectAdapter::new(
         ProviderEffectDispatch::Unknown,
@@ -487,9 +496,10 @@ async fn unpinned_bridge_cannot_observe_a_pinned_driver_attempt() {
     );
     assert_eq!(
         store
-            .pending_authorized_taskflow_effects(/*limit*/ 8)
+            .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 8)
             .await
-            .expect("still pending"),
+            .expect("still pending")
+            .effects,
         vec![pending]
     );
 }

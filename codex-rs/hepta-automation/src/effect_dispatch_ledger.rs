@@ -292,53 +292,6 @@ impl AutomationStore {
         row.map(effect_attempt_from_row).transpose()
     }
 
-    pub(crate) async fn pending_effect_dispatch_attempts(
-        &self,
-        limit: usize,
-    ) -> Result<Vec<EffectDispatchAttempt>, TaskFlowError> {
-        if limit == 0 || limit > 1_024 {
-            return Err(TaskFlowError::Invalid(
-                "effect recovery scan limit".to_string(),
-            ));
-        }
-        let rows = sqlx::query(
-            "SELECT a.*,
-                    COALESCE(r.observation, o.observation) AS observation,
-                    COALESCE(r.evidence_digest, o.evidence_digest) AS evidence_digest,
-                    COALESCE(r.observed_at_ms, o.observed_at_ms) AS observed_at_ms,
-                    CASE WHEN w.run_id IS NOT NULL THEN 'accepted'
-                         ELSE o.provider_dispatch_status END AS provider_dispatch_status
-             FROM taskflow_effect_dispatch_attempts a
-             LEFT JOIN taskflow_effect_dispatch_observations o
-               ON o.owner_agent_id = a.owner_agent_id
-              AND o.run_id = a.run_id
-              AND o.step_id = a.step_id
-              AND o.attempt = a.attempt
-             LEFT JOIN taskflow_effect_dispatch_reconciliations r
-               ON r.owner_agent_id = a.owner_agent_id
-              AND r.run_id = a.run_id
-              AND r.step_id = a.step_id
-              AND r.attempt = a.attempt
-             LEFT JOIN taskflow_effect_provider_acceptances w
-               ON w.owner_agent_id = a.owner_agent_id AND w.run_id = a.run_id
-              AND w.step_id = a.step_id AND w.attempt = a.attempt
-             WHERE a.owner_agent_id = ?
-               AND r.run_id IS NULL
-               AND (o.run_id IS NULL OR o.observation = 'indeterminate')
-             ORDER BY a.started_at_ms, a.run_id, a.step_id, a.attempt
-             LIMIT ?",
-        )
-        .bind(self.taskflow_owner_agent_id().as_str())
-        .bind(
-            i64::try_from(limit)
-                .map_err(|_| TaskFlowError::Invalid("effect recovery scan limit".to_string()))?,
-        )
-        .fetch_all(self.taskflow_pool())
-        .await
-        .map_err(|_| TaskFlowError::Unavailable)?;
-        rows.into_iter().map(effect_attempt_from_row).collect()
-    }
-
     pub(crate) async fn record_effect_provider_acceptance(
         &self,
         run_id: &str,
@@ -567,7 +520,7 @@ impl AutomationStore {
     }
 }
 
-fn effect_attempt_from_row(
+pub(super) fn effect_attempt_from_row(
     row: sqlx::sqlite::SqliteRow,
 ) -> Result<EffectDispatchAttempt, TaskFlowError> {
     let provider_contract_binding = row
@@ -692,7 +645,7 @@ fn is_constraint(error: &sqlx::Error) -> bool {
 mod recovery_frontier_tests;
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use codex_hepta_contracts::AgentId;
     use codex_hepta_contracts::Sha256Digest;
     use codex_hepta_fleet::AgentManifest;
@@ -728,7 +681,7 @@ mod tests {
         (temp, layout)
     }
 
-    pub(super) async fn prepared_store() -> (
+    pub(crate) async fn prepared_store() -> (
         tempfile::TempDir,
         codex_hepta_paths::HeptaAgentLayout,
         AutomationStore,
@@ -873,9 +826,10 @@ mod tests {
         );
         assert_eq!(
             store
-                .pending_effect_dispatch_attempts(10)
+                .scan_authorized_taskflow_effects(/*cursor*/ None, 10)
                 .await
                 .expect("pending")
+                .effects
                 .len(),
             1
         );
@@ -883,9 +837,10 @@ mod tests {
         store.close().await;
         let reopened = AutomationStore::open(&layout).await.expect("reopen store");
         let pending = reopened
-            .pending_effect_dispatch_attempts(10)
+            .scan_authorized_taskflow_effects(/*cursor*/ None, 10)
             .await
-            .expect("pending after reopen");
+            .expect("pending after reopen")
+            .effects;
         assert_eq!(pending.len(), 1);
         assert_eq!(pending[0].grant_id, "grant-1");
         assert_eq!(
@@ -926,11 +881,25 @@ mod tests {
                 .map(|value| value.evidence_digest.clone()),
             Some(terminal.clone())
         );
+        assert_eq!(
+            reopened
+                .scan_authorized_taskflow_effects(/*cursor*/ None, 10)
+                .await
+                .expect("terminal still needs projection")
+                .effects
+                .len(),
+            1
+        );
+        reopened
+            .settle_authorized_taskflow_effect_observation("effect-run", "work", 1, &fence)
+            .await
+            .expect("project durable terminal fact");
         assert!(
             reopened
-                .pending_effect_dispatch_attempts(10)
+                .scan_authorized_taskflow_effects(/*cursor*/ None, 10)
                 .await
-                .expect("no pending after terminal")
+                .expect("settled")
+                .effects
                 .is_empty()
         );
 

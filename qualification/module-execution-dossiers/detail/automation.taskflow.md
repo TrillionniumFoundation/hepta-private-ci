@@ -26,6 +26,15 @@ The existing `taskflow_definitions`, `taskflow_runs` and `taskflow_events` ledge
 
 Queue admission is an intermediate observation, never execution success. `AutomationTaskState::Completed` for a one-shot schedule means no further schedule instant exists; the corresponding occurrence remains non-terminal until its TaskFlow/provider observation settles.
 
+Effect discovery uses `scan_authorized_taskflow_effects(cursor, limit)`: at most
+1024 immutable candidates, an owner/path/attempt-bound opaque continuation and
+explicit scan completion. An empty filtered page may still require continuation.
+Terminal observations remain discoverable until exact step/run settlement is
+verified; absence additionally binds the exact historical requeue command/proof.
+No schema change or product backlog worker is implied. Settlement is current per
+page, so later changes and new attempts require a new scan; cursor anchors reject
+incompatible store history rather than claiming completion.
+
 ## 4. Deterministic algorithm and scheduling
 
 1. Claim due timer work under the Agent generation lease.

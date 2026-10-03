@@ -258,6 +258,15 @@ async fn proven_absent_effect_recovery_survives_successor_owner_and_attempt() {
         .taskflow_run(&effect.run_id)
         .await
         .expect("run snapshot");
+    let page = reopened
+        .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 1)
+        .await
+        .expect("settled absence remains excluded after successor advancement");
+    assert!(page.effects.is_empty());
+    assert_eq!(
+        page.progress,
+        codex_hepta_automation::AuthorizedEffectRecoveryProgress::Complete
+    );
     assert_eq!(
         reopened
             .authorized_taskflow_effect_fence(&effect.run_id, &effect.step_id, effect.attempt)

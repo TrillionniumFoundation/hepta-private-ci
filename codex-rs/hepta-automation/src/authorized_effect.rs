@@ -1393,23 +1393,6 @@ impl AutomationStore {
         }
     }
 
-    /// Return bounded provider-contact attempts that have no durable provider
-    /// observation yet. A restart reconciler must hand these immutable
-    /// identities to the registered downstream effect owner; this scan never
-    /// redispatches and never interprets absence of a local row as provider
-    /// absence.
-    pub async fn pending_authorized_taskflow_effects(
-        &self,
-        limit: usize,
-    ) -> Result<Vec<AuthorizedEffectPending>, AuthorizedEffectError> {
-        Ok(self
-            .pending_effect_dispatch_attempts(limit)
-            .await?
-            .into_iter()
-            .map(AuthorizedEffectPending::from)
-            .collect())
-    }
-
     async fn check_effect_admission(
         &self,
         intent: &AuthorizedEffectIntent,
@@ -1968,7 +1951,7 @@ fn final_use_binding_digest(
     Ok(Sha256Digest::for_bytes(&bytes))
 }
 
-fn effect_command_id(phase: &str, durable: &EffectDispatchAttempt) -> String {
+pub(super) fn effect_command_id(phase: &str, durable: &EffectDispatchAttempt) -> String {
     let mut bytes = b"hepta.automation.effect.command.v1\0".to_vec();
     bytes.extend_from_slice(phase.as_bytes());
     bytes.push(0);

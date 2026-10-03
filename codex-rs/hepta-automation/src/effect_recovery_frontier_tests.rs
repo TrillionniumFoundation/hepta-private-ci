@@ -160,9 +160,10 @@ async fn assert_terminal_frontier(origin: ObservationOrigin, cut: ProjectionCut)
         store.close().await;
         let reopened = AutomationStore::open(&layout).await.expect("restart");
         let pending = reopened
-            .pending_authorized_taskflow_effects(/*limit*/ 10)
+            .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 10)
             .await
-            .expect("restart recovery frontier");
+            .expect("restart recovery frontier")
+            .effects;
         if pending != vec![expected] {
             missing.push(kind);
         }
@@ -176,9 +177,10 @@ async fn assert_terminal_frontier(origin: ObservationOrigin, cut: ProjectionCut)
             .expect("idempotent local settlement");
         assert!(
             reopened
-                .pending_authorized_taskflow_effects(/*limit*/ 10)
+                .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 10)
                 .await
                 .expect("settled frontier")
+                .effects
                 .is_empty()
         );
         reopened.close().await;

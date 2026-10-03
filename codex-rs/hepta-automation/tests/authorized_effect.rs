@@ -766,9 +766,10 @@ async fn async_provider_unknown_and_lookup_not_found_remain_quarantined() {
     );
 
     let pending = store
-        .pending_authorized_taskflow_effects(8)
+        .scan_authorized_taskflow_effects(/*cursor*/ None, 8)
         .await
-        .expect("pending provider effect");
+        .expect("pending provider effect")
+        .effects;
     assert_eq!(pending.len(), 1);
     assert_eq!(
         driver
@@ -779,9 +780,10 @@ async fn async_provider_unknown_and_lookup_not_found_remain_quarantined() {
     );
     assert_eq!(
         store
-            .pending_authorized_taskflow_effects(/*limit*/ 8)
+            .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 8)
             .await
-            .expect("still pending"),
+            .expect("still pending")
+            .effects,
         pending
     );
     assert_eq!(driver.adapter().dispatch_calls.load(Ordering::Relaxed), 1);
@@ -850,9 +852,10 @@ async fn provider_identity_is_owner_scoped_and_preserves_historical_recovery() {
     );
     assert_eq!(
         reopened
-            .pending_authorized_taskflow_effects(/*limit*/ 8)
+            .scan_authorized_taskflow_effects(/*cursor*/ None, /*limit*/ 8)
             .await
-            .expect("still pending"),
+            .expect("still pending")
+            .effects,
         vec![pending]
     );
 }
@@ -1180,9 +1183,10 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
         .await
         .expect("reopen after provider-contact crash");
     let pending = reopened
-        .pending_authorized_taskflow_effects(8)
+        .scan_authorized_taskflow_effects(/*cursor*/ None, 8)
         .await
-        .expect("pending recovery scan");
+        .expect("pending recovery scan")
+        .effects;
     assert_eq!(pending.len(), 1);
     assert_eq!(pending[0].run_id, effect.run_id);
     assert_eq!(pending[0].step_id, effect.step_id);
@@ -1272,9 +1276,10 @@ async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_termina
         .await
         .expect("reopen store");
     let pending = reopened
-        .pending_authorized_taskflow_effects(8)
+        .scan_authorized_taskflow_effects(/*cursor*/ None, 8)
         .await
-        .expect("pending effects");
+        .expect("pending effects")
+        .effects;
     assert_eq!(pending.len(), 1);
     assert_eq!(pending[0].run_id, effect.run_id);
 
@@ -1493,9 +1498,10 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
         .await
         .expect("reopen after compensation crash");
     let pending = reopened
-        .pending_authorized_taskflow_effects(8)
+        .scan_authorized_taskflow_effects(/*cursor*/ None, 8)
         .await
-        .expect("pending compensation");
+        .expect("pending compensation")
+        .effects;
     assert_eq!(pending.len(), 1);
     assert_eq!(pending[0].intent_digest, expected_digest);
     assert_eq!(pending[0].run_id, compensation.run_id);
