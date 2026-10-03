@@ -1,0 +1,117 @@
+{
+  "baselinePublished": "571720cf07b1c0249b410c892cee5edd19dc1b61",
+  "localAppStage": "b54da824cfb8e25decf2499e6172e8ae3e669eb5",
+  "localAppTree": "9db69b558b42695d1594c9315cef9bc1de102754",
+  "nativeBinary": {
+    "sha256": "be45a10919d55c071f7f612535536888e315993c8421cc470ec114c5a8bcba6c",
+    "bytes": 239897672,
+    "sourceDiffSha256": "f748b8f3bf9977497e4ba8d25b4d7b15c6e0555d8990c08b6a1982685b2b4b8b"
+  },
+  "framework": {
+    "revision": "493d23a7630f487d29912dd73f2cbb5b639b74ca",
+    "patchSha256": "e4e8b2f727b7b4082a147f904fed880d32fe5b1a46a4295a074f42500bcb619a",
+    "navPatchSha256": "b4d82d823837c6930c9f3384bdb46f35b65c8e19b40f5e9191eac63df9a6de19",
+    "before": {
+      "widgets/src/dock.rs": "7ac23dce77f2a7a2c4a2a083740353f07bdcf7ab98ca370e4763db2760577654",
+      "widgets/src/scroll_bars.rs": "9d4c9e1ebf8bf756f33f3f29ab8965c57b48a9a404582411b87c8a4a34d32b44",
+      "platform/src/draw_list.rs": "32475b53c3e38dd82b33c24f7a3e6b3c9137773493ac1a36c3668eaf4ad23c92",
+      "widgets/src/nav_control.rs": "56830fb21636ebbcaeda7e3394021fda9a5342c4d3f784b869839e0cf7c7350b",
+      "widgets/src/button.rs": "3e45061fb0a12036a6480306df89a4ebc918b7995e73c70041f9c485ce8ac7db",
+      "widgets/src/text_input.rs": "cc8ca79929a1410b014e3dc9bc193c38884a1d500e9a46d5e2ab5d8966500b19",
+      "platform/src/script/res.rs": "2ae11aa2520266f4d2a77aab93c6e90db1bf9cb4ff44a051544b39d5bb38ac8b",
+      "platform/src/window.rs": "0dccf2ea7f449b7cb3a775b8a0236ef07eb1028c25c49e93fdcdcef221dfc039",
+      "platform/src/os/web/web.rs": "8be1ad8d5b7cd0191fffdc94bad14aa7adbde7d5abf39825aaa8c4971c7318e8",
+      "platform/src/os/web/web.js": "c9f17ebc80bb03bbc272174c91dc3f5d56ab4cc306b4fca11e2c29bb86c084f7"
+    },
+    "after": {
+      "widgets/src/dock.rs": "3a20d2e73ee3506121ec9eff4fd97e174657f0feefe1e112cd9ff560012d1194",
+      "widgets/src/scroll_bars.rs": "8a249eb76b4b36062b0c354529a37bce38362ac7e2a28eef509edb801c373ee3",
+      "platform/src/draw_list.rs": "9aa56bf531d7905fbfd04fa21f9f4b66261e5b664092abb96322a4c850c4eb67",
+      "widgets/src/nav_control.rs": "f47a7328d187e537129eac838c7a049d7e2bb8702585bb9327f46f43d1061bf7",
+      "widgets/src/button.rs": "ce84450e54ed3a03ab30befeb6cdacbf24f1fcdcfb5ee5f1be1805073140c643",
+      "widgets/src/text_input.rs": "3bdc633f89ccde9083c467fe3eb47508e1e00cfb87e068ec30f906d9ca45a150",
+      "platform/src/script/res.rs": "617550c49511a987c459c12a1244b38822e0a12586f79cc092466c09fe15724b",
+      "platform/src/window.rs": "3f3fb37976d1bcdb75588e524acb9440ac515e2f54e0ea18df5c194f26230ee0",
+      "platform/src/os/web/web.rs": "9131a20ca1fb11969cdd7c9caf28b64329d2ec8b735bd1b43491e4b74bc02443",
+      "platform/src/os/web/web.js": "c9f17ebc80bb03bbc272174c91dc3f5d56ab4cc306b4fca11e2c29bb86c084f7",
+      "widgets/src/hepta_font_tests.rs": "6d683c0e5d20de581d4f38bc50deeb40af6c17ab05dffad002622c1777fc1013",
+      "widgets/src/hepta_nav_tests.rs": "0f3da9a7b9f485fd2e631f9e2e07c5f551b0ce21c60958ff2c173b350be92086",
+      "widgets/src/hepta_scroll_area_tests.rs": "8eca2db782f6702379510abd7396ca47669f325c68f1a69bfa4e5575075b84a2",
+      "widgets/src/hepta_button_key_tests.rs": "638e480b403e0ef9954839cb99206d510605792ea93ffd9c2d3e03b536861ef8",
+      "widgets/src/hepta_dock_retirement_tests.rs": "ad9dd3abfeb50b3607237c1859b1651fbc5a0dbee126541594f430b7be4c2c7a"
+    }
+  },
+  "failure": {
+    "caller": "OpenGL render_view follows stale tab-content SubList after Dock layout replacement",
+    "phaseTrace": [
+      {
+        "phase": "startup before any UI input",
+        "bytes": 552,
+        "generationErrors": 0,
+        "sha256": "79e4c0944e03cf626694c4f1908fe4545e7c03bc86ef6bc24a0d27391e300d2e"
+      },
+      {
+        "phase": "after unmaximize1180x812 to1280x800",
+        "bytes": 552,
+        "generationErrors": 0,
+        "sha256": "79e4c0944e03cf626694c4f1908fe4545e7c03bc86ef6bc24a0d27391e300d2e"
+      },
+      {
+        "phase": "after desktop-to-compact room-list transition",
+        "bytes": 552,
+        "generationErrors": 0,
+        "sha256": "79e4c0944e03cf626694c4f1908fe4545e7c03bc86ef6bc24a0d27391e300d2e"
+      },
+      {
+        "phase": "after Research mobile push settled",
+        "bytes": 552,
+        "generationErrors": 0
+      },
+      {
+        "phase": "after mobile resize519x761 to799x561",
+        "bytes": 552,
+        "generationErrors": 0
+      },
+      {
+        "phase": "after mobile-to-desktop799x561 to1180x760",
+        "bytes": 32325,
+        "generationErrors": 140
+      }
+    ],
+    "logSha256": "eee5624b34e0ac81302d954e4a9c504adac4cac3d075430b045fd3fd27aed133"
+  },
+  "repair": "Dock detaches exactly its tab-content sublists from current valid parents before replacing TabBarWraps; original generation diagnostics untouched",
+  "tests": {
+    "realDrawnDockRed": {
+      "count": 2,
+      "logSha256": "b911c2118ad9b057d8bf60dacadec02f01eaa07cb688ffcd404563627ab75bec"
+    },
+    "frameworkGreen": {
+      "count": 16,
+      "logSha256": "8f2f9fc41441980173d6afe141d3aff580594278bd0f2d175498c8af8b0436f0",
+      "strictLog": true
+    },
+    "python": 40,
+    "appAtPrecedingFramework": 20
+  },
+  "nativeReplay": {
+    "accountFree": true,
+    "mode": "chat-prism",
+    "sequence": [
+      "wide1280x800",
+      "room list519x761",
+      "real Research room selection",
+      "short799x561",
+      "wide1180x760"
+    ],
+    "generationErrors": 0,
+    "strictLog": true,
+    "logSha256": "79e4c0944e03cf626694c4f1908fe4545e7c03bc86ef6bc24a0d27391e300d2e"
+  },
+  "remaining": [
+    "Current Research room still replaced by saved Design Lab on desktop return",
+    "Fixture has no production TimelineUiState, so its draft-loss replay does not qualify SDK state handoff",
+    "All three reference likeness and broader production interaction remain unaccepted",
+    "Exact-source hosted run pending"
+  ]
+}

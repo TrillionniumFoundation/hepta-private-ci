@@ -5,6 +5,7 @@ import subprocess
 from pathlib import Path
 
 BEFORE = {
+    'widgets/src/dock.rs': '7ac23dce77f2a7a2c4a2a083740353f07bdcf7ab98ca370e4763db2760577654',
     'widgets/src/scroll_bars.rs': '9d4c9e1ebf8bf756f33f3f29ab8965c57b48a9a404582411b87c8a4a34d32b44',
     'platform/src/draw_list.rs': '32475b53c3e38dd82b33c24f7a3e6b3c9137773493ac1a36c3668eaf4ad23c92',
     'widgets/src/nav_control.rs': '56830fb21636ebbcaeda7e3394021fda9a5342c4d3f784b869839e0cf7c7350b',
@@ -57,6 +58,9 @@ def apply(source):
     nav_test = 'widgets/src/hepta_nav_tests.rs'
     scroll_test = 'widgets/src/hepta_scroll_area_tests.rs'
     key_test = 'widgets/src/hepta_button_key_tests.rs'
+    dock_test = 'widgets/src/hepta_dock_retirement_tests.rs'
+    if (source / dock_test).exists():
+        raise ValueError('Framework regression path already exists: ' + dock_test)
     if (source / key_test).exists():
         raise ValueError('Framework regression path already exists: ' + key_test)
     if (source / scroll_test).exists():
@@ -73,7 +77,7 @@ def apply(source):
     return {'revision': '493d23a7630f487d29912dd73f2cbb5b639b74ca',
             'patchSha256': hashlib.sha256(patch.read_bytes()).hexdigest(),
             'navPatchSha256': hashlib.sha256(nav_patch.read_bytes()).hexdigest(),
-            'before': BEFORE, 'after': {name: hashlib.sha256((source / name).read_bytes()).hexdigest() for name in [*BEFORE, added, nav_test, scroll_test, key_test]}}
+            'before': BEFORE, 'after': {name: hashlib.sha256((source / name).read_bytes()).hexdigest() for name in [*BEFORE, added, nav_test, scroll_test, key_test, dock_test]}}
 
 
 def local_reporter(source):

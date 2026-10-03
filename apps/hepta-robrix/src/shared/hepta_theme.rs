@@ -227,7 +227,7 @@ script_mod! {
                 return sdf.result
             }
         }
-        Label { text: "H E P T A" draw_text +: {color: #xf0edff, text_style: theme.font_regular {font_size: 13}} }
+        hepta_brand := Label { text: "H E P T A" draw_text +: {color: #xf0edff, text_style: theme.font_regular {font_size: 13}} }
         View {width: Fill, height: Fit}
         theme_a := mod.widgets.HeptaThemeButton { text: "Titanium" }
         theme_b := mod.widgets.HeptaThemeButton { text: "Prism" }

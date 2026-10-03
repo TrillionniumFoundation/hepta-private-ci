@@ -47,6 +47,7 @@ pub(super) fn start(app: &mut App, cx: &mut Cx) -> bool {
         .set_title(cx, "Hepta · UI fixture · no live accounts");
     let host = cx.global::<crate::hepta_console::ConsoleHost>();
     host.set_fixture_unconfigured();
+    app.ui.label(cx, ids!(hepta_brand)).set_text(cx, "H E P T A · SAMPLE");
     app.update_login_visibility(cx);
     #[cfg(target_arch = "wasm32")]
     if mode == "login-usability" || mode.starts_with("chat-") { observation::start(cx); }
@@ -159,11 +160,19 @@ mod tests {
             let mut cx = Cx2d::new(&mut draw);
             cx.begin_root_turtle(dvec2(800.0, 600.0), Layout::flow_down());
             room.draw_all(&mut cx, &mut Scope::with_data(&mut AppState::default()));
-            cx.end_turtle();
+            cx.end_pass_sized_turtle();
         }
         list.end(&mut draw);
         draw.end_pass(&pass);
         drop(draw);
+        let list = room.portal_list(&mut cx, ids!(list));
+        let (_, image_message) = list.get_item(0).expect("first real image message");
+        let image = image_message.image(&mut cx, ids!(content.message.image.image_view.image));
+        let area = image.area();
+        assert!(area.is_valid(&cx), "fixture image must have a real drawn area");
+        let size = area.rect(&cx).size;
+        assert!(size.x > 0.0 && size.x <= 320.0 && size.y > 0.0 && size.y <= 96.0,
+            "fixture image must fit320x96, got {size:?}");
         cx.with_vm(|vm| { let errors = vm.take_errors(); assert!(errors.is_empty(), "fixture dynamic script errors: {errors:#?}"); });
         assert_eq!(makepad_widgets::makepad_platform::shader_error::take(), None);
     }

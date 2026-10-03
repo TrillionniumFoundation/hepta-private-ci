@@ -267,6 +267,48 @@
 +#[cfg(test)]
 +#[path = "hepta_scroll_area_tests.rs"]
 +mod hepta_scroll_area_tests;
+--- a/widgets/src/dock.rs
++++ b/widgets/src/dock.rs
+@@ -1656,7 +1656,23 @@
+         None
+     }
+
++    // Replacing tab bars retires their content draw lists immediately. Unlink
++    // those owned children before dropping them, so a window repaint between
++    // this event and the next draw cannot follow the parent's old sublist IDs.
++    fn detach_tab_contents(&self, cx: &mut Cx) {
++        for tab_bar in self.tab_bars.values() {
++            let child = tab_bar.contents_draw_list.id();
++            if cx.draw_lists.is_id_freed(child) { continue; }
++            if let Some(parent) = cx.draw_lists[child].codeflow_parent_id {
++                if !cx.draw_lists.is_id_freed(parent) {
++                    cx.draw_lists[parent].clear_sub_list(child);
++                }
++            }
++        }
++    }
++
+     pub fn load_state(&mut self, cx: &mut Cx, dock_items: HashMap<LiveId, DockItem>) {
++        self.detach_tab_contents(cx);
+         self.dock_items = dock_items;
+         self.items.clear();
+         self.tab_bars.clear();
+@@ -1679,6 +1695,7 @@
+         cx: &mut Cx,
+         dock_items: HashMap<LiveId, DockItem>,
+     ) {
++        self.detach_tab_contents(cx);
+         self.items
+             .retain(|id, (old_kind, _)| preserve_item_for_layout(&dock_items, *id, *old_kind));
+         self.dock_items = dock_items;
+@@ -2250,3 +2267,7 @@
+         assert!(!preserve_item_for_layout(&layout, reused, LiveId(2)));
+     }
+ }
++
++#[cfg(test)]
++#[path = "hepta_dock_retirement_tests.rs"]
++mod hepta_dock_retirement_tests;
 --- /dev/null
 +++ b/widgets/src/hepta_nav_tests.rs
 @@ -0,0 +1,80 @@
@@ -524,4 +566,83 @@
 +        button.handle_event(&mut cx, &Event::KeyUp(key(KeyCode::Space, false)), &mut Scope::empty());
 +        assert_eq!(clicks(&cx), 0);
 +    }
++}
+--- /dev/null
++++ b/widgets/src/hepta_dock_retirement_tests.rs
+@@ -0,0 +1,76 @@
++use super::*;
++use crate::*;
++
++fn scene() -> (Cx, Dock, DrawPass, DrawList) {
++    let mut cx = Cx::new(Box::new(|_, _| {}));
++    let dock = cx.with_vm(|vm| {
++        crate::script_mod(vm);
++        vm.bx.captured_errors = Some(Vec::new());
++        let value = script_eval!(vm, {
++            use mod.prelude.widgets.*
++            use mod.widgets.*
++            mod.widgets.Dock {
++                root := DockTabs {tabs: [@one], selected: 0}
++                one := DockTab {name: "One", template: @PermanentTab, kind: @panel}
++                panel := mod.widgets.SolidView {width: Fill, height: Fill, draw_bg.color: #333}
++            }
++        });
++        let dock = Dock::script_from_value(vm, value);
++        assert!(vm.take_errors().is_empty(), "real Dock script must initialize");
++        dock
++    });
++    let pass = DrawPass::new(&mut cx);
++    pass.set_size(&mut cx, dvec2(320.0, 240.0));
++    let list = DrawList::new(&mut cx);
++    (cx, dock, pass, list)
++}
++
++fn draw(cx: &mut Cx, dock: &mut Dock, pass: &DrawPass, list: &mut DrawList) {
++    let event = DrawEvent::default();
++    let mut draw = CxDraw::new(cx, &event);
++    draw.begin_pass(pass, None);
++    list.begin_always(&mut draw);
++    {
++        let mut cx = Cx2d::new(&mut draw);
++        cx.begin_root_turtle(dvec2(320.0, 240.0), Layout::flow_down());
++        dock.draw_all(&mut cx, &mut Scope::empty());
++        cx.end_pass_sized_turtle();
++    }
++    list.end(&mut draw);
++    draw.end_pass(pass);
++}
++
++#[test]
++fn replacing_dock_layout_detaches_retired_content_before_repaint() {
++    let (mut cx, mut dock, pass, mut list) = scene();
++    draw(&mut cx, &mut dock, &pass, &mut list);
++    let old = dock.tab_bars.values().next().unwrap().contents_draw_list.id();
++    let parent = cx.draw_lists[old].codeflow_parent_id.expect("drawn parent");
++    assert!((0..cx.draw_lists[parent].draw_items.len()).any(|i| cx.draw_lists[parent].draw_items[i].kind.sub_list() == Some(old)));
++    let other = DrawList::new(&mut cx);
++    let redraw_id = cx.redraw_id;
++    cx.draw_lists[parent].append_sub_list(redraw_id, other.id());
++    dock.load_state(&mut cx, dock.dock_items.clone());
++    assert!(cx.draw_lists.is_id_freed(old));
++    assert!(!(0..cx.draw_lists[parent].draw_items.len()).any(|i| cx.draw_lists[parent].draw_items[i].kind.sub_list() == Some(old)),
++        "retired Dock content remains attached before the next redraw");
++    assert!((0..cx.draw_lists[parent].draw_items.len()).any(|i| cx.draw_lists[parent].draw_items[i].kind.sub_list() == Some(other.id())),
++        "unrelated live content must remain attached");
++    draw(&mut cx, &mut dock, &pass, &mut list);
++    for id in cx.attached_draw_lists(pass.draw_pass_id()) {
++        assert!(!cx.draw_lists.is_id_freed(id));
++    }
++}
++
++#[test]
++fn preserving_tab_bodies_still_detaches_replaced_tabbar_draw_lists() {
++    let (mut cx, mut dock, pass, mut list) = scene();
++    draw(&mut cx, &mut dock, &pass, &mut list);
++    let old = dock.tab_bars.values().next().unwrap().contents_draw_list.id();
++    let parent = cx.draw_lists[old].codeflow_parent_id.unwrap();
++    let body = dock.items.get(&id!(one)).unwrap().1.widget_uid();
++    dock.load_state_preserving_items(&mut cx, dock.dock_items.clone());
++    assert_eq!(dock.items.get(&id!(one)).unwrap().1.widget_uid(), body);
++    assert!(!(0..cx.draw_lists[parent].draw_items.len()).any(|i| cx.draw_lists[parent].draw_items[i].kind.sub_list() == Some(old)),
++        "preserving bodies must not preserve retired layout draw lists");
 +}

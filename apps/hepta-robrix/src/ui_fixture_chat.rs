@@ -83,14 +83,13 @@ pub(crate) fn draw(view: &mut View, cx: &mut Cx2d, scope: &mut Scope, walk: Walk
             }
             if cx.global::<FixtureDrawState>().initialized.insert(item.widget_uid()) {
                 if index == 0 {
-                    let mut image_view = item.widget(cx, ids!(content.message.image));
-                    script_apply_eval!(cx, image_view, {
-                        width: mod.turtle.Fit{max: mod.turtle.FitBound.Abs(320.0)}
-                        image_view +: {
-                            width: mod.turtle.Fit{max: mod.turtle.FitBound.Abs(320.0)}
-                            image +: {width: mod.turtle.Fit{max: mod.turtle.FitBound.Abs(320.0)}, height: mod.turtle.Fit{max: mod.turtle.FitBound.Abs(96.0)}}
-                        }
-                    });
+                    // Use the actual production image's walk. A Fit parent has
+                    // no finite width for ImageFit.Smallest; retain Fill width
+                    // and cap height to preserve the texture's320:96 aspect.
+                    let image = item.image(cx, ids!(content.message.image.image_view.image));
+                    let mut image = image.borrow_mut().expect("real fixture image widget");
+                    image.walk.height = Size::Fit { min: None, max: Some(FitBound::Abs(96.0)) };
+                    drop(image);
                     // A small procedural material swatch, carried by the real
                     // ImageMessage/TextOrImage path. No files or media requests.
                     let texture = if let Some(texture) = cx.global::<FixtureDrawState>().image.clone() { texture } else {

@@ -388,7 +388,15 @@ script_mod! {
                     stack_templates: {
                         RoomScreenStackNavigationView := mod.widgets.RobrixStackNavigationView {
                             body +: {
-                                room_screen := mod.widgets.RoomScreen {}
+                                room_screen := mod.widgets.RoomScreen {
+                                    room_screen_wrapper +: {
+                                        timeline_and_input_bar +: {
+                                            // The existing stack header owns compact
+                                            // Back and room identity; avoid a second title.
+                                            room_header +: {visible: false}
+                                        }
+                                    }
+                                }
                             }
                         }
 

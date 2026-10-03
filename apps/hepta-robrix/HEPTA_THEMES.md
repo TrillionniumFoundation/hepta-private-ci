@@ -138,3 +138,36 @@ the reaction glyph is unsupported, the image fixture is absent, and default
 profile/attachment accents retain purple in A/C. A numeric image-size attempt
 did not fix actual pixels and was excluded. Native room previews and reaction
 are readable, so native success must not substitute for browser acceptance.
+
+## Adaptive destination and media follow-up (runtime not yet accepted)
+
+The real Dock-load regression reproduces Console selecting Home after a compact
+transition. Applying the authoritative Console selection after loading the tree
+passes both that regression and the actual wide/compact/short/wide CUA replay,
+with a clean runtime log. Home selection is unchanged.
+
+The production fixture image previously drew at0x0. Keep its finite Fill width
+and bound the actual Image.walk height; the real drawn-geometry regression now
+requires positive size within320x96. Actual native pixels confirm the image.
+Compact RoomScreen uses its existing stack Back/title header once, removing the
+redundant78px title. Fixture branding explicitly says SAMPLE at every width.
+
+Twenty scoped app tests pass. Continuous chat replay still fails acceptance:
+Research selected on mobile becomes the older saved Design Lab on return to
+wide, and the fixture draft is lost because its account-free path bypasses the
+production TimelineUiState owner. No claim of SDK draft loss or preservation is
+made from that fixture limitation. A separate stale-sublist error appears in
+OpenGL render_view only on compact-to-desktop restoration, despite readable
+pixels. The strict native diagnostic gate rejects it. Preserve the Console-only
+success separately; fix the actual retained draw-tree owner before accepting
+chat resize. No renderer diagnostic is suppressed.
+
+The next owner-level Dock repair closes the retained-sublist runtime failure:
+normal and preserving-items layout replacement detach only their own old tab
+content draw lists before dropping the tab bars. The original renderer and
+generation diagnostics are unchanged. Two real drawn-Dock tests are red before
+the repair and green after it; unrelated live sublists and stable tab body IDs
+are preserved. Sixteen framework tests and the strict log gate pass. The exact
+native wide→compact Research→short→wide replay now has zero generation errors.
+`qualification/native-dock-retirement.json` binds source, binary and before/after
+logs. The separate destination mismatch remains visible and unaccepted.

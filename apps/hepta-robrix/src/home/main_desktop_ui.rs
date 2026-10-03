@@ -439,6 +439,15 @@ impl MainDesktopUI {
         self.open_rooms = open_rooms;
 
         dock.load_state(cx, dock_items);
+        // The adaptive desktop is recreated after compact navigation. Apply
+        // the canonical current Console destination after loading the saved
+        // tree, before initializing whichever tab that tree exposes.
+        let selected_room = if app_state.selected_tab == SelectedTab::Console {
+            dock.select_tab(cx, id!(hepta_console_tab));
+            None
+        } else {
+            selected_room
+        };
         // Lazily populate the dock content to avoid initializing tabs that aren't visible.
         self.init_all_visible_tabs(cx);
 
@@ -458,6 +467,11 @@ impl MainDesktopUI {
             None => self.most_recently_selected_room = None,
         }
         app_state.selected_room = selected_room;
+        // Fallback room-tab recreation above can select a room while repairing
+        // corrupt saved layouts; Console remains the final current destination.
+        if app_state.selected_tab == SelectedTab::Console {
+            dock.select_tab(cx, id!(hepta_console_tab));
+        }
         self.redraw(cx);
     }
 
@@ -1331,3 +1345,7 @@ mod hepta_dock_tests {
         assert!(dock_state_repair::validate_and_repair_dock_state(&mut saved).is_err());
     }
 }
+
+#[cfg(test)]
+#[path = "desktop_destination_tests.rs"]
+mod hepta_destination_tests;
