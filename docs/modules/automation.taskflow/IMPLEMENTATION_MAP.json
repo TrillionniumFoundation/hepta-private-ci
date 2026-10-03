@@ -260,7 +260,7 @@
         }
       ],
       "productCompositionState": "configured_agentd_async_http_effect_control_prepared_steps_only_independent_qualification_pending",
-      "sourceBlob": "8b6fe9767d15feae4525de77aded206fc18f03ca"
+      "sourceBlob": "4dd687710d81de9d9dac0d69ab22b91060293488"
     }
   ],
   "repositoryControlledGaps": [],
@@ -307,8 +307,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "7799846e88a8904cc21efc423f27c551c2c0dba2",
-    "tree": "c37964e5de1ed75cefc7311f674206158f6e6695"
+    "commit": "4555f4e9f6797fce691b7bce9a9d372dbcd6488a",
+    "tree": "7815c751e7d701a9638787a5bfcbed1e154de414"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -328,7 +328,7 @@
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "8b6fe9767d15feae4525de77aded206fc18f03ca"
+        "blobSha": "4dd687710d81de9d9dac0d69ab22b91060293488"
       },
       {
         "path": "codex-rs/app-server-client/src/lib.rs",
@@ -482,7 +482,7 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/automation-taskflow-focused.yml",
-      "object": "0d9dd9e3e6b50eba37b469f541d6d0ca6b34aeb1"
+      "object": "08cb263473060e9b5db5584f8d90ddf03c4adc48"
     },
     {
       "path": "codex-rs/app-server-client/BUILD.bazel",
@@ -538,11 +538,11 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "f623d049e100f63ed5ef209b8bd9cb29833f8dc9"
+      "object": "9a838d2eeb4e1369137155944a5e1a61a718dfbb"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "8b6fe9767d15feae4525de77aded206fc18f03ca"
+      "object": "4dd687710d81de9d9dac0d69ab22b91060293488"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
@@ -551,6 +551,14 @@
     {
       "path": "codex-rs/hepta-automation/src/effect_execution_request.rs",
       "object": "e811418a0e76af8075c12fc62d3e3d118552a47e"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_preparation_evidence.rs",
+      "object": "a67cb0ba2f3f3c22ef7765464b515943d4797437"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_preparation_evidence_tests.rs",
+      "object": "0523a6aeef5c4ac5b6721b52bef0310617c053b3"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_recovery_frontier_tests.rs",
@@ -570,7 +578,7 @@
     },
     {
       "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
-      "object": "158e04d1daf5bc713c3bd803788111222f011d86"
+      "object": "423591f44e914155a53df2056fc9f8dd2125f62a"
     },
     {
       "path": "codex-rs/hepta-automation/src/queue_contact.rs",
@@ -590,19 +598,27 @@
     },
     {
       "path": "codex-rs/hepta-automation/src/store.rs",
-      "object": "2cb7bca95baf19284a6925f03a9793d29ebdf865"
+      "object": "1871e5449099c5aaf4c90f26b550c840a9481dcb"
     },
     {
       "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
-      "object": "dd46a185583808ac0f41ecfc9ce6256822a74fa8"
+      "object": "a3375c5a66709bc5d4f8e24b4f397ff11142fa30"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/taskflow_step_identity.rs",
+      "object": "eeea381f6bc7a0c34443fef870006e6f1a0d254d"
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
-      "object": "2df83dff58a781fda055b93ba7dbae45e9cd2b5b"
+      "object": "df31101118636d299cb3bb34324c78ecb1fb758e"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/authorized_effect/effect_preparation_tests.rs",
+      "object": "faa684a51c9429fd13e1e76e150acf160acff6b8"
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
-      "object": "c00d288a491c1189565b7233748f8ce3ad4d273d"
+      "object": "467d056ccf723d4e5f8a04006efe763bf8867cab"
     },
     {
       "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
@@ -619,6 +635,14 @@
     {
       "path": "codex-rs/hepta-automation/tests/taskflow_concurrent_reconcile.rs",
       "object": "638f3797bfae275264f27a9125a5652e1a649f0f"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_async_prepare.rs",
+      "object": "cadcde7eb204476a9db46158641bcb2a67fd3270"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_async_prepare_tests.rs",
+      "object": "26de5cd48f0017effb3e9351e582ff36534e681c"
     },
     {
       "path": "codex-rs/hepta-operations/src/durable_clock_tests.rs",
@@ -638,7 +662,7 @@
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "object": "2ea8a144238e1ef53519dc53dbfce3254302182b"
+      "object": "0d6f0005a70ed4bc5df5c90dd84985e96e887895"
     },
     {
       "path": "scripts/hepta_ci_exec.py",
