@@ -173,7 +173,8 @@
       "authority": "none",
       "tests": [
         "codex-rs/hepta-neuron/src/protocol_tests.rs",
-        "codex-rs/hepta-neuron/src/protocol_bounds_tests.rs"
+        "codex-rs/hepta-neuron/src/protocol_bounds_tests.rs",
+        "codex-rs/hepta-neuron/src/protocol_shape_tests.rs"
       ],
       "sourcePathExists": true,
       "designOperation": "canonical_neuron_protocols",
@@ -187,6 +188,11 @@
         {
           "path": "codex-rs/hepta-neuron/src/protocol_receipt_validation.rs",
           "symbol": "validate_tick_receipt_fields",
+          "role": "source_declaration"
+        },
+        {
+          "path": "codex-rs/hepta-neuron/src/protocol_json_object.rs",
+          "symbol": "deserialize",
           "role": "source_declaration"
         }
       ]

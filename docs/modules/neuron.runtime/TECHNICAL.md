@@ -140,6 +140,15 @@ Every producer validates output before publication and binds semantic fields int
 
 Each registered Rust protocol DTO matches its canonical JSON representation. Internal owner configuration and resource records pass through explicit projections; round-trip guarantees cover the registered DTO fields. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
+All five registered records and their eight nested profile/resource/summary
+records require JSON objects with named fields. Positional arrays are rejected;
+arrays remain valid for the declared numeric vectors and index lists. The
+streaming map decoder retains duplicate-field and unknown-field rejection,
+including duplicate escaped names, and rejects trailing JSON values without
+normalizing through an intermediate map. This narrows accidental Serde input
+acceptance; canonical object encodings, digest domains and durable bytes are
+unchanged. See `protocol_json_object.rs` and `protocol_shape_tests.rs`.
+
 Canonical tick input admits an absent `bodyGeneration`, or a supplied positive
 `u64` generation. An explicit zero is rejected before model execution and by
 the JSON input adapters. This is an explicit source admission rule: the

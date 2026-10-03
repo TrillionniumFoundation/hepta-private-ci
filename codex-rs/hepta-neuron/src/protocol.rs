@@ -197,12 +197,18 @@ struct RuntimeConfigDto {
     generation: u64,
     encoder_digest: String,
     head_digest: String,
+    #[serde(deserialize_with = "json_object::deserialize")]
     state_dimensions: StateDimensionsDto,
+    #[serde(deserialize_with = "json_object::deserialize")]
     fixed_point_profile: FixedPointProfileDto,
+    #[serde(deserialize_with = "json_object::deserialize")]
     top_k_policy: TopKPolicyDto,
     inhibition_digest: String,
+    #[serde(deserialize_with = "json_object::deserialize")]
     homeostasis_profile: HomeostasisProfileDto,
+    #[serde(deserialize_with = "json_object::deserialize")]
     eligibility_profile: EligibilityProfileDto,
+    #[serde(deserialize_with = "json_object::deserialize")]
     resource_envelope: ResourceEnvelopeDto,
     expiry: String,
 }
@@ -248,6 +254,7 @@ struct TickReceiptDto {
     confidence_ppm: u32,
     ood_ppm: u32,
     abstain: bool,
+    #[serde(deserialize_with = "json_object::deserialize")]
     resource_receipt: ResourceReceiptDto,
 }
 
@@ -281,6 +288,7 @@ struct CheckpointDto {
     head_digest: String,
     temporal_state_digest: String,
     threshold_digest: String,
+    #[serde(deserialize_with = "json_object::deserialize")]
     activation_summary: ActivationSummaryDto,
     eligibility_digest: String,
     logical_sequence: u64,
@@ -922,8 +930,14 @@ fn decode_bounded<T: for<'de> Deserialize<'de>>(bytes: &[u8]) -> Result<T, Neuro
     if bytes.is_empty() || bytes.len() > MAX_PROTOCOL_BYTES {
         return Err(NeuronProtocolError::EncodedSize);
     }
-    serde_json::from_slice(bytes).map_err(|_| NeuronProtocolError::Json)
+    let mut decoder = serde_json::Deserializer::from_slice(bytes);
+    let value = json_object::deserialize(&mut decoder).map_err(|_| NeuronProtocolError::Json)?;
+    decoder.end().map_err(|_| NeuronProtocolError::Json)?;
+    Ok(value)
 }
+
+#[path = "protocol_json_object.rs"]
+mod json_object;
 
 fn ensure_signal_bytes(values: &[i64]) -> Result<(), NeuronProtocolError> {
     if serde_json::to_vec(values)
