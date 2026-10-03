@@ -111,46 +111,50 @@ jobs:
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: python3 qualification/cognitive-types-v2/verify_vectors.py
 
-      - name: Show Rust toolchain identity
+      - name: Verify workspace-pinned Rust toolchain
         id: check_05
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
-        run: |
-          rustc --version --verbose
-          cargo --version --verbose
-          cargo clippy --version
+        working-directory: codex-rs
+        run: python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py
 
       - name: Check canonical cognitive.types formatting
         id: check_06
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
-        run: cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check
+        working-directory: codex-rs
+        run: python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py fmt --manifest-path Cargo.toml --package codex-hepta-cognitive-types -- --check
 
       - name: Check canonical cognitive.types all targets
         id: check_07
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
-        run: cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets
+        working-directory: codex-rs
+        run: python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py check --manifest-path Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets
 
       - name: Lint canonical cognitive.types
         id: check_08
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
-        run: cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings
+        working-directory: codex-rs
+        run: python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py clippy --manifest-path Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings
 
       - name: Test canonical cognitive.types
         id: check_09
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
-        run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types
+        working-directory: codex-rs
+        run: python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked -p codex-hepta-cognitive-types
 
       - name: Run bounded canonical decoder fuzz smoke
         id: check_10
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        working-directory: codex-rs
         run: >-
-          cargo test --manifest-path codex-rs/Cargo.toml --locked
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked
           -p codex-hepta-cognitive-types
           bounded_arbitrary_byte_decoder_smoke_covers_all_registered_contracts
 
       - name: Check canonical cognitive.types fuzz harness
         id: check_11
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
-        run: cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets
+        working-directory: codex-rs
+        run: python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py check --manifest-path hepta-cognitive-types/fuzz/Cargo.toml --all-targets
 
       - name: Preserve candidate and actual check outcomes
         if: ${{ always() && steps.check_01.outcome == 'success' }}
@@ -406,11 +410,18 @@ jobs:
           CANDIDATE_KIND: ${{ matrix.candidate }}
         run: python3 qualification/cognitive-types-v1/verify_candidate.py
 
+      - name: Verify workspace-pinned Rust toolchain
+        id: workspace_toolchain
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        working-directory: codex-rs
+        run: python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py
+
       - name: Check consumer formatting
         id: check_02
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        working-directory: codex-rs
         run: >-
-          cargo fmt --manifest-path codex-rs/Cargo.toml
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py fmt --manifest-path Cargo.toml
           --package codex-hepta-cognitive-read
           --package codex-hepta-cognitive-store
           --package codex-hepta-memory-retrieval
@@ -420,8 +431,9 @@ jobs:
       - name: Check canonical consumers
         id: check_03
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        working-directory: codex-rs
         run: >-
-          cargo check --manifest-path codex-rs/Cargo.toml --locked --all-targets
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py check --manifest-path Cargo.toml --locked --all-targets
           -p codex-hepta-cognitive-read
           -p codex-hepta-cognitive-store
           -p codex-hepta-memory-retrieval
@@ -431,8 +443,9 @@ jobs:
       - name: Lint canonical consumers strictly
         id: check_04
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        working-directory: codex-rs
         run: >-
-          cargo clippy --manifest-path codex-rs/Cargo.toml --locked --all-targets
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py clippy --manifest-path Cargo.toml --locked --all-targets
           -p codex-hepta-cognitive-read
           -p codex-hepta-cognitive-store
           -p codex-hepta-memory-retrieval
@@ -442,8 +455,9 @@ jobs:
       - name: Test canonical consumer packages
         id: check_05
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        working-directory: codex-rs
         run: >-
-          cargo test --manifest-path codex-rs/Cargo.toml --locked
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked
           -p codex-hepta-cognitive-read
           -p codex-hepta-cognitive-store
           -p codex-hepta-memory-retrieval
@@ -498,48 +512,60 @@ jobs:
           CANDIDATE_KIND: ${{ matrix.candidate }}
         run: python3 qualification/cognitive-types-v1/verify_candidate.py
 
+      - name: Verify workspace-pinned Rust toolchain
+        id: workspace_toolchain
+        if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        working-directory: codex-rs
+        run: python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py
+
       - name: Check owner and product formatting
         id: check_02
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        working-directory: codex-rs
         run: >-
-          cargo fmt --manifest-path codex-rs/Cargo.toml
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py fmt --manifest-path Cargo.toml
           --package codex-hepta-memory
           --package codex-hepta-agentd -- --check
 
       - name: Check owner bridge
         id: check_03
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        working-directory: codex-rs
         run: >-
-          cargo check --manifest-path codex-rs/Cargo.toml --locked --all-targets
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py check --manifest-path Cargo.toml --locked --all-targets
           -p codex-hepta-memory
           -p codex-hepta-agentd
 
       - name: Lint owner bridge strictly
         id: check_04
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        working-directory: codex-rs
         run: >-
-          cargo clippy --manifest-path codex-rs/Cargo.toml --locked --all-targets
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py clippy --manifest-path Cargo.toml --locked --all-targets
           -p codex-hepta-memory
           -p codex-hepta-agentd -- -D warnings
 
       - name: Test shared-experience owner
         id: check_05
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        working-directory: codex-rs
         run: >-
-          cargo test --manifest-path codex-rs/Cargo.toml --locked
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked
           -p codex-hepta-memory shared_experience
 
       - name: Test Agentd product writer canonical binding
         id: check_06
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
+        working-directory: codex-rs
         run: >-
-          cargo test --manifest-path codex-rs/Cargo.toml --locked
+          python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked
           -p codex-hepta-agentd --test cognitive_store_product_writer
 
       - name: Test actual Agentd canonical context consumption
         id: canonical_context
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
-        run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-agentd --lib canonical_recall_tests
+        working-directory: codex-rs
+        run: python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked -p codex-hepta-agentd --lib canonical_recall_tests
 
       - name: Preserve candidate and actual check outcomes
         if: ${{ always() && steps.check_01.outcome == 'success' }}

@@ -580,11 +580,11 @@ def verify() -> int:
         "cargo check --manifest-path qualification/hnmf-reference/Cargo.toml --all-targets --locked",
         "cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked",
         "python3 qualification/cognitive-types-v1/verify_vectors.py",
-        "cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-cognitive-types -- --check",
-        "cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets",
-        "cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings",
-        "cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types",
-        "cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets",
+        "python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py fmt --manifest-path Cargo.toml --package codex-hepta-cognitive-types -- --check",
+        "python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py check --manifest-path Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets",
+        "python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py clippy --manifest-path Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings",
+        "python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py test --manifest-path Cargo.toml --locked -p codex-hepta-cognitive-types",
+        "python3 ../qualification/cognitive-types-v1/verify_workspace_toolchain.py check --manifest-path hepta-cognitive-types/fuzz/Cargo.toml --all-targets",
     ]:
         need(command in workflow, f"workflow command {command}")
 
