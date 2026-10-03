@@ -13,6 +13,8 @@ mod foreign_font_reference {
 #[test]
 fn actual_shared_app_resources_are_complete_and_foreign_aliases_fail_closed() {
     let mut cx = new_cx_with_font_set(Box::new(|_, _| {}), FontSet::International);
+    // Match app_main before Startup: resource loading reads the native clock.
+    cx.init_cx_os();
     configure(&mut cx, None);
     cx.with_vm(|vm| {
         let value = <hepta_robrix_ui::app::App as AppMain>::script_mod(vm);
