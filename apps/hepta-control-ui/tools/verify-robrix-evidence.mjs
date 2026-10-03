@@ -16,14 +16,20 @@ export function validateTailStatusGeometry(entry){
  assert.equal(g.atEnd,true,'Rendered PortalList must have reached its end');
  assert.equal(g.total,64,'Status must belong to the actual final fixture row');
  const valid=rect=>Array.isArray(rect)&&rect.length===4&&rect.every(Number.isFinite)&&rect[2]>0&&rect[3]>0;
- for(const key of ['viewport','lastRow','lastStatusVisibleGlyphs','composer'])assert.ok(valid(g[key]),`Missing/invalid actual ${key} bounds`);
+ for(const key of ['viewport','lastRow','lastContent','lastStatusVisibleGlyphs','composer'])assert.ok(valid(g[key]),`Missing/invalid actual ${key} bounds`);
  const [vx,vy,vw,vh]=g.viewport,[rx,ry,rw,rh]=g.lastRow,[x,y,width,height]=g.lastStatusVisibleGlyphs;
  const epsilon=0.01; // Float-coordinate roundoff only, not a pixel clipping allowance.
- assert.ok(vx>=0&&vy>=0&&vx+vw<=entry.viewport.width+epsilon&&vy+vh<=entry.viewport.height+epsilon,'Timeline viewport must fit screenshot');
- assert.ok(ry>=vy-epsilon&&ry+rh<=vy+vh+epsilon,'Entire final fixture row must fit timeline');
- assert.ok(x>=Math.max(vx,rx)-epsilon&&y>=Math.max(vy,ry)-epsilon&&x+width<=Math.min(vx+vw,rx+rw)+epsilon&&y+height<=Math.min(vy+vh,ry+rh)+epsilon,'All visible status glyph bounds must fit final row and timeline');
+ // Raster-aligned SDK layout bounds can extend fractionally beyond the CSS
+ // canvas. Check content against the actually visible intersection, never
+ // increase a tolerance or clip an overflowing message/status into a pass.
+ const left=Math.max(0,vx),top=Math.max(0,vy),right=Math.min(entry.viewport.width,vx+vw),bottom=Math.min(entry.viewport.height,vy+vh);
+ assert.ok(right>left&&bottom>top,'Timeline has no visible screenshot intersection');
+ assert.ok(ry>=top-epsilon&&ry+rh<=bottom+epsilon,'Entire final fixture row height must fit visible timeline');
+ const [cx,cy,cw,ch]=g.lastContent;
+ assert.ok(cx>=left-epsilon&&cy>=top-epsilon&&cx+cw<=right+epsilon&&cy+ch<=bottom+epsilon,'Entire final message content must fit visible timeline');
+ assert.ok(x>=Math.max(left,rx)-epsilon&&y>=Math.max(top,ry)-epsilon&&x+width<=Math.min(right,rx+rw)+epsilon&&y+height<=Math.min(bottom,ry+rh)+epsilon,'All status glyph bounds must fit final row and visible timeline');
  assert.ok(y+height<=g.composer[1]+epsilon,'Composer must not cover final status');
- return {x:Math.max(vx,x-4),y:Math.max(vy,y-4),width:Math.min(vx+vw,x+width+4)-Math.max(vx,x-4),height:Math.min(vy+vh,y+height+4)-Math.max(vy,y-4)};
+ return {x:Math.max(left,x-4),y:Math.max(top,y-4),width:Math.min(right,x+width+4)-Math.max(left,x-4),height:Math.min(bottom,y+height+4)-Math.max(top,y-4)};
 }
 export async function verifyCapture(directory,entry,expected){
  assert.equal(entry.name,expected.name);
@@ -64,7 +70,7 @@ export async function verifyCapture(directory,entry,expected){
   const area=validateTailStatusGeometry(entry);
   const regionPath=join(directory,expected.name+'-last-status-region.png');
   const region=await prepareObservedAreaForOcr(path,regionPath,area,expected.viewport);
-  await writeFile(join(directory,expected.name+'-last-status-region.json'),JSON.stringify({sourcePngSha256:entry.pngSha256,geometry:entry.geometryBefore,...region}));
+  await writeFile(join(directory,expected.name+'-last-status-region.json'),JSON.stringify({sourcePngSha256:entry.pngSha256,geometry:entry.geometryBefore,visibleTimelineIntersection:{left:Math.max(0,entry.geometryBefore.viewport[0]),top:Math.max(0,entry.geometryBefore.viewport[1]),right:Math.min(entry.viewport.width,entry.geometryBefore.viewport[0]+entry.geometryBefore.viewport[2]),bottom:Math.min(entry.viewport.height,entry.geometryBefore.viewport[1]+entry.geometryBefore.viewport[3])},...region}));
   const raw=await readScreenshotText(region.rawPath,{layout:'block'});
   await writeFile(region.rawPath.replace(/\.png$/,'-ocr.txt'),raw);
   let text=raw;

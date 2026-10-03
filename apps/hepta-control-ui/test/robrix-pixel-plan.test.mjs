@@ -76,11 +76,15 @@ test('wrong source identity and missing mandatory stages cannot pass aggregate',
 
 test('follow-latest rejects clipped, stale, unfinished and missing final status geometry',async()=>{
  const {validateTailStatusGeometry}=await import('../tools/verify-robrix-evidence.mjs');
- const geometry={frame:10,room:0,epoch:0,total:64,layoutFinalized:true,followLatest:true,atEnd:true,viewport:[0,80,640,605],lastRow:[0,568,640,117],lastStatusVisibleGlyphs:[82,662,70,11],composer:[16,693,608,94]};
+ const geometry={frame:10,room:0,epoch:0,total:64,layoutFinalized:true,followLatest:true,atEnd:true,viewport:[0,80,640,605],lastRow:[0,568,640,117],lastContent:[70,578,550,97],lastStatusVisibleGlyphs:[82,662,70,11],composer:[16,693,608,94]};
  const entry=g=>({viewport:{width:640,height:800},geometryBefore:g,geometryAfter:structuredClone(g)});
  assert.deepEqual(validateTailStatusGeometry(entry(geometry)),{x:78,y:658,width:78,height:19});
  // Actual f96 Lunar geometry: final row bottom724.65 exceeds viewport685.6.
  for(const patch of [{atEnd:false},{lastRow:[0,583.293,640,141.36]},{lastStatusVisibleGlyphs:[82,689.33,70,10.64]},{lastStatusVisibleGlyphs:[0,0,0,0]},{lastRow:null},{layoutFinalized:false},{followLatest:false},{total:63},{viewport:[0,80,640,NaN]}])assert.throws(()=>validateTailStatusGeometry(entry({...geometry,...patch})));
+ // Actual WebKit raw layout is 0.1489px wider than the canvas. The
+ // unchanged content/status must still fit the mathematical intersection.
+ assert.deepEqual(validateTailStatusGeometry(entry({...geometry,viewport:[0,80,640.1489,605],lastRow:[0,568,640.1489,117]})),{x:78,y:658,width:78,height:19});
+ for(const patch of [{lastContent:[630,578,20,97]},{lastStatusVisibleGlyphs:[635,662,10,11]},{lastStatusVisibleGlyphs:[82,795,70,11]},{viewport:[650,80,100,605]}])assert.throws(()=>validateTailStatusGeometry(entry({...geometry,...patch})));
  assert.throws(()=>validateTailStatusGeometry({...entry(geometry),geometryAfter:{...geometry,frame:11}}),/changed during capture/);
  assert.throws(()=>validateTailStatusGeometry({viewport:{width:640,height:800}}),/requires real Rust geometry/);
 });
