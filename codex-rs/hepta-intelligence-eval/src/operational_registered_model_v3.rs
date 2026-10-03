@@ -143,6 +143,7 @@ pub(super) struct Registration {
 }
 
 pub struct RegisteredArtifactCurrentFactsV3 {
+    material_digest: Digest32,
     artifact_root: PathBuf,
     owner: ReadOnlyArtifactCurrentOwnerV1,
     view: VerifiedCurrentRegistryViewV1,
@@ -156,6 +157,11 @@ pub struct RegisteredArtifactCurrentFactsV3 {
     operational_binding: Option<RegisteredOperationalModelBindingV3>,
 }
 impl RegisteredArtifactCurrentFactsV3 {
+    /// Full original immutable material bytes authenticated during inspection.
+    /// This is a factual binding and grants no execution or selection authority.
+    pub fn material_digest(&self) -> Digest32 {
+        self.material_digest
+    }
     /// The complete successor tuple derived by the same authenticated CURRENT
     /// inspection. Initial generation facts deliberately carry no V3 purpose.
     pub fn operational_binding(&self) -> Option<&RegisteredOperationalModelBindingV3> {
@@ -322,6 +328,7 @@ fn inspect_material_frontier(
         return Err("registered original CURRENT changed during inspection".into());
     }
     let mut facts = RegisteredArtifactCurrentFactsV3 {
+        material_digest: Digest32::of_bytes(&encode_neuron_generation_material_v2(plan)?),
         operational_binding: None,
         artifact_root: registration.owner.root.clone(),
         owner,
