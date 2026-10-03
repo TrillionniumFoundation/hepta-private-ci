@@ -279,17 +279,28 @@ pub fn prepare_original_parameter_evaluation_publications_v1(
             == template_bytes,
         "whole original pipeline template changed"
     );
-    let evaluations = completed
-        .into_original_evaluations()
-        .into_iter()
-        .map(
-            |(bundle, metric_roles, evidence)| CandidateEvaluationAdmissionV1 {
-                bundle,
-                metric_roles,
-                evidence,
-            },
-        )
-        .collect();
+    // E1 and publication can take time. Reopen the actual FULL sources and ACK
+    // after those effects, then join their complete original receipts into the
+    // sole pre-publication request used by the final admission owner.
+    let request = materials.request();
+    let completed = inspect_completed_parameter_evaluations_v1(
+        &reviews,
+        &binding,
+        &request.generator_profile,
+        &request.admission,
+        &request.generator_attestation,
+        &request.admission_attestation,
+        reviewer,
+        trust,
+        now_ms()?,
+    )
+    .map_err(|e| anyhow::anyhow!("{e}"))?;
+    let materials = materials.install_completed_evaluations(&completed)?;
+    let evaluations = materials.request().evaluations.clone();
+    latest_current
+        .revalidate_current(now_ms()?)
+        .map_err(|e| anyhow::anyhow!("{e}"))?;
+    pipeline.validate_time(trust)?;
     Ok(OriginalParameterEvaluationPreparationResultV1::Completed(
         OriginalParameterEvaluationPublicationsV1 {
             materials,

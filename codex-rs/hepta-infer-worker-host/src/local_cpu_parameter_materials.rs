@@ -87,7 +87,11 @@ pub fn validate_cpu_neuron_parameter_materials_v2(
         .iter()
         .filter(|value| value.kind == ParameterCandidateKindV2::Update)
         .collect();
-    if updates.is_empty() || updates.len() != plan.candidates.len() {
+    // The sole generator verifier above also admits a deterministic NoChange
+    // frontier. It has no physical Update material; its independent E terminal
+    // is produced before any compiler/model effect. Every generated Update
+    // still requires exactly one complete physical candidate plan.
+    if updates.len() != plan.candidates.len() {
         return Err(error(
             "CPU compiler must materialize the complete admitted search space",
         ));

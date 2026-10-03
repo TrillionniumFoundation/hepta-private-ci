@@ -332,6 +332,10 @@ mod final_admission;
 #[cfg(feature = "fixed-initial-cpu-host")]
 pub(crate) use final_admission::FinalRoundParameterAdmissionV3;
 
+#[cfg(feature = "fixed-initial-cpu-host")]
+#[path = "local_cpu_round_completed_evaluations_v3.rs"]
+mod completed_evaluations;
+
 #[cfg(test)]
 #[path = "local_cpu_round_materials_tests_v3.rs"]
 mod tests;

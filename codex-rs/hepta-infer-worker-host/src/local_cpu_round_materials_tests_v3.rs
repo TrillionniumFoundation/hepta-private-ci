@@ -207,6 +207,69 @@ fn foreign_round_scope_quota_or_nonfresh_input_cannot_derive_a_recipe() -> TestR
     Ok(())
 }
 
+#[test]
+fn genuine_no_change_frontier_reaches_preparation_without_fabricated_e_or_physical_stores()
+-> TestResult {
+    use codex_hepta_agent_components::plasticity::generate_parameter_candidates_v3;
+    use codex_hepta_types::FixedQ32;
+    let directory = tempfile::tempdir()?;
+    let mut fixture = fixture::Fixture::new(directory.path().join("enrolled-rounds"))?;
+    fixture.request.generator_profile.signals[0].eligibility = FixedQ32::ZERO;
+    fixture.request.generated =
+        generate_parameter_candidates_v3(fixture.request.generator_profile.clone())?;
+    fixture.request.admission.generator_digest = fixture.request.generated.generator_digest;
+    fixture.execution.maximum_candidates =
+        u16::try_from(fixture.request.generated.candidates.len())?;
+    let round = fixture.round("actual.no.update.goal", 1)?;
+    let before = encode_parameter_plasticity_request_v1(&fixture.request)?;
+    let materials = fixture.derive(&round)?;
+    assert_eq!(materials.request().generated.candidates.len(), 1);
+    assert_eq!(
+        materials.request().generated.candidates[0].kind,
+        ParameterCandidateKindV2::NoChange
+    );
+    assert!(materials.candidates().is_empty());
+    assert_eq!(
+        encode_parameter_plasticity_request_v1(materials.request())?,
+        before
+    );
+    assert!(materials.request().no_change_attestation.is_none());
+    assert!(materials.request().evaluations.is_empty());
+    materials.with_plan(validate_cpu_neuron_parameter_materials_v2)?;
+    assert_eq!(std::fs::read_dir(directory.path())?.count(), 0);
+    Ok(())
+}
+
+#[test]
+fn generated_update_cannot_be_hidden_behind_an_empty_preparation_frontier() -> TestResult {
+    let fixture = fixture::Fixture::new("/protected/original-rounds".into())?;
+    let materials = fixture.derive(&fixture.round("actual.update.goal", 1)?)?;
+    assert_eq!(materials.candidates().len(), 1);
+    assert!(
+        materials
+            .with_plan(|plan| {
+                let incomplete = CpuNeuronParameterMaterialPlanV2 {
+                    candidates: &[],
+                    ..*plan
+                };
+                validate_cpu_neuron_parameter_materials_v2(&incomplete)
+            })
+            .is_err()
+    );
+    let mut altered = fixture;
+    altered
+        .request
+        .generated
+        .candidates
+        .retain(|candidate| candidate.kind == ParameterCandidateKindV2::NoChange);
+    assert!(
+        altered
+            .derive(&altered.round("actual.update.goal", 1)?)
+            .is_err()
+    );
+    Ok(())
+}
+
 #[cfg(feature = "fixed-initial-cpu-host")]
 #[path = "local_cpu_round_final_admission_tests_v3.rs"]
 mod final_admission_tests;
