@@ -5,11 +5,11 @@ name: platform.types retired Rama lock verifier
 on:
   pull_request:
     paths:
-      - '.github/workflows/platform-types-rama-lock-repair-once.yml'
+      - ".github/workflows/platform-types-rama-lock-repair-once.yml"
   push:
     branches: [main]
     paths:
-      - '.github/workflows/platform-types-rama-lock-repair-once.yml'
+      - ".github/workflows/platform-types-rama-lock-repair-once.yml"
 
 permissions:
   contents: read

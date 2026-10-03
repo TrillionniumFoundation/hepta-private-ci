@@ -4,13 +4,13 @@ on:
   workflow_dispatch:
   pull_request:
     paths:
-      - 'codex-rs/Cargo.toml'
-      - 'codex-rs/Cargo.lock'
-      - 'codex-rs/network-proxy/Cargo.toml'
-      - 'codex-rs/hepta-types/**'
-      - 'scripts/platform_types_rama_lock_guard.py'
-      - 'scripts/test_platform_types_rama_lock_guard.py'
-      - '.github/workflows/platform-types-lock-refresh.yml'
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/network-proxy/Cargo.toml"
+      - "codex-rs/hepta-types/**"
+      - "scripts/platform_types_rama_lock_guard.py"
+      - "scripts/test_platform_types_rama_lock_guard.py"
+      - ".github/workflows/platform-types-lock-refresh.yml"
 
 permissions:
   contents: read
