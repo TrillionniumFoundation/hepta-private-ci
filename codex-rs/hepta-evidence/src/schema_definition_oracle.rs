@@ -1,4 +1,4 @@
-//! Complete definitions for the two frozen, CREATE-only operational migrations.
+//! Complete definitions for explicitly selected frozen schema objects.
 //!
 //! These declarations are deliberately derived from compiled migration bytes.
 //! The final migration14 backfill INSERT is not part of its preceding trigger.
@@ -11,8 +11,8 @@ const MIGRATIONS: [&str; 2] = [
     include_str!("../migrations/0015_evidence_trust_acceptance.sql"),
 ];
 
-pub(super) fn verify_definition(name: &str, kind: &str, actual: &str) -> Result<(), EvidenceError> {
-    let expected = compiled_definition(name, kind)?;
+pub(crate) fn verify_definition(name: &str, kind: &str, actual: &str) -> Result<(), EvidenceError> {
+    let expected = compiled_definition(&MIGRATIONS, name, kind)?;
     if normalize(actual) != normalize(expected) {
         return Err(corrupt(
             "operational schema differs from its compiled migration",
@@ -21,7 +21,39 @@ pub(super) fn verify_definition(name: &str, kind: &str, actual: &str) -> Result<
     Ok(())
 }
 
-fn compiled_definition(name: &str, kind: &str) -> Result<&'static str, EvidenceError> {
+pub(crate) fn verify_legacy_immutable_definition(
+    name: &str,
+    actual: &str,
+) -> Result<(), EvidenceError> {
+    // These eight trigger definitions survive all later migrations unchanged.
+    // Do not use the original CREATE TABLE text for tables extended by ALTER.
+    let migration = match name {
+        "governance_decisions_no_update"
+        | "governance_decisions_no_delete"
+        | "governance_receipts_no_update"
+        | "governance_receipts_no_delete" => include_str!("../migrations/0001_governance.sql"),
+        "provider_invocation_intents_no_update"
+        | "provider_invocation_intents_no_delete"
+        | "provider_invocation_terminals_no_update"
+        | "provider_invocation_terminals_no_delete" => {
+            include_str!("../migrations/0002_provider_evidence.sql")
+        }
+        _ => return Ok(()),
+    };
+    let expected = compiled_definition(&[migration], name, "trigger")?;
+    if normalize(actual) != normalize(expected) {
+        return Err(corrupt(
+            "legacy immutable trigger differs from its compiled migration",
+        ));
+    }
+    Ok(())
+}
+
+fn compiled_definition(
+    migrations: &[&'static str],
+    name: &str,
+    kind: &str,
+) -> Result<&'static str, EvidenceError> {
     let keyword = match kind {
         "table" => "TABLE",
         "index" => "INDEX",
@@ -30,7 +62,7 @@ fn compiled_definition(name: &str, kind: &str) -> Result<&'static str, EvidenceE
     };
     let marker = format!("CREATE {keyword} {name}");
     let mut definition = None;
-    for migration in MIGRATIONS {
+    for &migration in migrations {
         for (start, _) in migration.match_indices(&marker) {
             // Governed declarations start at column zero. Do not mistake a
             // comment or a longer object's shared name prefix for this object.
@@ -45,7 +77,7 @@ fn compiled_definition(name: &str, kind: &str) -> Result<&'static str, EvidenceE
             {
                 continue;
             }
-            // Both frozen migrations have ordinary table/index statements and
+            // These frozen migrations have ordinary table/index statements and
             // trigger bodies ending in an unindented END; no nested CASE/END.
             // Keep internal trigger semicolons and exclude later DML/backfill.
             let end = if kind == "trigger" {

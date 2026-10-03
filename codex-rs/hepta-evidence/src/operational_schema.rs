@@ -6,10 +6,8 @@ use sqlx::SqlitePool;
 
 use crate::EvidenceError;
 use crate::qualification::QUALIFICATION_EVIDENCE_MAX_RECEIPT_BYTES;
+use crate::schema_definition_oracle as oracle;
 use crate::schema_validation::classify_sqlx_error;
-
-#[path = "operational_schema_oracle.rs"]
-mod oracle;
 
 const MAX_QUALIFICATION_STARTUP_ROWS: i64 = 1_000_000;
 const MAX_QUALIFICATION_STARTUP_ENVELOPE_BYTES: i64 = 512 * 1024 * 1024;

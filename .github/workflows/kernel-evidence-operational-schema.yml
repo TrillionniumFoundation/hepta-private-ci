@@ -47,6 +47,9 @@ jobs:
           git rev-parse HEAD HEAD^{tree} > "$RECORDS/candidate-before.txt"
           printf '%s\n' "$BASE_SHA" > "$RECORDS/base.txt"
       - uses: ./.github/actions/setup-ci
+      - uses: astral-sh/setup-uv@08807647e7069bb48b6ef5acd8ec9567f424441b
+        with:
+          version: "0.11.3"
       - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
         with:
           toolchain: 1.95.0
@@ -54,7 +57,7 @@ jobs:
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
         with:
           tool: cargo-nextest@0.9.103
-      - name: Require native negative control and restore exact source
+      - name: Require independent native negative controls and restore exact source
         shell: bash
         run: |
           set -euo pipefail
@@ -62,32 +65,48 @@ jobs:
           import hashlib, json, os, re, subprocess
           from pathlib import Path
           records = Path(os.environ['RECORDS'])
-          source = Path('codex-rs/hepta-evidence/src/operational_schema.rs')
-          original = source.read_bytes()
-          needle = b'        oracle::verify_definition(required.name, required.kind, &sql)?;\n'
-          if original.count(needle) != 1:
-              raise SystemExit('negative control requires exactly one full-definition gate')
-          names = [
-              'read_only_reopen_rejects_disabled_and_commented_operational_guards',
-              'read_only_reopen_rejects_comment_preserved_table_check',
-          ]
-          expression = ' | '.join(f'test(=operational_schema::oracle_tests::{name})' for name in names)
-          command = ['just', 'test', '--locked', '-p', 'codex-hepta-evidence', '--lib', '-E', expression]
-          log = records / 'negative-control.log'
-          try:
-              source.write_bytes(original.replace(needle, b''))
-              with log.open('wb') as output:
-                  result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT)
-          finally:
-              source.write_bytes(original)
-          output = log.read_text(errors='replace')
-          print(output[-20000:])
-          passed = result.returncode == 100 and bool(re.search(r'Summary[^\n]*2 tests run: 0 passed, 2 failed', output))
-          restored = source.read_bytes() == original
-          receipt = {'command': command, 'exitCode': result.returncode, 'expectedFailures': 2, 'negativeControlPassed': passed, 'sourceRestored': restored, 'sourceFileSha256': hashlib.sha256(original).hexdigest(), 'logSha256': hashlib.sha256(log.read_bytes()).hexdigest()}
-          (records / 'negative-control.json').write_text(json.dumps(receipt, indent=2) + '\n')
-          if not passed or not restored:
-              raise SystemExit('negative control did not demonstrate both native acceptance defects')
+
+          def negative_control(label, path, needle, names):
+              source = Path(path)
+              original = source.read_bytes()
+              if original.count(needle) != 1 or len(names) != 2:
+                  raise SystemExit('negative control requires one gate and two exact tests')
+              expression = ' | '.join(f'test(={name})' for name in names)
+              command = ['just', 'test', '--locked', '-p', 'codex-hepta-evidence', '--lib', '-E', expression]
+              log = records / f'{label}.log'
+              try:
+                  source.write_bytes(original.replace(needle, b''))
+                  with log.open('wb') as output:
+                      result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT)
+              finally:
+                  source.write_bytes(original)
+              output = log.read_text(errors='replace')
+              print(output[-20000:])
+              passed = result.returncode == 100 and bool(re.search(r'Summary[^\n]*2 tests run: 0 passed, 2 failed', output))
+              restored = source.read_bytes() == original
+              receipt = {'command': command, 'exitCode': result.returncode, 'expectedFailures': 2, 'negativeControlPassed': passed, 'sourceRestored': restored, 'sourceFileSha256': hashlib.sha256(original).hexdigest(), 'logSha256': hashlib.sha256(log.read_bytes()).hexdigest()}
+              (records / f'{label}.json').write_text(json.dumps(receipt, indent=2) + '\n')
+              if not passed or not restored:
+                  raise SystemExit(f'{label} did not demonstrate both native acceptance defects')
+
+          negative_control(
+              'negative-control',
+              'codex-rs/hepta-evidence/src/operational_schema.rs',
+              b'        oracle::verify_definition(required.name, required.kind, &sql)?;\n',
+              [
+                  'operational_schema::oracle_tests::read_only_reopen_rejects_disabled_and_commented_operational_guards',
+                  'operational_schema::oracle_tests::read_only_reopen_rejects_comment_preserved_table_check',
+              ],
+          )
+          negative_control(
+              'legacy-negative-control',
+              'codex-rs/hepta-evidence/src/schema_validation.rs',
+              b'        verify_legacy_immutable_definition(spec.name, &sql)?;\n',
+              [
+                  'schema_validation::legacy_immutable_schema_tests::governance_immutable_guards_reject_disabled_definitions',
+                  'schema_validation::legacy_immutable_schema_tests::provider_immutable_guards_reject_disabled_definitions',
+              ],
+          )
           PY
       - name: Verify repaired package then run scoped fix and format
         if: ${{ always() && !cancelled() }}

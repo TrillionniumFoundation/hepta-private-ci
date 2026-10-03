@@ -41,6 +41,13 @@ comments are retained. Migration bytes and migration checksums are unchanged.
 This check concerns local schema integrity, not authenticated external truth
 or protection against rollback of the entire database and its local metadata.
 
+The eight governance/provider invocation immutable UPDATE/DELETE triggers from
+`0001`/`0002` also use complete compiled definitions. Those trigger definitions
+remain unchanged through migration `0017`; later table ALTERs are not interpreted
+as if their original CREATE TABLE text were the current schema. The remaining
+legacy table and trigger checks retain their existing validation paths and do
+not inherit a complete-definition claim from these selected guards.
+
 ## Qualification and authenticated provenance
 
 Migration `0011` owns the append-only qualification lineage, immutable

@@ -98,6 +98,7 @@ mod qualification_policy;
 mod qualification_provenance;
 mod qualification_summary;
 mod recovery_frontier;
+mod schema_definition_oracle;
 mod schema_validation;
 mod store {
     include!("store.rs");
