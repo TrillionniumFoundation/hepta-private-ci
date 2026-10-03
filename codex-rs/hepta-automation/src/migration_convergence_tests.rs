@@ -184,10 +184,34 @@ async fn authority_schema20_is_rejected_without_relabelling_or_extending_history
         .expect("persist exact incompatible lineage");
     pool.close().await;
     let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner");
-    assert!(matches!(
-        AutomationStore::open_root(root, owner).await,
-        Err(AutomationError::Corrupt)
-    ));
+    let sqlite = SqliteConfig::from_sqlite_home(
+        AbsolutePathBuf::try_from(root.clone()).expect("absolute owner root"),
+    );
+    let image = sqlite
+        .open_read_only_pool(&root.join(AUTOMATION_DB_FILENAME))
+        .await
+        .expect("read persisted incompatible image");
+    let persisted: Vec<(i64, Vec<u8>)> =
+        sqlx::query_as("SELECT version, checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&image)
+            .await
+            .expect("persisted migration ledger");
+    assert_eq!(
+        persisted, before,
+        "VACUUM must retain the exact historical image"
+    );
+    image.close().await;
+    match AutomationStore::open_root(root, owner).await {
+        Err(error) => assert_eq!(
+            error,
+            AutomationError::Corrupt,
+            "incompatible lineage rejection"
+        ),
+        Ok(store) => {
+            store.close().await;
+            panic!("incompatible authority schema20 unexpectedly opened");
+        }
+    }
 }
 
 async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
