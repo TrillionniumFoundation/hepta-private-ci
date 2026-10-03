@@ -3,8 +3,8 @@
 // Source: src/home/room_screen.rs:235–383,654–740. Adapted message profile/content
 // hierarchy, virtual PortalList and room timeline/composer ownership. No Matrix behavior.
 use crate::presentation::{
-    PresentationAction, PresentationCommand, RoomKey, TimelineStatus, TimelineWindow, apply_action,
-    project,
+    PresentationAction, PresentationCommand, RoomKey, TimelineStatus, TimelineWindow,
+    UserScrollTracker, apply_action, project,
 };
 use hepta_control_core::{
     chat::{ChatWorkspace, ComposeStatus},
@@ -68,7 +68,7 @@ script_mod! {
    lunar_background := Image {width: Fill height: Fill visible: false fit: ImageFit.CropToFill src: crate_resource("self:resources/lunar-titanium.png") draw_bg.image_pan: vec2(0.06, 0.0)}
    timeline_and_input_bar := View {
     width: Fill height: Fill flow: Down
-    empty_state := Label {width: Fill height: Fit padding: 24 flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Start with a local draft. No authenticated conversation history is available."}
+    empty_state := Label {width: Fill height: Fit padding: 24 flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Your conversation starts here. Write a local draft below."}
     timeline := mod.widgets.Timeline {}
     jump_to_latest := mod.widgets.AuroraButton {visible: false text: "Jump to latest"}
     room_input_bar := mod.widgets.RoomInputBar {}
@@ -95,6 +95,8 @@ pub struct RoomScreen {
     view: View,
     #[rust]
     active_key: Option<RoomKey>,
+    #[rust]
+    scroll_tracker: UserScrollTracker,
 }
 impl Widget for RoomScreen {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
@@ -111,12 +113,23 @@ impl Widget for RoomScreen {
         if let Event::Actions(actions) = event {
             let list = self.view.portal_list(cx, ids!(list));
             if list.scrolled(actions) {
-                apply(PresentationCommand::UserScrolled {
-                    at_end: list.is_at_end(),
-                });
+                // Scroll actions also report font/layout renormalization. Only
+                // the SDK's user-travel counter identifies wheel/touch/bar input.
+                let travel = list.user_scroll_travel();
+                if let Some(at_end) = self.scroll_tracker.observe(travel, list.is_at_end()) {
+                    apply(PresentationCommand::UserScrolled { at_end });
+                }
+                #[cfg(feature = "ui-fixtures")]
+                log!(
+                    "HEPTA_FIXTURE_SCROLL travel={} at_end={} first={}",
+                    travel,
+                    list.is_at_end(),
+                    list.first_id()
+                );
             }
             if self.view.button(cx, ids!(jump_to_latest)).clicked(actions) {
                 apply(PresentationCommand::JumpToLatest);
+                list.set_tail_range(true);
                 list.scroll_to_end(cx);
             }
             if let Some(text) = input.changed(actions) {
@@ -139,6 +152,7 @@ impl Widget for RoomScreen {
             let switch_view = cx.global::<RoomViewMemory>().last_widget != Some(widget_id);
             if self.active_key != Some(key) || switch_view {
                 let list = self.view.portal_list(cx, ids!(list));
+                self.scroll_tracker.reset(list.user_scroll_travel());
                 let memory = cx.global::<RoomViewMemory>();
                 if memory.epoch != Some(key.epoch) {
                     memory.positions.clear();
@@ -207,7 +221,7 @@ impl Widget for RoomScreen {
             self.view
                 .widget(cx, ids!(empty_state))
                 .set_visible(cx, show_notice);
-            self.view.label(cx, ids!(empty_state)).set_text(cx, if presentation.timeline.status == TimelineStatus::ResyncRequired {"History is incomplete. Waiting for an authoritative refresh; partial output is unconfirmed."} else {"Start with a local draft. No authenticated conversation history is available."});
+            self.view.label(cx, ids!(empty_state)).set_text(cx, if presentation.timeline.status == TimelineStatus::ResyncRequired {"History is incomplete. Waiting for an authoritative refresh; partial output is unconfirmed."} else {"Your conversation starts here. Write a local draft below."});
         }
         #[cfg(feature = "ui-fixtures")]
         let mut diagnostic_items = Vec::new();
@@ -441,7 +455,15 @@ impl Widget for RoomScreen {
                 }
                 cx.global::<RoomViewMemory>().positions.insert(
                     key,
-                    (inner.first_id(), inner.first_scroll(), inner.is_at_end()),
+                    (
+                        inner.first_id(),
+                        inner.first_scroll(),
+                        scope
+                            .data
+                            .get::<ChatWorkspace>()
+                            .and_then(ChatWorkspace::timeline)
+                            .is_none_or(|timeline| timeline.scroll.at_end),
+                    ),
                 );
             }
         }

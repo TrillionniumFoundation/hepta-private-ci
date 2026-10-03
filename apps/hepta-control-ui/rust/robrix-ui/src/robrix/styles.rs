@@ -60,6 +60,32 @@ script_mod! {
    }
   }
  }
+ mod.widgets.SendButton = mod.widgets.AuroraButton {
+  width: 40 height: 40 padding: 0
+  // The real Button remains disabled until an authorized host is composed.
+  // Keep its action name in state; platform accessibility remains unqualified.
+  draw_text +: {get_color: fn() {return #0000}}
+  draw_bg +: {
+   accent: uniform(mod.widgets.COLOR_ROBRIX_PURPLE)
+   ink: uniform(mod.widgets.COLOR_TEXT)
+   pixel: fn() {
+    let sdf = Sdf2d.viewport(self.pos * self.rect_size)
+    let center = self.rect_size * 0.5
+    let face = mix(self.accent, self.color_disabled, self.disabled * 0.72)
+    let ink = mix(self.ink, self.border_color, self.disabled * 0.45)
+    sdf.circle(center.x, center.y, min(self.rect_size.x, self.rect_size.y) * 0.5 - 1.0)
+    sdf.fill_keep(face)
+    sdf.stroke(mix(self.accent, self.border_color_focus, self.focus), 1.0)
+    sdf.move_to(center.x, center.y + 8.0)
+    sdf.line_to(center.x, center.y - 8.0)
+    sdf.move_to(center.x - 6.0, center.y - 2.0)
+    sdf.line_to(center.x, center.y - 8.0)
+    sdf.line_to(center.x + 6.0, center.y - 2.0)
+    sdf.stroke(ink, 1.8)
+    return sdf.result
+   }
+  }
+ }
  mod.widgets.HeptaMark = View {
   width: Fill height: 56 show_bg: true
   draw_bg +: {accent: uniform(mod.widgets.COLOR_ROBRIX_PURPLE) pixel: fn() {

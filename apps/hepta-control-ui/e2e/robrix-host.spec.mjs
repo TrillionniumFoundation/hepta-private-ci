@@ -1,17 +1,19 @@
 // Real canvas evidence. OCR is a necessary glyph regression, not full visual/a11y acceptance.
 import {test,expect} from '@playwright/test';
-import {writeFile} from 'node:fs/promises';
+import {readFile,writeFile} from 'node:fs/promises';
 import {readScreenshotText,requireChatText,screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
 for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
  test(`Robrix host starts under strict CSP ${viewport.width}`,async({page,browserName},testInfo)=>{
   let phase='application';
-  const errors=[];const logs=[];const rustFontStates=[];const uploads=[];const fonts=[];const pendingFonts=new Set();
+  const errors=[];const logs=[];const rustFontStates=[];const scrollObservations=[];const uploads=[];const fonts=[];const pendingFonts=new Set();
   const isFont=request=>/\.(?:ttf|otf|woff2?)(?:[?#]|$)/i.test(request.url());
   page.on('pageerror',error=>errors.push({phase,message:error.message}));
   page.on('console',message=>{
    if(message.type()==='error') errors.push({phase,message:message.text()});
    if(logs.length<500) logs.push({phase,type:message.type(),text:message.text().slice(0,2000)});
-   if(rustFontStates.length<96&&/HEPTA_FIXTURE_(?:SHAPING|FONT_STATE|FONT_RESOURCE)/.test(message.text())) rustFontStates.push(message.text().slice(0,4000));
+   const scroll=message.text().match(/HEPTA_FIXTURE_SCROLL travel=([-\d.]+) at_end=(true|false) first=(\d+)/);
+   if(scroll){scrollObservations.push({travel:Number(scroll[1]),atEnd:scroll[2]==='true',first:Number(scroll[3])});if(scrollObservations.length>64)scrollObservations.shift();}
+   if(rustFontStates.length<160&&/HEPTA_FIXTURE_(?:SHAPING|FONT_STATE|FONT_RESOURCE|RESOURCE_EVENT)/.test(message.text())) rustFontStates.push(message.text().slice(0,4000));
   });
   page.on('request',request=>{
    if(/\/(?:api\/crash|\$report_error)/.test(request.url())) uploads.push(request.url());
@@ -65,6 +67,9 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     expect(captureErrors.every(item=>/Refused to apply a stylesheet/.test(item.message))).toBe(true);
     expect(captureErrors.length).toBeLessThanOrEqual(snapshot.styles.length*2);
    }
+   const png=await readFile(path);
+   const scale=png.readUInt32BE(16)/page.viewportSize().width;
+   expect.soft(png.readUInt32BE(20),'Full-page capture must not have canvas baseline overflow').toBe(Math.round(page.viewportSize().height*scale));
    const text=await readScreenshotText(path);
    await writeFile(testInfo.outputPath(name+'-ocr.txt'),text);
    if(consoleView){
@@ -141,12 +146,32 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    // mirror must be repopulated from owner state, including the astral character.
    await page.mouse.click(page.viewportSize().width*0.65,720);
    await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(/Theme round trip draft 🚀/);
+   if(process.env.HEPTA_ROBRIX_FIXTURES==='1'){
+    const before=scrollObservations.at(-1)?.travel??0;
+    await page.mouse.move(page.viewportSize().width*0.75,350);
+    await page.mouse.wheel(0,-480);
+    await expect.poll(()=>scrollObservations.at(-1)?.travel??before).toBeGreaterThan(before);
+    const older=await capture('robrix-user-scrollback');
+    expect(older.text).toMatch(/Jump to latest/i);
+    const anchor=scrollObservations.at(-1)?.first;
+    const scrollTravel=scrollObservations.at(-1)?.travel;
+    await page.setViewportSize({width:page.viewportSize().width===1280?640:1280,height:800});
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    captured=await capture('robrix-scrollback-after-resize');
+    expect(captured.text).toMatch(/Jump to latest/i);
+    expect(scrollObservations.at(-1)?.travel).toBe(scrollTravel);
+    expect(anchor).toBeLessThan(63);
+    await clickRenderedWord(captured,'Jump');
+    await expect.poll(()=>scrollObservations.at(-1)?.atEnd).toBe(true);
+    captured=await capture('robrix-jump-to-latest');
+    expect(captured.text).toMatch(/Fixture\s*63/i);
+   }
    await assertApplicationHealth();
 
   } finally {
    const observed=await page.evaluate(()=>({violations:window.__cspViolations??[],snapshotStyles:window.__snapshotStyles??[],bootPhase:document.documentElement.dataset.heptaBootPhase??'unobserved',wasmStages:window.__wasmStages??[],readyState:document.readyState,canvas:[...document.querySelectorAll('canvas')].map(canvas=>({width:canvas.width,height:canvas.height})),resources:performance.getEntriesByType('resource').map(item=>({name:item.name,duration:item.duration,bytes:item.transferSize}))})).catch(()=>({}));
    const diagnostics=testInfo.outputPath('host-diagnostics.json');
-   await writeFile(diagnostics,JSON.stringify({errors,logs,rustFontStates,uploads,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),...observed},null,2));
+   await writeFile(diagnostics,JSON.stringify({errors,logs,rustFontStates,scrollObservations,uploads,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),...observed},null,2));
    await testInfo.attach('host-diagnostics',{path:diagnostics,contentType:'application/json'});
   }
  });

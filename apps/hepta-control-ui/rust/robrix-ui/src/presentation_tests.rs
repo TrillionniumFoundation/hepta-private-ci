@@ -558,3 +558,27 @@ fn queue_ack_and_lost_reply_are_composer_status_not_synthetic_messages() {
             .contains("not a completed response")
     );
 }
+
+#[test]
+fn font_reflow_does_not_replace_user_scroll_intent_and_jump_restores_tail() {
+    let mut workspace = ChatWorkspace::default();
+    history(&mut workspace, 64);
+    let mut tracker = UserScrollTracker::default();
+    tracker.reset(0.0);
+    assert!(workspace.timeline().unwrap().scroll.at_end);
+    // A late font changes viewport geometry, with no user counter movement.
+    assert_eq!(tracker.observe(0.0, false), None);
+    assert!(workspace.timeline().unwrap().scroll.at_end);
+    // Real wheel/drag movement produces a counter delta and leaves the end.
+    let at_end = tracker.observe(180.0, false).unwrap();
+    act(&mut workspace, PresentationCommand::UserScrolled { at_end });
+    assert!(!workspace.timeline().unwrap().scroll.at_end);
+    assert_eq!(tracker.observe(180.0, false), None);
+    // Explicit Jump restores the owner's presentation intent. Reflow must not undo it.
+    act(&mut workspace, PresentationCommand::JumpToLatest);
+    assert!(workspace.timeline().unwrap().scroll.at_end);
+    assert_eq!(tracker.observe(180.0, false), None);
+    assert_eq!(tracker.observe(180.0, true), Some(true));
+    // A following real upward gesture can opt out again.
+    assert_eq!(tracker.observe(220.0, false), Some(false));
+}

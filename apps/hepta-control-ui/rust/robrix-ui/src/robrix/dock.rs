@@ -277,6 +277,7 @@ script_mod! {
 
     mod.widgets.RobrixDock = Dock {
         flow: Down
+        round_corner.border_radius: 0.0
 
         round_corner +: {
             color: COLOR_SECONDARY

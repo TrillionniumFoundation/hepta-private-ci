@@ -397,3 +397,26 @@ fn prefix(text: &str, max_bytes: usize) -> &str {
 #[cfg(test)]
 #[path = "presentation_tests.rs"]
 mod tests;
+
+/// Presentation-only interpretation of PortalList's coalesced viewport actions.
+/// Its user counter excludes font reflow, automatic tailing and animations.
+#[derive(Default)]
+pub struct UserScrollTracker {
+    last_travel: f64,
+}
+
+impl UserScrollTracker {
+    pub fn reset(&mut self, travel: f64) {
+        self.last_travel = travel;
+    }
+
+    /// `None` preserves the current intent during a layout-only movement.
+    pub fn observe(&mut self, travel: f64, at_end: bool) -> Option<bool> {
+        if !travel.is_finite() {
+            return None;
+        }
+        let user_moved = travel != self.last_travel;
+        self.last_travel = travel;
+        (user_moved || at_end).then_some(at_end)
+    }
+}

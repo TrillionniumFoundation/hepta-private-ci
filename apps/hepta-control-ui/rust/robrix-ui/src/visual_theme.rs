@@ -146,6 +146,9 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
             if name == id!(rail_chat) || name == id!(rail_console) {
                 script_apply_eval!(cx,widget,{draw_bg +: {ink: #(text)}});
             }
+            if name == id!(send_message_button) {
+                script_apply_eval!(cx,widget,{draw_bg +: {accent: #(accent) ink: #(text)}});
+            }
             if name == id!(theme_switch) || name == id!(mobile_theme_switch) {
                 widget.as_button().set_text(cx, theme.label());
             }
@@ -164,6 +167,8 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
             .is_some()
         {
             script_apply_eval!(cx,widget,{draw_bg +: {color_hover: #(surface) color_selected: #(selected) color_selected_hover: #(selected)}});
+        } else if widget.borrow::<Splitter>().is_some() {
+            script_apply_eval!(cx,widget,{draw_bg +: {color: #(border) color_hover: #(accent) color_drag: #(accent)}});
         } else if widget.borrow::<Dock>().is_some() {
             let width = match theme {
                 VisualTheme::ObsidianIce => 300.0,
@@ -181,6 +186,11 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
                 .as_image()
                 .set_visible(cx, theme == VisualTheme::LunarTitanium);
         } else if widget.borrow::<View>().is_some() {
+            // RoomScreen owns role-aware message surfaces. A generic pass must
+            // not erase the user's bubble after its direct child style applies.
+            if name == id!(content) {
+                continue;
+            }
             let color = if name == id!(room_screen_wrapper) {
                 canvas
             } else {
@@ -195,11 +205,6 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
             }
             if name == id!(avatar_frame) {
                 script_apply_eval!(cx,widget,{draw_bg +: {color: #(selected) border_color: #(accent)}});
-            }
-            if name == id!(content) {
-                let bubble = theme != VisualTheme::AuroraGraphite;
-                let inset = if bubble { 12.0 } else { 0.0 };
-                script_apply_eval!(cx,widget,{show_bg: #(bubble) padding: #(inset) draw_bg +: {color: #(surface) border_color: #(border)}});
             }
             if name == id!(room_input_bar) {
                 script_apply_eval!(cx,widget,{draw_bg +: {color: #(surface) accent: #(accent) secondary: #(secondary)}});

@@ -107,7 +107,7 @@ const expression = framework.slice(styleStart, styleEnd).split('style.innerHTML=
 if (!expression) throw new Error('Missing pinned input stylesheet');
 const literals = [...expression.matchAll(/"(?:[^"\\]|\\.)*"/g)].map(match => JSON.parse(match[0]));
 if (!literals.length) throw new Error('Empty input stylesheet');
-await writeFile(join(output, 'input-platform.css'), literals.join(''));
+await writeFile(join(output, 'input-platform.css'), literals.join('')+'\n/* Full-window canvas must not reserve an inline text baseline. */\ncanvas.full_canvas { display: block; }\n');
 framework = framework.slice(0, styleStart) + framework.slice(styleEnd + styleEndToken.length);
 if (framework.includes("fetch('/api/crash'") || framework.includes("fetch('/$report_error") || framework.includes("sendBeacon('/api/crash'")) throw new Error('Crash transport survived packaging');
 await writeFile(frameworkPath, framework);

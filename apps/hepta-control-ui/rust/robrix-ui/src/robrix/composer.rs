@@ -37,9 +37,9 @@ script_mod! {
      draw_bg +: {border_size: 0.0 border_radius: 12.0}
      empty_text: "Write a local draft…"
     }
-    send_message_button := mod.widgets.AuroraButton {
+    send_message_button := mod.widgets.SendButton {
      enabled: false text: "Send"
-     padding: 8 margin: Inset{top: 4, left: 4, right: 4, bottom: 5}
+     margin: Inset{top: 4, left: 8, right: 6, bottom: 6}
     }
    }
   }

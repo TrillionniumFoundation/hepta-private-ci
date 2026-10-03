@@ -18,6 +18,10 @@ script_mod! {
   }
  }
 }
+#[cfg(feature = "ui-fixtures")]
+#[derive(Default)]
+struct FixtureFontResources(std::collections::HashMap<String, (usize, u8)>);
+
 #[derive(Script)]
 pub struct App {
     #[live]
@@ -48,6 +52,36 @@ impl AppMain for App {
         self::script_mod(vm)
     }
     fn handle_event(&mut self, cx: &mut Cx, event: &Event) {
+        #[cfg(feature = "ui-fixtures")]
+        if matches!(event, Event::NetworkResponses(_) | Event::Draw(_)) {
+            use makepad_widgets::makepad_platform::script::res::CxScriptResourceData;
+            let resources = cx.script_data.resources.resources.clone();
+            for resource in resources.borrow().iter() {
+                if !resource.abs_path.ends_with(".ttf") {
+                    continue;
+                }
+                let state = match &resource.data {
+                    CxScriptResourceData::NotLoaded => 0,
+                    CxScriptResourceData::Loading => 1,
+                    CxScriptResourceData::Loaded(_) => 2,
+                    CxScriptResourceData::Error(_) => 3,
+                };
+                let current = (resource.loaded_len(), state);
+                if cx
+                    .global::<FixtureFontResources>()
+                    .0
+                    .insert(resource.abs_path.clone(), current)
+                    != Some(current)
+                {
+                    log!(
+                        "HEPTA_FIXTURE_RESOURCE_EVENT dependency={:?} state={} loaded_len={}",
+                        resource.dependency_path,
+                        state,
+                        resource.loaded_len()
+                    );
+                }
+            }
+        }
         crate::visual_theme::apply_tree(cx, &self.ui);
         self.ui
             .handle_event(cx, event, &mut Scope::with_data(&mut self.workspace));
