@@ -528,3 +528,5 @@ fn readonly_context_clock_check_preserves_original_bytes_and_cold_stored_floor()
     );
     assert_eq!(std::fs::read(path).expect("same cold bytes"), before);
 }
+#[path = "self_iteration_round_serving_scope_tests.rs"]
+mod serving_scope_tests;

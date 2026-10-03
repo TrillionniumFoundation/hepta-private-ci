@@ -123,6 +123,7 @@ pub use owner_host::TrustedArtifactSignerV1;
 pub use owner_host::VerifiedCurrentArtifactHeadV1;
 #[cfg(target_os = "linux")]
 pub use owner_host::decode_artifact_public_trust_v1;
+pub use owner_host::encode_artifact_owner_publication_checkpoint_v1;
 #[cfg(target_os = "linux")]
 pub use owner_host::encode_artifact_public_trust_v1;
 pub use owner_service::ArtifactPublicationHeadPreviewV1;

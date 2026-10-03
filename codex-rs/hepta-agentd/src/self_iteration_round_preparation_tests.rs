@@ -28,6 +28,7 @@ fn terminal(
         self_iteration_preparation_terminal_signing_payload_v1(&facts).expect("whole facts");
     AgentdSelfIterationPreparationStatusV1 {
         facts_hex: bytes.iter().map(|b| format!("{b:02x}")).collect(),
+        serving_scope_facts_hex: None,
         source_path: "/run/original-root-e/output.bin".into(),
         source_digest: d,
         evaluator_evidence_digest: d,

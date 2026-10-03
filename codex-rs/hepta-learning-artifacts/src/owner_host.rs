@@ -1103,6 +1103,14 @@ fn phase_from_code(value: &str) -> Result<ArtifactPublicationPhaseV1, ArtifactOw
     }
 }
 
+/// Sole original complete checkpoint encoding for factual source binding.
+/// Encoding supplies no custody, signature or current publication authority.
+pub fn encode_artifact_owner_publication_checkpoint_v1(
+    value: &ArtifactOwnerPublicationCheckpointV1,
+) -> Vec<u8> {
+    encode_checkpoint(value)
+}
+
 fn encode_checkpoint(value: &ArtifactOwnerPublicationCheckpointV1) -> Vec<u8> {
     let registry = value.registry_receipt.map_or_else(
         || "-".to_owned(),

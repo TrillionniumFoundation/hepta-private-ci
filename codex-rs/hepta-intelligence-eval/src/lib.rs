@@ -303,6 +303,15 @@ pub use signed_admission::SignedEligibilityAdmissionReceiptV1;
 pub use signed_admission::admit_signed_eligibility_v2;
 mod self_iteration_evaluation_transport;
 mod self_iteration_preparation;
+mod self_iteration_serving_scope;
+pub use self_iteration_serving_scope::MAX_SELF_ITERATION_SERVING_SCOPE_FACTS_BYTES_V1;
+pub use self_iteration_serving_scope::MAX_SELF_ITERATION_SERVING_SCOPE_TERMINAL_BYTES_V1;
+pub use self_iteration_serving_scope::SelfIterationServingScopeIncompatibleFactsV1;
+pub use self_iteration_serving_scope::decode_self_iteration_serving_scope_facts_v1;
+pub use self_iteration_serving_scope::decode_self_iteration_serving_scope_terminal_v1;
+pub use self_iteration_serving_scope::encode_self_iteration_serving_scope_terminal_v1;
+pub use self_iteration_serving_scope::self_iteration_serving_scope_signing_payload_v1;
+
 pub use self_iteration_evaluation_transport::MAX_SELF_ITERATION_EVALUATION_TRANSPORT_BYTES;
 pub use self_iteration_evaluation_transport::VerifiedSelfIterationEvaluationTransportV1;
 pub use self_iteration_evaluation_transport::decode_self_iteration_evaluation_transport_v1;
@@ -833,3 +842,13 @@ pub use parameter_pre_registration_head_v1::inspect_registered_parameter_head_ma
 mod fixed_parameter_current_admission_v1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_parameter_current_admission_v1::validate_current_parameter_admission_v1;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_serving_scope_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_serving_scope_host::FixedParameterServingScopeInputsV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_serving_scope_host::run_fixed_parameter_serving_scope_evaluator_v1;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_serving_scope_host::encode_fixed_parameter_serving_scope_inputs_v1;
