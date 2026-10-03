@@ -48,6 +48,22 @@ Candidate-execution workflows stay read-only, and the reporter does not execute
 candidate source. Reporting cannot grant target-host qualification, independent
 acceptance, activation or release.
 
+## Shadow numerical consumer boundary
+
+The Shadow qualification crate's Lane E numerical fixture uses the default
+`RecordedProductEvaluationRunnerV1` API with an anchored file journal and typed
+qualification archives. Its assertions cover the complete recorded lifecycle,
+archive-byte binding, journal reopening and rejection of attempt replay while
+preserving the original outcome and deny-all checks. The API linkage fixture
+also targets the recorded runner; neither consumer enables raw-runner compatibility.
+Convergence and exact-head/merge execution invoke both fixtures through the existing
+required-nextest discovery gate, which rejects an empty test selection.
+
+The local disk anchor, signing keys, holdout CAS and publication sink remain test
+fixtures. In particular, the sink acknowledgement is not durable publication or
+host acceptance. A real publication owner and root-activated selected-host trust
+still require the independently administered evidence described above.
+
 ## Generated execution evidence
 
 The source workflow retains:

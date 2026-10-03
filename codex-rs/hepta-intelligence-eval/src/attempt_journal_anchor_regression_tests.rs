@@ -1,4 +1,5 @@
 use super::*;
+use crate::ProductEvaluationAttemptPhaseV1;
 use std::cell::RefCell;
 use std::rc::Rc;
 use tempfile::NamedTempFile;
@@ -32,11 +33,7 @@ fn lifecycle(
             binding,
             digest(&format!("owner-state:{attempt}")),
         ),
-        ProductEvaluationAttemptTransitionV1::holdout_consumed(
-            attempt_id.clone(),
-            plan,
-            holdout,
-        ),
+        ProductEvaluationAttemptTransitionV1::holdout_consumed(attempt_id.clone(), plan, holdout),
         ProductEvaluationAttemptTransitionV1::comparison_sealed(
             attempt_id.clone(),
             plan,
@@ -135,7 +132,9 @@ fn anchored_known_no_write_rejections_do_not_poison_the_owner() {
 
     let plan = digest("shared-plan");
     let first = lifecycle("a", plan, binding);
-    journal.append(first[0].clone()).expect("persist first intent");
+    journal
+        .append(first[0].clone())
+        .expect("persist first intent");
 
     let moved = ProductEvaluationAttemptTransitionV1::intent(
         id("b"),
@@ -195,15 +194,14 @@ fn anchored_near_capacity_rejects_new_work_but_preserves_the_reserved_lifecycle(
     let temp = NamedTempFile::new().expect("temporary journal");
     let binding = digest("anchored-near-capacity");
     let authority = AnchorAuthority::default();
-    let mut journal =
-        AnchoredProductEvaluationAttemptJournalV1::create_with_qualification_limits(
-            temp.reopen().expect("reopen"),
-            binding,
-            authority.clone(),
-            COMPLETE_LIFECYCLE_BYTES,
-            COMPLETE_LIFECYCLE_EVENTS,
-        )
-        .expect("create bounded anchored journal");
+    let mut journal = AnchoredProductEvaluationAttemptJournalV1::create_with_qualification_limits(
+        temp.reopen().expect("reopen"),
+        binding,
+        authority.clone(),
+        COMPLETE_LIFECYCLE_BYTES,
+        COMPLETE_LIFECYCLE_EVENTS,
+    )
+    .expect("create bounded anchored journal");
 
     let first = lifecycle("a", digest("plan:a"), binding);
     journal.append(first[0].clone()).expect("reserve lifecycle");
@@ -229,24 +227,85 @@ fn anchored_near_capacity_rejects_new_work_but_preserves_the_reserved_lifecycle(
     assert!(journal.pending(None, 1).expect("pending").is_empty());
 
     drop(journal);
-    let mut recovered = AnchoredProductEvaluationAttemptJournalV1::recover(
-        temp.reopen().expect("reopen"),
-        binding,
-        authority,
-    )
-    .expect("recover exact full-capacity history");
+    let mut recovered =
+        AnchoredProductEvaluationAttemptJournalV1::recover_with_qualification_limits(
+            temp.reopen().expect("reopen"),
+            binding,
+            authority,
+            COMPLETE_LIFECYCLE_BYTES,
+            COMPLETE_LIFECYCLE_EVENTS,
+        )
+        .expect("recover exact full-capacity history");
     assert_eq!(
-        recovered
-            .history(&id("a"))
-            .expect("history")
-            .len(),
+        recovered.history(&id("a")).expect("history").len(),
         COMPLETE_LIFECYCLE_EVENTS
     );
     assert_eq!(
         recovered.append(lifecycle("b", digest("plan:b"), binding)[0].clone()),
         Err(ProductEvaluationAttemptJournalErrorV1::Capacity)
     );
-    assert!(recovered.pending(None, 1).expect("owner remains readable").is_empty());
+    assert!(
+        recovered
+            .pending(None, 1)
+            .expect("owner remains readable")
+            .is_empty()
+    );
+}
+
+#[test]
+fn bounded_anchored_recovery_still_rejects_invalid_limits_and_a_forged_floor() {
+    let temp = NamedTempFile::new().expect("temporary journal");
+    let binding = digest("bounded-recovery-floor");
+    let authority = AnchorAuthority::default();
+    let mut journal = AnchoredProductEvaluationAttemptJournalV1::create_with_qualification_limits(
+        temp.reopen().expect("reopen"),
+        binding,
+        authority.clone(),
+        COMPLETE_LIFECYCLE_BYTES,
+        COMPLETE_LIFECYCLE_EVENTS,
+    )
+    .expect("create bounded journal");
+    journal
+        .append(lifecycle("a", digest("plan:a"), binding)[0].clone())
+        .expect("retain intent");
+    let retained = journal.anchor().expect("retained anchor");
+    drop(journal);
+    let original = std::fs::read(temp.path()).expect("original bytes");
+
+    let invalid_limits =
+        LockedFileProductEvaluationAttemptJournalV1::recover_with_anchor_and_qualification_limits(
+            temp.reopen().expect("reopen"),
+            binding,
+            retained,
+            COMPLETE_LIFECYCLE_BYTES - 1,
+            COMPLETE_LIFECYCLE_EVENTS,
+        );
+    assert!(matches!(
+        invalid_limits,
+        Err(ProductEvaluationAttemptJournalErrorV1::Capacity)
+    ));
+
+    let forged = ProductEvaluationAttemptAnchorV1 {
+        state_digest: digest("not-the-retained-prefix"),
+        ..retained
+    };
+    authority.0.borrow_mut().value = Some(forged);
+    let recovery = AnchoredProductEvaluationAttemptJournalV1::recover_with_qualification_limits(
+        temp.reopen().expect("reopen"),
+        binding,
+        authority.clone(),
+        COMPLETE_LIFECYCLE_BYTES,
+        COMPLETE_LIFECYCLE_EVENTS,
+    );
+    assert!(matches!(
+        recovery,
+        Err(ProductEvaluationAttemptJournalErrorV1::Corrupt)
+    ));
+    assert_eq!(authority.0.borrow().value, Some(forged));
+    assert_eq!(
+        std::fs::read(temp.path()).expect("unchanged bytes"),
+        original
+    );
 }
 
 #[test]
@@ -333,12 +392,9 @@ fn anchored_lifecycle_survives_every_single_crash_cut_and_exact_replay() {
 
         drop(journal);
         let file = temp.reopen().expect("reopen journal file");
-        let mut recovered = AnchoredProductEvaluationAttemptJournalV1::recover(
-            file,
-            binding,
-            authority,
-        )
-        .expect("recover every legal prefix");
+        let mut recovered =
+            AnchoredProductEvaluationAttemptJournalV1::recover(file, binding, authority)
+                .expect("recover every legal prefix");
         assert_eq!(
             recovered.anchor().expect("recovered anchor").event_count,
             cut as u64

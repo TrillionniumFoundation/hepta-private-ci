@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Exact-tree entrypoint that fail-closes every filtered qualification test."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -18,6 +19,17 @@ REQUIRED_FILTERS = {
         "package": "codex-hepta-intelligence-eval",
         "filter": "signed_qualification_e2e",
         "label": "owner-signed-e2e",
+    },
+    "shadow-recorded-numerical-fixture": {
+        "package": "codex-hepta-shadow-qualification",
+        "filter": "lane_e_causal_candidate_chain_is_digest_bound_and_deny_all",
+        "label": "shadow-recorded-numerical-fixture",
+    },
+    "shadow-recorded-api-contract": {
+        "package": "codex-hepta-shadow-qualification",
+        "filter": "lane_e_public_operation_surface_is_linkable",
+        "label": "shadow-recorded-api-contract",
+        "tests": ["lane_e_api_contract"],
     },
     "shadow-consumer": {
         "package": "codex-hepta-intelligence",
@@ -52,11 +64,16 @@ def required_command(output: Path, spec: dict[str, object]) -> list[str]:
     argv = [
         sys.executable,
         "scripts/hepta-nextest-require.py",
-        "--manifest-path", "codex-rs/Cargo.toml",
-        "--package", str(spec["package"]),
-        "--filter", str(spec["filter"]),
-        "--label", str(spec["label"]),
-        "--evidence", str(output / f"{spec['label']}-discovery.json"),
+        "--manifest-path",
+        "codex-rs/Cargo.toml",
+        "--package",
+        str(spec["package"]),
+        "--filter",
+        str(spec["filter"]),
+        "--label",
+        str(spec["label"]),
+        "--evidence",
+        str(output / f"{spec['label']}-discovery.json"),
     ]
     for target in spec.get("tests", []):
         argv.extend(["--test", str(target)])
@@ -72,16 +89,19 @@ def commands(output: Path):
         else:
             result.append((name, argv, cwd))
         if name == "api-surface":
-            result.append((
-                "trusted-compatibility-fixture",
-                [
-                    sys.executable,
-                    "scripts/hepta-learning-eval-compat-fixture.py",
-                    "--offline",
-                    "--evidence", str(output / "trusted-compatibility-fixture.json"),
-                ],
-                ".",
-            ))
+            result.append(
+                (
+                    "trusted-compatibility-fixture",
+                    [
+                        sys.executable,
+                        "scripts/hepta-learning-eval-compat-fixture.py",
+                        "--offline",
+                        "--evidence",
+                        str(output / "trusted-compatibility-fixture.json"),
+                    ],
+                    ".",
+                )
+            )
             fixture_inserted = True
     if not fixture_inserted:
         raise RuntimeError("exact command inventory lost api-surface insertion point")
