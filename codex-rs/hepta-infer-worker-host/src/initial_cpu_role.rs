@@ -57,11 +57,13 @@ pub(super) fn require_actual_program(program_source: &Source, role: &Role) -> Ho
     let status = std::fs::read_to_string("/proc/self/status")?;
     require_actual_status(&status, role)?;
     let program = std::env::current_exe()?;
-    if program.canonicalize()? != program_source.path
-        || program_source.read(512 * 1024 * 1024)?.is_empty()
-    {
+    if program.canonicalize()? != program_source.path {
         return Err("actual fixed CPU composition executable".into());
     }
+    codex_hepta_agent_components::intelligence_eval::verify_registered_operational_program_v3(
+        &program_source.path,
+        digest(&program_source.digest)?,
+    )?;
     Ok(())
 }
 fn require_actual_status(status: &str, role: &Role) -> HostResult<()> {

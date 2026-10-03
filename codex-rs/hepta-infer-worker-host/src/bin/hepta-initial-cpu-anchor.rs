@@ -42,6 +42,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 path, pin,
             )?
         }
+        "select-registered-model-use-v3" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::select_cpu_registered_model_use_v3(path, pin)?
+        }
         "select-installed-model-use-v2" => {
             codex_hepta_infer_worker_host::initial_cpu_anchor::select_cpu_model_use_v2(path, pin)?
         }

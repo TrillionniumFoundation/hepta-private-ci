@@ -61,6 +61,11 @@ mod goal_factory;
 mod iteration_observation;
 #[path = "initial_cpu_iteration_selection.rs"]
 mod iteration_selection;
+#[path = "initial_cpu_registered_model_use_v3.rs"]
+mod registered_model_use;
+pub use registered_model_use::VerifiedRegisteredCpuModelUseV3;
+pub use registered_model_use::inspect_cpu_registered_model_use_v3;
+pub use registered_model_use::select_cpu_registered_model_use_v3;
 #[path = "initial_cpu_model_use_v2.rs"]
 mod model_use;
 #[path = "initial_cpu_model_use_binding_v2.rs"]
