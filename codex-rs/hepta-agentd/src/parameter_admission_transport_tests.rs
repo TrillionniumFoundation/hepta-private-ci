@@ -79,6 +79,11 @@ async fn actual_non_root_peer_cannot_resolve_seven_owner_facts_or_sample_owner_c
         std::path::PathBuf::from("/missing/root-context"), digest("protected context pin"),
         std::path::PathBuf::from("/missing/root-search"), digest("protected search pin")
     ).await, Err(AgentdError::Protocol(message)) if message.contains("root_peer_required")));
+    assert!(matches!(client.prepare_parameter_dataset_v1(
+        super::input_context_tests::fixture_round(),
+        std::path::PathBuf::from("/missing/root-producer"),digest("producer pin"),
+        std::path::PathBuf::from("/missing/root-plan"),digest("plan pin")
+    ).await, Err(AgentdError::Protocol(message)) if message.contains("root_peer_required")));
     assert_eq!(reads.load(std::sync::atomic::Ordering::SeqCst), 0);
     client
         .health()

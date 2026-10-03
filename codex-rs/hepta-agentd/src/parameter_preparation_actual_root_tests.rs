@@ -11,6 +11,9 @@ use std::os::unix::fs::PermissionsExt;
 #[path = "parameter_preparation_root_context_test_support.rs"]
 mod context_support;
 use context_support::*;
+#[path = "parameter_dataset_root_test_support.rs"]
+mod dataset_support;
+use dataset_support::*;
 
 struct UnusedTickProvider;
 impl crate::AgentdNeuronTickProviderV2 for UnusedTickProvider {
@@ -66,6 +69,14 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
         .set(host.clone())
         .unwrap_or_else(|_| panic!("one installed V2 host"));
     let (trust, trust_json) = learning_trust(material.scope, now, expires);
+    populate_original_dataset_ledger(&mut fixture, root.path(), &trust, now);
+    let dataset_witness_before = fs::read(root.path().join("authenticated-dataset-witness.bin"))
+        .expect("same original acknowledged Ledger witness");
+    let expected_dataset_snapshot = fixture
+        .owner
+        .ledger
+        .snapshot()
+        .expect("same production ledger");
     let (runtime, iteration) =
         crate::AgentdSelfIterationRuntimeConfigV1::new(root.path().join("iteration.json"), trust)
             .expect("original sole iteration journal");
@@ -128,6 +139,18 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
     assert!(
         fixture.owner.input_context.is_none(),
         "pure original facts do not install context"
+    );
+    let initial_installed_artifact_head = fixture.owner.artifacts.head_digest();
+    fixture.owner.current_artifacts = Some(
+        crate::plasticity_runtime::current_artifacts::PlasticityCurrentArtifactsV1::new(
+            artifacts.current_reader(),
+            ["policy:update-rule", "policy:mutation", "policy:broadcast"].map(id),
+            &fixture.owner.artifacts,
+            &fixture.owner.owner_evidence_policy,
+        )
+        .expect(
+            "original bootstrap reader pins actual CURRENT without replacing installed snapshot",
+        ),
     );
     let durable_before = persistent_bytes(&fixture.files);
     let ledger_before = fs::read(&fixture.files.ledger).expect("same held Ledger");
@@ -195,6 +218,19 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
             .is_err(),
         "new Round requires its original context first"
     );
+    assert_ne!(
+        initial_installed_artifact_head,
+        artifacts.registry.head_digest()
+    );
+    verify_actual_dataset_socket(
+        &client,
+        &round,
+        &context,
+        root.path(),
+        &expected_dataset_snapshot,
+        initial_installed_artifact_head,
+    )
+    .await;
     assert_eq!(
         client
             .refresh_parameter_input_context_v2(round.clone(), context.0.clone(), context.1)
@@ -321,6 +357,20 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
     assert_ne!(prepared.eligibility_digest, Digest32::ZERO);
     assert_ne!(prepared.modulator_digest, Digest32::ZERO);
     assert!(prepared.generated.candidates.len() <= round.candidate_admissions() as usize);
+    verify_actual_dataset_socket(
+        &client,
+        &round,
+        &context,
+        root.path(),
+        &expected_dataset_snapshot,
+        artifacts.registry.head_digest(),
+    )
+    .await;
+    assert_ne!(
+        initial_installed_artifact_head,
+        artifacts.registry.head_digest(),
+        "final refresh changes the held snapshot only through the original owner"
+    );
     let repeated = client
         .prepare_parameter_input_v1(round.clone(), search_path, search_pin)
         .await
@@ -347,6 +397,11 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
     assert_eq!(
         fs::read(&fixture.files.ledger).expect("Ledger"),
         ledger_before
+    );
+    assert_eq!(
+        fs::read(root.path().join("authenticated-dataset-witness.bin"))
+            .expect("original Ledger witness"),
+        dataset_witness_before
     );
     assert_eq!(
         [

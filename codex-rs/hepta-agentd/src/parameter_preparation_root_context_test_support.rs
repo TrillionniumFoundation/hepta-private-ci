@@ -13,6 +13,18 @@ pub(super) struct PublishedArtifacts {
     service: LearningArtifactOwnerService,
 }
 impl PublishedArtifacts {
+    pub(super) fn current_reader(&self) -> crate::CurrentArtifactRegistrySourceV1 {
+        crate::CurrentArtifactRegistrySourceV1::open(
+            self.owner_root.clone(),
+            self.trust.clone(),
+            read_dataset_withdrawal_snapshot(
+                fs::File::open(&self.withdrawals).expect("actual Root withdrawal source"),
+                self.withdrawal_receipt,
+            )
+            .expect("whole original withdrawal cut"),
+        )
+        .expect("actual original protected CURRENT reader")
+    }
     pub(super) fn new(
         root: &Path,
         material: &NeuronGenerationMaterialV2,
@@ -326,7 +338,7 @@ pub(super) fn write_search(
         encode_untrusted_parameter_generator_profile_v3(profile).expect("original shape codec"),
     )
 }
-fn write_source(path: PathBuf, bytes: Vec<u8>) -> (PathBuf, Digest32) {
+pub(super) fn write_source(path: PathBuf, bytes: Vec<u8>) -> (PathBuf, Digest32) {
     fs::write(&path, &bytes).expect("independent complete fixture source");
     fs::set_permissions(&path, fs::Permissions::from_mode(0o600)).expect("protected mode");
     (path, Digest32::of_bytes(&bytes))
@@ -380,32 +392,25 @@ pub(super) fn write_context(root: &Path, input: RootContextInputs<'_>) -> (PathB
     .expect("actual original NDU selection");
     let ndu = write_source(root.join("actual-ndu.bin"), ndu.export_bytes());
     let ledger = fixture.owner.ledger.snapshot().expect("same actual Ledger");
-    let dataset = freeze_dataset_receipt_v3(
-        DatasetFreezeRequestV1 {
+    let dataset = freeze_dataset_from_ledger(
+        &ledger,
+        DatasetFreezePlanV2 {
             snapshot_id: id("dataset.actual.root.prepare"),
-            producer: AuthenticatedPrincipalV1 {
-                principal_id: id("owner:dataset"),
-                credential_chain_digest: digest("actual dataset chain"),
-                signing_key_digest: digest("actual dataset key"),
-                scope_digest: material.scope.scope_digest,
-                authority_epoch: 1,
-                authenticated_at: now - 1,
-                expires_at: expires,
-            },
-            ledger_head_digest: ledger.head_digest,
             objective_digest: material.scope.objective_digest,
-            eligible_frontier: 1,
-            outcome_watermark: 1,
-            correction_cut_digest: digest("actual dataset correction"),
-            revocation_cut_digest: digest("actual dataset revocation"),
             inclusion_policy_digest: digest("actual dataset inclusion"),
-            source_record_digests: vec![ledger.head_digest],
-            pending_outcomes: 0,
-            censored_outcomes: 0,
+        },
+        AuthenticatedPrincipalV1 {
+            principal_id: id("owner:dataset"),
+            credential_chain_digest: digest("actual dataset chain"),
+            signing_key_digest: digest("actual dataset key"),
+            scope_digest: material.scope.scope_digest,
+            authority_epoch: 1,
+            authenticated_at: now - 1,
+            expires_at: expires,
         },
         now,
     )
-    .expect("whole actual original DatasetReceiptV3");
+    .expect("whole dataset derived from original admitted G/O records");
     let n = &material.native;
     let value = json!({"schema":"hepta.agentd.plasticity-input-context.v2","agent_id":fixture.state.identity().agent_id.as_str(),"spawn_generation":fixture.state.identity().spawn_generation,
         "round_hex":crate::client::encode_hex(&round.canonical_bytes().expect("actual sealed Round")),"predecessor_registry_head_digest":fixture.owner.artifacts.head_digest().to_string(),
