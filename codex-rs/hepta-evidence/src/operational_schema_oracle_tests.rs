@@ -91,8 +91,9 @@ async fn read_only_reopen_rejects_comment_preserved_table_check() -> TestResult 
     .fetch_one(&store.pool)
     .await?;
     let weakened = original.replace(
-        "CHECK (owner_generation > 0)",
-        "/* CHECK (owner_generation > 0) */",
+        "owner_generation INTEGER NOT NULL CHECK (owner_generation > 0)",
+        "owner_generation INTEGER NOT NULL \
+         /* owner_generation INTEGER NOT NULL CHECK (owner_generation > 0) */",
     );
     assert_ne!(original, weakened);
     let mut connection = store.pool.acquire().await?;
