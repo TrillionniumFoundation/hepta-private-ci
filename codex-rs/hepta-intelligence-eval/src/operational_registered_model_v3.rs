@@ -15,6 +15,7 @@ use serde::Serialize;
 #[path = "registered_material_projection_v3.rs"]
 mod manifest_projection;
 pub use manifest_projection::project_registered_artifact_manifest_configuration_v3;
+pub use manifest_projection::read_registered_artifact_manifest_sources_v3;
 use std::path::Path;
 use std::path::PathBuf;
 

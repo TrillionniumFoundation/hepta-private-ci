@@ -325,3 +325,69 @@ fn qualify_indexed_material_projection(
     assert!(read_current_cpu_neuron_material_projection_v3(&resolver, &baseline_source, subject).is_err());
     Ok(())
 }
+
+#[test]
+#[ignore = "requires actual Root and isolated /run legacy owner custody"]
+fn root_projects_complete_legacy_admissions_without_rewriting_original_aliases() -> TestResult {
+    use std::os::unix::fs::MetadataExt;
+    assert_eq!(rustix::process::geteuid().as_raw(), 0);
+    let directory = tempfile::Builder::new().prefix("hepta-legacy-admission-projection-")
+        .tempdir_in("/run")?;
+    let now: u64 = std::time::SystemTime::now().duration_since(std::time::UNIX_EPOCH)?
+        .as_millis().try_into()?;
+    let fixture = fixture::Fixture::new(directory.path().join("original-private-generations"))?;
+    let round = fixture.round("actual.original.legacy.projection.goal", 1)?;
+    let materials = fixture.derive(&round)?;
+    let mut writer = OriginalWriter::open(directory.path().join("original-artifacts"), now)?;
+    let (baseline, _) = writer.publish_material(materials.baseline(), "baseline", None,
+        [b"weights".to_vec(), b"independent E calibration".to_vec(),
+            b"independent E OOD".to_vec(), b"fixed heads".to_vec()])?;
+    let mut originals = Vec::new();
+    for (source, admission) in &baseline {
+        let alias = writer.root.join("admissions").join(format!("{admission}.bin"));
+        let bytes = std::fs::read(&source.path)?;
+        if std::fs::symlink_metadata(&source.path)?.nlink() == 1 {
+            std::fs::remove_file(&source.path)?;
+            std::fs::hard_link(&alias, &source.path)?;
+        }
+        assert_eq!(std::fs::symlink_metadata(&source.path)?.nlink(), 2);
+        assert!(codex_hepta_agent_components::learning_ledger::read_root_review_input(
+            &source.path, 128 * 1024).is_err());
+        originals.push((source.path.clone(), bytes, std::fs::symlink_metadata(&source.path)?.ino()));
+    }
+    let template = writer.template(&baseline)?;
+    let template_bytes = std::fs::read(&template)?;
+    let frontier_bytes = std::fs::read(writer.root.join("READ-CURRENT"))?;
+    let complete = read_registered_artifact_manifest_sources_v3(&template, pin(&template_bytes), now)?;
+    let mut independent = Vec::new();
+    for (index, (bytes, admission)) in complete.into_iter().enumerate() {
+        assert_eq!(bytes, originals[index].1);
+        let path = directory.path().join(format!("full-original-manifest-{index}.bin"));
+        std::fs::write(&path, &bytes)?;
+        assert_eq!(std::fs::symlink_metadata(&path)?.nlink(), 1);
+        independent.push((ParameterRoleSourceV3 { path, digest: pin(&bytes).to_string() }, admission));
+    }
+    let independent = independent.try_into().map_err(|_| "complete three-artifact frontier")?;
+    let bytes = project_registered_artifact_manifest_configuration_v3(&template,
+        pin(&template_bytes), &independent, materials.baseline(), &identity("actual.agent")?, now)?;
+    let projected = directory.path().join("legacy-read-only-registration.json");
+    std::fs::write(&projected, &bytes)?;
+    let current = inspect_registered_artifact_current_material_v3(&projected, pin(&bytes),
+        materials.baseline(), &identity("actual.agent")?, now)?;
+    assert_eq!(current.current_head().witness.generation.get(), 4);
+    assert_eq!(current.acknowledgement().operation_id.as_str(), "baseline.publication.3");
+    let owner = ReadOnlyArtifactCurrentOwnerV1::open(&writer.root, writer.trust.clone(),
+        writer.withdrawals.clone(), now)?;
+    assert!(owner.read_current_manifest_admission_source(&independent[0].0.path,
+        independent[0].0.digest.parse()?, independent[0].1, now).is_err());
+    assert!(owner.read_current_manifest_admission_source(&baseline[0].0.path,
+        pin(b"changed whole Source"), baseline[0].1, now).is_err());
+    for (path, bytes, inode) in originals {
+        assert_eq!(std::fs::read(&path)?, bytes);
+        assert_eq!((std::fs::symlink_metadata(&path)?.ino(),
+            std::fs::symlink_metadata(&path)?.nlink()), (inode, 2));
+    }
+    assert_eq!(std::fs::read(writer.root.join("READ-CURRENT"))?, frontier_bytes);
+    assert_eq!(std::fs::read(&template)?, template_bytes);
+    Ok(())
+}

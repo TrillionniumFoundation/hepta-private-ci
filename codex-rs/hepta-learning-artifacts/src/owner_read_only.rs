@@ -254,6 +254,9 @@ impl ReadOnlyArtifactCurrentOwnerV1 {
     }
 }
 
+#[path = "owner_read_admission_source.rs"]
+mod admission_source;
+
 #[cfg(test)]
 #[path = "owner_read_only_tests.rs"]
 mod tests;

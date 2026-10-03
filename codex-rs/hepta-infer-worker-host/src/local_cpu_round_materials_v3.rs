@@ -329,6 +329,8 @@ fn generation_plan(
 #[cfg(feature = "fixed-initial-cpu-host")]
 #[path = "local_cpu_round_final_admission_v3.rs"]
 mod final_admission;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub(crate) use final_admission::FinalRoundParameterAdmissionV3;
 
 #[cfg(test)]
 #[path = "local_cpu_round_materials_tests_v3.rs"]

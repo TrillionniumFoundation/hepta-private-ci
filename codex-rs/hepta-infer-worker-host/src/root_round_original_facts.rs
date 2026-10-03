@@ -13,6 +13,7 @@ use codex_hepta_agentd::PreparedParameterDatasetV1;
 use codex_hepta_neuron::NeuronGenerationMaterialV2;
 use codex_hepta_neuron::encode_neuron_generation_material_v2;
 use std::os::unix::fs::PermissionsExt;
+use std::os::unix::fs::MetadataExt;
 
 pub(super) struct OriginalFacts {
     pub indexed: crate::initial_cpu_anchor::CurrentCpuNeuronMaterialProjectionV3,
@@ -29,6 +30,7 @@ pub(super) struct OriginalFacts {
     pub snapshot_receipt: RegistrySnapshotReceipt,
     pub public: PathBuf,
     pub effects: PathBuf,
+    pub search: InstalledCpuSourceV1,
 }
 
 pub(super) fn publish(
@@ -37,13 +39,15 @@ pub(super) fn publish(
     bytes: &[u8],
     maximum: usize,
 ) -> Result<InstalledCpuSourceV1> {
-    let path = directory.join(name);
-    execution::immutable(&path, bytes, maximum)?;
-    Ok(InstalledCpuSourceV1 { path, digest: Digest32::of_bytes(bytes).to_string() })
+    super::super::independent_owners::roles::publish_public_source(directory, name, bytes, maximum)
 }
 
 fn public_directory(parent: &Path, name: &str) -> Result<PathBuf> {
     execution::protected_directory(parent)?;
+    for ancestor in parent.ancestors() {
+        ensure!(std::fs::symlink_metadata(ancestor)?.mode() & 0o001 != 0,
+            "original public Source parent is not traversable");
+    }
     let directory = parent.join(name);
     match std::fs::create_dir(&directory) {
         Ok(()) => {
@@ -65,8 +69,18 @@ pub(super) fn current_registration(
     subject: &StableId,
     public: &Path,
 ) -> Result<(InstalledCpuSourceV1, RegisteredArtifactCurrentFactsV3)> {
-    let bytes = project_registered_artifact_current_configuration_v3(
-        &template.path, template.digest.parse()?, material, subject, now_ms()?,
+    let original = read_registered_artifact_manifest_sources_v3(
+        &template.path, template.digest.parse()?, now_ms()?,
+    ).map_err(|error| anyhow::anyhow!("{error}"))?;
+    let mut manifests = Vec::new();
+    for (bytes, admission) in original {
+        let pin = Digest32::of_bytes(&bytes);
+        let source = publish(public, &format!("complete-manifest-{pin}.bin"), &bytes, 128 * 1024)?;
+        manifests.push((ParameterRoleSourceV3 { path: source.path, digest: source.digest }, admission));
+    }
+    let manifests = manifests.try_into().map_err(|_| anyhow::anyhow!("three whole original manifests"))?;
+    let bytes = project_registered_artifact_manifest_configuration_v3(
+        &template.path, template.digest.parse()?, &manifests, material, subject, now_ms()?,
     ).map_err(|error| anyhow::anyhow!("{error}"))?;
     let pin = Digest32::of_bytes(&bytes);
     let source = publish(public, &format!("current-registration-{pin}.json"), &bytes, 64 * 1024)?;
@@ -121,6 +135,7 @@ pub(super) async fn collect(
     };
     let public = public_directory(execution_directory,
         &format!("round-preparation-{}", round.identity_digest()))?;
+    let search = search_projection::project(blueprint, &indexed.material, &public)?;
     let effects = public.join("original-effects");
     super::super::independent_owners::roles::prepare_effect_directory(&effects)?;
     let goal_bytes = encode_neuron_generation_material_v2(&goal_material)
@@ -194,5 +209,5 @@ pub(super) async fn collect(
     indexed.revalidate().map_err(|error| anyhow::anyhow!("{error}"))?;
     current.revalidate_current(now_ms()?).map_err(|error| anyhow::anyhow!("{error}"))?;
     Ok(Some(OriginalFacts { indexed, registration, current, baseline_id, goal_material,
-        goal_material_source, serving, serving_source, checkpoint, dataset, snapshot, snapshot_receipt, public, effects }))
+        goal_material_source, serving, serving_source, checkpoint, dataset, snapshot, snapshot_receipt, public, effects, search }))
 }

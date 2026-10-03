@@ -13,6 +13,22 @@ use codex_hepta_types::Digest32;
 mod parameter_roles;
 #[path = "root_round_publication_configuration.rs"]
 mod publication_configuration;
+#[path = "root_round_blueprint.rs"]
+mod blueprint;
+#[path = "root_round_original_facts.rs"]
+mod original_facts;
+#[path = "root_round_context.rs"]
+mod context_projection;
+#[path = "root_round_search.rs"]
+mod search_projection;
+#[path = "root_round_admission.rs"]
+mod admission_projection;
+#[path = "root_round_selection.rs"]
+mod selection_projection;
+#[path = "root_round_bundle.rs"]
+mod bundle_publication;
+#[path = "root_round_fresh.rs"]
+mod fresh;
 
 impl RootFrozenGeneratorServiceV1 {
     pub(super) async fn prepare_round(
@@ -64,6 +80,18 @@ impl RootFrozenGeneratorServiceV1 {
             let directory = self.configuration.execution_directory
                 .join(format!("round-materials-{}", round.identity_digest()));
             let path = directory.join("bundle.json");
+            if !path.try_exists()?
+                && let Some(blueprint_source) = &scope.round_blueprint
+            {
+                let prepared = fresh::Preparation {
+                    service: self, blueprint_source, client: &client,
+                    before: &before, scope, round: &round, canonical: &canonical,
+                }.prepare().await?;
+                self.revalidate(stream, peer, scope, &before).await?;
+                if let Some(result) = prepared {
+                    return Ok(result);
+                }
+            }
             if !path.try_exists()? {
                 return Ok(RoundPreparationResultV1::Refused {
                     error: FrozenGeneratorErrorCodeV1::Pending,
@@ -139,8 +167,9 @@ impl RootFrozenGeneratorServiceV1 {
         RoundPreparationResponseV1 {
             schema_version: 8,
             round_payload_digest: payload_digest.to_string(),
-            result: result.unwrap_or(RoundPreparationResultV1::Refused {
-                error: FrozenGeneratorErrorCodeV1::Unavailable,
+            result: result.unwrap_or_else(|error| {
+                tracing::warn!(%error, %payload_digest, "original round preparation unavailable");
+                RoundPreparationResultV1::Refused { error: FrozenGeneratorErrorCodeV1::Unavailable }
             }),
         }
     }

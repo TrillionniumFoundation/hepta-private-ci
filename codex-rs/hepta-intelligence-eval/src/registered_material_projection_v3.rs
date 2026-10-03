@@ -88,3 +88,31 @@ pub fn project_registered_artifact_manifest_configuration_v3(
     }
     Ok(projected)
 }
+
+/// Read original legacy manifest Sources through their same authenticated
+/// Artifact owner. Root must publish independent immutable whole-byte Sources
+/// before using the ordinary registration inspector.
+pub fn read_registered_artifact_manifest_sources_v3(
+    path: &Path,
+    pin: Digest32,
+    now: u64,
+) -> HostResult<[(Vec<u8>, Digest32); 3]> {
+    let source = Source { path: path.to_owned(), digest: pin.to_string() };
+    let original = source.read(64 * 1024)?;
+    let registration: Registration = serde_json::from_slice(&original)?;
+    let owner = registration.owner.open(now)?;
+    let mut outputs = Vec::new();
+    for manifest in &registration.manifests {
+        let admission = manifest.admission_digest.parse()?;
+        let bytes = match manifest.source.read(128 * 1024) {
+            Ok(bytes) => bytes,
+            Err(_) => owner.read_current_manifest_admission_source(&manifest.source.path,
+                manifest.source.digest.parse()?, admission, now)?,
+        };
+        outputs.push((bytes, admission));
+    }
+    if source.read(64 * 1024)? != original {
+        return Err("whole original registration changed during legacy source read".into());
+    }
+    Ok(outputs.try_into().map_err(|_| "three complete original manifest Sources")?)
+}

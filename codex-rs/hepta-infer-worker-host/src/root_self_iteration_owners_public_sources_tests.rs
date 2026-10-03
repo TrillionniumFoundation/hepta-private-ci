@@ -49,6 +49,15 @@ fn actual_root_public_configuration_is_readable_but_effect_slot_stays_private() 
         public_root_source(&public, "config.json", b"changed", 64 * 1024).is_err(),
         "whole conflict rejected"
     );
+    for maximum in [64 * 1024 * 1024, 128 * 1024 * 1024] {
+        let name = format!("complete-source-{maximum}.bin");
+        let source = public_root_source(&public, &name, bytes, maximum)?;
+        ensure!(read_root_review_input(&source.path, maximum as u64)
+            .map_err(|error| anyhow::anyhow!("{error}"))? == bytes,
+            "complete original Source bound retains whole bytes");
+        ensure!(public_root_source(&public, &name, b"different", maximum).is_err(),
+            "large original Source bound preserves immutable slot");
+    }
     let private_dir = root.path().join("private-effects");
     std::fs::DirBuilder::new()
         .mode(0o700)

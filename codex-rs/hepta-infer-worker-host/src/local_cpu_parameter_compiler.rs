@@ -58,6 +58,8 @@ pub use round_materials::CpuNeuronRoundMaterialBlueprintV3;
 pub use round_materials::CpuNeuronRoundMaterialCandidateV3;
 #[cfg(target_os = "linux")]
 pub use round_materials::CpuNeuronRoundMaterialsV3;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub(crate) use round_materials::FinalRoundParameterAdmissionV3;
 #[cfg(target_os = "linux")]
 pub use round_materials::derive_cpu_neuron_round_materials_v3;
 
