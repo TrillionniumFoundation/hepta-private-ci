@@ -527,7 +527,7 @@ mod tests {
             predecessor_digest: Some(digest("previous")),
             entry_node: template.entry_node.clone(),
             nodes: template.nodes.clone(),
-            edges: template.edges.clone(),
+            edges: template.edges,
             capability_set: vec![],
             route_policy_digest: digest("route"),
             parameter_bundle_digest: digest("parameters"),
