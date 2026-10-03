@@ -35,6 +35,8 @@ struct Config {
     ack_path: PathBuf,
     #[serde(default)]
     self_iteration: Option<IterationConsumer>,
+    #[serde(default)]
+    parameter_evaluation: Option<crate::fixed_parameter_review::ParameterReviewPort>,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -57,6 +59,8 @@ struct Review {
     production_activation: bool,
     #[serde(default)]
     self_iteration_evaluation_transport_hex: Option<String>,
+    #[serde(default)]
+    parameter_evaluation_material_hex: Option<String>,
 }
 
 #[derive(Deserialize)]
@@ -258,6 +262,44 @@ pub fn finish_fixed_paired_custody(path: &Path) -> HostResult<()> {
                 .into(),
         ),
     };
+    let original_bundle = runner.paired_qualification_bundle(&execution, &context)?;
+    let original_roles: Vec<_> = execution
+        .registration
+        .plan
+        .metrics
+        .iter()
+        .map(|m| MetricRoleContractV2 {
+            metric_id: m.contract.metric_id.clone(),
+            role: m.role,
+        })
+        .collect();
+    let parameter = match (
+        config.parameter_evaluation,
+        &review.parameter_evaluation_material_hex,
+    ) {
+        (None, None) => None,
+        (Some(port), Some(material)) if config.self_iteration.is_none() => {
+            let owner = crate::fixed_parameter_review::ParameterReview::open(port)?;
+            let bytes = crate::fixed_parameter_no_change::unhex(
+                material,
+                crate::fixed_parameter_review::MAX_PARAMETER_EVALUATION_BYTES,
+            )?;
+            owner.verify_material(
+                &bytes,
+                &original_bundle,
+                &original_roles,
+                &execution.registration.generator_evidence,
+                &trust,
+                clock.sample_registered(&trust, &execution.registration)?,
+            )?;
+            Some((owner, bytes))
+        }
+        _ => {
+            return Err(
+                "original custody requires exact parameter purpose and whole material".into(),
+            );
+        }
+    };
     let mut original_request = serde_json::json!({"schema":"hepta.fixed-paired-original-signed-request.v1",
         "original_execution":serde_json::from_slice::<serde_json::Value>(&original)?,"original_independent_review":serde_json::from_slice::<serde_json::Value>(&review_bytes)?});
     if let Some((_, _, original_consumer)) = &iteration {
@@ -335,6 +377,36 @@ pub fn finish_fixed_paired_custody(path: &Path) -> HostResult<()> {
             return Err("original frozen Generator input changed before FULL sink".into());
         }
     }
+    let mut final_parameter_clock = clock.sample_registered(&trust, &execution.registration)?;
+    let mut current_sink = crate::fixed_parameter_review::CurrentParameterSink {
+        inner: &mut sink,
+        current: || -> HostResult<()> {
+            if let Some((owner, bytes)) = &parameter {
+                if read_root_review_input(path, 32 * 1024)? != config_bytes
+                    || config.execution.read(MAX_REVIEW_PUBLICATION_BYTES)? != original
+                    || config.evaluator_result.read(MAX_ITERATION_REVIEW_BYTES)? != review_bytes
+                {
+                    return Err(
+                        "original parameter custody sources changed at final sink use".into(),
+                    );
+                }
+                let now = crate::fixed_calibration_host::now_ms()?;
+                if now < final_parameter_clock {
+                    return Err("original parameter sink clock retreated".into());
+                }
+                final_parameter_clock = now;
+                owner.verify_material(
+                    bytes,
+                    &original_bundle,
+                    &original_roles,
+                    &execution.registration.generator_evidence,
+                    &trust,
+                    now,
+                )?;
+            }
+            Ok(())
+        },
+    };
     let qualification = runner.qualify_paired_with_clock(
         &execution,
         &context,
@@ -343,7 +415,7 @@ pub fn finish_fixed_paired_custody(path: &Path) -> HostResult<()> {
             evaluator_bundle: evidence,
         },
         &trust,
-        &mut sink,
+        &mut current_sink,
         &mut clock,
     )?;
     qualification.validate_integrity()?;
@@ -370,6 +442,10 @@ pub fn finish_fixed_paired_custody(path: &Path) -> HostResult<()> {
                 .self_iteration_evaluation_transport_hex
                 .ok_or("cycle transport missing")?,
         );
+    }
+    if let Some((_, bytes)) = parameter {
+        report["parameter_evaluation_material_hex"] =
+            serde_json::Value::String(crate::fixed_parameter_no_change::hex(&bytes));
     }
     println!("{report}");
     Ok(())

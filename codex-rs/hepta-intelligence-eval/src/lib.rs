@@ -573,6 +573,38 @@ mod fixed_public_development_host;
 pub use fixed_holdout_custody::admit_fixed_paired_custody;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_paired_review_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_no_change;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_no_change_host;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_preparation_review;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_no_change_host::FixedParameterEvaluatorConfigV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_preparation_review::FixedParameterCompletedReviewSourceV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_preparation_review::FixedParameterEvaluationSourceV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_inputs;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_review;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_inputs::ParameterEvaluationRoundBindingV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_inputs::encode_fixed_parameter_evaluator_config_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_inputs::encode_fixed_parameter_preparation_inputs_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_inputs::encode_fixed_parameter_role_inputs_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_no_change::FixedParameterNoChangeOutputV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_no_change::decode_fixed_parameter_no_change_output_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_no_change_host::run_fixed_parameter_no_change_evaluator_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_no_change_host::run_fixed_parameter_preparation_evaluator_v1;
 #[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
 mod self_iteration_role_input;
 #[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
@@ -583,6 +615,8 @@ mod paired_development_transport;
 pub use fixed_paired_generator_host::run_fixed_paired_generator;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_paired_review_host::run_fixed_paired_review_evaluator;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_paired_review_host::run_fixed_parameter_review_evaluator_v1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_public_development_host::run_fixed_public_development_measurement;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]

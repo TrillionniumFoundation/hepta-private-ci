@@ -39,6 +39,8 @@ struct Config {
     inaccessible_paths: Vec<PathBuf>,
     #[serde(default)]
     self_iteration_consumer: Option<IterationConsumer>,
+    #[serde(default)]
+    parameter_evaluation: Option<crate::fixed_parameter_review::ParameterReviewPort>,
 }
 
 #[derive(Deserialize)]
@@ -52,8 +54,20 @@ struct IterationConsumer {
 /// Run the fixed independently admitted E program on an immutable original G/O
 /// publication. Its output is a review, not a custody or publication receipt.
 pub fn run_fixed_paired_review_evaluator(path: &Path) -> HostResult<()> {
+    run_review(path, false)
+}
+/// Same admitted E and original measurement owner, with a full parameter output.
+pub fn run_fixed_parameter_review_evaluator_v1(path: &Path) -> HostResult<()> {
+    run_review(path, true)
+}
+fn run_review(path: &Path, parameter_mode: bool) -> HostResult<()> {
     let config_bytes = read_root_review_input(path, 32 * 1024)?;
     let config: Config = serde_json::from_slice(&config_bytes)?;
+    if parameter_mode != config.parameter_evaluation.is_some()
+        || (parameter_mode && config.self_iteration_consumer.is_some())
+    {
+        return Err("fixed E parameter purpose/configuration mismatch".into());
+    }
     if config.schema != "hepta.fixed-paired-review-config.v1"
         || config.uid == 0
         || config.gid == 0
@@ -152,6 +166,17 @@ pub fn run_fixed_paired_review_evaluator(path: &Path) -> HostResult<()> {
         unlearning_receipt_digest: execution.observations.cut.unlearning_receipt_digest,
     };
     let bundle = crate::paired_supervised_qualification::paired_bundle(&execution, &context)?;
+    let parameter = config
+        .parameter_evaluation
+        .map(crate::fixed_parameter_review::ParameterReview::open)
+        .transpose()?;
+    if let Some(parameter) = &parameter {
+        parameter.revalidate(
+            &bundle,
+            &trust,
+            clock.sample_registered(&trust, &execution.registration)?,
+        )?;
+    }
     let roles: Vec<_> = execution
         .registration
         .plan
@@ -297,8 +322,8 @@ pub fn run_fixed_paired_review_evaluator(path: &Path) -> HostResult<()> {
         Some(
             encode_self_iteration_evaluation_transport_v1(
                 frozen,
-                bundle,
-                roles,
+                bundle.clone(),
+                roles.clone(),
                 signed,
                 use_attestation,
                 &trust,
@@ -308,6 +333,38 @@ pub fn run_fixed_paired_review_evaluator(path: &Path) -> HostResult<()> {
             .map(|byte| format!("{byte:02x}"))
             .collect::<String>(),
         )
+    } else {
+        None
+    };
+    let parameter_material = if let Some(parameter) = &parameter {
+        if read_root_review_input(path, 32 * 1024)? != config_bytes
+            || read_root_review_input(&config.publication_path, MAX_REVIEW_PUBLICATION_BYTES)?
+                != publication_bytes
+        {
+            return Err("original parameter E sources changed before signing".into());
+        }
+        let now = clock.sample_registered(&trust, &execution.registration)?;
+        execution.verify_current(trust.verifier(), now)?;
+        parameter.revalidate(&bundle, &trust, now)?;
+        let mut exact = evidence.clone();
+        exact.evidence_id = StableId::new(format!(
+            "fixed.parameter.review.{}",
+            execution.execution_digest()
+        ))?;
+        exact.payload_digest = Digest32::of_bytes(&evaluation_signing_payload_v2(&bundle, &roles)?);
+        exact.issued_at = now;
+        exact.expires_at = exact.expires_at.min(parameter.expiry());
+        exact.signature = signing.sign(&exact.signing_bytes()).to_bytes();
+        Some(parameter.encode(
+            &bundle,
+            &roles,
+            &SignedEvaluationEvidenceV1 {
+                generator_plan: execution.registration.generator_evidence.clone(),
+                evaluator_bundle: exact,
+            },
+            &trust,
+            clock.sample_registered(&trust, &execution.registration)?,
+        )?)
     } else {
         None
     };
@@ -331,6 +388,10 @@ pub fn run_fixed_paired_review_evaluator(path: &Path) -> HostResult<()> {
     });
     if let Some(transport) = cycle_transport {
         report["self_iteration_evaluation_transport_hex"] = serde_json::Value::String(transport);
+    }
+    if let Some(material) = parameter_material {
+        report["parameter_evaluation_material_hex"] =
+            serde_json::Value::String(crate::fixed_parameter_no_change::hex(&material));
     }
     println!("{report}");
     Ok(())
