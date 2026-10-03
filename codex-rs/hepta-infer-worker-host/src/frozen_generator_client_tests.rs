@@ -150,12 +150,42 @@ async fn actual_root_process_and_route_binding_returns_only_original_evidence() 
             ),
         ))
     };
+    // Raw whole transport is distinct from the joined terminal verifier. A
+    // Reserved record here deliberately cannot establish model failure.
+    let failure_facts = raw_failure_transport_facts();
+    let request_identity = failure_facts.request.clone();
+    let whole = |facts: &codex_hepta_infer_core::SelfIterationModelFailureFactsV1| {
+        encode_self_iteration_model_failure_observation_response_v1(
+            &SelfIterationModelFailureObservationResponseV1::Facts(
+                SelfIterationModelFailureObservationFactsV1::from_facts(facts).unwrap(),
+            ),
+        )
+        .unwrap()
+    };
+    let original_whole = whole(&failure_facts);
+    assert!(original_whole.len() > MAX_FROZEN_GENERATOR_RESPONSE_BYTES_V1);
+    let mut foreign = failure_facts.clone();
+    foreign.request.request_id = StableId::new("different.failure.request").unwrap();
+    let mut partial = original_whole.clone();
+    partial.pop();
     let responses = [
-        granted(),
-        granted(),
-        FrozenGeneratorResponseV1::Refused(FrozenGeneratorFailureV1 {
-            error: FrozenGeneratorErrorCodeV1::Pending,
-        }),
+        encode_frozen_generator_response_v1(&granted()).unwrap(),
+        encode_frozen_generator_response_v1(&granted()).unwrap(),
+        encode_frozen_generator_response_v1(&FrozenGeneratorResponseV1::Refused(
+            FrozenGeneratorFailureV1 {
+                error: FrozenGeneratorErrorCodeV1::Pending,
+            },
+        ))
+        .unwrap(),
+        original_whole,
+        whole(&foreign),
+        encode_self_iteration_model_failure_observation_response_v1(
+            &SelfIterationModelFailureObservationResponseV1::Refused(FrozenGeneratorFailureV1 {
+                error: FrozenGeneratorErrorCodeV1::Pending,
+            }),
+        )
+        .unwrap(),
+        partial,
     ];
     let server = tokio::spawn(async move {
         for (index, response) in responses.into_iter().enumerate() {
@@ -171,12 +201,14 @@ async fn actual_root_process_and_route_binding_returns_only_original_evidence() 
                     assert!(index > 0);
                     request.payload().unwrap()
                 }
+                FrozenGeneratorOperationV1::ObserveModelFailure(request) => {
+                    assert!(index >= 3);
+                    assert_eq!(request.request().unwrap(), request_identity);
+                    payload.to_vec()
+                }
             };
             assert_eq!(decoded, payload);
-            stream
-                .write_all(&encode_frozen_generator_response_v1(&response).unwrap())
-                .await
-                .unwrap();
+            stream.write_all(&response).await.unwrap();
             stream.write_all(b"\n").await.unwrap();
         }
     });
@@ -186,8 +218,74 @@ async fn actual_root_process_and_route_binding_returns_only_original_evidence() 
         Some(evidence)
     );
     assert!(client.observe_payload(payload).await.unwrap().is_none());
+    assert_eq!(
+        client
+            .observe_model_failure_facts(&failure_facts.request)
+            .await
+            .unwrap(),
+        Some(failure_facts.clone())
+    );
+    assert!(
+        client
+            .observe_model_failure_facts(&failure_facts.request)
+            .await
+            .is_err()
+    );
+    assert!(
+        client
+            .observe_model_failure_facts(&failure_facts.request)
+            .await
+            .unwrap()
+            .is_none()
+    );
+    assert!(
+        client
+            .observe_model_failure_facts(&failure_facts.request)
+            .await
+            .is_err()
+    );
     server.await.unwrap();
     // The transport cannot reinterpret a changed Root route as the old pin.
     std::fs::write(&route_path, b"{}").unwrap();
     assert!(client.exchange(payload).await.is_err());
+}
+
+fn raw_failure_transport_facts() -> codex_hepta_infer_core::SelfIterationModelFailureFactsV1 {
+    use codex_hepta_infer_core::durable_control::native::NativeRequest;
+    use codex_hepta_infer_core::durable_control::native::NativeReservationState;
+    use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
+    let request = codex_hepta_infer_core::SelfIterationModelRequestV1 {
+        request_id: StableId::new("original.failure.request").unwrap(),
+        role: codex_hepta_infer_core::SelfIterationModelRoleV1::Generator,
+        envelope_digest: Digest32::of_bytes(b"policy"),
+        candidate_digest: None,
+        prompt: "original \n🙂 prompt".into(),
+        deadline_ms: 10000,
+        maximum_response_bytes: 8192,
+    };
+    codex_hepta_infer_core::SelfIterationModelFailureFactsV1 {
+        native_record: NativeRunRecord {
+            request: NativeRequest {
+                request_id: request.request_id.to_string(),
+                principal_id: "original-agent".into(),
+                worker_generation: 7,
+                model: "original-model".into(),
+                payload_digest: Digest32::of_bytes(b"source").to_string(),
+            },
+            revision: 1,
+            state: NativeReservationState::Reserved,
+            dispatch: None,
+            turn_id: None,
+            cancel_requested: false,
+            pre_dispatch_stop: None,
+            pre_effect_abort: None,
+            dispatch_rejection: None,
+            terminal_owner: None,
+            terminal_publication: None,
+            observation: None,
+        },
+        request,
+        root_outcome_bytes: vec![b'x'; 24 * 1024],
+        observed_at_ms: 11000,
+    }
 }

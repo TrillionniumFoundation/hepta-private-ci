@@ -23,6 +23,8 @@ use tokio::net::UnixStream;
 #[path = "frozen_generator_route.rs"]
 mod routing;
 use routing::Route;
+#[path = "frozen_model_failure_client.rs"]
+mod model_failure;
 
 /// Installed route and original roster principal, with no signing material.
 pub struct CpuNeuronFrozenGeneratorClientV1 {
@@ -172,6 +174,22 @@ async fn exchange_connected(
     route: &Route,
     request: &[u8],
 ) -> Result<FrozenGeneratorResponseV1, AgentdError> {
+    let bytes = exchange_connected_bytes(
+        stream,
+        route,
+        request,
+        MAX_FROZEN_GENERATOR_RESPONSE_BYTES_V1,
+    )
+    .await?;
+    decode_frozen_generator_response_v1(&bytes).map_err(protocol)
+}
+
+async fn exchange_connected_bytes(
+    stream: &mut UnixStream,
+    route: &Route,
+    request: &[u8],
+    maximum_response_bytes: usize,
+) -> Result<Vec<u8>, AgentdError> {
     let peer = stream.peer_cred()?;
     if peer.uid() != 0 {
         return Err(AgentdError::Protocol(
@@ -194,7 +212,7 @@ async fn exchange_connected(
     stream.shutdown().await?;
     let mut bytes = Vec::new();
     (&mut *stream)
-        .take(u64::try_from(MAX_FROZEN_GENERATOR_RESPONSE_BYTES_V1 + 1).map_err(protocol)?)
+        .take(u64::try_from(maximum_response_bytes + 1).map_err(protocol)?)
         .read_to_end(&mut bytes)
         .await?;
     let final_peer = stream.peer_cred()?;
@@ -205,7 +223,12 @@ async fn exchange_connected(
     }
     guard.revalidate().map_err(protocol)?;
     validate_issuer_socket(&route.socket, /*issuer_uid*/ 0).map_err(protocol)?;
-    decode_frozen_generator_response_v1(&bytes).map_err(protocol)
+    if bytes.is_empty() || bytes.len() > maximum_response_bytes {
+        return Err(AgentdError::Protocol(
+            "whole Root service response byte bound".into(),
+        ));
+    }
+    Ok(bytes)
 }
 
 fn protocol(error: impl std::fmt::Display) -> AgentdError {
