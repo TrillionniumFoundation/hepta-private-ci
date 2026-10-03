@@ -18,7 +18,7 @@ impl HeptaNativeApp {
             .input_mut(|input| input.consume_key(egui::Modifiers::NONE, egui::Key::Escape));
         if escape {
             if let Some(ticket) = cancel_file_input(ui.ctx()) {
-                if let Some(task) = self.pending_picker.as_ref() {
+                if let Some(task) = self.tasks.pending(TaskLane::Picker) {
                     task.worker.cancel_before_admission();
                 }
                 self.set_file_input_message(
@@ -33,7 +33,7 @@ impl HeptaNativeApp {
                 self.last_error = None;
                 return None;
             }
-            if let Some(task) = self.pending_picker.as_ref() {
+            if let Some(task) = self.tasks.pending(TaskLane::Picker) {
                 let cancelled = task.worker.cancel_before_admission();
                 self.last_error = Some(
                     if cancelled {
@@ -49,7 +49,10 @@ impl HeptaNativeApp {
                     }
                     .into(),
                 );
-            } else if let Some(task) = self.pending_read.as_ref().or(self.pending_runtime.as_ref())
+            } else if let Some(task) = self
+                .tasks
+                .pending(TaskLane::History)
+                .or(self.tasks.pending(TaskLane::Runtime))
             {
                 let cancelled = task.worker.cancel_before_admission();
                 self.last_error = Some(
@@ -74,7 +77,7 @@ impl HeptaNativeApp {
         }
         match accept_active_dropped_file(ui.ctx(), &files) {
             Ok((target, path)) => {
-                if let Some(task) = self.pending_picker.as_ref() {
+                if let Some(task) = self.tasks.pending(TaskLane::Picker) {
                     task.worker.cancel_before_admission();
                 }
                 self.install_file_input_path(target, path);
@@ -170,7 +173,9 @@ impl HeptaNativeApp {
                 path: super::native_picker::choose_file()?,
             })
         });
-        if self.pending_picker.is_none() && active_file_input(context) == Some(ticket) {
+        if self.tasks.pending(TaskLane::Picker).is_none()
+            && active_file_input(context) == Some(ticket)
+        {
             cancel_file_input(context);
         }
     }

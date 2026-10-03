@@ -10,16 +10,7 @@ impl HeptaNativeApp {
         self.operation_binding = None;
         task_supervisor::cancel_file_input(ctx);
         if first_request {
-            for task in [
-                self.pending_runtime.as_ref(),
-                self.pending_read.as_ref(),
-                self.pending_picker.as_ref(),
-            ]
-            .into_iter()
-            .flatten()
-            {
-                task.worker.cancel_before_admission();
-            }
+            self.tasks.cancel_waiting();
         }
         ctx.request_repaint();
     }
@@ -41,20 +32,18 @@ impl HeptaNativeApp {
         if self.all_tasks_idle() && !self.shutdown.close_started {
             let runtime = Arc::clone(&self.runtime);
             // Shutdown is the only mutation admitted after closing is requested.
-            match spawn_ui_task(
-                UiTaskKind::Shutdown,
-                Arc::clone(&self.repaint),
-                move |admission| {
+            let repaint = Arc::clone(&self.repaint);
+            match self.tasks.start_close(&self.shutdown, || {
+                spawn_ui_task(UiTaskKind::Shutdown, repaint, move |admission| {
                     let mut runtime = lock_runtime_for_task(&admission, &runtime)?;
                     admission
                         .begin()
                         .map_err(|message| ShellError::State(message.to_owned()))?;
                     runtime.close()?;
                     Ok(UiTaskOutput::Shutdown)
-                },
-            ) {
-                Ok(task) => {
-                    self.pending_runtime = Some(task);
+                })
+            }) {
+                Ok(()) => {
                     self.shutdown.close_started = true;
                 }
                 Err(error) => {

@@ -130,7 +130,7 @@ fn fixture() -> Fixture {
 
 fn finish_runtime_task(app: &mut HeptaNativeApp) {
     let deadline = Instant::now() + Duration::from_secs(5);
-    while app.pending_runtime.is_some() {
+    while app.tasks.pending(TaskLane::Runtime).is_some() {
         app.poll_tasks();
         assert!(
             Instant::now() < deadline,
@@ -146,7 +146,7 @@ fn prepare_returns_while_os_confirmation_is_blocked_and_discards_edited_input() 
     let selected = PathBuf::from(&fixture.app.operation_path);
     fixture.app.prepare_operation_binding();
     assert_eq!(
-        fixture.app.pending_runtime.as_ref().unwrap().kind,
+        fixture.app.tasks.pending(TaskLane::Runtime).unwrap().kind,
         UiTaskKind::PrepareBinding
     );
     assert_eq!(
@@ -186,8 +186,8 @@ fn cancelled_binding_lock_waiter_never_calls_the_confirmation_owner() {
     assert!(
         fixture
             .app
-            .pending_runtime
-            .as_ref()
+            .tasks
+            .pending(TaskLane::Runtime)
             .unwrap()
             .worker
             .cancel_before_admission()
@@ -236,7 +236,7 @@ fn admitted_binding_is_drained_before_shutdown_closes_the_runtime() {
         .unwrap();
     fixture.app.shutdown.update_requested = true;
     fixture.app.request_shutdown(&context);
-    assert!(fixture.app.pending_runtime.is_some());
+    assert!(fixture.app.tasks.pending(TaskLane::Runtime).is_some());
     assert!(!fixture.app.shutdown.runtime_closed);
     assert_eq!(fixture.closes.load(Ordering::SeqCst), 0);
     fixture.release.send(()).unwrap();

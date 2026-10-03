@@ -147,6 +147,18 @@ REQUIRED.update(
 )
 
 
+REQUIRED.update(
+    ("hepta-native", "host_lifecycle::controller::tests::" + name)
+    for name in (
+        "mutation_and_history_are_serialized_while_picker_is_independent",
+        "completion_wake_does_not_release_the_lane_before_join",
+        "shutdown_drains_admitted_owner_and_cancelled_picker_before_close",
+        "failed_spawn_preserves_empty_slots_and_close_retry",
+        "panic_completion_is_joined_once_and_retains_failure",
+    )
+)
+
+
 def sha(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()
 

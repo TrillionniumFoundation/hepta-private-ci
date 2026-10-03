@@ -21,9 +21,12 @@ use self::runtime_status::render_runtime_status;
 use self::task_supervisor::FileInputTarget;
 use self::task_supervisor::FileInputTicket;
 use crate::error::ShellError;
+use crate::host_lifecycle::controller::JoinedTask;
+use crate::host_lifecycle::controller::PendingTask;
+use crate::host_lifecycle::controller::TaskController;
+use crate::host_lifecycle::controller::TaskLane;
 use crate::host_lifecycle::readiness::ReadinessFrames;
 use crate::host_lifecycle::shutdown::Shutdown;
-use crate::host_lifecycle::task::SupervisedTask;
 use crate::host_lifecycle::task::TaskAdmission;
 use crate::model::EndpointManifest;
 use crate::model::PlatformAction;
@@ -173,12 +176,8 @@ enum UiTaskOutput {
     },
 }
 
-struct PendingUiTask {
-    kind: UiTaskKind,
-    worker: SupervisedTask<Result<UiTaskOutput, String>>,
-}
-
-type JoinedUiTask = Result<Result<UiTaskOutput, String>, &'static str>;
+type PendingUiTask = PendingTask<UiTaskKind, Result<UiTaskOutput, String>>;
+type JoinedUiTask = JoinedTask<Result<UiTaskOutput, String>>;
 
 fn lock_runtime_for_task<'a>(
     admission: &TaskAdmission,
@@ -197,7 +196,8 @@ fn spawn_ui_task<F>(
 where
     F: FnOnce(TaskAdmission) -> Result<UiTaskOutput, ShellError> + Send + 'static,
 {
-    let worker = SupervisedTask::spawn(
+    PendingTask::spawn(
+        kind,
         kind.thread_name(),
         move || {
             if let Ok(context) = repaint.lock()
@@ -207,16 +207,7 @@ where
             }
         },
         move |admission| task(admission).map_err(|error| error.to_string()),
-    )?;
-    Ok(PendingUiTask { kind, worker })
-}
-
-fn poll_task_slot(slot: &mut Option<PendingUiTask>) -> Option<(UiTaskKind, JoinedUiTask)> {
-    let task = slot.as_mut()?;
-    let kind = task.kind;
-    let outcome = task.worker.poll()?;
-    *slot = None;
-    Some((kind, outcome))
+    )
 }
 
 pub struct HeptaNativeApp {
@@ -235,14 +226,9 @@ pub struct HeptaNativeApp {
     history_page: usize,
     history_total: usize,
     file_input_focus: Option<FileInputTarget>,
-    /// Single mutation owner lane. It includes runtime/update/readiness/shutdown
-    /// mutations and never runs concurrently with the history-read lane.
-    pending_runtime: Option<PendingUiTask>,
-    /// Bounded read-only lane for persistent history pages.
-    pending_read: Option<PendingUiTask>,
-    /// Platform dialogs are isolated from the runtime owner and may remain open
-    /// without blocking refresh, reconciliation, or final-use mutation.
-    pending_picker: Option<PendingUiTask>,
+    /// Shared worker owner: runtime mutations and history reads are serialized;
+    /// the bounded native picker remains independent until safe shutdown.
+    tasks: TaskController<UiTaskKind, Result<UiTaskOutput, String>>,
     shutdown: Shutdown,
     repaint: Arc<Mutex<Option<egui::Context>>>,
     last_error: Option<String>,
@@ -294,9 +280,7 @@ impl HeptaNativeApp {
             history_page: history.page,
             history_total: history.total,
             file_input_focus: None,
-            pending_runtime: None,
-            pending_read: None,
-            pending_picker: None,
+            tasks: TaskController::default(),
             shutdown: Shutdown::default(),
             repaint: Arc::new(Mutex::new(None)),
             last_error: None,
@@ -393,7 +377,7 @@ impl HeptaNativeApp {
                 pending: updater.load_pending()?.map(Box::new),
             })
         });
-        if self.pending_runtime.is_none() {
+        if self.tasks.pending(TaskLane::Runtime).is_none() {
             self.fail_readiness(
                 self.last_error
                     .clone()
@@ -419,9 +403,11 @@ impl HeptaNativeApp {
             );
             return;
         }
-        match spawn_ui_task(kind, Arc::clone(&self.repaint), task) {
-            Ok(pending) => {
-                self.pending_runtime = Some(pending);
+        let repaint = Arc::clone(&self.repaint);
+        match self.tasks.start(TaskLane::Runtime, &self.shutdown, || {
+            spawn_ui_task(kind, repaint, task)
+        }) {
+            Ok(()) => {
                 self.last_error = None;
             }
             Err(error) => self.last_error = Some(format!("start native worker: {error}")),
@@ -443,9 +429,11 @@ impl HeptaNativeApp {
             );
             return;
         }
-        match spawn_ui_task(kind, Arc::clone(&self.repaint), task) {
-            Ok(pending) => {
-                self.pending_read = Some(pending);
+        let repaint = Arc::clone(&self.repaint);
+        match self.tasks.start(TaskLane::History, &self.shutdown, || {
+            spawn_ui_task(kind, repaint, task)
+        }) {
+            Ok(()) => {
                 self.last_error = None;
             }
             Err(error) => self.last_error = Some(format!("start history reader: {error}")),
@@ -467,9 +455,11 @@ impl HeptaNativeApp {
             );
             return;
         }
-        match spawn_ui_task(UiTaskKind::PickFile, Arc::clone(&self.repaint), task) {
-            Ok(pending) => {
-                self.pending_picker = Some(pending);
+        let repaint = Arc::clone(&self.repaint);
+        match self.tasks.start(TaskLane::Picker, &self.shutdown, || {
+            spawn_ui_task(UiTaskKind::PickFile, repaint, task)
+        }) {
+            Ok(()) => {
                 self.last_error = None;
             }
             Err(error) => self.last_error = Some(format!("start native picker: {error}")),
@@ -477,11 +467,7 @@ impl HeptaNativeApp {
     }
 
     fn poll_tasks(&mut self) {
-        let completed = [
-            poll_task_slot(&mut self.pending_runtime),
-            poll_task_slot(&mut self.pending_read),
-            poll_task_slot(&mut self.pending_picker),
-        ];
+        let completed = self.tasks.poll();
         for (kind, joined) in completed.into_iter().flatten() {
             self.handle_task_outcome(kind, joined);
         }
@@ -585,7 +571,7 @@ impl HeptaNativeApp {
     }
 
     fn runtime_busy(&self) -> bool {
-        self.pending_runtime.is_some() || self.pending_read.is_some() || self.shutdown.requested()
+        self.tasks.runtime_busy(&self.shutdown)
     }
 
     fn is_busy(&self) -> bool {
@@ -593,17 +579,15 @@ impl HeptaNativeApp {
     }
 
     fn picker_busy(&self) -> bool {
-        self.pending_picker.is_some() || self.shutdown.requested()
+        self.tasks.picker_busy(&self.shutdown)
     }
 
     fn history_read_busy(&self) -> bool {
-        self.pending_read.is_some()
+        self.tasks.pending(TaskLane::History).is_some()
     }
 
     fn any_task_active(&self) -> bool {
-        self.pending_runtime.is_some()
-            || self.pending_read.is_some()
-            || self.pending_picker.is_some()
+        self.tasks.any_active()
     }
 
     fn all_tasks_idle(&self) -> bool {
