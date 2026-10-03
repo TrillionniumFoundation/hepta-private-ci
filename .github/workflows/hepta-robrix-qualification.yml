@@ -1,0 +1,112 @@
+name: Hepta actual Robrix qualification
+on:
+  workflow_dispatch:
+  pull_request:
+    paths:
+      - apps/hepta-robrix/**
+      - apps/hepta-native/src/console.rs
+      - scripts/robrix/**
+      - .github/workflows/hepta-robrix-qualification.yml
+permissions:
+  contents: read
+concurrency:
+  group: robrix-qualification-${{ github.event.pull_request.head.sha || github.sha }}
+  cancel-in-progress: false
+env:
+  CARGO_INCREMENTAL: "0"
+  CARGO_BUILD_JOBS: "1"
+  CARGO_PROFILE_DEV_DEBUG: "0"
+  CARGO_PROFILE_TEST_DEBUG: "0"
+  CARGO_PROFILE_RELEASE_DEBUG: "0"
+  CARGO_PROFILE_RELEASE_LTO: "off"
+  RUST_BACKTRACE: "1"
+  CARGO_TERM_COLOR: never
+jobs:
+  actual-robrix:
+    name: Actual Robrix / ${{ matrix.platform }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    strategy:
+      fail-fast: false
+      matrix:
+        platform: [native, browser]
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+      - name: Install build and capture prerequisites
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake llvm clang libclang-dev libssl-dev libsqlite3-dev pkg-config libxcursor-dev libx11-dev libasound2-dev libpulse-dev libwayland-dev libxkbcommon-dev libffi-dev libgl1-mesa-dri libegl1 xvfb xdotool x11-utils imagemagick
+          rustup toolchain install 1.96.0 --profile minimal
+          rustup toolchain install nightly-2026-10-01 --profile minimal --component rust-src --target wasm32-unknown-unknown
+          python3 -m venv "$RUNNER_TEMP/robrix-python"
+          "$RUNNER_TEMP/robrix-python/bin/pip" install Pillow==11.3.0 playwright==1.55.0
+          echo "$RUNNER_TEMP/robrix-python/bin" >> "$GITHUB_PATH"
+      - name: Test fail-closed execution evidence gates
+        run: python -m unittest discover -s scripts/robrix -p test_qualification.py -v
+      - name: Test exact Makepad marker resolver
+        run: |
+          rustc +1.96.0 --edition 2024 --test scripts/robrix/makepad_marker.rs -o "$RUNNER_TEMP/robrix-marker-tests"
+          "$RUNNER_TEMP/robrix-marker-tests"
+      - name: Bind source, compiler and preserved license identity
+        run: python scripts/robrix/qualify.py identity
+      - name: Apply exact Makepad web-startup compatibility
+        run: python scripts/robrix/qualify.py framework-compat
+      - name: Execute native lifecycle, dock and read-only Console tests
+        if: matrix.platform == 'native'
+        run: python scripts/robrix/qualify.py native-tests
+      - name: Capture real native Robrix login and Console widgets
+        if: matrix.platform == 'native'
+        env:
+          LIBGL_ALWAYS_SOFTWARE: "1"
+        run: timeout 120m xvfb-run -a -s '-screen 0 1600x1000x24' python scripts/robrix/qualify.py native-capture
+      - name: Install matching browser test runner
+        if: matrix.platform == 'browser'
+        run: |
+          set -euo pipefail
+          cd "$RUNNER_TEMP"
+          curl --fail --location --retry 3 -o wasm-bindgen.tar.gz https://github.com/wasm-bindgen/wasm-bindgen/releases/download/0.2.129/wasm-bindgen-0.2.129-x86_64-unknown-linux-musl.tar.gz
+          echo '82d12bb940e2d4e72e0d5605387fc1b8ca179044e012b620f0ce4e7440e8320e  wasm-bindgen.tar.gz' | sha256sum --check --strict
+          tar -xzf wasm-bindgen.tar.gz
+          echo "$RUNNER_TEMP/wasm-bindgen-0.2.129-x86_64-unknown-linux-musl" >> "$GITHUB_PATH"
+          python -m playwright install --with-deps chromium
+          command -v google-chrome
+          command -v chromedriver
+          google-chrome --version
+          chromedriver --version
+      - name: Fetch exact Makepad build tool source
+        if: matrix.platform == 'browser'
+        env:
+          MAKEPAD_SOURCE: ${{ runner.temp }}/makepad-tool-source
+        run: |
+          git init "$MAKEPAD_SOURCE"
+          git -C "$MAKEPAD_SOURCE" remote add origin https://github.com/makepad/makepad
+          git -C "$MAKEPAD_SOURCE" fetch --depth 1 origin 493d23a7630f487d29912dd73f2cbb5b639b74ca
+          git -C "$MAKEPAD_SOURCE" checkout --detach FETCH_HEAD
+      - name: Execute actual Robrix browser storage and account-epoch tests
+        if: matrix.platform == 'browser'
+        env:
+          MAKEPAD_SOURCE: ${{ runner.temp }}/makepad-tool-source
+        run: python scripts/robrix/qualify.py web-tests
+      - name: Link and package actual Makepad WASM application
+        if: matrix.platform == 'browser'
+        env:
+          MAKEPAD_SOURCE: ${{ runner.temp }}/makepad-tool-source
+        run: python scripts/robrix/qualify.py web-build
+      - name: Capture real browser canvas at three viewport sizes
+        if: matrix.platform == 'browser'
+        run: python scripts/robrix/capture_web.py
+      - name: Select screenshots, text diagnostics and manifests for upload
+        if: always()
+        run: python scripts/robrix/stage_evidence.py
+      - name: Preserve evidence even when qualification fails
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: actual-robrix-${{ matrix.platform }}-${{ github.event.pull_request.head.sha || github.sha }}-${{ github.run_attempt }}
+          # Generated packages/fonts remain local until redistribution review.
+          path: robrix-upload-evidence/
+          if-no-files-found: error
+          retention-days: 14

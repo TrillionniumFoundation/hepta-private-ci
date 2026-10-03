@@ -1,6 +1,7 @@
 #![forbid(unsafe_code)]
 
 pub mod backend;
+pub mod console;
 pub mod error;
 pub mod journal;
 mod journal_storage;
@@ -11,6 +12,7 @@ pub mod qualification;
 pub mod runtime;
 pub mod security;
 pub mod session_store;
+#[cfg(feature = "legacy-renderer")]
 pub mod ui;
 pub mod updater;
 
@@ -27,6 +29,7 @@ pub mod update_handoff;
 mod update_lock;
 mod update_storage;
 
+#[cfg(feature = "legacy-renderer")]
 pub mod fonts;
 pub mod launch_config;
 pub mod startup;

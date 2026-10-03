@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "source_commit": "26060dc1a29068e5471c4bd93976f6a3dde1bbe3",
+  "source_tree": "03a080dec1768102b73420706170665a51c5b2da",
+  "check": "cargo +1.96.0 check",
+  "cwd": "apps/hepta-robrix",
+  "target": "x86_64-unknown-linux-gnu",
+  "result": "passed",
+  "scope": "native type-check only; not a linked/running UI or live account qualification",
+  "environment": {
+    "CARGO_BUILD_JOBS": "1",
+    "CARGO_PROFILE_DEV_DEBUG": "0",
+    "CARGO_INCREMENTAL": "0",
+    "native_system_dependencies": "workspace-extracted official Debian Wayland/libffi pkg-config metadata"
+  },
+  "warnings": [
+    "existing hepta-native native_portal::PortalResponse::Completed field unused",
+    "upstream Makepad duplicate package locations (bitflags/cfg-if)"
+  ],
+  "not_run": [
+    "native widget runtime",
+    "browser application build",
+    "browser storage tests",
+    "Matrix live account",
+    "deployment"
+  ]
+}

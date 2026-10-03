@@ -1,0 +1,69 @@
+{
+  "fixture": true,
+  "liveAccounts": false,
+  "sourceBefore": "493d23a7630f487d29912dd73f2cbb5b639b74ca",
+  "textFlowBeforeSha256": "06e25b971fb31cf44731cc70904e9890cd18f684f542475dc9886ade6061f40f",
+  "twoRealRedCases": [
+    "TextFlow retains(0,-0) vs ready(0.92499983,0.27499998)",
+    "Real Html passes DrawText row height0 vs ready14.879999"
+  ],
+  "green": "18 framework tests including two new font regressions; strict diagnostics pass",
+  "nativeGlyphOffsetScope": "Native fresh/delayed glyph offsets were already equal on the old Linux batching path, retained as a non-regression only",
+  "pixelRegression": {
+    "sourceRun": 37114389901,
+    "nativeInkTop": 2.7000017166,
+    "rejectedBrowserInkTop": 9.7000017166,
+    "originalScreenshotFixtures": "scripts/robrix/fixtures/preview-fonts"
+  },
+  "nativeBuild": {
+    "binarySha256": "899f3a9e9baac2fe5a08bf2a7460fd6b8bbeee28ef7858decd019bf7691a4b54",
+    "rustSourceSha256": "f5766455e5afb2a9c366510362844f60fbccf629a594006aadebe2d4bd916981",
+    "frameworkIdentity": "framework-identity.json",
+    "fixture": "chat-prism",
+    "liveAccounts": false
+  },
+  "frameworkIdentity": {
+    "revision": "493d23a7630f487d29912dd73f2cbb5b639b74ca",
+    "patchSha256": "ef6b5fc7650f95f6021c0575d5a2fba0ea38c31ee372003ffaff8b86c9046476",
+    "navPatchSha256": "b4d82d823837c6930c9f3384bdb46f35b65c8e19b40f5e9191eac63df9a6de19",
+    "before": {
+      "widgets/src/text_flow.rs": "06e25b971fb31cf44731cc70904e9890cd18f684f542475dc9886ade6061f40f",
+      "widgets/src/dock.rs": "7ac23dce77f2a7a2c4a2a083740353f07bdcf7ab98ca370e4763db2760577654",
+      "widgets/src/scroll_bars.rs": "9d4c9e1ebf8bf756f33f3f29ab8965c57b48a9a404582411b87c8a4a34d32b44",
+      "platform/src/draw_list.rs": "32475b53c3e38dd82b33c24f7a3e6b3c9137773493ac1a36c3668eaf4ad23c92",
+      "widgets/src/nav_control.rs": "56830fb21636ebbcaeda7e3394021fda9a5342c4d3f784b869839e0cf7c7350b",
+      "widgets/src/button.rs": "3e45061fb0a12036a6480306df89a4ebc918b7995e73c70041f9c485ce8ac7db",
+      "widgets/src/text_input.rs": "cc8ca79929a1410b014e3dc9bc193c38884a1d500e9a46d5e2ab5d8966500b19",
+      "platform/src/script/res.rs": "2ae11aa2520266f4d2a77aab93c6e90db1bf9cb4ff44a051544b39d5bb38ac8b",
+      "platform/src/window.rs": "0dccf2ea7f449b7cb3a775b8a0236ef07eb1028c25c49e93fdcdcef221dfc039",
+      "platform/src/os/web/web.rs": "8be1ad8d5b7cd0191fffdc94bad14aa7adbde7d5abf39825aaa8c4971c7318e8",
+      "platform/src/os/web/web.js": "c9f17ebc80bb03bbc272174c91dc3f5d56ab4cc306b4fca11e2c29bb86c084f7"
+    },
+    "after": {
+      "widgets/src/text_flow.rs": "f47f94a2546ed5f698d3612fc8f42ccca086710cecd0dd51e59c2659eb025033",
+      "widgets/src/dock.rs": "3a20d2e73ee3506121ec9eff4fd97e174657f0feefe1e112cd9ff560012d1194",
+      "widgets/src/scroll_bars.rs": "8a249eb76b4b36062b0c354529a37bce38362ac7e2a28eef509edb801c373ee3",
+      "platform/src/draw_list.rs": "9aa56bf531d7905fbfd04fa21f9f4b66261e5b664092abb96322a4c850c4eb67",
+      "widgets/src/nav_control.rs": "f47a7328d187e537129eac838c7a049d7e2bb8702585bb9327f46f43d1061bf7",
+      "widgets/src/button.rs": "ce84450e54ed3a03ab30befeb6cdacbf24f1fcdcfb5ee5f1be1805073140c643",
+      "widgets/src/text_input.rs": "3bdc633f89ccde9083c467fe3eb47508e1e00cfb87e068ec30f906d9ca45a150",
+      "platform/src/script/res.rs": "617550c49511a987c459c12a1244b38822e0a12586f79cc092466c09fe15724b",
+      "platform/src/window.rs": "3f3fb37976d1bcdb75588e524acb9440ac515e2f54e0ea18df5c194f26230ee0",
+      "platform/src/os/web/web.rs": "9131a20ca1fb11969cdd7c9caf28b64329d2ec8b735bd1b43491e4b74bc02443",
+      "platform/src/os/web/web.js": "c9f17ebc80bb03bbc272174c91dc3f5d56ab4cc306b4fca11e2c29bb86c084f7",
+      "widgets/src/hepta_font_tests.rs": "6d683c0e5d20de581d4f38bc50deeb40af6c17ab05dffad002622c1777fc1013",
+      "widgets/src/hepta_text_flow_font_tests.rs": "e59b51c6b253a9e466102dd37910dcd111d97430b9a8be326e31434c8e196491",
+      "widgets/src/hepta_nav_tests.rs": "0f3da9a7b9f485fd2e631f9e2e07c5f551b0ce21c60958ff2c173b350be92086",
+      "widgets/src/hepta_scroll_area_tests.rs": "8eca2db782f6702379510abd7396ca47669f325c68f1a69bfa4e5575075b84a2",
+      "widgets/src/hepta_button_key_tests.rs": "638e480b403e0ef9954839cb99206d510605792ea93ffd9c2d3e03b536861ef8",
+      "widgets/src/hepta_dock_retirement_tests.rs": "ad9dd3abfeb50b3607237c1859b1651fbc5a0dbee126541594f430b7be4c2c7a"
+    }
+  },
+  "logsSha256": {
+    "red4.log": "1ec6b83c7809279be74196b223f964582c3d3a78a4838a9350fd6f3f9ceddfc7",
+    "green.log": "42e12ebc3c7eed3fe9f2dc84e0ca9dbcf21c9fd333d6a8c0e9c176fa5306cb95",
+    "framework-all.log": "c1040fab98719161e0d4b6d6673a8d8ada30e2a805aa6e43ed980fa3f18a34ef",
+    "native-run.log": "de68e90d9387eb2897ad66ca1d921b7be0cfb4b4c35282cdde5a48f57def7581"
+  },
+  "browserPixelAcceptance": "pending exact new hosted source"
+}

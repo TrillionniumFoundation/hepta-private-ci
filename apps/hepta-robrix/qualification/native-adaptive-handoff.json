@@ -1,0 +1,27 @@
+{
+  "fixture": true,
+  "liveAccounts": false,
+  "submissionKeysSent": false,
+  "activeSdkReplyEditQualified": false,
+  "binary": {
+    "sha256": "4b39572db7eec349e54cd14af2220afecb22df425b1fcf84880cd99d5a7cdb18",
+    "bytes": 239926360,
+    "sourceDiffSha256": "6b30b24e8d669ca972a20a108418c65a1ac65345631dbed49df4ce4df2c2f013"
+  },
+  "runtimeLogSha256": "7ad51301bf6a3a1cc4193f7824e60c07180bc6cf4db6020b5e6f0f9ecb8e5d52",
+  "strictRuntimeLog": "pass; unchanged gate, only exact PulseAudio ALSA fallback allowed",
+  "actualCuaReplay": [
+    "Design Lab wide: type fixed synthetic theme-draft-fixture",
+    "compact 519x761: Design Lab draft retained",
+    "Back: six real room-list entries",
+    "Research: initially empty, type fixed research-draft",
+    "short 799x561: Research draft retained",
+    "wide 1180x760: Research selected and draft retained",
+    "Design Lab Dock tab: independent original draft restored",
+    "repeated compact-to-wide: original draft retained",
+    "Console wide-to-compact-to-short-to-wide: actual Console remains selected and unconfigured; room list still has six entries"
+  ],
+  "scope": "Synthetic UI state ownership and actual native navigation only; not Matrix delivery, SDK reply/edit or network acceptance",
+  "browserContinuousReplay": "new strict gate added; hosted result pending",
+  "visualLikeness": "all three themes remain in progress"
+}

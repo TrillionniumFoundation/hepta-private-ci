@@ -1,0 +1,162 @@
+#[cfg(not(target_family = "wasm"))]
+use std::io::Write;
+
+use makepad_widgets::*;
+use serde::{self, Deserialize, Serialize};
+use matrix_sdk::ruma::{OwnedUserId, UserId};
+use crate::app::AppState;
+#[cfg(not(target_family = "wasm"))]
+use crate::{app_data_dir, persistence::persistent_state_dir};
+
+#[cfg(not(target_family = "wasm"))]
+const LATEST_APP_STATE_FILE_NAME: &str = "latest_app_state.json";
+
+#[cfg(not(target_family = "wasm"))]
+const WINDOW_GEOM_STATE_FILE_NAME: &str = "window_geom_state.json";
+
+/// Persistable state of the window's size, position, and fullscreen status.
+#[derive(Default, Debug, Clone, PartialEq, Serialize, Deserialize)]
+pub struct WindowGeomState {
+    /// A tuple containing the window's width and height.
+    pub inner_size: (f64, f64),
+    /// A tuple containing the x and y position of the window's top-left corner.
+    pub position: (f64, f64),
+    /// Maximise fullscreen if true.
+    pub is_fullscreen: bool,
+}
+
+/// Save the current app state to persistent storage.
+pub fn save_app_state(app_state: AppState, user_id: OwnedUserId) -> anyhow::Result<()> {
+    let bytes = serialize_app_state(&app_state)?;
+    save_app_state_bytes(&bytes, &user_id)
+}
+
+/// Serializes the current app state into the same format used by [`save_app_state`].
+pub fn serialize_app_state(app_state: &AppState) -> anyhow::Result<Vec<u8>> {
+    Ok(serde_json::to_vec(app_state)?)
+}
+
+/// Save pre-serialized app state bytes to persistent storage.
+#[cfg(not(target_family = "wasm"))]
+pub fn save_app_state_bytes(app_state_json: &[u8], user_id: &UserId) -> anyhow::Result<()> {
+    let state_dir = persistent_state_dir(user_id);
+    std::fs::create_dir_all(&state_dir)?;
+    let file = std::fs::File::create(state_dir.join(LATEST_APP_STATE_FILE_NAME))?;
+    let mut writer = std::io::BufWriter::new(file);
+    writer.write_all(app_state_json)?;
+    writer.flush()?;
+    log!("Successfully saved app state to persistent storage.");
+    Ok(())
+}
+
+/// Save the current state of the given window's geometry to persistent storage.
+#[cfg(not(target_family = "wasm"))]
+pub fn save_window_state(window_ref: WindowRef, cx: &Cx) -> anyhow::Result<()> {
+    // take the DPI factor override into account
+    let layout_to_native = window_ref.window_id()
+        .map(|id| {
+            let window = &cx.windows[id];
+            window.effective_dpi_factor() / window.native_dpi_factor()
+        })
+        .unwrap_or(1.0);
+    let inner_size = window_ref.get_inner_size(cx) * layout_to_native;
+    // `get_position` returns physical screen pixels, the same units expected by `configure_window`,
+    // so we don't need to adjust anything w.r.t. the DPI scale factor.
+    let position = window_ref.get_position(cx);
+    let window_geom = WindowGeomState {
+        inner_size: (inner_size.x, inner_size.y),
+        position: (position.x, position.y),
+        is_fullscreen: window_ref.is_fullscreen(cx),
+    };
+    std::fs::write(
+        app_data_dir().join(WINDOW_GEOM_STATE_FILE_NAME),
+        serde_json::to_string(&window_geom)?,
+    )?;
+    log!("Successfully saved window geometry: {window_geom:?}");
+    Ok(())
+}
+
+/// Loads the App state from persistent storage.
+///
+/// Return values:
+/// * `Ok(Some(app_state))` if a saved state file was found and parsed.
+/// * `Ok(None)` if no saved file exists, or if the file existed but wasn't valid.
+/// * `Err` if there was a functional error in trying to read the saved state file.
+#[cfg(not(target_family = "wasm"))]
+pub async fn load_app_state(user_id: &UserId) -> anyhow::Result<Option<AppState>> {
+    let state_path = persistent_state_dir(user_id).join(LATEST_APP_STATE_FILE_NAME);
+    let file_bytes = match tokio::fs::read(&state_path).await {
+        Ok(fb) => fb,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            log!("No saved app state found, using default.");
+            return Ok(None);
+        }
+        Err(e) => return Err(e.into()),
+    };
+    match serde_json::from_slice(&file_bytes) {
+        Ok(app_state) => {
+            log!("Successfully loaded app state from persistent storage.");
+            Ok(Some(app_state))
+        }
+        Err(e) => {
+            error!(
+                "Failed to deserialize app state: {e}. This may be due to an incompatible format from a previous version."
+            );
+
+            // Backup the old file to preserve user's data
+            let backup_path = state_path.with_extension("json.bak");
+            if let Err(backup_err) = tokio::fs::rename(&state_path, &backup_path).await {
+                error!("Failed to backup old app state file: {}", backup_err);
+            } else {
+                log!("Old app state backed up to: {:?}", backup_path);
+            }
+
+            log!("Using default app state. Your previous tabs and selections will be reset.");
+            Ok(None)
+        }
+    }
+}
+
+/// Loads the window geometry's state from persistent storage.
+#[cfg(not(target_family = "wasm"))]
+pub fn load_window_state(window_ref: WindowRef, cx: &mut Cx) -> anyhow::Result<()> {
+    let file = match std::fs::File::open(app_data_dir().join(WINDOW_GEOM_STATE_FILE_NAME)) {
+        Ok(file) => file,
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => return Ok(()),
+        Err(e) => return Err(e.into()),
+    };
+    let window_geom = serde_json::from_reader(file).map_err(|e| anyhow::anyhow!(e))?;
+    log!("Restoring window geometry: {window_geom:?}");
+    let WindowGeomState {
+        inner_size,
+        position,
+        is_fullscreen,
+    } = window_geom;
+    window_ref.configure_window(
+        cx,
+        dvec2(inner_size.0, inner_size.1),
+        dvec2(position.0, position.1),
+        is_fullscreen,
+        "Robrix".to_string(),
+    );
+    Ok(())
+}
+
+#[cfg(target_family = "wasm")]
+pub fn save_app_state_bytes(bytes: &[u8], user_id: &UserId) -> anyhow::Result<()> {
+    use super::matrix_state::browser_storage::{self, StorageKind::Layout};
+    browser_storage::write(Layout, &format!("layout/{user_id}"), std::str::from_utf8(bytes)?)
+}
+
+#[cfg(target_family = "wasm")]
+pub async fn load_app_state(user_id: &UserId) -> anyhow::Result<Option<AppState>> {
+    use super::matrix_state::browser_storage::{self, StorageKind::Layout};
+    browser_storage::read(Layout, &format!("layout/{user_id}"))?
+        .map(|json| serde_json::from_str(&json).map_err(Into::into)).transpose()
+}
+
+// Browser viewport dimensions are controlled by the host page, not OS geometry.
+#[cfg(target_family = "wasm")]
+pub fn save_window_state(_window: WindowRef, _cx: &Cx) -> anyhow::Result<()> { Ok(()) }
+#[cfg(target_family = "wasm")]
+pub fn load_window_state(_window: WindowRef, _cx: &mut Cx) -> anyhow::Result<()> { Ok(()) }

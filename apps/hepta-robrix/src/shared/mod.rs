@@ -1,0 +1,62 @@
+use makepad_widgets::ScriptVm;
+
+pub mod attachment_download;
+pub mod avatar;
+pub mod collapsible_header;
+pub mod context_menu;
+pub mod expand_arrow;
+pub mod confirmation_modal;
+pub mod file_upload_modal;
+pub mod helpers;
+pub mod hover_highlight;
+pub mod html_or_plaintext;
+pub mod icon_button;
+pub mod jump_to_bottom_button;
+pub mod mention_popup;
+pub mod mentionable_text_input;
+pub mod navigation_bar_button;
+pub mod popup_list;
+pub mod progress_bar;
+pub mod room_filter_input_bar;
+pub mod room_input_popup_menu;
+pub mod slash_commands;
+pub mod styles;
+pub mod hepta_theme;
+pub mod text_or_image;
+pub mod timestamp;
+pub mod bouncing_dots;
+pub mod unread_badge;
+pub mod verification_badge;
+pub mod restore_status_view;
+pub mod image_viewer;
+
+
+pub fn script_mod(vm: &mut ScriptVm) {
+    // Order matters here, as some widget definitions depend on others.
+    styles::script_mod(vm);
+    hepta_theme::script_mod(vm);
+    helpers::script_mod(vm);
+    icon_button::script_mod(vm);
+    context_menu::script_mod(vm);
+    navigation_bar_button::script_mod(vm);
+    expand_arrow::script_mod(vm);
+    unread_badge::script_mod(vm);
+    collapsible_header::script_mod(vm);
+    timestamp::script_mod(vm);
+    room_filter_input_bar::script_mod(vm);
+    room_input_popup_menu::script_mod(vm);
+    avatar::script_mod(vm);
+    text_or_image::script_mod(vm);
+    html_or_plaintext::script_mod(vm);
+    bouncing_dots::script_mod(vm);
+    jump_to_bottom_button::script_mod(vm);
+    popup_list::script_mod(vm);
+    verification_badge::script_mod(vm);
+    mention_popup::script_mod(vm);
+    mentionable_text_input::script_mod(vm);
+    restore_status_view::script_mod(vm);
+    confirmation_modal::script_mod(vm);
+    image_viewer::script_mod(vm);
+    progress_bar::script_mod(vm);
+    file_upload_modal::script_mod(vm);
+}
