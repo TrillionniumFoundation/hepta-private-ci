@@ -134,3 +134,48 @@ class ThemeSwitchGate(unittest.TestCase):
         self.assertFalse(
             switch_checks(state, state, "DeepSpaceTitanium")["input_mode_focus"]
         )
+
+
+class AdaptiveHandoffGate(unittest.TestCase):
+    def test_destination_draft_and_authority_drift_fail(self):
+        from chat_usability import adaptive_checks
+
+        sample = {
+            "selected_room": "synthetic",
+            "displayed_room": "synthetic",
+            "draft_matches_fixture": True,
+            "desktop": True,
+            "stack_transitioning": False,
+            "dock_selection_matches_room": True,
+            "controls": {"composer": {"valid": True}},
+            "send_context_unset": True,
+            "fixture_logged_in": True,
+            "console_authority": [False, False, False, 0, False],
+        }
+        self.assertTrue(
+            all(
+                adaptive_checks(
+                    sample, "synthetic", "draft_matches_fixture", True
+                ).values()
+            )
+        )
+        for key, value in [
+            ("selected_room", "old"),
+            ("displayed_room", "old"),
+            ("draft_matches_fixture", False),
+            ("desktop", False),
+            ("stack_transitioning", True),
+            ("dock_selection_matches_room", False),
+            ("send_context_unset", False),
+            ("fixture_logged_in", False),
+            ("console_authority", [True]),
+        ]:
+            bad = dict(sample, **{key: value})
+            self.assertFalse(
+                all(
+                    adaptive_checks(
+                        bad, "synthetic", "draft_matches_fixture", True
+                    ).values()
+                ),
+                key,
+            )

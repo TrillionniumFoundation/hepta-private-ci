@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 """Run only the actual packaged Makepad canvas in disposable browser contexts."""
+
 import functools
 import http.server
 import json
@@ -14,87 +15,164 @@ from qualify import APP, OUT, digest, require_no_scene_failures
 from package_resources import package_inventory
 from render_checks import login_pixels
 from web_usability import capture_login_usability
-from chat_usability import capture_theme_switches
+from chat_usability import capture_theme_switches, capture_adaptive_handoff
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
     def end_headers(self):
-        self.send_header('Cross-Origin-Opener-Policy', 'same-origin')
-        self.send_header('Cross-Origin-Embedder-Policy', 'require-corp')
+        self.send_header("Cross-Origin-Opener-Policy", "same-origin")
+        self.send_header("Cross-Origin-Embedder-Policy", "require-corp")
         super().end_headers()
 
 
 def main():
-    package = APP / 'target/makepad-wasm-app/release/robrix'
+    package = APP / "target/makepad-wasm-app/release/robrix"
     inventory = package_inventory(package)
-    resources = json.loads((OUT / 'web-package-resource-identity.json').read_text())
-    for relative, expected in resources['verifiedResources'].items():
-        assert inventory.get(relative) == expected, f'Packaged resource drift: {relative}'
+    resources = json.loads((OUT / "web-package-resource-identity.json").read_text())
+    for relative, expected in resources["verifiedResources"].items():
+        assert inventory.get(relative) == expected, (
+            f"Packaged resource drift: {relative}"
+        )
     OUT.mkdir(parents=True, exist_ok=True)
-    server = http.server.ThreadingHTTPServer(('127.0.0.1', 0), functools.partial(Handler, directory=str(package)))
+    server = http.server.ThreadingHTTPServer(
+        ("127.0.0.1", 0), functools.partial(Handler, directory=str(package))
+    )
     threading.Thread(target=server.serve_forever, daemon=True).start()
-    origin = f'http://127.0.0.1:{server.server_port}'
+    origin = f"http://127.0.0.1:{server.server_port}"
     records = []
     scene_failures = []
     try:
         with sync_playwright() as playwright:
-            browser = playwright.chromium.launch(args=['--use-angle=swiftshader', '--enable-unsafe-swiftshader'])
+            browser = playwright.chromium.launch(
+                args=["--use-angle=swiftshader", "--enable-unsafe-swiftshader"]
+            )
             try:
-                for scene in ('login', 'console', 'chat-titanium', 'chat-prism', 'chat-ceramic'):
-                    for label, width, height in [('wide', 1180, 760), ('narrow', 520, 760), ('short', 800, 560)]:
-                        context = browser.new_context(viewport={'width': width, 'height': height}, device_scale_factor=1)
+                for scene in (
+                    "login",
+                    "console",
+                    "chat-titanium",
+                    "chat-prism",
+                    "chat-ceramic",
+                ):
+                    for label, width, height in [
+                        ("wide", 1180, 760),
+                        ("narrow", 520, 760),
+                        ("short", 800, 560),
+                    ]:
+                        context = browser.new_context(
+                            viewport={"width": width, "height": height},
+                            device_scale_factor=1,
+                        )
                         failures, messages, wasm, responses = [], [], [], []
                         delayed_fonts = []
+
                         def route(request_route):
                             url = request_route.request.url
-                            if urlsplit(url).path == '/$report_error':
-                                failures.append('Automatic panic telemetry was attempted')
+                            if urlsplit(url).path == "/$report_error":
+                                failures.append(
+                                    "Automatic panic telemetry was attempted"
+                                )
                                 request_route.abort()
-                            elif url.startswith(origin + '/') or url.startswith(('data:', 'blob:')):
-                                if scene == 'login' and label == 'wide' and url.endswith(('.ttf', '.otf')):
+                            elif url.startswith(origin + "/") or url.startswith(
+                                ("data:", "blob:")
+                            ):
+                                if (
+                                    scene == "login"
+                                    and label == "wide"
+                                    and url.endswith((".ttf", ".otf"))
+                                ):
                                     delayed_fonts.append(urlsplit(url).path)
                                     time.sleep(0.15)
                                 request_route.continue_()
                             else:
-                                failures.append('Forbidden external request: ' + urlsplit(url).netloc)
+                                failures.append(
+                                    "Forbidden external request: "
+                                    + urlsplit(url).netloc
+                                )
                                 request_route.abort()
-                        context.route('**/*', route)
+
+                        context.route("**/*", route)
                         page = context.new_page()
-                        page.on('pageerror', lambda error: failures.append(getattr(error, 'stack', str(error))))
-                        page.on('console', lambda message: messages.append(f'{message.type}: {message.text}'))
+                        page.on(
+                            "pageerror",
+                            lambda error: failures.append(
+                                getattr(error, "stack", str(error))
+                            ),
+                        )
+                        page.on(
+                            "console",
+                            lambda message: messages.append(
+                                f"{message.type}: {message.text}"
+                            ),
+                        )
+
                         def response_received(response):
-                            responses.append({'url': response.url, 'status': response.status})
+                            responses.append(
+                                {"url": response.url, "status": response.status}
+                            )
                             if not response.ok:
-                                failures.append(f'HTTP {response.status}: {response.url}')
-                            if response.url.endswith('.wasm') and response.ok:
+                                failures.append(
+                                    f"HTTP {response.status}: {response.url}"
+                                )
+                            if response.url.endswith(".wasm") and response.ok:
                                 wasm.append(response.url)
-                        page.on('response', response_received)
-                        page.on('requestfailed', lambda request: failures.append('Request failed: ' + request.url))
+
+                        page.on("response", response_received)
+                        page.on(
+                            "requestfailed",
+                            lambda request: failures.append(
+                                "Request failed: " + request.url
+                            ),
+                        )
                         try:
-                            page.goto(origin + '/?hepta-ui-fixture=' + scene, wait_until='networkidle')
-                            page.locator('canvas').first.wait_for(state='visible', timeout=60000)
+                            page.goto(
+                                origin + "/?hepta-ui-fixture=" + scene,
+                                wait_until="networkidle",
+                            )
+                            page.locator("canvas").first.wait_for(
+                                state="visible", timeout=60000
+                            )
                             deadline = time.monotonic() + 60
-                            while page.locator('.canvas_loader').is_visible():
+                            while page.locator(".canvas_loader").is_visible():
                                 assert not failures, failures
-                                assert time.monotonic() < deadline, 'Makepad loader did not finish within60s'
+                                assert time.monotonic() < deadline, (
+                                    "Makepad loader did not finish within60s"
+                                )
                                 page.wait_for_timeout(100)
                             page.wait_for_timeout(5000)
-                            assert wasm, 'No actual WASM module fetched'
-                            assert page.locator('canvas').first.evaluate('(c) => c.width > 0 && c.height > 0')
-                            png = OUT / f'web-{scene}-{label}.png'
+                            assert wasm, "No actual WASM module fetched"
+                            assert page.locator("canvas").first.evaluate(
+                                "(c) => c.width > 0 && c.height > 0"
+                            )
+                            png = OUT / f"web-{scene}-{label}.png"
                             page.screenshot(path=str(png))
                             with Image.open(png) as image:
                                 assert image.size == (width, height)
-                                assert len(image.convert('RGB').getcolors(width * height)) > 32, 'Blank canvas screenshot'
-                                if scene == 'login':
-                                    (OUT / f'web-login-{label}-pixels.json').write_text(json.dumps(login_pixels(image), indent=2))
-                            log = '\n'.join(messages)
-                            (OUT / f'web-{scene}-{label}.log').write_text(log)
+                                assert (
+                                    len(image.convert("RGB").getcolors(width * height))
+                                    > 32
+                                ), "Blank canvas screenshot"
+                                if scene == "login":
+                                    (OUT / f"web-login-{label}-pixels.json").write_text(
+                                        json.dumps(login_pixels(image), indent=2)
+                                    )
+                            log = "\n".join(messages)
+                            (OUT / f"web-{scene}-{label}.log").write_text(log)
                             assert not failures, failures
-                            assert not any(message.startswith('error:') for message in messages), log
-                            records.append({'scene': scene, 'viewport': [width, height], 'png': png.name,
-                                            'sha256': digest(png), 'wasmFetched': True, 'fixture': True,
-                                            'visualReview': 'pending human or image inspection; pixels alone are not layout acceptance'})
+                            assert not any(
+                                message.startswith("error:") for message in messages
+                            ), log
+                            records.append(
+                                {
+                                    "scene": scene,
+                                    "viewport": [width, height],
+                                    "png": png.name,
+                                    "sha256": digest(png),
+                                    "wasmFetched": True,
+                                    "fixture": True,
+                                    "visualReview": "pending human or image inspection; pixels alone are not layout acceptance",
+                                }
+                            )
                             if scene == "login" and label == "wide":
                                 assert len(delayed_fonts) >= 7, (
                                     "Delayed-font exercise did not load the actual font resources"
@@ -147,9 +225,10 @@ def main():
                                         )
                                         == 1
                                     ), "Repeated font request during input redraw"
-                            if scene == 'chat-prism' and label == 'wide':
+                            if scene == "chat-prism" and label == "wide":
                                 try:
                                     capture_theme_switches(page, messages, OUT)
+                                    capture_adaptive_handoff(page, messages, OUT)
                                 except AssertionError as error:
                                     scene_failures.append(str(error))
                             assert not failures, failures
@@ -157,22 +236,34 @@ def main():
                                 message.startswith("error:") for message in messages
                             ), "\n".join(messages)
                         finally:
-                            (OUT / f'web-{scene}-{label}.log').write_text('\n'.join(messages))
-                            (OUT / f'web-{scene}-{label}-runtime.json').write_text(json.dumps(
-                                {'failures': failures, 'responses': responses, 'wasm': wasm}, indent=2))
+                            (OUT / f"web-{scene}-{label}.log").write_text(
+                                "\n".join(messages)
+                            )
+                            (OUT / f"web-{scene}-{label}-runtime.json").write_text(
+                                json.dumps(
+                                    {
+                                        "failures": failures,
+                                        "responses": responses,
+                                        "wasm": wasm,
+                                    },
+                                    indent=2,
+                                )
+                            )
                         context.close()
-                    if scene == 'login':
+                    if scene == "login":
                         usability = capture_login_usability(browser, origin, OUT)
             finally:
                 browser.close()
     finally:
         server.shutdown()
         server.server_close()
-    (OUT / 'web-scene-failures.json').write_text(json.dumps(scene_failures, indent=2))
+    (OUT / "web-scene-failures.json").write_text(json.dumps(scene_failures, indent=2))
     require_no_scene_failures(scene_failures)
-    (OUT / 'web-capture-passed.json').write_text(json.dumps(records, indent=2) + '\n')
-    assert usability['passed'], 'Actual short-window usability checks failed; inspect web-login-short-usability.json'
+    (OUT / "web-capture-passed.json").write_text(json.dumps(records, indent=2) + "\n")
+    assert usability["passed"], (
+        "Actual short-window usability checks failed; inspect web-login-short-usability.json"
+    )
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

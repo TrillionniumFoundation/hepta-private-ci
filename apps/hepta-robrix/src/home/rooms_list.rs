@@ -2082,3 +2082,7 @@ struct RoomCategoryIndexes {
     /// The index after the last room in this category, which is where the next category should start.
     after_rooms_index: usize,
 }
+
+#[cfg(all(test, feature = "ui-fixture"))]
+#[path = "rooms_list_fixture_tests.rs"]
+mod hepta_fixture_tests;

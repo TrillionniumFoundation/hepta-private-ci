@@ -139,6 +139,25 @@ mod tests {
     use super::*;
 
     #[test]
+    fn real_app_logout_and_login_events_cancel_restore_intent() {
+        let mut cx = Cx::new(Box::new(|_, _| {}));
+        let mut app = cx.with_vm(|vm| {
+            let value = <App as AppMain>::script_mod(vm);
+            App::script_from_value(vm, value)
+        });
+        app.app_state.logged_in = true;
+        app.app_state.adaptive_dock_restore = Some(crate::home::adaptive_restore::AdaptiveDockRestore::capture());
+        let actions: Vec<Action> = vec![Box::new(crate::logout::logout_confirm_modal::LogoutAction::LogoutSuccess)];
+        app.handle_actions(&mut cx, &actions);
+        assert!(!app.app_state.logged_in);
+        assert!(app.app_state.adaptive_dock_restore.is_none());
+        app.app_state.adaptive_dock_restore = Some(crate::home::adaptive_restore::AdaptiveDockRestore::capture());
+        let actions: Vec<Action> = vec![Box::new(crate::login::login_screen::LoginAction::LoginSuccess)];
+        app.handle_actions(&mut cx, &actions);
+        assert!(app.app_state.adaptive_dock_restore.is_none());
+    }
+
+    #[test]
     fn actual_chat_fixture_draw_resolves_dynamic_material_and_image_values() {
         let _ = makepad_widgets::makepad_platform::shader_error::take();
         let mut cx = Cx::new(Box::new(|_, _| {}));
@@ -149,6 +168,10 @@ mod tests {
             let value = script_eval!(vm, { mod.widgets.RoomScreen {} });
             WidgetRef::script_from_value(vm, value)
         });
+        use crate::home::room_screen::RoomScreenWidgetRefExt;
+        let synthetic = crate::utils::RoomNameId::new(matrix_sdk::RoomDisplayName::Named("Sample".into()),
+            "!hepta-fixture-test:example.invalid".try_into().unwrap());
+        room.as_room_screen().set_displayed_room(&mut cx, &synthetic, None);
         let pass = DrawPass::new(&mut cx);
         pass.set_size(&mut cx, dvec2(800.0, 600.0));
         let mut list = DrawList::new(&mut cx);

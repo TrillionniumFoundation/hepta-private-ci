@@ -171,3 +171,30 @@ are preserved. Sixteen framework tests and the strict log gate pass. The exact
 native wide→compact Research→short→wide replay now has zero generation errors.
 `qualification/native-dock-retirement.json` binds source, binary and before/after
 logs. The separate destination mismatch remains visible and unaccepted.
+
+## Current-room adaptive handoff and synthetic owner evidence
+
+The subsequent repair selects the newest canonical destination at the new
+Dock's actual load boundary. Its one-shot intent is bound to the current
+account/epoch, cleared at login/logout/state restoration, and deferred under
+an active modal. Stale target widgets cannot consume it; ordinary later room
+navigation wins. Selected thread state is retained through adaptive ownership
+transfer, while obsolete mobile history is retired through the existing path.
+
+The explicit account-free chat fixture now uses the real TimelineUiState store,
+SavedState and RoomInputBar restoration. It has no Matrix client, SDK timeline,
+request consumer, subscription, task, send context or media request sender.
+The fixed synthetic drafts are never submitted. Real tests reproduce and fence
+two stale-return cases: an old dropped owner must not resurrect a cleared draft,
+and must not replace a newer owner marker or parked draft. Matching current
+owners still return state normally. Cursor/selection and repeated thread-state
+handoff are checked, without claiming SDK reply/edit or network acceptance.
+
+Actual native wide→compact→Back→Research→short→wide replay now retains separate
+Design Lab and Research drafts. Returning to Design Lab restores its own draft;
+Console adaptive return stays unconfigured, and the canonical fixture room order
+survives its real filter action. `qualification/native-adaptive-handoff.json`
+binds this replay to the built binary and strict runtime log. A new browser
+continuous replay observes the actual selected Dock/stack owner and checks the
+same destination/draft/authority contract; its hosted outcome is pending.
+All three material replicas remain visually in progress.

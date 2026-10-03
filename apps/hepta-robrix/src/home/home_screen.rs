@@ -541,6 +541,9 @@ impl ScriptHook for HomeScreen {
 impl Widget for HomeScreen {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
         if let Event::Actions(actions) = event {
+            // A draw can emit variant-change and new-Dock-load together. Publish
+            // restore intent before forwarding that load to the new Dock owner.
+            self.sync_effective_view_mode(cx, scope.data.get_mut::<AppState>().unwrap());
             // On desktop, the RoomFilterInputBar is inside this HomeScreen.
             // Check if it changed and re-emit as a MainFilterAction so that
             // RoomsList and SpacesBar can respond without cross-talk from
@@ -609,15 +612,8 @@ impl Widget for HomeScreen {
                 if let Some(AppPreferencesAction::ViewModeChanged(new_mode)) = action.downcast_ref() {
                     if *new_mode != self.applied_view_mode {
                         self.apply_view_mode(cx, *new_mode);
-                        // Set & broadcast the new variant now so that the mobile cleanup in
-                        // `sync_effective_view_mode()` can run before the dock reloads.
-                        if !matches!(new_mode, ViewModeOverride::Automatic)
-                            || cx.display_context.is_screen_size_known()
-                        {
-                            // this dummy parent size is only read when the screen size is unknown
-                            let variant = (new_mode.variant_selector())(cx, &Vec2d::default());
-                            cx.global::<MainViewIsDesktop>().0 = Some(variant == live_id!(Desktop));
-                        }
+                        // The actual AdaptiveView selector publishes the mode
+                        // when its widget tree changes; don't pre-publish intent.
                         self.view.redraw(cx);
                     }
                 }
@@ -740,7 +736,10 @@ impl HomeScreen {
 
     fn sync_effective_view_mode(&mut self, cx: &mut Cx, app_state: &mut AppState) {
         // Do nothing until the AdaptiveView instance has actually selected a variant
-        let Some(is_desktop) = cx.global::<MainViewIsDesktop>().0 else { return };
+        let actual = self.view.adaptive_view(cx, ids!(main_adaptive_view))
+            .borrow().and_then(|view| view.active_variant());
+        let Some(actual) = actual else { return };
+        let is_desktop = actual == live_id!(Desktop);
         let Some(was_desktop) = self.last_effective_is_desktop.replace(is_desktop) else {
             return;
         };
@@ -748,26 +747,22 @@ impl HomeScreen {
             return;
         }
 
-        // If we transitioned from mobile --> desktop view mode, the dock will reload the tabs
-        // from its previously-saved state, so we need to free the current selected room now
-        // (if it was a thread timeline), and then also clear any thread timelines in the mobile nav stack.
-        if !was_desktop && is_desktop {
-            if let Some(room) = app_state.selected_room.as_ref() {
-                room.close_thread_timeline(cx);
-            }
-        }
+        // Keep the selected thread's existing timeline state for its next owner.
+        // Only obsolete history entries are closed below.
+        app_state.adaptive_dock_restore = is_desktop.then(crate::home::adaptive_restore::AdaptiveDockRestore::capture);
 
         // If the mentionable popup was shown, close it because the whole UI has changed/moved.
         if cx.has_global::<MentionablePopupRef>() {
             cx.get_global::<MentionablePopupRef>().clone().cancel(cx);
         }
 
-        self.clear_mobile_navigation_state(cx);
-
-        // Switching into mobile mode lands on the rooms list, so no room should
-        // be drawn as selected until one is actually clicked.
-        if !is_desktop {
-            cx.action(AppStateAction::FocusNone);
+        let selected = app_state.selected_room.clone();
+        self.clear_mobile_navigation_state(cx, selected.as_ref());
+        self.update_active_page_from_selection(cx, app_state);
+        if !is_desktop && matches!(app_state.selected_tab, SelectedTab::Home | SelectedTab::Space { .. }) {
+            if let Some(selected) = selected {
+                self.push_selected_screen_view(cx, app_state, selected);
+            }
         }
     }
 
@@ -868,12 +863,14 @@ impl HomeScreen {
         Self::hide_displayed_stack_screen(cx, &stack_navigation_view);
     }
 
-    fn clear_mobile_navigation_state(&mut self, cx: &mut Cx) {
+    fn clear_mobile_navigation_state(&mut self, cx: &mut Cx, preserved: Option<&SelectedRoom>) {
         // When switching from mobile --> desktop view mode, we discard the nav stack,
         // and thus we need to free & destroy any thread timelines in it.
-        // Note that freeing the current room is handled in `sync_effective_view_mode`.
+        // The current room/thread is handed to the new adaptive owner.
         for room in &self.mobile_screen_history {
-            room.close_thread_timeline(cx);
+            if preserved != Some(room) {
+                room.close_thread_timeline(cx);
+            }
         }
         self.mobile_screen_history.clear();
 

@@ -24,7 +24,7 @@ fn room(index: usize) -> RoomNameId {
         format!("!hepta-fixture-{index}:example.invalid").try_into().expect("synthetic room ID"))
 }
 
-pub(super) fn populate() {
+pub(crate) fn populate() {
     for (index, (_, preview)) in ROOMS.iter().enumerate() {
         enqueue_rooms_list_update(RoomsListUpdate::AddJoinedRoom(JoinedRoomInfo {
             room_name_id: room(index), num_unread_messages: 0, num_unread_mentions: 0,
@@ -36,6 +36,10 @@ pub(super) fn populate() {
             has_been_shown: true, is_selected: index == 0, is_direct: false, is_tombstoned: false,
         }));
     }
+    enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(crate::utils::VecDiff::Clear));
+    enqueue_rooms_list_update(RoomsListUpdate::RoomOrderUpdate(crate::utils::VecDiff::Append {
+        values: (0..ROOMS.len()).map(|index| room(index).room_id().clone()).collect(),
+    }));
     enqueue_rooms_list_update(RoomsListUpdate::LoadedRooms { max_rooms: Some(6) });
 }
 
@@ -47,7 +51,6 @@ pub(super) fn select_room(cx: &mut Cx) {
 #[derive(Default)]
 struct FixtureDrawState {
     initialized: std::collections::HashSet<WidgetUid>,
-    lists: std::collections::HashSet<WidgetUid>,
     image: Option<Texture>,
 }
 
@@ -65,10 +68,6 @@ pub(crate) fn draw(view: &mut View, cx: &mut Cx2d, scope: &mut Scope, walk: Walk
         let list = child.as_portal_list();
         let Some(mut list) = list.borrow_mut() else { continue; };
         list.set_item_range(cx, 0, MESSAGES.len());
-        if cx.global::<FixtureDrawState>().lists.insert(list.widget_uid()) {
-            list.set_tail_range(false);
-            list.set_first_id_and_scroll(0, 0.0);
-        }
         while let Some(index) = list.next_visible_item(cx) {
             let Some((name, time, body)) = MESSAGES.get(index) else { continue; };
             let item = list.item(cx, index, if index == 0 { id!(ImageMessage) } else { id!(Message) });

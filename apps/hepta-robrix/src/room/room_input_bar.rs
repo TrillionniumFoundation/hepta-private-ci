@@ -890,6 +890,26 @@ impl RoomInputBar {
 }
 
 impl RoomInputBarRef {
+    /// Prepare a sample composer without installing room or delivery authority.
+    #[cfg(feature = "ui-fixture")]
+    pub(crate) fn prepare_synthetic_composer(&self, cx: &mut Cx) {
+        let Some(mut inner) = self.borrow_mut() else { return };
+        assert!(inner.timeline_kind.is_none() && inner.room_screen_widget_uid.is_none(),
+            "synthetic composer must have no send context");
+        inner.enable_send_message_button(cx, false);
+        inner.text_input(cx, ids!(input_bar.mentionable_text_input.text_input))
+            .set_empty_text(cx, "Write a sample message …".to_owned());
+        let mut button = inner.button(cx, ids!(send_message_button));
+        script_apply_eval!(cx, button, {draw_icon.svg: mod.widgets.ICON_SEND});
+    }
+
+    /// Read-only capability evidence for the explicit synthetic fixture.
+    #[cfg(feature = "ui-fixture")]
+    pub(crate) fn synthetic_send_context_unset(&self) -> bool {
+        self.borrow().is_some_and(|inner| inner.timeline_kind.is_none()
+            && inner.room_screen_widget_uid.is_none() && !inner.is_send_enabled)
+    }
+
     /// Shows a preview of the given event that the user is currently replying to
     /// above the message input bar.
     pub fn show_replying_to(

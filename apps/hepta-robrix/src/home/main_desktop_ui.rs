@@ -109,6 +109,14 @@ pub struct MainDesktopUI {
     /// * If true, this widget proceeds to draw the desktop UI as normal.
     #[rust]
     drawn_previously: bool,
+    /// Set after restoration or newer explicit navigation; stale initial-load
+    /// actions must not overwrite an already chosen destination.
+    #[rust] has_loaded_dock: bool,
+}
+
+enum RestoreSelection {
+    Saved,
+    Current(Option<SelectedRoom>),
 }
 
 impl ScriptHook for MainDesktopUI {
@@ -142,7 +150,7 @@ impl Widget for MainDesktopUI {
             // We must set `selected_space` first before the load operation occurs, in order for
             // the proper space-specific instance of the saved dock UI layout/state to be selected.
             self.selected_space = cx.get_global::<RoomsListRef>().get_selected_space_id();
-            cx.action(MainDesktopUiAction::LoadDockFromAppState);
+            cx.action(MainDesktopUiAction::LoadNewDock { target: self.widget_uid() });
             self.drawn_previously = true;
         }
         self.view.draw_walk(cx, scope, walk)
@@ -354,7 +362,8 @@ impl MainDesktopUI {
     ) {
         self.save_dock_state_to(cx, app_state);
         self.selected_space = new_space;
-        self.load_dock_state_from(cx, app_state);
+        app_state.adaptive_dock_restore = None;
+        self.load_dock_state_from(cx, app_state, RestoreSelection::Saved);
     }
 
     /// Saves a copy of the current UI state of the dock into the given app state,
@@ -386,7 +395,7 @@ impl MainDesktopUI {
     ///
     /// If the saved state is empty (has no open rooms), we use the default dock layout
     /// defined in the DSL: one splitter with the RoomsList on the left and a Welcome tab on the right.
-    fn load_dock_state_from(&mut self, cx: &mut Cx, app_state: &mut AppState) {
+    fn load_dock_state_from(&mut self, cx: &mut Cx, app_state: &mut AppState, selection: RestoreSelection) {
         let dock = self.view.dock(cx, ids!(dock));
 
         let saved_ref: Option<&SavedDockState> = if let Some(ss) = self.selected_space.as_ref() {
@@ -437,16 +446,22 @@ impl MainDesktopUI {
 
         self.room_order = room_order;
         self.open_rooms = open_rooms;
+        // A freshly loaded tree has not applied this widget's old selection.
+        self.most_recently_selected_room = None;
 
         dock.load_state(cx, dock_items);
         // The adaptive desktop is recreated after compact navigation. Apply
         // the canonical current Console destination after loading the saved
         // tree, before initializing whichever tab that tree exposes.
+        let selecting_current = matches!(selection, RestoreSelection::Current(_));
         let selected_room = if app_state.selected_tab == SelectedTab::Console {
             dock.select_tab(cx, id!(hepta_console_tab));
             None
         } else {
-            selected_room
+            match selection {
+                RestoreSelection::Saved => selected_room,
+                RestoreSelection::Current(current) => current,
+            }
         };
         // Lazily populate the dock content to avoid initializing tabs that aren't visible.
         self.init_all_visible_tabs(cx);
@@ -464,6 +479,7 @@ impl MainDesktopUI {
         let selected_room = selected_room.clone();
         match selected_room.clone() {
             Some(selected_room) => self.focus_or_create_tab(cx, selected_room),
+            None if selecting_current && app_state.selected_tab != SelectedTab::Console => self.select_room(cx, None),
             None => self.most_recently_selected_room = None,
         }
         app_state.selected_room = selected_room;
@@ -471,7 +487,9 @@ impl MainDesktopUI {
         // corrupt saved layouts; Console remains the final current destination.
         if app_state.selected_tab == SelectedTab::Console {
             dock.select_tab(cx, id!(hepta_console_tab));
+            cx.action(AppStateAction::FocusNone);
         }
+        self.has_loaded_dock = true;
         self.redraw(cx);
     }
 
@@ -603,6 +621,8 @@ impl WidgetMatchEvent for MainDesktopUI {
             match widget_action.cast() {
                 // Whenever a tab (except for the home_tab) is pressed, notify the app state.
                 DockAction::TabWasPressed(tab_id) => {
+                    scope.data.get_mut::<AppState>().unwrap().adaptive_dock_restore = None;
+                    self.has_loaded_dock = true;
                     if tab_id == id!(home_tab) {
                         cx.action(NavigationBarAction::CloseConsole);
                         self.select_room(cx, None);
@@ -660,6 +680,8 @@ impl WidgetMatchEvent for MainDesktopUI {
             // Handle RoomsList actions, which are updates from the rooms list.
             match widget_action.cast_ref() {
                 RoomsListAction::Selected(selected_room) => {
+                    scope.data.get_mut::<AppState>().unwrap().adaptive_dock_restore = None;
+                    self.has_loaded_dock = true;
                     // Note that this cannot be performed within draw_walk() as the draw flow prevents from
                     // performing actions that would trigger a redraw, and the Dock internally performs (and expects)
                     // a redraw to be happening in order to draw the tab content.
@@ -710,9 +732,31 @@ impl WidgetMatchEvent for MainDesktopUI {
 
             // Handle our own actions related to dock updates that we have previously emitted.
             match action.downcast_ref() {
+                Some(MainDesktopUiAction::LoadNewDock { target }) if *target == self.widget_uid() && !self.has_loaded_dock => {
+                    let app_state = scope.data.get_mut::<AppState>().unwrap();
+                    if !app_state.logged_in || !super::home_screen::effective_is_desktop(cx) {
+                        app_state.adaptive_dock_restore = None;
+                        self.drawn_previously = false;
+                        continue;
+                    }
+                    // A modal owns input/navigation. Retry on its next normal
+                    // redraw; don't schedule a redraw loop or steal key focus.
+                    if cx.fingers.blocked_scrolling_exception_area().is_some() {
+                        self.drawn_previously = false;
+                        continue;
+                    }
+                    let intent = app_state.adaptive_dock_restore.take();
+                    let selection = if intent.as_ref().is_some_and(|intent| intent.is_current(app_state)) {
+                        RestoreSelection::Current(app_state.selected_room.clone())
+                    } else {
+                        RestoreSelection::Saved
+                    };
+                    self.load_dock_state_from(cx, app_state, selection);
+                }
                 Some(MainDesktopUiAction::LoadDockFromAppState) => {
                     let app_state = scope.data.get_mut::<AppState>().unwrap();
-                    self.load_dock_state_from(cx, app_state);
+                    app_state.adaptive_dock_restore = None;
+                    self.load_dock_state_from(cx, app_state, RestoreSelection::Saved);
                 }
                 Some(MainDesktopUiAction::SaveDockIntoAppState) => {
                     let app_state = scope.data.get_mut::<AppState>().unwrap();
@@ -735,6 +779,8 @@ pub enum MainDesktopUiAction {
     SaveDockIntoAppState,
     /// Load the room panel state from the AppState to the dock.
     LoadDockFromAppState,
+    /// Initial load targeted to this exact newly-created adaptive Dock owner.
+    LoadNewDock { target: WidgetUid },
     /// Close all tabs; see [`MainDesktopUI::close_all_tabs()`]
     CloseAllTabs {
         on_close_all: Arc<Notify>,

@@ -304,6 +304,7 @@ impl MatchEvent for App {
 
             match action.downcast_ref() {
                 Some(LogoutAction::LogoutSuccess) => {
+                    self.app_state.adaptive_dock_restore = None;
                     self.app_state.logged_in = false;
                     self.ui.modal(cx, ids!(logout_confirm_modal)).close(cx);
                     self.update_login_visibility(cx);
@@ -325,6 +326,7 @@ impl MatchEvent for App {
             }
 
             if let Some(LoginAction::LoginSuccess) = action.downcast_ref() {
+                self.app_state.adaptive_dock_restore = None;
                 log!("Received LoginAction::LoginSuccess, hiding login view.");
                 self.app_state.logged_in = true;
                 self.update_login_visibility(cx);
@@ -336,6 +338,7 @@ impl MatchEvent for App {
             // by `handle_session_changes`), navigate back to the login screen.
             // When not yet logged in, the login_screen widget handles displaying the failure modal.
             if let Some(LoginAction::LoginFailure(_)) = action.downcast_ref() {
+                self.app_state.adaptive_dock_restore = None;
                 if self.app_state.logged_in {
                     log!("Received LoginAction::LoginFailure while logged in; showing login screen.");
                     self.app_state.logged_in = false;
@@ -459,6 +462,7 @@ impl MatchEvent for App {
                     // Ignore the `logged_in` state that was stored persistently.
                     let logged_in_actual = self.app_state.logged_in;
                     self.app_state = app_state.clone();
+                    self.app_state.adaptive_dock_restore = None;
                     self.app_state.logged_in = logged_in_actual;
                     // Broadcast the restored preferences first so listeners
                     // (e.g. the Dock's captured `room_screen` template) are
@@ -1102,6 +1106,10 @@ impl App {
 /// and shared/updated across various parts of the app.
 #[derive(Clone, Default, Debug, Serialize, Deserialize)]
 pub struct AppState {
+    /// A one-shot request to restore the latest destination after adaptation.
+    /// It carries only the current account identity; it is never persisted.
+    #[serde(skip)]
+    pub(crate) adaptive_dock_restore: Option<crate::home::adaptive_restore::AdaptiveDockRestore>,
     /// The currently-selected room, which is highlighted (selected) in the RoomsList
     /// and considered "active" in the main rooms screen.
     ///
@@ -1260,6 +1268,8 @@ impl SelectedRoom {
             room_id: room_id.clone(),
             thread_root_event_id: thread_root_event_id.clone(),
         });
+        #[cfg(feature = "ui-fixture")]
+        if ui_fixture::chat_active(cx) { return; }
         submit_async_request(MatrixRequest::CloseThreadTimeline {
             room_id,
             thread_root_event_id: thread_root_event_id.clone(),

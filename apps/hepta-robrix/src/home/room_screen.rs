@@ -78,6 +78,10 @@ const JUMP_SEARCH_NOT_FOUND_DELAY: f64 = 2.0;
 const MAX_BACKWARDS_PAGINATIONS_WITHOUT_PROGRESS: usize = 5;
 
 
+#[cfg(feature = "ui-fixture")]
+#[path = "synthetic_timeline.rs"]
+mod synthetic_timeline;
+
 static UNNAMED_ROOM: &str = "Unnamed Room";
 
 /// #x382e55
@@ -899,6 +903,8 @@ pub struct RoomScreen {
     #[rust] timeline_kind: Option<TimelineKind>,
     /// The persistent UI-relevant states for the room that this widget is currently displaying.
     #[rust] tl_state: Option<TimelineUiState>,
+    #[cfg(feature = "ui-fixture")]
+    #[rust] synthetic_timeline: bool,
     /// The set of pinned events in this room.
     #[rust] pinned_events: Vec<OwnedEventId>,
     /// Whether this room has been successfully loaded (received from the homeserver).
@@ -3277,6 +3283,11 @@ impl RoomScreen {
 
     /// Invoke this when this RoomScreen/timeline is being hidden or no longer being shown.
     fn hide_timeline(&mut self) {
+        #[cfg(feature = "ui-fixture")]
+        if self.synthetic_timeline {
+            if self.tl_state.is_some() { self.save_state(); }
+            return;
+        }
         let Some(timeline_kind) = self.timeline_kind.clone() else { return };
         if self.tl_state.is_none() {
             return;
@@ -3379,6 +3390,7 @@ impl RoomScreen {
     ) {
         #[cfg(feature = "ui-fixture")]
         if crate::app::ui_fixture::chat_active(cx) {
+            self.show_synthetic_timeline(cx, room_name_id, thread_root_event_id);
             self.room_name_id = Some(room_name_id.clone());
             self.view.label(cx, ids!(room_heading)).set_text(cx, &room_name_id.to_string());
             self.view.avatar(cx, ids!(room_avatar)).show_text(cx, None, None, &room_name_id.to_string());
@@ -3588,6 +3600,12 @@ impl RoomScreen {
 }
 
 impl RoomScreenRef {
+    #[cfg(feature = "ui-fixture")]
+    pub(crate) fn synthetic_displayed_room(&self) -> Option<String> {
+        self.borrow().filter(|screen| screen.synthetic_timeline)
+            .and_then(|screen| screen.room_name_id.as_ref().map(|room| room.room_id().to_string()))
+    }
+
     /// See [`RoomScreen::set_displayed_room()`].
     pub fn set_displayed_room(
         &self,
@@ -3902,25 +3920,17 @@ mod timeline_state_store {
     pub(super) fn put_back(owner: WidgetUid, state: TimelineUiState) {
         let kind = state.kind.clone();
         TIMELINE_STATES.with_borrow_mut(|states| {
-            match states.remove(&kind) {
-                Some(StateEntry::Taken { owner: current_owner, invalidated }) if current_owner == owner => {
-                    // If it was invalidated and we (the `owner`) was the RoomScreen currently showing it,
-                    // just return here to keep it removed from the TIMELINE_STATES.
-                    if invalidated {
-                        return;
-                    }
-                }
-                Some(StateEntry::Taken { owner: current_owner, .. }) => {
-                    error!("RoomScreen::save_state(): timeline {kind} was put back by widget {owner:?}, but it was taken by widget {current_owner:?}");
-                }
-                Some(StateEntry::Stored(_)) => {
-                    error!("RoomScreen::save_state(): timeline {kind} was put back by widget {owner:?}, but a stored state already existed");
-                }
-                None => {
-                    log!("RoomScreen::save_state(): timeline {kind} was put back by widget {owner:?} without a taken marker");
-                }
+            // A delayed drop after reset must not resurrect state, and an old
+            // owner must never remove a newer owner's marker or parked state.
+            let admitted = match states.get(&kind) {
+                Some(StateEntry::Taken { owner: current_owner, invalidated }) if *current_owner == owner => Some(!invalidated),
+                _ => None,
+            };
+            match admitted {
+                Some(true) => { states.insert(kind, StateEntry::Stored(state)); }
+                Some(false) => { states.remove(&kind); }
+                None => { log!("Discarded stale timeline UI state from {owner:?} for {kind}"); }
             }
-            states.insert(kind, StateEntry::Stored(state));
         });
     }
 

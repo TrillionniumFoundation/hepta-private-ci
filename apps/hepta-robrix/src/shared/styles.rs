@@ -386,7 +386,6 @@ pub const COLOR_BG_PREVIEW_HOVER:      Vec4 = super::hepta_theme::rgba(0x463666f
 pub fn apply_positive_button_style(cx: &mut Cx, button: &mut ButtonRef) {
     script_apply_eval!(cx, button, {
         draw_bg +: {
-            hepta_owned_material: uniform(1.0)
             border_color: mod.widgets.COLOR_FG_ACCEPT_GREEN,
             color: mod.widgets.COLOR_BG_ACCEPT_GREEN,
             color_hover: #x224a44,
@@ -407,7 +406,6 @@ pub fn apply_positive_button_style(cx: &mut Cx, button: &mut ButtonRef) {
 pub fn apply_negative_button_style(cx: &mut Cx, button: &mut ButtonRef) {
     script_apply_eval!(cx, button, {
         draw_bg +: {
-            hepta_owned_material: uniform(1.0)
             border_color: mod.widgets.COLOR_FG_DANGER_RED,
             color: mod.widgets.COLOR_BG_DANGER_RED,
             color_hover: #x52303f,
@@ -428,7 +426,6 @@ pub fn apply_negative_button_style(cx: &mut Cx, button: &mut ButtonRef) {
 pub fn apply_neutral_button_style(cx: &mut Cx, button: &mut ButtonRef) {
     script_apply_eval!(cx, button, {
         draw_bg +: {
-            hepta_owned_material: uniform(1.0)
             border_color: mod.widgets.COLOR_BG_DISABLED,
             color: mod.widgets.COLOR_SECONDARY,
             color_hover: #x382e55,
@@ -449,7 +446,6 @@ pub fn apply_neutral_button_style(cx: &mut Cx, button: &mut ButtonRef) {
 pub fn apply_primary_button_style(cx: &mut Cx, button: &mut ButtonRef) {
     script_apply_eval!(cx, button, {
         draw_bg +: {
-            hepta_owned_material: uniform(1.0)
             color: mod.widgets.COLOR_ACTIVE_PRIMARY,
             color_hover: mod.widgets.COLOR_ACTIVE_PRIMARY_DARKER,
             color_down: #xcebfff,

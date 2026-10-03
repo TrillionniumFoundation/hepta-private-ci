@@ -135,3 +135,23 @@ fn paint_changes_owned_material_without_touching_same_color_foreign_content() {
         assert_eq!(call.dyn_uniforms[radius.offset], [6.0, 12.0, 9.0][choice.index()]);
     }
 }
+
+#[test]
+fn runtime_button_style_helpers_do_not_redeclare_shader_uniforms() {
+    let mut cx = Cx::new(Box::new(|_, _| {}));
+    let mut button = cx.with_vm(|vm| {
+        vm.bx.captured_errors = Some(Vec::new());
+        let _ = <crate::app::App as AppMain>::script_mod(vm);
+        let value = script_eval!(vm, {mod.widgets.RobrixIconButton {text: "Fixture"}});
+        WidgetRef::script_from_value(vm, value).as_button()
+    });
+    let uid = button.widget_uid();
+    for style in [super::super::styles::apply_positive_button_style,
+        super::super::styles::apply_negative_button_style,
+        super::super::styles::apply_neutral_button_style,
+        super::super::styles::apply_primary_button_style] {
+        style(&mut cx, &mut button);
+        assert_eq!(button.widget_uid(), uid);
+        cx.with_vm(|vm| assert!(vm.take_errors().is_empty(), "runtime style script errors"));
+    }
+}
