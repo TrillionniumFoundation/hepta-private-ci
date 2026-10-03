@@ -193,6 +193,30 @@ impl AgentdNeuronGenerationControllerV2 {
         self.lock_state()?.active.generation()
     }
 
+    pub(crate) fn current_installed_owner_v3(
+        &self,
+    ) -> Result<
+        (
+            AgentdNeuronLifecycleStateV2,
+            AgentdNeuronHandleV2,
+            Option<AgentdNeuronGoalScopeV3>,
+        ),
+        AgentdNeuronControlErrorV2,
+    > {
+        let state = self.lock_state()?;
+        let scope = if state.goal_scope.is_some() {
+            Some(
+                state
+                    .goal_scope_state(state.lifecycle)
+                    .map_err(poison_control_state)?
+                    .active_scope,
+            )
+        } else {
+            None
+        };
+        Ok((state.lifecycle, state.active.clone(), scope))
+    }
+
     pub fn retained_generations(&self) -> Result<Vec<u64>, AgentdNeuronControlErrorV2> {
         let state = self.lock_state()?;
         if state.goal_scope.is_some() {

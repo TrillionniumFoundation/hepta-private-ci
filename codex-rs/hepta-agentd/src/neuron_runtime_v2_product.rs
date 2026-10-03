@@ -250,9 +250,12 @@ impl AgentdNeuronRuntimeV2Host {
                 "iteration host is stopped or not quarantined".into(),
             ));
         }
-        let active = self
+        let (_, current_owner, goal_scope) = self
             .controller
-            .active_generation()
+            .current_installed_owner_v3()
+            .map_err(|error| neuron_product_error("current iteration owner", error))?;
+        let active = current_owner
+            .generation()
             .map_err(|error| neuron_product_error("active generation", error))?;
         let target = next
             .generation()
@@ -264,6 +267,14 @@ impl AgentdNeuronRuntimeV2Host {
                 .map_err(|error| neuron_product_error("iteration snapshot", error))?;
             if current.body_bundle_digest
                 != next.body_bundle_digest().map(|digest| digest.to_string())
+                || current_owner.configuration_digest() != next.configuration_digest()
+                || goal_scope.is_some()
+                    && current_owner
+                        .scope_identity()
+                        .map_err(|error| neuron_product_error("recovered current scope", error))?
+                        != next.scope_identity().map_err(|error| {
+                            neuron_product_error("recovered target scope", error)
+                        })?
             {
                 return Err(crate::AgentdError::Protocol(
                     "recovered generation content changed".into(),
@@ -300,6 +311,21 @@ impl AgentdNeuronRuntimeV2Host {
                 "iteration predecessor changed".into(),
             ));
         }
+        if let Some(expected) = &goal_scope
+            && (target
+                != expected_previous.checked_add(1).ok_or_else(|| {
+                    crate::AgentdError::Invalid("iteration generation overflow".into())
+                })?
+                || next
+                    .scope_identity()
+                    .map_err(|error| neuron_product_error("iteration target scope", error))?
+                    .subject_scope_digest
+                    != expected.identity.subject_scope_digest)
+        {
+            return Err(crate::AgentdError::Invalid(
+                "iteration Goal model or subject changed".into(),
+            ));
+        }
         if self
             .controller
             .state()
@@ -320,9 +346,15 @@ impl AgentdNeuronRuntimeV2Host {
                 .seal()
                 .map_err(|error| neuron_product_error("iteration seal", error))?;
         }
-        self.controller
-            .reload(next)
-            .map_err(|error| neuron_product_error("iteration reload", error))
+        if let Some(expected) = goal_scope {
+            self.controller
+                .reload_goal_scope_v3(&expected, next)
+                .map_err(|error| neuron_product_error("iteration Goal reload", error))
+        } else {
+            self.controller
+                .reload(next)
+                .map_err(|error| neuron_product_error("iteration reload", error))
+        }
     }
     pub(crate) fn reconcile_iteration_probe(
         &self,
@@ -368,5 +400,39 @@ impl AgentdNeuronRuntimeV2Host {
         self.controller
             .controller_snapshot()
             .map_err(|error| neuron_product_error("generation snapshot", error))
+    }
+}
+
+impl AgentdNeuronRuntimeV2Host {
+    /// Installed composition borrows the actual serving owner. The handle keeps
+    /// its original admission and lifecycle fences; no controller is constructed.
+    pub fn current_installed_owner_v3(
+        &self,
+    ) -> Result<(AgentdNeuronHandleV2, Option<AgentdNeuronGoalScopeV3>), crate::AgentdError> {
+        let _lifecycle = self
+            .lifecycle
+            .try_lock()
+            .map_err(|_| crate::AgentdError::Overloaded {
+                retry_after_ms: 1_000,
+            })?;
+        if self.stopped.load(Ordering::Acquire) || self.iteration_quarantine.load(Ordering::Acquire)
+        {
+            return Err(crate::AgentdError::Invalid(
+                "current installed model is not available".into(),
+            ));
+        }
+        let (lifecycle, owner, scope) = self
+            .controller
+            .current_installed_owner_v3()
+            .map_err(|error| neuron_product_error("current installed owner", error))?;
+        if lifecycle != AgentdNeuronLifecycleStateV2::Serving {
+            return Err(crate::AgentdError::Invalid(
+                "current installed model is not serving".into(),
+            ));
+        }
+        owner
+            .validate_goal_scope_admission()
+            .map_err(|error| neuron_product_error("current installed admission", error))?;
+        Ok((owner, scope))
     }
 }

@@ -22,7 +22,7 @@ impl NeuronAdmissionGuard for ScopeAdmission {
     }
 }
 
-fn scope_owner(h: &Harness, objective_digest: Digest32) -> AgentdNeuronHandleV2 {
+pub(super) fn scope_owner(h: &Harness, objective_digest: Digest32) -> AgentdNeuronHandleV2 {
     let mut journal_scope = scope();
     journal_scope.objective_digest = objective_digest;
     let (mut store_context, mut index_context) = contexts(&h.native, &h.config, &h.body);
