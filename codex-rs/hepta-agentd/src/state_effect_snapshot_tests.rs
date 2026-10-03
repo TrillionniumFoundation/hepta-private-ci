@@ -4,7 +4,6 @@ use codex_hepta_automation::TaskFlowStepReceipt;
 use codex_hepta_automation::TaskFlowStepState;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
-use pretty_assertions::assert_eq;
 
 use crate::AgentdError;
 use crate::AutomationEffectObservation;
