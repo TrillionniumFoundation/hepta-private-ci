@@ -92,7 +92,10 @@
     "codex-rs/hepta-agentd/src/intelligence_product.rs",
     "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
     "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
-    "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs"
+    "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+    "codex-rs/hepta-agentd/src/intelligence_learning_candidates.rs",
+    "codex-rs/hepta-agentd/src/intelligence_learning_candidates_tests.rs",
+    "codex-rs/hepta-agentd/src/lib.rs"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -280,17 +283,17 @@
     "Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations.",
     "Unix descriptor-relative storage defenses do not establish Windows parity, target-host power-loss durability or resistance to a privileged same-user replace-and-restore adversary.",
     "Two seeded remote-v1 compaction policy fixtures have failed intermittently before their required request or terminal counts. Core delivers TurnComplete before terminal flush and admission-fence retirement. Source diagnostics now separately hold flush and idle publication and capture correlated start errors, but exact-head native diagnostic execution and the failing integration Error event are still required before attributing those failures. Retirement alone is neither durable-success proof nor an admission reservation; no lifecycle ordering or admission policy is changed by these diagnostics.",
-    "The Agentd dependency repair groups existing borrowed inputs and boxes three pre-release Rust payload variants without changing wire, persisted or validation semantics. Its additional recorded-event replay selection is pending exact-head native execution and does not qualify legacy append_decision: the older real-owner fixture lacks signed evaluation and that producer still omits the explicit abstain candidate. Three dormant Plasticity producer/state diagnostic groups retain the production lifetime sender; the documented non-test coordinator remains missing and is not fabricated or suppressed. The earlier compaction diagnostic did not execute because its assertion macro was ambiguous; the explicit import repair requires new native evidence."
+    "The Agentd dependency repair and the subsequent qualification candidate projection require fresh exact-head native evidence. The adapter now explicitly represents the already committed intrinsic abstain outcome without changing signed policy actions; its owner fixtures are not ordinary host-trust installation, a factory or production-write authority. Three dormant Plasticity producer/state diagnostic groups retain the production lifetime sender; the documented non-test coordinator remains missing and is not fabricated or suppressed. The compaction assertion import and borrowed Context delivery carrier likewise require their own actual native cases; none of these source changes grants global acceptance."
   ],
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "f475bbde81d781e839994c5110e55afdb465eb4b571af5576b81595841ba1cfa",
+    "stateSha256": "6308e07f6db8e2b85c4b616a25e0909d666cc9ce2662a3fbaa8d8b0b601ed2b0",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
   },
-  "runtimeSourceAnchor": "34b9ee11ac789116fcb2c398d0e7f812fe43d44b",
-  "runtimeSourceTree": "264006ebc8582d1a2982de5cce34634b40490ad8",
+  "runtimeSourceAnchor": "2ccd370fa1b0c156dc8995e259db0616b8abd4eb",
+  "runtimeSourceTree": "4665fe8c0f4dfcabc1cbc369754e94d1972cf6dd",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -460,7 +463,7 @@
     },
     {
       "path": "scripts/context_compiler_execution.py",
-      "blobSha": "d5cf74dc6e5ef47289183730d1b5c4240b0b9451"
+      "blobSha": "efe6cfdf74eb71f8ebb98830ffea9b82d3f63c43"
     },
     {
       "path": "scripts/context_compiler_named_evidence.py",
@@ -488,11 +491,11 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "blobSha": "3b11c93c4d3f7623f4a84ac3b767e551ae32a53e"
+      "blobSha": "7fba26035ac48151371567363f8fcc46bf76ae4f"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2_tests.rs",
-      "blobSha": "d8591faecc1968af9bb01fd976368358730f04a1"
+      "blobSha": "5482671c43fc16416b2eae36c0af44854bfe86d3"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage.rs",
@@ -528,11 +531,11 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/lib.rs",
-      "blobSha": "b5a49d27abdb767cb24633838c0e4604c4fb912c"
+      "blobSha": "394e5b069140ca86dd3fcd507955e3b9e08ac92d"
     },
     {
       "path": "scripts/test_context_compiler_execution.py",
-      "blobSha": "6c5edf5eb1a6bd4172e13cd67a71e1bfd6035709"
+      "blobSha": "7b70bd2e51d993259c71b64d9bee43d76c43f65d"
     },
     {
       "path": "scripts/test_context_compiler_execution_boundary.py",
@@ -580,15 +583,27 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
-      "blobSha": "f26fa80a88745922bc7b56af55ebb97db339edff"
+      "blobSha": "a568d798ea00b60301f06832676f9c56af6fc2ab"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
-      "blobSha": "a9d7b2e6d1dc1b0766421801d3954837053c2afd"
+      "blobSha": "c8c31bc1fc2a7d7f5522ec4e0eb0647555e1b32f"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
-      "blobSha": "cf1d3409cb546f2d54951b2bcf0a1dd1532efae0"
+      "blobSha": "e1ec5bcc0aed1e82e7c7075e64e1796cd795c5b9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_learning_candidates.rs",
+      "blobSha": "e34990ac6d8ab974b09b50beba2750cea1533999"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_learning_candidates_tests.rs",
+      "blobSha": "8887227d882d662ac0b87864b97b3e1c2babb863"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "blobSha": "e811093230067916d643a6bfab8e437e83d3e597"
     }
   ],
   "consumerExecution": [

@@ -1,7 +1,7 @@
 # context.compiler technical development guide
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `f475bbde81d781e839994c5110e55afdb465eb4b571af5576b81595841ba1cfa`. Source anchor: `34b9ee11ac789116fcb2c398d0e7f812fe43d44b`.
+State SHA-256: `6308e07f6db8e2b85c4b616a25e0909d666cc9ce2662a3fbaa8d8b0b601ed2b0`. Source anchor: `2ccd370fa1b0c156dc8995e259db0616b8abd4eb`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
@@ -59,6 +59,8 @@ The source anchor is provenance, not the final tested head. Only external execut
 - Require archived preparation/snapshot/time/thread/turn/attempt consistency at persisted-state admission.
 - Short-circuit final byte ambiguity after the second occurrence without retaining all offsets.
 - Converge legacy wire token accounting with the reviewed V2 bridge and repair the actual opaque-diagnostic caller.
+- The default-off legacy learning qualification adapter now projects frozen action IDs plus the intrinsic abstain outcome already committed by Intuition V2 into a complete Ledger Decision. Empty, duplicate, reserved-name and over-capacity action sets are rejected; signed action inputs, prepared objects, selected propensity, support and exact pending replay remain unchanged. Positive owner fixtures use actual signed evaluation and explicit test host trust. Required named coverage includes capacity, randomized propensity conservation, full recorded/recovered events and revocation-before-write; native execution belongs to the new exact candidate, not the source change.
+- ContextDeliveryInputsV2 groups the first four contiguous borrowed observe_delivery inputs. The carrier is unverified, grants no authority and has no serialized shape. This is an explicit pre-release public Rust source migration. It removes an inherited argument-count suppression while preserving all seven caller expression sequences and the complete newer validation/revocation/receipt body byte-for-byte; all seven migrated native cases are separately required. The original Evidence lineage result does not qualify this adaptation.
 
 ## 3. Current product call path
 
@@ -108,7 +110,7 @@ Stage publication uses exact-state -> runtime-state lock order, with no await or
 - Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations.
 - Unix descriptor-relative storage defenses do not establish Windows parity, target-host power-loss durability or resistance to a privileged same-user replace-and-restore adversary.
 - Two seeded remote-v1 compaction policy fixtures have failed intermittently before their required request or terminal counts. Core delivers TurnComplete before terminal flush and admission-fence retirement. Source diagnostics now separately hold flush and idle publication and capture correlated start errors, but exact-head native diagnostic execution and the failing integration Error event are still required before attributing those failures. Retirement alone is neither durable-success proof nor an admission reservation; no lifecycle ordering or admission policy is changed by these diagnostics.
-- The Agentd dependency repair groups existing borrowed inputs and boxes three pre-release Rust payload variants without changing wire, persisted or validation semantics. Its additional recorded-event replay selection is pending exact-head native execution and does not qualify legacy append_decision: the older real-owner fixture lacks signed evaluation and that producer still omits the explicit abstain candidate. Three dormant Plasticity producer/state diagnostic groups retain the production lifetime sender; the documented non-test coordinator remains missing and is not fabricated or suppressed. The earlier compaction diagnostic did not execute because its assertion macro was ambiguous; the explicit import repair requires new native evidence.
+- The Agentd dependency repair and the subsequent qualification candidate projection require fresh exact-head native evidence. The adapter now explicitly represents the already committed intrinsic abstain outcome without changing signed policy actions; its owner fixtures are not ordinary host-trust installation, a factory or production-write authority. Three dormant Plasticity producer/state diagnostic groups retain the production lifetime sender; the documented non-test coordinator remains missing and is not fabricated or suppressed. The compaction assertion import and borrowed Context delivery carrier likewise require their own actual native cases; none of these source changes grants global acceptance.
 
 ## 6. Verification
 
