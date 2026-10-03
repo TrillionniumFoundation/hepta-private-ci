@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "42767358850e64ce3ea13f46635a84c832d6e06f",
+    "tree": "b359eb3838b4a29f147340c2c7c14977dede9d38"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "browser.servo",
@@ -74,6 +74,11 @@
           "path": "apps/hepta-browser/test/runtime.test.js",
           "kind": "node_product_boundary",
           "command": "node --test apps/hepta-browser/test/runtime.test.js"
+        },
+        {
+          "path": "apps/hepta-browser/test/journal-prefix-integrity.test.js",
+          "kind": "node_durable_prefix_boundary",
+          "command": "node --test apps/hepta-browser/test/journal-prefix-integrity.test.js"
         }
       ],
       "sourceSemantics": "Validates immutable live/historical request semantics, page/document, destination, payload and authority; cancelled or late authority cannot dispatch; the minimum action/profile/grant deadline bounds fsynced intent plus one local worker-pipe dispatch.",
@@ -161,5 +166,31 @@
     "canonicalJson": "Strict UTF-8 key-byte lexical order and finite JavaScript-safe integers, canonical integer spelling; package-private format, not RFC JCS.",
     "journalHistory": "Previously admitted owner prefix anchors reject live deletion, rollback or rewrite. Erasure before the first admitted load still requires an external trusted history anchor.",
     "nativeSourceVerification": "Actual browser_servo.rs and contracts path, with every dependency name/version/source matched to repository Cargo.lock; offline test build and scoped Rust 1.95.0 Clippy passed. Default tests: 27 passed, one ignored; explicit actual Rust-port-to-Node-owner fixture: one passed, signed first dispatch/revoke/historical replay/changed-deadline rejection, exactly one authority entry and one dispatch."
-  }
+  },
+  "sourceObjects": [
+    {
+      "path": "apps/hepta-browser",
+      "object": "20866c6c43c46b6ef12a05977610aec53ce53367"
+    },
+    {
+      "path": "apps/hepta-browser/src/runtime.js",
+      "object": "fc532344cce5ef96afb2272fd320f42659b8ed1c"
+    },
+    {
+      "path": "apps/hepta-browser/test/journal-prefix-integrity.test.js",
+      "object": "cb8537048af92479b8f1cb2441e9d85c99dabdf3"
+    },
+    {
+      "path": "apps/hepta-browser/test/runtime.test.js",
+      "object": "e7b84c0fc45522b0d11bdb159fe5a72288f83ea5"
+    },
+    {
+      "path": "docs/modules/browser.servo/TECHNICAL.md",
+      "object": "715ce420dc808e8b4e6caaa4f8d593e076d4436f"
+    },
+    {
+      "path": "third_party/servo-patches",
+      "object": "0d0554161a24ea4c16ce836d95ddbe3ce4e9d5e7"
+    }
+  ]
 }
