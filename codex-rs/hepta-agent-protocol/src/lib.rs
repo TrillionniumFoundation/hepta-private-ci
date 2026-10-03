@@ -23,6 +23,7 @@ pub use capabilities::NegotiatedAgentdCapabilities;
 pub use capabilities::negotiate_capabilities;
 pub use evidence::KernelEvidenceAppendIngress;
 pub use evidence::KernelEvidenceCandidateV1;
+pub use evidence::KernelEvidencePageSelector;
 pub use evidence::KernelEvidenceQueryV1;
 pub use evidence::KernelEvidenceResult;
 pub use evidence::KernelEvidenceVerifyV1;
@@ -338,7 +339,7 @@ impl AgentdRequest {
             method: AgentdMethod::AutomationExecuteEffect {
                 intent,
                 wire_payload_hex,
-                signed_grant,
+                signed_grant: Box::new(signed_grant),
                 command_id,
             },
         }
@@ -651,7 +652,7 @@ pub enum AgentdMethod {
     AutomationExecuteEffect {
         intent: AuthorizedEffectIntent,
         wire_payload_hex: String,
-        signed_grant: SignedFinalUseGrant,
+        signed_grant: Box<SignedFinalUseGrant>,
         command_id: String,
     },
     AutomationReconcileEffect {
@@ -1072,7 +1073,7 @@ mod tests {
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1214,6 +1215,36 @@ mod tests {
             .iter()
             .flat_map(|byte| format!("{byte:02x}").chars().collect::<Vec<_>>())
             .collect::<String>();
+        // Retain the original by-value wire layout independently of enum storage.
+        #[derive(Serialize)]
+        struct UnboxedEffectMethod {
+            #[serde(rename = "type")]
+            kind: &'static str,
+            intent: AuthorizedEffectIntent,
+            wire_payload_hex: String,
+            signed_grant: SignedFinalUseGrant,
+            command_id: String,
+        }
+        #[derive(Serialize)]
+        struct UnboxedEffectRequest {
+            schema_version: u32,
+            request_id: u64,
+            spawn_generation: u64,
+            method: UnboxedEffectMethod,
+        }
+        let original_bytes = serde_json::to_vec(&UnboxedEffectRequest {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id: 11,
+            spawn_generation: 3,
+            method: UnboxedEffectMethod {
+                kind: "automation_execute_effect",
+                intent: intent.clone(),
+                wire_payload_hex: wire_payload_hex.clone(),
+                signed_grant: signed_grant.clone(),
+                command_id: "effect-command".to_string(),
+            },
+        })
+        .expect("serialize original by-value effect layout");
         let request = AgentdRequest::automation_execute_effect(
             11,
             3,
@@ -1223,11 +1254,22 @@ mod tests {
             "effect-command".to_string(),
         );
         let bytes = serde_json::to_vec(&request).expect("serialize effect request");
+        assert_eq!(
+            bytes, original_bytes,
+            "heap placement must preserve wire bytes"
+        );
         assert!(bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(
             serde_json::from_slice::<AgentdRequest>(&bytes).expect("parse effect request"),
             request
         );
+
+        let mut unknown = serde_json::to_value(&request).expect("effect JSON");
+        unknown["method"]["unexpected"] = serde_json::json!(true);
+        assert!(serde_json::from_value::<AgentdRequest>(unknown).is_err());
+        let mut missing_grant = serde_json::to_value(&request).expect("effect JSON");
+        missing_grant["method"]["signed_grant"] = serde_json::Value::Null;
+        assert!(serde_json::from_value::<AgentdRequest>(missing_grant).is_err());
 
         let response =
             AgentdPayload::AutomationEffectReconcile(AutomationEffectReconcileSnapshot {
@@ -1318,13 +1360,8 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
-            14,
-            3,
-            snapshot.run_id.clone(),
-            2,
-            "operator_request".to_string(),
-        );
+        let cancel =
+            AgentdRequest::run_cancel(14, 3, snapshot.run_id, 2, "operator_request".to_string());
         let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
         assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(

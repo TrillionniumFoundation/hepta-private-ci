@@ -34,17 +34,29 @@ CAPABILITIES = (
     ("productionFailClosedMode", "Fail-closed Agentd production mode"),
     ("immutableLocalFrontierAcceptance", "Immutable local frontier acceptance history"),
     ("thresholdSignerRotation", "Distinct-principal threshold and key-epoch rotation"),
-    ("productionReadOnlyMigrationPreflight", "Read-only production migration preflight"),
+    (
+        "productionReadOnlyMigrationPreflight",
+        "Read-only production migration preflight",
+    ),
     ("stableCursorPagination", "Stable append-sequence cursor pagination"),
     ("appendOnlyDatabaseTriggers", "Database update/delete denial triggers"),
     ("sqliteAuthorizer", "SQLite authorizer callback"),
     ("diskFullFaultInjection", "Disk-full fault injection"),
     ("multiProcessContentionBenchmark", "Multi-process contention benchmark"),
-    ("ownerControlledVerificationProfiles", "Owner-controlled non-degradable verification profiles"),
+    (
+        "ownerControlledVerificationProfiles",
+        "Owner-controlled non-degradable verification profiles",
+    ),
     ("verifiedMonotonicTrustSnapshots", "Sealed monotonic verified trust snapshots"),
-    ("transactionalRecoverySnapshotV2", "Single-transaction authenticated recovery snapshot V2"),
+    (
+        "transactionalRecoverySnapshotV2",
+        "Single-transaction authenticated recovery snapshot V2",
+    ),
     ("authenticatedAdmissionCommitment", "Complete authenticated-admission commitment"),
-    ("durablePublicationReconciliation", "Durable fenced publication and CAS reconciliation"),
+    (
+        "durablePublicationReconciliation",
+        "Durable fenced publication and CAS reconciliation",
+    ),
     ("boundedVerificationSummary", "Bounded product verification summaries"),
     ("realBackupObjectVerification", "Real backup-object byte verification"),
     ("governedBuildProvenance", "Governed source-to-executable build provenance"),
@@ -75,7 +87,9 @@ def unique_object(pairs: list[tuple[str, Any]]) -> dict[str, Any]:
 
 
 def load_json(path: Path) -> dict[str, Any]:
-    value = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_object)
+    value = json.loads(
+        path.read_text(encoding="utf-8"), object_pairs_hook=unique_object
+    )
     if not isinstance(value, dict):
         raise ValueError("canonical status root must be an object")
     return value
@@ -91,11 +105,18 @@ def validate_receipt(name: str, receipt: Any, status: dict[str, Any]) -> None:
     if not isinstance(receipt, dict):
         raise ValueError(f"{name} requires an evidence receipt object")
     required = {
-        "sha256", "issuerPrincipalId", "candidateCommit", "candidateTree", "observedAt"
+        "sha256",
+        "issuerPrincipalId",
+        "candidateCommit",
+        "candidateTree",
+        "observedAt",
     }
     if set(receipt) != required:
         raise ValueError(f"{name} receipt keys must be {sorted(required)}")
-    if not isinstance(receipt["sha256"], str) or HEX64.fullmatch(receipt["sha256"]) is None:
+    if (
+        not isinstance(receipt["sha256"], str)
+        or HEX64.fullmatch(receipt["sha256"]) is None
+    ):
         raise ValueError(f"{name} receipt digest must be lowercase SHA-256")
     if (
         not isinstance(receipt["issuerPrincipalId"], str)
@@ -113,11 +134,24 @@ def validate_receipt(name: str, receipt: Any, status: dict[str, Any]) -> None:
 
 def validate_status(status: dict[str, Any], *, check_git: bool = True) -> None:
     required = {
-        "schema", "schemaVersion", "module", "asOfCommit", "asOfTree",
-        "workflowRunId", "artifactDigest", "exactSourceQualified",
-        "mergeCandidateQualified", "independentAcceptance", "externalFrontierActive",
-        "backupRestoreDrilled", "canaryAccepted", "releaseApproved", "sourcePaths",
-        "capabilities", "evidenceReceipts", "claimBoundary",
+        "schema",
+        "schemaVersion",
+        "module",
+        "asOfCommit",
+        "asOfTree",
+        "workflowRunId",
+        "artifactDigest",
+        "exactSourceQualified",
+        "mergeCandidateQualified",
+        "independentAcceptance",
+        "externalFrontierActive",
+        "backupRestoreDrilled",
+        "canaryAccepted",
+        "releaseApproved",
+        "sourcePaths",
+        "capabilities",
+        "evidenceReceipts",
+        "claimBoundary",
     }
     if set(status) != required:
         raise ValueError(
@@ -137,7 +171,9 @@ def validate_status(status: dict[str, Any], *, check_git: bool = True) -> None:
         if type(status[key]) is not bool:
             raise ValueError(f"{key} must be boolean")
     capabilities = status["capabilities"]
-    if not isinstance(capabilities, dict) or set(capabilities) != {key for key, _ in CAPABILITIES}:
+    if not isinstance(capabilities, dict) or set(capabilities) != {
+        key for key, _ in CAPABILITIES
+    }:
         raise ValueError("capability inventory is not closed-world")
     if any(type(value) is not bool for value in capabilities.values()):
         raise ValueError("every capability value must be boolean")
@@ -160,7 +196,9 @@ def validate_status(status: dict[str, Any], *, check_git: bool = True) -> None:
 
     qualified = status["exactSourceQualified"] and status["mergeCandidateQualified"]
     if status["exactSourceQualified"] != status["mergeCandidateQualified"]:
-        raise ValueError("persistent source and merge qualification must advance together")
+        raise ValueError(
+            "persistent source and merge qualification must advance together"
+        )
     if qualified:
         if (
             not isinstance(status["workflowRunId"], str)
@@ -169,9 +207,13 @@ def validate_status(status: dict[str, Any], *, check_git: bool = True) -> None:
             or not isinstance(status["artifactDigest"], str)
             or HEX64.fullmatch(status["artifactDigest"]) is None
         ):
-            raise ValueError("qualified status requires a workflow run and artifact digest")
+            raise ValueError(
+                "qualified status requires a workflow run and artifact digest"
+            )
     elif status["workflowRunId"] is not None or status["artifactDigest"] is not None:
-        raise ValueError("unqualified persistent status cannot retain workflow authority")
+        raise ValueError(
+            "unqualified persistent status cannot retain workflow authority"
+        )
 
     dependencies = {
         "independentAcceptance": qualified,
@@ -208,8 +250,14 @@ def validate_status(status: dict[str, Any], *, check_git: bool = True) -> None:
             raise ValueError(f"missing source path: {path}")
         git("cat-file", "-e", f"{status['asOfCommit']}:{path}")
     changed = git(
-        "diff", "--no-ext-diff", "--no-textconv", "--name-only",
-        status["asOfCommit"], "HEAD", "--", *source_paths,
+        "diff",
+        "--no-ext-diff",
+        "--no-textconv",
+        "--name-only",
+        status["asOfCommit"],
+        "HEAD",
+        "--",
+        *source_paths,
     )
     if changed:
         raise ValueError("canonical status source is stale for: " + changed)
@@ -239,22 +287,28 @@ def render_block(status: dict[str, Any]) -> str:
     ]
     for key, label in CAPABILITIES:
         lines.append(f"| {label} | `{str(status['capabilities'][key]).lower()}` |")
-    lines.extend([
-        "", "### Qualification, deployment and governance gates", "",
-        "| Gate | State | Persistent authority receipt |",
-        "| --- | --- | --- |",
-    ])
+    lines.extend(
+        [
+            "",
+            "### Qualification, deployment and governance gates",
+            "",
+            "| Gate | State | Persistent authority receipt |",
+            "| --- | --- | --- |",
+        ]
+    )
     receipts = status["evidenceReceipts"]
     for key, label in GATES:
         receipt = receipts.get(key)
         digest = f"`{receipt['sha256']}`" if isinstance(receipt, dict) else "none"
         lines.append(f"| {label} | `{str(status[key]).lower()}` | {digest} |")
-    lines.extend([
-        "",
-        "> Repository implementation is not deployment evidence. A CI workflow",
-        "> receipt is not independent acceptance or release authority.",
-        STATUS_END,
-    ])
+    lines.extend(
+        [
+            "",
+            "> Repository implementation is not deployment evidence. A CI workflow",
+            "> receipt is not independent acceptance or release authority.",
+            STATUS_END,
+        ]
+    )
     return "\n".join(lines)
 
 
@@ -266,7 +320,11 @@ def project(text: str, block: str) -> str:
 
 
 def dashboard(block: str) -> str:
-    return "# kernel.evidence current status\n\nThis file is wholly generated.\n\n" + block + "\n"
+    return (
+        "# kernel.evidence current status\n\nThis file is wholly generated.\n\n"
+        + block
+        + "\n"
+    )
 
 
 def sync(status: dict[str, Any]) -> None:
@@ -284,7 +342,10 @@ def verify(status: dict[str, Any]) -> None:
         if not path.is_file() or path.read_text(encoding="utf-8") != expected
     ]
     if failures:
-        raise ValueError("kernel.evidence current-status projections are stale: " + ", ".join(failures))
+        raise ValueError(
+            "kernel.evidence current-status projections are stale: "
+            + ", ".join(failures)
+        )
 
 
 def main() -> int:
@@ -301,7 +362,12 @@ def main() -> int:
         else:
             print(json.dumps(status, indent=2, sort_keys=True))
         return 0
-    except (OSError, ValueError, subprocess.CalledProcessError, json.JSONDecodeError) as error:
+    except (
+        OSError,
+        ValueError,
+        subprocess.CalledProcessError,
+        json.JSONDecodeError,
+    ) as error:
         print(f"kernel.evidence canonical status failed: {error}", file=sys.stderr)
         return 2
 

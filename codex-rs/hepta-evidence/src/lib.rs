@@ -98,6 +98,7 @@ mod qualification_policy;
 mod qualification_provenance;
 mod qualification_summary;
 mod recovery_frontier;
+mod schema_definition_oracle;
 mod schema_validation;
 mod store {
     include!("store.rs");
@@ -133,9 +134,9 @@ pub use frontier_backend::EvidenceFrontierHistoryRangeV1;
 pub use frontier_backend_file::EvidenceFrontierCapacityAlertV1;
 pub use frontier_backend_file::EvidenceFrontierCapacityV1;
 pub use frontier_backend_file::SegmentedFileEvidenceFrontierBackend as LockedFileEvidenceFrontierBackend;
+pub use frontier_merge::FRONTIER_REPAIR_AUTHORITY_SCHEMA_VERSION;
 pub use frontier_merge::FRONTIER_REPAIR_AUTHORIZATION_MAX_VALIDITY_MS;
 pub use frontier_merge::FRONTIER_REPAIR_AUTHORIZATION_SCHEMA_VERSION;
-pub use frontier_merge::FRONTIER_REPAIR_AUTHORITY_SCHEMA_VERSION;
 pub use frontier_merge::FrontierMergeDecision;
 pub use frontier_merge::FrontierRepairAlgorithmV1;
 pub use frontier_merge::FrontierRepairAuthorityV1;

@@ -41,7 +41,9 @@ def sha256_file(path: Path) -> str:
 
 def atomic_json(path: Path, value: dict[str, object]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    descriptor, temporary_name = tempfile.mkstemp(dir=path.parent, prefix=".crash-receipt-")
+    descriptor, temporary_name = tempfile.mkstemp(
+        dir=path.parent, prefix=".crash-receipt-"
+    )
     temporary = Path(temporary_name)
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8") as stream:

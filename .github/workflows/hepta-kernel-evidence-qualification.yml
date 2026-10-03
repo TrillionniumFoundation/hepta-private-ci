@@ -9,14 +9,14 @@ on:
         description: Explicit full base commit; defaults to the source first parent outside PRs
         required: false
         type: string
-        default: ''
+        default: ""
   workflow_dispatch:
     inputs:
       base_sha:
         description: Explicit full base commit; defaults to the source first parent
         required: false
         type: string
-        default: ''
+        default: ""
 
 permissions:
   contents: read

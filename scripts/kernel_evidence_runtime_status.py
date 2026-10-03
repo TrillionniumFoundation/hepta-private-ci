@@ -91,9 +91,13 @@ def receipt_state(
         return {"present": False, "passed": False, "error": "receipt is absent"}
     try:
         value = load_json(path)
-        expected_merge = deterministic_merge_sha if kind == "deterministic_merge" else None
+        expected_merge = (
+            deterministic_merge_sha if kind == "deterministic_merge" else None
+        )
         expected_tested_object = (
-            deterministic_merge_sha if kind == "deterministic_merge" else source_head_sha
+            deterministic_merge_sha
+            if kind == "deterministic_merge"
+            else source_head_sha
         )
         log_sha256 = value.get("logSha256")
         passed = (
@@ -169,7 +173,12 @@ def build_status(
         ("final merge", final_merge_sha or ""),
     ):
         require_oid(value, label, optional=True)
-    if not workflow_run_id or not workflow_run_attempt or not runner_image or not target_triple:
+    if (
+        not workflow_run_id
+        or not workflow_run_attempt
+        or not runner_image
+        or not target_triple
+    ):
         raise ValueError("workflow, runner, and target identity must be non-empty")
 
     checked_in = load_json(checked_in_status_source)
@@ -239,10 +248,16 @@ def build_status(
     publication = bool(receipts["publication_diagnostics"]["passed"])
     crash_ready = bool(crash_state["passed"])
     repository_controlled_ready = (
-        exact_source and deterministic_merge and metadata and publication and crash_ready
+        exact_source
+        and deterministic_merge
+        and metadata
+        and publication
+        and crash_ready
     )
     final_merge_requalified = bool(
-        final_merge_sha and final_merge_sha == source_head_sha and repository_controlled_ready
+        final_merge_sha
+        and final_merge_sha == source_head_sha
+        and repository_controlled_ready
     )
 
     return {

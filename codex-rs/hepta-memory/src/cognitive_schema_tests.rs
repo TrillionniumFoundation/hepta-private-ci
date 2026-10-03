@@ -1,15 +1,20 @@
 //! Independently derive the schema from compiled migrations, never owner bytes.
-use sqlx::sqlite::SqlitePoolOptions;
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 
 use super::*;
 
 #[tokio::test]
 async fn compiled_migrations_match_schema_oracle_and_weakened_trigger_is_rejected() {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
+    let temp = tempfile::tempdir().expect("independent schema fixture");
+    let root = temp.path().canonicalize().expect("canonical fixture root");
+    let sqlite = SqliteConfig::new_for_testing(
+        AbsolutePathBuf::from_absolute_path(&root).expect("absolute fixture root"),
+    );
+    let pool = sqlite
+        .open_read_write_pool(&root.join("schema-oracle.sqlite"))
         .await
-        .expect("reference SQLite");
+        .expect("reference SQLite through the existing shim");
     MIGRATOR.run(&pool).await.expect("compiled migration chain");
     // Recovery and startup share one canonical schema inventory. A migration
     // adding a logical table must bind its contents, not silently ignore it.

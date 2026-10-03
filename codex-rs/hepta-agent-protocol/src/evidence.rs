@@ -35,6 +35,10 @@ pub struct KernelEvidenceQueryV1 {
     pub claim_class: String,
 }
 
+/// Decoded claim class, exclusive sequence cursor and bounded page limit.
+/// This names the existing tuple; it is selector data, not an authority grant.
+pub type KernelEvidencePageSelector<'a> = (&'a str, Option<u64>, u16);
+
 impl KernelEvidenceQueryV1 {
     /// Product pages remain comfortably below the 48 KiB frame even when every
     /// reference uses maximum identifiers. The store itself retains the wider
@@ -66,7 +70,7 @@ impl KernelEvidenceQueryV1 {
     /// Returns the strict page selector. A plain claim class is a legacy full
     /// query. Anything entering the reserved `page:` namespace but not matching
     /// the exact grammar is rejected instead of falling back.
-    pub fn page_selector(&self) -> Result<Option<(&str, Option<u64>, u16)>, String> {
+    pub fn page_selector(&self) -> Result<Option<KernelEvidencePageSelector<'_>>, String> {
         if !self.claim_class.starts_with("page:") {
             return Ok(None);
         }
@@ -212,7 +216,7 @@ mod tests {
             request.profile_name().expect("profile parse"),
             Some("mandatory_tests_reviewed")
         );
-        let mut with_roles = request.clone();
+        let mut with_roles = request;
         with_roles.required_roles.push("generator".to_string());
         assert!(with_roles.profile_name().is_err());
         let malformed = KernelEvidenceVerifyV1 {

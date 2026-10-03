@@ -96,8 +96,7 @@ class FinalizeReadinessTests(unittest.TestCase):
             kind: {"passed": True} for kind in finalize.QUALIFICATION_KINDS
         }
         crash_scenarios = {
-            scenario: {"passed": True}
-            for scenario in finalize.REQUIRED_CRASH_SCENARIOS
+            scenario: {"passed": True} for scenario in finalize.REQUIRED_CRASH_SCENARIOS
         }
         audit = {
             "schemaVersion": 1,
@@ -177,8 +176,7 @@ class FinalizeReadinessTests(unittest.TestCase):
         self.assertFalse(result["readiness"]["receipt_audit_qualified"])
         self.assertTrue(
             any(
-                "releaseGranted" in error
-                for error in result["receipt_audit"]["errors"]
+                "releaseGranted" in error for error in result["receipt_audit"]["errors"]
             )
         )
 

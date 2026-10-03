@@ -35,7 +35,9 @@ def replace_once(name: str, old: str, new: str) -> None:
         return
     observed = text.count(old)
     if observed != 1:
-        raise SystemExit(f"{name}: expected one match, observed {observed}: {old[:120]!r}")
+        raise SystemExit(
+            f"{name}: expected one match, observed {observed}: {old[:120]!r}"
+        )
     write(name, text.replace(old, new, 1))
 
 
@@ -51,10 +53,12 @@ def replace_regex_once(name: str, pattern: str, replacement: str) -> None:
     write(name, updated)
 
 
-if "EvidenceVerificationProfileV1" not in read("codex-rs/hepta-evidence/src/qualification.rs"):
+if "EvidenceVerificationProfileV1" not in read(
+    "codex-rs/hepta-evidence/src/qualification.rs"
+):
     raise SystemExit("phase one has not landed; refusing to apply phase two")
 
-TRUST_SNAPSHOT = r'''use std::collections::BTreeMap;
+TRUST_SNAPSHOT = r"""use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 
 use codex_hepta_authbus::IssuerRegistration;
@@ -602,10 +606,10 @@ fn push_part(target: &mut Vec<u8>, part: &[u8]) {
 fn invalid(message: impl Into<String>) -> EvidenceError {
     EvidenceError::InvalidRecord(message.into())
 }
-'''
+"""
 write("codex-rs/hepta-evidence/src/trust_snapshot.rs", TRUST_SNAPSHOT)
 
-RECOVERY_FRONTIER = r'''use codex_hepta_contracts::Sha256Digest;
+RECOVERY_FRONTIER = r"""use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 use serde::Serialize;
@@ -939,7 +943,7 @@ fn extend_frontier(domain: &[u8], previous: &Sha256Digest, parts: &[&[u8]]) -> S
     }
     Sha256Digest::for_bytes(&bytes)
 }
-'''
+"""
 write("codex-rs/hepta-evidence/src/recovery_frontier.rs", RECOVERY_FRONTIER)
 
 # Dependencies and exports.
@@ -982,7 +986,7 @@ if new_sig not in text:
     text = text.replace(old_sig, new_sig, 1)
 write(qualification, text)
 
-EVIDENCE_TRUST = r'''//! Owner-controlled trust registry for kernel.evidence production ingress.
+EVIDENCE_TRUST = r"""//! Owner-controlled trust registry for kernel.evidence production ingress.
 
 #[cfg(unix)]
 use std::fs::File;
@@ -1169,10 +1173,10 @@ fn evidence_error(error: codex_hepta_evidence::EvidenceError) -> AgentdError {
 fn invalid(message: &str) -> AgentdError {
     AgentdError::Invalid(format!("kernel.evidence: {message}"))
 }
-'''
+"""
 write("codex-rs/hepta-agentd/src/evidence_trust.rs", EVIDENCE_TRUST)
 
-PROCESS_LOCK = r'''//! Cross-process ownership and backup/write fencing for kernel.evidence.
+PROCESS_LOCK = r"""//! Cross-process ownership and backup/write fencing for kernel.evidence.
 
 use std::fs::File;
 use std::path::Path;
@@ -1312,7 +1316,7 @@ fn lock(_file: &File, _mode: LockMode) -> Result<(), AgentdError> {
 fn invalid(message: &str) -> AgentdError {
     AgentdError::Invalid(format!("kernel.evidence: {message}"))
 }
-'''
+"""
 write("codex-rs/hepta-agentd/src/evidence_process_lock.rs", PROCESS_LOCK)
 
 # Register Agentd fencing module and public backup API.
@@ -1330,7 +1334,8 @@ if "pub use evidence_process_lock::acquire_kernel_evidence_backup_fence;" not in
         raise SystemExit("Agentd module marker drifted")
     text = text.replace(
         marker,
-        marker + "pub use evidence_process_lock::acquire_kernel_evidence_backup_fence;\n",
+        marker
+        + "pub use evidence_process_lock::acquire_kernel_evidence_backup_fence;\n",
         1,
     )
     write("codex-rs/hepta-agentd/src/lib.rs", text)
@@ -1420,7 +1425,11 @@ if "KernelEvidenceOwnerLock" not in text:
         "let current_trust = host.trust(state)?;",
         1,
     )
-    text = text.replace("            &current_trust,\n", "            current_trust.verification_snapshot(),\n", 1)
+    text = text.replace(
+        "            &current_trust,\n",
+        "            current_trust.verification_snapshot(),\n",
+        1,
+    )
 write(host, text)
 
 # Bind trust generation/predecessor, all-domain digest and backup image to frontier v2.
@@ -1438,13 +1447,13 @@ if "issuer_trust_registry_generation" not in text:
         1,
     )
     text = text.replace(
-        "            (\"issuer trust registry\", &self.issuer_trust_registry_sha256),\n",
-        "            (\"issuer trust registry\", &self.issuer_trust_registry_sha256),\n            (\"authoritative store\", &self.authoritative_store_sha256),\n",
+        '            ("issuer trust registry", &self.issuer_trust_registry_sha256),\n',
+        '            ("issuer trust registry", &self.issuer_trust_registry_sha256),\n            ("authoritative store", &self.authoritative_store_sha256),\n',
         1,
     )
     text = text.replace(
-        "            (\"backup publication\", &self.backup_publication_sha256),\n",
-        "            (\"backup publication\", &self.backup_publication_sha256),\n            (\"backup image\", &self.backup_image_sha256),\n",
+        '            ("backup publication", &self.backup_publication_sha256),\n',
+        '            ("backup publication", &self.backup_publication_sha256),\n            ("backup image", &self.backup_image_sha256),\n',
         1,
     )
     text = text.replace(
@@ -1653,7 +1662,9 @@ for flag in [
     status[flag] = False
 status["workflowRunId"] = None
 status["artifactDigest"] = None
-status_path.write_text(json.dumps(status, indent=2, sort_keys=False) + "\n", encoding="utf-8")
+status_path.write_text(
+    json.dumps(status, indent=2, sort_keys=False) + "\n", encoding="utf-8"
+)
 
 # Documentation deltas are intentionally explicit and do not claim execution.
 for name, section in {

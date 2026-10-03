@@ -248,7 +248,9 @@ fn eight_process_first_generation_contention_has_one_durable_winner() {
     // acknowledgement. API-level success is therefore not eight winners.
     assert_eq!(acknowledgements.len(), WORKERS);
     assert_eq!(conflicts, 0);
-    let first_ack = acknowledgements.first().expect("one durable acknowledgement");
+    let first_ack = acknowledgements
+        .first()
+        .expect("one durable acknowledgement");
     assert_eq!(first_ack.0, 1);
     assert_eq!(first_ack.1, 1);
     assert!(
@@ -274,7 +276,11 @@ fn eight_process_first_generation_contention_has_one_durable_winner() {
             EvidenceFrontierHistoryRangeV1::new(1, 1).expect("one-generation range"),
         )
         .expect("read durable contention history");
-    assert_eq!(history.len(), 1, "contention must append exactly one record");
+    assert_eq!(
+        history.len(),
+        1,
+        "contention must append exactly one record"
+    );
     assert_eq!(history[0], latest);
 
     println!(

@@ -72,7 +72,10 @@ def build_receipt(args: argparse.Namespace) -> dict[str, object]:
             raise ValueError("tested object must equal deterministic merge SHA")
     elif args.tested_object_sha != args.source_head_sha:
         raise ValueError("non-merge receipt must test the exact source head")
-    if args.started_at_unix_ms <= 0 or args.finished_at_unix_ms < args.started_at_unix_ms:
+    if (
+        args.started_at_unix_ms <= 0
+        or args.finished_at_unix_ms < args.started_at_unix_ms
+    ):
         raise ValueError("receipt timestamps are invalid")
     if not args.command or not args.workflow_run_id or not args.workflow_run_attempt:
         raise ValueError("command and workflow run identity are required")

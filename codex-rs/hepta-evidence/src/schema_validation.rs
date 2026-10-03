@@ -5,6 +5,7 @@ use sqlx::Row;
 use sqlx::SqlitePool;
 
 use crate::EvidenceError;
+use crate::schema_definition_oracle::verify_legacy_immutable_definition;
 
 pub(crate) async fn verify_quick_check(pool: &SqlitePool) -> Result<(), EvidenceError> {
     let results = sqlx::query_scalar::<_, String>("PRAGMA quick_check(1)")
@@ -768,7 +769,8 @@ pub(crate) async fn verify_schema_manifest(pool: &SqlitePool) -> Result<(), Evid
         .chain(authbus_recovery_schema::REQUIRED_SCHEMA_OBJECTS)
     {
         let row = sqlx::query(
-            "SELECT type AS object_type, tbl_name, sql
+            "SELECT type AS object_type, tbl_name,
+                    CASE WHEN length(CAST(sql AS BLOB)) <= 65536 THEN sql END AS sql
              FROM sqlite_schema WHERE name = ?",
         )
         .bind(spec.name)
@@ -786,7 +788,7 @@ pub(crate) async fn verify_schema_manifest(pool: &SqlitePool) -> Result<(), Evid
         let sql: Option<String> = row.get("sql");
         let Some(sql) = sql else {
             return Err(EvidenceError::Corrupt(format!(
-                "required SQLite schema object {} has no definition",
+                "required SQLite schema object {} has no bounded definition",
                 spec.name
             )));
         };
@@ -807,9 +809,14 @@ pub(crate) async fn verify_schema_manifest(pool: &SqlitePool) -> Result<(), Evid
                 spec.name
             )));
         }
+        verify_legacy_immutable_definition(spec.name, &sql)?;
     }
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "legacy_immutable_schema_tests.rs"]
+mod legacy_immutable_schema_tests;
 
 /// Migration 0008 adds `source` with `ALTER TABLE`; SQLite keeps the original
 /// CREATE statement in `sqlite_schema`, so the normal schema-manifest oracle

@@ -51,31 +51,133 @@ OPERATIONS_PROFILE = {
         "maximumCasConflictRatePercent": 0.1,
     },
     "metrics": [
-        {"name": "kernel_evidence_append_total", "type": "counter", "labels": ["outcome"]},
-        {"name": "kernel_evidence_append_latency_ms", "type": "histogram", "labels": []},
-        {"name": "kernel_evidence_verify_total", "type": "counter", "labels": ["disposition", "profile"]},
-        {"name": "kernel_evidence_verify_latency_ms", "type": "histogram", "labels": ["profile"]},
-        {"name": "kernel_evidence_query_page_latency_ms", "type": "histogram", "labels": []},
-        {"name": "kernel_evidence_frontier_generation", "type": "gauge", "labels": ["store_id"]},
-        {"name": "kernel_evidence_frontier_age_ms", "type": "gauge", "labels": ["store_id"]},
-        {"name": "kernel_evidence_trust_generation", "type": "gauge", "labels": ["agent_id"]},
-        {"name": "kernel_evidence_cas_conflict_total", "type": "counter", "labels": ["backend"]},
-        {"name": "kernel_evidence_recovery_required_total", "type": "counter", "labels": ["reason_class"]},
-        {"name": "kernel_evidence_backup_fence_rejection_total", "type": "counter", "labels": []},
-        {"name": "kernel_evidence_database_bytes", "type": "gauge", "labels": ["store_id"]},
-        {"name": "kernel_evidence_disk_free_bytes", "type": "gauge", "labels": ["mount"]},
+        {
+            "name": "kernel_evidence_append_total",
+            "type": "counter",
+            "labels": ["outcome"],
+        },
+        {
+            "name": "kernel_evidence_append_latency_ms",
+            "type": "histogram",
+            "labels": [],
+        },
+        {
+            "name": "kernel_evidence_verify_total",
+            "type": "counter",
+            "labels": ["disposition", "profile"],
+        },
+        {
+            "name": "kernel_evidence_verify_latency_ms",
+            "type": "histogram",
+            "labels": ["profile"],
+        },
+        {
+            "name": "kernel_evidence_query_page_latency_ms",
+            "type": "histogram",
+            "labels": [],
+        },
+        {
+            "name": "kernel_evidence_frontier_generation",
+            "type": "gauge",
+            "labels": ["store_id"],
+        },
+        {
+            "name": "kernel_evidence_frontier_age_ms",
+            "type": "gauge",
+            "labels": ["store_id"],
+        },
+        {
+            "name": "kernel_evidence_trust_generation",
+            "type": "gauge",
+            "labels": ["agent_id"],
+        },
+        {
+            "name": "kernel_evidence_cas_conflict_total",
+            "type": "counter",
+            "labels": ["backend"],
+        },
+        {
+            "name": "kernel_evidence_recovery_required_total",
+            "type": "counter",
+            "labels": ["reason_class"],
+        },
+        {
+            "name": "kernel_evidence_backup_fence_rejection_total",
+            "type": "counter",
+            "labels": [],
+        },
+        {
+            "name": "kernel_evidence_database_bytes",
+            "type": "gauge",
+            "labels": ["store_id"],
+        },
+        {
+            "name": "kernel_evidence_disk_free_bytes",
+            "type": "gauge",
+            "labels": ["mount"],
+        },
     ],
     "alerts": [
-        {"id": "KE-001", "severity": "page", "condition": "recovery_required_total increases", "window": "immediate"},
-        {"id": "KE-002", "severity": "page", "condition": "frontier generation decreases or trust predecessor mismatches", "window": "immediate"},
-        {"id": "KE-003", "severity": "page", "condition": "frontier age exceeds 100% of configured maximum", "window": "immediate"},
-        {"id": "KE-004", "severity": "ticket", "condition": "frontier age exceeds 80% of configured maximum", "window": "5m"},
-        {"id": "KE-005", "severity": "page", "condition": "disk free is below 10% or 10 GiB", "window": "5m"},
-        {"id": "KE-006", "severity": "ticket", "condition": "disk free is below 20% or 20 GiB", "window": "15m"},
-        {"id": "KE-007", "severity": "page", "condition": "CAS conflicts exceed 0.1% or any CAS result is indeterminate", "window": "5m"},
-        {"id": "KE-008", "severity": "ticket", "condition": "append or verify p99 exceeds SLO", "window": "15m"},
-        {"id": "KE-009", "severity": "page", "condition": "exact-candidate or archive receipt digest mismatch", "window": "immediate"},
-        {"id": "KE-010", "severity": "page", "condition": "owner lock cannot be acquired on the selected production host", "window": "immediate"},
+        {
+            "id": "KE-001",
+            "severity": "page",
+            "condition": "recovery_required_total increases",
+            "window": "immediate",
+        },
+        {
+            "id": "KE-002",
+            "severity": "page",
+            "condition": "frontier generation decreases or trust predecessor mismatches",
+            "window": "immediate",
+        },
+        {
+            "id": "KE-003",
+            "severity": "page",
+            "condition": "frontier age exceeds 100% of configured maximum",
+            "window": "immediate",
+        },
+        {
+            "id": "KE-004",
+            "severity": "ticket",
+            "condition": "frontier age exceeds 80% of configured maximum",
+            "window": "5m",
+        },
+        {
+            "id": "KE-005",
+            "severity": "page",
+            "condition": "disk free is below 10% or 10 GiB",
+            "window": "5m",
+        },
+        {
+            "id": "KE-006",
+            "severity": "ticket",
+            "condition": "disk free is below 20% or 20 GiB",
+            "window": "15m",
+        },
+        {
+            "id": "KE-007",
+            "severity": "page",
+            "condition": "CAS conflicts exceed 0.1% or any CAS result is indeterminate",
+            "window": "5m",
+        },
+        {
+            "id": "KE-008",
+            "severity": "ticket",
+            "condition": "append or verify p99 exceeds SLO",
+            "window": "15m",
+        },
+        {
+            "id": "KE-009",
+            "severity": "page",
+            "condition": "exact-candidate or archive receipt digest mismatch",
+            "window": "immediate",
+        },
+        {
+            "id": "KE-010",
+            "severity": "page",
+            "condition": "owner lock cannot be acquired on the selected production host",
+            "window": "immediate",
+        },
     ],
     "claimBoundary": {
         "targetsAreNotMeasurements": True,
@@ -88,7 +190,7 @@ write(
     json.dumps(OPERATIONS_PROFILE, indent=2) + "\n",
 )
 
-OPERATIONS = r'''# kernel.evidence operations and service objectives
+OPERATIONS = r"""# kernel.evidence operations and service objectives
 
 This document is the production operations contract for `kernel.evidence`. The
 numbers below are qualification and activation gates. They are not historical
@@ -138,10 +240,10 @@ Dashboards and alerts observe; they do not grant acceptance, promotion or
 release. Source tests and simulated faults cannot set `backupRestoreDrilled`,
 `canaryAccepted` or `releaseApproved`. Those status changes require retained,
 externally signed receipts from distinct authorized principals.
-'''
+"""
 write("docs/lane-a-foundation/kernel.evidence/OPERATIONS.md", OPERATIONS)
 
-RUNBOOK = r'''# kernel.evidence operator runbook
+RUNBOOK = r"""# kernel.evidence operator runbook
 
 ## Universal stop rule
 
@@ -214,10 +316,10 @@ Preserve exact timestamps, source commit/tree, binary digest, trust/frontier
 records, immutable object version, raw command logs and observed exit codes.
 Redact secrets and payloads. Every corrective action references the incident ID
 and predecessor generation.
-'''
+"""
 write("docs/lane-a-foundation/kernel.evidence/RUNBOOK.md", RUNBOOK)
 
-ARCHIVE = r'''# kernel.evidence qualification archive contract V1
+ARCHIVE = r"""# kernel.evidence qualification archive contract V1
 
 GitHub workflow artifacts are a transport cache, not the permanent audit store.
 Every exact-source and deterministic-merge lane emits `archive-manifest.json`
@@ -237,7 +339,7 @@ Qualification artifacts are retained in GitHub for 365 days as a convenience.
 Expiration, deletion, skipped upload or an unverified copy never becomes a
 passing archive disposition. Promotion/release remains blocked until the
 required external archive receipt is admitted by an independent principal.
-'''
+"""
 write("docs/lane-a-foundation/kernel.evidence/ARCHIVE_V1.md", ARCHIVE)
 
 DRILLS = {
@@ -314,7 +416,7 @@ write(
     json.dumps(ARCHIVE_SCHEMA, indent=2) + "\n",
 )
 
-ARCHIVE_SCRIPT = r'''#!/usr/bin/env python3
+ARCHIVE_SCRIPT = r"""#!/usr/bin/env python3
 from __future__ import annotations
 
 import argparse
@@ -381,10 +483,10 @@ def main() -> None:
 
 if __name__ == "__main__":
     main()
-'''
+"""
 write("scripts/kernel_evidence_archive_manifest.py", ARCHIVE_SCRIPT)
 
-ARCHIVE_TEST = r'''import json
+ARCHIVE_TEST = r"""import json
 import os
 import subprocess
 import sys
@@ -460,7 +562,7 @@ class ArchiveManifestTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-'''
+"""
 write("scripts/tests/test_kernel_evidence_archive_manifest.py", ARCHIVE_TEST)
 
 # Extend artifact retention and generate per-lane manifests before upload.
@@ -499,7 +601,10 @@ write(workflow, value)
 
 convergence = ".github/workflows/hepta-kernel-evidence-convergence.yml"
 if p(convergence).exists():
-    write(convergence, read(convergence).replace("retention-days: 90", "retention-days: 365"))
+    write(
+        convergence,
+        read(convergence).replace("retention-days: 90", "retention-days: 365"),
+    )
 
 # Update status source but keep every operational/external gate false.
 status_path = p("qualification/kernel-evidence/STATUS_SOURCE.json")

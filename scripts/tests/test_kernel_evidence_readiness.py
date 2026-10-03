@@ -77,9 +77,7 @@ class ReadinessTests(unittest.TestCase):
                 "deterministicMergeSha": MERGE
                 if kind == "deterministic_merge"
                 else None,
-                "testedObjectSha": MERGE
-                if kind == "deterministic_merge"
-                else SOURCE,
+                "testedObjectSha": MERGE if kind == "deterministic_merge" else SOURCE,
                 "workflowSha": WORKFLOW,
                 "workflowRunId": RUN_ID,
                 "workflowRunAttempt": RUN_ATTEMPT,
