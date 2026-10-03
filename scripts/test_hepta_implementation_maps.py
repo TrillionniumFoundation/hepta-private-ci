@@ -196,7 +196,20 @@ class SourceIdentityTests(unittest.TestCase):
             modules=["alpha"],
             expected_sha=None,
             expected_tree=None,
+            profile="qualification",
         )
+
+    def test_development_profile_preserves_module_selection_on_dirty_navigation(self):
+        self.write("README.md", "work in progress\n")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            maps.verify(modules=["alpha"], profile="development")
+        result = json.loads(output.getvalue())
+        self.assertEqual(result["selectedModules"], ["alpha"])
+        self.assertEqual(result["verificationProfile"], "development")
+        self.assertFalse(result["historicalEvidenceRevalidated"])
+        with self.assertRaisesRegex(SystemExit, "dirty|clean"):
+            maps.verify(modules=["alpha"], profile="qualification")
 
     def closed_public_inventory(self, functions):
         self.write(

@@ -110,14 +110,14 @@ class SourceIdentityTests(unittest.TestCase):
             row["observedAtHead"] = dict(self.base)
             row["observedSourcePaths"] = [f"src/{mid}", "Cargo.lock"]
 
-    def verify(self, *, strict=False):
+    def verify(self, *, strict=False, profile="qualification"):
         self.save_maps()
         output = io.StringIO()
         with contextlib.redirect_stdout(output):
             if strict:
-                MAPS.verify(require_current_source=True)
+                MAPS.verify(require_current_source=True, profile=profile)
             else:
-                MAPS.verify()
+                MAPS.verify(profile=profile)
         return json.loads(output.getvalue())
 
     def rejects(self, fragment, *, strict=False):
@@ -206,6 +206,63 @@ class SourceIdentityTests(unittest.TestCase):
         self.write("src/alpha/lib.rs", "pub fn changed() {}\n")
         self.commit("changed source")
         self.rejects("changed after source observation")
+
+    def test_ordinary_source_edit_preserves_navigation_without_renewing_evidence(self):
+        self.save_maps()
+        maps_before = {
+            path: path.read_bytes() for path in self.root.glob("docs/modules/*/*.json")
+        }
+        self.write("src/alpha/lib.rs", "// Ordinary owner change\npub fn run() {}\n")
+        self.commit("implementation edit")
+        result = self.verify(profile="development")
+        self.assertEqual(result["verificationProfile"], "development")
+        self.assertFalse(result["historicalEvidenceRevalidated"])
+        self.assertFalse(result["productionImplementationProved"])
+        self.assertEqual(maps_before, {path: path.read_bytes() for path in maps_before})
+        self.rejects("changed after source observation")
+
+    def test_development_retains_path_and_type_guards(self):
+        cases = [
+            ("observedSourcePaths", ["src/alpha/../beta"], "non-canonical source path"),
+            ("sourceBase", {"commit": 0, "tree": "f" * 40}, "literal commit/tree"),
+            ("productionImplementation", "false", "must be boolean"),
+        ]
+        for field, value, message in cases:
+            original = self.rows["alpha"][field]
+            self.rows["alpha"][field] = value
+            with self.subTest(field=field), self.assertRaisesRegex(SystemExit, message):
+                self.verify(profile="development")
+            self.rows["alpha"][field] = original
+        self.save_maps()
+        self.write("src/alpha/lib.rs", "// uncommitted source\n")
+        self.verify(profile="development")
+        with self.assertRaisesRegex(SystemExit, "dirty|uncommitted"):
+            self.verify()
+
+    def test_development_does_not_freeze_exact_blob_manifests(self):
+        self.rows["alpha"]["mappingSourceIdentityMode"] = "exact_blob"
+        blob = self.git("rev-parse", "HEAD:src/alpha/lib.rs")
+        self.rows["alpha"]["operations"][0]["sourceBlob"] = blob
+        self.rows["alpha"]["exactSourceEvidence"] = {
+            "kind": "path_blob_manifest_v1",
+            "entries": [{"path": "src/alpha/lib.rs", "blobSha": blob}],
+        }
+        self.save_maps()
+        self.write("src/alpha/lib.rs", "// revised implementation\npub fn run() {}\n")
+        self.commit("implementation edit")
+        self.verify(profile="development")
+        self.rejects("source blob drift")
+
+    def test_development_requires_unique_complete_source_object_paths(self):
+        row = self.rows["alpha"]
+        row["sourceObjects"] = MAPS.current_source_objects(row)
+        self.verify(profile="development")
+        row["sourceObjects"].append(dict(row["sourceObjects"][0]))
+        with self.assertRaisesRegex(SystemExit, "duplicate source object"):
+            self.verify(profile="development")
+        row["sourceObjects"] = row["sourceObjects"][:1]
+        with self.assertRaisesRegex(SystemExit, "source object path coverage"):
+            self.verify(profile="development")
 
     def test_declared_dependency_drift_fails(self):
         self.observed()

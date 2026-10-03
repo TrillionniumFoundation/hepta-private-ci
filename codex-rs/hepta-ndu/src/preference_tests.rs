@@ -46,6 +46,7 @@ fn damped_preference_update_emits_local_solver_receipts() {
         }],
     ));
     let predecessor = initial.state_digest;
+    let initial_residual_raw = FixedQ32::ONE.raw() - initial.values[0].value.raw();
     let (terminal, termination, receipts) = must(solve_preference_target(
         initial,
         vec![AxisValue {
@@ -70,7 +71,7 @@ fn damped_preference_update_emits_local_solver_receipts() {
     );
     assert_eq!(
         termination.maximum_residual_raw,
-        std::iter::once(FixedQ32::ONE.raw())
+        std::iter::once(initial_residual_raw)
             .chain(receipts.iter().map(|receipt| receipt.residual_raw))
             .max()
             .expect("initial and step residuals")
@@ -288,6 +289,18 @@ fn impossible_local_receipt_invariants_are_rejected() {
     assert_eq!(
         must_err(invalid.validate()),
         NduError::InvalidSolverReceipt("iteration")
+    );
+    let context = crate::NduIterationContextV1 {
+        subject_id: id("agent-a"),
+        subject_class: SubjectClass::Agent,
+        objective_digest: Digest32::of_bytes(b"objective"),
+        generation: must(Generation::new(4)),
+        event_digest: Digest32::of_bytes(b"event"),
+        coefficient_digest: Digest32::of_bytes(b"coefficient"),
+    };
+    assert_eq!(
+        crate::bind_solver_iteration_receipt_v1(&context, &invalid),
+        Err(NduError::InvalidSolverReceipt("iteration"))
     );
 }
 

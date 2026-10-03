@@ -236,10 +236,9 @@ mod tests {
             Some(user_home.path()),
         )
         .expect("resolve Hepta home");
-        assert_eq!(
-            resolved.as_path(),
-            hepta_home.path().canonicalize().expect("canonicalize")
-        );
+        let canonical = hepta_home.path().canonicalize().expect("canonicalize");
+        let expected = AbsolutePathBuf::from_absolute_path(canonical).expect("absolute home");
+        assert_eq!(resolved, expected);
     }
 
     #[test]
@@ -249,10 +248,9 @@ mod tests {
         let resolved =
             find_hepta_home_from_env(None, codex_home.path().to_str(), Some(user_home.path()))
                 .expect("resolve legacy home");
-        assert_eq!(
-            resolved.as_path(),
-            codex_home.path().canonicalize().expect("canonicalize")
-        );
+        let canonical = codex_home.path().canonicalize().expect("canonicalize");
+        let expected = AbsolutePathBuf::from_absolute_path(canonical).expect("absolute home");
+        assert_eq!(resolved, expected);
     }
 
     #[test]

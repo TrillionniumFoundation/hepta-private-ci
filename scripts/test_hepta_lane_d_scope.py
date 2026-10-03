@@ -407,9 +407,9 @@ class ObjectiveProductOperationTests(unittest.TestCase):
         canonical = [
             "decode_source_envelope_json_v1",
             "validate_structure",
-            "admit_objective_v1",
-            "compile_admitted_objective_v1",
-            "encode_authenticated_objective_function_v1",
+            "validate_admission_profile_v1",
+            "compile_authoritative_objective_v1",
+            "encode_proof_bearing_objective_function_v1",
             "decode_objective_function_v1",
         ]
         return {
@@ -420,6 +420,9 @@ class ObjectiveProductOperationTests(unittest.TestCase):
                 + [
                     "canonical_objective_intent_digest_v1",
                     "check_feasibility_v1",
+                    "admit_objective_v1",
+                    "compile_admitted_objective_v1",
+                    "encode_authenticated_objective_function_v1",
                 ]
             ]
             + [
@@ -430,19 +433,47 @@ class ObjectiveProductOperationTests(unittest.TestCase):
             ],
         }
 
-    def test_authenticated_projection_is_the_required_product_operation(self) -> None:
+    def test_proof_bearing_projection_is_the_required_product_operation(self) -> None:
         LANE_D.verify_objective_product_operations(self.mapping())
 
-    def test_raw_projection_cannot_replace_authenticated_projection(self) -> None:
+    def test_raw_projection_cannot_replace_proof_bearing_projection(self) -> None:
         mapping = self.mapping()
         mapping["canonicalProductOperations"][4] = "encode_objective_function_v1"
         for operation in mapping["operations"]:
-            if operation["operation"] == "encode_authenticated_objective_function_v1":
+            if operation["operation"] == "encode_proof_bearing_objective_function_v1":
                 operation["operation"] = "encode_objective_function_v1"
         with self.assertRaisesRegex(
             SystemExit, "canonical operation mapping incomplete"
         ):
             LANE_D.verify_objective_product_operations(mapping)
+
+    def test_current_owner_map_uses_the_proof_bearing_product_path(self) -> None:
+        mapping = LANE_D.load(LANE_D.MAPS["objective.compiler"])
+        LANE_D.verify_objective_product_operations(mapping)
+
+    def test_compatibility_operations_cannot_replace_the_product_path(self) -> None:
+        mapping = self.mapping()
+        mapping["canonicalProductOperations"][2:5] = [
+            "admit_objective_v1",
+            "compile_admitted_objective_v1",
+            "encode_authenticated_objective_function_v1",
+        ]
+        with self.assertRaisesRegex(SystemExit, "canonical product operation order"):
+            LANE_D.verify_objective_product_operations(mapping)
+
+    def test_canonical_contract_failure_stops_full_lane_verification(self) -> None:
+        result = subprocess.CompletedProcess([], 7, "", "broken canonical contract")
+        with mock.patch.object(LANE_D.subprocess, "run", return_value=result) as run:
+            with self.assertRaisesRegex(SystemExit, "broken canonical contract"):
+                LANE_D.verify()
+        self.assertEqual(
+            run.call_args.args[0],
+            [
+                LANE_D.sys.executable,
+                str(LANE_D.ROOT / "scripts/hepta-objective-contract-consistency.py"),
+                "verify",
+            ],
+        )
 
     def test_product_order_and_compatibility_role_cannot_drift(self) -> None:
         mapping = self.mapping()
@@ -457,6 +488,68 @@ class ObjectiveProductOperationTests(unittest.TestCase):
             SystemExit, "convenience wrapper product-role drift"
         ):
             LANE_D.verify_objective_product_operations(mapping)
+
+
+class LaneDTruthBoundaryTests(unittest.TestCase):
+    def setUp(self) -> None:
+        self.row = {
+            "module": "utility.ndu",
+            "dimensions": {
+                "productCaller": {"authenticatedProductionEstablished": False},
+                "productionWriter": {"activated": False},
+                "independentAcceptance": {"established": False},
+                "activation": {"established": False},
+                "release": {"established": False},
+            },
+        }
+        self.mapping = {
+            "claimBoundary": {
+                "productionImplementation": False,
+                "productExecutionProved": False,
+                "independentAcceptance": False,
+                "activation": False,
+                "release": False,
+            },
+        }
+
+    def test_descriptive_caller_wording_does_not_mint_execution_or_block_read_only_source(
+        self,
+    ) -> None:
+        self.row["dimensions"]["productCaller"]["state"] = (
+            "editorial wording may evolve"
+        )
+        LANE_D.verify_truth_boundary(self.row, self.mapping)
+        real_map = LANE_D.load(LANE_D.MAPS["utility.ndu"])
+        real_map["claimBoundary"]["requestLocalReadOnlyProductExecutionProved"] = True
+        LANE_D.verify_truth_boundary(self.row, real_map)
+        real_map["productCallers"][0]["nativeSymbol"] = "missing_read_only_caller"
+        with self.assertRaisesRegex(SystemExit, "missing read-only caller symbol"):
+            LANE_D.verify_truth_boundary(self.row, real_map)
+
+    def test_execution_and_activation_claims_reject_without_rewriting_prose(
+        self,
+    ) -> None:
+        for key in self.mapping["claimBoundary"]:
+            with self.subTest(key=key):
+                self.mapping["claimBoundary"][key] = True
+                try:
+                    with self.assertRaisesRegex(SystemExit, "truth boundary"):
+                        LANE_D.verify_truth_boundary(self.row, self.mapping)
+                finally:
+                    self.mapping["claimBoundary"][key] = False
+        self.row["dimensions"]["productCaller"][
+            "authenticatedProductionEstablished"
+        ] = "false"
+        with self.assertRaisesRegex(SystemExit, "authenticated production"):
+            LANE_D.verify_truth_boundary(self.row, self.mapping)
+        self.row["dimensions"]["productCaller"][
+            "authenticatedProductionEstablished"
+        ] = False
+        self.mapping["claimBoundary"]["requestLocalReadOnlyProductExecutionProved"] = (
+            "true"
+        )
+        with self.assertRaisesRegex(SystemExit, "read-only claim type"):
+            LANE_D.verify_truth_boundary(self.row, self.mapping)
 
 
 if __name__ == "__main__":

@@ -684,6 +684,7 @@ mod tests {
     use std::time::SystemTime;
     use std::time::UNIX_EPOCH;
 
+    #[allow(clippy::unwrap_used)]
     fn fixture() -> (
         FinalUseAuthority,
         SignedFinalUseGrant,

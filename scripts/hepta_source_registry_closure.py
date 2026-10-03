@@ -39,6 +39,7 @@ SOURCE_INTERPRETATION = "source_root_present_is_separate_from_production_impleme
 SECTION_TWO_HEADING = "## 2. Source binding and implementation status"
 SECTION_THREE_HEADING = "## 3. Boundary, responsibilities and non-goals"
 SOURCE_RECEIPT_HEADING = "## 17. Source implementation receipt"
+SOURCE_REQUIREMENTS_HEADING = "## 17. Source implementation evidence requirements"
 
 
 class RegistryClosureError(RuntimeError):
@@ -175,6 +176,56 @@ The source candidate is checked by `.github/workflows/hepta-consolidated-source.
 """
 
 
+def _source_evidence_section(
+    text: str,
+    module_id: str,
+    roots: tuple[str, ...],
+    bootstrap: str,
+) -> tuple[re.Match[str], bool] | None:
+    """Locate one bounded section and check its source-location binding."""
+    headings = "|".join(
+        re.escape(heading)
+        for heading in (SOURCE_RECEIPT_HEADING, SOURCE_REQUIREMENTS_HEADING)
+    )
+    sections = list(
+        re.finditer(
+            rf"(?ms)^(?P<heading>{headings})(?:\n|\Z)(?P<body>.*?)(?=^#{{1,2}} |\Z)",
+            text,
+        )
+    )
+    if len(sections) > 1:
+        raise RegistryClosureError(
+            f"duplicate technical source evidence sections: {module_id}"
+        )
+    if not sections:
+        return None
+    section = sections[0]
+    body = section.group("body")
+    bindings = list(
+        re.finditer(
+            r"(?m)^The bootstrap source-location obligation for `([^`\n]+)` "
+            r"is implemented by work package `([^`\n]+)` in:\n\n"
+            r"([^\n]+(?:\n[^\n]+)*)",
+            body,
+        )
+    )
+    valid = False
+    if len(bindings) == 1:
+        binding = bindings[0]
+        valid = (
+            len(re.findall(r"(?m)^The bootstrap source-location obligation for ", body))
+            == 1
+            and binding.group(1) == module_id
+            and binding.group(2) == bootstrap
+            and binding.group(3).splitlines() == [f"- `{root}`" for root in roots]
+        )
+    if not valid and section.group("heading") == SOURCE_REQUIREMENTS_HEADING:
+        raise RegistryClosureError(
+            f"technical source evidence requirements binding mismatch: {module_id}"
+        )
+    return section, valid
+
+
 def _normalize_technical_document(
     module_id: str,
     path: Path,
@@ -187,6 +238,18 @@ def _normalize_technical_document(
         raise RegistryClosureError(
             f"cannot read {path.relative_to(ROOT)}: {error}"
         ) from error
+
+    evidence = _source_evidence_section(text, module_id, roots, bootstrap)
+    if evidence is None:
+        text = text.rstrip() + "\n\n" + _source_receipt(module_id, roots, bootstrap)
+    else:
+        section, valid = evidence
+        if not valid:
+            # Only legacy receipts may be refreshed. Keep later H2 contracts intact.
+            replacement = _source_receipt(module_id, roots, bootstrap)
+            if section.end() < len(text):
+                replacement += "\n"
+            text = text[: section.start()] + replacement + text[section.end() :]
 
     status_pattern = re.compile(r"(?m)^\*\*Source status:\*\* `[^`]+`$")
     if not status_pattern.search(text):
@@ -206,15 +269,6 @@ def _normalize_technical_document(
         _technical_section(module_id, roots) + "\n", text, count=1
     )
 
-    receipt_pattern = re.compile(rf"(?ms)\n{re.escape(SOURCE_RECEIPT_HEADING)}\n.*\Z")
-    receipt = "\n" + _source_receipt(module_id, roots, bootstrap)
-    if receipt_pattern.search(text):
-        text = receipt_pattern.sub(receipt, text, count=1)
-    else:
-        text = text.rstrip() + "\n" + receipt
-
-    if not text.endswith("\n"):
-        text += "\n"
     current = path.read_text(encoding="utf-8")
     if current == text:
         return False
@@ -556,8 +610,19 @@ def verify() -> list[str]:
         text = path.read_text(encoding="utf-8")
         if f"**Source status:** `{SOURCE_STATUS}`" not in text:
             failures.append(f"technical source status is stale: {module_id}")
-        if SOURCE_RECEIPT_HEADING not in text:
-            failures.append(f"technical source receipt is missing: {module_id}")
+        try:
+            evidence = _source_evidence_section(
+                text, module_id, expected_roots, bootstrap
+            )
+        except RegistryClosureError as error:
+            failures.append(str(error))
+        else:
+            if evidence is None:
+                failures.append(f"technical source evidence is missing: {module_id}")
+            elif not evidence[1]:
+                failures.append(
+                    f"technical source receipt binding mismatch: {module_id}"
+                )
         if "Declared roots not yet present:\n\nNone." not in text:
             failures.append(f"technical missing-root section is stale: {module_id}")
 

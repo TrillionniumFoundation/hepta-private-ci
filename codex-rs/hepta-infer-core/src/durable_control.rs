@@ -888,3 +888,7 @@ fn parse_u32(value: &str) -> Result<u32, Error> {
 #[cfg(test)]
 #[path = "durable_control_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "durable_history_tests.rs"]
+mod history_tests;

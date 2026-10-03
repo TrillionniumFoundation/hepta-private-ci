@@ -1,6 +1,11 @@
 //! Exercise the real task host's shutdown/retirement races through its public API.
 //! These tests grant no selection, writer or deployment authority.
 
+#![allow(
+    clippy::expect_used,
+    reason = "integration assertions and fixture setup must fail the test immediately"
+)]
+
 use std::future::pending;
 use std::sync::Arc;
 use std::sync::atomic::AtomicUsize;

@@ -353,6 +353,23 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
 }
 
 #[test]
+fn preserves_empty_caller_actions_for_intrinsic_abstain() {
+    let mut expected = decode_source_envelope_json_v1(SOURCE.as_bytes()).unwrap();
+    expected.structured_intent.legal_action_classes.clear();
+    expected
+        .structured_intent
+        .confirmation_action_classes
+        .clear();
+    let mut source: Value = serde_json::from_str(SOURCE).unwrap();
+    source["structuredIntent"]["legalActionClasses"] = json!([]);
+    source["structuredIntent"]["confirmationActionClasses"] = json!([]);
+    assert_eq!(
+        decode_source_envelope_json_v1(&serde_json::to_vec(&source).unwrap()),
+        Ok(expected)
+    );
+}
+
+#[test]
 fn raw_ingress_budget_and_json_framing_fail_without_source_leakage() {
     let mut at_limit = SOURCE.as_bytes().to_vec();
     at_limit.resize(MAX_OBJECTIVE_SOURCE_JSON_INPUT_BYTES, b' ');

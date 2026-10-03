@@ -8,6 +8,7 @@ import json
 import os
 import re
 import subprocess
+import sys
 from pathlib import Path
 from typing import Any
 
@@ -155,6 +156,47 @@ def verify_map(module: str) -> tuple[str, ...]:
     return tuple(owner_roots)
 
 
+def verify_truth_boundary(row: dict[str, Any], mapping: dict[str, Any]) -> None:
+    """Validate declared boolean capabilities independently of descriptive prose."""
+    module = row["module"]
+    dimensions = row["dimensions"]
+    boundary = mapping["claimBoundary"]
+    for key in ("productionImplementation", "productExecutionProved"):
+        need(boundary.get(key) is False, f"truth boundary {module} {key}")
+    need(
+        dimensions["productCaller"].get("authenticatedProductionEstablished") is False
+        and boundary.get("authenticatedProductionProductExecutionProved", False)
+        is False,
+        f"truth boundary {module} authenticated production",
+    )
+    need(
+        dimensions["productionWriter"].get("activated") is False
+        and boundary.get("productionWriterActivated", False) is False,
+        f"truth boundary {module} production writer activation",
+    )
+    for key in ("independentAcceptance", "activation", "release"):
+        need(
+            boundary.get(key) is False and dimensions[key].get("established") is False,
+            f"truth boundary {module} {key}",
+        )
+    read_only = boundary.get("requestLocalReadOnlyProductExecutionProved", False)
+    need(type(read_only) is bool, f"truth boundary {module} read-only claim type")
+    if read_only:
+        callers = mapping.get("productCallers", [])
+        need(bool(callers), f"truth boundary {module} missing read-only caller")
+        for caller in callers:
+            path = caller["sourcePath"]
+            target = (ROOT / path).resolve()
+            need(target.is_relative_to(ROOT.resolve()), f"{module} caller-path escape")
+            need(target.is_file(), f"{module} missing caller source {path}")
+            symbol = caller["nativeSymbol"].split("::")[-1]
+            need(
+                re.search(rf"\bfn\s+{re.escape(symbol)}\b", target.read_text())
+                is not None,
+                f"{module} missing read-only caller symbol {symbol}",
+            )
+
+
 def verify_objective_product_operations(objective_map: dict) -> None:
     objective_operations = {
         operation["operation"] for operation in objective_map["operations"]
@@ -167,6 +209,9 @@ def verify_objective_product_operations(objective_map: dict) -> None:
         "compile_admitted_objective_v1",
         "check_feasibility_v1",
         "encode_authenticated_objective_function_v1",
+        "validate_admission_profile_v1",
+        "compile_authoritative_objective_v1",
+        "encode_proof_bearing_objective_function_v1",
         "decode_objective_function_v1",
     }
     need(
@@ -178,9 +223,9 @@ def verify_objective_product_operations(objective_map: dict) -> None:
         == [
             "decode_source_envelope_json_v1",
             "validate_structure",
-            "admit_objective_v1",
-            "compile_admitted_objective_v1",
-            "encode_authenticated_objective_function_v1",
+            "validate_admission_profile_v1",
+            "compile_authoritative_objective_v1",
+            "encode_proof_bearing_objective_function_v1",
             "decode_objective_function_v1",
         ],
         "objective.compiler canonical product operation order",
@@ -204,6 +249,22 @@ def verify() -> int:
 
     objective_map = load(MAPS["objective.compiler"])
     verify_objective_product_operations(objective_map)
+    contract = subprocess.run(
+        [
+            sys.executable,
+            str(ROOT / "scripts/hepta-objective-contract-consistency.py"),
+            "verify",
+        ],
+        cwd=ROOT,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+    need(
+        contract.returncode == 0,
+        "objective canonical contract verification failed: "
+        + (contract.stderr or contract.stdout).strip(),
+    )
 
     objective = (
         ROOT / "codex-rs/hepta-objective/src/objective_admission.rs"
@@ -256,12 +317,6 @@ def verify() -> int:
         )
 
     headings = {
-        "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md": [
-            "## 4. Deterministic compilation algorithm",
-            "## 5. State machine and persistence",
-            "## 11. Coding-entry checklist",
-            "## Appendix A. Closed gap and protocol mapping",
-        ],
         "docs/readiness/NDU_SYSTEM_EXECUTION.md": [
             "## 2. Cross-organ utility contract",
             "## 3. Multi-objective feasibility and Pareto policy",
@@ -317,36 +372,7 @@ def verify() -> int:
         "maturity module closure",
     )
     for row in maturity["modules"]:
-        module = row["module"]
-        product_caller = row["dimensions"]["productCaller"]["state"]
-        if module == "objective.compiler":
-            need(
-                product_caller == "source_composed_authenticated_agentd_not_activated",
-                f"truth boundary {module} productCaller",
-            )
-        elif module == "utility.ndu":
-            need(
-                product_caller
-                == "request_local_read_only_established_authenticated_production_not_composed",
-                f"truth boundary {module} productCaller",
-            )
-            # This state recognizes the current request-local adapter only;
-            # production acceptance and activation remain separate false gates.
-            for evidence_path in row["dimensions"]["productCaller"]["evidence"]:
-                need(
-                    (ROOT / evidence_path).is_file(),
-                    f"missing NDU caller evidence {evidence_path}",
-                )
-        else:
-            need(
-                product_caller == "not_established",
-                f"truth boundary {module} productCaller",
-            )
-        for key in ["independentAcceptance", "activation", "release"]:
-            need(
-                row["dimensions"][key]["state"] == "not_established",
-                f"truth boundary {module} {key}",
-            )
+        verify_truth_boundary(row, load(MAPS[row["module"]]))
 
     print(
         json.dumps(

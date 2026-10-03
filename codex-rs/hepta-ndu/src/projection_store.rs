@@ -406,6 +406,10 @@ fn persist_image(
         .map_err(|_| NduProjectionStoreError::Indeterminate)
 }
 
-#[cfg(test)]
+#[cfg(all(test, unix))]
 #[path = "projection_store_tests.rs"]
 mod tests;
+
+#[cfg(all(test, not(unix)))]
+#[path = "projection_store_unsupported_tests.rs"]
+mod unsupported_platform_tests;
