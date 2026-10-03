@@ -1286,6 +1286,82 @@ async fn failed_proactive_refresh_does_not_return_auth_cleared_while_waiting() {
 }
 
 #[tokio::test]
+#[serial(codex_auth_env)]
+async fn queued_proactive_refresh_preserves_recovered_auth() {
+    let codex_home = tempdir().unwrap();
+    let _access_token_guard = remove_access_token_env_var();
+    write_auth_file(
+        AuthFileParams {
+            openai_api_key: None,
+            chatgpt_plan_type: Some("pro".to_string()),
+            chatgpt_account_id: Some(WORKSPACE_ID_ALLOWED.to_string()),
+        },
+        codex_home.path(),
+    )
+    .expect("isolated auth fixture");
+    let path = get_auth_file(codex_home.path());
+    let mut fixture: serde_json::Value =
+        serde_json::from_slice(&std::fs::read(&path).unwrap()).unwrap();
+    fixture["last_refresh"] = serde_json::to_value(Utc::now() - chrono::Duration::days(9)).unwrap();
+    std::fs::write(&path, serde_json::to_vec(&fixture).unwrap()).unwrap();
+    let config = crate::test_support::transport_default_auth_route_config();
+    let auth = super::load_auth(
+        codex_home.path(),
+        false,
+        AuthCredentialsStoreMode::File,
+        None,
+        None,
+        None,
+        AuthKeyringBackendKind::Direct,
+        None,
+        &config,
+    )
+    .await
+    .unwrap()
+    .unwrap();
+    assert!(AuthManager::should_refresh_proactively(&auth));
+    let manager =
+        AuthManager::from_auth_for_testing_with_home(auth, codex_home.path().to_path_buf());
+    let refresh_guard = manager.refresh_lock.acquire().await.unwrap();
+    let first = manager.auth();
+    let second = manager.auth();
+    tokio::pin!(first, second);
+    std::future::poll_fn(|context| {
+        assert!(std::future::Future::poll(first.as_mut(), context).is_pending());
+        assert!(std::future::Future::poll(second.as_mut(), context).is_pending());
+        std::task::Poll::Ready(())
+    })
+    .await;
+
+    fixture["last_refresh"] = serde_json::to_value(Utc::now()).unwrap();
+    fixture["tokens"]["access_token"] = serde_json::json!("recovered-access-token");
+    fixture["tokens"]["refresh_token"] = serde_json::json!("recovered-refresh-token");
+    std::fs::write(&path, serde_json::to_vec(&fixture).unwrap()).unwrap();
+    let recovered = super::load_auth(
+        codex_home.path(),
+        false,
+        AuthCredentialsStoreMode::File,
+        None,
+        None,
+        None,
+        AuthKeyringBackendKind::Direct,
+        None,
+        &config,
+    )
+    .await
+    .unwrap()
+    .unwrap();
+    assert!(!AuthManager::should_refresh_proactively(&recovered));
+    manager.set_cached_auth(Some(recovered.clone()));
+    drop(refresh_guard);
+
+    assert_eq!(first.await, Some(recovered.clone()));
+    assert_eq!(second.await, Some(recovered.clone()));
+    assert_eq!(manager.refresh_failure_for_auth(&recovered), None);
+    assert_eq!(manager.auth_cached(), Some(recovered));
+}
+
+#[tokio::test]
 async fn external_bearer_only_auth_manager_uses_cached_provider_token() {
     let script = ProviderAuthScript::new(&["provider-token", "next-token"]).unwrap();
     let manager = AuthManager::external_bearer_only(script.auth_config());
