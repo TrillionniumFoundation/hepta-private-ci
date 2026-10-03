@@ -198,6 +198,13 @@ impl AgentdState {
             .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
     }
 
+    /// Borrow the original daemon's bounded product sender after composition.
+    pub(crate) fn plasticity_runtime_handle(&self) -> Option<crate::PlasticityRuntimeHandleV1> {
+        self.plasticity_runtime.get().map(
+            crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::runtime_handle,
+        )
+    }
+
     /// Named Agentd-owned producer boundary for governed parameter plasticity.
     /// Callers never receive the mutable writer or a second owner handle.
     pub(crate) async fn submit_parameter_plasticity_v1(

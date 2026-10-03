@@ -283,6 +283,8 @@ pub use config::AgentdConfig;
 #[cfg(feature = "server")]
 pub use config::AgentdIdentity;
 #[cfg(feature = "server")]
+pub use config::AgentdSelfIterationModelOwnerContextV2;
+#[cfg(feature = "server")]
 pub use config::CognitiveRetrievalMode;
 #[cfg(feature = "server")]
 pub use config::HEPTA_AGENT_GENERATION_ENV;

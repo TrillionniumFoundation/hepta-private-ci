@@ -13,6 +13,11 @@ use codex_hepta_agent_components::paths::HeptaFleetRoot;
 
 use crate::AgentdError;
 
+#[path = "self_iteration_model_owner.rs"]
+mod self_iteration_model_owner;
+pub use self_iteration_model_owner::AgentdSelfIterationModelOwnerContextV2;
+use self_iteration_model_owner::SelfIterationModelOwner;
+
 #[path = "run_store_restart_admission.rs"]
 mod run_store_restart_admission;
 pub(crate) use run_store_restart_admission::VerifiedRunStoreRestart;
@@ -687,32 +692,3 @@ fn require_exact_path(actual: &Path, expected: &Path, label: &str) -> Result<(),
 #[cfg(test)]
 #[path = "config_tests.rs"]
 mod tests;
-
-// Host composition supplies the real model owner future; the Agentd lifecycle
-// supervises it alongside the canonical generation and control owners.
-type SelfIterationModelOwner = Box<
-    dyn FnOnce(
-            tokio_util::sync::CancellationToken,
-        ) -> std::pin::Pin<
-            Box<dyn std::future::Future<Output = Result<(), AgentdError>> + Send>,
-        > + Send,
->;
-impl AgentdConfig {
-    pub fn with_self_iteration_model_owner<F, Fut>(mut self, owner: F) -> Result<Self, AgentdError>
-    where
-        F: FnOnce(tokio_util::sync::CancellationToken) -> Fut + Send + 'static,
-        Fut: std::future::Future<Output = Result<(), AgentdError>> + Send + 'static,
-    {
-        if self.self_iteration_model_owner.is_some() {
-            return Err(AgentdError::Invalid(
-                "self-iteration model owner is already configured".into(),
-            ));
-        }
-        self.self_iteration_model_owner =
-            Some(Box::new(move |cancellation| Box::pin(owner(cancellation))));
-        Ok(self)
-    }
-    pub(crate) fn take_self_iteration_model_owner(&mut self) -> Option<SelfIterationModelOwner> {
-        self.self_iteration_model_owner.take()
-    }
-}

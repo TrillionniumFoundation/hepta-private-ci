@@ -29,6 +29,10 @@ impl AgentdLearningPlasticityProducerV1 {
         Self { handle }
     }
 
+    pub(crate) fn runtime_handle(&self) -> PlasticityRuntimeHandleV1 {
+        self.handle.clone()
+    }
+
     pub(crate) async fn submit_parameter(
         &self,
         request: ParameterPlasticityProductRequestV1,

@@ -327,7 +327,11 @@ pub async fn run(
         }
         tasks.spawn_required("control-server", control.run())?;
         if let Some(owner) = self_iteration_model_owner {
-            tasks.spawn_required("self-iteration-model-owner", owner(cancellation.clone()))?;
+            let context = crate::AgentdSelfIterationModelOwnerContextV2::from_state(&state);
+            tasks.spawn_required(
+                "self-iteration-model-owner",
+                owner(context, cancellation.clone()),
+            )?;
         }
         let app_identity = identity.clone();
         let app_state = Arc::clone(&state);

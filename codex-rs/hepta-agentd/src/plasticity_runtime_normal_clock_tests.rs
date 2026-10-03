@@ -102,6 +102,39 @@ fn persistent_bytes(files: &RuntimeFiles) -> Vec<Vec<u8>> {
 }
 
 #[tokio::test]
+async fn installed_model_context_uses_original_plasticity_owner_and_clock() {
+    let fixture = normal_clock_fixture();
+    let before = persistent_bytes(&fixture.files);
+    let context = crate::AgentdSelfIterationModelOwnerContextV2::from_state(&fixture.state);
+    assert!(context.neuron_host().is_none());
+    let handle = context
+        .plasticity_handle()
+        .expect("original daemon plasticity handle");
+    let cancellation = CancellationToken::new();
+    let owner_task = crate::plasticity_runtime::spawn_plasticity_runtime_v1(
+        Arc::clone(&fixture.state),
+        Some(fixture.owner),
+        cancellation.clone(),
+    );
+    let result = handle.propose_parameter(fixture.parameter, 50).await;
+    cancellation.cancel();
+    owner_task
+        .await
+        .expect("original owner join")
+        .expect("original owner shutdown");
+    assert!(
+        matches!(
+            result,
+            Err(PlasticityRuntimeCallErrorV1::Parameter(
+                AgentdPlasticityHostErrorV1::OwnerEvidence(PlasticityOwnerEvidenceErrorV1::Missing)
+            ))
+        ),
+        "installed context bypassed the original owner or revived expired evidence: {result:?}"
+    );
+    assert_eq!(persistent_bytes(&fixture.files), before);
+}
+
+#[tokio::test]
 async fn producer_time_cannot_revive_expired_parameter_owner_evidence() {
     let fixture = normal_clock_fixture();
     let before = persistent_bytes(&fixture.files);
