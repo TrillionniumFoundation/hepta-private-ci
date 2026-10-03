@@ -5,6 +5,7 @@ use codex_hepta_agentd::AgentdConfig;
 use codex_hepta_agentd::AgentdDurableCpuAbstainInvocationProviderV2;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::AgentdIdentity;
+use codex_hepta_agentd::AgentdIntelligenceInvocationProviderV1;
 use codex_hepta_agentd::AgentdIntelligenceProductRunnerV1;
 use codex_hepta_agentd::AgentdNeuronRuntimeV2Config;
 use codex_hepta_agentd::IntelligenceAuthorityVerifierV1;
@@ -16,7 +17,9 @@ use std::time::Duration;
 pub(crate) struct Composition {
     runtime: AgentdNeuronRuntimeV2Config,
     runner: Arc<AgentdIntelligenceProductRunnerV1>,
-    provider: Arc<AgentdDurableCpuAbstainInvocationProviderV2>,
+    provider: Arc<dyn AgentdIntelligenceInvocationProviderV1>,
+    resolver: Option<Arc<dyn goal_factory::model_capability::RegisteredCpuModelResolverV3>>,
+    original_generations: goal_factory::model_capability::CpuNeuronOriginalGenerationReaderV3,
 }
 
 impl Composition {
@@ -43,7 +46,12 @@ impl Composition {
         );
         let goal_mode = installed.model_use_pointer.is_some();
         let mut inactive_admission = None;
-        let tick_mode = if let Some(pointer) = installed.model_use_pointer.as_ref() {
+        let tick_mode = if let Some(bootstrap) = &installed.registered_bootstrap {
+            tick::GoalMode::ActualCompiledGoal {
+                encoder_manifest_digest: bootstrap.plan.runtime.encoder_digest,
+                tokenizer_digest: bootstrap.plan.runtime.tokenizer_digest,
+            }
+        } else if let Some(pointer) = installed.model_use_pointer.as_ref() {
             let admission = model_use_current::Admission::open(
                 pointer.clone(),
                 &plan,
@@ -61,7 +69,10 @@ impl Composition {
             tick::GoalMode::FixedObjective
         };
         let tick = Arc::new(tick::TickProvider::open_mode(
-            installed.tick_provider.clone(),
+            installed.registered_bootstrap.as_ref().map_or_else(
+                || installed.tick_provider.clone(),
+                |bootstrap| bootstrap.tick_provider.clone(),
+            ),
             &plan,
             tick_mode,
         )?);
@@ -79,7 +90,7 @@ impl Composition {
         )?);
         let mut provider = AgentdDurableCpuAbstainInvocationProviderV2::new(
             installed.authority_file.clone(),
-            verifier,
+            verifier.clone(),
             native,
             runtime_digest,
             body_digest,
@@ -94,17 +105,30 @@ impl Composition {
                 })
             }));
         }
-        let provider = Arc::new(provider);
+        let mut provider: Arc<dyn AgentdIntelligenceInvocationProviderV1> = Arc::new(provider);
         let model_generation = plan.runtime.generation;
         let worker = crate::CpuNeuronControlConfigV2 {
             resources,
             model_generation,
             maximum_request_duration: Duration::from_millis(installed.maximum_request_duration_ms),
         };
+        let mut installed_resolver = None;
+        let mut original_generations =
+            goal_factory::model_capability::CpuNeuronOriginalGenerationReaderV3::default();
         let runtime = if goal_mode {
-            goal_factory::prepare(
+            let (runtime, resolver, reader) = goal_factory::prepare(
                 source, &installed, identity, plan, control, clock, worker, tick,
-            )?
+            )?;
+            original_generations = reader;
+            installed_resolver = resolver.clone();
+            if let Some(resolver) = resolver {
+                provider = Arc::new(goal_factory::model_adapters::Provider {
+                    authority_file: installed.authority_file.clone(),
+                    verifier,
+                    resolver,
+                });
+            }
+            runtime
         } else {
             let handle = open_current_cpu_neuron_v2(
                 installed.current_pointer,
@@ -125,7 +149,21 @@ impl Composition {
             runtime,
             runner,
             provider,
+            resolver: installed_resolver,
+            original_generations,
         })
+    }
+
+    pub(crate) fn model_resolver(
+        &self,
+    ) -> Option<Arc<dyn goal_factory::model_capability::RegisteredCpuModelResolverV3>> {
+        self.resolver.clone()
+    }
+
+    pub(crate) fn original_generation_reader(
+        &self,
+    ) -> goal_factory::model_capability::CpuNeuronOriginalGenerationReaderV3 {
+        self.original_generations.clone()
     }
 
     pub(crate) fn attach(self, config: AgentdConfig) -> Result<AgentdConfig, AgentdError> {

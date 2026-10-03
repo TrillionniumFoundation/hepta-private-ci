@@ -59,6 +59,11 @@ pub(crate) use installed::Composition as InstalledCpuComposition;
 mod goal_factory;
 #[path = "initial_cpu_iteration_observation.rs"]
 mod iteration_observation;
+pub use goal_factory::model_capability::CpuNeuronModelCapabilityV3;
+pub use goal_factory::model_capability::CpuNeuronModelIdentityV3;
+pub use goal_factory::model_capability::CpuNeuronModelUsePurposeV3;
+pub use goal_factory::model_capability::CpuNeuronOriginalGenerationReaderV3;
+pub use goal_factory::model_capability::RegisteredCpuModelResolverV3;
 #[path = "initial_cpu_iteration_selection.rs"]
 mod iteration_selection;
 #[path = "initial_cpu_registered_model_use_v3.rs"]

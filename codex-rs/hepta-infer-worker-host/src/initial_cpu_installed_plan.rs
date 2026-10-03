@@ -21,6 +21,8 @@ pub(super) struct Installed {
     pub current_pointer: PathBuf,
     #[serde(default)]
     pub model_use_pointer: Option<PathBuf>,
+    #[serde(default)]
+    pub model_registry: Option<Source>,
     pub compiled_body: Source,
     pub tick_provider: Source,
     #[serde(default)]
@@ -28,6 +30,8 @@ pub(super) struct Installed {
     #[serde(default)]
     pub fleet_execution_binding: Option<FleetExecutionBindingV1>,
     pub control_state_path: PathBuf,
+    #[serde(skip)]
+    pub registered_bootstrap: Option<goal_factory::model_capability::Bootstrap>,
     pub authority_file: PathBuf,
     pub authority_signer_id: String,
     pub authority_verifying_key_hex: String,
@@ -41,6 +45,11 @@ pub(super) enum FleetExecutionBindingV1 {
 
 impl Installed {
     pub(super) fn launch_digest(&self, root_launch_fact: Option<&str>) -> HostResult<Digest32> {
+        if self.model_registry.is_some()
+            && self.schema != "hepta.cpu-neuron.installed-owner-composition.v5"
+        {
+            return Err("registered model resolver requires explicit installed v5 mode".into());
+        }
         match (
             self.schema.as_str(),
             &self.model_use_pointer,
@@ -57,6 +66,14 @@ impl Installed {
                 None,
                 Some(FleetExecutionBindingV1::CurrentRootFleetExecutionV1),
             ) => digest(root_launch_fact.ok_or("missing original Root Fleet launch fact")?),
+            (
+                "hepta.cpu-neuron.installed-owner-composition.v5",
+                Some(_),
+                None,
+                Some(FleetExecutionBindingV1::CurrentRootFleetExecutionV1),
+            ) if self.model_registry.is_some() => {
+                digest(root_launch_fact.ok_or("missing original Root Fleet launch fact")?)
+            }
             _ => Err("installed CPU Fleet binding mode or schema".into()),
         }
     }
@@ -77,13 +94,39 @@ pub(super) fn load(
         digest: source.digest.clone(),
     };
     let bytes = pinned.read(32 * 1024)?;
-    let installed: Installed = serde_json::from_slice(&bytes)?;
+    let mut installed: Installed = serde_json::from_slice(&bytes)?;
     let root_launch_fact = std::env::var("HEPTA_FLEET_LAUNCH_DIGEST").ok();
     let launch_digest = installed.launch_digest(root_launch_fact.as_deref())?;
     if installed.agent_id != identity.agent_id.to_string()
         || !(1..=60_000).contains(&installed.maximum_request_duration_ms)
     {
         return Err("installed CPU composition identity or duration".into());
+    }
+    if let Some(registry) = &installed.model_registry
+        && let Some(bootstrap) =
+            goal_factory::model_capability::read_bootstrap(registry, identity, clock.clone())?
+    {
+        let plan = bootstrap.plan.clone();
+        validate_state_paths(&plan, &installed.control_state_path, identity)?;
+        if !matches!(
+            goal_factory::mode(
+                [&plan.generation_store, &plan.runtime_index, &plan.witness],
+                goal_factory::StoreRequirement::Existing
+            )?,
+            crate::CpuNeuronGenerationOpenModeV1::Recover
+        ) {
+            return Err("registered successor requires all original completed stores".into());
+        }
+        installed.registered_bootstrap = Some(bootstrap);
+        if pinned.read(32 * 1024)? != bytes {
+            return Err("installed CPU source changed".into());
+        }
+        return Ok((
+            installed,
+            plan,
+            crate::CpuNeuronGenerationOpenModeV1::Recover,
+            launch_digest,
+        ));
     }
     let inputs = match &installed.model_use_pointer {
         Some(pointer) => model_use_current::read_installed_inputs(pointer, clock.clone())?,
@@ -96,7 +139,14 @@ pub(super) fn load(
     {
         return Err("installed CPU owner differs from original Root statement".into());
     }
-    let body = read_body(&installed.compiled_body, identity, &inputs)?;
+    let body = read_body(
+        &installed.compiled_body,
+        identity,
+        &inputs.runtime,
+        inputs.physical_profile_source(),
+        &inputs.profile.model,
+        &inputs.profile.weights,
+    )?;
     let scope = NeuronTickInputV1::journal_scope_for_subject(
         &id(identity.agent_id.as_str())?,
         inputs.evidence.objective_digest(),
@@ -195,10 +245,13 @@ pub(super) fn load(
 #[path = "initial_cpu_fleet_launch_binding_tests.rs"]
 mod tests;
 
-fn read_body(
+pub(super) fn read_body(
     source: &Source,
     identity: &codex_hepta_agentd::AgentdIdentity,
-    inputs: &Inputs,
+    runtime: &NeuronRuntimeConfigV1,
+    original_profile: &Source,
+    model: &Source,
+    weights: &Source,
 ) -> HostResult<NeuronBodyBundleIdentityV1> {
     let bytes = source.read(32 * 1024)?;
     let compiled: Value = serde_json::from_slice(&bytes)?;
@@ -253,8 +306,8 @@ fn read_body(
         effective_parameter_digest: digest(text("effective_parameter_digest")?)?,
         source_revision_digest: digest(text("source_revision_digest")?)?,
     };
-    if body.body_generation != inputs.runtime.generation
-        || body.effective_parameter_digest != inputs.runtime.execution_profile_digest_v1()?
+    if body.body_generation != runtime.generation
+        || body.effective_parameter_digest != runtime.execution_profile_digest_v1()?
         || body.semantic_digest()? != digest(text("runtime_body_digest")?)?
         || Digest32::of_bytes(&base_bytes) != body.base_bundle_digest
         || Digest32::of_bytes(&organ_bytes) != body.organ_bundle_digest
@@ -266,21 +319,10 @@ fn read_body(
     let organ: Value = serde_json::from_slice(&organ_bytes)?;
     let program: Source = serde_json::from_value(base["program"].clone())?;
     let provenance: Source = serde_json::from_value(base["source_provenance"].clone())?;
-    let program_bytes = program.read(512 * 1024 * 1024)?;
+    body_program::verify(&program)?;
     let provenance_bytes = provenance.read(64 * 1024)?;
     let build: Value = serde_json::from_slice(&provenance_bytes)?;
-    let current_exe = std::fs::File::open("/proc/self/exe")?;
-    if current_exe.metadata()?.len() > 512 * 1024 * 1024 {
-        return Err("actual WorkerHost ELF bounds".into());
-    }
-    use std::io::Read;
-    let mut actual = Vec::new();
-    current_exe
-        .take(512 * 1024 * 1024 + 1)
-        .read_to_end(&mut actual)?;
-    if !program_bytes.starts_with(b"\x7fELF")
-        || program_bytes != actual
-        || Digest32::of_bytes(&provenance_bytes) != body.source_revision_digest
+    if Digest32::of_bytes(&provenance_bytes) != body.source_revision_digest
         || build["schema"] != "hepta.cpu-neuron.installed-native-build-provenance.v1"
         || build["qualification_features"] != serde_json::json!([])
         || build["program"] != base["program"]
@@ -288,9 +330,9 @@ fn read_body(
         return Err("Root body does not bind this actual normal WorkerHost ELF".into());
     }
     for (key, expected) in [
-        ("original_profile", inputs.physical_profile_source()),
-        ("model", &inputs.profile.model),
-        ("weights", &inputs.profile.weights),
+        ("original_profile", original_profile),
+        ("model", model),
+        ("weights", weights),
     ] {
         let item: Source = serde_json::from_value(organ[key].clone())?;
         if &item != expected {
@@ -300,10 +342,35 @@ fn read_body(
     }
     let preprocessor: Source = serde_json::from_value(organ["preprocessor"].clone())?;
     preprocessor.read(64 * 1024)?;
-    if digest(&preprocessor.digest)? != inputs.runtime.normalization_digest
+    if digest(&preprocessor.digest)? != runtime.normalization_digest
         || source.read(32 * 1024)? != bytes
     {
         return Err("body normalization or source changed".into());
     }
     Ok(body)
+}
+
+#[path = "initial_cpu_body_program_v3.rs"]
+mod body_program;
+
+fn validate_state_paths(
+    plan: &crate::CpuNeuronGenerationPlanV1,
+    control: &Path,
+    identity: &codex_hepta_agentd::AgentdIdentity,
+) -> HostResult<()> {
+    for path in [
+        &plan.generation_store,
+        &plan.runtime_index,
+        &plan.witness,
+        control,
+    ] {
+        if !path.is_absolute()
+            || !path.starts_with(&identity.home_root)
+            || path.file_name().is_none()
+        {
+            return Err("registered CPU state escaped the original private Agent home".into());
+        }
+        crate::evolving_agentd::private_parent(path)?;
+    }
+    Ok(())
 }

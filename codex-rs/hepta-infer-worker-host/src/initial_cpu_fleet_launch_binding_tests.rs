@@ -68,3 +68,29 @@ fn binding_modes_cannot_mix_static_claims_or_silently_widen_legacy() -> HostResu
     assert!(serde_json::from_value::<Installed>(value).is_err());
     Ok(())
 }
+
+#[test]
+fn registered_model_mode_requires_pinned_reader_and_original_current_fleet_fact() -> HostResult<()>
+{
+    let mut value = descriptor(5);
+    value
+        .as_object_mut()
+        .ok_or("descriptor object")?
+        .remove("fleet_manifest_digest");
+    value["model_use_pointer"] = "/var/lib/original/model-use.json".into();
+    value["fleet_execution_binding"] = "CurrentRootFleetExecutionV1".into();
+    let absent: Installed = serde_json::from_value(value.clone())?;
+    assert!(absent.launch_digest(Some(&"e".repeat(64))).is_err());
+    value["model_registry"] =
+        serde_json::json!({"path":"/etc/original/registry-reader.json", "digest":"f".repeat(64)});
+    let installed: Installed = serde_json::from_value(value.clone())?;
+    assert!(installed.launch_digest(None).is_err());
+    assert_eq!(
+        installed.launch_digest(Some(&"e".repeat(64)))?,
+        digest(&"e".repeat(64))?
+    );
+    value["schema"] = "hepta.cpu-neuron.installed-owner-composition.v4".into();
+    let legacy: Installed = serde_json::from_value(value)?;
+    assert!(legacy.launch_digest(Some(&"e".repeat(64))).is_err());
+    Ok(())
+}

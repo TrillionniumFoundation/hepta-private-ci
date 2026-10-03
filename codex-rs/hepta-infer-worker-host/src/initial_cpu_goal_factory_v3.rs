@@ -8,16 +8,25 @@ use std::os::unix::fs::MetadataExt;
 use std::path::PathBuf;
 use std::sync::Arc;
 
+#[path = "initial_cpu_model_adapters_v3.rs"]
+pub(super) mod model_adapters;
+#[path = "initial_cpu_model_capability_v3.rs"]
+pub(super) mod model_capability;
+use model_capability::CpuNeuronModelIdentityV3;
+use model_capability::CpuNeuronModelUsePurposeV3;
+use model_capability::RegisteredCpuModelResolverV3;
+
 struct Factory {
     descriptor: Source,
     descriptor_bytes: Vec<u8>,
     identity: AgentdIdentity,
     plan: crate::CpuNeuronGenerationPlanV1,
-    admission: model_use_current::Admission,
+    admission: model_capability::Admission,
     physical: crate::SharedCpuNeuronInferenceControlV3,
+    resolver: Option<Arc<dyn RegisteredCpuModelResolverV3>>,
 }
 #[derive(Clone, Copy)]
-enum StoreRequirement {
+pub(super) enum StoreRequirement {
     NewOrExisting,
     Existing,
 }
@@ -33,10 +42,22 @@ impl Factory {
         &self,
         scope: &AgentdNeuronGoalScopeV3,
         requirement: StoreRequirement,
+        purpose: CpuNeuronModelUsePurposeV3,
     ) -> HostResult<AgentdNeuronHandleV2> {
         self.verify_descriptor()?;
-        let plan = scope_plan(&self.plan, &self.identity, scope)?;
-        let admission = self.admission.for_scope(&plan, &self.identity)?;
+        let capability = self
+            .resolver
+            .as_ref()
+            .map(|resolver| -> HostResult<_> {
+                Ok(resolver.resolve(&model_identity(scope, &self.identity)?, purpose)?)
+            })
+            .transpose()?;
+        let original = capability.as_ref().map_or(&self.plan, |cap| &cap.plan);
+        let plan = scope_plan(original, &self.identity, scope)?;
+        let original_admission = capability
+            .as_ref()
+            .map_or(&self.admission, |cap| &cap.admission);
+        let admission = original_admission.for_scope(&plan, &self.identity)?;
         let mode = mode(
             [&plan.generation_store, &plan.runtime_index, &plan.witness],
             requirement,
@@ -44,7 +65,9 @@ impl Factory {
         let handle = crate::open_shared_cpu_neuron_goal_scope_v3(
             plan,
             mode,
-            self.physical.clone(),
+            capability
+                .as_ref()
+                .map_or_else(|| self.physical.clone(), |cap| cap.physical.clone()),
             admission,
         )?;
         if AgentdNeuronGoalScopeV3::capture(scope.ordinal, &handle)? != *scope {
@@ -64,6 +87,17 @@ impl AgentdNeuronGoalScopeFactoryV3 for Factory {
         expected: &AgentdNeuronGoalScopeV3,
     ) -> Result<AgentdNeuronHandleV2, AgentdError> {
         let run = || -> HostResult<AgentdNeuronHandleV2> {
+            let capability = self
+                .resolver
+                .as_ref()
+                .map(|resolver| -> HostResult<_> {
+                    Ok(resolver.resolve(
+                        &model_identity(expected, &self.identity)?,
+                        CpuNeuronModelUsePurposeV3::CurrentSelectedNewGoal,
+                    )?)
+                })
+                .transpose()?;
+            let original = capability.as_ref().map_or(&self.plan, |cap| &cap.plan);
             // The sole Agentd host validates the durable invocation before
             // calling this installed factory and still owns the final CAS.
             if identity.agent_id != self.identity.agent_id
@@ -72,22 +106,38 @@ impl AgentdNeuronGoalScopeFactoryV3 for Factory {
                 || stage.run_id != record.snapshot.run_id
                 || stage.snapshot_digest != invocation.request.snapshot.digest()
                 || stage.predecessor_digest.is_zero()
-                || record.runtime_body_digest != self.plan.body.semantic_digest()?
-                || invocation.request.snapshot.body_generation() != self.plan.runtime.generation
+                || record.runtime_body_digest != original.body.semantic_digest()?
+                || invocation.request.snapshot.body_generation() != original.runtime.generation
             {
                 return Err("actual compiled Goal differs from the original physical owner".into());
             }
             // Verify the complete expected identity before constructing files.
-            scope_plan(&self.plan, &self.identity, expected)?;
+            scope_plan(original, &self.identity, expected)?;
             let mut next = expected.clone();
             next.ordinal = next.ordinal.checked_add(1).ok_or("Goal ordinal overflow")?;
             next.identity.objective_digest = stage.objective_digest;
-            self.open(&next, StoreRequirement::NewOrExisting)
+            self.open(
+                &next,
+                StoreRequirement::NewOrExisting,
+                CpuNeuronModelUsePurposeV3::CurrentSelectedNewGoal,
+            )
         };
         run().map_err(|error| {
             AgentdError::Invalid(format!("installed Goal scope unavailable: {error}"))
         })
     }
+}
+
+fn model_identity(
+    scope: &AgentdNeuronGoalScopeV3,
+    identity: &AgentdIdentity,
+) -> HostResult<CpuNeuronModelIdentityV3> {
+    Ok(CpuNeuronModelIdentityV3 {
+        generation: Generation::new(scope.identity.model_generation)?,
+        configuration_digest: scope.identity.runtime_configuration_digest,
+        body_digest: scope.identity.body_bundle_digest,
+        subject: id(identity.agent_id.as_str())?,
+    })
 }
 
 fn scope_plan(
@@ -129,7 +179,7 @@ fn scope_plan(
     }
     Ok(plan)
 }
-fn mode(
+pub(super) fn mode(
     paths: [&Path; 3],
     requirement: StoreRequirement,
 ) -> HostResult<crate::CpuNeuronGenerationOpenModeV1> {
@@ -170,7 +220,11 @@ pub(super) fn prepare(
     clock: Arc<dyn AuthorityClock>,
     worker: crate::CpuNeuronControlConfigV2,
     tick: Arc<tick::TickProvider>,
-) -> HostResult<AgentdNeuronRuntimeV2Config> {
+) -> HostResult<(
+    AgentdNeuronRuntimeV2Config,
+    Option<Arc<dyn RegisteredCpuModelResolverV3>>,
+    model_capability::CpuNeuronOriginalGenerationReaderV3,
+)> {
     let pointer = installed
         .model_use_pointer
         .clone()
@@ -223,25 +277,91 @@ pub(super) fn prepare(
         plan.model_manifest_digest,
         worker,
     )?;
-    let admission = model_use_current::Admission::open(pointer, &plan, identity, clock.clone())?;
+    let admission = match &installed.registered_bootstrap {
+        Some(bootstrap) => bootstrap.admission.clone(),
+        None => model_capability::Admission::Initial(model_use_current::Admission::open(
+            pointer,
+            &plan,
+            identity,
+            clock.clone(),
+        )?),
+    };
+    let physical = crate::SharedCpuNeuronInferenceControlV3::new(physical);
+    let original_generations = model_capability::CpuNeuronOriginalGenerationReaderV3::default();
+    let resolver: Option<Arc<dyn RegisteredCpuModelResolverV3>> = match &installed.model_registry {
+        Some(registry) => {
+            let (weights, installation) = match &installed.registered_bootstrap {
+                Some(bootstrap) => (bootstrap.weights.clone(), bootstrap.installation.clone()),
+                None => {
+                    let verified = model_use_current::inspect_current(
+                        installed
+                            .model_use_pointer
+                            .as_ref()
+                            .ok_or("registered model-use pointer")?,
+                    )?;
+                    (
+                        verified.installed_inputs().profile.weights.clone(),
+                        Source {
+                            path: source.path.clone(),
+                            digest: source.digest.clone(),
+                        },
+                    )
+                }
+            };
+            Some(Arc::new(model_capability::ProtectedReader::open(
+                registry.clone(),
+                identity.clone(),
+                clock,
+                model_capability::CpuNeuronModelCapabilityV3 {
+                    identity: model_identity(&fresh()?, identity)?,
+                    installation,
+                    plan: plan.clone(),
+                    admission: admission.clone(),
+                    physical: physical.clone(),
+                    tick: tick.clone(),
+                    weights,
+                },
+                original_generations.clone(),
+            )?) as Arc<dyn RegisteredCpuModelResolverV3>)
+        }
+        None => None,
+    };
+    let runtime_tick: Arc<dyn AgentdNeuronTickProviderV2> = match &resolver {
+        Some(resolver) => Arc::new(model_adapters::Tick {
+            resolver: resolver.clone(),
+        }),
+        None => tick,
+    };
     let factory = Arc::new(Factory {
         descriptor,
         descriptor_bytes,
         identity: identity.clone(),
         plan,
         admission,
-        physical: crate::SharedCpuNeuronInferenceControlV3::new(physical),
+        physical,
+        resolver: resolver.clone(),
     });
-    let active = factory.open(&active_scope, requirement)?;
-    let mut runtime =
-        AgentdNeuronRuntimeV2Config::new(active, installed.control_state_path.clone(), tick)?
-            .with_goal_scope_factory_v3(active_scope, factory.clone())?;
+    let purpose = match requirement {
+        StoreRequirement::NewOrExisting => CpuNeuronModelUsePurposeV3::CurrentSelectedNewGoal,
+        StoreRequirement::Existing => CpuNeuronModelUsePurposeV3::HistoricalRecovery,
+    };
+    let active = factory.open(&active_scope, requirement, purpose)?;
+    let mut runtime = AgentdNeuronRuntimeV2Config::new(
+        active,
+        installed.control_state_path.clone(),
+        runtime_tick,
+    )?
+    .with_goal_scope_factory_v3(active_scope, factory.clone())?;
     for scope in retained {
-        let handle = factory.open(&scope, StoreRequirement::Existing)?;
+        let handle = factory.open(
+            &scope,
+            StoreRequirement::Existing,
+            CpuNeuronModelUsePurposeV3::HistoricalRecovery,
+        )?;
         runtime = runtime.with_retained_goal_scope_v3(scope, handle)?;
     }
     factory.verify_descriptor()?;
-    Ok(runtime)
+    Ok((runtime, resolver, original_generations))
 }
 
 #[cfg(test)]
