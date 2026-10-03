@@ -104,6 +104,12 @@ test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
 
+# The bounded-window regression retains 1040 original signed, synced records.
+# Share the existing disk-work slot; keep its original 60-second watchdog.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-learning-ledger) & test(explicit_window_remains_bounded_when_original_complete_history_exceeds_packet_budget)'
+test-group = 'hepta_durable_capacity'
+
 [[profile.default.overrides]]
 filter = 'package(codex-hepta-learning-ledger) & test(history_exceeds_v1_record_capacity_without_resetting_chain_or_limits)'
 test-group = 'hepta_durable_capacity'
