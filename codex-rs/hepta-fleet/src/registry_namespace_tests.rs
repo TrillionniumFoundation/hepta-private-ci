@@ -11,11 +11,13 @@ use super::*;
 use crate::ResourceBudget;
 use crate::WorkspaceBinding;
 
-fn fixture() -> (tempfile::TempDir, FleetRegistry, AgentRecord, AgentRecord) {
-    let temp = tempfile::tempdir().expect("temporary root");
-    let root = temp.path().canonicalize().expect("canonical root");
-    let fleet_root = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet root");
-    let registry = FleetRegistry::initialize(fleet_root.clone()).expect("registry");
+type TestResult<T> = Result<T, Box<dyn std::error::Error>>;
+
+fn fixture() -> TestResult<(tempfile::TempDir, FleetRegistry, AgentRecord, AgentRecord)> {
+    let temp = tempfile::tempdir()?;
+    let root = temp.path().canonicalize()?;
+    let fleet_root = HeptaFleetRoot::parse(root.join("fleet"))?;
+    let registry = FleetRegistry::initialize(fleet_root.clone())?;
     let mut records = Vec::new();
     for (index, id) in [
         "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12",
@@ -25,23 +27,27 @@ fn fixture() -> (tempfile::TempDir, FleetRegistry, AgentRecord, AgentRecord) {
     .enumerate()
     {
         let workspace = root.join(format!("workspace-{index}"));
-        fs::create_dir(&workspace).expect("workspace");
+        fs::create_dir(&workspace)?;
         let manifest = AgentManifest::new(
-            AgentId::parse(*id).expect("id"),
-            WorkspaceBinding::new(&workspace, &fleet_root).expect("binding"),
+            AgentId::parse(*id)?,
+            WorkspaceBinding::new(&workspace, &fleet_root)?,
             ResourceBudget::local_default(),
-        )
-        .expect("manifest");
-        records.push(registry.register(manifest).expect("register"));
+        )?;
+        records.push(registry.register(manifest)?);
     }
-    let second = records.pop().expect("second record");
-    let first = records.pop().expect("first record");
-    (temp, registry, first, second)
+    let second = records
+        .pop()
+        .ok_or_else(|| std::io::Error::other("second record"))?;
+    let first = records
+        .pop()
+        .ok_or_else(|| std::io::Error::other("first record"))?;
+    Ok((temp, registry, first, second))
 }
 
 #[test]
-fn parent_alias_is_bound_once_and_cannot_redirect_migration_or_lifecycle_writes() {
-    let (temp, registry, first, _peer) = fixture();
+fn parent_alias_is_bound_once_and_cannot_redirect_migration_or_lifecycle_writes() -> TestResult<()>
+{
+    let (temp, registry, first, _peer) = fixture()?;
     let root = temp.path().canonicalize().expect("canonical fixture root");
     let redirects = root.join("redirects");
     fs::create_dir(&redirects).expect("alias parent");
@@ -89,6 +95,7 @@ fn parent_alias_is_bound_once_and_cannot_redirect_migration_or_lifecycle_writes(
             .count(),
         0
     );
+    Ok(())
 }
 
 #[test]
@@ -115,8 +122,8 @@ fn initialization_resolves_missing_suffixes_and_rejects_a_linked_final_root() {
 }
 
 #[test]
-fn unsafe_peer_namespace_is_rejected_before_legacy_migration_side_effects() {
-    let (_temp, registry, first, peer) = fixture();
+fn unsafe_peer_namespace_is_rejected_before_legacy_migration_side_effects() -> TestResult<()> {
+    let (_temp, registry, first, peer) = fixture()?;
     fs::remove_dir(peer.layout.matrix_secrets_root()).expect("legacy secrets missing");
     fs::remove_dir(peer.layout.matrix_root()).expect("legacy matrix missing");
     fs::set_permissions(peer.layout.agent_root(), fs::Permissions::from_mode(0o777))
@@ -130,11 +137,12 @@ fn unsafe_peer_namespace_is_rejected_before_legacy_migration_side_effects() {
             .expect("safe local read"),
         first
     );
+    Ok(())
 }
 
 #[test]
-fn unsafe_peer_control_files_are_rejected_without_affecting_local_read() {
-    let (_temp, registry, first, peer) = fixture();
+fn unsafe_peer_control_files_are_rejected_without_affecting_local_read() -> TestResult<()> {
+    let (_temp, registry, first, peer) = fixture()?;
     for path in [
         peer.layout.agent_config().to_path_buf(),
         lifecycle_path(peer.layout.run_root(), 0),
@@ -153,11 +161,12 @@ fn unsafe_peer_control_files_are_rejected_without_affecting_local_read() {
         fs::set_permissions(path, fs::Permissions::from_mode(0o644)).expect("restore control file");
     }
     registry.load().expect("restored native catalog");
+    Ok(())
 }
 
 #[test]
-fn sticky_ancestor_and_retained_hardlinks_preserve_native_catalog_recovery() {
-    let (temp, registry, _first, peer) = fixture();
+fn sticky_ancestor_and_retained_hardlinks_preserve_native_catalog_recovery() -> TestResult<()> {
+    let (temp, registry, _first, peer) = fixture()?;
     for path in [
         lifecycle_path(peer.layout.run_root(), 0),
         peer.layout
@@ -175,15 +184,16 @@ fn sticky_ancestor_and_retained_hardlinks_preserve_native_catalog_recovery() {
     let reopened = FleetRegistry::open_existing(registry.layout.fleet_root().clone())
         .expect("sticky namespace");
     assert_eq!(reopened.load().expect("native catalog recovery"), expected);
+    Ok(())
 }
 
 #[test]
-fn root_reader_preserves_nonroot_fleet_owner_and_rejects_foreign_control_owner() {
-    let (temp, registry, first, _peer) = fixture();
+fn root_reader_preserves_nonroot_fleet_owner_and_rejects_foreign_control_owner() -> TestResult<()> {
+    let (temp, registry, first, _peer) = fixture()?;
     let Some(nonroot_uid) =
         root_reader_fixture_uid(fs::metadata(temp.path()).expect("fixture owner").uid())
     else {
-        return;
+        return Ok(());
     };
     let expected = registry.load().expect("initial catalog");
     let path = first.layout.agent_config();
@@ -223,6 +233,7 @@ fn root_reader_preserves_nonroot_fleet_owner_and_rejects_foreign_control_owner()
     let reopened = FleetRegistry::open_existing(registry.layout.fleet_root().clone())
         .expect("root reads nonroot-owned Fleet");
     assert_eq!(reopened.load().expect("nonroot catalog"), expected);
+    Ok(())
 }
 
 // Returning here reports success to the test harness; the explicit diagnostic
