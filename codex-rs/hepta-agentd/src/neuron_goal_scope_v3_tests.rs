@@ -302,3 +302,6 @@ mod cold_tests;
 
 #[path = "neuron_goal_scope_reload_v3_tests.rs"]
 mod reload_tests;
+
+#[path = "neuron_runtime_v2_checkpoint_observation_tests.rs"]
+mod checkpoint_observation_tests;

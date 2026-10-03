@@ -221,6 +221,28 @@ where
         ))
     }
 
+    fn current_sparse_checkpoint_control(
+        &self,
+        required_anchor: codex_hepta_agent_components::neuron::JournalAnchor,
+    ) -> Result<
+        (
+            Generation,
+            codex_hepta_agent_components::neuron::JournalScope,
+            Option<codex_hepta_agent_components::neuron::SparseCheckpoint>,
+        ),
+        AgentdNeuronControlErrorV2,
+    > {
+        let locked = self.lock_control()?;
+        let runtime = &locked.owner.runtime;
+        Ok((
+            runtime.configuration().generation,
+            runtime.journal_scope(),
+            runtime
+                .current_acknowledged_sparse_checkpoint_v2(required_anchor)
+                .map_err(AgentdNeuronControlErrorV2::Runtime)?,
+        ))
+    }
+
     fn export_archive_control(
         &self,
     ) -> Result<

@@ -307,6 +307,20 @@ trait ProductNeuronOwnerV2: Send + Sync {
         Err(AgentdNeuronControlErrorV2::PendingRecovery)
     }
 
+    fn current_sparse_checkpoint_control(
+        &self,
+        _required_anchor: codex_hepta_agent_components::neuron::JournalAnchor,
+    ) -> Result<
+        (
+            Generation,
+            codex_hepta_agent_components::neuron::JournalScope,
+            Option<codex_hepta_agent_components::neuron::SparseCheckpoint>,
+        ),
+        AgentdNeuronControlErrorV2,
+    > {
+        Err(AgentdNeuronControlErrorV2::PendingRecovery)
+    }
+
     fn export_archive_control(
         &self,
     ) -> Result<
