@@ -57,6 +57,8 @@ pub(crate) use installed::Composition as InstalledCpuComposition;
 
 #[path = "initial_cpu_goal_factory_v3.rs"]
 mod goal_factory;
+#[path = "initial_cpu_iteration_observation.rs"]
+mod iteration_observation;
 #[path = "initial_cpu_iteration_selection.rs"]
 mod iteration_selection;
 #[path = "initial_cpu_model_use_v2.rs"]
@@ -81,6 +83,9 @@ mod role;
 mod selection;
 pub fn select_cpu_self_iteration_stage(path: &Path, pin: Digest32) -> HostResult<Value> {
     iteration_selection::select(path, pin)
+}
+pub fn observe_cpu_self_iteration_canary(path: &Path, pin: Digest32) -> HostResult<Value> {
+    iteration_observation::observe(path, pin)
 }
 pub use model_use::VerifiedCpuModelUseV2;
 pub use model_use::inspect_cpu_model_use_v2;
