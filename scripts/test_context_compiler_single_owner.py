@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Static source-topology regressions for the one context delivery owner."""
 
+from fnmatch import fnmatchcase
 from pathlib import Path
 import unittest
 
@@ -117,6 +118,26 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
         self.assertFalse(
             list((ROOT / "scripts").glob("remediate_context_compiler_*.py"))
         )
+
+    def test_supervisor_dependency_changes_select_context_qualification(self):
+        workflow = read(".github/workflows/context-compiler-qualification.yml")
+        pull_request = workflow.split("  pull_request:\n", 1)[1].split("  push:\n", 1)[
+            0
+        ]
+        path_lines = pull_request.split("    paths:\n", 1)[1].splitlines()
+        self.assertTrue(all(line.startswith("      - ") for line in path_lines))
+        paths = [line.removeprefix("      - ") for line in path_lines]
+        supervisor_scope = "codex-rs/hepta-supervisor/**"
+        without_supervisor = [path for path in paths if path != supervisor_scope]
+        for changed in (
+            "codex-rs/hepta-supervisor/src/restart_journal.rs",
+            "codex-rs/hepta-supervisor/Cargo.toml",
+        ):
+            with self.subTest(changed=changed):
+                self.assertTrue(any(fnmatchcase(changed, path) for path in paths))
+                self.assertFalse(
+                    any(fnmatchcase(changed, path) for path in without_supervisor)
+                )
 
     def test_profile_matrix_covers_both_git_lanes_and_feature_profiles(self):
         workflow = read(".github/workflows/context-compiler-profile-matrix.yml")
