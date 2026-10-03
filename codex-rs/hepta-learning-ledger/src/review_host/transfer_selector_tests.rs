@@ -1,6 +1,7 @@
 #![allow(clippy::expect_used, clippy::unwrap_used)]
 use super::*;
 use crate::AuthenticatedPrincipalV1;
+use crate::LearningEvidenceRoleV1;
 use crate::activate_learning_trust;
 use crate::verify_signed_independent_roles_v1;
 use ed25519_dalek::Signer;

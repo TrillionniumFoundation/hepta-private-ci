@@ -460,3 +460,6 @@ fn observer_and_evaluator_require_pairwise_independence() {
         Err(SignedEvidenceError::ControllerCollision)
     );
 }
+
+#[path = "public_evidence_wire_v1_tests.rs"]
+mod public_wire;

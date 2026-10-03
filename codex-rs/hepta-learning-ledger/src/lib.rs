@@ -228,8 +228,8 @@ pub use review_host::sign_root_learning_unlearning_v1;
 pub use review_host::FixedCalibrationCutV1;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::FixedCalibrationPublicationV1;
-#[cfg(all(target_os = "linux", feature = "review-host"))]
-pub use review_host::ReviewEvidenceWireV1;
+mod public_evidence_wire_v1;
+pub use public_evidence_wire_v1::ReviewEvidenceWireV1;
 #[cfg(all(target_os = "linux", feature = "review-host"))]
 pub use review_host::ReviewSignerWireV1;
 #[cfg(all(target_os = "linux", feature = "review-host"))]

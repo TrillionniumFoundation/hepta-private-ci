@@ -80,19 +80,8 @@ pub(super) fn generator_evidence(
         signature: decode_hex::<64>(&row.signature_hex)?,
     })
 }
-pub(super) fn encode_hex(bytes: &[u8]) -> String {
-    bytes.iter().map(|value| format!("{value:02x}")).collect()
-}
-pub(super) fn decode_hex<const N: usize>(value: &str) -> ReviewResult<[u8; N]> {
-    if value.len() != N * 2 || !value.bytes().all(|byte| byte.is_ascii_hexdigit()) {
-        return Err("invalid fixed-width hexadecimal value".into());
-    }
-    let mut output = [0; N];
-    for (index, byte) in output.iter_mut().enumerate() {
-        *byte = u8::from_str_radix(&value[index * 2..index * 2 + 2], 16)?;
-    }
-    Ok(output)
-}
+pub(super) use crate::public_evidence_wire_v1::decode_hex;
+pub(super) use crate::public_evidence_wire_v1::encode_hex;
 pub(super) fn now_ms() -> ReviewResult<u64> {
     Ok(u64::try_from(
         std::time::SystemTime::now()
