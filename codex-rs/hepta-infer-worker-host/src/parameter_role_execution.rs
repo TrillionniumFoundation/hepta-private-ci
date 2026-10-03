@@ -42,7 +42,8 @@ pub fn execute_retained_parameter_role_v1(
         ParameterRoleExecutionPurposeV1::ObserverPairedFinish => {
             OriginalFixedRolePurposeV1::PairedCustodyFinish
         }
-        ParameterRoleExecutionPurposeV1::ObserverCanary => {
+        ParameterRoleExecutionPurposeV1::ObserverCanary
+        | ParameterRoleExecutionPurposeV1::ObserverRegisteredCanary => {
             OriginalFixedRolePurposeV1::CanaryObserver
         }
         ParameterRoleExecutionPurposeV1::EvaluatorNoChange
@@ -61,7 +62,8 @@ pub fn execute_retained_parameter_role_v1(
         ParameterRoleExecutionPurposeV1::SelectorPreRegistration => {
             OriginalFixedRolePurposeV1::PreRegistrationSelector
         }
-        ParameterRoleExecutionPurposeV1::SelectorCycleStage => {
+        ParameterRoleExecutionPurposeV1::SelectorCycleStage
+        | ParameterRoleExecutionPurposeV1::SelectorRegisteredCycleStage => {
             OriginalFixedRolePurposeV1::CycleSelector
         }
     };
@@ -98,6 +100,7 @@ pub enum ParameterRoleExecutionPurposeV1 {
     ObserverPairedExecution,
     ObserverPairedFinish,
     ObserverCanary,
+    ObserverRegisteredCanary,
     EvaluatorNoChange,
     EvaluatorPairedReview,
     EvaluatorParameterReview,
@@ -105,6 +108,7 @@ pub enum ParameterRoleExecutionPurposeV1 {
     EvaluatorPreRegistration,
     SelectorPreRegistration,
     SelectorCycleStage,
+    SelectorRegisteredCycleStage,
 }
 impl ParameterRoleExecutionPurposeV1 {
     fn contract(self) -> (&'static str, &'static str, bool, bool) {
@@ -151,6 +155,12 @@ impl ParameterRoleExecutionPurposeV1 {
                 true,
                 true,
             ),
+            Self::ObserverRegisteredCanary => (
+                "hepta-fixed-holdout-custody-",
+                "--registered-canary-observation",
+                true,
+                true,
+            ),
             Self::EvaluatorNoChange => (
                 "hepta-fixed-calibration-eval-",
                 "--parameter-no-change",
@@ -190,6 +200,12 @@ impl ParameterRoleExecutionPurposeV1 {
             Self::SelectorCycleStage => (
                 "hepta-fixed-selector-",
                 "select-self-iteration-stage",
+                true,
+                true,
+            ),
+            Self::SelectorRegisteredCycleStage => (
+                "hepta-fixed-selector-",
+                "select-registered-self-iteration-stage",
                 true,
                 true,
             ),
@@ -347,7 +363,8 @@ fn require_root_caller() -> HostResult<()> {
 
 fn read_configuration(source: &ParameterRoleSourceV3) -> HostResult<Vec<u8>> {
     let bytes = codex_hepta_agent_components::learning_ledger::read_root_review_input(
-        &source.path, 64 * 1024,
+        &source.path,
+        64 * 1024,
     )?;
     let expected: Digest32 = source.digest.parse()?;
     if expected.is_zero() || Digest32::of_bytes(&bytes) != expected {
