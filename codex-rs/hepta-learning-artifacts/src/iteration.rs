@@ -109,6 +109,9 @@ impl IterationCandidateV1 {
         if self.state != IterationCandidateStateV1::Drafted && self.predecessor.is_none() {
             return Err("candidate state requires an exact rollback predecessor".to_string());
         }
+        if self.predecessor.as_ref() == Some(&self.candidate_id) {
+            return Err("candidate cannot roll back to itself".to_string());
+        }
         Ok(())
     }
 
@@ -119,7 +122,10 @@ impl IterationCandidateV1 {
     ) -> Result<(), String> {
         self.validate(envelope)?;
         validate_iteration_transition(self.state, next)?;
-        self.state = next;
+        let mut successor = self.clone();
+        successor.state = next;
+        successor.validate(envelope)?;
+        *self = successor;
         Ok(())
     }
 }

@@ -191,8 +191,11 @@ impl ArtifactPublicationTransactionV1 {
     ) -> Result<(), ArtifactPublicationError> {
         self.require_phase(ArtifactPublicationPhaseV1::PayloadDurable)?;
         self.revalidate_withdrawal_frontier(withdrawal_registry, now)?;
-        if receipt.binding.is_zero()
-            || receipt.file_digest.is_zero()
+        let bytes = crate::storage::encode_snapshot(registry, receipt.binding)
+            .map_err(|_| ArtifactPublicationError::RegistryReceiptMismatch)?;
+        if receipt.encoded_bytes != bytes.len()
+            || receipt.file_digest != Digest32::of_bytes(&bytes)
+            || receipt.binding.is_zero()
             || receipt.head_digest.is_zero()
             || receipt.records != registry.records().len()
             || receipt.head_digest != registry.snapshot().head_digest
@@ -206,17 +209,12 @@ impl ArtifactPublicationTransactionV1 {
         if record.predecessor_chain_digest != self.intent.expected_registry_predecessor_head {
             return Err(ArtifactPublicationError::RegistryPredecessorMismatch);
         }
-        let v2 = &self.intent.admission.validated_manifest.manifest;
-        let ArtifactEvent::Register { manifest: v1, .. } = &record.event else {
+        let ArtifactEvent::Register { event_id, manifest } = &record.event else {
             return Err(ArtifactPublicationError::RegistryProjectionMismatch);
         };
-        if v1.artifact_id != v2.artifact_id
-            || v1.kind != v2.kind
-            || v1.generation != v2.generation
-            || v1.content_digest != v2.bytes_digest
-            || v1.producer_id != v2.producer_id
-            || v1.compatibility_digest != v2.compatibility_digest
-            || v1.encoded_size_bytes != v2.encoded_size_bytes
+        if event_id.as_str() != format!("artifact-publication:{}", self.intent.intent_digest)
+            || crate::validate_admission_registry_projection_v3(manifest, &self.intent.admission)
+                .is_err()
         {
             return Err(ArtifactPublicationError::RegistryProjectionMismatch);
         }
@@ -242,8 +240,11 @@ impl ArtifactPublicationTransactionV1 {
             .ok_or(ArtifactPublicationError::InternalInvariant)?;
         let validated = validate_registry_head_witness(witness, requirement)
             .map_err(|_| ArtifactPublicationError::WitnessReceiptMismatch)?;
-        if receipt.binding.is_zero()
-            || receipt.file_digest.is_zero()
+        let bytes = crate::storage::encode_head_witness(witness, receipt.binding)
+            .map_err(|_| ArtifactPublicationError::WitnessReceiptMismatch)?;
+        if receipt.encoded_bytes != bytes.len()
+            || receipt.file_digest != Digest32::of_bytes(&bytes)
+            || receipt.binding.is_zero()
             || receipt.witness_digest != validated.witness_digest
             || witness.head_digest != registry_receipt.head_digest
             || witness.predecessor_head_digest != self.intent.expected_registry_predecessor_head
@@ -578,15 +579,22 @@ mod tests {
             panic!("fixture only supports genesis registry publication");
         }
         let event = ArtifactEvent::Register {
-            event_id: id("register-v2"),
+            event_id: id(&format!(
+                "artifact-publication:{}",
+                prepared().intent().intent_digest
+            )),
             manifest: ArtifactManifest {
                 artifact_id: id("artifact-v2"),
                 kind: ArtifactKind::Model,
                 generation: generation(2),
                 predecessor_id: None,
                 content_digest: digest("payload"),
-                objective_digest: digest("objective-index"),
-                support_digest: digest("support-index"),
+                objective_digest: digest("objective"),
+                support_digest: prepared()
+                    .intent()
+                    .admission
+                    .validated_manifest
+                    .manifest_digest,
                 producer_id: id("producer"),
                 compatibility_digest: digest("compatibility"),
                 encoded_size_bytes: 7,
@@ -599,12 +607,14 @@ mod tests {
     }
 
     fn snapshot_receipt(registry: &ArtifactRegistry) -> RegistrySnapshotReceipt {
+        let bytes = crate::storage::encode_snapshot(registry, digest("publication-scope"))
+            .expect("canonical registry");
         RegistrySnapshotReceipt {
             binding: digest("publication-scope"),
             head_digest: registry.snapshot().head_digest,
-            file_digest: digest("registry-file"),
+            file_digest: Digest32::of_bytes(&bytes),
             records: registry.records().len(),
-            encoded_bytes: 128,
+            encoded_bytes: bytes.len(),
         }
     }
 
@@ -637,11 +647,13 @@ mod tests {
             Ok(value) => value,
             Err(error) => panic!("valid witness fixture failed: {error}"),
         };
+        let bytes = crate::storage::encode_head_witness(witness, digest("publication-scope"))
+            .expect("canonical witness");
         RegistryHeadWitnessReceipt {
             binding: digest("publication-scope"),
             witness_digest: validated.witness_digest,
-            file_digest: digest("witness-file"),
-            encoded_bytes: 128,
+            file_digest: Digest32::of_bytes(&bytes),
+            encoded_bytes: bytes.len(),
         }
     }
 
@@ -843,8 +855,12 @@ mod tests {
                 generation: generation(2),
                 predecessor_id: None,
                 content_digest: digest("wrong-payload"),
-                objective_digest: digest("objective-index"),
-                support_digest: digest("support-index"),
+                objective_digest: digest("objective"),
+                support_digest: prepared()
+                    .intent()
+                    .admission
+                    .validated_manifest
+                    .manifest_digest,
                 producer_id: id("producer"),
                 compatibility_digest: digest("compatibility"),
                 encoded_size_bytes: 7,

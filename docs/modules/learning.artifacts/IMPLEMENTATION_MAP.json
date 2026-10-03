@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "f5c33546dac888d91e030713f520eed0b88b5c88",
+    "tree": "5a751b7d4a4226eec9a981c4d7c0245f35c16e85"
   },
   "laneId": "LANE-E-LEARNING",
   "module": "learning.artifacts",
@@ -27,7 +27,10 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/registry.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/registry_tests.rs::registration_is_immutable_and_idempotent",
+        "codex-rs/hepta-learning-artifacts/src/registry_tests.rs::event_identity_reuse_with_drift_fails"
+      ],
       "sourcePathExists": true,
       "designOperation": "artifact_registry_append",
       "mappingClass": "owner_native",
@@ -40,7 +43,10 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs::operator_sensor_core_projection_has_one_physical_owner",
+        "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs::operator_sensor_core_projection_tracks_revocation_without_second_write"
+      ],
       "sourcePathExists": true,
       "designOperation": "sensor_core_registry_read",
       "mappingClass": "owner_native",
@@ -53,7 +59,10 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/storage.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/storage_tests.rs::payload_rejects_wrong_bytes_without_reusing_its_created_target",
+        "codex-rs/hepta-learning-artifacts/src/storage_tests.rs::contained_write_rejects_escape_and_validates_before_create"
+      ],
       "sourcePathExists": true,
       "designOperation": "write_candidate_payload",
       "mappingClass": "owner_native",
@@ -66,12 +75,15 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
       "state": "product_read_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs::loads_exact_pinned_manifest_and_payload",
+        "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs::revoked_ancestor_blocks_loading"
+      ],
       "sourcePathExists": true,
       "designOperation": "load_pinned_candidate",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "3ff1450b5111706d737643351fb5692ee657726c"
+      "sourceBlob": "cc9bb257e3fb8d9811f6e07134da69151e544fc9"
     },
     {
       "operation": "revalidate_pinned_candidate",
@@ -79,12 +91,18 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
       "state": "product_read_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs::cached_consumer_observes_revocation_before_use_and_cannot_revive_from_backup",
+        "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs::cached_consumer_rejects_longer_fork_and_backwards_frontier",
+        "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs::panicking_consumer_permanently_closes_the_cache",
+        "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs::current_artifact_and_independent_evidence_compose_to_deny_all_admission",
+        "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs::withdrawal_frontier_change_invalidates_previously_admitted_artifact"
+      ],
       "sourcePathExists": true,
       "designOperation": "revalidate_pinned_candidate",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "3ff1450b5111706d737643351fb5692ee657726c"
+      "sourceBlob": "cc9bb257e3fb8d9811f6e07134da69151e544fc9"
     },
     {
       "operation": "validate_manifest_v2",
@@ -92,12 +110,15 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs::art_01_manifest_v2_normalizes_complete_lineage",
+        "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs::artifact_manifest_rejects_duplicate_lineage_and_missing_rollback_parent"
+      ],
       "sourcePathExists": true,
       "designOperation": "validate_manifest_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "49af2232566bf4c38380d88b7cf63e9b7975537a"
+      "sourceBlob": "56ca03fed44fd82f4d85446dccae2424ab5a72b0"
     },
     {
       "operation": "withdrawal_append",
@@ -105,12 +126,14 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs::art_02_persistent_withdrawal_blocks_future_admission_and_replays"
+      ],
       "sourcePathExists": true,
       "designOperation": "withdrawal_append",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "49af2232566bf4c38380d88b7cf63e9b7975537a"
+      "sourceBlob": "56ca03fed44fd82f4d85446dccae2424ab5a72b0"
     },
     {
       "operation": "admit_manifest_at_withdrawal_head_v3",
@@ -118,12 +141,16 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_v3.rs::art_05_admission_is_domain_registry_and_scope_bound",
+        "codex-rs/hepta-learning-artifacts/src/admission_v3.rs::art_05_withdrawal_race_invalidates_admission",
+        "codex-rs/hepta-learning-artifacts/src/admission_v3_adversarial_tests.rs::recomputed_public_receipt_cannot_admit_a_withdrawn_dataset"
+      ],
       "sourcePathExists": true,
       "designOperation": "admit_manifest_at_withdrawal_head_v3",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "8e4f8830dbda3f387b54992f297c8d1f8baa329f"
+      "sourceBlob": "5b46ef2fbe47d9073a9c6c0cadf0793674c7b6e8"
     },
     {
       "operation": "publication_begin",
@@ -131,12 +158,15 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/publication.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/publication.rs::art_07_publication_requires_ordered_durable_phases_before_ack",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_publication_rejects_unbound_projection_and_receipt"
+      ],
       "sourcePathExists": true,
       "designOperation": "publication_begin",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "eef46b0ab4d27214cad511ac2b0152a5b05a24b3"
+      "sourceBlob": "836a18098a1e558c4450b90704223dfa4307835e"
     },
     {
       "operation": "publication_checkpoint",
@@ -144,12 +174,18 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::owner_host_checkpoint_recovery_requires_exact_snapshot",
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::owner_host_process_kill_reopen_matrix",
+        "codex-rs/hepta-learning-artifacts/src/owner_host_adversarial_tests.rs::startup_recovery_rejects_missing_prior_checkpoint_and_alias_paths",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_resume_rejects_missing_durable_payload",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_terminal_receipt_rejects_forged_witness_byte_identity"
+      ],
       "sourcePathExists": true,
       "designOperation": "publication_checkpoint",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "f4b57a34db87447e079a6bfdd9cca572b913ee66"
     },
     {
       "operation": "authenticated_current_head",
@@ -157,12 +193,15 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::authenticated_current_head_is_discovered_and_signature_drift_rejects",
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::current_head_rotation_preserves_history_and_requires_current_key_epoch"
+      ],
       "sourcePathExists": true,
       "designOperation": "authenticated_current_head",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "f4b57a34db87447e079a6bfdd9cca572b913ee66"
     },
     {
       "operation": "authenticated_current_registry_view",
@@ -170,12 +209,14 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service.rs::named_owner_service_publishes_retries_and_reopens_from_current_head"
+      ],
       "sourcePathExists": true,
       "designOperation": "authenticated_current_registry_view",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
+      "sourceBlob": "dfb92c25f0adf065587f2120d02ef1fcba5cc398"
     },
     {
       "operation": "owner_writer_fence",
@@ -183,12 +224,14 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::owner_host_exclusively_fences_writer_lease"
+      ],
       "sourcePathExists": true,
       "designOperation": "owner_writer_fence",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "f4b57a34db87447e079a6bfdd9cca572b913ee66"
     },
     {
       "operation": "lifecycle_journal_append",
@@ -196,12 +239,16 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs::art_06_lifecycle_journal_enforces_head_state_and_role",
+        "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs::art_06_lifecycle_snapshot_replay_survives_actor_expiry",
+        "codex-rs/hepta-learning-artifacts/src/lifecycle_journal_adversarial_tests.rs::producer_substitution_cannot_authorize_self_evaluation"
+      ],
       "sourcePathExists": true,
       "designOperation": "lifecycle_journal_append",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "afa6ee9f052def7d17e291bf0fcd4e483bf4e08f"
+      "sourceBlob": "74185bd21c8d3026eb06a294730a71fdea8cb4db"
     },
     {
       "operation": "durable_withdrawal_snapshot",
@@ -209,12 +256,14 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs::art_08_scoped_withdrawal_snapshot_round_trips_and_rejects_cross_scope_receipt"
+      ],
       "sourcePathExists": true,
       "designOperation": "durable_withdrawal_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "f1e2bb61b6c5a8cff9b5742e2899f2dbde8b49bf"
+      "sourceBlob": "d3ad26d70f5f935233bfbb3bf3e414bab89311ac"
     },
     {
       "operation": "durable_lifecycle_snapshot",
@@ -222,12 +271,14 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs::art_08_lifecycle_snapshot_recovers_after_historical_actor_expiry"
+      ],
       "sourcePathExists": true,
       "designOperation": "durable_lifecycle_snapshot",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "f1e2bb61b6c5a8cff9b5742e2899f2dbde8b49bf"
+      "sourceBlob": "d3ad26d70f5f935233bfbb3bf3e414bab89311ac"
     },
     {
       "operation": "iteration_transition",
@@ -235,12 +286,16 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
       "state": "source_implemented",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs::records_bounded_external_transitions",
+        "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs::snapshot_replay_is_exact_and_duplicate_receipts_fail",
+        "codex-rs/hepta-learning-artifacts/src/iteration_adversarial_tests.rs::candidate_transition_preserves_valid_state_atomically"
+      ],
       "sourcePathExists": true,
       "designOperation": "iteration_transition",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "a0b1fd3db118cba0498209e38ad650850270c807"
+      "sourceBlob": "f142bd3effb51b44a435f100717fd32207d0eb30"
     },
     {
       "operation": "owner_service_open",
@@ -248,12 +303,14 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service.rs::named_owner_service_publishes_retries_and_reopens_from_current_head"
+      ],
       "sourcePathExists": true,
       "designOperation": "owner_service_open",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
+      "sourceBlob": "dfb92c25f0adf065587f2120d02ef1fcba5cc398"
     },
     {
       "operation": "owner_service_publish",
@@ -261,12 +318,19 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service.rs::named_owner_service_publishes_retries_and_reopens_from_current_head",
+        "codex-rs/hepta-learning-artifacts/src/owner_host_adversarial_tests.rs::signed_wrong_head_cannot_publish_a_current_head_side_effect",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_host_rejects_second_unfinished_publication",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_host_concurrent_begin_has_one_winner",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_host_rejects_stale_predecessor_before_checkpoint",
+        "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs::audit_admission_reserves_payload_capacity_before_prepared"
+      ],
       "sourcePathExists": true,
       "designOperation": "owner_service_publish",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
+      "sourceBlob": "dfb92c25f0adf065587f2120d02ef1fcba5cc398"
     },
     {
       "operation": "recover_current_registry",
@@ -274,12 +338,14 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::owner_host_process_kill_reopen_matrix"
+      ],
       "sourcePathExists": true,
       "designOperation": "recover_current_registry",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "f4b57a34db87447e079a6bfdd9cca572b913ee66"
     },
     {
       "operation": "recover_registry_by_head",
@@ -287,12 +353,14 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_service.rs::named_owner_service_publishes_retries_and_reopens_from_current_head"
+      ],
       "sourcePathExists": true,
       "designOperation": "recover_registry_by_head",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "f4b57a34db87447e079a6bfdd9cca572b913ee66"
     },
     {
       "operation": "current_head_restart_anchor",
@@ -300,12 +368,14 @@
       "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
       "state": "product_writer_service_composed",
       "authority": "none",
-      "tests": [],
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_host.rs::independent_current_head_anchor_rejects_restored_old_backup"
+      ],
       "sourcePathExists": true,
       "designOperation": "current_head_restart_anchor",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "sourceBlob": "f4b57a34db87447e079a6bfdd9cca572b913ee66"
     },
     {
       "operation": "independent_selection_verify",
@@ -321,7 +391,7 @@
       "designOperation": "independent_selection_verify",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
+      "sourceBlob": "eb371facbddcd05a7923d9a0fb579a0ab1856c1c"
     },
     {
       "operation": "record_verified_selection",
@@ -336,7 +406,7 @@
       "designOperation": "record_verified_selection",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
+      "sourceBlob": "eb371facbddcd05a7923d9a0fb579a0ab1856c1c"
     },
     {
       "operation": "load_selected_candidate",
@@ -351,12 +421,201 @@
       "designOperation": "load_selected_candidate",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "83bfc190f930409df01d099668370ad2d7578f7f"
+      "sourceBlob": "eb371facbddcd05a7923d9a0fb579a0ab1856c1c"
+    },
+    {
+      "operation": "admission_sidecar_receipt",
+      "nativeSymbol": "admission_snapshot_receipt_v3",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::complete_multi_source_admission_round_trips_and_survives_historical_expiry"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "admission_sidecar_receipt",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "f88fe7b08d7e38dfcfc1944a61c67dd8c202b863"
+    },
+    {
+      "operation": "write_admission_sidecar",
+      "nativeSymbol": "write_artifact_admission_snapshot_beneath",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::rejected_admission_never_creates_a_validation_orphan"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "write_admission_sidecar",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "f88fe7b08d7e38dfcfc1944a61c67dd8c202b863"
+    },
+    {
+      "operation": "read_admission_sidecar",
+      "nativeSymbol": "read_artifact_admission_snapshot",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::complete_multi_source_admission_round_trips_and_survives_historical_expiry"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_admission_sidecar",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "f88fe7b08d7e38dfcfc1944a61c67dd8c202b863"
+    },
+    {
+      "operation": "read_admission_sidecar_bound",
+      "nativeSymbol": "read_artifact_admission_snapshot_bound",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::sidecar_recovery_rejects_identity_drift_wrong_pins_and_noncanonical_bytes"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "read_admission_sidecar_bound",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "f88fe7b08d7e38dfcfc1944a61c67dd8c202b863"
+    },
+    {
+      "operation": "validate_admission_projection",
+      "nativeSymbol": "validate_admission_registry_projection_v3",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs::compatibility_projection_checks_objective_support_identity_and_all_representable_fields"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "validate_admission_projection",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "f88fe7b08d7e38dfcfc1944a61c67dd8c202b863"
+    },
+    {
+      "operation": "strict_current_admission_closure",
+      "nativeSymbol": "ArtifactOwnerVerifierV1::verify_current_registry_view_with_admission_closure",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/verified_admissions.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/admission_closure_tests.rs::quarantining_the_unprojected_parent_denies_descendants",
+        "codex-rs/hepta-agentd/src/cognitive_ranker_v2_tests.rs::v2_owner_published_policy_reaches_the_ranker_using_real_dataset_provenance",
+        "codex-rs/hepta-agentd/tests/shared_terminal_current.rs::cached_current_cannot_hide_parent_expiry_or_revive_failed_model"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "strict_current_admission_closure",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "69b2157d34f7afcec9ffc4d49d878f3d58c0fd80"
+    },
+    {
+      "operation": "decode_signed_current_head",
+      "nativeSymbol": "read_signed_current_artifact_head_v1",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_artifact_io.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::withdrawal_publishes_current_retries_and_recovers_frontier"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decode_signed_current_head",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "5dfd0b1be18de6f7f9996701d7614a00a8e71f10"
+    },
+    {
+      "operation": "owner_admission_backfill",
+      "nativeSymbol": "LearningArtifactOwnerService::backfill_artifact_admission",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_state_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::backfill_restores_only_original_exact_published_admission"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_admission_backfill",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "e73313457654ab1ce20bd2a85fb9cceb71932374"
+    },
+    {
+      "operation": "prepare_state_publication",
+      "nativeSymbol": "LearningArtifactOwnerService::prepare_state_registry",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_state_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::withdrawing_the_second_parent_source_revokes_multi_parent_descendants"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepare_state_publication",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "e73313457654ab1ce20bd2a85fb9cceb71932374"
+    },
+    {
+      "operation": "publish_state",
+      "nativeSymbol": "LearningArtifactOwnerService::publish_state",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_state_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::interrupted_state_publication_recovers_exactly_and_fences_other_operations"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "publish_state",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "e73313457654ab1ce20bd2a85fb9cceb71932374"
+    },
+    {
+      "operation": "owner_withdrawal_restart_floor",
+      "nativeSymbol": "LearningArtifactOwnerService::open_v2",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_state_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::withdrawal_publishes_current_retries_and_recovers_frontier"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_withdrawal_restart_floor",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "e73313457654ab1ce20bd2a85fb9cceb71932374"
+    },
+    {
+      "operation": "owner_signed_withdrawal_bootstrap",
+      "nativeSymbol": "LearningArtifactOwnerService::publish_withdrawal_bootstrap",
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_withdrawal_bootstrap_service.rs",
+      "state": "source_implemented",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::signed_bootstrap_persists_before_first_current_and_blocks_withdrawn_admission",
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::bootstrap_rejects_forged_and_stale_authorizations_without_rolling_back",
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::bootstrap_acknowledgement_cannot_recover_without_exact_snapshot",
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::acknowledged_bootstrap_retries_survive_expiry_and_authority_floor_rotation",
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::bootstrap_historical_retry_preserves_exact_request_and_snapshot_checks",
+        "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs::bootstrap_new_operations_still_require_current_authorization_and_writer"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "owner_signed_withdrawal_bootstrap",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourceBlob": "33cdb9cb9429bd5e5816bdc2da710377a144ff2c"
     }
   ],
-  "currentNativeState": "immutable registry/storage, scoped withdrawal, V3 admission, durable lifecycle/withdrawal snapshots, ordered host-visible publication, one physical sensor-core writer, bounded iteration, explicit Agentd read consumption, and one CALLERS.toml-closed LearningArtifactOwnerService over the fenced Ed25519-authenticated owner host are source implemented; activation, target-host durability and independently governed selection/release remain separate",
+  "currentNativeState": "Immutable V1 compatibility storage plus full canonical V3 admission sidecars, all-source/all-parent/expiry CURRENT joins, fenced authenticated publish and withdrawal/revoke/quarantine recovery, exact backfill and independent restart floors are implemented. Agentd plasticity checks independent CURRENT before each admission; cognitive and shared-terminal V2 readers reject trust substitution, forks, expiry, withdrawal and compatibility downgrade. Target-host execution, independent selection and release remain external evidence gates.",
   "repositoryControlledGaps": [
-    "Execute exact unified-candidate source binding, build and owner recovery qualification after cross-family composition."
+    "The built-in PlasticityCurrentArtifactFilesV1 adapter does not supply complete admission sidecars or an independently authenticated live withdrawal frontier; a strict product provider remains required.",
+    "This candidate has no artifact-owner executable/bootstrap or injected capability-backed owner storage port. Alternative unmerged candidates must be reconciled explicitly without introducing another authoritative writer.",
+    "Early publication recovery requires an externally retained exact request; partial final-file repair, expired CURRENT renewal and independently qualified retention remain unsupported in this source profile."
   ],
   "hostIntegrationRequirements": [
     "Persist ArtifactPublicationTransactionSnapshotV1 under the product writer fence before treating a phase as durable.",
@@ -404,6 +663,27 @@
       "callerPath": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
       "mustContain": "VerifiedCurrentRegistryViewV1",
       "productPath": "CurrentCognitiveRegistry -> VerifiedCurrentRegistryViewV1 -> RevalidatingCandidate::with_current"
+    },
+    {
+      "operation": "authenticated_current_revalidation",
+      "mode": "opaque_verified_current_view_only",
+      "callerPath": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+      "mustContain": "candidate.with_current",
+      "productPath": "admit_ndu_stochastic_candidate_v1 -> RevalidatingCandidate::with_current"
+    },
+    {
+      "operation": "publish_state",
+      "mode": "single_fenced_authoritative_store_service",
+      "callerPath": "codex-rs/hepta-learning-artifacts/src/owner_state_service.rs",
+      "mustContain": "publish_state_snapshots",
+      "productPath": "LearningArtifactOwnerService::publish_state -> signed owner state saga"
+    },
+    {
+      "operation": "strict_current_admission_closure",
+      "mode": "opaque_verified_current_view_only",
+      "callerPath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "mustContain": "full_admission",
+      "productPath": "SharedTerminalCellHostV1::load_from_current -> predict_from_current"
     }
   ],
   "productionWriterBindings": [
@@ -435,60 +715,164 @@
     {
       "sourcePath": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
       "nativeSymbol": "PinnedCognitiveRanker"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+      "nativeSymbol": "admit_ndu_stochastic_candidate_v1"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_state_service.rs",
+      "nativeSymbol": "LearningArtifactOwnerService::publish_state"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "nativeSymbol": "SharedTerminalCellHostV1::predict_from_current"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_artifact_current.rs",
+      "nativeSymbol": "PlasticityCurrentArtifactFilesV1::current"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-learning-artifacts/src/owner_withdrawal_bootstrap_service.rs",
+      "nativeSymbol": "LearningArtifactOwnerService::publish_withdrawal_bootstrap"
     }
   ],
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "28e565a3569f9148e3d371b0150a02e14bf2fde4"
+      "object": "4274d46fb803624ef9b33bae7692f8850e70e369"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/cognitive_ranker_v2_tests.rs",
+      "object": "4de2862b3b1e0e682c87aac5683c9976577c61da"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/plasticity_artifact_current.rs",
+      "object": "acecf92e4fd3a020d1e5d275ca35545aa2e7bd4b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "object": "972ee70c4d06a53dbbe91e8b301a6fc80cfd6a86"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/shared_terminal_current.rs",
+      "object": "55411155f33c38da2e735e7271011e9d68d0808d"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+      "object": "64ce0c612f4212fa0465177a74036b1cf3667e22"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission_tests.rs",
+      "object": "719bbbe50c27902d345e7d9a6e8481605e16df92"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts",
-      "object": "6c602a9ebf4042e39acba109635d17d64d434dcf"
+      "object": "1d23795dbde366e0a41aac19a355d1ed6c828688"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/admission_closure_tests.rs",
+      "object": "5acc7fd03f124063af5ac2af0288c4f16632239a"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/admission_storage.rs",
+      "object": "f88fe7b08d7e38dfcfc1944a61c67dd8c202b863"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/admission_storage_tests.rs",
+      "object": "ec47c73ab4a9fdafac1f978ff8b4938b774a6a13"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/admission_v3.rs",
-      "object": "8e4f8830dbda3f387b54992f297c8d1f8baa329f"
+      "object": "5b46ef2fbe47d9073a9c6c0cadf0793674c7b6e8"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/admission_v3_adversarial_tests.rs",
+      "object": "ddebf9442c0cb68a31dae20c88cfe45b32f3d764"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/closure_v2.rs",
-      "object": "49af2232566bf4c38380d88b7cf63e9b7975537a"
+      "object": "56ca03fed44fd82f4d85446dccae2424ab5a72b0"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/closure_v2_tests.rs",
+      "object": "8f3c902d82daa65e77fff7e86f0a4b0ad54bcee7"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/durable_snapshots.rs",
-      "object": "f1e2bb61b6c5a8cff9b5742e2899f2dbde8b49bf"
+      "object": "d3ad26d70f5f935233bfbb3bf3e414bab89311ac"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/iteration_adversarial_tests.rs",
+      "object": "812856d9ab959e28c4fd5d739d856e32823ace5b"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/iteration_ledger.rs",
-      "object": "a0b1fd3db118cba0498209e38ad650850270c807"
+      "object": "f142bd3effb51b44a435f100717fd32207d0eb30"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal.rs",
-      "object": "afa6ee9f052def7d17e291bf0fcd4e483bf4e08f"
+      "object": "74185bd21c8d3026eb06a294730a71fdea8cb4db"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/lifecycle_journal_adversarial_tests.rs",
+      "object": "780331a437e1c709008484e922634146f25f4456"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_artifact_io.rs",
+      "object": "5dfd0b1be18de6f7f9996701d7614a00a8e71f10"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_audit_regression_tests.rs",
+      "object": "4b0807f76c46bb202121d09191c7f888a8d8e8cc"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_host.rs",
-      "object": "cdde5193d614f464f4b6b917a2eeffa3e1ee126b"
+      "object": "f4b57a34db87447e079a6bfdd9cca572b913ee66"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_host_adversarial_tests.rs",
+      "object": "11515fc9a75e84965545c19bee29d80a39472493"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/owner_service.rs",
-      "object": "1427589355efa2ea3ac12cc076d0e9a028b29f0b"
+      "object": "dfb92c25f0adf065587f2120d02ef1fcba5cc398"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_state_service.rs",
+      "object": "e73313457654ab1ce20bd2a85fb9cceb71932374"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_state_tests.rs",
+      "object": "90c41961cb5353dd7ee1b4c9b50d137857bfd5d0"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/owner_withdrawal_bootstrap_service.rs",
+      "object": "33cdb9cb9429bd5e5816bdc2da710377a144ff2c"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/pinned.rs",
-      "object": "3ff1450b5111706d737643351fb5692ee657726c"
+      "object": "cc9bb257e3fb8d9811f6e07134da69151e544fc9"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/pinned_tests.rs",
+      "object": "1657efa2689bd0e381a353e89333674234cd1d5a"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/publication.rs",
-      "object": "eef46b0ab4d27214cad511ac2b0152a5b05a24b3"
+      "object": "836a18098a1e558c4450b90704223dfa4307835e"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/registry.rs",
       "object": "e723e3cf7c8e53ef59405bf71aa8cd4f5dc95f42"
     },
     {
+      "path": "codex-rs/hepta-learning-artifacts/src/registry_tests.rs",
+      "object": "b6eda8bfc10fe729c181c4e13affae4904e41afc"
+    },
+    {
       "path": "codex-rs/hepta-learning-artifacts/src/selection.rs",
-      "object": "83bfc190f930409df01d099668370ad2d7578f7f"
+      "object": "eb371facbddcd05a7923d9a0fb579a0ab1856c1c"
     },
     {
       "path": "codex-rs/hepta-learning-artifacts/src/sensor_core_registry.rs",
@@ -499,12 +883,62 @@
       "object": "d25f9e2a3070b3cf13aebfd5259611c4d66e1956"
     },
     {
+      "path": "codex-rs/hepta-learning-artifacts/src/storage_tests.rs",
+      "object": "e201f4ef22644c7e80e32ac7bf0f50bad8cd1ddf"
+    },
+    {
+      "path": "codex-rs/hepta-learning-artifacts/src/verified_admissions.rs",
+      "object": "69b2157d34f7afcec9ffc4d49d878f3d58c0fd80"
+    },
+    {
       "path": "codex-rs/hepta-shadow-qualification/tests/support/tabular_reload.rs",
       "object": "35d784e64383f3cc30f19b3e3c79b8258d09688d"
     },
     {
       "path": "docs/modules/learning.artifacts/TECHNICAL.md",
-      "object": "c693b6e0a78375b78e70d1243661819446c74fb7"
+      "object": "5dd90b0e6e6ce546afe0f506d5cf2fc90ad60009"
     }
-  ]
+  ],
+  "compatibilitySnapshotConsumers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+      "state": "compatibility_snapshot_composed_currentness_gap"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_host.rs",
+      "state": "compatibility_snapshot_composed_currentness_gap"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
+      "state": "compatibility_snapshot_composed_currentness_gap"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
+      "state": "compatibility_snapshot_composed_currentness_gap"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+      "state": "compatibility_snapshot_composed_currentness_gap"
+    }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd/src/plasticity_host.rs",
+    "codex-rs/hepta-agentd/src/plasticity_owner_evidence.rs",
+    "codex-rs/hepta-agentd/src/plasticity_process_bootstrap.rs",
+    "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+    "codex-rs/hepta-agentd/src/topology_plasticity_host.rs",
+    "codex-rs/hepta-learning-artifacts"
+  ],
+  "previousSourceProvenance": {
+    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
+    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+  },
+  "observedAtHead": {
+    "commit": "a4a3daf697df81f3dd29261e72a7fa8d1a814500",
+    "tree": "885bb7ac60524fb789544285af916f86605d9242"
+  }
 }

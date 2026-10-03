@@ -59,6 +59,24 @@ const MAX_SMALL_RECORD_BYTES: usize = 16 * 1024;
 const CHECKPOINT_MAGIC: &str = "HEPTA-ARTIFACT-CHECKPOINT-V1";
 const CURRENT_HEAD_MAGIC: &str = "HEPTA-ARTIFACT-CURRENT-HEAD-V1";
 
+#[path = "owner_artifact_io.rs"]
+mod artifact_io;
+#[path = "owner_capacity.rs"]
+mod capacity;
+#[path = "owner_host_recovery.rs"]
+mod recovery;
+pub use artifact_io::read_signed_current_artifact_head_v1;
+#[path = "owner_state.rs"]
+pub(super) mod state;
+#[path = "owner_withdrawal_bootstrap.rs"]
+mod withdrawal_bootstrap;
+pub use state::ArtifactOwnerStateIntentV1;
+pub use state::ArtifactOwnerStatePublicationReceiptV1;
+pub use state::ArtifactOwnerStateTransitionV1;
+pub use state::LearningArtifactStatePublishRequestV1;
+pub use withdrawal_bootstrap::ArtifactWithdrawalBootstrapReceiptV1;
+pub use withdrawal_bootstrap::LearningArtifactWithdrawalBootstrapRequestV1;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct TrustedArtifactSignerV1 {
     pub signer_id: StableId,
@@ -232,6 +250,15 @@ impl ArtifactOwnerVerifierV1 {
         self.trust_digest
     }
 
+    /// Authenticate a caller-supplied CURRENT head without opening a snapshot.
+    pub fn verify_current_head(
+        &self,
+        signed: &SignedCurrentArtifactHeadV1,
+        requirement: &RegistryHeadRequirementV1,
+    ) -> Result<VerifiedCurrentArtifactHeadV1, ArtifactOwnerHostError> {
+        self.verify_signed_head(signed, requirement, true)
+    }
+
     /// Authenticate one CURRENT head and the exact immutable registry snapshot
     /// backing it. The returned view is opaque outside this crate and is the
     /// only public input accepted by final-use candidate revalidation.
@@ -309,6 +336,10 @@ impl ArtifactOwnerVerifierV1 {
     ) -> Result<VerifiedCurrentArtifactHeadV1, ArtifactOwnerHostError> {
         if signed.withdrawal_scope_digest != self.trust.withdrawal_scope_digest
             || signed.binding.is_zero()
+            || signed.witness.registry_id != self.trust.registry_id
+            || (require_current_signer
+                && (signed.witness.generation < self.trust.minimum_registry_generation
+                    || signed.witness.authority_epoch < self.trust.minimum_authority_epoch))
         {
             return Err(ArtifactOwnerHostError::CurrentHeadContext);
         }
@@ -347,6 +378,7 @@ impl ArtifactOwnerVerifierV1 {
 /// generation requires constructing a new host.
 pub struct LearningArtifactOwnerHost {
     root: PathBuf,
+    publication_gate: std::sync::Mutex<()>,
     writer_fence: File,
     verifier: ArtifactOwnerVerifierV1,
     lease: SignedArtifactWriterLeaseV1,
@@ -415,8 +447,25 @@ impl LearningArtifactOwnerHost {
             "registries",
             "witnesses",
             "heads",
+            "admissions",
+            "state-transactions",
+            "withdrawals",
+            "withdrawal-bootstrap",
         ] {
             ensure_real_directory(&root, directory)?;
+        }
+        // Synchronizing a child directory does not persist its name in the
+        // trusted root. Publish the directory layout before any phase can ack.
+        #[cfg(unix)]
+        {
+            File::open(&root)?
+                .sync_all()
+                .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
+            if let Some(parent) = root.parent() {
+                File::open(parent)?
+                    .sync_all()
+                    .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
+            }
         }
         let verifier = ArtifactOwnerVerifierV1::new(trust)?;
         let verified_lease = verifier.verify_writer_lease(&lease, now)?;
@@ -433,6 +482,7 @@ impl LearningArtifactOwnerHost {
         }
         Ok(Self {
             root,
+            publication_gate: std::sync::Mutex::new(()),
             writer_fence,
             verifier,
             lease,
@@ -463,6 +513,21 @@ impl LearningArtifactOwnerHost {
         self.verifier.verify_writer_lease(&self.lease, now)
     }
 
+    fn require_owned_transaction(
+        &self,
+        transaction: &ArtifactPublicationTransactionV1,
+        now: u64,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        let writer = self.require_current_writer(now)?;
+        let admission = &transaction.intent().admission;
+        if admission.validated_manifest.manifest.producer_id != writer.producer_id
+            || admission.withdrawal_scope_digest != self.verifier.trust.withdrawal_scope_digest
+        {
+            return Err(ArtifactOwnerHostError::WriterLeaseContext);
+        }
+        Ok(())
+    }
+
     pub fn begin_publication(
         &self,
         operation_id: StableId,
@@ -472,6 +537,41 @@ impl LearningArtifactOwnerHost {
         expected_registry_predecessor_head: Digest32,
         now: u64,
     ) -> Result<ArtifactPublicationTransactionV1, ArtifactOwnerHostError> {
+        let _gate = self
+            .publication_gate
+            .lock()
+            .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
+        if self
+            .recovery_required_operations()?
+            .iter()
+            .any(|pending| pending.operation_id != operation_id)
+            || self
+                .state_recovery_operations()?
+                .iter()
+                .any(|pending| pending != &operation_id)
+        {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        if self.recover_publication(&operation_id)?.is_none() {
+            capacity::reserve_artifact(self)?;
+            let current = self.discover_current_head(now)?;
+            let head = current.map_or(
+                self.verifier.trust.genesis_predecessor_head_digest,
+                |current| current.signed.witness.head_digest,
+            );
+            if head != expected_registry_predecessor_head {
+                return Err(ArtifactOwnerHostError::RegistryPredecessorMismatch);
+            }
+            let recovered = self.recover_registry_by_head(head)?;
+            if recovered.records() != registry.records() {
+                return Err(ArtifactOwnerHostError::RegistryPredecessorMismatch);
+            }
+        }
+        if self.recover_state_publication(&operation_id)?.is_some()
+            || self.bootstrap_record_exists(&operation_id)
+        {
+            return Err(ArtifactOwnerHostError::IdentityConflict);
+        }
         let writer = self.require_current_writer(now)?;
         if admission.validated_manifest.manifest.producer_id != writer.producer_id
             || admission.withdrawal_scope_digest != self.verifier.trust.withdrawal_scope_digest
@@ -480,6 +580,7 @@ impl LearningArtifactOwnerHost {
         {
             return Err(ArtifactOwnerHostError::WriterLeaseContext);
         }
+        self.validate_candidate_lineage(registry, &admission, withdrawal_registry, now)?;
         let transaction = ArtifactPublicationTransactionV1::begin(
             operation_id,
             admission,
@@ -500,12 +601,9 @@ impl LearningArtifactOwnerHost {
         registry: &mut ArtifactRegistry,
         now: u64,
     ) -> Result<RegistryAppendReceipt, ArtifactOwnerHostError> {
-        let writer = self.require_current_writer(now)?;
+        self.require_owned_transaction(transaction, now)?;
         let admission = &transaction.intent().admission;
         let v2 = &admission.validated_manifest.manifest;
-        if v2.producer_id != writer.producer_id {
-            return Err(ArtifactOwnerHostError::WriterLeaseContext);
-        }
         if registry.snapshot().head_digest
             != transaction.intent().expected_registry_predecessor_head
         {
@@ -548,8 +646,14 @@ impl LearningArtifactOwnerHost {
         bytes: &[u8],
         now: u64,
     ) -> Result<PathBuf, ArtifactOwnerHostError> {
-        self.require_current_writer(now)?;
+        self.require_owned_transaction(transaction, now)?;
+        self.resume_publication(transaction.snapshot(), now)?;
         let manifest = &transaction.intent().admission.validated_manifest.manifest;
+        if bytes.len() as u64 != manifest.encoded_size_bytes {
+            return Err(ArtifactPublicationError::PayloadMismatch.into());
+        }
+        let mut advanced = transaction.clone();
+        advanced.record_payload_durable(Digest32::of_bytes(bytes), bytes.len() as u64)?;
         let relative = PathBuf::from("payloads").join(format!(
             "{}-{}.bin",
             manifest.artifact_id, manifest.bytes_digest
@@ -562,7 +666,9 @@ impl LearningArtifactOwnerHost {
             bytes,
         ) {
             Ok(digest) => {
-                transaction.record_payload_durable(digest, bytes.len() as u64)?;
+                if digest != manifest.bytes_digest {
+                    return Err(ArtifactOwnerHostError::InternalInvariant);
+                }
             }
             Err(crate::ArtifactStorageError::AlreadyExists) => {
                 let loaded = read_candidate_payload(
@@ -570,12 +676,15 @@ impl LearningArtifactOwnerHost {
                     staged_registry,
                     &manifest.artifact_id,
                 )?;
-                transaction
-                    .record_payload_durable(Digest32::of_bytes(&loaded), loaded.len() as u64)?;
+                if loaded != bytes {
+                    return Err(ArtifactOwnerHostError::IdentityConflict);
+                }
             }
             Err(error) => return Err(error.into()),
         }
-        self.persist_checkpoint(transaction)?;
+        recovery::synchronize_artifact_path(&self.root.join(&relative))?;
+        self.persist_checkpoint(&advanced)?;
+        *transaction = advanced;
         Ok(relative)
     }
 
@@ -587,7 +696,8 @@ impl LearningArtifactOwnerHost {
         binding: Digest32,
         now: u64,
     ) -> Result<RegistrySnapshotReceipt, ArtifactOwnerHostError> {
-        self.require_current_writer(now)?;
+        self.require_owned_transaction(transaction, now)?;
+        self.resume_publication(transaction.snapshot(), now)?;
         let encoded = encode_snapshot(registry, binding)?;
         let expected = RegistrySnapshotReceipt {
             binding,
@@ -596,6 +706,9 @@ impl LearningArtifactOwnerHost {
             records: registry.records().len(),
             encoded_bytes: encoded.len(),
         };
+        let mut advanced = transaction.clone();
+        advanced.record_registry_durable(registry, expected, withdrawal_registry, now)?;
+        self.persist_artifact_admission(&transaction.intent().admission, registry, binding)?;
         let relative = PathBuf::from("registries").join(format!(
             "{}-{}.snapshot",
             expected.head_digest, expected.file_digest
@@ -613,8 +726,12 @@ impl LearningArtifactOwnerHost {
                 }
                 Err(error) => return Err(error.into()),
             };
-        transaction.record_registry_durable(registry, receipt, withdrawal_registry, now)?;
-        self.persist_checkpoint(transaction)?;
+        if receipt != expected {
+            return Err(ArtifactOwnerHostError::InternalInvariant);
+        }
+        recovery::synchronize_artifact_path(&self.root.join(&relative))?;
+        self.persist_checkpoint(&advanced)?;
+        *transaction = advanced;
         Ok(receipt)
     }
 
@@ -628,11 +745,15 @@ impl LearningArtifactOwnerHost {
         withdrawal_registry: &DatasetWithdrawalRegistry,
         now: u64,
     ) -> Result<RegistryHeadWitnessReceipt, ArtifactOwnerHostError> {
-        self.require_current_writer(now)?;
+        self.require_owned_transaction(transaction, now)?;
+        self.resume_publication(transaction.snapshot(), now)?;
         let current = self.discover_current_head(now)?;
         let expected_predecessor = transaction.intent().expected_registry_predecessor_head;
         let requirement = match current.as_ref() {
             Some(current) if current.signed.witness.head_digest == signed.witness.head_digest => {
+                if current.signed != *signed {
+                    return Err(ArtifactOwnerHostError::CurrentHeadConflict);
+                }
                 RegistryHeadRequirementV1 {
                     registry_id: self.verifier.trust.registry_id.clone(),
                     minimum_generation: signed.witness.generation,
@@ -676,6 +797,14 @@ impl LearningArtifactOwnerHost {
             file_digest: Digest32::of_bytes(&encoded),
             encoded_bytes: encoded.len(),
         };
+        let mut advanced = transaction.clone();
+        advanced.record_witness_durable(
+            &signed.witness,
+            &requirement,
+            expected_receipt,
+            withdrawal_registry,
+            now,
+        )?;
         let relative = PathBuf::from("witnesses").join(format!(
             "{}-{}.witness",
             signed.witness.generation.get(),
@@ -702,6 +831,7 @@ impl LearningArtifactOwnerHost {
             }
             Err(error) => return Err(error.into()),
         };
+        recovery::synchronize_artifact_path(&self.root.join(&relative))?;
         self.persist_signed_head_record(signed)?;
         let discovered = self
             .discover_current_head(now)?
@@ -709,14 +839,11 @@ impl LearningArtifactOwnerHost {
         if discovered.signed != *signed {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
-        transaction.record_witness_durable(
-            &signed.witness,
-            &requirement,
-            receipt,
-            withdrawal_registry,
-            now,
-        )?;
-        self.persist_checkpoint(transaction)?;
+        if receipt != expected_receipt {
+            return Err(ArtifactOwnerHostError::InternalInvariant);
+        }
+        self.persist_checkpoint(&advanced)?;
+        *transaction = advanced;
         Ok(receipt)
     }
 
@@ -726,7 +853,8 @@ impl LearningArtifactOwnerHost {
         withdrawal_registry: &DatasetWithdrawalRegistry,
         now: u64,
     ) -> Result<crate::ArtifactPublicationReceiptV1, ArtifactOwnerHostError> {
-        self.require_current_writer(now)?;
+        self.require_owned_transaction(transaction, now)?;
+        self.resume_publication(transaction.snapshot(), now)?;
         let current = self
             .discover_current_head(now)?
             .ok_or(ArtifactOwnerHostError::CurrentHeadConflict)?;
@@ -736,8 +864,10 @@ impl LearningArtifactOwnerHost {
         {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
-        let receipt = transaction.acknowledge(withdrawal_registry, now)?;
-        self.persist_checkpoint(transaction)?;
+        let mut advanced = transaction.clone();
+        let receipt = advanced.acknowledge(withdrawal_registry, now)?;
+        self.persist_checkpoint(&advanced)?;
+        *transaction = advanced;
         Ok(receipt)
     }
 
@@ -754,17 +884,16 @@ impl LearningArtifactOwnerHost {
             return Ok(ArtifactRegistry::new());
         }
         let mut matched: Option<RegistrySnapshotReceipt> = None;
-        for entry in fs::read_dir(self.root.join("transactions"))? {
-            let entry = entry?;
-            let metadata = fs::symlink_metadata(entry.path())?;
-            if metadata.file_type().is_symlink() || !metadata.is_file() {
-                return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        for receipt in self.state_registry_receipts_by_head(head_digest)? {
+            match matched {
+                Some(existing) if existing != receipt => {
+                    return Err(ArtifactOwnerHostError::IdentityConflict);
+                }
+                Some(_) => {}
+                None => matched = Some(receipt),
             }
-            if entry.path().extension().and_then(|value| value.to_str()) != Some("checkpoint") {
-                continue;
-            }
-            let checkpoint =
-                decode_checkpoint(&read_small_record(&entry.path(), MAX_SMALL_RECORD_BYTES)?)?;
+        }
+        for checkpoint in recovery::verified_checkpoints(self)? {
             if phase_code(checkpoint.phase)
                 < phase_code(ArtifactPublicationPhaseV1::RegistryDurable)
             {
@@ -801,17 +930,19 @@ impl LearningArtifactOwnerHost {
         current: &VerifiedCurrentArtifactHeadV1,
     ) -> Result<RegistrySnapshotReceipt, ArtifactOwnerHostError> {
         let mut matched: Option<RegistrySnapshotReceipt> = None;
-        for entry in fs::read_dir(self.root.join("transactions"))? {
-            let entry = entry?;
-            let metadata = fs::symlink_metadata(entry.path())?;
-            if metadata.file_type().is_symlink() || !metadata.is_file() {
-                return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        for receipt in self.state_registry_receipts_by_head(current.signed.witness.head_digest)? {
+            if receipt.binding != current.signed.binding {
+                return Err(ArtifactOwnerHostError::CurrentHeadConflict);
             }
-            if entry.path().extension().and_then(|value| value.to_str()) != Some("checkpoint") {
-                continue;
+            match matched {
+                Some(existing) if existing != receipt => {
+                    return Err(ArtifactOwnerHostError::IdentityConflict);
+                }
+                Some(_) => {}
+                None => matched = Some(receipt),
             }
-            let checkpoint =
-                decode_checkpoint(&read_small_record(&entry.path(), MAX_SMALL_RECORD_BYTES)?)?;
+        }
+        for checkpoint in recovery::verified_checkpoints(self)? {
             if phase_code(checkpoint.phase)
                 < phase_code(ArtifactPublicationPhaseV1::RegistryDurable)
             {
@@ -895,27 +1026,8 @@ impl LearningArtifactOwnerHost {
     pub fn recovery_required_operations(
         &self,
     ) -> Result<Vec<ArtifactOwnerPublicationCheckpointV1>, ArtifactOwnerHostError> {
-        let mut latest: BTreeMap<StableId, ArtifactOwnerPublicationCheckpointV1> = BTreeMap::new();
-        for entry in fs::read_dir(self.root.join("transactions"))? {
-            let entry = entry?;
-            let metadata = fs::symlink_metadata(entry.path())?;
-            if metadata.file_type().is_symlink() || !metadata.is_file() {
-                return Err(ArtifactOwnerHostError::CheckpointMismatch);
-            }
-            if entry.path().extension().and_then(|value| value.to_str()) != Some("checkpoint") {
-                continue;
-            }
-            let checkpoint =
-                decode_checkpoint(&read_small_record(&entry.path(), MAX_SMALL_RECORD_BYTES)?)?;
-            match latest.get(&checkpoint.operation_id) {
-                Some(existing) if phase_code(existing.phase) >= phase_code(checkpoint.phase) => {}
-                Some(_) | None => {
-                    latest.insert(checkpoint.operation_id.clone(), checkpoint);
-                }
-            }
-        }
-        Ok(latest
-            .into_values()
+        Ok(recovery::verified_checkpoints(self)?
+            .into_iter()
             .filter(|checkpoint| checkpoint.phase != ArtifactPublicationPhaseV1::Acknowledged)
             .collect())
     }
@@ -924,9 +1036,9 @@ impl LearningArtifactOwnerHost {
         &self,
         operation_id: &StableId,
     ) -> Result<Option<ArtifactOwnerRecoveryV1>, ArtifactOwnerHostError> {
-        let mut latest = None;
+        let mut latest: Option<ArtifactOwnerPublicationCheckpointV1> = None;
         let mut missing_seen = false;
-        let mut invariant: Option<(Digest32, Digest32, Digest32, Digest32)> = None;
+        let mut invariant = None;
         for phase in ordered_phases() {
             let path = self.checkpoint_path(operation_id, phase);
             if !path.exists() {
@@ -945,9 +1057,19 @@ impl LearningArtifactOwnerHost {
                 checkpoint.intent_digest,
                 checkpoint.admission_digest,
                 checkpoint.withdrawal_scope_digest,
+                checkpoint.withdrawal_head_digest,
                 checkpoint.expected_registry_predecessor_head,
+                checkpoint.original_writer_lease_digest,
             );
             if invariant.is_some_and(|value| value != key) {
+                return Err(ArtifactOwnerHostError::CheckpointMismatch);
+            }
+            if let Some(previous) = &latest
+                && (previous.registry_receipt.is_some()
+                    && previous.registry_receipt != checkpoint.registry_receipt
+                    || previous.witness_receipt.is_some()
+                        && previous.witness_receipt != checkpoint.witness_receipt)
+            {
                 return Err(ArtifactOwnerHostError::CheckpointMismatch);
             }
             invariant = Some(key);
@@ -976,7 +1098,9 @@ impl LearningArtifactOwnerHost {
         if expected != recovery.checkpoint {
             return Err(ArtifactOwnerHostError::CheckpointMismatch);
         }
-        Ok(ArtifactPublicationTransactionV1::from_snapshot(snapshot)?)
+        let transaction = ArtifactPublicationTransactionV1::from_snapshot(snapshot)?;
+        recovery::verify_transaction_effects(self, &transaction, now)?;
+        Ok(transaction)
     }
 
     pub fn discover_current_head(
@@ -990,13 +1114,54 @@ impl LearningArtifactOwnerHost {
         Ok(latest)
     }
 
+    pub(crate) fn validate_recorded_publication_head(
+        &self,
+        signed: &SignedCurrentArtifactHeadV1,
+        checkpoint: &ArtifactOwnerPublicationCheckpointV1,
+    ) -> Result<(), ArtifactOwnerHostError> {
+        let requirement = RegistryHeadRequirementV1 {
+            registry_id: self.verifier.trust.registry_id.clone(),
+            minimum_generation: signed.witness.generation,
+            expected_predecessor_head_digest: checkpoint.expected_registry_predecessor_head,
+            minimum_authority_epoch: signed.witness.authority_epoch,
+            now: signed.witness.issued_at,
+        };
+        let verified = self
+            .verifier
+            .verify_signed_head(signed, &requirement, false)?;
+        let encoded = encode_head_witness(&signed.witness, signed.binding)?;
+        let canonical = RegistryHeadWitnessReceipt {
+            binding: signed.binding,
+            witness_digest: verified.witness_digest,
+            file_digest: Digest32::of_bytes(&encoded),
+            encoded_bytes: encoded.len(),
+        };
+        if checkpoint.witness_receipt != Some(canonical)
+            || checkpoint
+                .registry_receipt
+                .map(|receipt| (receipt.head_digest, receipt.binding))
+                != Some((signed.witness.head_digest, signed.binding))
+            || checkpoint
+                .witness_receipt
+                .map(|receipt| (receipt.witness_digest, receipt.binding))
+                != Some((verified.witness_digest, signed.binding))
+            || read_small_record(
+                &self.signed_head_record_path(signed),
+                MAX_SMALL_RECORD_BYTES,
+            )? != encode_signed_head(signed)
+        {
+            return Err(ArtifactOwnerHostError::CheckpointMismatch);
+        }
+        Ok(())
+    }
+
     fn discover_current_head_unanchored(
         &self,
         now: u64,
     ) -> Result<Option<VerifiedCurrentArtifactHeadV1>, ArtifactOwnerHostError> {
         let mut records = Vec::new();
-        for entry in fs::read_dir(self.root.join("heads"))? {
-            if records.len() >= MAX_HEAD_RECORDS {
+        for (index, entry) in fs::read_dir(self.root.join("heads"))?.enumerate() {
+            if index >= MAX_HEAD_RECORDS {
                 return Err(ArtifactOwnerHostError::Capacity);
             }
             let entry = entry?;
@@ -1025,8 +1190,11 @@ impl LearningArtifactOwnerHost {
                 .push(record);
         }
         let mut predecessor = self.verifier.trust.genesis_predecessor_head_digest;
-        let mut minimum_generation = self.verifier.trust.minimum_registry_generation;
-        let mut minimum_epoch = self.verifier.trust.minimum_authority_epoch;
+        // Current floors apply to the terminal head, not authentic retained
+        // predecessors. Per-signer epoch/time bounds remain mandatory below.
+        let mut minimum_generation =
+            Generation::new(1).map_err(|_| ArtifactOwnerHostError::InternalInvariant)?;
+        let mut minimum_epoch = 1;
         let mut consumed = 0usize;
         let mut latest = None;
         while let Some(candidates) = by_predecessor.remove(&predecessor) {
@@ -1048,11 +1216,13 @@ impl LearningArtifactOwnerHost {
                 self.verifier
                     .verify_signed_head(&candidate, &historical_requirement, false)?;
             predecessor = candidate.witness.head_digest;
-            minimum_generation = candidate
-                .witness
-                .generation
-                .next()
-                .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?;
+            if by_predecessor.contains_key(&predecessor) {
+                minimum_generation = candidate
+                    .witness
+                    .generation
+                    .next()
+                    .map_err(|_| ArtifactOwnerHostError::CurrentHeadContext)?;
+            }
             minimum_epoch = candidate.witness.authority_epoch;
             consumed += 1;
             latest = Some(verified);
@@ -1064,22 +1234,19 @@ impl LearningArtifactOwnerHost {
             return Err(ArtifactOwnerHostError::CurrentHeadContext);
         }
         let latest = latest.ok_or(ArtifactOwnerHostError::InternalInvariant)?;
-        let signer = self
-            .verifier
-            .head_signers
-            .get(&latest.signed.witness.signer_id)
-            .ok_or(ArtifactOwnerHostError::UnknownSigner)?;
-        verify_signer_context(
-            signer,
-            latest.signed.witness.signing_key_digest,
-            latest.signed.witness.authority_epoch,
-            latest.signed.witness.issued_at,
-            now,
-            true,
-        )?;
         if now > latest.signed.witness.expires_at {
             return Err(ArtifactOwnerHostError::CurrentHeadExpired);
         }
+        self.verifier.verify_current_head(
+            &latest.signed,
+            &RegistryHeadRequirementV1 {
+                registry_id: self.verifier.trust.registry_id.clone(),
+                minimum_generation: self.verifier.trust.minimum_registry_generation,
+                expected_predecessor_head_digest: latest.signed.witness.predecessor_head_digest,
+                minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+                now,
+            },
+        )?;
         Ok(Some(latest))
     }
 
@@ -1087,8 +1254,7 @@ impl LearningArtifactOwnerHost {
         &self,
         transaction: &ArtifactPublicationTransactionV1,
     ) -> Result<(), ArtifactOwnerHostError> {
-        let checkpoint =
-            checkpoint_from_snapshot(&transaction.snapshot(), self.verified_lease.lease_digest);
+        let checkpoint = recovery::checkpoint_for_write(self, transaction)?;
         let bytes = encode_checkpoint(&checkpoint);
         write_create_only_or_exact(
             &self.checkpoint_path(&checkpoint.operation_id, checkpoint.phase),
@@ -1113,6 +1279,14 @@ impl LearningArtifactOwnerHost {
         &self,
         signed: &SignedCurrentArtifactHeadV1,
     ) -> Result<(), ArtifactOwnerHostError> {
+        if !self.signed_head_record_path(signed).exists()
+            && fs::read_dir(self.root.join("heads"))?
+                .take(MAX_HEAD_RECORDS)
+                .count()
+                >= MAX_HEAD_RECORDS
+        {
+            return Err(ArtifactOwnerHostError::Capacity);
+        }
         write_create_only_or_exact(
             &self.signed_head_record_path(signed),
             &encode_signed_head(signed),
@@ -1136,7 +1310,7 @@ impl LearningArtifactOwnerHost {
             registry_id: self.verifier.trust.registry_id.clone(),
             minimum_generation: anchor.witness.generation,
             expected_predecessor_head_digest: anchor.witness.predecessor_head_digest,
-            minimum_authority_epoch: self.verifier.trust.minimum_authority_epoch,
+            minimum_authority_epoch: anchor.witness.authority_epoch,
             now: anchor.witness.issued_at,
         };
         self.verifier
@@ -1260,7 +1434,7 @@ fn decode_checkpoint(
     if fields.len() != 13 || fields[0] != CHECKPOINT_MAGIC {
         return Err(ArtifactOwnerHostError::CheckpointMismatch);
     }
-    Ok(ArtifactOwnerPublicationCheckpointV1 {
+    let checkpoint = ArtifactOwnerPublicationCheckpointV1 {
         operation_id: StableId::new(fields[1].to_owned())
             .map_err(|_| ArtifactOwnerHostError::CheckpointMismatch)?,
         phase: phase_from_code(fields[2])?,
@@ -1275,7 +1449,12 @@ fn decode_checkpoint(
         witness_receipt: parse_witness_receipt(fields[11])?,
         acknowledged_at: parse_optional_u64(fields[12])?,
         authority: AuthorityPosture::DENY_ALL,
-    })
+    };
+    recovery::validate_checkpoint_shape(&checkpoint)?;
+    if encode_checkpoint(&checkpoint) != bytes {
+        return Err(ArtifactOwnerHostError::CheckpointMismatch);
+    }
+    Ok(checkpoint)
 }
 
 fn parse_registry_receipt(
@@ -1341,7 +1520,7 @@ fn decode_signed_head(bytes: &[u8]) -> Result<SignedCurrentArtifactHeadV1, Artif
     if fields.len() != 13 || fields[0] != CURRENT_HEAD_MAGIC {
         return Err(ArtifactOwnerHostError::CurrentHeadContext);
     }
-    Ok(SignedCurrentArtifactHeadV1 {
+    let signed = SignedCurrentArtifactHeadV1 {
         withdrawal_scope_digest: parse_digest(fields[1])?,
         binding: parse_digest(fields[2])?,
         witness: RegistryHeadWitnessV1 {
@@ -1359,7 +1538,11 @@ fn decode_signed_head(bytes: &[u8]) -> Result<SignedCurrentArtifactHeadV1, Artif
             expires_at: parse_u64(fields[11])?,
         },
         signature: decode_signature(fields[12])?,
-    })
+    };
+    if encode_signed_head(&signed) != bytes {
+        return Err(ArtifactOwnerHostError::CurrentHeadContext);
+    }
+    Ok(signed)
 }
 
 fn validate_signers(
@@ -1467,14 +1650,18 @@ fn write_create_only_or_exact(path: &Path, bytes: &[u8]) -> Result<(), ArtifactO
     options.mode(0o600);
     match options.open(path) {
         Ok(mut file) => {
+            file.try_lock().map_err(|error| match error {
+                TryLockError::WouldBlock => ArtifactOwnerHostError::WriterFenceBusy,
+                TryLockError::Error(error) => error.into(),
+            })?;
             file.write_all(bytes)
                 .and_then(|()| file.sync_all())
                 .map_err(|_| ArtifactOwnerHostError::Indeterminate)?;
-            Ok(())
+            recovery::synchronize_artifact_path(path)
         }
         Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => {
             if read_small_record(path, MAX_SMALL_RECORD_BYTES)? == bytes {
-                Ok(())
+                recovery::synchronize_artifact_path(path)
             } else {
                 Err(ArtifactOwnerHostError::IdentityConflict)
             }
@@ -1585,6 +1772,7 @@ pub enum ArtifactOwnerHostError {
     CurrentHeadFork,
     CurrentHeadExpired,
     CurrentHeadRollback,
+    FullAdmissionRejected,
     CheckpointMissing,
     CheckpointGap,
     CheckpointMismatch,
@@ -1651,10 +1839,10 @@ mod tests {
 
     static NEXT_TEST_DIR: AtomicU64 = AtomicU64::new(1);
 
-    struct TestDir(PathBuf);
+    pub(super) struct TestDir(pub(super) PathBuf);
 
     impl TestDir {
-        fn new() -> Self {
+        pub(super) fn new() -> Self {
             let id = NEXT_TEST_DIR.fetch_add(1, Ordering::Relaxed);
             let path = std::env::temp_dir().join(format!(
                 "hepta-learning-artifact-owner-{}-{id}",
@@ -1672,19 +1860,19 @@ mod tests {
         }
     }
 
-    fn id(value: &str) -> StableId {
+    pub(super) fn id(value: &str) -> StableId {
         StableId::new(value.to_owned()).fixture("valid test id")
     }
 
-    fn digest(value: &str) -> Digest32 {
+    pub(super) fn digest(value: &str) -> Digest32 {
         Digest32::of_bytes(value.as_bytes())
     }
 
-    fn signer() -> SigningKey {
+    pub(super) fn signer() -> SigningKey {
         SigningKey::from_bytes(&[7u8; 32])
     }
 
-    fn trusted_signer(key: &SigningKey) -> TrustedArtifactSignerV1 {
+    pub(super) fn trusted_signer(key: &SigningKey) -> TrustedArtifactSignerV1 {
         TrustedArtifactSignerV1 {
             signer_id: id("owner-authority"),
             verifying_key: key.verifying_key().to_bytes(),
@@ -1696,7 +1884,7 @@ mod tests {
         }
     }
 
-    fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
+    pub(super) fn trust(key: &SigningKey, scope_digest: Digest32) -> ArtifactOwnerTrustV1 {
         ArtifactOwnerTrustV1 {
             registry_id: id("learning-artifacts"),
             withdrawal_scope_digest: scope_digest,
@@ -1708,7 +1896,7 @@ mod tests {
         }
     }
 
-    fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
+    pub(super) fn lease(key: &SigningKey, scope_digest: Digest32) -> SignedArtifactWriterLeaseV1 {
         let mut value = SignedArtifactWriterLeaseV1 {
             lease_id: id("writer-lease"),
             producer_id: id("trainer"),
@@ -1726,7 +1914,7 @@ mod tests {
         value
     }
 
-    fn withdrawal_scope() -> DatasetWithdrawalScopeV1 {
+    pub(super) fn withdrawal_scope() -> DatasetWithdrawalScopeV1 {
         DatasetWithdrawalScopeV1 {
             authority_domain_id: id("dataset-authority"),
             registry_id: id("withdrawals"),
@@ -1734,7 +1922,7 @@ mod tests {
         }
     }
 
-    fn manifest() -> LearningArtifactManifestV2 {
+    pub(super) fn manifest() -> LearningArtifactManifestV2 {
         LearningArtifactManifestV2 {
             artifact_id: id("candidate"),
             kind: ArtifactKind::Model,
@@ -1759,7 +1947,7 @@ mod tests {
         }
     }
 
-    fn signed_head(
+    pub(super) fn signed_head(
         key: &SigningKey,
         scope_digest: Digest32,
         head_digest: Digest32,
@@ -1837,7 +2025,7 @@ mod tests {
             20,
         )
         .fixture("admission");
-        let registry = ArtifactRegistry::new();
+        let mut registry = ArtifactRegistry::new();
         let mut transaction = owner
             .begin_publication(
                 id("operation"),
@@ -1848,12 +2036,12 @@ mod tests {
                 20,
             )
             .fixture("begin");
-        transaction
-            .record_payload_durable(digest("payload"), 7)
-            .fixture("payload durable");
         owner
-            .persist_checkpoint(&transaction)
-            .fixture("payload checkpoint");
+            .stage_compatibility_registration(&transaction, &mut registry, 20)
+            .fixture("stage registry");
+        owner
+            .ensure_payload_durable(&mut transaction, &registry, b"payload", 20)
+            .fixture("payload durable");
         let snapshot = transaction.snapshot();
         drop(owner);
 
@@ -1913,7 +2101,7 @@ mod tests {
         ));
     }
 
-    fn deterministic_publication(
+    pub(super) fn deterministic_publication(
         owner: &LearningArtifactOwnerHost,
         withdrawals: &DatasetWithdrawalRegistry,
         now: u64,
@@ -2326,3 +2514,11 @@ mod tests {
         ));
     }
 }
+
+#[cfg(test)]
+#[path = "owner_host_adversarial_tests.rs"]
+mod adversarial_tests;
+
+#[cfg(test)]
+#[path = "owner_audit_regression_tests.rs"]
+mod audit_regression_tests;
