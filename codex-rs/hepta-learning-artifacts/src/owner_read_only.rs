@@ -83,6 +83,18 @@ impl ReadOnlyArtifactCurrentOwnerV1 {
         withdrawals: DatasetWithdrawalRegistry,
         now: u64,
     ) -> Result<Self, ArtifactOwnerHostError> {
+        Self::open_with_current_registry_view(root, trust, withdrawals, now).map(|(owner, _)| owner)
+    }
+
+    /// Open the same protected owner and retain the complete view that opening
+    /// already verifies. A caller need not repeat that validation within this
+    /// read; each subsequent use still revalidates the actual CURRENT frontier.
+    pub fn open_with_current_registry_view(
+        root: impl AsRef<Path>,
+        trust: ArtifactOwnerTrustV1,
+        withdrawals: DatasetWithdrawalRegistry,
+        now: u64,
+    ) -> Result<(Self, VerifiedCurrentRegistryViewV1), ArtifactOwnerHostError> {
         let root = root.as_ref().to_owned();
         protected_inventory(&root)?;
         let (frontier, frontier_bytes) = read_frontier(&root)?;
@@ -101,8 +113,8 @@ impl ReadOnlyArtifactCurrentOwnerV1 {
             withdrawals,
             frontier_bytes,
         };
-        owner.current_registry_view(now)?;
-        Ok(owner)
+        let current = owner.current_registry_view(now)?;
+        Ok((owner, current))
     }
     /// Read an original complete publication ACK under the independently
     /// current Root frontier. Historical signatures authenticate history only;
