@@ -1,18 +1,18 @@
 //! Drive the installed original round, model adapter and physical compiler.
 //! Preparation and independent evidence use the original authenticated route.
-use super::evolving_agentd::SelfIterationHostConfigV1;
-use super::evolving_agentd::publish_status;
+use super::SelfIterationHostConfigV1;
+use super::publish_status;
 use crate::AppServerSelfIterationModelPortV1;
 use crate::CpuNeuronFrozenGeneratorClientV1;
 use crate::CpuNeuronGovernedParameterCompilerV1;
-use crate::CpuNeuronOriginalGenerationReaderV3;
+use crate::initial_cpu_anchor::CpuNeuronOriginalGenerationReaderV3;
 use crate::CpuNeuronParameterCandidatePlanV2;
 use crate::CpuNeuronParameterCompilerOwnersV2;
 use crate::CpuNeuronParameterCompilerPlanV2;
 use crate::CpuNeuronParameterPolicyV2;
 use crate::CpuNeuronParameterRootMaterialsV2;
 use crate::InstalledSelfIterationIndependentOwnersV1;
-use crate::RegisteredCpuModelResolverV3;
+use crate::initial_cpu_anchor::RegisteredCpuModelResolverV3;
 use crate::initial_cpu_anchor::InstalledCpuSourceV1;
 use codex_hepta_agent_components::frozen_generator_wire::RoundPreparationResultV1;
 use codex_hepta_agent_components::intelligence_eval::ParameterPreRegistrationPurposeV1;
@@ -239,7 +239,7 @@ fn admission(
     expected:&crate::CpuNeuronGenerationPlanV1, purpose:ParameterPreRegistrationPurposeV1,
     clock:Arc<SystemAuthorityClock>,
 ) -> Result<(crate::CpuNeuronGenerationPlanV1,codex_hepta_agentd::AgentdNeuronArtifactAdmissionV1),AgentdError> {
-    let verified = crate::inspect_parameter_pre_registered_admission_v1(&source.configuration.path,source.configuration.digest.parse().map_err(invalid)?,&source.selection.path,source.selection.digest.parse().map_err(invalid)?).map_err(invalid)?;
+    let verified = crate::initial_cpu_anchor::inspect_parameter_pre_registered_admission_v1(&source.configuration.path,source.configuration.digest.parse().map_err(invalid)?,&source.selection.path,source.selection.digest.parse().map_err(invalid)?).map_err(invalid)?;
     if verified.candidate_id().as_str() != source.candidate_id || verified.purpose() != purpose
         || verified.round().round_digest != round.identity_digest().to_string()
         || verified.round().round_payload_digest != Digest32::of_bytes(&round.canonical_bytes()?).to_string()
