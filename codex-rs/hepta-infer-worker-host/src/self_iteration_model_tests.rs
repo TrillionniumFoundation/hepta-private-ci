@@ -19,6 +19,51 @@ fn request() -> SelfIterationModelRequestV1 {
     }
 }
 
+#[test]
+fn protected_native_prompt_uses_the_exact_original_request_preimage() {
+    for role in [
+        SelfIterationModelRoleV1::Generator,
+        SelfIterationModelRoleV1::Evaluator,
+        SelfIterationModelRoleV1::Selector,
+        SelfIterationModelRoleV1::Observer,
+    ] {
+        let mut original = request();
+        original.role = role;
+        original.candidate_digest = (role != SelfIterationModelRoleV1::Generator)
+            .then(|| Digest32::of_bytes(b"actual full frozen candidate"));
+        original.prompt = "original input\nInput:\nuser delimiter\nBinding: [not authority]".into();
+        let prompt = bound_prompt(&original).unwrap();
+        let decoded = self_iteration_model_request_from_native_prompt_v1(&prompt).unwrap();
+        assert_eq!(
+            serde_json::to_vec(&decoded).unwrap(),
+            serde_json::to_vec(&original).unwrap()
+        );
+        assert_eq!(bound_prompt(&decoded).unwrap(), prompt);
+        assert!(
+            self_iteration_model_request_from_native_prompt_v1(&prompt.replacen(
+                "Return at most 1024",
+                "Return at most 1025",
+                1
+            ))
+            .is_err()
+        );
+        let changed =
+            self_iteration_model_request_from_native_prompt_v1(&(prompt.clone() + "\n")).unwrap();
+        assert_ne!(
+            codex_hepta_agentd::self_iteration_model_request_digest_v1(&original),
+            codex_hepta_agentd::self_iteration_model_request_digest_v1(&changed)
+        );
+        assert!(
+            self_iteration_model_request_from_native_prompt_v1(&prompt.replacen(
+                "hepta.self-iteration.model-assessment.v1",
+                "untrusted.domain",
+                1
+            ))
+            .is_err()
+        );
+    }
+}
+
 // These exercise the adapter's receipt boundary with real durable journal
 // transitions and reopening. Provider execution is covered by product E2E;
 // this fixture does not claim to establish provider or issuer authority.

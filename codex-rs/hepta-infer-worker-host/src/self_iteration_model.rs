@@ -8,6 +8,7 @@ use codex_hepta_infer_core::SelfIterationModelFailureObserverV1;
 use codex_hepta_infer_core::SelfIterationModelFailureV1;
 use codex_hepta_infer_core::SelfIterationModelPortV1;
 use codex_hepta_infer_core::SelfIterationModelRequestV1;
+use codex_hepta_infer_core::SelfIterationModelRoleV1;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_infer_core::durable_control::NativeHistoryMaintenanceReceipt;
 use codex_hepta_infer_core::durable_control::native::NativeReservationState;
@@ -15,6 +16,7 @@ use codex_hepta_infer_core::durable_control::native::NativeRunOutput;
 use codex_hepta_infer_core::durable_control::native::NativeRunRecord;
 use codex_hepta_types::AuthorityPosture;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use tokio_util::sync::CancellationToken;
 
 use crate::native_app_server::AppServerModelDriver;
@@ -261,6 +263,51 @@ fn bound_prompt(
         return Err(SelfIterationModelErrorV1::InvalidRequest);
     }
     Ok(prompt)
+}
+
+/// Read the sole model adapter's exact prompt preimage from an independently
+/// protected Root terminal witness. Parsing provides facts, never authority.
+pub fn self_iteration_model_request_from_native_prompt_v1(
+    prompt: &str,
+) -> Result<SelfIterationModelRequestV1, SelfIterationModelErrorV1> {
+    let invalid = || SelfIterationModelErrorV1::InvalidRequest;
+    let (prefix, input) = prompt.split_once("\nInput:\n").ok_or_else(invalid)?;
+    let (_, binding) = prefix.split_once("\nBinding: ").ok_or_else(invalid)?;
+    let (domain, id, role, envelope, candidate, deadline, maximum): (
+        String,
+        String,
+        String,
+        String,
+        Option<String>,
+        u64,
+        u32,
+    ) = serde_json::from_str(binding).map_err(|_| invalid())?;
+    if domain != "hepta.self-iteration.model-assessment.v1" {
+        return Err(invalid());
+    }
+    let role = match role.as_str() {
+        "Generator" => SelfIterationModelRoleV1::Generator,
+        "Evaluator" => SelfIterationModelRoleV1::Evaluator,
+        "Selector" => SelfIterationModelRoleV1::Selector,
+        "Observer" => SelfIterationModelRoleV1::Observer,
+        _ => return Err(invalid()),
+    };
+    let request = SelfIterationModelRequestV1 {
+        request_id: StableId::new(id).map_err(|_| invalid())?,
+        role,
+        envelope_digest: envelope.parse().map_err(|_| invalid())?,
+        candidate_digest: candidate
+            .map(|value| value.parse().map_err(|_| invalid()))
+            .transpose()?,
+        prompt: input.into(),
+        deadline_ms: deadline,
+        maximum_response_bytes: maximum,
+    };
+    request.validate(deadline.checked_sub(1).ok_or_else(invalid)?)?;
+    if bound_prompt(&request)? != prompt {
+        return Err(invalid());
+    }
+    Ok(request)
 }
 
 fn assessment_from_record(
