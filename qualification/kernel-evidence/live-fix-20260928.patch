@@ -1,0 +1,1530 @@
+diff -ruN '--exclude=.git' '--exclude=__pycache__' hepta-private-ci-99419-pristine/codex-rs/hepta-evidence/src/frontier_backend_file/segmented/tests.rs hepta-private-ci-99419/codex-rs/hepta-evidence/src/frontier_backend_file/segmented/tests.rs
+--- hepta-private-ci-99419-pristine/codex-rs/hepta-evidence/src/frontier_backend_file/segmented/tests.rs	2026-09-28 02:48:55.000000000 +0000
++++ hepta-private-ci-99419/codex-rs/hepta-evidence/src/frontier_backend_file/segmented/tests.rs	2026-09-28 08:18:56.999150890 +0000
+@@ -28,6 +28,7 @@
+             let external = tempfile::tempdir().unwrap();
+             let local = tempfile::tempdir().unwrap();
+             let backend_root = external.path().join("backend");
++            let local_root = local.path().canonicalize().unwrap();
+             let journals = backend_root.join(EVIDENCE_FRONTIER_BACKEND_JOURNAL_DIRECTORY);
+             std::fs::create_dir(&backend_root).unwrap();
+             std::fs::create_dir(&journals).unwrap();
+@@ -53,7 +54,7 @@
+                 _external: external,
+                 _local: local,
+                 backend_root: backend_root.canonicalize().unwrap(),
+-                local_root: local.path().canonicalize().unwrap(),
++                local_root,
+                 identity_sha256: Sha256Digest::for_bytes(&identity_bytes),
+             }
+         }
+@@ -107,7 +108,7 @@
+     fn automatic_rollover_preserves_latest_history_and_capacity() {
+         let fixture = Fixture::new();
+         let mut backend = fixture.open();
+-        for generation in 1..=6 {
++        for generation in 1_u64..=6 {
+             backend
+                 .compare_and_swap(
+                     "store:segmented-test",
+@@ -153,7 +154,7 @@
+         .unwrap();
+         {
+             let mut backend = fixture.open();
+-            for generation in 1..=5 {
++            for generation in 1_u64..=5 {
+                 backend
+                     .compare_and_swap(
+                         "store:segmented-test",
+@@ -176,7 +177,7 @@
+     fn duplicate_active_prefix_after_archive_crash_is_deduplicated() {
+         let fixture = Fixture::new();
+         let mut backend = fixture.open();
+-        for generation in 1..=6 {
++        for generation in 1_u64..=6 {
+             backend
+                 .compare_and_swap(
+                     "store:segmented-test",
+diff -ruN '--exclude=.git' '--exclude=__pycache__' hepta-private-ci-99419-pristine/codex-rs/hepta-evidence/src/qualification.rs hepta-private-ci-99419/codex-rs/hepta-evidence/src/qualification.rs
+--- hepta-private-ci-99419-pristine/codex-rs/hepta-evidence/src/qualification.rs	2026-09-28 02:48:55.000000000 +0000
++++ hepta-private-ci-99419/codex-rs/hepta-evidence/src/qualification.rs	2026-09-28 08:18:56.998521359 +0000
+@@ -872,9 +872,9 @@
+ pub(crate) async fn verify_qualification_evidence_rows(
+     pool: &SqlitePool,
+ ) -> Result<(), EvidenceError> {
+-    let rows = sqlx::query(&format!(
++    let rows = sqlx::query(sqlx::AssertSqlSafe(format!(
+         "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence ORDER BY seq ASC LIMIT 1000001"
+-    ))
++    )))
+     .fetch_all(pool)
+     .await
+     .map_err(classify_sqlx_error)?;
+@@ -989,11 +989,11 @@
+     transaction: &mut Transaction<'_, Sqlite>,
+     candidate: &EvidenceCandidateV1,
+ ) -> Result<Sha256Digest, EvidenceError> {
+-    let rows = sqlx::query(&format!(
++    let rows = sqlx::query(sqlx::AssertSqlSafe(format!(
+         "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence
+          WHERE candidate_id = ? AND source_commit = ? AND source_tree = ?
+            AND claim_class != 'independent_decision' ORDER BY seq ASC LIMIT ?"
+-    ))
++    )))
+     .bind(&candidate.candidate_id)
+     .bind(&candidate.source_commit)
+     .bind(&candidate.source_tree)
+@@ -1025,11 +1025,11 @@
+     candidate: &EvidenceCandidateV1,
+     claim_class: EvidenceClaimClassV1,
+ ) -> Result<Vec<StoredQualificationEvidence>, EvidenceError> {
+-    let rows = sqlx::query(&format!(
++    let rows = sqlx::query(sqlx::AssertSqlSafe(format!(
+         "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence
+          WHERE candidate_id = ? AND source_commit = ? AND source_tree = ? AND claim_class = ?
+          ORDER BY seq ASC LIMIT ?"
+-    ))
++    )))
+     .bind(&candidate.candidate_id)
+     .bind(&candidate.source_commit)
+     .bind(&candidate.source_tree)
+@@ -1053,9 +1053,9 @@
+     transaction: &mut Transaction<'_, Sqlite>,
+     evidence_id: &str,
+ ) -> Result<Option<StoredQualificationEvidence>, EvidenceError> {
+-    let row = sqlx::query(&format!(
++    let row = sqlx::query(sqlx::AssertSqlSafe(format!(
+         "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence WHERE evidence_id = ?"
+-    ))
++    )))
+     .bind(evidence_id)
+     .fetch_optional(&mut **transaction)
+     .await
+diff -ruN '--exclude=.git' '--exclude=__pycache__' hepta-private-ci-99419-pristine/codex-rs/hepta-evidence/src/qualification_commitment.rs hepta-private-ci-99419/codex-rs/hepta-evidence/src/qualification_commitment.rs
+--- hepta-private-ci-99419-pristine/codex-rs/hepta-evidence/src/qualification_commitment.rs	2026-09-28 02:48:55.000000000 +0000
++++ hepta-private-ci-99419/codex-rs/hepta-evidence/src/qualification_commitment.rs	2026-09-28 08:18:56.998768456 +0000
+@@ -18,7 +18,7 @@
+         let statement = format!(
+             "SELECT {QUALIFICATION_COLUMNS} FROM qualification_evidence WHERE evidence_id = ?"
+         );
+-        let row = sqlx::query(&statement)
++        let row = sqlx::query(sqlx::AssertSqlSafe(statement))
+             .bind(evidence_id.as_str())
+             .fetch_optional(&self.pool)
+             .await
+diff -ruN '--exclude=.git' '--exclude=__pycache__' hepta-private-ci-99419-pristine/codex-rs/hepta-evidence/src/recovery_snapshot.rs hepta-private-ci-99419/codex-rs/hepta-evidence/src/recovery_snapshot.rs
+--- hepta-private-ci-99419-pristine/codex-rs/hepta-evidence/src/recovery_snapshot.rs	2026-09-28 02:48:55.000000000 +0000
++++ hepta-private-ci-99419/codex-rs/hepta-evidence/src/recovery_snapshot.rs	2026-09-28 08:18:56.998867997 +0000
+@@ -121,7 +121,7 @@
+     let mut last_seq = 0_i64;
+     let mut observed_rows = 0_i64;
+     loop {
+-        let page = sqlx::query(&statement)
++        let page = sqlx::query(sqlx::AssertSqlSafe(statement.as_str()))
+             .bind(last_seq)
+             .bind(PAGE_ROWS)
+             .fetch_all(&mut **transaction)
+diff -ruN '--exclude=.git' '--exclude=__pycache__' hepta-private-ci-99419-pristine/codex-rs/hepta-evidence/src/store/runtime.rs hepta-private-ci-99419/codex-rs/hepta-evidence/src/store/runtime.rs
+--- hepta-private-ci-99419-pristine/codex-rs/hepta-evidence/src/store/runtime.rs	2026-09-28 02:48:55.000000000 +0000
++++ hepta-private-ci-99419/codex-rs/hepta-evidence/src/store/runtime.rs	2026-09-28 08:20:13.367257719 +0000
+@@ -43,7 +43,7 @@
+         )
+     }
+ 
+-    async fn assert_rejected(store: &HeptaEvidenceStore, statement: &str) {
++    async fn assert_rejected(store: &HeptaEvidenceStore, statement: &'static str) {
+         let result = sqlx::query(statement).execute(&store.pool).await;
+         assert!(
+             result.is_err(),
+@@ -123,11 +123,12 @@
+             .await
+             .expect("read current page count");
+         let requested_limit = page_count.checked_add(1).expect("page-count headroom");
+-        let configured_limit: i64 =
+-            sqlx::query_scalar(&format!("PRAGMA max_page_count = {requested_limit}"))
+-                .fetch_one(&store.pool)
+-                .await
+-                .expect("install disk-full injection ceiling");
++        let configured_limit: i64 = sqlx::query_scalar(sqlx::AssertSqlSafe(format!(
++            "PRAGMA max_page_count = {requested_limit}"
++        )))
++        .fetch_one(&store.pool)
++        .await
++        .expect("install disk-full injection ceiling");
+         assert_eq!(configured_limit, requested_limit);
+ 
+         let mut transaction = store.pool.begin().await.expect("begin injected write");
+diff -ruN '--exclude=.git' '--exclude=__pycache__' hepta-private-ci-99419-pristine/docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json hepta-private-ci-99419/docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json
+--- hepta-private-ci-99419-pristine/docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json	2026-09-28 02:48:55.000000000 +0000
++++ hepta-private-ci-99419/docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json	2026-09-28 08:28:56.239824587 +0000
+@@ -156,13 +156,13 @@
+         {
+           "path": "codex-rs/hepta-types/conformance/verify_rejections.py",
+           "mustContain": [
+-            "rejection oracle accepted invalid case"
++            "raw-byte rejection oracle accepted invalid bytes"
+           ]
+         },
+         {
+           "path": "codex-rs/hepta-types/conformance/verify_rejections.mjs",
+           "mustContain": [
+-            "rejection oracle accepted invalid case"
++            "raw-byte rejection oracle accepted invalid bytes"
+           ]
+         }
+       ],
+@@ -504,335 +504,6 @@
+       "receiptStatus": "native_workflow_required"
+     },
+     {
+-      "capabilityId": "kernel.operations.bounded-state-model.v1",
+-      "module": "kernel.operations",
+-      "summary": "bounded deterministic operation-state reference model",
+-      "publicSymbols": [
+-        "OperationLedger",
+-        "OperationState",
+-        "ReferenceAuthorityWitness"
+-      ],
+-      "sourceEvidence": [
+-        {
+-          "path": "codex-rs/hepta-operations/src/ledger.rs",
+-          "mustContain": [
+-            "MAX_MODEL_OPERATION_RECORDS",
+-            "pub struct OperationLedger"
+-          ]
+-        },
+-        {
+-          "path": "codex-rs/hepta-operations/src/model.rs",
+-          "mustContain": [
+-            "pub enum OperationState",
+-            "ReferenceAuthorityWitness"
+-          ]
+-        }
+-      ],
+-      "positiveTests": [
+-        {
+-          "path": "codex-rs/hepta-operations/src/ledger_tests.rs",
+-          "mustContain": [
+-            "exact_command_replay_is_idempotent_within_the_reference_model"
+-          ]
+-        }
+-      ],
+-      "negativeTests": [
+-        {
+-          "path": "codex-rs/hepta-operations/src/ledger_tests.rs",
+-          "mustContain": [
+-            "zero_digests_reject_without_mutation",
+-            "reference_ledger_capacity_is_bounded"
+-          ]
+-        }
+-      ],
+-      "durability": "sqlite_wal_full_integrated_owner",
+-      "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
+-      "productionCaller": null,
+-      "receiptStatus": "native_workflow_required"
+-    },
+-    {
+-      "capabilityId": "kernel.operations.bounded-outbox-model.v1",
+-      "module": "kernel.operations",
+-      "summary": "bounded in-memory outbox claim and acknowledgement model",
+-      "publicSymbols": [
+-        "Outbox",
+-        "OutboxIntent",
+-        "OutboxState"
+-      ],
+-      "sourceEvidence": [
+-        {
+-          "path": "codex-rs/hepta-operations/src/outbox.rs",
+-          "mustContain": [
+-            "MAX_MODEL_OUTBOX_RECORDS",
+-            "pub struct Outbox"
+-          ]
+-        }
+-      ],
+-      "positiveTests": [
+-        {
+-          "path": "codex-rs/hepta-operations/src/outbox_tests.rs",
+-          "mustContain": [
+-            "exact_enqueue_claim_and_ack_replay_are_idempotent"
+-          ]
+-        }
+-      ],
+-      "negativeTests": [
+-        {
+-          "path": "codex-rs/hepta-operations/src/outbox_tests.rs",
+-          "mustContain": [
+-            "zero_payload_and_acknowledgement_reject_without_mutation",
+-            "reference_outbox_capacity_is_bounded"
+-          ]
+-        }
+-      ],
+-      "durability": "sqlite_wal_full_integrated_owner",
+-      "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
+-      "productionCaller": null,
+-      "receiptStatus": "native_workflow_required"
+-    },
+-    {
+-      "capabilityId": "kernel.operations.fenced-terminal-model.v1",
+-      "module": "kernel.operations",
+-      "summary": "generation-fenced idempotent terminal observation",
+-      "publicSymbols": [
+-        "OperationLedger::observe_terminal",
+-        "ReconciliationOutcome"
+-      ],
+-      "sourceEvidence": [
+-        {
+-          "path": "codex-rs/hepta-operations/src/ledger.rs",
+-          "mustContain": [
+-            "pub fn observe_terminal",
+-            "terminal_matches"
+-          ]
+-        }
+-      ],
+-      "positiveTests": [
+-        {
+-          "path": "codex-rs/hepta-operations/src/ledger_tests.rs",
+-          "mustContain": [
+-            "indeterminate_requires_current_fence_reconciliation"
+-          ]
+-        }
+-      ],
+-      "negativeTests": [
+-        {
+-          "path": "codex-rs/hepta-operations/src/ledger_tests.rs",
+-          "mustContain": [
+-            "StaleGeneration",
+-            "terminal outcome"
+-          ]
+-        }
+-      ],
+-      "durability": "sqlite_wal_full_integrated_owner",
+-      "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
+-      "productionCaller": null,
+-      "receiptStatus": "native_workflow_required"
+-    },
+-    {
+-      "capabilityId": "kernel.evidence.governance-history-store.v1",
+-      "module": "kernel.evidence",
+-      "summary": "governance and historical evidence storage",
+-      "publicSymbols": [
+-        "HeptaEvidenceStore::append_decision",
+-        "HeptaEvidenceStore::append_receipt"
+-      ],
+-      "sourceEvidence": [
+-        {
+-          "path": "codex-rs/hepta-evidence/src/store.rs",
+-          "mustContain": [
+-            "pub async fn append_decision",
+-            "pub async fn append_receipt"
+-          ]
+-        },
+-        {
+-          "path": "codex-rs/hepta-evidence/src/lib.rs",
+-          "mustContain": [
+-            "HistoricalEvidenceRecord"
+-          ]
+-        }
+-      ],
+-      "positiveTests": [
+-        {
+-          "path": "codex-rs/hepta-evidence/src/tests.rs",
+-          "mustContain": [
+-            "append_is_idempotent_and_survives_reopen"
+-          ]
+-        }
+-      ],
+-      "negativeTests": [
+-        {
+-          "path": "codex-rs/hepta-evidence/src/tests.rs",
+-          "mustContain": [
+-            "conflicting_identity_never_overwrites_evidence",
+-            "corrupted_stored_digest_fails_closed"
+-          ]
+-        }
+-      ],
+-      "durability": "sqlite_migrations_0001_0012",
+-      "activation": "agentd_product_composed_config_gated",
+-      "productionCaller": null,
+-      "receiptStatus": "native_workflow_required"
+-    },
+-    {
+-      "capabilityId": "kernel.evidence.provider-effect-store.v1",
+-      "module": "kernel.evidence",
+-      "summary": "provider intent terminal and effect evidence storage",
+-      "publicSymbols": [
+-        "StoredProviderEffectIntent",
+-        "StoredProviderEffectAck",
+-        "StoredProviderEffectUncertainty"
+-      ],
+-      "sourceEvidence": [
+-        {
+-          "path": "codex-rs/hepta-evidence/src/lib.rs",
+-          "mustContain": [
+-            "StoredProviderEffectIntent",
+-            "StoredProviderEffectAck",
+-            "StoredProviderEffectUncertainty"
+-          ]
+-        }
+-      ],
+-      "positiveTests": [
+-        {
+-          "path": "codex-rs/hepta-evidence/src/provider_effect_tests.rs",
+-          "mustContain": [
+-            "effect_journal_quarantines_unknown_and_reconciles_after_restart"
+-          ]
+-        }
+-      ],
+-      "negativeTests": [
+-        {
+-          "path": "codex-rs/hepta-evidence/src/provider_effect_tests.rs",
+-          "mustContain": [
+-            "late_dispatch_ack_after_quarantine_requires_status_lookup_source"
+-          ]
+-        }
+-      ],
+-      "durability": "sqlite_migrations_0001_0012",
+-      "activation": "agentd_product_composed_config_gated",
+-      "productionCaller": null,
+-      "receiptStatus": "native_workflow_required"
+-    },
+-    {
+-      "capabilityId": "kernel.evidence.migration-integrity.v1",
+-      "module": "kernel.evidence",
+-      "summary": "schema migration and integrity validation",
+-      "publicSymbols": [
+-        "HeptaEvidenceStore::open",
+-        "HeptaEvidenceStore::open_existing_read_only"
+-      ],
+-      "sourceEvidence": [
+-        {
+-          "path": "codex-rs/hepta-evidence/src/store.rs",
+-          "mustContain": [
+-            "verify_current_migration_ledger",
+-            "verify_existing_store",
+-            "verify_quick_check"
+-          ]
+-        }
+-      ],
+-      "positiveTests": [
+-        {
+-          "path": "codex-rs/hepta-evidence/src/tests.rs",
+-          "mustContain": [
+-            "append_is_idempotent_and_survives_reopen"
+-          ]
+-        }
+-      ],
+-      "negativeTests": [
+-        {
+-          "path": "codex-rs/hepta-evidence/src/tests.rs",
+-          "mustContain": [
+-            "corrupted_stored_digest_fails_closed"
+-          ]
+-        }
+-      ],
+-      "durability": "sqlite_migrations_0001_0012",
+-      "activation": "agentd_product_composed_config_gated",
+-      "productionCaller": null,
+-      "receiptStatus": "native_workflow_required"
+-    },
+-    {
+-      "capabilityId": "secrets.heptabao.pinned-kv2-read.v1",
+-      "module": "secrets.heptabao",
+-      "summary": "pinned-CA HTTPS read of one exact KV-v2 string field",
+-      "publicSymbols": [
+-        "BaoClient::new",
+-        "BaoClient::consume_kv_v2"
+-      ],
+-      "sourceEvidence": [
+-        {
+-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+-          "mustContain": [
+-            "build_pinned_https_direct",
+-            "consume_kv_v2",
+-            "MAX_RESPONSE_BYTES"
+-          ]
+-        }
+-      ],
+-      "positiveTests": [
+-        {
+-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+-          "mustContain": [
+-            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
+-          ]
+-        }
+-      ],
+-      "negativeTests": [
+-        {
+-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+-          "mustContain": [
+-            "invalid_signature_and_provider_denial_do_not_release_secret",
+-            "untrusted_tls_certificate_fails_before_secret_delivery",
+-            "oversized_reply_fails_without_consumer_delivery"
+-          ]
+-        }
+-      ],
+-      "durability": "external_authority_plus_local_final_use_state",
+-      "activation": "registered_host_composed_not_product_activated",
+-      "productionCaller": null,
+-      "receiptStatus": "native_workflow_required"
+-    },
+-    {
+-      "capabilityId": "secrets.heptabao.metadata-receipt.v1",
+-      "module": "secrets.heptabao",
+-      "summary": "metadata-only receipt without raw secret value",
+-      "publicSymbols": [
+-        "BaoSecretReceipt"
+-      ],
+-      "sourceEvidence": [
+-        {
+-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+-          "mustContain": [
+-            "pub struct BaoSecretReceipt",
+-            "secret_sha256",
+-            "secret_bytes"
+-          ]
+-        }
+-      ],
+-      "positiveTests": [
+-        {
+-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+-          "mustContain": [
+-            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
+-          ]
+-        }
+-      ],
+-      "negativeTests": [
+-        {
+-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+-          "mustContain": [
+-            "consumer_failure_after_delivery_is_indeterminate"
+-          ]
+-        }
+-      ],
+-      "durability": "external_authority_plus_local_final_use_state",
+-      "activation": "registered_host_composed_not_product_activated",
+-      "productionCaller": null,
+-      "receiptStatus": "native_workflow_required"
+-    },
+-    {
+       "capabilityId": "kernel.authority.signed-final-use.v2",
+       "module": "kernel.authority",
+       "summary": "independently signed final-use grant verification through canonical claim and delivery entrypoints",
+@@ -1177,7 +848,7 @@
+             "pub struct FleetAuthorityPort",
+             "pub fn issue(",
+             ".verify_use(",
+-            ".with_verified_use(",
++            "dispatch_authority_lease_with_witness(",
+             "allocation_binding"
+           ]
+         },
+@@ -1213,123 +884,128 @@
+       "receiptStatus": "native_workflow_required"
+     },
+     {
+-      "capabilityId": "secrets.heptabao.canonical-final-use.v2",
+-      "module": "secrets.heptabao",
+-      "summary": "canonical final-use claim and delivery boundaries",
++      "capabilityId": "kernel.operations.bounded-state-model.v1",
++      "module": "kernel.operations",
++      "summary": "bounded deterministic operation-state reference model",
+       "publicSymbols": [
+-        "BaoClient::binding",
+-        "claim_final_use",
+-        "deliver_final_use"
++        "OperationLedger",
++        "OperationState",
++        "ReferenceAuthorityWitness"
+       ],
+       "sourceEvidence": [
+         {
+-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
++          "path": "codex-rs/hepta-operations/src/ledger.rs",
+           "mustContain": [
+-            "pub fn binding",
+-            "claim_final_use(authority, grant, &binding)",
+-            "deliver_final_use(authority, verified, &binding"
++            "MAX_MODEL_OPERATION_RECORDS",
++            "pub struct OperationLedger"
++          ]
++        },
++        {
++          "path": "codex-rs/hepta-operations/src/model.rs",
++          "mustContain": [
++            "pub enum OperationState",
++            "ReferenceAuthorityWitness"
+           ]
+         }
+       ],
+       "positiveTests": [
+         {
+-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
++          "path": "codex-rs/hepta-operations/src/ledger_tests.rs",
+           "mustContain": [
+-            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
++            "exact_command_replay_is_idempotent_within_the_reference_model"
+           ]
+         }
+       ],
+       "negativeTests": [
+         {
+-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
++          "path": "codex-rs/hepta-operations/src/ledger_tests.rs",
+           "mustContain": [
+-            "revocation_during_network_wait_prevents_consumer_delivery",
+-            "timeout_does_not_retry_or_release_a_secret"
++            "zero_digests_reject_without_mutation",
++            "reference_ledger_capacity_is_bounded"
+           ]
+         }
+       ],
+-      "durability": "external_authority_plus_local_final_use_state",
+-      "activation": "registered_host_composed_not_product_activated",
++      "durability": "sqlite_wal_full_integrated_owner",
++      "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
+       "productionCaller": null,
+       "receiptStatus": "native_workflow_required"
+     },
+     {
+-      "capabilityId": "secrets.heptabao.registered-consumer.v1",
+-      "module": "secrets.heptabao",
+-      "summary": "registered signed consumer-id to trusted callback mapping",
++      "capabilityId": "kernel.operations.bounded-outbox-model.v1",
++      "module": "kernel.operations",
++      "summary": "bounded in-memory outbox claim and acknowledgement model",
+       "publicSymbols": [
+-        "BaoFinalUseHost",
+-        "RegisteredBaoConsumer"
++        "Outbox",
++        "OutboxIntent",
++        "OutboxState"
+       ],
+       "sourceEvidence": [
+         {
+-          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
++          "path": "codex-rs/hepta-operations/src/outbox.rs",
+           "mustContain": [
+-            "pub struct BaoFinalUseHost",
+-            "pub struct RegisteredBaoConsumer",
+-            "consumers: BTreeMap"
++            "MAX_MODEL_OUTBOX_RECORDS",
++            "pub struct Outbox"
+           ]
+         }
+       ],
+       "positiveTests": [
+         {
+-          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
++          "path": "codex-rs/hepta-operations/src/outbox_tests.rs",
+           "mustContain": [
+-            "consumer_registry_is_closed_and_unique"
++            "exact_enqueue_claim_and_ack_replay_are_idempotent"
+           ]
+         }
+       ],
+       "negativeTests": [
+         {
+-          "path": "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
++          "path": "codex-rs/hepta-operations/src/outbox_tests.rs",
+           "mustContain": [
+-            "unregistered_signed_consumer_is_denied_before_network_dispatch"
++            "zero_payload_and_acknowledgement_reject_without_mutation",
++            "reference_outbox_capacity_is_bounded"
+           ]
+         }
+       ],
+-      "durability": "external_authority_plus_local_final_use_state",
+-      "activation": "registered_host_composed_not_product_activated",
++      "durability": "sqlite_wal_full_integrated_owner",
++      "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
+       "productionCaller": null,
+       "receiptStatus": "native_workflow_required"
+     },
+     {
+-      "capabilityId": "secrets.heptabao.independent-control.v1",
+-      "module": "secrets.heptabao",
+-      "summary": "independent approval before dispatch and authenticated revocation ingestion",
++      "capabilityId": "kernel.operations.fenced-terminal-model.v1",
++      "module": "kernel.operations",
++      "summary": "generation-fenced idempotent terminal observation",
+       "publicSymbols": [
+-        "BaoFinalUseHost::consume_kv_v2",
+-        "BaoFinalUseHost::apply_revocation_update"
++        "OperationLedger::observe_terminal",
++        "ReconciliationOutcome"
+       ],
+       "sourceEvidence": [
+         {
+-          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
++          "path": "codex-rs/hepta-operations/src/ledger.rs",
+           "mustContain": [
+-            "approval_verifier",
+-            ".verify(grant, approval)",
+-            "apply_revocation_update",
+-            "revocation_verifier"
++            "pub fn observe_terminal",
++            "terminal_matches"
+           ]
+         }
+       ],
+       "positiveTests": [
+         {
+-          "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
++          "path": "codex-rs/hepta-operations/src/ledger_tests.rs",
+           "mustContain": [
+-            "independent_approval_binds_exact_grant_semantics",
+-            "signed_revocation_feed_is_authenticated_and_monotonic"
++            "indeterminate_requires_current_fence_reconciliation"
+           ]
+         }
+       ],
+       "negativeTests": [
+         {
+-          "path": "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
++          "path": "codex-rs/hepta-operations/src/ledger_tests.rs",
+           "mustContain": [
+-            "forged_independent_approval_is_denied_before_network_dispatch"
++            "StaleGeneration",
++            "terminal outcome"
+           ]
+         }
+       ],
+-      "durability": "external_authority_plus_local_final_use_state",
+-      "activation": "registered_host_composed_not_product_activated",
++      "durability": "sqlite_wal_full_integrated_owner",
++      "activation": "explicit_daemon_runtime_source_composed_external_authority_not_enrolled",
+       "productionCaller": null,
+       "receiptStatus": "native_workflow_required"
+     },
+@@ -1369,7 +1045,7 @@
+           "mustContain": [
+             "run_production_operation_reconciler",
+             "attach_production_operations",
+-            "CompletedRuntimeTask::Operations"
++            "production-operation-reconciler"
+           ]
+         }
+       ],
+@@ -1424,7 +1100,7 @@
+           "mustContain": [
+             "run_production_operation_reconciler",
+             "attach_production_operations",
+-            "CompletedRuntimeTask::Operations"
++            "production-operation-reconciler"
+           ]
+         }
+       ],
+@@ -1489,7 +1165,7 @@
+           "mustContain": [
+             "run_production_operation_reconciler",
+             "attach_production_operations",
+-            "CompletedRuntimeTask::Operations"
++            "production-operation-reconciler"
+           ]
+         }
+       ],
+@@ -1534,10 +1210,10 @@
+         {
+           "path": "codex-rs/hepta-agentd/src/runtime.rs",
+           "mustContain": [
+-            "AgentdProductionOperationRuntimeConfig::open",
++            "operations.attach(",
+             "attach_production_operations",
+             "run_production_operation_reconciler",
+-            "CompletedRuntimeTask::Operations"
++            "production-operation-reconciler"
+           ]
+         },
+         {
+@@ -1551,10 +1227,10 @@
+       ],
+       "positiveTests": [
+         {
+-          "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
++          "path": "codex-rs/hepta-agentd/src/operations_host_tests.rs",
+           "mustContain": [
+-            "cleanup_never_polls_the_join_handle_already_consumed_by_select",
+-            "operations_task.is_finished()"
++            "configured_host_create_is_terminal_and_reopen_is_idempotent",
++            "newer_generation_reopen_reconciles_applied_destination_without_redispatch"
+           ]
+         }
+       ],
+@@ -1574,6 +1250,130 @@
+       "receiptStatus": "native_workflow_required"
+     },
+     {
++      "capabilityId": "kernel.evidence.governance-history-store.v1",
++      "module": "kernel.evidence",
++      "summary": "governance and historical evidence storage",
++      "publicSymbols": [
++        "HeptaEvidenceStore::append_decision",
++        "HeptaEvidenceStore::append_receipt"
++      ],
++      "sourceEvidence": [
++        {
++          "path": "codex-rs/hepta-evidence/src/store.rs",
++          "mustContain": [
++            "pub async fn append_decision",
++            "pub async fn append_receipt"
++          ]
++        },
++        {
++          "path": "codex-rs/hepta-evidence/src/lib.rs",
++          "mustContain": [
++            "HistoricalEvidenceRecord"
++          ]
++        }
++      ],
++      "positiveTests": [
++        {
++          "path": "codex-rs/hepta-evidence/src/tests.rs",
++          "mustContain": [
++            "append_is_idempotent_and_survives_reopen"
++          ]
++        }
++      ],
++      "negativeTests": [
++        {
++          "path": "codex-rs/hepta-evidence/src/tests.rs",
++          "mustContain": [
++            "conflicting_identity_never_overwrites_evidence",
++            "corrupted_stored_digest_fails_closed"
++          ]
++        }
++      ],
++      "durability": "sqlite_migrations_0001_0016",
++      "activation": "agentd_product_composed_config_gated",
++      "productionCaller": null,
++      "receiptStatus": "native_workflow_required"
++    },
++    {
++      "capabilityId": "kernel.evidence.provider-effect-store.v1",
++      "module": "kernel.evidence",
++      "summary": "provider intent terminal and effect evidence storage",
++      "publicSymbols": [
++        "StoredProviderEffectIntent",
++        "StoredProviderEffectAck",
++        "StoredProviderEffectUncertainty"
++      ],
++      "sourceEvidence": [
++        {
++          "path": "codex-rs/hepta-evidence/src/lib.rs",
++          "mustContain": [
++            "StoredProviderEffectIntent",
++            "StoredProviderEffectAck",
++            "StoredProviderEffectUncertainty"
++          ]
++        }
++      ],
++      "positiveTests": [
++        {
++          "path": "codex-rs/hepta-evidence/src/provider_effect_tests.rs",
++          "mustContain": [
++            "effect_journal_quarantines_unknown_and_reconciles_after_restart"
++          ]
++        }
++      ],
++      "negativeTests": [
++        {
++          "path": "codex-rs/hepta-evidence/src/provider_effect_tests.rs",
++          "mustContain": [
++            "late_dispatch_ack_after_quarantine_requires_status_lookup_source"
++          ]
++        }
++      ],
++      "durability": "sqlite_migrations_0001_0016",
++      "activation": "agentd_product_composed_config_gated",
++      "productionCaller": null,
++      "receiptStatus": "native_workflow_required"
++    },
++    {
++      "capabilityId": "kernel.evidence.migration-integrity.v1",
++      "module": "kernel.evidence",
++      "summary": "schema migration and integrity validation",
++      "publicSymbols": [
++        "HeptaEvidenceStore::open",
++        "HeptaEvidenceStore::open_existing_read_only"
++      ],
++      "sourceEvidence": [
++        {
++          "path": "codex-rs/hepta-evidence/src/store.rs",
++          "mustContain": [
++            "verify_current_migration_ledger",
++            "verify_existing_store",
++            "verify_quick_check"
++          ]
++        }
++      ],
++      "positiveTests": [
++        {
++          "path": "codex-rs/hepta-evidence/src/tests.rs",
++          "mustContain": [
++            "append_is_idempotent_and_survives_reopen"
++          ]
++        }
++      ],
++      "negativeTests": [
++        {
++          "path": "codex-rs/hepta-evidence/src/tests.rs",
++          "mustContain": [
++            "corrupted_stored_digest_fails_closed"
++          ]
++        }
++      ],
++      "durability": "sqlite_migrations_0001_0016",
++      "activation": "agentd_product_composed_config_gated",
++      "productionCaller": null,
++      "receiptStatus": "native_workflow_required"
++    },
++    {
+       "capabilityId": "kernel.evidence.qualification-store.v1",
+       "module": "kernel.evidence",
+       "summary": "authenticated exact-candidate qualification evidence append query and verification",
+@@ -1651,7 +1451,7 @@
+           ]
+         }
+       ],
+-      "durability": "sqlite_migrations_0001_0012",
++      "durability": "sqlite_migrations_0001_0016",
+       "activation": "agentd_product_composed_config_gated",
+       "productionCaller": "runtime.agentd",
+       "receiptStatus": "native_workflow_required",
+@@ -1717,7 +1517,7 @@
+           ]
+         }
+       ],
+-      "durability": "sqlite_migrations_0001_0012",
++      "durability": "sqlite_migrations_0001_0016",
+       "activation": "agentd_product_composed_config_gated",
+       "productionCaller": "runtime.agentd",
+       "receiptStatus": "native_workflow_required",
+@@ -2192,6 +1992,206 @@
+       "activation": "host_composition_required",
+       "productionCaller": null,
+       "receiptStatus": "native_workflow_required"
++    },
++    {
++      "capabilityId": "secrets.heptabao.pinned-kv2-read.v1",
++      "module": "secrets.heptabao",
++      "summary": "pinned-CA HTTPS read of one exact KV-v2 string field",
++      "publicSymbols": [
++        "BaoClient::new",
++        "BaoClient::consume_kv_v2"
++      ],
++      "sourceEvidence": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
++          "mustContain": [
++            "build_pinned_https_direct",
++            "consume_kv_v2",
++            "MAX_RESPONSE_BYTES"
++          ]
++        }
++      ],
++      "positiveTests": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
++          "mustContain": [
++            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
++          ]
++        }
++      ],
++      "negativeTests": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
++          "mustContain": [
++            "invalid_signature_and_provider_denial_do_not_release_secret",
++            "untrusted_tls_certificate_fails_before_secret_delivery",
++            "oversized_reply_fails_without_consumer_delivery"
++          ]
++        }
++      ],
++      "durability": "external_authority_plus_local_final_use_state",
++      "activation": "registered_host_composed_not_product_activated",
++      "productionCaller": null,
++      "receiptStatus": "native_workflow_required"
++    },
++    {
++      "capabilityId": "secrets.heptabao.canonical-final-use.v2",
++      "module": "secrets.heptabao",
++      "summary": "canonical final-use claim and delivery boundaries",
++      "publicSymbols": [
++        "BaoClient::binding",
++        "claim_final_use",
++        "deliver_final_use"
++      ],
++      "sourceEvidence": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
++          "mustContain": [
++            "pub fn binding",
++            "claim_final_use(authority, grant, &binding)",
++            "deliver_final_use(authority, verified, &binding"
++          ]
++        }
++      ],
++      "positiveTests": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
++          "mustContain": [
++            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
++          ]
++        }
++      ],
++      "negativeTests": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
++          "mustContain": [
++            "revocation_during_network_wait_prevents_consumer_delivery",
++            "timeout_does_not_retry_or_release_a_secret"
++          ]
++        }
++      ],
++      "durability": "external_authority_plus_local_final_use_state",
++      "activation": "registered_host_composed_not_product_activated",
++      "productionCaller": null,
++      "receiptStatus": "native_workflow_required"
++    },
++    {
++      "capabilityId": "secrets.heptabao.registered-consumer.v1",
++      "module": "secrets.heptabao",
++      "summary": "registered signed consumer-id to trusted callback mapping",
++      "publicSymbols": [
++        "BaoFinalUseHost",
++        "RegisteredBaoConsumer"
++      ],
++      "sourceEvidence": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
++          "mustContain": [
++            "pub struct BaoFinalUseHost",
++            "pub struct RegisteredBaoConsumer",
++            "consumers: BTreeMap"
++          ]
++        }
++      ],
++      "positiveTests": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
++          "mustContain": [
++            "consumer_registry_is_closed_and_unique"
++          ]
++        }
++      ],
++      "negativeTests": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
++          "mustContain": [
++            "unregistered_signed_consumer_is_denied_before_network_dispatch"
++          ]
++        }
++      ],
++      "durability": "external_authority_plus_local_final_use_state",
++      "activation": "registered_host_composed_not_product_activated",
++      "productionCaller": null,
++      "receiptStatus": "native_workflow_required"
++    },
++    {
++      "capabilityId": "secrets.heptabao.independent-control.v1",
++      "module": "secrets.heptabao",
++      "summary": "independent approval before dispatch and authenticated revocation ingestion",
++      "publicSymbols": [
++        "BaoFinalUseHost::consume_kv_v2",
++        "BaoFinalUseHost::apply_revocation_update"
++      ],
++      "sourceEvidence": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
++          "mustContain": [
++            "approval_verifier",
++            ".verify(grant, approval)",
++            "apply_revocation_update",
++            "revocation_verifier"
++          ]
++        }
++      ],
++      "positiveTests": [
++        {
++          "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
++          "mustContain": [
++            "independent_approval_binds_exact_grant_semantics",
++            "signed_revocation_feed_is_authenticated_and_monotonic"
++          ]
++        }
++      ],
++      "negativeTests": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/tests/final_use_host.rs",
++          "mustContain": [
++            "forged_independent_approval_is_denied_before_network_dispatch"
++          ]
++        }
++      ],
++      "durability": "external_authority_plus_local_final_use_state",
++      "activation": "registered_host_composed_not_product_activated",
++      "productionCaller": null,
++      "receiptStatus": "native_workflow_required"
++    },
++    {
++      "capabilityId": "secrets.heptabao.metadata-receipt.v1",
++      "module": "secrets.heptabao",
++      "summary": "metadata-only receipt without raw secret value",
++      "publicSymbols": [
++        "BaoSecretReceipt"
++      ],
++      "sourceEvidence": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
++          "mustContain": [
++            "pub struct BaoSecretReceipt",
++            "secret_sha256",
++            "secret_bytes"
++          ]
++        }
++      ],
++      "positiveTests": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
++          "mustContain": [
++            "real_tls_read_uses_headers_exact_version_and_secret_only_consumer"
++          ]
++        }
++      ],
++      "negativeTests": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
++          "mustContain": [
++            "consumer_failure_after_delivery_is_indeterminate"
++          ]
++        }
++      ],
++      "durability": "external_authority_plus_local_final_use_state",
++      "activation": "registered_host_composed_not_product_activated",
++      "productionCaller": null,
++      "receiptStatus": "native_workflow_required"
+     }
+   ]
+ }
+diff -ruN '--exclude=.git' '--exclude=__pycache__' hepta-private-ci-99419-pristine/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json hepta-private-ci-99419/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json
+--- hepta-private-ci-99419-pristine/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json	2026-09-28 02:48:55.000000000 +0000
++++ hepta-private-ci-99419/docs/lane-a-foundation/MODULE_TRUTH_MATRIX.json	2026-09-28 08:24:51.799586540 +0000
+@@ -227,7 +227,7 @@
+             "pub struct FleetAuthorityPort",
+             "pub fn issue(",
+             ".verify_use(",
+-            ".with_verified_use("
++            "dispatch_authority_lease_with_witness("
+           ]
+         }
+       ]
+@@ -336,7 +336,7 @@
+           "mustContain": [
+             "run_production_operation_reconciler",
+             "attach_production_operations",
+-            "CompletedRuntimeTask::Operations"
++            "\"production-operation-reconciler\""
+           ]
+         }
+       ]
+@@ -352,7 +352,7 @@
+       "states": {
+         "source": "implemented",
+         "implementation": "sqlite_qualification_evidence_store",
+-        "durability": "sqlite_migrations_0001_0012",
++        "durability": "sqlite_migrations_0001_0016",
+         "qualification": "native_tests_and_agentd_product_test_present",
+         "activation": "agentd_product_composed_config_gated",
+         "acceptance": "not_granted"
+@@ -365,9 +365,10 @@
+         "signed recovery frontier snapshot and Agentd startup verification"
+       ],
+       "targetOnlyCapabilities": [
+-        "external durable monotonic CAS/latest-frontier backend and backup publication acknowledgement",
+-        "independent external acceptance ceremony",
+-        "promotion or release authority"
++        "deployment of the external rollback-domain backend with verified lock, fsync and power-loss semantics",
++        "independent signer, trust, backup/restore and exact-candidate acceptance ceremonies",
++        "target-host capacity, latency, RPO and RTO qualification",
++        "operator acceptance, canary, promotion and release authority"
+       ],
+       "sourceAnchors": [
+         {
+@@ -447,73 +448,44 @@
+             "verify_evidence_recovery_frontier",
+             "recovery_required"
+           ]
+-        }
+-      ],
+-      "namedProductCallers": [
+-        "runtime.agentd"
+-      ]
+-    },
+-    {
+-      "module": "secrets.heptabao",
+-      "profile": "bounded_external_secret_reader",
+-      "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
+-      "formalGuideRole": "target_architecture",
+-      "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
+-      "currentSpecificationRole": "current_executable_contract",
+-      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
+-      "states": {
+-        "source": "implemented",
+-        "implementation": "bounded_kv_v2_reader_with_registered_final_use_host",
+-        "durability": "external_authority_plus_local_final_use_state",
+-        "qualification": "source_tests_and_exact_candidate_workflow_required",
+-        "activation": "registered_host_composed_not_product_activated",
+-        "acceptance": "not_granted"
+-      },
+-      "currentCapabilities": [
+-        "pinned-CA HTTPS read of one exact KV-v2 string field",
+-        "canonical final-use claim and delivery boundaries",
+-        "registered signed consumer-id to trusted callback mapping",
+-        "independent approval before dispatch and authenticated revocation ingestion",
+-        "metadata-only receipt without raw secret value"
+-      ],
+-      "targetOnlyCapabilities": [
+-        "secret mutation",
+-        "generic secret lease renewal API",
+-        "durable operation and evidence composition",
+-        "fleet revocation distribution and freshness enforcement",
+-        "automatic production enrollment and selected process caller"
+-      ],
+-      "sourceAnchors": [
++        },
+         {
+-          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
++          "path": "codex-rs/hepta-evidence/migrations/0016_qualification_auth_provenance.sql",
+           "mustContain": [
+-            "pub struct BaoClient",
+-            "consume_kv_v2",
+-            "MAX_RESPONSE_BYTES",
+-            "claim_final_use(authority, grant, &binding)",
+-            "deliver_final_use(authority, verified, &binding"
+-          ],
+-          "mustNotContain": [
+-            ".claim(grant, &binding)",
+-            ".with_verified_use(verified"
++            "ALTER TABLE qualification_evidence",
++            "auth_signature",
++            "trust_registry_generation",
++            "trust_registry_sha256"
+           ]
+         },
+         {
+-          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
++          "path": "codex-rs/hepta-evidence/src/identity_assignment.rs",
+           "mustContain": [
+-            "pub struct BaoFinalUseHost",
+-            "UnregisteredConsumer",
+-            "approval_verifier",
+-            "revocation_verifier"
++            "distinct_identity_assignment",
++            "roles.is_empty()",
++            "three_roles_cannot_reuse_the_outer_principal",
++            "cartesian_product_oracle"
+           ]
+         },
+         {
+-          "path": "codex-rs/hepta-bao-adapter/README.md",
++          "path": "codex-rs/hepta-evidence/src/publication.rs",
+           "mustContain": [
+-            "Authorized HeptaBao HTTPS consumer",
+-            "Only read operations exist here"
++            "claim_publication_owner",
++            "prepare_publication_batch",
++            "mark_publication_indeterminate",
++            "acknowledge_publication"
++          ]
++        },
++        {
++          "path": "codex-rs/hepta-agentd/src/evidence_publication_driver.rs",
++          "mustContain": [
++            "run_evidence_publication_request",
++            "compare_and_swap"
+           ]
+         }
++      ],
++      "namedProductCallers": [
++        "runtime.agentd"
+       ]
+     },
+     {
+@@ -639,6 +611,69 @@
+       "namedProductCallers": [
+         "codex-hepta-agentd signed-text ingress"
+       ]
++    },
++    {
++      "module": "secrets.heptabao",
++      "profile": "bounded_external_secret_reader",
++      "formalGuide": "docs/modules/secrets.heptabao/TECHNICAL.md",
++      "formalGuideRole": "target_architecture",
++      "currentSpecification": "docs/lane-a-foundation/secrets.heptabao/CURRENT_IMPLEMENTATION.md",
++      "currentSpecificationRole": "current_executable_contract",
++      "implementationDetail": "docs/lane-a-foundation/secrets.heptabao/KV_V2_READ_V1.md",
++      "states": {
++        "source": "implemented",
++        "implementation": "bounded_kv_v2_reader_with_registered_final_use_host",
++        "durability": "external_authority_plus_local_final_use_state",
++        "qualification": "source_tests_and_exact_candidate_workflow_required",
++        "activation": "registered_host_composed_not_product_activated",
++        "acceptance": "not_granted"
++      },
++      "currentCapabilities": [
++        "pinned-CA HTTPS read of one exact KV-v2 string field",
++        "canonical final-use claim and delivery boundaries",
++        "registered signed consumer-id to trusted callback mapping",
++        "independent approval before dispatch and authenticated revocation ingestion",
++        "metadata-only receipt without raw secret value"
++      ],
++      "targetOnlyCapabilities": [
++        "secret mutation",
++        "generic secret lease renewal API",
++        "durable operation and evidence composition",
++        "fleet revocation distribution and freshness enforcement",
++        "automatic production enrollment and selected process caller"
++      ],
++      "sourceAnchors": [
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
++          "mustContain": [
++            "pub struct BaoClient",
++            "consume_kv_v2",
++            "MAX_RESPONSE_BYTES",
++            "claim_final_use(authority, grant, &binding)",
++            "deliver_final_use(authority, verified, &binding"
++          ],
++          "mustNotContain": [
++            ".claim(grant, &binding)",
++            ".with_verified_use(verified"
++          ]
++        },
++        {
++          "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
++          "mustContain": [
++            "pub struct BaoFinalUseHost",
++            "UnregisteredConsumer",
++            "approval_verifier",
++            "revocation_verifier"
++          ]
++        },
++        {
++          "path": "codex-rs/hepta-bao-adapter/README.md",
++          "mustContain": [
++            "Authorized HeptaBao HTTPS consumer",
++            "It deliberately does not dispatch provider mutation APIs"
++          ]
++        }
++      ]
+     }
+   ]
+ }
+diff -ruN '--exclude=.git' '--exclude=__pycache__' hepta-private-ci-99419-pristine/docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md hepta-private-ci-99419/docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md
+--- hepta-private-ci-99419-pristine/docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md	2026-09-28 02:48:55.000000000 +0000
++++ hepta-private-ci-99419/docs/lane-a-foundation/kernel.evidence/CURRENT_IMPLEMENTATION.md	2026-09-28 08:22:46.802237805 +0000
+@@ -1,6 +1,6 @@
+ # `kernel.evidence` current implementation
+ 
+-## Executable boundary
++## Current executable contract
+ 
+ `codex-rs/hepta-evidence` is the SQLite-backed authoritative qualification
+ store. `codex-rs/hepta-agentd` is the named product host and
+@@ -14,7 +14,17 @@
+ qualification-trigger commits carry no inherited execution or deployment
+ authority.
+ 
+-## Core correctness
++## Public symbols and source bindings
++
++The public evidence surface is rooted in `codex-rs/hepta-evidence/src/lib.rs`.
++Core qualification, verification profiles and authenticated commitments live in
++`qualification.rs`, `qualification_policy.rs`, `identity_assignment.rs`,
++`verified_trust.rs` and `qualification_commitment.rs`. Recovery and publication
++state are owned by `recovery_snapshot.rs`, `frontier_acceptance.rs` and
++`publication.rs`; Agentd composition is in `evidence_host.rs`,
++`evidence_production.rs` and `evidence_publication_driver.rs`.
++
++### Core correctness
+ 
+ `identity_assignment.rs` implements a bounded, frame-correct assignment of
+ required roles to distinct authenticated principals and distinct signing
+@@ -46,7 +56,7 @@
+ sequence, expiry and recording time. Historical rows missing V2 provenance are
+ never promoted into production-valid rows.
+ 
+-## Verification and product reads
++### Product reads and claim checking
+ 
+ Claim verification runs in a read transaction, applies correction/revocation
+ lineage and expiry, checks the pinned trust snapshot, enforces the selected
+@@ -57,7 +67,13 @@
+ reserved selectors fail closed. The product no longer returns an unbounded
+ evidence vector for a verification decision.
+ 
+-## Recovery snapshot and atomic acceptance
++## Durability and activation
++
++Production durability is the checksum-bound SQLite lineage through migration
++`0016`, plus an independently retained monotonic frontier. Source presence does
++not activate either the external rollback domain or production mode.
++
++### Recovery snapshot and atomic acceptance
+ 
+ `authenticated_recovery_snapshot()` computes snapshot V2 in one SQLite read
+ transaction. It includes the migration set, immutable store identity,
+@@ -104,7 +120,13 @@
+ health/elevated alerts. History is preserved; capacity recovery never means
+ deleting evidence.
+ 
+-## Production backup, build and restore admission
++## Target-only design
++
++The source implements the admission and publication protocols below, while the
++actual storage deployment, signer ceremony, witnessed restore and target-host
++measurements remain external gates.
++
++### Production backup, build and restore admission
+ 
+ `evidence_backup_manifest.rs` requires a versioned backup object with exact
+ length and SHA-256, storage backend identity and durable acknowledgement. It
+@@ -135,7 +157,14 @@
+ schema mutation, migration-ledger writes, attach/detach, extension loading and
+ write-capable pragmas while typed evidence operations remain available.
+ 
+-## Qualification scope
++## Known limits and non-claims
++
++The repository cannot establish cross-host lock/fsync semantics, power-loss
++survival, operator backup custody, independent acceptance, canary success or
++release authority. A local append is not externally anchored until its exact
++publication batch receives or recovers a durable acknowledgement.
++
++## Verification
+ 
+ Dedicated workflows run both the exact source and the deterministic merge of
+ the immutable base and source. They execute evidence tests, Agentd product/profile
+@@ -144,7 +173,7 @@
+ A source reference, queued run or historical pass is not current execution
+ evidence.
+ 
+-## Remaining gates
++## Integration prerequisites
+ 
+ Repository-controlled implementation surfaces for tracks A–C are present.
+ Track D remains incomplete until the unchanged final head has successful
+diff -ruN '--exclude=.git' '--exclude=__pycache__' hepta-private-ci-99419-pristine/docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md hepta-private-ci-99419/docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md
+--- hepta-private-ci-99419-pristine/docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md	2026-09-28 02:48:55.000000000 +0000
++++ hepta-private-ci-99419/docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md	2026-09-28 08:21:25.950254101 +0000
+@@ -37,7 +37,13 @@
+   `generated/javascript/hepta_platform_types_v1.mjs`,
+   `generated/typescript/hepta_platform_types_v1.d.ts`.
+ 
+-## Authority boundary
++## Durability and activation
++
++The module is stateless and owns no durable writer. Library linkage, generated
++bindings and conformance fixtures do not activate a product authority. An
++authenticated product must provision and pin any registry generation it uses.
++
++### Authority boundary
+ 
+ `AuthorityPosture` and `NonAuthorizingPosture` cannot represent a grant.
+ Raw V1 authority input is exactly one untrusted byte. `0x00` admits deny-all;
+@@ -78,15 +84,14 @@
+ `fixed-q32-toward-zero-v1`; the numeric conversion profile uses
+ nearest-ties-even. The source API exposes this distinction explicitly.
+ 
+-## Durability and product composition
++### Product composition details
+ 
+-The module is stateless and has no durability. `productCallerState` is
+-`not_composed`: source tests, generated bindings and conformance oracles are
+-not a named production caller. Product provisioning of an authenticated
+-registry generation, target-host qualification and operator acceptance are
+-separate gates.
++`productCallerState` is `not_composed`: source tests, generated bindings and
++conformance oracles are not a named production caller. Product provisioning of
++an authenticated registry generation, target-host qualification and operator
++acceptance are separate gates.
+ 
+-## Owned target protocols still source-pending
++## Target-only design
+ 
+ Canonical registries assign these protocols to `platform.types`, but no native
+ Rust contract exists for them in this candidate:
+@@ -98,6 +103,13 @@
+ Their ownership does not make the module's full target protocol inventory source
+ complete.
+ 
++## Known limits and non-claims
++
++The crate does not authenticate registry distribution, grant authority, own a
++persistent generation, or prove target-host compatibility. The three manifest
++protocols listed above remain source-pending and must not be inferred from
++registry ownership.
++
+ ## Verification
+ 
+ Native tests cover bounds, exhaustive identifier grammar/profile substitution,
+@@ -110,3 +122,9 @@
+ `--check`, run generated Python/JavaScript consumer compatibility gates and
+ run Lane A native tests plus strict lint. Executed workflow artifacts, not this
+ document, are the candidate receipts.
++
++## Integration prerequisites
++
++A product integration must authenticate and pin registry generations, compile
++its concrete consumers against the generated bindings, retain exact-candidate
++qualification receipts and obtain independent semantic and target-host review.
+diff -ruN '--exclude=.git' '--exclude=__pycache__' hepta-private-ci-99419-pristine/docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json hepta-private-ci-99419/docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json
+--- hepta-private-ci-99419-pristine/docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json	2026-09-28 02:48:55.000000000 +0000
++++ hepta-private-ci-99419/docs/modules/kernel.evidence/IMPLEMENTATION_MAP.json	2026-09-28 08:21:25.952433061 +0000
+@@ -53,7 +53,7 @@
+       "mustContain": "compare_and_swap"
+     },
+     {
+-      "sourcePath": "codex-rs/hepta-agentd/src/evidence_production.rs",
++      "sourcePath": "codex-rs/hepta-agentd/src/evidence_production_checks.rs",
+       "mustContain": "kernel.evidence recovery_required"
+     }
+   ],
+diff -ruN '--exclude=.git' '--exclude=__pycache__' hepta-private-ci-99419-pristine/scripts/lane_a_foundation_core.py hepta-private-ci-99419/scripts/lane_a_foundation_core.py
+--- hepta-private-ci-99419-pristine/scripts/lane_a_foundation_core.py	2026-09-28 02:48:55.000000000 +0000
++++ hepta-private-ci-99419/scripts/lane_a_foundation_core.py	2026-09-28 08:30:15.744150785 +0000
+@@ -62,6 +62,10 @@
+     "0010_authbus_outbox.sql",
+     "0011_qualification_evidence.sql",
+     "0012_authbus_recovery.sql",
++    "0013_recovery_frontier_acceptance.sql",
++    "0014_evidence_publication.sql",
++    "0015_evidence_trust_acceptance.sql",
++    "0016_qualification_auth_provenance.sql",
+ ]
+ PACKAGES = [
+     "codex-hepta-types",
+@@ -309,8 +313,9 @@
+         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
+         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
+         "codex-rs/hepta-operations/src/lib.rs": [
+-            "In-memory reference model",
+-            "does not provide durable storage",
++            "Durable and reference operation, outbox and reconciliation semantics",
++            "remain deterministic in-memory reference",
++            "production-oriented SQLite owner",
+         ],
+         "codex-rs/hepta-operations/src/model.rs": [
+             "pub struct ReferenceAuthorityWitness",
+diff -ruN '--exclude=.git' '--exclude=__pycache__' hepta-private-ci-99419-pristine/scripts/lane_a_foundation_lib.py hepta-private-ci-99419/scripts/lane_a_foundation_lib.py
+--- hepta-private-ci-99419-pristine/scripts/lane_a_foundation_lib.py	2026-09-28 02:48:55.000000000 +0000
++++ hepta-private-ci-99419/scripts/lane_a_foundation_lib.py	2026-09-28 08:21:25.951940578 +0000
+@@ -104,7 +104,7 @@
+             "kernel.authority",
+             "implementation",
+         ): "final_use_and_authority_lease_owner",
+-        ("kernel.evidence", "durability"): "sqlite_migrations_0001_0012",
++        ("kernel.evidence", "durability"): "sqlite_migrations_0001_0016",
+         (
+             "secrets.heptabao",
+             "implementation",

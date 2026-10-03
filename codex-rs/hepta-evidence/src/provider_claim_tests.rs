@@ -14,10 +14,12 @@ use crate::HeptaEvidenceStore;
 use crate::ProviderBindingState;
 use crate::ProviderIntentClaimDisposition;
 
-fn sqlite_config(temp: &TempDir) -> SqliteConfig {
-    SqliteConfig::new_for_testing(
-        AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute temp path"),
-    )
+type TestError = Box<dyn std::error::Error + Send + Sync>;
+
+fn sqlite_config(temp: &TempDir) -> Result<SqliteConfig, TestError> {
+    Ok(SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(
+        temp.path().to_path_buf(),
+    )?))
 }
 
 fn binding(wire: &[u8]) -> ProviderRequestBinding {
@@ -46,9 +48,10 @@ fn intent(nonce: u8) -> ProviderInvocationIntent {
 }
 
 #[tokio::test]
-async fn concurrent_enforced_claims_for_one_request_binding_have_one_owner() {
+async fn concurrent_enforced_claims_for_one_request_binding_have_one_owner() -> Result<(), TestError>
+{
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let first = HeptaEvidenceStore::open(&sqlite).await.expect("first pool");
     let second = HeptaEvidenceStore::open(&sqlite)
         .await
@@ -87,12 +90,15 @@ async fn concurrent_enforced_claims_for_one_request_binding_have_one_owner() {
             .expect("pending count"),
         1
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn enforced_claim_blocks_transport_changes_until_not_dispatched_is_proven() {
+async fn enforced_claim_blocks_transport_changes_until_not_dispatched_is_proven()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     let first = intent(41);
@@ -137,4 +143,6 @@ async fn enforced_claim_blocks_transport_changes_until_not_dispatched_is_proven(
             .expect("retry after not-dispatched"),
         ProviderIntentClaimDisposition::Inserted
     );
+
+    Ok(())
 }

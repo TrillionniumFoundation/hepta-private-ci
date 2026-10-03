@@ -1,8 +1,7 @@
 //! Agentd-owned product composition for kernel.evidence.
 //!
-//! The daemon owns the SQLite store and reloads a private multi-issuer trust
-//! registry at the physical append boundary. This host stores/queries evidence;
-//! it does not select, promote, merge or release candidates.
+//! A production process retains the issuer digest admitted by its signed
+//! external frontier. Replacing the owner registry never silently re-enrolls it.
 
 use std::path::PathBuf;
 use std::sync::Arc;
@@ -17,12 +16,16 @@ use codex_hepta_agent_protocol::KernelEvidenceVerifyV1;
 use codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
+use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_evidence::EvidenceCandidateV1;
 use codex_hepta_evidence::EvidenceClaimClassV1;
 use codex_hepta_evidence::EvidenceIssuerRoleV1;
+use codex_hepta_evidence::EvidenceVerificationProfileV1;
+use codex_hepta_evidence::EvidenceVerificationSummaryV1;
 use codex_hepta_evidence::HeptaEvidenceStore;
+use codex_hepta_evidence::ProfiledVerifyChainRequestV1;
 use codex_hepta_evidence::QualificationEvidenceEnvelopeV1;
-use codex_hepta_evidence::VerifyChainRequestV1;
+use codex_hepta_evidence::VerifiedEvidenceTrustSnapshot;
 use codex_hepta_evidence::qualification_append_scope_digest;
 use codex_hepta_evidence::qualification_envelope_bytes;
 use codex_hepta_evidence::qualification_subject;
@@ -36,43 +39,156 @@ use crate::AgentdError;
 use crate::AgentdIdentity;
 use crate::AgentdState;
 use crate::authbus_trust::hex_bytes;
-use crate::evidence_trust::EvidenceTrust;
+
+pub(crate) enum EvidenceRuntimeProfile {
+    Development {
+        recovery_frontier: Option<(PathBuf, PathBuf)>,
+    },
+    Production {
+        descriptor: PathBuf,
+        signer_trust_file: PathBuf,
+    },
+}
+
+/// These modes have intentionally different trust-refresh semantics.
+enum EvidenceTrustMode {
+    Development,
+    Production {
+        admitted_registry_sha256: Sha256Digest,
+    },
+}
 
 pub(crate) struct EvidenceHost {
     pub(crate) store: HeptaEvidenceStore,
     trust_file: PathBuf,
+    trust_mode: EvidenceTrustMode,
 }
 
 impl EvidenceHost {
     pub(crate) async fn open(
         identity: &AgentdIdentity,
         trust_file: PathBuf,
-        recovery_frontier: Option<(PathBuf, PathBuf)>,
+        profile: EvidenceRuntimeProfile,
     ) -> Result<Self, AgentdError> {
-        EvidenceTrust::load(&trust_file, identity)?;
+        let production_profile = matches!(profile, EvidenceRuntimeProfile::Production { .. });
         let home = AbsolutePathBuf::from_absolute_path(&identity.home_root)?;
-        let store = HeptaEvidenceStore::open(&SqliteConfig::from_sqlite_home(home))
-            .await
-            .map_err(evidence_error)?;
-        if let Some((frontier_file, signer_trust_file)) = recovery_frontier {
-            crate::evidence_frontier::verify_evidence_recovery_frontier(
-                identity,
-                &store,
-                &frontier_file,
-                &signer_trust_file,
-            )
-            .await?;
+        let sqlite = SqliteConfig::from_sqlite_home(home);
+        let preflight_snapshot = if production_profile {
+            let preflight = HeptaEvidenceStore::open_existing_read_only(&sqlite)
+                .await
+                .map_err(evidence_error)?;
+            let snapshot = preflight
+                .authenticated_recovery_snapshot()
+                .await
+                .map_err(evidence_error)?;
+            preflight.close().await;
+            Some(snapshot)
+        } else {
+            None
+        };
+        let store = if production_profile {
+            HeptaEvidenceStore::open_existing_runtime(&sqlite)
+                .await
+                .map_err(evidence_error)?
+        } else {
+            HeptaEvidenceStore::open(&sqlite)
+                .await
+                .map_err(evidence_error)?
+        };
+        if let Some(expected) = preflight_snapshot {
+            let actual = store
+                .authenticated_recovery_snapshot()
+                .await
+                .map_err(evidence_error)?;
+            if actual != expected {
+                store.close().await;
+                return Err(invalid(
+                    "production evidence database changed between read-only migration preflight and restricted runtime open",
+                ));
+            }
         }
-        Ok(Self { store, trust_file })
+        let trust_mode = match profile {
+            EvidenceRuntimeProfile::Production {
+                descriptor,
+                signer_trust_file,
+            } => {
+                let admitted_registry_sha256 =
+                    crate::evidence_production::verify_production_evidence_frontier(
+                        identity,
+                        &store,
+                        &trust_file,
+                        &descriptor,
+                        &signer_trust_file,
+                    )
+                    .await?;
+                VerifiedEvidenceTrustSnapshot::load_owner_registry(
+                    &store,
+                    &trust_file,
+                    identity.agent_id.as_str(),
+                    Some(&admitted_registry_sha256),
+                )
+                .map_err(evidence_error)?;
+                EvidenceTrustMode::Production {
+                    admitted_registry_sha256,
+                }
+            }
+            EvidenceRuntimeProfile::Development {
+                recovery_frontier: Some((frontier, signer_trust_file)),
+            } => {
+                crate::evidence_frontier::verify_evidence_recovery_frontier(
+                    identity,
+                    &store,
+                    &frontier,
+                    &signer_trust_file,
+                )
+                .await?;
+                VerifiedEvidenceTrustSnapshot::load_owner_registry(
+                    &store,
+                    &trust_file,
+                    identity.agent_id.as_str(),
+                    None,
+                )
+                .map_err(evidence_error)?;
+                EvidenceTrustMode::Development
+            }
+            EvidenceRuntimeProfile::Development {
+                recovery_frontier: None,
+            } => {
+                VerifiedEvidenceTrustSnapshot::load_owner_registry(
+                    &store,
+                    &trust_file,
+                    identity.agent_id.as_str(),
+                    None,
+                )
+                .map_err(evidence_error)?;
+                EvidenceTrustMode::Development
+            }
+        };
+        Ok(Self {
+            store,
+            trust_file,
+            trust_mode,
+        })
     }
 
-    fn trust(&self, state: &AgentdState) -> Result<EvidenceTrust, AgentdError> {
-        EvidenceTrust::load(&self.trust_file, state.identity())
+    fn trust(&self, state: &AgentdState) -> Result<VerifiedEvidenceTrustSnapshot, AgentdError> {
+        let pin = match &self.trust_mode {
+            EvidenceTrustMode::Development => None,
+            EvidenceTrustMode::Production {
+                admitted_registry_sha256,
+            } => Some(admitted_registry_sha256),
+        };
+        VerifiedEvidenceTrustSnapshot::load_owner_registry(
+            &self.store,
+            &self.trust_file,
+            state.identity().agent_id.as_str(),
+            pin,
+        )
+        .map_err(evidence_error)
     }
 }
 
-/// Canonical claims an external evidence producer signs before calling Agentd.
-/// This helper creates no key, registration, authority or independent decision.
+/// Claims an external producer signs. Creates no key or independent authority.
 pub fn kernel_evidence_claims(
     issuer_id: &str,
     key_epoch: u64,
@@ -126,7 +242,9 @@ pub(crate) async fn append(
         &envelope,
     )?;
     let trust = host.trust(state)?;
-    let issuer = trust.issuer_for(&request.issuer_id, request.key_epoch, envelope.issuer_role)?;
+    let issuer = trust
+        .issuer_for(&request.issuer_id, request.key_epoch, envelope.issuer_role)
+        .map_err(evidence_error)?;
     let message = SignedMessage {
         claims,
         signature: hex_bytes(&request.signature_hex)?,
@@ -147,7 +265,21 @@ pub(crate) async fn query(
 ) -> Result<KernelEvidenceResult, AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
+    let page_selector = request
+        .page_selector()
+        .map_err(|error| invalid(&error))?
+        .map(|(claim, after_seq, limit)| (claim.to_string(), after_seq, limit));
     let candidate = candidate(request.candidate)?;
+    if let Some((claim, after_seq, limit)) = page_selector {
+        let claim_class = EvidenceClaimClassV1::parse(&claim).map_err(|error| invalid(&error))?;
+        let page = host
+            .store
+            .query_qualification_claim_page(&candidate, claim_class, after_seq, usize::from(limit))
+            .await
+            .map_err(evidence_error)?;
+        require_ready(state)?;
+        return result(&page);
+    }
     let claim_class =
         EvidenceClaimClassV1::parse(&request.claim_class).map_err(|error| invalid(&error))?;
     let references = host
@@ -166,35 +298,47 @@ pub(crate) async fn verify(
 ) -> Result<KernelEvidenceResult, AgentdError> {
     require_ready(state)?;
     let host = attached(state)?;
+    let profile_name = request
+        .profile_name()
+        .map_err(|error| invalid(&error))?
+        .map(str::to_string);
     let candidate = candidate(request.candidate)?;
-    let claim_class =
-        EvidenceClaimClassV1::parse(&request.claim_class).map_err(|error| invalid(&error))?;
-    if request.required_roles.len() > codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES
-    {
-        return Err(invalid("too many required evidence roles"));
-    }
-    let required_roles = request
-        .required_roles
-        .iter()
-        .map(|role| EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error)))
-        .collect::<Result<Vec<_>, _>>()?;
-    let current_trust = host.trust(state)?.verification_bindings()?;
+    let profile = if let Some(profile_name) = profile_name.as_deref() {
+        EvidenceVerificationProfileV1::parse(profile_name).map_err(|error| invalid(&error))?
+    } else {
+        let claim_class =
+            EvidenceClaimClassV1::parse(&request.claim_class).map_err(|error| invalid(&error))?;
+        if request.required_roles.len()
+            > codex_hepta_agent_protocol::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES
+        {
+            return Err(invalid("too many required evidence roles"));
+        }
+        let roles = request
+            .required_roles
+            .iter()
+            .map(|role| EvidenceIssuerRoleV1::parse(role).map_err(|error| invalid(&error)))
+            .collect::<Result<Vec<_>, _>>()?;
+        EvidenceVerificationProfileV1::from_legacy_roles(claim_class, &roles)
+            .map_err(evidence_error)?
+    };
+    let profiled_request =
+        ProfiledVerifyChainRequestV1::new(candidate, profile, current_time_millis()?)
+            .map_err(evidence_error)?;
+    let current_trust = host.trust(state)?;
     let disposition = host
         .store
         .qualification()
-        .verify_chain(
-            &VerifyChainRequestV1 {
-                candidate,
-                claim_class,
-                required_roles,
-                now_unix_ms: current_time_millis()?,
-            },
-            &current_trust,
-        )
+        .verify_chain(&profiled_request, &current_trust)
         .await
         .map_err(evidence_error)?;
     require_ready(state)?;
-    result(&disposition)
+    if profile_name.is_some() {
+        let summary = EvidenceVerificationSummaryV1::from_disposition(profile, &disposition)
+            .map_err(evidence_error)?;
+        result(&summary)
+    } else {
+        result(&disposition)
+    }
 }
 
 fn candidate(candidate: KernelEvidenceCandidateV1) -> Result<EvidenceCandidateV1, AgentdError> {

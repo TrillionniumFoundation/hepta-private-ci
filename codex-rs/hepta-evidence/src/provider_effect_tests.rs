@@ -142,6 +142,8 @@ impl ProviderEffectAdapter for DurableScriptedAdapter {
     }
 }
 
+type TestError = Box<dyn std::error::Error + Send + Sync>;
+
 fn scripted_adapter(
     capability: ProviderEffectIdempotencyCapability,
     dispatch_result: ProviderEffectDispatch,
@@ -156,10 +158,10 @@ fn scripted_adapter(
     }
 }
 
-fn sqlite_config(temp: &TempDir) -> SqliteConfig {
-    SqliteConfig::new_for_testing(
-        AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute temp path"),
-    )
+fn sqlite_config(temp: &TempDir) -> Result<SqliteConfig, TestError> {
+    Ok(SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(
+        temp.path().to_path_buf(),
+    )?))
 }
 
 fn request_binding_id() -> RequestBindingId {
@@ -183,17 +185,23 @@ fn request_binding_id() -> RequestBindingId {
     })
 }
 
-fn effect_intent_for_occurrence(payload: &[u8], occurrence: &str) -> ProviderEffectIntent {
+fn effect_intent_for_occurrence(
+    payload: &[u8],
+    occurrence: &str,
+) -> Result<ProviderEffectIntent, TestError> {
     let key = ProviderEffectKey::for_occurrence(
         "provider-effect-fixture/config-v1",
         occurrence,
         &request_binding_id(),
     )
-    .expect("effect key");
-    ProviderEffectIntent::new(key, Sha256Digest::for_bytes(payload))
+    .map_err(|error| std::io::Error::other(format!("invalid effect fixture: {error:?}")))?;
+    Ok(ProviderEffectIntent::new(
+        key,
+        Sha256Digest::for_bytes(payload),
+    ))
 }
 
-fn effect_intent(payload: &[u8]) -> ProviderEffectIntent {
+fn effect_intent(payload: &[u8]) -> Result<ProviderEffectIntent, TestError> {
     effect_intent_for_occurrence(payload, "automation:agent-a:occurrence-1")
 }
 
@@ -207,13 +215,14 @@ fn completed_ack(intent: &ProviderEffectIntent, operation: &[u8]) -> ProviderEff
 }
 
 #[tokio::test]
-async fn effect_journal_quarantines_unknown_and_reconciles_after_restart() {
+async fn effect_journal_quarantines_unknown_and_reconciles_after_restart() -> Result<(), TestError>
+{
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"effect-payload");
+    let intent = effect_intent(b"effect-payload")?;
     let key = intent.key.clone();
 
     assert_eq!(
@@ -273,15 +282,18 @@ async fn effect_journal_quarantines_unknown_and_reconciles_after_restart() {
     assert_eq!(completed.state(), ProviderEffectState::Completed);
     assert_eq!(completed.uncertainties.len(), 1);
     assert_eq!(completed.acknowledgements.len(), 1);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn late_dispatch_ack_after_quarantine_requires_status_lookup_source() {
+async fn late_dispatch_ack_after_quarantine_requires_status_lookup_source() -> Result<(), TestError>
+{
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"source-bound-payload");
+    let intent = effect_intent(b"source-bound-payload")?;
     let key = intent.key.clone();
     store
         .append_provider_effect_intent(&intent)
@@ -318,15 +330,18 @@ async fn late_dispatch_ack_after_quarantine_requires_status_lookup_source() {
         stored.acknowledgements[0].source,
         ProviderEffectAckSource::StatusLookup
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn duplicate_dispatch_ack_after_quarantine_requires_status_lookup_source() {
+async fn duplicate_dispatch_ack_after_quarantine_requires_status_lookup_source()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"duplicate-after-quarantine-payload");
+    let intent = effect_intent(b"duplicate-after-quarantine-payload")?;
     store
         .append_provider_effect_intent(&intent)
         .await
@@ -361,16 +376,19 @@ async fn duplicate_dispatch_ack_after_quarantine_requires_status_lookup_source()
             .expect("status lookup duplicate is idempotent"),
         AppendDisposition::AlreadyPresent
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn durable_status_observation_binds_payload_and_persists_lookup_provenance() {
+async fn durable_status_observation_binds_payload_and_persists_lookup_provenance()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"status-observation-payload");
+    let intent = effect_intent(b"status-observation-payload")?;
     store
         .append_provider_effect_intent(&intent)
         .await
@@ -485,16 +503,18 @@ async fn durable_status_observation_binds_payload_and_persists_lookup_provenance
             .iter()
             .all(|ack| ack.source == ProviderEffectAckSource::StatusLookup)
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn durable_status_accepted_fences_late_dispatch_transition() {
+async fn durable_status_accepted_fences_late_dispatch_transition() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"status-accepted-late-dispatch");
+    let intent = effect_intent(b"status-accepted-late-dispatch")?;
     let operation = Sha256Digest::for_bytes(b"status-accepted-operation");
     store
         .append_provider_effect_intent(&intent)
@@ -532,15 +552,17 @@ async fn durable_status_accepted_fences_late_dispatch_transition() {
         stored.acknowledgements[0].source,
         ProviderEffectAckSource::StatusLookup
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn durable_status_observation_rejects_unknown_intent() {
+async fn durable_status_observation_rejects_unknown_intent() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"unknown-status-observation");
+    let intent = effect_intent(b"unknown-status-observation")?;
     let observation = ProviderEffectStatusObservation::new(
         intent.key,
         intent.payload_sha256,
@@ -553,16 +575,18 @@ async fn durable_status_observation_rejects_unknown_intent() {
             .await,
         Err(EvidenceError::InvalidRecord(_))
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn reopen_rejects_missing_provider_ack_source_provenance() {
+async fn reopen_rejects_missing_provider_ack_source_provenance() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"missing-source-payload");
+    let intent = effect_intent(b"missing-source-payload")?;
     store
         .append_provider_effect_intent(&intent)
         .await
@@ -595,16 +619,18 @@ async fn reopen_rejects_missing_provider_ack_source_provenance() {
 
     let reopen = HeptaEvidenceStore::open(&sqlite).await;
     assert!(matches!(reopen, Err(EvidenceError::Corrupt(_))));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn reopen_rejects_provider_ack_source_check_drift_with_valid_rows() {
+async fn reopen_rejects_provider_ack_source_check_drift_with_valid_rows() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"source-check-drift-payload");
+    let intent = effect_intent(b"source-check-drift-payload")?;
     store
         .append_provider_effect_intent(&intent)
         .await
@@ -700,16 +726,19 @@ async fn reopen_rejects_provider_ack_source_check_drift_with_valid_rows() {
     drop(store);
     let reopen = HeptaEvidenceStore::open(&sqlite).await;
     assert!(matches!(reopen, Err(EvidenceError::Corrupt(_))));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn qualification_dispatch_ack_is_persisted_with_source_and_reopens() {
+async fn qualification_dispatch_ack_is_persisted_with_source_and_reopens() -> Result<(), TestError>
+{
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"qualification-dispatch-completed");
+    let intent = effect_intent(b"qualification-dispatch-completed")?;
     let ack = completed_ack(&intent, b"qualification-dispatch-operation");
     let adapter = scripted_adapter(
         ProviderEffectIdempotencyCapability::KeyAndStatusLookup,
@@ -758,16 +787,19 @@ async fn qualification_dispatch_ack_is_persisted_with_source_and_reopens() {
     assert_eq!(replay.state, ProviderEffectState::Completed);
     assert!(!replay.dispatch_attempted);
     assert_eq!(replay_adapter.dispatches.load(Ordering::Relaxed), 0);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn qualification_dispatch_claim_survives_reopen_without_redispatch() {
+async fn qualification_dispatch_claim_survives_reopen_without_redispatch() -> Result<(), TestError>
+{
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"qualification-dispatch-claim");
+    let intent = effect_intent(b"qualification-dispatch-claim")?;
     let key = intent.key.clone();
     let first_adapter = scripted_adapter(
         ProviderEffectIdempotencyCapability::KeyAndStatusLookup,
@@ -818,16 +850,19 @@ async fn qualification_dispatch_claim_survives_reopen_without_redispatch() {
     assert_eq!(effect.state(), ProviderEffectState::Completed);
     assert_eq!(effect.acknowledgements.len(), 1);
     assert_eq!(effect.uncertainties.len(), 2);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn qualification_crash_after_send_reopen_reconciles_without_redispatch() {
+async fn qualification_crash_after_send_reopen_reconciles_without_redispatch()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"qualification-crash-after-send");
+    let intent = effect_intent(b"qualification-crash-after-send")?;
     let key = intent.key.clone();
     let crash_adapter = CrashAfterSendAdapter {
         dispatches: Arc::new(AtomicUsize::new(0)),
@@ -906,16 +941,19 @@ async fn qualification_crash_after_send_reopen_reconciles_without_redispatch() {
         effect.uncertainties[0].uncertainty.reason_code,
         "provider_dispatch_boundary_pending"
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn imported_pending_is_quarantined_before_dispatch_and_reconcile_only() {
+async fn imported_pending_is_quarantined_before_dispatch_and_reconcile_only()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"imported-pending-quarantine");
+    let intent = effect_intent(b"imported-pending-quarantine")?;
     store
         .append_provider_effect_intent(&intent)
         .await
@@ -964,16 +1002,19 @@ async fn imported_pending_is_quarantined_before_dispatch_and_reconcile_only() {
     );
     assert_eq!(adapter.dispatches.load(Ordering::Relaxed), 0);
     assert_eq!(adapter.lookups.load(Ordering::Relaxed), 1);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn qualification_dispatch_malformed_ack_quarantines_and_replay_does_not_send() {
+async fn qualification_dispatch_malformed_ack_quarantines_and_replay_does_not_send()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"qualification-malformed-ack");
+    let intent = effect_intent(b"qualification-malformed-ack")?;
     let malformed = ProviderEffectAck::new(
         intent.key.clone(),
         Sha256Digest::for_bytes(b"wrong-payload"),
@@ -1013,15 +1054,18 @@ async fn qualification_dispatch_malformed_ack_quarantines_and_replay_does_not_se
         ProviderEffectState::Completed
     );
     assert_eq!(good_adapter.lookups.load(Ordering::Relaxed), 1);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn qualification_reconcile_malformed_ack_quarantines_and_blocks_dispatch() {
+async fn qualification_reconcile_malformed_ack_quarantines_and_blocks_dispatch()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"qualification-reconcile-malformed-ack");
+    let intent = effect_intent(b"qualification-reconcile-malformed-ack")?;
     store
         .append_provider_effect_intent(&intent)
         .await
@@ -1066,22 +1110,25 @@ async fn qualification_reconcile_malformed_ack_quarantines_and_blocks_dispatch()
     assert_eq!(replay.state, ProviderEffectState::Indeterminate);
     assert!(!replay.dispatch_attempted);
     assert_eq!(replay_adapter.dispatches.load(Ordering::Relaxed), 0);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn qualification_dispatch_rejects_cross_key_ack_without_mutating_other_effect() {
+async fn qualification_dispatch_rejects_cross_key_ack_without_mutating_other_effect()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
     let intent_a = effect_intent_for_occurrence(
         b"qualification-cross-key-a",
         "automation:agent-a:cross-key-a",
-    );
+    )?;
     let intent_b = effect_intent_for_occurrence(
         b"qualification-cross-key-b",
         "automation:agent-a:cross-key-b",
-    );
+    )?;
     store
         .append_provider_effect_intent(&intent_b)
         .await
@@ -1117,15 +1164,17 @@ async fn qualification_dispatch_rejects_cross_key_ack_without_mutating_other_eff
     assert_eq!(effect_b.state(), ProviderEffectState::Pending);
     assert!(effect_b.acknowledgements.is_empty());
     assert!(effect_b.uncertainties.is_empty());
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn qualification_boundary_lock_serializes_lookup_against_dispatch() {
+async fn qualification_boundary_lock_serializes_lookup_against_dispatch() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"qualification-boundary-lock");
+    let intent = effect_intent(b"qualification-boundary-lock")?;
     store
         .append_provider_effect_intent(&intent)
         .await
@@ -1173,16 +1222,18 @@ async fn qualification_boundary_lock_serializes_lookup_against_dispatch() {
         .expect("dispatch result");
     assert!(!dispatch.dispatch_attempted);
     assert_eq!(adapter.dispatches.load(Ordering::Relaxed), 0);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn qualification_dispatch_claim_has_one_concurrent_winner() {
+async fn qualification_dispatch_claim_has_one_concurrent_winner() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"qualification-concurrent-claim");
+    let intent = effect_intent(b"qualification-concurrent-claim")?;
     let first_adapter = scripted_adapter(
         ProviderEffectIdempotencyCapability::KeyAndStatusLookup,
         ProviderEffectDispatch::Unknown,
@@ -1215,15 +1266,18 @@ async fn qualification_dispatch_claim_has_one_concurrent_winner() {
         .expect("read concurrent claim")
         .expect("effect");
     assert_eq!(effect.state(), ProviderEffectState::Indeterminate);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn qualification_dispatch_unsupported_capability_never_invokes_adapter() {
+async fn qualification_dispatch_unsupported_capability_never_invokes_adapter()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"qualification-unsupported");
+    let intent = effect_intent(b"qualification-unsupported")?;
     let adapter = scripted_adapter(
         ProviderEffectIdempotencyCapability::Unsupported,
         ProviderEffectDispatch::Ack(completed_ack(&intent, b"must-not-send")),
@@ -1243,15 +1297,18 @@ async fn qualification_dispatch_unsupported_capability_never_invokes_adapter() {
         .expect_err("unsupported lookup must remain fail-closed");
     assert!(matches!(reconcile_error, EvidenceError::InvalidRecord(_)));
     assert_eq!(adapter.lookups.load(Ordering::Relaxed), 0);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn accepted_effect_stays_indeterminate_when_reconcile_reports_rejected() {
+async fn accepted_effect_stays_indeterminate_when_reconcile_reports_rejected()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"accepted-then-rejected");
+    let intent = effect_intent(b"accepted-then-rejected")?;
     let key = intent.key.clone();
     store
         .append_provider_effect_intent(&intent)
@@ -1297,15 +1354,17 @@ async fn accepted_effect_stays_indeterminate_when_reconcile_reports_rejected() {
     assert_eq!(effect.state(), ProviderEffectState::Indeterminate);
     assert_eq!(effect.acknowledgements.len(), 1);
     assert_eq!(effect.uncertainties.len(), 1);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn unsupported_provider_capability_is_durable_indeterminate() {
+async fn unsupported_provider_capability_is_durable_indeterminate() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"unsupported-payload");
+    let intent = effect_intent(b"unsupported-payload")?;
     let key = intent.key.clone();
     store
         .append_provider_effect_intent(&intent)
@@ -1331,15 +1390,17 @@ async fn unsupported_provider_capability_is_durable_indeterminate() {
         effect.uncertainties[0].uncertainty.reason_code,
         "provider_capability_unsupported"
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn terminal_effect_cannot_be_quarantined_or_replaced() {
+async fn terminal_effect_cannot_be_quarantined_or_replaced() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"terminal-payload");
+    let intent = effect_intent(b"terminal-payload")?;
     let key = intent.key.clone();
     store
         .append_provider_effect_intent(&intent)
@@ -1370,15 +1431,17 @@ async fn terminal_effect_cannot_be_quarantined_or_replaced() {
         .await
         .expect_err("terminal cannot be replaced");
     assert!(matches!(error, EvidenceError::IdempotencyConflict { .. }));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn terminal_lookup_replay_is_idempotent_without_late_uncertainty() {
+async fn terminal_lookup_replay_is_idempotent_without_late_uncertainty() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"terminal-lookup-replay");
+    let intent = effect_intent(b"terminal-lookup-replay")?;
     let key = intent.key.clone();
     let completion = completed_ack(&intent, b"terminal-lookup-operation");
     store
@@ -1449,15 +1512,18 @@ async fn terminal_lookup_replay_is_idempotent_without_late_uncertainty() {
     assert_eq!(effect.state(), ProviderEffectState::Completed);
     assert_eq!(effect.acknowledgements.len(), 1);
     assert!(effect.uncertainties.is_empty());
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn rejected_terminal_lookup_replay_is_idempotent_without_late_uncertainty() {
+async fn rejected_terminal_lookup_replay_is_idempotent_without_late_uncertainty()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"rejected-terminal-lookup-replay");
+    let intent = effect_intent(b"rejected-terminal-lookup-replay")?;
     let key = intent.key.clone();
     let rejection = ProviderEffectAck::new(
         key.clone(),
@@ -1502,16 +1568,18 @@ async fn rejected_terminal_lookup_replay_is_idempotent_without_late_uncertainty(
     assert_eq!(effect.state(), ProviderEffectState::Rejected);
     assert_eq!(effect.acknowledgements.len(), 1);
     assert!(effect.uncertainties.is_empty());
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn reopen_rejects_late_uncertainty_after_terminal_ack() {
+async fn reopen_rejects_late_uncertainty_after_terminal_ack() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"late-uncertainty-payload");
+    let intent = effect_intent(b"late-uncertainty-payload")?;
     let key = intent.key.clone();
     store
         .append_provider_effect_intent(&intent)
@@ -1558,16 +1626,18 @@ async fn reopen_rejects_late_uncertainty_after_terminal_ack() {
         Err(EvidenceError::Corrupt(detail))
             if detail.contains("uncertainty follows terminal ACK")
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn reopen_rejects_ack_uncertainty_timestamp_tie() {
+async fn reopen_rejects_ack_uncertainty_timestamp_tie() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"timestamp-tie-payload");
+    let intent = effect_intent(b"timestamp-tie-payload")?;
     let key = intent.key.clone();
     store
         .append_provider_effect_intent(&intent)
@@ -1623,16 +1693,19 @@ async fn reopen_rejects_ack_uncertainty_timestamp_tie() {
         Err(EvidenceError::Corrupt(detail))
             if detail.contains("ambiguous timestamp")
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn reopen_orders_ack_and_uncertainty_by_per_key_time_not_cross_table_seq() {
+async fn reopen_orders_ack_and_uncertainty_by_per_key_time_not_cross_table_seq()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let target = effect_intent(b"cross-table-seq-target");
+    let target = effect_intent(b"cross-table-seq-target")?;
     store
         .append_provider_effect_intent(&target)
         .await
@@ -1645,7 +1718,7 @@ async fn reopen_orders_ack_and_uncertainty_by_per_key_time_not_cross_table_seq()
         let other = effect_intent_for_occurrence(
             format!("cross-table-seq-other-{index}").as_bytes(),
             &format!("automation:agent-a:cross-table-other-{index}"),
-        );
+        )?;
         store
             .append_provider_effect_intent(&other)
             .await
@@ -1683,15 +1756,17 @@ async fn reopen_orders_ack_and_uncertainty_by_per_key_time_not_cross_table_seq()
     assert_eq!(effect.state(), ProviderEffectState::Completed);
     assert_eq!(effect.uncertainties.len(), 1);
     assert_eq!(effect.acknowledgements.len(), 1);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn same_key_payload_conflict_and_ack_binding_fail_closed() {
+async fn same_key_payload_conflict_and_ack_binding_fail_closed() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"authoritative-payload");
+    let intent = effect_intent(b"authoritative-payload")?;
     let key = intent.key.clone();
     assert_eq!(
         store
@@ -1703,7 +1778,7 @@ async fn same_key_payload_conflict_and_ack_binding_fail_closed() {
 
     // A provider/client retry may replay the exact occurrence, but it must
     // not reuse the durable key for a different payload.
-    let conflicting_intent = effect_intent(b"different-payload");
+    let conflicting_intent = effect_intent(b"different-payload")?;
     let conflict = store
         .append_provider_effect_intent(&conflicting_intent)
         .await
@@ -1743,15 +1818,17 @@ async fn same_key_payload_conflict_and_ack_binding_fail_closed() {
             .expect("exact ACK replay"),
         AppendDisposition::AlreadyPresent
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn effect_tables_are_append_only() {
+async fn effect_tables_are_append_only() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let store = HeptaEvidenceStore::open(&sqlite_config(&temp))
+    let store = HeptaEvidenceStore::open(&sqlite_config(&temp)?)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"immutable-payload");
+    let intent = effect_intent(b"immutable-payload")?;
     let key = intent.key.clone();
     store
         .append_provider_effect_intent(&intent)
@@ -1774,16 +1851,18 @@ async fn effect_tables_are_append_only() {
         .execute(&store.pool)
         .await;
     assert!(delete.is_err());
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn reopen_rejects_illegal_ack_even_when_late_uncertainty_exists() {
+async fn reopen_rejects_illegal_ack_even_when_late_uncertainty_exists() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp dir");
-    let sqlite = sqlite_config(&temp);
+    let sqlite = sqlite_config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let intent = effect_intent(b"corrupt-transition-payload");
+    let intent = effect_intent(b"corrupt-transition-payload")?;
     let key = intent.key.clone();
     store
         .append_provider_effect_intent(&intent)
@@ -1856,4 +1935,6 @@ async fn reopen_rejects_illegal_ack_even_when_late_uncertainty_exists() {
 
     let reopen = HeptaEvidenceStore::open(&sqlite).await;
     assert!(matches!(reopen, Err(EvidenceError::Corrupt(_))));
+
+    Ok(())
 }

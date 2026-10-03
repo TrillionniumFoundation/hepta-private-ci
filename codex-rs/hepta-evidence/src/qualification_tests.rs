@@ -32,20 +32,18 @@ use crate::evidence_set_digest;
 use crate::qualification_append_scope_digest;
 use crate::qualification_subject;
 
-fn config(temp: &TempDir) -> SqliteConfig {
-    SqliteConfig::new_for_testing(
-        AbsolutePathBuf::try_from(temp.path().to_path_buf()).expect("absolute temp path"),
-    )
+type TestError = Box<dyn std::error::Error + Send + Sync>;
+
+fn config(temp: &TempDir) -> Result<SqliteConfig, TestError> {
+    Ok(SqliteConfig::new_for_testing(AbsolutePathBuf::try_from(
+        temp.path().to_path_buf(),
+    )?))
 }
 
-fn now_ms() -> u64 {
-    u64::try_from(
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .expect("clock")
-            .as_millis(),
-    )
-    .expect("u64 millis")
+fn now_ms() -> Result<u64, TestError> {
+    Ok(u64::try_from(
+        SystemTime::now().duration_since(UNIX_EPOCH)?.as_millis(),
+    )?)
 }
 
 fn candidate(tree: char) -> EvidenceCandidateV1 {
@@ -56,26 +54,26 @@ fn candidate(tree: char) -> EvidenceCandidateV1 {
     }
 }
 
-fn issuer(principal: &str, seed: u8) -> (IssuerRegistration, SigningKey) {
+fn issuer(principal: &str, seed: u8) -> Result<(IssuerRegistration, SigningKey), TestError> {
     let key = SigningKey::from_bytes(&[seed; 32]);
-    (
+    Ok((
         IssuerRegistration {
-            issuer_id: StableId::new(principal).expect("principal"),
-            key_epoch: Generation::new(1).expect("epoch"),
+            issuer_id: StableId::new(principal)?,
+            key_epoch: Generation::new(1)?,
             verifying_key: key.verifying_key(),
             revoked: false,
         },
         key,
-    )
+    ))
 }
 
-fn issuer_with_key(principal: &str, key: &SigningKey) -> IssuerRegistration {
-    IssuerRegistration {
-        issuer_id: StableId::new(principal).expect("principal"),
-        key_epoch: Generation::new(1).expect("epoch"),
+fn issuer_with_key(principal: &str, key: &SigningKey) -> Result<IssuerRegistration, TestError> {
+    Ok(IssuerRegistration {
+        issuer_id: StableId::new(principal)?,
+        key_epoch: Generation::new(1)?,
         verifying_key: key.verifying_key(),
         revoked: false,
-    }
+    })
 }
 
 fn trust_binding(
@@ -93,10 +91,10 @@ fn evidence(
     observed: u64,
     expires: Option<u64>,
     payload: serde_json::Value,
-) -> QualificationEvidenceEnvelopeV1 {
-    QualificationEvidenceEnvelopeV1 {
+) -> Result<QualificationEvidenceEnvelopeV1, TestError> {
+    Ok(QualificationEvidenceEnvelopeV1 {
         schema_version: 1,
-        evidence_id: EvidenceId::parse(id).expect("evidence id"),
+        evidence_id: EvidenceId::parse(id)?,
         candidate,
         claim_class: class,
         receipt_kind: EvidenceReceiptKindV1::Evidence,
@@ -107,7 +105,7 @@ fn evidence(
         observed_unix_ms: observed,
         expires_unix_ms: expires,
         asset_digests: Vec::new(),
-    }
+    })
 }
 
 fn lineage(
@@ -117,21 +115,21 @@ fn lineage(
     base: &QualificationEvidenceEnvelopeV1,
     kind: EvidenceReceiptKindV1,
     observed: u64,
-) -> QualificationEvidenceEnvelopeV1 {
-    QualificationEvidenceEnvelopeV1 {
+) -> Result<QualificationEvidenceEnvelopeV1, TestError> {
+    Ok(QualificationEvidenceEnvelopeV1 {
         schema_version: 1,
-        evidence_id: EvidenceId::parse(id).expect("evidence id"),
+        evidence_id: EvidenceId::parse(id)?,
         candidate: base.candidate.clone(),
         claim_class: base.claim_class,
         receipt_kind: kind,
         issuer_role: base.issuer_role,
         payload: json!({"lineage": id}),
-        predecessor_evidence_id: Some(EvidenceId::parse(predecessor).expect("predecessor")),
-        target_evidence_id: Some(EvidenceId::parse(target).expect("target")),
+        predecessor_evidence_id: Some(EvidenceId::parse(predecessor)?),
+        target_evidence_id: Some(EvidenceId::parse(target)?),
         observed_unix_ms: observed,
         expires_unix_ms: None,
         asset_digests: Vec::new(),
-    }
+    })
 }
 
 fn signed(
@@ -140,25 +138,23 @@ fn signed(
     key: &SigningKey,
     sequence: u64,
     expires_at_ms: u64,
-) -> SignedMessage {
-    let bytes = crate::canonical::canonical_json(envelope).expect("canonical envelope");
+) -> Result<SignedMessage, TestError> {
+    let bytes = crate::canonical::canonical_json(envelope)?;
     let claims = SignedMessageClaims {
         issuer_id: issuer.issuer_id.clone(),
         key_epoch: issuer.key_epoch,
         message_id: StableId::new(format!(
             "evidence-message:{}:{sequence}",
             envelope.evidence_id
-        ))
-        .expect("message id"),
-        subject_id: qualification_subject(&envelope.candidate, envelope.issuer_role)
-            .expect("qualification subject"),
+        ))?,
+        subject_id: qualification_subject(&envelope.candidate, envelope.issuer_role)?,
         scope_digest: qualification_append_scope_digest(),
         payload_digest: Digest32::of_bytes(&bytes),
         sequence,
         expires_at_ms,
     };
     let signature = key.sign(&claims.signing_bytes()).to_bytes();
-    SignedMessage { claims, signature }
+    Ok(SignedMessage { claims, signature })
 }
 
 async fn append(
@@ -167,29 +163,30 @@ async fn append(
     key: &SigningKey,
     envelope: &QualificationEvidenceEnvelopeV1,
     sequence: u64,
-) -> Result<EvidenceId, EvidenceError> {
+) -> Result<Result<EvidenceId, EvidenceError>, TestError> {
     let message = signed(
         envelope,
         issuer,
         key,
         sequence,
-        now_ms().saturating_add(60_000),
-    );
-    store
+        now_ms()?.saturating_add(60_000),
+    )?;
+    Ok(store
         .qualification()
         .append_receipt(issuer, &message, envelope)
-        .await
+        .await)
 }
 
 #[tokio::test]
-async fn evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independence() {
+async fn evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independence()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
     let candidate = candidate('b');
-    let observed = now_ms();
-    let (same_principal, key) = issuer("principal:shared", 11);
+    let observed = now_ms()?;
+    let (same_principal, key) = issuer("principal:shared", 11)?;
 
     let generator = evidence(
         "evidence:generator",
@@ -199,9 +196,9 @@ async fn evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independen
         observed,
         None,
         json!({"passed": true}),
-    );
+    )?;
     append(&store, &same_principal, &key, &generator, 1)
-        .await
+        .await?
         .expect("append generator");
 
     let evaluator = evidence(
@@ -212,9 +209,9 @@ async fn evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independen
         observed,
         None,
         json!({"passed": true}),
-    );
+    )?;
     append(&store, &same_principal, &key, &evaluator, 1)
-        .await
+        .await?
         .expect("append evaluator");
 
     let disposition = store
@@ -240,18 +237,20 @@ async fn evid_01_one_principal_cannot_satisfy_generator_and_evaluator_independen
         disposition,
         EvidenceDispositionV1::Conflicting { .. }
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn evid_01_distinct_authenticated_principals_satisfy_independence() {
+async fn evid_01_distinct_authenticated_principals_satisfy_independence() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
     let candidate = candidate('b');
-    let observed = now_ms();
-    let (generator_issuer, generator_key) = issuer("principal:generator", 12);
-    let (evaluator_issuer, evaluator_key) = issuer("principal:evaluator", 13);
+    let observed = now_ms()?;
+    let (generator_issuer, generator_key) = issuer("principal:generator", 12)?;
+    let (evaluator_issuer, evaluator_key) = issuer("principal:evaluator", 13)?;
     let generator = evidence(
         "evidence:generator-distinct",
         candidate.clone(),
@@ -260,9 +259,9 @@ async fn evid_01_distinct_authenticated_principals_satisfy_independence() {
         observed,
         None,
         json!({"passed": true}),
-    );
+    )?;
     append(&store, &generator_issuer, &generator_key, &generator, 1)
-        .await
+        .await?
         .expect("append generator");
     let evaluator = evidence(
         "evidence:evaluator-distinct",
@@ -272,9 +271,9 @@ async fn evid_01_distinct_authenticated_principals_satisfy_independence() {
         observed,
         None,
         json!({"passed": true}),
-    );
+    )?;
     append(&store, &evaluator_issuer, &evaluator_key, &evaluator, 1)
-        .await
+        .await?
         .expect("append evaluator");
 
     assert!(matches!(
@@ -299,19 +298,22 @@ async fn evid_01_distinct_authenticated_principals_satisfy_independence() {
             .expect("verify"),
         EvidenceDispositionV1::Supported { .. }
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn evid_01_distinct_principals_sharing_one_signing_identity_are_not_independent() {
+async fn evid_01_distinct_principals_sharing_one_signing_identity_are_not_independent()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
     let candidate = candidate('b');
-    let observed = now_ms();
+    let observed = now_ms()?;
     let shared_key = SigningKey::from_bytes(&[41; 32]);
-    let generator_issuer = issuer_with_key("principal:generator-shared-key", &shared_key);
-    let evaluator_issuer = issuer_with_key("principal:evaluator-shared-key", &shared_key);
+    let generator_issuer = issuer_with_key("principal:generator-shared-key", &shared_key)?;
+    let evaluator_issuer = issuer_with_key("principal:evaluator-shared-key", &shared_key)?;
 
     let generator = evidence(
         "evidence:generator-shared-key",
@@ -321,9 +323,9 @@ async fn evid_01_distinct_principals_sharing_one_signing_identity_are_not_indepe
         observed,
         None,
         json!({"passed": true}),
-    );
+    )?;
     append(&store, &generator_issuer, &shared_key, &generator, 1)
-        .await
+        .await?
         .expect("append generator");
 
     let evaluator = evidence(
@@ -334,9 +336,9 @@ async fn evid_01_distinct_principals_sharing_one_signing_identity_are_not_indepe
         observed,
         None,
         json!({"passed": true}),
-    );
+    )?;
     append(&store, &evaluator_issuer, &shared_key, &evaluator, 1)
-        .await
+        .await?
         .expect("append evaluator");
 
     let disposition = store
@@ -362,17 +364,20 @@ async fn evid_01_distinct_principals_sharing_one_signing_identity_are_not_indepe
         disposition,
         EvidenceDispositionV1::Conflicting { .. }
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn current_trust_rotation_or_revocation_invalidates_positive_verification() {
+async fn current_trust_rotation_or_revocation_invalidates_positive_verification()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
     let candidate = candidate('b');
-    let observed = now_ms();
-    let (issuer, key) = issuer("principal:current-trust", 42);
+    let observed = now_ms()?;
+    let (issuer, key) = issuer("principal:current-trust", 42)?;
     let receipt = evidence(
         "evidence:current-trust",
         candidate.clone(),
@@ -381,9 +386,9 @@ async fn current_trust_rotation_or_revocation_invalidates_positive_verification(
         observed,
         None,
         json!({"exact_head": true}),
-    );
+    )?;
     append(&store, &issuer, &key, &receipt, 1)
-        .await
+        .await?
         .expect("append evidence");
 
     let request = VerifyChainRequestV1 {
@@ -405,7 +410,7 @@ async fn current_trust_rotation_or_revocation_invalidates_positive_verification(
     ));
 
     let rotated_key = SigningKey::from_bytes(&[43; 32]);
-    let rotated = issuer_with_key("principal:current-trust", &rotated_key);
+    let rotated = issuer_with_key("principal:current-trust", &rotated_key)?;
     assert!(matches!(
         store
             .qualification()
@@ -425,18 +430,20 @@ async fn current_trust_rotation_or_revocation_invalidates_positive_verification(
             .expect("verify revoked trust"),
         EvidenceDispositionV1::Conflicting { .. }
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn evid_02_wrong_tree_and_expired_candidate_are_unavailable() {
+async fn evid_02_wrong_tree_and_expired_candidate_are_unavailable() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
     let exact = candidate('b');
-    let observed = now_ms();
+    let observed = now_ms()?;
     let expiry = observed.saturating_add(5_000);
-    let (source_issuer, key) = issuer("principal:source", 14);
+    let (source_issuer, key) = issuer("principal:source", 14)?;
     let receipt = evidence(
         "evidence:exact-source",
         exact.clone(),
@@ -445,9 +452,9 @@ async fn evid_02_wrong_tree_and_expired_candidate_are_unavailable() {
         observed,
         Some(expiry),
         json!({"source": "exact"}),
-    );
+    )?;
     append(&store, &source_issuer, &key, &receipt, 1)
-        .await
+        .await?
         .expect("append source evidence");
 
     assert!(matches!(
@@ -488,17 +495,19 @@ async fn evid_02_wrong_tree_and_expired_candidate_are_unavailable() {
             .expect("expired verify"),
         EvidenceDispositionV1::Expired { .. }
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn evid_03_corrupted_canonical_payload_fails_reopen() {
+async fn evid_03_corrupted_canonical_payload_fails_reopen() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let sqlite = config(&temp);
+    let sqlite = config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let observed = now_ms();
-    let (source_issuer, key) = issuer("principal:integrity", 15);
+    let observed = now_ms()?;
+    let (source_issuer, key) = issuer("principal:integrity", 15)?;
     let receipt = evidence(
         "evidence:integrity",
         candidate('b'),
@@ -507,9 +516,9 @@ async fn evid_03_corrupted_canonical_payload_fails_reopen() {
         observed,
         None,
         json!({"passed": true}),
-    );
+    )?;
     append(&store, &source_issuer, &key, &receipt, 1)
-        .await
+        .await?
         .expect("append integrity evidence");
 
     let mut connection = store.pool.acquire().await.expect("connection");
@@ -542,17 +551,19 @@ async fn evid_03_corrupted_canonical_payload_fails_reopen() {
         HeptaEvidenceStore::open(&sqlite).await,
         Err(EvidenceError::Corrupt(_))
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn evid_03_broken_predecessor_fails_reopen() {
+async fn evid_03_broken_predecessor_fails_reopen() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let sqlite = config(&temp);
+    let sqlite = config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("open evidence");
-    let observed = now_ms();
-    let (issuer, key) = issuer("principal:lineage", 16);
+    let observed = now_ms()?;
+    let (issuer, key) = issuer("principal:lineage", 16)?;
     let base = evidence(
         "evidence:lineage-base",
         candidate('b'),
@@ -561,9 +572,9 @@ async fn evid_03_broken_predecessor_fails_reopen() {
         observed,
         None,
         json!({"version": 1}),
-    );
+    )?;
     append(&store, &issuer, &key, &base, 1)
-        .await
+        .await?
         .expect("append base");
     let correction = lineage(
         "evidence:lineage-correction",
@@ -572,9 +583,9 @@ async fn evid_03_broken_predecessor_fails_reopen() {
         &base,
         EvidenceReceiptKindV1::Correction,
         observed.saturating_add(1),
-    );
+    )?;
     append(&store, &issuer, &key, &correction, 2)
-        .await
+        .await?
         .expect("append correction");
 
     let mut connection = store.pool.acquire().await.expect("connection");
@@ -611,17 +622,19 @@ async fn evid_03_broken_predecessor_fails_reopen() {
         HeptaEvidenceStore::open(&sqlite).await,
         Err(EvidenceError::Corrupt(_))
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn evid_04_fixture_cannot_satisfy_hardware_claim() {
+async fn evid_04_fixture_cannot_satisfy_hardware_claim() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
     let candidate = candidate('b');
-    let observed = now_ms();
-    let (issuer, key) = issuer("principal:fixture", 17);
+    let observed = now_ms()?;
+    let (issuer, key) = issuer("principal:fixture", 17)?;
     let fixture = evidence(
         "evidence:fixture",
         candidate.clone(),
@@ -630,9 +643,9 @@ async fn evid_04_fixture_cannot_satisfy_hardware_claim() {
         observed,
         None,
         json!({"environment": "fixture"}),
-    );
+    )?;
     append(&store, &issuer, &key, &fixture, 1)
-        .await
+        .await?
         .expect("append fixture");
 
     assert!(
@@ -659,18 +672,21 @@ async fn evid_04_fixture_cannot_satisfy_hardware_claim() {
             .expect("hardware verify"),
         EvidenceDispositionV1::Missing
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn independent_decision_binds_candidate_principal_key_role_and_evidence_set() {
+async fn independent_decision_binds_candidate_principal_key_role_and_evidence_set()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
     let candidate = candidate('b');
-    let observed = now_ms();
+    let observed = now_ms()?;
     let expiry = observed.saturating_add(30_000);
-    let (reviewer, key) = issuer("principal:architecture", 18);
+    let (reviewer, key) = issuer("principal:architecture", 18)?;
 
     let source = evidence(
         "evidence:decision-source",
@@ -680,9 +696,9 @@ async fn independent_decision_binds_candidate_principal_key_role_and_evidence_se
         observed,
         None,
         json!({"exact_head": true}),
-    );
+    )?;
     append(&store, &reviewer, &key, &source, 1)
-        .await
+        .await?
         .expect("source");
     let refs = store
         .qualification()
@@ -712,9 +728,9 @@ async fn independent_decision_binds_candidate_principal_key_role_and_evidence_se
         observed,
         Some(expiry),
         serde_json::to_value(decision).expect("decision value"),
-    );
+    )?;
     append(&store, &reviewer, &key, &envelope, 2)
-        .await
+        .await?
         .expect("append independent decision");
 
     assert!(matches!(
@@ -733,18 +749,20 @@ async fn independent_decision_binds_candidate_principal_key_role_and_evidence_se
             .expect("verify decision"),
         EvidenceDispositionV1::Supported { .. }
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn independent_decision_validity_outlives_short_ingress_auth_ttl() {
+async fn independent_decision_validity_outlives_short_ingress_auth_ttl() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
     let candidate = candidate('b');
-    let observed = now_ms();
+    let observed = now_ms()?;
     let decision_expiry = observed.saturating_add(3_600_000);
-    let (reviewer, key) = issuer("principal:long-lived-architecture", 25);
+    let (reviewer, key) = issuer("principal:long-lived-architecture", 25)?;
 
     let source = evidence(
         "evidence:long-lived-decision-source",
@@ -754,9 +772,9 @@ async fn independent_decision_validity_outlives_short_ingress_auth_ttl() {
         observed,
         None,
         json!({"exact_head": true}),
-    );
+    )?;
     append(&store, &reviewer, &key, &source, 1)
-        .await
+        .await?
         .expect("source");
     let refs = store
         .qualification()
@@ -784,7 +802,7 @@ async fn independent_decision_validity_outlives_short_ingress_auth_ttl() {
         observed,
         Some(decision_expiry),
         serde_json::to_value(decision).expect("decision value"),
-    );
+    )?;
 
     // The AuthBus message is an admission-freshness envelope, not the durable
     // lifetime of the admitted independent decision.
@@ -793,8 +811,8 @@ async fn independent_decision_validity_outlives_short_ingress_auth_ttl() {
         &reviewer,
         &key,
         2,
-        now_ms().saturating_add(5_000),
-    );
+        now_ms()?.saturating_add(5_000),
+    )?;
     store
         .qualification()
         .append_receipt(&reviewer, &short_lived_message, &envelope)
@@ -817,18 +835,21 @@ async fn independent_decision_validity_outlives_short_ingress_auth_ttl() {
             .expect("verify durable decision after ingress ttl"),
         EvidenceDispositionV1::Supported { .. }
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_changes() {
+async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_changes()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
     let candidate = candidate('b');
-    let observed = now_ms();
+    let observed = now_ms()?;
     let expiry = observed.saturating_add(30_000);
-    let (reviewer, key) = issuer("principal:stale-review", 22);
+    let (reviewer, key) = issuer("principal:stale-review", 22)?;
 
     let source = evidence(
         "evidence:stale-source",
@@ -838,9 +859,9 @@ async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_ch
         observed,
         None,
         json!({"exact_head": true}),
-    );
+    )?;
     append(&store, &reviewer, &key, &source, 1)
-        .await
+        .await?
         .expect("source");
     let refs = store
         .qualification()
@@ -868,9 +889,9 @@ async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_ch
         observed,
         Some(expiry),
         serde_json::to_value(decision).expect("decision value"),
-    );
+    )?;
     append(&store, &reviewer, &key, &decision_envelope, 2)
-        .await
+        .await?
         .expect("decision");
 
     assert!(matches!(
@@ -898,9 +919,9 @@ async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_ch
         observed,
         None,
         json!({"registry": "changed"}),
-    );
+    )?;
     append(&store, &reviewer, &key, &registry, 3)
-        .await
+        .await?
         .expect("registry evidence");
 
     assert!(matches!(
@@ -919,16 +940,19 @@ async fn independent_decision_becomes_conflicting_when_candidate_evidence_set_ch
             .expect("stale decision"),
         EvidenceDispositionV1::Conflicting { .. }
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn exact_authenticated_retry_is_idempotent_but_payload_drift_conflicts() {
+async fn exact_authenticated_retry_is_idempotent_but_payload_drift_conflicts()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
-    let observed = now_ms();
-    let (issuer, key) = issuer("principal:idempotent", 19);
+    let observed = now_ms()?;
+    let (issuer, key) = issuer("principal:idempotent", 19)?;
     let receipt = evidence(
         "evidence:idempotent",
         candidate('b'),
@@ -937,8 +961,8 @@ async fn exact_authenticated_retry_is_idempotent_but_payload_drift_conflicts() {
         observed,
         None,
         json!({"revision": 1}),
-    );
-    let message = signed(&receipt, &issuer, &key, 1, observed.saturating_add(60_000));
+    )?;
+    let message = signed(&receipt, &issuer, &key, 1, observed.saturating_add(60_000))?;
     let first = store
         .qualification()
         .append_receipt(&issuer, &message, &receipt)
@@ -953,7 +977,7 @@ async fn exact_authenticated_retry_is_idempotent_but_payload_drift_conflicts() {
 
     let mut changed = receipt.clone();
     changed.payload = json!({"revision": 2});
-    let changed_message = signed(&changed, &issuer, &key, 2, observed.saturating_add(60_000));
+    let changed_message = signed(&changed, &issuer, &key, 2, observed.saturating_add(60_000))?;
     assert!(matches!(
         store
             .qualification()
@@ -961,15 +985,17 @@ async fn exact_authenticated_retry_is_idempotent_but_payload_drift_conflicts() {
             .await,
         Err(EvidenceError::IdempotencyConflict { .. })
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn correction_and_revocation_are_append_only_and_non_resurrecting() {
+async fn correction_and_revocation_are_append_only_and_non_resurrecting() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let sqlite = config(&temp);
+    let sqlite = config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite).await.expect("open");
-    let observed = now_ms();
-    let (issuer, key) = issuer("principal:reviewer", 20);
+    let observed = now_ms()?;
+    let (issuer, key) = issuer("principal:reviewer", 20)?;
     let base = evidence(
         "evidence:revocable",
         candidate('b'),
@@ -978,8 +1004,10 @@ async fn correction_and_revocation_are_append_only_and_non_resurrecting() {
         observed,
         None,
         json!({"version": 1}),
-    );
-    append(&store, &issuer, &key, &base, 1).await.expect("base");
+    )?;
+    append(&store, &issuer, &key, &base, 1)
+        .await?
+        .expect("base");
     let correction = lineage(
         "evidence:corrected",
         base.evidence_id.as_str(),
@@ -987,9 +1015,9 @@ async fn correction_and_revocation_are_append_only_and_non_resurrecting() {
         &base,
         EvidenceReceiptKindV1::Correction,
         observed.saturating_add(1),
-    );
+    )?;
     append(&store, &issuer, &key, &correction, 2)
-        .await
+        .await?
         .expect("correction");
     let revocation = lineage(
         "evidence:revoked",
@@ -998,9 +1026,9 @@ async fn correction_and_revocation_are_append_only_and_non_resurrecting() {
         &correction,
         EvidenceReceiptKindV1::Revocation,
         observed.saturating_add(2),
-    );
+    )?;
     append(&store, &issuer, &key, &revocation, 3)
-        .await
+        .await?
         .expect("revocation");
 
     assert!(matches!(
@@ -1030,16 +1058,19 @@ async fn correction_and_revocation_are_append_only_and_non_resurrecting() {
             .len(),
         3
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn lineage_mutation_is_principal_scoped_with_security_revocation_exception() {
+async fn lineage_mutation_is_principal_scoped_with_security_revocation_exception()
+-> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let sqlite = config(&temp);
+    let sqlite = config(&temp)?;
     let store = HeptaEvidenceStore::open(&sqlite).await.expect("open");
-    let observed = now_ms();
+    let observed = now_ms()?;
 
-    let (owner, owner_key) = issuer("principal:lineage-owner", 22);
+    let (owner, owner_key) = issuer("principal:lineage-owner", 22)?;
     let base = evidence(
         "evidence:lineage-owner-base",
         candidate('b'),
@@ -1048,12 +1079,12 @@ async fn lineage_mutation_is_principal_scoped_with_security_revocation_exception
         observed,
         None,
         json!({"version": 1}),
-    );
+    )?;
     append(&store, &owner, &owner_key, &base, 1)
-        .await
+        .await?
         .expect("owner base");
 
-    let (other, other_key) = issuer("principal:lineage-other", 23);
+    let (other, other_key) = issuer("principal:lineage-other", 23)?;
     let forged_correction = lineage(
         "evidence:lineage-forged-correction",
         base.evidence_id.as_str(),
@@ -1061,9 +1092,9 @@ async fn lineage_mutation_is_principal_scoped_with_security_revocation_exception
         &base,
         EvidenceReceiptKindV1::Correction,
         observed.saturating_add(1),
-    );
+    )?;
     assert!(matches!(
-        append(&store, &other, &other_key, &forged_correction, 1).await,
+        append(&store, &other, &other_key, &forged_correction, 1).await?,
         Err(EvidenceError::InvalidRecord(_))
     ));
 
@@ -1074,13 +1105,13 @@ async fn lineage_mutation_is_principal_scoped_with_security_revocation_exception
         &base,
         EvidenceReceiptKindV1::Revocation,
         observed.saturating_add(2),
-    );
+    )?;
     assert!(matches!(
-        append(&store, &other, &other_key, &forged_revocation, 1).await,
+        append(&store, &other, &other_key, &forged_revocation, 1).await?,
         Err(EvidenceError::InvalidRecord(_))
     ));
 
-    let (security, security_key) = issuer("principal:lineage-security", 24);
+    let (security, security_key) = issuer("principal:lineage-security", 24)?;
     let mut security_revocation = lineage(
         "evidence:lineage-security-revocation",
         base.evidence_id.as_str(),
@@ -1088,10 +1119,10 @@ async fn lineage_mutation_is_principal_scoped_with_security_revocation_exception
         &base,
         EvidenceReceiptKindV1::Revocation,
         observed.saturating_add(3),
-    );
+    )?;
     security_revocation.issuer_role = EvidenceIssuerRoleV1::Security;
     append(&store, &security, &security_key, &security_revocation, 1)
-        .await
+        .await?
         .expect("security revocation");
 
     assert!(matches!(
@@ -1118,16 +1149,18 @@ async fn lineage_mutation_is_principal_scoped_with_security_revocation_exception
     HeptaEvidenceStore::open(&sqlite)
         .await
         .expect("reopen accepts authorized security revocation");
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn replay_sequence_is_consumed_atomically_with_insert() {
+async fn replay_sequence_is_consumed_atomically_with_insert() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
-    let observed = now_ms();
-    let (issuer, key) = issuer("principal:atomic", 21);
+    let observed = now_ms()?;
+    let (issuer, key) = issuer("principal:atomic", 21)?;
     let first = evidence(
         "evidence:atomic-one",
         candidate('b'),
@@ -1136,9 +1169,9 @@ async fn replay_sequence_is_consumed_atomically_with_insert() {
         observed,
         None,
         json!({"case": 1}),
-    );
+    )?;
     append(&store, &issuer, &key, &first, 7)
-        .await
+        .await?
         .expect("first sequence");
 
     let second = evidence(
@@ -1149,8 +1182,8 @@ async fn replay_sequence_is_consumed_atomically_with_insert() {
         observed,
         None,
         json!({"case": 2}),
-    );
-    let replay = signed(&second, &issuer, &key, 7, observed.saturating_add(60_000));
+    )?;
+    let replay = signed(&second, &issuer, &key, 7, observed.saturating_add(60_000))?;
     assert!(matches!(
         store
             .qualification()
@@ -1167,17 +1200,19 @@ async fn replay_sequence_is_consumed_atomically_with_insert() {
             .iter()
             .all(|reference| reference.evidence_id != second.evidence_id)
     );
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn claim_query_rejects_more_than_512_references() {
+async fn claim_query_rejects_more_than_512_references() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
     let candidate = candidate('b');
-    let observed = now_ms();
-    let (issuer, key) = issuer("principal:query-bound", 51);
+    let observed = now_ms()?;
+    let (issuer, key) = issuer("principal:query-bound", 51)?;
 
     for index in 0_u64..=512 {
         let receipt = evidence(
@@ -1188,9 +1223,9 @@ async fn claim_query_rejects_more_than_512_references() {
             observed,
             None,
             json!({"index": index}),
-        );
+        )?;
         append(&store, &issuer, &key, &receipt, index + 1)
-            .await
+            .await?
             .expect("append bounded evidence");
     }
 
@@ -1202,16 +1237,18 @@ async fn claim_query_rejects_more_than_512_references() {
         Err(EvidenceError::InvalidRecord(message))
             if message.contains("exceeds 512 references")
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn predecessor_traversal_fails_closed_beyond_256_edges() {
+async fn predecessor_traversal_fails_closed_beyond_256_edges() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
-    let observed = now_ms();
-    let (issuer, key) = issuer("principal:traversal-bound", 52);
+    let observed = now_ms()?;
+    let (issuer, key) = issuer("principal:traversal-bound", 52)?;
     let base = evidence(
         "evidence:traversal:0",
         candidate('b'),
@@ -1220,9 +1257,9 @@ async fn predecessor_traversal_fails_closed_beyond_256_edges() {
         observed,
         None,
         json!({"index": 0}),
-    );
+    )?;
     append(&store, &issuer, &key, &base, 1)
-        .await
+        .await?
         .expect("append base");
 
     let mut previous = base;
@@ -1234,9 +1271,9 @@ async fn predecessor_traversal_fails_closed_beyond_256_edges() {
             &previous,
             EvidenceReceiptKindV1::Correction,
             observed.saturating_add(index),
-        );
+        )?;
         append(&store, &issuer, &key, &next, index + 1)
-            .await
+            .await?
             .expect("append lineage");
         previous = next;
     }
@@ -1257,16 +1294,19 @@ async fn predecessor_traversal_fails_closed_beyond_256_edges() {
         Err(EvidenceError::Corrupt(message))
             if message.contains("traversal exhausted")
     ));
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn concurrent_store_handles_serialize_conflicting_evidence_identity() {
+async fn concurrent_store_handles_serialize_conflicting_evidence_identity() -> Result<(), TestError>
+{
     let temp = TempDir::new().expect("temp");
-    let sqlite = config(&temp);
+    let sqlite = config(&temp)?;
     let left_store = HeptaEvidenceStore::open(&sqlite).await.expect("open left");
     let right_store = HeptaEvidenceStore::open(&sqlite).await.expect("open right");
-    let observed = now_ms();
-    let (issuer, key) = issuer("principal:concurrent-writer", 53);
+    let observed = now_ms()?;
+    let (issuer, key) = issuer("principal:concurrent-writer", 53)?;
     let left = evidence(
         "evidence:concurrent-id",
         candidate('b'),
@@ -1275,7 +1315,7 @@ async fn concurrent_store_handles_serialize_conflicting_evidence_identity() {
         observed,
         None,
         json!({"writer": "left"}),
-    );
+    )?;
     let right = evidence(
         "evidence:concurrent-id",
         candidate('b'),
@@ -1284,9 +1324,9 @@ async fn concurrent_store_handles_serialize_conflicting_evidence_identity() {
         observed,
         None,
         json!({"writer": "right"}),
-    );
-    let left_message = signed(&left, &issuer, &key, 1, observed.saturating_add(60_000));
-    let right_message = signed(&right, &issuer, &key, 2, observed.saturating_add(60_000));
+    )?;
+    let left_message = signed(&left, &issuer, &key, 1, observed.saturating_add(60_000))?;
+    let right_message = signed(&right, &issuer, &key, 2, observed.saturating_add(60_000))?;
 
     let left_qualification = left_store.qualification();
     let right_qualification = right_store.qualification();
@@ -1304,16 +1344,18 @@ async fn concurrent_store_handles_serialize_conflicting_evidence_identity() {
     ));
     assert_eq!(inserted, 1);
     assert_eq!(conflicts, 1);
+
+    Ok(())
 }
 
 #[tokio::test]
-async fn failed_evidence_insert_rolls_back_authbus_replay_advance() {
+async fn failed_evidence_insert_rolls_back_authbus_replay_advance() -> Result<(), TestError> {
     let temp = TempDir::new().expect("temp");
-    let store = HeptaEvidenceStore::open(&config(&temp))
+    let store = HeptaEvidenceStore::open(&config(&temp)?)
         .await
         .expect("open evidence");
-    let observed = now_ms();
-    let (issuer, key) = issuer("principal:atomic-fault", 54);
+    let observed = now_ms()?;
+    let (issuer, key) = issuer("principal:atomic-fault", 54)?;
 
     sqlx::query(
         "CREATE TRIGGER qualification_fault_injection
@@ -1335,8 +1377,8 @@ async fn failed_evidence_insert_rolls_back_authbus_replay_advance() {
         observed,
         None,
         json!({"fault": true}),
-    );
-    let failed_message = signed(&failed, &issuer, &key, 7, observed.saturating_add(60_000));
+    )?;
+    let failed_message = signed(&failed, &issuer, &key, 7, observed.saturating_add(60_000))?;
     assert!(
         store
             .qualification()
@@ -1358,11 +1400,13 @@ async fn failed_evidence_insert_rolls_back_authbus_replay_advance() {
         observed,
         None,
         json!({"fault": false}),
-    );
-    let retry_message = signed(&retry, &issuer, &key, 7, observed.saturating_add(60_000));
+    )?;
+    let retry_message = signed(&retry, &issuer, &key, 7, observed.saturating_add(60_000))?;
     store
         .qualification()
         .append_receipt(&issuer, &retry_message, &retry)
         .await
         .expect("failed evidence insert must not consume replay sequence");
+
+    Ok(())
 }
