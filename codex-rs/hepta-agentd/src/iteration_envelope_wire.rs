@@ -70,14 +70,15 @@ pub struct CanonicalIterationPolicyV1<'a> {
     pub maximum_bytes: u64,
     pub maximum_candidates: u32,
     pub wall_time_micros: u64,
-    pub compute_budget: CanonicalIterationComputeBudgetV1,
+    pub compute_budget: CanonicalIterationComputeBudgetV1<'a>,
     pub mandatory_checks: &'a [String],
     pub expires_unix_ms: u64,
 }
 
 /// Declared compute ceilings from the registered, validated budget profile.
 #[derive(Clone, Copy, Debug)]
-pub struct CanonicalIterationComputeBudgetV1 {
+pub struct CanonicalIterationComputeBudgetV1<'a> {
+    pub profile: &'a str,
     pub maximum_parallel_sandboxes: u8,
     pub maximum_memory_bytes: u64,
     pub maximum_processes: u32,
@@ -135,6 +136,7 @@ impl CanonicalIterationEnvelopeV1 {
             maximum_candidates: envelope.maximum_candidates,
             wall_time_micros: envelope.wall_time_micros,
             compute_budget: CanonicalIterationComputeBudgetV1 {
+                profile: &envelope.compute_budget.profile,
                 maximum_parallel_sandboxes: envelope.compute_budget.maximum_parallel_sandboxes,
                 maximum_memory_bytes: envelope.compute_budget.maximum_memory_bytes,
                 maximum_processes: envelope.compute_budget.maximum_processes,
