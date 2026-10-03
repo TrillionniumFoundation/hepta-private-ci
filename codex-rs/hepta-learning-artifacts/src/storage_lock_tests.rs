@@ -152,7 +152,7 @@ fn created_target_held_by_another_writer_fails_busy_without_writing() {
         write_registry_snapshot(created, &ArtifactRegistry::new(), binding()),
         Err(ArtifactStorageError::Busy)
     );
-    assert!(must(fs::read(fixture.path("registry"))).is_empty());
+    assert_eq!(must(held.metadata()).len(), 0);
     must(held.unlock());
 }
 

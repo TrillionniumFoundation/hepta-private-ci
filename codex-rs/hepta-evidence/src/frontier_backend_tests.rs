@@ -15,7 +15,7 @@ fn backend_identity_requires_registered_ids_and_positive_generation() {
     };
     valid.validate().expect("valid backend identity");
 
-    let mut invalid = valid.clone();
+    let mut invalid = valid;
     invalid.authority_generation = 0;
     assert!(matches!(
         invalid.validate(),

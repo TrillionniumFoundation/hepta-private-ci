@@ -203,7 +203,7 @@ The [module-specific implementation design](../../../qualification/module-execut
 
 ## 11. Observability and operations
 
-The native worker opens DurableInferenceControl with an absolute private journal, stable request ID and explicit in-flight budget. The journal writer fence is held only for replay or one durable mutation; provider/model execution does not hold it, so concurrent handles share the same journal budget without stale writes. Before new admission near the active-journal headroom threshold, the worker compacts current records into replayable checkpoints and preserves the complete prior event stream in a content-addressed sibling archive. A possibly dispatched record remains held/indeterminate across compaction and restart. Archive retention/transfer policy and authenticated post-crash provider reconciliation remain separate owner/operations work; deleting the journal is never recovery.
+The native worker opens DurableInferenceControl with an absolute private journal, stable request ID and explicit in-flight budget. The current owner holds the journal file lock until it is dropped; a concurrent owner is rejected. Appends synchronize the journal and recovery replays its complete retained history. The explicit bounded history test measures append/update latency, recovery, resident memory on Linux and disk growth while checking exact state recovery, identity conflict and capacity rejection. Short mutation locks, concurrent handles, checkpoints and archival compaction remain implementation blockers; no current test or measurement establishes those behaviors. A possibly dispatched record remains held/indeterminate after restart. Deleting the journal is never recovery.
 
 Current operating and state-format references:
 

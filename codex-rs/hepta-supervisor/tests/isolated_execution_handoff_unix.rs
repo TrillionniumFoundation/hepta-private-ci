@@ -1,3 +1,7 @@
+#![allow(
+    clippy::expect_used,
+    reason = "Integration-only handoff fixtures must fail immediately on invalid setup."
+)]
 #![cfg(target_os = "linux")]
 
 use std::ffi::OsString;

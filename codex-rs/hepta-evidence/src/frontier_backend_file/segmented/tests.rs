@@ -15,6 +15,8 @@ mod tests {
     use crate::frontier_backend::EVIDENCE_FRONTIER_BACKEND_IDENTITY_SCHEMA_VERSION;
     use crate::frontier_backend::EVIDENCE_FRONTIER_BACKEND_STORAGE_CLASS;
 
+    type TestError = Box<dyn std::error::Error + Send + Sync>;
+
     struct Fixture {
         _external: TempDir,
         _local: TempDir,
@@ -24,19 +26,16 @@ mod tests {
     }
 
     impl Fixture {
-        fn new() -> Self {
-            let external = tempfile::tempdir().unwrap();
-            let local = tempfile::tempdir().unwrap();
+        fn new() -> Result<Self, TestError> {
+            let external = tempfile::tempdir()?;
+            let local = tempfile::tempdir()?;
             let backend_root = external.path().join("backend");
             let journals = backend_root.join(EVIDENCE_FRONTIER_BACKEND_JOURNAL_DIRECTORY);
-            std::fs::create_dir(&backend_root).unwrap();
-            std::fs::create_dir(&journals).unwrap();
-            std::fs::set_permissions(&backend_root, std::fs::Permissions::from_mode(0o700))
-                .unwrap();
-            std::fs::set_permissions(&journals, std::fs::Permissions::from_mode(0o700))
-                .unwrap();
-            std::fs::set_permissions(local.path(), std::fs::Permissions::from_mode(0o700))
-                .unwrap();
+            std::fs::create_dir(&backend_root)?;
+            std::fs::create_dir(&journals)?;
+            std::fs::set_permissions(&backend_root, std::fs::Permissions::from_mode(0o700))?;
+            std::fs::set_permissions(&journals, std::fs::Permissions::from_mode(0o700))?;
+            std::fs::set_permissions(local.path(), std::fs::Permissions::from_mode(0o700))?;
             let identity = EvidenceFrontierBackendIdentityV1 {
                 schema_version: EVIDENCE_FRONTIER_BACKEND_IDENTITY_SCHEMA_VERSION,
                 backend_id: "backend:segmented-test".to_string(),
@@ -44,28 +43,28 @@ mod tests {
                 authority_generation: 1,
                 storage_class: EVIDENCE_FRONTIER_BACKEND_STORAGE_CLASS.to_string(),
             };
-            let identity_bytes = serde_json::to_vec(&identity).unwrap();
+            let identity_bytes = serde_json::to_vec(&identity)?;
             let identity_path = backend_root.join(EVIDENCE_FRONTIER_BACKEND_IDENTITY_FILENAME);
-            std::fs::write(&identity_path, &identity_bytes).unwrap();
-            std::fs::set_permissions(&identity_path, std::fs::Permissions::from_mode(0o600))
-                .unwrap();
-            let local_root = local.path().canonicalize().unwrap();
-            Self {
+            std::fs::write(&identity_path, &identity_bytes)?;
+            std::fs::set_permissions(&identity_path, std::fs::Permissions::from_mode(0o600))?;
+            let local_root = local.path().canonicalize()?;
+            Ok(Self {
                 _external: external,
                 _local: local,
-                backend_root: backend_root.canonicalize().unwrap(),
+                backend_root: backend_root.canonicalize()?,
                 local_root,
                 identity_sha256: Sha256Digest::for_bytes(&identity_bytes),
-            }
+            })
         }
 
-        fn open(&self) -> SegmentedFileEvidenceFrontierBackend {
-            SegmentedFileEvidenceFrontierBackend::open_same_filesystem_for_testing(
-                &self.backend_root,
-                self.identity_sha256.clone(),
-                &self.local_root,
+        fn open(&self) -> Result<SegmentedFileEvidenceFrontierBackend, TestError> {
+            Ok(
+                SegmentedFileEvidenceFrontierBackend::open_same_filesystem_for_testing(
+                    &self.backend_root,
+                    self.identity_sha256.clone(),
+                    &self.local_root,
+                )?,
             )
-            .unwrap()
         }
     }
 
@@ -105,9 +104,9 @@ mod tests {
     }
 
     #[test]
-    fn automatic_rollover_preserves_latest_history_and_capacity() {
-        let fixture = Fixture::new();
-        let mut backend = fixture.open();
+    fn automatic_rollover_preserves_latest_history_and_capacity() -> Result<(), TestError> {
+        let fixture = Fixture::new()?;
+        let mut backend = fixture.open()?;
         for generation in 1_u64..=6 {
             backend
                 .compare_and_swap(
@@ -142,12 +141,15 @@ mod tests {
         assert_eq!(capacity.segment_count, 1);
         assert_eq!(capacity.archived_records, 4);
         assert_eq!(capacity.active_records, 2);
+
+        Ok(())
     }
 
     #[test]
-    fn exact_duplicate_retry_returns_original_ack_without_a_second_commit() {
-        let fixture = Fixture::new();
-        let mut backend = fixture.open();
+    fn exact_duplicate_retry_returns_original_ack_without_a_second_commit() -> Result<(), TestError>
+    {
+        let fixture = Fixture::new()?;
+        let mut backend = fixture.open()?;
         let proposed = frontier(1, fixture.identity_sha256.clone());
         let original = backend
             .compare_and_swap("store:segmented-test", None, &proposed)
@@ -172,18 +174,18 @@ mod tests {
         assert_eq!(after.archived_records, before.archived_records);
         assert_eq!(after.active_records, before.active_records);
         assert_eq!(after.active_bytes, before.active_bytes);
+
+        Ok(())
     }
 
     #[test]
-    fn archived_acknowledgement_is_recoverable_after_reopen() {
-        let fixture = Fixture::new();
-        let expected = evidence_recovery_frontier_v2_sha256(&frontier(
-            2,
-            fixture.identity_sha256.clone(),
-        ))
-        .unwrap();
+    fn archived_acknowledgement_is_recoverable_after_reopen() -> Result<(), TestError> {
+        let fixture = Fixture::new()?;
+        let expected =
+            evidence_recovery_frontier_v2_sha256(&frontier(2, fixture.identity_sha256.clone()))
+                .unwrap();
         {
-            let mut backend = fixture.open();
+            let mut backend = fixture.open()?;
             for generation in 1_u64..=5 {
                 backend
                     .compare_and_swap(
@@ -194,19 +196,21 @@ mod tests {
                     .unwrap();
             }
         }
-        let mut reopened = fixture.open();
+        let mut reopened = fixture.open()?;
         let acknowledgement = reopened
             .recover_durable_acknowledgement("store:segmented-test", 2, &expected)
             .unwrap()
             .unwrap();
         assert_eq!(acknowledgement.frontier_generation, 2);
         assert_eq!(acknowledgement.audit_sequence, 2);
+
+        Ok(())
     }
 
     #[test]
-    fn duplicate_active_prefix_after_archive_crash_is_deduplicated() {
-        let fixture = Fixture::new();
-        let mut backend = fixture.open();
+    fn duplicate_active_prefix_after_archive_crash_is_deduplicated() -> Result<(), TestError> {
+        let fixture = Fixture::new()?;
+        let mut backend = fixture.open()?;
         for generation in 1_u64..=6 {
             backend
                 .compare_and_swap(
@@ -222,7 +226,10 @@ mod tests {
             .unwrap()
             .unwrap();
         let metadata = backend
-            .read_segment_metadata(index.latest_segment.as_ref().unwrap(), "store:segmented-test")
+            .read_segment_metadata(
+                index.latest_segment.as_ref().unwrap(),
+                "store:segmented-test",
+            )
             .unwrap();
         let segment =
             std::fs::read(backend.legacy.journals.join(metadata.segment_file_name)).unwrap();
@@ -230,8 +237,7 @@ mod tests {
         let mut duplicate = segment;
         duplicate.extend_from_slice(&active);
         std::fs::write(&paths.active, duplicate).unwrap();
-        std::fs::set_permissions(&paths.active, std::fs::Permissions::from_mode(0o600))
-            .unwrap();
+        std::fs::set_permissions(&paths.active, std::fs::Permissions::from_mode(0o600)).unwrap();
 
         let history = backend
             .get_history(
@@ -241,12 +247,14 @@ mod tests {
             .unwrap();
         assert_eq!(history.len(), 6);
         assert_eq!(history.last().unwrap().frontier_generation, 6);
+
+        Ok(())
     }
 
     #[test]
-    fn rehashed_archive_to_active_repair_transition_fails_reopen() {
-        let fixture = Fixture::new();
-        let mut backend = fixture.open();
+    fn rehashed_archive_to_active_repair_transition_fails_reopen() -> Result<(), TestError> {
+        let fixture = Fixture::new()?;
+        let mut backend = fixture.open()?;
         for generation in 1_u64..=5 {
             backend
                 .compare_and_swap(
@@ -261,13 +269,11 @@ mod tests {
         let mut record: EvidenceFrontierAuditRecordV1 =
             serde_json::from_slice(active.strip_suffix(b"\n").unwrap()).unwrap();
         record.frontier.source_commit = "c".repeat(40);
-        record.frontier_sha256 =
-            evidence_recovery_frontier_v2_sha256(&record.frontier).unwrap();
+        record.frontier_sha256 = evidence_recovery_frontier_v2_sha256(&record.frontier).unwrap();
         record.record_sha256 = audit_record_sha256(&record).unwrap();
         let active = encode_record(&record).unwrap();
         std::fs::write(&paths.active, &active).unwrap();
-        std::fs::set_permissions(&paths.active, std::fs::Permissions::from_mode(0o600))
-            .unwrap();
+        std::fs::set_permissions(&paths.active, std::fs::Permissions::from_mode(0o600)).unwrap();
 
         let mut index = backend
             .read_index(&paths, "store:segmented-test")
@@ -281,15 +287,16 @@ mod tests {
         index.record_sha256 = record.record_sha256.clone();
         index.index_sha256 = latest_index_sha256(&index).unwrap();
         std::fs::write(&paths.index, serde_json::to_vec(&index).unwrap()).unwrap();
-        std::fs::set_permissions(&paths.index, std::fs::Permissions::from_mode(0o600))
-            .unwrap();
+        std::fs::set_permissions(&paths.index, std::fs::Permissions::from_mode(0o600)).unwrap();
 
-        let mut reopened = fixture.open();
+        let mut reopened = fixture.open()?;
         assert!(matches!(
             reopened.get_latest("store:segmented-test"),
             Err(EvidenceFrontierBackendError::Corrupt(message))
                 if message.contains("non-automatic transition")
                     && message.contains("RepairRequired")
         ));
+
+        Ok(())
     }
 }

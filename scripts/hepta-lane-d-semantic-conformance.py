@@ -155,6 +155,47 @@ def verify_map(module: str) -> tuple[str, ...]:
     return tuple(owner_roots)
 
 
+def verify_truth_boundary(row: dict[str, Any], mapping: dict[str, Any]) -> None:
+    """Validate declared boolean capabilities independently of descriptive prose."""
+    module = row["module"]
+    dimensions = row["dimensions"]
+    boundary = mapping["claimBoundary"]
+    for key in ("productionImplementation", "productExecutionProved"):
+        need(boundary.get(key) is False, f"truth boundary {module} {key}")
+    need(
+        dimensions["productCaller"].get("authenticatedProductionEstablished") is False
+        and boundary.get("authenticatedProductionProductExecutionProved", False)
+        is False,
+        f"truth boundary {module} authenticated production",
+    )
+    need(
+        dimensions["productionWriter"].get("activated") is False
+        and boundary.get("productionWriterActivated", False) is False,
+        f"truth boundary {module} production writer activation",
+    )
+    for key in ("independentAcceptance", "activation", "release"):
+        need(
+            boundary.get(key) is False and dimensions[key].get("established") is False,
+            f"truth boundary {module} {key}",
+        )
+    read_only = boundary.get("requestLocalReadOnlyProductExecutionProved", False)
+    need(type(read_only) is bool, f"truth boundary {module} read-only claim type")
+    if read_only:
+        callers = mapping.get("productCallers", [])
+        need(bool(callers), f"truth boundary {module} missing read-only caller")
+        for caller in callers:
+            path = caller["sourcePath"]
+            target = (ROOT / path).resolve()
+            need(target.is_relative_to(ROOT.resolve()), f"{module} caller-path escape")
+            need(target.is_file(), f"{module} missing caller source {path}")
+            symbol = caller["nativeSymbol"].split("::")[-1]
+            need(
+                re.search(rf"\bfn\s+{re.escape(symbol)}\b", target.read_text())
+                is not None,
+                f"{module} missing read-only caller symbol {symbol}",
+            )
+
+
 def verify() -> int:
     for path in REQUIRED_DOCS:
         need((ROOT / path).is_file(), f"missing document {path}")
@@ -313,23 +354,7 @@ def verify() -> int:
         "maturity module closure",
     )
     for row in maturity["modules"]:
-        module = row["module"]
-        product_caller = row["dimensions"]["productCaller"]["state"]
-        if module == "objective.compiler":
-            need(
-                product_caller == "source_composed_authenticated_agentd_not_activated",
-                f"truth boundary {module} productCaller",
-            )
-        else:
-            need(
-                product_caller == "not_established",
-                f"truth boundary {module} productCaller",
-            )
-        for key in ["independentAcceptance", "activation", "release"]:
-            need(
-                row["dimensions"][key]["state"] == "not_established",
-                f"truth boundary {module} {key}",
-            )
+        verify_truth_boundary(row, load(MAPS[row["module"]]))
 
     print(
         json.dumps(

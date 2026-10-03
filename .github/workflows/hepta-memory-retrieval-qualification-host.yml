@@ -1,15 +1,9 @@
 name: Hepta memory retrieval qualification host
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-memory-retrieval/**"
-      - "codex-rs/hepta-memory/**"
-      - "codex-rs/hepta-agentd/**"
-      - "codex-rs/hepta-learning-ledger/**"
-      - "qualification/memory-retrieval/**"
-      - "docs/modules/memory.retrieval/**"
-      - ".github/workflows/hepta-memory-retrieval-qualification-host.yml"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
   workflow_dispatch:
 
 permissions:

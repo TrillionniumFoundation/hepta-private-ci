@@ -1,5 +1,3 @@
-#![expect(clippy::expect_used, reason = "test fixtures use explicit failure messages")]
-
 use std::fmt::Write as _;
 
 use codex_hepta_contracts::Sha256Digest;
@@ -15,8 +13,8 @@ use crate::EvidenceFrontierRepairStateV1;
 use crate::EvidenceRecoveryFrontierSignatureV2;
 use crate::EvidenceRecoveryFrontierV2;
 use crate::EvidenceRecoverySnapshotV1;
-use crate::FRONTIER_REPAIR_AUTHORIZATION_SCHEMA_VERSION;
 use crate::FRONTIER_REPAIR_AUTHORITY_SCHEMA_VERSION;
+use crate::FRONTIER_REPAIR_AUTHORIZATION_SCHEMA_VERSION;
 use crate::FrontierRepairAlgorithmV1;
 use crate::FrontierRepairAuthorityV1;
 use crate::FrontierRepairAuthorizationV1;

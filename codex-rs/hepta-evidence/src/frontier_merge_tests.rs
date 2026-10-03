@@ -4,8 +4,8 @@ use codex_hepta_contracts::Sha256Digest;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 
-use super::FRONTIER_REPAIR_AUTHORIZATION_SCHEMA_VERSION;
 use super::FRONTIER_REPAIR_AUTHORITY_SCHEMA_VERSION;
+use super::FRONTIER_REPAIR_AUTHORIZATION_SCHEMA_VERSION;
 use super::FrontierMergeDecision;
 use super::FrontierRepairAlgorithmV1;
 use super::FrontierRepairAuthorityV1;
@@ -178,7 +178,7 @@ fn repeated_and_permuted_automatic_merges_converge_without_extra_winners() {
     let next = automatic_successor(&current);
     for sequence in [
         vec![current.clone(), current.clone(), next.clone(), next.clone()],
-        vec![next.clone(), current.clone(), next.clone(), current.clone()],
+        vec![next.clone(), current.clone(), next.clone(), current],
     ] {
         let mut accepted = sequence[0].clone();
         let mut wins = 0;
@@ -250,7 +250,7 @@ fn exact_signed_repair_authorization_binds_one_transition() {
             .is_err()
     );
 
-    let mut revoked = authority.clone();
+    let mut revoked = authority;
     revoked.revoked = true;
     assert!(
         verify_frontier_repair_authorization(&authorization, &revoked, &current, &target, now)

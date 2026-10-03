@@ -88,10 +88,7 @@ impl Fixture {
     }
 }
 
-fn frontier(
-    generation: u64,
-    backend_identity_sha256: Sha256Digest,
-) -> EvidenceRecoveryFrontierV2 {
+fn frontier(generation: u64, backend_identity_sha256: Sha256Digest) -> EvidenceRecoveryFrontierV2 {
     let snapshot = EvidenceRecoverySnapshotV1 {
         schema_version: 1,
         database_lineage: EVIDENCE_DATABASE_LINEAGE.to_string(),
@@ -157,7 +154,7 @@ fn assert_repair_required_transition_is_side_effect_free(
         vec![first.clone()]
     );
 
-    let valid = frontier(2, fixture.identity_sha256.clone());
+    let valid = frontier(2, fixture.identity_sha256);
     let acknowledgement = backend
         .compare_and_swap("store:kernel-evidence", Some(1), &valid)
         .expect("rejected transition must not consume an audit sequence");
@@ -222,7 +219,7 @@ fn locked_backend_linearizes_cas_and_returns_durable_acknowledgements() {
         Some(first.clone())
     );
 
-    let second = frontier(2, fixture.identity_sha256.clone());
+    let second = frontier(2, fixture.identity_sha256);
     let second_ack = backend
         .compare_and_swap("store:kernel-evidence", Some(1), &second)
         .expect("publish second frontier");
@@ -266,7 +263,7 @@ fn locked_backend_rejects_stale_or_skipped_generations() {
         backend.compare_and_swap(
             "store:kernel-evidence",
             Some(1),
-            &frontier(3, fixture.identity_sha256.clone()),
+            &frontier(3, fixture.identity_sha256),
         ),
         Err(EvidenceFrontierBackendError::Invalid(_))
     ));
@@ -317,8 +314,7 @@ fn locked_backend_rejects_rehashed_non_automatic_history_on_reopen() {
     assert_eq!(records.len(), 2);
     records[1].frontier.source_commit = "c".repeat(40);
     records[1].frontier_sha256 =
-        evidence_recovery_frontier_v2_sha256(&records[1].frontier)
-            .expect("hash tampered frontier");
+        evidence_recovery_frontier_v2_sha256(&records[1].frontier).expect("hash tampered frontier");
     records[1].record_sha256 =
         audit_record_sha256(&records[1]).expect("rehash tampered audit record");
     let mut rewritten = Vec::new();
@@ -345,7 +341,7 @@ fn locked_backend_rejects_torn_audit_tails() {
         .compare_and_swap(
             "store:kernel-evidence",
             None,
-            &frontier(1, fixture.identity_sha256.clone()),
+            &frontier(1, fixture.identity_sha256),
         )
         .expect("publish first frontier");
     let journal = backend
@@ -372,7 +368,7 @@ fn locked_backend_rejects_empty_audit_records() {
         .compare_and_swap(
             "store:kernel-evidence",
             None,
-            &frontier(1, fixture.identity_sha256.clone()),
+            &frontier(1, fixture.identity_sha256),
         )
         .expect("publish first frontier");
     let journal = backend
@@ -446,7 +442,7 @@ fn concurrent_first_generation_publish_has_exactly_one_winner() {
     let left_backend = fixture.open();
     let right_backend = fixture.open();
     let left_identity = fixture.identity_sha256.clone();
-    let right_identity = fixture.identity_sha256.clone();
+    let right_identity = fixture.identity_sha256;
     let barrier = Arc::new(Barrier::new(3));
     let left_barrier = Arc::clone(&barrier);
     let right_barrier = Arc::clone(&barrier);
@@ -455,20 +451,12 @@ fn concurrent_first_generation_publish_has_exactly_one_winner() {
         let left = scope.spawn(move || {
             let mut backend = left_backend;
             left_barrier.wait();
-            backend.compare_and_swap(
-                "store:kernel-evidence",
-                None,
-                &frontier(1, left_identity),
-            )
+            backend.compare_and_swap("store:kernel-evidence", None, &frontier(1, left_identity))
         });
         let right = scope.spawn(move || {
             let mut backend = right_backend;
             right_barrier.wait();
-            backend.compare_and_swap(
-                "store:kernel-evidence",
-                None,
-                &frontier(1, right_identity),
-            )
+            backend.compare_and_swap("store:kernel-evidence", None, &frontier(1, right_identity))
         });
         barrier.wait();
         (
