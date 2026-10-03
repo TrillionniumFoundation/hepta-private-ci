@@ -1,8 +1,37 @@
 {
   "name": "@hepta/control-ui",
+  "version": "0.2.0",
   "private": true,
+  "description": "Robrix-derived Rust/Makepad chat UI for Hepta",
   "type": "module",
+  "files": [
+    "dist/",
+    "README.md",
+    "rust/robrix-ui/UPSTREAM.json"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
-    "test": "node --test"
-  }
+    "build": "node tools/build.mjs",
+    "check": "npm run lint && npm test && npm run build",
+    "lint": "cargo +1.95.0 clippy --manifest-path rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings",
+    "test": "just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features --lib",
+    "test:e2e": "playwright test --config=playwright.robrix.config.mjs",
+    "dev": "node tools/build.mjs && node tools/serve-robrix.mjs",
+    "start": "node tools/serve-robrix.mjs",
+    "build:legacy-dom": "node tools/build-rust.mjs",
+    "test:robrix": "playwright test --config=playwright.robrix.config.mjs",
+    "legacy:test-oracle": "node --test test/control.test.js test/canonical-profile.test.js test/runtime-client.test.js test/runtime-client-adversarial.test.js test/runtime-client-lifecycle.test.js test/browser-app-lifecycle.test.js test/browser-maintenance.test.js test/terminal-cleanup.test.js test/http-transport.test.js test/session-provider.test.js test/recovery-safety.test.js test/recovery-directory.test.js test/recovery-directory-integrity.test.js test/runtime-recovery-integration.test.js test/external-evidence.test.js",
+    "legacy:test-contract": "node --test test/api-surface.test.js test/package-boundary.test.js",
+    "legacy:lint": "node tools/lint.mjs",
+    "desktop": "cargo +1.95.0 run --manifest-path rust/Cargo.toml -p hepta-robrix-ui --bin hepta-robrix",
+    "legacy:test-e2e": "playwright test --config=playwright.config.mjs",
+    "legacy:receipt": "node tools/write-receipt.mjs"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0"
+  },
+  "exports": {}
 }

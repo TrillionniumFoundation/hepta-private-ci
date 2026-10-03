@@ -1,20 +1,21 @@
 # ui.native technical development guide
 
-For the 2026-10-02 continuation, see the [Rust-only product and presentation
-audit](ADVERSARIAL-AUDIT-20261002.md). It separates the accepted `978c1923...`
-baseline, current-main integration, new-source work and remaining acceptance
-gates. Historical source/evidence observations below retain their original scope;
-the adapter sections describe the current continuation.
+The canonical UI is the actual Robrix-derived Makepad host at
+`apps/hepta-control-ui/rust/robrix-ui`, using the same Rust widgets on native and
+WASM. Conversation navigation, message timeline and composer are primary;
+Console is an internal tab. See the [shared design source](../../../apps/hepta-control-ui/CHAT_DESIGN.md).
 
-The continuation replaces the gateway's HTML/JavaScript `GET /` canary with
-authenticated JSON native-client discovery. This is a breaking presentation
-change; `/api/hepta/runtime` and `/healthz` remain authenticated machine routes.
-The audit records source status separately from pending execution qualification.
+The existing native crate retains its platform, owner and recovery contracts and
+superseded egui host. Its historical console qualifications remain historical.
+Operational Console widgets are not yet composed into the new Makepad host;
+neither compilation nor old screenshots establish new-host acceptance. Existing
+read-only gateway credentials do not authorize chat writes. External authenticated
+owner/signer and production browser bridge composition remain required.
 
 **Module:** `ui.native`
 **Owner / deputy:** `ui-platform` / `accessibility`
-**Canonical branch:** `work/ui-native-qualified-integration-20260928`
-**Convergence branch:** `work/ui-rust-scifi-audit-20261002`
+**Historical native qualification branch:** `work/ui-native-qualified-integration-20260928`
+**Convergence branch:** `work/ui-chat-convergence-20261002`
 **Exact qualification parent:** `978c1923eda66373e9dce4fe0efa890bc60ac404`
 **Historical frozen implementation source:** `0a129b41c2a2d42ca907ea8257bf780108bc664f`
 **Historical implementation tree:** `f90313f067446c629b8da50058ee1bd2101e76e7`
@@ -35,7 +36,7 @@ tests are not passing receipts.
 
 ## 1. Mission, ownership and claim boundary
 
-The module provides native desktop presentation, authenticated runtime reads,
+The module provides the native chat workspace and its secondary Console, authenticated runtime reads,
 bounded local platform operations, durable operation observations and signed
 update coordination. It does not mint final-use grants, create a second runtime
 truth store, select releases or own deployment policy.
@@ -801,3 +802,12 @@ Exact filenames, input caps, stable focus IDs and a 4 MiB worker-rendered
 diagnostic cache keep
 presentation bounded without changing final-use authority. Explicit staged
 package cleanup preserves unrelated files and predecessor recovery evidence.
+
+## 16. V8.2 pre-coding implementation-readiness overlay
+
+Use the [parallel development plan](../../readiness/PARALLEL_DEVELOPMENT.md) and
+[module execution dossier](../../../qualification/module-execution-dossiers/MODULE_DOSSIERS.json)
+for lane ownership, execution-receipt fields and external evidence requirements.
+These references preserve the native owner/platform boundaries and incomplete
+qualification status. They do not qualify the new Makepad host or grant release
+authority; historical native receipts remain limited to their recorded subjects.

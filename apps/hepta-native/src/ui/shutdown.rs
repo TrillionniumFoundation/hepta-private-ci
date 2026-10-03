@@ -1,44 +1,4 @@
-use std::time::Instant;
-
 use super::*;
-
-const SHUTDOWN_GRACE: Duration = Duration::from_secs(150);
-
-#[derive(Default)]
-pub(super) struct Shutdown {
-    requested_at: Option<Instant>,
-    close_started: bool,
-    pub(super) runtime_closed: bool,
-    pub(super) update_requested: bool,
-    pub(super) failure: Option<String>,
-}
-
-impl Shutdown {
-    pub(super) fn requested(&self) -> bool {
-        self.requested_at.is_some()
-    }
-
-    pub(super) fn request(&mut self, now: Instant) {
-        // Repeated window-close events do not extend the deadline.
-        self.requested_at.get_or_insert(now);
-    }
-
-    pub(super) fn check_deadline(&mut self, now: Instant) {
-        if !self.runtime_closed
-            && self.failure.is_none()
-            && self
-                .requested_at
-                .is_some_and(|start| now.saturating_duration_since(start) >= SHUTDOWN_GRACE)
-        {
-            self.failure = Some("Shutdown deadline exceeded. Every worker is still owned; no update will activate. Do not replay unknown operations.".to_owned());
-            self.update_requested = false;
-        }
-    }
-
-    pub(super) fn activation_allowed(&self) -> bool {
-        self.runtime_closed && self.update_requested && self.failure.is_none()
-    }
-}
 
 impl HeptaNativeApp {
     /// The GUI remains alive until all three lanes and the runtime owner close.
@@ -134,7 +94,3 @@ impl HeptaNativeApp {
         true
     }
 }
-
-#[cfg(test)]
-#[path = "shutdown_tests.rs"]
-mod tests;

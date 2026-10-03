@@ -1,5 +1,22 @@
 # hepta-native developer guide
 
+## Product interaction and shared source
+
+The default app is a chat workspace, not a runtime dashboard. Conversation
+navigation, timeline and composer dominate; Console is one secondary tab.
+Implement both hosts against [CHAT_DESIGN.md](../hepta-control-ui/CHAT_DESIGN.md)
+and the existing `hepta-control-core` chat presentation model. Preserve drafts,
+selection, keyboard/IME focus and scroll through Console round trips. The
+The canonical native/Web product now shares the Robrix-derived Makepad widgets in apps/hepta-control-ui/rust/robrix-ui. The egui/AccessKit host and semantic-DOM host are superseded compatibility implementations; their input/accessibility receipts do not qualify Makepad.
+
+Native runtime tasks still use the existing single supervisor and journal owner.
+Draft state is transient UI data, never a room creation, send acknowledgement or
+terminal runtime fact. App Server admission and observed response/event provenance
+remain prerequisites for actual chat operations. Missing host composition must
+be visible, not simulated. Older console-only screenshots/test receipts below
+remain historical and do not qualify this chat-first interface.
+
+
 The [2026-10-02 Rust-only product and presentation audit](../../docs/modules/ui.native/ADVERSARIAL-AUDIT-20261002.md)
 maps current entrypoints and tests to the new acceptance matrix. It links final
 evidence for the historical `978c1923...` candidate without treating that result

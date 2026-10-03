@@ -3,7 +3,6 @@ mod history_page;
 mod native_picker;
 mod operations_view;
 mod path_input;
-mod readiness;
 mod runtime_status;
 mod shell_view;
 mod shutdown;
@@ -18,14 +17,14 @@ pub use self::startup_recovery::{
 
 use self::binding_prepare::PreparedBinding;
 use self::history_page::HISTORY_PAGE_SIZE;
-use self::readiness::ReadinessFrames;
 use self::runtime_status::render_runtime_status;
-use self::shutdown::Shutdown;
 use self::task_supervisor::FileInputTarget;
 use self::task_supervisor::FileInputTicket;
-use self::task_supervisor::SupervisedTask;
-use self::task_supervisor::TaskAdmission;
 use crate::error::ShellError;
+use crate::host_lifecycle::readiness::ReadinessFrames;
+use crate::host_lifecycle::shutdown::Shutdown;
+use crate::host_lifecycle::task::SupervisedTask;
+use crate::host_lifecycle::task::TaskAdmission;
 use crate::model::EndpointManifest;
 use crate::model::PlatformAction;
 use crate::model::PlatformPayload;

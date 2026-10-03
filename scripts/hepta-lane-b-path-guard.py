@@ -5,10 +5,14 @@ from __future__ import annotations
 
 import argparse
 import json
+import subprocess
 import tempfile
 import tomllib
 from pathlib import Path
 from typing import Any
+
+from hepta_lane_b_native import native_evidence
+from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
 TRUTH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
@@ -169,6 +173,7 @@ def verify(root: Path = ROOT) -> int:
 
     maps: dict[str, dict[str, Any]] = {}
     roots: dict[str, list[str]] = {}
+    native_maps = {}
     for entry in entries:
         need(isinstance(entry, dict), "module index entry")
         module = entry.get("module")
@@ -177,7 +182,15 @@ def verify(root: Path = ROOT) -> int:
         path = canonical_path(root, map_path, f"{module}: map", require_file=True)
         row = load(path)
         need(row.get("module") == module, f"{module}: map identity")
-        resolved_roots = row.get("resolvedRoots")
+        try:
+            evidence = native_evidence(root, row)
+        except (ValueError, OSError, subprocess.CalledProcessError) as error:
+            raise Invalid(f"{module}: native/schema validation: {error}") from error
+        if evidence:
+            native_maps[module] = evidence
+        resolved_roots = (
+            evidence["ownedRoots"] if evidence else row.get("resolvedRoots")
+        )
         need(
             isinstance(resolved_roots, list)
             and resolved_roots
@@ -189,10 +202,33 @@ def verify(root: Path = ROOT) -> int:
         maps[module] = row
         roots[module] = resolved_roots
 
+    registered = load(
+        canonical_path(
+            root, "docs/modules/MODULES.json", "module registry", require_file=True
+        )
+    )["modules"]
+    owners = {entry["id"]: entry for entry in registered}
+    need(len(owners) == len(registered), "duplicate module owner")
+    for module, row in maps.items():
+        for item in row["operations"]:
+            for delegate in item.get("delegatedCallees", []):
+                owner = delegate.get("ownerModule")
+                need(owner in owners, f"{module}: unregistered delegated owner")
+                if owner not in roots:
+                    try:
+                        roots[owner] = resolve_source_roots(root, owners[owner])
+                    except ValueError as error:
+                        raise Invalid(f"{module}: delegated owner: {error}") from error
+
     operations = tests = delegates = 0
     for module, row in maps.items():
         items = row.get("operations")
         need(isinstance(items, list) and items, f"{module}: operations")
+        if module in native_maps:
+            # The strict v6 adapter checked exact entrypoints and module-level
+            # test surfaces. They are not v3 per-operation command bindings.
+            operations += len(items)
+            continue
         for item in items:
             operations += 1
             need(isinstance(item, dict), f"{module}: operation")
@@ -228,6 +264,16 @@ def verify(root: Path = ROOT) -> int:
                 "operations": operations,
                 "delegates": delegates,
                 "testBindings": tests,
+                "nativeSchemaAdapters": [
+                    {
+                        "module": module,
+                        "schemaVersion": 6,
+                        "ownedRoots": evidence["ownedRoots"],
+                        "moduleTestSurfaces": maps[module]["testSurfaces"],
+                        "qualificationEstablished": False,
+                    }
+                    for module, evidence in native_maps.items()
+                ],
             },
             sort_keys=True,
         )

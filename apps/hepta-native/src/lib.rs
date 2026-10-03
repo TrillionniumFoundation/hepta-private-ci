@@ -18,6 +18,8 @@ pub use runtime::NativeShellRuntime;
 
 pub mod file_input;
 
+mod host_lifecycle;
+
 mod native_http;
 
 #[cfg(target_os = "linux")]

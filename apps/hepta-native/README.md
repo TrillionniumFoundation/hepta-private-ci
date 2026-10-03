@@ -1,14 +1,15 @@
-# Hepta Native
+# Hepta native platform and compatibility host
 
-Long-running refresh, reconciliation, final-use execution and update staging run
-through one serialized worker slot so the native event loop never performs those
-I/O operations directly.
+The canonical product UI is now the actual Robrix-derived Makepad implementation
+in `apps/hepta-control-ui/rust/robrix-ui`. Native and Web compile its same Rust
+widgets. Conversation navigation, timeline and composer lead the app; Console is
+an internal tab. Follow the [shared design source](../hepta-control-ui/CHAT_DESIGN.md).
 
-`apps/hepta-native` is the canonical Rust desktop shell for `ui.native` on the
-`work/ui-native-current-source-20260925` convergence line. The branch contains
-the actual eframe/egui/AccessKit application, not only the history of PR #830.
-The retired JavaScript `native.js` and `shell-runtime.js` surfaces are not
-product entrypoints.
+This crate preserves the previous egui/AccessKit host and validated native
+platform/owner/recovery contracts for compatibility and composition work. It is
+not the default product UI and its historical qualification does not qualify the
+new Makepad host. Console operational widgets have not yet been ported into that
+host. The implementation inventory below describes this preserved native layer.
 
 The shell is deliberately not a second execution spine. Runtime facts come
 from the loopback-only `codex-hepta-native-gateway`; final-use authority comes

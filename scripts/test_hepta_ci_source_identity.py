@@ -139,6 +139,8 @@ class GitSourceIdentityTests(unittest.TestCase):
             return LANE_B.verify_candidate(self.manifest, self.truth)
 
     def maps_at(self, source_base: dict) -> list[dict]:
+        # Generic v3 provenance; native v6 ancestry uses its real-Git adapter fixture.
+        modules = [module for module in LANE_B.MODULES if module != "ui.native"]
         truth = copy.deepcopy(self.truth)
         truth["modules"] = [
             {
@@ -146,7 +148,7 @@ class GitSourceIdentityTests(unittest.TestCase):
                 "mapPath": f"docs/modules/{module}/IMPLEMENTATION_MAP.json",
                 "operationIds": LANE_B.OPS[module],
             }
-            for module in LANE_B.MODULES
+            for module in modules
         ]
         maps = [
             {
@@ -156,10 +158,11 @@ class GitSourceIdentityTests(unittest.TestCase):
                     {"operation": operation} for operation in LANE_B.OPS[module]
                 ],
             }
-            for module in LANE_B.MODULES
+            for module in modules
         ]
         with (
             mock.patch.object(LANE_B, "ROOT", self.root),
+            mock.patch.object(LANE_B, "MODULES", modules),
             mock.patch.object(LANE_B, "load", side_effect=maps),
         ):
             return LANE_B.module_maps(truth)
@@ -369,6 +372,25 @@ class ImplementationMapSourceIdentityTests(unittest.TestCase):
 
 
 class SourceConformanceTests(unittest.TestCase):
+    def v3_fixture(self):
+        truth = LANE_B.load(LANE_B.TRUTH)
+        truth["modules"] = [
+            row for row in truth["modules"] if row["module"] != "ui.native"
+        ]
+        maps = [LANE_B.load(LANE_B.ROOT / row["mapPath"]) for row in truth["modules"]]
+        truth["moduleOrder"] = [row["module"] for row in maps]
+        truth["operationCount"] = sum(len(row["operations"]) for row in maps)
+        # These tests exercise v3 gap/delegation semantics. Native v6 uses the
+        # real-Git adapter fixtures in test_hepta_lane_b_native.py.
+        for name, value in (
+            ("MODULES", truth["moduleOrder"]),
+            ("OPERATION_COUNT", truth["operationCount"]),
+        ):
+            patcher = mock.patch.object(LANE_B, name, value)
+            patcher.start()
+            self.addCleanup(patcher.stop)
+        return truth, maps
+
     def test_cli_self_test_runs_the_real_entrypoint(self) -> None:
         result = subprocess.run(
             [sys.executable, str(SCRIPTS / "hepta-lane-b-truth.py"), "self-test"],
@@ -390,13 +412,12 @@ class SourceConformanceTests(unittest.TestCase):
     def test_honest_module_gaps_do_not_claim_completion_or_hide_bad_anchors(
         self,
     ) -> None:
-        truth = LANE_B.load(LANE_B.TRUTH)
+        truth, maps = self.v3_fixture()
         # This is a semantic claim/anchor test. Historical provenance is tested
         # against real temporary Git histories by GitSourceIdentityTests above.
         # Load the retained map fixtures directly so source-only archives can
         # exercise these assertions without pretending to possess Git ancestry.
         # Production module_maps and its provenance checks remain unchanged.
-        maps = [LANE_B.load(LANE_B.ROOT / row["mapPath"]) for row in truth["modules"]]
         truth["claimBoundary"]["repositoryControlledSourceBoundaryGapsClosed"] = False
         maps[0]["repositoryControlledGaps"] = [
             "Wire the registered owner to a real observer."
@@ -421,8 +442,7 @@ class SourceConformanceTests(unittest.TestCase):
             LANE_B.verify_truth(truth, maps)
 
     def test_registered_cross_lane_delegate_preserves_owner_boundary(self):
-        truth = LANE_B.load(LANE_B.TRUTH)
-        maps = [LANE_B.load(LANE_B.ROOT / row["mapPath"]) for row in truth["modules"]]
+        truth, maps = self.v3_fixture()
         agentd = next(row for row in maps if row["module"] == "runtime.agentd")
         operation = next(
             row

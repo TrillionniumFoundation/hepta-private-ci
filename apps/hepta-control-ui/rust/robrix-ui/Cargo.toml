@@ -1,0 +1,23 @@
+[package]
+name = "hepta-robrix-ui"
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+license = "MIT"
+
+[lib]
+crate-type = ["cdylib", "rlib"]
+
+[[bin]]
+name = "hepta-robrix"
+path = "src/main.rs"
+required-features = ["ui"]
+
+[features]
+default = ["ui"]
+ui = ["dep:makepad-widgets"]
+ui-fixtures = ["hepta-control-core/ui-fixtures"]
+
+[dependencies]
+makepad-widgets = { git = "https://github.com/kevinaboos/makepad", rev = "337566c8b25d47f7e4fff6a202157b65bf183330", features = ["serde"], optional = true }
+hepta-control-core = { path = "../core" }
