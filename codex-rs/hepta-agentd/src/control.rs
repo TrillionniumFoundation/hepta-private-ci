@@ -34,6 +34,7 @@ pub(crate) struct AgentdControlServer {
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
+    canary_reads: Arc<Semaphore>,
 }
 
 impl AgentdControlServer {
@@ -53,6 +54,7 @@ impl AgentdControlServer {
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
+            canary_reads: Arc::new(Semaphore::new(1)),
         })
     }
 
@@ -72,9 +74,10 @@ impl AgentdControlServer {
                 continue;
             };
             let state = Arc::clone(&self.state);
+            let canary_reads = Arc::clone(&self.canary_reads);
             tokio::spawn(async move {
                 let _permit = permit;
-                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
+                let _ = timeout(IO_TIMEOUT, serve_connection(stream, state, canary_reads)).await;
             });
         }
     }
@@ -93,25 +96,60 @@ impl Drop for AgentdControlServer {
     }
 }
 
-async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
+async fn serve_connection(
+    mut stream: UnixStream,
+    state: Arc<AgentdState>,
+    canary_reads: Arc<Semaphore>,
+) -> Result<(), AgentdError> {
     let root_peer = stream.ensure_peer_user(0);
-    let (reader, mut writer) = tokio::io::split(stream);
-    let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
     let mut frame = Vec::new();
-    let count = reader.read_until(b'\n', &mut frame).await?;
+    let count = {
+        let mut reader = BufReader::new(&mut stream).take(MAX_CONTROL_FRAME_BYTES + 1);
+        reader.read_until(b'\n', &mut frame).await?
+    };
     if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !frame.ends_with(b"\n") {
         return Err(AgentdError::Protocol(
             "agentd control request must be one bounded newline JSON frame".to_string(),
         ));
     }
     let request: AgentdRequest = serde_json::from_slice(&frame)?;
-    let response = if matches!(
+    let requested_response_limit = crate::canary_operation_receipt::response_limit(&request.method);
+    let root_only = matches!(
         &request.method,
         crate::AgentdMethod::NativeModelReceipt { .. }
+            | crate::AgentdMethod::PreparedGenerationV2 { .. }
             | crate::AgentdMethod::SelfIterationRoundStatus { .. }
+            | crate::AgentdMethod::CanaryOperationReceipt { .. }
             | crate::AgentdMethod::PlasticityCompletedProposal { .. }
-    ) && root_peer.is_err()
-    {
+    );
+    let authorized_root = root_peer.is_ok() && stream.ensure_peer_user(0).is_ok();
+    let response_limit = if authorized_root {
+        requested_response_limit
+    } else {
+        MAX_CONTROL_FRAME_BYTES
+    };
+    // Retain one whole-checkpoint inspection slot through encoding and write.
+    // Ordinary methods retain their original capacity; denied peers take no slot.
+    let canary_permit = if authorized_root
+        && matches!(
+            &request.method,
+            crate::AgentdMethod::CanaryOperationReceipt { .. }
+                | crate::AgentdMethod::PreparedGenerationV2 { .. }
+                | crate::AgentdMethod::PlasticityCompletedProposal { .. }
+        ) {
+        Some(canary_reads.try_acquire_owned())
+    } else {
+        None
+    };
+    let response = if canary_permit.as_ref().is_some_and(Result::is_err) {
+        error_response(
+            &state,
+            request.request_id,
+            request.spawn_generation,
+            "whole_receipt_read_busy",
+            "original whole receipt inspection is busy",
+        )
+    } else if root_only && !authorized_root {
         error_response(
             &state,
             request.request_id,
@@ -154,9 +192,25 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             ),
         }
     };
-    let bytes = encode_response(response)?;
-    writer.write_all(&bytes).await?;
-    writer.shutdown().await?;
+    let receipt_generation =
+        (root_only && authorized_root && !matches!(&response.payload, AgentdPayload::Error { .. }))
+            .then_some(response.current_generation);
+    let bytes = if response_limit == MAX_CONTROL_FRAME_BYTES {
+        encode_response(response)?
+    } else {
+        encode_response_with_limit(response, response_limit)?
+    };
+    if let Some(generation) = receipt_generation {
+        stream.ensure_peer_user(0)?;
+        if state.current_generation()? != generation {
+            return Err(AgentdError::GenerationFenced(
+                "receipt exporter generation changed".into(),
+            ));
+        }
+    }
+    stream.write_all(&bytes).await?;
+    stream.shutdown().await?;
+    drop(canary_permit);
     Ok(())
 }
 
@@ -254,10 +308,18 @@ async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
 
 /// Retain the unchanged frame budget even when a legacy endpoint materializes
 /// a large result. A bounded error preserves request identity instead of EOF.
-fn encode_response(mut response: AgentdResponse) -> Result<Vec<u8>, AgentdError> {
+fn encode_response(response: AgentdResponse) -> Result<Vec<u8>, AgentdError> {
+    encode_response_with_limit(response, MAX_CONTROL_FRAME_BYTES)
+}
+
+fn encode_response_with_limit(
+    mut response: AgentdResponse,
+    limit: u64,
+) -> Result<Vec<u8>, AgentdError> {
     let mut buffer = ControlFrameBuffer {
         bytes: Vec::with_capacity(MAX_CONTROL_FRAME_BYTES as usize),
         overflowed: false,
+        limit: limit as usize,
     };
     if let Err(error) = serde_json::to_writer(&mut buffer, &response) {
         if !buffer.overflowed {
@@ -278,11 +340,15 @@ fn encode_response(mut response: AgentdResponse) -> Result<Vec<u8>, AgentdError>
 struct ControlFrameBuffer {
     bytes: Vec<u8>,
     overflowed: bool,
+    limit: usize,
 }
 
 impl std::io::Write for ControlFrameBuffer {
     fn write(&mut self, bytes: &[u8]) -> std::io::Result<usize> {
-        let remaining = (MAX_CONTROL_FRAME_BYTES as usize - 1).saturating_sub(self.bytes.len());
+        let remaining = self
+            .limit
+            .saturating_sub(1)
+            .saturating_sub(self.bytes.len());
         if bytes.len() > remaining {
             self.overflowed = true;
             return Err(std::io::Error::other("control frame byte budget exceeded"));

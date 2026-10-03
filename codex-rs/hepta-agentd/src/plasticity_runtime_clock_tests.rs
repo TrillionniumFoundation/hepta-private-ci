@@ -24,6 +24,10 @@ struct ClockFixture {
     topology: TopologyPlasticityProductRequestV1,
 }
 
+#[cfg(target_os = "linux")]
+#[path = "plasticity_runtime_whole_observation_tests.rs"]
+mod whole_observation_tests;
+
 fn clock_fixture(clock: fn() -> Result<u64, AgentdError>) -> ClockFixture {
     let daemon = AgentdFixture::new();
     let runtime_root = tempfile::tempdir().expect("runtime root");

@@ -48,11 +48,18 @@ use crate::SessionIngress;
 #[path = "client_automation_listing.rs"]
 mod automation_listing;
 
+#[path = "client_canary_operation_receipt.rs"]
+#[cfg(feature = "server")]
+mod canary_operation_receipt;
+
 #[path = "client_native_model_receipt.rs"]
 mod native_model_receipt;
 #[cfg(feature = "server")]
 #[path = "client_plasticity_observation.rs"]
 mod plasticity_observation;
+#[cfg(feature = "server")]
+#[path = "client_prepared_generation.rs"]
+mod prepared_generation;
 #[cfg(feature = "server")]
 #[path = "client_self_iteration_round.rs"]
 mod self_iteration_round;
@@ -818,14 +825,17 @@ impl AgentdClient {
 
     async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
         let expected_request_id = request.request_id;
-        let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
+        #[cfg(feature = "server")]
+        let response_limit = crate::canary_operation_receipt::response_limit(&request.method);
+        #[cfg(not(feature = "server"))]
+        let response_limit = MAX_CONTROL_FRAME_BYTES;
+        let mut stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))??;
         #[cfg(unix)]
         if let Some((uid, pid)) = self.expected_peer {
             stream.ensure_peer_process(uid, pid)?;
         }
-        let (reader, mut writer) = tokio::io::split(stream);
         let mut bytes = serde_json::to_vec(&request)?;
         bytes.push(b'\n');
         if bytes.len() as u64 > MAX_CONTROL_FRAME_BYTES {
@@ -833,16 +843,21 @@ impl AgentdClient {
                 "agentd request exceeded frame bound".to_string(),
             ));
         }
-        timeout(self.timeout, writer.write_all(&bytes))
+        timeout(self.timeout, stream.write_all(&bytes))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control write timed out".to_string()))??;
-        let mut reader = BufReader::new(reader).take(MAX_CONTROL_FRAME_BYTES + 1);
         let mut response_bytes = Vec::new();
-        let count = timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
-            .await
-            .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??;
-        if count == 0 || count as u64 > MAX_CONTROL_FRAME_BYTES || !response_bytes.ends_with(b"\n")
-        {
+        let count = {
+            let mut reader = BufReader::new(&mut stream).take(response_limit + 1);
+            timeout(self.timeout, reader.read_until(b'\n', &mut response_bytes))
+                .await
+                .map_err(|_| AgentdError::Protocol("agentd control read timed out".to_string()))??
+        };
+        #[cfg(unix)]
+        if let Some((uid, pid)) = self.expected_peer {
+            stream.ensure_peer_process(uid, pid)?;
+        }
+        if count == 0 || count as u64 > response_limit || !response_bytes.ends_with(b"\n") {
             return Err(AgentdError::Protocol(
                 "agentd returned an invalid bounded response frame".to_string(),
             ));

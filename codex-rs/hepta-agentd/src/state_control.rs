@@ -92,6 +92,11 @@ impl AgentdState {
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
         let payload = match method {
+            crate::AgentdMethod::PreparedGenerationV2 {
+                generation,
+                configuration_digest,
+                body_digest,
+            } => self.prepared_generation(generation, configuration_digest, body_digest)?,
             crate::AgentdMethod::PlasticityCompletedProposal { proposal_id } => {
                 self.plasticity_completed_proposal(proposal_id).await?
             }
@@ -631,6 +636,9 @@ impl AgentdState {
                     .run(&run_id)
                     .map(wire_run_receipt);
                 AgentdPayload::RunStatus { run }
+            }
+            crate::AgentdMethod::CanaryOperationReceipt { query } => {
+                self.canary_operation_receipt(query)?
             }
             crate::AgentdMethod::NativeModelReceipt { request_id } => {
                 self.native_model_receipt(request_id).await?

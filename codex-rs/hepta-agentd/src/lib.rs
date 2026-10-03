@@ -27,6 +27,8 @@ mod automation_recovery;
 #[cfg(feature = "server")]
 mod browser_servo;
 #[cfg(feature = "server")]
+mod canary_operation_receipt;
+#[cfg(feature = "server")]
 mod canonical_abstain_provider;
 mod client;
 #[cfg(feature = "server")]
@@ -210,6 +212,7 @@ pub use codex_hepta_agent_protocol::AutomationEffectReconcileSnapshot;
 pub use codex_hepta_agent_protocol::AutomationEffectReconcileState;
 pub use codex_hepta_agent_protocol::AutomationEffectSnapshot;
 pub use codex_hepta_agent_protocol::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY;
+pub use codex_hepta_agent_protocol::CanaryOperationQueryV2;
 pub use codex_hepta_agent_protocol::CognitiveContextItem;
 pub use codex_hepta_agent_protocol::CognitiveContextPlan;
 pub use codex_hepta_agent_protocol::CognitiveContextRevalidation;
@@ -285,6 +288,8 @@ pub use config::AgentdIdentity;
 #[cfg(feature = "server")]
 pub use config::AgentdNativeModelReceiptReaderV1;
 #[cfg(feature = "server")]
+pub use config::AgentdPreparedGenerationReaderV2;
+#[cfg(feature = "server")]
 pub use config::AgentdSelfIterationModelOwnerContextV2;
 #[cfg(feature = "server")]
 pub use config::CognitiveRetrievalMode;
@@ -298,6 +303,8 @@ pub use config::HEPTA_AGENT_ID_ENV;
 pub use config::HEPTA_AGENT_RUN_ROOT_ENV;
 #[cfg(feature = "server")]
 pub use config::HEPTA_COGNITIVE_RETRIEVAL_MODE_ENV;
+#[cfg(feature = "server")]
+pub(crate) use config::prepared_generation_response_limit;
 #[cfg(feature = "server")]
 pub use conservative_cpu_state::ConservativeCpuStateModeV1;
 #[cfg(feature = "server")]
@@ -601,6 +608,8 @@ pub use self_iteration::AgentdSelfIterationCandidateEffectAdmissionV1;
 pub use self_iteration::AgentdSelfIterationCandidateEffectsV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationCandidateV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationCurrentRoundV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationHandleV1;
 #[cfg(feature = "server")]

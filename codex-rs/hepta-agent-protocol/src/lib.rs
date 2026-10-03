@@ -646,9 +646,31 @@ impl AgentdRequest {
     }
 }
 
+/// Exact original live Neuron operation requested by the authenticated Root peer.
+/// These identities select observations and grant no execution authority.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CanaryOperationQueryV2 {
+    pub model_generation: u64,
+    pub configuration_digest: String,
+    pub body_digest: String,
+    pub scope_digest: String,
+    pub objective_digest: String,
+    pub tick_id: String,
+    pub input_semantic_digest: String,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
+    PreparedGenerationV2 {
+        generation: u64,
+        configuration_digest: String,
+        body_digest: String,
+    },
+    CanaryOperationReceipt {
+        query: CanaryOperationQueryV2,
+    },
     NativeModelReceipt {
         request_id: String,
     },
@@ -850,6 +872,12 @@ pub struct AgentdResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    PreparedGenerationV2 {
+        generation: u64,
+        configuration_digest: String,
+        body_digest: String,
+        prepared_hex: Option<String>,
+    },
     PlasticityCompletedProposal {
         proposal_id: String,
         observation_hex: Option<String>,
@@ -858,6 +886,11 @@ pub enum AgentdPayload {
         goal_id: String,
         canonical_policy_digest: String,
         round_status_json: String,
+    },
+    CanaryOperationReceipt {
+        query: CanaryOperationQueryV2,
+        source_digest: String,
+        receipt_hex: String,
     },
     SecretsOriginal(SecretsOriginalObservation),
     Capabilities(AgentdCapabilitySet),
