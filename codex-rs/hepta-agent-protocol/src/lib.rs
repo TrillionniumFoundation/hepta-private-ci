@@ -680,6 +680,13 @@ pub struct ParameterAdmissionQueryV1 {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
+    PrepareParameterDatasetWindowV3 {
+        round_hex: String,
+        producer_source: String,
+        producer_digest: String,
+        plan_source: String,
+        plan_digest: String,
+    },
     PrepareParameterDatasetV1 {
         round_hex: String,
         producer_source: String,
@@ -943,6 +950,14 @@ pub struct ParameterPreparationBaselineV2 {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    PreparedParameterDatasetWindowV3 {
+        round_hex: String,
+        producer_source: String,
+        producer_digest: String,
+        plan_source: String,
+        plan_digest: String,
+        facts_json: String,
+    },
     PreparedParameterDatasetV1 {
         round_hex: String,
         producer_source: String,

@@ -64,7 +64,7 @@ enum PlasticityRuntimeCommandV1 {
         fence: crate::self_iteration::runtime::plasticity_context::RoundContextFence,
         request: parameter_dataset::ProtectedParameterDatasetV1,
         response: oneshot::Sender<
-            Result<parameter_dataset::PreparedParameterDatasetV1, PlasticityRuntimeCallErrorV1>,
+            Result<parameter_dataset::PreparedDataset, PlasticityRuntimeCallErrorV1>,
         >,
     },
     PrepareParameterInputFromContext {

@@ -10,10 +10,14 @@ use codex_hepta_agent_components::plasticity::validate_parameter_admission_bindi
 use codex_hepta_agent_components::types::Generation;
 
 pub(crate) fn decode_hex(value: &str) -> Result<Vec<u8>, AgentdError> {
-    if value.is_empty()
-        || value.len() > crate::MAX_CONTROL_FRAME_BYTES as usize
-        || !value.len().is_multiple_of(2)
-    {
+    decode_hex_bounded(value, crate::MAX_CONTROL_FRAME_BYTES as usize)
+}
+
+pub(crate) fn decode_hex_bounded(
+    value: &str,
+    maximum_encoded_bytes: usize,
+) -> Result<Vec<u8>, AgentdError> {
+    if value.is_empty() || value.len() > maximum_encoded_bytes || !value.len().is_multiple_of(2) {
         return Err(AgentdError::Protocol(
             "parameter admission whole hex bound".into(),
         ));

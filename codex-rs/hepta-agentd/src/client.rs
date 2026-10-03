@@ -943,3 +943,7 @@ mod parameter_protected_preparation;
 #[cfg(feature = "server")]
 #[path = "client_parameter_dataset.rs"]
 mod parameter_dataset;
+
+#[cfg(feature = "server")]
+#[path = "client_parameter_dataset_window.rs"]
+mod parameter_dataset_window;

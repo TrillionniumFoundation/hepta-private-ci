@@ -18,6 +18,7 @@ pub(crate) const MAX_COMPLETED_PROPOSAL_RESPONSE_BYTES_V1: u64 =
 
 pub(crate) fn response_limit(method: &AgentdMethod) -> u64 {
     match method {
+        AgentdMethod::PrepareParameterDatasetWindowV3 { .. } => crate::plasticity_runtime::parameter_dataset::parameter_dataset_window::MAX_DATASET_WINDOW_RESPONSE_BYTES_V3,
         AgentdMethod::PreparedGenerationV2 { .. } => {
             crate::prepared_generation_response_limit(method)
         }

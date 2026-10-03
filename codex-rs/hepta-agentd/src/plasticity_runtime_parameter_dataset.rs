@@ -4,9 +4,6 @@ use crate::self_iteration::runtime::plasticity_context::RoundContextFence;
 use codex_hepta_agent_components::learning_ledger::DatasetFreezePlanV2;
 use codex_hepta_agent_components::learning_ledger::PrincipalWire;
 use codex_hepta_agent_components::learning_ledger::ReviewDatasetWireV1;
-use codex_hepta_agent_components::learning_ledger::dataset_freeze_signing_payload_v2;
-use codex_hepta_agent_components::learning_ledger::freeze_dataset_from_ledger;
-use codex_hepta_agent_components::learning_ledger::verify_dataset_snapshot_receipt_v3;
 use codex_hepta_agent_components::types::Digest32;
 use codex_hepta_agent_components::types::StableId;
 use std::path::PathBuf;
@@ -20,7 +17,16 @@ pub struct PreparedParameterDatasetV1 {
     /// The held owner's installed snapshot, independently of latest CURRENT.
     pub installed_artifact_head: String,
 }
+pub(crate) enum DatasetPurpose {
+    OriginalV2,
+    WindowV3,
+}
+pub(crate) enum PreparedDataset {
+    OriginalV2(PreparedParameterDatasetV1),
+    WindowV3(crate::PreparedParameterDatasetWindowV3),
+}
 pub(crate) struct ProtectedParameterDatasetV1 {
+    pub(crate) purpose: DatasetPurpose,
     pub(crate) round: crate::AgentdSelfIterationRoundV1,
     pub(crate) producer: (PathBuf, Digest32),
     pub(crate) plan: (PathBuf, Digest32),
@@ -39,7 +45,7 @@ impl PlasticityRuntimeHandleV1 {
         &self,
         runtime: &crate::AgentdSelfIterationHandleV1,
         request: ProtectedParameterDatasetV1,
-    ) -> Result<PreparedParameterDatasetV1, PlasticityRuntimeCallErrorV1> {
+    ) -> Result<PreparedDataset, PlasticityRuntimeCallErrorV1> {
         runtime
             .prepare_plasticity_dataset_v1(self.clone(), request)
             .await
@@ -49,7 +55,7 @@ impl PlasticityRuntimeHandleV1 {
         &self,
         fence: RoundContextFence,
         request: ProtectedParameterDatasetV1,
-    ) -> Result<PreparedParameterDatasetV1, PlasticityRuntimeCallErrorV1> {
+    ) -> Result<PreparedDataset, PlasticityRuntimeCallErrorV1> {
         let (response, receive) = oneshot::channel();
         self.sender
             .blocking_send(PlasticityRuntimeCommandV1::PrepareParameterDataset {
@@ -72,7 +78,7 @@ impl PlasticityRuntimeOwnerV1 {
         ready: bool,
         fence: RoundContextFence,
         request: ProtectedParameterDatasetV1,
-    ) -> Result<PreparedParameterDatasetV1, PlasticityRuntimeCallErrorV1> {
+    ) -> Result<PreparedDataset, PlasticityRuntimeCallErrorV1> {
         use PlasticityRuntimeCallErrorV1::Unavailable;
         let installed = state.self_iteration_handle.get().ok_or(Unavailable)?;
         if !ready
@@ -100,19 +106,24 @@ impl PlasticityRuntimeOwnerV1 {
         let producer: PrincipalWire =
             serde_json::from_slice(&producer_bytes).map_err(|_| Unavailable)?;
         let producer = producer.principal().map_err(|_| Unavailable)?;
-        let plan: Plan = serde_json::from_slice(&plan_bytes).map_err(|_| Unavailable)?;
-        if plan.schema != "hepta.parameter.dataset-freeze-plan.v1" {
-            return Err(Unavailable);
-        }
-        let plan = DatasetFreezePlanV2 {
-            snapshot_id: StableId::new(plan.snapshot_id).map_err(|_| Unavailable)?,
-            objective_digest: plan.objective_digest.parse().map_err(|_| Unavailable)?,
-            inclusion_policy_digest: plan
-                .inclusion_policy_digest
-                .parse()
-                .map_err(|_| Unavailable)?,
+        let plan = match request.purpose {
+            DatasetPurpose::OriginalV2 => {
+                let plan: Plan = serde_json::from_slice(&plan_bytes).map_err(|_| Unavailable)?;
+                if plan.schema != "hepta.parameter.dataset-freeze-plan.v1" {
+                    return Err(Unavailable);
+                }
+                parameter_dataset_window::DatasetPlan::OriginalV2(DatasetFreezePlanV2 {
+                    snapshot_id: StableId::new(plan.snapshot_id).map_err(|_| Unavailable)?,
+                    objective_digest: plan.objective_digest.parse().map_err(|_| Unavailable)?,
+                    inclusion_policy_digest: plan
+                        .inclusion_policy_digest
+                        .parse()
+                        .map_err(|_| Unavailable)?,
+                })
+            }
+            DatasetPurpose::WindowV3 => parameter_dataset_window::read_plan(&plan_bytes)?,
         };
-        if plan.objective_digest != fence.learning_objective()
+        if plan.objective() != fence.learning_objective()
             || !self.owner_evidence_policy.allows(
                 crate::PlasticityOwnerEvidenceKindV1::Dataset,
                 &producer.principal_id,
@@ -135,10 +146,15 @@ impl PlasticityRuntimeOwnerV1 {
             .current_anchor()
             .map_err(|_| Unavailable)?
             .map_or(Digest32::ZERO, |anchor| anchor.frame_digest);
-        let payload =
-            dataset_freeze_signing_payload_v2(&snapshot, &plan).map_err(|_| Unavailable)?;
-        let dataset =
-            freeze_dataset_from_ledger(&snapshot, plan, producer, now).map_err(|_| Unavailable)?;
+        let derived = parameter_dataset_window::derive(
+            &self.ledger,
+            &snapshot,
+            plan,
+            producer,
+            now,
+            predecessor,
+            installed_artifact_head,
+        )?;
         if source(&request.producer)? != producer_bytes
             || source(&request.plan)? != plan_bytes
             || self.ledger.snapshot().map_err(|_| Unavailable)? != snapshot
@@ -178,35 +194,16 @@ impl PlasticityRuntimeOwnerV1 {
         fence
             .revalidate_learning_trust(final_now)
             .map_err(|_| Unavailable)?;
-        verify_dataset_snapshot_receipt_v3(&dataset, final_now).map_err(|_| Unavailable)?;
+        derived.verify_at(final_now)?;
         let _guard = state
             .plasticity_final_admission_guard(generation)
             .map_err(|_| Unavailable)?;
         if cancellation.is_cancelled() {
             return Err(Unavailable);
         }
-        let result = PreparedParameterDatasetV1 {
-            dataset: ReviewDatasetWireV1::from_native(&dataset),
-            ledger_head_digest: snapshot.head_digest.to_string(),
-            ledger_record_count: u64::try_from(snapshot.records().len())
-                .map_err(|_| Unavailable)?,
-            freeze_payload_hex: crate::client::encode_hex(&payload),
-            proposal_registry_predecessor: predecessor.to_string(),
-            installed_artifact_head: installed_artifact_head.to_string(),
-        };
-        // The ordinary transport remains 64KiB. Reject complete oversized
-        // facts here; never truncate a receipt or add a larger response grant.
-        let json_size = serde_json::to_vec(&result.dataset)
-            .map_err(|_| Unavailable)?
-            .len();
-        if json_size
-            .checked_mul(2)
-            .and_then(|n| n.checked_add(result.freeze_payload_hex.len()))
-            .and_then(|n| n.checked_add(8192))
-            .is_none_or(|n| n > crate::MAX_CONTROL_FRAME_BYTES as usize)
-        {
-            return Err(Unavailable);
-        }
-        Ok(result)
+        derived.finish()
     }
 }
+
+#[path = "plasticity_runtime_parameter_dataset_window.rs"]
+pub(crate) mod parameter_dataset_window;

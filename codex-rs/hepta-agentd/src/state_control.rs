@@ -95,6 +95,22 @@ impl AgentdState {
             crate::AgentdMethod::SelfIterationCurrentRound => {
                 self.self_iteration_current_round().await?
             }
+            crate::AgentdMethod::PrepareParameterDatasetWindowV3 {
+                round_hex,
+                producer_source,
+                producer_digest,
+                plan_source,
+                plan_digest,
+            } => {
+                self.prepare_parameter_dataset_window_payload(
+                    round_hex,
+                    producer_source,
+                    producer_digest,
+                    plan_source,
+                    plan_digest,
+                )
+                .await?
+            }
             crate::AgentdMethod::PrepareParameterDatasetV1 {
                 round_hex,
                 producer_source,

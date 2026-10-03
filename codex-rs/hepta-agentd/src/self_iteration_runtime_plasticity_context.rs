@@ -129,7 +129,7 @@ impl AgentdSelfIterationHandleV1 {
         &self,
         handle: crate::PlasticityRuntimeHandleV1,
         request: crate::plasticity_runtime::parameter_dataset::ProtectedParameterDatasetV1,
-    ) -> Result<crate::PreparedParameterDatasetV1, AgentdError> {
+    ) -> Result<crate::plasticity_runtime::parameter_dataset::PreparedDataset, AgentdError> {
         let (response, receive) = oneshot::channel();
         self.send(
             Command::PreparePlasticityDataset(handle, self.clone(), request, response),
@@ -144,7 +144,7 @@ impl SelfIterationOwner {
         handle: crate::PlasticityRuntimeHandleV1,
         runtime: AgentdSelfIterationHandleV1,
         request: crate::plasticity_runtime::parameter_dataset::ProtectedParameterDatasetV1,
-    ) -> Result<crate::PreparedParameterDatasetV1, AgentdError> {
+    ) -> Result<crate::plasticity_runtime::parameter_dataset::PreparedDataset, AgentdError> {
         let view = self
             .inspect_current_round()?
             .ok_or_else(|| invalid("dataset preparation requires original Round"))?;

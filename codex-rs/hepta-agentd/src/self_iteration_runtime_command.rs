@@ -6,7 +6,9 @@ pub(super) enum Command {
         crate::PlasticityRuntimeHandleV1,
         AgentdSelfIterationHandleV1,
         crate::plasticity_runtime::parameter_dataset::ProtectedParameterDatasetV1,
-        oneshot::Sender<Result<crate::PreparedParameterDatasetV1, AgentdError>>,
+        oneshot::Sender<
+            Result<crate::plasticity_runtime::parameter_dataset::PreparedDataset, AgentdError>,
+        >,
     ),
     PreparePlasticityInputFromContext(
         crate::PlasticityRuntimeHandleV1,

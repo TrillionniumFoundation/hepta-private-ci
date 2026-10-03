@@ -736,3 +736,7 @@ pub use learning_withdrawal::withdraw_learning_dataset_v1;
 
 #[cfg(feature = "server")]
 pub use plasticity_runtime::parameter_dataset::PreparedParameterDatasetV1;
+#[cfg(feature = "server")]
+pub use plasticity_runtime::parameter_dataset::parameter_dataset_window::MAX_PREPARED_DATASET_WINDOW_BYTES_V3;
+#[cfg(feature = "server")]
+pub use plasticity_runtime::parameter_dataset::parameter_dataset_window::PreparedParameterDatasetWindowV3;

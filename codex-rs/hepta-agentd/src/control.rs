@@ -123,6 +123,7 @@ async fn serve_connection(
             | crate::AgentdMethod::RefreshParameterInputContextV2 { .. }
             | crate::AgentdMethod::PrepareParameterInputFromContextV2 { .. }
             | crate::AgentdMethod::PrepareParameterDatasetV1 { .. }
+            | crate::AgentdMethod::PrepareParameterDatasetWindowV3 { .. }
             | crate::AgentdMethod::PrepareParameterInputV1 { .. }
             | crate::AgentdMethod::PreparedGenerationV2 { .. }
             | crate::AgentdMethod::SelfIterationRoundStatus { .. }
@@ -146,6 +147,7 @@ async fn serve_connection(
                 | crate::AgentdMethod::CanaryOperationReceipt { .. }
                 | crate::AgentdMethod::PreparedGenerationV2 { .. }
                 | crate::AgentdMethod::PlasticityCompletedProposal { .. }
+                | crate::AgentdMethod::PrepareParameterDatasetWindowV3 { .. }
         ) {
         Some(canary_reads.try_acquire_owned())
     } else {
@@ -182,6 +184,7 @@ async fn serve_connection(
                     | crate::AgentdMethod::RefreshParameterInputContextV2 { .. }
                     | crate::AgentdMethod::PrepareParameterInputFromContextV2 { .. }
                     | crate::AgentdMethod::PrepareParameterDatasetV1 { .. }
+                    | crate::AgentdMethod::PrepareParameterDatasetWindowV3 { .. }
                     | crate::AgentdMethod::PrepareParameterInputV1 { .. }
             ) {
                 "parameter admission requires the actual Root kernel peer"
