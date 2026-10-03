@@ -14,6 +14,7 @@ use std::process::ExitStatus;
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum OriginalFixedRolePurposeV1 {
+    PreRegistrationArtifactPublication,
     FrozenGenerator,
     ParameterGenerator,
     PairedGeneratorRegistration,
@@ -32,6 +33,7 @@ pub enum OriginalFixedRolePurposeV1 {
 impl OriginalFixedRolePurposeV1 {
     fn schema(self) -> &'static str {
         match self {
+            Self::PreRegistrationArtifactPublication => "hepta.native-parameter-artifact-publication-execution.v1",
             Self::FrozenGenerator => "hepta.native-frozen-generator-execution.v1",
             Self::ParameterGenerator => "hepta.native-parameter-generator-execution.v1",
             Self::PairedGeneratorRegistration => {
@@ -54,6 +56,7 @@ impl OriginalFixedRolePurposeV1 {
     }
     fn maximum(self) -> u64 {
         match self {
+            Self::PreRegistrationArtifactPublication => 64 * 1024,
             Self::FrozenGenerator => 16 * 1024,
             Self::CycleSelector | Self::CanaryObserver | Self::PreRegistrationSelector => 32 * 1024,
             Self::PairedGeneratorRegistration

@@ -62,6 +62,9 @@ pub fn execute_retained_parameter_role_v1(
         ParameterRoleExecutionPurposeV1::SelectorPreRegistration => {
             OriginalFixedRolePurposeV1::PreRegistrationSelector
         }
+        ParameterRoleExecutionPurposeV1::ArtifactPreRegistrationPublication => {
+            OriginalFixedRolePurposeV1::PreRegistrationArtifactPublication
+        }
         ParameterRoleExecutionPurposeV1::SelectorCycleStage
         | ParameterRoleExecutionPurposeV1::SelectorRegisteredCycleStage => {
             OriginalFixedRolePurposeV1::CycleSelector
@@ -93,6 +96,7 @@ pub fn execute_retained_parameter_role_v1(
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub enum ParameterRoleExecutionPurposeV1 {
+    ArtifactPreRegistrationPublication,
     GeneratorProfile,
     GeneratorPairedRegistration,
     ObserverAdmission,
@@ -113,6 +117,12 @@ pub enum ParameterRoleExecutionPurposeV1 {
 impl ParameterRoleExecutionPurposeV1 {
     fn contract(self) -> (&'static str, &'static str, bool, bool) {
         match self {
+            Self::ArtifactPreRegistrationPublication => (
+                "hepta-fixed-artifact-publication-",
+                "publish-parameter-pre-registration",
+                true,
+                true,
+            ),
             Self::GeneratorProfile => (
                 "hepta-native-generator-",
                 "--parameter-profile",
