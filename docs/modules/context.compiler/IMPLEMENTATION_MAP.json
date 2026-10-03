@@ -3,7 +3,7 @@
   "module": "context.compiler",
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "71732a5ec88ce7794271da5ff5e1f40f3aa2693e8de24ea98f8390bc718fac9d",
+    "stateSha256": "c358b551d22ab770f7f43618bad6a849e8bbab5f6e37435fd678dc394da2fbc0",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
@@ -272,8 +272,8 @@
   ],
   "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
   "integrationBranch": "codex/context-compiler-v3-closure-20260928",
-  "runtimeSourceAnchor": "9d5d8a7614a37d9d6875de7c33c421569d0c57d3",
-  "runtimeSourceTree": "13d97fbf7d05a4cce4be9e9a9540f5b55b7dd1e2",
+  "runtimeSourceAnchor": "bf0941d1df7a86e0d72a21978ff07f998f67dfa4",
+  "runtimeSourceTree": "11da89a244340ac4df2b835274c49cc2ac79a01a",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -427,7 +427,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/lib.rs",
-      "blobSha": "9535c1b7bcf9430157fcee531003f9a827d9950a"
+      "blobSha": "66eacd3ca7640b76cee433945381beaf59071f60"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
@@ -897,6 +897,18 @@
       },
       "disposition": "historical_source_navigation_only",
       "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "9d5d8a7614a37d9d6875de7c33c421569d0c57d3",
+        "tree": "13d97fbf7d05a4cce4be9e9a9540f5b55b7dd1e2"
+      },
+      "observedAtHead": {
+        "commit": "9d5d8a7614a37d9d6875de7c33c421569d0c57d3",
+        "tree": "13d97fbf7d05a4cce4be9e9a9540f5b55b7dd1e2"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
     }
   ],
   "schema": "hepta.module-implementation-map.v3",
@@ -907,12 +919,12 @@
     "currentHeadQualification": "absent"
   },
   "sourceBase": {
-    "commit": "9d5d8a7614a37d9d6875de7c33c421569d0c57d3",
-    "tree": "13d97fbf7d05a4cce4be9e9a9540f5b55b7dd1e2"
+    "commit": "bf0941d1df7a86e0d72a21978ff07f998f67dfa4",
+    "tree": "11da89a244340ac4df2b835274c49cc2ac79a01a"
   },
   "observedAtHead": {
-    "commit": "9d5d8a7614a37d9d6875de7c33c421569d0c57d3",
-    "tree": "13d97fbf7d05a4cce4be9e9a9540f5b55b7dd1e2"
+    "commit": "bf0941d1df7a86e0d72a21978ff07f998f67dfa4",
+    "tree": "11da89a244340ac4df2b835274c49cc2ac79a01a"
   },
   "observedSourcePaths": [
     "codex-rs/hepta-context-compiler",
