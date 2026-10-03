@@ -4,6 +4,7 @@
 This verifier checks references and scoped claims. It does not execute Rust code,
 authenticate a target host, or issue acceptance/release authority.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -34,9 +35,7 @@ REQUIRED_FILTERS = (
     "cold_process_recovery_uses_only_persisted_inputs_and_current_trust",
 )
 REQUIRED_SYMBOLS = {
-    "codex-rs/hepta-intelligence-eval/src/lib.rs": (
-        "pub mod product;",
-    ),
+    "codex-rs/hepta-intelligence-eval/src/lib.rs": ("pub mod product;",),
     "codex-rs/hepta-intelligence-eval/src/product.rs": (
         "Canonical, authority-free product qualification facade",
         "RecordedProductEvaluationRunnerV1",
@@ -83,7 +82,9 @@ def walk_items(value: Any, prefix: str = "") -> Iterable[tuple[str, Any]]:
 
 
 def reject_bare_verified(value: dict[str, Any]) -> None:
-    offenders = [path for path, _ in walk_items(value) if path.rsplit(".", 1)[-1] == "verified"]
+    offenders = [
+        path for path, _ in walk_items(value) if path.rsplit(".", 1)[-1] == "verified"
+    ]
     if offenders:
         raise ValueError("bare verified claim is prohibited: " + ", ".join(offenders))
 
@@ -108,6 +109,26 @@ def source_inventory() -> str:
     return "\n".join(parts)
 
 
+def validate_trusted_reporter_workflow(reporter: str) -> None:
+    """Check the documented lexical entry boundary, not runtime qualification."""
+    for needle in (
+        "workflow_run:",
+        "Hepta learning.eval convergence",
+        "Hepta learning.eval exact trees",
+        "pull-requests: write",
+        "github.event.repository.default_branch",
+        "actions/download-artifact@",
+        "python3 scripts/hepta-learning-eval-trusted-entry.py",
+        "python3 scripts/hepta-learning-eval-control-plane-identity.py",
+    ):
+        if needle not in reporter:
+            raise ValueError(f"trusted reporter workflow is missing {needle}")
+    if "ref: ${{ github.event.workflow_run.head_sha }}" in reporter:
+        raise ValueError("trusted reporter must not checkout candidate source")
+    if "python3 scripts/hepta-learning-eval-trusted-report.py" in reporter:
+        raise ValueError("trusted reporter must use the hardened entrypoint")
+
+
 def check(root: Path = ROOT) -> None:
     if root != ROOT:
         raise ValueError("alternate roots are not supported by the production verifier")
@@ -124,24 +145,29 @@ def check(root: Path = ROOT) -> None:
             raise ValueError(f"missing learning.eval document: {name}")
 
     guide = (DOCS / "DEVELOPER_GUIDE.md").read_text(encoding="utf-8")
-    for index, title in enumerate((
-        "Mission and non-goals",
-        "Authority model",
-        "Product call path",
-        "State machine",
-        "Persistence and recovery",
-        "Statistical contract",
-        "Failure taxonomy",
-        "Deployment topology",
-        "Qualification checklist",
-        "Known gaps",
-    ), start=1):
+    for index, title in enumerate(
+        (
+            "Mission and non-goals",
+            "Authority model",
+            "Product call path",
+            "State machine",
+            "Persistence and recovery",
+            "Statistical contract",
+            "Failure taxonomy",
+            "Deployment topology",
+            "Qualification checklist",
+            "Known gaps",
+        ),
+        start=1,
+    ):
         if f"## {index}. {title}" not in guide:
             raise ValueError(f"developer guide is missing section {index}: {title}")
     if guide.count("```mermaid") < 3:
         raise ValueError("developer guide must contain three normative diagrams")
     if "trusted default-branch" not in guide:
-        raise ValueError("developer guide does not explain the privileged reporting boundary")
+        raise ValueError(
+            "developer guide does not explain the privileged reporting boundary"
+        )
 
     audit = (DOCS / "AUDIT_INDEX.md").read_text(encoding="utf-8")
     for name in required_docs:
@@ -172,12 +198,16 @@ def check(root: Path = ROOT) -> None:
         "untrustedArtifactValidationSourcePresent",
     ):
         if source_facts.get(fact) is not True:
-            raise ValueError(f"qualification matrix is missing scoped source fact: {fact}")
+            raise ValueError(
+                f"qualification matrix is missing scoped source fact: {fact}"
+            )
 
     inventory = source_inventory()
     for required in REQUIRED_FILTERS:
         if required not in inventory:
-            raise ValueError(f"required nextest filter does not name a Rust test/symbol: {required}")
+            raise ValueError(
+                f"required nextest filter does not name a Rust test/symbol: {required}"
+            )
     if "signed_candidate_passes_only_on_bound_current_owner_and_context" in (
         ROOT / "scripts/hepta-learning-eval-exact-entry.py"
     ).read_text(encoding="utf-8"):
@@ -197,13 +227,20 @@ def check(root: Path = ROOT) -> None:
         raise ValueError("canonical product facade compile test is missing")
 
     fixture = EVAL / "fixtures/trusted-inprocess"
-    if not (fixture / "Cargo.toml.in").is_file() or not (fixture / "tests/operator_claim.rs").is_file():
+    if (
+        not (fixture / "Cargo.toml.in").is_file()
+        or not (fixture / "tests/operator_claim.rs").is_file()
+    ):
         raise ValueError("isolated trusted compatibility fixture is incomplete")
     wrapper = (EVAL / "tests/operator_claim.rs").read_text(encoding="utf-8")
     if "fixtures/trusted-inprocess/tests/operator_claim.rs" not in wrapper:
-        raise ValueError("historical operator_claim target is not a thin fixture wrapper")
+        raise ValueError(
+            "historical operator_claim target is not a thin fixture wrapper"
+        )
 
-    exact_entry = (ROOT / "scripts/hepta-learning-eval-exact-entry.py").read_text(encoding="utf-8")
+    exact_entry = (ROOT / "scripts/hepta-learning-eval-exact-entry.py").read_text(
+        encoding="utf-8"
+    )
     for required in REQUIRED_FILTERS:
         if required not in exact_entry:
             raise ValueError(f"exact entry does not guard filter {required}")
@@ -219,10 +256,12 @@ def check(root: Path = ROOT) -> None:
         if not (ROOT / "scripts" / script).is_file():
             raise ValueError(f"missing qualification script: {script}")
 
-    convergence = (ROOT / ".github/workflows/hepta-learning-eval-convergence.yml").read_text(
+    convergence = (
+        ROOT / ".github/workflows/hepta-learning-eval-convergence.yml"
+    ).read_text(encoding="utf-8")
+    exact = (ROOT / ".github/workflows/hepta-learning-eval-exact.yml").read_text(
         encoding="utf-8"
     )
-    exact = (ROOT / ".github/workflows/hepta-learning-eval-exact.yml").read_text(encoding="utf-8")
     reporter = (
         ROOT / ".github/workflows/hepta-learning-eval-trusted-report.yml"
     ).read_text(encoding="utf-8")
@@ -243,35 +282,38 @@ def check(root: Path = ROOT) -> None:
             raise ValueError(f"exact workflow is missing {needle}")
     for label, workflow in (("convergence", convergence), ("exact", exact)):
         if "pull-requests: write" in workflow:
-            raise ValueError(f"{label} candidate-execution workflow has write permission")
+            raise ValueError(
+                f"{label} candidate-execution workflow has write permission"
+            )
         if "hepta-learning-eval-pr-status.py" in workflow:
-            raise ValueError(f"{label} candidate-execution workflow performs privileged PR updates")
+            raise ValueError(
+                f"{label} candidate-execution workflow performs privileged PR updates"
+            )
         if "needs.identity-recorder.outputs.tested_sha" in workflow:
             raise ValueError(f"{label} workflow checks out a job-output-derived ref")
-        if workflow.count("id-token: write") != 1 or workflow.count("attestations: write") != 1:
-            raise ValueError(f"{label} must contain exactly one isolated attestation permission block")
+        if (
+            workflow.count("id-token: write") != 1
+            or workflow.count("attestations: write") != 1
+        ):
+            raise ValueError(
+                f"{label} must contain exactly one isolated attestation permission block"
+            )
         attestation_job = workflow.find("\n  attest-")
         if attestation_job < 0:
             raise ValueError(f"{label} main-only attestation job is missing")
-        privileged = min(workflow.find("id-token: write"), workflow.find("attestations: write"))
+        privileged = min(
+            workflow.find("id-token: write"), workflow.find("attestations: write")
+        )
         if privileged < attestation_job:
-            raise ValueError(f"{label} grants attestation authority before the isolated job")
-    for needle in (
-        "workflow_run:",
-        "Hepta learning.eval convergence",
-        "Hepta learning.eval exact trees",
-        "pull-requests: write",
-        "github.event.repository.default_branch",
-        "actions/download-artifact@",
-        "hepta-learning-eval-trusted-report.py",
-    ):
-        if needle not in reporter:
-            raise ValueError(f"trusted reporter workflow is missing {needle}")
-    if "ref: ${{ github.event.workflow_run.head_sha }}" in reporter:
-        raise ValueError("trusted reporter must not checkout candidate source")
+            raise ValueError(
+                f"{label} grants attestation authority before the isolated job"
+            )
+    validate_trusted_reporter_workflow(reporter)
     for workflow in (convergence, exact):
         if "github.ref == 'refs/heads/main'" not in workflow:
-            raise ValueError("attestation permission is not isolated to a main-only job")
+            raise ValueError(
+                "attestation permission is not isolated to a main-only job"
+            )
 
     operations = implementation.get("operations")
     if not isinstance(operations, list) or not any(

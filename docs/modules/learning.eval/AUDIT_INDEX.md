@@ -38,6 +38,16 @@ or release authority.
 These records explain prior observations. The current immutable workflow artifacts and
 PR machine markers are the source of truth for whether a particular SHA actually ran.
 
+## Trusted PR reporting boundary
+
+A `workflow_run` event wakes the trusted default-branch reporter; it does not
+qualify the candidate by itself. Candidate artifacts are untrusted data. The
+reporter verifies their immutable source/base/tree identities, expected artifact
+inventory and recorded outcomes before updating the bounded PR status markers.
+Candidate-execution workflows stay read-only, and the reporter does not execute
+candidate source. Reporting cannot grant target-host qualification, independent
+acceptance, activation or release.
+
 ## Generated execution evidence
 
 The source workflow retains:
