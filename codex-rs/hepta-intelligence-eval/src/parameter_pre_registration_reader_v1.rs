@@ -41,6 +41,7 @@ pub struct VerifiedParameterPreRegistrationEvaluationV1 {
     material: Option<NeuronGenerationMaterialV2>,
     authentication_digest: Digest32,
     publication_digest: Digest32,
+    measured_at_ms: u64,
     expires_at: u64,
     clock_floor: AtomicU64,
     evaluator_uid: u32,
@@ -95,6 +96,9 @@ impl VerifiedParameterPreRegistrationEvaluationV1 {
     }
     pub fn evaluation_publication_digest(&self) -> Digest32 {
         self.publication_digest
+    }
+    pub fn measured_at_ms(&self) -> u64 {
+        self.measured_at_ms
     }
     pub fn evaluator_uid(&self) -> u32 {
         self.evaluator_uid
@@ -393,6 +397,7 @@ fn inspect_at(
         material,
         authentication_digest: Digest32::of_bytes(&report_bytes),
         publication_digest: Digest32::of_bytes(&serde_json::to_vec(&output.publication)?),
+        measured_at_ms: body.measured_at_ms,
         expires_at: signed.expires_at,
         clock_floor: AtomicU64::new(settled_now),
         evaluator_uid: config.uid,

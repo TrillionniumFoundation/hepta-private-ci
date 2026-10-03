@@ -83,8 +83,14 @@ mod model_use_current;
 mod model_use_preview;
 #[path = "initial_cpu_model_use_program_v2.rs"]
 mod model_use_program;
+#[path = "initial_cpu_parameter_publication_v1.rs"]
+mod parameter_publication;
 #[path = "initial_cpu_publication.rs"]
 mod publication;
+pub use parameter_publication::ParameterPreRegisteredPublicationV1;
+pub use parameter_publication::ParameterPreRegistrationPublicationConfigV1;
+pub use parameter_publication::ParameterPublishedArtifactV1;
+pub use parameter_publication::publish_parameter_pre_registered_artifacts_v1;
 #[path = "initial_cpu_renewal.rs"]
 mod renewal;
 #[path = "initial_cpu_role.rs"]

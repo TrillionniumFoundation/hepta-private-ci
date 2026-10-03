@@ -273,6 +273,18 @@ pub(super) fn open_original(
             return Err("original acknowledged head missing".into());
         }
     }
+    if let Some(actual) = super::parameter_publication::retained_floor(inputs, binding)? {
+        match &required {
+            Some(previous)
+                if previous.witness.generation == actual.witness.generation
+                    && previous.witness.head_digest != actual.witness.head_digest =>
+            {
+                return Err("original retained E1 restart floor conflict".into());
+            }
+            Some(previous) if previous.witness.generation > actual.witness.generation => (),
+            _ => required = Some(actual),
+        }
+    }
     let config = LearningArtifactOwnerServiceConfigV1 {
         root: inputs.profile.owner_root.clone(),
         trust: inputs.trust()?,

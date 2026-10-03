@@ -135,12 +135,16 @@ pub(super) fn directory_for_profile(profile: &Profile) -> HostResult<()> {
         return Err("original Root state must be private".into());
     }
     for (index, entry) in std::fs::read_dir(directory)?.enumerate() {
-        if index >= 7 {
+        if index >= 8 {
             return Err("initial Root state capacity".into());
         }
         let entry = entry?;
         let name = entry.file_name();
         let name = name.to_str().ok_or("Root state filename")?;
+        if name == "parameter-heads" {
+            super::parameter_publication::validate_retained_directory(profile)?;
+            continue;
+        }
         if ![
             "lease.json",
             "head-0.json",
