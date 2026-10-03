@@ -12,7 +12,7 @@ use serde::Serialize;
 use super::*;
 
 static TEMP_SEQUENCE: AtomicU64 = AtomicU64::new(0);
-const MAX_RECORD_BYTES: u64 = 16 * 1024;
+const MAX_RECORD_BYTES: u64 = 256 * 1024;
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -20,13 +20,17 @@ struct StoredRecord {
     version: u32,
     #[serde(with = "super::codec::digest")]
     checksum: Digest32,
-    record: AgentdSelfIterationRecordV1,
+    record: Option<AgentdSelfIterationRecordV1>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    rounds: Option<round::RoundJournal>,
 }
 
 pub(super) struct IterationJournal {
     path: PathBuf,
     _lease: File,
+    fenced: bool,
     current: Option<AgentdSelfIterationRecordV1>,
+    pub(super) rounds: Option<round::RoundJournal>,
 }
 
 impl IterationJournal {
@@ -67,8 +71,8 @@ impl IterationJournal {
         lease
             .try_lock()
             .map_err(|_| invalid("iteration journal already owned"))?;
-        let current = match std::fs::symlink_metadata(&path) {
-            Err(error) if error.kind() == std::io::ErrorKind::NotFound => None,
+        let (current, rounds) = match std::fs::symlink_metadata(&path) {
+            Err(error) if error.kind() == std::io::ErrorKind::NotFound => (None, None),
             Err(error) => return Err(error.into()),
             Ok(metadata) => {
                 if !metadata.is_file()
@@ -83,17 +87,34 @@ impl IterationJournal {
                     .read_to_end(&mut bytes)?;
                 let stored: StoredRecord =
                     serde_json::from_slice(&bytes).map_err(|error| invalid(error.to_string()))?;
-                if stored.version != 1 || stored.checksum != checksum(&stored.record)? {
+                let expected = match (stored.version, stored.rounds.as_ref()) {
+                    (1, None) => checksum(
+                        stored
+                            .record
+                            .as_ref()
+                            .ok_or_else(|| invalid("legacy journal record missing"))?,
+                    )?,
+                    (2, Some(rounds)) => {
+                        rounds.validate()?;
+                        checksum_v2(&stored.record, rounds)?
+                    }
+                    _ => return Err(invalid("iteration journal version")),
+                };
+                if stored.checksum != expected {
                     return Err(invalid("iteration journal checksum"));
                 }
-                validate_record(&stored.record)?;
-                Some(stored.record)
+                if let Some(record) = &stored.record {
+                    validate_record(record)?;
+                }
+                (stored.record, stored.rounds)
             }
         };
         Ok(Self {
             path,
             _lease: lease,
+            fenced: false,
             current,
+            rounds,
         })
     }
 
@@ -138,10 +159,53 @@ impl IterationJournal {
                 return Err(invalid("iteration phase regression"));
             }
         }
+        let mut rounds = self.rounds.clone();
+        if let Some(rounds) = &mut rounds {
+            rounds.record_phase(record)?;
+        }
+        self.write_state(Some(record.clone()), rounds)
+    }
+
+    pub(super) fn observe_clock(&mut self, now: u64, command: bool) -> Result<(), AgentdError> {
+        let Some(mut rounds) = self.rounds.clone() else {
+            return Ok(());
+        };
+        if rounds.observe_clock(now, command)? {
+            self.persist_rounds(rounds)?;
+        }
+        Ok(())
+    }
+    pub(super) fn persist_rounds(
+        &mut self,
+        rounds: round::RoundJournal,
+    ) -> Result<(), AgentdError> {
+        rounds.validate()?;
+        self.write_state(self.current.clone(), Some(rounds))
+    }
+
+    fn write_state(
+        &mut self,
+        record: Option<AgentdSelfIterationRecordV1>,
+        rounds: Option<round::RoundJournal>,
+    ) -> Result<(), AgentdError> {
+        if self.fenced {
+            return Err(invalid(
+                "journal publication durability is unknown; reopen original owner",
+            ));
+        }
+        let checksum = match &rounds {
+            Some(rounds) => checksum_v2(&record, rounds)?,
+            None => checksum(
+                record
+                    .as_ref()
+                    .ok_or_else(|| invalid("legacy journal record missing"))?,
+            )?,
+        };
         let bytes = serde_json::to_vec(&StoredRecord {
-            version: 1,
-            checksum: checksum(record)?,
+            version: if rounds.is_some() { 2 } else { 1 },
+            checksum,
             record: record.clone(),
+            rounds: rounds.clone(),
         })
         .map_err(|error| invalid(error.to_string()))?;
         if bytes.len() as u64 > MAX_RECORD_BYTES {
@@ -151,6 +215,7 @@ impl IterationJournal {
         let temporary = self
             .path
             .with_extension(format!("tmp-{}-{sequence}", std::process::id()));
+        let mut published = false;
         let result: Result<(), AgentdError> = (|| {
             let mut options = OpenOptions::new();
             options.write(true).create_new(true);
@@ -163,6 +228,7 @@ impl IterationJournal {
             file.write_all(&bytes)?;
             file.sync_all()?;
             std::fs::rename(&temporary, &self.path)?;
+            published = true;
             File::open(
                 self.path
                     .parent()
@@ -172,10 +238,12 @@ impl IterationJournal {
             Ok(())
         })();
         if result.is_err() {
+            self.fenced |= published;
             let _ = std::fs::remove_file(&temporary);
         }
         result?;
-        self.current = Some(record.clone());
+        self.current = record;
+        self.rounds = rounds;
         Ok(())
     }
 }
@@ -257,3 +325,15 @@ fn allowed_transition(from: AgentdSelfIterationPhaseV1, to: AgentdSelfIterationP
 #[cfg(test)]
 #[path = "self_iteration_journal_tests.rs"]
 mod tests;
+
+fn checksum_v2(
+    record: &Option<AgentdSelfIterationRecordV1>,
+    rounds: &round::RoundJournal,
+) -> Result<Digest32, AgentdError> {
+    let bytes =
+        serde_json::to_vec(&(record, rounds)).map_err(|error| invalid(error.to_string()))?;
+    Ok(Digest32::of_parts(&[
+        b"hepta.agentd.self-iteration-journal.v2",
+        &bytes,
+    ]))
+}

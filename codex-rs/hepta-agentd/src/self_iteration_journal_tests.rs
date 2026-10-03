@@ -83,7 +83,8 @@ fn accepted_label_with_valid_checksum_cannot_replace_missing_native_and_owner_pr
     let stored = StoredRecord {
         version: 1,
         checksum: checksum(&forged).expect("checksum"),
-        record: forged,
+        record: Some(forged),
+        rounds: None,
     };
     std::fs::write(&path, serde_json::to_vec(&stored).expect("json")).expect("write");
     assert!(IterationJournal::open(path).is_err());
