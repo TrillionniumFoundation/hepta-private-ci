@@ -49,15 +49,27 @@ async fn abandoned_startup_waiter_keeps_flock_through_work_and_result_retirement
     assert!(matches!(waiter.await, Err(error) if error.is_cancelled()));
     assert!(SingleInstanceLock::acquire(&path).is_err());
     release.send(())?;
-    timeout(Duration::from_secs(5), async {
+    let _next_owner = timeout(Duration::from_secs(5), async {
         while !retired.load(Ordering::Acquire) {
             tokio::task::yield_now().await;
         }
+        // The outcome destructor proves that it retired under the original
+        // lock. Its following instance field may still be dropping; observe
+        // actual flock retirement within this same five-second deadline.
+        assert!(retired.load(Ordering::Acquire));
+        loop {
+            match SingleInstanceLock::acquire(&path) {
+                Ok(next_owner) => return Ok::<_, crate::SupervisorError>(next_owner),
+                Err(crate::SupervisorError::Io(error))
+                    if error.kind() == std::io::ErrorKind::AddrInUse =>
+                {
+                    tokio::task::yield_now().await;
+                }
+                Err(error) => return Err(error),
+            }
+        }
     })
-    .await?;
-    // The queued result's own destructor still held the exact original lock.
-    assert!(retired.load(Ordering::Acquire));
-    SingleInstanceLock::acquire(&path)?;
+    .await??;
     Ok(())
 }
 
