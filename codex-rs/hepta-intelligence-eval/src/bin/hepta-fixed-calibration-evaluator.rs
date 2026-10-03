@@ -57,6 +57,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             );
             return Ok(());
         }
+        if args.len() == 2 && args[0] == "--parameter-pre-registration" {
+            return codex_hepta_intelligence_eval::run_parameter_pre_registration_evaluator_v1(
+                std::path::Path::new(&args[1]),
+            );
+        }
         if args.len() == 2 && args[0] == "--registered-operational-model-v3" {
             return codex_hepta_intelligence_eval::run_registered_operational_model_evaluator_v3(
                 std::path::Path::new(&args[1]),

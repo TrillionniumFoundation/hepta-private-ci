@@ -779,3 +779,20 @@ pub use fixed_parameter_observer_v1::FixedParameterObserverConfigV1;
 pub use fixed_parameter_observer_v1::FixedParameterObserverInputsV1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_parameter_observer_v1::run_fixed_parameter_observer_v1;
+
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+mod parameter_pre_registration_host_v1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+mod parameter_pre_registration_policy_v1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+mod parameter_pre_registration_reader_v1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+mod parameter_pre_registration_v1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use parameter_pre_registration_host_v1::run_parameter_pre_registration_evaluator_v1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use parameter_pre_registration_reader_v1::VerifiedParameterPreRegistrationEvaluationV1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use parameter_pre_registration_reader_v1::inspect_parameter_pre_registration_evaluation_v1;
+#[cfg(all(feature = "fixed-eval-host", target_os = "linux"))]
+pub use parameter_pre_registration_v1::*;
