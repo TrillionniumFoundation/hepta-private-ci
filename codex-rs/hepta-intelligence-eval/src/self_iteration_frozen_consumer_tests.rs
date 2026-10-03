@@ -135,6 +135,21 @@ fn full_canonical_bytes_and_actual_model_receipt_are_authenticated_in_explicit_v
     payload.extend_from_slice(native.as_array());
     payload.extend_from_slice(digest("actual model output").as_array());
     payload.extend_from_slice(&legacy);
+    // Presign parsing needs no invented signature; authority remains absent.
+    let unsigned = inspect_unsigned_self_iteration_candidate_v1(&payload, 30).unwrap();
+    assert_eq!(unsigned.payload_digest(), Digest32::of_bytes(&payload));
+    assert_eq!(
+        unsigned.generator_round_payload_digest(),
+        Some(Digest32::of_bytes(round))
+    );
+    assert_eq!(
+        unsigned.generator_model_request_id().unwrap().as_str(),
+        request
+    );
+    assert_eq!(
+        unsigned.canonical_envelope_bytes(),
+        Some(canonical.as_slice())
+    );
     let bytes =
         encode_self_iteration_frozen_consumer_v1(&payload, &signing.sign(0, &payload, 25)).unwrap();
     let verified =
@@ -174,4 +189,80 @@ fn full_canonical_bytes_and_actual_model_receipt_are_authenticated_in_explicit_v
     assert!(
         decode_self_iteration_frozen_consumer_v1(&tampered, &bundle, &signing.trust, 30).is_err()
     );
+}
+
+#[test]
+fn unsigned_fields_preserve_the_whole_original_tuple_without_authenticating_g() {
+    let (signing, bundle, mut payload) = fixture();
+    let digest_start = payload.len() - 64 - 18 * 32;
+    let expected: Vec<_> = (0..18)
+        .map(|index| digest(&format!("presign-field-{index}")))
+        .collect();
+    for (index, value) in expected.iter().enumerate() {
+        payload[digest_start + index * 32..digest_start + (index + 1) * 32]
+            .copy_from_slice(value.as_array());
+    }
+    let view = inspect_unsigned_self_iteration_candidate_v1(&payload, 30).unwrap();
+    assert_eq!(
+        [
+            view.envelope_id().as_str(),
+            view.candidate_id().as_str(),
+            view.generator_id().as_str(),
+            view.canary_tick_id().as_str(),
+            view.baseline_id().as_str()
+        ],
+        [
+            "original-envelope",
+            bundle.candidate_id.as_str(),
+            bundle.generator.principal_id.as_str(),
+            "original-canary",
+            bundle.baseline_id.as_str()
+        ]
+    );
+    assert_eq!(
+        [
+            view.base_commit(),
+            view.base_tree(),
+            view.objective_digest(),
+            view.grammar_digest(),
+            view.semantic_diff_digest(),
+            view.test_plan_digest(),
+            view.rollback_digest(),
+            view.governed_proposal_digest(),
+            view.governed_anchor_digest(),
+            view.governed_composition_digest(),
+            view.canary_snapshot_digest(),
+            view.canary_candidate_set_digest(),
+            view.canary_predecessor_digest(),
+            view.successor_body(),
+            view.rollback_body(),
+            view.successor_configuration(),
+            view.rollback_configuration(),
+            view.canary_input_digest()
+        ]
+        .as_slice(),
+        expected.as_slice()
+    );
+    assert_eq!(
+        [
+            view.base_generation(),
+            view.maximum_files(),
+            view.maximum_diff_bytes(),
+            view.candidate_admissions(),
+            view.maximum_parallel_sandboxes(),
+            view.expires_unix_seconds(),
+            view.changed_files(),
+            view.canary_budget_micros()
+        ],
+        [1, 2, 4096, 2, 1, 1, 1, 1_000_000]
+    );
+    let mut signature = signing.sign(0, &payload, 25);
+    signature.signature[0] ^= 1;
+    let publication = encode_self_iteration_frozen_consumer_v1(&payload, &signature).unwrap();
+    assert!(
+        inspect_signed_self_iteration_frozen_consumer_v1(&publication, &signing.trust, 30).is_err()
+    );
+    assert!(inspect_unsigned_self_iteration_candidate_v1(&payload, 1000).is_err());
+    payload.push(0);
+    assert!(inspect_unsigned_self_iteration_candidate_v1(&payload, 30).is_err());
 }

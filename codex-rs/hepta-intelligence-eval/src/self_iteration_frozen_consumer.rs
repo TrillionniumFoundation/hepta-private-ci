@@ -19,6 +19,11 @@ const TRANSPORT: &[u8] = b"hepta.eval.self-iteration-frozen-consumer.v1\0";
 const CANDIDATE: &[u8] = b"hepta.agentd.self-iteration-candidate.v1\0";
 const CANONICAL_CANDIDATE: &[u8] = b"hepta.agentd.self-iteration-candidate.v2\0";
 
+#[path = "self_iteration_unsigned_candidate.rs"]
+mod unsigned;
+pub use unsigned::UntrustedSelfIterationCandidateV1;
+pub use unsigned::inspect_unsigned_self_iteration_candidate_v1;
+
 struct Publication {
     candidate_payload: Vec<u8>,
     generator_attestation: SignedLearningEvidenceV1,
