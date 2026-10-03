@@ -644,6 +644,10 @@ pub use self_iteration::self_iteration_envelope_digest_v1;
 #[cfg(feature = "server")]
 pub use self_iteration::self_iteration_frozen_candidate_payload_v1;
 #[cfg(feature = "server")]
+pub use self_iteration::self_iteration_generator_model_request_v1;
+#[cfg(feature = "server")]
+pub use self_iteration::self_iteration_model_request_digest_v1;
+#[cfg(feature = "server")]
 pub use self_iteration::self_iteration_stage_payload_v1;
 
 #[cfg(feature = "server")]

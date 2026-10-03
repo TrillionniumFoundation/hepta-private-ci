@@ -150,3 +150,63 @@ fn legacy_missing_effect_marker_stays_unknown_and_original_bytes_stay_stable() {
         AgentdSelfIterationCandidateConstructionAdmissionV1::Pending
     );
 }
+
+#[test]
+fn protected_generator_preimage_reuses_original_admitted_request_codec() {
+    let (canonical, envelope) = inputs(2);
+    let goal = StableId::new("goal.root.inspector").expect("id");
+    let mut rounds = RoundJournal::default();
+    let round = rounds
+        .reserve(goal.clone(), &canonical, &envelope, 1000)
+        .expect("reserve");
+    let request = self_iteration_generator_model_request_v1(
+        &round,
+        &envelope,
+        "Root protected objective",
+        "actual original bounded parameters",
+    )
+    .expect("sole caller helper");
+    assert_eq!(request.maximum_response_bytes, 8192);
+    assert_eq!(request.deadline_ms, round.deadline_ms());
+    rounds
+        .begin(&round, &request, 1001)
+        .expect("actual durable request");
+    let status = rounds
+        .status(&goal, canonical.digest())
+        .expect("original authenticated projection");
+    assert_eq!(
+        status.generator_model_request_digest,
+        Some(self_iteration_model_request_digest_v1(&request))
+    );
+    let changed = self_iteration_generator_model_request_v1(
+        &round,
+        &envelope,
+        "another objective",
+        "actual original bounded parameters",
+    )
+    .expect("pure construction");
+    assert_ne!(
+        self_iteration_model_request_digest_v1(&changed),
+        status
+            .generator_model_request_digest
+            .expect("recorded digest")
+    );
+    assert!(rounds.begin(&round, &changed, 1002).is_err());
+    let mut foreign = envelope.clone();
+    foreign.objective_digest = Digest32::of_bytes(b"foreign objective");
+    assert!(
+        self_iteration_generator_model_request_v1(
+            &round,
+            &foreign,
+            "Root protected objective",
+            "actual original bounded parameters"
+        )
+        .is_err()
+    );
+    assert_eq!(
+        rounds
+            .status(&goal, canonical.digest())
+            .expect("same receipt"),
+        status
+    );
+}

@@ -6,7 +6,6 @@ use std::future::Future;
 
 use codex_hepta_agent_components::infer_core::SelfIterationModelAssessmentV1;
 use codex_hepta_agent_components::infer_core::SelfIterationModelPortV1;
-use codex_hepta_agent_components::infer_core::SelfIterationModelRequestV1;
 use codex_hepta_agent_components::infer_core::SelfIterationModelRoleV1;
 use codex_hepta_agent_components::types::StableId;
 
@@ -41,6 +40,16 @@ pub trait AgentdSelfIterationCandidateAssemblerV1: Send {
         std::future::ready(Ok(
             AgentdSelfIterationCandidateEffectAdmissionV1::ConservativeUnknown,
         ))
+    }
+
+    /// Only observe completed original effects; default cannot recover or reissue.
+    fn recover_completed(
+        &mut self,
+        _envelope: IterationEnvelopeV1,
+        _proposal: &SelfIterationModelAssessmentV1,
+    ) -> impl Future<Output = Result<Option<AgentdSelfIterationCandidateV1>, AgentdError>> + Send
+    {
+        std::future::ready(Ok(None))
     }
 
     fn assemble(
@@ -201,10 +210,15 @@ where
             return Err(invalid("host parameter description budget"));
         }
         let envelope_digest = envelope_digest(&envelope);
-        let proposal = self.assess(SelfIterationModelRoleV1::Generator,
-            envelope_digest, None, deadline_ms, format!(
-                "Propose a bounded durable Neuron generation change and its rollback.\nObjective: {objective_prompt}\nActual baseline and permitted mutations: {current}\nEnvelope: {envelope_digest}\nNo acceptance or signing authority is granted."
-            )).await?;
+        let proposal = self
+            .assess(
+                SelfIterationModelRoleV1::Generator,
+                envelope_digest,
+                None,
+                deadline_ms,
+                generator_prompt(&objective_prompt, &current, envelope_digest)?,
+            )
+            .await?;
         let candidate = self
             .construct_candidate(envelope.clone(), proposal.clone())
             .await?;
@@ -296,27 +310,14 @@ where
         deadline_ms: u64,
         prompt: String,
     ) -> Result<SelfIterationModelAssessmentV1, AgentdError> {
-        let request_id = if let Some(round) = &self.round {
-            round.model_request_id(role, candidate_digest)?
-        } else {
-            let identity = Digest32::of_parts(&[
-                b"hepta.self-iteration.model-request.v1",
-                envelope_digest.as_array(),
-                candidate_digest.unwrap_or(Digest32::ZERO).as_array(),
-                &[role as u8],
-            ]);
-            StableId::new(format!("iteration.{identity}"))
-                .map_err(|error| invalid(error.to_string()))?
-        };
-        let request = SelfIterationModelRequestV1 {
-            request_id,
+        let request = model_request(
+            self.round.as_ref(),
             role,
             envelope_digest,
             candidate_digest,
-            prompt,
             deadline_ms,
-            maximum_response_bytes: 8 * 1024,
-        };
+            prompt,
+        )?;
         if let Some(round) = &self.round {
             let admission = self
                 .runtime

@@ -97,7 +97,7 @@ impl RoundJournal {
     }
 }
 
-fn request_digest(request: &SelfIterationModelRequestV1) -> Digest32 {
+pub(in crate::self_iteration) fn request_digest(request: &SelfIterationModelRequestV1) -> Digest32 {
     Digest32::of_parts(&[
         b"hepta.self-iteration.admitted-model-request.v1",
         request.request_id.as_str().as_bytes(),

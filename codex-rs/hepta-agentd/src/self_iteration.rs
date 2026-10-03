@@ -47,6 +47,13 @@ pub use signer::AgentdSelfIterationLocalSignerV1;
 mod contracts;
 pub use contracts::*;
 
+#[path = "self_iteration_model_request.rs"]
+mod model_request;
+use model_request::generator_prompt;
+use model_request::model_request;
+pub use model_request::self_iteration_generator_model_request_v1;
+pub use model_request::self_iteration_model_request_digest_v1;
+
 #[path = "self_iteration_cycle.rs"]
 mod cycle;
 pub use cycle::AgentdSelfIterationCandidateAssemblerV1;

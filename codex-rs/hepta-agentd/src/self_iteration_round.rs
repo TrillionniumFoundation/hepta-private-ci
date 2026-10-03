@@ -421,7 +421,7 @@ mod status_codec;
 pub use status_codec::AgentdSelfIterationRoundStatusV1;
 
 #[path = "self_iteration_round_model.rs"]
-mod model;
+pub(super) mod model;
 
 #[path = "self_iteration_round_rejection.rs"]
 mod rejection;
