@@ -10,13 +10,11 @@ use std::sync::Arc;
 use std::sync::Mutex;
 #[path = "chat_live.rs"]
 mod live;
+pub use codex_hepta_contracts::chat_transport as wire;
+pub use codex_hepta_contracts::native_chat_bridge_wire as native_wire;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 use std::time::Duration;
-#[path = "../../../apps/hepta-ui-shared/native_chat_bridge_wire.rs"]
-pub mod native_wire;
-#[path = "../../../apps/hepta-ui-shared/chat_transport.rs"]
-pub mod wire;
 use wire::*;
 
 #[path = "chat_connection.rs"]

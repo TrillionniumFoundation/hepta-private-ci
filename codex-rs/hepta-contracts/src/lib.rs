@@ -16,11 +16,13 @@ pub mod authority_trust;
 #[cfg(test)]
 mod callers_manifest_tests;
 mod canonical;
+pub mod chat_transport;
 mod final_use;
 mod final_use_control;
 mod final_use_port;
 mod identity;
 mod memory;
+pub mod native_chat_bridge_wire;
 pub mod native_gateway;
 mod provider;
 mod provider_effect;

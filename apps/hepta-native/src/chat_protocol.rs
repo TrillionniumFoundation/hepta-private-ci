@@ -1,5 +1,3 @@
 //! Presentation-only consumers of the exact original owner chat wire.
-#[path = "../../hepta-ui-shared/native_chat_bridge_wire.rs"]
-pub mod root;
-#[path = "../../hepta-ui-shared/chat_transport.rs"]
-pub mod wire;
+pub use codex_hepta_contracts::chat_transport as wire;
+pub use codex_hepta_contracts::native_chat_bridge_wire as root;

@@ -1,6 +1,9 @@
 //! Robrix widgets consume original owner observations. No embedded Matrix/model owner.
+#[cfg(not(target_arch = "wasm32"))]
+pub use hepta_native::chat_protocol::wire as chat_transport;
 pub use makepad_widgets;
-#[path = "../../hepta-ui-shared/chat_transport.rs"]
+#[cfg(target_arch = "wasm32")]
+#[path = "../../../codex-rs/hepta-contracts/src/chat_transport.rs"]
 pub mod chat_transport;
 pub mod hepta_app;
 // Presentation-only upstream Robrix styles and controls. Its Matrix client,

@@ -1,5 +1,3 @@
 //! The exact shared wire carries no model, Fleet or session owner.
-#[path = "../../../apps/hepta-ui-shared/native_chat_bridge_wire.rs"]
-pub(super) mod root;
-#[path = "../../../apps/hepta-ui-shared/chat_transport.rs"]
-pub(super) mod wire;
+pub(super) use codex_hepta_contracts::chat_transport as wire;
+pub(super) use codex_hepta_contracts::native_chat_bridge_wire as root;
