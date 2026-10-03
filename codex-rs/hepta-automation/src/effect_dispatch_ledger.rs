@@ -688,6 +688,10 @@ fn is_constraint(error: &sqlx::Error) -> bool {
 }
 
 #[cfg(test)]
+#[path = "effect_recovery_frontier_tests.rs"]
+mod recovery_frontier_tests;
+
+#[cfg(test)]
 mod tests {
     use codex_hepta_contracts::AgentId;
     use codex_hepta_contracts::Sha256Digest;
@@ -724,7 +728,7 @@ mod tests {
         (temp, layout)
     }
 
-    async fn prepared_store() -> (
+    pub(super) async fn prepared_store() -> (
         tempfile::TempDir,
         codex_hepta_paths::HeptaAgentLayout,
         AutomationStore,
