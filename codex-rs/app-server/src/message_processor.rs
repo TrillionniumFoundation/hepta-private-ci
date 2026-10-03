@@ -1329,6 +1329,9 @@ impl MessageProcessor {
                 .reconcile(params)
                 .await
                 .map(|response| Some(response.into())),
+            ClientRequest::ThreadCreationObserve { params, .. } => processor.thread_processor.observe_thread_creation(params).await.map(|response| Some(response.into())),
+            ClientRequest::ThreadCreationReconcile { params, .. } => processor.thread_processor.reconcile_thread_creation(params).await.map(|response| Some(codex_app_server_protocol::ClientResponsePayload::ThreadCreationReconcile(response))),
+            ClientRequest::ThreadCreationAbandon { params, .. } => processor.thread_processor.abandon_thread_creation(params).await.map(|response| Some(codex_app_server_protocol::ClientResponsePayload::ThreadCreationAbandon(response))),
             ClientRequest::ThreadQueueObserve { params, .. } => processor
                 .thread_queue_processor
                 .observe(params)
