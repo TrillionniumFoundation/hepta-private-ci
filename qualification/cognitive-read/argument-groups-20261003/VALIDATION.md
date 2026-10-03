@@ -47,3 +47,5 @@ findings. The separate Agentd --no-deps lane reaches the13 owner findings above.
 Darwin passes399 library tests, including all five repaired fixture cases, with
 19 release-install failures remaining. No result establishes production,
 independent, activation or release acceptance, or execution of this new refactor.
+
+Published source `8876dbf4cc9292c71281c7e99b96e149e68b181b`, tree `39c3c247f1f7aa4e4eb9a36581a3789bfd79b21e`, is the new cognitive.read observation. All227 previous paths remain; the explicitly changed metrics dependency adds the228th object. Historical sourceBase and every claim flag/other map field are identical; unrelated module maps are unchanged. The prior map blob `f7e23a1f1e10ca7a6d4f3c90e0e9bc3120f33ef2` remains in history.
