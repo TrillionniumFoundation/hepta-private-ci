@@ -17,6 +17,61 @@ def libtest(passed=1, failed=0, ignored=0):
 
 
 class ExecutionSummaryTests(unittest.TestCase):
+    def test_delivery_carrier_requires_all_seven_migrated_native_cases(self):
+        from context_compiler_named_evidence import bind_named_tests
+
+        spec = next(
+            value
+            for value in specs(legacy)
+            if value["name"] == "context-delivery-input-regressions"
+        )
+        names = spec["requiredNativeTests"]
+        self.assertEqual(
+            names,
+            [
+                "v2::tests::provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_delivery_receipt",
+                "v2::tests::provider_owned_attempt_witness_is_authenticated_by_delivery_verifier",
+                "v2::tests::provider_payload_binding_must_match_exact_serialized_payload",
+                "v2::tests::provider_input_witness_must_bind_current_pre_dispatch_revalidation",
+                "v2::tests::provider_and_model_identity_must_match_exact_model_profile",
+                "v2::tests::independent_provider_evidence_verifier_is_required",
+                "v2::tests::indeterminate_provider_terminal_remains_indeterminate",
+            ],
+        )
+        self.assertEqual(spec["minimumTests"], 7)
+        self.assertEqual(len(names), 7)
+        self.assertEqual(
+            spec["argv"][spec["argv"].index("-p") + 1], "codex-hepta-context-compiler"
+        )
+        self.assertEqual(
+            spec["argv"][spec["argv"].index("-E") + 1],
+            " | ".join(f"test({name})" for name in names),
+        )
+        for missing in [None, *names]:
+            with self.subTest(missing=missing):
+                observed = [
+                    name if name != missing else "unrelated::green_test"
+                    for name in names
+                ]
+                summary = "Summary [1s] 7 tests run: 7 passed"
+                result = {"succeeded": True}
+                bind_test_count(summary, spec, result)
+                with tempfile.TemporaryDirectory() as directory:
+                    path = Path(directory) / "native.log"
+                    path.write_text(
+                        "".join(
+                            f"PASS [0.1s] codex-hepta-context-compiler {name}\n"
+                            for name in observed
+                        )
+                        + summary
+                        + "\n"
+                    )
+                    named = bind_named_tests(path, names)
+                self.assertEqual(
+                    result["succeeded"] and named["namedNativeTestsPassed"],
+                    missing is None,
+                )
+
     def test_legacy_projection_commands_require_every_native_case(self):
         from context_compiler_named_evidence import bind_named_tests
 
@@ -27,8 +82,22 @@ class ExecutionSummaryTests(unittest.TestCase):
             ),
             "agentd-legacy-product-conservation": ("intelligence_product::tests", 4),
         }
+        expected_names = {
+            "agentd-legacy-candidate-projection": [
+                "intelligence_learning_candidates::tests::action_projection_is_canonical_without_changing_policy_actions",
+                "intelligence_learning_candidates::tests::action_projection_rejects_empty_duplicate_and_reserved_actions",
+                "intelligence_learning_candidates::tests::action_projection_preserves_the_ledger_capacity_bound",
+            ],
+            "agentd-legacy-product-conservation": [
+                "intelligence_product::tests::real_owner_product_path_records_decision_outcome_and_reopens",
+                "intelligence_product::tests::final_use_revocation_race_fails_before_decision_publication",
+                "intelligence_product::tests::signed::randomized_selected_decision_preserves_intrinsic_abstain_and_exact_propensity",
+                "intelligence_product::tests::boxed_pending_append_preserves_owned_replay_and_error_mapping",
+            ],
+        }
         for command, (selector, count) in expected.items():
             spec = next(value for value in specs(legacy) if value["name"] == command)
+            self.assertEqual(spec["requiredNativeTests"], expected_names[command])
             self.assertEqual(spec["argv"][:2], ["just", "test"])
             self.assertIn(selector, spec["argv"])
             self.assertEqual(

@@ -105,6 +105,15 @@ def specs(legacy):
             spec["minimumTests"] = 1
         commands.append(spec)
 
+    delivery_regression_names = [
+        "v2::tests::provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_delivery_receipt",
+        "v2::tests::provider_owned_attempt_witness_is_authenticated_by_delivery_verifier",
+        "v2::tests::provider_payload_binding_must_match_exact_serialized_payload",
+        "v2::tests::provider_input_witness_must_bind_current_pre_dispatch_revalidation",
+        "v2::tests::provider_and_model_identity_must_match_exact_model_profile",
+        "v2::tests::independent_provider_evidence_verifier_is_required",
+        "v2::tests::indeterminate_provider_terminal_remains_indeterminate",
+    ]
     stream_regression_names = [
         "client::provider_policy_tests::completed_is_hidden_until_exact_terminal_is_acknowledged",
         "client::provider_policy_tests::terminal_failure_suppresses_completed_and_last_response",
@@ -121,6 +130,22 @@ def specs(legacy):
     # These selectors exercise the actual provider-body slots, not only the
     # context compiler crate in isolation.
     commands[2:2] = [
+        {
+            "name": "context-delivery-input-regressions",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-context-compiler",
+                "--lib",
+                "-E",
+                " | ".join(f"test({name})" for name in delivery_regression_names),
+            ],
+            "minimumTests": len(delivery_regression_names),
+            "requiredNativeTests": delivery_regression_names,
+        },
         {
             "name": "agentd-legacy-candidate-projection",
             "cwd": legacy.CODEX_RS,
