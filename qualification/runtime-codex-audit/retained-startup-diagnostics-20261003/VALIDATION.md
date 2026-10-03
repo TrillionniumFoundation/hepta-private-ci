@@ -40,3 +40,5 @@ not establish passing daemon restart or overall product/independent acceptance.
 
 All paused AuthBus/state/workspace-lock paths and registrar/publication remain
 unchanged. No trust provisioning, live effects, activation or release.
+
+Published diagnostic source `df5a0a0bf13f1abfbd02f4a5e87a0392e3c9d5d2`, tree `670c39ca8588c8d2347df62cf32c1005f71350ee`, is bound by three directly affected observations: runtime.supervisor, runtime.agentd and kernel.operations. Every historical identity, claim flag and closure path is unchanged; the other two selected observations remain valid and all other maps are byte-identical. Clean-checkout validation is repeated after committing this metadata.
