@@ -1,4 +1,5 @@
 use super::*;
+use crate::authenticate_ledger_snapshot_prefix_v3;
 use crate::verify_dataset_window_snapshot_against_current_ledger_v3;
 
 #[test]
@@ -189,4 +190,96 @@ fn foreign_prefix_corrupt_tail_and_expired_producer_never_revalidate() {
         )
         .is_err()
     );
+}
+
+#[test]
+fn original_observed_h2_is_exact_prefix_of_h3_while_h1_window_remains_frozen() {
+    let fixture = Fixture::new();
+    let mut writer = fixture.writer();
+    let a = add_decision(&mut writer, "a");
+    add_outcome(&mut writer, "a", "1", None, 100);
+    let p = plan(a.sequence.get(), a.sequence.get());
+    let receipt = freeze(&writer, p.clone());
+    let h1 = writer.snapshot().unwrap();
+    add_decision(&mut writer, "normal-chat");
+    add_outcome(&mut writer, "normal-chat", "1", None, 100);
+    let h2 = writer.snapshot().unwrap();
+    add_credit(&mut writer, "normal-chat", "1", 100);
+    let h3 = writer.snapshot().unwrap();
+    let before = (
+        fs::read(fixture.root.join("ledger")).unwrap(),
+        fs::read(fixture.root.join("witness")).unwrap(),
+        writer.witness_frontier().unwrap(),
+    );
+    assert_ne!(h1.head_digest, h2.head_digest);
+    assert_ne!(h2.head_digest, h3.head_digest);
+    assert_eq!(
+        authenticate_ledger_snapshot_prefix_v3(&h3, h2.head_digest, h2.records().len() as u64)
+            .unwrap(),
+        h2
+    );
+    assert_eq!(
+        verify_dataset_window_snapshot_against_current_ledger_v3(&receipt, &p, &h3, 50).unwrap(),
+        h1
+    );
+    assert_eq!(
+        before,
+        (
+            fs::read(fixture.root.join("ledger")).unwrap(),
+            fs::read(fixture.root.join("witness")).unwrap(),
+            writer.witness_frontier().unwrap(),
+        )
+    );
+}
+
+#[test]
+fn prefix_rejects_foreign_head_wrong_count_and_corruption_anywhere_in_current_history() {
+    let fixture = Fixture::new();
+    let mut writer = fixture.writer();
+    add_decision(&mut writer, "a");
+    add_outcome(&mut writer, "a", "1", None, 100);
+    let observed = writer.snapshot().unwrap();
+    add_decision(&mut writer, "tail");
+    let current = writer.snapshot().unwrap();
+    let count = observed.records().len() as u64;
+    assert!(authenticate_ledger_snapshot_prefix_v3(&current, digest("foreign"), count).is_err());
+    assert!(
+        authenticate_ledger_snapshot_prefix_v3(&current, observed.head_digest, count + 1).is_err()
+    );
+    assert!(
+        authenticate_ledger_snapshot_prefix_v3(&current, observed.head_digest, u64::MAX).is_err()
+    );
+    for index in [0, current.records().len() - 1] {
+        let mut corrupt = current.clone();
+        corrupt.records[index].chain_digest = digest("corrupt");
+        assert!(
+            authenticate_ledger_snapshot_prefix_v3(&corrupt, observed.head_digest, count).is_err()
+        );
+    }
+    let mut corrupt = current;
+    corrupt.head_digest = digest("corrupt-outer-head");
+    assert!(authenticate_ledger_snapshot_prefix_v3(&corrupt, observed.head_digest, count).is_err());
+}
+
+#[test]
+fn empty_prefix_requires_exact_original_zero_head_and_valid_complete_current_source() {
+    let empty = LearningLedger::new().snapshot();
+    assert_eq!(
+        authenticate_ledger_snapshot_prefix_v3(&empty, Digest32::ZERO, 0).unwrap(),
+        empty
+    );
+    assert!(authenticate_ledger_snapshot_prefix_v3(&empty, digest("foreign-empty"), 0).is_err());
+    assert!(authenticate_ledger_snapshot_prefix_v3(&empty, Digest32::ZERO, 1).is_err());
+    let fixture = Fixture::new();
+    let mut writer = fixture.writer();
+    add_decision(&mut writer, "a");
+    let current = writer.snapshot().unwrap();
+    assert_eq!(
+        authenticate_ledger_snapshot_prefix_v3(&current, Digest32::ZERO, 0).unwrap(),
+        empty
+    );
+    assert!(authenticate_ledger_snapshot_prefix_v3(&current, Digest32::ZERO, 1).is_err());
+    let mut invalid_empty = empty;
+    invalid_empty.head_digest = digest("corrupt-empty");
+    assert!(authenticate_ledger_snapshot_prefix_v3(&invalid_empty, Digest32::ZERO, 0).is_err());
 }

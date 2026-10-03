@@ -6,6 +6,7 @@ use crate::ReviewDatasetWireV1;
 
 #[path = "production_dataset_window_current_v3.rs"]
 mod current;
+pub use current::authenticate_ledger_snapshot_prefix_v3;
 pub use current::verify_dataset_window_snapshot_against_current_ledger_v3;
 
 pub const MAX_DATASET_WINDOW_SOURCE_RECORDS_V3: u32 = 4096;

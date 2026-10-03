@@ -97,6 +97,7 @@ pub use production::ProductionLedgerError;
 pub use production::UnlearningLineagePreviewV1;
 pub use production::UnlearningLineageReceiptV1;
 pub use production::UnlearningLineageRequestV1;
+pub use production::authenticate_ledger_snapshot_prefix_v3;
 pub use production::candidate_ids_digest_v2;
 pub use production::candidate_order_digest_v2;
 pub use production::credit_batch_signing_payload_v2;
