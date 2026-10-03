@@ -1537,6 +1537,10 @@
     },
     {
       "fromModule": "learning.eval",
+      "toModule": "kernel.authority"
+    },
+    {
+      "fromModule": "learning.eval",
       "toModule": "learning.plasticity"
     },
     {
@@ -2008,6 +2012,10 @@
     {
       "fromModule": "learning.artifacts",
       "toModule": "platform.types"
+    },
+    {
+      "fromModule": "learning.eval",
+      "toModule": "kernel.authority"
     },
     {
       "fromModule": "learning.eval",
@@ -3105,6 +3113,15 @@
       "toLayer": 3,
       "toModule": "cognitive.store",
       "toPackage": "codex-hepta-memory"
+    },
+    {
+      "dependencyKind": "normal",
+      "fromLayer": 4,
+      "fromModule": "learning.eval",
+      "fromPackage": "codex-hepta-intelligence-eval",
+      "toLayer": 0,
+      "toModule": "kernel.authority",
+      "toPackage": "codex-hepta-contracts"
     },
     {
       "dependencyKind": "normal",
