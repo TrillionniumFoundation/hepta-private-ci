@@ -4,39 +4,39 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'codex-rs/hepta-types/**'
-      - 'docs/contracts/CONTRACTS.json'
-      - 'docs/contracts/PROTOCOL_SCHEMAS.json'
-      - 'codex-rs/hepta-cognitive-*/**'
-      - 'codex-rs/hepta-memory*/**'
-      - 'codex-rs/hepta-compact-engine/**'
-      - 'codex-rs/hepta-intelligence/**'
-      - 'codex-rs/hepta-agentd/**'
-      - 'codex-rs/hepta-operations/**'
-      - 'codex-rs/state/**'
-      - 'codex-rs/Cargo.*'
-      - 'qualification/cognitive-types-*/**'
-      - 'docs/modules/cognitive.types/**'
-      - '.github/workflows/cognitive-types-qualification.yml'
-      - '.github/workflows/cognitive-types-depth-evidence.yml'
+      - "codex-rs/hepta-types/**"
+      - "docs/contracts/CONTRACTS.json"
+      - "docs/contracts/PROTOCOL_SCHEMAS.json"
+      - "codex-rs/hepta-cognitive-*/**"
+      - "codex-rs/hepta-memory*/**"
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/state/**"
+      - "codex-rs/Cargo.*"
+      - "qualification/cognitive-types-*/**"
+      - "docs/modules/cognitive.types/**"
+      - ".github/workflows/cognitive-types-qualification.yml"
+      - ".github/workflows/cognitive-types-depth-evidence.yml"
   push:
-    branches: ['codex/cognitive-types-full-closure-20260927']
+    branches: ["codex/cognitive-types-full-closure-20260927"]
     paths:
-      - 'codex-rs/hepta-types/**'
-      - 'docs/contracts/CONTRACTS.json'
-      - 'docs/contracts/PROTOCOL_SCHEMAS.json'
-      - 'codex-rs/hepta-cognitive-*/**'
-      - 'codex-rs/hepta-memory*/**'
-      - 'codex-rs/hepta-compact-engine/**'
-      - 'codex-rs/hepta-intelligence/**'
-      - 'codex-rs/hepta-agentd/**'
-      - 'codex-rs/hepta-operations/**'
-      - 'codex-rs/state/**'
-      - 'codex-rs/Cargo.*'
-      - 'qualification/cognitive-types-*/**'
-      - 'docs/modules/cognitive.types/**'
-      - '.github/workflows/cognitive-types-qualification.yml'
-      - '.github/workflows/cognitive-types-depth-evidence.yml'
+      - "codex-rs/hepta-types/**"
+      - "docs/contracts/CONTRACTS.json"
+      - "docs/contracts/PROTOCOL_SCHEMAS.json"
+      - "codex-rs/hepta-cognitive-*/**"
+      - "codex-rs/hepta-memory*/**"
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-operations/**"
+      - "codex-rs/state/**"
+      - "codex-rs/Cargo.*"
+      - "qualification/cognitive-types-*/**"
+      - "docs/modules/cognitive.types/**"
+      - ".github/workflows/cognitive-types-qualification.yml"
+      - ".github/workflows/cognitive-types-depth-evidence.yml"
   workflow_dispatch:
 
 permissions:
@@ -47,7 +47,7 @@ concurrency:
   cancel-in-progress: true
 
 env:
-  PYTHONDONTWRITEBYTECODE: '1'
+  PYTHONDONTWRITEBYTECODE: "1"
   CARGO_TERM_COLOR: never
 
 jobs:

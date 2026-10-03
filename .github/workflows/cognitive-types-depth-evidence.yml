@@ -4,21 +4,21 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'codex-rs/hepta-types/**'
-      - 'codex-rs/hepta-cognitive-types/**'
-      - 'codex-rs/hepta-cognitive-read/**'
-      - 'codex-rs/hepta-cognitive-store/**'
-      - 'codex-rs/hepta-memory-retrieval/**'
-      - 'codex-rs/hepta-compact-engine/**'
-      - 'codex-rs/hepta-intelligence/**'
-      - 'codex-rs/hepta-memory/**'
-      - 'codex-rs/hepta-agentd/**'
-      - 'codex-rs/Cargo.*'
-      - 'qualification/cognitive-types-*/**'
-      - 'docs/modules/cognitive.types/**'
-      - '.github/workflows/cognitive-types-depth-evidence.yml'
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-cognitive-store/**"
+      - "codex-rs/hepta-memory-retrieval/**"
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/Cargo.*"
+      - "qualification/cognitive-types-*/**"
+      - "docs/modules/cognitive.types/**"
+      - ".github/workflows/cognitive-types-depth-evidence.yml"
   schedule:
-    - cron: '23 2 * * *'
+    - cron: "23 2 * * *"
   workflow_dispatch:
 
 permissions:
@@ -30,8 +30,8 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: never
-  PYTHONDONTWRITEBYTECODE: '1'
-  RUST_BACKTRACE: '1'
+  PYTHONDONTWRITEBYTECODE: "1"
+  RUST_BACKTRACE: "1"
 
 jobs:
   resolve:
@@ -499,7 +499,6 @@ jobs:
 
       - name: Seal the complete fuzz artifact
         if: ${{ always() && steps.checkout.outcome == 'success' }}
-        continue-on-error: true
         run: >-
           python3 qualification/cognitive-types-v1/depth_evidence.py seal
           --directory "$RUNNER_TEMP/cognitive-types-fuzz"

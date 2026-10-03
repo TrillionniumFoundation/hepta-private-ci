@@ -5,19 +5,19 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'codex-rs/hepta-cognitive-types/**'
-      - 'codex-rs/hepta-cognitive-read/**'
-      - 'codex-rs/hepta-cognitive-store/**'
-      - 'codex-rs/hepta-memory-retrieval/**'
-      - 'codex-rs/hepta-compact-engine/**'
-      - 'codex-rs/hepta-intelligence/**'
-      - 'codex-rs/hepta-memory/**'
-      - 'codex-rs/hepta-agentd/**'
-      - 'codex-rs/hepta-objective/**'
-      - 'docs/modules/cognitive.types/**'
-      - 'qualification/cognitive-types-*/**'
-      - 'scripts/hepta-hnmf.py'
-      - '.github/workflows/cognitive-types-remediation-snapshot.yml'
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-cognitive-store/**"
+      - "codex-rs/hepta-memory-retrieval/**"
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-objective/**"
+      - "docs/modules/cognitive.types/**"
+      - "qualification/cognitive-types-*/**"
+      - "scripts/hepta-hnmf.py"
+      - ".github/workflows/cognitive-types-remediation-snapshot.yml"
   workflow_dispatch:
 
 permissions:

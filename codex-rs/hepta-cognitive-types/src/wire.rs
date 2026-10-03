@@ -278,7 +278,7 @@ mod prepared_tests {
             decode_validated_canonical_payload_v1::<PreparedProbe>(&wire).expect("decode");
         assert_eq!(SERIALIZATIONS.with(Cell::get), 1);
         assert_eq!(VALIDATIONS.with(Cell::get), 1);
-        assert_eq!(prepared.encode_wire().expect("reencode"), wire);
+        assert_eq!(prepared.encode_wire().expect("re-encode"), wire);
         assert_eq!(SERIALIZATIONS.with(Cell::get), 1);
         assert_eq!(VALIDATIONS.with(Cell::get), 1);
     }

@@ -152,7 +152,6 @@ jobs:
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo check --manifest-path codex-rs/hepta-cognitive-types/fuzz/Cargo.toml --all-targets
 
-
       - name: Preserve candidate and actual check outcomes
         if: ${{ always() && steps.check_01.outcome == 'success' }}
         env:
@@ -221,7 +220,6 @@ jobs:
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo test --manifest-path qualification/hnmf-contract-reference/Cargo.toml --locked
 
-
       - name: Preserve candidate and actual check outcomes
         if: ${{ always() && steps.check_01.outcome == 'success' }}
         env:
@@ -289,7 +287,6 @@ jobs:
         id: check_05
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo test --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml --locked
-
 
       - name: Preserve candidate and actual check outcomes
         if: ${{ always() && steps.check_01.outcome == 'success' }}
@@ -360,7 +357,6 @@ jobs:
         id: check_05
         if: ${{ !cancelled() && steps.check_01.outcome == 'success' }}
         run: cargo test --manifest-path qualification/hnmf-reference/Cargo.toml --locked
-
 
       - name: Preserve candidate and actual check outcomes
         if: ${{ always() && steps.check_01.outcome == 'success' }}
@@ -453,7 +449,6 @@ jobs:
           -p codex-hepta-memory-retrieval
           -p codex-hepta-compact-engine
           -p codex-hepta-intelligence
-
 
       - name: Preserve candidate and actual check outcomes
         if: ${{ always() && steps.check_01.outcome == 'success' }}
@@ -571,7 +566,15 @@ jobs:
   qualification-required:
     name: HNMF qualification required
     if: ${{ always() }}
-    needs: [canonical-contracts, contract-reference, adversarial-reference, deterministic-reference, canonical-consumers, shared-experience-owner]
+    needs:
+      [
+        canonical-contracts,
+        contract-reference,
+        adversarial-reference,
+        deterministic-reference,
+        canonical-consumers,
+        shared-experience-owner,
+      ]
     runs-on: ubuntu-24.04
     steps:
       - name: Require all applicable candidate checks

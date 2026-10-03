@@ -107,6 +107,32 @@ class DepthEvidenceTests(unittest.TestCase):
         (directory / "receipt.json").write_bytes(raw)
         (directory / "receipt.sha256").write_text(hashlib.sha256(raw).hexdigest() + "\n")
 
+    def test_fuzz_entry_overflow_remains_rejected_by_sealer_and_aggregate(self):
+        self.make_matrix()
+        directory = self.evidence / (
+            f"cognitive-types-fuzz-exact-head-{self.source}-{self.attempt}"
+        )
+        for index in range(depth.inventory.MAX_ENTRIES):
+            (directory / "corpus" / f"overflow-{index}").write_bytes(b"sample")
+        with self.assertRaisesRegex(ValueError, "entry budget exceeded"):
+            depth.seal_artifact(directory, "fuzz", self.source, self.base,
+                                "exact-head", self.run_id, self.attempt)
+        with self.assertRaisesRegex(ValueError, "entry budget exceeded"):
+            self.verify()
+
+    def test_failed_fuzz_seal_fails_job_while_preserving_refusal_artifact(self):
+        root = Path(__file__).resolve().parents[2]
+        workflow = (root / ".github/workflows/cognitive-types-depth-evidence.yml").read_text()
+        section = workflow.split("      - name: Seal the complete fuzz artifact\n", 1)[1]
+        seal, upload = section.split(
+            "      - name: Preserve fuzz corpus, findings, and refusal evidence\n", 1
+        )
+        upload = upload.split("\n  required:", 1)[0]
+        self.assertNotIn("continue-on-error", seal)
+        self.assertIn("depth_evidence.py seal", seal)
+        self.assertIn("if: ${{ always() && steps.checkout.outcome == 'success' }}", upload)
+        self.assertIn("if-no-files-found: error", upload)
+
     def test_complete_pull_request_matrix_is_verified_without_promotion(self):
         self.make_matrix()
         report = self.verify()

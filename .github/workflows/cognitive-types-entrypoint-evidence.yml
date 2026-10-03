@@ -4,20 +4,20 @@ on:
   pull_request:
     branches: [main]
     paths:
-      - 'codex-rs/hepta-types/**'
-      - 'codex-rs/hepta-cognitive-types/**'
-      - 'codex-rs/hepta-cognitive-read/**'
-      - 'codex-rs/hepta-cognitive-store/**'
-      - 'codex-rs/hepta-memory-retrieval/**'
-      - 'codex-rs/hepta-compact-engine/**'
-      - 'codex-rs/hepta-intelligence/**'
-      - 'codex-rs/Cargo.*'
-      - 'qualification/cognitive-types-v1/entrypoint_evidence.py'
-      - 'qualification/cognitive-types-v1/test_entrypoint_evidence.py'
-      - 'qualification/cognitive-types-v1/depth_evidence.py'
-      - 'qualification/cognitive-types-v1/run_qualification.py'
-      - 'docs/modules/cognitive.types/**'
-      - '.github/workflows/cognitive-types-entrypoint-evidence.yml'
+      - "codex-rs/hepta-types/**"
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-cognitive-store/**"
+      - "codex-rs/hepta-memory-retrieval/**"
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/Cargo.*"
+      - "qualification/cognitive-types-v1/entrypoint_evidence.py"
+      - "qualification/cognitive-types-v1/test_entrypoint_evidence.py"
+      - "qualification/cognitive-types-v1/depth_evidence.py"
+      - "qualification/cognitive-types-v1/run_qualification.py"
+      - "docs/modules/cognitive.types/**"
+      - ".github/workflows/cognitive-types-entrypoint-evidence.yml"
   workflow_dispatch:
 
 permissions:
@@ -29,8 +29,8 @@ concurrency:
 
 env:
   CARGO_TERM_COLOR: never
-  PYTHONDONTWRITEBYTECODE: '1'
-  RUST_BACKTRACE: '1'
+  PYTHONDONTWRITEBYTECODE: "1"
+  RUST_BACKTRACE: "1"
 
 jobs:
   resolve:

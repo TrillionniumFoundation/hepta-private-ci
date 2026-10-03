@@ -267,7 +267,7 @@ proptest! {
         let decoded: Validated<TextProbeV1> =
             decode_validated_wire_v1(&encoded).expect("validated decode");
         prop_assert_eq!(decoded.as_inner(), &probe);
-        prop_assert_eq!(encode_wire_v1(decoded.as_inner()).expect("reencode"), encoded);
+        prop_assert_eq!(encode_wire_v1(decoded.as_inner()).expect("re-encode"), encoded);
     }
 }
 
