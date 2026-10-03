@@ -6,6 +6,8 @@ use crate::fixed_paired_generator_host::sample;
 use crate::fixed_parameter_generator_v3::ParameterRoleSourceV3;
 use crate::fixed_parameter_generator_v3::parameter_role_evidence_id;
 use crate::fixed_parameter_generator_v3::validate_parameter_generator_baseline_v3;
+use crate::inspect_registered_artifact_current_material_v3;
+use crate::validate_current_parameter_admission_v1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::ReviewEvidenceWireV1;
 use codex_hepta_learning_ledger::ReviewTrustWireV1;
@@ -21,6 +23,7 @@ use codex_hepta_plasticity::parameter_generator_signing_payload_v3;
 use codex_hepta_plasticity::plasticity_admission_signing_payload_v1;
 use codex_hepta_plasticity::validate_parameter_admission_binding_v1;
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use serde::Deserialize;
 use serde::Serialize;
@@ -47,6 +50,12 @@ pub struct FixedParameterObserverInputsV1 {
     /// Immutable output from the authenticated original current admission owner.
     /// Root must obtain it through that owner's factual port, not a DTO echo.
     pub admission: ParameterRoleSourceV3,
+    /// Protected original full CURRENT material registration, independently
+    /// verified by O. Legacy initial inputs omit both optional fields.
+    #[serde(default)]
+    pub current_artifact_material: Option<ParameterRoleSourceV3>,
+    #[serde(default)]
+    pub subject: Option<String>,
     pub generator_evidence: ReviewEvidenceWireV1,
     pub round_digest: String,
     pub canonical_policy_digest: String,
@@ -131,14 +140,29 @@ pub fn run_fixed_parameter_observer_v1(path: &Path) -> Result<()> {
     let admission_bytes = inputs.admission.read(16 * 1024)?;
     let admission = decode_untrusted_plasticity_admission_v1(&admission_bytes)?;
     validate_parameter_admission_binding_v1(&profile, &generated, &admission)?;
-    if admission.baseline_id != baseline.runtime.model_id
-        || admission.baseline_generation != baseline.runtime.generation
-        || admission.objective_digest != trust.verifier().objective_digest()
-    {
-        return Err(
-            "O admission changed actual whole baseline/generation/training objective".into(),
-        );
-    }
+    let current = match (&inputs.current_artifact_material, &inputs.subject) {
+        (Some(source), Some(subject)) => {
+            let subject = StableId::new(subject.clone())?;
+            let facts = inspect_registered_artifact_current_material_v3(
+                &source.path,
+                source.digest.parse()?,
+                &baseline,
+                &subject,
+                sample(&trust, &mut last)?,
+            )?;
+            validate_current_parameter_admission_v1(&facts, &admission, &baseline)?;
+            Some(facts)
+        }
+        (None, None)
+            if baseline.runtime.generation.get() == 1
+                && admission.baseline_id == baseline.runtime.model_id
+                && admission.baseline_generation == baseline.runtime.generation
+                && admission.objective_digest == trust.verifier().objective_digest() =>
+        {
+            None
+        }
+        _ => return Err("whole original O baseline CURRENT configuration/binding".into()),
+    };
     let generator = inputs.generator_evidence.native()?;
     let verified_g = trust.verifier().verify(
         LearningEvidenceRoleV1::Generator,
@@ -174,6 +198,18 @@ pub fn run_fixed_parameter_observer_v1(path: &Path) -> Result<()> {
     if signing.verifying_key().to_bytes() != observer.verifying_key {
         return Err("actual O key differs from original current admission".into());
     }
+    if let Some(current) = &current {
+        current.revalidate_current(now)?;
+    }
+    let now = sample(&trust, &mut last)?;
+    window(&inputs, now)?;
+    observer.principal.validate(now)?;
+    if current
+        .as_ref()
+        .is_some_and(|facts| now >= facts.expires_at())
+    {
+        return Err("O current material expired during final input read".into());
+    }
     let mut evidence = SignedLearningEvidenceV1 {
         evidence_id: parameter_role_evidence_id(
             LearningEvidenceRoleV1::Observer,
@@ -191,7 +227,12 @@ pub fn run_fixed_parameter_observer_v1(path: &Path) -> Result<()> {
             .principal
             .expires_at
             .min(trust.expires_at())
-            .min(inputs.deadline_ms),
+            .min(inputs.deadline_ms)
+            .min(
+                current
+                    .as_ref()
+                    .map_or(u64::MAX, super::operational_registered_model_v3::RegisteredArtifactCurrentFactsV3::expires_at),
+            ),
         payload_digest: Digest32::of_bytes(&payload),
         signature: [0; 64],
     };
@@ -201,6 +242,17 @@ pub fn run_fixed_parameter_observer_v1(path: &Path) -> Result<()> {
     evidence.signature = signing.sign(&evidence.signing_bytes()).to_bytes();
     let final_now = sample(&trust, &mut last)?;
     window(&inputs, final_now)?;
+    if let Some(current) = &current {
+        current.revalidate_current(final_now)?;
+    }
+    let final_now = sample(&trust, &mut last)?;
+    window(&inputs, final_now)?;
+    if current
+        .as_ref()
+        .is_some_and(|facts| final_now >= facts.expires_at())
+    {
+        return Err("O current material expired during final signature read".into());
+    }
     let verified_o = trust.verifier().verify(
         LearningEvidenceRoleV1::Observer,
         &evidence,

@@ -779,3 +779,8 @@ pub use fixed_parameter_observer_v1::FixedParameterObserverConfigV1;
 pub use fixed_parameter_observer_v1::FixedParameterObserverInputsV1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_parameter_observer_v1::run_fixed_parameter_observer_v1;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_current_admission_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_current_admission_v1::validate_current_parameter_admission_v1;
