@@ -3516,6 +3516,7 @@ dependencies = [
  "core_test_support",
  "ed25519-dalek",
  "http 1.4.0",
+ "libc",
  "serde",
  "serde_json",
  "sha2 0.10.9",
@@ -3754,6 +3755,7 @@ dependencies = [
  "serde",
  "serde_json",
  "sha2 0.10.9",
+ "winapi-util",
 ]
 
 [[package]]
@@ -4058,6 +4060,8 @@ version = "0.0.0"
 dependencies = [
  "codex-hepta-contracts",
  "codex-hepta-types",
+ "codex-state",
+ "codex-state-test-support",
  "ed25519-dalek",
  "sqlx",
  "tempfile",
@@ -5197,6 +5201,14 @@ dependencies = [
  "tracing",
  "tracing-subscriber",
  "uuid",
+]
+
+[[package]]
+name = "codex-state-test-support"
+version = "0.0.0"
+dependencies = [
+ "log",
+ "sqlx",
 ]
 
 [[package]]

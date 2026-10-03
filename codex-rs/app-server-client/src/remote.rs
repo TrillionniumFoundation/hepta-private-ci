@@ -132,9 +132,14 @@ pub(crate) fn websocket_url_supports_auth_token(url: &Url) -> bool {
     }
 }
 
+#[path = "remote_send_guard.rs"]
+mod send_guard;
+pub use send_guard::RemoteRequestSendGuard;
+
 enum RemoteClientCommand {
     Request {
         request: Box<JSONRPCRequest>,
+        guard: Option<RemoteRequestSendGuard>,
         response_tx: oneshot::Sender<IoResult<RequestResult>>,
     },
     Notify {
@@ -627,7 +632,7 @@ impl RemoteAppServerClient {
                             break;
                         };
                         match command {
-                            RemoteClientCommand::Request { request, response_tx } => {
+                            RemoteClientCommand::Request { request, guard, mut response_tx } => {
                                 let request_id = request.id.clone();
                                 if pending_requests.contains_key(&request_id) {
                                     let _ = response_tx.send(Err(IoError::new(
@@ -636,14 +641,21 @@ impl RemoteAppServerClient {
                                     )));
                                     continue;
                                 }
+                                let message = JSONRPCMessage::Request(*request);
+                                let result = match guard {
+                                    Some(guard) => match serde_json::to_string(&message) {
+                                        Ok(payload) => send_guard::send_guarded(
+                                            &mut stream,
+                                            Message::Text(payload.into()),
+                                            &mut response_tx,
+                                            guard,
+                                        ).await,
+                                        Err(error) => Err(IoError::other(error)),
+                                    },
+                                    None => write_jsonrpc_message(&mut stream, message, &endpoint).await,
+                                };
                                 pending_requests.insert(request_id.clone(), response_tx);
-                                if let Err(err) = write_jsonrpc_message(
-                                    &mut stream,
-                                    JSONRPCMessage::Request(*request),
-                                    &endpoint,
-                                )
-                                .await
-                                {
+                                if let Err(err) = result {
                                     let err_message = err.to_string();
                                     let message = format!(
                                         "remote app server at `{endpoint}` write failed: {err_message}"
@@ -936,7 +948,7 @@ impl RemoteAppServerClient {
     {
         self.request_typed_observed_response(request)
             .await
-            .map(|observed| observed.into_response())
+            .map(RemoteAppServerObservedResponse::into_response)
     }
 
     pub async fn request_typed_observed_response<T>(
@@ -946,14 +958,42 @@ impl RemoteAppServerClient {
     where
         T: DeserializeOwned,
     {
+        self.request_typed_observed_response_inner(request, None)
+            .await
+    }
+
+    /// Observed request with a one-shot guard at physical transport entry.
+    /// Guard failure is a transport error, never permission to replay or release.
+    pub async fn request_typed_observed_response_guarded<T>(
+        &self,
+        request: ClientRequest,
+        guard: RemoteRequestSendGuard,
+    ) -> Result<RemoteAppServerObservedResponse<T>, RemoteObservedTypedRequestError>
+    where
+        T: DeserializeOwned,
+    {
+        self.request_typed_observed_response_inner(request, Some(guard))
+            .await
+    }
+
+    async fn request_typed_observed_response_inner<T>(
+        &self,
+        request: ClientRequest,
+        guard: Option<RemoteRequestSendGuard>,
+    ) -> Result<RemoteAppServerObservedResponse<T>, RemoteObservedTypedRequestError>
+    where
+        T: DeserializeOwned,
+    {
         let method = request.method_name().to_string();
         let request_id = request.id().clone();
-        let response = self.request(request).await.map_err(|source| {
-            RemoteObservedTypedRequestError::Transport {
+        let response = self
+            .request_handle()
+            .request_json_rpc_guarded(jsonrpc_request_from_client_request(request), guard)
+            .await
+            .map_err(|source| RemoteObservedTypedRequestError::Transport {
                 method: method.clone(),
                 source,
-            }
-        })?;
+            })?;
         let result = response.map_err(|error| RemoteObservedTypedRequestError::Server {
             observed: RemoteAppServerObservedServerError {
                 method: method.clone(),
@@ -1110,10 +1150,19 @@ impl RemoteAppServerRequestHandle {
     }
 
     pub async fn request_json_rpc(&self, request: JSONRPCRequest) -> IoResult<RequestResult> {
+        self.request_json_rpc_guarded(request, None).await
+    }
+
+    async fn request_json_rpc_guarded(
+        &self,
+        request: JSONRPCRequest,
+        guard: Option<RemoteRequestSendGuard>,
+    ) -> IoResult<RequestResult> {
         let (response_tx, response_rx) = oneshot::channel();
         self.command_tx
             .send(RemoteClientCommand::Request {
                 request: Box::new(request),
+                guard,
                 response_tx,
             })
             .await
@@ -1530,3 +1579,7 @@ mod tests {
             .expect("shutdown should complete when worker exits first");
     }
 }
+
+#[cfg(test)]
+#[path = "remote_queue_guard_tests.rs"]
+mod queue_guard_tests;

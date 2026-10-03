@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "ca855069f63ef239c0f15d7c744812aa8552f76e",
-    "tree": "213fc76ed3da84e0d2af06e5f2ee03a12775f0a1"
+    "commit": "532471eebc6c784b873afa4b02700c08abba87c4",
+    "tree": "659f6a0d0401251093b5057b572db85888e2a415"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.supervisor",
@@ -43,7 +43,8 @@
       "operation": "start_instance",
       "nativeSymbol": "pub fn start(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
     },
     {
       "designOperation": "observe_health",
@@ -71,7 +72,8 @@
       "operation": "observe_health",
       "nativeSymbol": "pub fn tick(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
     },
     {
       "designOperation": "drain",
@@ -99,7 +101,8 @@
       "operation": "drain",
       "nativeSymbol": "pub fn drain(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
     },
     {
       "designOperation": "stop_instance",
@@ -122,7 +125,8 @@
       "operation": "stop_instance",
       "nativeSymbol": "pub fn stop(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
     },
     {
       "designOperation": "kill_instance",
@@ -145,7 +149,8 @@
       "operation": "kill_instance",
       "nativeSymbol": "pub fn kill(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
     },
     {
       "designOperation": "restart_instance",
@@ -168,7 +173,8 @@
       "operation": "restart_instance",
       "nativeSymbol": "pub fn restart(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
     },
     {
       "designOperation": "load_next",
@@ -201,7 +207,8 @@
       "operation": "load_next",
       "nativeSymbol": "pub fn upgrade(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
     },
     {
       "designOperation": "rollback_release",
@@ -224,7 +231,8 @@
       "operation": "rollback_release",
       "nativeSymbol": "pub fn rollback(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
     },
     {
       "designOperation": "signed_upgrade",
@@ -257,7 +265,8 @@
       "operation": "signed_upgrade",
       "nativeSymbol": "pub fn apply_production_grant(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
     },
     {
       "designOperation": "signed_rollback",
@@ -290,7 +299,8 @@
       "operation": "signed_rollback",
       "nativeSymbol": "pub fn apply_production_grant(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
     },
     {
       "designOperation": "reconcile_signed_intent",
@@ -323,7 +333,8 @@
       "operation": "reconcile_signed_intent",
       "nativeSymbol": "pub fn resolve_production_recovery(",
       "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
     }
   ],
   "repositoryControlledGaps": [],
@@ -369,12 +380,76 @@
     "codex-rs/hepta-agentd",
     "codex-rs/hepta-automation",
     "codex-rs/hepta-fleet",
-    "codex-rs/hepta-supervisor"
+    "codex-rs/hepta-supervisor",
+    "codex-rs/hepta-supervisor/src/release_transaction.rs",
+    "codex-rs/hepta-supervisor/src/signed_authority.rs",
+    "codex-rs/hepta-supervisor/src/supervisor.rs",
+    "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+    "codex-rs/hepta-supervisor/src/unix_tests.rs",
+    "docs/modules/runtime.supervisor/TECHNICAL.md"
   ],
   "observedAtHead": {
-    "commit": "ca855069f63ef239c0f15d7c744812aa8552f76e",
-    "tree": "213fc76ed3da84e0d2af06e5f2ee03a12775f0a1",
-    "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
+    "commit": "df5a0a0bf13f1abfbd02f4a5e87a0392e3c9d5d2",
+    "tree": "670c39ca8588c8d2347df62cf32c1005f71350ee"
   },
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1"
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceObjects": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "d49719e948aecaf3633ae94cc0d5320799a9277a"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "2201b9118d97ce6d9b79e06647ec999bc84dc990"
+    },
+    {
+      "path": "codex-rs/app-server",
+      "object": "b9367f7003dc4898367ab2082076ea51e2b9bed0"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol",
+      "object": "52e52dd45d1b8aa18029a2e9b35181829c9f090f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd",
+      "object": "2408628f909c3480be629464abe5d32c5256dfb8"
+    },
+    {
+      "path": "codex-rs/hepta-automation",
+      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+    },
+    {
+      "path": "codex-rs/hepta-fleet",
+      "object": "9d34c5bde1744216a34dad3f28f62c125ad0d2f9"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor",
+      "object": "f2f0b4866e8f5ecd91df0d964c81d2291184e0cf"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
+      "object": "fc0b8657107d450d2d81edd95ef44e8d1d8dbd27"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+      "object": "f5767f7bd1b55df0a04317b444a7b40e114c5e35"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+      "object": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+      "object": "3da1a5c8d227c9fe615d5d0847a3e787b34597f8"
+    },
+    {
+      "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
+      "object": "eb88a374cf9497fc794bba5b62b7c596a4a2200a"
+    },
+    {
+      "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
+      "object": "d94806d04f81f8ebc52b5ce7226b3f95a198bf7e"
+    }
+  ]
 }

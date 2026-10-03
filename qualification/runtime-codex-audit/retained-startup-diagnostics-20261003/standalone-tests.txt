@@ -1,0 +1,11 @@
+
+running 6 tests
+test exact_budget_preserves_output_and_one_extra_byte_is_marked ... ok
+test large_streams_have_bounded_input_consumption ... ok
+test invalid_bytes_cannot_expand_the_decoded_budget ... ok
+test short_streams_are_preserved_after_lossy_decoding ... ok
+test multibyte_boundaries_never_split_a_code_point ... ok
+test startup_error_survives_a_long_backtrace_without_losing_the_tail ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

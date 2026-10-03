@@ -1,0 +1,914 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+   Compiling libc v0.2.186
+   Compiling serde_core v1.0.228
+   Compiling zeroize v1.8.2
+   Compiling getrandom v0.2.17
+   Compiling subtle v2.6.1
+   Compiling typenum v1.20.0
+   Compiling serde v1.0.228
+   Compiling smallvec v1.15.1
+   Compiling rand_core v0.6.4
+   Compiling generic-array v0.14.7
+   Compiling log v0.4.29
+   Compiling portable-atomic v1.13.1
+   Compiling crypto-common v0.1.7
+   Compiling lock_api v0.4.14
+   Compiling critical-section v1.2.0
+   Compiling once_cell v1.21.4
+   Compiling block-buffer v0.10.4
+   Compiling parking_lot_core v0.9.12
+   Compiling digest v0.10.7
+   Compiling parking_lot v0.12.5
+   Compiling thiserror v2.0.18
+   Compiling stable_deref_trait v1.2.1
+   Compiling serde_json v1.0.149
+   Compiling mio v1.2.0
+   Compiling socket2 v0.6.3
+   Compiling errno v0.3.14
+   Compiling futures-sink v0.3.32
+   Compiling signal-hook-registry v1.4.8
+   Compiling aho-corasick v1.1.4
+   Compiling tokio v1.52.3
+   Compiling regex-automata v0.4.13
+   Compiling slab v0.4.12
+   Compiling futures-channel v0.3.32
+   Compiling tracing-core v0.1.36
+   Compiling futures-util v0.3.32
+   Compiling tracing v0.1.44
+   Compiling num-traits v0.2.19
+   Compiling sha2 v0.10.9
+   Compiling fastrand v2.3.0
+   Compiling getrandom v0.3.4
+   Compiling http v1.4.0
+   Compiling zerofrom v0.1.6
+   Compiling yoke v0.8.2
+   Compiling hashbrown v0.17.1
+   Compiling zerovec v0.11.6
+   Compiling http-body v1.0.1
+   Compiling indexmap v2.14.0
+   Compiling num_threads v0.1.7
+   Compiling tinystr v0.8.3
+   Compiling time v0.3.47
+   Compiling http-body-util v0.1.3
+   Compiling base64 v0.22.1
+   Compiling zerocopy v0.8.37
+   Compiling tokio-util v0.7.18
+   Compiling writeable v0.6.2
+   Compiling either v1.15.0
+   Compiling litemap v0.8.1
+   Compiling icu_locale_core v2.2.0
+   Compiling ppv-lite86 v0.2.21
+   Compiling potential_utf v0.1.4
+   Compiling zerotrie v0.2.4
+   Compiling icu_collections v2.2.0
+   Compiling icu_provider v2.2.0
+   Compiling crossbeam-utils v0.8.21
+   Compiling ipnet v2.11.0
+   Compiling atomic-waker v1.1.2
+   Compiling ring v0.17.14
+   Compiling aws-lc-sys v0.39.0
+   Compiling bstr v1.12.1
+   Compiling sync_wrapper v1.0.2
+   Compiling rustls-pki-types v1.14.0
+   Compiling linux-raw-sys v0.12.1
+   Compiling untrusted v0.7.1
+   Compiling aws-lc-rs v1.16.2
+   Compiling rustix v1.1.4
+   Compiling icu_normalizer v2.2.0
+   Compiling icu_properties v2.2.0
+   Compiling pin-utils v0.1.0
+   Compiling sha1_smol v1.0.1
+   Compiling httpdate v1.0.3
+   Compiling uuid v1.20.0
+   Compiling idna_adapter v1.2.1
+   Compiling num-integer v0.1.46
+   Compiling idna v1.1.0
+   Compiling rustls-webpki v0.103.13
+   Compiling ryu v1.0.22
+   Compiling byteorder v1.5.0
+   Compiling rustls v0.23.43
+   Compiling httparse v1.10.1
+   Compiling url v2.5.8
+   Compiling sha1 v0.10.6
+   Compiling tinyvec_macros v0.1.1
+   Compiling tinyvec v1.10.0
+   Compiling try-lock v0.2.5
+   Compiling want v0.3.1
+   Compiling crc32fast v1.5.0
+   Compiling h2 v0.4.16
+   Compiling rand_core v0.9.5
+   Compiling futures-executor v0.3.32
+   Compiling tower-service v0.3.3
+   Compiling rand_chacha v0.9.0
+   Compiling rand v0.9.3
+   Compiling mime v0.3.17
+   Compiling hyper v1.8.1
+   Compiling regex v1.12.3
+   Compiling socket2 v0.5.10
+   Compiling openssl-probe v0.2.1
+   Compiling rustls-native-certs v0.8.3
+   Compiling hyper-util v0.1.20
+   Compiling tokio-rustls v0.26.4
+   Compiling webpki-roots v1.0.9
+   Compiling tower-layer v0.3.3
+   Compiling tower v0.5.3
+   Compiling psl-types v2.0.11
+   Compiling futures v0.3.31
+   Compiling spin v0.9.8
+   Compiling rand_core v0.10.1
+   Compiling getrandom v0.4.2
+   Compiling crossbeam-epoch v0.9.20
+   Compiling hyper-rustls v0.27.7
+   Compiling num-bigint v0.4.6
+   Compiling itertools v0.14.0
+   Compiling nibble_vec v0.1.0
+   Compiling bytemuck v1.25.0
+   Compiling ahash v0.8.12
+   Compiling flume v0.12.0
+   Compiling simd-adler32 v0.3.8
+   Compiling iri-string v0.7.10
+   Compiling const_format v0.2.35
+   Compiling tokio-stream v0.1.18
+   Compiling wildcard v0.3.0
+   Compiling smol_str v0.3.5
+   Compiling foreign-types-shared v0.1.1
+   Compiling foreign-types v0.3.2
+   Compiling rama-utils v0.3.0-alpha.4
+   Compiling mime_guess v2.0.5
+   Compiling openssl-sys v0.9.111
+   Compiling tokio-graceful v0.2.2
+   Compiling asynk-strim v0.1.5
+   Compiling regex-lite v0.1.8
+   Compiling adler2 v2.0.1
+   Compiling data-encoding v2.10.0
+   Compiling rama-error v0.3.0-alpha.4
+   Compiling rama-core v0.3.0-alpha.4
+   Compiling miniz_oxide v0.8.9
+   Compiling openssl v0.10.75
+   Compiling chrono v0.4.43
+   Compiling nom v8.0.0
+   Compiling minimal-lexical v0.2.1
+   Compiling openssl-probe v0.1.6
+   Compiling endian-type v0.2.0
+   Compiling radix_trie v0.3.0
+   Compiling native-tls v0.2.14
+   Compiling nom v7.1.3
+   Compiling rama-http-types v0.3.0-alpha.4
+   Compiling psl v2.1.184
+   Compiling dyn-clone v1.0.20
+   Compiling md5 v0.8.0
+   Compiling cookie v0.18.1
+   Compiling tokio-native-tls v0.3.1
+   Compiling rama-net v0.3.0-alpha.4
+   Compiling tower-http v0.6.8
+   Compiling crossbeam-deque v0.8.6
+   Compiling tempfile v3.27.0
+   Compiling publicsuffix v2.3.0
+   Compiling encoding_rs v0.8.35
+   Compiling static_assertions v1.1.0
+   Compiling cookie_store v0.22.1
+   Compiling hyper-tls v0.6.0
+   Compiling serde_urlencoded v0.7.1
+   Compiling opentelemetry v0.31.0
+   Compiling option-ext v0.2.0
+   Compiling cpufeatures v0.3.0
+   Compiling chacha20 v0.10.0
+   Compiling dirs-sys v0.5.0
+   Compiling reqwest v0.12.28
+   Compiling schemars v0.8.22
+   Compiling rayon-core v1.13.0
+   Compiling crossbeam-channel v0.5.15
+   Compiling zlib-rs v0.5.5
+   Compiling anstyle v1.0.13
+   Compiling utf8parse v0.2.2
+   Compiling ref-cast v1.0.25
+   Compiling dirs v6.0.0
+   Compiling ts-rs v11.1.0
+   Compiling rand v0.10.1
+   Compiling env_filter v1.0.0
+   Compiling sharded-slab v0.1.7
+   Compiling tracing-log v0.2.0
+   Compiling tracing-serde v0.2.0
+   Compiling matchers v0.2.0
+   Compiling thread_local v1.1.9
+   Compiling bumpalo v3.19.1
+   Compiling nu-ansi-term v0.50.3
+   Compiling tracing-subscriber v0.3.22
+   Compiling flate2 v1.1.8
+   Compiling enumflags2 v0.7.12
+   Compiling env_logger v0.11.9
+   Compiling codex-utils-absolute-path v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/absolute-path)
+   Compiling memoffset v0.9.1
+   Compiling zstd-sys v2.0.16+zstd.1.5.7
+   Compiling rusticata-macros v4.1.0
+   Compiling hash32 v0.2.1
+   Compiling arrayvec v0.7.6
+   Compiling bit-vec v0.8.0
+   Compiling atomic v0.5.3
+   Compiling tagptr v0.2.0
+   Compiling link-section v0.17.2
+   Compiling constant_time_eq v0.3.1
+   Compiling lock_free_hashtable v0.1.4
+   Compiling ctor v1.0.6
+   Compiling moka v0.12.13
+   Compiling bit-set v0.8.0
+   Compiling asn1-rs v0.7.1
+   Compiling heapless v0.7.17
+   Compiling hickory-proto v0.25.2
+   Compiling zstd-safe v7.2.4
+   Compiling quickcheck v1.1.0
+   Compiling typeid v1.0.3
+   Compiling anstyle-parse v0.2.7
+   Compiling cobs v0.3.0
+   Compiling hashbrown v0.14.5
+   Compiling is_terminal_polyfill v1.70.2
+   Compiling arrayref v0.3.9
+   Compiling colorchoice v1.0.4
+   Compiling resolv-conf v0.7.6
+   Compiling anstyle-query v1.1.5
+   Compiling unicode-width v0.1.14
+   Compiling hickory-resolver v0.25.2
+   Compiling anstream v0.6.21
+   Compiling blake3 v1.8.2
+   Compiling dashmap v6.1.0
+   Compiling strong_hash v0.1.0
+   Compiling allocative v0.3.6
+   Compiling postcard v1.1.3
+   Compiling erased-serde v0.4.10
+   Compiling nix v0.28.0
+   Compiling sorted_vector_map v0.2.1
+   Compiling zstd v0.13.3
+   Compiling fancy-regex v0.16.2
+   Compiling static_interner v0.1.2
+   Compiling codex-utils-rustls-provider v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/rustls-provider)
+   Compiling fxhash v0.2.1
+   Compiling terminal_size v0.4.3
+   Compiling triomphe v0.1.15
+   Compiling csv-core v0.1.13
+   Compiling urlencoding v2.1.3
+   Compiling sequence_trie v0.3.6
+   Compiling clap_lex v1.0.0
+   Compiling take_mut v0.2.2
+   Compiling inventory v0.3.24
+   Compiling bitflags v1.3.2
+   Compiling pagable v0.4.1
+   Compiling fluent-uri v0.1.4
+   Compiling clap_builder v4.5.58
+   Compiling csv v1.4.0
+   Compiling oid-registry v0.8.1
+   Compiling rama-dns v0.3.0-alpha.4
+   Compiling rama-http-headers v0.3.0-alpha.4
+   Compiling der-parser v10.0.0
+   Compiling tracing-opentelemetry v0.32.1
+   Compiling serde_html_form v0.3.2
+   Compiling pem v3.0.6
+   Compiling http-range-header v0.4.2
+   Compiling endian-type v0.1.2
+   Compiling matchit v0.9.1
+   Compiling gix-trace v0.1.18
+   Compiling radix_trie v0.2.1
+   Compiling rama-http v0.3.0-alpha.4
+   Compiling clap v4.5.58
+   Compiling codex-http-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/http-client)
+   Compiling x509-parser v0.18.1
+   Compiling rama-tcp v0.3.0-alpha.4
+   Compiling logos v0.15.1
+   Compiling derive_more v1.0.0
+   Compiling starlark_map v0.14.2
+   Compiling lsp-types v0.97.0
+   Compiling annotate-snippets v0.9.2
+   Compiling tokio-test v0.4.5
+   Compiling fdeflate v0.3.7
+   Compiling fd-lock v4.0.4
+   Compiling globset v0.4.18
+   Compiling gix-validate v0.11.0
+   Compiling yasna v0.5.2
+   Compiling pxfm v0.1.27
+   Compiling zune-core v0.5.1
+   Compiling quick-error v2.0.1
+   Compiling color_quant v1.1.0
+   Compiling indenter v0.3.4
+   Compiling home v0.5.12
+   Compiling byteorder-lite v0.1.0
+   Compiling weezl v0.1.12
+   Compiling gif v0.14.1
+   Compiling image-webp v0.2.4
+   Compiling moxcms v0.7.11
+   Compiling rustyline v14.0.0
+   Compiling display_container v0.9.0
+   Compiling zune-jpeg v0.5.12
+   Compiling starlark_syntax v0.14.2
+   Compiling rcgen v0.14.7
+   Compiling gix-path v0.11.2
+   Compiling png v0.18.0
+   Compiling rama-http-core v0.3.0-alpha.4
+   Compiling debugserver-types v0.5.0
+   Compiling icu_locale_data v2.2.0
+   Compiling textwrap v0.11.0
+   Compiling codex-utils-home-dir v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/home-dir)
+   Compiling rama-udp v0.3.0-alpha.4
+   Compiling rama-unix v0.3.0-alpha.4
+   Compiling unicode-normalization v0.1.25
+   Compiling lru v0.18.2
+   Compiling erased-serde v0.3.31
+   Compiling strsim v0.10.0
+   Compiling maplit v1.0.2
+   Compiling cmp_any v0.8.1
+   Compiling codex-utils-cache v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/cache)
+   Compiling starlark v0.14.2
+   Compiling gix-utils v0.3.1
+   Compiling rama-http-backend v0.3.0-alpha.4
+   Compiling rama-socks5 v0.3.0-alpha.4
+   Compiling icu_locale v2.2.0
+   Compiling serde_with v3.17.0
+   Compiling image v0.25.9
+   Compiling rama-tls-rustls v0.3.0-alpha.4
+   Compiling icu_decimal_data v2.2.0
+   Compiling fixed_decimal v0.7.2
+   Compiling multimap v0.10.1
+   Compiling icu_decimal v2.2.0
+   Compiling strum v0.27.2
+   Compiling codex-network-proxy v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/network-proxy)
+   Compiling codex-execpolicy v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/execpolicy)
+   Compiling codex-utils-image v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/image)
+   Compiling codex-utils-path-uri v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/path-uri)
+   Compiling codex-extension-items v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/items)
+   Compiling landlock v0.4.4
+   Compiling codex-utils-redacted-string v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/redacted-string)
+   Compiling chardetng v0.1.17
+   Compiling codex-utils-string v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/string)
+   Compiling concurrent-queue v2.5.0
+   Compiling codex-async-utils v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/async-utils)
+   Compiling quick-xml v0.41.0
+   Compiling seccompiler v0.5.0
+   Compiling sys-locale v0.3.2
+   Compiling wildmatch v2.6.1
+   Compiling prodash v31.0.0
+   Compiling zlib-rs v0.6.3
+   Compiling codex-protocol v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/protocol)
+   Compiling gix-features v0.46.2
+   Compiling event-listener v5.4.1
+   Compiling hash32 v0.3.1
+   Compiling heapless v0.8.0
+   Compiling gix-error v0.2.1
+   Compiling winnow v0.7.14
+   Compiling faster-hex v0.10.0
+   Compiling curve25519-dalek v4.1.3
+   Compiling sha1-checked v0.10.0
+   Compiling gix-hash v0.23.0
+   Compiling base64ct v1.8.3
+   Compiling jiff v0.2.23
+   Compiling gix-date v0.15.1
+   Compiling pem-rfc7468 v0.7.0
+   Compiling der v0.7.10
+   Compiling gix-actor v0.40.0
+   Compiling gix-hashtable v0.13.0
+   Compiling gix-object v0.58.0
+   Compiling spki v0.7.3
+   Compiling memmap2 v0.9.10
+   Compiling pkcs8 v0.10.2
+   Compiling gix-fs v0.19.2
+   Compiling block-padding v0.3.3
+   Compiling shell-words v1.1.1
+   Compiling inout v0.1.4
+   Compiling gix-chunk v0.7.0
+   Compiling event-listener-strategy v0.5.4
+   Compiling signature v2.2.0
+   Compiling nonempty v0.12.0
+   Compiling cipher v0.4.4
+   Compiling gix-tempfile v21.0.2
+   Compiling gix-lock v21.0.2
+   Compiling gix-commitgraph v0.35.0
+   Compiling async-channel v2.5.0
+   Compiling filedescriptor v0.8.3
+   Compiling gix-quote v0.7.0
+   Compiling headers-core v0.3.0
+   Compiling gix-sec v0.13.2
+   Compiling serial2 v0.2.33
+   Compiling downcast-rs v1.2.1
+   Compiling portable-pty v0.9.0
+   Compiling pin-project v1.1.10
+   Compiling headers v0.4.1
+   Compiling gix-revwalk v0.29.0
+   Compiling gix-ref v0.61.0
+   Compiling utf-8 v0.7.6
+   Compiling tungstenite v0.27.0 (https://github.com/openai-oss-forks/tungstenite-rs?rev=4fffad30fe373adbdcffab9545e9e9bf4f2fc19f#4fffad30)
+   Compiling codex-utils-pty v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/pty)
+   Compiling gix-command v0.8.0
+   Compiling ed25519 v2.2.3
+   Compiling gix-packetline v0.21.2
+   Compiling gix-glob v0.24.0
+   Compiling gix-url v0.35.2
+   Compiling clru v0.6.3
+   Compiling rand_chacha v0.3.1
+   Compiling gix-pack v0.68.0
+   Compiling rand v0.8.6
+   Compiling gix-transport v0.55.1
+   Compiling ed25519-dalek v2.2.0
+   Compiling tokio-tungstenite v0.28.0 (https://github.com/openai-oss-forks/tokio-tungstenite?rev=0e5b2d73aa18dd9f0a50ee9ff199d5aef7594186#0e5b2d73)
+   Compiling gix-revision v0.43.0
+   Compiling gix-shallow v0.10.0
+   Compiling gix-config-value v0.17.1
+   Compiling hyper-timeout v0.5.2
+   Compiling hmac v0.12.1
+   Compiling unicode-bom v2.0.3
+   Compiling gix-protocol v0.59.0
+   Compiling gix-config v0.54.0
+   Compiling tonic v0.14.3
+   Compiling gix-refspec v0.39.0
+   Compiling gix-odb v0.78.0
+   Compiling gix-discover v0.49.0
+   Compiling gix-traverse v0.55.0
+   Compiling codex-file-system v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/file-system)
+   Compiling prost v0.14.3
+   Compiling gix-diff v0.61.0
+   Compiling gix v0.81.0
+   Compiling tonic-prost v0.14.3
+   Compiling codex-websocket-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/websocket-client)
+   Compiling universal-hash v0.5.1
+   Compiling opaque-debug v0.3.1
+   Compiling similar v2.7.0
+   Compiling eventsource-stream v0.2.3
+   Compiling codex-git-utils v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/git-utils)
+   Compiling codex-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/codex-client)
+   Compiling nix v0.30.1
+   Compiling codex-api v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/codex-api)
+   Compiling opentelemetry_sdk v0.31.0
+   Compiling const-hex v1.17.0
+   Compiling aead v0.5.2
+   Compiling opentelemetry-proto v0.31.0
+   Compiling opentelemetry-http v0.31.0
+   Compiling num-complex v0.4.6
+   Compiling os_info v3.14.0
+   Compiling aes v0.8.4
+   Compiling opentelemetry-appender-tracing v0.31.1
+   Compiling gethostname v1.1.0
+   Compiling opentelemetry-semantic-conventions v0.31.0
+   Compiling toml_datetime v0.7.5+spec-1.1.0
+   Compiling toml_writer v1.0.6+spec-1.1.0
+   Compiling opentelemetry-otlp v0.31.0
+   Compiling serde_spanned v1.1.1
+   Compiling toml v0.9.11+spec-1.1.0
+   Compiling codex-otel v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/otel)
+   Compiling http v0.2.12
+   Compiling serde_path_to_error v0.1.20
+   Compiling outref v0.5.2
+   Compiling vsimd v0.8.0
+   Compiling base64-simd v0.8.0
+   Compiling http-body v0.4.6
+   Compiling tree-sitter-language v0.1.7
+   Compiling x25519-dalek v2.0.1
+   Compiling bytes-utils v0.1.4
+   Compiling env_home v0.1.0
+   Compiling which v8.0.0
+   Compiling aws-smithy-types v1.4.7
+   Compiling futures-lite v2.6.1
+   Compiling codex-utils-path v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/path-utils)
+   Compiling unic-langid-impl v0.9.6
+   Compiling windows_x86_64_gnu v0.52.6
+   Compiling streaming-iterator v0.1.9
+   Compiling unic-langid v0.9.6
+   Compiling async-task v4.7.1
+   Compiling tree-sitter v0.25.10
+   Compiling windows-targets v0.52.6
+   Compiling tree-sitter-powershell v0.26.4
+   Compiling tree-sitter-bash v0.25.1
+   Compiling poly1305 v0.8.0
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-contracts)
+   Compiling piper v0.2.4
+   Compiling aws-smithy-async v1.2.14
+   Compiling endi v1.1.1
+   Compiling zvariant v4.2.0
+   Compiling aws-smithy-runtime-api v1.12.0
+   Compiling blocking v1.6.2
+   Compiling codex-shell-command v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/shell-command)
+   Compiling windows-result v0.2.0
+   Compiling codex-features v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/features)
+   Compiling toml_edit v0.24.0+spec-1.1.0
+   Compiling codex-model-provider-info v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/model-provider-info)
+   Compiling hkdf v0.12.4
+   Compiling salsa20 v0.10.2
+   Compiling async-lock v3.4.2
+   Compiling polling v3.11.0
+   Compiling dns-lookup v3.0.1
+   Compiling serde_ignored v0.1.14
+   Compiling async-fs v2.2.0
+   Compiling codex-config v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/config)
+   Compiling async-io v2.6.0
+   Compiling windows-strings v0.1.0
+   Compiling nix v0.29.0
+   Compiling zbus_names v3.0.0
+   Compiling async-executor v1.13.3
+   Compiling fluent-langneg v0.13.1
+   Compiling intl_pluralrules v7.0.2
+   Compiling intl-memoizer v0.5.3
+   Compiling async-broadcast v0.7.2
+   Compiling num-rational v0.4.2
+   Compiling num-iter v0.1.45
+   Compiling ordered-stream v0.2.0
+   Compiling xdg-home v1.3.0
+   Compiling base64 v0.21.7
+   Compiling windows-core v0.58.0
+   Compiling zbus v4.4.0
+   Compiling num v0.4.3
+   Compiling fluent-bundle v0.15.3
+   Compiling pbkdf2 v0.12.2
+   Compiling chacha20 v0.9.1
+   Compiling cbc v0.1.2
+   Compiling rust-embed-utils v8.11.0
+   Compiling dirs-sys-next v0.1.2
+   Compiling codex-windows-sandbox v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/windows-sandbox-rs)
+   Compiling dirs-next v2.0.0
+   Compiling rust-embed v8.11.0
+   Compiling secret-service v4.0.0
+   Compiling chacha20poly1305 v0.10.1
+   Compiling fluent v0.16.1
+   Compiling windows v0.58.0
+   Compiling polyval v0.6.2
+   Compiling tracing-appender v0.2.4
+   Compiling cookie-factory v0.3.3
+   Compiling linux-keyutils v0.2.4
+   Compiling secrecy v0.10.3
+   Compiling keccak v0.1.6
+   Compiling io_tee v0.1.1
+   Compiling age-core v0.11.0
+   Compiling sha3 v0.10.9
+   Compiling keyring v3.6.3
+   Compiling ghash v0.5.1
+   Compiling i18n-embed v0.15.4
+   Compiling scrypt v0.11.0
+   Compiling ctr v0.9.2
+   Compiling kem v0.3.0-pre.0
+   Compiling hybrid-array v0.2.3
+   Compiling bech32 v0.9.1
+   Compiling age v0.11.2
+   Compiling ml-kem v0.2.3
+   Compiling thiserror-no-std v2.0.2
+   Compiling aes-gcm v0.10.3
+   Compiling codex-sandboxing v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/sandboxing)
+   Compiling codex-keyring-store v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/keyring-store)
+   Compiling aws-smithy-http v0.62.6
+   Compiling aws-credential-types v1.2.11
+   Compiling axum-core v0.5.6
+   Compiling matchit v0.8.4
+   Compiling codex-secrets v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/secrets)
+   Compiling axum v0.8.8
+   Compiling clatter v2.2.0
+   Compiling codex-exec-server-protocol v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/exec-server-protocol)
+   Compiling aws-smithy-http-client v1.1.12
+   Compiling aws-smithy-observability v0.1.5
+   Compiling debugid v0.8.0
+   Compiling crossbeam-queue v0.3.12
+   Compiling futures-intrusive v0.5.0
+   Compiling sqlx-core v0.9.0
+   Compiling sentry-types v0.46.1
+   Compiling aws-smithy-runtime v1.9.5
+   Compiling codex-exec-server v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/exec-server)
+   Compiling aws-types v1.3.11
+   Compiling aws-sigv4 v1.3.7
+   Compiling crypto_secretbox v0.1.1
+   Compiling simple_asn1 v0.6.4
+   Compiling atoi v2.0.0
+   Compiling blake2 v0.10.6
+   Compiling ff v0.13.1
+   Compiling base16ct v0.2.0
+   Compiling chunked_transfer v1.5.0
+   Compiling ascii v1.1.0
+   Compiling tiny_http v0.12.0
+   Compiling sec1 v0.7.3
+   Compiling group v0.13.0
+   Compiling crypto_box v0.9.1
+   Compiling sqlx-sqlite v0.9.0
+   Compiling jsonwebtoken v9.3.1
+   Compiling aws-runtime v1.5.17
+   Compiling sentry-core v0.46.1
+   Compiling aws-smithy-json v0.61.9
+   Compiling webbrowser v1.2.4
+   Compiling crypto-bigint v0.5.5
+   Compiling gimli v0.32.3
+   Compiling codex-utils-template v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/template)
+   Compiling addr2line v0.25.1
+   Compiling elliptic-curve v0.13.8
+   Compiling sqlx v0.9.0
+   Compiling codex-agent-identity v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/agent-identity)
+   Compiling object v0.37.3
+   Compiling codex-workload-identity v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/workload-identity)
+   Compiling codex-terminal-detection v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/terminal-detection)
+   Compiling rustc-demangle v0.1.27
+   Compiling codex-login v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/login)
+   Compiling backtrace v0.3.76
+   Compiling rfc6979 v0.4.0
+   Compiling xmlparser v0.13.6
+   Compiling aws-smithy-xml v0.60.13
+   Compiling schemars v1.2.1
+   Compiling ecdsa v0.16.9
+   Compiling sentry-backtrace v0.46.1
+   Compiling findshlibs v0.10.2
+   Compiling primeorder v0.13.6
+   Compiling oauth2 v5.0.0
+   Compiling aws-smithy-query v0.60.9
+   Compiling process-wrap v9.0.1
+   Compiling codex-utils-output-truncation v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/output-truncation)
+   Compiling codex-history v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/history)
+   Compiling reqwest v0.13.4
+   Compiling sse-stream v0.2.5
+   Compiling semver v1.0.27
+   Compiling hostname v0.4.2
+   Compiling uname v0.1.1
+   Compiling base64 v0.23.0
+   Compiling rmcp v3.1.3
+   Compiling sentry-contexts v0.46.1
+   Compiling codex-install-context v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/install-context)
+   Compiling codex-state v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/state)
+   Compiling aws-sdk-sts v1.95.0
+   Compiling p256 v0.13.2
+   Compiling sentry-debug-images v0.46.1
+   Compiling sentry-panic v0.46.1
+   Compiling aws-sdk-ssooidc v1.93.0
+   Compiling aws-sdk-signin v1.2.0
+   Compiling aws-sdk-sso v1.91.0
+   Compiling codex-utils-plugins v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/plugins)
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-types)
+   Compiling codex-plugin v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/plugin)
+   Compiling aws-config v1.8.12
+   Compiling sentry v0.46.1
+   Compiling codex-code-mode-protocol v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/code-mode-protocol)
+   Compiling codex-collaboration-mode-templates v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/collaboration-mode-templates)
+   Compiling codex-models-manager v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/models-manager)
+   Compiling codex-aws-auth v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/aws-auth)
+   Compiling codex-feedback v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/feedback)
+   Compiling codex-response-debug-context v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/response-debug-context)
+   Compiling codex-model-provider v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/model-provider)
+   Compiling codex-code-mode v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/code-mode)
+   Compiling codex-connectors v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/connectors)
+   Compiling codex-rmcp-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/rmcp-client)
+   Compiling codex-exec-server-test-support v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/exec-server/tests/support)
+   Compiling codex-diagnostics v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/diagnostics)
+   Compiling predicates-core v1.0.9
+   Compiling jsonptr v0.7.1
+   Compiling codex-tools v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/tools)
+   Compiling codex-mcp v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/codex-mcp)
+   Compiling symphonia-core v0.6.0
+   Compiling rayon v1.11.0
+   Compiling nucleo-matcher v0.3.1 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+   Compiling termtree v0.5.1
+   Compiling difflib v0.4.0
+   Compiling predicates v3.1.3
+   Compiling predicates-tree v1.0.12
+   Compiling nucleo v0.5.0 (https://github.com/helix-editor/nucleo.git?rev=4253de9faabb4e5c6d81d946a5e35a90f87347ee#4253de9f)
+   Compiling codex-context-fragments v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/context-fragments)
+   Compiling ignore v0.4.25
+   Compiling wait-timeout v0.2.1
+   Compiling assert_cmd v2.1.2
+   Compiling codex-file-search v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/file-search)
+   Compiling symphonia-metadata v0.6.0
+   Compiling runfiles v0.1.0 (https://github.com/dzbarsky/rules_rust?rev=b56cbaa8465e74127f1ea216f813cd377295ad81#b56cbaa8)
+   Compiling codex-utils-cargo-bin v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/cargo-bin)
+   Compiling codex-rollout v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/rollout)
+   Compiling codex-extension-api v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/extension-api)
+   Compiling codex-experimental-api-macros v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/codex-experimental-api-macros)
+   Compiling codex-app-server-protocol-noop-macros v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/app-server-protocol-noop-macros)
+   Compiling symphonia-common v0.6.0
+   Compiling codex-skills v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/skills)
+   Compiling unsafe-libyaml v0.2.11
+   Compiling codex-app-server-protocol v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/app-server-protocol)
+   Compiling serde_yaml v0.9.34+deprecated
+   Compiling include_dir v0.7.4
+   Compiling lzma-sys v0.1.20
+   Compiling bzip2-sys v0.1.13+1.0.8
+   Compiling bzip2 v0.5.2
+   Compiling xz2 v0.1.7
+   Compiling zopfli v0.8.3
+   Compiling lzma-rs v0.3.0
+   Compiling filetime v0.2.27
+   Compiling deflate64 v0.1.10
+   Compiling extended v0.1.0
+   Compiling symphonia-format-riff v0.6.0
+   Compiling zip v2.4.2
+   Compiling tar v0.4.45
+   Compiling symphonia-format-ogg v0.6.0
+   Compiling symphonia-format-isomp4 v0.6.0
+   Compiling symphonia-format-mkv v0.6.0
+   Compiling symphonia-bundle-mp3 v0.6.0
+   Compiling codex-hooks v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hooks)
+   Compiling hashbrown v0.15.5
+   Compiling cached_proc_macro_types v0.1.1
+   Compiling web-time v1.1.0
+   Compiling cached v0.56.0
+   Compiling symphonia v0.6.0
+   Compiling stop-words v0.9.0
+   Compiling pulldown-cmark v0.10.3
+   Compiling codex-apply-patch v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/apply-patch)
+   Compiling codex-shell-escalation v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/shell-escalation)
+   Compiling rust-stemmers v1.2.0
+   Compiling deunicode v1.6.2
+   Compiling bm25 v2.3.2
+   Compiling codex-utils-audio v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/audio)
+   Compiling codex-prompts v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/prompts)
+   Compiling codex-rollout-trace v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/rollout-trace)
+   Compiling codex-analytics v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/analytics)
+   Compiling codex-core-plugins v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/core-plugins)
+   Compiling codex-skills-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/skills)
+   Compiling codex-thread-store v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/thread-store)
+   Compiling codex-agent-graph-store v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/agent-graph-store)
+   Compiling codex-memories-read v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/memories/read)
+   Compiling codex-utils-stream-parser v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/stream-parser)
+   Compiling whoami v1.6.1
+   Compiling codex-hepta-cognitive-types v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-cognitive-types)
+   Compiling codex-core v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/core)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-memory-retrieval)
+   Compiling codex-hepta-prompt-registry v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-prompt-registry)
+   Compiling codex-hepta-paths v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-paths)
+   Compiling codex-hepta-kg v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-kg)
+   Compiling codex-hepta-operations v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-operations)
+   Compiling codex-backend-openapi-models v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/codex-backend-openapi-models)
+   Compiling codex-backend-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/backend-client)
+   Compiling codex-hepta-cognitive-read v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-cognitive-read)
+   Compiling inotify-sys v0.1.5
+   Compiling codex-linux-sandbox v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/linux-sandbox)
+   Compiling is_ci v1.2.0
+   Compiling inotify v0.11.0
+   Compiling codex-hepta-memory-federation v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-memory-federation)
+   Compiling notify-types v2.1.0
+   Compiling is-terminal v0.4.17
+   Compiling codex-process-hardening v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/process-hardening)
+   Compiling supports-color v2.1.0
+   Compiling notify v8.2.0
+   Compiling codex-hepta-memory v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-memory)
+   Compiling supports-color v3.0.2
+   Compiling codex-hepta-authbus v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-authbus)
+   Compiling codex-hepta-evidence v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-evidence)
+   Compiling owo-colors v4.3.0
+   Compiling codex-arg0 v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/arg0)
+   Compiling codex-connectors-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/connectors)
+   Compiling codex-home v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/codex-home)
+   Compiling codex-hepta-intuition v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-intuition)
+   Compiling codex-utils-cli v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/cli)
+   Compiling codex-uds v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/uds)
+   Compiling codex-hepta-learning-ledger v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-learning-ledger)
+   Compiling codex-hepta-governance v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/hepta-governance)
+   Compiling codex-hepta-memory-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/hepta-memory)
+warning: associated function `new` is never used
+   --> ext/hepta-memory/src/cognitive/mod.rs:274:19
+    |
+273 | impl CognitiveExtension {
+    | ----------------------- associated function in this implementation
+274 |     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    |                   ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `api_digest` is never used
+   --> ext/hepta-memory/src/cognitive/federation.rs:864:4
+    |
+864 | fn api_digest(
+    |    ^^^^^^^^^^
+
+warning: `codex-hepta-memory-extension` (lib) generated 2 warnings
+   Compiling codex-file-watcher v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/file-watcher)
+   Compiling codex-git-attribution v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/git-attribution)
+   Compiling codex-hepta-prompt-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/hepta-prompt)
+   Compiling codex-utils-json-to-toml v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/json-to-toml)
+   Compiling codex-hepta-wire v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-wire)
+   Compiling codex-hepta-ndu v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-ndu)
+warning: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2
+  --> hepta-ndu/src/lib.rs:50:20
+   |
+50 | pub use evaluator::evaluate_candidates;
+   |                    ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-hepta-ndu` (lib) generated 1 warning
+   Compiling codex-memories-write v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/memories/write)
+   Compiling codex-external-agent-migration v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/external-agent-migration)
+   Compiling codex-web-search-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/web-search)
+   Compiling codex-queue-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/queue)
+   Compiling codex-agent-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/agent)
+   Compiling codex-goal-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/goal)
+   Compiling codex-app-server-transport v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/app-server-transport)
+   Compiling codex-memories-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/memories)
+   Compiling codex-cloud-config v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/cloud-config)
+   Compiling codex-chatgpt v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/chatgpt)
+   Compiling codex-image-generation-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/image-generation)
+   Compiling codex-history-notes-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/history-notes)
+   Compiling codex-guardian-v2 v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/guardian-v2)
+   Compiling codex-mcp-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/mcp)
+   Compiling codex-hepta-infer-core v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-infer-core)
+   Compiling codex-app-server v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/app-server)
+   Compiling num_cpus v1.17.0
+   Compiling deadpool-runtime v0.1.4
+   Compiling dtor-proc-macro v0.0.6
+   Compiling dtor v0.1.1
+   Compiling deadpool v0.12.3
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-neuron)
+   Compiling codex-hepta-context-compiler v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-context-compiler)
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-intelligence-eval)
+   Compiling codex-hepta-prompt-optimizer v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-prompt-optimizer)
+   Compiling codex-hepta-automation v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-automation)
+   Compiling codex-hepta-fleet v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-fleet)
+   Compiling codex-hepta-plasticity v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-plasticity)
+   Compiling codex-hepta-objective v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-objective)
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-learning-artifacts)
+   Compiling assert-json-diff v2.0.2
+   Compiling ctor-proc-macro v0.0.7
+   Compiling ctor v0.6.3
+   Compiling wiremock v0.6.5
+   Compiling codex-hepta-intelligence v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-intelligence)
+   Compiling codex-hepta-agent-protocol v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-agent-protocol)
+   Compiling codex-hepta-control-plane v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-control-plane)
+   Compiling codex-hepta-bellman-operator v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-bellman-operator)
+   Compiling codex-hepta-cognitive-store v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-cognitive-store)
+   Compiling diff v0.1.13
+   Compiling yansi v1.0.1
+   Compiling codex-app-server-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/app-server-client)
+   Compiling codex-hepta-codex-adapter v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-codex-adapter)
+   Compiling codex-hepta-agentd v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-agentd)
+warning: field `sequence` is never read
+   --> hepta-agentd/src/browser_servo.rs:317:5
+    |
+316 | struct DecodedFrame {
+    |        ------------ field in this struct
+317 |     sequence: u64,
+    |     ^^^^^^^^
+    |
+    = note: `DecodedFrame` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `append` and `append_with_delivery` are never used
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19
+   |
+24 | impl CognitiveRetrievalLearningSink {
+   | ----------------------------------- methods in this implementation
+...
+32 |     pub(crate) fn append(
+   |                   ^^^^^^
+...
+52 |     pub(crate) fn append_with_delivery(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: field `handle` is never read
+  --> hepta-agentd/src/plasticity_learning_producer.rs:24:5
+   |
+23 | pub(crate) struct AgentdLearningPlasticityProducerV1 {
+   |                   ---------------------------------- field in this struct
+24 |     handle: PlasticityRuntimeHandleV1,
+   |     ^^^^^^
+   |
+   = note: `AgentdLearningPlasticityProducerV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: methods `submit_parameter` and `submit_topology` are never used
+  --> hepta-agentd/src/plasticity_learning_producer.rs:32:25
+   |
+27 | impl AgentdLearningPlasticityProducerV1 {
+   | --------------------------------------- methods in this implementation
+...
+32 |     pub(crate) async fn submit_parameter(
+   |                         ^^^^^^^^^^^^^^^^
+...
+40 |     pub(crate) async fn submit_topology(
+   |                         ^^^^^^^^^^^^^^^
+
+warning: methods `submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` are never used
+   --> hepta-agentd/src/state.rs:178:25
+    |
+ 76 | impl AgentdState {
+    | ---------------- methods in this implementation
+...
+178 |     pub(crate) async fn submit_parameter_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+195 |     pub(crate) async fn submit_topology_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+   Compiling pretty_assertions v1.4.1
+   Compiling core_test_support v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/core/tests/common)
+warning: `codex-hepta-agentd` (lib) generated 5 warnings
+   Compiling codex-hepta-infer-worker-host v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-infer-worker-host)
+error[E0432]: unresolved import `pretty_assertions`
+ --> hepta-infer-worker-host/src/native_send_guard_tests.rs:2:5
+  |
+2 | use pretty_assertions::assert_eq;
+  |     ^^^^^^^^^^^^^^^^^ use of unresolved module or unlinked crate `pretty_assertions`
+  |
+  = help: if you wanted to use a crate named `pretty_assertions`, use `cargo add pretty_assertions` to add it to your `Cargo.toml`
+
+error[E0063]: missing field `trace` in initializer of `codex_app_server_protocol::JSONRPCRequest`
+  --> app-server-client/src/remote_queue_guard_tests.rs:97:31
+   |
+97 |             request: Box::new(JSONRPCRequest {
+   |                               ^^^^^^^^^^^^^^ missing `trace`
+
+error[E0063]: missing field `trace` in initializer of `codex_app_server_protocol::JSONRPCRequest`
+   --> app-server-client/src/remote_queue_guard_tests.rs:133:31
+    |
+133 |             request: Box::new(JSONRPCRequest {
+    |                               ^^^^^^^^^^^^^^ missing `trace`
+
+For more information about this error, try `rustc --explain E0063`.
+error: could not compile `codex-app-server-client` (lib test) due to 2 previous errors
+warning: build failed, waiting for other jobs to finish...
+For more information about this error, try `rustc --explain E0432`.
+error: could not compile `codex-hepta-infer-worker-host` (lib test) due to 1 previous error
+error: command `/workspace/scratch/aebafee84981/toolchain/rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu/bin/cargo '--color=auto' test --no-run --message-format json-render-diagnostics --package codex-app-server-client --package codex-hepta-infer-worker-host --lib --locked` exited with code 101
+error: recipe `test` failed on line 88 with exit code 101

@@ -1,0 +1,53 @@
+{
+  "after": {
+    "commit": "b73445ecc703153bdcf7f505beafb9b25f84b89f",
+    "dirty": false,
+    "parents": [
+      "f2661efafcd4bef72ec22c37ed4947f19ca1e1de"
+    ],
+    "tree": "6242ed0022e31142d37486ee9ff480a0612338ba"
+  },
+  "base_sha": "c6f90d48c40f7b5267db587bb3c3f4934f1414a8",
+  "before": {
+    "commit": "b73445ecc703153bdcf7f505beafb9b25f84b89f",
+    "dirty": false,
+    "parents": [
+      "f2661efafcd4bef72ec22c37ed4947f19ca1e1de"
+    ],
+    "tree": "6242ed0022e31142d37486ee9ff480a0612338ba"
+  },
+  "command": [
+    "python3",
+    "-m",
+    "unittest",
+    "-v",
+    "scripts.test_hepta_inference_current_state",
+    "scripts.test_hepta_inference_capacity",
+    "scripts.test_hepta_inference_ownership_projection",
+    "scripts.test_hepta_inference_artifact_acceptor",
+    "scripts.test_hepta_ci_source_identity"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 1.6258985070000165,
+  "exit_code": 0,
+  "finished_at": "2026-10-02T21:59:21.584581+00:00",
+  "job": "qualify",
+  "lane": "source-head",
+  "log_bytes": 10667,
+  "log_file": "03-regressions.json.52537d6de9ad451c93ee97e49cdf9d2e.log",
+  "log_sha256": "59ca37da6dec596f2be37663560ae8032a6b0115881fcab28625c15e6bb54337",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 59,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": "1",
+  "run_id": "37069929674",
+  "schema_version": 1,
+  "source_sha": "b73445ecc703153bdcf7f505beafb9b25f84b89f",
+  "started_at": "2026-10-02T21:59:19.955782+00:00",
+  "status": "passed",
+  "tested_sha": "b73445ecc703153bdcf7f505beafb9b25f84b89f",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

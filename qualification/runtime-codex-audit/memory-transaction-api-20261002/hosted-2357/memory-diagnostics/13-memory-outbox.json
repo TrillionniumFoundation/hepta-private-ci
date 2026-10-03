@@ -1,0 +1,53 @@
+{
+  "after": {
+    "commit": "2357d58ca2ae30baf452abe25dff71c2f020467f",
+    "dirty": false,
+    "parents": [
+      "b73445ecc703153bdcf7f505beafb9b25f84b89f"
+    ],
+    "tree": "31dc912975f5d2f6056131fcf0a25ea3125bf9ea"
+  },
+  "base_sha": "c6f90d48c40f7b5267db587bb3c3f4934f1414a8",
+  "before": {
+    "commit": "2357d58ca2ae30baf452abe25dff71c2f020467f",
+    "dirty": false,
+    "parents": [
+      "b73445ecc703153bdcf7f505beafb9b25f84b89f"
+    ],
+    "tree": "31dc912975f5d2f6056131fcf0a25ea3125bf9ea"
+  },
+  "command": [
+    "just",
+    "test",
+    "--locked",
+    "-p",
+    "codex-hepta-memory",
+    "--lib",
+    "-E",
+    "test(local_lease_outbox_tests)",
+    "--test-threads=1"
+  ],
+  "command_exit_code": 0,
+  "elapsed_seconds": 5.988129173000061,
+  "exit_code": 0,
+  "finished_at": "2026-10-02T23:14:25.483503+00:00",
+  "job": "qualify",
+  "lane": "source-head",
+  "log_bytes": 6508,
+  "log_file": "13-memory-outbox.json.0f0ea3a8aa334d22922804c96d49ea31.log",
+  "log_sha256": "1abbd0e6b893878be5856e19d4dea64d852e637b41237e46956cf982abea0e3a",
+  "minimum_tests": 1,
+  "observed_failed_tests": 0,
+  "observed_passed_tests": 32,
+  "output_limit_exceeded": false,
+  "returncode": 0,
+  "run_attempt": "1",
+  "run_id": "37075372401",
+  "schema_version": 1,
+  "source_sha": "2357d58ca2ae30baf452abe25dff71c2f020467f",
+  "started_at": "2026-10-02T23:14:19.494815+00:00",
+  "status": "passed",
+  "tested_sha": "2357d58ca2ae30baf452abe25dff71c2f020467f",
+  "timed_out": false,
+  "working_directory": "/home/runner/work/hepta-private-ci/hepta-private-ci"
+}

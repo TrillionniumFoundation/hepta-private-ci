@@ -1,0 +1,22 @@
+OpenJDK 64-Bit Server VM warning: Options -Xverify:none and -noverify were deprecated in JDK 13 and will likely be removed in a future release.
+INFO: Invocation ID: 5cf3543b-4ccd-45d5-a745-4a569248135c
+WARNING: For repository 'platforms', the root module requires module version platforms@1.0.0, but got platforms@1.1.0 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+WARNING: For repository 'rules_cc', the root module requires module version rules_cc@0.2.18, but got rules_cc@0.2.20 in the resolved dependency graph. Please update the version in your MODULE.bazel or set --check_direct_dependencies=off
+Loading: 0 packages loaded
+Loading: 26 packages loaded
+    currently loading: @@bazel_tools//tools/cpp ... (10 packages)
+Loading: 223 packages loaded
+Loading: 228 packages loaded
+    currently loading: @@llvm++llvm+llvm-project//libunwind
+Loading: 228 packages loaded
+    currently loading: @@llvm++llvm+llvm-project//libunwind
+INFO: Repo rules_rs++crate+crates__rama-unix-0.3.0-alpha.4 defined by rule crate_repository in @@rules_rs+//rs/private:crate_repository.bzl
+ERROR: /workspace/scratch/aebafee84981/hepta-bazel-tmp/28fe3bae5d3bdae169f8562ad970a404/external/rules_rs+/rs/private/crate_repository.bzl:52:30: An error occurred during the fetch of repository 'rules_rs++crate+crates__rama-unix-0.3.0-alpha.4':
+   Traceback (most recent call last):
+	File "/workspace/scratch/aebafee84981/hepta-bazel-tmp/28fe3bae5d3bdae169f8562ad970a404/external/rules_rs+/rs/private/crate_repository.bzl", line 52, column 30, in _crate_repository_impl
+		rctx.download_and_extract(
+Error in download_and_extract: java.io.IOException: [unix_jni.cc:471] /workspace/scratch/aebafee84981/hepta-bazel-tmp/repository-cache/content_addressable/sha256/91acb16d571428ba4cece072dfab90d2667cdfa910a7b3cb4530c3f31542d708 (No space left on device)
+ERROR: /workspace/scratch/aebafee84981/hepta-bazel-tmp/28fe3bae5d3bdae169f8562ad970a404/external/rules_rs++crate+crates/BUILD.bazel:4712:6: no such package '@@rules_rs++crate+crates__rama-unix-0.3.0-alpha.4//': java.io.IOException: [unix_jni.cc:471] /workspace/scratch/aebafee84981/hepta-bazel-tmp/repository-cache/content_addressable/sha256/91acb16d571428ba4cece072dfab90d2667cdfa910a7b3cb4530c3f31542d708 (No space left on device) and referenced by '@@rules_rs++crate+crates//:rama-unix-0.3.0-alpha.4'
+ERROR: Evaluation of query "somepath(//codex-rs/hepta-operations:hepta-operations-unit-tests-bin, //codex-rs/state/tests/support:support)" failed: preloading transitive closure failed: no such package '@@rules_rs++crate+crates__rama-unix-0.3.0-alpha.4//': java.io.IOException: [unix_jni.cc:471] /workspace/scratch/aebafee84981/hepta-bazel-tmp/repository-cache/content_addressable/sha256/91acb16d571428ba4cece072dfab90d2667cdfa910a7b3cb4530c3f31542d708 (No space left on device)
+Loading: 228 packages loaded
+    currently loading: @@llvm++llvm+llvm-project//libunwind

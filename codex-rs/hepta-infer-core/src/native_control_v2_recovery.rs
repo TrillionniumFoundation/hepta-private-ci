@@ -89,7 +89,7 @@ impl DurableInferenceControl {
             && receipt.terminal_sequence <= previous.terminal_sequence
         {
             return if previous.receipt_digest == verified.receipt_digest() {
-                Ok(record.clone())
+                self.acknowledge_native_record(record.clone())
             } else {
                 Err(Error::Conflict)
             };

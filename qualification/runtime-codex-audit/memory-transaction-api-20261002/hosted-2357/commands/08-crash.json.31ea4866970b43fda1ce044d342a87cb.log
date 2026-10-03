@@ -1,0 +1,26 @@
+[1m[92m   Compiling[0m zeroize v1.8.2
+[1m[92m   Compiling[0m syn v2.0.117
+[1m[92m   Compiling[0m der v0.7.10
+[1m[92m   Compiling[0m serde_core v1.0.228
+[1m[92m   Compiling[0m spki v0.7.3
+[1m[92m   Compiling[0m pkcs8 v0.10.2
+[1m[92m   Compiling[0m curve25519-dalek-derive v0.1.1
+[1m[92m   Compiling[0m serde v1.0.228
+[1m[92m   Compiling[0m signature v2.2.0
+[1m[92m   Compiling[0m serde_json v1.0.149
+[1m[92m   Compiling[0m ed25519 v2.2.3
+[1m[92m   Compiling[0m curve25519-dalek v4.1.3
+[1m[92m   Compiling[0m serde_derive v1.0.228
+[1m[92m   Compiling[0m memchr v2.8.1
+[1m[92m   Compiling[0m ed25519-dalek v2.2.0
+[1m[92m   Compiling[0m codex-hepta-types v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-types)
+[1m[92m   Compiling[0m codex-hepta-infer-core v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-core)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 7.74s
+[1m[92m     Running[0m tests/process_crash_recovery.rs (codex-rs/target/debug/deps/process_crash_recovery-ba08626bbd1de75c)
+
+running 2 tests
+test an_incomplete_torn_tail_is_rejected_instead_of_replayed_or_truncated ... ok
+test sigkill_at_every_maintenance_boundary_recovers_one_complete_generation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+

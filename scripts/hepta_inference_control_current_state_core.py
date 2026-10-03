@@ -67,6 +67,12 @@ def validate_source(source: dict[str, Any]) -> None:
     roots = ownership.get("declaredRoots")
     require(isinstance(roots, list) and roots, "declared roots must be nonempty")
     require(len(roots) == len(set(roots)), "declared roots must be unique")
+    modules = load_json(ROOT / "docs/modules/MODULES.json")["modules"]
+    registered = next(row for row in modules if row["id"] == source["module"])
+    require(
+        set(roots) == {row["path"] for row in registered["rootBindings"]},
+        "declared roots must match registered exclusive owner",
+    )
     for root in roots:
         require(isinstance(root, str) and root, "invalid declared root")
         require((ROOT / root).is_dir(), f"missing declared root: {root}")
@@ -154,22 +160,98 @@ def validate_source(source: dict[str, Any]) -> None:
         tests = operation.get("tests")
         require(isinstance(tests, list) and tests, f"{name}: tests must be nonempty")
         for reference in tests:
-            require(isinstance(reference, str) and bool(reference), f"{name}: invalid test reference")
+            require(
+                isinstance(reference, str) and bool(reference),
+                f"{name}: invalid test reference",
+            )
             test_path, separator, test_name = reference.partition("::")
             relative = Path(test_path)
-            require(not relative.is_absolute() and ".." not in relative.parts,
-                    f"{name}: unsafe test path")
+            require(
+                not relative.is_absolute() and ".." not in relative.parts,
+                f"{name}: unsafe test path",
+            )
             test_file = ROOT / relative
             require(test_file.is_file(), f"{name}: missing test source: {test_path}")
             if separator:
-                require(test_file.suffix == ".rs" and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", test_name) is not None,
-                        f"{name}: invalid Rust test identity")
-                require(re.search(r"\bfn\s+" + re.escape(test_name) + r"\s*\(",
-                                  test_file.read_text(encoding="utf-8")) is not None,
-                        f"{name}: missing Rust test: {test_name}")
+                require(
+                    test_file.suffix == ".rs"
+                    and re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", test_name) is not None,
+                    f"{name}: invalid Rust test identity",
+                )
+                require(
+                    re.search(
+                        r"\bfn\s+" + re.escape(test_name) + r"\s*\(",
+                        test_file.read_text(encoding="utf-8"),
+                    )
+                    is not None,
+                    f"{name}: missing Rust test: {test_name}",
+                )
+    lane_operations = source.get("laneOperations")
+    require(
+        isinstance(lane_operations, list) and lane_operations,
+        "canonical lane operations missing",
+    )
+    lane = load_json(ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json")
+    expected = next(
+        row["operationIds"]
+        for row in lane["modules"]
+        if row["module"] == source["module"]
+    )
+    require(
+        all(isinstance(row, dict) for row in lane_operations),
+        "canonical lane operation must be object",
+    )
+    require(
+        [row.get("operation") for row in lane_operations] == expected,
+        "canonical lane operation coverage drift",
+    )
+    for operation in lane_operations:
+        anchor = operation.get("ownerEntrypoint") or {}
+        path = anchor.get("path", "")
+        require(
+            isinstance(path, str)
+            and ".." not in Path(path).parts
+            and any(
+                path.startswith(root + "/")
+                for root in source["ownership"]["declaredRoots"]
+            ),
+            "canonical lane owner-root escape",
+        )
+        require(
+            (ROOT / path).is_file()
+            and isinstance(anchor.get("symbol"), str)
+            and bool(anchor["symbol"])
+            and anchor["symbol"] in (ROOT / path).read_text(),
+            "canonical lane owner symbol missing",
+        )
+        require(operation.get("sourceSemantics"), "canonical lane semantics missing")
+        tests = operation.get("tests")
+        require(isinstance(tests, list) and tests, "canonical lane tests missing")
+        for binding in tests:
+            require(isinstance(binding, dict), "canonical lane test binding missing")
+            path = binding.get("path")
+            command = binding.get("command")
+            require(
+                isinstance(path, str)
+                and bool(path)
+                and not Path(path).is_absolute()
+                and ".." not in Path(path).parts
+                and (ROOT / path).is_file()
+                and isinstance(command, str)
+                and bool(command.strip()),
+                "canonical lane test binding missing",
+            )
+    for field in ("stateOwnerDisposition", "terminalObserverDisposition"):
+        require(
+            isinstance(source["ownership"].get(field), str)
+            and bool(source["ownership"][field].strip()),
+            "owner disposition missing",
+        )
     qualification = source.get("qualification") or {}
     workflow = qualification.get("requiredWorkflow")
-    require(isinstance(workflow, str) and (ROOT / workflow).is_file(), "missing workflow")
+    require(
+        isinstance(workflow, str) and (ROOT / workflow).is_file(), "missing workflow"
+    )
     commands = qualification.get("commands")
     require(isinstance(commands, list) and commands, "qualification commands missing")
 
@@ -201,7 +283,19 @@ def build_map(source: dict[str, Any]) -> dict[str, Any]:
             {
                 **operation,
                 "designOperation": operation["operation"],
-                "mappingClass": "owner_native",
+                "mappingClass": (
+                    "documentation_evidence"
+                    if operation["state"].startswith("documentation_")
+                    else (
+                        "owner_native"
+                        if any(
+                            operation["sourcePath"] == root
+                            or operation["sourcePath"].startswith(root + "/")
+                            for root in ownership["declaredRoots"]
+                        )
+                        else "delegated_evidence"
+                    )
+                ),
                 "sourcePathExists": True,
                 "authority": "none_minted_by_execution_owner",
             }
@@ -220,6 +314,8 @@ def build_map(source: dict[str, Any]) -> dict[str, Any]:
         "module": source["module"],
         "owner": source["owner"],
         "deputy": source["deputy"],
+        "stateOwnerDisposition": ownership["stateOwnerDisposition"],
+        "terminalObserverDisposition": ownership["terminalObserverDisposition"],
         "technicalGuide": "docs/modules/inference.control/TECHNICAL.md",
         "generatedStatus": str(TECHNICAL_STATUS_PATH.relative_to(ROOT)),
         "currentState": str(CURRENT_PATH.relative_to(ROOT)),
@@ -253,13 +349,15 @@ def build_map(source: dict[str, Any]) -> dict[str, Any]:
                 "mustContain": "compact_native_journal_inner",
             },
         ],
-        "operations": operations,
+        # The lane registry retains its four required design operations. The
+        # detailed V2 inventory is evidence, not permission to replace that
+        # registry or promote documentation-only policy into a native owner.
+        "operations": source["laneOperations"],
+        "implementationDetails": operations,
         "claimBoundary": {
             "implementedOperationMappingComplete": True,
             "nativeSourceMappingComplete": True,
-            "repositoryControlledSourceBoundaryGapsClosed": not bool(
-                repository_gaps
-            ),
+            "repositoryControlledSourceBoundaryGapsClosed": not bool(repository_gaps),
             "sourceRootPresent": True,
             "productionImplementation": status["productionImplementation"],
             "productExecutionProved": status["productExecutionProved"],
@@ -390,11 +488,7 @@ def check() -> None:
         raise SystemExit("\n".join(failures))
     print(
         json.dumps(
-            {
-                "checked": [
-                    str(path.relative_to(ROOT)) for path in projections(source)
-                ]
-            },
+            {"checked": [str(path.relative_to(ROOT)) for path in projections(source)]},
             ensure_ascii=False,
         )
     )
@@ -427,20 +521,36 @@ def command_record(path: Path) -> dict[str, Any]:
     }
 
 
-
 # Match the actual command inventories of hepta-inference-maintenance.yml.
 # This receipt is a CI observation, never independent release authorization.
 OWNER_RECORDS = {
-    "00-candidate.json", "01-current-state.json", "01a-ownership.json",
-    "01b-actor-migration.json", "01c-boundary-planning.json", "02-implementation-maps.json",
-    "03-runner.json", "04-controls-scope.json", "05-cargo-metadata.json",
-    "06-tests.json", "07-clippy.json", "08-maintenance-scale.json", "09-format.json",
+    "00-candidate.json",
+    "01-current-state.json",
+    "01a-ownership.json",
+    "01b-actor-migration.json",
+    "01c-boundary-planning.json",
+    "02-implementation-maps.json",
+    "03-runner.json",
+    "04-controls-scope.json",
+    "05-cargo-metadata.json",
+    "06-tests.json",
+    "07-clippy.json",
+    "08-maintenance-scale.json",
+    "09-format.json",
 }
 NATIVE_RECORDS = {
-    "00-current-state.json", "00a-ownership.json", "00b-actor-migration.json",
-    "00c-boundary-planning.json", "01-implementation-maps.json", "02-native-host.json",
-    "03-durable-faults.json", "04-checkpoint-tamper.json", "05-process-crash.json",
-    "06-expired-recovery.json", "07-clippy.json", "08-format.json",
+    "00-current-state.json",
+    "00a-ownership.json",
+    "00b-actor-migration.json",
+    "00c-boundary-planning.json",
+    "01-implementation-maps.json",
+    "02-native-host.json",
+    "03-durable-faults.json",
+    "04-checkpoint-tamper.json",
+    "05-process-crash.json",
+    "06-expired-recovery.json",
+    "07-clippy.json",
+    "08-format.json",
 }
 
 
@@ -450,21 +560,41 @@ def record_failures(paths: list[Path], args: argparse.Namespace) -> list[str]:
     names = [path.name for path in paths]
     expected = NATIVE_RECORDS if args.lane == "native-host" else OWNER_RECORDS
     if len(names) != len(set(names)) or set(names) != expected:
-        failures.append("command record inventory is incomplete, duplicated or unexpected")
+        failures.append(
+            "command record inventory is incomplete, duplicated or unexpected"
+        )
     for path in paths:
         value = load_json(path)
-        identity = {"source_sha": args.source_sha, "tested_sha": args.tested_sha,
-                    "base_sha": args.base_sha, "lane": args.lane}
-        if any(value.get(key) != expected_value for key, expected_value in identity.items()):
+        identity = {
+            "source_sha": args.source_sha,
+            "tested_sha": args.tested_sha,
+            "base_sha": args.base_sha,
+            "lane": args.lane,
+        }
+        if any(
+            value.get(key) != expected_value for key, expected_value in identity.items()
+        ):
             failures.append(f"{path.name}: command identity mismatch")
-        if type(value.get("exit_code")) is not int or value["exit_code"] != 0 or value.get("status") != "passed":
+        if (
+            type(value.get("exit_code")) is not int
+            or value["exit_code"] != 0
+            or value.get("status") != "passed"
+        ):
             failures.append(f"{path.name}: command did not pass")
         for phase in ("before", "after"):
             observed = value.get(phase) or {}
-            if observed.get("commit") != args.tested_sha or observed.get("tree") != args.candidate_tree or observed.get("dirty") is not False:
+            if (
+                observed.get("commit") != args.tested_sha
+                or observed.get("tree") != args.candidate_tree
+                or observed.get("dirty") is not False
+            ):
                 failures.append(f"{path.name}: {phase} source is stale or dirty")
         log_name = value.get("log_file")
-        if not isinstance(log_name, str) or Path(log_name).name != log_name or log_name in {"", ".", ".."}:
+        if (
+            not isinstance(log_name, str)
+            or Path(log_name).name != log_name
+            or log_name in {"", ".", ".."}
+        ):
             failures.append(f"{path.name}: invalid log path")
             continue
         log = path.parent / log_name
@@ -472,9 +602,16 @@ def record_failures(paths: list[Path], args: argparse.Namespace) -> list[str]:
             failures.append(f"{path.name}: missing regular command log")
             continue
         raw = log.read_bytes()
-        if type(value.get("log_bytes")) is not int or len(raw) != value["log_bytes"] or sha256_bytes(raw) != value.get("log_sha256"):
+        if (
+            type(value.get("log_bytes")) is not int
+            or len(raw) != value["log_bytes"]
+            or sha256_bytes(raw) != value.get("log_sha256")
+        ):
             failures.append(f"{path.name}: log identity mismatch")
-        if value.get("timed_out") is not False or value.get("output_limit_exceeded") is not False:
+        if (
+            value.get("timed_out") is not False
+            or value.get("output_limit_exceeded") is not False
+        ):
             failures.append(f"{path.name}: command timed out or exceeded output bound")
     return failures
 
@@ -491,7 +628,10 @@ def evidence(args: argparse.Namespace) -> None:
     if args.lane == "source-head":
         require(args.source_sha == args.tested_sha, "source-head must test source SHA")
     if args.lane == "base-merge":
-        require(args.source_sha != args.tested_sha, "base-merge must test synthetic merge SHA")
+        require(
+            args.source_sha != args.tested_sha,
+            "base-merge must test synthetic merge SHA",
+        )
     records = [command_record(Path(value)) for value in args.command_record]
     require(records, "at least one command record is required")
     failures = record_failures([Path(value) for value in args.command_record], args)

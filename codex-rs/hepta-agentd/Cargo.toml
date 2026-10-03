@@ -39,6 +39,7 @@ required-features = ["qualification-cognitive-write"]
 workspace = true
 
 [dependencies]
+codex-hepta-infer-core = { path = "../hepta-infer-core" }
 anyhow = { workspace = true }
 codex-app-server = { workspace = true }
 codex-app-server-client = { workspace = true }
@@ -102,7 +103,6 @@ tokio-util = { workspace = true }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger", features = ["qualification-legacy-write"] }
 codex-hepta-operations = { workspace = true }
 codex-hepta-cognitive-types = { path = "../hepta-cognitive-types" }
-codex-hepta-infer-core = { path = "../hepta-infer-core" }
 app_test_support = { workspace = true }
 codex-hepta-infer-worker-host = { path = "../hepta-infer-worker-host" }
 codex-hepta-context-compiler = { path = "../hepta-context-compiler" }
@@ -112,3 +112,6 @@ core_test_support = { workspace = true }
 sqlx = { workspace = true }
 tempfile = { workspace = true }
 wiremock = { workspace = true }
+
+[target.'cfg(unix)'.dependencies]
+libc = { workspace = true }

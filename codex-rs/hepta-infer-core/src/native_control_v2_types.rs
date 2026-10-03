@@ -4,6 +4,7 @@ use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
 use std::io::Read;
+use std::io::Seek;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
@@ -29,6 +30,7 @@ use super::validate_identity;
 
 pub(super) const JOURNAL_PREFIX: &str = "native-v1|";
 const CHECKPOINT_SCHEMA_VERSION: u32 = 2;
+const BOUND_CHECKPOINT_SCHEMA_VERSION: u32 = 3;
 const MAX_CHECKPOINT_BYTES: u64 = super::MAX_JOURNAL_BYTES;
 const COMPACTION_HEADROOM_BYTES: u64 = 2 * super::MAX_JOURNAL_LINE_BYTES as u64;
 
@@ -276,6 +278,8 @@ pub struct NativeDispatchRejection {
 #[serde(deny_unknown_fields)]
 pub struct NativeRunRecord {
     pub request: NativeRequest,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub bound_source: Option<NativeBoundSourceRecordV2>,
     pub revision: u64,
     pub state: NativeReservationState,
     pub dispatch: Option<NativeDispatch>,
@@ -304,6 +308,7 @@ pub(super) struct NativeJournal {
     checkpoint_generation: u64,
     archive_chain_digest: Option<String>,
     checkpoint_digest: Option<String>,
+    retained_checkpoint: Option<super::retained_journal::Checkpoint>,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -324,6 +329,11 @@ enum Event {
     Reserve {
         request: NativeRequest,
         maximum_in_flight: usize,
+    },
+    ReserveBound {
+        request: NativeRequest,
+        maximum_in_flight: usize,
+        source: NativeBoundSourceRecordV2,
     },
     BindExecution {
         request_id: String,

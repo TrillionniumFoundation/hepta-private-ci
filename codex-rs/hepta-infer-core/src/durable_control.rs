@@ -13,8 +13,13 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+use sha2::Digest;
+use sha2::Sha256;
+
 #[path = "native_control.rs"]
 pub mod native;
+#[path = "retained_journal.rs"]
+mod retained_journal;
 #[path = "durable_writer_lock.rs"]
 mod writer_lock;
 
@@ -180,6 +185,7 @@ pub struct DurableInferenceControl {
     native_owner: std::sync::Arc<()>,
     capacity: usize,
     journal_bytes: u64,
+    journal_hasher: Sha256,
     poisoned: bool,
 }
 
@@ -209,6 +215,7 @@ impl DurableInferenceControl {
         let mut native = native::NativeJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
+        let mut journal_hasher = Sha256::new();
         let mut line = Vec::new();
         loop {
             line.clear();
@@ -224,6 +231,7 @@ impl DurableInferenceControl {
             if count > MAX_JOURNAL_LINE_BYTES || journal_bytes > MAX_JOURNAL_BYTES {
                 return Err(Error::CapacityExceeded);
             }
+            journal_hasher.update(&line);
             if line.pop() != Some(b'\n') {
                 return Err(Error::CorruptJournal("incomplete line"));
             }
@@ -262,7 +270,7 @@ impl DurableInferenceControl {
                 .unwrap_or_else(|| Path::new("."));
             File::open(parent)?.sync_all()?;
         }
-        Ok(Self {
+        let mut owner = Self {
             path,
             file,
             _writer_lock: writer_lock,
@@ -272,8 +280,11 @@ impl DurableInferenceControl {
             native_owner: std::sync::Arc::new(()),
             capacity,
             journal_bytes,
+            journal_hasher,
             poisoned: false,
-        })
+        };
+        owner.ensure_writer_available()?;
+        Ok(owner)
     }
 
     pub fn submit(
@@ -281,13 +292,12 @@ impl DurableInferenceControl {
         now_ms: u64,
         request: InferenceRequest,
     ) -> Result<ControlReceipt, Error> {
-        if self.poisoned {
-            return Err(Error::WriterUnavailable);
-        }
         validate_request(now_ms, &request)?;
+        self.check_writer_poison()?;
         if let Some(current) = self.records.get(&request.request_id) {
             if current.request == request {
-                return Ok(receipt(current, /*idempotent*/ true));
+                return self
+                    .acknowledge_control_receipt(receipt(current, /*idempotent*/ true));
             }
             return Err(Error::Conflict);
         }
@@ -308,9 +318,7 @@ impl DurableInferenceControl {
         expected_revision: u64,
         reservation: Reservation,
     ) -> Result<ControlReceipt, Error> {
-        if self.poisoned {
-            return Err(Error::WriterUnavailable);
-        }
+        self.check_writer_poison()?;
         validate_identity(request_id, "request")?;
         validate_reservation(now_ms, &reservation)?;
         let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
@@ -323,7 +331,7 @@ impl DurableInferenceControl {
         if record.state == RequestState::Reserved
             && record.reservation.as_ref() == Some(&reservation)
         {
-            return Ok(receipt(record, /*idempotent*/ true));
+            return self.acknowledge_control_receipt(receipt(record, /*idempotent*/ true));
         }
         if record.state != RequestState::Pending {
             return Err(Error::InvalidTransition);
@@ -344,9 +352,7 @@ impl DurableInferenceControl {
         expected_revision: u64,
         assignment: Assignment,
     ) -> Result<ControlReceipt, Error> {
-        if self.poisoned {
-            return Err(Error::WriterUnavailable);
-        }
+        self.check_writer_poison()?;
         validate_identity(request_id, "request")?;
         validate_assignment(&assignment)?;
         let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
@@ -355,7 +361,7 @@ impl DurableInferenceControl {
         }
         if record.state == RequestState::Assigned && record.assignment.as_ref() == Some(&assignment)
         {
-            return Ok(receipt(record, /*idempotent*/ true));
+            return self.acknowledge_control_receipt(receipt(record, /*idempotent*/ true));
         }
         if record.state != RequestState::Reserved {
             return Err(Error::InvalidTransition);
@@ -372,16 +378,14 @@ impl DurableInferenceControl {
         request_id: &str,
         expected_revision: u64,
     ) -> Result<ControlReceipt, Error> {
-        if self.poisoned {
-            return Err(Error::WriterUnavailable);
-        }
+        self.check_writer_poison()?;
         validate_identity(request_id, "request")?;
         let record = self.records.get(request_id).ok_or(Error::RequestNotFound)?;
         if record.revision != expected_revision {
             return Err(Error::StaleRevision);
         }
         if record.state == RequestState::Cancelled || record.state == RequestState::Cancelling {
-            return Ok(receipt(record, /*idempotent*/ true));
+            return self.acknowledge_control_receipt(receipt(record, /*idempotent*/ true));
         }
         if record.state.terminal() {
             return Err(Error::InvalidTransition);
@@ -399,9 +403,7 @@ impl DurableInferenceControl {
         observation_digest: String,
         observation: TerminalObservation,
     ) -> Result<ControlReceipt, Error> {
-        if self.poisoned {
-            return Err(Error::WriterUnavailable);
-        }
+        self.check_writer_poison()?;
         validate_identity(request_id, "request")?;
         validate_digest(&observation_digest, "observation")?;
         validate_observation(&observation)?;
@@ -421,7 +423,7 @@ impl DurableInferenceControl {
             {
                 return Err(Error::Conflict);
             }
-            return Ok(receipt(record, /*idempotent*/ true));
+            return self.acknowledge_control_receipt(receipt(record, /*idempotent*/ true));
         }
         if record.state.terminal() {
             return Err(Error::Conflict);
@@ -443,9 +445,7 @@ impl DurableInferenceControl {
     }
 
     fn commit(&mut self, event: Event) -> Result<ControlReceipt, Error> {
-        if self.poisoned {
-            return Err(Error::WriterUnavailable);
-        }
+        self.check_writer_poison()?;
         // Reject invalid transitions before durable append; a rejected command
         // must not poison the next reopen with an invalid journal event.
         let mut next = self.records.clone();
@@ -471,9 +471,7 @@ impl DurableInferenceControl {
     }
 
     fn append(&mut self, encoded: &str) -> Result<(), Error> {
-        if self.poisoned {
-            return Err(Error::WriterUnavailable);
-        }
+        self.ensure_writer_available()?;
         let next_bytes = self
             .journal_bytes
             .checked_add(encoded.len() as u64)
@@ -481,6 +479,8 @@ impl DurableInferenceControl {
         if encoded.len() > MAX_JOURNAL_LINE_BYTES || next_bytes > MAX_JOURNAL_BYTES {
             return Err(Error::CapacityExceeded);
         }
+        let mut next_hasher = self.journal_hasher.clone();
+        next_hasher.update(encoded.as_bytes());
         let persisted = self
             .file
             .write_all(encoded.as_bytes())
@@ -492,8 +492,49 @@ impl DurableInferenceControl {
             self.poisoned = true;
             return Err(error.into());
         }
+        if let Err(error) = retained_journal::verify(
+            &self.path,
+            &self.file,
+            next_bytes,
+            next_hasher.clone().finalize().into(),
+            retained_journal::Access::OwnerReadWrite,
+        )
+        .and_then(|()| self.native.verify_retained_checkpoint())
+        {
+            self.poisoned = true;
+            return Err(error);
+        }
         self.journal_bytes = next_bytes;
+        self.journal_hasher = next_hasher;
         Ok(())
+    }
+
+    fn acknowledge_control_receipt(
+        &mut self,
+        receipt: ControlReceipt,
+    ) -> Result<ControlReceipt, Error> {
+        self.ensure_writer_available()?;
+        Ok(receipt)
+    }
+
+    fn check_writer_poison(&self) -> Result<(), Error> {
+        if self.poisoned {
+            return Err(Error::WriterUnavailable);
+        }
+        Ok(())
+    }
+
+    fn ensure_writer_available(&mut self) -> Result<(), Error> {
+        self.check_writer_poison()?;
+        retained_journal::verify(
+            &self.path,
+            &self.file,
+            self.journal_bytes,
+            self.journal_hasher.clone().finalize().into(),
+            retained_journal::Access::OwnerReadWrite,
+        )
+        .and_then(|()| self.native.verify_retained_checkpoint())
+        .inspect_err(|_| self.poisoned = true)
     }
 }
 
@@ -965,3 +1006,7 @@ fn parse_u32(value: &str) -> Result<u32, Error> {
 #[cfg(test)]
 #[path = "durable_control_tests.rs"]
 mod tests;
+
+#[cfg(all(test, unix))]
+#[path = "retained_journal_tests.rs"]
+mod retained_journal_tests;

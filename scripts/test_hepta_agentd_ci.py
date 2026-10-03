@@ -147,8 +147,11 @@ class WorkflowDependencyTests(unittest.TestCase):
             "runtime_shutdown_outcomes",
             "retirement_recovery",
             "operation_timer_fence",
-            "destination_recovery_binding",
+            "test(production_writer::)",
+            "test(production_cognitive_source_target::tests::)",
             "cognitive_product_e2e",
+            "fleet_stream_diagnostics",
+            "fleet_harness_diagnostics",
             "runtime::tests::qualification_",
             "cargo clippy --locked",
         ):

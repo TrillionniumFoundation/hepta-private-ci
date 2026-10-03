@@ -6,6 +6,11 @@
 //! be reviewed independently while compiling as this single module.
 
 include!("native_control_v2_types.rs");
+
+#[path = "native_bound_source.rs"]
+mod bound_source;
+pub use bound_source::NativeBoundSourceProof;
+pub use bound_source::NativeBoundSourceRecordV2;
 include!("native_control_v2_control_a.rs");
 include!("native_control_v2_control_b.rs");
 include!("native_control_v2_control_c.rs");

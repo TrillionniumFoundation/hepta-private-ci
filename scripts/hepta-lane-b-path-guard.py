@@ -189,6 +189,29 @@ def verify(root: Path = ROOT) -> int:
         maps[module] = row
         roots[module] = resolved_roots
 
+    # Registered cross-lane delegation is not a transfer of native ownership.
+    # Resolve only owners explicitly named by these maps, just as the Lane-B
+    # truth verifier does; unknown owners and root escapes still fail closed.
+    from hepta_module_source_roots import resolve_source_roots
+
+    registry = load(root / "docs/modules/MODULES.json")["modules"]
+    owners = {entry["id"]: entry for entry in registry}
+    need(len(owners) == len(registry), "duplicate registered owner")
+    for row in maps.values():
+        for operation in row.get("operations", []):
+            for delegate in operation.get("delegatedCallees", []):
+                owner = delegate.get("ownerModule")
+                need(
+                    isinstance(owner, str) and owner in owners,
+                    "unregistered delegated owner",
+                )
+                if owner not in roots:
+                    roots[owner] = resolve_source_roots(root, owners[owner])
+                    for owner_root in roots[owner]:
+                        canonical_path(
+                            root, owner_root, "delegated owner root", require_file=None
+                        )
+
     operations = tests = delegates = 0
     for module, row in maps.items():
         items = row.get("operations")

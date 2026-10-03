@@ -16,7 +16,8 @@ use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_contracts::SignedFinalUseGrant;
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
+use codex_hepta_infer_worker_host::control_actor::NativeJournalWriterActor;
+use codex_hepta_infer_worker_host::control_port::NativeControlPort;
 use codex_hepta_infer_worker_host::final_use_authorizer::FinalUseAuthorizerConfig;
 use codex_hepta_infer_worker_host::final_use_authorizer::UnixFinalUseAuthorizer;
 use codex_hepta_infer_worker_host::native_app_server::AppServerModelDriver;
@@ -39,6 +40,9 @@ use wiremock::matchers::method;
 use wiremock::matchers::path_regex;
 
 mod support;
+
+#[path = "support/native_execution_plan.rs"]
+mod execution_plan;
 
 use support::fleet::FleetHarness;
 
@@ -116,17 +120,28 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
 
     let journal_root = tempfile::tempdir()?;
     let journal = journal_root.path().join("runtime-codex.journal");
-    let mut control = DurableInferenceControl::open(&journal, /*capacity*/ 32)?;
+    let actor = NativeJournalWriterActor::spawn(journal, /*capacity*/ 32)?;
+    let mut control = actor.handle();
+    let prompt = "Return the exact phrase runtime codex e2e.";
+    let plan = execution_plan::signed_plan(
+        REQUEST_ID,
+        AGENT_ID,
+        MODEL,
+        agent.layout.agentd_control_socket(),
+        prompt,
+        Duration::from_secs(20),
+    )?;
     let cancellation = CancellationToken::new();
     let output = driver
-        .run(
+        .run_authorized(
             &mut control,
             NativeAdmission {
                 request_id: REQUEST_ID.to_string(),
                 maximum_in_flight: 1,
             },
-            "Return the exact phrase runtime codex e2e.".to_string(),
+            prompt.to_string(),
             None,
+            &plan,
             &cancellation,
         )
         .await
@@ -149,6 +164,7 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
 
     let record = control
         .native_record(REQUEST_ID)
+        .await?
         .context("durable runtime.codex record disappeared")?;
     ensure!(
         record
@@ -197,6 +213,7 @@ async fn runtime_codex_product_caller_commits_one_authorized_terminal_turn() -> 
         "runtime.codex product caller sent {physical_sends} physical provider requests instead of exactly one"
     );
 
+    actor.shutdown().await?;
     drop(fleet);
     Ok(())
 }
@@ -213,7 +230,8 @@ async fn mount_terminal_response(server: &wiremock::MockServer) {
                 .insert_header("content-type", "text/event-stream")
                 .set_body_string(body),
         )
-        .expect(1)
+        // The successful path checks the total physical send count explicitly.
+        // A drop-time mock assertion would obscure an earlier startup error.
         .mount(server)
         .await;
 }

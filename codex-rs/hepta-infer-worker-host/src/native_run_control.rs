@@ -210,6 +210,10 @@ impl AppServerModelDriver {
             intelligence,
             authority,
         } = bindings;
+        let deadline = super::send_guard::NativeExecutionDeadline::capture(
+            self.config.timeout,
+            authority.map(|authority| authority.plan.valid_until_unix_ms()),
+        )?;
         // Compatibility spelling remains source-compatible but cannot perform
         // reservations, RPCs or effects in the production library.
         if authority.is_none() && !cfg!(test) {
@@ -341,6 +345,7 @@ impl AppServerModelDriver {
                 context_query,
                 intelligence,
                 cancellation,
+                deadline,
             )
             .await
         {

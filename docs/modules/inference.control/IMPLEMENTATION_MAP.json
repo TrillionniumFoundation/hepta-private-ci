@@ -11,22 +11,21 @@
   "module": "inference.control",
   "owner": "inference-platform",
   "deputy": "runtime-control",
+  "stateOwnerDisposition": "DurableInferenceControl remains the sole request, reservation and receipt writer; NativeJournalWriterActor serializes its production mutations. Provider execution remains outside that owner.",
+  "terminalObserverDisposition": "The named App Server caller supplies exact correlated observations to protected signed-plan settlement. Unknown execution retains capacity. Repository observations do not prove billing, selected-host execution or independent acceptance.",
   "technicalGuide": "docs/modules/inference.control/TECHNICAL.md",
   "generatedStatus": "docs/modules/inference.control/TECHNICAL_STATUS.generated.md",
   "currentState": "docs/modules/inference.control/CURRENT_STATE.json",
   "declaredRoots": [
     "codex-rs/hepta-infer-core",
-    "codex-rs/hepta-infer-worker-host",
     "codex-rs/hepta-inferd"
   ],
   "resolvedRoots": [
     "codex-rs/hepta-infer-core",
-    "codex-rs/hepta-infer-worker-host",
     "codex-rs/hepta-inferd"
   ],
   "sourceRoot": [
     "codex-rs/hepta-infer-core",
-    "codex-rs/hepta-infer-worker-host",
     "codex-rs/hepta-inferd"
   ],
   "sourceRootPresent": true,
@@ -73,6 +72,100 @@
   ],
   "operations": [
     {
+      "operation": "reserve_request",
+      "designOperation": "reserve_request",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+        "symbol": "pub fn reserve_native(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+          "kind": "durable_exact_plan_and_recovery",
+          "command": "just test -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Pins exact request identity and bounded local capacity under the single durable owner before provider contact.",
+      "nativeSymbol": "pub fn reserve_native(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "schedule",
+      "designOperation": "schedule",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+        "symbol": "pub fn dispatch_native_authorized_with_pre_effect_abort(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+          "kind": "durable_exact_plan_and_recovery",
+          "command": "just test -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Validates the exact signed plan and syncs dispatch intent before provider entry; this is local dispatch, not an enrolled-worker scheduler.",
+      "nativeSymbol": "pub fn dispatch_native_authorized_with_pre_effect_abort(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "cancel",
+      "designOperation": "cancel",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+        "symbol": "pub fn cancel_native(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+          "kind": "durable_exact_plan_and_recovery",
+          "command": "just test -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Persists cancellation intent without equating acknowledgement with terminality or releasing uncertain capacity.",
+      "nativeSymbol": "pub fn cancel_native(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "settle",
+      "designOperation": "settle",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+        "symbol": "pub fn settle_native_authorized(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+          "kind": "durable_exact_plan_and_recovery",
+          "command": "just test -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Settles exact observations against the signed plan and output policy; uncertain effects retain capacity and cannot be replayed.",
+      "nativeSymbol": "pub fn settle_native_authorized(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+      "sourcePathExists": true
+    }
+  ],
+  "implementationDetails": [
+    {
       "operation": "verify_execution_plan",
       "state": "source_implemented",
       "nativeSymbol": "verify_execution_plan",
@@ -106,7 +199,10 @@
       "nativeSymbol": "DurableInferenceControl::bind_native_execution",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
       "tests": [
-        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output"
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output",
+        "codex-rs/hepta-infer-core/src/retained_journal_tests.rs::truncation_denies_cached_ack_and_restoring_bytes_does_not_clear_poison",
+        "codex-rs/hepta-infer-core/src/retained_journal_tests.rs::same_length_valid_history_substitution_denies_new_write_without_repair",
+        "codex-rs/hepta-infer-core/src/retained_journal_tests.rs::checkpoint_damage_denies_cached_ack_and_restore_does_not_clear_poison"
       ],
       "designOperation": "reserve_and_bind_native_execution",
       "mappingClass": "owner_native",
@@ -204,7 +300,7 @@
         "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs::success_requires_both_matching_completion_and_final_ready_owner"
       ],
       "designOperation": "exact_plan_native_app_server_execution",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -217,7 +313,7 @@
         "codex-rs/hepta-infer-worker-host/src/control_actor_compat_tests.rs::one_writer_owns_the_journal_and_effect_capability_is_one_shot"
       ],
       "designOperation": "unique_writer_effect_reconciler_actor_boundary",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -231,7 +327,7 @@
         "codex-rs/hepta-infer-worker-host/src/unix_output_protector_boundary_tests.rs::vault_config_rejects_symlinks_hardlinks_and_oversize_files"
       ],
       "designOperation": "external_encrypted_output",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -244,7 +340,7 @@
         "codex-rs/hepta-infer-core/tests/recovery_after_expiry.rs::fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry"
       ],
       "designOperation": "signed_operator_recovery_cli",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -257,7 +353,7 @@
         "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::compaction_preserves_indeterminate_capacity_and_exact_state"
       ],
       "designOperation": "bounded_maintenance_cli",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -283,7 +379,7 @@
         "scripts/test_hepta_inference_current_state.py"
       ],
       "designOperation": "operator_slo_alert_policy",
-      "mappingClass": "owner_native",
+      "mappingClass": "documentation_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -298,7 +394,7 @@
         "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::real_writer_mixed_query_terminal_contention_curve"
       ],
       "designOperation": "bounded_terminal_admission_and_fifo_fairness",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -315,7 +411,7 @@
         "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::shutdown_deadline_retains_lock_until_the_real_owner_exits"
       ],
       "designOperation": "accepted_response_loss_and_post_commit_observation",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     },
@@ -328,7 +424,7 @@
         "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs::published_metrics_are_immutable_stale_and_do_not_queue_reads"
       ],
       "designOperation": "immutable_observational_metrics",
-      "mappingClass": "owner_native",
+      "mappingClass": "delegated_evidence",
       "sourcePathExists": true,
       "authority": "none_minted_by_execution_owner"
     }
@@ -353,7 +449,10 @@
     "qualify host-selected mailbox, response and shutdown limits under real provider and storage contention",
     "compose the real inference-control neuron feature port and selected worker into the Agentd daemon lifecycle; typed feature receipts alone do not execute a model",
     "connect real enrolled-worker scheduling, measured device capacity and provider usage/billing to their existing owners; signed declared leases are not physical observations",
-    "define a bounded retained-request lifecycle beyond the 16384 distinct-record ceiling; checkpoint compaction preserves released request identities"
+    "define a bounded retained-request lifecycle beyond the 16384 distinct-record ceiling; checkpoint compaction preserves released request identities",
+    "carry original signed-plan and Agentd admitted absolute deadlines through transport queue/readiness waits to guarded physical-send admission; preserve cancellation and owner-generation fencing without claiming packet completion",
+    "reconcile the ordinary runtime.codex durable Agentd dispatch/abort handoff with the V2 inference actor rather than replacing either owner or executing source-writing migrations",
+    "qualify full-prefix journal/checkpoint verification latency and selected Windows filesystem/ACL/locking behavior; current Windows 64-bit file identity does not qualify ReFS"
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
@@ -373,7 +472,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-infer-core",
-      "object": "fe48c95557d683990b94328b0357e1e1825aa338"
+      "object": "2091da139be72a734715c80d136702065df005e8"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/control_contracts.rs",
@@ -381,15 +480,15 @@
     },
     {
       "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
-      "object": "fa1cae33b44de4be0c8dc681c8d7bc43dec4cccb"
+      "object": "b2ce1f82d8360f099c4daaf7f156aeafd17e943b"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
-      "object": "5c06ec43410dffcda61a2c41b72e01af90b858d2"
+      "object": "8f74d063bd0ec8fb8dcec263cb6f47d92447fd5e"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs",
-      "object": "7b8c25fb664d3ffc536c5eb43894356d773d14e2"
+      "object": "172db1ea3622cc29836de8390631a7458bf2585f"
     },
     {
       "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
@@ -398,6 +497,10 @@
     {
       "path": "codex-rs/hepta-infer-core/src/recovery_contracts.rs",
       "object": "c3cc547de1ce7036909ae3827f46edbdb869a831"
+    },
+    {
+      "path": "codex-rs/hepta-infer-core/src/retained_journal_tests.rs",
+      "object": "977d920a676a30092aa70d56aabf099b644be859"
     },
     {
       "path": "codex-rs/hepta-infer-core/tests/process_crash_recovery.rs",
@@ -409,7 +512,7 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host",
-      "object": "547c57b6d18c6902f9f865738a4f1fefb796dda3"
+      "object": "8ada312da4fe4005a93bcf9cdc4a908f445f4060"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/actor_mailbox.rs",
@@ -433,7 +536,7 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/control_actor.rs",
-      "object": "f1c79ddfe34c9ec3bb19a220a8762e534f00ac2c"
+      "object": "f0e12bcafedc0141ac68b30d31e1c083c2020e0f"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/control_actor_boundary_tests.rs",
@@ -449,7 +552,7 @@
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
-      "object": "99f6975462167c5a4dfa91f8603d61ecd98bc6f1"
+      "object": "ad713b29864bf5ba3947a6e0b91b1406096a1500"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/unix_output_protector.rs",
@@ -469,11 +572,11 @@
     },
     {
       "path": "docs/modules/inference.control/TECHNICAL.md",
-      "object": "85591db7d5cd501a0a7b8211c7d01a9a7ea5c6c5"
+      "object": "096e0b9733637981d5f0f8d40f4bd8be8e33b0d3"
     },
     {
       "path": "scripts/test_hepta_inference_current_state.py",
-      "object": "66e6925347f49d81fa37baa6d1e6e5c981010c6b"
+      "object": "615b901bf5cbbf99d9fd4f2362133b283c32bb97"
     }
   ]
 }

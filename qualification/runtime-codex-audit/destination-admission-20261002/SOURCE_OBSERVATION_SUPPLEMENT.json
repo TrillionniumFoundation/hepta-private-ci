@@ -1,0 +1,1440 @@
+{
+  "schema": "hepta.source-observation-supplement.v1",
+  "meaning": "Supplemental exact content navigation, not a replacement of historical source/qualification claims or an accepted canonical map migration. Original maps, provenance and false qualification gates are unchanged.",
+  "admissionSource": {
+    "commit": "c15884e527746ad633728c442415ab73af7188b6",
+    "tree": "2e17d727fdd04e5609f897b875778511d15f3933"
+  },
+  "records": [
+    {
+      "module": "runtime.supervisor",
+      "originalMapSha256": "731860f0b7f4b4e78e2cf3aa94984f03ade752c9e6843d86dbafde7d80ef4f16",
+      "originalMapSourceCommit": "50a4678beef74f9d65b996e5dffa2c68681b7dd5",
+      "originalSourceBase": {
+        "commit": "532471eebc6c784b873afa4b02700c08abba87c4",
+        "tree": "659f6a0d0401251093b5057b572db85888e2a415"
+      },
+      "originalObservation": {
+        "commit": "532471eebc6c784b873afa4b02700c08abba87c4",
+        "tree": "659f6a0d0401251093b5057b572db85888e2a415",
+        "interpretation": "final exact repository-controlled source observation for runtime.supervisor convergence: typed Agentd drain and admitted-handler barrier, durable automation classification, production unsigned-release denial when a verifier is configured, unified release transaction/re-admission, transition-aware signed terminal recovery, durable bounded explicit and automatic restart semantics, expanded readiness gates, and recovery hydration that preserves durable authority state across process faults. Product activation, deployed trust roots, target-host qualification and independent acceptance remain external."
+      },
+      "observation": {
+        "schema": "hepta.module-implementation-map.v3",
+        "schemaVersion": 3,
+        "sourceBase": {
+          "commit": "532471eebc6c784b873afa4b02700c08abba87c4",
+          "tree": "659f6a0d0401251093b5057b572db85888e2a415"
+        },
+        "laneId": "LANE-B-RUNTIME",
+        "module": "runtime.supervisor",
+        "sourceMaturity": "native_daemon",
+        "declaredRoots": [
+          "codex-rs/hepta-supervisor"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-supervisor"
+        ],
+        "stateOwnerDisposition": "Owns generation-fenced process lifecycle, durable bounded restart state and the unified durable release-transition journal; Fleet owns immutable release catalog/allow-revoke admission facts and user-task truth remains outside this module.",
+        "terminalObserverDisposition": "The exact process driver, Agentd readiness/drain acknowledgements and current-generation observations establish lifecycle terminality; drain acknowledgement closes admission but never establishes user-task success.",
+        "operations": [
+          {
+            "designOperation": "start_instance",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+              "symbol": "pub fn start(",
+              "buildTarget": "codex-hepta-supervisor"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+                "kind": "native_unit_and_launch_faults",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              },
+              {
+                "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
+                "kind": "native_process_identity",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              }
+            ],
+            "sourceSemantics": "Creates a generation-fenced managed process from a registered release, retains failed lease-publication children under hard-kill quarantine, and recovers exact process identity without PID-only trust.",
+            "operation": "start_instance",
+            "nativeSymbol": "pub fn start(",
+            "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+          },
+          {
+            "designOperation": "observe_health",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+              "symbol": "pub fn tick(",
+              "buildTarget": "codex-hepta-supervisor"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+                "kind": "fault_lifecycle_and_restart_budget",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              },
+              {
+                "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
+                "kind": "readiness_and_generation_fences",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              }
+            ],
+            "sourceSemantics": "Consumes exact Agentd/process observations under the active generation, requires critical-store/revocation-baseline/required-port/admission readiness before Running, fences stale processes, and advances bounded durable restart/recovery state without inferring task success.",
+            "operation": "observe_health",
+            "nativeSymbol": "pub fn tick(",
+            "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+          },
+          {
+            "designOperation": "drain",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+              "symbol": "pub fn drain(",
+              "buildTarget": "codex-hepta-supervisor"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+                "kind": "drain_stop_and_restart",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              },
+              {
+                "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
+                "kind": "agentd_drain_ack_generation_fence",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              }
+            ],
+            "sourceSemantics": "Transitions the lifecycle fence to Draining and requires an exact typed Agentd Drain acknowledgement for the current spawn/draining generation. Agentd first closes App Server admission and waits for already-admitted RPC handlers, then requires zero running assistant turns and zero unclassified durable Automation/TaskFlow blockers. Durable uncertain/indeterminate effects remain unknown for reconciliation rather than being relabelled complete. A crash after durable Draining replays the idempotent Drain RPC; unavailable drain evidence fails closed into bounded stop escalation, never a drain==SIGTERM shortcut.",
+            "operation": "drain",
+            "nativeSymbol": "pub fn drain(",
+            "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+          },
+          {
+            "designOperation": "stop_instance",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+              "symbol": "pub fn stop(",
+              "buildTarget": "codex-hepta-supervisor"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+                "kind": "graceful_stop",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              }
+            ],
+            "sourceSemantics": "Escalates an already fenced lifecycle through graceful process stop without treating process termination as user-task success.",
+            "operation": "stop_instance",
+            "nativeSymbol": "pub fn stop(",
+            "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+          },
+          {
+            "designOperation": "kill_instance",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+              "symbol": "pub fn kill(",
+              "buildTarget": "codex-hepta-supervisor"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+                "kind": "hard_kill_and_fencing",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              }
+            ],
+            "sourceSemantics": "Issues a hard kill only to the exact managed process identity after generation fencing; it is an emergency lifecycle action, not release success.",
+            "operation": "kill_instance",
+            "nativeSymbol": "pub fn kill(",
+            "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+          },
+          {
+            "designOperation": "restart_instance",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+              "symbol": "pub fn restart(",
+              "buildTarget": "codex-hepta-supervisor"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+                "kind": "bounded_restart_budget",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              }
+            ],
+            "sourceSemantics": "Restarts the current admitted release under generation fencing; automatic crash restarts are separately bounded by the durable restart window/backoff record.",
+            "operation": "restart_instance",
+            "nativeSymbol": "pub fn restart(",
+            "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+          },
+          {
+            "designOperation": "load_next",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+              "symbol": "pub fn upgrade(",
+              "buildTarget": "codex-hepta-supervisor"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+                "kind": "upgrade_rollback_and_recovery",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              },
+              {
+                "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
+                "kind": "durable_transaction_integrity",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              },
+              {
+                "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+                "kind": "signed_release_and_recovery_authority",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              }
+            ],
+            "sourceSemantics": "Transitions through a fsynced unified release transaction that binds exact source/target immutable manifests/program bytes, the per-Agent allow/revoke admission frontier, the exact source/target pair identity, lifecycle/release-state generations and optional signed production authority. The pair digest is a structural binding, not independent semantic-compatibility approval; runtime compatibility is established by the typed Agentd/Matrixd readiness contract before commit. A production daemon configured with a verifier rejects unsigned Upgrade/Rollback.",
+            "operation": "load_next",
+            "nativeSymbol": "pub fn upgrade(",
+            "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+          },
+          {
+            "designOperation": "rollback_release",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+              "symbol": "pub fn rollback(",
+              "buildTarget": "codex-hepta-supervisor"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+                "kind": "rollback_readmission",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              }
+            ],
+            "sourceSemantics": "Re-resolves the recorded predecessor at the final-use boundary, rejects revoked or allowance/frontier-drifted releases, verifies its immutable bytes against the durable transaction, and starts rollback only as a fresh process generation.",
+            "operation": "rollback_release",
+            "nativeSymbol": "pub fn rollback(",
+            "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+          },
+          {
+            "designOperation": "signed_upgrade",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+              "symbol": "pub fn apply_production_grant(",
+              "buildTarget": "codex-hepta-supervisor"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+                "kind": "signed_upgrade_authority",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              },
+              {
+                "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+                "kind": "signed_authority_contract",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              },
+              {
+                "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
+                "kind": "durable_transaction_integrity",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              }
+            ],
+            "sourceSemantics": "Admits a production upgrade only after independently signed H7 and production-grant verification binds exact source/target releases and current control/lifecycle/daemon-authority fences. The fsynced release transaction additionally binds immutable program digests plus the current per-Agent admission frontier before drain.",
+            "operation": "signed_upgrade",
+            "nativeSymbol": "pub fn apply_production_grant(",
+            "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+          },
+          {
+            "designOperation": "signed_rollback",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+              "symbol": "pub fn apply_production_grant(",
+              "buildTarget": "codex-hepta-supervisor"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+                "kind": "signed_rollback_authority",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              },
+              {
+                "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+                "kind": "signed_authority_contract",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              },
+              {
+                "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
+                "kind": "durable_transaction_integrity",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              }
+            ],
+            "sourceSemantics": "Admits production rollback only through an independently signed grant; the predecessor is freshly re-resolved and its manifest/program digests and current allow/revoke admission frontier must exactly match the durable transaction witness.",
+            "operation": "signed_rollback",
+            "nativeSymbol": "pub fn apply_production_grant(",
+            "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+          },
+          {
+            "designOperation": "reconcile_signed_intent",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+              "symbol": "pub fn resolve_production_recovery(",
+              "buildTarget": "codex-hepta-supervisor"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+                "kind": "signed_recovery_ceremony",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              },
+              {
+                "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+                "kind": "signed_recovery_contract",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              },
+              {
+                "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
+                "kind": "durable_recovery_terminal_state",
+                "command": "just test -p codex-hepta-supervisor --lib"
+              }
+            ],
+            "sourceSemantics": "Quarantines ambiguous signed transitions as recovery_required while keeping owner-local status/recovery RPCs reachable. An independently signed recovery decision must bind the grant, signed-intent digest, release-transaction digest, observed immutable release bytes and current lifecycle/daemon-authority fences; the current admission frontier is revalidated again before terminal commit/rollback.",
+            "operation": "reconcile_signed_intent",
+            "nativeSymbol": "pub fn resolve_production_recovery(",
+            "sourcePath": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+          }
+        ],
+        "repositoryControlledGaps": [],
+        "externalEvidenceGates": [
+          "exact deployed hepta-supervisord binary, host identity and externally pinned production grant/H7 verifier configuration",
+          "target-host startup, watchdog, typed Agentd drain, bounded restart and signed-recovery crash/fault/latency measurements",
+          "deployment and independent verification of the external release-policy/authority distribution feeding Fleet allow/revoke state and signer rotation",
+          "independent operational acceptance of signed upgrade, rollback and recovery outcomes"
+        ],
+        "claimBoundary": {
+          "nativeSourceMappingComplete": true,
+          "repositoryControlledDocumentationGapsClosed": true,
+          "repositoryControlledMappingGapsClosed": true,
+          "repositoryControlledSourceBoundaryGapsClosed": true,
+          "productExecutionComplete": false,
+          "deploymentQualificationComplete": false,
+          "independentAcceptanceComplete": false,
+          "sourceRootPresent": true,
+          "productionImplementation": false,
+          "productExecutionProved": false,
+          "independentAcceptance": false,
+          "activation": false,
+          "release": false,
+          "implementedOperationMappingComplete": true
+        },
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productCallerState": "not_composed",
+        "productionWriterState": "not_established",
+        "owner": "runtime-control",
+        "deputy": "fleet-runtime",
+        "technicalGuide": "docs/modules/runtime.supervisor/TECHNICAL.md",
+        "sourceRoot": [
+          "codex-rs/hepta-supervisor"
+        ],
+        "sourceBaseSemantics": "historical_provenance_only_exact_candidate_derived_from_git_at_verification_time",
+        "candidateIdentity": "derived_from_git_head_or_deterministic_merge_at_verification_time",
+        "observedSourcePaths": [
+          "codex-rs/Cargo.lock",
+          "codex-rs/Cargo.toml",
+          "codex-rs/app-server",
+          "codex-rs/hepta-agent-protocol",
+          "codex-rs/hepta-agentd",
+          "codex-rs/hepta-automation",
+          "codex-rs/hepta-fleet",
+          "codex-rs/hepta-supervisor",
+          "codex-rs/hepta-supervisor/src/release_transaction.rs",
+          "codex-rs/hepta-supervisor/src/signed_authority.rs",
+          "codex-rs/hepta-supervisor/src/supervisor.rs",
+          "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+          "codex-rs/hepta-supervisor/src/unix_tests.rs",
+          "docs/modules/runtime.supervisor/TECHNICAL.md"
+        ],
+        "observedAtHead": {
+          "commit": "c15884e527746ad633728c442415ab73af7188b6",
+          "tree": "2e17d727fdd04e5609f897b875778511d15f3933"
+        },
+        "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+        "mappingSourceIdentityMode": "exact_blob",
+        "sourceObjects": [
+          {
+            "path": "codex-rs/hepta-supervisor",
+            "object": "f2f0b4866e8f5ecd91df0d964c81d2291184e0cf"
+          },
+          {
+            "path": "codex-rs/hepta-supervisor/src/release_transaction.rs",
+            "object": "fc0b8657107d450d2d81edd95ef44e8d1d8dbd27"
+          },
+          {
+            "path": "codex-rs/hepta-supervisor/src/signed_authority.rs",
+            "object": "f5767f7bd1b55df0a04317b444a7b40e114c5e35"
+          },
+          {
+            "path": "codex-rs/hepta-supervisor/src/supervisor.rs",
+            "object": "f854f1a0c40024a5fe01ea42b5139d8c77bfc778"
+          },
+          {
+            "path": "codex-rs/hepta-supervisor/src/supervisor_tests.rs",
+            "object": "3da1a5c8d227c9fe615d5d0847a3e787b34597f8"
+          },
+          {
+            "path": "codex-rs/hepta-supervisor/src/unix_tests.rs",
+            "object": "eb88a374cf9497fc794bba5b62b7c596a4a2200a"
+          },
+          {
+            "path": "docs/modules/runtime.supervisor/TECHNICAL.md",
+            "object": "d94806d04f81f8ebc52b5ce7226b3f95a198bf7e"
+          }
+        ]
+      },
+      "changedPathsFromPriorStage": [
+        "codex-rs/hepta-agentd/Cargo.toml",
+        "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "codex-rs/hepta-agentd/src/lib.rs",
+        "codex-rs/hepta-agentd/src/run_bridge_admission.rs",
+        "codex-rs/hepta-agentd/src/run_bridge_admission_fixture.rs",
+        "codex-rs/hepta-agentd/src/run_bridge_admission_tests.rs"
+      ],
+      "verifiedPathCount": 14
+    },
+    {
+      "module": "runtime.agentd",
+      "originalMapSha256": "d7f87c4a32927f35f32f354f90fedebb2c87e37af21a955f33f7f9aaa0a391bf",
+      "originalMapSourceCommit": "50a4678beef74f9d65b996e5dffa2c68681b7dd5",
+      "originalSourceBase": {
+        "commit": "15a55b7a2d05afdf5c2c04500dfba41936a44500",
+        "tree": "82eb35f95499e6354c8b3b342d70d4bc534e840e"
+      },
+      "originalObservation": null,
+      "observation": {
+        "schema": "hepta.module-implementation-map.v3",
+        "schemaVersion": 3,
+        "sourceBase": {
+          "commit": "15a55b7a2d05afdf5c2c04500dfba41936a44500",
+          "tree": "82eb35f95499e6354c8b3b342d70d4bc534e840e"
+        },
+        "laneId": "LANE-B-RUNTIME",
+        "module": "runtime.agentd",
+        "sourceMaturity": "native_composition_host",
+        "declaredRoots": [
+          "codex-rs/hepta-agentd"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-agentd"
+        ],
+        "stateOwnerDisposition": "Owns durable bounded run admission, immutable snapshot references, private released-run deduplication and runtime-health composition state on the reviewed protected Unix storage profile; non-Unix retained-store construction currently fails closed.",
+        "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.",
+        "operations": [
+          {
+            "designOperation": "compose_runtime",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+              "symbol": "pub fn compose_runtime(",
+              "buildTarget": "codex-hepta-agentd"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+                "kind": "native_unit",
+                "command": "just test -p codex-hepta-agentd --lib"
+              }
+            ],
+            "sourceSemantics": "Validates immutable supervisor/Agentd generations, configuration, and owner-port identities.",
+            "operation": "compose_runtime",
+            "nativeSymbol": "pub fn compose_runtime(",
+            "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "007e92b7c6242cb33cba6772fbd4dbfdb92e25b9"
+          },
+          {
+            "designOperation": "start_run",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+              "symbol": "pub fn start_run(",
+              "buildTarget": "codex-hepta-agentd"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+                "kind": "snapshot_and_capacity",
+                "command": "just test -p codex-hepta-agentd --lib"
+              },
+              {
+                "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+                "kind": "retained_run_replay_and_pre_ack_failure",
+                "command": "just test -p codex-hepta-agentd --lib durable"
+              }
+            ],
+            "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity; it does not itself dispatch a Codex turn. The product retained coordinator stages, validates and persists reducer state before publishing a successful acknowledgement; storage uncertainty poisons the owner.",
+            "operation": "start_run",
+            "nativeSymbol": "pub fn start_run(",
+            "sourcePath": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "80ca70cececdee961ee592e56c54c9d642d31753"
+          },
+          {
+            "designOperation": "admit_revalidated_run_start",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+              "symbol": "pub fn start_revalidated_run_start(",
+              "buildTarget": "codex-hepta-agentd"
+            },
+            "delegatedCallees": [
+              {
+                "role": "delegated_callee",
+                "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+                "symbol": "pub struct RunStartRecordV1",
+                "buildTarget": "codex-hepta-learning-ledger",
+                "ownerModule": "learning.ledger"
+              }
+            ],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+                "kind": "durable_run_start_projection",
+                "command": "just test -p codex-hepta-agentd --lib"
+              },
+              {
+                "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+                "kind": "retained_run_replay_and_pre_ack_failure",
+                "command": "just test -p codex-hepta-agentd --lib durable"
+              }
+            ],
+            "sourceSemantics": "Projects only a product-revalidated durable RunStartRecordV1 into the sole daemon coordinator. request_digest is admitted_source_digest; body/artifact/authority/generation/fence/deadline are exact durable fields. ExplicitAbstain never enters runtime admission. Authentication/currentness remains a caller precondition. The product retained coordinator stages, validates and persists reducer state before publishing a successful acknowledgement; storage uncertainty poisons the owner.",
+            "operation": "admit_revalidated_run_start",
+            "nativeSymbol": "pub fn start_revalidated_run_start(",
+            "sourcePath": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "80ca70cececdee961ee592e56c54c9d642d31753"
+          },
+          {
+            "designOperation": "cancel_run",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+              "symbol": "pub fn cancel_run(",
+              "buildTarget": "codex-hepta-agentd"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+                "kind": "cancellation_race",
+                "command": "just test -p codex-hepta-agentd --lib"
+              },
+              {
+                "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+                "kind": "retained_run_replay_and_pre_ack_failure",
+                "command": "just test -p codex-hepta-agentd --lib durable"
+              }
+            ],
+            "sourceSemantics": "Transitions only Agentd-owned lifecycle state. Pre-dispatch cancellation is locally terminal; post-dispatch cancellation remains pending/indeterminate until the execution owner is invoked and observed by a separately composed caller. The product retained coordinator stages, validates and persists reducer state before publishing a successful acknowledgement; storage uncertainty poisons the owner.",
+            "operation": "cancel_run",
+            "nativeSymbol": "pub fn cancel_run(",
+            "sourcePath": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "80ca70cececdee961ee592e56c54c9d642d31753"
+          },
+          {
+            "designOperation": "attach_context",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+              "symbol": "pub fn attach_context(",
+              "buildTarget": "codex-hepta-agentd"
+            },
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+                "kind": "mixed_generation_rejection",
+                "command": "just test -p codex-hepta-agentd --lib"
+              },
+              {
+                "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+                "kind": "retained_run_replay_and_pre_ack_failure",
+                "command": "just test -p codex-hepta-agentd --lib durable"
+              }
+            ],
+            "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple; it does not itself submit the context to Codex. The product retained coordinator stages, validates and persists reducer state before publishing a successful acknowledgement; storage uncertainty poisons the owner.",
+            "operation": "attach_context",
+            "nativeSymbol": "pub fn attach_context(",
+            "sourcePath": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "80ca70cececdee961ee592e56c54c9d642d31753"
+          },
+          {
+            "designOperation": "daemon_run_lifecycle_control",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-agentd/src/state_control.rs",
+              "symbol": "crate::AgentdMethod::RunStart",
+              "buildTarget": "codex-hepta-agentd"
+            },
+            "delegatedCallees": [
+              {
+                "role": "delegated_callee",
+                "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+                "symbol": "pub fn start_run(",
+                "buildTarget": "codex-hepta-agentd",
+                "ownerModule": "runtime.agentd"
+              }
+            ],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+                "kind": "daemon_control_lifecycle",
+                "command": "just test -p codex-hepta-agentd --lib"
+              },
+              {
+                "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+                "kind": "bounded_drain_reconciliation",
+                "command": "just test -p codex-hepta-agentd --lib"
+              }
+            ],
+            "sourceSemantics": "The real Agentd control path owns one Fleet-budget-bounded run coordinator, advertises run.lifecycle/1.1, enforces complete frozen tuple/deadline/reasoned-cancellation semantics, advances a 3-second cancellation-ack deadline to Indeterminate, supports exact-revision closed-record release, and keeps terminal reconciliation available during bounded drain. The coordinator now retains validated atomic images on Unix, preserves private released-run deduplication, and refuses changed composition or ambiguous missing history; cross-owner typed outbox and ingress generation fencing remain pending.",
+            "operation": "daemon_run_lifecycle_control",
+            "nativeSymbol": "crate::AgentdMethod::RunStart",
+            "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "2888e10da5ac46e9b0cd568f6d37e30168cc5870"
+          },
+          {
+            "designOperation": "agentd_neuron_owner",
+            "mappingClass": "owner_native",
+            "ownerEntrypoint": {
+              "role": "owner_entrypoint",
+              "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+              "symbol": "pub struct AgentdNeuronOwner",
+              "buildTarget": "codex-hepta-agentd"
+            },
+            "delegatedCallees": [
+              {
+                "role": "delegated_callee",
+                "path": "codex-rs/hepta-neuron/src/runtime.rs",
+                "symbol": "pub struct NeuronRuntime",
+                "buildTarget": "codex-hepta-neuron",
+                "ownerModule": "neuron.runtime"
+              },
+              {
+                "role": "delegated_callee",
+                "path": "codex-rs/hepta-neuron/src/inference_control.rs",
+                "symbol": "pub trait NeuronInferenceControlPort",
+                "buildTarget": "codex-hepta-neuron",
+                "ownerModule": "neuron.runtime"
+              }
+            ],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs",
+                "kind": "compiled_owner_boundary",
+                "command": "just test -p codex-hepta-agentd --lib"
+              }
+            ],
+            "sourceSemantics": "Owns one long-lived NeuronRuntime plus its inference-control port; construction remains explicit and does not self-activate the daemon lifecycle.",
+            "operation": "agentd_neuron_owner",
+            "nativeSymbol": "pub struct AgentdNeuronOwner",
+            "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+            "sourcePathExists": true,
+            "sourceBlob": "3e880ef975af2b7210a7466b9fb4e12f62937d9c"
+          },
+          {
+            "operation": "shared_terminal_cell_train",
+            "designOperation": "shared_terminal_cell_train",
+            "nativeSymbol": "pub async fn train(",
+            "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+            "mappingClass": "owner_native",
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+                "kind": "native_integration",
+                "command": "just test --locked -p codex-hepta-agentd --test terminal_cell_owner -E test(clean_agent_recall_replay_training_load_and_source_withdrawal)"
+              }
+            ],
+            "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+            "authority": "none",
+            "sourcePathExists": true,
+            "buildTarget": "codex-hepta-agentd",
+            "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority.",
+            "sourceBlob": "ada0d0f52e842d73bf2c0ee3f66e041420f6ceb3"
+          },
+          {
+            "operation": "shared_terminal_cell_load",
+            "designOperation": "shared_terminal_cell_load",
+            "nativeSymbol": "pub async fn load(",
+            "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+            "mappingClass": "owner_native",
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+                "kind": "native_integration",
+                "command": "just test --locked -p codex-hepta-agentd --test terminal_cell_owner -E test(clean_agent_recall_replay_training_load_and_source_withdrawal)"
+              }
+            ],
+            "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+            "authority": "none",
+            "sourcePathExists": true,
+            "buildTarget": "codex-hepta-agentd",
+            "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority.",
+            "sourceBlob": "ada0d0f52e842d73bf2c0ee3f66e041420f6ceb3"
+          },
+          {
+            "operation": "shared_terminal_cell_predict",
+            "designOperation": "shared_terminal_cell_predict",
+            "nativeSymbol": "pub async fn predict(",
+            "sourcePath": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+            "mappingClass": "owner_native",
+            "delegatedCallees": [],
+            "tests": [
+              {
+                "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+                "kind": "native_integration",
+                "command": "just test --locked -p codex-hepta-agentd --test terminal_cell_owner -E test(clean_agent_recall_replay_training_load_and_source_withdrawal)"
+              }
+            ],
+            "state": "source_implemented_bounded_candidate_profile_not_deployment_qualified",
+            "authority": "none",
+            "sourcePathExists": true,
+            "buildTarget": "codex-hepta-agentd",
+            "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority.",
+            "sourceBlob": "ada0d0f52e842d73bf2c0ee3f66e041420f6ceb3"
+          }
+        ],
+        "repositoryControlledGaps": [
+          "Compose the canonical caller through runtime.codex so physical turn start/interrupt and terminal observations are real invocation edges rather than design-only delegated targets.",
+          "Bind current AuthBus/trust revalidation to the durable RunStartRecordV1 before start_revalidated_run_start; raw journal records are not current authentication evidence. Post-dispatch recovery remains Indeterminate and non-redispatchable.",
+          "Compose AgentdNeuronOwner into the daemon-owned run lifecycle once the canonical runtime.agentd coordinator line converges, with selected-artifact/current inference.control/witness dependencies constructed by the registered owner composition rather than an ambient singleton."
+        ],
+        "externalEvidenceGates": [
+          "deployed Agentd process and authenticated socket identity",
+          "target-host drain/restart/backpressure measurements",
+          "independent acceptance, promotion and release"
+        ],
+        "claimBoundary": {
+          "nativeSourceMappingComplete": true,
+          "repositoryControlledDocumentationGapsClosed": true,
+          "repositoryControlledMappingGapsClosed": true,
+          "repositoryControlledSourceBoundaryGapsClosed": false,
+          "productExecutionComplete": false,
+          "deploymentQualificationComplete": false,
+          "independentAcceptanceComplete": false,
+          "sourceRootPresent": true,
+          "productionImplementation": false,
+          "productExecutionProved": false,
+          "independentAcceptance": false,
+          "activation": false,
+          "release": false,
+          "durableRunStartProjectionSourceImplemented": true,
+          "currentTrustRunStartRevalidationComposed": false,
+          "implementedOperationMappingComplete": true
+        },
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productCallerState": "daemon_lifecycle_and_durable_run_start_projection_composed_physical_codex_pending",
+        "productionWriterState": "not_established",
+        "owner": "agent-runtime",
+        "deputy": "runtime-control",
+        "technicalGuide": "docs/modules/runtime.agentd/TECHNICAL.md",
+        "sourceRoot": [
+          "codex-rs/hepta-agentd"
+        ],
+        "currentSourceEvidence": {
+          "commit": "cbb3cee084a4caf4702dd4e575cae5504486c176",
+          "tree": "e22806b086240bb2015344dfb545734342c7fdb3",
+          "meaning": "exact_module_local_run_lifecycle_and_durable_run_start_projection_anchor",
+          "evidencePaths": [
+            "codex-rs/hepta-agentd/Cargo.toml",
+            "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+            "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+            "codex-rs/hepta-learning-ledger/src/run_start.rs"
+          ]
+        },
+        "productCallers": [
+          {
+            "sourcePath": "codex-rs/hepta-agentd/src/main.rs",
+            "nativeSymbol": "codex_hepta_agentd::run",
+            "state": "default_daemon_composition_entry"
+          },
+          {
+            "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+            "nativeSymbol": "ObjectiveStart",
+            "state": "authenticated_objective_ingress_routes_canonical_profile_or_explicit_compatibility"
+          },
+          {
+            "sourcePath": "codex-rs/hepta-agentd/src/state.rs",
+            "nativeSymbol": "start_canonical_intelligence",
+            "state": "configured_canonical_profile_freezes_prepared_run_and_context"
+          }
+        ],
+        "sourceObjects": [
+          {
+            "path": "codex-rs/hepta-agentd",
+            "object": "226c1e22854d45870bcb0339a2d551f02497c284"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+            "object": "80ca70cececdee961ee592e56c54c9d642d31753"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+            "object": "7aae60c9b1181415d491cda1a09819042ddac298"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+            "object": "007e92b7c6242cb33cba6772fbd4dbfdb92e25b9"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+            "object": "aed29fe2689084b405dba3864dfcc3375bbf6708"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/main.rs",
+            "object": "60595420f4bf42089b5745830ac611df1c7ec2c2"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+            "object": "3e880ef975af2b7210a7466b9fb4e12f62937d9c"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs",
+            "object": "c7f7d080ac94724ad8625d0e5d9287df94af2abe"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+            "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+            "object": "ada0d0f52e842d73bf2c0ee3f66e041420f6ceb3"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/state.rs",
+            "object": "b2981675ddb7f56dd36c5ff7deb525afec280928"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/state_control.rs",
+            "object": "2888e10da5ac46e9b0cd568f6d37e30168cc5870"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+            "object": "5736ec59e6030becce80108201e70dc4c07b1226"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+            "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+          },
+          {
+            "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+            "object": "adf96585c3efb947e35ae73cc096ca1d18d40a78"
+          },
+          {
+            "path": "codex-rs/hepta-neuron/src/inference_control.rs",
+            "object": "8a85a1e433f29b1354b4ee3c73f27b85a1842b31"
+          },
+          {
+            "path": "codex-rs/hepta-neuron/src/runtime.rs",
+            "object": "d483e00a69756339254124a633eb4fdcd05664d7"
+          },
+          {
+            "path": "docs/modules/runtime.agentd/TECHNICAL.md",
+            "object": "cb5c75c1eb3abe1e402c26b011e51703f501ca67"
+          }
+        ],
+        "mappingSourceIdentityMode": "exact_blob",
+        "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+        "observedAtHead": {
+          "commit": "c15884e527746ad633728c442415ab73af7188b6",
+          "tree": "2e17d727fdd04e5609f897b875778511d15f3933"
+        },
+        "observedSourcePaths": [
+          "codex-rs/Cargo.lock",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-agentd",
+          "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+          "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+          "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+          "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+          "codex-rs/hepta-agentd/src/main.rs",
+          "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+          "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs",
+          "codex-rs/hepta-agentd/src/runtime_tests.rs",
+          "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+          "codex-rs/hepta-agentd/src/state.rs",
+          "codex-rs/hepta-agentd/src/state_control.rs",
+          "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+          "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+          "codex-rs/hepta-learning-ledger/src/run_start.rs",
+          "codex-rs/hepta-neuron/src/inference_control.rs",
+          "codex-rs/hepta-neuron/src/runtime.rs",
+          "docs/modules/runtime.agentd/TECHNICAL.md"
+        ]
+      },
+      "changedPathsFromPriorStage": [
+        "codex-rs/hepta-agentd/Cargo.toml",
+        "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "codex-rs/hepta-agentd/src/lib.rs",
+        "codex-rs/hepta-agentd/src/run_bridge_admission.rs",
+        "codex-rs/hepta-agentd/src/run_bridge_admission_fixture.rs",
+        "codex-rs/hepta-agentd/src/run_bridge_admission_tests.rs"
+      ],
+      "verifiedPathCount": 20
+    },
+    {
+      "module": "kernel.operations",
+      "originalMapSha256": "b203f3ccbca2d2843f41e0ba7bf161c5373cc0e55857e9e118f2d8db1ffc8cdc",
+      "originalMapSourceCommit": "50a4678beef74f9d65b996e5dffa2c68681b7dd5",
+      "originalSourceBase": {
+        "commit": "532471eebc6c784b873afa4b02700c08abba87c4",
+        "tree": "659f6a0d0401251093b5057b572db85888e2a415"
+      },
+      "originalObservation": {
+        "commit": "532471eebc6c784b873afa4b02700c08abba87c4",
+        "tree": "659f6a0d0401251093b5057b572db85888e2a415"
+      },
+      "observation": {
+        "schema": "hepta.module-implementation-map.v3",
+        "schemaVersion": 3,
+        "sourceBase": {
+          "commit": "532471eebc6c784b873afa4b02700c08abba87c4",
+          "tree": "659f6a0d0401251093b5057b572db85888e2a415"
+        },
+        "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+        "laneId": "LANE-A-FOUNDATION",
+        "module": "kernel.operations",
+        "owner": "durability-kernel",
+        "deputy": "architecture",
+        "technicalGuide": "docs/modules/kernel.operations/TECHNICAL.md",
+        "declaredRoots": [
+          "codex-rs/hepta-operations"
+        ],
+        "resolvedRoots": [
+          "codex-rs/hepta-operations"
+        ],
+        "sourceRootPresent": true,
+        "productionImplementation": false,
+        "productCallerState": "agentd_runtime_lifecycle_source_composed_external_authority_activation_pending",
+        "productionWriterState": "durable_cognitive_store_owner_implemented_not_activated",
+        "operations": [
+          {
+            "operation": "operation_intent_v1",
+            "nativeSymbol": "OperationIntentV1",
+            "sourcePath": "codex-rs/hepta-operations/src/model.rs",
+            "state": "canonical_contract_implemented",
+            "authority": "none",
+            "tests": [
+              "codex-rs/hepta-operations/src/model.rs",
+              "codex-rs/hepta-operations/src/ledger_tests.rs",
+              "codex-rs/hepta-operations/src/outbox_tests.rs"
+            ],
+            "sourcePathExists": true,
+            "designOperation": "prepare_intent",
+            "mappingClass": "owner_native",
+            "delegatedCallees": [],
+            "sourceBlob": "d952060c81eca0d64d7091ebca928c8740c00ed7"
+          },
+          {
+            "operation": "prepare_operation",
+            "nativeSymbol": "ProductionDurableWriter::prepare_operation",
+            "sourcePath": "codex-rs/hepta-memory/src/production_writer.rs",
+            "state": "durable_source_implemented_execution_pending",
+            "authority": "durability-kernel",
+            "tests": [
+              "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+              "codex-rs/hepta-memory/src/production_writer.rs"
+            ],
+            "sourcePathExists": true,
+            "designOperation": "prepare_intent",
+            "mappingClass": "delegated_owner_native",
+            "delegatedCallees": [
+              {
+                "path": "codex-rs/hepta-cognitive-store",
+                "module": "cognitive.store",
+                "role": "declared_module_dependency_not_callsite_proof"
+              }
+            ],
+            "sourceBlob": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+          },
+          {
+            "operation": "claim_outbox",
+            "nativeSymbol": "operation_claims::claim",
+            "sourcePath": "codex-rs/hepta-memory/src/operation_claims.rs",
+            "state": "durable_claim_lease_implemented_execution_pending",
+            "authority": "generation_fence_attempt_lease_bound",
+            "tests": [
+              "codex-rs/hepta-memory/src/production_writer.rs"
+            ],
+            "sourcePathExists": true,
+            "designOperation": "claim_outbox",
+            "mappingClass": "delegated_owner_native",
+            "delegatedCallees": [
+              {
+                "path": "codex-rs/hepta-cognitive-store",
+                "module": "cognitive.store",
+                "role": "declared_module_dependency_not_callsite_proof"
+              }
+            ],
+            "sourceBlob": "c5c6f0aa8ee3a630857e1232b5b054817dd715f7"
+          },
+          {
+            "operation": "authorized_dispatch",
+            "nativeSymbol": "ProductionFinalUseOutboxDispatcher::dispatch",
+            "sourcePath": "codex-rs/hepta-memory/src/production_writer.rs",
+            "state": "final_use_boundary_source_implemented_execution_pending",
+            "authority": "kernel.authority_final_use_consumed",
+            "tests": [
+              "codex-rs/hepta-memory/src/production_writer.rs",
+              "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs"
+            ],
+            "sourcePathExists": true,
+            "designOperation": "authorized_dispatch",
+            "mappingClass": "delegated_owner_native",
+            "delegatedCallees": [
+              {
+                "path": "codex-rs/hepta-contracts",
+                "module": "kernel.authority",
+                "role": "declared_module_dependency_not_callsite_proof"
+              },
+              {
+                "path": "codex-rs/hepta-cognitive-store",
+                "module": "cognitive.store",
+                "role": "declared_module_dependency_not_callsite_proof"
+              }
+            ],
+            "sourceBlob": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+          },
+          {
+            "operation": "observe_cognitive_terminal",
+            "nativeSymbol": "CognitiveSourceOutboxTarget::observe_terminal",
+            "sourcePath": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+            "state": "destination_cas_and_observer_source_implemented_execution_pending",
+            "authority": "destination_owned_terminal_evidence",
+            "tests": [
+              "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs"
+            ],
+            "sourcePathExists": true,
+            "designOperation": "observe_terminal",
+            "mappingClass": "delegated_owner_native",
+            "delegatedCallees": [
+              {
+                "path": "codex-rs/hepta-cognitive-store",
+                "module": "cognitive.store",
+                "role": "declared_module_dependency_not_callsite_proof"
+              }
+            ],
+            "sourceBlob": "d32961e6bddbd020658f3b60fb1d66d15c0f2e37"
+          },
+          {
+            "operation": "agentd_final_use_host",
+            "nativeSymbol": "AgentdProductionWriterHost",
+            "sourcePath": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+            "state": "named_final_use_host_source_implemented_activation_pending",
+            "authority": "externally_supplied_authority_and_grant_provider",
+            "tests": [
+              "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs"
+            ],
+            "sourcePathExists": true,
+            "designOperation": "product_composition",
+            "mappingClass": "delegated_owner_native",
+            "delegatedCallees": [
+              {
+                "path": "codex-rs/hepta-agentd",
+                "module": "runtime.agentd",
+                "role": "declared_module_dependency_not_callsite_proof"
+              }
+            ],
+            "sourceBlob": "dbf3f0729e336ed0a4d4ce3ce1ec90eced4f5c91"
+          },
+          {
+            "operation": "agentd_runtime_composition",
+            "nativeSymbol": "runtime::run",
+            "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
+            "state": "explicit_daemon_lifecycle_source_implemented_activation_pending",
+            "authority": "externally_supplied_authority_and_grant_provider",
+            "tests": [
+              "codex-rs/hepta-agentd/src/runtime_tests.rs"
+            ],
+            "sourcePathExists": true,
+            "designOperation": "product_composition",
+            "mappingClass": "delegated_owner_native",
+            "delegatedCallees": [
+              {
+                "path": "codex-rs/hepta-agentd",
+                "module": "runtime.agentd",
+                "role": "declared_module_dependency_not_callsite_proof"
+              }
+            ],
+            "sourceBlob": "fefc59bd975f3c4422fd56ce19afa15207eaf628"
+          },
+          {
+            "operation": "automation_operation_consumer",
+            "nativeSymbol": "AutomationStore::dispatch_authorized_effect",
+            "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
+            "state": "second_operation_intent_consumer_source_implemented",
+            "authority": "kernel.authority_final_use_consumed",
+            "tests": [
+              "codex-rs/hepta-automation/tests/authorized_effect.rs"
+            ],
+            "sourcePathExists": true,
+            "designOperation": "destination_apply",
+            "mappingClass": "delegated_owner_native",
+            "delegatedCallees": [
+              {
+                "path": "codex-rs/hepta-automation",
+                "module": "automation.taskflow",
+                "role": "declared_module_dependency_not_callsite_proof"
+              }
+            ],
+            "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+          },
+          {
+            "operation": "reference_operationledger",
+            "nativeSymbol": "OperationLedger",
+            "sourcePath": "codex-rs/hepta-operations/src/ledger.rs",
+            "state": "reference_oracle_implemented",
+            "authority": "none",
+            "tests": [
+              "codex-rs/hepta-operations/src/ledger_tests.rs"
+            ],
+            "sourcePathExists": true,
+            "designOperation": "reference_operationledger",
+            "mappingClass": "owner_native",
+            "delegatedCallees": [],
+            "sourceBlob": "e6ed053a86608f30e63c703a6ed6e3cdb049abfd"
+          },
+          {
+            "operation": "reference_outbox",
+            "nativeSymbol": "Outbox",
+            "sourcePath": "codex-rs/hepta-operations/src/outbox.rs",
+            "state": "reference_oracle_implemented",
+            "authority": "none",
+            "tests": [
+              "codex-rs/hepta-operations/src/outbox_tests.rs"
+            ],
+            "sourcePathExists": true,
+            "designOperation": "reference_outbox",
+            "mappingClass": "owner_native",
+            "delegatedCallees": [],
+            "sourceBlob": "1f172748e56e2fdffa403b485ec0145af66a99f8"
+          }
+        ],
+        "repositoryControlledGaps": [
+          "Run current exact-head and deterministic synthetic-merge qualification for this current-main convergence candidate and close every resulting finding.",
+          "Add destination-owned dedupe/apply/terminal observation before activating each remaining registered effect destination.",
+          "Design and qualify bounded segment/checkpoint compaction for append-only lease/event/outbox history before long-lived capacity qualification.",
+          "Named source and product adapters remain present; current candidate requalification is required because mapped source/build inputs changed after the retained historical observation. Historical production proof is not rebound by navigation migration."
+        ],
+        "externalEvidenceGates": [
+          "independent semantic review",
+          "enrolled production authority/grant source and target-host crash/power-loss/storage qualification",
+          "operator acceptance, canary, promotion and release"
+        ],
+        "claimBoundary": {
+          "nativeSourceMappingComplete": true,
+          "sourceRootPresent": true,
+          "productionImplementation": false,
+          "productExecutionProved": false,
+          "independentAcceptance": false,
+          "activation": false,
+          "release": false,
+          "implementedOperationMappingComplete": true
+        },
+        "sourceRoot": [
+          "codex-rs/hepta-operations"
+        ],
+        "exactSourceEvidence": {
+          "kind": "path_blob_manifest_v1",
+          "entries": [
+            {
+              "path": "codex-rs/hepta-operations/src/model.rs",
+              "blobSha": "d952060c81eca0d64d7091ebca928c8740c00ed7"
+            },
+            {
+              "path": "codex-rs/hepta-operations/src/ledger.rs",
+              "blobSha": "e6ed053a86608f30e63c703a6ed6e3cdb049abfd"
+            },
+            {
+              "path": "codex-rs/hepta-operations/src/outbox.rs",
+              "blobSha": "1f172748e56e2fdffa403b485ec0145af66a99f8"
+            },
+            {
+              "path": "codex-rs/hepta-memory/migrations/0011_kernel_operations.sql",
+              "blobSha": "918195da1b30ce7ebb432df54a7bc247f5154a63"
+            },
+            {
+              "path": "codex-rs/hepta-memory/migrations/0012_kernel_operation_dispatch_claims.sql",
+              "blobSha": "b8d06d5ca867f6d5b32d78f5276f9a1b4f11f5cc"
+            },
+            {
+              "path": "codex-rs/hepta-memory/src/local_lease_outbox.rs",
+              "blobSha": "1c07918ae14e7d7a8c635d1574178424ba3407b4"
+            },
+            {
+              "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+              "blobSha": "73b61de67a6d8b62c6ab961196c42a2b131ca076"
+            },
+            {
+              "path": "codex-rs/hepta-memory/src/operation_claims.rs",
+              "blobSha": "c5c6f0aa8ee3a630857e1232b5b054817dd715f7"
+            },
+            {
+              "path": "codex-rs/hepta-memory/src/production_writer.rs",
+              "blobSha": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+            },
+            {
+              "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+              "blobSha": "d32961e6bddbd020658f3b60fb1d66d15c0f2e37"
+            },
+            {
+              "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+              "blobSha": "ac96e86b614f95a5da9fb68d13752b26bc857933"
+            },
+            {
+              "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+              "blobSha": "dbf3f0729e336ed0a4d4ce3ce1ec90eced4f5c91"
+            },
+            {
+              "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+              "blobSha": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+            },
+            {
+              "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+              "blobSha": "2f0a8cea98cecc940a785dae606861ab2053a109"
+            },
+            {
+              "path": "codex-rs/hepta-agentd/src/config.rs",
+              "blobSha": "afb9cac35db1c57d58edb3b31c6beee31bab2560"
+            },
+            {
+              "path": "codex-rs/hepta-agentd/src/runtime.rs",
+              "blobSha": "fefc59bd975f3c4422fd56ce19afa15207eaf628"
+            },
+            {
+              "path": "codex-rs/hepta-agentd/src/state.rs",
+              "blobSha": "b2981675ddb7f56dd36c5ff7deb525afec280928"
+            },
+            {
+              "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+              "blobSha": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
+            },
+            {
+              "path": "codex-rs/hepta-agentd/src/config_tests.rs",
+              "blobSha": "e1f3fa191bd46090380a338134ffd84c0a44a5e3"
+            }
+          ]
+        },
+        "observedAtHead": {
+          "commit": "c15884e527746ad633728c442415ab73af7188b6",
+          "tree": "2e17d727fdd04e5609f897b875778511d15f3933"
+        },
+        "observedSourcePaths": [
+          "codex-rs/Cargo.lock",
+          "codex-rs/Cargo.toml",
+          "codex-rs/hepta-agentd",
+          "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs",
+          "codex-rs/hepta-agentd/src/production_writer_host.rs",
+          "codex-rs/hepta-agentd/src/runtime.rs",
+          "codex-rs/hepta-agentd/src/runtime_tests.rs",
+          "codex-rs/hepta-automation",
+          "codex-rs/hepta-automation/src/authorized_effect.rs",
+          "codex-rs/hepta-automation/tests/authorized_effect.rs",
+          "codex-rs/hepta-cognitive-store",
+          "codex-rs/hepta-contracts",
+          "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+          "codex-rs/hepta-memory/src/operation_claims.rs",
+          "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+          "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+          "codex-rs/hepta-memory/src/production_writer.rs",
+          "codex-rs/hepta-operations",
+          "codex-rs/hepta-operations/src/ledger.rs",
+          "codex-rs/hepta-operations/src/ledger_tests.rs",
+          "codex-rs/hepta-operations/src/model.rs",
+          "codex-rs/hepta-operations/src/outbox.rs",
+          "codex-rs/hepta-operations/src/outbox_tests.rs",
+          "docs/modules/kernel.operations/TECHNICAL.md"
+        ],
+        "productCallers": [
+          {
+            "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
+            "nativeSymbol": "run_production_operation_reconciler",
+            "state": "configured_product_reconciler_not_external_authority_activation"
+          }
+        ],
+        "sourceObjects": [
+          {
+            "path": "codex-rs/hepta-agentd",
+            "object": "226c1e22854d45870bcb0339a2d551f02497c284"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs",
+            "object": "72d7262b40fe7970ae0cead431aae5d32f68295f"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/production_writer_host.rs",
+            "object": "dbf3f0729e336ed0a4d4ce3ce1ec90eced4f5c91"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/runtime.rs",
+            "object": "fefc59bd975f3c4422fd56ce19afa15207eaf628"
+          },
+          {
+            "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+            "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
+          },
+          {
+            "path": "codex-rs/hepta-automation",
+            "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+          },
+          {
+            "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+            "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+          },
+          {
+            "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+            "object": "15b84f5f00d149efbab5ab6ac68c29e116ce1a9d"
+          },
+          {
+            "path": "codex-rs/hepta-cognitive-store",
+            "object": "b321d1157ea310845ed7642e2692ef829ee3e0f8"
+          },
+          {
+            "path": "codex-rs/hepta-contracts",
+            "object": "9a00da45387d7dabbb18e676fbf6902d32579332"
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/local_lease_outbox_tests.rs",
+            "object": "73b61de67a6d8b62c6ab961196c42a2b131ca076"
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/operation_claims.rs",
+            "object": "c5c6f0aa8ee3a630857e1232b5b054817dd715f7"
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/production_cognitive_source_target.rs",
+            "object": "d32961e6bddbd020658f3b60fb1d66d15c0f2e37"
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/production_cognitive_source_target_tests.rs",
+            "object": "ac96e86b614f95a5da9fb68d13752b26bc857933"
+          },
+          {
+            "path": "codex-rs/hepta-memory/src/production_writer.rs",
+            "object": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+          },
+          {
+            "path": "codex-rs/hepta-operations",
+            "object": "c43c83da00eb7870773fa64c1d19ae53eb822ef4"
+          },
+          {
+            "path": "codex-rs/hepta-operations/src/ledger.rs",
+            "object": "e6ed053a86608f30e63c703a6ed6e3cdb049abfd"
+          },
+          {
+            "path": "codex-rs/hepta-operations/src/ledger_tests.rs",
+            "object": "44938e50337d807b3dbe24890e676e9f65d6ab97"
+          },
+          {
+            "path": "codex-rs/hepta-operations/src/model.rs",
+            "object": "d952060c81eca0d64d7091ebca928c8740c00ed7"
+          },
+          {
+            "path": "codex-rs/hepta-operations/src/outbox.rs",
+            "object": "1f172748e56e2fdffa403b485ec0145af66a99f8"
+          },
+          {
+            "path": "codex-rs/hepta-operations/src/outbox_tests.rs",
+            "object": "183884fbb29bd7fa4881292c51fc5f0e83b1053d"
+          },
+          {
+            "path": "docs/modules/kernel.operations/TECHNICAL.md",
+            "object": "744afc7479736a81e075a6bce83cb0323f1e8f45"
+          }
+        ],
+        "mappingSourceIdentityMode": "exact_blob"
+      },
+      "changedPathsFromPriorStage": [
+        "codex-rs/hepta-agentd/Cargo.toml",
+        "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+        "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "codex-rs/hepta-agentd/src/lib.rs",
+        "codex-rs/hepta-agentd/src/run_bridge_admission.rs",
+        "codex-rs/hepta-agentd/src/run_bridge_admission_fixture.rs",
+        "codex-rs/hepta-agentd/src/run_bridge_admission_tests.rs"
+      ],
+      "verifiedPathCount": 24
+    }
+  ]
+}

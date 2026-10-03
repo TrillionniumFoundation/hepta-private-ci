@@ -13,7 +13,7 @@ impl DurableInferenceControl {
             .get(request_id)
             .ok_or(Error::RequestNotFound)?;
         if record.observation.as_ref() == Some(&output) {
-            return Ok(record.clone());
+            return self.acknowledge_native_record(record.clone());
         }
         self.commit_native(
             request_id,
@@ -118,7 +118,7 @@ impl DurableInferenceControl {
             && receipt.terminal_sequence <= previous.terminal_sequence
         {
             return if previous.receipt_digest == verified.receipt_digest() {
-                Ok(record.clone())
+                self.acknowledge_native_record(record.clone())
             } else {
                 Err(Error::Conflict)
             };
@@ -283,9 +283,7 @@ impl DurableInferenceControl {
         now_unix_ms: u64,
         failpoint: &mut dyn NativeMaintenanceFailpoint,
     ) -> Result<NativeMaintenanceReceipt, Error> {
-        if self.poisoned {
-            return Err(Error::WriterUnavailable);
-        }
+        self.ensure_writer_available()?;
         let result = self.compact_native_journal_inner(now_unix_ms, failpoint);
         if matches!(
             result,

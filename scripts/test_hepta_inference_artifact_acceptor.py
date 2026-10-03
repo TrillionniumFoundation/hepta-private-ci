@@ -145,6 +145,36 @@ class AcceptorTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "command/schema"):
             self.validate()
 
+    def test_each_required_regression_suite_must_be_present(self):
+        key = "commands/03-regressions.json"
+        original = self.files[key]
+        command = json.loads(original)["command"]
+        for module in command[4:]:
+            record = json.loads(original)
+            record["command"].remove(module)
+            self.files[key] = json.dumps(record).encode()
+            with (
+                self.subTest(module=module),
+                self.assertRaisesRegex(ValueError, "command/schema"),
+            ):
+                self.validate()
+        self.files[key] = original
+
+    def test_obsolete_regression_entrypoint_cannot_claim_complete_coverage(self):
+        key = "commands/03-regressions.json"
+        record = json.loads(self.files[key])
+        record["command"] = [
+            "python3",
+            "-m",
+            "unittest",
+            "-v",
+            "scripts.test_hepta_inference_hardening",
+            "scripts.test_hepta_ci_source_identity",
+        ]
+        self.files[key] = json.dumps(record).encode()
+        with self.assertRaisesRegex(ValueError, "command/schema"):
+            self.validate()
+
     def test_log_tampering_is_rejected(self):
         self.files["commands/07-tests.log"] = b"forged log"
         with self.assertRaisesRegex(ValueError, "log size|log digest"):

@@ -1,0 +1,139 @@
+{
+  "schema": "hepta.runtime-codex-guarded-send-audit.v1",
+  "date": "2026-10-02",
+  "baselineSha": "82c6e2872dd835b3196e85f3ef381453a5488d1e",
+  "sourceCommit": "bfea3ceeeb84d7374be0a1bfba20170c287e244f",
+  "sourceTree": "4805314834e76116c684d6d99924d4f05da46846",
+  "sourceFileSha256": {
+    "codex-rs/app-server-client/src/lib.rs": "f210d102a9bc4debfc07d6512966b11c7aa6967878c793cc37c10a25e5246bc0",
+    "codex-rs/app-server-client/src/remote.rs": "6f1fc57baf32518bee81e703e611109888559ca92cb829ac7810618a9a7983ab",
+    "codex-rs/app-server-client/src/remote_queue_guard_tests.rs": "301272bc051172377b8526ce828b9ce69912602ff591867a52d5cd2e4c9dce19",
+    "codex-rs/app-server-client/src/remote_send_guard.rs": "8b651ebb22dfebc94f8f82e5880446e968fe382cad6f76dd51906e71f400d6ad",
+    "codex-rs/app-server-client/src/remote_send_guard_tests.rs": "058fed96c4b3e79a594121663c217967e6c1905bbb4af58d7789c7d931bf319d",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs": "bbd6f3876855300e8aaad81b9639e83287cb540857610d6c5e9d766950268e78",
+    "codex-rs/hepta-infer-worker-host/src/native_run_control.rs": "fa5601b6e723f1b0bd8da49135c039fd7c40a843564fb93be85a6d0fd41e27f1",
+    "codex-rs/hepta-infer-worker-host/src/native_send_guard.rs": "02b6c1743f2158579d74b47f8d0cb882d048e0a5c4513d2325ff42f0958fa3ee",
+    "codex-rs/hepta-infer-worker-host/src/native_send_guard_tests.rs": "a66879d9ee9d9277589b22ea0f9364cadeeb8380c182cfb894296563a2b24459",
+    "docs/modules/inference.control/RETENTION_AUDIT_20261002.md": "bc0f77ce603875084b6ac8fd4d8707b6cf1e6ef055d436f9e0401cb4c4437005",
+    "docs/modules/runtime.codex/FAULT_MATRIX.md": "ec9f2b08aca88f2bcc851a8a940277061edf0d03bc53f4cd6d52463b0a07da86",
+    "docs/modules/runtime.codex/GUARDED_SEND_AUDIT_20261002.md": "d72b188b88b3a0f3f6250de5e089d3424a3b9457f0696fd4ac1b2371cf061040",
+    "docs/modules/runtime.codex/INTERFACE_AUDIT_20261002.md": "21d01d3aa9cd47b7d7f19d73b64a068c6127b3e5cd201a22a1aa2fb644669f16"
+  },
+  "scope": "local ordinary-workspace package compilation, library tests, and selected-package strict lint; not full product or exact-head/current-main-merge qualification",
+  "profile": {
+    "cargoLocked": true,
+    "jobs": 2,
+    "debugInfo": 0,
+    "incremental": false,
+    "newDependencies": false
+  },
+  "commands": [
+    {
+      "command": "cargo check --locked -p codex-app-server-client -p codex-hepta-infer-worker-host",
+      "result": "passed",
+      "log": "logs/package-check.log",
+      "note": "Initial composed source; subsequent full test compilation and strict Clippy validate final Rust source."
+    },
+    {
+      "command": "just test --locked -p codex-app-server-client -p codex-hepta-infer-worker-host --lib -E 'test(guard)'",
+      "result": "passed",
+      "passed": 16,
+      "filtered": 93,
+      "log": "logs/package-tests-final.log",
+      "note": "Intermediate focused pass; final source then strengthens the queued-expiry fixture and is included in the final full-library run."
+    },
+    {
+      "command": "cargo build --locked -p codex-exec --bin codex-exec",
+      "result": "passed",
+      "log": "logs/codex-exec-build.log"
+    },
+    {
+      "command": "just test --locked -p codex-app-server-client -p codex-hepta-infer-worker-host --lib --retries 0 --test-threads 2",
+      "result": "failed",
+      "passed": 98,
+      "failed": 9,
+      "ignored": 2,
+      "newGuardTestsPassed": 16,
+      "log": "logs/all-package-final.log",
+      "failureCategories": {
+        "unixSocketPermissionDenied": 6,
+        "inProcessFixtureMissingSandboxRuntimePaths": 3
+      },
+      "originalIgnoredTests": [
+        "actor_mailbox::boundary_tests::mixed_fifo_contention_curve",
+        "control_actor::boundary_tests::real_writer_mixed_query_terminal_contention_curve"
+      ]
+    },
+    {
+      "command": "just fix --locked -p codex-app-server-client -p codex-hepta-infer-worker-host --lib",
+      "result": "passed",
+      "log": "logs/fix.log"
+    },
+    {
+      "command": "cargo clippy --locked -p codex-app-server-client -p codex-hepta-infer-worker-host --lib --tests --no-deps -- -D warnings",
+      "result": "passed",
+      "log": "logs/strict-clippy.log",
+      "note": "Selected-package strict lint; dependency dead-code/deprecation warnings remain."
+    },
+    {
+      "command": "just fmt",
+      "result": "passed_after_writable_cache_configuration",
+      "log": "logs/format-writable-cache.log",
+      "note": "Initial cache failure retained. Fifty-six unrelated pre-existing Python-format changes were reverted to retain scoped source; do not interpret as a whole-repository format-clean receipt."
+    },
+    {
+      "command": "python scripts/hepta-inference-control-current-state.py check",
+      "result": "passed",
+      "log": "logs/current-state-check.log"
+    },
+    {
+      "command": "python scripts/hepta-implementation-maps.py verify",
+      "result": "failed_outside_scoped_modules",
+      "log": "logs/global-maps-final.log",
+      "note": "No reported failure for runtime.codex, inference.control, or inference.worker after refreshing their exact source bindings. Global verification remains failed on other modules due inherited source/evidence drift and unavailable referenced Git objects."
+    }
+  ],
+  "review": {
+    "independentReviewCompleted": true,
+    "scope": "Additive guarded transport and native deadline composition only; not independent product acceptance.",
+    "reviewedSourceCommits": [
+      "81d20bcd1",
+      "4c235fa99"
+    ],
+    "reviewedBoundaries": [
+      "Checks before and after preparation/entry",
+      "Caller deadline propagation and cancellation",
+      "Flush error handling",
+      "Actual remote command-writer tests"
+    ],
+    "newBlockingFindings": 0,
+    "verification": {
+      "newTestsPassed": 16,
+      "log": "logs/independent-source-review-tests.log"
+    },
+    "retainedLimits": [
+      "Generation/ingress observations are not atomic cross-process leases.",
+      "Guard failure closes the entire client connection: conservative safety with an availability effect.",
+      "Full library suite retains nine failures; product and broader durable bridge acceptance remain false."
+    ]
+  },
+  "remainingWork": [
+    "Ordinary Agentd exact durable dispatch/abort commitment/outbox bridge, without copying divergent construction or integration candidates.",
+    "Server ingress generation fence or live owner permit; async observations are not atomic cross-process fencing.",
+    "Transport-owned typed no-effect proof if future work should release safely rejected queued operations; this stage remains conservatively reconcile-only.",
+    "Unix-socket-capable host and corrected in-process sandbox-runtime fixtures for complete library/product checks.",
+    "Windows runtime, exact-head/current-main-merge gates, target-host SLOs, independent acceptance, activation and release."
+  ],
+  "claims": {
+    "sourceCompiled": true,
+    "fullLibrarySuitePassed": false,
+    "productExecutionQualified": false,
+    "productionImplementation": false,
+    "independentAcceptance": false,
+    "activation": false,
+    "promotion": false,
+    "release": false
+  },
+  "localSourceCommit": "4c235fa99263a36a72c5294a553361c2af98e487",
+  "publicationMapping": "qualification/runtime-codex-audit/guarded-send-20261002/PUBLICATION.json"
+}

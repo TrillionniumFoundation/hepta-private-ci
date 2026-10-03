@@ -16,6 +16,83 @@ SPEC.loader.exec_module(MODULE)
 
 
 class LaneBTruthTests(unittest.TestCase):
+    def test_exact_ci_profile_still_runs_shared_verifier(self) -> None:
+        row = {
+            "sourceIdentityPolicy": "exact_ci_receipt_v1",
+            "sourceBase": {
+                "commit": "a" * 40,
+                "tree": "b" * 40,
+                "kind": "integration_provenance_anchor",
+            },
+            "resolvedRoots": ["owned"],
+        }
+        shared = mock.Mock()
+        shared.current_source_base.return_value = {"commit": "c" * 40, "tree": "d" * 40}
+        with (
+            mock.patch.object(
+                MODULE.importlib.util, "module_from_spec", return_value=shared
+            ),
+            mock.patch.object(MODULE.importlib.util, "spec_from_file_location") as spec,
+            mock.patch.object(
+                MODULE, "verify_source_base", return_value=("a" * 40, "b" * 40)
+            ) as anchor,
+        ):
+            spec.return_value.loader.exec_module.return_value = None
+            self.assertEqual(
+                ("a" * 40, "b" * 40), MODULE.verify_module_source_base(row, "fixture")
+            )
+            shared.verify_source_identity.assert_called_once_with(
+                row, ["owned"], shared.current_source_base.return_value
+            )
+            anchor.assert_called_once_with(
+                {"commit": "a" * 40, "tree": "b" * 40}, "fixture"
+            )
+            shared.verify_source_identity.side_effect = ValueError(
+                "dirty or promoted claim"
+            )
+            with self.assertRaisesRegex(MODULE.Invalid, "dirty or promoted claim"):
+                MODULE.verify_module_source_base(row, "fixture")
+
+    def test_canonical_source_profiles_reject_unknown_shape_and_kind(self) -> None:
+        for policy, source in [
+            (
+                "candidate_or_exact_observation_v1",
+                {"commit": "a" * 40, "tree": "b" * 40, "extra": True},
+            ),
+            (
+                "candidate_or_exact_observation_v1",
+                {
+                    "commit": "a" * 40,
+                    "tree": "b" * 40,
+                    "kind": "integration_provenance_anchor",
+                },
+            ),
+            (
+                "exact_ci_receipt_v1",
+                {
+                    "commit": "a" * 40,
+                    "tree": "b" * 40,
+                    "kind": "integration_provenance_anchor",
+                    "extra": True,
+                },
+            ),
+            (
+                "exact_ci_receipt_v1",
+                {"commit": "a" * 40, "tree": "b" * 40, "kind": "unverified"},
+            ),
+            ("exact_ci_receipt_v1", {"commit": "a" * 40, "tree": "b" * 40}),
+        ]:
+            with self.subTest(policy=policy, source=source):
+                with self.assertRaises(MODULE.Invalid):
+                    MODULE.verify_module_source_base(
+                        {
+                            "sourceIdentityPolicy": policy,
+                            "sourceBase": source,
+                            "resolvedRoots": ["owned"],
+                        },
+                        "fixture",
+                    )
+
     def test_duplicate_json_keys_fail(self) -> None:
         with self.assertRaises(MODULE.Invalid):
             json.loads('{"a":1,"a":2}', object_pairs_hook=MODULE.pairs)

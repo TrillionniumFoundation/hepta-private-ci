@@ -1,0 +1,111 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+warning: associated function `new` is never used
+   --> ext/hepta-memory/src/cognitive/mod.rs:274:19
+    |
+273 | impl CognitiveExtension {
+    | ----------------------- associated function in this implementation
+274 |     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    |                   ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `api_digest` is never used
+   --> ext/hepta-memory/src/cognitive/federation.rs:864:4
+    |
+864 | fn api_digest(
+    |    ^^^^^^^^^^
+
+warning: `codex-hepta-memory-extension` (lib) generated 2 warnings
+warning: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2
+  --> hepta-ndu/src/lib.rs:50:20
+   |
+50 | pub use evaluator::evaluate_candidates;
+   |                    ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-hepta-ndu` (lib) generated 1 warning
+   Compiling codex-app-server-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/app-server-client)
+   Compiling codex-hepta-codex-adapter v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-codex-adapter)
+   Compiling codex-hepta-agentd v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-agentd)
+warning: field `sequence` is never read
+   --> hepta-agentd/src/browser_servo.rs:317:5
+    |
+316 | struct DecodedFrame {
+    |        ------------ field in this struct
+317 |     sequence: u64,
+    |     ^^^^^^^^
+    |
+    = note: `DecodedFrame` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `append` and `append_with_delivery` are never used
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19
+   |
+24 | impl CognitiveRetrievalLearningSink {
+   | ----------------------------------- methods in this implementation
+...
+32 |     pub(crate) fn append(
+   |                   ^^^^^^
+...
+52 |     pub(crate) fn append_with_delivery(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: field `handle` is never read
+  --> hepta-agentd/src/plasticity_learning_producer.rs:24:5
+   |
+23 | pub(crate) struct AgentdLearningPlasticityProducerV1 {
+   |                   ---------------------------------- field in this struct
+24 |     handle: PlasticityRuntimeHandleV1,
+   |     ^^^^^^
+   |
+   = note: `AgentdLearningPlasticityProducerV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: methods `submit_parameter` and `submit_topology` are never used
+  --> hepta-agentd/src/plasticity_learning_producer.rs:32:25
+   |
+27 | impl AgentdLearningPlasticityProducerV1 {
+   | --------------------------------------- methods in this implementation
+...
+32 |     pub(crate) async fn submit_parameter(
+   |                         ^^^^^^^^^^^^^^^^
+...
+40 |     pub(crate) async fn submit_topology(
+   |                         ^^^^^^^^^^^^^^^
+
+warning: methods `submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` are never used
+   --> hepta-agentd/src/state.rs:178:25
+    |
+ 76 | impl AgentdState {
+    | ---------------- methods in this implementation
+...
+178 |     pub(crate) async fn submit_parameter_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+195 |     pub(crate) async fn submit_topology_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib) generated 5 warnings
+   Compiling codex-hepta-infer-worker-host v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-infer-worker-host)
+    Finished `test` profile [unoptimized] target(s) in 28.49s
+────────────
+ Nextest run ID 60256c75-a74d-4913-8e46-c17771ead6dd with nextest profile: local
+    Starting 16 tests across 2 binaries (93 tests skipped)
+        PASS [   0.020s] ( 1/16) codex-app-server-client remote::send_guard::tests::queued_request_expired_before_dequeue_never_enters_or_sends
+        PASS [   0.021s] ( 2/16) codex-app-server-client remote::send_guard::tests::rejected_final_authority_never_sends
+        PASS [   0.023s] ( 3/16) codex-app-server-client remote::send_guard::tests::abandoned_queued_request_never_enters_or_sends
+        PASS [   0.025s] ( 4/16) codex-app-server-client remote::send_guard::tests::cancellation_during_synchronous_entry_prevents_send
+        PASS [   0.025s] ( 5/16) codex-app-server-client remote::send_guard::tests::flush_failure_does_not_retry_physical_send
+        PASS [   0.030s] ( 6/16) codex-app-server-client remote::queue_guard_tests::real_writer_drops_expired_queued_request
+        PASS [   0.030s] ( 7/16) codex-app-server-client remote::queue_guard_tests::real_writer_drops_abandoned_queued_request
+        PASS [   0.035s] ( 8/16) codex-app-server-client remote::queue_guard_tests::legacy_queued_request_preserves_abandonment_semantics
+        PASS [   0.042s] ( 9/16) codex-app-server-client remote::send_guard::tests::deadline_elapsing_inside_entry_never_sends
+        PASS [   0.020s] (10/16) codex-app-server-client remote::send_guard::tests::successful_guard_enters_once_and_sends_once
+        PASS [   0.017s] (11/16) codex-hepta-infer-worker-host native_app_server::send_guard::tests::signed_ceiling_is_not_replaced_by_a_fresh_execution_timeout
+        PASS [   0.017s] (12/16) codex-hepta-infer-worker-host native_app_server::send_guard::tests::shorter_operation_timeout_wins_over_long_signed_lease
+        PASS [   0.022s] (13/16) codex-hepta-infer-worker-host native_app_server::send_guard::tests::expired_signed_ceiling_and_zero_budget_fail_closed
+        PASS [   0.025s] (14/16) codex-app-server-client remote::send_guard::tests::stalled_preparation_is_cancelled_without_entering
+        PASS [   0.029s] (15/16) codex-app-server-client remote::send_guard::tests::stalled_socket_readiness_is_bounded_by_deadline
+        PASS [   0.046s] (16/16) codex-app-server-client remote::send_guard::tests::stalled_flush_is_bounded_without_retry_after_send
+────────────
+     Summary [   0.074s] 16 tests run: 16 passed, 93 skipped

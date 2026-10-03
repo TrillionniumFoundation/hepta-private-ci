@@ -1,0 +1,40 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+[33;1mwarning[0m: in config file .config/nextest.toml, ignoring unknown configuration keys:  profile.local.inherits
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 0.65s
+────────────
+[32;1m Nextest run[0m ID [1m4b43a66d-6fbd-402b-9069-1bc4d4010660[0m with nextest profile: [1mlocal[0m
+[32;1m    Starting[0m [1m32[0m tests across [1m1[0m binary ([1m247[0m tests [33;1mskipped[0m)
+[32;1m        PASS[0m [   0.104s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1macquire_replay_and_atomic_admission_are_idempotent[0m
+[32;1m        PASS[0m [   0.109s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mbound_expiry_is_explicit_timeout_rollback_and_exact_head_reopens_generation[0m
+[32;1m        PASS[0m [   0.005s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mdurable_sequence_capacity_rejects_before_mutation_boundary[0m
+[32;1m        PASS[0m [   0.106s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mevent_and_outbox_faults_leave_no_partial_rows[0m
+[32;1m        PASS[0m [   0.218s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mexpiry_and_replay_finalization_reject_missing_outbox_pair[0m
+[32;1m        PASS[0m [   0.105s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mexpiry_rejects_legacy_unbound_leases[0m
+[32;1m        PASS[0m [   0.116s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mgeneration_cas_release_and_stale_handle_fail_closed[0m
+[32;1m        PASS[0m [   0.108s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mhost_bound_reopen_requires_exact_head_and_binding[0m
+[32;1m        PASS[0m [   0.116s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mhost_bound_successor_cas_requires_lexicographically_newer_epochs[0m
+[32;1m        PASS[0m [   0.149s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mindeterminate_replay_is_status_aware_and_releases_without_dispatch[0m
+[32;1m        PASS[0m [   0.117s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1minspect_local_lease_head_is_read_only_and_classifies_fences[0m
+[32;1m        PASS[0m [   0.107s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mlease_head_cas_rejects_stale_terminal_head_and_digest_mismatch[0m
+[32;1m        PASS[0m [   0.253s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mlease_terminalization_rejects_unresolved_outbox_until_occurrence_is_settled[0m
+[32;1m        PASS[0m [   0.005s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mlocal_lease_outbox_has_no_production_authority[0m
+[32;1m        PASS[0m [   0.111s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mmaximum_length_lease_id_keeps_generated_row_ids_bounded[0m
+[32;1m        PASS[0m [   0.113s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mnew_generation_retry_of_old_occurrence_is_stale_not_corrupt[0m
+[32;1m        PASS[0m [   0.109s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1moperation_event_and_outbox_are_one_atomic_transaction_across_every_fault_boundary[0m
+[32;1m        PASS[0m [   0.006s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mqualification_durable_writer_crash_helper[0m
+[32;1m        PASS[0m [   0.110s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mqueued_replay_returns_original_receipt_and_keeps_lease_active[0m
+[32;1m        PASS[0m [   0.152s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mreopen_rejects_late_reconcile_after_terminal_outcome[0m
+[32;1m        PASS[0m [   0.108s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mreplay_acquisition_rejects_corrupt_child_chain_before_returning_handle[0m
+[32;1m        PASS[0m [   0.121s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mreplay_finalization_keeps_lease_active_when_another_occurrence_is_unresolved[0m
+[32;1m        PASS[0m [   0.103s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mreplay_without_admission_is_explicit_and_keeps_lease_writable[0m
+[32;1m        PASS[0m [   0.185s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1msqlite_full_aborts_operation_event_and_outbox_atomically_and_reopens_cleanly[0m
+[32;1m        PASS[0m [   0.115s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1msuccessor_terminalization_ignores_unresolved_expired_generation[0m
+[32;1m        PASS[0m [   0.430s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mtampered_child_chain_cannot_be_terminalized_by_release_or_rollback[0m
+[32;1m        PASS[0m [   0.111s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mtampered_event_chain_is_rejected_on_reopen[0m
+[32;1m        PASS[0m [   0.127s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mterminal_or_indeterminate_occurrence_never_replays_as_queued[0m
+[32;1m        PASS[0m [   0.216s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mterminal_recovery_rejects_missing_event_outbox_pair_without_appending_lease[0m
+[32;1m        PASS[0m [   0.153s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1munknown_reconcile_survives_reopen_and_never_claims_effect[0m
+[32;1m        PASS[0m [   0.167s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mverifier_accepts_direct_queued_apply_and_reject_after_reopen[0m
+[32;1m        PASS[0m [   0.112s] [35;1mcodex-hepta-memory[0m [36mlocal_lease_outbox_tests[0m[36m::[0m[34;1mverify_current_rejects_expired_active_head_but_reopen_allows_explicit_expiry[0m
+────────────
+[32;1m     Summary[0m [   4.169s] [1m32[0m tests run: [1m32[0m [32;1mpassed[0m, [1m247[0m [33;1mskipped[0m

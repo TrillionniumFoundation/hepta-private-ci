@@ -19,7 +19,6 @@ Exact candidate success is not stored here; it is carried by a CI evidence recei
 ## Formal roots
 
 - `codex-rs/hepta-infer-core`
-- `codex-rs/hepta-infer-worker-host`
 - `codex-rs/hepta-inferd`
 
 ## Operation inventory
@@ -28,7 +27,7 @@ Exact candidate success is not stored here; it is carried by a CI evidence recei
 | --- | --- | --- | ---: |
 | `verify_execution_plan` | `source_implemented` | `codex-rs/hepta-infer-core/src/control_contracts.rs` | 2 |
 | `post_lease_recovery_verification` | `source_implemented` | `codex-rs/hepta-infer-core/src/recovery_contracts.rs` | 2 |
-| `reserve_and_bind_native_execution` | `source_implemented` | `codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs` | 1 |
+| `reserve_and_bind_native_execution` | `source_implemented` | `codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs` | 4 |
 | `write_ahead_dispatch` | `product_composed` | `codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs` | 1 |
 | `protected_terminal_settlement` | `product_composed` | `codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs` | 1 |
 | `signed_terminal_usage_reconciliation` | `source_implemented` | `codex-rs/hepta-infer-core/src/native_control_v2_recovery.rs` | 1 |
@@ -56,6 +55,9 @@ Exact candidate success is not stored here; it is carried by a CI evidence recei
 - compose the real inference-control neuron feature port and selected worker into the Agentd daemon lifecycle; typed feature receipts alone do not execute a model
 - connect real enrolled-worker scheduling, measured device capacity and provider usage/billing to their existing owners; signed declared leases are not physical observations
 - define a bounded retained-request lifecycle beyond the 16384 distinct-record ceiling; checkpoint compaction preserves released request identities
+- carry original signed-plan and Agentd admitted absolute deadlines through transport queue/readiness waits to guarded physical-send admission; preserve cancellation and owner-generation fencing without claiming packet completion
+- reconcile the ordinary runtime.codex durable Agentd dispatch/abort handoff with the V2 inference actor rather than replacing either owner or executing source-writing migrations
+- qualify full-prefix journal/checkpoint verification latency and selected Windows filesystem/ACL/locking behavior; current Windows 64-bit file identity does not qualify ReFS
 
 ## External evidence gates
 

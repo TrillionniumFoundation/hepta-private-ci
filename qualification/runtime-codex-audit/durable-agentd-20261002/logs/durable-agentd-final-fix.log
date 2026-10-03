@@ -1,0 +1,1830 @@
+cargo clippy --fix --tests --allow-dirty {args}
+warning: associated function `new` is never used
+   --> ext/hepta-memory/src/cognitive/mod.rs:274:19
+    |
+273 | impl CognitiveExtension {
+    | ----------------------- associated function in this implementation
+274 |     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    |                   ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `api_digest` is never used
+   --> ext/hepta-memory/src/cognitive/federation.rs:864:4
+    |
+864 | fn api_digest(
+    |    ^^^^^^^^^^
+
+warning: `codex-hepta-memory-extension` (lib) generated 2 warnings
+warning: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2
+  --> hepta-ndu/src/lib.rs:50:20
+   |
+50 | pub use evaluator::evaluate_candidates;
+   |                    ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-hepta-ndu` (lib) generated 1 warning
+    Checking codex-hepta-agentd v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-agentd)
+warning: field `sequence` is never read
+   --> hepta-agentd/src/browser_servo.rs:317:5
+    |
+316 | struct DecodedFrame {
+    |        ------------ field in this struct
+317 |     sequence: u64,
+    |     ^^^^^^^^
+    |
+    = note: `DecodedFrame` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `append` and `append_with_delivery` are never used
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19
+   |
+24 | impl CognitiveRetrievalLearningSink {
+   | ----------------------------------- methods in this implementation
+...
+32 |     pub(crate) fn append(
+   |                   ^^^^^^
+...
+52 |     pub(crate) fn append_with_delivery(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: field `handle` is never read
+  --> hepta-agentd/src/plasticity_learning_producer.rs:24:5
+   |
+23 | pub(crate) struct AgentdLearningPlasticityProducerV1 {
+   |                   ---------------------------------- field in this struct
+24 |     handle: PlasticityRuntimeHandleV1,
+   |     ^^^^^^
+   |
+   = note: `AgentdLearningPlasticityProducerV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: methods `submit_parameter` and `submit_topology` are never used
+  --> hepta-agentd/src/plasticity_learning_producer.rs:32:25
+   |
+27 | impl AgentdLearningPlasticityProducerV1 {
+   | --------------------------------------- methods in this implementation
+...
+32 |     pub(crate) async fn submit_parameter(
+   |                         ^^^^^^^^^^^^^^^^
+...
+40 |     pub(crate) async fn submit_topology(
+   |                         ^^^^^^^^^^^^^^^
+
+warning: methods `submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` are never used
+   --> hepta-agentd/src/state.rs:181:25
+    |
+ 76 | impl AgentdState {
+    | ---------------- methods in this implementation
+...
+181 |     pub(crate) async fn submit_parameter_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+198 |     pub(crate) async fn submit_topology_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: large size difference between variants
+  --> hepta-agentd/src/automation_effect_host.rs:58:1
+   |
+58 | / pub(crate) enum AgentdAutomationEffectReconcileOutcome {
+59 | |     Observed(TaskFlowStepReceipt),
+   | |     ----------------------------- the largest variant contains at least 272 bytes
+60 | |     Indeterminate,
+   | |     ------------- the second-largest variant carries no data at all
+61 | |     ProvenAbsent,
+62 | | }
+   | |_^ the entire enum is at least 272 bytes
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#large_enum_variant
+   = note: `#[warn(clippy::large_enum_variant)]` on by default
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+   |
+59 -     Observed(TaskFlowStepReceipt),
+59 +     Observed(Box<TaskFlowStepReceipt>),
+   |
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/cognitive_context.rs:105:1
+    |
+105 | / pub(crate) async fn read_with_retrieval_context_and_learning(
+106 | |     store: &CognitiveStore,
+107 | |     owner: &AgentId,
+108 | |     body_generation: u64,
+...   |
+114 | |     request_id: Option<u64>,
+115 | | ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
+    | |____________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+    = note: `#[warn(clippy::too_many_arguments)]` on by default
+
+warning: this function has too many arguments (10/7)
+   --> hepta-agentd/src/cognitive_context.rs:507:1
+    |
+507 | / pub(crate) async fn revalidate_with_retrieval_context(
+508 | |     store: &CognitiveStore,
+509 | |     owner: &AgentId,
+510 | |     snapshot_digest: &str,
+...   |
+517 | |     current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
+518 | | ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    | |________________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+
+warning: this function has too many arguments (8/7)
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:52:5
+   |
+52 | /     pub(crate) fn append_with_delivery(
+53 | |         &self,
+54 | |         owner: &AgentId,
+55 | |         body_generation: u64,
+...  |
+60 | |         published_context_digest: Option<Digest32>,
+61 | |     ) -> Result<AppendReceipt, String> {
+   | |______________________________________^
+   |
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+
+warning: large size difference between variants
+   --> hepta-agentd/src/intelligence_product.rs:584:1
+    |
+584 | / pub enum AgentdIntelligenceProductOutcomeV1 {
+585 | |     Ready(PreparedAgentdIntelligenceRunV1),
+    | |     -------------------------------------- the largest variant contains at least 1136 bytes
+586 | |     Abstained,
+    | |     --------- the second-largest variant carries no data at all
+587 | |     SlowPath,
+588 | | }
+    | |_^ the entire enum is at least 1136 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+585 -     Ready(PreparedAgentdIntelligenceRunV1),
+585 +     Ready(Box<PreparedAgentdIntelligenceRunV1>),
+    |
+
+warning: large size difference between variants
+   --> hepta-agentd/src/intelligence_product.rs:593:1
+    |
+593 | /  pub enum AgentdIntelligenceAdmittedOutcomeV1 {
+594 | |/     Ready {
+595 | ||         prepared: PreparedAgentdIntelligenceRunV1,
+596 | ||         run_receipt: crate::RunReceipt,
+597 | ||     },
+    | ||_____- the largest variant contains at least 1312 bytes
+598 | |      Abstained,
+    | |      --------- the second-largest variant carries no data at all
+599 | |      SlowPath,
+600 | |  }
+    | |__^ the entire enum is at least 1312 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+595 -         prepared: PreparedAgentdIntelligenceRunV1,
+595 +         prepared: Box<PreparedAgentdIntelligenceRunV1>,
+    |
+
+warning: large size difference between variants
+   --> hepta-agentd/src/intelligence_product.rs:722:1
+    |
+722 | / pub enum AgentdIntelligenceLedgerError {
+723 | |     Currentness(CanonicalIntelligenceError),
+    | |     --------------------------------------- the second-largest variant contains at least 40 bytes
+724 | |     Ledger(DurableLedgerError),
+725 | |     Indeterminate(PendingIntelligenceLedgerAppendV1),
+    | |     ------------------------------------------------ the largest variant contains at least 664 bytes
+726 | |     NotSelected,
+727 | |     InvalidOutcome,
+728 | | }
+    | |_^ the entire enum is at least 664 bytes
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#large_enum_variant
+help: consider boxing the large fields or introducing indirection in some other way to reduce the total size of the enum
+    |
+725 -     Indeterminate(PendingIntelligenceLedgerAppendV1),
+725 +     Indeterminate(Box<PendingIntelligenceLedgerAppendV1>),
+    |
+
+warning: this function has too many arguments (9/7)
+   --> hepta-agentd/src/plasticity_host.rs:704:1
+    |
+704 | / pub fn propose_agentd_plasticity_v1(
+705 | |     mut request: ParameterPlasticityProductRequestV1,
+706 | |     artifacts: &ArtifactRegistry,
+707 | |     ledger: &DurableLedger,
+...   |
+713 | |     now: u64,
+714 | | ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
+    | |_____________________________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+
+warning: `codex-hepta-agentd` (lib) generated 13 warnings
+warning: function `read_restart_journal` is never used
+   --> hepta-supervisor/src/restart_journal.rs:313:15
+    |
+313 | pub(crate) fn read_restart_journal(
+    |               ^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `restore_window` is never used
+   --> hepta-supervisor/src/restart_journal.rs:356:15
+    |
+356 | pub(crate) fn restore_window(
+    |               ^^^^^^^^^^^^^^
+
+warning: methods `reset_restart_budget_for_release`, `reset_restart_budget`, and `restore_restart_budget` are never used
+  --> hepta-supervisor/src/restart_state.rs:37:19
+   |
+19 | impl<D: ProcessDriver> Supervisor<D> {
+   | ------------------------------------ methods in this implementation
+...
+37 |     pub(crate) fn reset_restart_budget_for_release(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+47 |     pub(crate) fn reset_restart_budget(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+...
+64 |     pub(crate) fn restore_restart_budget(
+   |                   ^^^^^^^^^^^^^^^^^^^^^^
+
+warning: function `reset_slot_restart_budget` is never used
+   --> hepta-supervisor/src/restart_state.rs:147:4
+    |
+147 | fn reset_slot_restart_budget<P>(slot: &mut AgentSlot<P>) {
+    |    ^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: fields `restart_window_started_at`, `restart_window_started_unix_millis`, `restart_retry_at`, `restart_automatic`, `restart_after_exit`, and `restart_exhausted` are never read
+   --> hepta-supervisor/src/runtime.rs:153:9
+    |
+145 | pub(crate) struct AgentSlot<P> {
+    |                   --------- fields in this struct
+...
+153 |     pub restart_window_started_at: Option<Instant>,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^
+154 |     pub restart_window_started_unix_millis: Option<u64>,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+155 |     pub restart_retry_at: Option<Instant>,
+    |         ^^^^^^^^^^^^^^^^
+156 |     pub restart_automatic: bool,
+    |         ^^^^^^^^^^^^^^^^^
+157 |     pub restart_after_exit: bool,
+    |         ^^^^^^^^^^^^^^^^^^
+158 |     pub restart_exhausted: bool,
+    |         ^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-supervisor` (lib) generated 5 warnings
+    Checking codex-hepta-infer-worker-host v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-infer-worker-host)
+warning: used `expect()` on a `Result` value
+  --> hepta-agentd/tests/optional_module_restart.rs:60:18
+   |
+60 |       let intent = automation_task_operation_intent(
+   |  __________________^
+61 | |         store.owner_agent_id(),
+62 | |         &request.draft,
+63 | |         Generation::new(1).expect("stable original operation generation"),
+64 | |     )
+65 | |     .expect("exact task intent");
+   | |________________________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+   = note: requested on the command line with `-D clippy::expect-used`
+
+warning: used `expect()` on a `Result` value
+  --> hepta-agentd/tests/optional_module_restart.rs:63:9
+   |
+63 |         Generation::new(1).expect("stable original operation generation"),
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-agentd/tests/optional_module_restart.rs:74:13
+   |
+74 |             result.expect("effect must commit before injected task panic");
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-agentd/tests/optional_module_restart.rs:78:13
+   |
+78 |             result.expect("effect must commit before injected process loss");
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:93:5
+    |
+ 93 | /     host.spawn_optional_service(
+ 94 | |         name,
+ 95 | |         move |stop| async move {
+ 96 | |             loop {
+...   |
+121 | |     .expect("same public host extension point");
+    | |_______________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:131:5
+    |
+131 | /     send.send(Request {
+132 | |         draft,
+133 | |         fault,
+134 | |         reply,
+135 | |     })
+136 | |     .await
+137 | |     .expect("admission");
+    | |________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:138:5
+    |
+138 | /     timeout(Duration::from_secs(10), result)
+139 | |         .await
+140 | |         .expect("bounded reply")
+    | |________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:146:9
+    |
+146 | /         client
+147 | |             .send((index as u64, reply))
+148 | |             .await
+149 | |             .expect("core admission");
+    | |_____________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:150:21
+    |
+150 |           let value = timeout(Duration::from_secs(2), response)
+    |  _____________________^
+151 | |             .await
+152 | |             .expect("core live")
+153 | |             .expect("core reply");
+    | |_________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:150:21
+    |
+150 |           let value = timeout(Duration::from_secs(2), response)
+    |  _____________________^
+151 | |             .await
+152 | |             .expect("core live")
+    | |________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:159:17
+    |
+159 |     let bytes = std::fs::read(root.join(file)).expect("draft file");
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:160:5
+    |
+160 |     serde_json::from_slice(&bytes).expect("draft JSON")
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:164:17
+    |
+164 |     let fleet = HeptaFleetRoot::parse(root.join("fleet")).expect("fleet");
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:165:40
+    |
+165 |     let layout = fleet.layout().agent(&AgentId::parse(AGENT).expect("agent"));
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:166:17
+    |
+166 |       let store = AutomationStore::open(&layout)
+    |  _________________^
+167 | |         .await
+168 | |         .expect("real SQLite reopen");
+    | |_____________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:171:19
+    |
+171 |     let initial = store.timer_status().await.expect("durable epoch");
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:173:20
+    |
+173 |     let mut host = RuntimeTasks::new(stop.clone(), Duration::from_secs(2)).expect("host");
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:178:9
+    |
+178 | /         host.spawn_required(&format!("core.{index}"), async move {
+179 | |             loop {
+180 | |                 tokio::select! {
+181 | |                     () = cancellation.cancelled() => return Ok(()),
+...   |
+188 | |         })
+189 | |         .expect("required service");
+    | |___________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:204:13
+    |
+204 | /             timeout(Duration::from_secs(10), host.observe_next())
+205 | |                 .await
+206 | |                 .expect("observe panic")
+207 | |                 .expect("isolated");
+    | |___________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:204:13
+    |
+204 | /             timeout(Duration::from_secs(10), host.observe_next())
+205 | |                 .await
+206 | |                 .expect("observe panic")
+    | |________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:211:25
+    |
+211 |               let tasks = store
+    |  _________________________^
+212 | |                 .list_tasks(10)
+213 | |                 .await
+214 | |                 .expect("committed despite ACK loss");
+    | |_____________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:223:31
+    |
+223 |                   let receipt = ask(&client, draft, Fault::None)
+    |  _______________________________^
+224 | |                     .await
+225 | |                     .expect("reply")
+226 | |                     .expect("reconcile committed task");
+    | |_______________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:223:31
+    |
+223 |                   let receipt = ask(&client, draft, Fault::None)
+    |  _______________________________^
+224 | |                     .await
+225 | |                     .expect("reply")
+    | |____________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:232:21
+    |
+232 |             assert!(store.quiesce_timer().await.expect("quiesce").can_handoff());
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:233:13
+    |
+233 | /             host.retire_optional(&name)
+234 | |                 .await
+235 | |                 .expect("drain optional task");
+    | |______________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:237:24
+    |
+237 |             let next = store.handoff_timer().await.expect("durable writer handoff");
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:239:17
+    |
+239 |                 next.timer_status().await.expect("next status").writer_epoch,
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:242:13
+    |
+242 | /             next.resume_timer()
+243 | |                 .await
+244 | |                 .expect("publish compatible successor");
+    | |_______________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:246:26
+    |
+246 |               let intent = automation_task_operation_intent(
+    |  __________________________^
+247 | |                 store.owner_agent_id(),
+248 | |                 &fresh,
+249 | |                 Generation::new(1).expect("original generation"),
+250 | |             )
+251 | |             .expect("intent");
+    | |_____________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:249:17
+    |
+249 |                 Generation::new(1).expect("original generation"),
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:263:26
+    |
+263 |               let replay = ask(&successor, first.clone(), Fault::None)
+    |  __________________________^
+264 | |                 .await
+265 | |                 .expect("successor response")
+266 | |                 .expect("replay");
+    | |_________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:263:26
+    |
+263 |               let replay = ask(&successor, first.clone(), Fault::None)
+    |  __________________________^
+264 | |                 .await
+265 | |                 .expect("successor response")
+    | |_____________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:272:17
+    |
+272 | /                 next.list_tasks(10)
+273 | |                     .await
+274 | |                     .expect("no duplicate effects")
+    | |___________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:278:13
+    |
+278 | /             host.retire_optional(&next_name)
+279 | |                 .await
+280 | |                 .expect("close local route");
+    | |____________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:285:28
+    |
+285 |             let draining = store.quiesce_timer().await.expect("durable quiesce");
+    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:293:21
+    |
+293 |             assert!(store.quiesce_timer().await.expect("quiesce").can_handoff());
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:294:13
+    |
+294 | /             host.retire_optional(&name)
+295 | |                 .await
+296 | |                 .expect("old route drained");
+    | |____________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:297:24
+    |
+297 |               let next = store
+    |  ________________________^
+298 | |                 .handoff_timer()
+299 | |                 .await
+300 | |                 .expect("committed successor epoch");
+    | |____________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:301:27
+    |
+301 |             let cutover = next.timer_status().await.expect("successor state");
+    |                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:305:26
+    |
+305 |               let intent = automation_task_operation_intent(
+    |  __________________________^
+306 | |                 store.owner_agent_id(),
+307 | |                 &fresh,
+308 | |                 Generation::new(1).expect("original generation"),
+309 | |             )
+310 | |             .expect("intent");
+    | |_____________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:308:17
+    |
+308 |                 Generation::new(1).expect("original generation"),
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:323:17
+    |
+323 | /                 ask(
+324 | |                     &client,
+325 | |                     new_draft("must not bypass durable drain"),
+326 | |                     Fault::None
+327 | |                 )
+328 | |                 .await
+329 | |                 .expect("draining service responded")
+    | |_____________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:333:17
+    |
+333 | /                 store
+334 | |                     .claim_due(40_000, initial.writer_epoch, 1_000)
+335 | |                     .await
+336 | |                     .expect("bounded scheduler read while draining")
+    | |____________________________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:340:31
+    |
+340 |                   let receipt = ask(&client, draft, Fault::None)
+    |  _______________________________^
+341 | |                     .await
+342 | |                     .expect("recovery reply")
+343 | |                     .expect("historical committed receipt remains readable");
+    | |____________________________________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:340:31
+    |
+340 |                   let receipt = ask(&client, draft, Fault::None)
+    |  _______________________________^
+341 | |                     .await
+342 | |                     .expect("recovery reply")
+    | |_____________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:350:17
+    |
+350 | /                 store
+351 | |                     .list_tasks(10)
+352 | |                     .await
+353 | |                     .expect("exact retained tasks")
+    | |___________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:359:27
+    |
+359 |               let resumed = store
+    |  ___________________________^
+360 | |                 .resume_timer()
+361 | |                 .await
+362 | |                 .expect("explicit compatible resume");
+    | |_____________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:365:13
+    |
+365 | /             host.retire_optional(&name)
+366 | |                 .await
+367 | |                 .expect("close recovered local route");
+    | |______________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:370:21
+    |
+370 |             assert!(store.quiesce_timer().await.expect("quiesce").can_handoff());
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:371:13
+    |
+371 |             host.retire_optional(&name).await.expect("drain route");
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:373:17
+    |
+373 | /                 store
+374 | |                     .retire_timer()
+375 | |                     .await
+376 | |                     .expect("durable retirement")
+    | |_________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:384:17
+    |
+384 | /                 ask(&client, new_draft("must not resurrect"), Fault::None)
+385 | |                     .await
+386 | |                     .expect("reply"),
+    | |____________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:393:26
+    |
+393 |               let replay = ask(&client, first.clone(), Fault::None)
+    |  __________________________^
+394 | |                 .await
+395 | |                 .expect("historical reply")
+396 | |                 .expect("read-only receipt");
+    | |____________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:393:26
+    |
+393 |               let replay = ask(&client, first.clone(), Fault::None)
+    |  __________________________^
+394 | |                 .await
+395 | |                 .expect("historical reply")
+    | |___________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:401:13
+    |
+401 | /             host.retire_optional(&name)
+402 | |                 .await
+403 | |                 .expect("unpublish fixture route");
+    | |__________________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:412:24
+    |
+412 |     let final_status = store.timer_status().await.expect("current durable state");
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:413:17
+    |
+413 |     let count = store.list_tasks(10).await.expect("task count").len();
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:423:5
+    |
+423 | /     std::fs::write(
+424 | |         root.join("report.json"),
+425 | |         serde_json::to_vec(&report).expect("report JSON"),
+426 | |     )
+427 | |     .expect("report file");
+    | |__________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:425:9
+    |
+425 |         serde_json::to_vec(&report).expect("report JSON"),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:469:9
+    |
+469 |         std::fs::remove_file(&report).expect("remove stale report");
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:472:18
+    |
+472 |     let output = File::create(&log).expect("log");
+    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:474:9
+    |
+474 | /         Command::new(std::env::current_exe().expect("test executable"))
+475 | |             .args([
+476 | |                 "--ignored",
+477 | |                 "--exact",
+...   |
+486 | |             .spawn()
+487 | |             .expect("real subprocess"),
+    | |______________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:474:22
+    |
+474 |         Command::new(std::env::current_exe().expect("test executable"))
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:484:33
+    |
+484 |             .stdout(Stdio::from(output.try_clone().expect("stdout")))
+    |                                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:491:31
+    |
+491 |         if let Some(status) = child.0.try_wait().expect("wait") {
+    |                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:500:21
+    |
+500 |         let bytes = std::fs::read(&log).expect("failure log");
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:507:21
+    |
+507 |         let bytes = std::fs::read(&report).expect("new stage report");
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/optional_module_restart.rs:508:40
+    |
+508 |         let value: serde_json::Value = serde_json::from_slice(&bytes).expect("report");
+    |                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: `codex-hepta-agentd` (test "optional_module_restart") generated 68 warnings
+warning: used `expect()` on a `Result` value
+  --> hepta-agentd/tests/plasticity_process_e2e.rs:45:5
+   |
+45 |     StableId::new(value).expect("stable id")
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+   = note: requested on the command line with `-D clippy::expect-used`
+
+warning: used `expect()` on a `Result` value
+  --> hepta-agentd/tests/plasticity_process_e2e.rs:53:5
+   |
+53 |     Generation::new(value).expect("generation")
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+  --> hepta-agentd/tests/plasticity_process_e2e.rs:57:5
+   |
+57 | /     OpenOptions::new()
+58 | |         .create_new(true)
+59 | |         .read(true)
+60 | |         .write(true)
+61 | |         .open(path)
+62 | |         .expect("create owner file")
+   | |____________________________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: `codex-hepta-agentd` (test "plasticity_process_e2e") generated 3 warnings
+warning: used `unwrap()` on a `Result` value
+  --> hepta-agentd/tests/support/terminal_cell_owner.rs:17:5
+   |
+17 |     StableId::new(value.to_owned()).unwrap()
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+   = note: requested on the command line with `-D clippy::unwrap-used`
+
+warning: used `unwrap()` on an `Option` value
+  --> hepta-agentd/tests/support/terminal_cell_owner.rs:93:5
+   |
+93 | /     trust()
+94 | |         .signers
+95 | |         .into_iter()
+96 | |         .find(|signer| signer.principal.principal_id == id(name))
+97 | |         .unwrap()
+   | |_________________^
+   |
+   = note: if this value is `None`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/support/terminal_cell_owner.rs:127:39
+    |
+127 |     signed.signature = root_key.sign(&signed.signing_bytes().unwrap()).to_bytes();
+    |                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/support/terminal_cell_owner.rs:128:5
+    |
+128 |     activate_learning_trust(&root, signed, None, 50).unwrap()
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/support/terminal_cell_owner.rs:178:9
+    |
+178 |         fs::create_dir(&root).unwrap();
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/support/terminal_cell_owner.rs:179:9
+    |
+179 |         File::create(root.join("ledger")).unwrap();
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/support/terminal_cell_owner.rs:180:9
+    |
+180 |         File::create(root.join("witness")).unwrap();
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/support/terminal_cell_owner.rs:185:9
+    |
+185 | /         OpenOptions::new()
+186 | |             .read(true)
+187 | |             .write(true)
+188 | |             .open(self.root.join(name))
+189 | |             .unwrap()
+    | |_____________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/support/terminal_cell_owner.rs:193:9
+    |
+193 |         File::open(&self.root).unwrap()
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/support/terminal_cell_owner.rs:201:22
+    |
+201 |         let ledger = DurableLedger::create(self.file("ledger"), binding(), limit).unwrap();
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/support/terminal_cell_owner.rs:202:23
+    |
+202 |         let witness = LedgerWitnessStore::create(self.file("witness"), binding()).unwrap();
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/support/terminal_cell_owner.rs:206:9
+    |
+206 | /         LedgerWriter::from_durable(
+207 | |             ledger,
+208 | |             witness,
+209 | |             trust,
+...   |
+213 | |         .unwrap()
+    | |_________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/support/terminal_cell_owner.rs:223:22
+    |
+223 |           let ledger = DurableLedger::recover(
+    |  ______________________^
+224 | |             self.file("ledger"),
+225 | |             binding(),
+226 | |             limit,
+...   |
+229 | |         .unwrap();
+    | |_________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/support/terminal_cell_owner.rs:230:23
+    |
+230 |         let witness = LedgerWitnessStore::recover(self.file("witness"), binding()).unwrap();
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/support/terminal_cell_owner.rs:231:9
+    |
+231 | /         LedgerWriter::from_durable(
+232 | |             ledger,
+233 | |             witness,
+234 | |             activated_trust(),
+...   |
+238 | |         .unwrap()
+    | |_________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-agentd/tests/terminal_cell_owner.rs:40:10
+   |
+40 |         &decision_signing_payload_v2(&request).unwrap(),
+   |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-agentd/tests/terminal_cell_owner.rs:42:23
+   |
+42 |     let predecessor = owner.witness_frontier().unwrap().anchor.chain_digest;
+   |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-agentd/tests/terminal_cell_owner.rs:43:19
+   |
+43 |       let receipt = owner
+   |  ___________________^
+44 | |         .append_decision(predecessor, request, &signed, 50)
+45 | |         .unwrap();
+   | |_________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-agentd/tests/terminal_cell_owner.rs:59:5
+   |
+59 | /     owner
+60 | |         .append_outcome(receipt.chain_digest, observed, &signed, 50)
+61 | |         .unwrap();
+   | |_________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-agentd/tests/terminal_cell_owner.rs:70:19
+   |
+70 |     let payload = dataset_freeze_signing_payload_v2(&owner.snapshot().unwrap(), &plan).unwrap();
+   |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-agentd/tests/terminal_cell_owner.rs:70:54
+   |
+70 |     let payload = dataset_freeze_signing_payload_v2(&owner.snapshot().unwrap(), &plan).unwrap();
+   |                                                      ^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-agentd/tests/terminal_cell_owner.rs:77:5
+   |
+77 |     owner.freeze_dataset(plan, &signed, 50).unwrap()
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-agentd/tests/terminal_cell_owner.rs:84:21
+   |
+84 |         generation: Generation::new(generation).unwrap(),
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/terminal_cell_owner.rs:100:17
+    |
+100 |     let bytes = encode_tabular_payload_v1(trained).unwrap();
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/terminal_cell_owner.rs:113:5
+    |
+113 | /     registry
+114 | |         .append(artifacts::ArtifactEvent::Register {
+115 | |             event_id: id(&format!("register.{}", trained.generation.get())),
+116 | |             manifest: manifest.clone(),
+117 | |         })
+118 | |         .unwrap();
+    | |_________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/terminal_cell_owner.rs:121:5
+    |
+121 | /     artifacts::write_candidate_payload(
+122 | |         artifacts::CreateOnlyArtifactFile::create(&payload).unwrap(),
+123 | |         registry,
+124 | |         &manifest.artifact_id,
+...   |
+127 | |     .unwrap();
+    | |_____________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/terminal_cell_owner.rs:122:9
+    |
+122 |         artifacts::CreateOnlyArtifactFile::create(&payload).unwrap(),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/terminal_cell_owner.rs:128:19
+    |
+128 |       let receipt = artifacts::write_registry_snapshot(
+    |  ___________________^
+129 | |         artifacts::CreateOnlyArtifactFile::create(&snapshot).unwrap(),
+130 | |         registry,
+131 | |         digest("host-artifact-binding"),
+132 | |     )
+133 | |     .unwrap();
+    | |_____________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/terminal_cell_owner.rs:129:9
+    |
+129 |         artifacts::CreateOnlyArtifactFile::create(&snapshot).unwrap(),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/terminal_cell_owner.rs:138:18
+    |
+138 |       let loaded = artifacts::load_pinned_candidate(
+    |  __________________^
+139 | |         File::open(snapshot).unwrap(),
+140 | |         File::open(payload).unwrap(),
+141 | |         retained,
+142 | |     )
+143 | |     .unwrap();
+    | |_____________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/terminal_cell_owner.rs:139:9
+    |
+139 |         File::open(snapshot).unwrap(),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/terminal_cell_owner.rs:140:9
+    |
+140 |         File::open(payload).unwrap(),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+   --> hepta-agentd/tests/terminal_cell_owner.rs:153:5
+    |
+153 |     LoadedTabularOperatorV1::from_pinned_payload(loaded.bytes(), &pin).unwrap()
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: avoid using `collect()` when not needed
+   --> hepta-agentd/tests/terminal_cell_owner.rs:319:17
+    |
+319 |             })).collect::<Vec<_>>();
+    |                 ^^^^^^^
+320 |             jobs.into_iter()
+    |             ---------------- the iterator could be used here instead
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#needless_collect
+    = note: requested on the command line with `-D clippy::needless-collect`
+help: use the original Iterator instead of collecting it and then producing a new one
+    |
+296 ~             
+297 ~             (0..agents).map(|agent| scope.spawn(move || {
+298 +                 let fixture=Fixture::new();let mut writer=fixture.writer_with_limit(4096);
+299 +                 let mut append_latencies=Vec::new();
+300 +                 for index in 0..pairs {
+301 +                     let t=Instant::now();
+302 +                     collect(&mut writer,&format!("profile-{agent}-{index}"),if index%2==0 { "read" } else { "abstain" },if index%2==0 { FixedQ32::ONE.raw() } else { 0 });
+303 +                     append_latencies.push(t.elapsed().as_micros());
+304 +                 }
+305 +                 let t=Instant::now();
+306 +                 let data=freeze(&writer,&format!("profile.dataset.{agent}"));
+307 +                 let frozen=freeze_terminal_cell_from_owner_v1(&writer,&data,profile(1),50).unwrap();
+308 +                 let trained=fit_terminal_cell_from_owner_v1(&writer,frozen,50).unwrap();
+309 +                 let mut registry=artifacts::ArtifactRegistry::new();
+310 +                 let loaded=persist_reload(&fixture.root,&mut registry,&trained,None);
+311 +                 assert!(loaded.predict(&id("single-approved-state"),&id("read")).is_ok());
+312 +                 let fit_and_reload_us=t.elapsed().as_micros();
+313 +                 let cut=writer.witness_frontier().unwrap();drop(writer);
+314 +                 let bytes=std::fs::metadata(fixture.root.join("ledger")).unwrap().len();
+315 +                 let t=Instant::now();let recovered=fixture.recover_writer(4096,cut);let recovery_us=t.elapsed().as_micros();
+316 +                 assert_eq!(recovered.witness_frontier().unwrap().anchor.sequence, (pairs*2) as u64);
+317 +                 let t=Instant::now();assert_eq!(recovered.read_dataset_records(&data,50).unwrap().len(),pairs*2);let page_us=t.elapsed().as_micros();
+318 +                 append_latencies.sort_unstable();
+319 +                 format!("OWNER_HISTORY_PROFILE agents={agents} agent={agent} records={} ledger_bytes={bytes} decision_outcome_p50_us={} p95_us={} p99_us={} fit_registry_reload_us={fit_and_reload_us} full_recovery_us={recovery_us} indexed_dataset_read_us={page_us} recovery_profile=complete_authenticated_history not_cold_compaction=true",pairs*2,append_latencies[pairs/2],append_latencies[(pairs*95/100).min(pairs-1)],append_latencies[(pairs*99/100).min(pairs-1)])
+320 +             }))
+    |
+
+warning: `codex-hepta-agentd` (test "terminal_cell_owner") generated 34 warnings
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/kernel_evidence_product.rs:683:22
+    |
+683 |         evidence_id: EvidenceId::parse(id).expect("evidence id"),
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+    = note: requested on the command line with `-D clippy::expect-used`
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/tests/kernel_evidence_product.rs:727:9
+    |
+727 |         serde_json::to_value(receipt).expect("decision payload"),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: `codex-hepta-agentd` (test "kernel_evidence_product") generated 2 warnings
+warning: used `expect()` on a `Result` value
+  --> hepta-agentd/tests/intuition_policy_product.rs:39:5
+   |
+39 |     StableId::new(value).expect("id")
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+   = note: requested on the command line with `-D clippy::expect-used`
+
+warning: `codex-hepta-agentd` (test "intuition_policy_product") generated 1 warning
+warning: used `expect()` on a `Result` value
+  --> hepta-agentd/tests/runtime_shutdown_outcomes.rs:16:5
+   |
+16 |     RuntimeTasks::new(cancellation, Duration::from_millis(50)).expect("host")
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+   = note: requested on the command line with `-D clippy::expect-used`
+
+warning: `codex-hepta-agentd` (test "runtime_shutdown_outcomes") generated 1 warning
+warning: method `append_with_delivery` is never used
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:52:19
+   |
+24 | impl CognitiveRetrievalLearningSink {
+   | ----------------------------------- method in this implementation
+...
+52 |     pub(crate) fn append_with_delivery(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:716:24
+    |
+716 |             let temp = tempfile::tempdir().expect("temp root");
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+    = note: requested on the command line with `-D clippy::expect-used`
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:717:24
+    |
+717 |             let root = temp.path().canonicalize().expect("canonical temp root");
+    |                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:719:30
+    |
+719 |             let fleet_root = HeptaFleetRoot::parse(fleet_path.clone()).expect("fleet root");
+    |                              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:720:28
+    |
+720 |             let registry = FleetRegistry::initialize(fleet_root.clone()).expect("fleet registry");
+    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:722:13
+    |
+722 |             fs::create_dir(&workspace).expect("workspace");
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:723:29
+    |
+723 |             let workspace = workspace.canonicalize().expect("canonical workspace");
+    |                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:724:28
+    |
+724 |             let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID).expect("agent id");
+    |                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:726:28
+    |
+726 |               let manifest = AgentManifest::new(
+    |  ____________________________^
+727 | |                 agent_id.clone(),
+728 | |                 WorkspaceBinding::new(workspace.clone(), &fleet_root).expect("workspace binding"),
+729 | |                 resources.clone(),
+730 | |             )
+731 | |             .expect("manifest");
+    | |_______________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:728:17
+    |
+728 |                 WorkspaceBinding::new(workspace.clone(), &fleet_root).expect("workspace binding"),
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:732:26
+    |
+732 |             let layout = registry.register(manifest).expect("register agent").layout;
+    |                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:745:25
+    |
+745 |               let store = AutomationStore::open(&layout)
+    |  _________________________^
+746 | |                 .await
+747 | |                 .expect("automation store");
+    | |___________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:757:9
+    |
+757 | /         TaskFlowDefinition::new(
+758 | |             "agentd-product-effect",
+759 | |             1,
+760 | |             "effect",
+...   |
+773 | |         .expect("definition")
+    | |_____________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:799:21
+    |
+799 |           let fence = TaskFlowFence::new(
+    |  _____________________^
+800 | |             fixture.identity.agent_id.clone(),
+801 | |             "agentd-product-effect-owner",
+802 | |             1,
+...   |
+806 | |         .expect("fence");
+    | |________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:807:9
+    |
+807 | /         fixture
+808 | |             .store
+809 | |             .register_taskflow_definition(&definition, &fence, now_ms)
+810 | |             .await
+811 | |             .expect("register definition");
+    | |__________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:812:9
+    |
+812 | /         fixture
+813 | |             .store
+814 | |             .create_taskflow_run(
+815 | |                 &intent.run_id,
+...   |
+822 | |             .await
+823 | |             .expect("create run");
+    | |_________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:824:23
+    |
+824 |           let claimed = fixture
+    |  _______________________^
+825 | |             .store
+826 | |             .claim_taskflow_run(&intent.run_id, &fence, now_ms + 1, 60_000)
+827 | |             .await
+828 | |             .expect("claim run");
+    | |________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:829:9
+    |
+829 | /         fixture
+830 | |             .store
+831 | |             .apply_taskflow_command(
+832 | |                 &TaskFlowCommand::new(
+...   |
+842 | |             .await
+843 | |             .expect("start run");
+    | |________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:832:18
+    |
+832 |                   &TaskFlowCommand::new(
+    |  __________________^
+833 | |                     &intent.run_id,
+834 | |                     "agentd-product-effect-start",
+835 | |                     fence.clone(),
+...   |
+840 | |                 .expect("start command"),
+    | |________________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:844:22
+    |
+844 |         let digest = intent.digest().expect("intent digest");
+    |                      ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:845:9
+    |
+845 | /         fixture
+846 | |             .store
+847 | |             .prepare_taskflow_step(
+848 | |                 &intent.run_id,
+...   |
+857 | |             .await
+858 | |             .expect("prepare step");
+    | |___________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:859:9
+    |
+859 | /         fixture
+860 | |             .store
+861 | |             .claim_taskflow_step(
+862 | |                 &intent.run_id,
+...   |
+871 | |             .await
+872 | |             .expect("claim step");
+    | |_________________________________^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:881:23
+    |
+881 |         let binding = intent.final_use_binding().expect("final-use binding");
+    |                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:893:20
+    |
+893 |             .sign(&grant.signing_bytes().expect("signing bytes"))
+    |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: used `expect()` on a `Result` value
+   --> hepta-agentd/src/automation_effect_host.rs:900:9
+    |
+900 |         decode_hex_array::<32>(digest.as_str(), "digest").expect("digest bytes")
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    |
+    = note: if this value is an `Err`, it will panic
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#expect_used
+
+warning: this function has too many arguments (8/7)
+   --> hepta-agentd/src/cognitive_context.rs:482:1
+    |
+482 | / pub(crate) async fn revalidate(
+483 | |     store: &CognitiveStore,
+484 | |     owner: &AgentId,
+485 | |     snapshot_digest: &str,
+...   |
+490 | |     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
+491 | | ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    | |________________________________________________________________^
+    |
+    = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#too_many_arguments
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-agentd/src/durable_agent_runs_tests.rs:44:20
+   |
+44 |     let admitted = owner.start_run(1, s.clone()).unwrap();
+   |                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+   = note: requested on the command line with `-D clippy::unwrap-used`
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-agentd/src/durable_agent_runs_tests.rs:45:20
+   |
+45 |       let attached = owner
+   |  ____________________^
+46 | |         .attach_context(2, admitted.revision, attach(&s))
+47 | |         .unwrap();
+   | |_________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: used `unwrap()` on a `Result` value
+  --> hepta-agentd/src/durable_agent_runs_tests.rs:48:5
+   |
+48 | /     owner
+49 | |         .mark_dispatched(3, &s.run_id, attached.revision)
+50 | |         .unwrap()
+   | |_________________^
+   |
+   = note: if this value is an `Err`, it will panic
+   = help: for further information visit https://rust-lang.github.io/rust-clippy/rust-1.95.0/index.html#unwrap_used
+
+warning: `codex-hepta-agentd` (lib test) generated 38 warnings (9 duplicates)
+    Finished `dev` profile [unoptimized] target(s) in 22.30s

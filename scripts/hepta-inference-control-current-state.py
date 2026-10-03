@@ -14,7 +14,7 @@ from pathlib import Path
 from typing import Any
 
 _CORE_PATH = Path(__file__).with_name("hepta_inference_control_current_state_core.py")
-_CORE_SHA256 = "10961f5e263e6ccbef29597eae2b4f2beafa716c2b45b975d91a646e861b8e2e"
+_CORE_SHA256 = "6f37db9374c19375333cb3d89e606c7168b8f37516b1ad42ea2a75592ab789a5"
 
 
 def _load_core():

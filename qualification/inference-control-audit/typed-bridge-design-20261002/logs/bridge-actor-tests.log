@@ -1,0 +1,252 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+   Compiling sha2 v0.10.9
+   Compiling rama-net v0.3.0-alpha.4
+   Compiling rama-dns v0.3.0-alpha.4
+   Compiling rama-http-headers v0.3.0-alpha.4
+   Compiling rama-http v0.3.0-alpha.4
+   Compiling codex-http-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/http-client)
+   Compiling rama-tcp v0.3.0-alpha.4
+   Compiling rama-http-core v0.3.0-alpha.4
+   Compiling rama-unix v0.3.0-alpha.4
+   Compiling rama-udp v0.3.0-alpha.4
+   Compiling rama-socks5 v0.3.0-alpha.4
+   Compiling rama-http-backend v0.3.0-alpha.4
+   Compiling rama-tls-rustls v0.3.0-alpha.4
+   Compiling codex-network-proxy v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/network-proxy)
+   Compiling codex-protocol v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/protocol)
+   Compiling ed25519-dalek v2.2.0
+   Compiling codex-file-system v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/file-system)
+   Compiling codex-git-utils v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/git-utils)
+   Compiling codex-websocket-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/websocket-client)
+   Compiling codex-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/codex-client)
+   Compiling codex-api v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/codex-api)
+   Compiling codex-otel v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/otel)
+   Compiling rust-embed-utils v8.11.0
+   Compiling rust-embed-impl v8.11.0
+   Compiling codex-hepta-contracts v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-contracts)
+   Compiling codex-shell-command v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/shell-command)
+   Compiling codex-features v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/features)
+   Compiling codex-model-provider-info v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/model-provider-info)
+   Compiling codex-config v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/config)
+   Compiling rust-embed v8.11.0
+   Compiling secret-service v4.0.0
+   Compiling i18n-embed v0.15.4
+   Compiling age-core v0.11.0
+   Compiling keyring v3.6.3
+   Compiling codex-windows-sandbox v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/windows-sandbox-rs)
+   Compiling i18n-embed-fl v0.9.4
+   Compiling scrypt v0.11.0
+   Compiling age v0.11.2
+   Compiling sqlx-core v0.9.0
+   Compiling codex-sandboxing v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/sandboxing)
+   Compiling codex-keyring-store v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/keyring-store)
+   Compiling sqlx-sqlite v0.9.0
+   Compiling codex-secrets v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/secrets)
+   Compiling clatter v2.2.0
+   Compiling codex-exec-server-protocol v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/exec-server-protocol)
+   Compiling codex-exec-server v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/exec-server)
+   Compiling sqlx-macros-core v0.9.0
+   Compiling aws-sigv4 v1.3.7
+   Compiling aws-runtime v1.5.17
+   Compiling sqlx-macros v0.9.0
+   Compiling sqlx v0.9.0
+   Compiling codex-agent-identity v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/agent-identity)
+   Compiling codex-workload-identity v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/workload-identity)
+   Compiling codex-login v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/login)
+   Compiling codex-history v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/history)
+   Compiling codex-state v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/state)
+   Compiling oauth2 v5.0.0
+   Compiling codex-utils-output-truncation v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/output-truncation)
+   Compiling rmcp v3.1.3
+   Compiling aws-sdk-sts v1.95.0
+   Compiling p256 v0.13.2
+   Compiling aws-sdk-sso v1.91.0
+   Compiling aws-sdk-signin v1.2.0
+   Compiling aws-sdk-ssooidc v1.93.0
+   Compiling codex-utils-plugins v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/plugins)
+   Compiling codex-hepta-types v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-types)
+   Compiling codex-plugin v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/plugin)
+   Compiling aws-config v1.8.12
+   Compiling codex-models-manager v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/models-manager)
+   Compiling codex-feedback v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/feedback)
+   Compiling codex-aws-auth v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/aws-auth)
+   Compiling codex-response-debug-context v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/response-debug-context)
+   Compiling codex-model-provider v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/model-provider)
+   Compiling codex-code-mode-protocol v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/code-mode-protocol)
+   Compiling codex-code-mode v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/code-mode)
+   Compiling codex-connectors v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/connectors)
+   Compiling codex-rmcp-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/rmcp-client)
+   Compiling codex-exec-server-test-support v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/exec-server/tests/support)
+   Compiling codex-tools v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/tools)
+   Compiling codex-mcp v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/codex-mcp)
+   Compiling codex-context-fragments v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/context-fragments)
+   Compiling codex-rollout v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/rollout)
+   Compiling codex-extension-api v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/extension-api)
+   Compiling codex-app-server-protocol v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/app-server-protocol)
+   Compiling codex-skills v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/skills)
+   Compiling codex-analytics v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/analytics)
+   Compiling codex-hooks v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hooks)
+   Compiling codex-core-plugins v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/core-plugins)
+   Compiling codex-apply-patch v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/apply-patch)
+   Compiling codex-shell-escalation v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/shell-escalation)
+   Compiling codex-thread-store v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/thread-store)
+   Compiling codex-utils-audio v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/audio)
+   Compiling codex-skills-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/skills)
+   Compiling codex-prompts v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/prompts)
+   Compiling codex-rollout-trace v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/rollout-trace)
+   Compiling codex-agent-graph-store v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/agent-graph-store)
+   Compiling codex-memories-read v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/memories/read)
+   Compiling codex-core v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/core)
+   Compiling codex-hepta-cognitive-types v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-cognitive-types)
+   Compiling codex-hepta-memory-retrieval v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-memory-retrieval)
+   Compiling codex-hepta-prompt-registry v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-prompt-registry)
+   Compiling codex-hepta-paths v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-paths)
+   Compiling codex-hepta-kg v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-kg)
+   Compiling codex-hepta-operations v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-operations)
+   Compiling codex-backend-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/backend-client)
+   Compiling codex-hepta-cognitive-read v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-cognitive-read)
+   Compiling codex-hepta-memory-federation v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-memory-federation)
+   Compiling codex-linux-sandbox v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/linux-sandbox)
+   Compiling codex-hepta-memory v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-memory)
+   Compiling codex-hepta-authbus v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-authbus)
+   Compiling codex-hepta-intuition v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-intuition)
+   Compiling codex-hepta-learning-ledger v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-learning-ledger)
+   Compiling codex-hepta-evidence v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-evidence)
+   Compiling codex-arg0 v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/arg0)
+   Compiling codex-memories-write v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/memories/write)
+   Compiling codex-connectors-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/connectors)
+   Compiling codex-home v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/codex-home)
+   Compiling codex-utils-cli v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/utils/cli)
+   Compiling codex-app-server-transport v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/app-server-transport)
+   Compiling codex-chatgpt v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/chatgpt)
+   Compiling codex-mcp-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/mcp)
+   Compiling codex-external-agent-migration v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/external-agent-migration)
+   Compiling codex-hepta-governance v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/hepta-governance)
+   Compiling codex-hepta-memory-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/hepta-memory)
+warning: associated function `new` is never used
+   --> ext/hepta-memory/src/cognitive/mod.rs:274:19
+    |
+273 | impl CognitiveExtension {
+    | ----------------------- associated function in this implementation
+274 |     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    |                   ^^^
+    |
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: function `api_digest` is never used
+   --> ext/hepta-memory/src/cognitive/federation.rs:864:4
+    |
+864 | fn api_digest(
+    |    ^^^^^^^^^^
+
+warning: `codex-hepta-memory-extension` (lib) generated 2 warnings
+   Compiling codex-cloud-config v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/cloud-config)
+   Compiling codex-git-attribution v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/git-attribution)
+   Compiling codex-goal-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/goal)
+   Compiling codex-guardian-v2 v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/guardian-v2)
+   Compiling codex-queue-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/queue)
+   Compiling codex-memories-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/memories)
+   Compiling codex-history-notes-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/history-notes)
+   Compiling codex-image-generation-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/image-generation)
+   Compiling codex-web-search-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/web-search)
+   Compiling codex-agent-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/agent)
+   Compiling codex-hepta-prompt-extension v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/ext/hepta-prompt)
+   Compiling codex-hepta-wire v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-wire)
+   Compiling codex-app-server v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/app-server)
+   Compiling codex-hepta-ndu v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-ndu)
+warning: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2
+  --> hepta-ndu/src/lib.rs:50:20
+   |
+50 | pub use evaluator::evaluate_candidates;
+   |                    ^^^^^^^^^^^^^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: `codex-hepta-ndu` (lib) generated 1 warning
+   Compiling codex-hepta-infer-core v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-infer-core)
+   Compiling codex-hepta-neuron v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-neuron)
+   Compiling codex-app-server-client v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/app-server-client)
+   Compiling codex-hepta-context-compiler v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-context-compiler)
+   Compiling codex-hepta-prompt-optimizer v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-prompt-optimizer)
+   Compiling codex-hepta-intelligence-eval v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-intelligence-eval)
+   Compiling codex-hepta-automation v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-automation)
+   Compiling codex-hepta-fleet v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-fleet)
+   Compiling codex-hepta-plasticity v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-plasticity)
+   Compiling codex-hepta-learning-artifacts v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-learning-artifacts)
+   Compiling codex-hepta-objective v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-objective)
+   Compiling codex-hepta-intelligence v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-intelligence)
+   Compiling codex-hepta-agent-protocol v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-agent-protocol)
+   Compiling codex-hepta-codex-adapter v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-codex-adapter)
+   Compiling codex-hepta-control-plane v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-control-plane)
+   Compiling codex-hepta-bellman-operator v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-bellman-operator)
+   Compiling codex-hepta-cognitive-store v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-cognitive-store)
+   Compiling codex-hepta-agentd v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-agentd)
+warning: field `sequence` is never read
+   --> hepta-agentd/src/browser_servo.rs:317:5
+    |
+316 | struct DecodedFrame {
+    |        ------------ field in this struct
+317 |     sequence: u64,
+    |     ^^^^^^^^
+    |
+    = note: `DecodedFrame` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    = note: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+warning: methods `append` and `append_with_delivery` are never used
+  --> hepta-agentd/src/cognitive_retrieval_learning.rs:32:19
+   |
+24 | impl CognitiveRetrievalLearningSink {
+   | ----------------------------------- methods in this implementation
+...
+32 |     pub(crate) fn append(
+   |                   ^^^^^^
+...
+52 |     pub(crate) fn append_with_delivery(
+   |                   ^^^^^^^^^^^^^^^^^^^^
+
+warning: field `handle` is never read
+  --> hepta-agentd/src/plasticity_learning_producer.rs:24:5
+   |
+23 | pub(crate) struct AgentdLearningPlasticityProducerV1 {
+   |                   ---------------------------------- field in this struct
+24 |     handle: PlasticityRuntimeHandleV1,
+   |     ^^^^^^
+   |
+   = note: `AgentdLearningPlasticityProducerV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+warning: methods `submit_parameter` and `submit_topology` are never used
+  --> hepta-agentd/src/plasticity_learning_producer.rs:32:25
+   |
+27 | impl AgentdLearningPlasticityProducerV1 {
+   | --------------------------------------- methods in this implementation
+...
+32 |     pub(crate) async fn submit_parameter(
+   |                         ^^^^^^^^^^^^^^^^
+...
+40 |     pub(crate) async fn submit_topology(
+   |                         ^^^^^^^^^^^^^^^
+
+warning: methods `submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` are never used
+   --> hepta-agentd/src/state.rs:181:25
+    |
+ 76 | impl AgentdState {
+    | ---------------- methods in this implementation
+...
+181 |     pub(crate) async fn submit_parameter_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+...
+198 |     pub(crate) async fn submit_topology_plasticity_v1(
+    |                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: `codex-hepta-agentd` (lib) generated 5 warnings
+   Compiling core_test_support v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/core/tests/common)
+   Compiling codex-hepta-infer-worker-host v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-infer-worker-host)
+    Finished `test` profile [unoptimized] target(s) in 7m 03s
+────────────
+ Nextest run ID 84e24fee-4779-4c75-a256-9779be2ce922 with nextest profile: local
+    Starting 3 tests across 1 binary (69 tests skipped)
+        PASS [   0.029s] (1/3) codex-hepta-infer-worker-host control_actor::bound::tests::bound_admission_checks_request_proof_pair_inside_the_writer
+        PASS [   0.023s] (2/3) codex-hepta-infer-worker-host control_actor::bound::tests::bound_port_is_idempotent_and_reconstructs_after_actor_restart
+        PASS [   0.030s] (3/3) codex-hepta-infer-worker-host control_actor::bound::tests::bound_reply_loss_preserves_exact_committed_relationship
+────────────
+     Summary [   0.086s] 3 tests run: 3 passed, 69 skipped

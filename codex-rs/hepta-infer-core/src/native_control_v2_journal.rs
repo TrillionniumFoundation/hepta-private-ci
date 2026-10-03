@@ -1,4 +1,11 @@
 impl NativeJournal {
+    pub(super) fn verify_retained_checkpoint(&self) -> Result<(), Error> {
+        if let Some(checkpoint) = &self.retained_checkpoint {
+            checkpoint.verify()?;
+        }
+        Ok(())
+    }
+
     pub(super) fn replay(&mut self, json: &str) -> Result<(), Error> {
         let event =
             serde_json::from_str(json).map_err(|_| Error::CorruptJournal("native decode"))?;
@@ -22,6 +29,13 @@ impl NativeJournal {
                 &archive_chain_digest,
             );
         }
+        if let Event::ReserveBound { request, maximum_in_flight, source } = event {
+            source.validate(&request)?;
+            let request_id = request.request_id.clone();
+            self.apply(Event::Reserve { request, maximum_in_flight })?;
+            self.records.get_mut(&request_id).ok_or(Error::RequestNotFound)?.bound_source = Some(source);
+            return Ok(());
+        }
         if let Event::Reserve {
             request,
             maximum_in_flight,
@@ -33,6 +47,7 @@ impl NativeJournal {
                 request.request_id.clone(),
                 NativeRunRecord {
                     request,
+                    bound_source: None,
                     revision: 1,
                     state: NativeReservationState::Reserved,
                     dispatch: None,
@@ -50,7 +65,7 @@ impl NativeJournal {
             return Ok(());
         }
         let id = match &event {
-            Event::Reserve { .. } | Event::CheckpointReference { .. } => {
+            Event::Reserve { .. } | Event::ReserveBound { .. } | Event::CheckpointReference { .. } => {
                 return Err(Error::InvalidTransition);
             }
             Event::BindExecution { request_id, .. }
@@ -66,7 +81,7 @@ impl NativeJournal {
         };
         let record = self.records.get_mut(id).ok_or(Error::RequestNotFound)?;
         match event {
-            Event::Reserve { .. } | Event::CheckpointReference { .. } => {
+            Event::Reserve { .. } | Event::ReserveBound { .. } | Event::CheckpointReference { .. } => {
                 return Err(Error::InvalidTransition);
             }
             Event::BindExecution { binding, .. } => {
@@ -79,7 +94,7 @@ impl NativeJournal {
                 record.execution_binding = Some(binding);
             }
             Event::Dispatch { dispatch, .. } => {
-                if record.state != NativeReservationState::Reserved {
+                if record.state != NativeReservationState::Reserved || record.bound_source.is_some() {
                     return Err(Error::InvalidTransition);
                 }
                 validate_dispatch(&dispatch)?;
@@ -326,7 +341,7 @@ impl NativeJournal {
     ) -> Result<(NativeRunRecord, Option<usize>), Error> {
         let event_id = match &event {
             Event::CheckpointReference { .. } => return Err(Error::InvalidTransition),
-            Event::Reserve { request, .. } => &request.request_id,
+            Event::Reserve { request, .. } | Event::ReserveBound { request, .. } => &request.request_id,
             Event::BindExecution { request_id, .. }
             | Event::Dispatch { request_id, .. }
             | Event::Started { request_id, .. }
@@ -341,10 +356,8 @@ impl NativeJournal {
         if event_id != request_id {
             return Err(Error::AssignmentMismatch);
         }
-        if let Event::Reserve {
-            request,
-            maximum_in_flight,
-        } = &event
+        if let Event::Reserve { request, maximum_in_flight }
+            | Event::ReserveBound { request, maximum_in_flight, .. } = &event
         {
             // A one-record projection cannot count the other occupied slots.
             self.validate_reserve(request, *maximum_in_flight)?;
@@ -394,7 +407,11 @@ impl NativeJournal {
         {
             return Err(Error::CorruptJournal("native checkpoint path"));
         }
-        let metadata = fs::metadata(path)?;
+        let checkpoint_file = File::open(path)?;
+        let metadata = checkpoint_file.metadata()?;
+        if !metadata.is_file() {
+            return Err(Error::CorruptJournal("native checkpoint file type"));
+        }
         if metadata.len() > MAX_CHECKPOINT_BYTES {
             return Err(Error::CapacityExceeded);
         }
@@ -405,13 +422,17 @@ impl NativeJournal {
                 return Err(Error::CorruptJournal("native checkpoint permissions"));
             }
         }
-        let bytes = read_bounded(path, MAX_CHECKPOINT_BYTES)?;
+        let mut bytes = Vec::new();
+        checkpoint_file.try_clone()?.take(MAX_CHECKPOINT_BYTES + 1).read_to_end(&mut bytes)?;
+        if bytes.len() as u64 > MAX_CHECKPOINT_BYTES {
+            return Err(Error::CapacityExceeded);
+        }
         if sha256_hex(b"hepta.inference-control.checkpoint.v1\0", &bytes) != checkpoint_digest {
             return Err(Error::CorruptJournal("native checkpoint digest"));
         }
         let mut checkpoint: NativeCheckpoint = serde_json::from_slice(&bytes)
             .map_err(|_| Error::CorruptJournal("native checkpoint decode"))?;
-        if !matches!(checkpoint.schema_version, 1 | CHECKPOINT_SCHEMA_VERSION)
+        if !matches!(checkpoint.schema_version, 1 | CHECKPOINT_SCHEMA_VERSION | BOUND_CHECKPOINT_SCHEMA_VERSION)
             || checkpoint.generation != generation
             || checkpoint.archive_segment_digest != archive_segment_digest
             || checkpoint.archive_chain_digest != archive_chain_digest
@@ -422,6 +443,10 @@ impl NativeJournal {
                 .is_some_and(|limit| !(1..=256).contains(&limit))
         {
             return Err(Error::CorruptJournal("native checkpoint binding"));
+        }
+        if checkpoint.schema_version != BOUND_CHECKPOINT_SCHEMA_VERSION
+            && checkpoint.records.values().any(|record| record.bound_source.is_some()) {
+            return Err(Error::CorruptJournal("bound native checkpoint requires schema 3"));
         }
         for (id, record) in &mut checkpoint.records {
             // Version 1 reconciliations manufactured readiness without host
@@ -463,6 +488,9 @@ impl NativeJournal {
         self.checkpoint_generation = generation;
         self.archive_chain_digest = Some(archive_chain_digest.to_string());
         self.checkpoint_digest = Some(checkpoint_digest.to_string());
+        self.retained_checkpoint = Some(super::retained_journal::Checkpoint::new(
+            path.to_path_buf(), checkpoint_file, &bytes,
+        )?);
         Ok(())
     }
 }

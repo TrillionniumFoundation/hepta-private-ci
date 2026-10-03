@@ -71,6 +71,7 @@ pub use crate::remote::RemoteAppServerObservedResponse;
 pub use crate::remote::RemoteAppServerObservedServerError;
 pub use crate::remote::RemoteAppServerRequestHandle;
 pub use crate::remote::RemoteObservedTypedRequestError;
+pub use crate::remote::RemoteRequestSendGuard;
 
 /// Transitional access to core-only embedded app-server types.
 ///

@@ -95,18 +95,24 @@ jobs:
           rustc --version --verbose > "$out/toolchain.txt"
           cargo --version >> "$out/toolchain.txt"
           printf 'image_os=%s\nimage_version=%s\nworkflow_sha=%s\n' "$ImageOS" "$ImageVersion" "$GITHUB_WORKFLOW_SHA" >> "$out/toolchain.txt"
+      - name: Install pinned scoped test runner
+        if: ${{ !cancelled() && steps.bound.outcome == 'success' }}
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
       - name: Execute all required commands without hiding earlier failures
         if: ${{ !cancelled() && steps.bound.outcome == 'success' }}
         run: |
           set -uo pipefail
           result=0
+          record_dir=commands
           record() {
             name="$1"; minimum="$2"; shift 2
-            python3 scripts/hepta_ci_exec.py --output "$RECORDS_DIR/commands/$name.json" --minimum-tests "$minimum" --timeout-seconds 1200 -- "$@" || result=1
+            python3 scripts/hepta_ci_exec.py --output "$RECORDS_DIR/$record_dir/$name.json" --minimum-tests "$minimum" --timeout-seconds 1200 -- "$@" || result=1
           }
           record 01-state 0 python3 scripts/hepta-inference-control-current-state.py check
           record 02-actor 0 python3 scripts/hepta-inference-control-actor-migrate.py check
-          record 03-regressions 1 python3 -m unittest -v scripts.test_hepta_inference_hardening scripts.test_hepta_ci_source_identity
+          record 03-regressions 1 python3 -m unittest -v scripts.test_hepta_inference_current_state scripts.test_hepta_inference_capacity scripts.test_hepta_inference_ownership_projection scripts.test_hepta_inference_artifact_acceptor scripts.test_hepta_ci_source_identity
           record 04-lane-b 0 python3 scripts/hepta-lane-b-truth.py verify
           record 05-maps 0 python3 scripts/hepta-implementation-maps.py verify
           record 06-metadata 0 cargo metadata --locked --manifest-path codex-rs/Cargo.toml --format-version 1
@@ -116,6 +122,14 @@ jobs:
           record 09-clippy 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core -p codex-hepta-infer-worker-host -p codex-hepta-types --all-targets --all-features -- -D warnings
           record 10-format 0 cargo fmt --manifest-path codex-rs/Cargo.toml --package codex-hepta-infer-core --package codex-hepta-infer-worker-host --package codex-hepta-types -- --check
           record 11-soak 1 cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-infer-core post_compaction_multi_generation_curve -- --ignored --nocapture --test-threads=1
+          # Additional memory diagnostics do not replace any protected acceptance command.
+          record_dir=memory-diagnostics
+          record 12-memory-correction 1 just test --locked -p codex-hepta-memory --lib -E 'test(cognitive_intelligence_writer_tests)' --test-threads=1
+          record 13-memory-outbox 1 just test --locked -p codex-hepta-memory --lib -E 'test(local_lease_outbox_tests)' --test-threads=1
+          record 14-memory-production 1 just test --locked -p codex-hepta-memory --lib -E 'test(production_writer::)' --test-threads=1
+          record 15-memory-lib-clippy 0 cargo clippy --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-memory --lib --no-deps -- -D warnings
+          record 16-memory-exact-recovery 1 just test --locked -p codex-hepta-memory --lib -E 'test(=cognitive_store::recovery::tests::exact_current_cut_recovers_writable_generation_and_persists_activation)' --test-threads=1 --no-tests=fail
+          record 17-agentd-recovery-product 1 just test --locked -p codex-hepta-agentd --test cognitive_store_product_writer -E 'test(=agentd_product_host_recovers_exact_cut_into_fenced_writer_generation)' --test-threads=1 --no-tests=fail
           exit "$result"
       - name: Retain formatting proposal outside the tested source
         if: ${{ always() && steps.bound.outcome == 'success' }}

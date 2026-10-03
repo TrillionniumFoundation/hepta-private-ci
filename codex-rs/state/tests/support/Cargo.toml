@@ -1,0 +1,18 @@
+[package]
+name = "codex-state-test-support"
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+publish = false
+
+[lib]
+path = "lib.rs"
+test = false
+doctest = false
+
+[lints]
+workspace = true
+
+[dependencies]
+log = { workspace = true }
+sqlx = { workspace = true }

@@ -1,4 +1,5 @@
 """Regression tests for executable inference-control evidence navigation."""
+
 import copy
 import importlib.util
 from pathlib import Path
@@ -41,20 +42,40 @@ class CurrentStateTests(unittest.TestCase):
                 with self.assertRaisesRegex(ValueError, "unsafe test path"):
                     STATE.validate_source(source)
 
+    def test_product_caller_evidence_cannot_claim_exclusive_worker_root(self):
+        self.source["ownership"]["declaredRoots"].append(
+            "codex-rs/hepta-infer-worker-host"
+        )
+        with self.assertRaisesRegex(ValueError, "registered exclusive owner"):
+            STATE.validate_source(self.source)
+
     def test_map_preserves_external_gates_and_exact_receipt_policy(self):
         mapping = STATE.build_map(self.source)
         self.assertEqual(mapping["sourceIdentityPolicy"], "exact_ci_receipt_v1")
-        for field in ("productionImplementation", "productExecutionProved", "targetHostQualification",
-                      "independentAcceptance", "activation", "release"):
+        for field in (
+            "productionImplementation",
+            "productExecutionProved",
+            "targetHostQualification",
+            "independentAcceptance",
+            "activation",
+            "release",
+        ):
             self.assertFalse(mapping["claimBoundary"][field])
         self.assertNotIn("observedAtHead", mapping)
-        self.assertEqual(mapping["externalEvidenceGates"], self.source["externalEvidenceGates"])
+        self.assertEqual(
+            mapping["externalEvidenceGates"], self.source["externalEvidenceGates"]
+        )
 
 
 class ReceiptTests(unittest.TestCase):
     def args(self):
-        return argparse.Namespace(lane="source-head", source_sha="a" * 40,
-            tested_sha="a" * 40, base_sha="b" * 40, candidate_tree="c" * 40)
+        return argparse.Namespace(
+            lane="source-head",
+            source_sha="a" * 40,
+            tested_sha="a" * 40,
+            base_sha="b" * 40,
+            candidate_tree="c" * 40,
+        )
 
     def fixtures(self, directory):
         paths = []
@@ -63,13 +84,29 @@ class ReceiptTests(unittest.TestCase):
             log = path.with_suffix(".log")
             log.write_bytes(b"fixture output, not execution evidence\n")
             args = self.args()
-            value = {"source_sha": args.source_sha, "tested_sha": args.tested_sha,
-                "base_sha": args.base_sha, "lane": args.lane, "status": "passed", "exit_code": 0,
-                "before": {"commit": args.tested_sha, "tree": args.candidate_tree, "dirty": False},
-                "after": {"commit": args.tested_sha, "tree": args.candidate_tree, "dirty": False},
-                "log_file": log.name, "log_bytes": log.stat().st_size,
+            value = {
+                "source_sha": args.source_sha,
+                "tested_sha": args.tested_sha,
+                "base_sha": args.base_sha,
+                "lane": args.lane,
+                "status": "passed",
+                "exit_code": 0,
+                "before": {
+                    "commit": args.tested_sha,
+                    "tree": args.candidate_tree,
+                    "dirty": False,
+                },
+                "after": {
+                    "commit": args.tested_sha,
+                    "tree": args.candidate_tree,
+                    "dirty": False,
+                },
+                "log_file": log.name,
+                "log_bytes": log.stat().st_size,
                 "log_sha256": hashlib.sha256(log.read_bytes()).hexdigest(),
-                "timed_out": False, "output_limit_exceeded": False}
+                "timed_out": False,
+                "output_limit_exceeded": False,
+            }
             path.write_text(json.dumps(value))
             paths.append(path)
         return paths
@@ -85,8 +122,12 @@ class ReceiptTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             paths = self.fixtures(directory)
             original = json.loads(paths[0].read_text())
-            for key, value in (("exit_code", False), ("tested_sha", "d" * 40),
-                               ("timed_out", True), ("log_file", "../outside")):
+            for key, value in (
+                ("exit_code", False),
+                ("tested_sha", "d" * 40),
+                ("timed_out", True),
+                ("log_file", "../outside"),
+            ):
                 changed = dict(original, **{key: value})
                 paths[0].write_text(json.dumps(changed))
                 self.assertTrue(STATE.record_failures(paths, self.args()))
@@ -97,6 +138,56 @@ class ReceiptTests(unittest.TestCase):
             paths[0].write_text(json.dumps(original))
             paths[0].with_suffix(".log").write_text("changed")
             self.assertTrue(STATE.record_failures(paths, self.args()))
+
+
+class CanonicalLaneProjectionTests(unittest.TestCase):
+    def test_required_operations_and_detailed_inventory_are_both_preserved(self):
+        source = STATE.load_json(STATE.SOURCE_PATH)
+        mapping = STATE.build_map(source)
+        self.assertEqual(
+            [row["operation"] for row in mapping["operations"]],
+            ["reserve_request", "schedule", "cancel", "settle"],
+        )
+        self.assertEqual(
+            [row["operation"] for row in mapping["implementationDetails"]],
+            [row["operation"] for row in source["operations"]],
+        )
+        policy = next(
+            row
+            for row in mapping["implementationDetails"]
+            if row["operation"] == "operator_slo_alert_policy"
+        )
+        self.assertEqual(policy["mappingClass"], "documentation_evidence")
+        self.assertFalse(mapping["claimBoundary"]["productExecutionProved"])
+        self.assertFalse(mapping["claimBoundary"]["independentAcceptance"])
+
+    def test_missing_required_lane_operation_fails_closed(self):
+        source = STATE.load_json(STATE.SOURCE_PATH)
+        source["laneOperations"].pop()
+        with self.assertRaisesRegex(ValueError, "operation coverage drift"):
+            STATE.validate_source(source)
+
+    def test_documentation_cannot_be_promoted_to_native_owner(self):
+        source = STATE.load_json(STATE.SOURCE_PATH)
+        source["laneOperations"][0]["ownerEntrypoint"]["path"] = (
+            "docs/modules/inference.control/SLO_ALERTS.json"
+        )
+        with self.assertRaisesRegex(ValueError, "owner-root escape"):
+            STATE.validate_source(source)
+
+    def test_malformed_typed_test_binding_fails_closed(self):
+        for invalid in [
+            "arbitrary text",
+            {"path": "missing.rs", "command": "test"},
+            {"path": "scripts/test_hepta_inference_current_state.py", "command": ""},
+        ]:
+            source = STATE.load_json(STATE.SOURCE_PATH)
+            source["laneOperations"][0]["tests"] = [invalid]
+            with (
+                self.subTest(binding=invalid),
+                self.assertRaisesRegex(ValueError, "test binding missing"),
+            ):
+                STATE.validate_source(source)
 
 
 if __name__ == "__main__":

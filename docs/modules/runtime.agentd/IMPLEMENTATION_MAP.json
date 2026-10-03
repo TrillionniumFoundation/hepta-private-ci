@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "ca855069f63ef239c0f15d7c744812aa8552f76e",
-    "tree": "213fc76ed3da84e0d2af06e5f2ee03a12775f0a1"
+    "commit": "15a55b7a2d05afdf5c2c04500dfba41936a44500",
+    "tree": "82eb35f95499e6354c8b3b342d70d4bc534e840e"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -14,7 +14,7 @@
   "resolvedRoots": [
     "codex-rs/hepta-agentd"
   ],
-  "stateOwnerDisposition": "Owns only ephemeral run admission, immutable snapshot references, and runtime-health composition state.",
+  "stateOwnerDisposition": "Owns durable bounded run admission, immutable snapshot references, private released-run deduplication and runtime-health composition state on the reviewed protected Unix storage profile; non-Unix retained-store construction currently fails closed.",
   "terminalObserverDisposition": "Agentd preserves dispatch-boundary uncertainty and accepts terminal state only from the delegated execution/effect owner.",
   "operations": [
     {
@@ -38,14 +38,15 @@
       "operation": "compose_runtime",
       "nativeSymbol": "pub fn compose_runtime(",
       "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "007e92b7c6242cb33cba6772fbd4dbfdb92e25b9"
     },
     {
       "designOperation": "start_run",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
         "symbol": "pub fn start_run(",
         "buildTarget": "codex-hepta-agentd"
       },
@@ -55,21 +56,27 @@
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "snapshot_and_capacity",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+          "kind": "retained_run_replay_and_pre_ack_failure",
+          "command": "just test -p codex-hepta-agentd --lib durable"
         }
       ],
-      "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity; it does not itself dispatch a Codex turn.",
+      "sourceSemantics": "Admits a bounded run and freezes request, objective, body, artifact, authority, and deadline identity; it does not itself dispatch a Codex turn. The product retained coordinator stages, validates and persists reducer state before publishing a successful acknowledgement; storage uncertainty poisons the owner.",
       "operation": "start_run",
       "nativeSymbol": "pub fn start_run(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePath": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+      "sourcePathExists": true,
+      "sourceBlob": "80ca70cececdee961ee592e56c54c9d642d31753"
     },
     {
       "designOperation": "admit_revalidated_run_start",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-        "symbol": "pub(crate) fn start_revalidated_run_start(",
+        "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+        "symbol": "pub fn start_revalidated_run_start(",
         "buildTarget": "codex-hepta-agentd"
       },
       "delegatedCallees": [
@@ -86,20 +93,26 @@
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "durable_run_start_projection",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+          "kind": "retained_run_replay_and_pre_ack_failure",
+          "command": "just test -p codex-hepta-agentd --lib durable"
         }
       ],
-      "sourceSemantics": "Projects only a product-revalidated durable RunStartRecordV1 into the sole daemon coordinator. request_digest is admitted_source_digest; body/artifact/authority/generation/fence/deadline are exact durable fields. ExplicitAbstain never enters runtime admission. Authentication/currentness remains a caller precondition.",
+      "sourceSemantics": "Projects only a product-revalidated durable RunStartRecordV1 into the sole daemon coordinator. request_digest is admitted_source_digest; body/artifact/authority/generation/fence/deadline are exact durable fields. ExplicitAbstain never enters runtime admission. Authentication/currentness remains a caller precondition. The product retained coordinator stages, validates and persists reducer state before publishing a successful acknowledgement; storage uncertainty poisons the owner.",
       "operation": "admit_revalidated_run_start",
-      "nativeSymbol": "pub(crate) fn start_revalidated_run_start(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "nativeSymbol": "pub fn start_revalidated_run_start(",
+      "sourcePath": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+      "sourcePathExists": true,
+      "sourceBlob": "80ca70cececdee961ee592e56c54c9d642d31753"
     },
     {
       "designOperation": "cancel_run",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
         "symbol": "pub fn cancel_run(",
         "buildTarget": "codex-hepta-agentd"
       },
@@ -109,20 +122,26 @@
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "cancellation_race",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+          "kind": "retained_run_replay_and_pre_ack_failure",
+          "command": "just test -p codex-hepta-agentd --lib durable"
         }
       ],
-      "sourceSemantics": "Transitions only Agentd-owned lifecycle state. Pre-dispatch cancellation is locally terminal; post-dispatch cancellation remains pending/indeterminate until the execution owner is invoked and observed by a separately composed caller.",
+      "sourceSemantics": "Transitions only Agentd-owned lifecycle state. Pre-dispatch cancellation is locally terminal; post-dispatch cancellation remains pending/indeterminate until the execution owner is invoked and observed by a separately composed caller. The product retained coordinator stages, validates and persists reducer state before publishing a successful acknowledgement; storage uncertainty poisons the owner.",
       "operation": "cancel_run",
       "nativeSymbol": "pub fn cancel_run(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePath": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+      "sourcePathExists": true,
+      "sourceBlob": "80ca70cececdee961ee592e56c54c9d642d31753"
     },
     {
       "designOperation": "attach_context",
       "mappingClass": "owner_native",
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
-        "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+        "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
         "symbol": "pub fn attach_context(",
         "buildTarget": "codex-hepta-agentd"
       },
@@ -132,13 +151,19 @@
           "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
           "kind": "mixed_generation_rejection",
           "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+          "kind": "retained_run_replay_and_pre_ack_failure",
+          "command": "just test -p codex-hepta-agentd --lib durable"
         }
       ],
-      "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple; it does not itself submit the context to Codex.",
+      "sourceSemantics": "Accepts context only when its receipt binds the complete frozen run tuple; it does not itself submit the context to Codex. The product retained coordinator stages, validates and persists reducer state before publishing a successful acknowledgement; storage uncertainty poisons the owner.",
       "operation": "attach_context",
       "nativeSymbol": "pub fn attach_context(",
-      "sourcePath": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "sourcePathExists": true
+      "sourcePath": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+      "sourcePathExists": true,
+      "sourceBlob": "80ca70cececdee961ee592e56c54c9d642d31753"
     },
     {
       "designOperation": "daemon_run_lifecycle_control",
@@ -152,7 +177,7 @@
       "delegatedCallees": [
         {
           "role": "delegated_callee",
-          "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+          "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
           "symbol": "pub fn start_run(",
           "buildTarget": "codex-hepta-agentd",
           "ownerModule": "runtime.agentd"
@@ -170,11 +195,12 @@
           "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
-      "sourceSemantics": "The real Agentd control path owns one Fleet-budget-bounded run coordinator, advertises run.lifecycle/1.1, enforces complete frozen tuple/deadline/reasoned-cancellation semantics, advances a 3-second cancellation-ack deadline to Indeterminate, supports exact-revision closed-record release, and keeps terminal reconciliation available during bounded drain.",
+      "sourceSemantics": "The real Agentd control path owns one Fleet-budget-bounded run coordinator, advertises run.lifecycle/1.1, enforces complete frozen tuple/deadline/reasoned-cancellation semantics, advances a 3-second cancellation-ack deadline to Indeterminate, supports exact-revision closed-record release, and keeps terminal reconciliation available during bounded drain. The coordinator now retains validated atomic images on Unix, preserves private released-run deduplication, and refuses changed composition or ambiguous missing history; cross-owner typed outbox and ingress generation fencing remain pending.",
       "operation": "daemon_run_lifecycle_control",
       "nativeSymbol": "crate::AgentdMethod::RunStart",
       "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "2888e10da5ac46e9b0cd568f6d37e30168cc5870"
     },
     {
       "designOperation": "agentd_neuron_owner",
@@ -212,7 +238,8 @@
       "operation": "agentd_neuron_owner",
       "nativeSymbol": "pub struct AgentdNeuronOwner",
       "sourcePath": "codex-rs/hepta-agentd/src/neuron_runtime.rs",
-      "sourcePathExists": true
+      "sourcePathExists": true,
+      "sourceBlob": "3e880ef975af2b7210a7466b9fb4e12f62937d9c"
     },
     {
       "operation": "shared_terminal_cell_train",
@@ -232,7 +259,8 @@
       "authority": "none",
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
-      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority.",
+      "sourceBlob": "ada0d0f52e842d73bf2c0ee3f66e041420f6ceb3"
     },
     {
       "operation": "shared_terminal_cell_load",
@@ -252,7 +280,8 @@
       "authority": "none",
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
-      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority.",
+      "sourceBlob": "ada0d0f52e842d73bf2c0ee3f66e041420f6ceb3"
     },
     {
       "operation": "shared_terminal_cell_predict",
@@ -272,7 +301,8 @@
       "authority": "none",
       "sourcePathExists": true,
       "buildTarget": "codex-hepta-agentd",
-      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority."
+      "sourceSemantics": "Purpose-scoped same-host candidate table consumer; revalidates exact Memory owner/revision, frozen ledger and artifact eligibility before use; no production selection authority.",
+      "sourceBlob": "ada0d0f52e842d73bf2c0ee3f66e041420f6ceb3"
     }
   ],
   "repositoryControlledGaps": [
@@ -343,12 +373,32 @@
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/Cargo.lock",
+      "object": "d49719e948aecaf3633ae94cc0d5320799a9277a"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "2201b9118d97ce6d9b79e06647ec999bc84dc990"
+    },
+    {
       "path": "codex-rs/hepta-agentd",
-      "object": "401635c2c9e33a5b6c170ddd2c5acf36c6be1500"
+      "object": "2408628f909c3480be629464abe5d32c5256dfb8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/Cargo.toml",
+      "object": "e8a1c26cc184f2b206aa1f8eeb030224ca610d33"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+      "object": "80ca70cececdee961ee592e56c54c9d642d31753"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+      "object": "7aae60c9b1181415d491cda1a09819042ddac298"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
-      "object": "dfba6f9599d2736f977a84ad36482f8a0319935b"
+      "object": "007e92b7c6242cb33cba6772fbd4dbfdb92e25b9"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
@@ -376,15 +426,15 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state.rs",
-      "object": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
+      "object": "b2981675ddb7f56dd36c5ff7deb525afec280928"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
+      "object": "2888e10da5ac46e9b0cd568f6d37e30168cc5870"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-      "object": "4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"
+      "object": "911a8fc4672060c672b37b91f7c698e9742e0b7c"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
@@ -406,5 +456,34 @@
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
       "object": "cb5c75c1eb3abe1e402c26b011e51703f501ca67"
     }
+  ],
+  "mappingSourceIdentityMode": "exact_blob",
+  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "observedAtHead": {
+    "commit": "df5a0a0bf13f1abfbd02f4a5e87a0392e3c9d5d2",
+    "tree": "670c39ca8588c8d2347df62cf32c1005f71350ee"
+  },
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd",
+    "codex-rs/hepta-agentd/Cargo.toml",
+    "codex-rs/hepta-agentd/src/durable_agent_runs.rs",
+    "codex-rs/hepta-agentd/src/durable_agent_runs_tests.rs",
+    "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+    "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/main.rs",
+    "codex-rs/hepta-agentd/src/neuron_runtime.rs",
+    "codex-rs/hepta-agentd/src/neuron_runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/shared_terminal_cell.rs",
+    "codex-rs/hepta-agentd/src/state.rs",
+    "codex-rs/hepta-agentd/src/state_control.rs",
+    "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+    "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
+    "codex-rs/hepta-learning-ledger/src/run_start.rs",
+    "codex-rs/hepta-neuron/src/inference_control.rs",
+    "codex-rs/hepta-neuron/src/runtime.rs",
+    "docs/modules/runtime.agentd/TECHNICAL.md"
   ]
 }

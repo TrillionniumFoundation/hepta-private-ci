@@ -388,9 +388,11 @@ fn write_content_addressed(path: &Path, bytes: &[u8]) -> Result<(), Error> {
     Ok(())
 }
 
-fn read_bounded(path: &Path, maximum_bytes: u64) -> Result<Vec<u8>, Error> {
+fn read_bounded(file: &File, maximum_bytes: u64) -> Result<Vec<u8>, Error> {
     let mut bytes = Vec::new();
-    File::open(path)?
+    let mut reader = file.try_clone()?;
+    reader.rewind()?;
+    reader
         .take(maximum_bytes.saturating_add(1))
         .read_to_end(&mut bytes)?;
     if bytes.len() as u64 > maximum_bytes {

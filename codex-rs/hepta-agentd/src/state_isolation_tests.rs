@@ -459,7 +459,11 @@ async fn current_durable_run_start_requires_live_owner_trust() {
         fs::set_permissions(&trust_file, fs::Permissions::from_mode(0o600)).expect("private trust");
     };
     write_trust(false);
-    let checkpoint_file = temp.path().join("run-start-replay-checkpoint.json");
+    let checkpoint_file = temp
+        .path()
+        .canonicalize()
+        .expect("canonical checkpoint parent")
+        .join("run-start-replay-checkpoint.json");
     // The external fixture witness is captured from the canonical empty owner,
     // never invented from a label or recaptured from a suspect backup.
     let evidence = codex_hepta_evidence::HeptaEvidenceStore::open(
@@ -613,6 +617,7 @@ async fn current_durable_run_start_requires_live_owner_trust() {
             .lock()
             .expect("runs")
             .run(second_id.as_str())
+            .expect("retained run status")
             .is_none()
     );
 }

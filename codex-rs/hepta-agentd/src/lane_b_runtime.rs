@@ -1,5 +1,14 @@
 use std::collections::BTreeMap;
 
+use serde::Deserialize;
+use serde::Serialize;
+
+#[path = "run_bridge_admission.rs"]
+pub(crate) mod bridge_admission;
+#[path = "durable_agent_runs.rs"]
+mod durable;
+pub(crate) use durable::DurableAgentRunCoordinator;
+
 use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
 use codex_hepta_learning_ledger::RunStartRecordV1;
 
@@ -9,7 +18,8 @@ const MAX_CANCEL_REASON_BYTES: usize = 512;
 const CANCEL_ACK_TIMEOUT_MS: u64 = 3_000;
 const DEADLINE_CANCEL_REASON: &str = "deadline_elapsed";
 
-#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+#[derive(Clone, Copy, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(rename_all = "snake_case")]
 pub enum RunPhase {
     Admitted,
     ContextAttached,
@@ -38,7 +48,8 @@ impl RunPhase {
     }
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct RuntimeComposition {
     pub agent_id: String,
     pub supervisor_generation: u64,
@@ -48,7 +59,8 @@ pub struct RuntimeComposition {
     pub max_active_runs: usize,
 }
 
-#[derive(Clone, Debug, Eq, PartialEq)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 pub struct RunSnapshot {
     pub run_id: String,
     pub request_digest: String,
@@ -128,9 +140,11 @@ pub enum AgentRunError {
     TerminalObservationRequired,
     ArithmeticOverflow,
     InvalidRunStart(&'static str),
+    Persistence(String),
 }
 
-#[derive(Clone, Debug)]
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
 struct RunRecord {
     snapshot: RunSnapshot,
     revision: u64,
@@ -147,7 +161,7 @@ struct RunRecord {
 /// remains the thread/turn execution owner, and domain stores remain with their
 /// canonical modules. Recovery can only rehydrate a previously-dispatched run
 /// as indeterminate; it can never authorize redispatch.
-#[derive(Debug)]
+#[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AgentRunCoordinator {
     composition: RuntimeComposition,
     runs: BTreeMap<String, RunRecord>,

@@ -1,0 +1,14 @@
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
+
+# Deliberate storage-fault constructors must not enter production state targets.
+rust_library(
+    name = "support",
+    testonly = True,
+    srcs = ["lib.rs"],
+    crate_name = "codex_state_test_support",
+    crate_root = "lib.rs",
+    edition = "2024",
+    visibility = ["//visibility:public"],
+    deps = all_crate_deps(),
+)

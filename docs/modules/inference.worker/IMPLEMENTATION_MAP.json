@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "743782ca770019c68f5417ead3303413a5640959",
-    "tree": "b06a5932175c1aa55f6ccea35a0617a1c86242e9"
+    "commit": "b4effbedf0fc0affbb619a6cf43aa0f23291b66a",
+    "tree": "afacff181e0c1de731842348de7eeab462ca30ff"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "inference.worker",
@@ -46,7 +46,7 @@
       "ownerEntrypoint": {
         "role": "owner_entrypoint",
         "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
-        "symbol": "pub async fn run(",
+        "symbol": "pub async fn run_authorized(",
         "buildTarget": "codex-hepta-infer-worker-host::native_app_server"
       },
       "delegatedCallees": [
@@ -59,8 +59,8 @@
         },
         {
           "role": "supporting_algorithm",
-          "path": "codex-rs/hepta-infer-core/src/native_control.rs",
-          "symbol": "pub fn settle_native(",
+          "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+          "symbol": "pub fn settle_native_authorized(",
           "buildTarget": "codex-hepta-infer-core::durable_control::native",
           "ownerModule": "inference.control"
         }
@@ -77,9 +77,9 @@
           "command": "just test -p codex-hepta-infer-worker-host --lib"
         }
       ],
-      "sourceSemantics": "Reserves through durable inference.control, calls the actual private Agent/App Server once, and commits matching terminal/output/optional-token observations before returning. Reopen and duplicate paths consume the journal without invoking the provider again.",
+      "sourceSemantics": "Uses the unique inference writer actor and independently verified execution plan around the private Agent/App Server caller; protected settlement records matching observations. Uncertain effects reconcile without redispatch. Full product and target-host qualification remain separate.",
       "operation": "run",
-      "nativeSymbol": "pub async fn run(",
+      "nativeSymbol": "pub async fn run_authorized(",
       "sourcePath": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
       "sourcePathExists": true
     },

@@ -1,0 +1,161 @@
+{
+  "schema": "hepta.memory-diagnostic-review.v1",
+  "repository": "TrillionniumFoundation/hepta-private-ci",
+  "runId": 37075372401,
+  "runAttempt": 1,
+  "sourceJobId": 111063992585,
+  "mergeJobId": 111063992450,
+  "artifactId": 11256298848,
+  "artifactName": "inference-readonly-37075372401-1-source-head",
+  "artifactZipSha256": "fdcf2f421de0c4ee36d42cee27b67cc8936ffd6a397a9ecb2e5d6f5dbf76569e",
+  "artifactZipBytes": 24206884,
+  "sourceArchiveSha256": "7bf07a2f13375344c5ac2af261a9c821066de85d8ae57c6de8cf6c4e8ba018ca",
+  "sourceArchiveTreeVerified": true,
+  "sourceSha": "2357d58ca2ae30baf452abe25dff71c2f020467f",
+  "sourceTree": "31dc912975f5d2f6056131fcf0a25ea3125bf9ea",
+  "baseSha": "c6f90d48c40f7b5267db587bb3c3f4934f1414a8",
+  "memorySourceCommit": "f2661efafcd4bef72ec22c37ed4947f19ca1e1de",
+  "memorySourceBlobs": {
+    "codex-rs/hepta-memory/src/cognitive_intelligence_writer.rs": "96231a6bd4d4bd86ccbf14dee014de0b1202dfc0",
+    "codex-rs/hepta-memory/src/local_lease_outbox.rs": "93aef85620e753a6f49d486eaee436f8ac3edde1",
+    "codex-rs/hepta-memory/src/production_writer.rs": "fd9fa46e14576f78a872a5aee524b46d04cde593"
+  },
+  "protectedCommandInventoryUnchanged": true,
+  "recordAndLogHashesVerified": 16,
+  "records": [
+    {
+      "path": "commands/01-state.json",
+      "recordSha256": "fefdb5e5dfe8de3fbe3ef366939b82029ced8b94b436dbd8d75a637bad387b6c",
+      "logSha256": "5fd7a40d586dc81df076293980a5ac1e734fd54b352d246901f6515293f0125e",
+      "status": "passed",
+      "passed": 0,
+      "failed": 0
+    },
+    {
+      "path": "commands/02-actor.json",
+      "recordSha256": "c275f5be1a720eaf7aa8423843b4fe74e35ab4216288e0d4502adebb2934c3db",
+      "logSha256": "0408ada09fc9bcc6edb7e970a348b0c6f3f5d3a40934906400cf53066ad6ed0d",
+      "status": "passed",
+      "passed": 0,
+      "failed": 0
+    },
+    {
+      "path": "commands/03-regressions.json",
+      "recordSha256": "9679b62ac4c1ca9a2fcf4757cf81a50b8e5dd5389d981c31fb1bdeba135519f2",
+      "logSha256": "8c738352f3b829a0e4d53597aa24281e65fc599f2ec90e1c936ac9e5145316ed",
+      "status": "passed",
+      "passed": 59,
+      "failed": 0
+    },
+    {
+      "path": "commands/04-lane-b.json",
+      "recordSha256": "33fe588df12e6ef41e89d94c7e559413e16b687cc7e5f5dac04af935b6c36d99",
+      "logSha256": "9b364cdb33f4d723214c5ed45f6a42edf9119444b5ef2fe426c66179c34cb2fa",
+      "status": "failed",
+      "passed": 0,
+      "failed": 0
+    },
+    {
+      "path": "commands/05-maps.json",
+      "recordSha256": "2993f96d0fd6b576da130e7f42a3ff7197678fe83315cb8b31e90c5086bc98f0",
+      "logSha256": "df2e67a2dde619fb5c88955721ac54dcad841ef793ee950d8f5f329c8f7226b1",
+      "status": "failed",
+      "passed": 0,
+      "failed": 0
+    },
+    {
+      "path": "commands/06-metadata.json",
+      "recordSha256": "ac8398bf59dae0ad3beb1ae74513666c30c0a2dcd8f5821e30c7e818e409ef6f",
+      "logSha256": "a5388e83d17bb008c25a35c1c63dd145040621f227fd8f4a38422a58dcce429d",
+      "status": "passed",
+      "passed": 0,
+      "failed": 0
+    },
+    {
+      "path": "commands/06a-worker-helper-build.json",
+      "recordSha256": "6e6ea417467d9c172e8b2c73a774ea17f164d8dd7cd663cc573bb2dc63d2b290",
+      "logSha256": "352131f9d377928cce41e01f6dee64e4f77e31e0cc5ecc0b1bc4d381ca799325",
+      "status": "passed",
+      "passed": 0,
+      "failed": 0
+    },
+    {
+      "path": "commands/07-tests.json",
+      "recordSha256": "17dc064b3dc2330ad1854bf7e1a06a9471f912af2424e384339743dbf511f4f2",
+      "logSha256": "744dbdbb2072726a3ff6fd438894bd9a7e9548b81cc6c9fc0dac1baac0e3e1dd",
+      "status": "passed",
+      "passed": 233,
+      "failed": 0
+    },
+    {
+      "path": "commands/08-crash.json",
+      "recordSha256": "dc841ae9dbfe692463548df3dfa737873b3fa0cf3ead5a34853cbb85d503f5e0",
+      "logSha256": "a67a49be509324b6bfeceb86d5d53d3049eac717aae0c1a0d5250a434c6f6da6",
+      "status": "passed",
+      "passed": 2,
+      "failed": 0
+    },
+    {
+      "path": "commands/09-clippy.json",
+      "recordSha256": "350c3b547800989c8ede8fa88ee7c297a29b60469da69912e8fb574798a91163",
+      "logSha256": "a0a7c51d402aded3714dbdf4da6187f2bf0975d07c1b34067b273dc501c1ad80",
+      "status": "failed",
+      "passed": 0,
+      "failed": 0
+    },
+    {
+      "path": "commands/10-format.json",
+      "recordSha256": "6716c6179e34777ce487c011b488bb64d44cbed5ebf6a2756b5772be0a03e18f",
+      "logSha256": "e12257e85603a1d07f228dd4b0c02f0c97ac07df6241ffb9861bdc852d4b7912",
+      "status": "passed",
+      "passed": 0,
+      "failed": 0
+    },
+    {
+      "path": "commands/11-soak.json",
+      "recordSha256": "985f6c9187289e5abba2e953dbe34c7fd4fa069d40eda43d07285cec007d35f3",
+      "logSha256": "32ba1466e57ddc47cf66eb7c80a1768f2d9ae79bc4b709f9714461e0e4c7a40d",
+      "status": "passed",
+      "passed": 1,
+      "failed": 0
+    },
+    {
+      "path": "memory-diagnostics/12-memory-correction.json",
+      "recordSha256": "21c0771daf9a772d43143f49b929be455489ad2afdcb13b84d3bba85ce82e2da",
+      "logSha256": "dab5fc9ce30b630284557e6cbe8c879f374a7c013bba171c8ad1a4532dc6b7db",
+      "status": "passed",
+      "passed": 7,
+      "failed": 0
+    },
+    {
+      "path": "memory-diagnostics/13-memory-outbox.json",
+      "recordSha256": "ed6a8b603ae136f7ccff15b1f95f5db1c5c7314e5bbb2ec3f90fcd10fa5ff721",
+      "logSha256": "1abbd0e6b893878be5856e19d4dea64d852e637b41237e46956cf982abea0e3a",
+      "status": "passed",
+      "passed": 32,
+      "failed": 0
+    },
+    {
+      "path": "memory-diagnostics/14-memory-production.json",
+      "recordSha256": "96299b9c99a2e0c925a12f230fe24bd03c6ef623db2585bbe027a4ecc559b411",
+      "logSha256": "6b93db564a95eb955905fc0d3b68eae28c80331af5f54d5c405e978bc39b2a66",
+      "status": "passed",
+      "passed": 18,
+      "failed": 0
+    },
+    {
+      "path": "memory-diagnostics/15-memory-lib-clippy.json",
+      "recordSha256": "300747e38c4779f5bcc0f131c706c979e928f5d3e66a32022aaff338c9f8641b",
+      "logSha256": "1fd238554c6671e3d3015a405aca4425d9f40733fc94a0f0f7cd0f5d7b52ab3b",
+      "status": "passed",
+      "passed": 0,
+      "failed": 0
+    }
+  ],
+  "aggregateAcceptance": false,
+  "aggregateRejection": "command did not pass: 04-lane-b",
+  "baseMergeExecution": "not-run: bind exact checkout and deterministic merge failed",
+  "independentExecutionProved": false,
+  "activation": false,
+  "release": false
+}

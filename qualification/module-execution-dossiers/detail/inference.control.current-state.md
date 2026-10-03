@@ -8,7 +8,7 @@ This projection records source facts and required evidence. It is not an accepta
 
 - no recovered dispatch is blindly replayed
 - cancellation intent does not release capacity
-- external effect requires a still-live exact execution binding and final-use grant
+- writer application verifies the signed execution binding; final-send freshness after transport queue and readiness waits remains a repository-controlled gap
 - indeterminate release requires a signed terminal receipt or revision-bound dual-control retirement
 - the active journal never stores plaintext output on the exact-plan production path
 - checkpoint replacement preserves the stable lifecycle sidecar owner lock and validates checkpoint content plus recorded archive bindings; replay does not rehash the complete archive history
@@ -26,6 +26,7 @@ This projection records source facts and required evidence. It is not an accepta
 - authorized worker return qualification is projected from durable settlement; empty encrypted terminal output still requires output protection
 - the four execution-authority roles require distinct actual verification public keys in normal and historical verification
 - protected-output structure is checked on journal and checkpoint replay even after a valid retention TTL expires
+- positive cached acknowledgements and new mutations verify the complete live journal and current referenced checkpoint before publication; integrity or uncertain I/O failure poisons the owner and restoring bytes does not clear that poison
 
 ## Required exact-candidate commands
 

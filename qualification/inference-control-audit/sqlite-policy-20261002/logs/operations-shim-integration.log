@@ -1,0 +1,14 @@
+RUST_MIN_STACK=8388608 NEXTEST_PROFILE=local cargo nextest run --no-fail-fast "$@"
+   Compiling codex-hepta-operations v0.0.0 (/workspace/scratch/aebafee84981/hepta-runtime-inference/codex-rs/hepta-operations)
+    Finished `test` profile [unoptimized] target(s) in 3.84s
+────────────
+ Nextest run ID fbab320b-f6b5-4ef2-a18c-607f6c8e8382 with nextest profile: local
+    Starting 6 tests across 1 binary (1 test skipped)
+        PASS [   0.016s] (1/6) codex-hepta-operations::destination_recovery_binding observation_rejects_same_operation_with_different_payload
+        PASS [   0.030s] (2/6) codex-hepta-operations::destination_recovery_binding process_loss_after_commit_reconciles_without_repeating_domain_effect
+        PASS [   0.020s] (3/6) codex-hepta-operations::destination_recovery_binding process_loss_before_commit_rolls_back_domain_and_receipt_together
+        PASS [   0.009s] (4/6) codex-hepta-operations::destination_recovery_binding unrelated_destination_or_scope_never_borrows_an_applied_receipt
+        PASS [   0.022s] (5/6) codex-hepta-operations::destination_recovery_binding valid_width_but_semantically_corrupt_receipts_fail_after_reopen
+        PASS [   0.127s] (6/6) codex-hepta-operations::destination_recovery_binding growing_history_keeps_early_identity_and_domain_count_after_restart
+────────────
+     Summary [   0.128s] 6 tests run: 6 passed, 1 skipped

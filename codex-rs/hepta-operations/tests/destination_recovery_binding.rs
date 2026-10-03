@@ -19,38 +19,34 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use sqlx::Row;
 use sqlx::SqlitePool;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqlitePoolOptions;
 
 const ROOT_ENV: &str = "HEPTA_DESTINATION_RECOVERY_TEST_ROOT";
 const MODE_ENV: &str = "HEPTA_DESTINATION_RECOVERY_TEST_MODE";
 
-fn id(value: &str) -> StableId {
-    StableId::new(value).expect("test identity")
+type TestResult<T> = Result<T, Box<dyn std::error::Error>>;
+
+fn id(value: &str) -> TestResult<StableId> {
+    Ok(StableId::new(value)?)
 }
 
-fn operation(payload: &[u8]) -> DestinationOperationIdentity {
-    DestinationOperationIdentity {
-        destination: id("feature.41.destination"),
-        scope_id: id("recovery-test"),
-        operation_id: id("request.1"),
+fn operation(payload: &[u8]) -> TestResult<DestinationOperationIdentity> {
+    Ok(DestinationOperationIdentity {
+        destination: id("feature.41.destination")?,
+        scope_id: id("recovery-test")?,
+        operation_id: id("request.1")?,
         payload_digest: Digest32::of_bytes(payload),
-    }
+    })
 }
 
-async fn pool(path: &Path) -> SqlitePool {
-    SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(SqliteConnectOptions::new().filename(path))
-        .await
-        .expect("open existing owner database")
+async fn pool(path: &Path) -> TestResult<SqlitePool> {
+    Ok(codex_state_test_support::open_existing_operation_fixture(path).await?)
 }
 
 async fn stage_effect(
     store: &DestinationDedupeStore,
     identity: &DestinationOperationIdentity,
-) -> DestinationApplyTransaction {
-    let start = store.begin_apply(identity).await.expect("admit");
+) -> TestResult<DestinationApplyTransaction> {
+    let start = store.begin_apply(identity).await?;
     let DestinationApplyStart::Apply(mut apply) = start else {
         panic!("new request must obtain the domain transaction");
     };
@@ -60,11 +56,10 @@ async fn stage_effect(
         "UPDATE domain_counter SET value = value + 1",
     ] {
         sqlx::query(query)
-            .execute(&mut **apply.transaction().expect("owner transaction"))
-            .await
-            .expect("stage actual owner mutation");
+            .execute(&mut **apply.transaction()?)
+            .await?;
     }
-    apply
+    Ok(apply)
 }
 
 #[tokio::test]
@@ -74,9 +69,10 @@ async fn observation_rejects_same_operation_with_different_payload() {
     let store = DestinationDedupeStore::open_standalone(&path)
         .await
         .expect("store");
-    let original = operation(b"original");
+    let original = operation(b"original").expect("fixture operation");
     let receipt = stage_effect(&store, &original)
         .await
+        .expect("stage owner effect")
         .commit_applied(Digest32::of_bytes(b"counter=1"))
         .await
         .expect("commit");
@@ -84,7 +80,7 @@ async fn observation_rejects_same_operation_with_different_payload() {
         store.observe(&original).await.expect("exact observation"),
         Some(receipt)
     );
-    let drifted = operation(b"different-effect");
+    let drifted = operation(b"different-effect").expect("fixture operation");
     assert!(matches!(
         store.observe(&drifted).await,
         Err(DurableOperationError::Conflict(_))
@@ -118,14 +114,15 @@ async fn unrelated_destination_or_scope_never_borrows_an_applied_receipt() {
     let store = DestinationDedupeStore::open_standalone(&path)
         .await
         .expect("store");
-    let original = operation(b"original");
+    let original = operation(b"original").expect("fixture operation");
     stage_effect(&store, &original)
         .await
+        .expect("stage owner effect")
         .commit_applied(Digest32::of_bytes(b"counter=1"))
         .await
         .expect("commit");
     let mut other = original.clone();
-    other.scope_id = id("different-scope");
+    other.scope_id = id("different-scope").expect("fixture identity");
     assert!(
         store
             .observe(&other)
@@ -134,7 +131,7 @@ async fn unrelated_destination_or_scope_never_borrows_an_applied_receipt() {
             .is_none()
     );
     other = original.clone();
-    other.destination = id("different-destination");
+    other.destination = id("different-destination").expect("fixture identity");
     assert!(
         store
             .observe(&other)
@@ -147,7 +144,7 @@ async fn unrelated_destination_or_scope_never_borrows_an_applied_receipt() {
 
 #[tokio::test]
 async fn valid_width_but_semantically_corrupt_receipts_fail_after_reopen() {
-    let original = operation(b"original");
+    let original = operation(b"original").expect("fixture operation");
     for (payload, semantic, outcome) in [
         (
             original.payload_digest,
@@ -171,7 +168,7 @@ async fn valid_width_but_semantically_corrupt_receipts_fail_after_reopen() {
             .await
             .expect("migrate");
         store.close().await;
-        let raw = pool(&path).await;
+        let raw = pool(&path).await.expect("existing owner pool");
         // Owner-level fault injection: no trigger, schema or production check is
         // disabled. Width-valid INSERTs demonstrate why quick_check is not enough.
         sqlx::query(
@@ -218,10 +215,11 @@ async fn growing_history_keeps_early_identity_and_domain_count_after_restart() {
         let reopen_micros = started.elapsed().as_micros();
         let started = Instant::now();
         for index in previous..limit {
-            let mut identity = operation(b"bounded owner payload");
-            identity.operation_id = id(&format!("request.{index}"));
+            let mut identity = operation(b"bounded owner payload").expect("fixture operation");
+            identity.operation_id = id(&format!("request.{index}")).expect("fixture identity");
             let receipt = stage_effect(&store, &identity)
                 .await
+                .expect("stage owner effect")
                 .commit_applied(Digest32::of_bytes(
                     format!("counter={}", index + 1).as_bytes(),
                 ))
@@ -247,7 +245,7 @@ async fn growing_history_keeps_early_identity_and_domain_count_after_restart() {
                 .expect("early replay"),
             DestinationApplyStart::AlreadyApplied(_)
         ));
-        let raw = pool(&path).await;
+        let raw = pool(&path).await.expect("existing owner pool");
         let count: i64 = sqlx::query_scalar("SELECT value FROM domain_counter")
             .fetch_one(&raw)
             .await
@@ -268,8 +266,8 @@ async fn growing_history_keeps_early_identity_and_domain_count_after_restart() {
     }
 }
 
-fn run_crash_worker(path: &Path, mode: &str, expected: i32) {
-    let mut child = Command::new(std::env::current_exe().expect("test executable"))
+fn run_crash_worker(path: &Path, mode: &str, expected: i32) -> TestResult<()> {
+    let mut child = Command::new(std::env::current_exe()?)
         .args([
             "--ignored",
             "--exact",
@@ -279,11 +277,10 @@ fn run_crash_worker(path: &Path, mode: &str, expected: i32) {
         .env(ROOT_ENV, path)
         .env(MODE_ENV, mode)
         .stdin(Stdio::null())
-        .spawn()
-        .expect("spawn real owner process");
+        .spawn()?;
     let deadline = Instant::now() + Duration::from_secs(30);
     loop {
-        if let Some(status) = child.try_wait().expect("observe child") {
+        if let Some(status) = child.try_wait()? {
             assert_eq!(
                 status.code(),
                 Some(expected),
@@ -298,6 +295,7 @@ fn run_crash_worker(path: &Path, mode: &str, expected: i32) {
         }
         std::thread::sleep(Duration::from_millis(10));
     }
+    Ok(())
 }
 
 #[test]
@@ -313,7 +311,12 @@ fn destination_crash_worker() {
         let store = DestinationDedupeStore::open_standalone(Path::new(&path))
             .await
             .expect("child store");
-        let apply = stage_effect(&store, &operation(b"crash-test")).await;
+        let apply = stage_effect(
+            &store,
+            &operation(b"crash-test").expect("fixture operation"),
+        )
+        .await
+        .expect("stage owner effect");
         match mode.as_str() {
             "after-commit" => {
                 apply
@@ -333,8 +336,8 @@ fn destination_crash_worker() {
 async fn process_loss_after_commit_reconciles_without_repeating_domain_effect() {
     let dir = tempfile::tempdir().expect("directory");
     let path = dir.path().join("owner.sqlite3");
-    run_crash_worker(&path, "after-commit", 73);
-    let identity = operation(b"crash-test");
+    run_crash_worker(&path, "after-commit", 73).expect("crash worker");
+    let identity = operation(b"crash-test").expect("fixture operation");
     // Each reopen is a new owner handle. The original process has terminated.
     for _ in 0..4 {
         let store = DestinationDedupeStore::open_standalone(&path)
@@ -351,10 +354,12 @@ async fn process_loss_after_commit_reconciles_without_repeating_domain_effect() 
             DestinationApplyStart::AlreadyApplied(_)
         ));
         assert!(matches!(
-            store.observe(&operation(b"substituted")).await,
+            store
+                .observe(&operation(b"substituted").expect("fixture operation"))
+                .await,
             Err(DurableOperationError::Conflict(_))
         ));
-        let raw = pool(&path).await;
+        let raw = pool(&path).await.expect("existing owner pool");
         let count: i64 = sqlx::query_scalar("SELECT value FROM domain_counter")
             .fetch_one(&raw)
             .await
@@ -369,11 +374,11 @@ async fn process_loss_after_commit_reconciles_without_repeating_domain_effect() 
 async fn process_loss_before_commit_rolls_back_domain_and_receipt_together() {
     let dir = tempfile::tempdir().expect("directory");
     let path = dir.path().join("owner.sqlite3");
-    run_crash_worker(&path, "before-commit", 74);
+    run_crash_worker(&path, "before-commit", 74).expect("crash worker");
     let store = DestinationDedupeStore::open_standalone(&path)
         .await
         .expect("recover owner");
-    let identity = operation(b"crash-test");
+    let identity = operation(b"crash-test").expect("fixture operation");
     assert!(
         store
             .observe(&identity)
@@ -383,10 +388,11 @@ async fn process_loss_before_commit_rolls_back_domain_and_receipt_together() {
     );
     stage_effect(&store, &identity)
         .await
+        .expect("stage owner effect")
         .commit_applied(Digest32::of_bytes(b"counter=1"))
         .await
         .expect("first actual commit after rollback");
-    let raw = pool(&path).await;
+    let raw = pool(&path).await.expect("existing owner pool");
     let count: i64 = sqlx::query_scalar("SELECT value FROM domain_counter")
         .fetch_one(&raw)
         .await

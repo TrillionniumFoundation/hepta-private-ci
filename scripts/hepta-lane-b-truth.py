@@ -99,7 +99,20 @@ def verify_source_base(value: Any, label: str) -> tuple[str, str]:
 
 def verify_module_source_base(row: dict[str, Any], label: str) -> tuple[str, str]:
     policy = row.get("sourceIdentityPolicy", "legacy_shared_literal")
-    if policy == "candidate_or_exact_observation_v1":
+    if policy in {"candidate_or_exact_observation_v1", "exact_ci_receipt_v1"}:
+        source_base = row.get("sourceBase")
+        expected_keys = {"commit", "tree"}
+        if policy == "exact_ci_receipt_v1":
+            expected_keys.add("kind")
+        need(
+            isinstance(source_base, dict) and set(source_base) == expected_keys,
+            f"{label}: bounded source base shape",
+        )
+        if policy == "exact_ci_receipt_v1":
+            need(
+                source_base["kind"] == "integration_provenance_anchor",
+                f"{label}: source provenance kind",
+            )
         # Do not duplicate or weaken the shared verifier's mapped-source,
         # workspace-input, clean-checkout and historical-anchor requirements.
         spec = importlib.util.spec_from_file_location(
@@ -116,7 +129,9 @@ def verify_module_source_base(row: dict[str, Any], label: str) -> tuple[str, str
             verifier.verify_source_identity(row, roots, verifier.current_source_base())
         except (ValueError, OSError, subprocess.CalledProcessError) as error:
             raise Invalid(f"{label}: canonical source identity: {error}") from error
-        return verify_source_base(row.get("sourceBase"), label)
+        return verify_source_base(
+            {key: row["sourceBase"][key] for key in ("commit", "tree")}, label
+        )
     if policy == "runtime_current_candidate":
         need(
             row.get("sourceBase") == RUNTIME_CURRENT_SOURCE_BASE,

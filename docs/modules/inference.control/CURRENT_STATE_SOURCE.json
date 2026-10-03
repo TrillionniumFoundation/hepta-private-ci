@@ -14,7 +14,6 @@
   "ownership": {
     "declaredRoots": [
       "codex-rs/hepta-infer-core",
-      "codex-rs/hepta-infer-worker-host",
       "codex-rs/hepta-inferd"
     ],
     "sourceEvidenceRoots": [
@@ -35,7 +34,9 @@
     ],
     "productionEffectOwner": "codex-hepta-infer-worker-host::native_app_server::AppServerModelDriver",
     "durableWriterOwner": "codex-hepta-infer-core::durable_control::DurableInferenceControl",
-    "actorPort": "codex-hepta-infer-worker-host::control_actor::NativeJournalWriterActor"
+    "actorPort": "codex-hepta-infer-worker-host::control_actor::NativeJournalWriterActor",
+    "stateOwnerDisposition": "DurableInferenceControl remains the sole request, reservation and receipt writer; NativeJournalWriterActor serializes its production mutations. Provider execution remains outside that owner.",
+    "terminalObserverDisposition": "The named App Server caller supplies exact correlated observations to protected signed-plan settlement. Unknown execution retains capacity. Repository observations do not prove billing, selected-host execution or independent acceptance."
   },
   "status": {
     "sourceImplementation": "implemented_with_unique_writer_actor_exact_head_qualification_pending",
@@ -51,7 +52,7 @@
   "safetyInvariants": [
     "no recovered dispatch is blindly replayed",
     "cancellation intent does not release capacity",
-    "external effect requires a still-live exact execution binding and final-use grant",
+    "writer application verifies the signed execution binding; final-send freshness after transport queue and readiness waits remains a repository-controlled gap",
     "indeterminate release requires a signed terminal receipt or revision-bound dual-control retirement",
     "the active journal never stores plaintext output on the exact-plan production path",
     "checkpoint replacement preserves the stable lifecycle sidecar owner lock and validates checkpoint content plus recorded archive bindings; replay does not rehash the complete archive history",
@@ -68,7 +69,8 @@
     "retirement audits persist distinct actual verification-key fingerprints; historical audits lacking them remain held Indeterminate until fresh revision-bound approval, and excess recovered capacity fails closed",
     "authorized worker return qualification is projected from durable settlement; empty encrypted terminal output still requires output protection",
     "the four execution-authority roles require distinct actual verification public keys in normal and historical verification",
-    "protected-output structure is checked on journal and checkpoint replay even after a valid retention TTL expires"
+    "protected-output structure is checked on journal and checkpoint replay even after a valid retention TTL expires",
+    "positive cached acknowledgements and new mutations verify the complete live journal and current referenced checkpoint before publication; integrity or uncertain I/O failure poisons the owner and restoring bytes does not clear that poison"
   ],
   "operations": [
     {
@@ -97,7 +99,10 @@
       "nativeSymbol": "DurableInferenceControl::bind_native_execution",
       "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
       "tests": [
-        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output"
+        "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs::authorized_settlement_never_persists_raw_output",
+        "codex-rs/hepta-infer-core/src/retained_journal_tests.rs::truncation_denies_cached_ack_and_restoring_bytes_does_not_clear_poison",
+        "codex-rs/hepta-infer-core/src/retained_journal_tests.rs::same_length_valid_history_substitution_denies_new_write_without_repair",
+        "codex-rs/hepta-infer-core/src/retained_journal_tests.rs::checkpoint_damage_denies_cached_ack_and_restore_does_not_clear_poison"
       ]
     },
     {
@@ -285,11 +290,108 @@
     "qualify host-selected mailbox, response and shutdown limits under real provider and storage contention",
     "compose the real inference-control neuron feature port and selected worker into the Agentd daemon lifecycle; typed feature receipts alone do not execute a model",
     "connect real enrolled-worker scheduling, measured device capacity and provider usage/billing to their existing owners; signed declared leases are not physical observations",
-    "define a bounded retained-request lifecycle beyond the 16384 distinct-record ceiling; checkpoint compaction preserves released request identities"
+    "define a bounded retained-request lifecycle beyond the 16384 distinct-record ceiling; checkpoint compaction preserves released request identities",
+    "carry original signed-plan and Agentd admitted absolute deadlines through transport queue/readiness waits to guarded physical-send admission; preserve cancellation and owner-generation fencing without claiming packet completion",
+    "reconcile the ordinary runtime.codex durable Agentd dispatch/abort handoff with the V2 inference actor rather than replacing either owner or executing source-writing migrations",
+    "qualify full-prefix journal/checkpoint verification latency and selected Windows filesystem/ACL/locking behavior; current Windows 64-bit file identity does not qualify ReFS"
   ],
   "externalEvidenceGates": [
     "independent semantic and security review",
     "selected target-host qualification with a real provider-compatible endpoint and output vault",
     "operator acceptance, canary, activation, promotion and release"
+  ],
+  "laneOperations": [
+    {
+      "operation": "reserve_request",
+      "designOperation": "reserve_request",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+        "symbol": "pub fn reserve_native(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+          "kind": "durable_exact_plan_and_recovery",
+          "command": "just test -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Pins exact request identity and bounded local capacity under the single durable owner before provider contact.",
+      "nativeSymbol": "pub fn reserve_native(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "schedule",
+      "designOperation": "schedule",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+        "symbol": "pub fn dispatch_native_authorized_with_pre_effect_abort(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+          "kind": "durable_exact_plan_and_recovery",
+          "command": "just test -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Validates the exact signed plan and syncs dispatch intent before provider entry; this is local dispatch, not an enrolled-worker scheduler.",
+      "nativeSymbol": "pub fn dispatch_native_authorized_with_pre_effect_abort(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "cancel",
+      "designOperation": "cancel",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+        "symbol": "pub fn cancel_native(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+          "kind": "durable_exact_plan_and_recovery",
+          "command": "just test -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Persists cancellation intent without equating acknowledgement with terminality or releasing uncertain capacity.",
+      "nativeSymbol": "pub fn cancel_native(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_a.rs",
+      "sourcePathExists": true
+    },
+    {
+      "operation": "settle",
+      "designOperation": "settle",
+      "mappingClass": "owner_native",
+      "ownerEntrypoint": {
+        "role": "owner_entrypoint",
+        "path": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+        "symbol": "pub fn settle_native_authorized(",
+        "buildTarget": "codex-hepta-infer-core::durable_control::native"
+      },
+      "delegatedCallees": [],
+      "tests": [
+        {
+          "path": "codex-rs/hepta-infer-core/src/native_control_v2_tests.rs",
+          "kind": "durable_exact_plan_and_recovery",
+          "command": "just test -p codex-hepta-infer-core --lib"
+        }
+      ],
+      "sourceSemantics": "Settles exact observations against the signed plan and output policy; uncertain effects retain capacity and cannot be replayed.",
+      "nativeSymbol": "pub fn settle_native_authorized(",
+      "sourcePath": "codex-rs/hepta-infer-core/src/native_control_v2_control_b.rs",
+      "sourcePathExists": true
+    }
   ]
 }

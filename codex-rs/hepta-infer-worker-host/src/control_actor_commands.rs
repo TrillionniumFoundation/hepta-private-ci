@@ -14,6 +14,12 @@ pub(super) enum Command {
         maximum_in_flight: usize,
         reply: oneshot::Sender<ActorResult<NativeRunRecord>>,
     },
+    ReserveBound {
+        request: NativeRequest,
+        maximum_in_flight: usize,
+        proof: NativeBoundSourceProof,
+        reply: oneshot::Sender<ActorResult<NativeRunRecord>>,
+    },
     BindExecution {
         request_id: String,
         plan: Arc<VerifiedExecutionPlan>,
@@ -117,6 +123,7 @@ impl Command {
             | Self::ReconcileRecovery { .. }
             | Self::RetireRecovery { .. } => true,
             Self::Reserve { .. }
+            | Self::ReserveBound { .. }
             | Self::BindExecution { .. }
             | Self::PrepareDispatch { .. }
             | Self::PrepareAuthorizedDispatch { .. }
@@ -144,6 +151,15 @@ impl Command {
                 maximum_in_flight,
                 reply,
             } => send_result(reply, control.reserve_native(request, maximum_in_flight)),
+            Self::ReserveBound {
+                request,
+                maximum_in_flight,
+                proof,
+                reply,
+            } => send_result(
+                reply,
+                control.reserve_native_bound(request, maximum_in_flight, proof),
+            ),
             Self::BindExecution {
                 request_id,
                 plan,

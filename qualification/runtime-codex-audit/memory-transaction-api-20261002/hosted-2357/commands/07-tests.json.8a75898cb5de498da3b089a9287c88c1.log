@@ -1,0 +1,427 @@
+[1m[92m   Compiling[0m codex-hepta-infer-core v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-core)
+[1m[92m   Compiling[0m codex-hepta-intuition v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intuition)
+[1m[92m   Compiling[0m codex-hepta-learning-ledger v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-learning-ledger)
+[1m[33mwarning[0m[1m: associated function `new` is never used[0m
+   [1m[94m--> [0mext/hepta-memory/src/cognitive/mod.rs:274:19
+    [1m[94m|[0m
+[1m[94m273[0m [1m[94m|[0m impl CognitiveExtension {
+    [1m[94m|[0m [1m[94m-----------------------[0m [1m[94massociated function in this implementation[0m
+[1m[94m274[0m [1m[94m|[0m     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
+    [1m[94m|[0m                   [1m[33m^^^[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m[1m: function `api_digest` is never used[0m
+   [1m[94m--> [0mext/hepta-memory/src/cognitive/federation.rs:864:4
+    [1m[94m|[0m
+[1m[94m864[0m [1m[94m|[0m fn api_digest(
+    [1m[94m|[0m    [1m[33m^^^^^^^^^^[0m
+
+[1m[33mwarning[0m: `codex-hepta-memory-extension` (lib) generated 2 warnings
+[1m[92m   Compiling[0m codex-hepta-wire v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-wire)
+[1m[92m   Compiling[0m codex-hepta-ndu v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-ndu)
+[1m[33mwarning[0m[1m: use of deprecated function `evaluator::evaluate_candidates`: new integrations must use evaluate_candidates_with_policy and NduEvaluationReceiptV2[0m
+  [1m[94m--> [0mhepta-ndu/src/lib.rs:50:20
+   [1m[94m|[0m
+[1m[94m50[0m [1m[94m|[0m pub use evaluator::evaluate_candidates;
+   [1m[94m|[0m                    [1m[33m^^^^^^^^^^^^^^^^^^^[0m
+   [1m[94m|[0m
+   [1m[94m= [0m[1mnote[0m: `#[warn(deprecated)]` on by default
+
+[1m[92m   Compiling[0m codex-app-server-client v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/app-server-client)
+[1m[33mwarning[0m: `codex-hepta-ndu` (lib) generated 1 warning
+[1m[92m   Compiling[0m codex-hepta-context-compiler v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-context-compiler)
+[1m[92m   Compiling[0m codex-hepta-neuron v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-neuron)
+[1m[92m   Compiling[0m codex-hepta-prompt-optimizer v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-prompt-optimizer)
+[1m[92m   Compiling[0m codex-hepta-intelligence-eval v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intelligence-eval)
+[1m[92m   Compiling[0m codex-hepta-automation v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-automation)
+[1m[92m   Compiling[0m codex-hepta-fleet v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-fleet)
+[1m[92m   Compiling[0m codex-hepta-learning-artifacts v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-learning-artifacts)
+[1m[92m   Compiling[0m codex-hepta-objective v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-objective)
+[1m[92m   Compiling[0m codex-hepta-plasticity v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-plasticity)
+[1m[92m   Compiling[0m codex-hepta-intelligence v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-intelligence)
+[1m[92m   Compiling[0m codex-hepta-agent-protocol v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agent-protocol)
+[1m[92m   Compiling[0m codex-hepta-codex-adapter v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-codex-adapter)
+[1m[92m   Compiling[0m codex-hepta-control-plane v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-control-plane)
+[1m[92m   Compiling[0m codex-hepta-bellman-operator v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-bellman-operator)
+[1m[92m   Compiling[0m codex-hepta-cognitive-store v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-cognitive-store)
+[1m[92m   Compiling[0m codex-hepta-agentd v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-agentd)
+[1m[92m   Compiling[0m dtor-proc-macro v0.0.6
+[1m[92m   Compiling[0m dtor v0.1.1
+[1m[92m   Compiling[0m ctor-proc-macro v0.0.7
+[1m[92m   Compiling[0m ctor v0.6.3
+[1m[92m   Compiling[0m core_test_support v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/core/tests/common)
+[1m[33mwarning[0m[1m: field `sequence` is never read[0m
+   [1m[94m--> [0mhepta-agentd/src/browser_servo.rs:317:5
+    [1m[94m|[0m
+[1m[94m316[0m [1m[94m|[0m struct DecodedFrame {
+    [1m[94m|[0m        [1m[94m------------[0m [1m[94mfield in this struct[0m
+[1m[94m317[0m [1m[94m|[0m     sequence: u64,
+    [1m[94m|[0m     [1m[33m^^^^^^^^[0m
+    [1m[94m|[0m
+    [1m[94m= [0m[1mnote[0m: `DecodedFrame` has a derived impl for the trait `Debug`, but this is intentionally ignored during dead code analysis
+    [1m[94m= [0m[1mnote[0m: `#[warn(dead_code)]` (part of `#[warn(unused)]`) on by default
+
+[1m[33mwarning[0m[1m: methods `append` and `append_with_delivery` are never used[0m
+  [1m[94m--> [0mhepta-agentd/src/cognitive_retrieval_learning.rs:32:19
+   [1m[94m|[0m
+[1m[94m24[0m [1m[94m|[0m impl CognitiveRetrievalLearningSink {
+   [1m[94m|[0m [1m[94m-----------------------------------[0m [1m[94mmethods in this implementation[0m
+[1m[94m...[0m
+[1m[94m32[0m [1m[94m|[0m     pub(crate) fn append(
+   [1m[94m|[0m                   [1m[33m^^^^^^[0m
+[1m[94m...[0m
+[1m[94m52[0m [1m[94m|[0m     pub(crate) fn append_with_delivery(
+   [1m[94m|[0m                   [1m[33m^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[33mwarning[0m[1m: field `handle` is never read[0m
+  [1m[94m--> [0mhepta-agentd/src/plasticity_learning_producer.rs:24:5
+   [1m[94m|[0m
+[1m[94m23[0m [1m[94m|[0m pub(crate) struct AgentdLearningPlasticityProducerV1 {
+   [1m[94m|[0m                   [1m[94m----------------------------------[0m [1m[94mfield in this struct[0m
+[1m[94m24[0m [1m[94m|[0m     handle: PlasticityRuntimeHandleV1,
+   [1m[94m|[0m     [1m[33m^^^^^^[0m
+   [1m[94m|[0m
+   [1m[94m= [0m[1mnote[0m: `AgentdLearningPlasticityProducerV1` has a derived impl for the trait `Clone`, but this is intentionally ignored during dead code analysis
+
+[1m[33mwarning[0m[1m: methods `submit_parameter` and `submit_topology` are never used[0m
+  [1m[94m--> [0mhepta-agentd/src/plasticity_learning_producer.rs:32:25
+   [1m[94m|[0m
+[1m[94m27[0m [1m[94m|[0m impl AgentdLearningPlasticityProducerV1 {
+   [1m[94m|[0m [1m[94m---------------------------------------[0m [1m[94mmethods in this implementation[0m
+[1m[94m...[0m
+[1m[94m32[0m [1m[94m|[0m     pub(crate) async fn submit_parameter(
+   [1m[94m|[0m                         [1m[33m^^^^^^^^^^^^^^^^[0m
+[1m[94m...[0m
+[1m[94m40[0m [1m[94m|[0m     pub(crate) async fn submit_topology(
+   [1m[94m|[0m                         [1m[33m^^^^^^^^^^^^^^^[0m
+
+[1m[33mwarning[0m[1m: methods `submit_parameter_plasticity_v1` and `submit_topology_plasticity_v1` are never used[0m
+   [1m[94m--> [0mhepta-agentd/src/state.rs:181:25
+    [1m[94m|[0m
+[1m[94m 76[0m [1m[94m|[0m impl AgentdState {
+    [1m[94m|[0m [1m[94m----------------[0m [1m[94mmethods in this implementation[0m
+[1m[94m...[0m
+[1m[94m181[0m [1m[94m|[0m     pub(crate) async fn submit_parameter_plasticity_v1(
+    [1m[94m|[0m                         [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+[1m[94m...[0m
+[1m[94m198[0m [1m[94m|[0m     pub(crate) async fn submit_topology_plasticity_v1(
+    [1m[94m|[0m                         [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m
+
+[1m[92m   Compiling[0m codex-hepta-infer-worker-host v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-infer-worker-host)
+[1m[33mwarning[0m: `codex-hepta-agentd` (lib) generated 5 warnings
+[1m[92m   Compiling[0m codex-hepta-types v0.0.0 (/home/runner/work/hepta-private-ci/hepta-private-ci/codex-rs/hepta-types)
+[1m[92m    Finished[0m `test` profile [unoptimized] target(s) in 39.40s
+[1m[92m     Running[0m unittests src/lib.rs (codex-rs/target/debug/deps/codex_hepta_infer_core-7aca22535abad521)
+
+running 104 tests
+test control_contracts::tests::confidential_output_requires_external_encryption_metadata ... ok
+test control_contracts::tests::deserialized_protected_metadata_is_checked_before_marker_hashing ... ok
+test control_contracts::tests::four_authority_aliases_cannot_reuse_one_execution_signing_key ... ok
+test control_contracts::tests::four_independent_authorities_bind_one_exact_execution ... ok
+test control_contracts::tests::distinct_operator_aliases_cannot_reuse_one_retirement_key ... ok
+test durable_control::native::bound_source::admission_tests::bound_capacity_counts_other_held_records_before_staging ... ok
+test control_contracts::tests::key_rotation_window_and_revocation_are_enforced ... ok
+test durable_control::native::bound_source::admission_tests::bound_metadata_survives_reopen_and_compaction_without_plaintext ... ok
+test durable_control::native::bound_source::admission_tests::cached_bound_ack_cannot_survive_retained_journal_tampering ... ok
+test durable_control::native::bound_source::admission_tests::legacy_dispatch_cannot_bypass_bound_profile_in_owner_or_replay ... ok
+test durable_control::native::bound_source::admission_tests::idempotent_bound_admission_and_legacy_collision_do_not_append ... ok
+test durable_control::native::bound_source::tests::exact_v2_source_proof_retains_only_binding_metadata ... ok
+test durable_control::native::bound_source::tests::original_binding_rejects_prompt_query_socket_or_timeout_drift ... ok
+test durable_control::native::bound_source::admission_tests::ordinary_checkpoint_stays_v2_and_bound_data_cannot_hide_in_v2 ... ok
+test durable_control::native::bound_source::tests::unchanged_signed_payload_cannot_be_relabelled_to_another_run_or_context ... ok
+test durable_control::native::checkpoint_validation_tests::checkpoint_cannot_release_unknown_execution_without_terminal_evidence ... ok
+test durable_control::native::checkpoint_validation_tests::checkpoint_revalidates_observation_assignment_identity ... ok
+test control_contracts::tests::retirement_requires_two_distinct_operators ... ok
+test durable_control::native::checkpoint_validation_tests::dispatched_request_survives_reopen_compaction_and_second_reopen ... ok
+test durable_control::native::checkpoint_validation_tests::checkpoint_revalidates_signed_audit_shape_and_terminal_sequence ... ok
+test durable_control::native::checkpoint_validation_tests::valid_checkpoint_reopens_and_retains_unknown_execution_capacity ... ok
+test durable_control::native::bound_source::tests::source_preimage_is_bounded_before_encoding ... ok
+test control_contracts::tests::signed_reconciliation_is_exact_and_rotation_bound ... ok
+test durable_control::native::record_staging_tests::actual_append_failure_discards_target_and_first_admission_candidates ... ok
+test durable_control::native::record_staging_tests::late_reducer_failure_does_not_install_mutated_target_or_append ... ok
+test durable_control::native::record_staging_tests::mismatched_event_identity_and_checkpoint_are_rejected_before_append ... ok
+test durable_control::native::record_staging_tests::staged_admission_counts_all_held_records_and_preserves_compacted_history ... ok
+test durable_control::native::storage_sync_tests::identical_content_addressed_reuse_preserves_the_existing_object ... ok
+test durable_control::native::storage_sync_tests::identical_reuse_requires_a_successful_real_file_flush ... ok
+test durable_control::native::storage_sync_tests::maintenance_retry_reuses_the_synced_archive_and_commits_one_generation ... ok
+test durable_control::native::economic_tests::host_observed_overrun_releases_slot_and_preserves_denial_reason ... ok
+test durable_control::native::tests::codex_bound_terminal_requires_adapter_correlation_witness ... ok
+test durable_control::native::tests::completed_owner_ready_without_codex_witness_is_not_success ... ok
+test durable_control::native::tests::cancellation_intent_and_terminal_failure_do_not_invent_zero_usage ... ok
+test durable_control::native::tests::duplicate_reopen_preserves_exact_binding_and_reserves_only_once ... ok
+test durable_control::native::tests::explicit_dispatch_rejection_releases_without_claiming_provider_terminal ... ok
+test durable_control::native::tests::generic_dispatch_rejection_holds_slot_when_pre_admission_is_not_proven ... ok
+test durable_control::native::tests::historical_codex_dispatch_without_frontier_reopens_but_cannot_upgrade_to_success ... ok
+test durable_control::native::tests::late_completed_releases_slot_without_erasing_authority_loss ... ok
+test durable_control::native::tests::legacy_journal_completion_without_authority_cannot_be_replayed_as_success ... ok
+test durable_control::native::tests::lost_pre_effect_abort_token_becomes_reconcile_only_on_reopen ... ok
+test durable_control::native::tests::missing_terminal_usage_can_be_completed_without_changing_the_outcome ... ok
+test durable_control::native::tests::one_shot_pre_effect_abort_releases_only_the_live_write_ahead ... ok
+test durable_control::native::tests::oversized_and_incomplete_lines_are_rejected_without_truncation ... ok
+test durable_control::native::tests::post_dispatch_pre_turn_stop_is_durable_and_releases_without_provider_terminal ... ok
+test durable_control::native::tests::pre_dispatch_stop_releases_without_claiming_provider_terminal ... ok
+test durable_control::native::tests::unknown_execution_holds_slot_and_late_terminal_settles_real_usage ... ok
+test durable_control::native::v2_tests::ambiguous_native_append_fences_idempotent_mutations ... ok
+test durable_control::native::v2_tests::authorized_settlement_never_persists_raw_output ... ok
+test durable_control::native::economic_tests::signed_quota_overrun_preserves_terminal_usage_and_denies_success ... ok
+test durable_control::native::economic_tests::signed_terminal_preserves_prior_owner_authority_without_inventing_readiness ... ok
+test durable_control::native::v2_tests::checkpoint_migration_tests::normal_schema_one_pre_effect_abort_checkpoint_remains_released ... ok
+test durable_control::native::v2_tests::checkpoint_migration_tests::current_schema_two_checkpoint_preserves_independently_observed_readiness ... ok
+test durable_control::native::v2_tests::checkpoint_tampering_is_rejected_on_reopen ... ok
+test durable_control::native::v2_tests::compaction_preserves_indeterminate_capacity_and_exact_state ... ok
+test durable_control::native::v2_tests::every_compaction_failpoint_reopens_a_complete_generation ... ok
+test durable_control::native::v2_tests::checkpoint_migration_tests::normal_schema_one_reconciliation_checkpoint_denies_unsupported_readiness ... ok
+test durable_control::native::v2_tests::checkpoint_migration_tests::legacy_retirement_without_key_fingerprints_stays_held_in_both_checkpoint_versions ... ok
+test durable_control::native::v2_tests::locally_aborted_dispatch_cannot_be_resurrected_by_observation ... ok
+test durable_control::native::v2_tests::post_compaction_multi_generation_curve ... ignored, qualification soak; executed by hepta-inference-maintenance
+test durable_control::native::v2_tests::indeterminate_retirement_is_revision_bound_and_dual_controlled ... ok
+test durable_control::native::v2_tests::pre_effect_abort_token_cannot_release_another_journal ... ok
+test durable_control::native::v2_tests::protected_replay_tests::journal_replay_rejects_malformed_metadata_and_unbound_output_marker ... ok
+test durable_control::native::v2_tests::legacy_retirement_holds_capacity_until_fresh_independent_approval ... ok
+test durable_control::native::v2_tests::retained_pre_effect_abort_token_cannot_release_reopened_owner ... ok
+test durable_control::native::v2_tests::terminal_usage_refinement_cannot_clear_success_denial ... ok
+test durable_control::retained_journal_tests::byte_identical_path_replacement_fences_the_original_open_writer ... ok
+test durable_control::native::v2_tests::protected_replay_tests::reconciled_checkpoint_revalidates_retained_partial_output_metadata ... ok
+test durable_control::retained_journal_tests::compaction_and_reopen_adopt_only_the_verified_new_prefix ... ok
+test durable_control::retained_journal_tests::compaction_does_not_publish_damaged_replacement_after_directory_sync ... ok
+test durable_control::retained_journal_tests::checkpoint_damage_denies_cached_ack_and_restore_does_not_clear_poison ... ok
+test durable_control::retained_journal_tests::damaged_new_checkpoint_cannot_be_adopted_after_directory_sync ... ok
+test durable_control::retained_journal_tests::compaction_rechecks_predecessor_after_generation_sync_before_rename ... ok
+test durable_control::retained_journal_tests::malformed_admission_is_rejected_without_an_expensive_retention_scan ... ok
+test durable_control::retained_journal_tests::lost_journal_access_denies_ack_and_write_until_explicit_reopen ... ok
+test durable_control::retained_journal_tests::same_length_valid_history_substitution_denies_new_write_without_repair ... ok
+test durable_control::retained_journal_tests::truncation_denies_cached_ack_and_restoring_bytes_does_not_clear_poison ... ok
+test durable_control::tests::cancellation_after_assignment_waits_for_observation_and_accounts_usage ... ok
+test durable_control::tests::failed_append_fences_legacy_idempotent_commands_until_reopen ... ok
+test durable_control::tests::invalid_event_is_rejected_before_append ... ok
+test durable_control::tests::missing_terminal_observation_becomes_indeterminate ... ok
+test durable_control::tests::one_writer_is_held_until_owner_drop ... ok
+test durable_control::tests::reopens_exact_committed_state ... ok
+test durable_control::tests::replay_revalidates_event_semantics_and_terminal_bindings ... ok
+test durable_control::tests::reservation_rejects_request_that_expired_after_submission ... ok
+test durable_control::tests::same_digest_output_drift_is_rejected_before_and_after_legacy_journal_replay ... ok
+test durable_control::tests::settlement_enforces_request_token_limit_before_append_and_on_replay ... ok
+test durable_control::tests::settlement_rejects_quota_overrun_and_same_digest_usage_drift ... ok
+test durable_control::native::v2_tests::signed_reconciliation_releases_indeterminate_without_blind_replay ... ok
+test durable_control::writer_lock::tests::compaction_rejects_journal_growth_and_fences_the_stale_owner ... ok
+test durable_control::writer_lock::tests::a_dangling_journal_symlink_cannot_split_the_compaction_owner ... ok
+test durable_control::writer_lock::tests::detached_generation_lock_does_not_replace_the_lifecycle_lock ... ok
+test durable_control::writer_lock::tests::long_journal_names_and_existing_symlink_aliases_share_a_short_lock ... ok
+test neuron_feature::tests::non_success_observations_preserve_exact_encoder_and_head_binding ... ok
+test neuron_feature::tests::non_success_status_cannot_smuggle_numerical_output ... ok
+test neuron_feature::tests::runtime_tuple_or_output_identity_drift_is_rejected ... ok
+test neuron_feature::tests::successful_receipt_binds_request_runtime_output_and_denies_authority ... ok
+test tests::completion_requires_reservation ... ok
+test tests::conflicting_identity_is_rejected ... ok
+test tests::request_lifecycle_is_fenced_and_authority_free ... ok
+test tests::stale_digest_cannot_reserve ... ok
+test durable_control::writer_lock::tests::renamed_generation_failure_retains_ownership_until_the_owner_exits ... ok
+test durable_control::native::tests::journal_byte_budget_rejects_before_append_and_replay_checks_actual_bytes ... ok
+test durable_control::retained_journal_tests::retained_prefix_cost_is_bounded_at_small_and_near_capacity_sizes ... ok
+
+test result: ok. 103 passed; 0 failed; 1 ignored; 0 measured; 0 filtered out; finished in 10.36s
+
+[1m[92m     Running[0m unittests src/bin/hepta-infer-control.rs (codex-rs/target/debug/deps/hepta_infer_control-a23e266da128e425)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+[1m[92m     Running[0m unittests src/bin/hepta-infer-maintenance-fault-child.rs (codex-rs/target/debug/deps/hepta_infer_maintenance_fault_child-68c1c6733b18bb57)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+[1m[92m     Running[0m tests/output_retention.rs (codex-rs/target/debug/deps/output_retention-f570330df10981b9)
+
+running 1 test
+test compaction_reports_expiry_without_manufacturing_vault_deletion ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.05s
+
+[1m[92m     Running[0m tests/process_crash_recovery.rs (codex-rs/target/debug/deps/process_crash_recovery-213d261a654d7934)
+
+running 2 tests
+test an_incomplete_torn_tail_is_rejected_instead_of_replayed_or_truncated ... ok
+test sigkill_at_every_maintenance_boundary_recovers_one_complete_generation ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+
+[1m[92m     Running[0m tests/recovery_after_expiry.rs (codex-rs/target/debug/deps/recovery_after_expiry-68cae01fd1f1cfe2)
+
+running 3 tests
+test historical_four_authority_aliases_cannot_reuse_one_execution_signing_key ... ok
+test fresh_rotated_terminal_receipt_releases_after_dispatch_lease_expiry ... ok
+test fresh_rotated_dual_control_retirement_releases_after_lease_expiry ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+[1m[92m     Running[0m unittests src/lib.rs (codex-rs/target/debug/deps/codex_hepta_infer_worker_host-67c691b5fc3d5267)
+
+running 72 tests
+test actor_mailbox::boundary_tests::mixed_fifo_contention_curve ... ignored, pilot scheduling measurement, not filesystem or target-host qualification
+test actor_latency::tests::nearest_rank_percentiles_and_window_are_bounded ... ok
+test actor_mailbox::boundary_tests::terminal_reserve_preserves_fifo_and_shutdown_when_every_quota_is_full ... ok
+test actor_mailbox::boundary_tests::terminal_traffic_cannot_steal_ordinary_quota_or_overtake_it ... ok
+test actor_mailbox::tests::disconnected_receiver_never_looks_like_overload ... ok
+test actor_mailbox::tests::saturation_rejects_before_delivery_and_recovers_capacity ... ok
+test actor_mailbox::tests::shutdown_is_admitted_when_full_and_fences_every_clone ... ok
+test actor_mailbox::boundary_tests::concurrent_producers_are_bounded_and_all_accepted_commands_precede_shutdown ... ok
+test control_actor::bound::tests::bound_admission_checks_request_proof_pair_inside_the_writer ... ok
+test control_actor::bound::tests::bound_port_is_idempotent_and_reconstructs_after_actor_restart ... ok
+test control_actor::bound::tests::bound_reply_loss_preserves_exact_committed_relationship ... ok
+test control_actor::boundary_tests::dropped_accepted_sender_is_not_pre_admission_closed ... ok
+test control_actor::boundary_tests::caller_cancellation_after_admission_cannot_erase_the_owner_command ... ok
+test control_actor::boundary_tests::full_ordinary_queue_cannot_reject_terminal_transition_or_shutdown ... ok
+test control_actor::boundary_tests::lost_terminal_reply_remains_durable_and_survives_restart ... ok
+test control_actor::boundary_tests::real_writer_mixed_query_terminal_contention_curve ... ignored, real-journal pilot; not selected target-host/provider qualification
+test control_actor::boundary_tests::published_metrics_are_immutable_stale_and_do_not_queue_reads ... ok
+test control_actor::boundary_tests::accepted_deadline_does_not_cancel_commit_or_license_duplicate_dispatch ... ok
+test control_actor::compatibility_tests::one_writer_owns_the_journal_and_effect_capability_is_one_shot ... ok
+test control_actor::boundary_tests::shutdown_deadline_retains_lock_until_the_real_owner_exits ... ok
+test control_actor::boundary_tests::signed_post_effect_terminal_reply_loss_keeps_exact_durable_result ... ok
+test final_use_authorizer::tests::connected_issuer_peer_uid_must_match_configured_owner ... ok
+test final_use_authorizer::tests::endpoint_denial_updates_head_and_old_head_cannot_roll_back ... ok
+test final_use_authorizer::tests::exact_signed_grant_becomes_one_entry_verified_token ... ok
+test final_use_authorizer::tests::forged_grant_never_reaches_effect_entry ... ok
+test model_worker::tests::executes_authenticated_neuron_feature_tuple_from_loaded_manifest ... ok
+test model_worker::tests::loads_runs_and_unloads_exact_model_tuple ... ok
+test model_worker::tests::lost_driver_terminality_is_indeterminate ... ok
+test model_worker::tests::neuron_feature_path_rejects_payload_drift_and_driver_identity_drift ... ok
+test model_worker::tests::neuron_feature_worker_projects_exact_inference_control_receipt ... ok
+test model_worker::tests::rejects_changed_tokenizer_model_or_payload_tuple ... ok
+test control_actor::recovery_tests::writer_rejects_cached_terminal_capability_expired_after_verification ... ok
+test actor_mailbox::tests::more_than_one_hundred_thousand_mailbox_lifecycles_remain_bounded ... ok
+test control_actor::recovery_tests::queued_authorized_commands_recheck_owner_clock_after_expiry ... ok
+test native_app_server::control::tests::intelligence_handoff_is_committed_to_native_admission_identity ... ok
+test native_app_server::control::tests::pre_dispatch_cancellation_and_connection_failure_release_without_usage_claims ... ok
+test native_app_server::control::tests::reopened_dispatch_and_completed_duplicate_never_connect_to_provider ... ok
+test native_app_server::control::tests::reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown ... ok
+test native_app_server::output_message_tests::completed_message_supplies_text_without_streaming_deltas ... ok
+test native_app_server::output_message_tests::completed_snapshot_replaces_partial_text_and_is_idempotent ... ok
+test native_app_server::output_message_tests::completed_text_and_identity_limits_reject_without_mutating_output ... ok
+test native_app_server::control::authorized_settlement_tests::empty_nonterminal_has_no_protection_object_or_terminal_claim ... ok
+test native_app_server::output_message_tests::interleaved_messages_keep_item_order_and_completed_text_once ... ok
+test native_app_server::output_message_tests::started_items_keep_order_when_messages_complete_in_reverse ... ok
+test native_app_server::output_message_tests::successive_tail_deltas_and_snapshot_preserve_the_prefix_once ... ok
+test native_app_server::output_message_tests::unrelated_completed_items_do_not_change_output ... ok
+test native_app_server::send_guard::tests::expired_signed_ceiling_and_zero_budget_fail_closed ... ok
+test native_app_server::send_guard::tests::shorter_operation_timeout_wins_over_long_signed_lease ... ok
+test native_app_server::send_guard::tests::signed_ceiling_is_not_replaced_by_a_fresh_execution_timeout ... ok
+test native_app_server::tests::actual_usage_is_bound_monotonic_and_survives_terminal_failure ... ok
+test native_app_server::tests::disconnect_event_lag_cancel_and_deadline_have_explicit_boundary_statuses ... ok
+test native_app_server::tests::final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift ... ok
+test native_app_server::tests::in_progress_is_not_a_terminal_observation ... ok
+test native_app_server::tests::late_completed_cannot_upgrade_cancelled_or_timed_out_boundary ... ok
+test native_app_server::tests::lost_turn_start_ack_reconciles_only_the_exact_in_progress_thread ... ok
+test native_app_server::tests::only_the_bound_turn_can_complete_the_native_request ... ok
+test native_app_server::tests::output_is_observed_bounded_and_never_predeclares_success ... ok
+test native_app_server::tests::owner_loss_stays_denied_after_interrupt_grace_observes_completed ... ok
+test native_app_server::tests::owner_timeout_and_terminal_first_selection_cannot_authorize_success ... ok
+test native_app_server::output_message_tests::empty_message_items_have_a_bounded_identity_budget ... ok
+test native_app_server::tests::success_requires_both_matching_completion_and_final_ready_owner ... ok
+test tests::payload_drift_is_rejected ... ok
+test tests::revoked_lease_is_rejected ... ok
+test tests::terminal_success_requires_exact_authority_binding ... ok
+test tests::timeout_never_becomes_success ... ok
+test tests::token_limit_is_enforced ... ok
+test tests::unobserved_terminal_state_is_indeterminate ... ok
+test unix_output_protector::boundary_tests::vault_config_rejects_symlinks_hardlinks_and_oversize_files ... ok
+test unix_output_protector::boundary_tests::vault_uid_socket_and_parent_permissions_fail_closed ... ok
+test native_app_server::control::authorized_settlement_tests::live_output_preserves_text_and_uses_durable_quota_denial ... ok
+test native_app_server::control::authorized_settlement_tests::empty_encrypted_terminals_use_the_protector_and_release_capacity ... ok
+[2m2026-10-02T23:09:16.414944Z[0m [31mERROR[0m [2mcodex_app_server[0m[2m:[0m Project-local config, hooks, and exec policies are disabled in the following folders until the project is trusted, but skills still load.
+    1. /home/runner/work/hepta-private-ci/hepta-private-ci/.codex
+       To load project-local config, hooks, and exec policies, add /home/runner/work/hepta-private-ci/hepta-private-ci as a trusted project in /tmp/hepta-cognitive-worker-e2e-1790982556117170548/fleet/agents/018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12/home/config.toml.
+
+[2m2026-10-02T23:09:16.415062Z[0m [31mERROR[0m [2mcodex_app_server[0m[2m:[0m Codex could not find bubblewrap on PATH. Install bubblewrap with your OS package manager. See the sandbox prerequisites: https://developers.openai.com/codex/concepts/sandboxing#prerequisites. Codex will use the bundled bubblewrap in the meantime.
+test native_app_server::tests::real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone ... ok
+
+test result: ok. 70 passed; 0 failed; 2 ignored; 0 measured; 0 filtered out; finished in 1.06s
+
+[1m[92m     Running[0m unittests src/bin/hepta-infer-maintenance.rs (codex-rs/target/debug/deps/hepta_infer_maintenance-0848c9d5ba076d39)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+[1m[92m     Running[0m unittests src/bin/hepta-infer-recovery.rs (codex-rs/target/debug/deps/hepta_infer_recovery-9d2ed4e51fa4f9f4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+[1m[92m     Running[0m unittests src/bin/hepta-infer-worker.rs (codex-rs/target/debug/deps/hepta_infer_worker-f98e856000b3fc30)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+[1m[92m     Running[0m tests/control_actor.rs (codex-rs/target/debug/deps/control_actor-bbfbcfacfba76675)
+
+running 1 test
+test production_actor_denies_unsigned_dispatch_and_retains_one_writer ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+[1m[92m     Running[0m unittests src/lib.rs (codex-rs/target/debug/deps/codex_hepta_types-76b90f84dd94259f)
+
+running 53 tests
+test bounded::tests::borrowed_constructors_validate_before_copy_and_count_utf8_bytes ... ok
+test bounded::tests::empty_nul_and_zero_maximum_fail_closed ... ok
+test canonical_digest::tests::canonical_byte_validator_rejects_invalid_bool_and_unknown_tag ... ok
+test bounded::tests::text_and_bytes_enforce_exact_bound ... ok
+test canonical_digest::tests::canonical_byte_validator_rejects_truncation_and_trailing_bytes ... ok
+test canonical_digest::tests::canonical_byte_validator_accepts_frozen_bytes_and_returns_same_digest ... ok
+test canonical_digest::tests::canonical_container_depth_is_exactly_bounded ... ok
+test canonical_digest::tests::integer_boundaries_unicode_and_empty_containers_are_frozen ... ok
+test canonical_digest::tests::field_and_map_order_are_canonical_but_array_order_is_semantic ... ok
+test canonical_digest::tests::frozen_cross_language_vector_matches_exact_bytes_and_digest ... ok
+test canonical_digest::tests::canonical_v1_does_not_apply_unicode_normalization ... ok
+test digest::stream_tests::unbounded_reader_stops_after_one_overflow_byte ... ok
+test canonical_digest::tests::malformed_canonical_inputs_fail_closed ... ok
+test digest::stream_tests::bounded_stream_digest_matches_bytes_at_buffer_boundaries ... ok
+test digest::stream_tests::stream_error_never_returns_a_partial_digest ... ok
+test digest::tests::multipart_hash_matches_exact_concatenation ... ok
+test digest::tests::sha256_round_trip_is_canonical ... ok
+test digest::tests::uppercase_and_wrong_length_fail_closed ... ok
+test fixed::tests::arithmetic_boundaries_reject_overflow_and_division_by_zero ... ok
+test fixed::tests::checked_arithmetic_rejects_overflow_and_zero_division ... ok
+test fixed::tests::probability_and_clamp_fail_closed ... ok
+test fixed::tests::explicit_toward_zero_methods_match_legacy_compatibility_methods ... ok
+test identity::tests::authority_flags_round_trip_only_as_untrusted_wire_bits ... ok
+test identity::tests::authority_posture_rejects_grants_at_raw_wire_ingress ... ok
+test identity::tests::id_profiles_and_namespaces_are_explicit_and_canonical ... ok
+test identity::tests::non_authorizing_posture_is_structurally_deny_only ... ok
+test identity::tests::identity_bounds_and_monotonic_overflow_fail_closed ... ok
+test identity::tests::stable_id_and_generation_are_strict ... ok
+test digest::tests::digest_parser_deterministic_fuzz_corpus_is_total_and_strict ... ok
+test fixed::tests::multiplication_and_division_are_deterministic ... ok
+test identity::tests::stable_profile_exhaustively_matches_the_v1_ascii_alphabet ... ok
+test numeric_conversion::tests::checked_scaling_rejects_overflow_without_mutating_input ... ok
+test numeric_conversion::tests::incompatible_units_normalization_shape_and_ranges_reject ... ok
+test numeric_conversion::tests::ppm_q24_roundtrip_reports_exact_error_instead_of_byte_equality ... ok
+test numeric_conversion::tests::digest_binds_numerical_profile_shape_range_units_and_normalization ... ok
+test numeric_conversion::tests::malformed_shape_and_unknown_profile_cannot_enter_conversion ... ok
+test numeric_conversion::tests::q24_to_q32_is_exact_and_legacy_multiply_keeps_toward_zero ... ok
+test numeric_profile::tests::profile_definition_binds_identity_version_scale_and_rounding ... ok
+test numeric_conversion::tests::registered_conversion_requires_normalization_and_both_profile_definitions ... ok
+test numeric_profile::tests::q32_raw_scale_compatibility_does_not_imply_arithmetic_compatibility ... ok
+test numeric_conversion::tests::signed_half_ties_round_to_even_target_bins ... ok
+test prompt_delivery::tests::rejection_reason_is_open_but_bounded ... ok
+test prompt_delivery::tests::semantic_digest_is_deterministic_and_field_complete ... ok
+test registry::tests::definition_kind_is_bound_to_identifier_namespace ... ok
+test registry::tests::immutable_registry_resolves_exact_definition_and_numeric_profile ... ok
+test registry::tests::registry_digest_is_insertion_order_independent_and_definition_sensitive ... ok
+test prompt_delivery::tests::delivered_and_rejected_are_mutually_exclusive ... ok
+test prompt_delivery::tests::token_positions_are_optional_bounded_and_canonical ... ok
+test topology::tests::related_module_bounds_are_checked_before_digest_allocation ... ok
+test topology::tests::selected_digest_cannot_hide_substituted_delta_content ... ok
+test topology::tests::split_requires_individually_bound_add_participants ... ok
+test registry::tests::registry_rejects_duplicate_identity_profile_version_capacity_and_aggregate_bytes ... ok
+test identity::tests::stable_profile_deterministic_fuzz_corpus_matches_borrowed_validation ... ok
+
+test result: ok. 53 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
