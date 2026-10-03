@@ -271,3 +271,8 @@ pub use review_host::ReviewDatasetWireV1;
 #[cfg(test)]
 #[path = "public_dataset_wire_v1_tests.rs"]
 mod public_dataset_wire_v1_tests;
+
+#[cfg(unix)]
+pub use durable::LedgerCanonicalSourceV1;
+#[cfg(unix)]
+pub use durable::MAX_LEDGER_CANONICAL_SOURCE_BYTES_V1;

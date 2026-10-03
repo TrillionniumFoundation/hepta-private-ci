@@ -749,3 +749,7 @@ fn preparation_reopen_and_torn_append_never_produce_exposure() {
     }
     must(fs::write(fixture.path(), bytes));
 }
+
+#[cfg(unix)]
+#[path = "durable_source_export_v1_tests.rs"]
+mod source_export;

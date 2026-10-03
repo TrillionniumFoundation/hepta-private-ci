@@ -181,6 +181,14 @@ fn read_frontiers(
     binding: Digest32,
     length: u64,
 ) -> Result<(LedgerWitnessFrontier, u64), DurableLedgerError> {
+    read_frontiers_reader(&mut **file, binding, length)
+}
+
+fn read_frontiers_reader(
+    file: &mut (impl Read + Seek),
+    binding: Digest32,
+    length: u64,
+) -> Result<(LedgerWitnessFrontier, u64), DurableLedgerError> {
     if length < HEADER as u64 {
         return Err(DurableLedgerError::MissingHeader);
     }
@@ -320,3 +328,7 @@ fn decode_frontier(bytes: &[u8]) -> Result<LedgerWitnessFrontier, DurableLedgerE
 #[cfg(test)]
 #[path = "witness_tests.rs"]
 mod tests;
+
+#[cfg(unix)]
+#[path = "witness_source_export_v1.rs"]
+mod source_export;

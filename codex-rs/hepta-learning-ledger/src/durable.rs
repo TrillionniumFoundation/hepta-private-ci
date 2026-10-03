@@ -354,6 +354,16 @@ fn replay_frames(
     recovery: LedgerRecovery,
 ) -> Result<(LearningLedger, u64, u64), DurableLedgerError> {
     let length = file.metadata()?.len();
+    replay_reader(file, length, binding, max_records, recovery)
+}
+
+fn replay_reader(
+    file: &mut (impl Read + Seek),
+    length: u64,
+    binding: Digest32,
+    max_records: usize,
+    recovery: LedgerRecovery,
+) -> Result<(LearningLedger, u64, u64), DurableLedgerError> {
     if length < HEADER as u64 {
         return Err(DurableLedgerError::MissingHeader);
     }
@@ -459,3 +469,11 @@ mod tests;
 #[cfg(test)]
 #[path = "inspection_tests.rs"]
 mod inspection_tests;
+
+#[cfg(unix)]
+#[path = "durable_source_export_v1.rs"]
+mod source_export;
+#[cfg(unix)]
+pub use source_export::LedgerCanonicalSourceV1;
+#[cfg(unix)]
+pub use source_export::MAX_LEDGER_CANONICAL_SOURCE_BYTES_V1;
