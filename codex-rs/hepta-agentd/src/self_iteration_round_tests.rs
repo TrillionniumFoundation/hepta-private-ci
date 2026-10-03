@@ -1,5 +1,9 @@
 //! Synthetic model receipts exercise the real sole-writer journal, not a live model.
 use super::*;
+#[path = "self_iteration_round_effects_tests.rs"]
+mod effect_tests;
+#[path = "self_iteration_round_rejection_tests.rs"]
+mod rejection_tests;
 fn inputs(maximum: u32) -> (crate::CanonicalIterationEnvelopeV1, IterationEnvelopeV1) {
     let objective = Digest32::of_bytes(b"objective");
     let grammar = Digest32::of_bytes(b"grammar");

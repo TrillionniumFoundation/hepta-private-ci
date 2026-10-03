@@ -145,6 +145,22 @@ async fn cancelled_caller_leaves_actual_model_task_to_persist_terminal_and_never
                     let _ = response.send(Ok(()));
                     recorded.notify_one();
                 }
+                Command::InspectRound(goal, policy, response) => {
+                    let _ = response.send(rounds.status(&goal, policy));
+                }
+                Command::BeginCandidateEffects(round, assessment, response) => {
+                    let admission = rounds
+                        .begin_candidate_effects(
+                            &round,
+                            &assessment,
+                            cycle::now_ms().expect("clock"),
+                        )
+                        .expect("candidate intent");
+                    journal
+                        .persist_rounds(rounds)
+                        .expect("durable candidate intent");
+                    let _ = response.send(Ok(admission));
+                }
                 _ => panic!("fixture must not reach generation or acceptance effects"),
             }
         }
