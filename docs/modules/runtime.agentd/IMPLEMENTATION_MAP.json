@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "ed93847b972bd8e51e3e8da15f4476bdca7dbfc5",
-    "tree": "e316afb5b08508413fe5c8fb4167f1c477993e58"
+    "commit": "12f665e6e014ebad012c108dcf4948e7ebd4ce3b",
+    "tree": "1ded61fa3c8590cbf363fc563ed959e33a242ff1"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -344,7 +344,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "7771eedd95f8a3c9ba91b2b3245fe4c5749c3fa4"
+      "object": "066652d2b20af9dff4849cf4c1d366f7181b17ce"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -384,11 +384,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-      "object": "4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"
+      "object": "ef90d7f993365627c4fcbc69d3b75b380958738d"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+      "object": "dc06eca8abfc6c85e1f32ea0846c75dd9883d80e"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
@@ -405,6 +405,17 @@
     {
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
       "object": "cb5c75c1eb3abe1e402c26b011e51703f501ca67"
+    }
+  ],
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "ed93847b972bd8e51e3e8da15f4476bdca7dbfc5",
+        "tree": "e316afb5b08508413fe5c8fb4167f1c477993e58"
+      },
+      "observedAtHead": null,
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
     }
   ]
 }

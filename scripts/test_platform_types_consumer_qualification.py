@@ -1,4 +1,5 @@
 """Real shell, count parser and evidence builder; native commands remain stand-ins."""
+
 from __future__ import annotations
 
 import json
@@ -64,32 +65,32 @@ class ConsumerExecutionTests(unittest.TestCase):
                     'printf "%s\\n" "$name $*" >> "$TEST_COMMAND_LOG"\n'
                     'if [ "$name" = python3 ]; then\n'
                     '  case "$1" in\n'
-                    '    scripts/platform_types_nonempty_tests.py)\n'
+                    "    scripts/platform_types_nonempty_tests.py)\n"
                     '      if [ "$TEST_FAILURE" = count-tamper ]; then printf \'{"executedTests":999}\\n\'; exit 0; fi;;\n'
-                    '  esac\n'
+                    "  esac\n"
                     '  case "$1" in\n'
-                    '    scripts/platform_types_nonempty_tests.py|scripts/platform_types_consumer_evidence.py)\n'
+                    "    scripts/platform_types_nonempty_tests.py|scripts/platform_types_consumer_evidence.py)\n"
                     f'      exec {shlex.quote(sys.executable)} -S "$@";;\n'
-                    '  esac\n'
-                    'fi\n'
+                    "  esac\n"
+                    "fi\n"
                     'if [ "$name" = cargo ] && [ "$1" = check ] && [ "$TEST_FAILURE" = compile ]; then exit 19; fi\n'
                     'if [ "$name" = cargo ] && [ "$1" = test ]; then\n'
                     '  case "$*" in\n'
-                    '    *topology_candidate*)\n'
+                    "    *topology_candidate*)\n"
                     '      if [ "$TEST_FAILURE" = empty ]; then\n'
                     '        printf "%s\\n" "running 0 tests"\n'
                     '        printf "%s\\n" "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 9 filtered out; finished in 0.00s"\n'
-                    '        exit 0\n'
-                    '      fi\n'
+                    "        exit 0\n"
+                    "      fi\n"
                     '      if [ "$TEST_FAILURE" = orphan-summary ]; then\n'
                     '        printf "%s\\n" "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"\n'
-                    '        exit 0\n'
-                    '      fi\n'
+                    "        exit 0\n"
+                    "      fi\n"
                     '      if [ "$TEST_FAILURE" = compile-only ]; then printf "%s\\n" "Finished test profile; no tests executed"; exit 0; fi;;\n'
-                    '  esac\n'
+                    "  esac\n"
                     '  printf "%s\\n" "running 2 tests"\n'
                     '  printf "%s\\n" "test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s"\n'
-                    'fi\nexit 0\n'
+                    "fi\nexit 0\n"
                 )
                 tool.chmod(0o755)
             if failure == "drift":
@@ -102,7 +103,7 @@ class ConsumerExecutionTests(unittest.TestCase):
                     'if [ "$1" = rev-parse ] && [ "$2" = HEAD ]; then\n'
                     f'  if [ -f "{marker}" ]; then printf "%040d\\n" 1; exit 0; fi\n'
                     f'  : > "{marker}"\n'
-                    'fi\n'
+                    "fi\n"
                     f'exec {shlex.quote(real_git)} "$@"\n'
                 )
                 git_tool.chmod(0o755)
@@ -178,9 +179,7 @@ class ConsumerExecutionTests(unittest.TestCase):
                 self.assertNotEqual(process.returncode, 0)
                 self.assertFalse(record["checksPassed"])
                 self.assertFalse(record["qualified"])
-                checks = {
-                    row["name"]: row["exitCode"] for row in record["checks"]
-                }
+                checks = {row["name"]: row["exitCode"] for row in record["checks"]}
                 self.assertEqual(len(checks), EXPECTED_CHECK_COUNT)
                 self.assertEqual(checks["topology-consumer"], 4)
                 self.assertEqual(checks["manifest-owners"], 0)
@@ -222,6 +221,12 @@ class ConsumerExecutionTests(unittest.TestCase):
         workflow = yaml.safe_load(
             (ROOT / ".github/workflows/lane-a-foundation.yml").read_text()
         )
+        # A reusable workflow with no caller must not silently lose automatic
+        # consumer qualification while its individual jobs still look valid.
+        events = workflow.get("on", workflow.get(True))
+        self.assertIn("codex-rs/hepta-*/**", events["pull_request"]["paths"])
+        self.assertIn("docs/modules/platform.types/**", events["pull_request"]["paths"])
+        self.assertIn("main", events["push"]["branches"])
         for job in workflow["jobs"].values():
             steps = job["steps"]
             consumers = next(

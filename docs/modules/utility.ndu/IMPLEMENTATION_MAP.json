@@ -144,15 +144,15 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "iteration_bound_exhaustion_is_unavailable"
+          "symbol": "iteration_exhaustion_is_unavailable"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "parent_and_child_updates_cannot_share_generation_within_one_hierarchy"
+          "symbol": "parent_and_child_updates_cannot_share_generation"
         },
         {
           "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-          "symbol": "unrelated_hierarchies_may_advance_different_levels_in_same_generation"
+          "symbol": "unrelated_hierarchy_updates_can_share_generation"
         }
       ],
       "designOperation": "solve_preference_target",
@@ -183,8 +183,8 @@
           "symbol": "zero_context_digest_rejects_before_protocol_publication"
         },
         {
-          "path": "codex-rs/hepta-ndu/src/protocol_tests.rs",
-          "symbol": "malformed_local_solver_receipts_reject_before_protocol_publication"
+          "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
+          "symbol": "impossible_local_receipt_invariants_are_rejected"
         }
       ],
       "designOperation": "bind_solver_iteration_receipt_v1",
@@ -291,7 +291,11 @@
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-          "symbol": "hash_valid_but_semantically_impossible_recovery_rejects"
+          "symbol": "reopen_rejects_well_hashed_selection_without_projection"
+        },
+        {
+          "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+          "symbol": "reopen_rejects_well_hashed_revocation_without_projection"
         },
         {
           "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
@@ -612,8 +616,8 @@
     "registeredNumericAdmissionProductExecutionProved": false
   },
   "sourceBase": {
-    "commit": "e17a6c8a07abb21946a9fb1ac064a7a2a0464128",
-    "tree": "ff689c10b285a635116e6b305cbea97b0f94f8c0"
+    "commit": "de6c823f6eb3020b5672cb21f082cf793cbac099",
+    "tree": "197c0edb9123746c68472dc346f4460ab12930f6"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
@@ -682,7 +686,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "fb1aaab081bfb291686b61b8bac607cb2cd870d7"
+      "object": "1aa34753a444c471af9511ba4fd61cd09264de3c"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
@@ -706,7 +710,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-      "object": "837e737a8dd3fa464214b638ca8cbda0d4970b28"
+      "object": "b86cdeefff22e19675cfd8357cff7f218b9b814c"
     },
     {
       "path": "codex-rs/hepta-ndu/src/numeric_admission.rs",
@@ -722,7 +726,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
-      "object": "31d7d05914bcd8c169d274b6e3d5d0feca30ac4e"
+      "object": "216fb6f4c412a0dfa675c4f1892643288bdbfac1"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference.rs",
@@ -730,7 +734,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-      "object": "b8ea26756281b80957cbfd2ede9d41b098493a22"
+      "object": "ae78e348a9f368cbc67ff133f4c7355c1fa2feb2"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal.rs",
@@ -738,15 +742,15 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
-      "object": "3018e57b24b4e5a3a86b9b205504744426ade4f0"
+      "object": "d14f039e8cf68191b393a37ead95f114c29f7ee1"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store.rs",
-      "object": "7ffa8e5f0e4dff4ae6031e3c3d3bf9b1d391ad7e"
+      "object": "4fb64e91b45e3653b77a59f6f5ed3e2650929b0e"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_store_tests.rs",
-      "object": "3a8d8bc99aab620dc37e07b30024fc33f06738b4"
+      "object": "105341840e6d7e8b82df0b240868df650bb5499e"
     },
     {
       "path": "codex-rs/hepta-ndu/src/protocol.rs",
@@ -784,5 +788,16 @@
     },
     "claimAtHistoricalSource": true,
     "role": "Historical request-local read-only execution claim only; source navigation rebinding does not transfer it to the current candidate."
-  }
+  },
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "e17a6c8a07abb21946a9fb1ac064a7a2a0464128",
+        "tree": "ff689c10b285a635116e6b305cbea97b0f94f8c0"
+      },
+      "observedAtHead": null,
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    }
+  ]
 }

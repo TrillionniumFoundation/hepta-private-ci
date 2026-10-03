@@ -6,25 +6,32 @@
 //! canonical cognitive/memory contracts and not wire schemas. Canonical V1
 //! contract ownership lives exclusively in `codex-rs/hepta-cognitive-types`.
 
-use std::collections::{BTreeMap, BTreeSet};
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::fmt;
 
-use codex_hepta_cognitive_types::hnmf::{
-    ContractIdV1, MemoryEventV1, MemoryLifecycleV1, MAX_LABEL_BYTES, MAX_PROVENANCE,
-    MAX_SEMANTIC_KEYS,
-};
-pub use codex_hepta_cognitive_types::hnmf::{
-    ModalityKindV1 as ReferenceModalityKind, PrivacyClassV1 as ReferencePrivacyClass,
-};
-pub use codex_hepta_cognitive_types::hnmf_learning::{
-    EngramPopulationV1 as ReferenceEngramPopulation, SynapseRelationV1 as ReferenceSynapseRelation,
-};
-use codex_hepta_cognitive_types::hnmf_learning::{
-    MAX_ACTIVATION_PATHS, MAX_ACTIVE_NODES, MAX_ACTIVE_PER_POPULATION, MAX_CANDIDATE_EVENTS,
-    MAX_CUE_SEEDS as CANONICAL_MAX_CUE_SEEDS, MAX_NODES, MAX_RECALL_EVENTS,
-    MAX_RECURRENT_STEPS, MAX_REPLAY_CANDIDATES, MAX_REPLAY_SELECTION, MAX_SYNAPSES,
-    MAX_WEIGHT_DELTA_PPM,
-};
+use codex_hepta_cognitive_types::hnmf::ContractIdV1;
+use codex_hepta_cognitive_types::hnmf::MAX_LABEL_BYTES;
+use codex_hepta_cognitive_types::hnmf::MAX_PROVENANCE;
+use codex_hepta_cognitive_types::hnmf::MAX_SEMANTIC_KEYS;
+use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
+use codex_hepta_cognitive_types::hnmf::MemoryLifecycleV1;
+pub use codex_hepta_cognitive_types::hnmf::ModalityKindV1 as ReferenceModalityKind;
+pub use codex_hepta_cognitive_types::hnmf::PrivacyClassV1 as ReferencePrivacyClass;
+pub use codex_hepta_cognitive_types::hnmf_learning::EngramPopulationV1 as ReferenceEngramPopulation;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_ACTIVATION_PATHS;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_ACTIVE_NODES;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_ACTIVE_PER_POPULATION;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_CANDIDATE_EVENTS;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_CUE_SEEDS as CANONICAL_MAX_CUE_SEEDS;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_NODES;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_RECALL_EVENTS;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_RECURRENT_STEPS;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_REPLAY_CANDIDATES;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_REPLAY_SELECTION;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_SYNAPSES;
+use codex_hepta_cognitive_types::hnmf_learning::MAX_WEIGHT_DELTA_PPM;
+pub use codex_hepta_cognitive_types::hnmf_learning::SynapseRelationV1 as ReferenceSynapseRelation;
 
 pub const PPM: i64 = codex_hepta_cognitive_types::hnmf::PPM as i64;
 pub const CURRENT_RUN_MUTATION_ALLOWED: bool = false;
@@ -311,7 +318,9 @@ impl ReferenceFabricConfig {
             || self.maximum_activation_paths == 0
             || self.maximum_activation_paths > MAX_ACTIVATION_PATHS
         {
-            return Err(ReferenceFabricError::BoundExceeded("fabric structural bound"));
+            return Err(ReferenceFabricError::BoundExceeded(
+                "fabric structural bound",
+            ));
         }
         for value in [
             self.leak_ppm,
@@ -329,7 +338,9 @@ impl ReferenceFabricConfig {
             }
         }
         if self.maximum_weight_delta_ppm <= 0 || i64::from(self.maximum_weight_delta_ppm) > PPM {
-            return Err(ReferenceFabricError::Invalid("maximum weight delta is invalid"));
+            return Err(ReferenceFabricError::Invalid(
+                "maximum weight delta is invalid",
+            ));
         }
         Ok(())
     }
@@ -346,7 +357,9 @@ pub struct ReferenceCueFeatures {
 impl ReferenceCueFeatures {
     pub fn validate(&self) -> Result<(), ReferenceFabricError> {
         if self.modalities.is_empty() || self.modalities.len() > ReferenceModalityKind::ALL.len() {
-            return Err(ReferenceFabricError::Invalid("cue modality set is empty or invalid"));
+            return Err(ReferenceFabricError::Invalid(
+                "cue modality set is empty or invalid",
+            ));
         }
         validate_keys(&self.semantic_keys, MAX_CUE_KEYS, "cue semantic keys")?;
         if self.seed_nodes.len() > MAX_CUE_SEEDS || self.seed_nodes.contains(&0) {
@@ -413,7 +426,9 @@ pub struct ReferenceOutcomeFeatures {
 impl ReferenceOutcomeFeatures {
     pub fn validate(self) -> Result<(), ReferenceFabricError> {
         if !(-PPM as i32..=PPM as i32).contains(&self.utility_delta_ppm) {
-            return Err(ReferenceFabricError::Invalid("utility delta is outside range"));
+            return Err(ReferenceFabricError::Invalid(
+                "utility delta is outside range",
+            ));
         }
         for value in [
             self.prediction_error_ppm,
@@ -422,7 +437,9 @@ impl ReferenceOutcomeFeatures {
             self.ood_ppm,
         ] {
             if u64::from(value) > PPM as u64 {
-                return Err(ReferenceFabricError::Invalid("outcome component is outside range"));
+                return Err(ReferenceFabricError::Invalid(
+                    "outcome component is outside range",
+                ));
             }
         }
         Ok(())
@@ -492,7 +509,9 @@ impl ReferenceReplayCandidate {
             self.coverage_need_ppm,
         ] {
             if u64::from(value) > PPM as u64 {
-                return Err(ReferenceFabricError::Invalid("replay score component exceeds one"));
+                return Err(ReferenceFabricError::Invalid(
+                    "replay score component exceeds one",
+                ));
             }
         }
         let values = [
@@ -574,7 +593,9 @@ impl ReferenceTopologyProposal {
                 validate_label(&labels[0])?;
                 validate_label(&labels[1])?;
                 if labels[0] == labels[1] {
-                    return Err(ReferenceFabricError::Invalid("split labels must be distinct"));
+                    return Err(ReferenceFabricError::Invalid(
+                        "split labels must be distinct",
+                    ));
                 }
             }
             ReferenceTopologyOperation::RetireNode { node_id, reason } => {
@@ -596,7 +617,9 @@ impl ReferenceTopologyProposal {
                     || source == new_target
                     || old_target == new_target
                 {
-                    return Err(ReferenceFabricError::Invalid("rewire endpoints are invalid"));
+                    return Err(ReferenceFabricError::Invalid(
+                        "rewire endpoints are invalid",
+                    ));
                 }
             }
         }
@@ -656,7 +679,9 @@ impl ReferenceHnmfFabric {
         config: ReferenceFabricConfig,
     ) -> Result<Self, ReferenceFabricError> {
         if generation == 0 {
-            return Err(ReferenceFabricError::Invalid("snapshot generation must be non-zero"));
+            return Err(ReferenceFabricError::Invalid(
+                "snapshot generation must be non-zero",
+            ));
         }
         config.validate()?;
         Ok(Self {
@@ -1156,7 +1181,9 @@ impl ReferenceHnmfFabric {
         if batch.predecessor_generation != self.generation
             || batch.next_generation != self.generation + 1
         {
-            return Err(ReferenceFabricError::Conflict("plasticity generation mismatch"));
+            return Err(ReferenceFabricError::Conflict(
+                "plasticity generation mismatch",
+            ));
         }
         if !batch.current_snapshot_immutable || batch.production_activation_allowed {
             return Err(ReferenceFabricError::AuthorityBoundary);
@@ -1168,7 +1195,9 @@ impl ReferenceHnmfFabric {
                 .get_mut(&(proposal.source, proposal.target, proposal.relation))
                 .ok_or(ReferenceFabricError::Missing("plasticity synapse"))?;
             if synapse.weight_ppm != proposal.old_weight_ppm {
-                return Err(ReferenceFabricError::Conflict("plasticity old weight mismatch"));
+                return Err(ReferenceFabricError::Conflict(
+                    "plasticity old weight mismatch",
+                ));
             }
             if proposal.new_weight_ppm - proposal.old_weight_ppm != proposal.delta_ppm
                 || i64::from(proposal.delta_ppm).abs()
@@ -1187,7 +1216,9 @@ impl ReferenceHnmfFabric {
             if node.threshold_ppm != proposal.old_threshold_ppm
                 || proposal.new_threshold_ppm - proposal.old_threshold_ppm != proposal.delta_ppm
             {
-                return Err(ReferenceFabricError::Conflict("plasticity threshold mismatch"));
+                return Err(ReferenceFabricError::Conflict(
+                    "plasticity threshold mismatch",
+                ));
             }
             node.threshold_ppm = proposal.new_threshold_ppm;
         }
@@ -1205,7 +1236,9 @@ impl ReferenceHnmfFabric {
             .get(&event_id)
             .ok_or(ReferenceFabricError::Missing("forget event"))?;
         if event.tombstoned {
-            return Err(ReferenceFabricError::Conflict("event is already tombstoned"));
+            return Err(ReferenceFabricError::Conflict(
+                "event is already tombstoned",
+            ));
         }
         let affected_nodes = self
             .nodes
@@ -1249,7 +1282,9 @@ impl ReferenceHnmfFabric {
             .get_mut(&batch.event_id)
             .ok_or(ReferenceFabricError::Missing("forget event"))?;
         if event.tombstoned {
-            return Err(ReferenceFabricError::Conflict("event is already tombstoned"));
+            return Err(ReferenceFabricError::Conflict(
+                "event is already tombstoned",
+            ));
         }
         event.tombstoned = true;
         for node in next.nodes.values_mut() {
@@ -1401,7 +1436,9 @@ fn validate_keys(
             || key.chars().any(char::is_control)
             || key.to_lowercase() != key.as_str()
         {
-            return Err(ReferenceFabricError::Invalid("semantic key is not canonical"));
+            return Err(ReferenceFabricError::Invalid(
+                "semantic key is not canonical",
+            ));
         }
     }
     Ok(())
@@ -1582,10 +1619,22 @@ mod tests {
             ))
             .unwrap();
         fabric
-            .insert_synapse(synapse(1, 2, ReferenceSynapseRelation::Associative, 900_000, &[1]))
+            .insert_synapse(synapse(
+                1,
+                2,
+                ReferenceSynapseRelation::Associative,
+                900_000,
+                &[1],
+            ))
             .unwrap();
         fabric
-            .insert_synapse(synapse(2, 3, ReferenceSynapseRelation::Supports, 800_000, &[1]))
+            .insert_synapse(synapse(
+                2,
+                3,
+                ReferenceSynapseRelation::Supports,
+                800_000,
+                &[1],
+            ))
             .unwrap();
         fabric
     }
@@ -1594,8 +1643,14 @@ mod tests {
     fn exposes_all_modalities_and_populations() {
         assert_eq!(ReferenceModalityKind::ALL.len(), 9);
         assert_eq!(ReferenceEngramPopulation::ALL.len(), 7);
-        assert_eq!(ReferenceModalityKind::ToolTrajectory.as_str(), "tool_trajectory");
-        assert_eq!(ReferenceEngramPopulation::MetaMemory.as_str(), "meta_memory");
+        assert_eq!(
+            ReferenceModalityKind::ToolTrajectory.as_str(),
+            "tool_trajectory"
+        );
+        assert_eq!(
+            ReferenceEngramPopulation::MetaMemory.as_str(),
+            "meta_memory"
+        );
     }
 
     #[test]
@@ -1678,7 +1733,13 @@ mod tests {
             ))
             .unwrap();
         fabric
-            .insert_synapse(synapse(1, 2, ReferenceSynapseRelation::Contradicts, 1, &[1]))
+            .insert_synapse(synapse(
+                1,
+                2,
+                ReferenceSynapseRelation::Contradicts,
+                1,
+                &[1],
+            ))
             .unwrap();
         let packet = fabric
             .recall(&cue(&[ReferenceModalityKind::Text], &["status"], &[1, 2]))
@@ -1897,7 +1958,10 @@ mod tests {
             .recall(&cue(&[ReferenceModalityKind::Image], &["door"], &[1]))
             .unwrap();
         assert_eq!(packet.selected_events, Vec::<EventId>::new());
-        assert_eq!(packet.abstain, Some(ReferenceRecallAbstainReason::NoCandidate));
+        assert_eq!(
+            packet.abstain,
+            Some(ReferenceRecallAbstainReason::NoCandidate)
+        );
     }
 
     #[test]
@@ -1943,10 +2007,22 @@ mod tests {
             ))
             .unwrap();
         second
-            .insert_synapse(synapse(2, 3, ReferenceSynapseRelation::Supports, 800_000, &[1]))
+            .insert_synapse(synapse(
+                2,
+                3,
+                ReferenceSynapseRelation::Supports,
+                800_000,
+                &[1],
+            ))
             .unwrap();
         second
-            .insert_synapse(synapse(1, 2, ReferenceSynapseRelation::Associative, 900_000, &[1]))
+            .insert_synapse(synapse(
+                1,
+                2,
+                ReferenceSynapseRelation::Associative,
+                900_000,
+                &[1],
+            ))
             .unwrap();
         let recall_cue = cue(&[ReferenceModalityKind::Audio], &["door"], &[1]);
         assert_eq!(
@@ -1974,7 +2050,10 @@ mod tests {
             production_activation_allowed: true,
             ..proposal
         };
-        assert_eq!(invalid.validate(), Err(ReferenceFabricError::AuthorityBoundary));
+        assert_eq!(
+            invalid.validate(),
+            Err(ReferenceFabricError::AuthorityBoundary)
+        );
         assert!(!ONLINE_TOPOLOGY_ACTIVATION_ALLOWED);
         assert!(!PRODUCTION_AUTHORITY);
         assert!(!EXTERNAL_EFFECTS_ALLOWED);
@@ -1987,7 +2066,9 @@ mod tests {
         config.maximum_recurrent_steps = 5;
         assert_eq!(
             ReferenceHnmfFabric::new(1, config),
-            Err(ReferenceFabricError::BoundExceeded("fabric structural bound"))
+            Err(ReferenceFabricError::BoundExceeded(
+                "fabric structural bound"
+            ))
         );
         let invalid_event = ReferenceEventFeatures {
             source_sha256: set(["not-a-digest".to_string()]),

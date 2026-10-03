@@ -39,6 +39,7 @@ on:
       - "scripts/test_verify_cargo_lock.py"
       - ".github/scripts/check_ci_results.py"
       - ".github/workflows/hepta-converged-learning.yml"
+  workflow_call:
 
 permissions:
   contents: read

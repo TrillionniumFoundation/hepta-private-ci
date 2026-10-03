@@ -2,3 +2,6 @@
 # .git/sl/origbackups (which can be populated by Sapling SCM).
 .git
 codex-rs/target
+# Cargo patch dependencies are materialized by @crates, not workspace targets.
+# Vendored BUILD files cannot consume the workspace DEP_DATA table.
+codex-rs/third_party

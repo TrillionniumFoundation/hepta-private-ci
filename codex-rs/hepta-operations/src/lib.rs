@@ -19,6 +19,7 @@ mod exact_claim;
 mod ledger;
 mod model;
 mod outbox;
+mod sqlite;
 
 pub use destination_dedupe::DestinationApplyStart;
 pub use destination_dedupe::DestinationApplyTransaction;

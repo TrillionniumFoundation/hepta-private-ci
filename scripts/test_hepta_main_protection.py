@@ -1,12 +1,20 @@
 """Operator-policy tests with a fake GitHub API; not live enforcement evidence."""
+
 import copy
 from pathlib import Path
 import tempfile
 import unittest
 
 from hepta_main_protection import (
-    API, GATE, RULESET_NAME, WORKFLOW, ProtectionError,
-    desired_ruleset, execute, verified_gate_app, verify_ruleset,
+    API,
+    GATE,
+    RULESET_NAME,
+    WORKFLOW,
+    ProtectionError,
+    desired_ruleset,
+    execute,
+    verified_gate_app,
+    verify_ruleset,
 )
 
 HEAD = "a" * 40
@@ -14,13 +22,27 @@ APP = 99
 
 
 def evidence():
-    check = {"id": 1, "name": GATE, "head_sha": HEAD, "status": "completed",
-             "conclusion": "success", "app": {"slug": "github-actions", "id": APP},
-             "check_suite": {"id": 42}}
-    run = {"id": 100, "run_attempt": 1, "head_branch": "main", "event": "push",
-           "repository": {"full_name": "TrillionniumFoundation/hepta-private-ci"},
-           "head_sha": HEAD, "check_suite_id": 42, "status": "completed",
-           "conclusion": "success", "path": ".github/workflows/" + WORKFLOW}
+    check = {
+        "id": 1,
+        "name": GATE,
+        "head_sha": HEAD,
+        "status": "completed",
+        "conclusion": "success",
+        "app": {"slug": "github-actions", "id": APP},
+        "check_suite": {"id": 42},
+    }
+    run = {
+        "id": 100,
+        "run_attempt": 1,
+        "head_branch": "main",
+        "event": "push",
+        "repository": {"full_name": "TrillionniumFoundation/hepta-private-ci"},
+        "head_sha": HEAD,
+        "check_suite_id": 42,
+        "status": "completed",
+        "conclusion": "success",
+        "path": ".github/workflows/" + WORKFLOW,
+    }
     return [check], [run]
 
 
@@ -30,10 +52,19 @@ class FakeAPI:
         self.ruleset = None
         self.writes = []
         self.checks, self.runs = evidence()
-        self.jobs = [{"id": 1, "run_id": 100, "run_attempt": 1, "head_sha": HEAD,
-                      "name": GATE, "status": "completed", "conclusion": "success",
-                      "check_run_url": "https://api.github.com/repos/"
-                      "TrillionniumFoundation/hepta-private-ci/check-runs/1"}]
+        self.jobs = [
+            {
+                "id": 1,
+                "run_id": 100,
+                "run_attempt": 1,
+                "head_sha": HEAD,
+                "name": GATE,
+                "status": "completed",
+                "conclusion": "success",
+                "check_run_url": "https://api.github.com/repos/"
+                "TrillionniumFoundation/hepta-private-ci/check-runs/1",
+            }
+        ]
 
     def call(self, method, path, body=None):
         if method == "GET" and path == "branches/main":
@@ -59,7 +90,9 @@ class FakeAPI:
 
 
 def review(value):
-    return next(row for row in value["rules"] if row["type"] == "pull_request")["parameters"]
+    return next(row for row in value["rules"] if row["type"] == "pull_request")[
+        "parameters"
+    ]
 
 
 class ProtectionTests(unittest.TestCase):
@@ -68,26 +101,70 @@ class ProtectionTests(unittest.TestCase):
             with self.subTest(value=value), self.assertRaises(ProtectionError):
                 desired_ruleset(value)
 
-    def test_no_bypass_and_independent_review_rules(self):
+    def test_install_preserves_checks_without_reintroducing_required_review(self):
         value = desired_ruleset(APP)
         verify_ruleset(value, APP)
-        self.assertEqual(value["bypass_actors"], [])
-        self.assertEqual(review(value)["required_approving_review_count"], 1)
+        self.assertEqual(
+            value["bypass_actors"],
+            [
+                {
+                    "actor_id": 5,
+                    "actor_type": "RepositoryRole",
+                    "bypass_mode": "pull_request",
+                }
+            ],
+        )
+        self.assertEqual(review(value)["required_approving_review_count"], 0)
+        self.assertFalse(review(value)["require_code_owner_review"])
+        self.assertFalse(review(value)["require_last_push_approval"])
         self.assertEqual((GATE, WORKFLOW), ("CI required", "blocking-ci.yml"))
 
     def test_every_review_control_is_checked_on_readback(self):
-        fields = ("dismiss_stale_reviews_on_push", "require_code_owner_review",
-                  "require_last_push_approval", "required_review_thread_resolution")
+        fields = (
+            "dismiss_stale_reviews_on_push",
+            "require_code_owner_review",
+            "require_last_push_approval",
+        )
         for field in fields:
-            for replacement in (False, None, 1, "true"):
+            for replacement in (None, 1, "true"):
                 value = desired_ruleset(APP)
                 review(value)[field] = replacement
                 with self.subTest(field=field, replacement=replacement):
                     with self.assertRaises(ProtectionError):
                         verify_ruleset(value, APP)
 
-    def test_zero_missing_and_boolean_review_counts_are_rejected(self):
-        for count in (None, 0, -1, True, "1"):
+    def test_admin_merge_bypass_cannot_widen_to_writer_or_direct_push(self):
+        for change in ({"actor_id": 4}, {"bypass_mode": "always"}, {"actor_id": 5.0}):
+            value = desired_ruleset(APP)
+            value["bypass_actors"][0].update(change)
+            with self.subTest(change=change), self.assertRaises(ProtectionError):
+                verify_ruleset(value, APP)
+        value = desired_ruleset(APP)
+        value["bypass_actors"] = []
+        verify_ruleset(value, APP)
+
+    def test_owner_selected_review_values_are_accepted_without_weakening_checks(self):
+        for count in (0, 1, 2):
+            value = desired_ruleset(APP)
+            review(value)["required_approving_review_count"] = count
+            review(value)["require_code_owner_review"] = bool(count)
+            review(value)["require_last_push_approval"] = bool(count)
+            verify_ruleset(value, APP)
+        for replacement in (False, True):
+            value = desired_ruleset(APP)
+            review(value)["required_review_thread_resolution"] = replacement
+            verify_ruleset(value, APP)
+        for replacement in (None, 1):
+            value = desired_ruleset(APP)
+            review(value)["required_review_thread_resolution"] = replacement
+            with (
+                self.subTest(resolution=replacement),
+                self.assertRaises(ProtectionError),
+            ):
+                verify_ruleset(value, APP)
+
+    def test_missing_negative_and_boolean_review_counts_are_rejected(self):
+        for count in (None, -1, True, "1"):
             value = desired_ruleset(APP)
             review(value)["required_approving_review_count"] = count
             with self.subTest(count=count), self.assertRaises(ProtectionError):
@@ -107,8 +184,11 @@ class ProtectionTests(unittest.TestCase):
             verified_gate_app(checks, runs, HEAD)
 
     def test_wrong_commit_app_or_suite_rejected(self):
-        replacements = {"head_sha": "b" * 40, "app": {"slug": "other", "id": APP},
-                        "check_suite": {"id": 123}}
+        replacements = {
+            "head_sha": "b" * 40,
+            "app": {"slug": "other", "id": APP},
+            "check_suite": {"id": 123},
+        }
         for field, replacement in replacements.items():
             checks, runs = evidence()
             checks[0][field] = replacement
@@ -124,7 +204,9 @@ class ProtectionTests(unittest.TestCase):
 
     def test_bypass_and_missing_check_rejected(self):
         value = desired_ruleset(APP)
-        value["bypass_actors"] = [{"actor_type": "OrganizationAdmin", "bypass_mode": "always"}]
+        value["bypass_actors"] = [
+            {"actor_type": "OrganizationAdmin", "bypass_mode": "always"}
+        ]
         with self.assertRaises(ProtectionError):
             verify_ruleset(value, APP)
         value = desired_ruleset(APP)
@@ -149,8 +231,15 @@ class ProtectionTests(unittest.TestCase):
         for apply in (False, True):
             api = FakeAPI()
             api.ruleset = {**desired_ruleset(APP), "id": 7}
-            review(api.ruleset)["required_approving_review_count"] = 0
-            with tempfile.TemporaryDirectory() as tmp, self.assertRaises(ProtectionError):
+            api.ruleset["rules"] = [
+                rule
+                for rule in api.ruleset["rules"]
+                if rule["type"] != "required_status_checks"
+            ]
+            with (
+                tempfile.TemporaryDirectory() as tmp,
+                self.assertRaises(ProtectionError),
+            ):
                 execute(api, HEAD, Path(tmp), apply)
             self.assertFalse(api.writes)
 
@@ -194,6 +283,7 @@ class ProtectionTests(unittest.TestCase):
                 if path.startswith("actions/"):
                     self.head = "b" * 40
                 return value
+
         api = MovingMain()
         with tempfile.TemporaryDirectory() as tmp, self.assertRaises(ProtectionError):
             execute(api, HEAD, Path(tmp), True)
@@ -204,8 +294,14 @@ class ProtectionTests(unittest.TestCase):
             def call(self, method, path, body=None):
                 value = super().call(method, path, body)
                 if method == "POST":
-                    review(self.ruleset)["require_last_push_approval"] = False
+                    checks = next(
+                        rule
+                        for rule in self.ruleset["rules"]
+                        if rule["type"] == "required_status_checks"
+                    )
+                    checks["parameters"]["strict_required_status_checks_policy"] = False
                 return value
+
         api = WeakReadback()
         with tempfile.TemporaryDirectory() as tmp, self.assertRaises(ProtectionError):
             execute(api, HEAD, Path(tmp), True)
@@ -215,6 +311,7 @@ class ProtectionTests(unittest.TestCase):
         class Endless(API):
             def call(self, method, path, body=None):
                 return [{}] * 100
+
         with self.assertRaises(ProtectionError):
             Endless().pages("rulesets")
 

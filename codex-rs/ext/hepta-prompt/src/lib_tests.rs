@@ -264,3 +264,194 @@ async fn not_dispatched_never_fabricates_delivery_credit() {
         .validate()
         .unwrap_or_else(|error| panic!("record: {error}"));
 }
+
+#[tokio::test]
+async fn concurrent_turn_resolution_prepares_exactly_one_attachment() {
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let entered = Arc::new(tokio::sync::Notify::new());
+    let release = Arc::new(tokio::sync::Notify::new());
+    let expected = attachment();
+    let extension = PromptRuntimeExtension {
+        host: PromptRuntimeHost::new(
+            "single-preparation",
+            {
+                let calls = Arc::clone(&calls);
+                let entered = Arc::clone(&entered);
+                let release = Arc::clone(&release);
+                let expected = expected.clone();
+                move |_request| {
+                    calls.fetch_add(1, Ordering::SeqCst);
+                    let entered = Arc::clone(&entered);
+                    let release = Arc::clone(&release);
+                    let expected = expected.clone();
+                    Box::pin(async move {
+                        entered.notify_one();
+                        release.notified().await;
+                        Ok(Some(expected))
+                    })
+                }
+            },
+            |_record| Box::pin(async { Ok(()) }),
+            |_record| Box::pin(async { Ok(()) }),
+        )
+        .unwrap(),
+    };
+    let (_, thread, turn) = stores();
+    let resolve = || {
+        extension.resolve(
+            thread.level_id().to_owned(),
+            turn.level_id().to_owned(),
+            Some(128_000),
+            &turn,
+        )
+    };
+    let (a, b, c, ()) = tokio::join!(resolve(), resolve(), resolve(), async {
+        entered.notified().await;
+        release.notify_one();
+    });
+    for result in [a, b, c] {
+        let ResolvedAttachment::Ready(actual) = result else {
+            panic!("all callers must receive the same prepared attachment");
+        };
+        assert_eq!(actual, expected);
+    }
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+}
+
+#[tokio::test]
+async fn completed_prepare_failure_is_cached_for_only_its_turn() {
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let expected = PromptRuntimeHostError::new("owner_unavailable", "bounded failure");
+    let extension = PromptRuntimeExtension {
+        host: PromptRuntimeHost::new(
+            "failure-caching",
+            {
+                let calls = Arc::clone(&calls);
+                let expected = expected.clone();
+                move |_request| {
+                    calls.fetch_add(1, Ordering::SeqCst);
+                    let expected = expected.clone();
+                    Box::pin(async move { Err(expected) })
+                }
+            },
+            |_record| Box::pin(async { Ok(()) }),
+            |_record| Box::pin(async { Ok(()) }),
+        )
+        .unwrap(),
+    };
+    let (_, thread, turn) = stores();
+    for _ in 0..2 {
+        let result = extension
+            .resolve(
+                thread.level_id().to_owned(),
+                turn.level_id().to_owned(),
+                Some(128_000),
+                &turn,
+            )
+            .await;
+        let ResolvedAttachment::Failed(error) = result else {
+            panic!("failed preparation cannot become an absent attachment");
+        };
+        assert_eq!(error, expected);
+    }
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+    let next_turn = ExtensionData::new("turn:next");
+    let result = extension
+        .resolve(
+            thread.level_id().to_owned(),
+            next_turn.level_id().to_owned(),
+            Some(128_000),
+            &next_turn,
+        )
+        .await;
+    assert!(matches!(result, ResolvedAttachment::Failed(error) if error == expected));
+    assert_eq!(calls.load(Ordering::SeqCst), 2);
+}
+
+#[tokio::test]
+async fn cancelled_preparation_does_not_poison_turn_resolution() {
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let entered = Arc::new(tokio::sync::Notify::new());
+    let expected = attachment();
+    let extension = PromptRuntimeExtension {
+        host: PromptRuntimeHost::new(
+            "cancelled-preparation",
+            {
+                let calls = Arc::clone(&calls);
+                let entered = Arc::clone(&entered);
+                let expected = expected.clone();
+                move |_request| {
+                    let attempt = calls.fetch_add(1, Ordering::SeqCst);
+                    let entered = Arc::clone(&entered);
+                    let expected = expected.clone();
+                    Box::pin(async move {
+                        if attempt == 0 {
+                            entered.notify_one();
+                            std::future::pending::<()>().await;
+                        }
+                        Ok(Some(expected))
+                    })
+                }
+            },
+            |_record| Box::pin(async { Ok(()) }),
+            |_record| Box::pin(async { Ok(()) }),
+        )
+        .unwrap(),
+    };
+    let (_, thread, turn) = stores();
+    let mut cancelled = Box::pin(extension.resolve(
+        thread.level_id().to_owned(),
+        turn.level_id().to_owned(),
+        Some(128_000),
+        &turn,
+    ));
+    tokio::select! {
+        _ = &mut cancelled => panic!("first preparation must remain pending"),
+        _ = entered.notified() => {},
+    }
+    drop(cancelled);
+    let result = extension
+        .resolve(
+            thread.level_id().to_owned(),
+            turn.level_id().to_owned(),
+            Some(128_000),
+            &turn,
+        )
+        .await;
+    let ResolvedAttachment::Ready(actual) = result else {
+        panic!("cancellation must leave preparation retryable");
+    };
+    assert_eq!(actual, expected);
+    assert_eq!(calls.load(Ordering::SeqCst), 2);
+}
+
+#[tokio::test]
+async fn absent_attachment_is_cached_without_repeated_owner_calls() {
+    let calls = Arc::new(std::sync::atomic::AtomicUsize::new(0));
+    let factory_calls = Arc::clone(&calls);
+    let extension = PromptRuntimeExtension {
+        host: PromptRuntimeHost::new(
+            "absent-preparation",
+            move |_request| {
+                factory_calls.fetch_add(1, Ordering::SeqCst);
+                Box::pin(async { Ok(None) })
+            },
+            |_record| Box::pin(async { Ok(()) }),
+            |_record| Box::pin(async { Ok(()) }),
+        )
+        .unwrap_or_else(|error| panic!("host: {error}")),
+    };
+    let (_, thread, turn) = stores();
+    for _ in 0..2 {
+        let result = extension
+            .resolve(
+                thread.level_id().to_owned(),
+                turn.level_id().to_owned(),
+                Some(128_000),
+                &turn,
+            )
+            .await;
+        assert!(matches!(result, ResolvedAttachment::None));
+    }
+    assert_eq!(calls.load(Ordering::SeqCst), 1);
+}

@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "56db98219c75491aeb5ce93a660b9b23109a045d",
-    "tree": "c03d4cb5724095e06fa22ad85cf94ea650196bce"
+    "commit": "12f665e6e014ebad012c108dcf4948e7ebd4ce3b",
+    "tree": "1ded61fa3c8590cbf363fc563ed959e33a242ff1"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "platform.types",
@@ -465,8 +465,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "e17a6c8a07abb21946a9fb1ac064a7a2a0464128",
-    "tree": "ff689c10b285a635116e6b305cbea97b0f94f8c0"
+    "commit": "2b73b76cdb67f4e2abe32417e42f75e7528de3df",
+    "tree": "f6cc0978bf3cc5bb0c700135929beed2d40cac49"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -792,7 +792,7 @@
     },
     {
       "path": "scripts/test_platform_types_consumer_qualification.py",
-      "object": "010c4bb4613981e571538cab2e2907489507a37d"
+      "object": "d59616d46ff548ba1824e63bda63062976b908cd"
     },
     {
       "path": "scripts/verify_lane_a_foundation.py",
@@ -805,6 +805,20 @@
     {
       "path": "scripts/verify_platform_types_schema_catalog.py",
       "object": "81155d1c3654573bfa486c0df7c1433d2198f905"
+    }
+  ],
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "56db98219c75491aeb5ce93a660b9b23109a045d",
+        "tree": "c03d4cb5724095e06fa22ad85cf94ea650196bce"
+      },
+      "observedAtHead": {
+        "commit": "e17a6c8a07abb21946a9fb1ac064a7a2a0464128",
+        "tree": "ff689c10b285a635116e6b305cbea97b0f94f8c0"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
     }
   ]
 }

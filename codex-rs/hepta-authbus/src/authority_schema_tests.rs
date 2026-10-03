@@ -4,8 +4,8 @@ use crate::AuthBusAuthorityStore;
 #[tokio::test]
 async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
     let root = tempfile::tempdir().unwrap();
-    let baseline = root.path().join("fixture.sqlite");
-    let fixture = AuthBusAuthorityStore::open(&baseline).await.unwrap();
+    let fixture_path = root.path().join("fixture.sqlite");
+    let fixture = AuthBusAuthorityStore::open(&fixture_path).await.unwrap();
     let triggers = sqlx::query_as::<_, (String, String)>(
         "SELECT name, tbl_name FROM sqlite_schema WHERE type = 'trigger' ORDER BY name",
     )
@@ -13,18 +13,20 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
     .await
     .unwrap();
     assert!(!triggers.is_empty());
-    // Migrate the trusted fixture once, then checkpoint and close ALL handles
-    // before copying it. Each corruption case still opens and validates its own
-    // durable database; no live SQLite/WAL file is copied or repaired.
-    sqlx::query("PRAGMA wal_checkpoint(TRUNCATE)")
-        .execute(&fixture.pool)
+    let (busy, _, _): (i64, i64, i64) = sqlx::query_as("PRAGMA wal_checkpoint(TRUNCATE)")
+        .fetch_one(&fixture.pool)
         .await
         .unwrap();
+    assert_eq!(busy, 0);
     fixture.pool.close().await;
     for (name, table) in triggers {
         for replace in [false, true] {
             let path = root.path().join(format!("{name}-{replace}.sqlite"));
-            std::fs::copy(&baseline, &path).unwrap();
+            // Copy only the verified, checkpointed reference after every pool
+            // handle closes. Each mutation and owner reopen remains real and
+            // isolated, without repeating all migration DDL for every trigger.
+            std::fs::copy(&fixture_path, &path).unwrap();
+            std::fs::File::open(&path).unwrap().sync_all().unwrap();
             let store = AuthBusAuthorityStore::open(&path).await.unwrap();
             // Keep DDL on one connection: a different pooled connection may
             // still hold the pre-DROP schema cache while preparing CREATE.
@@ -35,18 +37,20 @@ async fn missing_and_replaced_authority_triggers_fail_closed_on_reopen() {
             // data or untrusted SQL fragments are interpolated.
             let quoted_name = format!("\"{}\"", name.replace('"', "\"\""));
             let quoted_table = format!("\"{}\"", table.replace('"', "\"\""));
+            let mut mutation = store.pool.begin().await.unwrap();
             sqlx::query(sqlx::AssertSqlSafe(format!("DROP TRIGGER {quoted_name}")))
-                .execute(&mut *connection)
+                .execute(&mut *mutation)
                 .await
                 .unwrap();
             if replace {
                 sqlx::query(sqlx::AssertSqlSafe(format!(
                     "CREATE TRIGGER {quoted_name} AFTER UPDATE ON {quoted_table} BEGIN SELECT 1; END"
                 )))
-                .execute(&mut *connection)
+                .execute(&mut *mutation)
                 .await
                 .unwrap();
             }
+            mutation.commit().await.unwrap();
             let check: String = sqlx::query_scalar("PRAGMA quick_check")
                 .fetch_one(&mut *connection)
                 .await
