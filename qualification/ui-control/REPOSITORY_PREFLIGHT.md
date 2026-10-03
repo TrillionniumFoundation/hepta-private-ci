@@ -1,6 +1,8 @@
 # `ui.control` protected external-qualification preflight
 
-The external qualification workflow has three process-isolated trust domains:
+This document specifies the historical preflight contract retained in `apps/hepta-control-ui/test/fixtures/legacy-workflows/ui-control-external-qualification.yml`. That file is a pinned test-only oracle, not an active workflow. The current Robrix host has no composed external qualification workflow or accepted production receipts. The requirements below remain requirements for any separately reviewed future integration; current compatibility tests do not establish them.
+
+The historical contract separates three process-isolated trust domains:
 
 1. a trusted repository preflight that runs without deployment, Agentd, identity-provider, or release-authority secrets;
 2. a separate secretless candidate-build job that may execute candidate-owned `npm` code but cannot enter the protected environment;
@@ -8,9 +10,9 @@ The external qualification workflow has three process-isolated trust domains:
 
 The trusted verifier is checked out from the immutable `github.workflow_sha`. The candidate checkout is an exact subject identity and data source; it is not the authority that interprets external evidence.
 
-## Required invocation
+## Historical invocation requirements
 
-Dispatch `.github/workflows/ui-control-external-qualification.yml` from `refs/heads/main`. Supply:
+The retained contract required a main-only dispatch with the following inputs. There is no current workflow to dispatch:
 
 - the exact lowercase 40-character candidate commit SHA;
 - the official successful pull-request qualification run ID for that candidate;
@@ -54,7 +56,7 @@ Candidate-controlled environment writes, PATH changes, workspace mutations, or p
 
 ## Protected environment boundary
 
-Only the `protected-external-qualification` job names the `ui-control-production-qualification` environment. Configure that environment with required independent reviewers, main-only deployment-branch policy, no administrator bypass, and the deployment/Agentd/manual-acceptance secrets.
+The historical `protected-external-qualification` job names the `ui-control-production-qualification` environment. Any future authorized integration must preserve required independent reviewers, main-only deployment-branch policy and no administrator bypass before external credentials or authority evidence can be configured. This document does not authorize configuring that environment.
 
 The protected runner checks out the immutable workflow-SHA verifier and the exact candidate separately. It repeats candidate identity and main-ancestry checks, downloads the already accepted preflight evidence and isolated build artifact, and completes trusted artifact validation before the first secret expression appears. It does not run `npm`, candidate package scripts, candidate test code, local candidate actions, or candidate qualification modules.
 

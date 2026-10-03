@@ -18,7 +18,7 @@ script_mod! {
         text_overflow: Ellipsis
         draw_text +: {
             color: COLOR_TEXT,
-            text_style: USERNAME_TEXT_STYLE { font_size: 10. }
+            text_style: USERNAME_TEXT_STYLE { font_size: 12. }
         }
         text: "[Room name unknown]"
     }
@@ -116,9 +116,9 @@ script_mod! {
  mod.widgets.RoomsListEntry = #(RoomsListEntry::register_widget(vm)) {
   ..mod.widgets.RoomsListEntryContent
   padding: 10
-  avatar := Label {width: 40 height: 40 text: "H" draw_text.color: COLOR_TEXT}
+  avatar_frame := mod.widgets.AuroraAvatar {}
   View {
-   flow: Down width: Fill height: 56 align: Align{x: 0.0, y: 0.0}
+   flow: Down width: Fill height: 40 align: Align{x: 0.0, y: 0.0}
    top := View {
     width: Fill height: Fit spacing: 3 flow: Right
     room_name := mod.widgets.RoomName {text: "New conversation"}
@@ -131,11 +131,19 @@ script_mod! {
   }
  }
  mod.widgets.RoomsSideBar = #(RoomsSideBar::register_widget(vm)) {
-  width: Fill height: Fill flow: Down spacing: 8 padding: 8
-  Label {text: "HEPTA / CONVERSATIONS" draw_text.color: COLOR_TEXT}
-  room_filter := TextInput {width: Fill empty_text: "Find a conversation"}
-  new_draft := Button {width: Fill text: "New draft"}
+  width: Fill height: Fill flow: Down spacing: 12 padding: 12
+  show_bg: true
+  draw_bg +: {color: uniform(COLOR_SECONDARY) accent: uniform(COLOR_ROBRIX_PURPLE) pixel: fn() {
+   let curve = 0.96 - 0.20 * self.pos.x * self.pos.x
+   let light = max(0.0, 1.0 - abs(self.pos.y - curve) * 65.0)
+   let haze = max(0.0, 1.0 - length(self.pos - vec2(1.1, 0.85)))
+   return mix(self.color, self.accent, light * 0.22 + haze * haze * 0.16)
+  }}
+  Label {height: Fit padding: Inset{top: 14, bottom: 18} text: "H E P T A" draw_text +: {color: COLOR_TEXT text_style: theme.font_regular{font_size: 15}}}
+  room_filter := TextInput {width: Fill height: 40 padding: 10 empty_text: "Find a conversation"}
+  new_draft := mod.widgets.AuroraNewConversation {width: Fill text: "+  New draft"}
   list := PortalList {width: Fill height: Fill flow: Down Room := mod.widgets.RoomsListEntry {}}
+  theme_switch := mod.widgets.AuroraButton {width: Fill grab_key_focus: false text: "Aurora Graphite"}
  }
 }
 
@@ -208,6 +216,9 @@ impl Widget for RoomsSideBar {
         };
         let Some(source) = self.rendered else { return };
         if let Event::Actions(actions) = event {
+            if self.view.button(cx, ids!(theme_switch)).clicked(actions) && !workspace.composing {
+                crate::visual_theme::cycle(cx);
+            }
             if self.view.button(cx, ids!(new_draft)).clicked(actions) {
                 apply_action(
                     workspace,
@@ -259,6 +270,9 @@ impl Widget for RoomsSideBar {
             self.view
                 .button(cx, ids!(new_draft))
                 .set_enabled(cx, workspace.can_create_draft());
+            self.view
+                .button(cx, ids!(theme_switch))
+                .set_enabled(cx, !workspace.composing);
             self.rendered = Some(key);
         }
         while let Some(widget) = self.view.draw_walk(cx, scope, walk).step() {

@@ -1,0 +1,48 @@
+// Diagnostic comparison only. The unmodified host's strict OCR acceptance runs separately.
+import {test,expect} from '@playwright/test';
+import {writeFile} from 'node:fs/promises';
+import {readScreenshotText} from '../tools/verify-robrix-pixels.mjs';
+
+test('compare the same WASM with default and retained drawing buffers',async({browser},testInfo)=>{
+ const observations=[];
+ for(const preserve of [false,true]){
+  const context=await browser.newContext({viewport:{width:1280,height:800}});
+  const page=await context.newPage();const events=[];const pending=new Set();
+  page.on('console',message=>events.push({type:message.type(),text:message.text().slice(0,2000)}));
+  page.on('request',request=>{if(/\.(ttf|otf)(?:[?#]|$)/.test(request.url()))pending.add(request);});
+  page.on('requestfinished',request=>pending.delete(request));
+  page.on('requestfailed',request=>pending.delete(request));
+  // One explicit platform attribute is the sole comparison variable. Keep the
+  // same origin, WASM, CSS, CSP headers and application state for both subjects.
+  if(preserve) await page.route('http://127.0.0.1:4175/',async route=>{
+   const response=await route.fetch();const body=await response.text();
+   expect(body.match(/<canvas /g)).toHaveLength(1);
+   await route.fulfill({response,body:body.replace('<canvas ','<canvas preserveDrawingBuffer ')});
+  });
+  try{
+   await page.goto('http://127.0.0.1:4175/');
+   await expect(page.locator('.canvas_loader')).toBeHidden({timeout:60000});
+   await expect.poll(()=>pending.size,{timeout:60000}).toBe(0);
+   for(const stage of ['initial','resize','settled']){
+    if(stage==='resize')await page.setViewportSize({width:640,height:800});
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    const pixels=await page.locator('canvas').evaluate(canvas=>{
+     const gl=canvas.getContext('webgl2');if(!gl)return{available:false};
+     const width=gl.drawingBufferWidth,height=gl.drawingBufferHeight;
+     if(width*height>8*1024*1024)throw new Error('Diagnostic framebuffer exceeds bound');
+     const data=new Uint8Array(width*height*4);const binding=gl.getParameter(gl.FRAMEBUFFER_BINDING);
+     gl.bindFramebuffer(gl.FRAMEBUFFER,null);
+     try{gl.readPixels(0,0,width,height,gl.RGBA,gl.UNSIGNED_BYTE,data);}finally{gl.bindFramebuffer(gl.FRAMEBUFFER,binding);}
+     const colors=new Set();let nonzero=0;
+     for(let i=0;i<data.length;i+=64){const value=data[i]*16777216+data[i+1]*65536+data[i+2]*256+data[i+3];if(value)nonzero++;if(colors.size<256)colors.add(value);}
+     return{available:true,width,height,contextLost:gl.isContextLost(),attributes:gl.getContextAttributes(),glError:gl.getError(),sampleColors:colors.size,nonzeroSamples:nonzero};
+    });
+    const name=`buffer-${preserve?'retained':'default'}-${stage}`;
+    const path=testInfo.outputPath(name+'.png');await page.screenshot({path,caret:'initial'});
+    const ocr=await readScreenshotText(path);await writeFile(testInfo.outputPath(name+'-ocr.txt'),ocr);
+    observations.push({preserve,stage,pixels,ocr});
+   }
+  }finally{observations.push({preserve,events});await context.close();}
+ }
+ await writeFile(testInfo.outputPath('host-diagnostics.json'),JSON.stringify({scope:'diagnostic-only; does not qualify either product host',observations},null,2));
+});

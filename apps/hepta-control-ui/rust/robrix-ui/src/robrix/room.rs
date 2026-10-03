@@ -18,17 +18,18 @@ script_mod! {
   width: Fill height: Fit margin: 0 flow: Down spacing: 0
   body := View {
    width: Fill height: Fit flow: Right
-   padding: Inset{top: 0, bottom: 10, left: 10, right: 10}
+   padding: Inset{top: 10, bottom: 14, left: 20, right: 20}
    profile := View {
-    align: Align{x: 0.5, y: 0.0} width: 65 height: Fit
-    margin: Inset{top: 4.5, right: 10} flow: Down
-    avatar := Label {width: 48 height: 48 text: "H" draw_text.color: COLOR_TEXT}
+    align: Align{x: 0.5, y: 0.0} width: 36 height: Fit
+    margin: Inset{top: 0, right: 14} flow: Down
+    avatar_frame := mod.widgets.AuroraAvatar {}
    }
-   content := View {
+   content := RoundedView {
     width: Fill height: Fit flow: Down padding: 0
+    show_bg: false draw_bg +: {color: COLOR_SECONDARY border_radius: 12 border_size: 1 border_color: COLOR_BORDER}
     username := Label {
      width: Fill max_lines: 1 text_overflow: Ellipsis
-     margin: Inset{bottom: 9, top: 20, right: 10}
+     margin: Inset{bottom: 5, top: 0, right: 10}
      draw_text +: {text_style: USERNAME_TEXT_STYLE {} color: COLOR_TEXT}
     }
     message := Label {
@@ -51,15 +52,16 @@ script_mod! {
  }
  mod.widgets.RoomScreen = #(RoomScreen::register_widget(vm)) {
   width: Fill height: Fill cursor: MouseCursor.Default flow: Down spacing: 0
-  presentation_note := Label {visible: false width: Fill padding: 10 flow: Flow.Right{wrap:true} draw_text.color: COLOR_TEXT}
-  room_actions := Label {width: Fill padding: 16 text: "New conversation" draw_text.color: COLOR_TEXT}
+  presentation_note := Label {visible: false width: Fill height: Fit padding: 8 flow: Flow.Right{wrap:true} draw_text.color: COLOR_TEXT}
+  room_actions := Label {width: Fill height: Fit padding: 12 text: "New conversation" draw_text.color: COLOR_TEXT}
   room_screen_wrapper := SolidView {
    width: Fill height: Fill flow: Overlay draw_bg.color: COLOR_PRIMARY_DARKER
+   lunar_background := Image {width: Fill height: Fill visible: false fit: ImageFit.Cover src: crate_resource("self:resources/lunar-titanium.png") draw_bg.image_pan: vec2(0.06, 0.0)}
    timeline_and_input_bar := View {
     width: Fill height: Fill flow: Down
     empty_state := Label {width: Fill height: Fit padding: 24 flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Start with a local draft. No authenticated conversation history is available."}
     timeline := mod.widgets.Timeline {}
-    jump_to_latest := Button {visible: false text: "Jump to latest"}
+    jump_to_latest := mod.widgets.AuroraButton {visible: false text: "Jump to latest"}
     room_input_bar := mod.widgets.RoomInputBar {}
    }
   }
@@ -67,6 +69,8 @@ script_mod! {
 }
 #[derive(Default)]
 struct RoomViewMemory {
+    #[cfg(feature = "ui-fixtures")]
+    diagnostic_frames: usize,
     positions: std::collections::HashMap<RoomKey, (usize, f64, bool)>,
     last_widget: Option<WidgetUid>,
     epoch: Option<u64>,
@@ -190,6 +194,8 @@ impl Widget for RoomScreen {
                 .set_visible(cx, show_notice);
             self.view.label(cx, ids!(empty_state)).set_text(cx, if presentation.timeline.status == TimelineStatus::ResyncRequired {"History is incomplete. Waiting for an authoritative refresh; partial output is unconfirmed."} else {"Start with a local draft. No authenticated conversation history is available."});
         }
+        #[cfg(feature = "ui-fixtures")]
+        let mut diagnostic_items = Vec::new();
         while let Some(widget) = self.view.draw_walk(cx, scope, walk).step() {
             let portal = widget.as_portal_list();
             let Some(mut list) = portal.borrow_mut() else {
@@ -230,6 +236,23 @@ impl Widget for RoomScreen {
                 item.label(cx, ids!(send_status_indicator))
                     .set_text(cx, message.status);
                 item.draw_all(cx, &mut Scope::empty());
+                #[cfg(feature = "ui-fixtures")]
+                diagnostic_items.push((index, item));
+            }
+        }
+        #[cfg(feature = "ui-fixtures")]
+        if !diagnostic_items.is_empty() && cx.global::<RoomViewMemory>().diagnostic_frames < 12 {
+            cx.global::<RoomViewMemory>().diagnostic_frames += 1;
+            for (index, item) in diagnostic_items {
+                let rect = item.label(cx, ids!(message)).area().rect(cx);
+                log!(
+                    "HEPTA_FIXTURE_LAYOUT index={} x={} y={} width={} height={}",
+                    index,
+                    rect.pos.x,
+                    rect.pos.y,
+                    rect.size.x,
+                    rect.size.y
+                );
             }
         }
         if let Some(key) = self.active_key {

@@ -68,3 +68,15 @@ must not carry essential meaning alone.
 These are intended interactions, not claims that the in-progress host has been
 validated. Current implementation and verification limits are recorded in the
 [application guide](README.md); build details are in the [Rust guide](rust/README.md).
+
+## Requested visual variants (2026-10-03)
+
+The shared Rust host is being updated against three image-generated reference
+directions: Obsidian Ice, Lunar Titanium and Aurora Graphite. The canonical
+implementation token and acceptance contract is
+[`DESIGN_TOKENS.md`](rust/robrix-ui/DESIGN_TOKENS.md). This covers controlled
+sidebar widths, message cards versus open text, material and background layers,
+and one real local theme selector. No reference image implies a real person,
+online status, attachment capability or model integration. These variants remain
+candidates until actual host screenshots and theme/Console/input/scroll round
+trips pass; older screenshots do not qualify the revised design.

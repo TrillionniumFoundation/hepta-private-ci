@@ -94,13 +94,15 @@ jobs:
           python3 scripts/hepta-lane-b-truth.py verify
           git diff --check
 
-      - name: Verify JavaScript runtime boundaries
+      - name: Verify retained browser and control JavaScript compatibility
         shell: bash
         run: |
           set -euo pipefail
           node --test apps/hepta-browser/test/runtime.test.js
           node --test apps/hepta-control-ui/test/runtime-client.test.js
-          node --test apps/hepta-native/test/shell-runtime.test.js
+          # The native owner migrated to Rust; the retired JavaScript test is absent.
+          # These two compatibility suites do not qualify native execution.
+          printf 'Native Rust execution qualification: not established by this Lane B compatibility step\n'
 
       - name: Verify Rust formatting
         working-directory: codex-rs

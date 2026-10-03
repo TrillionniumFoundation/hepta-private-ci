@@ -195,7 +195,13 @@ jobs:
       - id: default_browser
         name: Run actual browser renderer and capture layouts
         working-directory: apps/hepta-control-ui
-        run: npm run test:robrix
+        run: xvfb-run -a npm run test:robrix
+      - name: Diagnose WebKit drawing buffer without changing product defaults
+        if: always() && steps.default_build.outcome == 'success'
+        working-directory: apps/hepta-control-ui
+        env:
+          HEPTA_ROBRIX_DIAGNOSTICS: '1'
+        run: xvfb-run -a npm run test:robrix -- --project=webkit --output=test-results/robrix-buffer-diagnostic
       - id: fixture_build
         if: always() && steps.default_build.outcome == 'success'
         name: Build explicitly labeled owner-fixture through the same renderer
@@ -205,7 +211,7 @@ jobs:
         working-directory: apps/hepta-control-ui
         env:
           HEPTA_ROBRIX_FIXTURES: "1"
-        run: npm run test:robrix
+        run: xvfb-run -a npm run test:robrix
       - if: always() && steps.default_build.outcome == 'success'
         name: Confirm exact source after build and browser checks
         env:

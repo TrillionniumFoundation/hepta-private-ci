@@ -6,3 +6,6 @@ pub mod app;
 pub mod robrix;
 
 pub mod presentation;
+
+#[cfg(feature = "ui")]
+pub mod visual_theme;

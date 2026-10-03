@@ -67,6 +67,17 @@ if (!wasmName) throw new Error('Unexpected pinned Makepad bootstrap; refusing to
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 await cp(source, output, { recursive: true });
+// The app entry is a bin backed by a Rust library. Bind the library resource
+// alias explicitly instead of depending on the packager's bin-only alias.
+const art=JSON.parse(await readFile(join(workspace,'robrix-ui/resources/ASSETS.json'),'utf8'));
+for(const asset of art.assets){
+ if(asset.path!=='lunar-titanium.png')throw new Error('Unexpected UI art asset');
+ const bytes=await readFile(join(workspace,'robrix-ui/resources',asset.path));
+ if(bytes.length!==asset.bytes||sha(bytes)!==asset.sha256)throw new Error('UI art source identity drift');
+ const destination=join(output,'hepta_robrix_ui/resources',asset.path);
+ await mkdir(dirname(destination),{recursive:true});await writeFile(destination,bytes);
+}
+
 const frameworkPath = join(output, 'makepad_platform/web.js');
 let framework = await readFile(frameworkPath, 'utf8');
 const originalFrameworkSha256 = sha(framework);
@@ -91,7 +102,7 @@ framework = framework.slice(0, styleStart) + framework.slice(styleEnd + styleEnd
 if (framework.includes("fetch('/api/crash'") || framework.includes("fetch('/$report_error") || framework.includes("sendBeacon('/api/crash'")) throw new Error('Crash transport survived packaging');
 await writeFile(frameworkPath, framework);
 // Generated loader glue contains no application state/actions or transcript.
-await writeFile(join(output, 'bootstrap.js'), `import {WasmWebGL} from './makepad_platform/web_gl.js';\ndocument.documentElement.dataset.heptaBootPhase='fetch-and-instantiate-wasm';\ntry {\n const wasm=await WasmWebGL.fetch_and_instantiate_wasm('./${wasmName}');\n document.documentElement.dataset.heptaBootPhase='construct-webgl-host';\n new WasmWebGL(wasm, {}, document.querySelector('canvas'));\n document.documentElement.dataset.heptaBootPhase='webgl-host-constructed';\n} catch(error) {\n document.documentElement.dataset.heptaBootPhase='bootstrap-failed';\n throw error;\n}\n`);
+await writeFile(join(output, 'bootstrap.js'), `import {WasmWebGL} from './makepad_platform/web_gl.js';\ndocument.documentElement.dataset.heptaBootPhase='fetch-and-instantiate-wasm';\ntry {\n const wasm=await WasmWebGL.fetch_and_instantiate_wasm('./${wasmName}');\n document.documentElement.dataset.heptaBootPhase='construct-webgl-host';\n const host=new WasmWebGL(wasm, {}, document.querySelector('canvas'));\n if(!host.gl){\n  document.documentElement.dataset.heptaBootPhase='webgl2-unavailable';\n  const loader=document.querySelector('.canvas_loader');\n  loader.textContent='WebGL2 is unavailable in this browser or graphics environment. Conversations cannot be rendered here.';\n  loader.setAttribute('role','alert');\n }else document.documentElement.dataset.heptaBootPhase='webgl-host-constructed';\n} catch(error) {\n document.documentElement.dataset.heptaBootPhase='bootstrap-failed';\n throw error;\n}\n`);
 const csp = "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'";
 await writeFile(join(output, 'index.html'), `<!doctype html>\n<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta http-equiv="Content-Security-Policy" content="${csp}"><title>Hepta Conversations</title><link rel="stylesheet" href="./makepad_platform/full_canvas.css"><link rel="stylesheet" href="./input-platform.css"><script type="module" src="./bootstrap.js"></script></head><body><canvas class="full_canvas" aria-label="Hepta conversations"></canvas><div class="canvas_loader">Loading conversations…</div></body></html>\n`);
 await cp(join(workspace, 'robrix-ui/licenses'), join(output, 'licenses'), { recursive: true });
@@ -107,5 +118,5 @@ async function inventory(dir) {
  }
 }
 await inventory(output);
-await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,nightly,platformPatch:overlay.identity,instanceLayoutPatch:overlay.layoutIdentity,drawPatch:overlay.drawIdentity,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
+await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,artAssets:art,nightly,platformPatch:overlay.identity,instanceLayoutPatch:overlay.layoutIdentity,drawPatch:overlay.drawIdentity,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
 console.log(`Packaged Robrix-derived Rust UI (${Object.keys(files).length} assets); rendering still requires host acceptance`);

@@ -31,8 +31,13 @@ pub fn extend_scroll_fixture(workspace: &mut ChatWorkspace) {
     let original = history.messages.clone();
     history.messages.clear();
     for index in 0..16 {
-        for mut message in original.clone() {
+        for (offset, mut message) in original.clone().into_iter().enumerate() {
             message.id = format!("{}-{index}", message.id);
+            message.text = format!(
+                "[Fixture {}] {}",
+                index * original.len() + offset + 1,
+                message.text
+            );
             history.messages.push(message);
         }
     }

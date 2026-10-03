@@ -26,7 +26,7 @@ script_mod! {
                 // `color_bg_app`), transitions to purple on hover/drag.
                 // Mildly rounded corners soften the edges where panels meet.
                 let body_color = mix(
-                    #4D4D4D
+                    COLOR_BORDER
                     mix(self.color_hover, self.color_drag, self.drag)
                     self.hover
                 )
@@ -161,24 +161,24 @@ script_mod! {
             max_lines: 1
             text_overflow: TextOverflow.Ellipsis
 
-            color: #000
-            color_active: COLOR_PRIMARY
+            color: TIMESTAMP_TEXT_COLOR
+            color_active: COLOR_TEXT
             get_color: fn() {
                 return self.color.mix(self.color_active, self.active)
             }
         }
 
         draw_bg +: {
-            // Light blue-ish color, de-saturated from COLOR_ACTIVE_PRIMARY
-            color: #E1EEFA
-            color_2: #E1EEFA
+            // Aurora graphite surface and restrained violet selection.
+            color: COLOR_PRIMARY
+            color_2: COLOR_PRIMARY
             // A slightly darker shade of the tab color for hover visibility
-            color_hover: #C8DDEF
-            color_2_hover: #C8DDEF
-            // Active (selected) tabs are a deeper blue, with a vertical gradient
+            color_hover: COLOR_LIST_ITEM_BG_HOVER
+            color_2_hover: COLOR_LIST_ITEM_BG_HOVER
+            // Active tabs use the shared violet surface, with a subtle gradient
             // to a slightly lighter blue.
-            color_active: #0660FE
-            color_2_active: #398CFE
+            color_active: COLOR_ACTIVE_PRIMARY
+            color_2_active: COLOR_ACTIVE_PRIMARY
             // Remove the border and rounded corners from the default Tab style
             border_size: 0.0
             border_radius: 3.0
@@ -252,7 +252,7 @@ script_mod! {
         }
 
         width: Fill
-        height: max(theme.tab_height, 25.)
+        height: 42.0
 
         scroll_bars: ScrollBarsTabs {
             show_scroll_x: true

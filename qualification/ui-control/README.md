@@ -141,17 +141,19 @@ These receipts must bind the same candidate commit, candidate tree, and backend 
 
 The production workflow additionally requires the candidate commit to be reachable from `main`. Missing, duplicate, malformed, stale, cross-candidate, cross-deployment, or failed evidence produces a structured failure bundle with every production and release claim set to false.
 
-## Workflow dispatch
+## Historical workflow contract
 
-`.github/workflows/ui-control-external-qualification.yml` supports three progressively stronger modes:
+The pinned test-only fixture at `apps/hepta-control-ui/test/fixtures/legacy-workflows/ui-control-external-qualification.yml` records the earlier external-qualification contract. It is not an active workflow and cannot be dispatched. A production qualification workflow for the Robrix host remains uncomposed; current browser and legacy compatibility jobs do not emit its required acceptance receipts.
+
+The historical contract describes three progressively stronger modes:
 
 1. deployment-security observation only;
 2. deployment-security plus real Agentd/backend qualification;
 3. the complete production-evidence bundle.
 
-For mode 3, pass the workflow run ID that contains the exact-head and synthetic-merge artifacts for the same `candidate_sha`. The workflow downloads those immutable receipts rather than trusting hand-copied status text.
+The historical mode 3 required the workflow run ID that contains the exact-head and synthetic-merge artifacts for the same `candidate_sha`. The workflow downloads those immutable receipts rather than trusting hand-copied status text.
 
-Repository or environment secrets used by the workflow are:
+The historical contract names the following external inputs; this inventory does not request their configuration or authorize deployment:
 
 ```text
 HEPTA_UI_CONTROL_BASE_URL
@@ -170,7 +172,7 @@ HEPTA_UI_CONTROL_OPERATIONAL_EXERCISE_JSON
 HEPTA_UI_CONTROL_PRODUCTION_APPROVAL_JSON
 ```
 
-Use a protected GitHub environment for credentials and authority receipts. The workflow has read-only repository and Actions permissions, never writes source, and uploads pass or failure evidence with bounded retention.
+Any future separately reviewed composition must preserve the protected environment boundary for credentials and authority receipts, read-only repository and Actions permissions, and bounded evidence retention. The historical fixture grants no current execution or release authority.
 
 ## Failure receipts
 

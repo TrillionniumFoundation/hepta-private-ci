@@ -10,7 +10,13 @@ script_mod! {
  use mod.prelude.widgets.*
  use mod.widgets.*
  mod.widgets.MainDesktopUI = #(MainDesktopUI::register_widget(vm)) {
-  flow: Overlay
+  flow: Right
+  rail := SolidView {
+   width: 64 height: Fill flow: Down spacing: 16 padding: 8 draw_bg.color: COLOR_PRIMARY
+   Label {width: Fill height: 56 align: Center text: "H" draw_text +: {color: COLOR_ROBRIX_PURPLE text_style: theme.font_bold{font_size: 20}}}
+   rail_chat := mod.widgets.AuroraButton {width: Fill height: 44 padding: 4 text: "Chat"}
+   rail_console := mod.widgets.AuroraButton {width: Fill height: 44 padding: 4 text: ">_"}
+  }
   dock := mod.widgets.RobrixDock {
    width: Fill height: Fill padding: 0 spacing: 0 margin: 0
    tab_bar +: {
@@ -18,7 +24,7 @@ script_mod! {
     PermanentTab := mod.widgets.RobrixTab {closeable: false width: Fit padding: 9}
    }
    root := DockSplitter {
-    axis: SplitterAxis.Horizontal align: SplitterAlign.FromA(300.0)
+    axis: SplitterAxis.Horizontal align: SplitterAlign.FromA(248.0)
     a: @rooms_sidebar_tabs b: @main_tabs
    }
    rooms_sidebar_tabs := DockTabs {tabs: [@rooms_sidebar_tab] selected: 0 hide_tab_bar: true}
@@ -44,17 +50,18 @@ script_mod! {
    }
    Mobile := SolidView {
     width: Fill height: Fill flow: Down draw_bg.color: COLOR_SECONDARY
-    View {width: Fill height: Fit flow: Right spacing: 8
-     conversations := Button {text: "Conversations"}
-     chat_tab := Button {text: "Chat"}
-     console_tab_button := Button {text: "Console"}
+    View {width: Fill height: Fit flow: Flow.Right{wrap: true} spacing: 6 padding: 6
+     conversations := mod.widgets.AuroraButton {text: "Conversations"}
+     chat_tab := mod.widgets.AuroraButton {text: "Chat"}
+     console_tab_button := mod.widgets.AuroraButton {text: "Console"}
+     mobile_theme_switch := mod.widgets.AuroraButton {grab_key_focus: false text: "Aurora Graphite"}
     }
     mobile_pages := PageFlip {
      width: Fill height: Fill active_page: @chat_page
      chat_page := CachedWidget {room_screen := mod.widgets.RoomScreen {}}
      navigation_page := View {
       flow: Down
-      back_to_chat := Button {text: "Back to conversation"}
+      back_to_chat := mod.widgets.AuroraButton {text: "Back to conversation"}
       CachedWidget {rooms_sidebar := mod.widgets.RoomsSideBar {}}
      }
      console_page := View {flow: Down padding: 16
@@ -95,6 +102,14 @@ impl Widget for HomeScreen {
         };
         let Some(source) = self.rendered else { return };
         if let Event::Actions(actions) = event {
+            if self
+                .view
+                .button(cx, ids!(mobile_theme_switch))
+                .clicked(actions)
+                && !workspace.composing
+            {
+                crate::visual_theme::cycle(cx);
+            }
             let command = if self.view.button(cx, ids!(conversations)).clicked(actions) {
                 Some(PresentationCommand::SetNavigationOpen(true))
             } else if self.view.button(cx, ids!(back_to_chat)).clicked(actions) {
@@ -148,6 +163,9 @@ impl Widget for HomeScreen {
             self.view
                 .button(cx, ids!(conversations))
                 .set_enabled(cx, !workspace.composing);
+            self.view
+                .button(cx, ids!(mobile_theme_switch))
+                .set_enabled(cx, !workspace.composing);
         }
         self.view.draw_walk(cx, scope, walk)
     }
@@ -167,6 +185,23 @@ impl Widget for MainDesktopUI {
         };
         let Some(source) = self.rendered else { return };
         if let Event::Actions(actions) = event {
+            let rail_tab = if self.view.button(cx, ids!(rail_chat)).clicked(actions) {
+                Some(WorkspaceTab::Conversations)
+            } else if self.view.button(cx, ids!(rail_console)).clicked(actions) {
+                Some(WorkspaceTab::Console)
+            } else {
+                None
+            };
+            if let Some(tab) = rail_tab {
+                apply_action(
+                    workspace,
+                    PresentationAction {
+                        source,
+                        command: PresentationCommand::SelectTab(tab),
+                    },
+                );
+                self.view.redraw(cx);
+            }
             let dock = self.view.dock(cx, ids!(dock));
             for action in actions.filter_widget_actions_cast::<DockAction>(dock.widget_uid()) {
                 if let DockAction::TabWasPressed(tab) = action {

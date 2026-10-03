@@ -48,7 +48,9 @@ impl AppMain for App {
         self::script_mod(vm)
     }
     fn handle_event(&mut self, cx: &mut Cx, event: &Event) {
+        crate::visual_theme::apply_tree(cx, &self.ui);
         self.ui
             .handle_event(cx, event, &mut Scope::with_data(&mut self.workspace));
+        crate::visual_theme::apply_tree(cx, &self.ui);
     }
 }

@@ -1,7 +1,7 @@
 // Real canvas evidence. OCR is a necessary glyph regression, not full visual/a11y acceptance.
 import {test,expect} from '@playwright/test';
 import {writeFile} from 'node:fs/promises';
-import {readScreenshotText,requireChatText} from '../tools/verify-robrix-pixels.mjs';
+import {readScreenshotText,requireChatText,screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
 for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
  test(`Robrix host starts under strict CSP ${viewport.width}`,async({page,browserName},testInfo)=>{
   let phase='application';
@@ -45,7 +45,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    expect(await page.evaluate(()=>window.__cspViolations.filter(item=>item.phase==='application'))).toEqual([]);
    expect(uploads).toEqual([]);
   }
-  async function capture(name){
+  async function capture(name,{consoleView=false}={}){
    await assertApplicationHealth();
    phase='snapshot';await page.evaluate(()=>window.__heptaTestPhase='snapshot');
    const path=testInfo.outputPath(name+'.png');
@@ -66,8 +66,24 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    }
    const text=await readScreenshotText(path);
    await writeFile(testInfo.outputPath(name+'-ocr.txt'),text);
-   requireChatText(text,{fixtures:process.env.HEPTA_ROBRIX_FIXTURES==='1'});
+   if(consoleView){
+    expect(text).toMatch(/Console/i);
+    expect(text).toMatch(/composed|composition/i);
+   }else {
+    requireChatText(text,{fixtures:process.env.HEPTA_ROBRIX_FIXTURES==='1'});
+    if(process.env.HEPTA_ROBRIX_FIXTURES==='1'){
+     const ordinals=[...text.matchAll(/Fixture\s*(\d{1,3})\b/gi)].map(match=>Number(match[1]));
+     expect(ordinals.length,'At least two real fixture messages must be visible').toBeGreaterThanOrEqual(2);
+     expect(ordinals,'Rendered owner order must remain oldest to newest').toEqual([...ordinals].sort((a,b)=>a-b));
+    }
+   }
    await assertApplicationHealth();
+   return {path,text};
+  }
+  async function clickRenderedWord(captured,word,options){
+   const point=await screenshotWordCenter(captured.path,word,page.viewportSize().width,options);
+   await page.mouse.click(point.x,point.y);
+   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
   }
   try {
    await page.setViewportSize(viewport);await page.goto('/');
@@ -77,9 +93,35 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    await page.waitForTimeout(1000);
    expect(await page.locator('canvas').evaluate(canvas=>canvas.width>0&&canvas.height>0)).toBe(true);
    expect(await page.locator('meta[name=viewport]').getAttribute('content')).not.toContain('user-scalable=no');
-   await capture(`robrix-${viewport.width}`);
-   await page.setViewportSize({width:viewport.width===1280?640:1280,height:800});
-   await page.waitForTimeout(500);await capture('robrix-after-resize');
+   let captured;
+   for(const theme of ['Aurora','Obsidian','Lunar']){
+    await expect.poll(()=>pendingFonts.size,{timeout:60000}).toBe(0);
+    captured=await capture(`robrix-${theme}-${page.viewportSize().width}`);
+    expect(captured.text.toLowerCase()).toContain(theme.toLowerCase());
+    await page.setViewportSize({width:page.viewportSize().width===1280?640:1280,height:800});
+    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    captured=await capture(`robrix-${theme}-after-resize`);
+    if(theme==='Aurora'){
+     await page.mouse.click(page.viewportSize().width*0.65,720);
+     await page.keyboard.type('Theme round trip draft');
+     captured=await capture('robrix-draft-before-theme');
+     expect(captured.text).toMatch(/Theme round trip draft/i);
+    }else{
+     expect(captured.text).toMatch(/Theme round trip draft/i);
+    }
+    await clickRenderedWord(captured,theme);
+    await page.keyboard.type(' kept');
+   }
+   captured=await capture('robrix-theme-round-trip');
+   expect(captured.text).toMatch(/Aurora/i);
+   expect(captured.text).toMatch(/Theme round trip draft/i);
+   expect(captured.text).toMatch(/kept/i);
+   await clickRenderedWord(captured,'Console',{topOnly:true});
+   const consoleCapture=await capture('robrix-console',{consoleView:true});
+   await clickRenderedWord(consoleCapture,page.viewportSize().width<760?'Chat':'Conversation',{topOnly:true});
+   captured=await capture('robrix-console-round-trip');
+   expect(captured.text).toMatch(/Theme round trip draft/i);
+
   } finally {
    const observed=await page.evaluate(()=>({violations:window.__cspViolations??[],snapshotStyles:window.__snapshotStyles??[],bootPhase:document.documentElement.dataset.heptaBootPhase??'unobserved',wasmStages:window.__wasmStages??[],readyState:document.readyState,canvas:[...document.querySelectorAll('canvas')].map(canvas=>({width:canvas.width,height:canvas.height})),resources:performance.getEntriesByType('resource').map(item=>({name:item.name,duration:item.duration,bytes:item.transferSize}))})).catch(()=>({}));
    const diagnostics=testInfo.outputPath('host-diagnostics.json');

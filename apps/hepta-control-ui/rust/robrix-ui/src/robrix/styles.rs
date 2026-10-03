@@ -7,15 +7,52 @@ script_mod! {
  use mod.widgets.*
  // Upstream shared/styles.rs:246, required by the adapted PortalList.
  mod.widgets.ListScrollBar = ScrollBar { bar_size: 9 }
- mod.widgets.COLOR_PRIMARY = #151e2b
- mod.widgets.COLOR_PRIMARY_DARKER = #101722
- mod.widgets.COLOR_SECONDARY = #202d3b
- mod.widgets.COLOR_ROBRIX_PURPLE = #53d4c3
- mod.widgets.COLOR_ACTIVE_PRIMARY = #204f59
- mod.widgets.COLOR_ACTIVE_PRIMARY_DARKER = #29626b
- mod.widgets.COLOR_LIST_ITEM_BG_HOVER = #263849
- mod.widgets.COLOR_TEXT = #e4edf5
- mod.widgets.TIMESTAMP_TEXT_COLOR = #aabcca
- mod.widgets.USERNAME_TEXT_STYLE = theme.font_bold {font_size: 12}
- mod.widgets.MESSAGE_TEXT_STYLE = theme.font_regular {font_size: 12 line_spacing: 1.3}
+ mod.widgets.COLOR_PRIMARY = #x151522
+ mod.widgets.COLOR_PRIMARY_DARKER = #x10111d
+ mod.widgets.COLOR_SECONDARY = #x1a1a2e
+ mod.widgets.COLOR_ROBRIX_PURPLE = #x9585ff
+ mod.widgets.COLOR_ACTIVE_PRIMARY = #x34305e
+ mod.widgets.COLOR_ACTIVE_PRIMARY_DARKER = #x45406f
+ mod.widgets.COLOR_LIST_ITEM_BG_HOVER = #x25253e
+ mod.widgets.COLOR_TEXT = #xeeebff
+ mod.widgets.TIMESTAMP_TEXT_COLOR = #xb4b0c9
+ mod.widgets.COLOR_AURORA_CORAL = #xffb3bc
+ mod.widgets.COLOR_BORDER = #x37354f
+ mod.widgets.AuroraButton = ButtonFlat {
+  height: 40 padding: Inset{left: 14, right: 14, top: 8, bottom: 8} margin: 0
+  draw_text +: {color: COLOR_TEXT color_hover: COLOR_TEXT color_focus: COLOR_TEXT text_style: theme.font_regular{font_size: 11}}
+  draw_bg +: {
+   color: COLOR_PRIMARY color_hover: COLOR_LIST_ITEM_BG_HOVER color_focus: COLOR_ACTIVE_PRIMARY
+   color_down: COLOR_ACTIVE_PRIMARY_DARKER color_disabled: COLOR_PRIMARY
+   border_radius: 10 border_size: 1 border_color: COLOR_BORDER
+   border_color_hover: COLOR_ROBRIX_PURPLE border_color_focus: COLOR_ROBRIX_PURPLE
+  }
+ }
+ mod.widgets.AuroraNewConversation = mod.widgets.AuroraButton {
+  height: 44
+  draw_bg +: {color: COLOR_SECONDARY color_2: COLOR_ACTIVE_PRIMARY
+   border_color: COLOR_AURORA_CORAL border_color_2: COLOR_ROBRIX_PURPLE
+   gradient_border_horizontal: 1.0 border_size: 1.0}
+ }
+ mod.widgets.AuroraAvatar = RoundedView {
+  width: 36 height: 36 align: Center
+  draw_bg +: {color: COLOR_ACTIVE_PRIMARY border_radius: 18 border_size: 1 border_color: COLOR_ROBRIX_PURPLE}
+  avatar := Label {height: Fit width: Fit text: "H" draw_text +: {color: COLOR_TEXT text_style: theme.font_bold{font_size: 11}}}
+ }
+ mod.widgets.HEPTA_REGULAR = theme.font_regular {
+  font_family: FontFamily {
+   latin := FontMember {res: crate_resource("makepad_widgets:resources/IBMPlexSans-Text.ttf") asc: -0.1 desc: 0.0}
+   cjk := FontMember {res: crate_resource("makepad_widgets:resources/LXGWWenKaiRegular.ttf") asc: 0.0 desc: 0.0}
+   emoji := FontMember {res: crate_resource("makepad_widgets:resources/NotoColorEmoji.ttf") asc: 0.0 desc: 0.0}
+  }
+ }
+ mod.widgets.HEPTA_BOLD = theme.font_bold {
+  font_family: FontFamily {
+   latin := FontMember {res: crate_resource("makepad_widgets:resources/IBMPlexSans-SemiBold.ttf") asc: -0.1 desc: 0.0}
+   cjk := FontMember {res: crate_resource("makepad_widgets:resources/LXGWWenKaiBold.ttf") asc: 0.0 desc: 0.0}
+   emoji := FontMember {res: crate_resource("makepad_widgets:resources/NotoColorEmoji.ttf") asc: 0.0 desc: 0.0}
+  }
+ }
+ mod.widgets.USERNAME_TEXT_STYLE = mod.widgets.HEPTA_BOLD {font_size: 12}
+ mod.widgets.MESSAGE_TEXT_STYLE = mod.widgets.HEPTA_REGULAR {font_size: 12 line_spacing: 1.3}
 }
