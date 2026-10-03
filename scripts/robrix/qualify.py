@@ -107,7 +107,7 @@ def native_tests():
                    '--lib', 'hepta_font_tests', '--', '--nocapture'], 'makepad-font-cache-tests.log', 1)
     for module, minimum in [('hepta_console::tests', 4),
                             ('home::main_desktop_ui::hepta_dock_tests', 3),
-                            ('app::ui_fixture::tests', 1),
+                            ('app::ui_fixture::tests', 2),
                             ('ui_dispatch::tests', 3),
                             ('timeline_channel::tests', 3)]:
         checked_tests(['cargo', '+1.96.0', 'test', '--locked', '--features', 'ui-fixture',

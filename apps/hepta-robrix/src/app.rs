@@ -68,7 +68,7 @@ script_mod! {
                         join_leave_modal := Modal {
                             content := JoinLeaveRoomModal {}
                         }
-                        login_screen_view := View {
+                        login_screen_view := SolidView {
                             visible: true
                             flow: Down
                             show_bg: true
@@ -76,7 +76,7 @@ script_mod! {
                             login_screen := LoginScreen {}
                             open_hepta_console := Button { text: "Console setup" }
                         }
-                        login_console_view := View {
+                        login_console_view := SolidView {
                             visible: false
                             flow: Down
                             show_bg: true

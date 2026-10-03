@@ -67,13 +67,17 @@ class TestEvidenceUploadScope(unittest.TestCase):
                 b"\x7fELF\0executable"
             )
             (source / "font.ttf").write_bytes(b"\0font")
+            (source / "makepad-tool/.crates2.json").write_text('{}')
+            (source / ".hidden").mkdir()
+            (source / ".hidden/metadata.json").write_text('{}')
             (source / "partial.log").write_text("build failed\n")
             (source / "identity.json").write_text('{"candidate":"fixture"}')
             (source / "framework.patch").write_text("diagnostic patch\n")
             Image.new("RGB", (2, 2), "white").save(source / "fixture.png")
             receipt = stage(source, target)
             self.assertEqual(
-                set(receipt["excluded"]), {"makepad-tool/bin/cargo-makepad", "font.ttf"}
+                set(receipt["excluded"]), {"makepad-tool/bin/cargo-makepad", "font.ttf",
+                                           "makepad-tool/.crates2.json", ".hidden/metadata.json"}
             )
             self.assertEqual(
                 {p.name for p in target.iterdir()},

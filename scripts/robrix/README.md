@@ -252,3 +252,23 @@ through strict PNG/text/JSON staging. Exact patch/helper source is retained as
 diagnostic logs; excluded build tools receive only SHA-256/size records. Existing
 uploaded artifacts are not deleted. Account/Matrix end-to-end, font redistribution,
 installed acceptance, premium redesign and production readiness remain unqualified.
+
+Run 37080823462 at 7011d0d63b74ef32b3c5e978a8a6f80d1e5e86e4 passed
+native tests/captures, all 14 browser tests and actual WASM packaging. Its browser
+wide-login image visibly confirms the font correction: input-center offsets
+(-0.5, -0.5, 0.5 px) are within 1 px of native, including deliberately delayed fonts.
+The 79 resource responses succeeded without runtime failures. Capture correctly
+stopped at the still-black footer before type/clear or the other browser scenes.
+Plain View inherits DrawQuad.pixel returning transparent #0000; show_bg/color
+alone cannot paint it. The two wrappers now use the existing SolidView color
+shader with the same COLOR_PRIMARY. Fixture startup checks their actual compiled
+color instance and opaque alpha; a real framework-widget test rejects the old
+plain-View configuration. The pixel gates are unchanged.
+
+The staged 7011 artifacts contain only screenshots, text logs and manifests; the
+compiled tool is excluded. The browser manifest also listed Cargo's hidden JSON
+metadata which upload-artifact omitted by default. Staging now excludes hidden
+paths explicitly, retaining their hashes only in the excluded-file receipt, so
+included paths and uploaded files agree. ZIP SHA-256: native
+`e658495b25bf3194bbd50d0d4a467e2a2b88a2d2537c130201c348be28592e32`, browser
+`74ad09b20f037a86f295c763d2890a397ab0b957d93a27b7acd7fdb7765dbb42`.

@@ -18,7 +18,9 @@ def stage(source, destination):
             continue
         data = path.read_bytes()
         record = {"sha256": hashlib.sha256(data).hexdigest(), "bytes": len(data)}
-        if path.suffix not in (".png", ".json", ".log", ".patch", ".rs"):
+        if any(part.startswith(".") for part in relative.parts) or path.suffix not in (
+            ".png", ".json", ".log", ".patch", ".rs"
+        ):
             receipt["excluded"][str(relative)] = record
             continue
         if path.suffix == ".png":

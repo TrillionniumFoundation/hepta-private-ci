@@ -13,6 +13,11 @@ pub(super) fn start(app: &mut App, cx: &mut Cx) -> bool {
     let Some(mode) = selected_mode().expect("invalid explicit UI fixture selection") else {
         return false;
     };
+    for path in [ids!(login_screen_view), ids!(login_console_view)] {
+        let view = app.ui.view(cx, path);
+        let view = view.borrow().expect("pre-login wrapper missing");
+        assert!(opaque_color_shader(cx, &view), "pre-login wrapper needs an opaque color shader");
+    }
     let timer = cx.start_timeout(0.5);
     let state = cx.global::<FixtureState>();
     state.active = true;
@@ -27,6 +32,18 @@ pub(super) fn start(app: &mut App, cx: &mut Cx) -> bool {
     app.update_login_visibility(cx);
     cx.redraw_all();
     true
+}
+
+fn opaque_color_shader(cx: &mut Cx, view: &View) -> bool {
+    let Some(shader) = view.draw_bg.draw_vars.draw_shader_id else { return false };
+    if !view.show_bg || !cx.draw_shaders[shader.index].mapping.instances.inputs
+        .iter().any(|input| input.id == id!(color) && input.slots == 4)
+    {
+        return false;
+    }
+    let mut color = [0.0; 4];
+    view.draw_bg.draw_vars.get_instance(cx, id!(color), &mut color);
+    color.iter().all(|value| value.is_finite()) && color[3] == 1.0
 }
 
 pub(super) fn active(cx: &mut Cx) -> bool {
@@ -95,7 +112,25 @@ fn browser_mode(query: &str) -> Result<Option<String>, &'static str> {
 
 #[cfg(test)]
 mod tests {
-    use super::browser_mode;
+    use super::*;
+
+    #[test]
+    fn prelogin_background_requires_real_color_shader() {
+        let mut cx = Cx::new(Box::new(|_, _| {}));
+        let (plain, solid) = cx.with_vm(|vm| {
+            makepad_widgets::script_mod(vm);
+            let plain = script_eval!(vm, {
+                mod.widgets.View { show_bg: true draw_bg.color: #fff }
+            });
+            let plain = View::script_from_value(vm, plain);
+            let solid = script_eval!(vm, {
+                mod.widgets.SolidView { show_bg: true draw_bg.color: #fff }
+            });
+            (plain, View::script_from_value(vm, solid))
+        });
+        assert!(!opaque_color_shader(&mut cx, &plain));
+        assert!(opaque_color_shader(&mut cx, &solid));
+    }
     #[test]
     fn browser_fixture_is_explicit_and_cannot_mix_owner_parameters() {
         assert_eq!(browser_mode("").unwrap(), None);
