@@ -20,6 +20,7 @@ use std::sync::Mutex;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
 
+use codex_hepta_context_compiler::ContextDeliveryInputsV2;
 use codex_hepta_context_compiler::ContextDeliveryPreparationV2;
 use codex_hepta_context_compiler::ContextProviderDeliveryDecisionV2;
 use codex_hepta_context_compiler::ContextProviderDeliveryVerifierV2;
@@ -651,10 +652,12 @@ impl AgentdPromptProductOwnerV3 {
         let delivery_id = StableId::new(format!("context-delivery:v3:{attempt_id}"))
             .map_err(|_| AgentdPromptProductErrorV3::InvalidScope)?;
         let delivery = observe_delivery(
-            &preparation,
-            &stage.compiled.attachment,
-            &stage.compiled.serialized_context,
-            &stage.compiled.model_profile,
+            ContextDeliveryInputsV2 {
+                preparation: &preparation,
+                attachment: &stage.compiled.attachment,
+                serialization: &stage.compiled.serialized_context,
+                profile: &stage.compiled.model_profile,
+            },
             delivery_id,
             &receipt,
             &verifier,

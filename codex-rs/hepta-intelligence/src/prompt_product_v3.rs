@@ -19,6 +19,7 @@ use codex_hepta_context_compiler::ContextAttachmentV2;
 use codex_hepta_context_compiler::ContextCandidateV2;
 use codex_hepta_context_compiler::ContextCompilationRequestV2;
 use codex_hepta_context_compiler::ContextCompilerV2Error;
+use codex_hepta_context_compiler::ContextDeliveryInputsV2;
 use codex_hepta_context_compiler::ContextDeliveryPreparationV2;
 use codex_hepta_context_compiler::ContextDeliveryReceiptV2;
 use codex_hepta_context_compiler::ContextModelProfileV2;
@@ -851,10 +852,12 @@ pub fn observe_prompt_delivery_v3(
         return Err(PromptProductV3Error::Integrity);
     }
     observe_delivery(
-        &prepared.preparation,
-        &compiled.attachment,
-        &compiled.serialized_context,
-        &compiled.model_profile,
+        ContextDeliveryInputsV2 {
+            preparation: &prepared.preparation,
+            attachment: &compiled.attachment,
+            serialization: &compiled.serialized_context,
+            profile: &compiled.model_profile,
+        },
         delivery_id,
         provider_receipt,
         delivery_verifier,

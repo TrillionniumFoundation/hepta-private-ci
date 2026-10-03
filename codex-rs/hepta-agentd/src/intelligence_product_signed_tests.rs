@@ -2,7 +2,7 @@ use super::*;
 use crate::intelligence_product::evaluation_tests::evidence_fixture;
 use codex_hepta_intelligence::build_legal_candidates;
 
-fn signed_fixture() -> (
+pub(super) fn signed_fixture() -> (
     Fixture,
     codex_hepta_learning_ledger::ActivatedLearningTrustV1,
 ) {
@@ -65,10 +65,132 @@ async fn signed_evaluation_completes_existing_owner_preparation_and_run_admissio
     else {
         panic!("expected the signed existing path to reach ready");
     };
+    let prepared: PreparedAgentdIntelligenceRunV1 = *prepared;
     assert!(!prepared.envelope.evaluation_receipt_digest.is_zero());
     assert!(!prepared.envelope.authority.grants_any());
-    assert_eq!(run_receipt.run_id, prepared.run_snapshot().run_id);
-    assert_eq!(run_receipt.phase, crate::RunPhase::ContextAttached);
+    let snapshot = prepared.run_snapshot();
+    assert_eq!(
+        run_receipt,
+        crate::RunReceipt {
+            run_id: snapshot.run_id,
+            revision: 2,
+            phase: crate::RunPhase::ContextAttached,
+            context_digest: Some(prepared.envelope.context_receipt_digest.to_string()),
+            authority_epoch: snapshot.authority_epoch,
+            generation: snapshot.generation,
+            fence_digest: snapshot.fence_digest,
+            deadline_ms: snapshot.deadline_ms,
+            cancel_reason: None,
+            cancel_ack_deadline_ms: None,
+            compilation_receipt_digest: Some(prepared.envelope.envelope_digest.to_string()),
+            terminal_observed: false,
+            idempotent: false,
+        }
+    );
+}
+
+#[cfg(feature = "qualification-legacy-learning-write")]
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+async fn randomized_selected_decision_preserves_intrinsic_abstain_and_exact_propensity() {
+    let (mut value, trust) = signed_fixture();
+    let legal = build_legal_candidates(value.request.legal_candidates.clone()).expect("legal set");
+    let abstain_probability = probability(ProbabilityQ32::ONE.raw() / 4);
+    let selected_probability = probability(ProbabilityQ32::ONE.raw() - abstain_probability.raw());
+    let intuition = &mut value.inputs.intuition_request;
+    intuition.candidates[0].assignment_probability = selected_probability;
+    intuition.assignment = AssignmentModeV1::CounterBased {
+        random_stream_digest: digest("randomized-qualification-stream"),
+        draw: probability(ProbabilityQ32::ONE.raw() / 2),
+        abstain_probability,
+    };
+    intuition.completeness.candidate_set_digest =
+        canonical_candidate_set_digest_v1(&intuition.candidates).expect("randomized candidate set");
+    let intuition_receipt = decide_calibrated_v2(intuition.clone()).expect("randomized policy");
+    assert_eq!(
+        (
+            &intuition_receipt.disposition,
+            &intuition_receipt.propensities,
+            intuition_receipt.abstain_probability,
+            intuition_receipt.slow_path_probability,
+        ),
+        (
+            &CalibratedDispositionV1::Selected(id("action.read")),
+            &vec![codex_hepta_intuition::CalibratedCandidatePropensityV1 {
+                candidate_id: id("action.read"),
+                probability: selected_probability,
+            }],
+            abstain_probability,
+            ProbabilityQ32::ZERO,
+        )
+    );
+
+    let directory = tempfile::tempdir().expect("directory");
+    let authority = directory.path().join("authority.json");
+    write_authority_file(
+        &authority,
+        &value.owners,
+        value.request.snapshot.revocation_frontier_digest(),
+    );
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("host-root trust");
+    let outcome = runner
+        .prepare(&product_test_coordinator(), value.request, value.inputs)
+        .await
+        .expect("signed randomized preparation");
+    let AgentdIntelligenceProductOutcomeV1::Ready(prepared) = outcome else {
+        panic!("the counter-based draw must select the action");
+    };
+    assert_eq!(prepared.candidate_ids, vec![id("action.read")]);
+    assert_eq!(
+        (
+            prepared.envelope.candidate_set_digest,
+            prepared.envelope.decision.candidate_set_digest,
+            prepared.envelope.decision.intuition_receipt_digest,
+            &prepared.envelope.decision.decision,
+        ),
+        (
+            legal.candidate_set_digest,
+            legal.candidate_set_digest,
+            intuition_receipt.receipt_digest,
+            &AdvisoryDecisionV1::Selected {
+                candidate_id: id("action.read"),
+                propensity: selected_probability,
+            },
+        )
+    );
+    let prepared_before = prepared.clone();
+    let expected = LedgerEvent::Decision(EpisodeDecision {
+        record_id: prepared.envelope.run_id.clone(),
+        episode_id: id("episode.randomized"),
+        objective_digest: prepared.envelope.objective_digest,
+        policy_id: id("intuition.policy"),
+        candidate_ids: vec![id("abstain"), id("action.read")],
+        selected_candidate_id: id("action.read"),
+        selected_propensity: selected_probability,
+        completeness: CandidateSetCompleteness::Complete,
+        support_digest: prepared.dispatch_proposal_digest,
+    });
+    let file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(directory.path().join("ledger"))
+        .expect("create ledger");
+    let mut ledger = DurableLedger::create(file, digest("randomized-qualification-binding"), 16)
+        .expect("ledger");
+    runner
+        .append_decision(
+            &mut ledger,
+            Digest32::ZERO,
+            &prepared,
+            id("episode.randomized"),
+            id("intuition.policy"),
+        )
+        .expect("randomized decision append");
+    assert_eq!(ledger.records().expect("records")[0].event, expected);
+    assert_eq!(prepared, prepared_before);
 }
 
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]

@@ -154,6 +154,20 @@ Every producer validates output before publication and binds semantic fields int
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
+### Pre-release Agentd Rust payload ownership migration
+
+`AgentdIntelligenceProductOutcomeV1::Ready`, the `prepared` field of `AgentdIntelligenceAdmittedOutcomeV1::Ready`, and `AgentdIntelligenceLedgerError::Indeterminate` now own `Box` payloads. This is a Rust source-breaking change: constructors use `Box::new`, and callers consuming the previous by-value type use `*prepared` or `*pending`; borrowed access still dereferences normally. Agentd is unpublished at workspace version `0.0.0`. This bounded migration adapts source `916785e374ea69e62a2c7f57f491ad0e815b2edf` (corrected lineage `889aa348fc58c17260d97d5be0ae86a78caabbd9`) without asserting compatibility for unknown external Rust consumers.
+
+These three enums have no serde representation. Public wire methods, wire converters, complete receipts and ledger events, digest inputs and persisted formats are unchanged. Both admission callers forward the prepared box directly. Context's existing boxed `CanonicalRunOutcomeV1::Ready` remains unchanged, with one dereference before constructing the Agentd payload. The existing signed admission test consumes the owned payload and checks the complete run receipt. Qualification replay coverage consumes the exact pending event through the existing by-value reconciliation API on a freshly recovered journal, checks complete replay and error values, and requires unchanged journal bytes. It seeds a valid qualification event and does not claim to exercise an actual ambiguous I/O write or repair legacy candidate preparation. Fresh native tests and strict-owner evidence for this adaptation remain pending; earlier lineage results do not qualify it.
+
+### Qualification candidate representation
+
+The default-off `qualification-legacy-learning-write` adapter now projects frozen action IDs into the Ledger's explicit complete outcome universe. Intuition V2 commits the supplied actions and their propensities separately from intrinsic abstain and slow-path probability. Its V2 receipt binds the full request; the canonical decision, envelope and dispatch proposal digest retain that receipt. Thus an intrinsic abstain identity is an explicit representation of an already committed outcome, not a new signed policy action. The Ledger event separately hashes the projected IDs and unchanged support digest.
+
+The private projection runs only when constructing a fresh qualification `EpisodeDecision`. It sorts action IDs, adds the intrinsic `abstain` identity, and rejects empty actions, duplicates, an action using the reserved identity, or more than 127 actions under the Ledger's unchanged 128-total bound. Signed action candidates, prepared runs, selected ID, exact propensity and dispatch support remain unchanged. Persisted and pending replay events are consumed exactly as recorded and are never reprojected.
+
+The two positive legacy owner fixtures now use the existing signed evaluator fixture and its explicit test host trust rather than relaxing verification. Coverage checks complete recorded decisions and prepared objects, 127/128 capacity, invalid projections, and a counter-based selected action with 3/4 propensity plus 1/4 intrinsic abstain. Existing unsigned-input, trust-substitution, context-substitution, revocation-before-write and owned replay checks remain. The separate new native selections require actual named cases, but execution on the new source remains pending. These qualification fixtures do not install ordinary host trust, activate a product factory or authorize a production writer.
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:

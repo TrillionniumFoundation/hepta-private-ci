@@ -105,9 +105,201 @@ def specs(legacy):
             spec["minimumTests"] = 1
         commands.append(spec)
 
+    retirement_observer_names = [
+        f"session::tests::compaction_admission_tests::{name}"
+        for name in [
+            "compact_after_turn_complete_rejects_while_terminalization_pending",
+            "retirement_observation_waits_for_flush_and_idle_fence",
+            "retirement_observation_rejects_newer_active_and_retired_turns",
+            "retirement_observation_rejects_registry_contention_at_capture_and_recheck",
+            "cancelled_retirement_observation_preserves_terminalizer",
+            "retirement_observation_deadline_does_not_cancel_terminalizer",
+            "retirement_observation_deadline_bounds_capture_lock",
+            "retirement_observation_deadline_bounds_recheck_lock",
+            "retirement_observation_rechecks_shutdown",
+            "retirement_observation_does_not_imply_successful_terminal_flush",
+        ]
+    ]
+    compaction_fixture_names = [
+        "suite::model_provider_policy_compaction::provider_policy_block_prevents_remote_v1_compaction_send",
+        "suite::model_provider_policy_compaction::provider_policy_claims_each_remote_v1_compaction_retry",
+    ]
+    delivery_regression_names = [
+        "v2::tests::provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_delivery_receipt",
+        "v2::tests::provider_owned_attempt_witness_is_authenticated_by_delivery_verifier",
+        "v2::tests::provider_payload_binding_must_match_exact_serialized_payload",
+        "v2::tests::provider_input_witness_must_bind_current_pre_dispatch_revalidation",
+        "v2::tests::provider_and_model_identity_must_match_exact_model_profile",
+        "v2::tests::independent_provider_evidence_verifier_is_required",
+        "v2::tests::indeterminate_provider_terminal_remains_indeterminate",
+    ]
+    stream_regression_names = [
+        "client::provider_policy_tests::completed_is_hidden_until_exact_terminal_is_acknowledged",
+        "client::provider_policy_tests::terminal_failure_suppresses_completed_and_last_response",
+        "client::provider_policy_tests::consumer_drop_records_partial_indeterminate_terminal",
+        "client::provider_policy_tests::unauthorized_stream_error_records_rejected_before_downstream_error",
+        "client::provider_policy_tests::eof_records_partial_indeterminate_terminal",
+        "client::provider_policy_tests::terminal_acknowledgement_wait_is_not_consumer_timeout_driven",
+        "client::tests::dropped_response_stream_traces_cancelled_partial_output",
+        "client::tests::response_stream_records_last_model_feedback_ids",
+        "client::tests::ephemeral_unauthorized_and_stream_errors_are_redacted",
+        "client::tests::dropped_backpressured_response_stream_traces_cancelled_partial_output",
+    ]
+
     # These selectors exercise the actual provider-body slots, not only the
     # context compiler crate in isolation.
     commands[2:2] = [
+        {
+            "name": "core-retirement-observer-regressions",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-core",
+                "--lib",
+                "session::tests::compaction_admission_tests",
+                "--status-level",
+                "pass",
+            ],
+            "minimumTests": len(retirement_observer_names),
+            "requiredNativeTests": retirement_observer_names,
+        },
+        {
+            "name": "core-compaction-retirement-fixtures",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-core",
+                "--test",
+                "all",
+                "-E",
+                " | ".join(f"test({name})" for name in compaction_fixture_names),
+                "--status-level",
+                "pass",
+            ],
+            "minimumTests": len(compaction_fixture_names),
+            "requiredNativeTests": compaction_fixture_names,
+        },
+        {
+            "name": "context-delivery-input-regressions",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-context-compiler",
+                "--lib",
+                "-E",
+                " | ".join(f"test({name})" for name in delivery_regression_names),
+            ],
+            "minimumTests": len(delivery_regression_names),
+            "requiredNativeTests": delivery_regression_names,
+        },
+        {
+            "name": "agentd-legacy-candidate-projection",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
+                "--lib",
+                "--features",
+                "qualification-legacy-learning-write",
+                "intelligence_learning_candidates::tests",
+                "--status-level",
+                "pass",
+            ],
+            "minimumTests": 3,
+            "requiredNativeTests": [
+                "intelligence_learning_candidates::tests::action_projection_is_canonical_without_changing_policy_actions",
+                "intelligence_learning_candidates::tests::action_projection_rejects_empty_duplicate_and_reserved_actions",
+                "intelligence_learning_candidates::tests::action_projection_preserves_the_ledger_capacity_bound",
+            ],
+        },
+        {
+            "name": "agentd-legacy-product-conservation",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
+                "--lib",
+                "--features",
+                "qualification-legacy-learning-write",
+                "intelligence_product::tests",
+                "--status-level",
+                "pass",
+            ],
+            "minimumTests": 4,
+            "requiredNativeTests": [
+                "intelligence_product::tests::real_owner_product_path_records_decision_outcome_and_reopens",
+                "intelligence_product::tests::final_use_revocation_race_fails_before_decision_publication",
+                "intelligence_product::tests::signed::randomized_selected_decision_preserves_intrinsic_abstain_and_exact_propensity",
+                "intelligence_product::tests::boxed_pending_append_preserves_owned_replay_and_error_mapping",
+            ],
+        },
+        {
+            "name": "agentd-boxed-pending-replay-regression",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agentd",
+                "--lib",
+                "--features",
+                "qualification-legacy-learning-write",
+                "intelligence_product::tests::boxed_pending_append_preserves_owned_replay_and_error_mapping",
+            ],
+            "minimumTests": 1,
+            "requiredNativeTests": [
+                "intelligence_product::tests::boxed_pending_append_preserves_owned_replay_and_error_mapping",
+            ],
+        },
+        {
+            "name": "core-compaction-admission-diagnostic",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-core",
+                "--lib",
+                "session::tests::compaction_admission_tests::compact_after_turn_complete_rejects_while_terminalization_pending",
+            ],
+            "minimumTests": 1,
+            "requiredNativeTests": [
+                "session::tests::compaction_admission_tests::compact_after_turn_complete_rejects_while_terminalization_pending",
+            ],
+        },
+        {
+            "name": "core-response-stream-regressions",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-core",
+                "--lib",
+                "-E",
+                " | ".join(f"test({name})" for name in stream_regression_names),
+            ],
+            "minimumTests": len(stream_regression_names),
+            "requiredNativeTests": stream_regression_names,
+        },
         {
             "name": "core-websocket-connection-identity-regression",
             "cwd": legacy.CODEX_RS,

@@ -1,7 +1,13 @@
 #!/usr/bin/env python3
 """Static source-topology regressions for the one context delivery owner."""
 
+from fnmatch import fnmatchcase
+import hashlib
+import os
 from pathlib import Path
+import re
+import subprocess
+import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -12,6 +18,74 @@ def read(relative):
 
 
 class ContextCompilerSingleOwnerTests(unittest.TestCase):
+    def test_artifact_manifests_bind_every_payload_without_hashing_their_output(self):
+        lines = read(
+            ".github/workflows/context-compiler-qualification.yml"
+        ).splitlines()
+        pipelines = []
+        for index, line in enumerate(lines):
+            match = re.search(
+                r'find "\$RUNNER_TEMP/(context-source|context-evidence)"', line
+            )
+            if match:
+                pipelines.append((match.group(1), "\n".join(lines[index : index + 2])))
+        self.assertEqual(
+            {name for name, _ in pipelines}, {"context-source", "context-evidence"}
+        )
+        self.assertEqual(len(pipelines), 2)
+        for name, pipeline in pipelines:
+            with (
+                self.subTest(manifest=name),
+                tempfile.TemporaryDirectory() as temporary,
+            ):
+                root = Path(temporary) / name
+                payloads = {
+                    root / "payload.txt": b"retained source or receipt\n",
+                    root / "empty.bin": b"",
+                    root
+                    / "logs/detail with spaces.log": b"native execution\x00bytes\n",
+                    root
+                    / "logs/artifact-files.sha256": b"same basename is still payload\n",
+                }
+                for path, content in payloads.items():
+                    path.parent.mkdir(parents=True, exist_ok=True)
+                    path.write_bytes(content)
+                manifest = root / "artifact-files.sha256"
+                environment = dict(os.environ, RUNNER_TEMP=temporary)
+
+                def execute(command):
+                    subprocess.run(
+                        ["bash", "-c", command],
+                        env=environment,
+                        check=True,
+                        capture_output=True,
+                    )
+                    return {
+                        Path(path): digest
+                        for digest, path in (
+                            line.split("  ", 1)
+                            for line in manifest.read_text(
+                                encoding="utf-8"
+                            ).splitlines()
+                        )
+                    }
+
+                expected = {
+                    path: hashlib.sha256(content).hexdigest()
+                    for path, content in payloads.items()
+                }
+                self.assertEqual(execute(pipeline), expected)
+                manifest.write_text("stale previous manifest\n", encoding="utf-8")
+                self.assertEqual(execute(pipeline), expected)
+                exclusion = f' ! -path "$RUNNER_TEMP/{name}/artifact-files.sha256"'
+                without_exclusion = pipeline.replace(exclusion, "")
+                self.assertNotEqual(without_exclusion, pipeline)
+                invalid = execute(without_exclusion)
+                self.assertEqual(set(invalid), set(payloads) | {manifest})
+                self.assertNotEqual(
+                    invalid[manifest], hashlib.sha256(manifest.read_bytes()).hexdigest()
+                )
+
     def test_registry_and_intelligence_v3_are_registered(self):
         registry = read("codex-rs/hepta-prompt-registry/src/lib.rs")
         intelligence = read("codex-rs/hepta-intelligence/src/lib.rs")
@@ -117,6 +191,26 @@ class ContextCompilerSingleOwnerTests(unittest.TestCase):
         self.assertFalse(
             list((ROOT / "scripts").glob("remediate_context_compiler_*.py"))
         )
+
+    def test_supervisor_dependency_changes_select_context_qualification(self):
+        workflow = read(".github/workflows/context-compiler-qualification.yml")
+        pull_request = workflow.split("  pull_request:\n", 1)[1].split("  push:\n", 1)[
+            0
+        ]
+        path_lines = pull_request.split("    paths:\n", 1)[1].splitlines()
+        self.assertTrue(all(line.startswith("      - ") for line in path_lines))
+        paths = [line.removeprefix("      - ") for line in path_lines]
+        supervisor_scope = "codex-rs/hepta-supervisor/**"
+        without_supervisor = [path for path in paths if path != supervisor_scope]
+        for changed in (
+            "codex-rs/hepta-supervisor/src/restart_journal.rs",
+            "codex-rs/hepta-supervisor/Cargo.toml",
+        ):
+            with self.subTest(changed=changed):
+                self.assertTrue(any(fnmatchcase(changed, path) for path in paths))
+                self.assertFalse(
+                    any(fnmatchcase(changed, path) for path in without_supervisor)
+                )
 
     def test_profile_matrix_covers_both_git_lanes_and_feature_profiles(self):
         workflow = read(".github/workflows/context-compiler-profile-matrix.yml")

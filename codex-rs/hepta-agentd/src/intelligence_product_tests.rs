@@ -662,7 +662,7 @@ fn fixture() -> Fixture {
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_owner_product_path_records_decision_outcome_and_reopens() {
-    let fixture = fixture();
+    let (fixture, trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -670,8 +670,10 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("host-root trust");
     let mut coordinator = product_test_coordinator();
     let outcome = runner
         .prepare_and_admit(&mut coordinator, fixture.request, fixture.inputs)
@@ -693,7 +695,11 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         Some(prepared.envelope.envelope_digest.to_string().as_str())
     );
     let dispatched = coordinator
-        .mark_dispatched(&attached.run_id, attached.revision)
+        .mark_dispatched(
+            wall_clock_ms().expect("clock"),
+            &attached.run_id,
+            attached.revision,
+        )
         .expect("commit dispatch before physical effect");
     assert_eq!(dispatched.phase, RunPhase::Dispatched);
 
@@ -706,6 +712,18 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         .open(&ledger_path)
         .expect("create ledger");
     let mut ledger = DurableLedger::create(file, binding, 16).expect("ledger");
+    let prepared_before = prepared.clone();
+    let expected_decision = LedgerEvent::Decision(EpisodeDecision {
+        record_id: prepared.envelope.run_id.clone(),
+        episode_id: id("episode.agentd"),
+        objective_digest: prepared.envelope.objective_digest,
+        policy_id: id("intuition.policy"),
+        candidate_ids: vec![id("abstain"), id("action.read")],
+        selected_candidate_id: id("action.read"),
+        selected_propensity: ProbabilityQ32::ONE,
+        completeness: CandidateSetCompleteness::Complete,
+        support_digest: prepared.dispatch_proposal_digest,
+    });
     let decision = runner
         .append_decision(
             &mut ledger,
@@ -716,6 +734,12 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         )
         .expect("decision append");
     assert_eq!(decision.disposition, AppendDisposition::Appended);
+    assert_eq!(prepared, prepared_before);
+    assert_eq!(prepared.candidate_ids, vec![id("action.read")]);
+    assert_eq!(
+        ledger.records().expect("records")[0].event,
+        expected_decision
+    );
 
     let outcome = runner
         .append_outcome(
@@ -747,10 +771,10 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         Some(prepared.envelope.envelope_digest.to_string().as_str())
     );
     assert_eq!(ledger.records().expect("records").len(), 2);
-    assert!(matches!(
+    assert_eq!(
         ledger.records().expect("records")[0].event,
-        LedgerEvent::Decision(_)
-    ));
+        expected_decision
+    );
     assert!(matches!(
         ledger.records().expect("records")[1].event,
         LedgerEvent::Outcome(_)
@@ -773,6 +797,10 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
     )
     .expect("recover");
     assert_eq!(recovered.records().expect("recovered records").len(), 2);
+    assert_eq!(
+        recovered.records().expect("recovered records")[0].event,
+        expected_decision
+    );
 
     let replay = runner
         .append_outcome(
@@ -825,7 +853,7 @@ async fn unsigned_currentness_substitution_fails_before_owner_use() {
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn final_use_revocation_race_fails_before_decision_publication() {
-    let fixture = fixture();
+    let (fixture, trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -834,7 +862,9 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
         fixture.request.snapshot.revocation_frontier_digest(),
     );
     let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone(), authority_verifier())
-        .expect("runner");
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("host-root trust");
     let outcome = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await
@@ -986,6 +1016,109 @@ async fn aborted_owner_work_retains_its_budget_until_computation_finishes() {
         .spawn_owner_work(|| 7_u32)
         .expect("capacity restored");
     assert_eq!(ready.await.expect("new work completes"), 7);
+}
+
+#[cfg(feature = "qualification-legacy-learning-write")]
+#[test]
+fn boxed_pending_append_preserves_owned_replay_and_error_mapping() {
+    let fixture = fixture();
+    let directory = tempfile::tempdir().expect("directory");
+    let authority = directory.path().join("authority.json");
+    write_authority_file(
+        &authority,
+        &fixture.owners,
+        fixture.request.snapshot.revocation_frontier_digest(),
+    );
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone(), authority_verifier())
+        .expect("runner");
+    // Seed the real qualification journal directly. This tests owned recovery,
+    // not append_decision's candidate preparation or an injected I/O failure.
+    let event = LedgerEvent::Decision(EpisodeDecision {
+        record_id: fixture.request.run_id,
+        episode_id: id("episode.boxed-replay"),
+        objective_digest: fixture.request.snapshot.objective_digest(),
+        policy_id: id("intuition.policy"),
+        candidate_ids: vec![id("abstain"), id("action.read")],
+        selected_candidate_id: id("action.read"),
+        selected_propensity: ProbabilityQ32::ONE,
+        completeness: CandidateSetCompleteness::Complete,
+        support_digest: fixture.request.snapshot.digest(),
+    });
+    let ledger_path = directory.path().join("ledger");
+    let binding = digest("boxed-replay-binding");
+    let file = OpenOptions::new()
+        .create_new(true)
+        .read(true)
+        .write(true)
+        .open(&ledger_path)
+        .expect("create ledger");
+    let mut ledger = DurableLedger::create(file, binding, 16).expect("ledger");
+    let committed = ledger
+        .append_qualification(Digest32::ZERO, event)
+        .expect("qualification decision");
+    let expected = PendingIntelligenceLedgerAppendV1 {
+        expected_predecessor: Digest32::ZERO,
+        snapshot: fixture.request.snapshot,
+        event: ledger.records().expect("committed records")[0]
+            .event
+            .clone(),
+    };
+    let error = AgentdIntelligenceLedgerError::Indeterminate(Box::new(expected.clone()));
+    assert_eq!(error.to_string(), format!("Indeterminate({expected:?})"));
+    let AgentdIntelligenceLedgerError::Indeterminate(pending) = error else {
+        panic!("pending append changed variant");
+    };
+    assert_eq!(*pending, expected);
+    drop(ledger);
+    let before_replay = std::fs::read(&ledger_path).expect("persisted ledger bytes");
+    let file = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .open(&ledger_path)
+        .expect("reopen ledger");
+    let mut recovered = DurableLedger::recover(
+        file,
+        binding,
+        16,
+        LedgerRecovery::Acknowledged(LedgerAnchor {
+            sequence: committed.sequence.get(),
+            chain_digest: committed.chain_digest,
+        }),
+    )
+    .expect("recover acknowledged decision");
+    let replay = runner
+        .reconcile_ledger_append(&mut recovered, *pending)
+        .expect("reconcile exact owned boxed payload");
+    assert_eq!(
+        replay,
+        AppendReceipt {
+            disposition: AppendDisposition::IdempotentReplay,
+            ..committed
+        }
+    );
+    let mut conflicting = expected.clone();
+    conflicting.expected_predecessor = digest("wrong-predecessor");
+    let Err(AgentdIntelligenceLedgerError::Ledger(error)) =
+        runner.reconcile_ledger_append(&mut recovered, conflicting)
+    else {
+        panic!("predecessor conflict must retain the ledger error");
+    };
+    assert_eq!(error, DurableLedgerError::Conflict);
+    write_authority_file(&authority, &fixture.owners, digest("revoked-frontier"));
+    let Err(AgentdIntelligenceLedgerError::Currentness(error)) =
+        runner.reconcile_ledger_append(&mut recovered, expected)
+    else {
+        panic!("revoked snapshot must retain the currentness error");
+    };
+    assert_eq!(
+        error,
+        CanonicalIntelligenceError::RevocationFrontierDrift(id("objective.compiler"))
+    );
+    drop(recovered);
+    assert_eq!(
+        std::fs::read(&ledger_path).expect("unchanged replay bytes"),
+        before_replay
+    );
 }
 
 #[path = "intelligence_product_signed_tests.rs"]

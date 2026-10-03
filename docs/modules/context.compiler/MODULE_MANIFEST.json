@@ -82,7 +82,22 @@
     "scripts/test_context_compiler_execution.py",
     "scripts/test_context_compiler_execution_boundary.py",
     "codex-rs/core/src/client_tests.rs",
-    "codex-rs/core/src/responses_metadata.rs"
+    "codex-rs/core/src/responses_metadata.rs",
+    "codex-rs/core/tests/suite/model_provider_policy.rs",
+    ".github/workflows/context-compiler-qualification.yml",
+    "codex-rs/core/src/client_provider_policy_tests.rs",
+    "codex-rs/core/src/session/tests.rs",
+    "codex-rs/core/src/session/compaction_admission_tests.rs",
+    "codex-rs/core/tests/suite/model_provider_policy_compaction.rs",
+    "codex-rs/hepta-agentd/src/intelligence_product.rs",
+    "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+    "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+    "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+    "codex-rs/hepta-agentd/src/intelligence_learning_candidates.rs",
+    "codex-rs/hepta-agentd/src/intelligence_learning_candidates_tests.rs",
+    "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/core/src/test_support.rs",
+    "codex-rs/core/src/test_support/turn_retirement.rs"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -268,17 +283,20 @@
     "Long-lived history rollover is not implemented by raw-payload retirement. The 1024 runtime dispatch and 4096 exact pre-send limits, bounded whole-JSON persistence and replay cost remain. A versioned append-only journal/checkpoint/archive migration must retain every attempt tombstone, unresolved binding and independently anchored frontier; do not delete history or increase limits as a substitute.",
     "Execute all seventeen lifecycle/capacity/metrics Rust regressions on the final source and merge candidates, including their named-output and bounded-profile validation. Local toolchain availability and local passing tests do not replace immutable CI lane receipts.",
     "Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations.",
-    "Unix descriptor-relative storage defenses do not establish Windows parity, target-host power-loss durability or resistance to a privileged same-user replace-and-restore adversary."
+    "Unix descriptor-relative storage defenses do not establish Windows parity, target-host power-loss durability or resistance to a privileged same-user replace-and-restore adversary.",
+    "Historical 29781b75 source and merge receipts directly reproduce the correlated terminalizing rejection in both seeded remote-v1 compaction fixtures. The 05561a6d receipts execute all ten retirement/held-fence cases, both compaction fixtures and the 57-case Core policy slice successfully in both lanes without fixture retries. Its strict lint exposes two fixture guard-across-await findings; the subsequent synchronous lock-owner correction needs its own exact-candidate execution. Conservative Busy during legitimate registry contention remains a visible failure. Visible TurnComplete, successful durability, fence retirement and an atomic admission reservation remain distinct. No production completion-readiness API or lifecycle-order fix is provided.",
+    "The 82cda6a9 and 05561a6d source/merge receipts each execute seven delivery-owner cases, three candidate-projection cases and ten feature-enabled Agentd product cases successfully. These overlapping owner fixtures do not establish ordinary host-trust installation, a factory or production-write authority. Three dormant Plasticity producer/state diagnostic groups still retain the production lifetime sender; the documented non-test coordinator remains missing and is not fabricated or suppressed. Historical scoped execution does not grant the later candidate global acceptance.",
+    "The fbfa V3 consumer compile failure left the new Agentd candidate-projection commands unexecuted. The two-file correction at 82cda6a9 passed all ten exact source/merge compilation profiles and its native adapter selections, with verified artifacts. The 05561a6d checkpoint also passes all ten compilation profiles and 35 of 37 native commands per lane; combined strict lint fails on the two corrected fixture findings plus the three retained Plasticity composition groups, while the optional advisory command fails against the unchanged paused lock. Every later candidate still requires its own execution and independent product acceptance."
   ],
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "e106a61703b121d370cd990aa90e1f8a951a141c895bf3e7f38b76589b1c327e",
+    "stateSha256": "af9378b09a45b093cc88834d9c9049330f365db383665ed5604253b89f2e2323",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
   },
-  "runtimeSourceAnchor": "78c68bf76436ef4e5d41a10ade76ddfe924d92d4",
-  "runtimeSourceTree": "339eec26b417d0de11bf49b7a541c9c34e5d1407",
+  "runtimeSourceAnchor": "4ae15a750695bcb16dce62b6351708be82582347",
+  "runtimeSourceTree": "29445040de353f5bc5bbe8a0ead7f6f459158b18",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -436,7 +454,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/prompt_product_v3.rs",
-      "blobSha": "7659ace2b902c2746a223b5b998b506d486d7f92"
+      "blobSha": "22b1fcdd146f08ab3e6f9d28df47198218b5756c"
     },
     {
       "path": "codex-rs/hepta-prompt-registry/src/context_authority.rs",
@@ -448,7 +466,7 @@
     },
     {
       "path": "scripts/context_compiler_execution.py",
-      "blobSha": "040ff0457678337b0daa52d0213cd3f7b8eb219b"
+      "blobSha": "6a4b1265af64fab8a28df98733c622eab387c3e9"
     },
     {
       "path": "scripts/context_compiler_named_evidence.py",
@@ -468,7 +486,7 @@
     },
     {
       "path": "scripts/test_context_compiler_single_owner.py",
-      "blobSha": "21489a3e2d8b93289ccac1b4932c4571be87b66e"
+      "blobSha": "f838fd945c6131675f0d42525fe440e1013c2a22"
     },
     {
       "path": "scripts/test_context_compiler_state.py",
@@ -476,11 +494,11 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2.rs",
-      "blobSha": "3b11c93c4d3f7623f4a84ac3b767e551ae32a53e"
+      "blobSha": "7fba26035ac48151371567363f8fcc46bf76ae4f"
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/v2_tests.rs",
-      "blobSha": "d8591faecc1968af9bb01fd976368358730f04a1"
+      "blobSha": "5482671c43fc16416b2eae36c0af44854bfe86d3"
     },
     {
       "path": "codex-rs/hepta-agentd/src/exact_context_delivery/storage.rs",
@@ -516,11 +534,11 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler/src/lib.rs",
-      "blobSha": "b5a49d27abdb767cb24633838c0e4604c4fb912c"
+      "blobSha": "394e5b069140ca86dd3fcd507955e3b9e08ac92d"
     },
     {
       "path": "scripts/test_context_compiler_execution.py",
-      "blobSha": "bd49844c22fb2cb6e8bff45c51d93a613510aa31"
+      "blobSha": "9ab1475b484ecd4188ca2a73674bfebc77271e4a"
     },
     {
       "path": "scripts/test_context_compiler_execution_boundary.py",
@@ -528,15 +546,75 @@
     },
     {
       "path": "codex-rs/core/src/client.rs",
-      "blobSha": "b56c62cbda00cbc75b506fb4c72c18c8eaf6ea68"
+      "blobSha": "9bbc3ef49c4d45cf5a67d6d9d7ffbb4d9464710e"
     },
     {
       "path": "codex-rs/core/src/client_tests.rs",
-      "blobSha": "f718ceec109f94d02651b132865479c8dbde17d1"
+      "blobSha": "cbe6d24930ab6b31561b53540e52be4d28146809"
     },
     {
       "path": "codex-rs/core/src/responses_metadata.rs",
-      "blobSha": "da91fab68cd0b29d05ed0c8cb109d9f8bf7765c4"
+      "blobSha": "b338a07f047ffff4a2ac742d5ad2cba4dec9280c"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/model_provider_policy.rs",
+      "blobSha": "1abde28937e3ea81d47b2611fdcbd06963119522"
+    },
+    {
+      "path": ".github/workflows/context-compiler-qualification.yml",
+      "blobSha": "f432b98f8bdde2328e2ae318688b46e47c470c78"
+    },
+    {
+      "path": "codex-rs/core/src/client_provider_policy_tests.rs",
+      "blobSha": "c5fb1e8e1296d44142f821ea0ff431ee4c741c66"
+    },
+    {
+      "path": "codex-rs/core/src/session/tests.rs",
+      "blobSha": "9b03a390aba8ceeaf2ed24a5e27ad6c5da41e737"
+    },
+    {
+      "path": "codex-rs/core/src/session/compaction_admission_tests.rs",
+      "blobSha": "67d338f8b68bb6187e0ef8181602a5532f8e9c48"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/model_provider_policy_compaction.rs",
+      "blobSha": "b219cd3d58d215d1ae459ba16cdfbb9001df97a0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "blobSha": "0df64edc3bfd0c1e8a1993b8c37a03c5ea123830"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "blobSha": "a568d798ea00b60301f06832676f9c56af6fc2ab"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "blobSha": "c8c31bc1fc2a7d7f5522ec4e0eb0647555e1b32f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+      "blobSha": "e1ec5bcc0aed1e82e7c7075e64e1796cd795c5b9"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_learning_candidates.rs",
+      "blobSha": "e34990ac6d8ab974b09b50beba2750cea1533999"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_learning_candidates_tests.rs",
+      "blobSha": "8887227d882d662ac0b87864b97b3e1c2babb863"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "blobSha": "e811093230067916d643a6bfab8e437e83d3e597"
+    },
+    {
+      "path": "codex-rs/core/src/test_support.rs",
+      "blobSha": "39e0db0dfc7c4be8014ac8cb1e07057520938e15"
+    },
+    {
+      "path": "codex-rs/core/src/test_support/turn_retirement.rs",
+      "blobSha": "7725da21a8adad9277e65f7adac94d349a7315a3"
     }
   ],
   "consumerExecution": [

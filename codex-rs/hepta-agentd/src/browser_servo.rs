@@ -314,7 +314,6 @@ fn response_result(frame: DecodedFrame, request_id: &str) -> Result<Value, Brows
 
 #[derive(Debug)]
 struct DecodedFrame {
-    sequence: u64,
     kind: String,
     request_id: String,
     payload: Value,
@@ -450,7 +449,6 @@ fn receive_frame<T: BrowserServoTransport>(
         ));
     }
     Ok(DecodedFrame {
-        sequence,
         kind: kind.to_string(),
         request_id: request_id.to_string(),
         payload,
@@ -1105,6 +1103,52 @@ mod tests {
             harness.outbound.recv_timeout(Duration::from_millis(25)),
             Err(mpsc::RecvTimeoutError::Timeout)
         ));
+    }
+
+    #[test]
+    fn rejected_sequence_keeps_the_next_expected_frame_unchanged() {
+        let (outbound, _unused_outbound) = mpsc::channel();
+        let (inbound, receiver) = mpsc::channel();
+        let mut state = PortState {
+            transport: ChannelTransport {
+                outbound,
+                inbound: receiver,
+            },
+            next_request_id: 1,
+            next_outgoing_sequence: 1,
+            next_incoming_sequence: 1,
+        };
+        inbound
+            .send(inbound_frame(
+                /*sequence*/ 1,
+                "response",
+                "request.1",
+                json!({}),
+            ))
+            .expect("first frame");
+        let accepted = receive_frame(&mut state).expect("first sequence");
+        assert_eq!(
+            (accepted.kind, accepted.request_id, accepted.payload),
+            ("response".to_owned(), "request.1".to_owned(), json!({}))
+        );
+        for sequence in [1, 3] {
+            inbound
+                .send(inbound_frame(sequence, "response", "request.2", json!({})))
+                .expect("non-monotonic frame");
+            assert!(matches!(receive_frame(&mut state),
+                Err(BrowserServoError::Protocol(message)) if message == "Browser input sequence is not monotonic"));
+            assert_eq!(state.next_incoming_sequence, 2);
+        }
+        inbound
+            .send(inbound_frame(
+                /*sequence*/ 2,
+                "response",
+                "request.2",
+                json!({}),
+            ))
+            .expect("next valid frame");
+        receive_frame(&mut state).expect("rejection did not advance the counter");
+        assert_eq!(state.next_incoming_sequence, 3);
     }
 
     #[test]

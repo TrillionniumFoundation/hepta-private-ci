@@ -17,6 +17,276 @@ def libtest(passed=1, failed=0, ignored=0):
 
 
 class ExecutionSummaryTests(unittest.TestCase):
+    def test_retirement_observer_and_fixtures_require_actual_named_cases(self):
+        from context_compiler_named_evidence import bind_named_tests
+
+        observer = [
+            "compact_after_turn_complete_rejects_while_terminalization_pending",
+            "retirement_observation_waits_for_flush_and_idle_fence",
+            "retirement_observation_rejects_newer_active_and_retired_turns",
+            "retirement_observation_rejects_registry_contention_at_capture_and_recheck",
+            "cancelled_retirement_observation_preserves_terminalizer",
+            "retirement_observation_deadline_does_not_cancel_terminalizer",
+            "retirement_observation_deadline_bounds_capture_lock",
+            "retirement_observation_deadline_bounds_recheck_lock",
+            "retirement_observation_rechecks_shutdown",
+            "retirement_observation_does_not_imply_successful_terminal_flush",
+        ]
+        expected = {
+            "core-retirement-observer-regressions": [
+                f"session::tests::compaction_admission_tests::{name}"
+                for name in observer
+            ],
+            "core-compaction-retirement-fixtures": [
+                "suite::model_provider_policy_compaction::provider_policy_block_prevents_remote_v1_compaction_send",
+                "suite::model_provider_policy_compaction::provider_policy_claims_each_remote_v1_compaction_retry",
+            ],
+        }
+        for command, names in expected.items():
+            spec = next(value for value in specs(legacy) if value["name"] == command)
+            self.assertEqual(spec["requiredNativeTests"], names)
+            self.assertEqual(spec["minimumTests"], len(names))
+            self.assertEqual(spec["argv"][:2], ["just", "test"])
+            self.assertEqual(spec["argv"][spec["argv"].index("-p") + 1], "codex-core")
+            for missing in [None, *names]:
+                with self.subTest(command=command, missing=missing):
+                    observed = [
+                        name if name != missing else "unrelated::green"
+                        for name in names
+                    ]
+                    with tempfile.TemporaryDirectory() as directory:
+                        path = Path(directory) / "native.log"
+                        path.write_text(
+                            "".join(
+                                f"PASS [0.1s] codex-core {name}\n" for name in observed
+                            )
+                        )
+                        named = bind_named_tests(path, names)
+                    self.assertEqual(named["namedNativeTestsPassed"], missing is None)
+            zero = {"succeeded": True}
+            bind_test_count("Summary [1s] 0 tests run: 0 passed", spec, zero)
+            self.assertFalse(zero["succeeded"])
+
+    def test_delivery_carrier_requires_all_seven_migrated_native_cases(self):
+        from context_compiler_named_evidence import bind_named_tests
+
+        spec = next(
+            value
+            for value in specs(legacy)
+            if value["name"] == "context-delivery-input-regressions"
+        )
+        names = spec["requiredNativeTests"]
+        self.assertEqual(
+            names,
+            [
+                "v2::tests::provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_delivery_receipt",
+                "v2::tests::provider_owned_attempt_witness_is_authenticated_by_delivery_verifier",
+                "v2::tests::provider_payload_binding_must_match_exact_serialized_payload",
+                "v2::tests::provider_input_witness_must_bind_current_pre_dispatch_revalidation",
+                "v2::tests::provider_and_model_identity_must_match_exact_model_profile",
+                "v2::tests::independent_provider_evidence_verifier_is_required",
+                "v2::tests::indeterminate_provider_terminal_remains_indeterminate",
+            ],
+        )
+        self.assertEqual(spec["minimumTests"], 7)
+        self.assertEqual(len(names), 7)
+        self.assertEqual(
+            spec["argv"][spec["argv"].index("-p") + 1], "codex-hepta-context-compiler"
+        )
+        self.assertEqual(
+            spec["argv"][spec["argv"].index("-E") + 1],
+            " | ".join(f"test({name})" for name in names),
+        )
+        for missing in [None, *names]:
+            with self.subTest(missing=missing):
+                observed = [
+                    name if name != missing else "unrelated::green_test"
+                    for name in names
+                ]
+                summary = "Summary [1s] 7 tests run: 7 passed"
+                result = {"succeeded": True}
+                bind_test_count(summary, spec, result)
+                with tempfile.TemporaryDirectory() as directory:
+                    path = Path(directory) / "native.log"
+                    path.write_text(
+                        "".join(
+                            f"PASS [0.1s] codex-hepta-context-compiler {name}\n"
+                            for name in observed
+                        )
+                        + summary
+                        + "\n"
+                    )
+                    named = bind_named_tests(path, names)
+                self.assertEqual(
+                    result["succeeded"] and named["namedNativeTestsPassed"],
+                    missing is None,
+                )
+
+    def test_legacy_projection_commands_require_every_native_case(self):
+        from context_compiler_named_evidence import bind_named_tests
+
+        expected = {
+            "agentd-legacy-candidate-projection": (
+                "intelligence_learning_candidates::tests",
+                3,
+            ),
+            "agentd-legacy-product-conservation": ("intelligence_product::tests", 4),
+        }
+        expected_names = {
+            "agentd-legacy-candidate-projection": [
+                "intelligence_learning_candidates::tests::action_projection_is_canonical_without_changing_policy_actions",
+                "intelligence_learning_candidates::tests::action_projection_rejects_empty_duplicate_and_reserved_actions",
+                "intelligence_learning_candidates::tests::action_projection_preserves_the_ledger_capacity_bound",
+            ],
+            "agentd-legacy-product-conservation": [
+                "intelligence_product::tests::real_owner_product_path_records_decision_outcome_and_reopens",
+                "intelligence_product::tests::final_use_revocation_race_fails_before_decision_publication",
+                "intelligence_product::tests::signed::randomized_selected_decision_preserves_intrinsic_abstain_and_exact_propensity",
+                "intelligence_product::tests::boxed_pending_append_preserves_owned_replay_and_error_mapping",
+            ],
+        }
+        for command, (selector, count) in expected.items():
+            spec = next(value for value in specs(legacy) if value["name"] == command)
+            self.assertEqual(spec["requiredNativeTests"], expected_names[command])
+            self.assertEqual(spec["argv"][:2], ["just", "test"])
+            self.assertIn(selector, spec["argv"])
+            self.assertEqual(
+                spec["argv"][spec["argv"].index("--features") + 1],
+                "qualification-legacy-learning-write",
+            )
+            self.assertEqual(spec["minimumTests"], count)
+            self.assertEqual(len(spec["requiredNativeTests"]), count)
+            for missing in [None, *spec["requiredNativeTests"]]:
+                with self.subTest(command=command, missing=missing):
+                    observed = [
+                        name if name != missing else "unrelated::green_test"
+                        for name in spec["requiredNativeTests"]
+                    ]
+                    summary = f"Summary [1s] {count} tests run: {count} passed"
+                    result = {"succeeded": True}
+                    bind_test_count(summary, spec, result)
+                    with tempfile.TemporaryDirectory() as directory:
+                        path = Path(directory) / "native.log"
+                        path.write_text(
+                            "".join(
+                                f"PASS [0.1s] codex-hepta-agentd {name}\n"
+                                for name in observed
+                            )
+                            + summary
+                            + "\n"
+                        )
+                        named = bind_named_tests(path, spec["requiredNativeTests"])
+                    self.assertEqual(
+                        result["succeeded"] and named["namedNativeTestsPassed"],
+                        missing is None,
+                    )
+
+    def test_boxed_pending_replay_requires_feature_and_actual_native_case(self):
+        from context_compiler_named_evidence import bind_named_tests
+
+        spec = next(
+            value
+            for value in specs(legacy)
+            if value["name"] == "agentd-boxed-pending-replay-regression"
+        )
+        name = "intelligence_product::tests::boxed_pending_append_preserves_owned_replay_and_error_mapping"
+        self.assertEqual(spec["argv"][:2], ["just", "test"])
+        self.assertEqual(
+            spec["argv"][spec["argv"].index("--features") + 1],
+            "qualification-legacy-learning-write",
+        )
+        self.assertEqual(spec["argv"][-1], name)
+        self.assertEqual(spec["requiredNativeTests"], [name])
+        self.assertEqual(spec["minimumTests"], 1)
+        for count, observed, expected in [
+            (0, name, False),
+            (1, "intelligence_product::tests::unrelated", False),
+            (1, name, True),
+        ]:
+            with self.subTest(count=count, observed=observed):
+                summary = f"Summary [1s] {count} tests run: {count} passed"
+                result = {"succeeded": True}
+                bind_test_count(summary, spec, result)
+                with tempfile.TemporaryDirectory() as directory:
+                    path = Path(directory) / "native.log"
+                    path.write_text(
+                        f"PASS [0.1s] codex-hepta-agentd {observed}\n{summary}\n"
+                    )
+                    named = bind_named_tests(path, spec["requiredNativeTests"])
+                self.assertEqual(
+                    result["succeeded"] and named["namedNativeTestsPassed"], expected
+                )
+
+    def test_compaction_admission_diagnostic_requires_its_actual_native_case(self):
+        from context_compiler_named_evidence import bind_named_tests
+
+        spec = next(
+            value
+            for value in specs(legacy)
+            if value["name"] == "core-compaction-admission-diagnostic"
+        )
+        name = "session::tests::compaction_admission_tests::compact_after_turn_complete_rejects_while_terminalization_pending"
+        self.assertEqual(spec["argv"][:2], ["just", "test"])
+        self.assertEqual(spec["argv"][-1], name)
+        self.assertEqual(spec["requiredNativeTests"], [name])
+        self.assertEqual(spec["minimumTests"], 1)
+        for count, observed, expected in [
+            (0, name, False),
+            (1, "session::tests::unrelated", False),
+            (1, name, True),
+        ]:
+            with self.subTest(count=count, observed=observed):
+                summary = f"Summary [1s] {count} tests run: {count} passed"
+                result = {"succeeded": True}
+                bind_test_count(summary, spec, result)
+                with tempfile.TemporaryDirectory() as directory:
+                    path = Path(directory) / "native.log"
+                    path.write_text(f"PASS [0.1s] codex-core {observed}\n{summary}\n")
+                    named = bind_named_tests(path, spec["requiredNativeTests"])
+                self.assertEqual(
+                    result["succeeded"] and named["namedNativeTestsPassed"], expected
+                )
+
+    def test_response_stream_regressions_require_every_named_case(self):
+        from context_compiler_named_evidence import bind_named_tests
+
+        spec = next(
+            value
+            for value in specs(legacy)
+            if value["name"] == "core-response-stream-regressions"
+        )
+        self.assertEqual(spec["argv"][:2], ["just", "test"])
+        self.assertIn("codex-core", spec["argv"])
+        self.assertIn("--lib", spec["argv"])
+        names = spec["requiredNativeTests"]
+        self.assertEqual(len(set(names)), 10)
+        self.assertEqual(spec["minimumTests"], 10)
+        self.assertEqual(
+            spec["argv"][spec["argv"].index("-E") + 1],
+            " | ".join(f"test({name})" for name in names),
+        )
+        for missing in [None, *names]:
+            with self.subTest(missing=missing):
+                # A green ten-test summary and an unrelated passing case must
+                # not replace any required acknowledgement/cancellation case.
+                observed = [name for name in names if name != missing]
+                if missing is not None:
+                    observed.append("client::tests::unrelated")
+                summary = "Summary [1s] 10 tests run: 10 passed"
+                result = {"succeeded": True}
+                bind_test_count(summary, spec, result)
+                with tempfile.TemporaryDirectory() as directory:
+                    path = Path(directory) / "native.log"
+                    path.write_text(
+                        "\n".join(f"PASS [0.1s] codex-core {name}" for name in observed)
+                        + f"\n{summary}\n"
+                    )
+                    named = bind_named_tests(path, names)
+                self.assertEqual(
+                    result["succeeded"] and named["namedNativeTestsPassed"],
+                    missing is None,
+                )
+
     def test_websocket_identity_regression_requires_actual_named_nonzero_execution(
         self,
     ):

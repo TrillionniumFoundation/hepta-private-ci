@@ -128,6 +128,16 @@ the current Running/ready Agentd generation before it reaches the parameter or t
 host entrypoint. There is no public Agentd wire method and no ambient/default writer:
 if the owner is not explicitly attached to `AgentdConfig`, plasticity remains absent.
 
+`propose_agentd_plasticity_v1` groups only the borrowed artifact registry, durable
+ledger, owner-evidence resolver and owner-evidence policy in
+`AgentdPlasticityAdmissionSourcesV1`. Request, verifier, mutable writer, mutable
+anchor store and `now` remain explicit. This is a pre-release Rust source API
+change; it does not change wire formats or complete product composition. The
+selected self-iteration coordinator remains missing. Later integration with the
+clock-aware host boundary must apply the same grouping while preserving its clock
+handling and live-integrity guards; this source-only refactor does not replace
+that boundary. Native qualification remains pending.
+
 Immediately before admission, Agentd recomputes the current `ArtifactRegistry` and
 durable learning-ledger heads. Every owner-evidence query binds those heads, the exact
 artifact/window/dataset context and, for `ParameterSignal`, the actual eligibility,

@@ -2006,18 +2006,35 @@ impl ContextDeliveryReceiptV2 {
     }
 }
 
-// Keep the published V2 call shape; each argument binds a distinct evidence owner.
-#[allow(clippy::too_many_arguments)]
+/// Unverified borrowed artifacts supplied for a delivery observation.
+///
+/// This carrier grants no authority and introduces no serialized shape.
+/// Validation still occurs inside `observe_delivery` before the verifier is called.
+pub struct ContextDeliveryInputsV2<'a> {
+    pub preparation: &'a ContextDeliveryPreparationV2,
+    pub attachment: &'a ContextAttachmentV2,
+    pub serialization: &'a SerializedContextV2,
+    pub profile: &'a ContextModelProfileV2,
+}
+
+/// Observe delivery using explicit borrowed inputs and the independent verifier.
+///
+/// This is a public Rust source-breaking change: callers must group the former
+/// first four arguments in `ContextDeliveryInputsV2`, in their original order.
+/// The carrier grants nothing; all validation and receipt derivation remain here.
 pub fn observe_delivery(
-    preparation: &ContextDeliveryPreparationV2,
-    attachment: &ContextAttachmentV2,
-    serialization: &SerializedContextV2,
-    profile: &ContextModelProfileV2,
+    inputs: ContextDeliveryInputsV2<'_>,
     delivery_id: StableId,
     provider_receipt: &ProviderInvocationReceipt,
     delivery_verifier: &impl ContextProviderDeliveryVerifierV2,
     observed_unix_ms: u64,
 ) -> Result<ContextDeliveryReceiptV2, ContextCompilerV2Error> {
+    let ContextDeliveryInputsV2 {
+        preparation,
+        attachment,
+        serialization,
+        profile,
+    } = inputs;
     preparation.validate_for(attachment, serialization, profile)?;
     provider_receipt
         .validate()
