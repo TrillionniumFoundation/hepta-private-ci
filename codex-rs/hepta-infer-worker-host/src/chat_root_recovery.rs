@@ -1,4 +1,4 @@
-//! Read the old exact message through the current kernel-bound original owner.
+//! Recover the old exact operation through the current kernel-bound original owner.
 use super::*;
 use codex_hepta_matrixd::chat::wire::ChatRequest;
 use codex_hepta_supervisor::SupervisordAgentStatus;
@@ -11,6 +11,7 @@ impl RootChatHost {
         binding: NativeChatBinding,
         original_binding: NativeChatBinding,
         request: ChatRequest,
+        abandon: bool,
     ) -> Result<NativeChatRootResponse> {
         ensure!(
             binding.agent_id == original_binding.agent_id,
@@ -28,8 +29,9 @@ impl RootChatHost {
             env!("CARGO_PKG_VERSION"),
         );
         let uid = self.gateway.agent_workload_uid(&scope.agent_id)?;
-        // This connection is an observation only. It cannot replace a session
-        // slot or grant the old request the current process's mutation fence.
+        // This recovery connection cannot replace a session slot or grant the
+        // old request the current process's mutation fence. Send observes only;
+        // CreateOnce may repair its exact original receipt/index, never create.
         let owner = match (&scope.project_id, &scope.managed_project) {
             (Some(id), None) => {
                 AgentChatSession::connect_existing_observer_for_agent_process(
@@ -57,16 +59,38 @@ impl RootChatHost {
             }
             _ => anyhow::bail!("invalid fixed original project"),
         };
-        let observation = tokio::time::timeout(
-            std::time::Duration::from_secs(10),
-            owner.observe_message(&request),
-        )
-        .await??;
-        Ok(NativeChatRootResponse::Recovered {
-            binding,
-            original_binding,
-            request,
-            observation,
-        })
+        match &request.command {
+            codex_hepta_matrixd::chat::wire::ChatCommand::Send { .. } => {
+                ensure!(!abandon, "only identified creation can be abandoned");
+                let observation = tokio::time::timeout(
+                    std::time::Duration::from_secs(10),
+                    owner.observe_message(&request),
+                )
+                .await??;
+                Ok(NativeChatRootResponse::Recovered {
+                    binding,
+                    original_binding,
+                    request,
+                    observation,
+                })
+            }
+            codex_hepta_matrixd::chat::wire::ChatCommand::CreateOnce { .. } => {
+                let observation = tokio::time::timeout(std::time::Duration::from_secs(10), async {
+                    if abandon {
+                        owner.abandon_creation(&request).await
+                    } else {
+                        owner.reconcile_creation(&request).await
+                    }
+                })
+                .await??;
+                Ok(NativeChatRootResponse::CreationRecovered {
+                    binding,
+                    original_binding,
+                    request,
+                    observation,
+                })
+            }
+            _ => anyhow::bail!("operation has no original durable recovery identity"),
+        }
     }
 }

@@ -181,9 +181,12 @@ fn operation(request: &NativeChatRootRequest) -> NativeGatewayChatOperationV2 {
     match request {
         NativeChatRootRequest::Attach { .. } => NativeGatewayChatOperationV2::Attach,
         NativeChatRootRequest::Recover { .. } => NativeGatewayChatOperationV2::Reconcile,
+        NativeChatRootRequest::AbandonCreation { .. } => NativeGatewayChatOperationV2::Cancel,
         NativeChatRootRequest::Dispatch { request, .. } => match &request.command {
             ChatCommand::List { .. } => NativeGatewayChatOperationV2::List,
-            ChatCommand::Create => NativeGatewayChatOperationV2::Create,
+            ChatCommand::Create | ChatCommand::CreateOnce { .. } => {
+                NativeGatewayChatOperationV2::Create
+            }
             ChatCommand::Timeline { .. } => NativeGatewayChatOperationV2::Timeline,
             ChatCommand::Resume { .. } => NativeGatewayChatOperationV2::Resume,
             ChatCommand::Send { .. } => NativeGatewayChatOperationV2::Send,

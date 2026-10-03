@@ -33,9 +33,15 @@ pub enum NativeChatRootRequest {
         binding: NativeChatBinding,
         request: ChatRequest,
     },
-    /// A current authenticated owner may observe the exact old message, never
-    /// replay it or rebind its mutation to another process.
+    /// A current authenticated owner may recover the exact old operation,
+    /// never replay it or rebind its original mutation to another process.
     Recover {
+        binding: NativeChatBinding,
+        original_binding: NativeChatBinding,
+        request: ChatRequest,
+    },
+    /// Explicitly abandon only this creation's original pre-effect reservation.
+    AbandonCreation {
         binding: NativeChatBinding,
         original_binding: NativeChatBinding,
         request: ChatRequest,
@@ -47,7 +53,8 @@ impl NativeChatRootRequest {
         match self {
             Self::Attach { binding, .. }
             | Self::Dispatch { binding, .. }
-            | Self::Recover { binding, .. } => binding,
+            | Self::Recover { binding, .. }
+            | Self::AbandonCreation { binding, .. } => binding,
         }
     }
 
@@ -78,6 +85,11 @@ impl NativeChatRootRequest {
                 original_binding,
                 request,
                 ..
+            }
+            | Self::AbandonCreation {
+                original_binding,
+                request,
+                ..
             } => {
                 Self::Attach {
                     binding: original_binding.clone(),
@@ -89,9 +101,20 @@ impl NativeChatRootRequest {
                     || !matches!(
                         request.command,
                         crate::chat_transport::ChatCommand::Send { .. }
+                            | crate::chat_transport::ChatCommand::CreateOnce { .. }
                     )
                 {
-                    return Err("recovery requires the exact original message and stable Agent");
+                    return Err(
+                        "recovery requires an identified original operation and stable Agent",
+                    );
+                }
+                if matches!(self, Self::AbandonCreation { .. })
+                    && !matches!(
+                        request.command,
+                        crate::chat_transport::ChatCommand::CreateOnce { .. }
+                    )
+                {
+                    return Err("abandonment requires the exact identified original creation");
                 }
             }
         }
@@ -129,6 +152,12 @@ pub enum NativeChatRootResponse {
         request: ChatRequest,
         observation: MessageObservation,
     },
+    CreationRecovered {
+        binding: NativeChatBinding,
+        original_binding: NativeChatBinding,
+        request: ChatRequest,
+        observation: CreationObservation,
+    },
     Rejected {
         code: String,
         outcome_unknown: bool,
@@ -150,9 +179,37 @@ pub enum MessageObservation {
     Unknown,
 }
 
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(
+    tag = "type",
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase",
+    deny_unknown_fields
+)]
+pub enum CreationObservation {
+    Pending {
+        thread_id: String,
+    },
+    Materialized {
+        thread_id: String,
+    },
+    Created {
+        data: crate::chat_transport::ChatConversation,
+    },
+    Deleted {
+        thread_id: String,
+    },
+    Abandoned {
+        thread_id: String,
+    },
+    Missing,
+    Unknown,
+}
+
 impl NativeChatRootResponse {
     pub fn validate_for(&self, request: &NativeChatRootRequest) -> Result<(), &'static str> {
         request.validate()?;
+        let abandoning = matches!(request, NativeChatRootRequest::AbandonCreation { .. });
         match (self, request) {
             (
                 Self::Attached {
@@ -191,7 +248,11 @@ impl NativeChatRootResponse {
                 },
             ) if binding == expected
                 && original_binding == expected_original
-                && request == expected_request =>
+                && request == expected_request
+                && matches!(
+                    request.command,
+                    crate::chat_transport::ChatCommand::Send { .. }
+                ) =>
             {
                 let id = match observation {
                     MessageObservation::Pending { queue_id } => queue_id.as_deref(),
@@ -204,6 +265,53 @@ impl NativeChatRootResponse {
                     id.is_empty() || id.len() > 256 || id.chars().any(char::is_control)
                 }) {
                     return Err("invalid observed message identity");
+                }
+                Ok(())
+            }
+            (
+                Self::CreationRecovered {
+                    binding,
+                    original_binding,
+                    request,
+                    observation,
+                },
+                NativeChatRootRequest::Recover {
+                    binding: expected,
+                    original_binding: expected_original,
+                    request: expected_request,
+                }
+                | NativeChatRootRequest::AbandonCreation {
+                    binding: expected,
+                    original_binding: expected_original,
+                    request: expected_request,
+                },
+            ) if binding == expected
+                && original_binding == expected_original
+                && request == expected_request
+                && matches!(
+                    request.command,
+                    crate::chat_transport::ChatCommand::CreateOnce { .. }
+                )
+                && (!abandoning
+                    || matches!(observation, CreationObservation::Abandoned { .. })) =>
+            {
+                let id = match observation {
+                    CreationObservation::Pending { thread_id }
+                    | CreationObservation::Materialized { thread_id }
+                    | CreationObservation::Deleted { thread_id }
+                    | CreationObservation::Abandoned { thread_id } => Some(thread_id.as_str()),
+                    CreationObservation::Created { data } => {
+                        if data.title.len() > 512 || data.preview.len() > 4096 {
+                            return Err("oversized original creation observation");
+                        }
+                        Some(data.id.as_str())
+                    }
+                    CreationObservation::Missing | CreationObservation::Unknown => None,
+                };
+                if id.is_some_and(|id| {
+                    id.is_empty() || id.len() > 256 || id.chars().any(char::is_control)
+                }) {
+                    return Err("invalid observed creation identity");
                 }
                 Ok(())
             }

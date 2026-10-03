@@ -28,6 +28,10 @@ pub enum ChatCommand {
         limit: u32,
     },
     Create,
+    /// Stable original-owner protected-chat V1 creation; never replay after uncertainty.
+    CreateOnce {
+        operation_id: String,
+    },
     Timeline {
         thread_id: String,
         cursor: Option<String>,
@@ -75,6 +79,10 @@ pub enum ChatResult {
         next_cursor: Option<String>,
     },
     Conversation {
+        data: ChatConversation,
+    },
+    Creation {
+        operation_id: String,
         data: ChatConversation,
     },
     Timeline {
@@ -132,6 +140,7 @@ impl ChatRequest {
         }
         match &self.command {
             ChatCommand::Create => {}
+            ChatCommand::CreateOnce { operation_id } => identity(operation_id)?,
             ChatCommand::List { cursor, limit } => page(cursor, *limit)?,
             ChatCommand::Timeline {
                 thread_id,
@@ -211,6 +220,18 @@ impl ChatResponse {
                 }
             }
             (ChatCommand::Create, ChatResult::Conversation { data }) => conversation_valid(data)?,
+            (
+                ChatCommand::CreateOnce { operation_id },
+                ChatResult::Creation {
+                    operation_id: actual,
+                    data,
+                },
+            ) => {
+                if operation_id != actual {
+                    return Err("wrong creation operation");
+                }
+                conversation_valid(data)?;
+            }
             (ChatCommand::Resume { thread_id }, ChatResult::Conversation { data }) => {
                 conversation_valid(data)?;
                 if &data.id != thread_id {

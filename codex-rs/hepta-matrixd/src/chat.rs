@@ -19,6 +19,8 @@ use wire::*;
 
 #[path = "chat_connection.rs"]
 mod connection;
+#[path = "chat_creation.rs"]
+mod creation;
 #[path = "chat_observation.rs"]
 mod observation;
 pub use connection::ManagedChatProject;
@@ -133,6 +135,7 @@ impl AgentChatSession {
                     next_cursor: response.next_cursor,
                 })
             }
+            ChatCommand::CreateOnce { operation_id } => self.create_once(operation_id).await,
             ChatCommand::Create => {
                 let response: ThreadStartResponse = self
                     .transport

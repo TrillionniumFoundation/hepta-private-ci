@@ -115,8 +115,31 @@ impl RootChatHost {
                     request,
                     ..
                 } => {
-                    self.recover(scope, &current, binding.clone(), original_binding, request)
-                        .await
+                    self.recover(
+                        scope,
+                        &current,
+                        binding.clone(),
+                        original_binding,
+                        request,
+                        /*abandon*/ false,
+                    )
+                    .await
+                }
+                NativeChatRootRequest::AbandonCreation {
+                    original_binding,
+                    request,
+                    ..
+                } => {
+                    outcome_unknown = true;
+                    self.recover(
+                        scope,
+                        &current,
+                        binding.clone(),
+                        original_binding,
+                        request,
+                        /*abandon*/ true,
+                    )
+                    .await
                 }
                 NativeChatRootRequest::Attach { session_id, .. } => {
                     // Project admission uses its fixed original idempotency key.
