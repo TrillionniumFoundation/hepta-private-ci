@@ -15,6 +15,9 @@ use crate::plasticity_runtime::PlasticityRuntimeOwnerV1;
 
 #[path = "plasticity_runtime_parameter_admission_tests.rs"]
 mod parameter_admission_tests;
+#[cfg(target_os = "linux")]
+#[path = "parameter_admission_transport_tests.rs"]
+mod parameter_admission_transport_tests;
 
 struct ClockFixture {
     _daemon: AgentdFixture,

@@ -55,6 +55,9 @@ mod canary_operation_receipt;
 #[path = "client_native_model_receipt.rs"]
 mod native_model_receipt;
 #[cfg(feature = "server")]
+#[path = "client_parameter_admission.rs"]
+mod parameter_admission;
+#[cfg(feature = "server")]
 #[path = "client_plasticity_observation.rs"]
 mod plasticity_observation;
 #[cfg(feature = "server")]

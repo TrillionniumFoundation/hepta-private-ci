@@ -900,6 +900,8 @@ pub(crate) struct PlasticityFinalAdmissionGuardV1<'a> {
     _runtime: std::sync::MutexGuard<'a, RuntimeState>,
 }
 
+#[path = "state_parameter_admission.rs"]
+mod parameter_admission;
 #[path = "state_plasticity_observation.rs"]
 mod plasticity_observation;
 #[cfg(all(test, target_os = "linux"))]

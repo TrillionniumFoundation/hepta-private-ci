@@ -117,6 +117,7 @@ async fn serve_connection(
     let root_only = matches!(
         &request.method,
         crate::AgentdMethod::NativeModelReceipt { .. }
+            | crate::AgentdMethod::ResolveParameterAdmissionV1 { .. }
             | crate::AgentdMethod::PreparedGenerationV2 { .. }
             | crate::AgentdMethod::SelfIterationRoundStatus { .. }
             | crate::AgentdMethod::SelfIterationCurrentRound
@@ -167,6 +168,11 @@ async fn serve_connection(
                     | crate::AgentdMethod::SelfIterationCurrentRound
             ) {
                 "round inspection requires the actual Root kernel peer"
+            } else if matches!(
+                &request.method,
+                crate::AgentdMethod::ResolveParameterAdmissionV1 { .. }
+            ) {
+                "parameter admission requires the actual Root kernel peer"
             } else {
                 "native receipt inspection requires the actual Root kernel peer"
             },

@@ -95,6 +95,9 @@ impl AgentdState {
             crate::AgentdMethod::SelfIterationCurrentRound => {
                 self.self_iteration_current_round().await?
             }
+            crate::AgentdMethod::ResolveParameterAdmissionV1 { query } => {
+                self.resolve_parameter_admission(query).await?
+            }
             crate::AgentdMethod::PreparedGenerationV2 {
                 generation,
                 configuration_digest,

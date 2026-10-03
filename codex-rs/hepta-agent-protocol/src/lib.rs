@@ -660,9 +660,29 @@ pub struct CanaryOperationQueryV2 {
     pub input_semantic_digest: String,
 }
 
+/// Complete factual inputs to the original parameter admission owner. The
+/// profile uses its original bounded codec; this query grants no mutation.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ParameterAdmissionQueryV1 {
+    pub baseline_id: String,
+    pub objective_digest: String,
+    pub profile_hex: String,
+    pub baseline_generation: u64,
+    pub candidate_generation: u64,
+    pub dataset_digest: String,
+    pub update_rule_digest: String,
+    pub modulator_digest: String,
+    pub modulator_broadcast_digest: String,
+    pub eligibility_digest: String,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
+    ResolveParameterAdmissionV1 {
+        query: ParameterAdmissionQueryV1,
+    },
     PreparedGenerationV2 {
         generation: u64,
         configuration_digest: String,
@@ -873,6 +893,10 @@ pub struct AgentdResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    ParameterAdmissionV1 {
+        query: ParameterAdmissionQueryV1,
+        admission_hex: String,
+    },
     PreparedGenerationV2 {
         generation: u64,
         configuration_digest: String,

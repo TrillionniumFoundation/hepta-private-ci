@@ -79,6 +79,8 @@ pub mod neuron_runtime_v2;
 #[cfg(feature = "server")]
 mod objective_runtime;
 #[cfg(feature = "server")]
+mod parameter_admission_query;
+#[cfg(feature = "server")]
 pub use objective_runtime::objective_ingress_signing_claims_v1;
 #[cfg(all(unix, feature = "server"))]
 mod operator_namespace;
@@ -237,6 +239,7 @@ pub use codex_hepta_agent_protocol::MemoryFederationCapabilityState;
 pub use codex_hepta_agent_protocol::MemoryFederationScopeKind;
 pub use codex_hepta_agent_protocol::ObjectiveRunAdmission;
 pub use codex_hepta_agent_protocol::ObjectiveStartOutcome;
+pub use codex_hepta_agent_protocol::ParameterAdmissionQueryV1;
 pub use codex_hepta_agent_protocol::ReadinessSnapshot;
 pub use codex_hepta_agent_protocol::SecretsOriginalObservation;
 pub use codex_hepta_agent_protocol::SessionIngress;
