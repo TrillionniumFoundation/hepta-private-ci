@@ -3,6 +3,111 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+struct RecoveryClock(u64);
+impl codex_hepta_contracts::AuthorityClock for RecoveryClock {
+    fn now_unix_ms(&self) -> Result<u64, codex_hepta_contracts::AuthorityTrustError> {
+        Ok(self.0)
+    }
+}
+
+#[test]
+fn restored_original_generator_publication_keeps_admitted_round_time_and_exact_frozen_purpose()
+-> Result<(), Box<dyn std::error::Error>> {
+    use codex_hepta_agent_components::learning_ledger::LearningEvidenceRoleV1;
+    use codex_hepta_agent_components::learning_ledger::SignedLearningEvidenceV1;
+    let payload = b"actual original full frozen candidate fixture bytes";
+    let round: codex_hepta_agentd::AgentdSelfIterationRoundV1 =
+        serde_json::from_value(serde_json::json!({
+            "goal":"actual.fixture.goal", "ordinal":1, "candidate_admissions":2,
+            "policy":Digest32::of_bytes(b"full policy").to_string(),
+            "execution":Digest32::of_bytes(b"tight original execution").to_string(),
+            "admitted_at_ms":1000, "deadline_ms":5000
+        }))?;
+    let original = SignedLearningEvidenceV1 {
+        evidence_id: StableId::new("immutable.g.publication")?,
+        principal_id: StableId::new("original.generator")?,
+        role: LearningEvidenceRoleV1::Generator,
+        trust_digest: Digest32::of_bytes(b"activated trust"),
+        scope_digest: Digest32::of_bytes(b"original scope"),
+        objective_digest: Digest32::of_bytes(b"original training objective"),
+        authority_epoch: 3,
+        issued_at: 1500,
+        expires_at: 4500,
+        payload_digest: Digest32::of_bytes(payload),
+        signature: [19; 64],
+    };
+    let bytes = original.signing_bytes();
+    let now = RecoveryClock(3000);
+    validate_generator_issuance(
+        &original,
+        &original,
+        payload,
+        round.admitted_at_ms(),
+        5000,
+        &now,
+        Some(&round),
+    )?;
+    assert!(
+        validate_generator_issuance(
+            &original,
+            &original,
+            payload,
+            3000,
+            5000,
+            &now,
+            Some(&round),
+        )
+        .is_err()
+    );
+    for changed in [
+        SignedLearningEvidenceV1 {
+            issued_at: 999,
+            ..original.clone()
+        },
+        SignedLearningEvidenceV1 {
+            expires_at: 5001,
+            ..original.clone()
+        },
+        SignedLearningEvidenceV1 {
+            payload_digest: Digest32::of_bytes(b"other candidate"),
+            ..original.clone()
+        },
+        SignedLearningEvidenceV1 {
+            role: LearningEvidenceRoleV1::Selector,
+            ..original.clone()
+        },
+    ] {
+        assert!(
+            validate_generator_issuance(
+                &changed,
+                &original,
+                payload,
+                round.admitted_at_ms(),
+                6000,
+                &now,
+                Some(&round),
+            )
+            .is_err()
+        );
+    }
+    assert!(
+        validate_generator_issuance(
+            &original,
+            &original,
+            payload,
+            round.admitted_at_ms(),
+            5000,
+            &RecoveryClock(4500),
+            Some(&round),
+        )
+        .is_err()
+    );
+    assert_eq!(original.signing_bytes(), bytes);
+    // These are factual adapter checks; only the original runtime validates
+    // the real signature and current trust before authorizing an effect.
+    Ok(())
+}
+
 fn baseline() -> SparseConfig {
     SparseConfig {
         model_digest: Digest32::of_bytes(b"selected frozen heads"),

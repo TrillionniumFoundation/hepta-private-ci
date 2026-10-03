@@ -56,6 +56,21 @@ pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerOwnersV1;
 #[cfg(feature = "agentd-host")]
 pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerPlanV1;
 
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CPU_PARAMETER_CHECKS_V1;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CPU_PARAMETER_OPERAND_V1;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronGeneratorIssuancePortV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterCandidatePlanV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerOwnersV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerPlanV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterPolicyV2;
+
 pub mod final_use_authorizer;
 mod final_use_trust_port;
 pub mod native_app_server;

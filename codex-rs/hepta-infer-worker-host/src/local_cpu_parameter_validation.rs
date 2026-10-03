@@ -5,7 +5,9 @@ use std::collections::BTreeSet;
 use codex_hepta_agent_components::intelligence::ParameterPlasticityDispositionV1;
 use codex_hepta_agent_components::intelligence::ParameterPlasticityProductReceiptV1;
 use codex_hepta_agent_components::intelligence::ParameterPlasticityProductRequestV1;
+use codex_hepta_agent_components::plasticity::ParameterCandidateKindV2;
 use codex_hepta_agent_components::plasticity::ParameterDeltaV2;
+use codex_hepta_agent_components::plasticity::verify_generated_parameter_candidates_v3;
 use codex_hepta_agent_components::plasticity::verify_parameter_proposal_v2;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_neuron::NeuronBodyBundleIdentityV1;
@@ -224,6 +226,152 @@ pub(super) fn validate_generation_plan(
     Ok(())
 }
 
+pub(super) fn validate_compiler_plan(
+    plan: &super::CpuNeuronParameterCompilerPlanV1<super::owners::Worker>,
+) -> Result<(), AgentdError> {
+    plan.envelope.validate().map_err(error)?;
+    verify_generated_parameter_candidates_v3(
+        plan.request.generator_profile.clone(),
+        &plan.request.generated,
+    )
+    .map_err(|value| error(value.to_string()))?;
+    let current = &plan.baseline_runtime;
+    let admission = &plan.request.admission;
+    if plan
+        .baseline
+        .generation()
+        .map_err(|value| error(value.to_string()))?
+        != current.generation.get()
+        || plan.baseline.configuration_digest()
+            != current
+                .semantic_digest()
+                .map_err(|value| error(value.to_string()))?
+        || current.native_config_digest
+            != plan
+                .baseline_native
+                .digest()
+                .map_err(|value| error(value.to_string()))?
+        || current.generation != plan.baseline_native.generation
+        || plan.baseline.body_bundle_digest()
+            != Some(
+                plan.baseline_body
+                    .semantic_digest()
+                    .map_err(|value| error(value.to_string()))?,
+            )
+        || admission.baseline_generation != current.generation
+        || admission.candidate_generation
+            != current
+                .generation
+                .next()
+                .map_err(|value| error(value.to_string()))?
+        || admission.baseline_id != plan.baseline_candidate_id
+        || admission.objective_digest != plan.envelope.objective_digest
+        || plan.test_plan_digest.is_zero()
+        || plan.request.generated.candidates.len() > plan.envelope.maximum_candidates as usize
+        || plan.rollback_admission.is_none()
+    {
+        return Err(error("CPU compiler baseline or frozen envelope changed"));
+    }
+    let layers = &plan.request.generator_profile.norm_layers;
+    if layers.len() != 1
+        || layers[0].layer_id.as_str() != PARAMETER_LAYER
+        || layers[0].baseline_squared_l2_raw_q64 != norm_denominator(&plan.baseline_native)?
+    {
+        return Err(error(
+            "CPU compiler norm denominator is not the original parameters",
+        ));
+    }
+    let updates: Vec<_> = plan
+        .request
+        .generated
+        .candidates
+        .iter()
+        .filter(|value| value.kind == ParameterCandidateKindV2::Update)
+        .collect();
+    if updates.is_empty() || updates.len() != plan.candidates.len() {
+        return Err(error(
+            "CPU compiler must materialize the complete admitted search space",
+        ));
+    }
+    for update in updates {
+        let mut matching = plan
+            .candidates
+            .iter()
+            .filter(|value| value.candidate_id == update.candidate_id);
+        let candidate = matching
+            .next()
+            .ok_or_else(|| error("CPU compiler missing generated candidate"))?;
+        if matching.next().is_some()
+            || candidate.generation.native
+                != apply_sparse_deltas(
+                    &plan.baseline_native,
+                    admission.candidate_generation,
+                    &update.parameter_deltas,
+                )?
+        {
+            return Err(error(
+                "CPU compiler generation differs from actual governed deltas",
+            ));
+        }
+        validate_frozen_model(current, &candidate.generation.runtime)?;
+        validate_generation_plan(&plan.baseline_body, &candidate.generation)?;
+        if candidate.worker.generation() != admission.candidate_generation.get() {
+            return Err(error("CPU compiler successor worker generation changed"));
+        }
+    }
+    let mut original = plan.baseline_native.clone();
+    original.generation = admission
+        .candidate_generation
+        .next()
+        .map_err(|value| error(value.to_string()))?;
+    if plan.rollback.native != original {
+        return Err(error(
+            "CPU compiler rollback changed original sparse parameters",
+        ));
+    }
+    validate_frozen_model(current, &plan.rollback.runtime)?;
+    validate_generation_plan(&plan.baseline_body, &plan.rollback)?;
+    if plan.rollback_worker.generation() != original.generation.get() {
+        return Err(error("CPU compiler rollback worker generation changed"));
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 #[path = "local_cpu_parameter_validation_tests.rs"]
 mod tests;
+
+/// This adapter checks factual pins only. Original runtime performs the current
+/// signature/trust verification before evidence can authorize an effect.
+pub(super) fn validate_generator_issuance(
+    signed: &codex_hepta_agent_components::learning_ledger::SignedLearningEvidenceV1,
+    expected: &codex_hepta_agent_components::learning_ledger::SignedLearningEvidenceV1,
+    frozen_payload: &[u8],
+    issued_not_before: u64,
+    expires_not_after: u64,
+    clock: &dyn codex_hepta_contracts::AuthorityClock,
+    round: Option<&codex_hepta_agentd::AgentdSelfIterationRoundV1>,
+) -> Result<(), AgentdError> {
+    let current = clock
+        .now_unix_ms()
+        .map_err(|value| error(value.to_string()))?;
+    if signed.role
+        != codex_hepta_agent_components::learning_ledger::LearningEvidenceRoleV1::Generator
+        || signed.principal_id != expected.principal_id
+        || signed.trust_digest != expected.trust_digest
+        || signed.scope_digest != expected.scope_digest
+        || signed.objective_digest != expected.objective_digest
+        || signed.authority_epoch != expected.authority_epoch
+        || signed.payload_digest != codex_hepta_types::Digest32::of_bytes(frozen_payload)
+        || signed.issued_at < issued_not_before
+        || signed.issued_at > current
+        || signed.expires_at <= current
+        || signed.expires_at > expires_not_after
+        || round.is_some_and(|round| signed.expires_at > round.deadline_ms())
+    {
+        return Err(error(
+            "original Generator issuance changed its frozen purpose or factual pins",
+        ));
+    }
+    Ok(())
+}

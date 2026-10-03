@@ -2,29 +2,27 @@
 //! Installer-owned plans, artifact admissions and signing material never enter
 //! model text. This adapter neither qualifies nor selects its own candidates.
 use std::sync::Arc;
-use std::sync::Mutex;
 
 use codex_hepta_agent_components::intelligence::CanonicalPortInputV1;
 use codex_hepta_agent_components::intelligence::ParameterPlasticityProductReceiptV1;
 use codex_hepta_agent_components::intelligence::ParameterPlasticityProductRequestV1;
 use codex_hepta_agent_components::learning_artifacts::IterationCandidateStateV1;
 use codex_hepta_agent_components::learning_artifacts::IterationCandidateV1;
-use codex_hepta_agent_components::learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_agent_components::plasticity::ParameterCandidateKindV2;
-use codex_hepta_agent_components::plasticity::verify_generated_parameter_candidates_v3;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::AgentdGovernedParameterGenerationCompilerV1;
 use codex_hepta_agentd::AgentdNeuronArtifactAdmissionV1;
 use codex_hepta_agentd::AgentdNeuronHandleV2;
 use codex_hepta_agentd::AgentdSelfIterationCandidateV1;
 use codex_hepta_agentd::AgentdSelfIterationLocalSignerV1;
+use codex_hepta_agentd::AgentdSelfIterationRoundV1;
+use codex_hepta_agentd::CanonicalIterationEnvelopeV1;
 use codex_hepta_agentd::IterationEnvelopeV1;
-use codex_hepta_agentd::self_iteration_candidate_payload_v1;
 use codex_hepta_agentd::self_iteration_envelope_digest_v1;
+use codex_hepta_agentd::self_iteration_frozen_candidate_payload_v1;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_infer_core::SelfIterationModelAssessmentV1;
 use codex_hepta_infer_core::SelfIterationModelRoleV1;
-use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_neuron::NeuronBodyBundleIdentityV1;
 use codex_hepta_neuron::NeuronRuntimeConfigV1;
 use codex_hepta_neuron::NeuronTickInputV1;
@@ -37,19 +35,15 @@ use tokio::task::JoinHandle;
 use crate::CpuNeuronControlConfigV1;
 use crate::CpuNeuronGenerationOpenModeV1;
 use crate::CpuNeuronGenerationPlanV1;
-use crate::open_installed_cpu_neuron_generation_v1;
 
 #[path = "local_cpu_parameter_validation.rs"]
 mod validation;
-use validation::apply_sparse_deltas;
 use validation::error;
-use validation::norm_denominator;
-use validation::validate_frozen_model;
 
-pub struct CpuNeuronParameterCandidatePlanV1 {
+pub struct CpuNeuronParameterCandidatePlanV1<W = CpuNeuronControlConfigV1> {
     pub candidate_id: StableId,
     pub generation: CpuNeuronGenerationPlanV1,
-    pub worker: CpuNeuronControlConfigV1,
+    pub worker: W,
     pub admission: AgentdNeuronArtifactAdmissionV1,
     pub canary_tick: NeuronTickInputV1,
     pub canary_port: CanonicalPortInputV1,
@@ -58,7 +52,7 @@ pub struct CpuNeuronParameterCandidatePlanV1 {
 /// One frozen search window from the existing learning and artifact owners.
 /// The request's real signed evaluations remain subject to the sole plasticity
 /// owner. A plan cannot confer eligibility or install a mutable tensor model.
-pub struct CpuNeuronParameterCompilerPlanV1 {
+pub struct CpuNeuronParameterCompilerPlanV1<W = CpuNeuronControlConfigV1> {
     pub envelope: IterationEnvelopeV1,
     pub baseline: AgentdNeuronHandleV2,
     pub baseline_runtime: NeuronRuntimeConfigV1,
@@ -67,32 +61,50 @@ pub struct CpuNeuronParameterCompilerPlanV1 {
     pub baseline_candidate_id: StableId,
     pub request: ParameterPlasticityProductRequestV1,
     pub test_plan_digest: Digest32,
-    pub candidates: Vec<CpuNeuronParameterCandidatePlanV1>,
+    pub candidates: Vec<CpuNeuronParameterCandidatePlanV1<W>>,
     pub rollback: CpuNeuronGenerationPlanV1,
-    pub rollback_worker: CpuNeuronControlConfigV1,
+    pub rollback_worker: W,
     /// Required at construction, consumed only when its actual writer starts.
     pub rollback_admission: Option<AgentdNeuronArtifactAdmissionV1>,
 }
 
-pub struct CpuNeuronParameterCompilerOwnersV1 {
-    pub control: Arc<Mutex<DurableInferenceControl>>,
-    pub clock: Arc<dyn AuthorityClock>,
-    pub generator: AgentdSelfIterationLocalSignerV1,
-}
+#[path = "local_cpu_parameter_owners.rs"]
+mod owners;
+use owners::Control;
+#[cfg(target_os = "linux")]
+pub use owners::CpuNeuronGeneratorIssuancePortV2;
+pub use owners::CpuNeuronParameterCompilerOwnersV1;
+#[cfg(target_os = "linux")]
+pub use owners::CpuNeuronParameterCompilerOwnersV2;
+use owners::Materialized;
+use owners::Worker;
+#[cfg(target_os = "linux")]
+#[path = "local_cpu_parameter_policy.rs"]
+mod policy;
+#[cfg(target_os = "linux")]
+pub use policy::CPU_PARAMETER_CHECKS_V1;
+#[cfg(target_os = "linux")]
+pub use policy::CPU_PARAMETER_OPERAND_V1;
+#[cfg(target_os = "linux")]
+pub use policy::CpuNeuronParameterPolicyV2;
 
-struct Materialized {
-    successor: AgentdNeuronHandleV2,
-    rollback: AgentdNeuronHandleV2,
-    canary_tick: NeuronTickInputV1,
-    canary_port: CanonicalPortInputV1,
-}
+#[cfg(target_os = "linux")]
+pub type CpuNeuronParameterCandidatePlanV2 =
+    CpuNeuronParameterCandidatePlanV1<crate::CpuNeuronControlConfigV2>;
+#[cfg(target_os = "linux")]
+pub type CpuNeuronParameterCompilerPlanV2 =
+    CpuNeuronParameterCompilerPlanV1<crate::CpuNeuronControlConfigV2>;
 
 pub struct CpuNeuronGovernedParameterCompilerV1 {
-    plan: CpuNeuronParameterCompilerPlanV1,
-    owners: CpuNeuronParameterCompilerOwnersV1,
+    plan: CpuNeuronParameterCompilerPlanV1<Worker>,
+    owners: owners::Owners,
+    #[cfg(target_os = "linux")]
+    policy: Option<CpuNeuronParameterPolicyV2>,
+    round: Option<AgentdSelfIterationRoundV1>,
     prepared: Option<(StableId, Digest32)>,
     admitted: Option<ParameterPlasticityProductReceiptV1>,
     creation: Option<JoinHandle<Result<Materialized, AgentdError>>>,
+    issuance: Option<owners::Issuance>,
     materialized: Option<AgentdSelfIterationCandidateV1>,
 }
 
@@ -101,119 +113,106 @@ impl CpuNeuronGovernedParameterCompilerV1 {
         plan: CpuNeuronParameterCompilerPlanV1,
         owners: CpuNeuronParameterCompilerOwnersV1,
     ) -> Result<Self, AgentdError> {
-        plan.envelope.validate().map_err(error)?;
-        verify_generated_parameter_candidates_v3(
-            plan.request.generator_profile.clone(),
-            &plan.request.generated,
+        Self::new_owned(
+            owners::map_workers(plan, Worker::Legacy),
+            owners::Owners {
+                control: Control::Legacy(owners.control),
+                clock: owners.clock,
+                generator: owners::Generator::Legacy(Arc::new(owners.generator)),
+                #[cfg(target_os = "linux")]
+                resources: None,
+            },
+            #[cfg(target_os = "linux")]
+            None,
         )
-        .map_err(|value| error(value.to_string()))?;
-        let current = &plan.baseline_runtime;
-        let admission = &plan.request.admission;
-        if plan
-            .baseline
-            .generation()
-            .map_err(|value| error(value.to_string()))?
-            != current.generation.get()
-            || plan.baseline.configuration_digest()
-                != current
-                    .semantic_digest()
-                    .map_err(|value| error(value.to_string()))?
-            || current.native_config_digest
-                != plan
-                    .baseline_native
-                    .digest()
-                    .map_err(|value| error(value.to_string()))?
-            || current.generation != plan.baseline_native.generation
-            || plan.baseline.body_bundle_digest()
-                != Some(
-                    plan.baseline_body
-                        .semantic_digest()
-                        .map_err(|value| error(value.to_string()))?,
-                )
-            || admission.baseline_generation != current.generation
-            || admission.candidate_generation
-                != current
-                    .generation
-                    .next()
-                    .map_err(|value| error(value.to_string()))?
-            || admission.baseline_id != plan.baseline_candidate_id
-            || admission.objective_digest != plan.envelope.objective_digest
-            || plan.test_plan_digest.is_zero()
-            || plan.request.generated.candidates.len() > plan.envelope.maximum_candidates as usize
-            || plan.rollback_admission.is_none()
-        {
-            return Err(error("CPU compiler baseline or frozen envelope changed"));
-        }
-        let layers = &plan.request.generator_profile.norm_layers;
-        if layers.len() != 1
-            || layers[0].layer_id.as_str() != validation::PARAMETER_LAYER
-            || layers[0].baseline_squared_l2_raw_q64 != norm_denominator(&plan.baseline_native)?
-        {
+    }
+
+    #[cfg(target_os = "linux")]
+    pub fn new_v2(
+        plan: CpuNeuronParameterCompilerPlanV2,
+        owners: CpuNeuronParameterCompilerOwnersV2,
+        policy: CpuNeuronParameterPolicyV2,
+    ) -> Result<Self, AgentdError> {
+        policy.validate_plan(&plan, &owners)?;
+        if owners.generator.principal_id() != &plan.request.generator_attestation.principal_id {
             return Err(error(
-                "CPU compiler norm denominator is not the original parameters",
+                "production Generator differs from original admitted roster",
             ));
         }
-        let updates: Vec<_> = plan
-            .request
-            .generated
-            .candidates
-            .iter()
-            .filter(|value| value.kind == ParameterCandidateKindV2::Update)
-            .collect();
-        if updates.is_empty() || updates.len() != plan.candidates.len() {
-            return Err(error(
-                "CPU compiler must materialize the complete admitted search space",
-            ));
-        }
-        for update in updates {
-            let mut matching = plan
-                .candidates
-                .iter()
-                .filter(|value| value.candidate_id == update.candidate_id);
-            let candidate = matching
-                .next()
-                .ok_or_else(|| error("CPU compiler missing generated candidate"))?;
-            if matching.next().is_some()
-                || candidate.generation.native
-                    != apply_sparse_deltas(
-                        &plan.baseline_native,
-                        admission.candidate_generation,
-                        &update.parameter_deltas,
-                    )?
-            {
-                return Err(error(
-                    "CPU compiler generation differs from actual governed deltas",
-                ));
-            }
-            validate_frozen_model(current, &candidate.generation.runtime)?;
-            validation::validate_generation_plan(&plan.baseline_body, &candidate.generation)?;
-            if candidate.worker.generation != admission.candidate_generation.get() {
-                return Err(error("CPU compiler successor worker generation changed"));
-            }
-        }
-        let mut original = plan.baseline_native.clone();
-        original.generation = admission
-            .candidate_generation
-            .next()
-            .map_err(|value| error(value.to_string()))?;
-        if plan.rollback.native != original {
-            return Err(error(
-                "CPU compiler rollback changed original sparse parameters",
-            ));
-        }
-        validate_frozen_model(current, &plan.rollback.runtime)?;
-        validation::validate_generation_plan(&plan.baseline_body, &plan.rollback)?;
-        if plan.rollback_worker.generation != original.generation.get() {
-            return Err(error("CPU compiler rollback worker generation changed"));
-        }
+        Self::new_owned(
+            owners::map_workers(plan, Worker::Current),
+            owners::Owners {
+                control: Control::Current(owners.control),
+                clock: owners.clock,
+                generator: owners::Generator::Protected(owners.generator),
+                resources: Some(owners.resources),
+            },
+            Some(policy),
+        )
+    }
+
+    fn new_owned(
+        plan: CpuNeuronParameterCompilerPlanV1<Worker>,
+        owners: owners::Owners,
+        #[cfg(target_os = "linux")] policy: Option<CpuNeuronParameterPolicyV2>,
+    ) -> Result<Self, AgentdError> {
+        validation::validate_compiler_plan(&plan)?;
         Ok(Self {
             plan,
             owners,
+            #[cfg(target_os = "linux")]
+            policy,
+            round: None,
             prepared: None,
             admitted: None,
             creation: None,
+            issuance: None,
             materialized: None,
         })
+    }
+
+    fn check_policy(&self) -> Result<(), AgentdError> {
+        #[cfg(target_os = "linux")]
+        if let Some(policy) = &self.policy {
+            let resources = self
+                .owners
+                .resources
+                .as_ref()
+                .ok_or_else(|| error("sparse compiler original resource owner missing"))?;
+            policy.check_current(self.owners.clock.as_ref(), resources)?;
+            let round = self.round.as_ref().ok_or_else(|| {
+                error("production sparse compiler has no original reserved round")
+            })?;
+            policy.check_round(round, &self.plan.envelope, self.owners.clock.as_ref())?;
+        }
+        Ok(())
+    }
+
+    async fn observe_issuance(&mut self) -> Result<AgentdSelfIterationCandidateV1, AgentdError> {
+        let pending = self
+            .issuance
+            .as_mut()
+            .ok_or_else(|| error("original sparse issuance missing"))?;
+        #[cfg(target_os = "linux")]
+        let candidate = if let Some(policy) = &self.policy {
+            let round = self
+                .round
+                .as_ref()
+                .ok_or_else(|| error("original sparse round missing"))?;
+            tokio::time::timeout(
+                policy.round_remaining(round, self.owners.clock.as_ref())?,
+                pending.observe(),
+            )
+            .await
+            .map_err(|_| error("sparse deadline reached; original issuance task retained"))??
+        } else {
+            pending.observe().await?
+        };
+        #[cfg(not(target_os = "linux"))]
+        let candidate = pending.observe().await?;
+        self.check_policy()?;
+        self.materialized = Some(candidate.clone());
+        Ok(candidate)
     }
 
     fn validate_assessment(
@@ -221,6 +220,7 @@ impl CpuNeuronGovernedParameterCompilerV1 {
         envelope: &IterationEnvelopeV1,
         proposal: &SelfIterationModelAssessmentV1,
     ) -> Result<StableId, AgentdError> {
+        self.check_policy()?;
         #[derive(Deserialize)]
         #[serde(deny_unknown_fields)]
         struct Advice {
@@ -236,6 +236,14 @@ impl CpuNeuronGovernedParameterCompilerV1 {
         {
             return Err(error(
                 "CPU compiler model advice changed its frozen context",
+            ));
+        }
+        if let Some(round) = &self.round
+            && proposal.request_id
+                != round.model_request_id(SelfIterationModelRoleV1::Generator, None)?
+        {
+            return Err(error(
+                "sparse advice is not the original reserved Generator request",
             ));
         }
         let advice: Advice = serde_json::from_str(&proposal.model_output)
@@ -258,7 +266,35 @@ impl CpuNeuronGovernedParameterCompilerV1 {
 }
 
 impl AgentdGovernedParameterGenerationCompilerV1 for CpuNeuronGovernedParameterCompilerV1 {
+    fn bind_round(
+        &mut self,
+        round: AgentdSelfIterationRoundV1,
+        canonical: CanonicalIterationEnvelopeV1,
+    ) -> Result<(), AgentdError> {
+        #[cfg(target_os = "linux")]
+        if let Some(policy) = &self.policy {
+            if canonical.canonical_bytes() != policy.canonical().canonical_bytes()
+                || self
+                    .round
+                    .as_ref()
+                    .is_some_and(|original| original != &round)
+            {
+                return Err(error(
+                    "sparse compiler cannot replace its installed policy or original round",
+                ));
+            }
+            policy.check_round(&round, &self.plan.envelope, self.owners.clock.as_ref())?;
+            self.round = Some(round);
+            return self.check_policy();
+        }
+        let _ = (round, canonical);
+        Err(error(
+            "legacy sparse compiler has no installed canonical round port",
+        ))
+    }
+
     fn describe(&self, envelope: &IterationEnvelopeV1) -> Result<String, AgentdError> {
+        self.check_policy()?;
         if envelope != &self.plan.envelope {
             return Err(error("CPU compiler envelope mismatch"));
         }
@@ -327,58 +363,9 @@ impl AgentdGovernedParameterGenerationCompilerV1 for CpuNeuronGovernedParameterC
             }
             return Ok(candidate.clone());
         }
-        if self.creation.is_none() {
-            let position = self
-                .plan
-                .candidates
-                .iter()
-                .position(|value| value.candidate_id == id)
-                .ok_or_else(|| error("CPU compiler consumed generation plan requires recovery"))?;
-            let selected = self.plan.candidates.remove(position);
-            let rollback = self.plan.rollback.clone();
-            let rollback_worker = self.plan.rollback_worker.clone();
-            let control = Arc::clone(&self.owners.control);
-            let clock = Arc::clone(&self.owners.clock);
-            let rollback_admission =
-                self.plan.rollback_admission.take().ok_or_else(|| {
-                    error("CPU compiler rollback requires original owner recovery")
-                })?;
-            self.creation = Some(tokio::task::spawn_blocking(move || {
-                let successor = open_installed_cpu_neuron_generation_v1(
-                    selected.generation,
-                    CpuNeuronGenerationOpenModeV1::Create,
-                    Arc::clone(&control),
-                    Arc::clone(&clock),
-                    selected.worker,
-                    selected.admission,
-                )?;
-                let rollback = open_installed_cpu_neuron_generation_v1(
-                    rollback,
-                    CpuNeuronGenerationOpenModeV1::Create,
-                    control,
-                    clock,
-                    rollback_worker,
-                    rollback_admission,
-                )?;
-                Ok(Materialized {
-                    successor,
-                    rollback,
-                    canary_tick: selected.canary_tick,
-                    canary_port: selected.canary_port,
-                })
-            }));
+        if self.issuance.is_some() {
+            return self.observe_issuance().await;
         }
-        // The handle stays in this owner if the caller cancels its await. A
-        // retry observes this worker's actual retirement instead of opening a
-        // second writer or claiming that timeout retired physical resources.
-        let completed = self
-            .creation
-            .as_mut()
-            .ok_or_else(|| error("CPU compiler owner missing"))?
-            .await;
-        self.creation = None;
-        let generation =
-            completed.map_err(|value| error(format!("CPU compiler worker: {value}")))??;
         let update = admitted
             .proposal
             .candidates
@@ -397,19 +384,79 @@ impl AgentdGovernedParameterGenerationCompilerV1 for CpuNeuronGovernedParameterC
             update.parameter_deltas
         )
         .into_bytes();
-        let now = self
-            .owners
-            .clock
-            .now_unix_ms()
-            .map_err(|value| error(value.to_string()))?;
-        let expiry = envelope
-            .expiry_unix_seconds
-            .checked_mul(1_000)
-            .ok_or_else(|| error("CPU compiler expiry overflow"))?;
+        #[cfg(target_os = "linux")]
+        if let Some(policy) = &self.policy {
+            policy.check_diff(&semantic_diff)?;
+        }
+        self.check_policy()?;
+        if self.creation.is_none() {
+            let position = self
+                .plan
+                .candidates
+                .iter()
+                .position(|value| value.candidate_id == id)
+                .ok_or_else(|| error("CPU compiler consumed generation plan requires recovery"))?;
+            let selected = self.plan.candidates.remove(position);
+            let rollback = self.plan.rollback.clone();
+            let rollback_worker = self.plan.rollback_worker.clone();
+            let control = self.owners.control.clone();
+            let clock = Arc::clone(&self.owners.clock);
+            let rollback_admission =
+                self.plan.rollback_admission.take().ok_or_else(|| {
+                    error("CPU compiler rollback requires original owner recovery")
+                })?;
+            self.creation = Some(owners::start_generation(
+                selected,
+                rollback,
+                rollback_worker,
+                control,
+                clock,
+                rollback_admission,
+            ));
+        }
+
+        // The handle stays in this owner if the caller cancels its await. A
+        // retry observes this worker's actual retirement instead of opening a
+        // second writer or claiming that timeout retired physical resources.
+        let owner = self
+            .creation
+            .as_mut()
+            .ok_or_else(|| error("CPU compiler owner missing"))?;
+        #[cfg(target_os = "linux")]
+        let completed = if let Some(policy) = &self.policy {
+            tokio::time::timeout(
+                policy.round_remaining(
+                    self.round
+                        .as_ref()
+                        .ok_or_else(|| error("sparse creation original round missing"))?,
+                    self.owners.clock.as_ref(),
+                )?,
+                owner,
+            )
+            .await
+            .map_err(|_| error("CPU compiler deadline reached; physical owner retained"))?
+        } else {
+            owner.await
+        };
+        #[cfg(not(target_os = "linux"))]
+        let completed = owner.await;
+        self.creation = None;
+        let generation =
+            completed.map_err(|value| error(format!("CPU compiler worker: {value}")))??;
+        self.check_policy()?;
         let provisional = self.plan.request.generator_attestation.clone();
-        let mut candidate = AgentdSelfIterationCandidateV1 {
-            round: None,
+        let candidate = AgentdSelfIterationCandidateV1 {
+            round: self.round.clone(),
+            #[cfg(target_os = "linux")]
+            canonical_envelope: self
+                .policy
+                .as_ref()
+                .map(CpuNeuronParameterPolicyV2::canonical),
+            #[cfg(not(target_os = "linux"))]
             canonical_envelope: None,
+            #[cfg(target_os = "linux")]
+            model_assessment: self.policy.as_ref().map(|_| proposal.clone()),
+            #[cfg(not(target_os = "linux"))]
             model_assessment: None,
             candidate: IterationCandidateV1 {
                 candidate_id: id,
@@ -434,15 +481,11 @@ impl AgentdGovernedParameterGenerationCompilerV1 for CpuNeuronGovernedParameterC
             canary_port: generation.canary_port,
             generator_attestation: provisional,
         };
-        candidate.generator_attestation = self.owners.generator.sign_payload(
-            &self_iteration_candidate_payload_v1(&candidate)?,
-            now,
-            expiry,
-        )?;
-        if candidate.generator_attestation.role != LearningEvidenceRoleV1::Generator {
-            return Err(error("CPU compiler installed signer is not the Generator"));
-        }
-        self.materialized = Some(candidate.clone());
-        Ok(candidate)
+        self.issuance = Some(owners::Issuance::start(
+            self.owners.generator.clone(),
+            candidate,
+            Arc::clone(&self.owners.clock),
+        )?);
+        self.observe_issuance().await
     }
 }
