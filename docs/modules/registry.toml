@@ -37,7 +37,9 @@ highRiskMergeCandidateRequired = true
 ordinaryFeedbackTargetMinutes = 10
 ordinaryWorkflowTimeoutMinutes = 15
 statefulWorkflowTimeoutMinutes = 40
-architectureDeepTimeoutMinutes = 60
+# A cold deep lane compiles both ordinary and isolated qualification profiles.
+# Preserve their distinct authority and complete tests within the job budget.
+architectureDeepTimeoutMinutes = 120
 selfIterationDraftOnly = true
 selfIterationMergeAllowed = false
 selfIterationActivationAllowed = false
