@@ -83,6 +83,8 @@ jobs:
         run: just test --locked -p codex-app-server-client --lib -E 'test(remote_send_guard)'
       - name: Test Agentd library
         run: just test --locked -p codex-hepta-agentd --lib
+      - name: Strict Automation library lint
+        run: cargo clippy --locked -p codex-hepta-automation --lib --features taskflow-structural-qualification -- -D warnings
       - name: Apply scoped recovery lint checks
         run: just fix --locked -p codex-hepta-automation -p codex-hepta-evidence --features taskflow-structural-qualification
       - name: Verify scoped lint kept the reviewed source

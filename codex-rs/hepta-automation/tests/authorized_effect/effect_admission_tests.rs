@@ -1,4 +1,5 @@
 use super::*;
+use codex_hepta_automation::AuthorizedEffectDispatchRequest;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::AuthorityTrustError;
 use codex_hepta_contracts::SystemAuthorityClock;
@@ -47,13 +48,15 @@ async fn effect_writer_wait_cannot_backdate_lease_admission(async_dispatch: bool
                     .execute_authorized_taskflow_effect_async(
                         &authority,
                         &mut async_driver,
-                        &effect,
-                        EFFECT_PAYLOAD,
-                        &owner,
-                        &signed,
-                        &expected,
-                        "writer-wait-record",
-                        /*now_ms*/ 770,
+                        AuthorizedEffectDispatchRequest {
+                            intent: &effect,
+                            wire_payload: EFFECT_PAYLOAD,
+                            fence: &owner,
+                            signed_grant: &signed,
+                            expected_binding: &expected,
+                            command_id: "writer-wait-record",
+                            now_ms: 770,
+                        },
                     )
                     .await
             } else {
@@ -61,13 +64,15 @@ async fn effect_writer_wait_cannot_backdate_lease_admission(async_dispatch: bool
                     .execute_authorized_taskflow_effect(
                         &authority,
                         &mut sync_driver,
-                        &effect,
-                        EFFECT_PAYLOAD,
-                        &owner,
-                        &signed,
-                        &expected,
-                        "writer-wait-record",
-                        /*now_ms*/ 770,
+                        AuthorizedEffectDispatchRequest {
+                            intent: &effect,
+                            wire_payload: EFFECT_PAYLOAD,
+                            fence: &owner,
+                            signed_grant: &signed,
+                            expected_binding: &expected,
+                            command_id: "writer-wait-record",
+                            now_ms: 770,
+                        },
                     )
                     .await
             }
@@ -163,13 +168,15 @@ async fn effect_checks_lease_inside_the_authorized_consumer(async_dispatch: bool
             .execute_authorized_taskflow_effect_async(
                 &authority,
                 &mut async_driver,
-                &effect,
-                EFFECT_PAYLOAD,
-                &owner,
-                &signed,
-                &expected,
-                "consumer-clock-record",
-                /*now_ms*/ 770,
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: EFFECT_PAYLOAD,
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "consumer-clock-record",
+                    now_ms: 770,
+                },
             )
             .await
     } else {
@@ -177,13 +184,15 @@ async fn effect_checks_lease_inside_the_authorized_consumer(async_dispatch: bool
             .execute_authorized_taskflow_effect(
                 &authority,
                 &mut sync_driver,
-                &effect,
-                EFFECT_PAYLOAD,
-                &owner,
-                &signed,
-                &expected,
-                "consumer-clock-record",
-                /*now_ms*/ 770,
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: EFFECT_PAYLOAD,
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "consumer-clock-record",
+                    now_ms: 770,
+                },
             )
             .await
     };

@@ -1,4 +1,5 @@
 use super::*;
+use codex_hepta_automation::AuthorizedEffectDispatchRequest;
 use pretty_assertions::assert_eq;
 
 #[tokio::test]
@@ -26,13 +27,15 @@ async fn owned_effect_fence_survives_terminal_run_lease_clear_and_reopen() {
             .execute_authorized_taskflow_effect(
                 &authority,
                 &mut driver,
-                &effect,
-                EFFECT_PAYLOAD,
-                &owner,
-                &signed,
-                &expected,
-                "terminal-fence-dispatch",
-                /*now_ms*/ 30,
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: EFFECT_PAYLOAD,
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "terminal-fence-dispatch",
+                    now_ms: 30,
+                },
             )
             .await
             .expect("terminal effect");
@@ -72,7 +75,7 @@ async fn owned_effect_fence_survives_terminal_run_lease_clear_and_reopen() {
                 )
                 .await
                 .expect("settle durable terminal evidence"),
-            Some(AuthorizedEffectRecoveryResult::Observed(receipt)),
+            Some(AuthorizedEffectRecoveryResult::Observed(Box::new(receipt))),
         );
         assert_eq!(
             reopened
@@ -99,13 +102,15 @@ async fn unresolved_effect_fence_retains_exact_owner_identity() {
         .execute_authorized_taskflow_effect(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "unresolved-fence-dispatch",
-            /*now_ms*/ 30,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "unresolved-fence-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("indeterminate effect");
@@ -147,13 +152,15 @@ async fn proven_absent_effect_recovery_survives_successor_owner_and_attempt() {
         .execute_authorized_taskflow_effect_async(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "absence-successor-dispatch",
-            /*now_ms*/ 30,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "absence-successor-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("unknown dispatch");
@@ -334,13 +341,15 @@ async fn pre_contact_absence_recovers_after_cleared_run_owner() {
             .execute_authorized_taskflow_effect(
                 &authority,
                 &mut driver,
-                &effect,
-                EFFECT_PAYLOAD,
-                &owner,
-                &signed,
-                &expected,
-                "pre-contact-fence-dispatch",
-                /*now_ms*/ 30,
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: EFFECT_PAYLOAD,
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "pre-contact-fence-dispatch",
+                    now_ms: 30,
+                },
             )
             .await,
         Err(AuthorizedEffectError::Driver(

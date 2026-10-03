@@ -17,6 +17,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_automation::AsyncAuthorizedEffectDriver;
+use codex_hepta_automation::AuthorizedEffectDispatchRequest;
 use codex_hepta_automation::AuthorizedEffectDriver;
 use codex_hepta_automation::AuthorizedEffectDriverError;
 use codex_hepta_automation::AuthorizedEffectError;
@@ -624,13 +625,15 @@ async fn wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant() {
             .execute_authorized_taskflow_effect(
                 &authority,
                 &mut driver,
-                &effect,
-                b"different-provider-bytes",
-                &owner,
-                &signed,
-                &expected,
-                "authorized-effect-dispatch",
-                30,
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: b"different-provider-bytes",
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "authorized-effect-dispatch",
+                    now_ms: 30,
+                },
             )
             .await,
         Err(AuthorizedEffectError::BindingMismatch)
@@ -641,13 +644,15 @@ async fn wire_payload_drift_rejects_before_dispatch_and_does_not_burn_grant() {
         .execute_authorized_taskflow_effect(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            31,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
         )
         .await
         .expect("same grant remains usable after local wire mismatch");
@@ -678,13 +683,15 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
             .execute_authorized_taskflow_effect_async(
                 &authority,
                 &mut driver,
-                &effect,
-                b"wrong-payload",
-                &owner,
-                &signed,
-                &expected,
-                "authorized-effect-async-dispatch",
-                30,
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: b"wrong-payload",
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "authorized-effect-async-dispatch",
+                    now_ms: 30,
+                },
             )
             .await,
         Err(AuthorizedEffectError::BindingMismatch)
@@ -699,13 +706,15 @@ async fn async_provider_effect_binds_exact_wire_bytes_before_burning_grant() {
         .execute_authorized_taskflow_effect_async(
             &authority,
             &mut driver,
-            &effect,
-            b"effect-payload",
-            &owner,
-            &signed,
-            &expected,
-            "authorized-effect-async-dispatch",
-            31,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: b"effect-payload",
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-async-dispatch",
+                now_ms: 31,
+            },
         )
         .await
         .expect("exact wire payload dispatch");
@@ -741,13 +750,15 @@ async fn async_provider_unknown_and_lookup_not_found_remain_quarantined() {
         .execute_authorized_taskflow_effect_async(
             &authority,
             &mut driver,
-            &effect,
-            b"effect-payload",
-            &owner,
-            &signed,
-            &expected,
-            "authorized-effect-async-unknown",
-            30,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: b"effect-payload",
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-async-unknown",
+                now_ms: 30,
+            },
         )
         .await
         .expect("unknown provider dispatch is durable");
@@ -804,13 +815,15 @@ async fn provider_identity_is_owner_scoped_and_preserves_historical_recovery() {
         .execute_authorized_taskflow_effect_async(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "identity-dispatch",
-            /*now_ms*/ 30,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "identity-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("dispatch");
@@ -871,13 +884,15 @@ async fn expired_lease_rejects_sync_and_async_dispatch_before_consuming_grant() 
             .execute_authorized_taskflow_effect(
                 &authority,
                 &mut driver,
-                &effect,
-                EFFECT_PAYLOAD,
-                &owner,
-                &signed,
-                &expected,
-                "invalid\ncommand",
-                /*now_ms*/ 30
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: EFFECT_PAYLOAD,
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "invalid\ncommand",
+                    now_ms: 30,
+                },
             )
             .await,
         Err(AuthorizedEffectError::TaskFlow(
@@ -889,13 +904,15 @@ async fn expired_lease_rejects_sync_and_async_dispatch_before_consuming_grant() 
             .execute_authorized_taskflow_effect(
                 &authority,
                 &mut driver,
-                &effect,
-                EFFECT_PAYLOAD,
-                &owner,
-                &signed,
-                &expected,
-                "lease-dispatch",
-                /*now_ms*/ 1_020
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: EFFECT_PAYLOAD,
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "lease-dispatch",
+                    now_ms: 1_020,
+                },
             )
             .await,
         Err(AuthorizedEffectError::TaskFlow(
@@ -916,13 +933,15 @@ async fn expired_lease_rejects_sync_and_async_dispatch_before_consuming_grant() 
             .execute_authorized_taskflow_effect_async(
                 &authority,
                 &mut async_driver,
-                &effect,
-                EFFECT_PAYLOAD,
-                &owner,
-                &signed,
-                &expected,
-                "lease-dispatch",
-                /*now_ms*/ 1_020
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: EFFECT_PAYLOAD,
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "lease-dispatch",
+                    now_ms: 1_020,
+                },
             )
             .await,
         Err(AuthorizedEffectError::TaskFlow(
@@ -964,13 +983,15 @@ async fn provider_contract_binding_is_durable_before_dispatch_and_survives_reope
         .execute_authorized_taskflow_effect_async(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "provider-contract-dispatch",
-            /*now_ms*/ 30,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "provider-contract-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("dispatch");
@@ -997,13 +1018,15 @@ async fn stale_recovery_fence_cannot_append_terminal_provider_evidence() {
         .execute_authorized_taskflow_effect(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "recovery-dispatch",
-            /*now_ms*/ 30,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "recovery-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("dispatch");
@@ -1055,13 +1078,15 @@ async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
             .execute_authorized_taskflow_effect(
                 &authority,
                 &mut driver,
-                &effect,
-                EFFECT_PAYLOAD,
-                &owner,
-                &signed,
-                &wrong,
-                "authorized-effect-dispatch",
-                30,
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: EFFECT_PAYLOAD,
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &wrong,
+                    command_id: "authorized-effect-dispatch",
+                    now_ms: 30,
+                },
             )
             .await,
         Err(AuthorizedEffectError::BindingMismatch)
@@ -1072,13 +1097,15 @@ async fn final_use_binding_drift_rejects_before_dispatch_and_does_not_burn_grant
         .execute_authorized_taskflow_effect(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            31,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
         )
         .await
         .expect("correct binding executes");
@@ -1109,13 +1136,15 @@ async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
         .execute_authorized_taskflow_effect(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            30,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("first dispatch");
@@ -1126,13 +1155,15 @@ async fn successful_effect_is_at_most_once_for_one_durable_step_attempt() {
         .execute_authorized_taskflow_effect(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            31,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
         )
         .await;
     assert!(
@@ -1164,13 +1195,15 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
             .execute_authorized_taskflow_effect(
                 &crash_authority,
                 &mut driver,
-                &crash_effect,
-                EFFECT_PAYLOAD,
-                &crash_owner,
-                &crash_signed,
-                &crash_expected,
-                "authorized-effect-dispatch",
-                30,
+                AuthorizedEffectDispatchRequest {
+                    intent: &crash_effect,
+                    wire_payload: EFFECT_PAYLOAD,
+                    fence: &crash_owner,
+                    signed_grant: &crash_signed,
+                    expected_binding: &crash_expected,
+                    command_id: "authorized-effect-dispatch",
+                    now_ms: 30,
+                },
             )
             .await
     })
@@ -1198,13 +1231,15 @@ async fn crash_after_provider_contact_before_observation_requires_recovery_witho
         .execute_authorized_taskflow_effect(
             &authority,
             &mut must_not_dispatch,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            31,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
         )
         .await;
     assert!(matches!(
@@ -1245,13 +1280,15 @@ async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_termina
         .execute_authorized_taskflow_effect(
             &authority,
             &mut ambiguous,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            30,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("ambiguous dispatch");
@@ -1289,13 +1326,15 @@ async fn indeterminate_effect_reopens_without_redispatch_then_reconciles_termina
         .execute_authorized_taskflow_effect(
             &authority,
             &mut must_not_dispatch,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            31,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
         )
         .await;
     assert!(
@@ -1349,13 +1388,15 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
             .execute_authorized_taskflow_effect(
                 &authority,
                 &mut driver,
-                &effect,
-                EFFECT_PAYLOAD,
-                &owner,
-                &signed,
-                &expected,
-                "authorized-effect-dispatch",
-                30,
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: EFFECT_PAYLOAD,
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "authorized-effect-dispatch",
+                    now_ms: 30,
+                },
             )
             .await,
         Err(AuthorizedEffectError::Driver(
@@ -1377,13 +1418,15 @@ async fn proven_pre_contact_failure_never_blindly_redispatches_same_attempt() {
         .execute_authorized_taskflow_effect(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            31,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 31,
+            },
         )
         .await;
     assert!(
@@ -1408,13 +1451,15 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
         .execute_authorized_taskflow_effect(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "authorized-effect-dispatch",
-            30,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "authorized-effect-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("dispatch under one final-use revocation fence");
@@ -1443,13 +1488,15 @@ async fn revocation_race_is_fenced_across_the_physical_provider_call() {
             .execute_authorized_taskflow_effect(
                 &authority,
                 &mut must_not_dispatch,
-                &effect,
-                EFFECT_PAYLOAD,
-                &owner,
-                &signed,
-                &expected,
-                "authorized-effect-dispatch",
-                31,
+                AuthorizedEffectDispatchRequest {
+                    intent: &effect,
+                    wire_payload: EFFECT_PAYLOAD,
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "authorized-effect-dispatch",
+                    now_ms: 31,
+                },
             )
             .await
             .is_err(),
@@ -1476,13 +1523,15 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
         .execute_authorized_taskflow_effect(
             &authority,
             &mut ambiguous,
-            &compensation,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "compensation-dispatch",
-            30,
+            AuthorizedEffectDispatchRequest {
+                intent: &compensation,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "compensation-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("ambiguous compensation dispatch");
@@ -1536,13 +1585,15 @@ async fn compensation_crash_preserves_intent_identity_and_requires_reconciliatio
             .execute_authorized_taskflow_effect(
                 &authority,
                 &mut must_not_dispatch,
-                &compensation,
-                EFFECT_PAYLOAD,
-                &owner,
-                &signed,
-                &expected,
-                "compensation-dispatch",
-                32,
+                AuthorizedEffectDispatchRequest {
+                    intent: &compensation,
+                    wire_payload: EFFECT_PAYLOAD,
+                    fence: &owner,
+                    signed_grant: &signed,
+                    expected_binding: &expected,
+                    command_id: "compensation-dispatch",
+                    now_ms: 32,
+                },
             )
             .await
             .is_err(),

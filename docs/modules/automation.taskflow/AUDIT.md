@@ -115,6 +115,15 @@ checksums or extending it. The authority-witness adapter and any future migratio
 remain separate integration work. Existing Operations post-writer clock sampling,
 exact intent fences and provider admission continuity are preserved.
 
+The related strict-lint cleanup adopts the kernel owner's
+`AuthorizedEffectDispatchRequest` and `NeuralCircuitSpecV1` input shapes plus
+boxed observed recovery receipts. Repository Rust callers must construct those
+named inputs; the Agentd control wire and stored circuit/effect identities do
+not change. Both dispatch bodies retain the same validation/contact ordering,
+and the newer circuit version-overflow rejection remains in place. The complete
+existing effect regressions exercise the migrated synchronous/asynchronous
+callers; strict Automation library lint remains a required hosted check.
+
 ## Repeat-review method
 
 Compare documentation and registries to actual callers, then review identity/authority, durable lifecycle, progression and host execution independently.

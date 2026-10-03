@@ -1,4 +1,5 @@
 use super::*;
+use codex_hepta_automation::AuthorizedEffectDispatchRequest;
 use codex_hepta_automation::AuthorizedProviderDispatchStatus;
 use pretty_assertions::assert_eq;
 
@@ -25,13 +26,15 @@ async fn lookup_acceptance_survives_reopen_and_cannot_become_rejection_or_absenc
         .execute_authorized_taskflow_effect_async(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "admission-dispatch",
-            /*now_ms*/ 30,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "admission-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("dispatch unknown");
@@ -162,13 +165,15 @@ async fn rejected_lookup_distinguishes_unknown_accepted_and_legacy_dispatch() {
                 .execute_authorized_taskflow_effect_async(
                     &authority,
                     &mut driver,
-                    &effect,
-                    EFFECT_PAYLOAD,
-                    &owner,
-                    &signed,
-                    &expected,
-                    "initial-dispatch",
-                    /*now_ms*/ 30,
+                    AuthorizedEffectDispatchRequest {
+                        intent: &effect,
+                        wire_payload: EFFECT_PAYLOAD,
+                        fence: &owner,
+                        signed_grant: &signed,
+                        expected_binding: &expected,
+                        command_id: "initial-dispatch",
+                        now_ms: 30,
+                    },
                 )
                 .await
                 .expect("typed dispatch");
@@ -179,13 +184,15 @@ async fn rejected_lookup_distinguishes_unknown_accepted_and_legacy_dispatch() {
                 .execute_authorized_taskflow_effect(
                     &authority,
                     &mut legacy,
-                    &effect,
-                    EFFECT_PAYLOAD,
-                    &owner,
-                    &signed,
-                    &expected,
-                    "initial-dispatch",
-                    /*now_ms*/ 30,
+                    AuthorizedEffectDispatchRequest {
+                        intent: &effect,
+                        wire_payload: EFFECT_PAYLOAD,
+                        fence: &owner,
+                        signed_grant: &signed,
+                        expected_binding: &expected,
+                        command_id: "initial-dispatch",
+                        now_ms: 30,
+                    },
                 )
                 .await
                 .expect("opaque legacy dispatch");
@@ -267,13 +274,15 @@ async fn existing_step_command_ids_reject_before_contact_and_preserve_grant() {
                 .execute_authorized_taskflow_effect(
                     &authority,
                     &mut driver,
-                    &effect,
-                    EFFECT_PAYLOAD,
-                    &owner,
-                    &signed,
-                    &expected,
-                    command_id,
-                    /*now_ms*/ 30
+                    AuthorizedEffectDispatchRequest {
+                        intent: &effect,
+                        wire_payload: EFFECT_PAYLOAD,
+                        fence: &owner,
+                        signed_grant: &signed,
+                        expected_binding: &expected,
+                        command_id,
+                        now_ms: 30,
+                    },
                 )
                 .await,
             Err(AuthorizedEffectError::TaskFlow(
@@ -289,13 +298,15 @@ async fn existing_step_command_ids_reject_before_contact_and_preserve_grant() {
                 .execute_authorized_taskflow_effect_async(
                     &authority,
                     &mut async_driver,
-                    &effect,
-                    EFFECT_PAYLOAD,
-                    &owner,
-                    &signed,
-                    &expected,
-                    command_id,
-                    /*now_ms*/ 30
+                    AuthorizedEffectDispatchRequest {
+                        intent: &effect,
+                        wire_payload: EFFECT_PAYLOAD,
+                        fence: &owner,
+                        signed_grant: &signed,
+                        expected_binding: &expected,
+                        command_id,
+                        now_ms: 30,
+                    },
                 )
                 .await,
             Err(AuthorizedEffectError::TaskFlow(
@@ -315,13 +326,15 @@ async fn existing_step_command_ids_reject_before_contact_and_preserve_grant() {
         .execute_authorized_taskflow_effect(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "fresh-effect-record",
-            /*now_ms*/ 31,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "fresh-effect-record",
+                now_ms: 31,
+            },
         )
         .await
         .expect("rejected command must preserve grant for valid dispatch");
@@ -338,13 +351,15 @@ async fn terminal_step_evidence_rejects_conflicting_recovery_without_poisoning_l
         .execute_authorized_taskflow_effect(
             &authority,
             &mut driver,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "terminal-step-dispatch",
-            /*now_ms*/ 30,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "terminal-step-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("dispatch");
@@ -434,13 +449,15 @@ async fn unpinned_bridge_cannot_observe_a_pinned_driver_attempt() {
         .execute_authorized_taskflow_effect_async(
             &authority,
             &mut pinned,
-            &effect,
-            EFFECT_PAYLOAD,
-            &owner,
-            &signed,
-            &expected,
-            "pinned-dispatch",
-            /*now_ms*/ 30,
+            AuthorizedEffectDispatchRequest {
+                intent: &effect,
+                wire_payload: EFFECT_PAYLOAD,
+                fence: &owner,
+                signed_grant: &signed,
+                expected_binding: &expected,
+                command_id: "pinned-dispatch",
+                now_ms: 30,
+            },
         )
         .await
         .expect("pinned dispatch");
