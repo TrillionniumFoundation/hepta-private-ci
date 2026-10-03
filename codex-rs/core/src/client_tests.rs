@@ -17,6 +17,7 @@ use crate::GenerateAttestationFuture;
 use crate::config::Config;
 use crate::model_provider_policy::ModelProviderPolicyContext;
 use crate::responses_metadata::CodexResponsesMetadata;
+use crate::responses_metadata::CodexResponsesRequestKind;
 use crate::test_support::TestCodexResponsesRequestKind;
 use crate::test_support::responses_metadata as test_responses_metadata;
 use codex_api::AgentIdentityTelemetry;
@@ -335,10 +336,79 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         "window-a".to_string(),
     );
     metadata_a.sandbox_mode = Some("workspace-write".to_string());
+    metadata_a.request_kind = Some(CodexResponsesRequestKind::Turn);
     metadata_a.turn_started_at_unix_ms = Some(1);
     let identity_a =
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
             .expect("identity a");
+
+    let mut prewarm_metadata = metadata_a.clone();
+    prewarm_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
+    assert_ne!(
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+            .expect("turn recovery projection"),
+        serde_json::to_value(prewarm_metadata.turn_recovery_compatibility_projection())
+            .expect("prewarm recovery projection"),
+        "request recovery must still bind the actual operation kind",
+    );
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &prewarm_metadata)
+            .expect("prewarm identity"),
+        "prewarm and the same ordinary turn must reuse the original transport",
+    );
+    let mut memory_metadata = metadata_a.clone();
+    memory_metadata.request_kind = Some(CodexResponsesRequestKind::Memory);
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &memory_metadata)
+            .expect("different operation identity"),
+        "other operation kinds must remain distinct",
+    );
+
+    let mut self_root_metadata = metadata_a.clone();
+    self_root_metadata.turn_id = Some("own-root-turn".to_string());
+    self_root_metadata.root_turn_id = self_root_metadata.turn_id.clone();
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &self_root_metadata
+        )
+        .expect("own root request identity"),
+    );
+    assert_ne!(
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+            .expect("original recovery projection"),
+        serde_json::to_value(self_root_metadata.turn_recovery_compatibility_projection())
+            .expect("own root recovery projection"),
+    );
+    let mut inherited_root_metadata = self_root_metadata;
+    inherited_root_metadata.root_turn_id = Some("inherited-root-turn".to_string());
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &inherited_root_metadata
+        )
+        .expect("inherited root authority identity"),
+    );
+
+    let mut parent_metadata = metadata_a.clone();
+    parent_metadata.parent_turn_id = Some("parent-turn-attribution".to_string());
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &parent_metadata)
+            .expect("per-frame parent attribution identity"),
+    );
+    assert_ne!(
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+            .expect("original recovery projection"),
+        serde_json::to_value(parent_metadata.turn_recovery_compatibility_projection())
+            .expect("parent recovery projection"),
+    );
 
     let mut volatile_metadata = metadata_a.clone();
     volatile_metadata.session_id = "session-after-restart".to_string();
