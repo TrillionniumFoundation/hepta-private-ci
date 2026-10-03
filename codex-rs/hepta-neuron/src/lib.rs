@@ -387,3 +387,9 @@ mod runtime_prepared_file_v2;
 pub use runtime_prepared_file_v2::NeuronPreparedFileObservationV2;
 pub use runtime_v2::MAX_NEURON_PREPARED_GENERATION_BYTES_V2;
 pub use runtime_v2::NeuronPreparedGenerationV2;
+
+mod sparse_parameter_norm_v1;
+pub use sparse_parameter_norm_v1::sparse_parameter_norm_denominator_v1;
+
+mod sparse_parameter_deltas_v1;
+pub use sparse_parameter_deltas_v1::apply_sparse_parameter_deltas_v1;
