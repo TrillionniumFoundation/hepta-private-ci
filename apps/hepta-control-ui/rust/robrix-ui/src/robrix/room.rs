@@ -87,6 +87,8 @@ struct RoomViewMemory {
     #[cfg(feature = "ui-fixtures")]
     font_samples:
         std::collections::HashSet<(makepad_draw::text::font_family::FontFamilyId, usize, bool)>,
+    #[cfg(feature = "ui-fixtures")]
+    jump_samples: std::collections::HashMap<WidgetUid, (bool, bool, bool, [u64; 4])>,
     positions: std::collections::HashMap<RoomKey, (usize, f64, bool)>,
     message_styles:
         std::collections::HashMap<WidgetUid, (crate::visual_theme::VisualTheme, bool, u64)>,
@@ -121,7 +123,15 @@ impl Widget for RoomScreen {
                 // the SDK's user-travel counter identifies wheel/touch/bar input.
                 let travel = list.user_scroll_travel();
                 if let Some(at_end) = self.scroll_tracker.observe(travel, list.is_at_end()) {
-                    apply(PresentationCommand::UserScrolled { at_end });
+                    let _result = apply(PresentationCommand::UserScrolled { at_end });
+                    #[cfg(feature = "ui-fixtures")]
+                    log!(
+                        "HEPTA_FIXTURE_SCROLL_ACTION room={} epoch={} at_end={} result={:?}",
+                        source.local_id,
+                        source.epoch,
+                        at_end,
+                        _result
+                    );
                     // The list action arrives after its own redraw. Repaint the
                     // parent too so the sibling Jump control reflects the new intent.
                     self.view.redraw(cx);
@@ -435,6 +445,48 @@ impl Widget for RoomScreen {
                 log!(
                     "HEPTA_FIXTURE_VISIBLE_GLYPHS index={} x={} y={} width={} height={}",
                     index,
+                    rect.pos.x,
+                    rect.pos.y,
+                    rect.size.x,
+                    rect.size.y
+                );
+            }
+        }
+        #[cfg(feature = "ui-fixtures")]
+        if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
+            let jump = self.view.widget(cx, ids!(jump_to_latest));
+            let area = jump.area();
+            let valid = area.is_valid(cx);
+            let rect = if valid {
+                area.rect(cx)
+            } else {
+                Rect::default()
+            };
+            let tail = workspace
+                .timeline()
+                .is_none_or(|timeline| timeline.scroll.at_end);
+            let sample = (
+                tail,
+                jump.visible(),
+                valid,
+                [
+                    rect.pos.x.to_bits(),
+                    rect.pos.y.to_bits(),
+                    rect.size.x.to_bits(),
+                    rect.size.y.to_bits(),
+                ],
+            );
+            if cx
+                .global::<RoomViewMemory>()
+                .jump_samples
+                .insert(self.widget_uid(), sample)
+                != Some(sample)
+            {
+                log!(
+                    "HEPTA_FIXTURE_JUMP tail={} visible={} area_valid={} x={} y={} width={} height={}",
+                    tail,
+                    jump.visible(),
+                    valid,
                     rect.pos.x,
                     rect.pos.y,
                     rect.size.x,

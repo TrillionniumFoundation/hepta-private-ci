@@ -262,11 +262,16 @@ jobs:
           npx playwright install --with-deps chromium firefox webkit
           sudo apt-get install -y tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim python3-pil
           dpkg-query -W tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim python3-pil
-          node --test test/screenshot-readability.test.mjs
+          node --test test/screenshot-readability.test.mjs test/robrix-pixel-plan.test.mjs
       - id: default_browser
         name: Run actual browser renderer and capture layouts
         working-directory: apps/hepta-control-ui
         run: xvfb-run -a npm run test:robrix
+      - name: Require every default screenshot pixel check
+        if: always() && steps.default_build.outcome == 'success'
+        env:
+          SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
+        run: node apps/hepta-control-ui/tools/verify-robrix-evidence.mjs apps/hepta-control-ui/test-results/robrix-default default
       - name: Diagnose WebKit drawing buffer without changing product defaults
         if: always() && steps.default_build.outcome == 'success'
         working-directory: apps/hepta-control-ui
@@ -283,6 +288,11 @@ jobs:
         env:
           HEPTA_ROBRIX_FIXTURES: "1"
         run: xvfb-run -a npm run test:robrix
+      - name: Require every populated screenshot pixel check
+        if: always() && steps.fixture_build.outcome == 'success'
+        env:
+          SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
+        run: node apps/hepta-control-ui/tools/verify-robrix-evidence.mjs apps/hepta-control-ui/test-results/robrix-fixtures fixtures
       - if: always() && steps.default_build.outcome == 'success'
         name: Confirm exact source after build and browser checks
         env:
@@ -290,15 +300,56 @@ jobs:
         run: |
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --exit-code HEAD
+      - name: Inventory every source-bound browser evidence file
+        if: always()
+        env:
+          SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
+        run: python3 apps/hepta-control-ui/tools/group-robrix-evidence.py
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
-          name: robrix-host-${{ needs.identity.outputs.source_sha }}
-          path: |
-            apps/hepta-control-ui/test-results/**/*.png
-            apps/hepta-control-ui/test-results/**/host-diagnostics.json
-            apps/hepta-control-ui/test-results/**/*-ocr.txt
-            apps/hepta-control-ui/test-results/robrix-*-results.json
-            apps/hepta-control-ui/dist/build-manifest.json
-            apps/hepta-control-ui/dist-robrix-fixtures/build-manifest.json
+          name: robrix-host-default-chromium-${{ needs.identity.outputs.source_sha }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/default-chromium/
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: robrix-host-default-firefox-${{ needs.identity.outputs.source_sha }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/default-firefox/
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: robrix-host-default-webkit-${{ needs.identity.outputs.source_sha }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/default-webkit/
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: robrix-host-fixtures-chromium-${{ needs.identity.outputs.source_sha }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/fixtures-chromium/
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: robrix-host-fixtures-firefox-${{ needs.identity.outputs.source_sha }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/fixtures-firefox/
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: robrix-host-fixtures-webkit-${{ needs.identity.outputs.source_sha }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/fixtures-webkit/
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: robrix-host-diagnostic-${{ needs.identity.outputs.source_sha }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/diagnostic/
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: robrix-host-summary-${{ needs.identity.outputs.source_sha }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/summary/
           if-no-files-found: warn

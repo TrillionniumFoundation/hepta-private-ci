@@ -9,6 +9,20 @@ export async function prepareScreenshotForOcr(path,output){
  await run('python3',[fileURLToPath(new URL('./prepare-ocr-pixels.py',import.meta.url)),path,output],{timeout:20000,maxBuffer:65536});
  return output;
 }
+export async function prepareObservedControlForOcr(path,output,point,viewport){
+ const bytes=await readFile(path);
+ assert.equal(bytes.subarray(1,4).toString(),'PNG');
+ const width=bytes.readUInt32BE(16),height=bytes.readUInt32BE(20),scale=width/viewport.width;
+ assert.equal(height,Math.round(viewport.height*scale),'Control ROI requires a verified full-viewport capture');
+ assert.ok(Number.isFinite(point.x)&&Number.isFinite(point.y)&&point.x>0&&point.x<viewport.width&&point.y>0&&point.y<viewport.height,'Control must have been observed inside this viewport');
+ // Fixed text-centered region around the real first-theme OCR observation.
+ // It is not a claimed widget rectangle; full-frame visibility checks remain.
+ const left=Math.max(0,Math.floor((point.x-80)*scale));
+ const top=Math.max(0,Math.floor((point.y-28)*scale));
+ const region={left,top,width:Math.min(width-left,Math.ceil(280*scale)),height:Math.min(height-top,Math.ceil(56*scale)),observedPoint:point,viewport};
+ await run('python3',[fileURLToPath(new URL('./prepare-ocr-pixels.py',import.meta.url)),path,output,...[region.left,region.top,region.width,region.height].map(String)],{timeout:20000,maxBuffer:65536});
+ return region;
+}
 export async function readScreenshotText(path,{language='eng',layout='sparse'}={}){
  assert.ok(['eng','eng+chi_sim'].includes(language),'Only pinned QA OCR languages are accepted');
  assert.ok(['sparse','block'].includes(layout),'Only fixed QA layout modes are accepted');
