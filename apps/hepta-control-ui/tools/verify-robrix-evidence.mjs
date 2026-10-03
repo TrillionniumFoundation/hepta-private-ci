@@ -5,7 +5,7 @@ import {createHash} from 'node:crypto';
 import {join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {captureSchedule} from './robrix-pixel-plan.mjs';
-import {readScreenshotText,prepareScreenshotForOcr,prepareObservedControlForOcr} from './verify-robrix-pixels.mjs';
+import {readScreenshotText,prepareScreenshotForOcr,prepareObservedControlForOcr,prepareObservedFixtureRows} from './verify-robrix-pixels.mjs';
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
 export async function verifyCapture(directory,entry,expected){
  assert.equal(entry.name,expected.name);
@@ -42,6 +42,13 @@ export async function verifyCapture(directory,entry,expected){
    const normalized=await prepareScreenshotForOcr(path,join(directory,expected.name+'-ocr-pixels.png'));
    const additional=await readScreenshotText(normalized,{language:'eng+chi_sim'});
    await writeFile(join(directory,expected.name+'-cjk-normalized-ocr.txt'),additional);text+='\n'+additional;
+   if(!/中文输入|键盘焦点|滚动位置/.test(text.replace(/\s+/g,''))){
+    const regions=await prepareObservedFixtureRows(path,normalized,join(directory,expected.name),expected.viewport.width);
+    for(const region of regions){
+     const rowText=await readScreenshotText(region.path,{language:'eng+chi_sim',layout:'block'});
+     await writeFile(region.path.replace(/\.png$/,'-ocr.txt'),rowText);text+='\n'+rowText;
+    }
+   }
   }
   outcomes.push({check:'exact-cjk',passed:/中文输入|键盘焦点|滚动位置/.test(text.replace(/\s+/g,''))});
  }

@@ -272,12 +272,6 @@ jobs:
         env:
           SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
         run: node apps/hepta-control-ui/tools/verify-robrix-evidence.mjs apps/hepta-control-ui/test-results/robrix-default default
-      - name: Diagnose WebKit drawing buffer without changing product defaults
-        if: always() && steps.default_build.outcome == 'success'
-        working-directory: apps/hepta-control-ui
-        env:
-          HEPTA_ROBRIX_DIAGNOSTICS: '1'
-        run: xvfb-run -a npm run test:robrix -- --project=webkit --output=test-results/robrix-buffer-diagnostic
       - id: fixture_build
         if: always() && steps.default_build.outcome == 'success'
         name: Build explicitly labeled owner-fixture through the same renderer
@@ -293,6 +287,13 @@ jobs:
         env:
           SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
         run: node apps/hepta-control-ui/tools/verify-robrix-evidence.mjs apps/hepta-control-ui/test-results/robrix-fixtures fixtures
+      - name: Diagnose WebKit drawing buffer without changing product defaults
+        if: always() && steps.fixture_build.outcome == 'success'
+        working-directory: apps/hepta-control-ui
+        env:
+          HEPTA_ROBRIX_DIAGNOSTICS: '1'
+          HEPTA_ROBRIX_FIXTURES: '1'
+        run: xvfb-run -a npm run test:robrix -- --project=webkit --output=test-results/robrix-buffer-diagnostic
       - if: always() && steps.default_build.outcome == 'success'
         name: Confirm exact source after build and browser checks
         env:
@@ -310,46 +311,54 @@ jobs:
         with:
           name: robrix-host-default-chromium-${{ needs.identity.outputs.source_sha }}
           path: apps/hepta-control-ui/test-results/evidence-groups/default-chromium/
+          include-hidden-files: true
           if-no-files-found: warn
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: robrix-host-default-firefox-${{ needs.identity.outputs.source_sha }}
           path: apps/hepta-control-ui/test-results/evidence-groups/default-firefox/
+          include-hidden-files: true
           if-no-files-found: warn
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: robrix-host-default-webkit-${{ needs.identity.outputs.source_sha }}
           path: apps/hepta-control-ui/test-results/evidence-groups/default-webkit/
+          include-hidden-files: true
           if-no-files-found: warn
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: robrix-host-fixtures-chromium-${{ needs.identity.outputs.source_sha }}
           path: apps/hepta-control-ui/test-results/evidence-groups/fixtures-chromium/
+          include-hidden-files: true
           if-no-files-found: warn
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: robrix-host-fixtures-firefox-${{ needs.identity.outputs.source_sha }}
           path: apps/hepta-control-ui/test-results/evidence-groups/fixtures-firefox/
+          include-hidden-files: true
           if-no-files-found: warn
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: robrix-host-fixtures-webkit-${{ needs.identity.outputs.source_sha }}
           path: apps/hepta-control-ui/test-results/evidence-groups/fixtures-webkit/
+          include-hidden-files: true
           if-no-files-found: warn
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: robrix-host-diagnostic-${{ needs.identity.outputs.source_sha }}
           path: apps/hepta-control-ui/test-results/evidence-groups/diagnostic/
+          include-hidden-files: true
           if-no-files-found: warn
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: robrix-host-summary-${{ needs.identity.outputs.source_sha }}
           path: apps/hepta-control-ui/test-results/evidence-groups/summary/
+          include-hidden-files: true
           if-no-files-found: warn

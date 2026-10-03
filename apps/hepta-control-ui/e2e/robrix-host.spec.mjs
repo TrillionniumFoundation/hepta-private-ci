@@ -65,6 +65,9 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     // Wait for the real message renderer's font-family observation, not a sleep.
     await expect.poll(()=>rustFontStates.some(text=>/HEPTA_FIXTURE_FONT_STATE .*loaded_fonts=3 complete=true/.test(text)),{timeout:60000}).toBe(true);
    }
+   // A Rust draw observation can precede browser compositing. Cross a real
+   // frame boundary before reading pixels; no time-based sleep or retry waiver.
+   await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
    phase='snapshot';await page.evaluate(()=>window.__heptaTestPhase='snapshot');
    const path=testInfo.outputPath(name+'.png');
    try {await page.screenshot({path,fullPage:true,caret:'initial'});}
@@ -129,6 +132,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    await expect.poll(()=>pendingFonts.size,{timeout:60000}).toBe(0);
    await page.waitForTimeout(1000);
    expect(await page.locator('canvas').evaluate(canvas=>canvas.width>0&&canvas.height>0)).toBe(true);
+   expect(await page.locator('canvas').evaluate(canvas=>canvas.getContext('webgl2')?.getContextAttributes()?.preserveDrawingBuffer)).toBe(true);
    expect(await page.locator('meta[name=viewport]').getAttribute('content')).not.toContain('user-scalable=no');
    let captured;
    for(const theme of ['Aurora','Obsidian','Lunar']){
@@ -178,6 +182,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     await page.mouse.move(page.viewportSize().width*0.75,350);
     await page.mouse.wheel(0,-480);
     await expect.poll(()=>scrollObservations.at(-1)?.travel??before).toBeGreaterThan(before);
+    await expect.poll(()=>jumpObservations.findLast(text=>text.includes('HEPTA_FIXTURE_JUMP'))??'').toMatch(/tail=false visible=true area_valid=true/);
     const older=await capture('robrix-user-scrollback');
     expect(older.text).toMatch(/Jump to latest/i);
     const anchor=scrollObservations.at(-1)?.first;

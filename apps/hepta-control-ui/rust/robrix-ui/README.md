@@ -62,6 +62,22 @@ real implementation gap, not a supported mobile-chat claim.
 
 ## Web runtime inventory
 
+The WebGL host explicitly retains its drawing buffer on every browser. At source
+`4092ddc7`, the discarded-buffer WebKit resize subject became black in both the
+page capture and the surrounding Xvfb display captures; the otherwise identical
+retained-buffer subject stayed visible. This is a presentation repair, not an OCR
+workaround. The false setting remains a diagnostic comparison, while the real
+product runs the complete three-browser interaction matrix with retention.
+
+Retention may consume additional storage and reduce driver optimizations. Runtime
+evidence records actual drawing-buffer dimensions and DPR; `width × height × 4`
+is one RGBA surface's size equivalent. It is not measured extra GPU memory or
+a guaranteed minimum increase: the driver may reuse storage or maintain multiple
+buffers.
+The diagnostic compares consecutive resizes and scrolls with RAF cadence and CPU
+submission samples. These observations do not establish performance neutrality;
+target-host performance and power costs remain to be measured.
+
 Application layout, state and event logic are Rust. The WASM package contains
 Makepad's JavaScript platform/ABI loader, input, WebGL and browser integration.
 That framework glue is distinct from application UI logic. The owned packaging
