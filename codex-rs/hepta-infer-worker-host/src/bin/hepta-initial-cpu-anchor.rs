@@ -8,6 +8,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let path = std::path::Path::new(&arguments[1]);
     let pin = arguments[2].parse()?;
     let report = match arguments[0].as_str() {
+        "select-registered-self-iteration-stage" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::select_registered_cpu_self_iteration_stage_v1(path, pin)?
+        }
         "publish-parameter-pre-registration" => {
             codex_hepta_infer_worker_host::initial_cpu_anchor::publish_parameter_pre_registered_artifacts_v1(path, pin)?
         }

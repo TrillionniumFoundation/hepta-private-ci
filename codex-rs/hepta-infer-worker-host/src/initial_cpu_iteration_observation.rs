@@ -314,7 +314,7 @@ fn observe_inner(path: &Path, pin: Digest32, root_purpose: bool) -> HostResult<V
     )
 }
 
-fn require_independent_actors(
+pub(super) fn require_independent_actors(
     generator: &ledger::VerifiedLearningEvidenceV1,
     evaluator: &ledger::VerifiedLearningEvidenceV1,
     selector: &ledger::VerifiedLearningEvidenceV1,
@@ -330,7 +330,7 @@ fn require_independent_actors(
     Ok(())
 }
 
-fn observed_record(
+pub(super) fn observed_record(
     frozen: &VerifiedSelfIterationFrozenConsumerV1,
     evaluation: Digest32,
     selector: &ledger::SignedLearningEvidenceV1,
@@ -391,11 +391,29 @@ fn physical_verdict(
     inputs: &Inputs,
     memory: u64,
 ) -> AgentdSelfIterationCanaryVerdictV1 {
+    physical_verdict_with_bounds(
+        observation,
+        canary,
+        inputs.profile.calibration.minimum_confidence_ppm,
+        inputs.profile.calibration.maximum_ood_ppm,
+        inputs.profile.resources.p99_latency_micros,
+        memory,
+    )
+}
+
+pub(super) fn physical_verdict_with_bounds(
+    observation: &AgentdSelfIterationCanaryObservationV1,
+    canary: &NeuronAcknowledgedOperationV2,
+    minimum_confidence_ppm: u32,
+    maximum_ood_ppm: u32,
+    maximum_latency_micros: u64,
+    memory: u64,
+) -> AgentdSelfIterationCanaryVerdictV1 {
     if canary.commit().disposition == NeuronCommitDispositionV1::CommittedReady
         && !observation.abstain
-        && observation.confidence_ppm >= inputs.profile.calibration.minimum_confidence_ppm
-        && observation.ood_ppm <= inputs.profile.calibration.maximum_ood_ppm
-        && observation.latency_micros <= inputs.profile.resources.p99_latency_micros
+        && observation.confidence_ppm >= minimum_confidence_ppm
+        && observation.ood_ppm <= maximum_ood_ppm
+        && observation.latency_micros <= maximum_latency_micros
         && observation.resident_bytes <= memory
     {
         AgentdSelfIterationCanaryVerdictV1::Accept

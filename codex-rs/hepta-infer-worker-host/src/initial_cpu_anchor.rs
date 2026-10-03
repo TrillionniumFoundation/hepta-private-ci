@@ -66,6 +66,15 @@ pub use goal_factory::model_capability::CpuNeuronOriginalGenerationReaderV3;
 pub use goal_factory::model_capability::RegisteredCpuModelResolverV3;
 #[path = "initial_cpu_iteration_selection.rs"]
 mod iteration_selection;
+#[path = "initial_cpu_registered_cycle_v1.rs"]
+mod registered_cycle;
+pub use registered_cycle::RegisteredCycleAdmissionSourcesV1;
+pub use registered_cycle::RegisteredCycleCandidateSourcesV1;
+pub use registered_cycle::RegisteredCycleObserverCustodyV1;
+pub use registered_cycle::RegisteredCycleRoleInputV1;
+pub use registered_cycle::RegisteredSelfIterationOwnerConfigurationV1;
+pub use registered_cycle::observe_registered_cpu_self_iteration_canary_v1;
+pub use registered_cycle::select_registered_cpu_self_iteration_stage_v1;
 #[path = "initial_cpu_registered_model_use_v3.rs"]
 mod registered_model_use;
 pub use registered_model_use::VerifiedRegisteredCpuModelUseV3;

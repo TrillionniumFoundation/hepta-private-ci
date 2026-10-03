@@ -110,6 +110,16 @@ impl VerifiedParameterPreRegisteredAdmissionV1 {
     pub fn selections(&self) -> &[SignedArtifactSelectionV1; 4] {
         &self.selections
     }
+    /// The actual independently installed S3 process, without signing access.
+    pub fn selector_program(&self) -> &CpuProtectedSourceV1 {
+        &self.inputs.config.selector_program
+    }
+    pub fn selector_identity(&self) -> &CpuIndependentRoleV1 {
+        &self.inputs.config.selector
+    }
+    pub fn expires_at_ms(&self) -> u64 {
+        self.body.expires_at_ms
+    }
     pub fn revalidate_current(&self) -> HostResult<()> {
         let now = now_ms()?;
         if now
