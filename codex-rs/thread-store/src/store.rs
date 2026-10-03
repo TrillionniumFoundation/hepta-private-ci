@@ -121,6 +121,13 @@ pub trait ThreadStore: Any + Send + Sync {
         false
     }
 
+    /// Whether creation binds its fixed thread ID and exact rollout identity to the original
+    /// durable creation reservation before any file, index, or other creation effect can occur.
+    /// Hard-delete fencing alone does not provide this binding-before-effect guarantee.
+    fn supports_identified_creation(&self) -> bool {
+        false
+    }
+
     /// Appends raw rollout items to a live thread.
     ///
     /// Implementations should apply the shared rollout persistence policy before writing durable

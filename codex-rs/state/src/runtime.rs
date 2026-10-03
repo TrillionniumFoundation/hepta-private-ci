@@ -52,9 +52,14 @@ mod remote_control;
 mod rollout_migration;
 #[cfg(test)]
 pub(crate) mod test_support;
+mod thread_creation;
 mod thread_section_order;
 mod thread_sections;
 mod threads;
+pub use thread_creation::ThreadCreationPhase;
+pub use thread_creation::ThreadCreationRecord;
+pub use thread_creation::ThreadCreationReservation;
+pub use thread_creation::ThreadCreationReserveOutcome;
 
 pub use external_agent_config_imports::ExternalAgentConfigImportDetailsRecord;
 pub use external_agent_config_imports::ExternalAgentConfigImportFailureRecord;

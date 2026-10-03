@@ -473,6 +473,11 @@ impl ThreadStore for LocalThreadStore {
         self.state_db.is_some()
     }
 
+    fn supports_identified_creation(&self) -> bool {
+        // create_thread binds the lazy recorder before returning it to its original owner.
+        self.state_db.is_some()
+    }
+
     fn append_items(&self, params: AppendThreadItemsParams) -> ThreadStoreFuture<'_, ()> {
         Box::pin(async move { live_writer::append_items(self, params).await })
     }
