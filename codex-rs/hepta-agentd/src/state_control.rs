@@ -688,7 +688,7 @@ impl AgentdState {
                         receipt,
                     ) => crate::AutomationEffectReconcileSnapshot {
                         state: crate::AutomationEffectReconcileState::Terminal,
-                        effect: Some(effect_snapshot(receipt)?),
+                        effect: Some(effect_snapshot(*receipt)?),
                     },
                     crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Indeterminate => {
                         crate::AutomationEffectReconcileSnapshot {
@@ -1429,3 +1429,7 @@ fn now_seconds() -> Result<i64, AgentdError> {
     i64::try_from(seconds)
         .map_err(|_| AgentdError::Protocol("system clock exceeds i64 seconds".to_string()))
 }
+
+#[cfg(test)]
+#[path = "state_effect_snapshot_tests.rs"]
+mod effect_snapshot_tests;
