@@ -69,6 +69,7 @@ fn role_name(value: LearningEvidenceRoleV1) -> &'static str {
         LearningEvidenceRoleV1::Generator => "generator",
         LearningEvidenceRoleV1::Observer => "observer",
         LearningEvidenceRoleV1::Evaluator => "evaluator",
+        LearningEvidenceRoleV1::Selector => "selector",
         LearningEvidenceRoleV1::UnlearningAuthority => "unlearning_authority",
         _ => "unsupported",
     }
@@ -78,11 +79,15 @@ fn role(value: &str) -> ReviewResult<LearningEvidenceRoleV1> {
         "generator" => Ok(LearningEvidenceRoleV1::Generator),
         "observer" => Ok(LearningEvidenceRoleV1::Observer),
         "evaluator" => Ok(LearningEvidenceRoleV1::Evaluator),
+        "selector" => Ok(LearningEvidenceRoleV1::Selector),
         "unlearning_authority" => Ok(LearningEvidenceRoleV1::UnlearningAuthority),
         _ => Err("review transfer role unsupported".into()),
     }
 }
 
+#[cfg(test)]
+#[path = "transfer_selector_tests.rs"]
+mod selector_tests;
 #[cfg(test)]
 #[path = "transfer_unlearning_tests.rs"]
 mod unlearning_tests;
@@ -156,9 +161,10 @@ impl ReviewTrustWireV1 {
             || role_count("observer") != 1
             || role_count("evaluator") != 2
             || role_count("unlearning_authority") > 1
-            || self.signers.len() != 4 + role_count("unlearning_authority")
+            || role_count("selector") > 1
+            || self.signers.len() != 4 + role_count("unlearning_authority") + role_count("selector")
         {
-            return Err("fixed review requires the original four signers and at most one dedicated unlearning authority".into());
+            return Err("fixed review requires the original four signers and at most one dedicated unlearning authority and selector".into());
         }
         let scope: Digest32 = self.scope_digest.parse()?;
         let root = LearningTrustRootV1 {

@@ -1,10 +1,13 @@
 //! Public finite request bytes grant no Root custody or E authority.
-use crate::fixed_parameter_no_change::{HostResult, hex};
+use crate::fixed_parameter_no_change::HostResult;
+use crate::fixed_parameter_no_change::hex;
 use crate::fixed_parameter_no_change_host::Inputs;
 use crate::*;
-use codex_hepta_learning_ledger::{ReviewEvidenceWireV1, SignedLearningEvidenceV1};
+use codex_hepta_learning_ledger::ReviewEvidenceWireV1;
+use codex_hepta_learning_ledger::SignedLearningEvidenceV1;
 use codex_hepta_plasticity::*;
-use codex_hepta_types::{Digest32, StableId};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct ParameterEvaluationRoundBindingV1 {

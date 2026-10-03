@@ -15,6 +15,9 @@ use codex_hepta_agentd::self_iteration_canary_payload_v1;
 use ed25519_dalek::Signer;
 use std::path::PathBuf;
 
+#[path = "initial_cpu_iteration_observation_root.rs"]
+mod root_custody;
+
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Configuration {
@@ -27,7 +30,9 @@ struct Configuration {
     evaluation: RoleInput,
     selection: RoleInput,
     canary: Source,
-    inaccessible_paths: [PathBuf; 5],
+    inaccessible_paths: Vec<PathBuf>,
+    #[serde(default)]
+    root_custody: Option<root_custody::RootCustody>,
 }
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
@@ -54,27 +59,19 @@ struct Selection {
 }
 
 pub(super) fn observe(path: &Path, pin: Digest32) -> HostResult<Value> {
+    observe_inner(path, pin, false)
+}
+pub(super) fn observe_root(path: &Path, pin: Digest32) -> HostResult<Value> {
+    observe_inner(path, pin, true)
+}
+fn observe_inner(path: &Path, pin: Digest32, root_purpose: bool) -> HostResult<Value> {
     let source = Source {
         path: path.to_owned(),
         digest: pin.to_string(),
     };
     let bytes = source.read(64 * 1024)?;
     let config: Configuration = serde_json::from_slice(&bytes)?;
-    let uids = [
-        config.consumer.uid,
-        config.evaluation.uid,
-        config.selection.uid,
-        config.observer.uid,
-    ];
-    if config.schema != "hepta.cpu-neuron.self-iteration-observation.v1"
-        || uids.contains(&0)
-        || uids
-            .iter()
-            .enumerate()
-            .any(|(index, uid)| uids[..index].contains(uid))
-    {
-        return Err("original O must be physically distinct from G/E/S".into());
-    }
+    root_custody::validate_purpose(&config, root_purpose)?;
     let inputs = Inputs::read(
         &config.baseline_deployment.path,
         digest(&config.baseline_deployment.digest)?,
@@ -88,7 +85,11 @@ pub(super) fn observe(path: &Path, pin: Digest32) -> HostResult<Value> {
             _ => return Err("O can read Gold/another key or denial is not physical".into()),
         }
     }
-    let key = role::actual_role(&inputs, &config.observer)?;
+    let key = if let Some(custody) = &config.root_custody {
+        root_custody::key(custody, &inputs, &config.observer)?
+    } else {
+        role::actual_role(&inputs, &config.observer)?
+    };
     let trust_bytes = config.learning_trust.read(64 * 1024)?;
     let wire: ledger::ReviewTrustWireV1 = serde_json::from_slice(&trust_bytes)?;
     let (root, distribution) = wire.native()?;
@@ -112,6 +113,9 @@ pub(super) fn observe(path: &Path, pin: Digest32) -> HostResult<Value> {
     {
         return Err("physical O does not own original admitted Observer".into());
     }
+    if let Some(custody) = &config.root_custody {
+        root_custody::verify(custody, &observer)?;
+    }
     let now = now_ms()?;
     let trust = ledger::activate_learning_trust(&root, distribution, None, now)?;
     let consumer_bytes = config
@@ -120,7 +124,7 @@ pub(super) fn observe(path: &Path, pin: Digest32) -> HostResult<Value> {
     let evaluation_bytes = config
         .evaluation
         .read(MAX_SELF_ITERATION_EVALUATION_TRANSPORT_BYTES)?;
-    let selection_bytes = config.selection.read(32 * 1024)?;
+    let selection_bytes = root_custody::selection(&config, 32 * 1024)?;
     let canary_bytes = config
         .canary
         .read(MAX_NEURON_OPERATION_OBSERVATION_BYTES_V2 as u64)?;
@@ -252,7 +256,7 @@ pub(super) fn observe(path: &Path, pin: Digest32) -> HostResult<Value> {
             .evaluation
             .read(MAX_SELF_ITERATION_EVALUATION_TRANSPORT_BYTES)?
             != evaluation_bytes
-        || config.selection.read(32 * 1024)? != selection_bytes
+        || root_custody::selection(&config, 32 * 1024)? != selection_bytes
         || config
             .canary
             .read(MAX_NEURON_OPERATION_OBSERVATION_BYTES_V2 as u64)?
@@ -262,7 +266,12 @@ pub(super) fn observe(path: &Path, pin: Digest32) -> HostResult<Value> {
     }
     let final_now = now_ms()?;
     trust.revalidate_at(final_now)?;
-    role::require_actual_program(&inputs.profile.program, &config.observer)?;
+    if let Some(custody) = &config.root_custody {
+        root_custody::key_boundary(custody, &inputs, &config.observer)?;
+        root_custody::verify(custody, &observer)?;
+    } else {
+        role::require_actual_program(&inputs.profile.program, &config.observer)?;
+    }
     if observer.revoked_at.is_some_and(|at| final_now >= at)
         || final_now >= observer.principal.expires_at
         || final_now >= evidence.expires_at

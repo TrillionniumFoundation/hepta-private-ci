@@ -97,6 +97,10 @@ pub fn select_cpu_self_iteration_stage(path: &Path, pin: Digest32) -> HostResult
 pub fn observe_cpu_self_iteration_canary(path: &Path, pin: Digest32) -> HostResult<Value> {
     iteration_observation::observe(path, pin)
 }
+/// Fixed original Root-custody Observer purpose, separate from the non-root entry.
+pub fn observe_cpu_self_iteration_canary_root(path: &Path, pin: Digest32) -> HostResult<Value> {
+    iteration_observation::observe_root(path, pin)
+}
 pub use model_use::VerifiedCpuModelUseV2;
 pub use model_use::inspect_cpu_model_use_v2;
 pub use model_use::select_cpu_model_use_v2;

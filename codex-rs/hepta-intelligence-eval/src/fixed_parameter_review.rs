@@ -1,5 +1,6 @@
 //! Raw parameter evaluation reuses the exact original custody-measured bundle.
-use crate::fixed_parameter_no_change::{HostResult, unhex};
+use crate::fixed_parameter_no_change::HostResult;
+use crate::fixed_parameter_no_change::unhex;
 use crate::fixed_parameter_no_change_host::Inputs;
 use crate::*;
 use codex_hepta_learning_ledger::*;

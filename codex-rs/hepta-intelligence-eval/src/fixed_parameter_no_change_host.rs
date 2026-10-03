@@ -1,16 +1,20 @@
 //! Fixed real E purpose for a deterministic no-update frontier. No caller
 //! metrics, arbitrary signing payload, Gold access, or model advice is accepted.
 use super::fixed_parameter_no_change::*;
-use crate::fixed_calibration_host::{boundary, key, now_ms};
+use crate::fixed_calibration_host::boundary;
+use crate::fixed_calibration_host::key;
+use crate::fixed_calibration_host::now_ms;
 use crate::*;
 use codex_hepta_learning_ledger::*;
 use codex_hepta_plasticity::*;
-use codex_hepta_types::{Digest32, StableId};
+use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use serde::Deserialize;
 use serde::Serialize;
 use std::fs::File;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
 
 const MAX_CONFIG_BYTES: u64 = 32 * 1024;
 const MAX_INPUT_BYTES: u64 = 4 * MAX_PARAMETER_ROLE_MATERIAL_BYTES_V1 as u64 + 32 * 1024;

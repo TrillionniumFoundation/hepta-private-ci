@@ -11,7 +11,7 @@ fn id(value: &str) -> StableId {
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
-fn fixture(count: usize) -> (LearningTrustRootV1, SignedLearningTrustDistributionV1) {
+pub(super) fn fixture(count: usize) -> (LearningTrustRootV1, SignedLearningTrustDistributionV1) {
     let root_key = SigningKey::from_bytes(&[99; 32]);
     let root = LearningTrustRootV1 {
         root_id: id("fixture-root"),

@@ -1,6 +1,9 @@
 //! Original measured paired execution must reach final use before publication.
 use super::*;
-use crate::paired_supervised_test_support::{SigningFixture, Sink, inputs, runner};
+use crate::paired_supervised_test_support::SigningFixture;
+use crate::paired_supervised_test_support::Sink;
+use crate::paired_supervised_test_support::inputs;
+use crate::paired_supervised_test_support::runner;
 
 #[test]
 fn original_full_sink_is_not_reached_after_parameter_final_use_is_withdrawn() {

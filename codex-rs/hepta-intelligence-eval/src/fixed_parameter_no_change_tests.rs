@@ -1,7 +1,10 @@
 //! Public synthetic evidence exercises the original verifier, never role custody.
 use super::*;
-use crate::paired_supervised_test_support::{SigningFixture, digest, id};
-use codex_hepta_types::{FixedQ32, Generation};
+use crate::paired_supervised_test_support::SigningFixture;
+use crate::paired_supervised_test_support::digest;
+use crate::paired_supervised_test_support::id;
+use codex_hepta_types::FixedQ32;
+use codex_hepta_types::Generation;
 
 fn profile() -> ParameterGeneratorProfileV3 {
     let artifact = digest("artifact");
