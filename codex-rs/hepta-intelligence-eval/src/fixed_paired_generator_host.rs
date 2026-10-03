@@ -162,10 +162,10 @@ pub fn run_fixed_paired_generator(path: &Path) -> Result<()> {
         "hepta-native-generator-",
     )?;
     actual_limits(&cgroup)?;
-    let program = Digest32::of_bytes(&read_root_review_input(
+    let program = crate::verify_registered_operational_program_v3(
         &std::env::current_exe()?,
-        128 * 1024 * 1024,
-    )?);
+        config.program_digest.parse()?,
+    )?;
     if program != config.program_digest.parse::<Digest32>()? {
         return Err("immutable actual G program pin".into());
     }

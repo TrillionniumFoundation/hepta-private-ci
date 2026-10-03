@@ -47,7 +47,7 @@ fn source(source: &Source, maximum: u64) -> HostResult<Vec<u8>> {
     }
     Ok(bytes)
 }
-pub(crate) fn root_boundary() -> HostResult<()> {
+pub fn root_boundary() -> HostResult<()> {
     let status = std::fs::read_to_string("/proc/self/status")?;
     for field in ["Uid:", "Gid:"] {
         let values = status

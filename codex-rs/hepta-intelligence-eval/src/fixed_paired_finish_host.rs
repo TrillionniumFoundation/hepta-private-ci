@@ -73,10 +73,10 @@ pub fn finish_fixed_paired_custody(path: &Path) -> HostResult<()> {
     let config_bytes = read_root_review_input(path, 32 * 1024)?;
     let config: Config = serde_json::from_slice(&config_bytes)?;
     if config.schema != "hepta.fixed-paired-custody-finish-config.v1"
-        || Digest32::of_bytes(&read_root_review_input(
+        || crate::verify_registered_operational_program_v3(
             &std::env::current_exe()?,
-            128 * 1024 * 1024,
-        )?) != config.program_digest.parse::<Digest32>()?
+            config.program_digest.parse()?,
+        )? != config.program_digest.parse::<Digest32>()?
         || config.evidence_path.parent() == config.ack_path.parent()
     {
         return Err("fixed custody finish program or independently retained ACK parent".into());

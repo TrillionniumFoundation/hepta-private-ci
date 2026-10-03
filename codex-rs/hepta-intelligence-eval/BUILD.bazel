@@ -7,6 +7,7 @@ codex_rust_crate(
     # Enabling a feature here does not add its optional Cargo externs to Bazel.
     deps_extra = [
         "//codex-rs/hepta-neuron",
+        "//codex-rs/hepta-plasticity",
         "//codex-rs/hepta-learning-artifacts",
         "@crates//:ed25519-dalek",
         "@crates//:rustix",

@@ -15,7 +15,7 @@ default = []
 # Explicit compatibility escape hatch for trusted in-process fixtures only.
 # Production and qualification consumers must use signed admission APIs.
 trusted-inprocess-eval = []
-fixed-eval-host = ["dep:ed25519-dalek", "dep:serde", "dep:serde_json", "dep:rustix", "codex-hepta-learning-ledger/review-host", "dep:codex-hepta-neuron", "dep:codex-hepta-learning-artifacts"]
+fixed-eval-host = ["dep:ed25519-dalek", "dep:serde", "dep:serde_json", "dep:rustix", "codex-hepta-learning-ledger/review-host", "dep:codex-hepta-neuron", "dep:codex-hepta-learning-artifacts", "dep:codex-hepta-plasticity"]
 
 [[test]]
 name = "operator_claim"
@@ -28,6 +28,7 @@ workspace = true
 [dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
 codex-hepta-types = { path = "../hepta-types" }
+codex-hepta-plasticity = { path = "../hepta-plasticity", optional = true }
 codex-hepta-neuron = { path = "../hepta-neuron", optional = true }
 codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts", optional = true }
 

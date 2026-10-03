@@ -559,8 +559,12 @@ mod paired_custody_retention;
 mod paired_custody_withdrawal;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_paired_custody_host::run_fixed_paired_custody;
+#[cfg(feature = "fixed-eval-host")]
+pub use fixed_paired_custody_host::verify_original_observer_controller;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_paired_finish_host::finish_fixed_paired_custody;
+#[cfg(feature = "fixed-eval-host")]
+pub use fixed_product_host::root_boundary as verify_original_observer_process_boundary_v1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_paired_generator_host;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
@@ -720,3 +724,24 @@ pub use operational_registered_program_v3::verify_registered_operational_program
 pub use operational_registered_reader_v3::VerifiedRegisteredOperationalEvaluationV3;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use operational_registered_reader_v3::inspect_registered_operational_evaluation_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_generator_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_generator_v3::FixedParameterGeneratorConfigV3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_generator_v3::FixedParameterGeneratorInputsV3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_generator_v3::ParameterRoleSourceV3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_generator_v3::run_fixed_parameter_generator_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_generator_v3::validate_parameter_generator_baseline_v3;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod fixed_parameter_observer_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_observer_v1::FixedParameterObserverConfigV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_observer_v1::FixedParameterObserverInputsV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use fixed_parameter_observer_v1::run_fixed_parameter_observer_v1;

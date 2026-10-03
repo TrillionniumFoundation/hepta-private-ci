@@ -91,10 +91,10 @@ pub fn run_fixed_paired_custody(path: &Path) -> HostResult<()> {
     crate::fixed_product_host::root_boundary()?;
     let config_bytes = read_root_review_input(path, 32 * 1024)?;
     let config: Config = serde_json::from_slice(&config_bytes)?;
-    let program = Digest32::of_bytes(&read_root_review_input(
+    let program = crate::verify_registered_operational_program_v3(
         &std::env::current_exe()?,
-        128 * 1024 * 1024,
-    )?);
+        config.program_digest.parse()?,
+    )?;
     if config.schema
         != format!(
             "hepta.fixed-paired-custody-execution-config.v{}",
@@ -141,21 +141,7 @@ pub fn run_fixed_paired_custody(path: &Path) -> HostResult<()> {
         .as_ref()
         .map(|source| source.read(32 * 1024))
         .transpose()?;
-    let mut controller = Vec::from(program.as_array().as_slice());
-    controller.extend_from_slice(Digest32::of_bytes(&trust_bytes).as_array());
-    if let Some(bytes) = &approval {
-        controller.extend_from_slice(Digest32::of_bytes(bytes).as_array());
-    }
-    controller.extend_from_slice(b"root-private-outcome-custody;no-arbitrary-outcome-or-sign-api");
-    if trust_policy["schema"] != "hepta.fixed-custody-evaluator-trust.v1"
-        || observer.controller_id.as_str()
-            != format!(
-                "fixed-custody-evaluator.{}",
-                Digest32::of_bytes(&controller)
-            )
-    {
-        return Err("actual O executable/source controller does not match admission".into());
-    }
+    verify_original_observer_controller(program, &trust_bytes, approval.as_deref(), &observer)?;
     let key_path = PathBuf::from(
         trust_policy["observer_key_path"]
             .as_str()
@@ -580,4 +566,31 @@ impl Producer<'_> {
         // accuracy, cost, retention, or causally dependent withdrawal sample.
         Ok(observations)
     }
+}
+
+/// Verify the original custody controller's exact program and protected policy
+/// bytes. This factual check grants neither key access nor signing authority.
+pub fn verify_original_observer_controller(
+    program: Digest32,
+    trust_bytes: &[u8],
+    approval: Option<&[u8]>,
+    observer: &codex_hepta_learning_ledger::TrustedLearningSignerV1,
+) -> HostResult<()> {
+    let trust_policy: Value = serde_json::from_slice(trust_bytes)?;
+    let mut controller = Vec::from(program.as_array().as_slice());
+    controller.extend_from_slice(Digest32::of_bytes(trust_bytes).as_array());
+    if let Some(bytes) = approval {
+        controller.extend_from_slice(Digest32::of_bytes(bytes).as_array());
+    }
+    controller.extend_from_slice(b"root-private-outcome-custody;no-arbitrary-outcome-or-sign-api");
+    if trust_policy["schema"] != "hepta.fixed-custody-evaluator-trust.v1"
+        || observer.controller_id.as_str()
+            != format!(
+                "fixed-custody-evaluator.{}",
+                Digest32::of_bytes(&controller)
+            )
+    {
+        return Err("actual O executable/source controller does not match admission".into());
+    }
+    Ok(())
 }
