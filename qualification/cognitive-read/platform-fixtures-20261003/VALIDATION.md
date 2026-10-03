@@ -59,3 +59,5 @@ green afterwards. Focused Python and source-identity results are retained beside
 this record. New-source owner/process Rust tests await hosted execution; no broad
 local build or shared-cache restoration was performed. The workspace Cargo.lock,
 paused AuthBus/state files, registrar/publication and authority checks are unchanged.
+
+Published source `c78d2614f100e7ea9a3c2ca25b772b5d76d2adaf`, tree `88242fc58a737e3b0c08b2104240dff171d6205f`, binds the existing cognitive.read exact-blob observation. The prior map blob `3d98c13ef77ca6e211400caf4dd2f01c31ec749d` is retained in history. All224 original paths remain; three additional checkout/fixture/test inputs produce227 exact objects. Every other map field, historical sourceBase and claim flag is unchanged; all unrelated maps remain byte-identical. Wrong observation tree, missing root, missing nonevidence observation path and wrong checkout-policy blob are rejected. Local Python results:105 passed plus3 existing skips, then148 passed.

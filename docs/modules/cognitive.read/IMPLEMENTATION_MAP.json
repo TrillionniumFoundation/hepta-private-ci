@@ -254,6 +254,10 @@
   "sourceIdentityMode": "repository_baseline_plus_exact_head_objects",
   "sourceObjects": [
     {
+      "path": ".gitattributes",
+      "object": "20fbe6f83f656a5b4a576db7f7e1849845c363e1"
+    },
+    {
       "path": ".github/actions/hepta-synthetic-merge/action.yml",
       "object": "905fc5039016ac7aaadbb857c0a7b94bb594f7ce"
     },
@@ -263,7 +267,7 @@
     },
     {
       "path": ".github/workflows/hepta-gap-agentd-process.yml",
-      "object": "2682fc19a20ec436c6e5f456acec9c7f59b2868e"
+      "object": "77e35b106924b48d4c11a374202910826d320b58"
     },
     {
       "path": "codex-rs/Cargo.lock",
@@ -315,7 +319,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_hnmf_tests.rs",
-      "object": "e78e14756a4a9d371166fabb148eca58ff2ea643"
+      "object": "2d9067a81e2e90f7d4c33e67e2c7fadb8fe736f4"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_context_observation.rs",
@@ -419,7 +423,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-      "object": "d82e0129dd812cbe154e15278db32d82d0bb601a"
+      "object": "a4935d38143a6a0c4fd08b7c8a442d2b0102e45b"
     },
     {
       "path": "codex-rs/hepta-agentd/src/test_support.rs",
@@ -752,6 +756,10 @@
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
       "object": "cc4e293746323491103142b53be09542fc2a6465"
+    },
+    {
+      "path": "codex-rs/hepta-memory/src/cognitive_test_support.rs",
+      "object": "11306805bca685a18758b50c16659a75092e0077"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_scope_witness.rs",
@@ -1139,7 +1147,11 @@
     },
     {
       "path": "scripts/test_hepta_agentd_ci.py",
-      "object": "5d985123deac487ec92519c317be59e68e966200"
+      "object": "50a5dda8a203685ba00e48578ffdf791b985c76d"
+    },
+    {
+      "path": "scripts/test_hepta_agentd_recovery_scope.py",
+      "object": "bb1dd1b601f98adda31d8ceda54fe1b8d1a620ea"
     },
     {
       "path": "scripts/verify-cognitive-read-constants.py",
@@ -1200,8 +1212,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "164199fc256850fcbecca91eed751f72df126c14",
-    "tree": "28ffa036a8b823af70fc1a8ce563219bf0e3e903"
+    "commit": "c78d2614f100e7ea9a3c2ca25b772b5d76d2adaf",
+    "tree": "88242fc58a737e3b0c08b2104240dff171d6205f"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "revision_bound_shadow_v2_source_candidate",
@@ -1292,6 +1304,7 @@
     "mergeExecutionProved": false
   },
   "observedSourcePaths": [
+    ".gitattributes",
     ".github/actions/hepta-synthetic-merge/action.yml",
     ".github/workflows/cognitive-read-qualification.yml",
     ".github/workflows/hepta-gap-agentd-process.yml",
@@ -1417,6 +1430,7 @@
     "codex-rs/hepta-memory/src/cognitive_store_recovery_read_only_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
     "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
+    "codex-rs/hepta-memory/src/cognitive_test_support.rs",
     "codex-rs/hepta-memory/src/lane_c_scope_witness.rs",
     "codex-rs/hepta-memory/src/lane_c_selected_snapshot.rs",
     "codex-rs/hepta-memory/src/lane_c_selected_snapshot_tests.rs",
@@ -1514,6 +1528,7 @@
     "scripts/test_cognitive_read_toolchain_setup.py",
     "scripts/test_cognitive_read_witness_counts.py",
     "scripts/test_hepta_agentd_ci.py",
+    "scripts/test_hepta_agentd_recovery_scope.py",
     "scripts/verify-cognitive-read-constants.py",
     "scripts/verify-cognitive-read-map.py"
   ],
