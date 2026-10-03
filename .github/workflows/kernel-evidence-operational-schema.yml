@@ -24,8 +24,13 @@ jobs:
       CARGO_INCREMENTAL: 0
       CARGO_PROFILE_DEV_DEBUG: 0
       CARGO_PROFILE_TEST_DEBUG: 0
-      RECORDS: ${{ runner.temp }}/evidence-operational-schema
     steps:
+      - name: Initialize diagnostic directory on the runner
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/evidence-operational-schema"
+          echo "RECORDS=$RUNNER_TEMP/evidence-operational-schema" >> "$GITHUB_ENV"
       - name: Checkout exact source
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
