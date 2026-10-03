@@ -14,6 +14,8 @@ use context_support::*;
 #[path = "parameter_dataset_root_test_support.rs"]
 mod dataset_support;
 use dataset_support::*;
+#[path = "parameter_context_projection_actual_root_tests.rs"]
+mod projection_support;
 
 struct UnusedTickProvider;
 impl crate::AgentdNeuronTickProviderV2 for UnusedTickProvider {
@@ -25,6 +27,22 @@ impl crate::AgentdNeuronTickProviderV2 for UnusedTickProvider {
     ) -> Result<NeuronTickInputV1, AgentdError> {
         Err(AgentdError::Invalid(
             "preparation must not dispatch a tick".into(),
+        ))
+    }
+}
+
+struct UnusedGoalFactory;
+impl crate::AgentdNeuronGoalScopeFactoryV3 for UnusedGoalFactory {
+    fn open_goal_scope(
+        &self,
+        _: &crate::AgentdIdentity,
+        _: &RunStartRecordV1,
+        _: &crate::AgentdIntelligenceInvocationV1,
+        _: &codex_hepta_agent_components::intelligence::CanonicalPortInputV1,
+        _: &crate::AgentdNeuronGoalScopeV3,
+    ) -> Result<crate::AgentdNeuronHandleV2, AgentdError> {
+        Err(AgentdError::Invalid(
+            "context reads must not create or reload another Goal owner".into(),
         ))
     }
 }
@@ -44,11 +62,24 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
     let now = crate::authbus_ingress::now_ms().expect("actual clock");
     let expires = (now / 1000 + 120) * 1000;
     let objective = fixture.parameter.admission.objective_digest;
-    let (neuron, material) =
+    let (neuron, neuron_material) =
         crate::neuron_runtime_v2::lock_metrics_tests::runtime_fixture_for_parameter_preparation(
             id(fixture.state.identity().agent_id.as_str()),
-            objective,
+            digest("actual Serving Goal objective distinct from training"),
         );
+    let mut material = neuron_material.clone();
+    material.scope = NeuronTickInputV1::journal_scope_for_subject(
+        &id(fixture.state.identity().agent_id.as_str()),
+        objective,
+    )
+    .expect("original training scope");
+    material.store_context.scope = material.scope;
+    material.index_context.scope = material.scope;
+    material.witness_context.scope = material.scope;
+    material.generation_store = root.path().join("registered-training-generation.hptngs02");
+    material.runtime_index = root.path().join("registered-training-index.hptngi02");
+    material.witness = root.path().join("registered-training-witness.hptnwv02");
+    assert_ne!(material.scope, neuron_material.scope);
     crate::neuron_runtime_v2::lock_metrics_tests::commit_parameter_preparation_checkpoint(&neuron);
     let (_, anchor) = neuron
         .handle
@@ -61,6 +92,12 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
         Arc::new(UnusedTickProvider),
     )
     .expect("same original owner")
+    .with_goal_scope_factory_v3(
+        crate::AgentdNeuronGoalScopeV3::capture(/*ordinal*/ 1, &neuron.handle)
+            .expect("actual original Goal scope"),
+        Arc::new(UnusedGoalFactory),
+    )
+    .expect("original installed Goal mode with the same held owner")
     .start()
     .expect("Serving original V2 owner");
     fixture
@@ -103,6 +140,7 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
         RootContextInputs {
             fixture: &fixture,
             material: &material,
+            neuron_material: &neuron_material,
             anchor,
             round: &round,
             artifacts: &artifacts,
@@ -162,9 +200,9 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
     let journal_before =
         fs::read(root.path().join("iteration.json")).expect("original durable reservation");
     let physical_before = [
-        material.generation_store.clone(),
-        material.runtime_index.clone(),
-        material.witness.clone(),
+        neuron_material.generation_store.clone(),
+        neuron_material.runtime_index.clone(),
+        neuron_material.witness.clone(),
     ]
     .map(|path| fs::read(path).expect("original actual V2 store"));
     let source_before = artifacts.source_bytes();
@@ -181,6 +219,28 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
         .current_generation()
         .expect("original Running generation");
     assert_eq!(expected_runtime, 2);
+    let dataset = verify_actual_dataset_socket(
+        &client,
+        &round,
+        &context,
+        root.path(),
+        &expected_dataset_snapshot,
+        initial_installed_artifact_head,
+    )
+    .await;
+    let context = projection_support::project_and_check_context(
+        &context,
+        root.path(),
+        projection_support::ProjectionInputs {
+            identity: fixture.state.identity(),
+            round: &round,
+            training: &material,
+            goal: &neuron_material,
+            anchor,
+            artifacts: &artifacts,
+            dataset: &dataset,
+        },
+    );
     let stage = std::time::Instant::now();
     let temporary = client
         .prepare_parameter_input_from_context_v2(
@@ -405,9 +465,9 @@ async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_o
     );
     assert_eq!(
         [
-            material.generation_store,
-            material.runtime_index,
-            material.witness
+            neuron_material.generation_store,
+            neuron_material.runtime_index,
+            neuron_material.witness
         ]
         .map(|path| fs::read(path).expect("V2 store")),
         physical_before

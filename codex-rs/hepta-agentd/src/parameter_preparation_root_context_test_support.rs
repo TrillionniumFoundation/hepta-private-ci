@@ -4,8 +4,8 @@ use super::*;
 pub(super) struct PublishedArtifacts {
     pub(super) registry: ArtifactRegistry,
     pub(super) profile: ParameterGeneratorProfileV3,
-    receipt: RegistrySnapshotReceipt,
-    snapshot: PathBuf,
+    pub(super) receipt: RegistrySnapshotReceipt,
+    pub(super) snapshot: PathBuf,
     withdrawals: PathBuf,
     withdrawal_receipt: DatasetWithdrawalSnapshotReceiptV1,
     trust: ArtifactOwnerTrustV1,
@@ -347,6 +347,7 @@ pub(super) fn write_source(path: PathBuf, bytes: Vec<u8>) -> (PathBuf, Digest32)
 pub(super) struct RootContextInputs<'a> {
     pub(super) fixture: &'a ClockFixture,
     pub(super) material: &'a NeuronGenerationMaterialV2,
+    pub(super) neuron_material: &'a NeuronGenerationMaterialV2,
     pub(super) anchor: JournalAnchor,
     pub(super) round: &'a crate::AgentdSelfIterationRoundV1,
     pub(super) artifacts: &'a PublishedArtifacts,
@@ -358,6 +359,7 @@ pub(super) fn write_context(root: &Path, input: RootContextInputs<'_>) -> (PathB
     let RootContextInputs {
         fixture,
         material,
+        neuron_material,
         anchor,
         round,
         artifacts,
@@ -418,7 +420,7 @@ pub(super) fn write_context(root: &Path, input: RootContextInputs<'_>) -> (PathB
         "artifacts":artifacts.descriptor(now,expires),
         "dataset":{"snapshot":{"snapshot_id":dataset.snapshot.snapshot_id.as_str(),"ledger_head_digest":dataset.snapshot.ledger_head_digest.to_string(),"objective_digest":dataset.snapshot.objective_digest.to_string(),"eligible_frontier":dataset.snapshot.eligible_frontier,"outcome_watermark":dataset.snapshot.outcome_watermark,"source_record_digests":dataset.snapshot.source_record_digests.iter().map(ToString::to_string).collect::<Vec<_>>(),"pending_outcomes":dataset.snapshot.pending_outcomes,"censored_outcomes":dataset.snapshot.censored_outcomes,"dataset_digest":dataset.snapshot.dataset_digest.to_string()},"producer":principal_json(&dataset.producer),"correction_cut_digest":dataset.correction_cut_digest.to_string(),"revocation_cut_digest":dataset.revocation_cut_digest.to_string(),"inclusion_policy_digest":dataset.inclusion_policy_digest.to_string()},
         "ndu":{"journal_path":ndu.0,"subject_digest":subject.to_string(),"owner_id":"owner:utility.ndu","modulator_values_raw_q32":values.iter().map(|v|v.raw()).collect::<Vec<_>>()},"ndu_journal_digest":ndu.1.to_string(),
-        "neuron":{"journal_path":material.generation_store,"owner_id":"owner:neuron.runtime","scope_digest":material.scope.scope_digest.to_string(),"objective_digest":material.scope.objective_digest.to_string(),"max_records":material.store_context.max_records,"anchor_sequence":anchor.sequence,"anchor_checkpoint_digest":anchor.checkpoint_digest.to_string(),
+        "neuron":{"journal_path":neuron_material.generation_store,"owner_id":"owner:neuron.runtime","scope_digest":neuron_material.scope.scope_digest.to_string(),"objective_digest":neuron_material.scope.objective_digest.to_string(),"max_records":neuron_material.store_context.max_records,"anchor_sequence":anchor.sequence,"anchor_checkpoint_digest":anchor.checkpoint_digest.to_string(),
             "config":{"model_digest":n.model_digest.to_string(),"normalization_digest":n.normalization_digest.to_string(),"generation":n.generation.get(),"width":n.width,"top_k":n.top_k,"temporal_decay_q24":n.temporal_decay_q24,"inhibition_gain_q24":n.inhibition_gain_q24,"inhibition":[],"activity_decay_q24":n.activity_decay_q24,"target_activity_q24":n.target_activity_q24,"threshold_rate_q24":n.threshold_rate_q24,"threshold_min_q24":n.threshold_min_q24,"threshold_max_q24":n.threshold_max_q24,"eligibility_decay_q24":n.eligibility_decay_q24}},
         "signal_bindings":[{"layer_id":"neuron.sparse.rates.q24.v1","parameter_id":"threshold_rate_q24","eligibility_index":0,"modulator_weights_raw_q32":[FixedQ32::ONE.raw()]}],"trust":trust,
         "owner_policy":{"dataset_owner_id":"owner:dataset","update_rule_owner_id":"owner:fixture-policy","mutation_policy_owner_id":"owner:fixture-policy","modulator_owner_id":"owner:utility.ndu","modulator_broadcast_owner_id":"owner:fixture-policy","eligibility_owner_id":"owner:neuron.runtime","parameter_signal_owner_id":"owner:neuron.runtime"}});

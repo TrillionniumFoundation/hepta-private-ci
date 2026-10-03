@@ -193,7 +193,7 @@ pub(super) async fn verify_actual_dataset_socket(
     root: &Path,
     snapshot: &LedgerSnapshot,
     installed_artifact_head: Digest32,
-) {
+) -> crate::PreparedParameterDatasetV1 {
     let context: Value =
         serde_json::from_slice(&fs::read(&context.0).expect("fixture public context"))
             .expect("whole context");
@@ -322,4 +322,5 @@ pub(super) async fn verify_actual_dataset_socket(
             .await
             .is_err()
     );
+    facts
 }
