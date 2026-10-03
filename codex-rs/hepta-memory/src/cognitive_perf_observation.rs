@@ -134,10 +134,7 @@ impl Guard<'_> {
 
 impl Drop for Guard<'_> {
     fn drop(&mut self) {
-        let elapsed = match u64::try_from(self.start.elapsed().as_micros()) {
-            Ok(value) => value,
-            Err(_) => u64::MAX,
-        };
+        let elapsed = u64::try_from(self.start.elapsed().as_micros()).unwrap_or(u64::MAX);
         add(&self.counters.elapsed_us, elapsed);
         add(
             if self.completed {
