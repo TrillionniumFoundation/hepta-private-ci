@@ -5,14 +5,14 @@ script_mod! {
     use mod.widgets.*
 
 
-    mod.widgets.WELCOME_TEXT_COLOR = #x4
+    mod.widgets.WELCOME_TEXT_COLOR = mod.widgets.COLOR_TEXT_SECONDARY
 
     mod.widgets.WelcomeScreen = SolidView {
         width: Fill, height: Fill
         align: Align{x: 0.0, y: 0.5}
 
         show_bg: true,
-        draw_bg.color: (COLOR_PRIMARY)
+        draw_bg +: {hepta_owned_material: uniform(1.0), color: (COLOR_PRIMARY)}
 
         // make this a ScrollYView
         scroll_bars: mod.widgets.ScrollBars {
@@ -25,7 +25,7 @@ script_mod! {
             width: Fill, height: Fit
             flow: Down, spacing: 20
 
-            draw_bg.color: (COLOR_PRIMARY)
+            draw_bg +: {hepta_owned_material: uniform(1.0), color: (COLOR_PRIMARY)}
 
             title := Label {
                 padding: 0

@@ -1,0 +1,171 @@
+{
+  "candidate": "798a59c0c9735cf5fbc7298fa2a64765f2b9bfd1",
+  "tree": "b5729f5cc7e51dd1ccd7c2ff69a1bdc3e5ad144b",
+  "run": 37099572465,
+  "browserArtifact": {
+    "id": 11266605041,
+    "zipSha256": "88f1ae3d991d919a5f4a9517ac49cec6905b030e67759cb3d7a2f4e6f2083549",
+    "verifiedFiles": 86,
+    "exactSet": true
+  },
+  "nativeJob": "PASS; does not supersede local stale-area reproduction",
+  "loginUsability": {
+    "initialTabStartsAtFirstInput": true,
+    "forwardTabReachesAllControls": true,
+    "reverseTabReachesAllControls": true,
+    "wheelShowsAllLowerControls": true,
+    "draftPreserved": true,
+    "noSubmission": true,
+    "fontsFetchedOnce": true
+  },
+  "themeSwitch": {
+    "fixture": true,
+    "liveAccounts": false,
+    "submissionKeysSent": false,
+    "checks": [
+      {
+        "theme": "DeepSpaceTitanium",
+        "selected": true,
+        "draft": true,
+        "editor_identity": true,
+        "input_mode_focus": true,
+        "room": true,
+        "tab": true,
+        "account_fixture": true,
+        "console_authority": true
+      },
+      {
+        "theme": "PolarPrism",
+        "selected": true,
+        "draft": true,
+        "editor_identity": true,
+        "input_mode_focus": true,
+        "room": true,
+        "tab": true,
+        "account_fixture": true,
+        "console_authority": true
+      },
+      {
+        "theme": "ObsidianCeramic",
+        "selected": true,
+        "draft": true,
+        "editor_identity": true,
+        "input_mode_focus": true,
+        "room": true,
+        "tab": true,
+        "account_fixture": true,
+        "console_authority": true
+      },
+      {
+        "theme": "DeepSpaceTitanium",
+        "selected": false,
+        "draft": true,
+        "editor_identity": true,
+        "input_mode_focus": true,
+        "room": true,
+        "tab": true,
+        "account_fixture": true,
+        "console_authority": true,
+        "activation": "keyboard"
+      }
+    ],
+    "activeSdkReplyEditQualified": false
+  },
+  "reviewedChatPngs": {
+    "web-chat-ceramic-narrow.png": "b62d12cfb5574f23a85f98eb150334a15ef59c72c48889761ac468f04c5626de",
+    "web-chat-ceramic-short.png": "d64017e88eda87b7bdb56cbac70122fc212bf5a714b08078bb130d1665d22cae",
+    "web-chat-ceramic-wide.png": "1c452918d82f4650ac64754fb4b7475e909bce37499d95ff627f79b7c524308a",
+    "web-chat-prism-narrow.png": "c81f42f4c016a93d36ddd2c3564e83927c4b900e4b46c7a6e29b0f9d423b44dc",
+    "web-chat-prism-short.png": "97c85401be95e26d0a7072e190bde891d5cea047679041a78ae1f99fe4e17731",
+    "web-chat-prism-wide.png": "cb68ed65f17fdd1fec66883d26acf395975ff13b4ef10966ea7737703841e449",
+    "web-chat-titanium-narrow.png": "13129dd944997377263864a67b58800a27cc62542ad67674b9c1cdeac39f9666",
+    "web-chat-titanium-short.png": "6577a7b4bbb3c3769c25c4f7a0bebc61a75d3ca440610ce18d6bb8b550034766",
+    "web-chat-titanium-wide.png": "ec267ab35582242c5104126313e38b1abfe49c84252f9a497212041352104be2"
+  },
+  "visualReview": {
+    "accepted": false,
+    "observations": [
+      "All three responsive chat planes and composer are readable",
+      "SDF decorative avatars now visible",
+      "Wide browser room previews still clip",
+      "Browser reaction heart glyph remains unsupported",
+      "Production image fixture is absent; fixed child dimensions did not restore it locally",
+      "Default profile and attachment icon accents still have purple remnants in Titanium/Ceramic",
+      "Material depth, spacing and reference likeness remain incomplete"
+    ]
+  },
+  "localRuntime": {
+    "environment": "Existing enabled cloud desktop, ordinary CUA actions; no new display server or security changes",
+    "oldConsoleBacktraceSha256": "72f41624504375e9c33fe69d2149797336c96f7a3f6d9e29c3d0b9a68b9c7499",
+    "caller": "ScrollBars::catch_fling_on_press reads retired area before checking event type",
+    "scrollRegression": {
+      "tests": 4,
+      "oldSource": "Native log gate rejects exact stale generation diagnostics",
+      "newSource": "Four tests and strict log gate pass; live mouse/touch scroll catch retained"
+    },
+    "consoleResize": {
+      "viewports": [
+        [
+          1180,
+          812
+        ],
+        [
+          519,
+          761
+        ],
+        [
+          799,
+          561
+        ],
+        [
+          1180,
+          760
+        ]
+      ],
+      "strictLog": "PASS",
+      "logSha256": "79e4c0944e03cf626694c4f1908fe4545e7c03bc86ef6bc24a0d27391e300d2e",
+      "destination": "FAIL: returning wide selects Dock Home while navigation rail remains Console; ineffective action-based repair excluded"
+    },
+    "keyboardReplay": {
+      "themes": [
+        "DeepSpaceTitanium",
+        "PolarPrism",
+        "ObsidianCeramic"
+      ],
+      "inputs": [
+        "Tab, Space",
+        "Tab, Enter",
+        "Tab, Space"
+      ],
+      "observed": "Actual theme changes with visible selector focus; account-free native log clean",
+      "logSha256": "79e4c0944e03cf626694c4f1908fe4545e7c03bc86ef6bc24a0d27391e300d2e",
+      "scope": "Final guarded binary verified by actual CUA keyboard actions; hosted browser/full state gate pending"
+    },
+    "finalBuild": {
+      "binarySha256": "5e42da979eaf03f311e819493b5ea438d8f718c50e7332886ae2cc3c4718d7b1",
+      "binaryBytes": 239898208,
+      "patchSha256": "362f980219e47479bee01fa5130888e0dced64ef14e592a44b269a7ebe0678d5",
+      "sourceAfter": {
+        "widgets/src/scroll_bars.rs": "8a249eb76b4b36062b0c354529a37bce38362ac7e2a28eef509edb801c373ee3",
+        "platform/src/draw_list.rs": "9aa56bf531d7905fbfd04fa21f9f4b66261e5b664092abb96322a4c850c4eb67",
+        "widgets/src/nav_control.rs": "f47a7328d187e537129eac838c7a049d7e2bb8702585bb9327f46f43d1061bf7",
+        "widgets/src/button.rs": "ce84450e54ed3a03ab30befeb6cdacbf24f1fcdcfb5ee5f1be1805073140c643",
+        "widgets/src/text_input.rs": "3bdc633f89ccde9083c467fe3eb47508e1e00cfb87e068ec30f906d9ca45a150",
+        "platform/src/script/res.rs": "617550c49511a987c459c12a1244b38822e0a12586f79cc092466c09fe15724b",
+        "platform/src/window.rs": "3f3fb37976d1bcdb75588e524acb9440ac515e2f54e0ea18df5c194f26230ee0",
+        "platform/src/os/web/web.rs": "9131a20ca1fb11969cdd7c9caf28b64329d2ec8b735bd1b43491e4b74bc02443",
+        "platform/src/os/web/web.js": "c9f17ebc80bb03bbc272174c91dc3f5d56ab4cc306b4fca11e2c29bb86c084f7",
+        "widgets/src/hepta_font_tests.rs": "6d683c0e5d20de581d4f38bc50deeb40af6c17ab05dffad002622c1777fc1013",
+        "widgets/src/hepta_nav_tests.rs": "0f3da9a7b9f485fd2e631f9e2e07c5f551b0ce21c60958ff2c173b350be92086",
+        "widgets/src/hepta_scroll_area_tests.rs": "8eca2db782f6702379510abd7396ca47669f325c68f1a69bfa4e5575075b84a2",
+        "widgets/src/hepta_button_key_tests.rs": "638e480b403e0ef9954839cb99206d510605792ea93ffd9c2d3e03b536861ef8"
+      }
+    },
+    "tests": {
+      "framework": 14,
+      "application": 18,
+      "python": 40
+    },
+    "activeSdkReplyEditQualified": false
+  }
+}

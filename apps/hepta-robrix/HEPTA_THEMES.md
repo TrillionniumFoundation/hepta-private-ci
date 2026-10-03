@@ -105,3 +105,36 @@ at most three truncated backtraces and retains the original error and failing
 gate. Independent later scenes may still be captured for diagnosis, but any
 recorded failure prevents a qualification pass. Ceramic was not reached in the
 d39 browser run and has no accepted current pixel evidence.
+
+## Third runtime review and bounded input repair
+
+`qualification/themes-798a59c0.json` records the verified browser ZIP, all 86
+included hashes, nine reviewed chat PNGs, and actual interaction traces. All
+seven login usability checks and all three pointer theme switches pass. Keyboard
+selection fails despite correct selector focus: pinned Button had no KeyDown or
+KeyUp activation handler. The new handler uses the existing Button actions and
+callbacks, arms once on Enter/Space and clicks on matching release. Repeats,
+modifier shortcuts, lost focus, disabled/hidden/invalid areas, navigation and
+modal-blocked input cannot activate an armed button. Five focused tests cover
+these bounded contracts; this is not broad modal/accessibility certification.
+The final guarded binary selects all three themes using keyboard only, with
+visible selector focus and clean logs. Hosted browser checking remains required. Passed pointer focus/state logic is unchanged.
+
+On the existing enabled native desktop, resize reproduces the exact stale-area
+caller: ScrollBars::catch_fling_on_press read a retired DrawList before deciding
+whether the event was even a press. The pinned repair rejects non-press and
+invalid/freed areas before hit testing. Four real old/new regressions retain
+valid mouse/touch fling-catching, and the repeated wide/compact/short/wide
+runtime log is clean. Original diagnostics and strict gates remain intact.
+
+That replay reveals a separate destination bug: returning to desktop selects
+Dock Home while the navigation rail remains Console. An early canonical-action
+attempt did not survive Dock rebuilding and was excluded, along with its
+insufficient test. Home foreground now uses the owned contrast token. Adaptive
+Console/room/thread ownership transfer needs a real replay-based repair.
+
+The three materials still fail likeness acceptance. Browser room previews clip,
+the reaction glyph is unsupported, the image fixture is absent, and default
+profile/attachment accents retain purple in A/C. A numeric image-size attempt
+did not fix actual pixels and was excluded. Native room previews and reaction
+are readable, so native success must not substitute for browser acceptance.

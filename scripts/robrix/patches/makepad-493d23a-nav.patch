@@ -2,7 +2,7 @@
 +++ b/widgets/src/nav_control.rs
 @@ -50,46 +50,13 @@
      }
- 
+
      pub fn handle_event(&mut self, cx: &mut Cx, event: &Event, root: DrawListId) {
 -        match event {
 -            Event::KeyDown(ke) => match ke.key_code {
@@ -53,7 +53,7 @@
 +            cx.set_key_focus(area);
          }
      }
- 
+
 @@ -101,3 +68,42 @@
          self.draw_list.end(cx);
      }
@@ -99,7 +99,51 @@
 +mod hepta_nav_tests;
 --- a/widgets/src/button.rs
 +++ b/widgets/src/button.rs
-@@ -639,7 +639,7 @@
+@@ -487,6 +487,8 @@
+
+     #[live(true)]
+     grab_key_focus: bool,
++    #[rust]
++    keyboard_key: Option<KeyCode>,
+
+     #[live(true)]
+     enabled: bool,
+@@ -585,6 +587,7 @@
+     }
+
+     fn set_disabled(&mut self, cx: &mut Cx, disabled: bool) {
++        if disabled { self.keyboard_key = None; }
+         self.animator_toggle(
+             cx,
+             disabled,
+@@ -600,6 +603,11 @@
+
+     fn handle_event(&mut self, cx: &mut Cx, event: &Event, _scope: &mut Scope) {
+         let uid = self.widget_uid();
++        let area = self.draw_bg.area();
++        let keyboard_allowed = self.enabled && self.visible && !self.disabled(cx)
++            && area.is_valid(cx) && cx.has_key_focus(area)
++            && cx.is_scrolling_allowed_within(&area);
++        if !keyboard_allowed { self.keyboard_key = None; }
+         if self.animator_handle_event(cx, event).must_redraw() {
+             self.draw_bg.redraw(cx);
+         }
+@@ -616,10 +624,14 @@
+                 self.animator_play(cx, ids!(focus.on));
+             }
+             Hit::KeyFocusLost(_) => {
++                self.keyboard_key = None;
+                 self.animator_play(cx, ids!(focus.off));
+                 self.draw_bg.redraw(cx);
+             }
++            Hit::KeyDown(key) if keyboard_allowed => self.activate_keyboard(cx, key, KeyboardEdge::Press),
++            Hit::KeyUp(key) if keyboard_allowed => self.activate_keyboard(cx, key, KeyboardEdge::Release),
+             Hit::FingerDown(fe) if self.enabled && fe.is_primary_hit() => {
++                self.keyboard_key = None;
+                 if self.grab_key_focus {
+                     cx.set_key_focus(self.draw_bg.area());
+                 }
+@@ -639,7 +651,7 @@
                      );
                  }
                  self.animator_play(cx, ids!(hover.down));
@@ -108,7 +152,7 @@
              }
              Hit::FingerHoverIn(_) => {
                  if self.enabled {
-@@ -707,7 +707,9 @@
+@@ -707,7 +719,9 @@
          self.draw_text
              .draw_walk(cx, self.label_walk, Align::default(), self.text.as_ref());
          self.draw_bg.end(cx);
@@ -118,7 +162,67 @@
 +        }
          DrawStep::done()
      }
- 
+
+@@ -849,6 +863,7 @@
+     pub fn set_visible(&self, cx: &mut Cx, visible: bool) {
+         if let Some(mut inner) = self.borrow_mut() {
+             inner.visible = visible;
++            if !visible { inner.keyboard_key = None; }
+             inner.redraw(cx);
+         }
+     }
+@@ -856,6 +871,7 @@
+     pub fn set_enabled(&self, cx: &mut Cx, enabled: bool) {
+         if let Some(mut inner) = self.borrow_mut() {
+             inner.enabled = enabled;
++            if !enabled { inner.keyboard_key = None; }
+             inner.redraw(cx);
+         }
+     }
+@@ -908,3 +924,43 @@
+         }
+     }
+ }
++
++// Keyboard activation is armed only by a focused real Hit::KeyDown. Repeat,
++// cancellation and release never synthesize pointer events or change key focus.
++#[derive(Clone, Copy)]
++enum KeyboardEdge { Press, Release }
++
++impl Button {
++    fn activate_keyboard(&mut self, cx: &mut Cx, key: KeyEvent, edge: KeyboardEdge) {
++        let allowed = self.enabled && self.visible && !self.disabled(cx)
++            && matches!(key.key_code, KeyCode::ReturnKey | KeyCode::Space)
++            && !key.modifiers.control && !key.modifiers.alt && !key.modifiers.logo;
++        if !allowed { self.keyboard_key = None; return; }
++        let uid = self.widget_uid();
++        match edge {
++            KeyboardEdge::Press => {
++                if key.is_repeat || self.keyboard_key.is_some() { return; }
++                self.keyboard_key = Some(key.key_code);
++                cx.widget_action_with_data(&self.action_data, uid, ButtonAction::Pressed(key.modifiers));
++                cx.widget_to_script_call(uid, NIL, self.source.clone(), self.on_press.clone(), &[]);
++                if self.trigger_on_press {
++                    cx.widget_to_script_call(uid, NIL, self.source.clone(), self.on_click.clone(), &[]);
++                }
++                self.animator_play(cx, ids!(hover.down));
++            }
++            KeyboardEdge::Release => {
++                let armed = self.keyboard_key.take();
++                self.animator_play(cx, ids!(hover.off));
++                if key.is_repeat || armed != Some(key.key_code) { return; }
++                cx.widget_action_with_data(&self.action_data, uid, ButtonAction::Clicked(key.modifiers));
++                if !self.trigger_on_press {
++                    cx.widget_to_script_call(uid, NIL, self.source.clone(), self.on_click.clone(), &[]);
++                }
++            }
++        }
++    }
++}
++
++#[cfg(test)]
++#[path = "hepta_button_key_tests.rs"]
++mod hepta_button_key_tests;
 --- a/platform/src/draw_list.rs
 +++ b/platform/src/draw_list.rs
 @@ -366,9 +366,13 @@
@@ -137,6 +241,32 @@
              )
          }
          &d.item
+--- a/widgets/src/scroll_bars.rs
++++ b/widgets/src/scroll_bars.rs
+@@ -179,6 +179,15 @@
+     /// fires even when a child would otherwise capture the press, and it must run before the
+     /// view dispatches the event to its children.
+     pub fn catch_fling_on_press(&mut self, cx: &mut Cx, event: &Event) -> bool {
++        // Cached widgets can receive an adaptive-layout action after their old
++        // parent draw list was retired, before their next draw supplies an area.
++        // Such an area cannot own a press or a fling hit test.
++        if !matches!(event, Event::MouseDown(_) | Event::TouchUpdate(_))
++            || !self.area.is_valid(cx)
++            || self.area.draw_list_id().is_some_and(|id| cx.draw_lists.is_id_freed(id))
++        {
++            return false;
++        }
+         let area_rect = self.area.rect(cx);
+         // The press time also gates the coast check below, so a momentum stream that
+         // silently stopped reaching this view can't leave it eating presses.
+@@ -420,3 +429,7 @@
+         self.area.redraw(cx);
+     }
+ }
++
++#[cfg(test)]
++#[path = "hepta_scroll_area_tests.rs"]
++mod hepta_scroll_area_tests;
 --- /dev/null
 +++ b/widgets/src/hepta_nav_tests.rs
 @@ -0,0 +1,80 @@
@@ -219,4 +349,179 @@
 +    tree.0.borrow_mut()[list.id()].nav_list.rotate_right(1);
 +    assert_eq!(tab_target(&mut cx, list.id(), Area::Empty, false).unwrap().0, areas[0]);
 +    assert_eq!(tab_target(&mut cx, list.id(), areas[2], false).unwrap().0, areas[0]);
++}
+--- /dev/null
++++ b/widgets/src/hepta_scroll_area_tests.rs
+@@ -0,0 +1,93 @@
++use super::ScrollBars as TestedScrollBars;
++use crate::*;
++use crate::event::{ScrollEvent, ScrollPhase, TouchUpdateEvent, TouchPoint, TouchState};
++use crate::scroll_bar::ScrollAxis;
++
++fn scene() -> (Cx, TestedScrollBars, DrawList, View) {
++    let mut cx = Cx::new(Box::new(|_, _| {}));
++    let (mut view, mut bars) = cx.with_vm(|vm| {
++        crate::script_mod(vm);
++        let view = script_eval!(vm, {mod.widgets.SolidView {width: 120, height: 80, draw_bg.color: #fff}});
++        let bars = script_eval!(vm, {mod.widgets.ScrollBars {}});
++        (View::script_from_value(vm, view), TestedScrollBars::script_from_value(vm, bars))
++    });
++    let pass = DrawPass::new(&mut cx);
++    pass.set_size(&mut cx, dvec2(320.0, 240.0));
++    let mut list = DrawList::new(&mut cx);
++    let event = DrawEvent::default();
++    let mut draw = CxDraw::new(&mut cx, &event);
++    draw.begin_pass(&pass, None);
++    list.begin_always(&mut draw);
++    {
++        let mut cx = Cx2d::new(&mut draw);
++        cx.begin_root_turtle(dvec2(320.0, 240.0), Layout::flow_down());
++        view.draw_all(&mut cx, &mut Scope::empty());
++        bars.scroll_bar_y.draw_scroll_bar(&mut cx, ScrollAxis::Vertical,
++            Rect {pos: dvec2(0.0, 0.0), size: dvec2(120.0, 80.0)}, dvec2(120.0, 600.0));
++        cx.end_pass_sized_turtle();
++    }
++    list.end(&mut draw);
++    draw.end_pass(&pass);
++    drop(draw);
++    bars.set_area(view.area());
++    (cx, bars, list, view)
++}
++
++#[test]
++fn adaptive_actions_do_not_read_retired_area_generation() {
++    let (mut cx, mut bars, list, _view) = scene();
++    let old = list.id();
++    drop(list);
++    let replacement = DrawList::new(&mut cx);
++    assert_eq!(old.index(), replacement.id().index());
++    assert!(!bars.area().is_valid(&cx));
++    // The runtime log gate must remain silent, not just return false.
++    assert!(!bars.catch_fling_on_press(&mut cx, &Event::Actions(Vec::new())));
++}
++
++#[test]
++fn pointer_does_not_hit_a_retired_area_generation() {
++    let (mut cx, mut bars, list, _view) = scene();
++    drop(list);
++    let _replacement = DrawList::new(&mut cx);
++    let event = Event::MouseDown(MouseDownEvent {
++        abs: dvec2(10.0, 10.0), button: MouseButton::PRIMARY, window_id: WindowId(0, 0),
++        modifiers: Default::default(), handled: Default::default(), time: 1.0,
++    });
++    assert!(!bars.catch_fling_on_press(&mut cx, &event));
++}
++
++#[test]
++fn live_idle_content_does_not_consume_a_click() {
++    let (mut cx, mut bars, _list, _view) = scene();
++    assert!(bars.area().is_valid(&cx));
++    let event = Event::MouseDown(MouseDownEvent {
++        abs: dvec2(10.0, 10.0), button: MouseButton::PRIMARY, window_id: WindowId(0, 0),
++        modifiers: Default::default(), handled: Default::default(), time: 1.0,
++    });
++    assert!(!bars.catch_fling_on_press(&mut cx, &event));
++}
++
++#[test]
++fn valid_mouse_and_touch_presses_still_catch_live_scroll() {
++    for touch in [false, true] {
++        let (mut cx, mut bars, _list, _view) = scene();
++        let event = Event::Scroll(ScrollEvent {
++            window_id: WindowId(0, 0), scroll: dvec2(0.0, 20.0), abs: dvec2(10.0, 10.0),
++            modifiers: Default::default(), handled_x: Default::default(), handled_y: Default::default(),
++            is_mouse: false, time: 1.0, phase: ScrollPhase::Changed,
++        });
++        bars.scroll_bar_y.handle_scroll_event(&mut cx, &event, bars.area(), &mut |_, _| {});
++        assert!(bars.scroll_bar_y.is_motion_live(1.01));
++        let press = if touch { Event::TouchUpdate(TouchUpdateEvent {
++            time: 1.01, window_id: WindowId(0, 0), modifiers: Default::default(),
++            touches: vec![TouchPoint {state: TouchState::Start, abs: dvec2(10.0, 10.0), time: 1.01,
++                uid: 1, rotation_angle: 0.0, force: 1.0, radius: dvec2(1.0, 1.0),
++                handled: Default::default(), sweep_lock: Default::default()}],
++        }) } else { Event::MouseDown(MouseDownEvent {
++            abs: dvec2(10.0, 10.0), button: MouseButton::PRIMARY, window_id: WindowId(0, 0),
++            modifiers: Default::default(), handled: Default::default(), time: 1.01,
++        }) };
++        assert!(bars.catch_fling_on_press(&mut cx, &press));
++    }
++}
+--- /dev/null
++++ b/widgets/src/hepta_button_key_tests.rs
+@@ -0,0 +1,76 @@
++use super::{Button as TestedButton, ButtonAction as TestedAction, KeyboardEdge};
++use crate::*;
++
++fn button() -> (Cx, TestedButton) {
++    let mut cx = Cx::new(Box::new(|_, _| {}));
++    let button = cx.with_vm(|vm| {
++        crate::script_mod(vm);
++        let value = script_eval!(vm, { mod.widgets.Button {text: "Fixture"} });
++        TestedButton::script_from_value(vm, value)
++    });
++    (cx, button)
++}
++fn key(code: KeyCode, repeat: bool) -> KeyEvent {
++    KeyEvent {key_code: code, is_repeat: repeat, modifiers: KeyModifiers {shift: true, ..Default::default()}, time: 1.0}
++}
++fn clicks(cx: &Cx) -> usize {
++    cx.new_actions.iter().filter(|a| matches!(a.as_widget_action().cast::<TestedAction>(), TestedAction::Clicked(_))).count()
++}
++
++#[test]
++fn enter_and_space_use_real_button_actions_once_with_modifiers() {
++    for code in [KeyCode::ReturnKey, KeyCode::Space] {
++        let (mut cx, mut button) = button();
++        button.activate_keyboard(&mut cx, key(code, false), KeyboardEdge::Press);
++        button.activate_keyboard(&mut cx, key(code, true), KeyboardEdge::Press);
++        assert_eq!(clicks(&cx), 0);
++        button.activate_keyboard(&mut cx, key(code, false), KeyboardEdge::Release);
++        button.activate_keyboard(&mut cx, key(code, false), KeyboardEdge::Release);
++        assert_eq!(clicks(&cx), 1);
++        let action = cx.new_actions.iter().find_map(|a| match a.as_widget_action().cast::<TestedAction>() {
++            TestedAction::Clicked(modifiers) => Some(modifiers), _ => None,
++        }).unwrap();
++        assert!(action.shift);
++    }
++}
++#[test]
++fn disabled_hidden_and_mismatched_releases_do_not_click() {
++    for mode in 0..3 {
++        let (mut cx, mut button) = button();
++        button.activate_keyboard(&mut cx, key(KeyCode::Space, false), KeyboardEdge::Press);
++        match mode {0 => button.enabled = false, 1 => button.visible = false, _ => {}}
++        let code = if mode == 2 {KeyCode::ReturnKey} else {KeyCode::Space};
++        button.activate_keyboard(&mut cx, key(code, false), KeyboardEdge::Release);
++        assert_eq!(clicks(&cx), 0);
++        assert!(button.keyboard_key.is_none());
++    }
++}
++#[test]
++fn intervening_navigation_key_cancels_the_arm() {
++    let (mut cx, mut button) = button();
++    button.activate_keyboard(&mut cx, key(KeyCode::Space, false), KeyboardEdge::Press);
++    button.activate_keyboard(&mut cx, key(KeyCode::Tab, false), KeyboardEdge::Press);
++    button.activate_keyboard(&mut cx, key(KeyCode::Space, false), KeyboardEdge::Release);
++    assert_eq!(clicks(&cx), 0);
++}
++
++#[test]
++fn actual_event_dispatch_cancels_an_arm_without_current_focus() {
++    let (mut cx, mut button) = button();
++    button.activate_keyboard(&mut cx, key(KeyCode::Space, false), KeyboardEdge::Press);
++    button.handle_event(&mut cx, &Event::Actions(Vec::new()), &mut Scope::empty());
++    button.activate_keyboard(&mut cx, key(KeyCode::Space, false), KeyboardEdge::Release);
++    assert_eq!(clicks(&cx), 0);
++}
++
++#[test]
++fn undrawn_or_modal_blocked_button_cannot_arm_from_key_dispatch() {
++    let (mut cx, mut button) = button();
++    for modal in [false, true] {
++        if modal { cx.block_scrolling_except_within(Area::Empty); }
++        button.handle_event(&mut cx, &Event::KeyDown(key(KeyCode::Space, false)), &mut Scope::empty());
++        assert!(button.keyboard_key.is_none());
++        button.handle_event(&mut cx, &Event::KeyUp(key(KeyCode::Space, false)), &mut Scope::empty());
++        assert_eq!(clicks(&cx), 0);
++    }
 +}

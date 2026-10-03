@@ -109,6 +109,12 @@ def native_tests():
                    '--lib', 'hepta_font_tests', '--', '--nocapture'], 'makepad-font-cache-tests.log', 1)
     checked_tests(['cargo', '+1.96.0', 'test', '--locked', '-p', 'makepad-widgets',
                    '--lib', 'hepta_nav_tests', '--', '--nocapture'], 'makepad-nav-tests.log', 4)
+    checked_tests(['cargo', '+1.96.0', 'test', '--locked', '-p', 'makepad-widgets',
+                   '--lib', 'hepta_scroll_area_tests', '--', '--nocapture'], 'makepad-scroll-area-tests.log', 4)
+    validate_native_log((OUT / 'makepad-scroll-area-tests.log').read_text())
+    checked_tests(['cargo', '+1.96.0', 'test', '--locked', '-p', 'makepad-widgets',
+                   '--lib', 'hepta_button_key_tests', '--', '--nocapture'], 'makepad-button-key-tests.log', 5)
+    validate_native_log((OUT / 'makepad-button-key-tests.log').read_text())
     for module, minimum in [('shared::hepta_theme::tests', 6),
                             ('hepta_console::tests', 4),
                             ('home::main_desktop_ui::hepta_dock_tests', 3),
