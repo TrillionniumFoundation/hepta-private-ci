@@ -82,7 +82,9 @@
     "scripts/test_context_compiler_execution.py",
     "scripts/test_context_compiler_execution_boundary.py",
     "codex-rs/core/src/client_tests.rs",
-    "codex-rs/core/src/responses_metadata.rs"
+    "codex-rs/core/src/responses_metadata.rs",
+    "codex-rs/core/tests/suite/model_provider_policy.rs",
+    ".github/workflows/context-compiler-qualification.yml"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -272,13 +274,13 @@
   ],
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "762304790ebb01c3df75a01197b30cd42e3618bce29fd4b9fec6901ee85bb21c",
+    "stateSha256": "97ee998dec70d41889348d2ce8b410dcbb5eb99e2c513166a998196301fbef02",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
   },
-  "runtimeSourceAnchor": "86c4a479eee1d17da389dbb497d740e73e41a641",
-  "runtimeSourceTree": "0dfff46beab4e8bae7979adc3ae5a330b111e134",
+  "runtimeSourceAnchor": "3bb371370691d393ed00f519ee08bb4a3dc09985",
+  "runtimeSourceTree": "6e7522db6a4abf5dfbea5a38f93a5567e2483d54",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -468,7 +470,7 @@
     },
     {
       "path": "scripts/test_context_compiler_single_owner.py",
-      "blobSha": "7f3f40450068d3c2b3c792b604d5605c26d1e4af"
+      "blobSha": "f838fd945c6131675f0d42525fe440e1013c2a22"
     },
     {
       "path": "scripts/test_context_compiler_state.py",
@@ -532,11 +534,19 @@
     },
     {
       "path": "codex-rs/core/src/client_tests.rs",
-      "blobSha": "f718ceec109f94d02651b132865479c8dbde17d1"
+      "blobSha": "f17b11ef1e56d53fa70f4f3fc649e73c64f43a16"
     },
     {
       "path": "codex-rs/core/src/responses_metadata.rs",
-      "blobSha": "da91fab68cd0b29d05ed0c8cb109d9f8bf7765c4"
+      "blobSha": "b338a07f047ffff4a2ac742d5ad2cba4dec9280c"
+    },
+    {
+      "path": "codex-rs/core/tests/suite/model_provider_policy.rs",
+      "blobSha": "1abde28937e3ea81d47b2611fdcbd06963119522"
+    },
+    {
+      "path": ".github/workflows/context-compiler-qualification.yml",
+      "blobSha": "f432b98f8bdde2328e2ae318688b46e47c470c78"
     }
   ],
   "consumerExecution": [
