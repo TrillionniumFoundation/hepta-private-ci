@@ -18,6 +18,8 @@ pub struct ChatPresentation {
     pub selected_thread: Option<String>,
     pub active_turn: Option<String>,
     pub previous_action_pending: bool,
+    pub previous_creation_pending: bool,
+    pub connection_ready: bool,
     pub approval_required: bool,
     pub last_submission: Option<SubmissionState>,
 }
@@ -42,6 +44,19 @@ impl DesktopChat {
     pub fn presentation(&self) -> ChatPresentation {
         let mut view = self.presentation.clone();
         view.previous_action_pending = self.references.pending().is_some();
+        view.previous_creation_pending = self.references.pending().is_some_and(|reference| {
+            matches!(
+                &reference.request,
+                NativeChatRootRequest::Dispatch {
+                    request: ChatRequest {
+                        command: ChatCommand::CreateOnce { .. },
+                        ..
+                    },
+                    ..
+                }
+            )
+        });
+        view.connection_ready = self.connection.is_some();
         view
     }
     pub fn attach(
@@ -61,7 +76,8 @@ impl DesktopChat {
             match &pending.request {
                 NativeChatRootRequest::Attach { session_id, .. } => session_id.clone(),
                 NativeChatRootRequest::Dispatch { request, .. } => request.session_id.clone(),
-                NativeChatRootRequest::Recover { .. } => {
+                NativeChatRootRequest::Recover { .. }
+                | NativeChatRootRequest::AbandonCreation { .. } => {
                     return Err(ShellError::Security(
                         "recovery queries cannot be pending mutations".into(),
                     ));
@@ -108,7 +124,11 @@ impl DesktopChat {
         )
     }
     pub fn create(&mut self, runtime: &mut NativeShellRuntime) -> Result<(), ShellError> {
-        self.execute(runtime, ChatCommand::Create, true)
+        let mut entropy = [0; 32];
+        getrandom::fill(&mut entropy)
+            .map_err(|error| ShellError::Security(format!("creation identity entropy: {error}")))?;
+        let operation_id = format!("native-creation.{}", crate::model::sha256_hex(entropy));
+        self.execute(runtime, ChatCommand::CreateOnce { operation_id }, true)
     }
     pub fn select(
         &mut self,
@@ -178,6 +198,16 @@ impl DesktopChat {
         self.execute(runtime, ChatCommand::Cancel { thread_id, turn_id }, true)
     }
     pub fn inspect(&mut self, runtime: &mut NativeShellRuntime) -> Result<(), ShellError> {
+        self.recover_pending(runtime, /*abandon*/ false)
+    }
+    pub fn abandon_creation(&mut self, runtime: &mut NativeShellRuntime) -> Result<(), ShellError> {
+        self.recover_pending(runtime, /*abandon*/ true)
+    }
+    fn recover_pending(
+        &mut self,
+        runtime: &mut NativeShellRuntime,
+        abandon: bool,
+    ) -> Result<(), ShellError> {
         let reference = self
             .references
             .pending()
@@ -188,12 +218,20 @@ impl DesktopChat {
                 "attachment reference requires original owner inspection".into(),
             ));
         };
-        let ChatCommand::Send { thread_id, .. } = &request.command else {
-            return Err(ShellError::State(
-                "this action has no durable identity; its outcome remains unknown".into(),
-            ));
+        let thread_id = match &request.command {
+            ChatCommand::Send { thread_id, .. } => Some(thread_id.clone()),
+            ChatCommand::CreateOnce { .. } => None,
+            _ => {
+                return Err(ShellError::State(
+                    "this action has no durable identity; its outcome remains unknown".into(),
+                ));
+            }
         };
-        let thread_id = thread_id.clone();
+        if abandon && !matches!(request.command, ChatCommand::CreateOnce { .. }) {
+            return Err(ShellError::State(
+                "only the previous identified creation can be abandoned".into(),
+            ));
+        }
         let agent_id = binding.agent_id.clone();
         if runtime
             .session()
@@ -205,34 +243,52 @@ impl DesktopChat {
         }
         let (view, _) = runtime.refresh_runtime_view()?;
         let current = runtime.chat_binding(&binding.agent_id, view.revision)?;
-        let query = NativeChatRootRequest::Recover {
-            binding: current,
-            original_binding: binding,
-            request,
+        let query = if abandon {
+            NativeChatRootRequest::AbandonCreation {
+                binding: current,
+                original_binding: binding,
+                request,
+            }
+        } else {
+            NativeChatRootRequest::Recover {
+                binding: current,
+                original_binding: binding,
+                request,
+            }
         };
         let response = runtime.chat_exchange(&query)?;
-        let NativeChatRootResponse::Recovered { observation, .. } = response else {
-            return Err(ShellError::Backend(
-                "original message observation is unavailable; its reference is retained".into(),
-            ));
-        };
-        let state = match observation {
-            crate::chat_protocol::root::MessageObservation::Persisted { turn_id } => {
-                SubmissionState::Persisted { turn_id }
+        match response {
+            NativeChatRootResponse::Recovered { observation, .. } => {
+                let state = match observation {
+                    crate::chat_protocol::root::MessageObservation::Persisted { turn_id } => SubmissionState::Persisted { turn_id },
+                    crate::chat_protocol::root::MessageObservation::Cancelled => SubmissionState::Cancelled,
+                    _ => return Err(ShellError::State("original message has no settled receipt yet; inspect again without resending".into())),
+                };
+                self.presentation.selected_thread = thread_id;
+                self.presentation.last_submission = Some(state);
             }
-            crate::chat_protocol::root::MessageObservation::Cancelled => SubmissionState::Cancelled,
-            crate::chat_protocol::root::MessageObservation::Pending { .. }
-            | crate::chat_protocol::root::MessageObservation::Missing
-            | crate::chat_protocol::root::MessageObservation::Unknown => {
-                return Err(ShellError::State(
-                    "original message has no settled receipt yet; inspect again without resending"
-                        .into(),
-                ));
+            NativeChatRootResponse::CreationRecovered { observation, .. } => {
+                match observation {
+                    crate::chat_protocol::root::CreationObservation::Created { data } => {
+                        self.presentation.selected_thread = Some(data.id.clone());
+                        self.presentation.messages.clear();
+                        if !self.presentation.conversations.iter().any(|row| row.id == data.id) {
+                            self.presentation.conversations.push(data);
+                        }
+                    }
+                    crate::chat_protocol::root::CreationObservation::Deleted { .. }
+                    | crate::chat_protocol::root::CreationObservation::Abandoned { .. } => {
+                        self.presentation.selected_thread = None;
+                        self.presentation.messages.clear();
+                        self.presentation.active_turn = None;
+                        self.presentation.last_submission = None;
+                    }
+                    _ => return Err(ShellError::State("original creation has no settled receipt yet; inspect again without creating another chat".into())),
+                }
             }
-        };
+            _ => return Err(ShellError::Backend("original operation observation is unavailable; its reference is retained".into())),
+        }
         self.presentation.agent_id = Some(agent_id);
-        self.presentation.selected_thread = Some(thread_id.clone());
-        self.presentation.last_submission = Some(state);
         self.references.clear_observed()?;
         // A receipt observation never transfers the old mutation connection.
         self.connection = None;
@@ -297,7 +353,7 @@ impl DesktopChat {
                     ChatResult::Conversations { data, .. } => {
                         self.presentation.conversations = data
                     }
-                    ChatResult::Conversation { data } => {
+                    ChatResult::Conversation { data } | ChatResult::Creation { data, .. } => {
                         self.presentation.selected_thread = Some(data.id.clone());
                         self.presentation.messages.clear();
                         if !self
@@ -355,9 +411,10 @@ pub(crate) fn operation(request: &NativeChatRootRequest) -> Purpose {
     match request {
         NativeChatRootRequest::Attach { .. } => Purpose::Attach,
         NativeChatRootRequest::Recover { .. } => Purpose::Reconcile,
+        NativeChatRootRequest::AbandonCreation { .. } => Purpose::Cancel,
         NativeChatRootRequest::Dispatch { request, .. } => match request.command {
             ChatCommand::List { .. } => Purpose::List,
-            ChatCommand::Create => Purpose::Create,
+            ChatCommand::Create | ChatCommand::CreateOnce { .. } => Purpose::Create,
             ChatCommand::Timeline { .. } => Purpose::Timeline,
             ChatCommand::Resume { .. } => Purpose::Resume,
             ChatCommand::Send { .. } => Purpose::Send,

@@ -10,9 +10,14 @@ Fleet pending receipts, platform final-use guards and Console controls.
 
 Chat needs a separately enrolled Root bridge and chat-purpose key. Send persists
 its original intent before invoking the owner. Lost acknowledgements retain that
-intent; inspection only queries the original operation. Unknown conversation
-creation, resume or cancellation currently have no receipt query and remain
-blocked rather than replaying. The UI cannot authorize model or runtime effects.
+intent; inspection queries the original message or identified creation receipt.
+Creation inspection can reconcile only the original rollout's receipt/index.
+The explicit Abandon action retires a creation only when its original owner
+confirms that no creation effect has begun. Bound, materialized or unknown
+creations retain their intent; a lost Abandon reply is inspected with that same
+creation key. Legacy unkeyed creation, resume and other cancellation outcomes
+remain unresolved when they lack a receipt query. The UI cannot authorize model
+or runtime effects.
 
 Build the normal binary with `MAKEPAD_PACKAGE_DIR=resources` and use
 `package_renderer.py --makepad-source CHECKOUT --binary ELF --output NEW_DIR`.

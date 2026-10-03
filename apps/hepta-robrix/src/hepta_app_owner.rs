@@ -67,7 +67,7 @@ impl App {
             let chat_ready = self
                 .chat_view
                 .as_ref()
-                .is_some_and(|view| view.agent_id.is_some());
+                .is_some_and(|view| view.connection_ready);
             let pending = self
                 .chat_view
                 .as_ref()
@@ -93,13 +93,20 @@ impl App {
                 .set_enabled(cx, available && chat_ready && !pending);
             self.ui
                 .button(cx, ids!(refresh_conversation))
-                .set_enabled(cx, selected);
+                .set_enabled(cx, chat_ready && selected && !pending);
             self.ui
                 .button(cx, ids!(inspect_chat))
                 .set_enabled(cx, pending);
+            self.ui.button(cx, ids!(abandon_creation)).set_enabled(
+                cx,
+                self.chat_view
+                    .as_ref()
+                    .is_some_and(|view| view.previous_creation_pending),
+            );
             self.ui.button(cx, ids!(cancel_reply)).set_enabled(
                 cx,
-                !pending
+                chat_ready
+                    && !pending
                     && self
                         .chat_view
                         .as_ref()
@@ -127,6 +134,9 @@ impl App {
         }
         if self.ui.button(cx, ids!(inspect_chat)).clicked(actions) {
             self.submit(cx, OwnerCommand::ChatInspect);
+        }
+        if self.ui.button(cx, ids!(abandon_creation)).clicked(actions) {
+            self.submit(cx, OwnerCommand::ChatAbandonCreation);
         }
         if self.ui.button(cx, ids!(cancel_reply)).clicked(actions) {
             self.submit(cx, OwnerCommand::ChatCancel);

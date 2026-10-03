@@ -21,6 +21,7 @@ pub enum OwnerCommand {
     ChatTimeline,
     ChatSend(String),
     ChatInspect,
+    ChatAbandonCreation,
     ChatCancel,
     Lifecycle {
         agent_id: String,
@@ -69,6 +70,7 @@ impl OwnerWorker {
                     OwnerCommand::ChatTimeline => with_chat(&mut host, |chat, runtime| chat.timeline(runtime)),
                     OwnerCommand::ChatSend(text) => with_chat(&mut host, |chat, runtime| chat.send(runtime, text)),
                     OwnerCommand::ChatInspect => with_chat(&mut host, |chat, runtime| chat.inspect(runtime)),
+                    OwnerCommand::ChatAbandonCreation => with_chat(&mut host, |chat, runtime| chat.abandon_creation(runtime)),
                     OwnerCommand::ChatCancel => with_chat(&mut host, |chat, runtime| chat.cancel(runtime)),
                     OwnerCommand::Inspect => host.runtime.inspect_fleet_lifecycle_receipt().map(|_| ()),
                     OwnerCommand::Lifecycle { agent_id, operation, revision } =>

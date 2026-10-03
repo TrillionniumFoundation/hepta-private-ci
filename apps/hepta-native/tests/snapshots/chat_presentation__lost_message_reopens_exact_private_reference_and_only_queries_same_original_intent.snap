@@ -13,6 +13,8 @@ ChatPresentation {
     ),
     active_turn: None,
     previous_action_pending: false,
+    previous_creation_pending: false,
+    connection_ready: false,
     approval_required: false,
     last_submission: Some(
         Persisted {

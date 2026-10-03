@@ -36,7 +36,8 @@ script_mod! {
                             width: Fill height: Fit padding: 12 spacing: 8 flow: Right
                             new_conversation := RobrixNeutralIconButton {text: "New conversation" enabled: false}
                             refresh_conversation := RobrixNeutralIconButton {text: "Refresh messages" enabled: false}
-                            inspect_chat := RobrixNeutralIconButton {text: "Inspect previous message" enabled: false}
+                            inspect_chat := RobrixNeutralIconButton {text: "Inspect previous action" enabled: false}
+                            abandon_creation := RobrixNegativeIconButton {text: "Abandon pending creation" enabled: false}
                             cancel_reply := RobrixNegativeIconButton {text: "Stop reply" enabled: false}
                         }
                         composer := View {

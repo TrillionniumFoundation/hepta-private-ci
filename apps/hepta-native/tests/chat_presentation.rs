@@ -28,8 +28,10 @@ struct State {
     calls: Vec<NativeChatRootRequest>,
     lose_send: bool,
     lose_create: bool,
+    lose_abandon: bool,
     wrong_response: bool,
     observation: Option<MessageObservation>,
+    creation_observation: Option<CreationObservation>,
     reference: std::path::PathBuf,
 }
 struct Backend(Arc<Mutex<State>>);
@@ -81,6 +83,11 @@ impl BackendAdapter for Backend {
                 binding,
                 original_binding,
                 request,
+            }
+            | NativeChatRootRequest::AbandonCreation {
+                binding,
+                original_binding,
+                request,
             } => {
                 let stored: Value =
                     serde_json::from_slice(&std::fs::read(&state.reference).unwrap()).unwrap();
@@ -96,6 +103,35 @@ impl BackendAdapter for Backend {
                 if state.wrong_response {
                     binding.agent_process_id += 1;
                 }
+                if matches!(request.command, ChatCommand::CreateOnce { .. }) {
+                    if state.lose_abandon
+                        && matches!(
+                            state.calls.last(),
+                            Some(NativeChatRootRequest::AbandonCreation { .. })
+                        )
+                    {
+                        state.creation_observation = Some(CreationObservation::Abandoned {
+                            thread_id: "reserved-thread".into(),
+                        });
+                        return Err(ShellError::Backend(
+                            "lost original abandonment reply".into(),
+                        ));
+                    }
+                    return Ok(NativeChatRootResponse::CreationRecovered {
+                        binding,
+                        original_binding: original_binding.clone(),
+                        request: request.clone(),
+                        observation: state.creation_observation.clone().unwrap_or(
+                            CreationObservation::Created {
+                                data: ChatConversation {
+                                    id: "thread-1".into(),
+                                    title: "Actual protocol response".into(),
+                                    preview: "".into(),
+                                },
+                            },
+                        ),
+                    });
+                }
                 Ok(NativeChatRootResponse::Recovered {
                     binding,
                     original_binding: original_binding.clone(),
@@ -110,7 +146,7 @@ impl BackendAdapter for Backend {
             NativeChatRootRequest::Dispatch { binding, request } => {
                 if matches!(
                     request.command,
-                    ChatCommand::Send { .. } | ChatCommand::Create
+                    ChatCommand::Send { .. } | ChatCommand::Create | ChatCommand::CreateOnce { .. }
                 ) {
                     let stored: Value =
                         serde_json::from_slice(&std::fs::read(&state.reference).unwrap()).unwrap();
@@ -126,10 +162,22 @@ impl BackendAdapter for Backend {
                 if matches!(request.command, ChatCommand::Send { .. }) && state.lose_send {
                     return Err(ShellError::Backend("reply lost after delivery".into()));
                 }
-                if matches!(request.command, ChatCommand::Create) && state.lose_create {
+                if matches!(
+                    request.command,
+                    ChatCommand::Create | ChatCommand::CreateOnce { .. }
+                ) && state.lose_create
+                {
                     return Err(ShellError::Backend("thread created but reply lost".into()));
                 }
                 let result = match &request.command {
+                    ChatCommand::CreateOnce { operation_id } => ChatResult::Creation {
+                        operation_id: operation_id.clone(),
+                        data: ChatConversation {
+                            id: "thread-1".into(),
+                            title: "Actual protocol response".into(),
+                            preview: "".into(),
+                        },
+                    },
                     ChatCommand::Create | ChatCommand::Resume { .. } => ChatResult::Conversation {
                         data: ChatConversation {
                             id: "thread-1".into(),
@@ -390,21 +438,283 @@ fn original_message_receipt_can_be_inspected_after_a_current_owner_restart() {
 }
 
 #[test]
-fn unidentified_creation_stays_unknown_without_repeating_or_guessing_a_thread() {
+fn identified_creation_recovers_same_original_key_after_owner_restart_without_repeating_create() {
     let temp = common::private_tempdir();
     let state = state(temp.path());
     let (mut runtime, mut chat, revision) = open(temp.path(), state.clone());
     chat.attach(&mut runtime, AGENT, revision).unwrap();
     state.lock().unwrap().lose_create = true;
     assert!(chat.create(&mut runtime).is_err());
+    let original = state.lock().unwrap().calls.last().cloned().unwrap();
     assert!(chat.presentation().previous_action_pending);
-    let before = std::fs::read(temp.path().join("chat-pending.json")).unwrap();
+    drop(chat);
+    runtime.close().unwrap();
+    drop(runtime);
+    state.lock().unwrap().pid = 101;
+    let (mut runtime, mut chat, _) = open(temp.path(), state.clone());
+    chat.inspect(&mut runtime).unwrap();
+    assert!(!chat.presentation().previous_action_pending);
+    assert_eq!(
+        chat.presentation().selected_thread.as_deref(),
+        Some("thread-1")
+    );
+    let NativeChatRootRequest::Dispatch { binding, request } = original else {
+        panic!("original creation");
+    };
+    assert!(
+        matches!(&request.command, ChatCommand::CreateOnce { operation_id } if operation_id.starts_with("native-creation."))
+    );
+    let state_guard = state.lock().unwrap();
+    let calls = &state_guard.calls;
+    assert_eq!(
+        calls.last(),
+        Some(&NativeChatRootRequest::Recover {
+            binding: NativeChatBinding {
+                agent_process_id: 101,
+                ..binding.clone()
+            },
+            original_binding: binding,
+            request,
+        })
+    );
+    assert_eq!(
+        calls
+            .iter()
+            .filter(|call| matches!(
+                call,
+                NativeChatRootRequest::Dispatch {
+                    request: ChatRequest {
+                        command: ChatCommand::CreateOnce { .. },
+                        ..
+                    },
+                    ..
+                }
+            ))
+            .count(),
+        1
+    );
+    // An observed receipt still requires a current explicit attachment before new effects.
+    drop(state_guard);
+    assert!(chat.create(&mut runtime).is_err());
+}
+
+#[test]
+fn unsettled_or_substituted_creation_recovery_keeps_exact_original_key_and_request() {
+    for observation in [
+        CreationObservation::Pending {
+            thread_id: "original-thread".into(),
+        },
+        CreationObservation::Materialized {
+            thread_id: "original-thread".into(),
+        },
+        CreationObservation::Missing,
+        CreationObservation::Unknown,
+    ] {
+        let temp = common::private_tempdir();
+        let state = state(temp.path());
+        let (mut runtime, mut chat, revision) = open(temp.path(), state.clone());
+        chat.attach(&mut runtime, AGENT, revision).unwrap();
+        state.lock().unwrap().lose_create = true;
+        assert!(chat.create(&mut runtime).is_err());
+        let before = std::fs::read(temp.path().join("chat-pending.json")).unwrap();
+        state.lock().unwrap().creation_observation = Some(observation);
+        state.lock().unwrap().pid = 101;
+        assert!(chat.inspect(&mut runtime).is_err());
+        assert_eq!(
+            std::fs::read(temp.path().join("chat-pending.json")).unwrap(),
+            before
+        );
+        state.lock().unwrap().creation_observation = Some(CreationObservation::Created {
+            data: ChatConversation {
+                id: "original-thread".into(),
+                title: "".into(),
+                preview: "".into(),
+            },
+        });
+        state.lock().unwrap().wrong_response = true;
+        assert!(chat.inspect(&mut runtime).is_err());
+        assert_eq!(
+            std::fs::read(temp.path().join("chat-pending.json")).unwrap(),
+            before
+        );
+        assert_eq!(
+            state
+                .lock()
+                .unwrap()
+                .calls
+                .iter()
+                .filter(|call| matches!(
+                    call,
+                    NativeChatRootRequest::Dispatch {
+                        request: ChatRequest {
+                            command: ChatCommand::CreateOnce { .. },
+                            ..
+                        },
+                        ..
+                    }
+                ))
+                .count(),
+            1
+        );
+    }
+}
+
+#[test]
+fn legacy_unidentified_creation_reference_is_readable_and_retained_without_guessing_or_replay() {
+    #[derive(serde::Serialize)]
+    struct LegacyReference {
+        endpoint_id: String,
+        request: NativeChatRootRequest,
+    }
+    let temp = common::private_tempdir();
+    let state = state(temp.path());
+    let (mut runtime, chat, revision) = open(temp.path(), state.clone());
+    let original = LegacyReference {
+        endpoint_id: "runtime.fleet".into(),
+        request: NativeChatRootRequest::Dispatch {
+            binding: runtime.chat_binding(AGENT, revision).unwrap(),
+            request: ChatRequest {
+                session_id: "old-original-session".into(),
+                connection_generation: 1,
+                command: ChatCommand::Create,
+            },
+        },
+    };
+    drop(chat);
+    let pending = Some(original);
+    let mut bytes = b"hepta.desktop.chat.reference.v1\0".to_vec();
+    bytes.extend(serde_json::to_vec(&pending).unwrap());
+    let before = serde_json::to_vec(
+        &json!({"schema_version":1,"pending":pending,"checksum":sha256_hex(bytes)}),
+    )
+    .unwrap();
+    std::fs::write(temp.path().join("chat-pending.json"), &before).unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        std::fs::set_permissions(
+            temp.path().join("chat-pending.json"),
+            std::fs::Permissions::from_mode(0o600),
+        )
+        .unwrap();
+    }
+    let mut chat = DesktopChat::open(PrivateStateRoot::open(temp.path()).unwrap()).unwrap();
+    let calls = state.lock().unwrap().calls.len();
     assert!(chat.inspect(&mut runtime).is_err());
+    assert!(chat.abandon_creation(&mut runtime).is_err());
     assert!(chat.presentation().previous_action_pending);
+    assert_eq!(state.lock().unwrap().calls.len(), calls);
     assert_eq!(
         std::fs::read(temp.path().join("chat-pending.json")).unwrap(),
         before
     );
+}
+
+#[test]
+fn explicit_abandon_preserves_exact_create_until_the_current_owner_confirms_reserved_termination() {
+    let temp = common::private_tempdir();
+    let state = state(temp.path());
+    let (mut runtime, mut chat, revision) = open(temp.path(), state.clone());
+    chat.attach(&mut runtime, AGENT, revision).unwrap();
+    state.lock().unwrap().lose_create = true;
+    assert!(chat.create(&mut runtime).is_err());
+    let before = std::fs::read(temp.path().join("chat-pending.json")).unwrap();
+    let original: Value = serde_json::from_slice(&before).unwrap();
+    state.lock().unwrap().pid = 101;
+    for observation in [
+        CreationObservation::Pending {
+            thread_id: "reserved-thread".into(),
+        },
+        CreationObservation::Materialized {
+            thread_id: "reserved-thread".into(),
+        },
+        CreationObservation::Missing,
+        CreationObservation::Unknown,
+        CreationObservation::Created {
+            data: ChatConversation {
+                id: "reserved-thread".into(),
+                title: "".into(),
+                preview: "".into(),
+            },
+        },
+    ] {
+        state.lock().unwrap().creation_observation = Some(observation);
+        assert!(chat.abandon_creation(&mut runtime).is_err());
+        assert_eq!(
+            std::fs::read(temp.path().join("chat-pending.json")).unwrap(),
+            before
+        );
+    }
+    state.lock().unwrap().creation_observation = Some(CreationObservation::Abandoned {
+        thread_id: "reserved-thread".into(),
+    });
+    state.lock().unwrap().wrong_response = true;
+    assert!(chat.abandon_creation(&mut runtime).is_err());
+    assert_eq!(
+        std::fs::read(temp.path().join("chat-pending.json")).unwrap(),
+        before
+    );
+    state.lock().unwrap().wrong_response = false;
+    chat.abandon_creation(&mut runtime).unwrap();
+    assert!(!chat.presentation().previous_action_pending);
+    assert!(!chat.presentation().previous_creation_pending);
+    assert!(!chat.presentation().connection_ready);
+    let calls = &state.lock().unwrap().calls;
+    let NativeChatRootRequest::AbandonCreation {
+        binding,
+        original_binding,
+        request,
+    } = calls.last().unwrap()
+    else {
+        panic!("explicit abandonment must use the original identified creation");
+    };
+    assert_eq!(binding.agent_process_id, 101);
+    assert_eq!(
+        serde_json::to_value(NativeChatRootRequest::Dispatch {
+            binding: original_binding.clone(),
+            request: request.clone()
+        })
+        .unwrap(),
+        original["pending"]["request"]
+    );
+    assert_eq!(
+        calls
+            .iter()
+            .filter(|call| matches!(
+                call,
+                NativeChatRootRequest::Dispatch {
+                    request: ChatRequest {
+                        command: ChatCommand::CreateOnce { .. },
+                        ..
+                    },
+                    ..
+                }
+            ))
+            .count(),
+        1
+    );
+}
+
+#[test]
+fn lost_abandonment_reply_retains_original_create_and_later_inspection_reads_terminal_receipt() {
+    let temp = common::private_tempdir();
+    let state = state(temp.path());
+    let (mut runtime, mut chat, revision) = open(temp.path(), state.clone());
+    chat.attach(&mut runtime, AGENT, revision).unwrap();
+    state.lock().unwrap().lose_create = true;
+    assert!(chat.create(&mut runtime).is_err());
+    let before = std::fs::read(temp.path().join("chat-pending.json")).unwrap();
+    state.lock().unwrap().lose_abandon = true;
+    assert!(chat.abandon_creation(&mut runtime).is_err());
+    assert_eq!(
+        std::fs::read(temp.path().join("chat-pending.json")).unwrap(),
+        before
+    );
+    state.lock().unwrap().pid = 101;
+    chat.inspect(&mut runtime).unwrap();
+    assert!(!chat.presentation().previous_action_pending);
+    assert_eq!(chat.presentation().selected_thread, None);
+    assert!(!chat.presentation().connection_ready);
     assert_eq!(
         state
             .lock()
@@ -415,7 +725,7 @@ fn unidentified_creation_stays_unknown_without_repeating_or_guessing_a_thread() 
                 call,
                 NativeChatRootRequest::Dispatch {
                     request: ChatRequest {
-                        command: ChatCommand::Create,
+                        command: ChatCommand::CreateOnce { .. },
                         ..
                     },
                     ..
