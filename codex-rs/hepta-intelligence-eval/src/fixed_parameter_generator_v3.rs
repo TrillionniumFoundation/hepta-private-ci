@@ -193,10 +193,11 @@ pub fn run_fixed_parameter_generator_v3(path: &Path) -> Result<()> {
     }
     signer.principal.validate(now)?;
     let mut evidence = SignedLearningEvidenceV1 {
-        evidence_id: StableId::new(format!(
-            "parameter-g.{}.{}",
-            inputs.round_digest, generated.generator_digest
-        ))?,
+        evidence_id: parameter_role_evidence_id(
+            LearningEvidenceRoleV1::Generator,
+            inputs.round_digest.parse()?,
+            Digest32::of_bytes(&payload),
+        )?,
         principal_id: signer.principal.principal_id.clone(),
         role: LearningEvidenceRoleV1::Generator,
         trust_digest: trust.verifier().trust_digest(),
@@ -227,6 +228,31 @@ pub fn run_fixed_parameter_generator_v3(path: &Path) -> Result<()> {
         serde_json::json!({"schema":"hepta.fixed-parameter-generator-result.v3","source_digest":config.source.digest,"round_digest":inputs.round_digest,"canonical_policy_digest":inputs.canonical_policy_digest,"profile_digest":Digest32::of_bytes(&profile_bytes).to_string(),"generator_digest":generated.generator_digest.to_string(),"generator_evidence":ReviewEvidenceWireV1::from_native(&evidence),"generator_uid":config.uid,"generator_gid":config.gid,"generator_program_digest":program.to_string(),"generator_cgroup":cgroup,"qualified":false,"authority_grants_any":false})
     );
     Ok(())
+}
+// StableId has a 128-byte bound. Hash both complete pins with a finite role
+// discriminator rather than concatenating their two 64-character encodings.
+pub(super) fn parameter_role_evidence_id(
+    role: LearningEvidenceRoleV1,
+    round: Digest32,
+    payload: Digest32,
+) -> Result<StableId> {
+    let prefix = match role {
+        LearningEvidenceRoleV1::Generator => "parameter-g",
+        LearningEvidenceRoleV1::Observer => "parameter-o",
+        LearningEvidenceRoleV1::Evaluator
+        | LearningEvidenceRoleV1::CreditAllocator
+        | LearningEvidenceRoleV1::UnlearningAuthority
+        | LearningEvidenceRoleV1::Selector => {
+            return Err("unsupported fixed parameter evidence role".into());
+        }
+    };
+    let digest = Digest32::of_parts(&[
+        b"hepta.fixed-parameter-role-evidence-id.v1\0",
+        prefix.as_bytes(),
+        round.as_array(),
+        payload.as_array(),
+    ]);
+    Ok(StableId::new(format!("{prefix}.{digest}"))?)
 }
 #[cfg(test)]
 #[path = "fixed_parameter_generator_v3_tests.rs"]

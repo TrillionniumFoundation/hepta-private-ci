@@ -4,6 +4,7 @@ use crate::fixed_calibration_host::now_ms;
 use crate::fixed_paired_custody_host::verify_original_observer_controller;
 use crate::fixed_paired_generator_host::sample;
 use crate::fixed_parameter_generator_v3::ParameterRoleSourceV3;
+use crate::fixed_parameter_generator_v3::parameter_role_evidence_id;
 use crate::fixed_parameter_generator_v3::validate_parameter_generator_baseline_v3;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::ReviewEvidenceWireV1;
@@ -20,7 +21,6 @@ use codex_hepta_plasticity::parameter_generator_signing_payload_v3;
 use codex_hepta_plasticity::plasticity_admission_signing_payload_v1;
 use codex_hepta_plasticity::validate_parameter_admission_binding_v1;
 use codex_hepta_types::Digest32;
-use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use serde::Deserialize;
 use serde::Serialize;
@@ -175,11 +175,11 @@ pub fn run_fixed_parameter_observer_v1(path: &Path) -> Result<()> {
         return Err("actual O key differs from original current admission".into());
     }
     let mut evidence = SignedLearningEvidenceV1 {
-        evidence_id: StableId::new(format!(
-            "parameter-o.{}.{}",
-            inputs.round_digest,
-            Digest32::of_bytes(&payload)
-        ))?,
+        evidence_id: parameter_role_evidence_id(
+            LearningEvidenceRoleV1::Observer,
+            inputs.round_digest.parse()?,
+            Digest32::of_bytes(&payload),
+        )?,
         principal_id: observer.principal.principal_id.clone(),
         role: LearningEvidenceRoleV1::Observer,
         trust_digest: trust.verifier().trust_digest(),
