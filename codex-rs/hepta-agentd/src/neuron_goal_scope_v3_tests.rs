@@ -1,5 +1,8 @@
 use super::*;
 
+#[path = "neuron_runtime_v2_operation_observation_tests.rs"]
+mod operation_observation_tests;
+
 struct ScopeAdmission(Arc<AtomicBool>);
 impl NeuronAdmissionGuard for ScopeAdmission {
     fn check_scope(

@@ -412,6 +412,21 @@ where
         locked.owner.runtime.capacity_snapshot()
     }
 
+    fn export_operation_control(
+        &self,
+        tick_id: &StableId,
+        input_digest: Digest32,
+    ) -> Result<
+        codex_hepta_agent_components::neuron::NeuronAcknowledgedOperationV2,
+        AgentdNeuronControlErrorV2,
+    > {
+        self.lock_control()?
+            .owner
+            .runtime
+            .export_acknowledged_operation_v2(tick_id, input_digest)
+            .map_err(AgentdNeuronControlErrorV2::Runtime)
+    }
+
     fn operational_snapshot_control(
         &self,
     ) -> Result<AgentdNeuronOperationalSnapshotV2, AgentdNeuronControlErrorV2> {

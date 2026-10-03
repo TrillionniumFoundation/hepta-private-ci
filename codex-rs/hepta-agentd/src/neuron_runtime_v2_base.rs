@@ -393,6 +393,17 @@ trait ProductNeuronOwnerV2: Send + Sync {
             .map_err(AgentdNeuronControlErrorV2::Runtime)
     }
 
+    fn export_operation_control(
+        &self,
+        _tick_id: &StableId,
+        _input_digest: Digest32,
+    ) -> Result<
+        codex_hepta_agent_components::neuron::NeuronAcknowledgedOperationV2,
+        AgentdNeuronControlErrorV2,
+    > {
+        Err(AgentdNeuronControlErrorV2::PendingRecovery)
+    }
+
     fn capacity_snapshot(&self) -> Result<NeuronRuntimeCapacityV2, NeuronRuntimeV2Error>;
 
     fn operational_snapshot_control(
