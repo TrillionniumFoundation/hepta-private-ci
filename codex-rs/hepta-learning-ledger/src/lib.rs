@@ -108,6 +108,7 @@ pub use production::freeze_dataset_window_from_ledger_v3;
 pub use production::outcome_signing_payload_v2;
 pub use production::sync_directory_handle;
 pub use production::unlearning_signing_payload_v1;
+pub use production::verify_dataset_window_snapshot_against_current_ledger_v3;
 pub use production::verify_dataset_window_snapshot_against_ledger_v3;
 pub use protocol::CreditAllocationV1 as CreditAllocationProtocolV1;
 pub use protocol::CreditAssignmentReceiptV1;

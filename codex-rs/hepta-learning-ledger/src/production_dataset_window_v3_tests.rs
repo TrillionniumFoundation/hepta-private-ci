@@ -5,6 +5,9 @@ use crate::dataset_window_freeze_signing_payload_v3;
 use crate::freeze_dataset_window_from_ledger_v3;
 use crate::verify_dataset_window_snapshot_against_ledger_v3;
 
+#[path = "production_dataset_window_current_v3_tests.rs"]
+mod current;
+
 fn add_decision(writer: &mut LedgerWriter, name: &str) -> AppendReceipt {
     let mut request = decision();
     request.record_id = id(&format!("decision-{name}"));

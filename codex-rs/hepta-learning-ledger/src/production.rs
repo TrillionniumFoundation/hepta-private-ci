@@ -70,6 +70,7 @@ pub use dataset_window::MAX_DATASET_WINDOW_ENCODED_BYTES_V3;
 pub use dataset_window::MAX_DATASET_WINDOW_SOURCE_RECORDS_V3;
 pub use dataset_window::dataset_window_freeze_signing_payload_v3;
 pub use dataset_window::freeze_dataset_window_from_ledger_v3;
+pub use dataset_window::verify_dataset_window_snapshot_against_current_ledger_v3;
 pub use dataset_window::verify_dataset_window_snapshot_against_ledger_v3;
 pub use unlearning::UnlearningLineagePreviewV1;
 
