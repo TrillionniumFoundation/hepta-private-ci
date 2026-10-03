@@ -5,9 +5,10 @@ use tokio::io::AsyncReadExt;
 use super::*;
 
 #[tokio::test]
-async fn pinned_agentd_wrong_uid_or_pid_writes_no_request_payload() -> anyhow::Result<()> {
+async fn pinned_agentd_wrong_uid_or_pid_writes_no_request_payload()
+-> Result<(), Box<dyn std::error::Error + Send + Sync>> {
     let uid = std::fs::metadata("/proc/self")?.uid();
-    anyhow::ensure!(
+    assert!(
         uid != 0,
         "run the ordinary client fixture as a non-root user"
     );
@@ -27,14 +28,15 @@ async fn pinned_agentd_wrong_uid_or_pid_writes_no_request_payload() -> anyhow::R
             let mut bytes = Vec::new();
             let count = tokio::time::timeout(Duration::from_secs(1), peer.read_to_end(&mut bytes))
                 .await??;
-            anyhow::ensure!(
-                count == 0 && bytes.is_empty(),
+            assert_eq!(
+                (count, bytes),
+                (0, Vec::new()),
                 "kernel rejection leaked protocol bytes"
             );
-            anyhow::Ok(())
+            Ok::<_, Box<dyn std::error::Error + Send + Sync>>(())
         };
         let (result, observed) = tokio::join!(client.health(), read);
-        anyhow::ensure!(result.is_err(), "wrong peer was accepted");
+        assert!(result.is_err(), "wrong peer was accepted");
         observed?;
     }
     Ok(())
