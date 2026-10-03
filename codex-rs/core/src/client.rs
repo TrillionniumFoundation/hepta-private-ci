@@ -3109,8 +3109,10 @@ fn map_response_stream(
         upstream_request_id: None,
     };
     map_response_events(
-        upstream_request_id,
-        api_stream,
+        UpstreamResponse {
+            upstream_request_id,
+            events: api_stream,
+        },
         session_telemetry,
         inference_trace_attempt,
         provider,
@@ -3120,9 +3122,15 @@ fn map_response_stream(
     )
 }
 
-fn map_response_events<S>(
+/// Keep the upstream identifier paired with the event source it describes.
+/// Generic streams remain available to direct cancellation and redaction tests.
+struct UpstreamResponse<S> {
     upstream_request_id: Option<String>,
-    api_stream: S,
+    events: S,
+}
+
+fn map_response_events<S>(
+    response: UpstreamResponse<S>,
     session_telemetry: SessionTelemetry,
     inference_trace_attempt: InferenceTraceAttempt,
     provider: SharedModelProvider,
@@ -3136,6 +3144,10 @@ where
         + Send
         + 'static,
 {
+    let UpstreamResponse {
+        upstream_request_id,
+        events: api_stream,
+    } = response;
     let (tx_event, rx_event) =
         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();
