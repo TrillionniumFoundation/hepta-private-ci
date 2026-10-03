@@ -266,8 +266,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "522a8eeb7c758028279ffae7b719825fefbdeccf",
-    "tree": "0376142a0defb92a780bd2ecd25cf6690921fcbf"
+    "commit": "c8977d04f35752e3285f5457a9cd78ecada233d9",
+    "tree": "960e7647e50bbf3675dc79a1a2e1af0e03e67cc3"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -356,6 +356,7 @@
     "codex-rs/hepta-automation",
     "codex-rs/hepta-automation/src/authorized_effect.rs",
     "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+    "codex-rs/hepta-automation/src/effect_execution_request.rs",
     "codex-rs/hepta-automation/src/effect_recovery_frontier_tests.rs",
     "codex-rs/hepta-automation/src/effect_recovery_scan.rs",
     "codex-rs/hepta-automation/src/effect_recovery_scan_tests.rs",
@@ -381,8 +382,7 @@
     "codex-rs/hepta-operations/src/exact_claim.rs",
     "codex-rs/hepta-types",
     "codex-rs/model-provider/src/provider_effect.rs",
-    "docs/modules/automation.taskflow/TECHNICAL.md",
-    "codex-rs/hepta-automation/src/effect_execution_request.rs"
+    "docs/modules/automation.taskflow/TECHNICAL.md"
   ],
   "repositoryControlledProductCompositionGaps": [
     "Configured Agentd HTTP execute/reconcile control requires already registered, claimed and prepared TaskFlow steps. General scheduled external-effect/DAG/Neural Circuit execution remains an implementation target; selected-host provider/authority qualification is separate.",
@@ -423,7 +423,7 @@
   "sourceObjects": [
     {
       "path": ".github/workflows/automation-taskflow-focused.yml",
-      "object": "a5fe66c7b748f4960eec69c9499036c165438aec"
+      "object": "5ffd3091c3f1f4bfa600279df4b129044ecaaee9"
     },
     {
       "path": "codex-rs/app-server-client/BUILD.bazel",
@@ -479,7 +479,7 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "bd4345d0f80243f894f92d392701988ca4486007"
+      "object": "cfa2b9f06ad70964910f3293d24e4017bd28cf64"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -488,6 +488,10 @@
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
       "object": "166c8a93a1db589acfa4272f3776d1591f59bb88"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_execution_request.rs",
+      "object": "e811418a0e76af8075c12fc62d3e3d118552a47e"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_recovery_frontier_tests.rs",
@@ -507,7 +511,7 @@
     },
     {
       "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
-      "object": "00b769ffe411447cbff5e7b7f3f2311407ef718e"
+      "object": "0b367fba4ba4f85e1156e5afc9f8f07c4d2afbf9"
     },
     {
       "path": "codex-rs/hepta-automation/src/queue_contact.rs",
@@ -576,10 +580,6 @@
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
       "object": "2ea8a144238e1ef53519dc53dbfce3254302182b"
-    },
-    {
-      "path": "codex-rs/hepta-automation/src/effect_execution_request.rs",
-      "object": "e811418a0e76af8075c12fc62d3e3d118552a47e"
     }
   ],
   "navigationProvenanceRepair": {
