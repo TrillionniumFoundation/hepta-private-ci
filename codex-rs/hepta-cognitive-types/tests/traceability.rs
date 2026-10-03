@@ -66,7 +66,6 @@ fn traceability_manifest_has_closed_unique_invariant_inventory() {
             !row["title"].as_str().expect("invariant title").is_empty(),
             "empty title for {id}"
         );
-        let repository_root = Path::new(env!("CARGO_MANIFEST_DIR")).join("../..");
         for key in ["source", "tests"] {
             let paths = row[key].as_array().expect("path array");
             assert!(!paths.is_empty(), "{id} has no {key}");
@@ -79,8 +78,11 @@ fn traceability_manifest_has_closed_unique_invariant_inventory() {
                         && !path.split('/').any(|component| component == ".."),
                     "{id} contains an invalid {key} path: {path}"
                 );
+                let resource = Path::new("../..").join(path);
+                let resolved = codex_utils_cargo_bin::find_resource!(resource)
+                    .expect("declared traceability resource resolves");
                 assert!(
-                    repository_root.join(path).is_file(),
+                    resolved.is_file(),
                     "{id} references a missing {key} path: {path}"
                 );
             }
