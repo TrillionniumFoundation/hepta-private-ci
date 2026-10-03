@@ -3,11 +3,11 @@ name: Fleet canonical temporary-path regression
 on:
   pull_request:
     paths:
-      - 'codex-rs/Cargo.toml'
-      - 'codex-rs/Cargo.lock'
-      - 'codex-rs/rust-toolchain.toml'
-      - 'codex-rs/hepta-fleet/**'
-      - '.github/workflows/fleet-canonical-path-regression.yml'
+      - "codex-rs/Cargo.toml"
+      - "codex-rs/Cargo.lock"
+      - "codex-rs/rust-toolchain.toml"
+      - "codex-rs/hepta-fleet/**"
+      - ".github/workflows/fleet-canonical-path-regression.yml"
   workflow_dispatch:
 
 permissions:
@@ -27,12 +27,12 @@ jobs:
     runs-on: ${{ matrix.os }}
     timeout-minutes: 20
     env:
-      RUSTUP_TOOLCHAIN: '1.95.0'
+      RUSTUP_TOOLCHAIN: "1.95.0"
       SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
-      CARGO_INCREMENTAL: '0'
-      CARGO_BUILD_JOBS: '2'
-      CARGO_PROFILE_DEV_DEBUG: '0'
-      CARGO_PROFILE_TEST_DEBUG: '0'
+      CARGO_INCREMENTAL: "0"
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
         with:
