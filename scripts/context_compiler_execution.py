@@ -109,6 +109,23 @@ def specs(legacy):
     # context compiler crate in isolation.
     commands[2:2] = [
         {
+            "name": "agent-protocol-effect-wire-regression",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-hepta-agent-protocol",
+                "--lib",
+                "tests::automation_effect_wire_round_trip_is_strict_and_bounded",
+            ],
+            "minimumTests": 1,
+            "requiredNativeTests": [
+                "tests::automation_effect_wire_round_trip_is_strict_and_bounded",
+            ],
+        },
+        {
             "name": "typed-slot-regressions",
             "cwd": legacy.CODEX_RS,
             "argv": [

@@ -406,9 +406,13 @@ async fn active_provider_policy_governs_websocket_prewarm_and_turn() -> Result<(
     );
 
     state.terminal_release.add_permits(1);
-    timeout(Duration::from_secs(15), state.wait_for_terminal_count(2))
-        .await
-        .with_context(|| {
+    // Submission is a lazy future. Startup prewarm may finish before the
+    // turn is enqueued, so keep driving submission while awaiting its terminal.
+    let second_terminal = tokio::select! {
+        result = &mut submit => panic!("turn completed before its terminal acknowledgement: {result:?}"),
+        result = timeout(Duration::from_secs(15), state.wait_for_terminal_count(2)) => result,
+    };
+    second_terminal.with_context(|| {
             format!(
                 "second provider terminal after prewarm release: begin={}, terminal={}, completed={}, websocket_connections={:?}",
                 state.begin_count.load(Ordering::SeqCst),
