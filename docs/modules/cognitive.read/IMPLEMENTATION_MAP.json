@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "1b764eea5b326c10a54b4e7f5415d98062a2eb80",
-    "tree": "7957d082a0845ce0030aeb87fbefbd49fdf620d5"
+    "commit": "63718689899265b966fbb1994245a8b2eabcaf8c",
+    "tree": "efadbc8a5639be99a5404f48033da70982a51285"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -169,7 +169,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
-      "object": "2379d7a33ac80ccb60fa381373537b5dcfac6b54"
+      "object": "cffa394c492738253da1c826dd9a25e8c19ed029"
     },
     {
       "path": "codex-rs/hepta-agentd/src/client.rs",
@@ -291,7 +291,7 @@
     },
     {
       "role": "control_protocol",
-      "blobSha": "2379d7a33ac80ccb60fa381373537b5dcfac6b54",
+      "blobSha": "cffa394c492738253da1c826dd9a25e8c19ed029",
       "sourcePath": "codex-rs/hepta-agent-protocol/src/lib.rs",
       "nativeSymbol": "CognitiveContextRevalidate {"
     },
@@ -320,8 +320,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "1b764eea5b326c10a54b4e7f5415d98062a2eb80",
-    "tree": "7957d082a0845ce0030aeb87fbefbd49fdf620d5"
+    "commit": "63718689899265b966fbb1994245a8b2eabcaf8c",
+    "tree": "efadbc8a5639be99a5404f48033da70982a51285"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
@@ -363,6 +363,18 @@
       "observedAtHead": {
         "commit": "e2d1c12855e7f598c317b83b76cecab79b6e1d4a",
         "tree": "e93854c35e2deb4e7a8ef4c4b0d67574ceeeb33b"
+      },
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "1b764eea5b326c10a54b4e7f5415d98062a2eb80",
+        "tree": "7957d082a0845ce0030aeb87fbefbd49fdf620d5"
+      },
+      "observedAtHead": {
+        "commit": "1b764eea5b326c10a54b4e7f5415d98062a2eb80",
+        "tree": "7957d082a0845ce0030aeb87fbefbd49fdf620d5"
       },
       "disposition": "historical_source_navigation_only",
       "executionEvidenceTransferred": false
