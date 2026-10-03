@@ -447,3 +447,14 @@ pub use parameter_role_execution::ParameterRoleExecutionV1;
 pub use parameter_role_execution::execute_parameter_role_v1;
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 pub use parameter_role_execution::execute_retained_parameter_role_v1;
+
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_frozen_generator::OriginalParameterEvaluationPreparationResultV1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_frozen_generator::OriginalParameterEvaluationPublicationsV1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_frozen_generator::OriginalParameterEvaluationTemplateV1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_frozen_generator::OriginalParameterRoleProgramV1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_frozen_generator::prepare_original_parameter_evaluation_publications_v1;

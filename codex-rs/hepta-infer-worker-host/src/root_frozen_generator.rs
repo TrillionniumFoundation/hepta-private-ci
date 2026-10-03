@@ -34,10 +34,10 @@ mod facts;
 mod failure;
 #[path = "root_self_iteration_owners.rs"]
 mod independent_owners;
-#[path = "root_frozen_generator_prepared.rs"]
-mod prepared;
 #[path = "root_round_preparation.rs"]
 mod preparation;
+#[path = "root_frozen_generator_prepared.rs"]
+mod prepared;
 #[path = "root_frozen_generator_recipe.rs"]
 pub(crate) mod recipe;
 #[path = "root_frozen_generator_server.rs"]
@@ -228,3 +228,11 @@ fn now_ms() -> Result<u64> {
 fn refused(error: FrozenGeneratorErrorCodeV1) -> FrozenGeneratorResponseV1 {
     FrozenGeneratorResponseV1::Refused(FrozenGeneratorFailureV1 { error })
 }
+
+#[path = "root_parameter_evaluation_pipeline.rs"]
+mod parameter_evaluation_pipeline;
+pub use parameter_evaluation_pipeline::OriginalParameterEvaluationPreparationResultV1;
+pub use parameter_evaluation_pipeline::OriginalParameterEvaluationPublicationsV1;
+pub use parameter_evaluation_pipeline::OriginalParameterEvaluationTemplateV1;
+pub use parameter_evaluation_pipeline::OriginalParameterRoleProgramV1;
+pub use parameter_evaluation_pipeline::prepare_original_parameter_evaluation_publications_v1;

@@ -230,3 +230,12 @@ mod evaluation;
 use evaluation::completed_evaluation;
 use evaluation::finish_evaluation;
 use evaluation::verify_publication;
+
+pub(in crate::root_frozen_generator) fn publish_public_source(
+    directory: &std::path::Path,
+    name: &str,
+    bytes: &[u8],
+    maximum: usize,
+) -> Result<InstalledCpuSourceV1> {
+    publication::public_root_source(directory, name, bytes, maximum)
+}
