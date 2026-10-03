@@ -30,6 +30,11 @@ impl RoundJournal {
             if stage.request != digest {
                 return Err(invalid("reserved model request changed"));
             }
+            if let Some(failure) = &stage.failure {
+                return Ok(AgentdSelfIterationModelAdmissionV1::Failed(
+                    failure.for_request(request)?,
+                ));
+            }
             return match (&stage.output, stage.native_run) {
                 (Some(output), Some(native_run_digest)) => {
                     Ok(AgentdSelfIterationModelAdmissionV1::Completed(
@@ -63,6 +68,7 @@ impl RoundJournal {
             request: digest,
             output: None,
             native_run: None,
+            failure: None,
         });
         Ok(AgentdSelfIterationModelAdmissionV1::Fresh)
     }
@@ -84,6 +90,9 @@ impl RoundJournal {
             return Err(invalid(
                 "model completion differs from original admitted request",
             ));
+        }
+        if stage.failure.is_some() {
+            return Err(invalid("actual failed model cannot become successful"));
         }
         if let Some(previous) = &stage.output
             && (previous != &assessment.model_output

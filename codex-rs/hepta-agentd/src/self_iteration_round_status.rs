@@ -26,6 +26,8 @@ pub struct AgentdSelfIterationRoundStatusV1 {
     pub generator_output_digest: Option<Digest32>,
     pub terminal: bool,
     pub rejected_proposal: Option<AgentdSelfIterationProposalRejectionV1>,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub model_stages: Vec<AgentdSelfIterationModelStageStatusV1>,
 }
 
 impl AgentdSelfIterationRoundStatusV1 {
@@ -50,6 +52,7 @@ impl AgentdSelfIterationRoundStatusV1 {
     }
     fn validate(&self) -> Result<(), AgentdError> {
         self.round.validate()?;
+        super::model_status::validate(self)?;
         if self.maximum_policy_candidates == 0
             || self.maximum_policy_candidates > 32
             || self.admitted_policy_candidates < self.round.candidate_admissions()
@@ -140,6 +143,7 @@ impl RoundJournal {
                 .map(|output| Digest32::of_bytes(output.as_bytes())),
             terminal: current.terminal,
             rejected_proposal: current.rejected_proposal.as_ref().map(|fact| fact.reason),
+            model_stages: super::model_status::project(current)?,
         })
     }
 }

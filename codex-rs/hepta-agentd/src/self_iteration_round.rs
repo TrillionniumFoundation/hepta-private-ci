@@ -1,6 +1,7 @@
 //! Round and model intent share the original iteration journal and lease.
 use super::*;
 use codex_hepta_agent_components::infer_core::SelfIterationModelAssessmentV1;
+use codex_hepta_agent_components::infer_core::SelfIterationModelFailureV1;
 use codex_hepta_agent_components::infer_core::SelfIterationModelRequestV1;
 use codex_hepta_agent_components::infer_core::SelfIterationModelRoleV1;
 use codex_hepta_agent_components::types::AuthorityPosture;
@@ -104,6 +105,7 @@ pub enum AgentdSelfIterationModelAdmissionV1 {
     Fresh,
     Pending,
     Completed(SelfIterationModelAssessmentV1),
+    Failed(SelfIterationModelFailureV1),
 }
 
 #[derive(Clone, Default, Deserialize, Serialize)]
@@ -147,6 +149,8 @@ struct ModelStage {
     output: Option<String>,
     #[serde(with = "super::codec::optional_digest")]
     native_run: Option<Digest32>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    failure: Option<failure::ModelFailure>,
 }
 impl RoundJournal {
     pub(super) fn validate(&self) -> Result<(), AgentdError> {
@@ -179,6 +183,7 @@ impl RoundJournal {
                 || current.terminal
                     && current.frozen.is_none()
                     && current.rejected_proposal.is_none()
+                    && !failure::failed_before_candidate_effects(current)
             {
                 return Err(invalid("durable round state"));
             }
@@ -198,6 +203,8 @@ impl RoundJournal {
                     || stage.request.is_zero()
                     || stage.output.is_some() != stage.native_run.is_some()
                     || stage.native_run.is_some_and(Digest32::is_zero)
+                    || stage.failure.is_some()
+                        && (stage.output.is_some() || stage.native_run.is_some())
                     || stage
                         .output
                         .as_ref()
@@ -205,6 +212,12 @@ impl RoundJournal {
                     || index + 1 < current.stages.len() && stage.output.is_none()
                 {
                     return Err(invalid("durable model intent or actual terminal receipt"));
+                }
+                if let Some(failure) = &stage.failure {
+                    failure.validate(current.permit.admitted_at_ms, self.watermark_ms)?;
+                    if index == 0 && !failure::failed_before_candidate_effects(current) {
+                        return Err(invalid("Generator failure cannot retire candidate effects"));
+                    }
                 }
             }
         } else if self.ordinal != 0 {
@@ -243,7 +256,7 @@ impl RoundJournal {
             return Err(invalid("policy window or admission clock expired"));
         }
         if let Some(current) = &self.current
-            && (!current.terminal || current.stages.iter().any(|stage| stage.output.is_none()))
+            && (!current.terminal || current.stages.iter().any(ModelStage::pending))
         {
             if current.permit.goal != goal.as_str()
                 || current.permit.policy != canonical.digest()
@@ -419,12 +432,19 @@ mod effects;
 #[path = "self_iteration_round_status.rs"]
 mod status_codec;
 pub use status_codec::AgentdSelfIterationRoundStatusV1;
+#[path = "self_iteration_round_model_status.rs"]
+mod model_status;
+pub use model_status::AgentdSelfIterationModelFailureStatusV1;
+pub use model_status::AgentdSelfIterationModelStageStatusV1;
 #[path = "self_iteration_round_current.rs"]
 mod current;
 pub use current::AgentdSelfIterationCurrentRoundV1;
 
 #[path = "self_iteration_round_model.rs"]
 pub(super) mod model;
+
+#[path = "self_iteration_round_failure.rs"]
+mod failure;
 
 #[path = "self_iteration_round_rejection.rs"]
 mod rejection;

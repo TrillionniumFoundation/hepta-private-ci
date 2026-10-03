@@ -625,6 +625,10 @@ pub use self_iteration::AgentdSelfIterationModelAdmissionV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationModelCycleV1;
 #[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationModelFailureStatusV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationModelStageStatusV1;
+#[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationPendingProposalV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationPhaseV1;

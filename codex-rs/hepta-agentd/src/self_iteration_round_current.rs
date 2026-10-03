@@ -25,7 +25,7 @@ impl RoundJournal {
         let goal = StableId::new(&current.permit.goal).map_err(|e| invalid(e.to_string()))?;
         Ok(Some(AgentdSelfIterationCurrentRoundV1 {
             status: self.status(&goal, current.permit.policy)?,
-            has_pending_model_requests: current.stages.iter().any(|stage| stage.output.is_none()),
+            has_pending_model_requests: current.stages.iter().any(ModelStage::pending),
         }))
     }
 }

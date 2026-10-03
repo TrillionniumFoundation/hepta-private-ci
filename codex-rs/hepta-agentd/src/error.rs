@@ -28,6 +28,10 @@ pub enum AgentdError {
     CognitiveWriteRuntimeUnavailable,
     #[error("self-iteration proposal rejected before candidate effects")]
     SelfIterationProposalRejected,
+    #[error(
+        "self-iteration model role {role} has an actual failed terminal receipt {facts_digest}"
+    )]
+    SelfIterationModelFailed { role: u8, facts_digest: String },
     #[error("agentd protocol error: {0}")]
     Protocol(String),
     #[error("agentd control overloaded; retry after {retry_after_ms} ms")]

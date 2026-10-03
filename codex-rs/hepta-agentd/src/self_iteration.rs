@@ -79,6 +79,8 @@ mod apply;
 mod round;
 pub use round::AgentdSelfIterationCurrentRoundV1;
 pub use round::AgentdSelfIterationModelAdmissionV1;
+pub use round::AgentdSelfIterationModelFailureStatusV1;
+pub use round::AgentdSelfIterationModelStageStatusV1;
 pub use round::AgentdSelfIterationRoundStatusV1;
 pub use round::AgentdSelfIterationRoundV1;
 
