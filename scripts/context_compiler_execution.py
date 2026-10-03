@@ -105,6 +105,25 @@ def specs(legacy):
             spec["minimumTests"] = 1
         commands.append(spec)
 
+    retirement_observer_names = [
+        f"session::tests::compaction_admission_tests::{name}"
+        for name in [
+            "compact_after_turn_complete_rejects_while_terminalization_pending",
+            "retirement_observation_waits_for_flush_and_idle_fence",
+            "retirement_observation_rejects_newer_active_and_retired_turns",
+            "retirement_observation_rejects_registry_contention_at_capture_and_recheck",
+            "cancelled_retirement_observation_preserves_terminalizer",
+            "retirement_observation_deadline_does_not_cancel_terminalizer",
+            "retirement_observation_deadline_bounds_capture_lock",
+            "retirement_observation_deadline_bounds_recheck_lock",
+            "retirement_observation_rechecks_shutdown",
+            "retirement_observation_does_not_imply_successful_terminal_flush",
+        ]
+    ]
+    compaction_fixture_names = [
+        "suite::model_provider_policy_compaction::provider_policy_block_prevents_remote_v1_compaction_send",
+        "suite::model_provider_policy_compaction::provider_policy_claims_each_remote_v1_compaction_retry",
+    ]
     delivery_regression_names = [
         "v2::tests::provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_delivery_receipt",
         "v2::tests::provider_owned_attempt_witness_is_authenticated_by_delivery_verifier",
@@ -130,6 +149,42 @@ def specs(legacy):
     # These selectors exercise the actual provider-body slots, not only the
     # context compiler crate in isolation.
     commands[2:2] = [
+        {
+            "name": "core-retirement-observer-regressions",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-core",
+                "--lib",
+                "session::tests::compaction_admission_tests",
+                "--status-level",
+                "pass",
+            ],
+            "minimumTests": len(retirement_observer_names),
+            "requiredNativeTests": retirement_observer_names,
+        },
+        {
+            "name": "core-compaction-retirement-fixtures",
+            "cwd": legacy.CODEX_RS,
+            "argv": [
+                "just",
+                "test",
+                "--locked",
+                "-p",
+                "codex-core",
+                "--test",
+                "all",
+                "-E",
+                " | ".join(f"test({name})" for name in compaction_fixture_names),
+                "--status-level",
+                "pass",
+            ],
+            "minimumTests": len(compaction_fixture_names),
+            "requiredNativeTests": compaction_fixture_names,
+        },
         {
             "name": "context-delivery-input-regressions",
             "cwd": legacy.CODEX_RS,

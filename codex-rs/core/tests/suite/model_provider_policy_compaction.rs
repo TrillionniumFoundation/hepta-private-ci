@@ -1,4 +1,5 @@
 use anyhow::Result;
+use codex_core::test_support::wait_for_turn_retirement;
 use codex_extension_api::ModelProviderRequestKind;
 use codex_extension_api::ModelProviderTerminal;
 use codex_extension_api::ModelProviderTransport;
@@ -26,6 +27,7 @@ use std::sync::atomic::Ordering;
 use std::time::Duration;
 use tokio::time::Instant;
 use tokio::time::timeout;
+use tokio::time::timeout_at;
 use wiremock::ResponseTemplate;
 
 use super::compact::SUMMARY_TEXT;
@@ -268,8 +270,12 @@ async fn provider_policy_block_prevents_remote_v1_compaction_send() -> Result<()
     test.submit_turn("seed history before governed compaction")
         .await?;
     assert_eq!(state.begin_count.load(Ordering::SeqCst), 0);
+    // TurnComplete precedes fence retirement. Observe it outside the dispatcher
+    // without treating it as a reservation or evidence of a successful flush.
+    let compact_deadline = Instant::now() + Duration::from_secs(10);
+    wait_for_turn_retirement(&test.codex, compact_deadline).await?;
     let compact_id = test.codex.submit(Op::Compact).await?;
-    timeout(Duration::from_secs(10), async {
+    timeout_at(compact_deadline, async {
         loop {
             let event = test.codex.next_event().await?;
             if event.id == compact_id {
@@ -290,23 +296,28 @@ async fn provider_policy_block_prevents_remote_v1_compaction_send() -> Result<()
     assert_eq!(compact_mock.requests().len(), 2);
     assert_eq!(state.begin_count.load(Ordering::SeqCst), 0);
 
+    let compact_deadline = Instant::now() + Duration::from_secs(10);
+    wait_for_turn_retirement(&test.codex, compact_deadline).await?;
     state.set_active(true);
     test.codex.submit(Op::Compact).await?;
 
-    let error = wait_for_event(&test.codex, |event| matches!(event, EventMsg::Error(_))).await;
-    let EventMsg::Error(error) = error else {
-        unreachable!("event predicate requires an error")
-    };
-    assert!(
-        error
-            .message
-            .contains("blocked by the test provider policy"),
-        "unexpected remote-v1 compaction rejection: {error:?}"
-    );
-    wait_for_event(&test.codex, |event| {
-        matches!(event, EventMsg::TurnComplete(_))
+    timeout_at(compact_deadline, async {
+        let error = wait_for_event(&test.codex, |event| matches!(event, EventMsg::Error(_))).await;
+        let EventMsg::Error(error) = error else {
+            unreachable!("event predicate requires an error")
+        };
+        assert!(
+            error
+                .message
+                .contains("blocked by the test provider policy"),
+            "unexpected remote-v1 compaction rejection: {error:?}"
+        );
+        wait_for_event(&test.codex, |event| {
+            matches!(event, EventMsg::TurnComplete(_))
+        })
+        .await;
     })
-    .await;
+    .await?;
 
     assert_eq!(state.begin_count.load(Ordering::SeqCst), 1);
     assert_eq!(state.terminal_count.load(Ordering::SeqCst), 0);
@@ -362,6 +373,8 @@ async fn provider_policy_claims_each_remote_v1_compaction_retry() -> Result<()> 
     test.submit_turn("seed history before governed compaction")
         .await?;
     assert_eq!(state.begin_count.load(Ordering::SeqCst), 0);
+    let compact_deadline = Instant::now() + Duration::from_secs(5);
+    wait_for_turn_retirement(&test.codex, compact_deadline).await?;
     state.set_active(true);
     let compact_id = test.codex.submit(Op::Compact).await?;
 
@@ -370,6 +383,7 @@ async fn provider_policy_claims_each_remote_v1_compaction_retry() -> Result<()> 
         &compact_id,
         &state,
         /*expected*/ 1,
+        compact_deadline,
     )
     .await?;
     assert_eq!(state.begin_count.load(Ordering::SeqCst), 1);
@@ -389,6 +403,7 @@ async fn provider_policy_claims_each_remote_v1_compaction_retry() -> Result<()> 
         &compact_id,
         &state,
         /*expected*/ 2,
+        Instant::now() + Duration::from_secs(5),
     )
     .await?;
     assert_eq!(state.begin_count.load(Ordering::SeqCst), 2);
@@ -431,8 +446,9 @@ async fn wait_for_provider_terminal_or_compaction_error(
     compact_id: &str,
     state: &ProviderPolicyState,
     expected: usize,
+    deadline: Instant,
 ) -> Result<()> {
-    timeout(Duration::from_secs(5), async {
+    timeout_at(deadline, async {
         loop {
             tokio::select! {
                 () = state.wait_for_terminal_count(expected) => return Ok(()),

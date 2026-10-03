@@ -17,6 +17,56 @@ def libtest(passed=1, failed=0, ignored=0):
 
 
 class ExecutionSummaryTests(unittest.TestCase):
+    def test_retirement_observer_and_fixtures_require_actual_named_cases(self):
+        from context_compiler_named_evidence import bind_named_tests
+
+        observer = [
+            "compact_after_turn_complete_rejects_while_terminalization_pending",
+            "retirement_observation_waits_for_flush_and_idle_fence",
+            "retirement_observation_rejects_newer_active_and_retired_turns",
+            "retirement_observation_rejects_registry_contention_at_capture_and_recheck",
+            "cancelled_retirement_observation_preserves_terminalizer",
+            "retirement_observation_deadline_does_not_cancel_terminalizer",
+            "retirement_observation_deadline_bounds_capture_lock",
+            "retirement_observation_deadline_bounds_recheck_lock",
+            "retirement_observation_rechecks_shutdown",
+            "retirement_observation_does_not_imply_successful_terminal_flush",
+        ]
+        expected = {
+            "core-retirement-observer-regressions": [
+                f"session::tests::compaction_admission_tests::{name}"
+                for name in observer
+            ],
+            "core-compaction-retirement-fixtures": [
+                "suite::model_provider_policy_compaction::provider_policy_block_prevents_remote_v1_compaction_send",
+                "suite::model_provider_policy_compaction::provider_policy_claims_each_remote_v1_compaction_retry",
+            ],
+        }
+        for command, names in expected.items():
+            spec = next(value for value in specs(legacy) if value["name"] == command)
+            self.assertEqual(spec["requiredNativeTests"], names)
+            self.assertEqual(spec["minimumTests"], len(names))
+            self.assertEqual(spec["argv"][:2], ["just", "test"])
+            self.assertEqual(spec["argv"][spec["argv"].index("-p") + 1], "codex-core")
+            for missing in [None, *names]:
+                with self.subTest(command=command, missing=missing):
+                    observed = [
+                        name if name != missing else "unrelated::green"
+                        for name in names
+                    ]
+                    with tempfile.TemporaryDirectory() as directory:
+                        path = Path(directory) / "native.log"
+                        path.write_text(
+                            "".join(
+                                f"PASS [0.1s] codex-core {name}\n" for name in observed
+                            )
+                        )
+                        named = bind_named_tests(path, names)
+                    self.assertEqual(named["namedNativeTestsPassed"], missing is None)
+            zero = {"succeeded": True}
+            bind_test_count("Summary [1s] 0 tests run: 0 passed", spec, zero)
+            self.assertFalse(zero["succeeded"])
+
     def test_delivery_carrier_requires_all_seven_migrated_native_cases(self):
         from context_compiler_named_evidence import bind_named_tests
 
