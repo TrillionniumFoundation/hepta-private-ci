@@ -70,6 +70,19 @@ the 128-object schema inventory to LF migrations produces the required oracle
 to LF. The required oracle, SQL content, migration versions and runtime checks
 are not altered. Renewed final-head platform results remain a separate gate.
 
+The `e49d87c6` rerun passed the actual historical SQLite reopen regression on
+all three systems. Linux again passed 374 tests; macOS reached 363 passed and
+11 fixture-root failures, and Windows reached 342 passed and 14 failures (seven
+existing ignored cases on each platform). Three additional direct fixture paths
+are now canonicalized, including the child-process WAL fixture; the H7 reopen
+fixtures explicitly await pool close before opening their successor.
+
+Four Windows failures are a different boundary: writable recovery cannot establish
+complete immutable file identity, pointer publication receives an access-denied
+rename, and two downstream rejection expectations differ. They remain failed
+qualification. The checkpoint repair does not change the recovery implementation,
+relax those assertions or add ignored cases to obtain a green platform result.
+
 This closes local-development integrity defects only. A normal production
 compact publisher, complete current-input membership in the owner's transaction,
 immutable checkpoint body persistence/loading, selected CAS, final-use recovery,
