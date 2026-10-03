@@ -63,6 +63,13 @@ pub(crate) struct CanonicalFactSet {
     pub(crate) relations: Vec<CanonicalRelationFact>,
 }
 
+/// The cited revision and its facts are validated and committed together.
+pub(crate) struct CognitiveCorrectionMaterial<'a> {
+    pub(crate) source: &'a SourceDraft,
+    pub(crate) draft: &'a MemoryRevisionDraft,
+    pub(crate) facts: &'a KgFactSetDraft,
+}
+
 impl CognitiveStore {
     /// Atomically appends the cited source, creates the first memory revision,
     /// persists its immutable structured facts, and publishes the next complete
@@ -144,9 +151,11 @@ impl CognitiveStore {
                 access,
                 memory_id,
                 expected_revision,
-                source,
-                draft,
-                facts,
+                CognitiveCorrectionMaterial {
+                    source,
+                    draft,
+                    facts,
+                },
             )
             .await?;
         transaction.commit().await.map_err(unavailable)?;
@@ -159,10 +168,13 @@ impl CognitiveStore {
         access: &CognitiveAccess,
         memory_id: &StableMemoryId,
         expected_revision: u64,
-        source: &SourceDraft,
-        draft: &MemoryRevisionDraft,
-        facts: &KgFactSetDraft,
+        material: CognitiveCorrectionMaterial<'_>,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        let CognitiveCorrectionMaterial {
+            source,
+            draft,
+            facts,
+        } = material;
         validate_source_binding(source, &draft.scope, &draft.content)?;
         if draft.verification != MemoryVerification::Verified
             || draft.lifecycle != MemoryLifecycleState::Active
