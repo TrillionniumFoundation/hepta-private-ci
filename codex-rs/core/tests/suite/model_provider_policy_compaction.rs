@@ -286,7 +286,8 @@ async fn provider_policy_block_prevents_remote_v1_compaction_send() -> Result<()
     assert!(
         error
             .message
-            .contains("blocked by the test provider policy")
+            .contains("blocked by the test provider policy"),
+        "unexpected remote-v1 compaction rejection: {error:?}"
     );
     wait_for_event(&test.codex, |event| {
         matches!(event, EventMsg::TurnComplete(_))
