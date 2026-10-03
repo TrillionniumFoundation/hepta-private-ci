@@ -1,0 +1,77 @@
+name: cognitive-types-remediation-snapshot
+run-name: cognitive-types-remediation-snapshot @ ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+on:
+  pull_request:
+    branches: [main]
+    paths:
+      - "codex-rs/hepta-cognitive-types/**"
+      - "codex-rs/hepta-cognitive-read/**"
+      - "codex-rs/hepta-cognitive-store/**"
+      - "codex-rs/hepta-memory-retrieval/**"
+      - "codex-rs/hepta-compact-engine/**"
+      - "codex-rs/hepta-intelligence/**"
+      - "codex-rs/hepta-memory/**"
+      - "codex-rs/hepta-agentd/**"
+      - "codex-rs/hepta-objective/**"
+      - "docs/modules/cognitive.types/**"
+      - "qualification/cognitive-types-*/**"
+      - "scripts/hepta-hnmf.py"
+      - ".github/workflows/cognitive-types-remediation-snapshot.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: cognitive-types-remediation-snapshot-${{ github.event.pull_request.head.ref || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  snapshot:
+    runs-on: [self-hosted, linux, x64, rog]
+    timeout-minutes: 30
+    steps:
+      - name: Check out immutable exact-head candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ env.SOURCE_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+
+      - name: Verify exact source identity
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$RUNNER_NAME" = rog
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          git diff --exit-code
+          git diff --cached --exit-code
+
+      - name: Export immutable source snapshot
+        shell: bash
+        run: |
+          set -euo pipefail
+          evidence="$RUNNER_TEMP/cognitive-types-remediation"
+          mkdir -p "$evidence"
+          git rev-parse HEAD > "$evidence/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$evidence/source-tree.txt"
+          git archive --format=tar HEAD > "$evidence/source.tar"
+          git bundle create "$evidence/source.bundle" HEAD
+          git status --porcelain=v1 > "$evidence/worktree-status.txt"
+          test ! -s "$evidence/worktree-status.txt"
+          (
+            cd "$evidence"
+            sha256sum source.tar source.bundle source-sha.txt source-tree.txt worktree-status.txt > SHA256SUMS
+          )
+
+      - name: Upload immutable remediation evidence
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: cognitive-types-remediation-${{ env.SOURCE_SHA }}
+          path: ${{ runner.temp }}/cognitive-types-remediation
+          if-no-files-found: error
+          retention-days: 14

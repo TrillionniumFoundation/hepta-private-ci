@@ -142,8 +142,7 @@ impl CognitiveStore {
             .correct_with_kg_tx(
                 &mut transaction,
                 access,
-                memory_id,
-                expected_revision,
+                (memory_id, expected_revision),
                 source,
                 draft,
                 facts,
@@ -157,12 +156,12 @@ impl CognitiveStore {
         &self,
         transaction: &mut Transaction<'_, Sqlite>,
         access: &CognitiveAccess,
-        memory_id: &StableMemoryId,
-        expected_revision: u64,
+        memory_revision: (&StableMemoryId, u64),
         source: &SourceDraft,
         draft: &MemoryRevisionDraft,
         facts: &KgFactSetDraft,
     ) -> Result<CognitiveWriteReceipt, CognitiveStoreError> {
+        let (memory_id, expected_revision) = memory_revision;
         validate_source_binding(source, &draft.scope, &draft.content)?;
         if draft.verification != MemoryVerification::Verified
             || draft.lifecycle != MemoryLifecycleState::Active

@@ -5,9 +5,21 @@
 
 #![forbid(unsafe_code)]
 
+mod bounded;
+pub mod consumer;
+pub mod consumer_adapters;
+pub mod context;
+pub mod contract;
+pub mod handoff;
 pub mod hnmf;
 pub mod hnmf_learning;
+pub mod identity_policy;
 pub mod lane_c;
+pub mod prepared_consumer;
+pub mod shared_experience;
+pub mod shared_experience_context;
+mod shared_wire;
+pub mod transitions;
 pub mod wire;
 
 use std::collections::BTreeSet;
@@ -132,7 +144,7 @@ impl MemoryRecord {
             if citation.source_digest.is_zero() {
                 return Err(Error::EmptyDigest("citation"));
             }
-            if !seen.insert(citation.source_id.clone()) {
+            if !seen.insert(&citation.source_id) {
                 return Err(Error::DuplicateCitation(citation.source_id.to_string()));
             }
         }
@@ -145,8 +157,10 @@ impl MemoryRecord {
     /// The digest is not source authentication or freshness evidence.
     #[must_use]
     pub fn record_digest(&self) -> Digest32 {
-        let mut citations = self.citations.clone();
-        citations.sort();
+        // Borrow identities for this call only; preserve the full Citation order.
+        // Equal citations encode identical bytes, so stable sorting is unnecessary.
+        let mut citations = self.citations.iter().collect::<Vec<_>>();
+        citations.sort_unstable();
         let mut bytes = Vec::new();
         bytes.extend_from_slice(b"hepta.cognitive.record.v1");
         push_id(&mut bytes, &self.record_id);
@@ -200,7 +214,7 @@ fn validate_records(records: &[MemoryRecord]) -> Result<(), Error> {
     let mut identities = BTreeSet::new();
     for record in records {
         record.validate()?;
-        if !identities.insert((record.record_id.clone(), record.revision)) {
+        if !identities.insert((&record.record_id, record.revision)) {
             return Err(Error::DuplicateRecord(record.record_id.to_string()));
         }
     }
@@ -247,5 +261,22 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 mod tests;
 
 #[cfg(test)]
-#[path = "contract_tests.rs"]
 mod contract_tests;
+
+#[cfg(test)]
+mod consumer_tests;
+
+#[cfg(test)]
+mod hardening_tests;
+
+#[cfg(test)]
+mod shared_experience_tests;
+
+#[cfg(test)]
+mod shared_experience_context_tests;
+
+#[cfg(test)]
+mod record_digest_reuse_tests;
+
+#[cfg(test)]
+mod wire_budget_tests;

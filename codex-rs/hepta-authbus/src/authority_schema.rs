@@ -6,22 +6,15 @@
 
 use sqlx::SqlitePool;
 use sqlx::migrate::Migrator;
-use sqlx::sqlite::SqlitePoolOptions;
 
 use crate::AuthBusAuthorityError;
 use crate::authority_store::storage;
 
-#[allow(
-    clippy::disallowed_methods,
-    reason = "the transient in-memory schema oracle is non-authoritative and intentionally has no durable state path"
-)]
 pub(crate) async fn verify_schema(
     pool: &SqlitePool,
     migrator: &Migrator,
 ) -> Result<(), AuthBusAuthorityError> {
-    let reference = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
+    let reference = crate::sqlite_owner::open_in_memory_pool()
         .await
         .map_err(storage)?;
     let result = async {

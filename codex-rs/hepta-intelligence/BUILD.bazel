@@ -9,3 +9,13 @@ codex_rust_crate(
         "//codex-rs/hepta-prompt-optimizer": "//codex-rs/hepta-prompt-optimizer:hepta-prompt-optimizer-test-lib",
     },
 )
+
+# Exact source evidence read by cognitive.types traceability qualification.
+exports_files(
+    [
+        "src/canonical.rs",
+        "src/canonical_recall_policy.rs",
+        "src/canonical_tests.rs",
+    ],
+    visibility = ["//codex-rs/hepta-cognitive-types:__pkg__"],
+)

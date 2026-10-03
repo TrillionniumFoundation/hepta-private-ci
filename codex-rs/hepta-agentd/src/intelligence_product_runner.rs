@@ -69,14 +69,86 @@ impl AgentdIntelligenceProductRunnerV1 {
             .await
     }
 
-    /// Run the seven-owner preparation against one frozen Agentd composition
+    /// Run the seven-stage preparation against one frozen Agentd composition
     /// without retaining the run-coordinator mutex across owner execution.
+    /// The retrieval input is an eighth, read-only owner fence rather than a new
+    /// stage: an owner-created selected or abstaining result is checked before
+    /// worker admission and again before any result is published.
     pub async fn prepare_for_composition(
         &self,
         composition: &crate::RuntimeComposition,
         request: CanonicalIntelligenceRunRequestV1,
         mut inputs: AgentdIntelligenceOwnerInputsV1,
     ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        let recall = inputs.canonical_recall.take().ok_or_else(|| {
+            AgentdIntelligenceProductError::Canonical(CanonicalIntelligenceError::CanonicalRecall(
+                "normal product entry requires an explicit retrieval-owned canonical recall result"
+                    .into(),
+            ))
+        })?;
+        self.prepare_composition_inner(composition, request, inputs, recall)
+            .await
+    }
+
+    /// Convenience adapter to the normal runner, not a parallel execution path.
+    /// The accepted value already retains the exact `memory.retrieval` result
+    /// and owner binding; raw intelligence-control recall DTOs are not accepted.
+    pub async fn prepare_with_canonical_recall(
+        &self,
+        coordinator: &crate::AgentRunCoordinator,
+        request: CanonicalIntelligenceRunRequestV1,
+        mut inputs: AgentdIntelligenceOwnerInputsV1,
+        recall: AgentdCanonicalRecallInputV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        if inputs.canonical_recall.is_some() {
+            return Err(AgentdIntelligenceProductError::Canonical(
+                CanonicalIntelligenceError::CanonicalRecall(
+                    "conflicting canonical recall inputs".into(),
+                ),
+            ));
+        }
+        inputs.canonical_recall = Some(recall);
+        self.prepare(coordinator, request, inputs).await
+    }
+
+    async fn prepare_composition_inner(
+        &self,
+        composition: &crate::RuntimeComposition,
+        request: CanonicalIntelligenceRunRequestV1,
+        mut inputs: AgentdIntelligenceOwnerInputsV1,
+        recall: AgentdCanonicalRecallInputV1,
+    ) -> Result<AgentdIntelligenceProductOutcomeV1, AgentdIntelligenceProductError> {
+        recall
+            .validate()
+            .map_err(AgentdIntelligenceProductError::Canonical)?;
+        if recall.run_id != request.run_id {
+            return Err(AgentdIntelligenceProductError::Canonical(
+                CanonicalIntelligenceError::CanonicalRecallRunMismatch,
+            ));
+        }
+        let snapshot = request.snapshot.clone();
+        let mut retrieval_oracle = FileBackedFreshnessOracleV1::new(
+            self.authority_file.clone(),
+            self.authority_verifier.clone(),
+        );
+        validate_retrieval_owner_current(&snapshot, &recall, &mut retrieval_oracle)
+            .map_err(AgentdIntelligenceProductError::Canonical)?;
+        let recall_fence = recall.clone();
+        let (selected_recall, recall_policy_digest) = if recall.packet.abstain.is_some() {
+            let reason_digest = Digest32::of_parts(&[
+                b"hepta.agentd.canonical-recall-explicit-abstention.v1\0",
+                recall.consumer_binding.binding_sha256.digest().as_array(),
+            ]);
+            let policy_digest =
+                codex_hepta_intelligence::canonical_recall_absence_policy_digest_v1(reason_digest)
+                    .map_err(AgentdIntelligenceProductError::Canonical)?;
+            (None, policy_digest)
+        } else {
+            let policy_digest =
+                codex_hepta_intelligence::canonical_recall_binding_policy_digest_v1(&recall)
+                    .map_err(AgentdIntelligenceProductError::Canonical)?;
+            (Some(recall), policy_digest)
+        };
         let candidate_ids = request
             .legal_candidates
             .candidates
@@ -102,7 +174,6 @@ impl AgentdIntelligenceProductRunnerV1 {
         fence_bytes.extend_from_slice(&generation.to_be_bytes());
         fence_bytes.extend_from_slice(&generation.to_be_bytes());
         let fence_digest = Digest32::of_bytes(&fence_bytes).to_string();
-        let snapshot = request.snapshot.clone();
         let timeout_micros = request.budget.total_micros;
         let started_ms = wall_clock_ms()?;
         let timeout_ms = timeout_micros.saturating_add(999) / 1_000;
@@ -138,7 +209,15 @@ impl AgentdIntelligenceProductRunnerV1 {
         let mut worker = self.spawn_owner_work(move || {
             let mut ports = AgentdOwnerPortsV1::new(inputs, evaluation_session);
             let mut oracle = FileBackedFreshnessOracleV1::new(authority_file, authority_verifier);
-            prepare_intelligence_run(request, &mut ports, &mut oracle)
+            match selected_recall {
+                Some(recall) => prepare_intelligence_run_with_canonical_recall(
+                    request,
+                    recall.into_intelligence_input(),
+                    &mut ports,
+                    &mut oracle,
+                ),
+                None => prepare_intelligence_run(request, &mut ports, &mut oracle),
+            }
         })?;
         let outcome = timeout(Duration::from_micros(timeout_micros), &mut worker)
             .await
@@ -149,8 +228,20 @@ impl AgentdIntelligenceProductRunnerV1 {
             .map_err(|_| AgentdIntelligenceProductError::WorkerCrashed)?
             .map_err(AgentdIntelligenceProductError::Canonical)?;
 
+        let mut retrieval_oracle = FileBackedFreshnessOracleV1::new(
+            self.authority_file.clone(),
+            self.authority_verifier.clone(),
+        );
+        validate_retrieval_owner_current(&snapshot, &recall_fence, &mut retrieval_oracle)
+            .map_err(AgentdIntelligenceProductError::Canonical)?;
+
+        let outcome =
+            codex_hepta_intelligence::bind_recall_policy_outcome_v1(outcome, recall_policy_digest)
+                .map_err(AgentdIntelligenceProductError::Canonical)?;
+
         match outcome {
             CanonicalRunOutcomeV1::Ready(envelope) => {
+                let envelope = *envelope;
                 let mut oracle = FileBackedFreshnessOracleV1::new(
                     self.authority_file.clone(),
                     self.authority_verifier.clone(),
@@ -207,10 +298,10 @@ impl AgentdIntelligenceProductRunnerV1 {
         }
     }
 
-    /// Execute the canonical seven-owner composition and immediately admit the
-    /// exact resulting envelope into the Agentd-owned run coordinator. This
-    /// prevents product callers from treating a prepared envelope as a valid
-    /// physical-turn binding before Agentd has frozen its run/context identity.
+    /// Execute the canonical owner composition and immediately admit the exact
+    /// resulting envelope into the Agentd-owned run coordinator. This prevents
+    /// product callers from treating a prepared envelope as a valid physical
+    /// turn binding before Agentd has frozen its run/context identity.
     pub async fn prepare_and_admit(
         &self,
         coordinator: &mut crate::AgentRunCoordinator,

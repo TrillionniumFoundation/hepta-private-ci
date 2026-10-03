@@ -503,7 +503,7 @@
     "release": false
   },
   "sharedExperienceDesign": {
-    "status": "planned_extension_not_original_reference_closure",
+    "status": "v2_contract_source_and_local_owner_bridge_implemented_not_activated",
     "architectureReference": "docs/architecture/ARCHITECTURE.json#sharedExperienceArchitecture",
     "definition": "docs/hnmf/TECHNICAL.md",
     "migration": "docs/hnmf/MIGRATION.md",
@@ -531,6 +531,18 @@
       "SM-08",
       "SM-09",
       "SM-10"
-    ]
+    ],
+    "canonicalTypeSource": "codex-rs/hepta-cognitive-types/src/shared_experience.rs",
+    "canonicalContracts": [
+      "SharedExperiencePublicationV2",
+      "SharedExperienceSnapshotV2",
+      "SharedExperienceUseReceiptV2",
+      "SharedExperienceRevocationReceiptV2"
+    ],
+    "localOwnerBridge": "codex-rs/hepta-memory/src/shared_experience.rs",
+    "productExecutionProved": false,
+    "crossHostTransportProved": false,
+    "longitudinalTransferProved": false,
+    "fullInfluenceRemovalProved": false
   }
 }
