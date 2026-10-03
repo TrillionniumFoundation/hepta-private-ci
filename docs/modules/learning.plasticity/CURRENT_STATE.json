@@ -127,7 +127,7 @@
       "state": "named_agentd_runtime_bootstrap_creates_long_lived_owner_and_state_held_producer_generation_fenced_bounded_queue_restart_reconcile_tested_not_target_host_qualified",
       "sourcePath": "codex-rs/hepta-agentd/src/plasticity_runtime.rs",
       "tests": [
-        "codex-rs/hepta-agentd/src/plasticity_runtime.rs::tests::runtime_queue_capacity_is_bounded",
+        "codex-rs/hepta-agentd/src/plasticity_runtime_queue_tests.rs::runtime_queue_capacity_is_bounded",
         "codex-rs/hepta-agentd/src/plasticity_runtime_lifetime_tests.rs::agentd_lifetime_owner_submits_restarts_and_reconciles_idempotently"
       ]
     },
