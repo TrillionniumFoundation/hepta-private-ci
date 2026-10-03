@@ -229,7 +229,7 @@ pub fn publish_parameter_pre_registered_artifacts_v1(
         .to_string(),
         evaluation_digest: observed.authentication_digest().to_string(),
         evaluation_sources: config.evaluation.clone(),
-        baseline_registration: config.baseline_registration.clone(),
+        baseline_registration: config.baseline_registration,
         pre_e1_registry_head: observed.baseline_registry_head().to_string(),
         pre_e1_publication_operation: observed.baseline_publication_operation().to_string(),
         current_head: current.receipt().head_digest.to_string(),

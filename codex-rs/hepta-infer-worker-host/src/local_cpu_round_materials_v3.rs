@@ -88,9 +88,14 @@ impl CpuNeuronRoundMaterialsV3 {
         if candidates.len() != self.candidates.len()
             || rollback.purpose() != ParameterPreRegistrationPurposeV1::ExactRollback
             || !same_round(rollback)
-            || !self.candidates.iter().any(|candidate| &candidate.candidate_id == rollback.candidate_id())
+            || !self
+                .candidates
+                .iter()
+                .any(|candidate| &candidate.candidate_id == rollback.candidate_id())
         {
-            return Err(error("complete measured candidate/rollback frontier changed"));
+            return Err(error(
+                "complete measured candidate/rollback frontier changed",
+            ));
         }
         let replace = |prospective: &CpuNeuronGenerationPlanV1, evaluation: &codex_hepta_agent_components::intelligence_eval::VerifiedParameterPreRegistrationEvaluationV1| -> Result<CpuNeuronGenerationPlanV1, AgentdError> {
             evaluation.revalidate_after_registration().map_err(material_error)?;
@@ -108,8 +113,12 @@ impl CpuNeuronRoundMaterialsV3 {
             Ok(actual.clone())
         };
         for candidate in &mut self.candidates {
-            let mut matching = candidates.iter().filter(|evaluation| evaluation.candidate_id() == &candidate.candidate_id);
-            let evaluation = matching.next().ok_or_else(|| error("whole original measured candidate absent"))?;
+            let mut matching = candidates
+                .iter()
+                .filter(|evaluation| evaluation.candidate_id() == &candidate.candidate_id);
+            let evaluation = matching
+                .next()
+                .ok_or_else(|| error("whole original measured candidate absent"))?;
             if matching.next().is_some()
                 || evaluation.purpose() != ParameterPreRegistrationPurposeV1::Candidate
                 || !same_round(evaluation)
@@ -316,6 +325,10 @@ fn generation_plan(
     validate_neuron_generation_material_v2(&plan).map_err(material_error)?;
     Ok(plan)
 }
+
+#[cfg(feature = "fixed-initial-cpu-host")]
+#[path = "local_cpu_round_final_admission_v3.rs"]
+mod final_admission;
 
 #[cfg(test)]
 #[path = "local_cpu_round_materials_tests_v3.rs"]

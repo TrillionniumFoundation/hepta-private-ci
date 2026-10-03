@@ -203,3 +203,7 @@ fn foreign_round_scope_quota_or_nonfresh_input_cannot_derive_a_recipe() -> TestR
     assert_eq!(std::fs::read_dir(directory.path())?.count(), 0);
     Ok(())
 }
+
+#[cfg(feature = "fixed-initial-cpu-host")]
+#[path = "local_cpu_round_final_admission_tests_v3.rs"]
+mod final_admission_tests;
