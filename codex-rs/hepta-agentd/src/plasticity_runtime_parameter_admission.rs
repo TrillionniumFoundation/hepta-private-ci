@@ -33,6 +33,25 @@ impl PlasticityRuntimeOwnerV1 {
         ready: bool,
         input: &AgentdPlasticityAdmissionInputV1,
     ) -> Result<PlasticityAdmissionEvidenceV1, PlasticityRuntimeCallErrorV1> {
+        self.resolve_parameter_admission_with_context(
+            state,
+            cancellation,
+            generation,
+            ready,
+            input,
+            None,
+        )
+    }
+
+    pub(super) fn resolve_parameter_admission_with_context(
+        &mut self,
+        state: &Arc<AgentdState>,
+        cancellation: &CancellationToken,
+        generation: u64,
+        ready: bool,
+        input: &AgentdPlasticityAdmissionInputV1,
+        context: Option<&super::input_context::PlasticityInputContextV2>,
+    ) -> Result<PlasticityAdmissionEvidenceV1, PlasticityRuntimeCallErrorV1> {
         if !ready || cancellation.is_cancelled() {
             return Err(PlasticityRuntimeCallErrorV1::Unavailable);
         }
@@ -40,14 +59,28 @@ impl PlasticityRuntimeOwnerV1 {
             input.generator_profile.clone(), &input.generated).map_err(|error|
                 PlasticityRuntimeCallErrorV1::Parameter(AgentdPlasticityHostErrorV1::Product(
                     codex_hepta_agent_components::intelligence::ParameterPlasticityProductErrorV1::Generator(error))))?;
+        let (artifacts, resolver, policy, current_artifacts) = match context {
+            Some(context) => (
+                &context.artifacts,
+                context.resolver.as_ref(),
+                &context.policy,
+                Some(&context.current_artifacts),
+            ),
+            None => (
+                &self.artifacts,
+                self.owner_evidence_resolver.as_ref(),
+                &self.owner_evidence_policy,
+                self.current_artifacts.as_ref(),
+            ),
+        };
         let mut admission = FinalPlasticityAdmissionV1 {
             state,
             cancellation,
             generation,
             guard: None,
             unavailable: false,
-            current_artifacts: self.current_artifacts.as_ref(),
-            artifacts: &self.artifacts,
+            current_artifacts,
+            artifacts,
             baseline: input.baseline_id.clone(),
         };
         let now = admission
@@ -59,10 +92,10 @@ impl PlasticityRuntimeOwnerV1 {
             .map_err(|_| PlasticityRuntimeCallErrorV1::Unavailable)?;
         let result = crate::resolve_agentd_plasticity_admission_v1(
             input,
-            &self.artifacts,
+            artifacts,
             &self.ledger,
-            self.owner_evidence_resolver.as_ref(),
-            &self.owner_evidence_policy,
+            resolver,
+            policy,
             now,
         )
         .map_err(PlasticityRuntimeCallErrorV1::Parameter)?;
@@ -78,10 +111,10 @@ impl PlasticityRuntimeOwnerV1 {
             .map_err(|_| PlasticityRuntimeCallErrorV1::Unavailable)?;
         let final_result = crate::resolve_agentd_plasticity_admission_v1(
             input,
-            &self.artifacts,
+            artifacts,
             &self.ledger,
-            self.owner_evidence_resolver.as_ref(),
-            &self.owner_evidence_policy,
+            resolver,
+            policy,
             after,
         )
         .map_err(PlasticityRuntimeCallErrorV1::Parameter)?;

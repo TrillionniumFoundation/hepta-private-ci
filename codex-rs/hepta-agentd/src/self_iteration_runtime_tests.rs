@@ -125,6 +125,10 @@ async fn cancelled_caller_leaves_actual_model_task_to_persist_terminal_and_never
             let command = tokio::select! { _=owner_stop.cancelled()=>break, command=receiver.recv()=>command.expect("retained caller") };
             let mut rounds = journal.rounds.clone().unwrap_or_default();
             match command {
+                Command::PreparePlasticityInputFromContext(_, _, _, response) => {
+                    let _ =
+                        response.send(Err(invalid("fixture does not prepare protected context")));
+                }
                 Command::Reserve(goal, canonical, envelope, response) => {
                     let permit = rounds
                         .reserve(goal, &canonical, &envelope, cycle::now_ms().expect("clock"))
@@ -150,7 +154,7 @@ async fn cancelled_caller_leaves_actual_model_task_to_persist_terminal_and_never
                 Command::InspectRound(goal, policy, response) => {
                     let _ = response.send(rounds.status(&goal, policy));
                 }
-                Command::RefreshPlasticityContext(_, _, _, _, response) => {
+                Command::RefreshPlasticityContext(_, _, _, _, _, response) => {
                     let _ = response.send(Err(invalid("fixture does not refresh")));
                 }
                 Command::InspectCurrentRound(response) => {

@@ -33,6 +33,89 @@ fn context(
 }
 
 #[tokio::test]
+async fn whole_context_refresh_crossing_round_deadline_during_current_inspection_preserves_owner() {
+    let clock = Arc::new(std::sync::atomic::AtomicU64::new(50));
+    let sample = Arc::clone(&clock);
+    let mut fixture = clock_fixture(|| Ok(50));
+    fixture.owner.clock = Box::new(move || Ok(sample.load(std::sync::atomic::Ordering::SeqCst)));
+    let directory = tempfile::tempdir().expect("new original facts");
+    let sources = build_owner_sources(
+        directory.path(),
+        &fixture.owner.ledger,
+        digest("plasticity-clock-objective"),
+        digest("new-current-baseline"),
+    );
+    let mut packet = context(&fixture, &sources, digest("whole protected context"));
+    let current_registry = sources.artifacts;
+    packet.current_artifacts =
+        crate::plasticity_runtime::current_artifacts::fixture_current_reader(move |_| {
+            let view = crate::plasticity_runtime::current_artifacts::fixture_verified_registry(
+                &current_registry,
+            );
+            clock.store(100, std::sync::atomic::Ordering::SeqCst);
+            view
+        });
+    let before = persistent_bytes(&fixture.files);
+    let old_head = fixture.owner.artifacts.head_digest();
+    let generation = fixture
+        .state
+        .current_generation()
+        .expect("same original runtime");
+    assert!(matches!(
+        fixture.owner.admit_input_context(
+            &fixture.state,
+            &CancellationToken::new(),
+            generation,
+            packet,
+        ),
+        Err(PlasticityRuntimeCallErrorV1::Unavailable)
+    ));
+    assert_eq!(fixture.owner.artifacts.head_digest(), old_head);
+    assert!(fixture.owner.input_context.is_none());
+    assert_eq!(persistent_bytes(&fixture.files), before);
+}
+
+#[test]
+fn temporary_parameter_preparation_rejects_original_deadline_and_retained_clock_regression() {
+    for expired in [false, true] {
+        let mut fixture = clock_fixture(|| Ok(100));
+        if !expired {
+            fixture.owner.clock = Box::new(|| Ok(49));
+            fixture.owner.last_observed_unix_ms = Some(50);
+        }
+        let directory = tempfile::tempdir().expect("original owner inputs");
+        let sources = build_owner_sources(
+            directory.path(),
+            &fixture.owner.ledger,
+            digest("plasticity-clock-objective"),
+            digest("actual readonly baseline"),
+        );
+        let packet = context(&fixture, &sources, digest("whole protected context"));
+        let before = persistent_bytes(&fixture.files);
+        let head = fixture.owner.artifacts.head_digest();
+        let result = fixture.owner.prepare_with_context(
+            &fixture.state,
+            &CancellationToken::new(),
+            fixture
+                .state
+                .current_generation()
+                .expect("original runtime"),
+            PathBuf::from("/fixture/search-not-opened-after-clock-rejection"),
+            digest("search"),
+            packet,
+        );
+        assert!(matches!(
+            (&result, expired),
+            (Err(PlasticityRuntimeCallErrorV1::Unavailable), true)
+                | (Err(PlasticityRuntimeCallErrorV1::ClockUnavailable), false)
+        ));
+        assert!(fixture.owner.input_context.is_none());
+        assert_eq!(fixture.owner.artifacts.head_digest(), head);
+        assert_eq!(persistent_bytes(&fixture.files), before);
+    }
+}
+
+#[tokio::test]
 async fn whole_current_refresh_accepts_original_no_change_request_and_old_inputs_cannot_append() {
     let mut fixture = clock_fixture(|| Ok(50));
     let directory = tempfile::tempdir().expect("new original fact fixture");

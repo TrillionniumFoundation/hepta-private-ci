@@ -68,6 +68,17 @@ async fn actual_non_root_peer_cannot_resolve_seven_owner_facts_or_sample_owner_c
         super::input_context_tests::fixture_round(),std::path::PathBuf::from("/missing/root-search"),
         digest("protected search pin")).await,
         Err(AgentdError::Protocol(message)) if message.contains("root_peer_required")));
+    assert!(matches!(client.refresh_parameter_input_context_v2(
+        super::input_context_tests::fixture_round(),
+        std::path::PathBuf::from("/missing/root-context"),
+        digest("protected context pin")).await,
+        Err(AgentdError::Protocol(message)) if message.contains("root_peer_required")));
+    assert_eq!(reads.load(std::sync::atomic::Ordering::SeqCst), 0);
+    assert!(matches!(client.prepare_parameter_input_from_context_v2(
+        super::input_context_tests::fixture_round(),
+        std::path::PathBuf::from("/missing/root-context"), digest("protected context pin"),
+        std::path::PathBuf::from("/missing/root-search"), digest("protected search pin")
+    ).await, Err(AgentdError::Protocol(message)) if message.contains("root_peer_required")));
     assert_eq!(reads.load(std::sync::atomic::Ordering::SeqCst), 0);
     client
         .health()
@@ -203,3 +214,6 @@ fn profile_query_rejects_partial_uppercase_and_over_frame_material() {
 }
 
 include!("parameter_preparation_client_tests.rs");
+
+#[path = "parameter_context_refresh_client_tests.rs"]
+mod refresh_client_tests;

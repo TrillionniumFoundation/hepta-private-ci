@@ -118,6 +118,8 @@ async fn serve_connection(
         &request.method,
         crate::AgentdMethod::NativeModelReceipt { .. }
             | crate::AgentdMethod::ResolveParameterAdmissionV1 { .. }
+            | crate::AgentdMethod::RefreshParameterInputContextV2 { .. }
+            | crate::AgentdMethod::PrepareParameterInputFromContextV2 { .. }
             | crate::AgentdMethod::PrepareParameterInputV1 { .. }
             | crate::AgentdMethod::PreparedGenerationV2 { .. }
             | crate::AgentdMethod::SelfIterationRoundStatus { .. }
@@ -172,6 +174,8 @@ async fn serve_connection(
             } else if matches!(
                 &request.method,
                 crate::AgentdMethod::ResolveParameterAdmissionV1 { .. }
+                    | crate::AgentdMethod::RefreshParameterInputContextV2 { .. }
+                    | crate::AgentdMethod::PrepareParameterInputFromContextV2 { .. }
                     | crate::AgentdMethod::PrepareParameterInputV1 { .. }
             ) {
                 "parameter admission requires the actual Root kernel peer"

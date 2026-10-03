@@ -30,7 +30,19 @@ impl PlasticityRuntimeHandleV1 {
         pin: Digest32,
     ) -> Result<(), PlasticityRuntimeCallErrorV1> {
         runtime
-            .refresh_plasticity_input_context_v2(self.clone(), path, pin)
+            .refresh_plasticity_input_context_v2(self.clone(), None, path, pin)
+            .await
+            .map_err(|_| PlasticityRuntimeCallErrorV1::Unavailable)
+    }
+    pub(crate) async fn refresh_input_context_for_round_v2(
+        &self,
+        runtime: &crate::AgentdSelfIterationHandleV1,
+        round: crate::AgentdSelfIterationRoundV1,
+        path: PathBuf,
+        pin: Digest32,
+    ) -> Result<(), PlasticityRuntimeCallErrorV1> {
+        runtime
+            .refresh_plasticity_input_context_v2(self.clone(), Some(round), path, pin)
             .await
             .map_err(|_| PlasticityRuntimeCallErrorV1::Unavailable)
     }
@@ -157,6 +169,13 @@ impl PlasticityRuntimeOwnerV1 {
             .current_artifacts
             .verify(&context.artifacts, &context.baseline, now)
             .map_err(|_| PlasticityRuntimeCallErrorV1::Unavailable)?;
+        // CURRENT inspection may perform protected file I/O. Close the same
+        // Round and verified actor windows using a fresh original clock sample.
+        let now = observe_plasticity_clock_v1(self.clock.as_mut(), &mut self.last_observed_unix_ms)
+            .map_err(|_| PlasticityRuntimeCallErrorV1::ClockUnavailable)?;
+        if now < context.round.admitted_at_ms() || now >= context.round.deadline_ms() {
+            return Err(PlasticityRuntimeCallErrorV1::Unavailable);
+        }
         window
             .revalidate_at(now)
             .map_err(|_| PlasticityRuntimeCallErrorV1::Unavailable)?;

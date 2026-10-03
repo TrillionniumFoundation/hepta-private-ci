@@ -2,9 +2,18 @@
 use super::*;
 
 pub(super) enum Command {
+    PreparePlasticityInputFromContext(
+        crate::PlasticityRuntimeHandleV1,
+        AgentdSelfIterationHandleV1,
+        crate::plasticity_runtime::parameter_preparation::ProtectedParameterPreparationV2,
+        oneshot::Sender<
+            Result<crate::plasticity_runtime::parameter_preparation::Prepared, AgentdError>,
+        >,
+    ),
     RefreshPlasticityContext(
         crate::PlasticityRuntimeHandleV1,
         AgentdSelfIterationHandleV1,
+        Option<AgentdSelfIterationRoundV1>,
         PathBuf,
         Digest32,
         oneshot::Sender<Result<(), AgentdError>>,
@@ -76,7 +85,10 @@ impl Command {
             | Self::Observe(_, _, _, response) => {
                 let _ = response.send(Err(error));
             }
-            Self::RefreshPlasticityContext(_, _, _, _, response) => {
+            Self::PreparePlasticityInputFromContext(_, _, _, response) => {
+                let _ = response.send(Err(error));
+            }
+            Self::RefreshPlasticityContext(_, _, _, _, _, response) => {
                 let _ = response.send(Err(error));
             }
             Self::InspectRound(_, _, response) => {

@@ -680,6 +680,18 @@ pub struct ParameterAdmissionQueryV1 {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
+    PrepareParameterInputFromContextV2 {
+        round_hex: String,
+        context_source: String,
+        context_digest: String,
+        search_source: String,
+        search_digest: String,
+    },
+    RefreshParameterInputContextV2 {
+        round_hex: String,
+        context_source: String,
+        context_digest: String,
+    },
     PrepareParameterInputV1 {
         round_hex: String,
         search_source: String,
@@ -914,9 +926,32 @@ pub struct ParameterPreparationBaselineV1 {
     pub context_digest: String,
 }
 
+/// V2 facts retain the complete original V1 metadata without changing V1 JSON.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ParameterPreparationBaselineV2 {
+    pub baseline: ParameterPreparationBaselineV1,
+    pub proposal_registry_predecessor: String,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    PreparedParameterInputFromContextV2 {
+        round_hex: String,
+        context_source: String,
+        context_digest: String,
+        search_source: String,
+        search_digest: String,
+        query: ParameterAdmissionQueryV1,
+        admission_hex: String,
+        baseline: ParameterPreparationBaselineV2,
+    },
+    ParameterInputContextRefreshedV2 {
+        round_hex: String,
+        context_source: String,
+        context_digest: String,
+    },
     PreparedParameterInputV1 {
         round_hex: String,
         search_source: String,

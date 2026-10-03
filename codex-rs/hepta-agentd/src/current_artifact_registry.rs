@@ -57,13 +57,13 @@ impl CurrentArtifactRegistrySourceV1 {
                 root,
                 trust,
                 withdrawals,
-            } => ReadOnlyArtifactCurrentOwnerV1::open(
+            } => ReadOnlyArtifactCurrentOwnerV1::open_with_current_registry_view(
                 root,
                 trust.as_ref().clone(),
                 withdrawals.clone(),
                 now,
             )
-            .and_then(|owner| owner.current_registry_view(now))
+            .map(|(_owner, current)| current)
             .map_err(|error| error.to_string())?,
             #[cfg(test)]
             Source::Fixture(reader) => reader(now)?,

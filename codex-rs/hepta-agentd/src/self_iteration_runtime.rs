@@ -238,7 +238,7 @@ impl SelfIterationRuntime {
                 let mut owner = owner
                     .lock()
                     .map_err(|_| invalid("self-iteration owner poisoned"))?;
-                if !matches!(
+                let context_command = matches!(
                     &command,
                     Some(
                         Command::Complete(..)
@@ -247,25 +247,35 @@ impl SelfIterationRuntime {
                             | Command::InspectCurrentRound(..)
                             | Command::RejectProposal(..)
                             | Command::CompletePreparation(..)
+                            | Command::PreparePlasticityInputFromContext(..)
+                            | Command::RefreshPlasticityContext(..)
                     )
-                ) && let Err(error) = owner.journal.observe_clock(now, command.is_some())
+                );
+                if context_command && let Err(error) = owner.journal.check_clock(now) {
+                    if let Some(command) = command {
+                        command.reject(error);
+                    }
+                    return Ok(());
+                }
+                if !context_command
+                    && !matches!(
+                        &command,
+                        Some(
+                            Command::Complete(..)
+                                | Command::CompleteFailure(..)
+                                | Command::InspectRound(..)
+                                | Command::InspectCurrentRound(..)
+                                | Command::RejectProposal(..)
+                        )
+                    )
+                    && let Err(error) = owner.journal.observe_clock(now, command.is_some())
                 {
                     if let Some(command) = command {
                         command.reject(error);
                     }
                     return Ok(());
                 }
-                let expiry = if matches!(
-                    &command,
-                    Some(
-                        Command::Complete(..)
-                            | Command::CompleteFailure(..)
-                            | Command::InspectRound(..)
-                            | Command::InspectCurrentRound(..)
-                            | Command::RejectProposal(..)
-                            | Command::CompletePreparation(..)
-                    )
-                ) {
+                let expiry = if context_command {
                     Ok(())
                 } else {
                     owner.expire(now)
@@ -282,9 +292,32 @@ impl SelfIterationRuntime {
                 }
                 if let Some(command) = command {
                     match command {
-                        Command::RefreshPlasticityContext(handle, runtime, path, pin, response) => {
-                            let _ = response
-                                .send(owner.refresh_plasticity_context(handle, runtime, path, pin));
+                        Command::PreparePlasticityInputFromContext(
+                            handle,
+                            runtime,
+                            request,
+                            response,
+                        ) => {
+                            let _ =
+                                response.send(owner.prepare_plasticity_input_from_context(
+                                    handle, runtime, request,
+                                ));
+                        }
+                        Command::RefreshPlasticityContext(
+                            handle,
+                            runtime,
+                            expected_round,
+                            path,
+                            pin,
+                            response,
+                        ) => {
+                            let _ = response.send(owner.refresh_plasticity_context(
+                                handle,
+                                runtime,
+                                expected_round,
+                                path,
+                                pin,
+                            ));
                         }
                         Command::InspectCurrentRound(response) => {
                             let _ = response.send(owner.inspect_current_round());

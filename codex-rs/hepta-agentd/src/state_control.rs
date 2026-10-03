@@ -95,6 +95,34 @@ impl AgentdState {
             crate::AgentdMethod::SelfIterationCurrentRound => {
                 self.self_iteration_current_round().await?
             }
+            crate::AgentdMethod::PrepareParameterInputFromContextV2 {
+                round_hex,
+                context_source,
+                context_digest,
+                search_source,
+                search_digest,
+            } => {
+                self.prepare_parameter_input_from_context_payload(
+                    round_hex,
+                    context_source,
+                    context_digest,
+                    search_source,
+                    search_digest,
+                )
+                .await?
+            }
+            crate::AgentdMethod::RefreshParameterInputContextV2 {
+                round_hex,
+                context_source,
+                context_digest,
+            } => {
+                self.refresh_parameter_input_context_payload(
+                    round_hex,
+                    context_source,
+                    context_digest,
+                )
+                .await?
+            }
             crate::AgentdMethod::PrepareParameterInputV1 {
                 round_hex,
                 search_source,
