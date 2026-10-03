@@ -22,6 +22,8 @@ use tokio::sync::OnceCell;
 mod configuration;
 #[path = "chat_root_current.rs"]
 mod current;
+#[path = "chat_root_recovery.rs"]
+mod recovery;
 #[path = "chat_root_server.rs"]
 mod server;
 use configuration::Configuration;
@@ -108,6 +110,14 @@ impl RootChatHost {
         let mut outcome_unknown = false;
         let result = async {
             match request {
+                NativeChatRootRequest::Recover {
+                    original_binding,
+                    request,
+                    ..
+                } => {
+                    self.recover(scope, &current, binding.clone(), original_binding, request)
+                        .await
+                }
                 NativeChatRootRequest::Attach { session_id, .. } => {
                     // Project admission uses its fixed original idempotency key.
                     outcome_unknown = scope.managed_project.is_some();

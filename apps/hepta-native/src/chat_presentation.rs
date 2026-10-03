@@ -61,6 +61,11 @@ impl DesktopChat {
             match &pending.request {
                 NativeChatRootRequest::Attach { session_id, .. } => session_id.clone(),
                 NativeChatRootRequest::Dispatch { request, .. } => request.session_id.clone(),
+                NativeChatRootRequest::Recover { .. } => {
+                    return Err(ShellError::Security(
+                        "recovery queries cannot be pending mutations".into(),
+                    ));
+                }
             }
         } else {
             format!("{}:{agent}", session.session_id)
@@ -183,40 +188,57 @@ impl DesktopChat {
                 "attachment reference requires original owner inspection".into(),
             ));
         };
-        let ChatCommand::Send {
-            thread_id,
-            operation_id,
-            text,
-        } = request.command
-        else {
+        let ChatCommand::Send { thread_id, .. } = &request.command else {
             return Err(ShellError::State(
-                "this action has no receipt query; refresh conversations without repeating it"
-                    .into(),
+                "this action has no durable identity; its outcome remains unknown".into(),
             ));
         };
-        let connection = self
-            .connection
-            .as_ref()
-            .filter(|value| value.binding == binding && value.session_id == request.session_id)
-            .ok_or_else(|| {
-                ShellError::State(
-                    "attach the same original Agent before querying its message".into(),
-                )
-            })?;
-        let query = NativeChatRootRequest::Dispatch {
-            binding,
-            request: ChatRequest {
-                session_id: request.session_id,
-                connection_generation: connection.generation,
-                command: ChatCommand::Reconcile {
-                    thread_id,
-                    operation_id,
-                    text,
-                },
-            },
+        let thread_id = thread_id.clone();
+        let agent_id = binding.agent_id.clone();
+        if runtime
+            .session()
+            .is_none_or(|session| session.endpoint_id != reference.endpoint_id)
+        {
+            return Err(ShellError::Security(
+                "original chat endpoint changed".into(),
+            ));
+        }
+        let (view, _) = runtime.refresh_runtime_view()?;
+        let current = runtime.chat_binding(&binding.agent_id, view.revision)?;
+        let query = NativeChatRootRequest::Recover {
+            binding: current,
+            original_binding: binding,
+            request,
         };
-        self.accept(runtime.chat_exchange(&query)?, true)
+        let response = runtime.chat_exchange(&query)?;
+        let NativeChatRootResponse::Recovered { observation, .. } = response else {
+            return Err(ShellError::Backend(
+                "original message observation is unavailable; its reference is retained".into(),
+            ));
+        };
+        let state = match observation {
+            crate::chat_protocol::root::MessageObservation::Persisted { turn_id } => {
+                SubmissionState::Persisted { turn_id }
+            }
+            crate::chat_protocol::root::MessageObservation::Cancelled => SubmissionState::Cancelled,
+            crate::chat_protocol::root::MessageObservation::Pending { .. }
+            | crate::chat_protocol::root::MessageObservation::Missing
+            | crate::chat_protocol::root::MessageObservation::Unknown => {
+                return Err(ShellError::State(
+                    "original message has no settled receipt yet; inspect again without resending"
+                        .into(),
+                ));
+            }
+        };
+        self.presentation.agent_id = Some(agent_id);
+        self.presentation.selected_thread = Some(thread_id.clone());
+        self.presentation.last_submission = Some(state);
+        self.references.clear_observed()?;
+        // A receipt observation never transfers the old mutation connection.
+        self.connection = None;
+        Ok(())
     }
+
     fn execute(
         &mut self,
         runtime: &mut NativeShellRuntime,
@@ -332,6 +354,7 @@ impl DesktopChat {
 pub(crate) fn operation(request: &NativeChatRootRequest) -> Purpose {
     match request {
         NativeChatRootRequest::Attach { .. } => Purpose::Attach,
+        NativeChatRootRequest::Recover { .. } => Purpose::Reconcile,
         NativeChatRootRequest::Dispatch { request, .. } => match request.command {
             ChatCommand::List { .. } => Purpose::List,
             ChatCommand::Create => Purpose::Create,

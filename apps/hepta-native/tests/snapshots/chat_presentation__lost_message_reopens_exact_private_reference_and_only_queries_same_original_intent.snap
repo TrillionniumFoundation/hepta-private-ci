@@ -8,7 +8,9 @@ ChatPresentation {
     ),
     conversations: [],
     messages: [],
-    selected_thread: None,
+    selected_thread: Some(
+        "thread-1",
+    ),
     active_turn: None,
     previous_action_pending: false,
     approval_required: false,

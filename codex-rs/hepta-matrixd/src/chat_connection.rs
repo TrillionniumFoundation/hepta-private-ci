@@ -21,13 +21,15 @@ impl ManagedChatProject {
 }
 enum ProjectSelection {
     Existing(String),
+    ObservedExisting(String),
     Managed(ManagedChatProject),
+    ObservedManaged(ManagedChatProject),
 }
 impl ProjectSelection {
     fn validate(&self) -> Result<()> {
         match self {
-            Self::Existing(id) if identifier(id) => Ok(()),
-            Self::Managed(project) => project.validate(),
+            (Self::Existing(id) | Self::ObservedExisting(id)) if identifier(id) => Ok(()),
+            Self::Managed(project) | Self::ObservedManaged(project) => project.validate(),
             _ => Err(invalid("invalid project")),
         }
     }
@@ -37,8 +39,27 @@ impl ProjectSelection {
         workspace: &AbsolutePathBuf,
     ) -> Result<String> {
         let project = match self {
-            Self::Existing(id) => return Ok(id.clone()),
+            Self::Existing(id) | Self::ObservedExisting(id) => return Ok(id.clone()),
             Self::Managed(project) => project,
+            Self::ObservedManaged(project) => {
+                let response: ProjectReadResponse = transport
+                    .request(ClientRequest::ProjectReadByIdempotencyKey {
+                        request_id: transport.request_id(),
+                        params: ProjectReadByIdempotencyKeyParams {
+                            idempotency_key: project.idempotency_key.clone(),
+                        },
+                    })
+                    .await?;
+                let actual = response.project;
+                if !identifier(&actual.id)
+                    || actual.roots.len() != 1
+                    || actual.roots[0].path != *workspace
+                    || !actual.metadata.is_empty()
+                {
+                    return Err(invalid("original observed project changed the fixed scope"));
+                }
+                return Ok(actual.id);
+            }
         };
         let request = crate::BridgeProjectCreate {
             name: project.name.clone(),
@@ -61,6 +82,51 @@ fn identifier(value: &str) -> bool {
 }
 
 impl AgentChatSession {
+    /// Connect to an existing project without project creation or tool approval.
+    #[cfg(unix)]
+    pub async fn connect_existing_observer_for_agent_process(
+        args: MatrixAgentdConnectArgs,
+        project_id: String,
+        workspace: AbsolutePathBuf,
+        session_id: String,
+        connection_generation: u64,
+        expected_uid: u32,
+        expected_pid: u32,
+    ) -> Result<Self> {
+        Self::connect_with_peer(
+            args,
+            ProjectSelection::ObservedExisting(project_id),
+            workspace,
+            session_id,
+            connection_generation,
+            Some((expected_uid, expected_pid)),
+        )
+        .await
+    }
+
+    /// Observe an existing managed project. An absent key fails closed instead
+    /// of admitting a new project or replaying a prior chat command.
+    #[cfg(unix)]
+    pub async fn connect_managed_observer_for_agent_process(
+        args: MatrixAgentdConnectArgs,
+        project: ManagedChatProject,
+        workspace: AbsolutePathBuf,
+        session_id: String,
+        connection_generation: u64,
+        expected_uid: u32,
+        expected_pid: u32,
+    ) -> Result<Self> {
+        Self::connect_with_peer(
+            args,
+            ProjectSelection::ObservedManaged(project),
+            workspace,
+            session_id,
+            connection_generation,
+            Some((expected_uid, expected_pid)),
+        )
+        .await
+    }
+
     /// This creates or reopens a project using the original owner's exact
     /// idempotency mechanism; the configured key cannot become a message ID.
     #[cfg(unix)]
@@ -140,6 +206,10 @@ impl AgentChatSession {
         .validate()
         .map_err(invalid)?;
         project.validate()?;
+        let observes_only = matches!(
+            project,
+            ProjectSelection::ObservedExisting(_) | ProjectSelection::ObservedManaged(_)
+        );
         let mut agentd = AgentdClient::new(
             args.agentd_control_socket.clone(),
             args.agent_id.clone(),
@@ -173,6 +243,10 @@ impl AgentChatSession {
             while let Some(event) = events.next_event().await {
                 match event {
                     AppServerEvent::ServerRequest(request) => {
+                        if observes_only {
+                            // Historical observation has no tool-decision authority.
+                            continue;
+                        }
                         approvals.store(true, Ordering::Release);
                         // Chat is not a tool-approval UI. Never auto-approve a request.
                         let _ = rejection

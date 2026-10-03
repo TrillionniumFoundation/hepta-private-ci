@@ -27,7 +27,9 @@ struct State {
     connection: u64,
     calls: Vec<NativeChatRootRequest>,
     lose_send: bool,
+    lose_create: bool,
     wrong_response: bool,
+    observation: Option<MessageObservation>,
     reference: std::path::PathBuf,
 }
 struct Backend(Arc<Mutex<State>>);
@@ -75,6 +77,36 @@ impl BackendAdapter for Backend {
                     connection_generation: state.connection,
                 })
             }
+            NativeChatRootRequest::Recover {
+                binding,
+                original_binding,
+                request,
+            } => {
+                let stored: Value =
+                    serde_json::from_slice(&std::fs::read(&state.reference).unwrap()).unwrap();
+                assert_eq!(
+                    stored["pending"]["request"],
+                    serde_json::to_value(NativeChatRootRequest::Dispatch {
+                        binding: original_binding.clone(),
+                        request: request.clone()
+                    })
+                    .unwrap()
+                );
+                let mut binding = binding.clone();
+                if state.wrong_response {
+                    binding.agent_process_id += 1;
+                }
+                Ok(NativeChatRootResponse::Recovered {
+                    binding,
+                    original_binding: original_binding.clone(),
+                    request: request.clone(),
+                    observation: state.observation.clone().unwrap_or(
+                        MessageObservation::Persisted {
+                            turn_id: "turn-1".into(),
+                        },
+                    ),
+                })
+            }
             NativeChatRootRequest::Dispatch { binding, request } => {
                 if matches!(
                     request.command,
@@ -93,6 +125,9 @@ impl BackendAdapter for Backend {
                 }
                 if matches!(request.command, ChatCommand::Send { .. }) && state.lose_send {
                     return Err(ShellError::Backend("reply lost after delivery".into()));
+                }
+                if matches!(request.command, ChatCommand::Create) && state.lose_create {
+                    return Err(ShellError::Backend("thread created but reply lost".into()));
                 }
                 let result = match &request.command {
                     ChatCommand::Create | ChatCommand::Resume { .. } => ChatResult::Conversation {
@@ -220,9 +255,10 @@ fn lost_message_reopens_exact_private_reference_and_only_queries_same_original_i
     else {
         panic!("send expected")
     };
-    let NativeChatRootRequest::Dispatch {
-        binding: actual,
+    let NativeChatRootRequest::Recover {
+        original_binding: actual,
         request: query,
+        ..
     } = state.calls.last().unwrap()
     else {
         panic!("query expected")
@@ -231,7 +267,7 @@ fn lost_message_reopens_exact_private_reference_and_only_queries_same_original_i
     assert_eq!(query.session_id, request.session_id);
     assert_eq!(
         query.command,
-        ChatCommand::Reconcile {
+        ChatCommand::Send {
             thread_id,
             operation_id,
             text
@@ -254,7 +290,7 @@ fn lost_message_reopens_exact_private_reference_and_only_queries_same_original_i
             .count(),
         1
     );
-    assert_eq!(query.connection_generation, 2);
+    assert_eq!(query.connection_generation, request.connection_generation);
     insta::assert_debug_snapshot!(chat.presentation());
 }
 #[test]
@@ -301,4 +337,147 @@ fn changed_displayed_process_rejects_before_reference_or_request_write() {
         before
     );
     assert!(!chat.presentation().previous_action_pending);
+}
+
+#[test]
+fn original_message_receipt_can_be_inspected_after_a_current_owner_restart() {
+    let temp = common::private_tempdir();
+    let state = state(temp.path());
+    let (mut runtime, mut chat, revision) = open(temp.path(), state.clone());
+    chat.attach(&mut runtime, AGENT, revision).unwrap();
+    chat.create(&mut runtime).unwrap();
+    state.lock().unwrap().lose_send = true;
+    assert!(chat.send(&mut runtime, "original text".into()).is_err());
+    let original = state.lock().unwrap().calls.last().cloned().unwrap();
+    drop(chat);
+    runtime.close().unwrap();
+    drop(runtime);
+    state.lock().unwrap().pid = 101;
+    let (mut runtime, mut chat, _) = open(temp.path(), state.clone());
+    chat.inspect(&mut runtime).unwrap();
+    assert!(!chat.presentation().previous_action_pending);
+    let calls = &state.lock().unwrap().calls;
+    let NativeChatRootRequest::Dispatch { binding, request } = original else {
+        panic!("original send")
+    };
+    assert_eq!(
+        calls.last(),
+        Some(&NativeChatRootRequest::Recover {
+            binding: NativeChatBinding {
+                agent_process_id: 101,
+                ..binding.clone()
+            },
+            original_binding: binding,
+            request,
+        })
+    );
+    assert_eq!(
+        calls
+            .iter()
+            .filter(|call| matches!(
+                call,
+                NativeChatRootRequest::Dispatch {
+                    request: ChatRequest {
+                        command: ChatCommand::Send { .. },
+                        ..
+                    },
+                    ..
+                }
+            ))
+            .count(),
+        1
+    );
+}
+
+#[test]
+fn unidentified_creation_stays_unknown_without_repeating_or_guessing_a_thread() {
+    let temp = common::private_tempdir();
+    let state = state(temp.path());
+    let (mut runtime, mut chat, revision) = open(temp.path(), state.clone());
+    chat.attach(&mut runtime, AGENT, revision).unwrap();
+    state.lock().unwrap().lose_create = true;
+    assert!(chat.create(&mut runtime).is_err());
+    assert!(chat.presentation().previous_action_pending);
+    let before = std::fs::read(temp.path().join("chat-pending.json")).unwrap();
+    assert!(chat.inspect(&mut runtime).is_err());
+    assert!(chat.presentation().previous_action_pending);
+    assert_eq!(
+        std::fs::read(temp.path().join("chat-pending.json")).unwrap(),
+        before
+    );
+    assert_eq!(
+        state
+            .lock()
+            .unwrap()
+            .calls
+            .iter()
+            .filter(|call| matches!(
+                call,
+                NativeChatRootRequest::Dispatch {
+                    request: ChatRequest {
+                        command: ChatCommand::Create,
+                        ..
+                    },
+                    ..
+                }
+            ))
+            .count(),
+        1
+    );
+}
+
+#[test]
+fn unsettled_or_substituted_recovery_retains_the_original_message_bytes() {
+    for observation in [
+        MessageObservation::Pending {
+            queue_id: Some("queue-original".into()),
+        },
+        MessageObservation::Missing,
+        MessageObservation::Unknown,
+    ] {
+        let temp = common::private_tempdir();
+        let state = state(temp.path());
+        let (mut runtime, mut chat, revision) = open(temp.path(), state.clone());
+        chat.attach(&mut runtime, AGENT, revision).unwrap();
+        chat.create(&mut runtime).unwrap();
+        state.lock().unwrap().lose_send = true;
+        assert!(chat.send(&mut runtime, "original text".into()).is_err());
+        let before = std::fs::read(temp.path().join("chat-pending.json")).unwrap();
+        state.lock().unwrap().observation = Some(observation);
+        state.lock().unwrap().pid = 101;
+        assert!(chat.inspect(&mut runtime).is_err());
+        assert!(chat.presentation().previous_action_pending);
+        assert_eq!(
+            std::fs::read(temp.path().join("chat-pending.json")).unwrap(),
+            before
+        );
+        state.lock().unwrap().observation = Some(MessageObservation::Persisted {
+            turn_id: "turn-1".into(),
+        });
+        state.lock().unwrap().wrong_response = true;
+        assert!(chat.inspect(&mut runtime).is_err());
+        assert_eq!(
+            std::fs::read(temp.path().join("chat-pending.json")).unwrap(),
+            before
+        );
+        assert_eq!(
+            state
+                .lock()
+                .unwrap()
+                .calls
+                .iter()
+                .filter(|call| matches!(
+                    call,
+                    NativeChatRootRequest::Dispatch {
+                        request: ChatRequest {
+                            command: ChatCommand::Send { .. },
+                            ..
+                        },
+                        ..
+                    }
+                ))
+                .count(),
+            1
+        );
+    }
 }

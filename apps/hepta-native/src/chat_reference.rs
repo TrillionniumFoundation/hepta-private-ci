@@ -14,6 +14,11 @@ pub(crate) struct ChatReference {
 }
 impl ChatReference {
     fn validate(&self) -> Result<(), ShellError> {
+        if matches!(self.request, NativeChatRootRequest::Recover { .. }) {
+            return Err(ShellError::Security(
+                "read-only recovery cannot become a mutation reference".into(),
+            ));
+        }
         crate::model::validate_stable_id(&self.endpoint_id, "chat endpoint")?;
         self.request
             .validate()

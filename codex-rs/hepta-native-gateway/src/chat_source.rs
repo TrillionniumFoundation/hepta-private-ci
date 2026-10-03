@@ -180,6 +180,7 @@ impl ChatSource {
 fn operation(request: &NativeChatRootRequest) -> NativeGatewayChatOperationV2 {
     match request {
         NativeChatRootRequest::Attach { .. } => NativeGatewayChatOperationV2::Attach,
+        NativeChatRootRequest::Recover { .. } => NativeGatewayChatOperationV2::Reconcile,
         NativeChatRootRequest::Dispatch { request, .. } => match &request.command {
             ChatCommand::List { .. } => NativeGatewayChatOperationV2::List,
             ChatCommand::Create => NativeGatewayChatOperationV2::Create,

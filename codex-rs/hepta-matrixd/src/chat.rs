@@ -19,6 +19,8 @@ use wire::*;
 
 #[path = "chat_connection.rs"]
 mod connection;
+#[path = "chat_observation.rs"]
+mod observation;
 pub use connection::ManagedChatProject;
 
 const SOURCE: &str = "hepta-ui-chat";

@@ -33,12 +33,21 @@ pub enum NativeChatRootRequest {
         binding: NativeChatBinding,
         request: ChatRequest,
     },
+    /// A current authenticated owner may observe the exact old message, never
+    /// replay it or rebind its mutation to another process.
+    Recover {
+        binding: NativeChatBinding,
+        original_binding: NativeChatBinding,
+        request: ChatRequest,
+    },
 }
 
 impl NativeChatRootRequest {
     pub fn binding(&self) -> &NativeChatBinding {
         match self {
-            Self::Attach { binding, .. } | Self::Dispatch { binding, .. } => binding,
+            Self::Attach { binding, .. }
+            | Self::Dispatch { binding, .. }
+            | Self::Recover { binding, .. } => binding,
         }
     }
 
@@ -65,6 +74,26 @@ impl NativeChatRootRequest {
                 }
             }
             Self::Dispatch { request, .. } => request.validate()?,
+            Self::Recover {
+                original_binding,
+                request,
+                ..
+            } => {
+                Self::Attach {
+                    binding: original_binding.clone(),
+                    session_id: request.session_id.clone(),
+                }
+                .validate()?;
+                request.validate()?;
+                if original_binding.agent_id != binding.agent_id
+                    || !matches!(
+                        request.command,
+                        crate::chat_transport::ChatCommand::Send { .. }
+                    )
+                {
+                    return Err("recovery requires the exact original message and stable Agent");
+                }
+            }
         }
         if serde_json::to_vec(self)
             .map_err(|_| "invalid request")?
@@ -94,10 +123,31 @@ pub enum NativeChatRootResponse {
         binding: NativeChatBinding,
         response: ChatResponse,
     },
+    Recovered {
+        binding: NativeChatBinding,
+        original_binding: NativeChatBinding,
+        request: ChatRequest,
+        observation: MessageObservation,
+    },
     Rejected {
         code: String,
         outcome_unknown: bool,
     },
+}
+
+#[derive(Clone, Debug, Deserialize, Serialize, PartialEq, Eq)]
+#[serde(
+    tag = "type",
+    rename_all = "camelCase",
+    rename_all_fields = "camelCase",
+    deny_unknown_fields
+)]
+pub enum MessageObservation {
+    Pending { queue_id: Option<String> },
+    Persisted { turn_id: String },
+    Cancelled,
+    Missing,
+    Unknown,
 }
 
 impl NativeChatRootResponse {
@@ -127,6 +177,36 @@ impl NativeChatRootResponse {
                     request,
                 },
             ) if binding == expected => response.validate_for(request),
+            (
+                Self::Recovered {
+                    binding,
+                    original_binding,
+                    request,
+                    observation,
+                },
+                NativeChatRootRequest::Recover {
+                    binding: expected,
+                    original_binding: expected_original,
+                    request: expected_request,
+                },
+            ) if binding == expected
+                && original_binding == expected_original
+                && request == expected_request =>
+            {
+                let id = match observation {
+                    MessageObservation::Pending { queue_id } => queue_id.as_deref(),
+                    MessageObservation::Persisted { turn_id } => Some(turn_id.as_str()),
+                    MessageObservation::Cancelled
+                    | MessageObservation::Missing
+                    | MessageObservation::Unknown => None,
+                };
+                if id.is_some_and(|id| {
+                    id.is_empty() || id.len() > 256 || id.chars().any(char::is_control)
+                }) {
+                    return Err("invalid observed message identity");
+                }
+                Ok(())
+            }
             (Self::Rejected { code, .. }, _)
                 if !code.is_empty() && code.len() <= 128 && !code.chars().any(char::is_control) =>
             {
