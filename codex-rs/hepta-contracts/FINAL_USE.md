@@ -56,6 +56,29 @@ provider contact, the provider effect remains indeterminate and must be
 reconciled by the durable operation/effect owner; revocation is not a rollback
 of an effect that already crossed the provider boundary.
 
+## Awaited owner preparation
+
+The additive `with_prepared_verified_use_async` boundary retains the original
+opaque token and an active-dispatch guard across a bounded preparation future.
+Preparation must not contact the provider. It receives an opaque
+`VerifiedPreparationEvidence`, whose read-only grant and `PreparationEntry`
+observation describe the actual token verified at preparation entry. The carrier
+has no public constructor, deserializer or token conversion. Persisting its
+observation records neither a physical send nor the later final verification.
+
+After preparation returns, the authority rechecks the token with current trusted
+time before creating the selected consumer future. Expiry, clock failure and
+time before the grant window deny that entry even if the preparation observation already committed.
+Revocation returns `DispatchInProgress` throughout both futures; no mutex spans
+an await. Preparation errors, cancellation and unwind release the active fence
+without restoring the nonce. Consumer cancellation remains ambiguous contact.
+The consumer must recheck its prepared lease immediately before dispatch and
+must not introduce another asynchronous preparation gap. A witness never
+authorizes settlement, replay or redispatch.
+
+Existing `ConsumerEntry` and `DispatchEntry` meanings are unchanged. Old strict
+decoders reject the new enum variant; schema1 evidence is not a capability wire.
+
 ## Wire and signing schemas
 
 All grants use `schema_version = 1`, deny unknown JSON fields, and serialize
