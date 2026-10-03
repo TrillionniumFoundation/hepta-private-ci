@@ -742,7 +742,14 @@ selection or registry head. New bootstrap operations are rejected after CURRENT 
 The exact withdrawal snapshot is persisted and synchronized before the immutable signed
 `withdrawal-bootstrap/{operation-hash}.receipt`. Orphan snapshots do not advance recovery;
 acknowledged records require their exact snapshot and signature. Recovery joins only
-compatible prefix extensions. Exact retries cannot roll the live frontier backwards.
+compatible prefix extensions. Exact acknowledged retries verify the original signed record
+and exact durable snapshot before returning the original receipt, even after authorization
+or writer-lease expiry and a raised live authority-epoch floor. They cannot roll the live
+frontier backwards. Changed requests still conflict with the recorded identity, and missing
+or corrupted snapshots fail closed. New operations continue to require a current writer
+lease and an unexpired authorization meeting the live authority floor.
 `open_v2` also applies the independently retained withdrawal head floor to this frontier.
 Tests in `owner_state_tests.rs` cover unsigned mutation, stale authorization, first-publication
-admission denial, exact retry, restart and missing acknowledged snapshot.
+admission denial, exact retry after expiry and floor rotation, restart, request drift and
+missing or corrupted acknowledged snapshots. These synthetic-key source tests do not
+supply production trust, a product bootstrap caller or authoritative wall-clock time.

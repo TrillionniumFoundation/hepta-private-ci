@@ -712,3 +712,164 @@ fn bootstrap_acknowledgement_cannot_recover_without_exact_snapshot() {
         .is_err()
     );
 }
+
+#[test]
+fn acknowledged_bootstrap_retries_survive_expiry_and_authority_floor_rotation() {
+    let directory = TestDir::new();
+    let signing = key();
+    let mut service = opened(&directory, &signing);
+    let first = bootstrap_request(
+        &service,
+        &signing,
+        "first",
+        withdraw(&service.withdrawal_registry, "unrelated-first"),
+    );
+    let receipt = service
+        .publish_withdrawal_bootstrap(first.clone(), 30)
+        .fixture("first bootstrap");
+    let second = bootstrap_request(
+        &service,
+        &signing,
+        "second",
+        withdraw(&service.withdrawal_registry, "unrelated-second"),
+    );
+    service
+        .publish_withdrawal_bootstrap(second, 31)
+        .fixture("successor bootstrap");
+    let current = service.withdrawal_registry.snapshot();
+    for now in [91, 1_001] {
+        assert_eq!(
+            service
+                .publish_withdrawal_bootstrap(first.clone(), now)
+                .fixture("historical receipt survives authorization and writer expiry"),
+            receipt
+        );
+        assert_eq!(service.withdrawal_registry.snapshot(), current);
+    }
+    drop(service);
+
+    let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope());
+    let scope_digest = withdrawals.scope_digest().fixture("scope");
+    let mut rotated_trust = trust(&signing, scope_digest);
+    rotated_trust.minimum_authority_epoch = 2;
+    let mut renewed_lease = lease(&signing, scope_digest);
+    renewed_lease.authority_epoch = 2;
+    renewed_lease.lease_generation = 2;
+    renewed_lease.issued_at = 1_001;
+    renewed_lease.expires_at = 2_000;
+    renewed_lease.signature = signing.sign(&renewed_lease.signing_bytes()).to_bytes();
+    let mut reopened = LearningArtifactOwnerService::open(LearningArtifactOwnerServiceConfigV1 {
+        root: directory.0.clone(),
+        trust: rotated_trust,
+        writer_lease: renewed_lease,
+        required_current_head: None,
+        withdrawal_registry: withdrawals,
+        storage_binding: digest("binding"),
+        now: 1_001,
+    })
+    .fixture("recover authenticated history after floor rotation");
+    assert_eq!(
+        reopened
+            .publish_withdrawal_bootstrap(first, 1_001)
+            .fixture("historical bootstrap receipt survives current authority floor"),
+        receipt
+    );
+    assert_eq!(reopened.withdrawal_registry.snapshot(), current);
+    let mut stale_epoch = bootstrap_request(
+        &reopened,
+        &signing,
+        "stale-epoch",
+        withdraw(&reopened.withdrawal_registry, "other"),
+    );
+    stale_epoch.issued_at = 1_001;
+    stale_epoch.expires_at = 2_000;
+    stale_epoch.signature = signing.sign(&stale_epoch.signing_bytes()).to_bytes();
+    assert!(
+        reopened
+            .publish_withdrawal_bootstrap(stale_epoch, 1_001)
+            .is_err()
+    );
+    assert_eq!(reopened.withdrawal_registry.snapshot(), current);
+    assert_eq!(
+        fs::read_dir(directory.0.join("withdrawal-bootstrap"))
+            .fixture("only original acknowledgements")
+            .count(),
+        2
+    );
+}
+
+#[test]
+fn bootstrap_historical_retry_preserves_exact_request_and_snapshot_checks() {
+    let directory = TestDir::new();
+    let signing = key();
+    let mut service = opened(&directory, &signing);
+    let request = bootstrap_request(
+        &service,
+        &signing,
+        "bootstrap",
+        withdraw(&service.withdrawal_registry, "unrelated"),
+    );
+    let receipt = service
+        .publish_withdrawal_bootstrap(request.clone(), 30)
+        .fixture("bootstrap");
+    let current = service.withdrawal_registry.snapshot();
+    let mut changed = request.clone();
+    changed.expires_at = 2_000;
+    changed.signature = signing.sign(&changed.signing_bytes()).to_bytes();
+    assert!(service.publish_withdrawal_bootstrap(changed, 91).is_err());
+    assert_eq!(service.withdrawal_registry.snapshot(), current);
+    assert!(service.recovery_required().is_none());
+    assert_eq!(
+        service
+            .publish_withdrawal_bootstrap(request.clone(), 91)
+            .fixture("original request still recovers"),
+        receipt
+    );
+
+    let snapshot = directory.0.join("withdrawals").join(format!(
+        "{}-{}.snapshot",
+        receipt.withdrawal_receipt.head_digest, receipt.withdrawal_receipt.file_digest
+    ));
+    fs::write(snapshot, b"corrupt withdrawal snapshot").fixture("corrupt durable evidence");
+    assert!(service.publish_withdrawal_bootstrap(request, 91).is_err());
+    assert_eq!(service.recovery_required(), Some(&id("bootstrap")));
+}
+
+#[test]
+fn bootstrap_new_operations_still_require_current_authorization_and_writer() {
+    let directory = TestDir::new();
+    let signing = key();
+    let mut service = opened(&directory, &signing);
+    let request = bootstrap_request(
+        &service,
+        &signing,
+        "bootstrap",
+        withdraw(&service.withdrawal_registry, "unrelated"),
+    );
+    let original = service.withdrawal_registry.snapshot();
+    assert!(
+        service
+            .publish_withdrawal_bootstrap(request.clone(), 91)
+            .is_err()
+    );
+    let mut current_authorization = request;
+    current_authorization.expires_at = 2_000;
+    current_authorization.signature = signing
+        .sign(&current_authorization.signing_bytes())
+        .to_bytes();
+    assert!(
+        service
+            .publish_withdrawal_bootstrap(current_authorization, 1_001)
+            .is_err()
+    );
+    assert_eq!(service.withdrawal_registry.snapshot(), original);
+    assert!(service.recovery_required().is_none());
+    for namespace in ["withdrawals", "withdrawal-bootstrap"] {
+        assert_eq!(
+            fs::read_dir(directory.0.join(namespace))
+                .fixture("unmodified namespace")
+                .count(),
+            0
+        );
+    }
+}

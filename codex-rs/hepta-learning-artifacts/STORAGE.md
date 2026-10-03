@@ -190,6 +190,13 @@ the full state intent and next withdrawal frontier, including a no-op registry
 delta whose signed CURRENT head is unchanged. Current requests check expiry;
 historical checkpoint replay checks the original authorized-at time.
 
+Acknowledged first-publication withdrawal-bootstrap retries likewise recover the
+original receipt using its historical signature and exact durable snapshot. They
+survive authorization/lease expiry and live authority-floor rotation without
+changing the live frontier. An altered request or corrupt/missing snapshot still
+fails closed. Every new bootstrap operation requires current writer and head-signer
+authorization; historical replay creates no new mutation authority.
+
 On Unix, the native owner synchronizes the root directory layout at startup and
 each file's containing directory after writes and exact reconciliation. Direct
 low-level adapters retain the caller's directory-sync obligation. Other targets

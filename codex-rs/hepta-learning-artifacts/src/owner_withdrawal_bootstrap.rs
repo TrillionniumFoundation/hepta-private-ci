@@ -123,8 +123,6 @@ impl LearningArtifactOwnerHost {
         {
             return Err(ArtifactOwnerHostError::CheckpointMismatch);
         }
-        self.require_current_writer(now)?;
-        self.verify_bootstrap_authorization(request, now, true)?;
         if self.recover_publication(&request.operation_id)?.is_some()
             || self
                 .recover_state_publication(&request.operation_id)?
@@ -154,6 +152,12 @@ impl LearningArtifactOwnerHost {
             recovery::synchronize_artifact_path(&record_path)?;
             return Ok(receipt(request, withdrawal_receipt));
         }
+        // The exact authenticated acknowledgement is historical evidence, not a
+        // new mutation. Lease expiry and raised live authority floors must not
+        // erase that receipt; the read above still verifies its original
+        // signature and exact durable withdrawal snapshot.
+        self.require_current_writer(now)?;
+        self.verify_bootstrap_authorization(request, now, true)?;
         if self.discover_current_head(now)?.is_some() {
             return Err(ArtifactOwnerHostError::CurrentHeadConflict);
         }
