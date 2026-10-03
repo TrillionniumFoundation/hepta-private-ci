@@ -4,7 +4,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     {
         use codex_hepta_agent_components::intelligence_eval as eval;
         let args = std::env::args_os().skip(1).collect::<Vec<_>>();
-        if args.len() == 3 && (args[0] == "--canary-observation" || args[0] == "--registered-canary-observation") {
+        if args.len() == 3
+            && (args[0] == "--canary-observation" || args[0] == "--registered-canary-observation")
+        {
             let pin = args[2]
                 .to_str()
                 .ok_or("canary configuration pin encoding")?
