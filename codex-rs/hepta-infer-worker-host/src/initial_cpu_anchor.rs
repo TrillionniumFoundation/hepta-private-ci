@@ -99,6 +99,7 @@ mod publication;
 pub use parameter_publication::ParameterPreRegisteredPublicationV1;
 pub use parameter_publication::ParameterPreRegistrationPublicationConfigV1;
 pub use parameter_publication::ParameterPublishedArtifactV1;
+pub use parameter_publication::observe_parameter_pre_registered_artifacts_v1;
 pub use parameter_publication::publish_parameter_pre_registered_artifacts_v1;
 #[path = "initial_cpu_renewal.rs"]
 mod renewal;

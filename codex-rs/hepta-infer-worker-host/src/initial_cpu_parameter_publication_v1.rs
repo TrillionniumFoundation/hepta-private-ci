@@ -6,8 +6,11 @@ use serde::Serialize;
 
 #[path = "initial_cpu_parameter_publication_materials.rs"]
 mod materials;
+#[path = "initial_cpu_parameter_publication_observation.rs"]
+mod observation;
 #[path = "initial_cpu_parameter_publication_state.rs"]
 mod retained;
+pub use observation::observe_parameter_pre_registered_artifacts_v1;
 
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -217,32 +220,16 @@ pub fn publish_parameter_pre_registered_artifacts_v1(
     if signed_bytes != encode_untrusted_signed_artifact_head_v1(&signed) {
         return Err("whole actual E1 signed CURRENT Source changed".into());
     }
-    let result = ParameterPreRegisteredPublicationV1 {
-        schema: "hepta.cpu-neuron.parameter-pre-registered-publication.v1".into(),
-        original_round: observed.round().clone(),
-        purpose: observed.purpose(),
-        candidate_id: observed.candidate_id().to_string(),
-        material_digest: Digest32::of_bytes(
-            &codex_hepta_neuron::encode_neuron_generation_material_v2(
-                observed.material().ok_or("qualified material absent")?,
-            )?,
-        )
-        .to_string(),
-        evaluation_digest: observed.authentication_digest().to_string(),
-        evaluation_sources: config.evaluation.clone(),
-        baseline_registration: config.baseline_registration,
-        pre_e1_registry_head: observed.baseline_registry_head().to_string(),
-        pre_e1_publication_operation: observed.baseline_publication_operation().to_string(),
-        current_head: current.receipt().head_digest.to_string(),
-        publication_operation_id: last.operation_id.clone(),
-        signed_current_head: CpuProtectedSourceV1 {
+    let result = observation::packet(
+        &config,
+        &observed,
+        receipts,
+        &signed,
+        CpuProtectedSourceV1 {
             path: signed_path,
             digest: Digest32::of_bytes(&signed_bytes).to_string(),
         },
-        acknowledgement_state_digest: acknowledgement.state_digest.to_string(),
-        publications: receipts
-            .try_into()
-            .map_err(|_| "exact four E1 publications")?,
-    };
+        &acknowledgement,
+    )?;
     Ok(serde_json::to_value(result)?)
 }
