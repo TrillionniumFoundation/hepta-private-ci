@@ -4,6 +4,8 @@
 
 use codex_hepta_infer_core::SelfIterationModelAssessmentV1;
 use codex_hepta_infer_core::SelfIterationModelErrorV1;
+use codex_hepta_infer_core::SelfIterationModelFailureObserverV1;
+use codex_hepta_infer_core::SelfIterationModelFailureV1;
 use codex_hepta_infer_core::SelfIterationModelPortV1;
 use codex_hepta_infer_core::SelfIterationModelRequestV1;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
@@ -33,8 +35,17 @@ mod root_native_join;
 pub use root_native_join::RootNativeAssessmentScopeV1;
 #[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
 pub use root_native_join::validate_root_native_assessment_facts_v1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+#[path = "self_iteration_root_native_failure.rs"]
+mod root_native_failure;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_native_failure::validate_root_native_failure_facts_v1;
 
 const NATIVE_PROMPT_LIMIT: usize = 32 * 1024;
+
+#[path = "self_iteration_native_failure_record.rs"]
+mod failure_record;
+use failure_record::native_failure_record_digest;
 
 #[path = "self_iteration_reference.rs"]
 mod reference;
@@ -49,6 +60,7 @@ pub struct AppServerSelfIterationModelPortV1 {
     maximum_in_flight: usize,
     cancellation: CancellationToken,
     cleanup_maintenance_at: Option<std::time::Instant>,
+    failure_observer: Option<std::sync::Arc<dyn SelfIterationModelFailureObserverV1>>,
 }
 
 impl AppServerSelfIterationModelPortV1 {
@@ -92,7 +104,16 @@ impl AppServerSelfIterationModelPortV1 {
             maximum_in_flight,
             cancellation,
             cleanup_maintenance_at: None,
+            failure_observer: None,
         })
+    }
+
+    pub fn with_failure_observer(
+        mut self,
+        observer: std::sync::Arc<dyn SelfIterationModelFailureObserverV1>,
+    ) -> Self {
+        self.failure_observer = Some(observer);
+        self
     }
 
     /// Host hook for startup or periodic bounded retirement of exact settled
@@ -129,6 +150,32 @@ impl AppServerSelfIterationModelPortV1 {
 }
 
 impl SelfIterationModelPortV1 for AppServerSelfIterationModelPortV1 {
+    async fn observe_failed(
+        &mut self,
+        request: &SelfIterationModelRequestV1,
+    ) -> Result<Option<SelfIterationModelFailureV1>, SelfIterationModelErrorV1> {
+        let Some(observer) = &self.failure_observer else {
+            return Ok(None);
+        };
+        let Some(failure) = observer.observe(request).await? else {
+            return Ok(None);
+        };
+        failure.validate(request)?;
+        // Do not hold the native owner across a Root query: that service reads
+        // this very owner through the original authenticated Agentd callback.
+        let control = self.control.try_acquire()?;
+        let Some(record) = control
+            .native_record_resolved(request.request_id.as_str())
+            .map_err(|error| SelfIterationModelErrorV1::Provider(error.to_string()))?
+        else {
+            return Ok(None);
+        };
+        if native_failure_record_digest(request, &record)? != failure.native_run_digest {
+            return Err(SelfIterationModelErrorV1::InvalidResponse);
+        }
+        Ok(Some(failure))
+    }
+
     async fn assess(
         &mut self,
         request: SelfIterationModelRequestV1,
