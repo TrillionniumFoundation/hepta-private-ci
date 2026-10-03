@@ -10,6 +10,7 @@ on:
       - codex-rs/app-server-client/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-operations/**
+      - codex-rs/hepta-evidence/**
       - codex-rs/hepta-types/**
       - codex-rs/agent-protocol/**
       - codex-rs/hepta-agent-protocol/**
@@ -26,6 +27,7 @@ on:
       - codex-rs/app-server-client/**
       - codex-rs/hepta-contracts/**
       - codex-rs/hepta-operations/**
+      - codex-rs/hepta-evidence/**
       - codex-rs/hepta-types/**
       - codex-rs/agent-protocol/**
       - codex-rs/hepta-agent-protocol/**
@@ -64,18 +66,24 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
       - name: Rustfmt changed automation owners
-        run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -p codex-model-provider -p codex-app-server-client -- --check
+        run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-evidence -p codex-hepta-agentd -p codex-model-provider -p codex-app-server-client -- --check
       - name: Check automation, operations, Agentd and queue transport
-        run: cargo check --locked -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-agentd -p codex-model-provider -p codex-app-server-client
+        run: cargo check --locked -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-evidence -p codex-hepta-agentd -p codex-model-provider -p codex-app-server-client
       - name: Test kernel operation contract
         run: just test --locked -p codex-hepta-operations
       - name: Test automation package
         run: just test --locked -p codex-hepta-automation
       - name: Test automation qualification profile
         run: just test --locked -p codex-hepta-automation --features taskflow-structural-qualification
+      - name: Test evidence owner recovery and admission
+        run: just test --locked -p codex-hepta-evidence
       - name: Test provider-effect adapter
         run: just test --locked -p codex-model-provider --lib
       - name: Test queue transport pre-send guard
         run: just test --locked -p codex-app-server-client --lib -E 'test(remote_send_guard)'
       - name: Test Agentd library
         run: just test --locked -p codex-hepta-agentd --lib
+      - name: Apply scoped recovery lint checks
+        run: just fix --locked -p codex-hepta-automation -p codex-hepta-evidence --features taskflow-structural-qualification
+      - name: Verify scoped lint kept the reviewed source
+        run: git diff --exit-code
