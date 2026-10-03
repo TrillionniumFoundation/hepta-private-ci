@@ -20,6 +20,6 @@ pub(crate) fn map_error(error: NeuronGenerationMaterialErrorV2) -> AgentdError {
         NeuronGenerationMaterialErrorV2::Json(error) => AgentdError::Json(error),
     }
 }
-#[cfg(test)]
+#[cfg(all(test, feature = "fixed-initial-cpu-host"))]
 #[path = "local_cpu_generation_material_codec_v2_tests.rs"]
 mod tests;

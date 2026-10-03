@@ -379,7 +379,7 @@ mod tests;
 #[cfg(feature = "agentd-host")]
 pub mod evolving_agentd;
 
-#[cfg(feature = "fixed-initial-cpu-host")]
+#[cfg(feature = "agentd-host")]
 #[path = "local_cpu_generation_material_codec_v2.rs"]
 mod cpu_generation_material;
 #[cfg(feature = "fixed-initial-cpu-host")]
