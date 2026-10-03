@@ -1,4 +1,5 @@
 """Recorder regression tests. Subprocess fixtures do not qualify the Rust product."""
+
 import contextlib
 import io
 import json
@@ -23,8 +24,24 @@ class LedgerRecorderTests(unittest.TestCase):
         (self.repo / "codex-rs/Cargo.lock").write_text("unit-test fixture only\n")
         subprocess.run(["git", "init", "-q", str(self.repo)], check=True)
         subprocess.run(["git", "-C", str(self.repo), "add", "."], check=True)
-        subprocess.run(["git", "-C", str(self.repo), "-c", "user.name=Test", "-c", "user.email=test@example.invalid", "commit", "-qm", "fixture"], check=True)
-        self.sha = subprocess.check_output(["git", "-C", str(self.repo), "rev-parse", "HEAD"], text=True).strip()
+        subprocess.run(
+            [
+                "git",
+                "-C",
+                str(self.repo),
+                "-c",
+                "user.name=Test",
+                "-c",
+                "user.email=test@example.invalid",
+                "commit",
+                "-qm",
+                "fixture",
+            ],
+            check=True,
+        )
+        self.sha = subprocess.check_output(
+            ["git", "-C", str(self.repo), "rev-parse", "HEAD"], text=True
+        ).strip()
         self.evidence = self.root / "evidence"
 
     def tearDown(self):
@@ -36,8 +53,15 @@ class LedgerRecorderTests(unittest.TestCase):
             if dirty:
                 (self.repo / "unexpected").write_text("mutated by fixture\n")
             return code
-        with mock.patch.object(q, "ROOT", self.repo), mock.patch.object(q, "execute", side_effect=execute), contextlib.redirect_stdout(io.StringIO()):
-            result = ledger.main(["--source-commit", self.sha, "--evidence", str(self.evidence)])
+
+        with (
+            mock.patch.object(q, "ROOT", self.repo),
+            mock.patch.object(q, "execute", side_effect=execute),
+            contextlib.redirect_stdout(io.StringIO()),
+        ):
+            result = ledger.main(
+                ["--source-commit", self.sha, "--evidence", str(self.evidence)]
+            )
         return result, json.loads((self.evidence / "command-record.json").read_text())
 
     def test_full_mandatory_plan_records_all_commands_without_promoting(self):

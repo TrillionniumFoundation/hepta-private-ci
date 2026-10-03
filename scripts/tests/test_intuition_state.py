@@ -1,4 +1,5 @@
 """Source-document projection tests; no runtime or acceptance claims."""
+
 from __future__ import annotations
 
 import copy
@@ -26,19 +27,31 @@ class SourceStateTests(unittest.TestCase):
             "authority": "source_state_only",
             "completion": {name: False for name in state_tools.FLAGS},
             "facts": [
-                {"id": name, "summary": "Test-only source fixture", "state": "source_present",
-                 "source": "codex-rs/fixture.rs", "symbol": "fixture_symbol",
-                 "tests": ["scripts/tests/fixture.py"], "evidence": "Real artifacts required"}
+                {
+                    "id": name,
+                    "summary": "Test-only source fixture",
+                    "state": "source_present",
+                    "source": "codex-rs/fixture.rs",
+                    "symbol": "fixture_symbol",
+                    "tests": ["scripts/tests/fixture.py"],
+                    "evidence": "Real artifacts required",
+                }
                 for name in sorted(state_tools.FACT_IDS)
             ],
-            "gaps": [{"id": name, "required": "Real completion remains required"}
-                     for name in sorted(state_tools.GAP_IDS)],
-            "contracts": [{"name": "FixtureV1", "layer": "fixture", "status": "test only"}],
+            "gaps": [
+                {"id": name, "required": "Real completion remains required"}
+                for name in sorted(state_tools.GAP_IDS)
+            ],
+            "contracts": [
+                {"name": "FixtureV1", "layer": "fixture", "status": "test only"}
+            ],
         }
         files = {
             "codex-rs/fixture.rs": "fn fixture_symbol() {}\n",
             "scripts/tests/fixture.py": "# source fixture only\n",
-            state_tools.MAP: json.dumps({"full_completion_predicate": self.value["completion"]}),
+            state_tools.MAP: json.dumps(
+                {"full_completion_predicate": self.value["completion"]}
+            ),
         }
         for name in state_tools.DOCS:
             files[name] = "# Existing technical document\n\nKEEP THE ORIGINAL DESIGN.\n"
@@ -49,19 +62,27 @@ class SourceStateTests(unittest.TestCase):
         self.save()
 
     def save(self):
-        (self.root / state_tools.STATE).write_text(json.dumps(self.value), encoding="utf-8")
+        (self.root / state_tools.STATE).write_text(
+            json.dumps(self.value), encoding="utf-8"
+        )
 
     def test_generation_is_idempotent_and_retains_original_design(self):
         self.assertTrue(state_tools.project(self.root, write=True))
         self.assertEqual(state_tools.project(self.root, write=True), [])
         self.assertEqual(state_tools.project(self.root), [])
         for name in state_tools.DOCS:
-            self.assertIn("KEEP THE ORIGINAL DESIGN.", (self.root / name).read_text(encoding="utf-8"))
+            self.assertIn(
+                "KEEP THE ORIGINAL DESIGN.",
+                (self.root / name).read_text(encoding="utf-8"),
+            )
 
     def test_check_reports_drift_without_modifying_any_file(self):
         state_tools.project(self.root, write=True)
         path = self.root / state_tools.DOCS[0]
-        path.write_text(path.read_text(encoding="utf-8").replace("source_present", "stale", 1), encoding="utf-8")
+        path.write_text(
+            path.read_text(encoding="utf-8").replace("source_present", "stale", 1),
+            encoding="utf-8",
+        )
         before = {str(p): p.read_bytes() for p in self.root.rglob("*") if p.is_file()}
         self.assertIn(state_tools.DOCS[0], state_tools.project(self.root))
         after = {str(p): p.read_bytes() for p in self.root.rglob("*") if p.is_file()}
@@ -82,7 +103,10 @@ class SourceStateTests(unittest.TestCase):
             for value in (True, 0, "false", None):
                 changed = copy.deepcopy(self.value)
                 changed["completion"][flag] = value
-                with self.subTest(flag=flag, value=value), self.assertRaises(ValueError):
+                with (
+                    self.subTest(flag=flag, value=value),
+                    self.assertRaises(ValueError),
+                ):
                     state_tools.validate(changed, self.root)
 
     def test_execution_pass_is_not_a_source_state(self):
@@ -112,17 +136,32 @@ class SourceStateTests(unittest.TestCase):
             state_tools.validate(self.value, self.root)
 
     def test_scope_escape_and_noncanonical_paths_are_rejected(self):
-        for path in ("../escape", "/absolute", "C:/escape", "docs/../escape", "docs//x", "docs/./x", "docs\\x", "secrets/key"):
+        for path in (
+            "../escape",
+            "/absolute",
+            "C:/escape",
+            "docs/../escape",
+            "docs//x",
+            "docs/./x",
+            "docs\\x",
+            "secrets/key",
+        ):
             with self.subTest(path=path), self.assertRaises(ValueError):
                 state_tools.safe_file(self.root, path, must_exist=False)
 
     def test_duplicate_and_incomplete_generated_markers_are_rejected(self):
-        for original in ("# A\n" + state_tools.START, state_tools.START + state_tools.END + state_tools.START, state_tools.END + state_tools.START):
+        for original in (
+            "# A\n" + state_tools.START,
+            state_tools.START + state_tools.END + state_tools.START,
+            state_tools.END + state_tools.START,
+        ):
             with self.subTest(original=original), self.assertRaises(ValueError):
                 state_tools.replace_block(original, "replacement")
 
     def test_projection_refuses_disagreeing_completion(self):
-        mapping = {"full_completion_predicate": {name: True for name in state_tools.FLAGS}}
+        mapping = {
+            "full_completion_predicate": {name: True for name in state_tools.FLAGS}
+        }
         (self.root / state_tools.MAP).write_text(json.dumps(mapping), encoding="utf-8")
         with self.assertRaises(ValueError):
             state_tools.project(self.root, write=True)

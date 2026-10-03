@@ -5,6 +5,7 @@ No Rust subprocess, generated digest, or fixture rewrite is used to compute the
 expected bytes. This checks the deterministic fixture; it is not a benchmark,
 production acceptance receipt, or evidence of randomized-path coverage.
 """
+
 from __future__ import annotations
 
 import argparse
@@ -50,38 +51,63 @@ def compute(fixture: dict) -> dict[str, str]:
     stable_id = integer(len(name), 32) + name
     count = integer(1, 32)
     identity = digest(
-        b"hepta.intuition.candidate-identity.v2\0" + count + stable_id
-        + flag(fixture["legal"]) + flag(fixture["hardVeto"])
+        b"hepta.intuition.candidate-identity.v2\0"
+        + count
+        + stable_id
+        + flag(fixture["legal"])
+        + flag(fixture["hardVeto"])
         + digest(text(fixture["supportLabel"]))
     )
     scores = digest(
-        b"hepta.intuition.scored-outputs.v2\0" + identity + count + stable_id
+        b"hepta.intuition.scored-outputs.v2\0"
+        + identity
+        + count
+        + stable_id
         + integer(fixture["utilityRawI64"], 64, signed=True)
         + probability(fixture["confidenceRawU64"])
         + probability(fixture["oodRawU64"])
     )
     distribution = digest(
-        b"hepta.intuition.assignment-distribution.v2\0" + identity + count + stable_id
+        b"hepta.intuition.assignment-distribution.v2\0"
+        + identity
+        + count
+        + stable_id
         + probability(fixture["assignmentProbabilityRawU64"])
-        + b"\0" + integer(0, 64)
+        + b"\0"
+        + integer(0, 64)
     )
     generation = fixture["policyGenerationU64"]
     if type(generation) is not int or generation <= 0:
         raise ValueError("policy generation must be nonzero")
     scoring = digest(
         b"hepta.intuition.scoring-commitment.v2\0"
-        + b"".join(digest(text(fixture[key])) for key in (
-            "modelLabel", "featureSnapshotLabel", "featureSchemaLabel", "scorerContractLabel"
-        ))
-        + identity + scores + digest(text(fixture["policyLabel"]))
+        + b"".join(
+            digest(text(fixture[key]))
+            for key in (
+                "modelLabel",
+                "featureSnapshotLabel",
+                "featureSchemaLabel",
+                "scorerContractLabel",
+            )
+        )
+        + identity
+        + scores
+        + digest(text(fixture["policyLabel"]))
         + integer(generation, 64)
     )
-    assignment = digest(b"hepta.intuition.assignment-commitment.v2\0" + b"\0" + distribution)
-    return {key: value.hex() for key, value in (
-        ("candidateIdentityV2", identity), ("scoredOutputsV2", scores),
-        ("assignmentDistributionV2", distribution), ("scoringCommitmentV2", scoring),
-        ("assignmentCommitmentV2", assignment)
-    )}
+    assignment = digest(
+        b"hepta.intuition.assignment-commitment.v2\0" + b"\0" + distribution
+    )
+    return {
+        key: value.hex()
+        for key, value in (
+            ("candidateIdentityV2", identity),
+            ("scoredOutputsV2", scores),
+            ("assignmentDistributionV2", distribution),
+            ("scoringCommitmentV2", scoring),
+            ("assignmentCommitmentV2", assignment),
+        )
+    }
 
 
 def unique_object(pairs: list[tuple[str, object]]) -> dict:
@@ -94,7 +120,9 @@ def unique_object(pairs: list[tuple[str, object]]) -> dict:
 
 
 def verify(path: Path) -> dict:
-    document = json.loads(path.read_text(encoding="utf-8"), object_pairs_hook=unique_object)
+    document = json.loads(
+        path.read_text(encoding="utf-8"), object_pairs_hook=unique_object
+    )
     if document["schema"] != "hepta.intuition.production-contract-golden.v1":
         raise ValueError("unsupported golden schema")
     actual = compute(document["fixture"])
@@ -109,7 +137,11 @@ def verify(path: Path) -> dict:
         fixture["confidenceRawU64"] = rng.randrange((1 << 32) + 1)
         fixture["oodRawU64"] = rng.randrange((1 << 32) + 1)
         changed = compute(fixture)
-        for key in ("candidateIdentityV2", "assignmentDistributionV2", "assignmentCommitmentV2"):
+        for key in (
+            "candidateIdentityV2",
+            "assignmentDistributionV2",
+            "assignmentCommitmentV2",
+        ):
             if changed[key] != actual[key]:
                 raise ValueError("scorer field leaked into " + key)
         if changed["scoredOutputsV2"] == actual["scoredOutputsV2"]:
