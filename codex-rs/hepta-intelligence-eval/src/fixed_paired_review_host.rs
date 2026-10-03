@@ -396,3 +396,17 @@ fn run_review(path: &Path, parameter_mode: bool) -> HostResult<()> {
     println!("{report}");
     Ok(())
 }
+
+pub(crate) fn validate_paired_parameter_review_config(bytes: &[u8]) -> HostResult<()> {
+    let config: Config = serde_json::from_slice(bytes)?;
+    if config.schema != "hepta.fixed-paired-review-config.v1"
+        || config.uid == 0
+        || config.gid == 0
+        || config.inaccessible_paths.len() != 5
+        || config.self_iteration_consumer.is_some()
+        || config.parameter_evaluation.is_none()
+    {
+        return Err("original parameter review purpose configuration".into());
+    }
+    Ok(())
+}

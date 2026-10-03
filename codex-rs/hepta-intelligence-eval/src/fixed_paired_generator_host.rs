@@ -149,7 +149,7 @@ pub fn run_fixed_paired_generator(path: &Path) -> Result<()> {
     let config: Config = serde_json::from_slice(&config_bytes)?;
     if config.schema != "hepta.fixed-paired-generator-config.v1"
         || config.uid == 0
-        || config.uid != config.gid
+        || config.gid == 0
         || config.inaccessible_paths.len() != 5
         || config.distribution_generation == 0
         || config.authority_epoch == 0
@@ -346,4 +346,36 @@ pub(super) fn measured_contract(original: Digest32, bytes: &[u8]) -> Digest32 {
         ]
         .concat(),
     )
+}
+
+pub(crate) fn validate_paired_parameter_generator_config(bytes: &[u8]) -> Result<()> {
+    let config: Config = serde_json::from_slice(bytes)?;
+    if config.schema != "hepta.fixed-paired-generator-config.v1"
+        || config.uid == 0
+        || config.gid == 0
+        || config.inaccessible_paths.len() != 5
+        || config.distribution_generation == 0
+        || config.authority_epoch == 0
+    {
+        return Err("original paired G configuration boundary".into());
+    }
+    Ok(())
+}
+pub(crate) fn replace_paired_parameter_generator_plan(
+    bytes: &[u8],
+    plan: &PairedReviewSourcePlanV1,
+) -> Result<Vec<u8>> {
+    let input: Inputs = serde_json::from_slice(bytes)?;
+    if input.schema != "hepta.eval.paired-supervised.public-generator-inputs.v1"
+        || plan.tasks.iter().any(|task| {
+            !task.candidate_input_digest.is_zero() || !task.baseline_input_digest.is_zero()
+        })
+    {
+        return Err("fresh original paired G inputs".into());
+    }
+    let mut value: serde_json::Value = serde_json::from_slice(bytes)?;
+    value["plan_inputs_hex"] = serde_json::Value::String(hex(&plan.encode()?));
+    let output = serde_json::to_vec(&value)?;
+    let _: Inputs = serde_json::from_slice(&output)?;
+    Ok(output)
 }

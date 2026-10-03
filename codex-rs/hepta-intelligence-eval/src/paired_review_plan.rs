@@ -204,3 +204,15 @@ impl Wire for PairedMetricKindV1 {
         }
     }
 }
+
+/// Sole original full plan codec; decoding grants no registration or G custody.
+pub fn encode_original_paired_review_source_plan_v1(
+    value: &PairedReviewSourcePlanV1,
+) -> Result<Vec<u8>, Box<dyn std::error::Error>> {
+    Ok(value.encode()?)
+}
+pub fn decode_original_paired_review_source_plan_v1(
+    bytes: &[u8],
+) -> Result<PairedReviewSourcePlanV1, Box<dyn std::error::Error>> {
+    Ok(PairedReviewSourcePlanV1::decode(bytes)?)
+}

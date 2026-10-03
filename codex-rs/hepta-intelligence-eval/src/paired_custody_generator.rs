@@ -68,7 +68,7 @@ impl Inputs {
                 .parse::<Digest32>()?
                 .is_zero()
             || publication.generator_uid == 0
-            || publication.generator_gid != publication.generator_uid
+            || publication.generator_gid == 0
             || !publication
                 .generator_cgroup
                 .starts_with("0::/system.slice/hepta-native-generator-")

@@ -454,3 +454,15 @@ pub fn finish_fixed_paired_custody(path: &Path) -> HostResult<()> {
 #[path = "fixed_paired_finish_write_paths.rs"]
 mod write_paths;
 pub use write_paths::fixed_paired_finish_write_paths_v1;
+
+pub(crate) fn validate_paired_parameter_finish_config(bytes: &[u8]) -> HostResult<()> {
+    let config: Config = serde_json::from_slice(bytes)?;
+    if config.schema != "hepta.fixed-paired-custody-finish-config.v1"
+        || config.self_iteration.is_some()
+        || config.parameter_evaluation.is_none()
+        || config.evidence_path.parent() == config.ack_path.parent()
+    {
+        return Err("original parameter FULL finish configuration".into());
+    }
+    Ok(())
+}

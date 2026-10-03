@@ -76,6 +76,8 @@ mod paired_review_plan;
 mod paired_review_transport;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use paired_review_plan::PairedReviewSourcePlanV1;
+pub use paired_review_plan::decode_original_paired_review_source_plan_v1;
+pub use paired_review_plan::encode_original_paired_review_source_plan_v1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use paired_review_transport::encode_paired_review_publication_v1;
 mod paired_supervised_estimate;
@@ -594,10 +596,14 @@ mod fixed_parameter_no_change_host;
 mod fixed_parameter_preparation_review;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_parameter_no_change_host::FixedParameterEvaluatorConfigV1;
+#[cfg(feature = "fixed-eval-host")]
+pub use fixed_parameter_preparation_review::CompletedParameterEvaluationsV1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_parameter_preparation_review::FixedParameterCompletedReviewSourceV1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_parameter_preparation_review::FixedParameterEvaluationSourceV1;
+#[cfg(feature = "fixed-eval-host")]
+pub use fixed_parameter_preparation_review::inspect_completed_parameter_evaluations_v1;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 mod fixed_parameter_inputs;
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
@@ -852,3 +858,12 @@ pub use fixed_parameter_serving_scope_host::run_fixed_parameter_serving_scope_ev
 
 #[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub use fixed_parameter_serving_scope_host::encode_fixed_parameter_serving_scope_inputs_v1;
+
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+mod paired_parameter_configuration;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use paired_parameter_configuration::OriginalPairedParameterConfigurationV1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use paired_parameter_configuration::project_original_paired_parameter_configuration_v1;
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+pub use paired_parameter_configuration::project_original_paired_parameter_generator_inputs_v1;

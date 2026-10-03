@@ -50,7 +50,144 @@ struct Finished {
     production_activation: bool,
     parameter_evaluation_material_hex: String,
 }
-pub(crate) fn replay_rejected_preparation(
+type OriginalEvaluation = (
+    IndependentEvaluationBundleV1,
+    Vec<MetricRoleContractV2>,
+    SignedEvaluationEvidenceV1,
+);
+
+/// Complete measured parts from the original custody and FULL acknowledgement.
+/// This result grants no artifact registration, selection or activation.
+pub struct CompletedParameterEvaluationsV1 {
+    evaluations: Vec<OriginalEvaluation>,
+    dispositions: Vec<IndependentEvaluationDispositionV1>,
+    reports: Vec<String>,
+}
+impl CompletedParameterEvaluationsV1 {
+    pub fn evaluations(&self) -> &[OriginalEvaluation] {
+        &self.evaluations
+    }
+    pub fn dispositions(&self) -> &[IndependentEvaluationDispositionV1] {
+        &self.dispositions
+    }
+    pub fn into_original_evaluations(self) -> Vec<OriginalEvaluation> {
+        self.evaluations
+    }
+}
+
+/// Read every completed actual Update through the same original measurement,
+/// signed decision and FULL ACK checks used by the rejected-preparation owner.
+/// Trust is supplied by the independently installed host, never these Sources.
+pub fn inspect_completed_parameter_evaluations_v1(
+    inputs: &[FixedParameterCompletedReviewSourceV1],
+    round: &ParameterEvaluationRoundBindingV1,
+    profile: &ParameterGeneratorProfileV3,
+    admission: &PlasticityAdmissionEvidenceV1,
+    generator: &SignedLearningEvidenceV1,
+    observer: &SignedLearningEvidenceV1,
+    reviewer: &AuthenticatedPrincipalV1,
+    trust: &ActivatedLearningTrustV1,
+    now: u64,
+) -> HostResult<CompletedParameterEvaluationsV1> {
+    let generated = generate_parameter_candidates_v3(profile.clone())?;
+    validate_parameter_admission_binding_v1(profile, &generated, admission)?;
+    let validate_actors = |at| -> HostResult<()> {
+        if at < round.admitted_at_ms
+            || at >= round.deadline_ms
+            || [
+                round.round_identity_digest,
+                round.round_payload_digest,
+                round.canonical_policy_digest,
+                round.execution_envelope_digest,
+            ]
+            .iter()
+            .any(|pin| pin.is_zero())
+        {
+            return Err("original completed E Round/window".into());
+        }
+        trust.revalidate_at(at)?;
+        let g = trust.verifier().verify(
+            LearningEvidenceRoleV1::Generator,
+            generator,
+            &parameter_generator_signing_payload_v3(&generated),
+            at,
+        )?;
+        let o = trust.verifier().verify(
+            LearningEvidenceRoleV1::Observer,
+            observer,
+            &plasticity_admission_signing_payload_v1(admission),
+            at,
+        )?;
+        for actor in [&g, &o] {
+            verify_independent_roles(actor.principal(), reviewer, at)?;
+        }
+        Ok(())
+    };
+    validate_actors(now)?;
+    let completed = replay_completed(
+        inputs, &generated, admission, generator, reviewer, trust, now,
+    )?;
+    let final_now = crate::fixed_calibration_host::now_ms()?;
+    if final_now < now {
+        return Err("original completed review clock rollback".into());
+    }
+    validate_actors(final_now)?;
+    for (bundle, roles, evidence) in &completed.evaluations {
+        crate::signed_evaluation::decide_with_signed_evidence_v2(
+            bundle.clone(),
+            roles.clone(),
+            evidence,
+            trust.verifier(),
+            final_now,
+        )?;
+        let e = trust.verifier().verify(
+            LearningEvidenceRoleV1::Evaluator,
+            &evidence.evaluator_bundle,
+            &evaluation_signing_payload_v2(bundle, roles)?,
+            final_now,
+        )?;
+        for actor in [
+            trust.verifier().verify(
+                LearningEvidenceRoleV1::Generator,
+                generator,
+                &parameter_generator_signing_payload_v3(&generated),
+                final_now,
+            )?,
+            trust.verifier().verify(
+                LearningEvidenceRoleV1::Observer,
+                observer,
+                &plasticity_admission_signing_payload_v1(admission),
+                final_now,
+            )?,
+        ] {
+            verify_signed_role_separation(&actor, &e, final_now)?;
+        }
+    }
+    for input in inputs {
+        input
+            .publication
+            .read(crate::paired_review_transport::MAX_REVIEW_PUBLICATION_BYTES)?;
+        input.result.read(3 * 1024 * 1024)?;
+        input.acknowledgement.read(65)?;
+    }
+    let settled = crate::fixed_calibration_host::now_ms()?;
+    if settled < final_now {
+        return Err("completed E final clock rollback".into());
+    }
+    validate_actors(settled)?;
+    for (bundle, roles, evidence) in &completed.evaluations {
+        crate::signed_evaluation::decide_with_signed_evidence_v2(
+            bundle.clone(),
+            roles.clone(),
+            evidence,
+            trust.verifier(),
+            settled,
+        )?;
+    }
+    Ok(completed)
+}
+
+fn replay_completed(
     inputs: &[FixedParameterCompletedReviewSourceV1],
     generated: &GeneratedParameterCandidateSetV3,
     admission: &PlasticityAdmissionEvidenceV1,
@@ -58,7 +195,7 @@ pub(crate) fn replay_rejected_preparation(
     reviewer: &AuthenticatedPrincipalV1,
     trust: &ActivatedLearningTrustV1,
     now: u64,
-) -> HostResult<(Vec<u8>, SelfIterationPreparationDispositionV1)> {
+) -> HostResult<CompletedParameterEvaluationsV1> {
     let expected: BTreeSet<_> = generated
         .candidates
         .iter()
@@ -70,7 +207,8 @@ pub(crate) fn replay_rejected_preparation(
     }
     let mut actual = BTreeSet::new();
     let mut reports = Vec::new();
-    let mut insufficient = false;
+    let mut evaluations = Vec::new();
+    let mut dispositions = Vec::new();
     for input in inputs {
         let original = input
             .publication
@@ -141,8 +279,8 @@ pub(crate) fn replay_rejected_preparation(
             );
         }
         let decision = crate::signed_evaluation::decide_with_signed_evidence_v2(
-            measured,
-            measured_roles,
+            measured.clone(),
+            measured_roles.clone(),
             &evidence,
             trust.verifier(),
             now,
@@ -154,20 +292,43 @@ pub(crate) fn replay_rejected_preparation(
         {
             return Err("original preparation measured disposition mismatch".into());
         }
-        match decision.decision.disposition {
-            IndependentEvaluationDispositionV1::EligibleForIndependentSelection => {
-                return Err(
-                    "an eligible measured candidate cannot be preparation-terminal rejected".into(),
-                );
-            }
-            IndependentEvaluationDispositionV1::InsufficientEvidence => insufficient = true,
-            IndependentEvaluationDispositionV1::Ineligible => (),
-        }
+        dispositions.push(decision.decision.disposition);
+        evaluations.push((measured, measured_roles, evidence));
         reports.push(hex(&result));
     }
     if actual != expected {
         return Err("original measured preparation coverage changed".into());
     }
+    Ok(CompletedParameterEvaluationsV1 {
+        evaluations,
+        dispositions,
+        reports,
+    })
+}
+
+pub(crate) fn replay_rejected_preparation(
+    inputs: &[FixedParameterCompletedReviewSourceV1],
+    generated: &GeneratedParameterCandidateSetV3,
+    admission: &PlasticityAdmissionEvidenceV1,
+    generator: &SignedLearningEvidenceV1,
+    reviewer: &AuthenticatedPrincipalV1,
+    trust: &ActivatedLearningTrustV1,
+    now: u64,
+) -> HostResult<(Vec<u8>, SelfIterationPreparationDispositionV1)> {
+    let completed = replay_completed(
+        inputs, generated, admission, generator, reviewer, trust, now,
+    )?;
+    if completed
+        .dispositions
+        .contains(&IndependentEvaluationDispositionV1::EligibleForIndependentSelection)
+    {
+        return Err(
+            "an eligible measured candidate cannot be preparation-terminal rejected".into(),
+        );
+    }
+    let insufficient = completed
+        .dispositions
+        .contains(&IndependentEvaluationDispositionV1::InsufficientEvidence);
     let disposition = if insufficient {
         SelfIterationPreparationDispositionV1::InsufficientEvidence
     } else {
@@ -177,7 +338,7 @@ pub(crate) fn replay_rejected_preparation(
         "schema":"hepta.parameter.measured-preparation-disposition.v1",
         "generated_digest":generated.generator_digest.to_string(),
         "admission_digest":Digest32::of_bytes(&plasticity_admission_signing_payload_v1(admission)).to_string(),
-        "original_custody_completed_reports_hex":reports,
+        "original_custody_completed_reports_hex":completed.reports,
         "disposition":if insufficient {"insufficient_evidence"}else{"ineligible"},
     }))?;
     if summary.len() > MAX_PARAMETER_ROLE_MATERIAL_BYTES_V1 {

@@ -598,3 +598,18 @@ pub fn verify_original_observer_controller(
 #[path = "fixed_paired_custody_write_paths.rs"]
 mod write_paths;
 pub use write_paths::fixed_paired_execution_write_paths_v1;
+
+pub(crate) fn validate_paired_parameter_execution_config(bytes: &[u8]) -> HostResult<()> {
+    let config: Config = serde_json::from_slice(bytes)?;
+    if config.schema
+        != format!(
+            "hepta.fixed-paired-custody-execution-config.v{}",
+            config.withdrawal.version()
+        )
+        || !(1..=120_000).contains(&config.absolute_budget_ms)
+        || config.operation_expires_at_ms == 0
+    {
+        return Err("original paired custody execution configuration".into());
+    }
+    Ok(())
+}
