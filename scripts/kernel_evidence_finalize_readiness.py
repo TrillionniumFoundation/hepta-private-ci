@@ -91,7 +91,9 @@ def audit_structure_errors(audit: dict[str, Any]) -> list[str]:
                 errors.append(f"receipt audit authority.{key} must be exactly false")
 
     qualifications = audit.get("qualificationReceipts")
-    if not isinstance(qualifications, dict) or set(qualifications) != set(QUALIFICATION_KINDS):
+    if not isinstance(qualifications, dict) or set(qualifications) != set(
+        QUALIFICATION_KINDS
+    ):
         errors.append("receipt audit qualification inventory is not closed-world")
     else:
         for kind in QUALIFICATION_KINDS:
@@ -107,7 +109,9 @@ def audit_structure_errors(audit: dict[str, Any]) -> list[str]:
     if not isinstance(summary, dict) or summary.get("passed") is not True:
         errors.append("receipt audit crash summary did not pass")
     scenarios = crash.get("scenarios")
-    if not isinstance(scenarios, dict) or set(scenarios) != set(REQUIRED_CRASH_SCENARIOS):
+    if not isinstance(scenarios, dict) or set(scenarios) != set(
+        REQUIRED_CRASH_SCENARIOS
+    ):
         errors.append("receipt audit crash scenario inventory is not closed-world")
     else:
         for scenario in REQUIRED_CRASH_SCENARIOS:
@@ -143,7 +147,9 @@ def audit_identity_errors(manifest: dict[str, Any], audit: dict[str, Any]) -> li
     return errors
 
 
-def runtime_identity_errors(manifest: dict[str, Any], runtime: dict[str, Any]) -> list[str]:
+def runtime_identity_errors(
+    manifest: dict[str, Any], runtime: dict[str, Any]
+) -> list[str]:
     pairs = (
         ("asOfCommit", "source_head_sha"),
         ("asOfTree", "source_head_tree"),

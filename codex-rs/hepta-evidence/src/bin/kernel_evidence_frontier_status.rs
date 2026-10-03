@@ -49,9 +49,9 @@ fn parse_arguments(
     let mut arguments = arguments.into_iter();
 
     while let Some(flag) = arguments.next() {
-        let value = arguments.next().ok_or_else(|| {
-            CliError(format!("missing value for {}", flag.to_string_lossy()))
-        })?;
+        let value = arguments
+            .next()
+            .ok_or_else(|| CliError(format!("missing value for {}", flag.to_string_lossy())))?;
         let slot = match flag.to_str() {
             Some("--backend-root") => &mut backend_root,
             Some("--backend-identity-sha256") => &mut backend_identity_sha256,
@@ -73,21 +73,16 @@ fn parse_arguments(
     }
 
     let backend_root = PathBuf::from(required(backend_root, "--backend-root")?);
-    let local_rollback_root = PathBuf::from(required(
-        local_rollback_root,
-        "--local-rollback-root",
-    )?);
+    let local_rollback_root =
+        PathBuf::from(required(local_rollback_root, "--local-rollback-root")?);
     if !backend_root.is_absolute() || !local_rollback_root.is_absolute() {
         return Err(CliError(
             "backend and local rollback roots must be absolute".to_string(),
         ));
     }
-    let backend_identity_sha256 = required(
-        backend_identity_sha256,
-        "--backend-identity-sha256",
-    )?
-    .into_string()
-    .map_err(|_| CliError("backend identity digest is not UTF-8".to_string()))?;
+    let backend_identity_sha256 = required(backend_identity_sha256, "--backend-identity-sha256")?
+        .into_string()
+        .map_err(|_| CliError("backend identity digest is not UTF-8".to_string()))?;
     let backend_identity_sha256 = Sha256Digest::parse(backend_identity_sha256)
         .map_err(|error| CliError(format!("invalid backend identity digest: {error}")))?;
     let store_id = required(store_id, "--store-id")?

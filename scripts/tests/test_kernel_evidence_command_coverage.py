@@ -32,14 +32,20 @@ class QualificationCommandCoverageTests(unittest.TestCase):
                 self.assertIn("--locked", shlex.split(command[2]))
 
     def test_product_plan_runs_library_and_every_registered_integration_target(self):
-        tokens = shlex.split(validation.EXPECTED_COMMANDS["agentd-product-test.json"][2])
+        tokens = shlex.split(
+            validation.EXPECTED_COMMANDS["agentd-product-test.json"][2]
+        )
         self.assertEqual(tokens.count("--lib"), 1)
-        observed = [tokens[i + 1] for i, token in enumerate(tokens) if token == "--test"]
+        observed = [
+            tokens[i + 1] for i, token in enumerate(tokens) if token == "--test"
+        ]
         self.assertEqual(observed, list(PRODUCT_TARGETS))
 
     def test_both_workflow_lanes_execute_the_admitted_commands(self):
         workflow = ROOT / ".github/workflows/hepta-kernel-evidence-qualification.yml"
-        commands = re.findall(r"bash -lc '([^'\n]+)'", workflow.read_text(encoding="utf-8"))
+        commands = re.findall(
+            r"bash -lc '([^'\n]+)'", workflow.read_text(encoding="utf-8")
+        )
         for name in validation.TEST_RECORDS:
             with self.subTest(name=name):
                 expected = validation.EXPECTED_COMMANDS[name][2]
@@ -56,8 +62,7 @@ class QualificationCommandCoverageTests(unittest.TestCase):
             current[2].replace(" --lib", "", 1),
         ]
         weakened.extend(
-            current[2].replace(f" --test {target}", "", 1)
-            for target in PRODUCT_TARGETS
+            current[2].replace(f" --test {target}", "", 1) for target in PRODUCT_TARGETS
         )
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
@@ -107,7 +112,10 @@ class QualificationCommandCoverageTests(unittest.TestCase):
                 record["command"] = command
                 (root / name).write_text(json.dumps(record), encoding="utf-8")
                 return validation.inspect_execution_record(
-                    root, name, expected=expected, identity=identity,
+                    root,
+                    name,
+                    expected=expected,
+                    identity=identity,
                     working_directory=directory,
                 )
 

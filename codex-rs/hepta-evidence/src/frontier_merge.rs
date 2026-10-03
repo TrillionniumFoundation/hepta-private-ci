@@ -252,7 +252,9 @@ pub fn verify_frontier_repair_authorization(
     if now_unix_ms < authorization.issued_at_unix_ms
         || now_unix_ms > authorization.expires_at_unix_ms
     {
-        return Err(invalid("frontier repair authorization is not currently valid"));
+        return Err(invalid(
+            "frontier repair authorization is not currently valid",
+        ));
     }
     match classify_frontier_merge(current, target) {
         FrontierMergeDecision::IncomingWins | FrontierMergeDecision::RepairRequired => {}
@@ -334,7 +336,9 @@ fn validate_authority(
         || now_unix_ms < authority.not_before_unix_ms
         || now_unix_ms > authority.not_after_unix_ms
     {
-        return Err(invalid("frontier repair authority is unavailable or revoked"));
+        return Err(invalid(
+            "frontier repair authority is unavailable or revoked",
+        ));
     }
     StableId::new(authority.authority_key_id.clone())
         .map_err(|error| invalid(format!("invalid repair authority key id: {error}")))?;

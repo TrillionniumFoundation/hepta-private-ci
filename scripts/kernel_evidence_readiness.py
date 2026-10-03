@@ -66,7 +66,9 @@ def inventory_hash(root: Path, paths: Iterable[Path]) -> str:
 
 
 def tree_files(path: Path) -> list[Path]:
-    return [entry for entry in path.rglob("*") if entry.is_file()] if path.exists() else []
+    return (
+        [entry for entry in path.rglob("*") if entry.is_file()] if path.exists() else []
+    )
 
 
 def parse_named_paths(values: list[str]) -> dict[str, Path]:
@@ -128,9 +130,13 @@ def qualification_receipt_status(
 
     try:
         value = load_json(path)
-        expected_merge = deterministic_merge_sha if kind == "deterministic_merge" else None
+        expected_merge = (
+            deterministic_merge_sha if kind == "deterministic_merge" else None
+        )
         expected_tested_object = (
-            deterministic_merge_sha if kind == "deterministic_merge" else source_head_sha
+            deterministic_merge_sha
+            if kind == "deterministic_merge"
+            else source_head_sha
         )
         passed = (
             value.get("schemaVersion") == 2
@@ -169,7 +175,9 @@ def qualification_receipt_status(
             }
         )
         if not passed:
-            entry["error"] = "receipt identity, execution, or authority boundary is invalid"
+            entry["error"] = (
+                "receipt identity, execution, or authority boundary is invalid"
+            )
     except (OSError, ValueError, json.JSONDecodeError) as error:
         entry["error"] = str(error)
     return entry
@@ -298,7 +306,9 @@ def validate_runtime_status(
         "sha256": sha256_file(path),
         "asOfCommit": status.get("asOfCommit"),
         "asOfTree": status.get("asOfTree"),
-        "error": None if exact else "runtime STATUS_SOURCE is not bound to the exact tested object",
+        "error": None
+        if exact
+        else "runtime STATUS_SOURCE is not bound to the exact tested object",
         "value": status,
     }
 
@@ -354,7 +364,12 @@ def build_manifest(
         ("final merge", final_merge_sha),
     ):
         require_oid(oid, label, optional=True)
-    if not workflow_run_id or not workflow_run_attempt or not runner_image or not target_triple:
+    if (
+        not workflow_run_id
+        or not workflow_run_attempt
+        or not runner_image
+        or not target_triple
+    ):
         raise ValueError("workflow, runner, and target identity must be non-empty")
 
     root = root.resolve()
@@ -488,9 +503,7 @@ def build_manifest(
         "artifact_hashes": artifact_hashes,
         "status_identity": {
             "runtime": {
-                key: value
-                for key, value in runtime_status.items()
-                if key != "value"
+                key: value for key, value in runtime_status.items() if key != "value"
             },
             "checked_in_implementation_source": {
                 "path": str(checked_in_status_source),
@@ -535,9 +548,7 @@ def build_manifest(
 
 def atomic_json(path: Path, value: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
-    descriptor, temporary_name = tempfile.mkstemp(
-        dir=path.parent, prefix=".readiness-"
-    )
+    descriptor, temporary_name = tempfile.mkstemp(dir=path.parent, prefix=".readiness-")
     temporary = Path(temporary_name)
     try:
         with os.fdopen(descriptor, "w", encoding="utf-8") as stream:
