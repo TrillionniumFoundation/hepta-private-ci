@@ -246,38 +246,6 @@ pub fn sparse_cpu_neuron_parameter_diff_v2(
 pub fn validate_cpu_neuron_generation_material_v2(
     plan: &crate::CpuNeuronGenerationPlanV1,
 ) -> Result<(), AgentdError> {
-    plan.runtime
-        .validate_native(&plan.native)
-        .map_err(|value| validation::error(value.to_string()))?;
-    validation::validate_generation_plan(&plan.body, plan)?;
-    plan.store_context
-        .validate()
-        .map_err(|value| validation::error(value.to_string()))?;
-    plan.index_context
-        .validate()
-        .map_err(|value| validation::error(value.to_string()))?;
-    plan.witness_context
-        .validate()
-        .map_err(|value| validation::error(value.to_string()))?;
-    for path in [
-        &plan.model_manifest,
-        &plan.generation_store,
-        &plan.runtime_index,
-        &plan.witness,
-    ] {
-        if !path.is_absolute() || path.file_name().is_none() {
-            return Err(validation::error(
-                "generation material paths must be absolute files",
-            ));
-        }
-    }
-    if plan.generation_store == plan.runtime_index
-        || plan.generation_store == plan.witness
-        || plan.runtime_index == plan.witness
-    {
-        return Err(validation::error(
-            "generation material stores must be distinct",
-        ));
-    }
-    Ok(())
+    codex_hepta_neuron::validate_neuron_generation_material_v2(plan)
+        .map_err(crate::cpu_generation_material::map_error)
 }

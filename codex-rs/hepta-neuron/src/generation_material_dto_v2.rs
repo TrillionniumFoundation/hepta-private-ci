@@ -1,6 +1,5 @@
 //! Complete adapters for original immutable material; no runtime serde or authority.
-use crate::CpuNeuronGenerationPlanV1;
-use codex_hepta_neuron::*;
+use crate::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -193,7 +192,7 @@ pub(super) struct WitnessContext {
 }
 
 #[derive(Serialize, Deserialize)]
-#[serde(remote = "CpuNeuronGenerationPlanV1", deny_unknown_fields)]
+#[serde(remote = "NeuronGenerationMaterialV2", deny_unknown_fields)]
 pub(super) struct Plan {
     pub model_manifest: PathBuf,
     #[serde(with = "digest")]

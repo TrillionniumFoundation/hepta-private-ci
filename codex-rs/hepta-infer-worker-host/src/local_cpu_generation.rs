@@ -1,7 +1,6 @@
 //! Construct one actual durable generation behind its independently selected
 //! artifact gate. Parameters are owned by installer/compiler composition; model
 //! text and request bytes do not construct the admission capability.
-use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::Mutex;
 
@@ -12,15 +11,7 @@ use codex_hepta_agentd::AgentdNeuronOwnerV2;
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_infer_core::durable_control::DurableInferenceControl;
 use codex_hepta_neuron::FileNeuronWitnessStoreV2;
-use codex_hepta_neuron::JournalScope;
-use codex_hepta_neuron::NeuronBodyBundleIdentityV1;
-use codex_hepta_neuron::NeuronGenerationStoreContextV2;
-use codex_hepta_neuron::NeuronRuntimeConfigV1;
-use codex_hepta_neuron::NeuronRuntimeIndexContextV2;
 use codex_hepta_neuron::NeuronRuntimeV2;
-use codex_hepta_neuron::NeuronWitnessContextV2;
-use codex_hepta_neuron::SparseConfig;
-use codex_hepta_types::Digest32;
 
 use crate::CpuNeuronControlConfigV1;
 use crate::CpuNeuronInferenceControlV1;
@@ -36,21 +27,7 @@ pub enum CpuNeuronGenerationOpenModeV1 {
     Recover,
 }
 
-#[derive(Clone)]
-pub struct CpuNeuronGenerationPlanV1 {
-    pub model_manifest: PathBuf,
-    pub model_manifest_digest: Digest32,
-    pub generation_store: PathBuf,
-    pub runtime_index: PathBuf,
-    pub witness: PathBuf,
-    pub native: SparseConfig,
-    pub scope: JournalScope,
-    pub runtime: NeuronRuntimeConfigV1,
-    pub body: NeuronBodyBundleIdentityV1,
-    pub store_context: NeuronGenerationStoreContextV2,
-    pub index_context: NeuronRuntimeIndexContextV2,
-    pub witness_context: NeuronWitnessContextV2,
-}
+pub use codex_hepta_neuron::NeuronGenerationMaterialV2 as CpuNeuronGenerationPlanV1;
 
 /// Bootstrap a new Agent from admitted generation-one artifacts and empty
 /// physical stores. No selected predecessor or checkpoint is manufactured.

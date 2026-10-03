@@ -234,6 +234,15 @@ pub struct NeuronSignalReceipt {
     pub authority: AuthorityPosture,
 }
 
+mod generation_material_codec_v2;
+mod generation_material_v2;
+pub use generation_material_codec_v2::MAX_NEURON_GENERATION_MATERIAL_BYTES_V2;
+pub use generation_material_codec_v2::decode_neuron_generation_material_v2;
+pub use generation_material_codec_v2::encode_neuron_generation_material_v2;
+pub use generation_material_v2::NeuronGenerationMaterialErrorV2;
+pub use generation_material_v2::NeuronGenerationMaterialV2;
+pub use generation_material_v2::validate_neuron_generation_material_v2;
+
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum Error {
     EmptyFeatures,

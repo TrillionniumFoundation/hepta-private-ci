@@ -180,42 +180,15 @@ pub(super) fn validate_generation_plan(
     baseline: &NeuronBodyBundleIdentityV1,
     plan: &crate::CpuNeuronGenerationPlanV1,
 ) -> Result<(), AgentdError> {
-    let config = &plan.runtime;
+    codex_hepta_neuron::validate_neuron_generation_material_v2(plan)
+        .map_err(crate::cpu_generation_material::map_error)?;
     let body = &plan.body;
-    let config_digest = config
-        .semantic_digest()
-        .map_err(|value| error(value.to_string()))?;
-    let body_digest = body
-        .semantic_digest()
-        .map_err(|value| error(value.to_string()))?;
-    if config.native_config_digest
-        != plan
-            .native
-            .digest()
-            .map_err(|value| error(value.to_string()))?
-        || config.generation != plan.native.generation
-        || config.calibration.generation != config.generation
-        || config.model_manifest_digest != plan.model_manifest_digest
-        || config.head_digest != plan.native.model_digest
-        || config.normalization_digest != plan.native.normalization_digest
-        || config.state_width != plan.native.width
-        || body.body_generation != config.generation
-        || body.base_bundle_digest != baseline.base_bundle_digest
+    if body.base_bundle_digest != baseline.base_bundle_digest
         || body.organ_id != baseline.organ_id
         || body.organ_bundle_digest != baseline.organ_bundle_digest
         || body.cell_slot_id != baseline.cell_slot_id
         || body.cell_bundle_digest != baseline.cell_bundle_digest
         || body.source_revision_digest != baseline.source_revision_digest
-        || plan.store_context.generation != config.generation
-        || plan.store_context.scope != plan.scope
-        || plan.store_context.runtime_config_digest != config_digest
-        || plan.store_context.body_bundle_digest != body_digest
-        || plan.index_context.generation != config.generation
-        || plan.index_context.scope != plan.scope
-        || plan.index_context.runtime_config_digest != config_digest
-        || plan.index_context.body_bundle_digest != body_digest
-        || plan.witness_context.generation != config.generation
-        || plan.witness_context.scope != plan.scope
     {
         return Err(error(
             "CPU compiler changed body topology or generation-store context",
