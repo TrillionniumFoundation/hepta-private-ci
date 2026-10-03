@@ -15,6 +15,84 @@ import hepta_native_lifecycle_ci as ci
 ROOT = Path(__file__).resolve().parents[1]
 
 
+class JunitCollectionTests(unittest.TestCase):
+    def setUp(self):
+        self.directory = tempfile.TemporaryDirectory()
+        self.addCleanup(self.directory.cleanup)
+        self.root = Path(self.directory.name)
+        self.report = (
+            self.root / "apps/hepta-native/target/nextest/native-lifecycle/junit.xml"
+        )
+        self.report.parent.mkdir(parents=True)
+        self.evidence = self.root / "evidence"
+        self.evidence.mkdir()
+        self.env = {
+            **os.environ,
+            "CARGO_TARGET_DIR": str(self.root / "separate-build-target"),
+            "NATIVE_EVIDENCE": str(self.evidence),
+        }
+
+    def workflow_shell(self, name):
+        workflow = (ROOT / ci.WORKFLOW).read_text()
+        block = workflow.split(f"      - name: {name}\n", 1)[1].split(
+            "      - name:", 1
+        )[0]
+        script = block.split("        run: |\n", 1)[1]
+        return "\n".join(line[10:] for line in script.splitlines())
+
+    def collect(self):
+        script = self.workflow_shell("Retain JUnit and verify exact test coverage")
+        # Execute the actual shell copy. Routing bytes are not synthetic JUnit
+        # evidence, and the production verifier is never replaced or bypassed.
+        copy_line = next(line for line in script.splitlines() if line.startswith("cp "))
+        return subprocess.run(
+            ["bash", "-euo", "pipefail", "-c", copy_line],
+            cwd=self.root,
+            env=self.env,
+            capture_output=True,
+        )
+
+    def test_pinned_workspace_report_is_collected_with_separate_build_target(self):
+        self.report.write_bytes(b"path-routing fixture bytes; not a JUnit report")
+        result = self.collect()
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(
+            (self.evidence / "junit.xml").read_bytes(), self.report.read_bytes()
+        )
+
+    def test_missing_workspace_report_cannot_fall_back_to_build_target(self):
+        wrong = (
+            Path(self.env["CARGO_TARGET_DIR"]) / "nextest/native-lifecycle/junit.xml"
+        )
+        wrong.parent.mkdir(parents=True)
+        wrong.write_bytes(b"wrong-location fixture")
+        self.assertNotEqual(self.collect().returncode, 0)
+        self.assertFalse((self.evidence / "junit.xml").exists())
+
+    def test_preexisting_report_or_dangling_symlink_rejects_before_tests(self):
+        script = self.workflow_shell(
+            "Run complete ordinary native tests without retries"
+        )
+        guard = script.split("python3 scripts/hepta_ci_exec.py", 1)[0]
+        self.assertRegex(guard, r"test ! -e .*/junit\.xml")
+        self.assertRegex(guard, r"test ! -L .*/junit\.xml")
+        self.report.write_bytes(b"old report fixture")
+        for dangling in (False, True):
+            if dangling:
+                self.report.unlink()
+                self.report.symlink_to(self.root / "absent-old-target")
+            result = subprocess.run(
+                ["bash", "-c", guard],
+                cwd=self.root,
+                env=self.env,
+                capture_output=True,
+            )
+            self.assertNotEqual(result.returncode, 0)
+        self.report.unlink()
+        result = subprocess.run(["bash", "-c", guard], cwd=self.root, env=self.env)
+        self.assertEqual(result.returncode, 0)
+
+
 class CoverageTests(unittest.TestCase):
     def setUp(self):
         self.directory = tempfile.TemporaryDirectory()

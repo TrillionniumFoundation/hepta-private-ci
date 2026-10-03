@@ -116,6 +116,9 @@ jobs:
             bash -euo pipefail -c 'cargo +1.95.0 nextest list --manifest-path apps/hepta-native/Cargo.toml --locked --workspace --all-targets --config-file .github/config/native-lifecycle-nextest.toml --profile native-lifecycle --message-format json > "$NATIVE_EVIDENCE/inventory.json"'
       - name: Run complete ordinary native tests without retries
         run: |
+          set -euo pipefail
+          test ! -e apps/hepta-native/target/nextest/native-lifecycle/junit.xml
+          test ! -L apps/hepta-native/target/nextest/native-lifecycle/junit.xml
           python3 scripts/hepta_ci_exec.py --output "$NATIVE_EVIDENCE/tests.json" --minimum-tests 1 -- \
             just test --manifest-path ../apps/hepta-native/Cargo.toml --locked --workspace --all-targets \
             --config-file ../.github/config/native-lifecycle-nextest.toml --profile native-lifecycle --retries 0
@@ -133,7 +136,7 @@ jobs:
         if: ${{ !cancelled() && steps.bind.outcome == 'success' }}
         run: |
           set -euo pipefail
-          cp "$CARGO_TARGET_DIR/nextest/native-lifecycle/junit.xml" "$NATIVE_EVIDENCE/junit.xml"
+          cp apps/hepta-native/target/nextest/native-lifecycle/junit.xml "$NATIVE_EVIDENCE/junit.xml"
           python3 scripts/hepta_native_lifecycle_ci.py seal --out "$NATIVE_EVIDENCE"
       - name: Retain complete or partial source validation evidence
         if: always()
