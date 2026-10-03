@@ -13,9 +13,9 @@ from PIL import Image
 from playwright.sync_api import sync_playwright
 from qualify import APP, OUT, digest, require_no_scene_failures
 from package_resources import package_inventory
-from render_checks import login_pixels
+from render_checks import login_pixels, room_preview_pixels
 from web_usability import capture_login_usability
-from chat_usability import capture_theme_switches, capture_adaptive_handoff
+from chat_usability import capture_theme_switches, capture_adaptive_handoff, snapshots
 
 
 class Handler(http.server.SimpleHTTPRequestHandler):
@@ -156,6 +156,24 @@ def main():
                                     (OUT / f"web-login-{label}-pixels.json").write_text(
                                         json.dumps(login_pixels(image), indent=2)
                                     )
+                            if scene.startswith("chat-") and label == "wide":
+                                sample = snapshots(messages)[-1]
+                                try:
+                                    with Image.open(png) as pixels:
+                                        ink = room_preview_pixels(
+                                            pixels, sample["room_preview_geometry"]
+                                        )
+                                    result = {"pass": True, "ink": ink}
+                                except AssertionError as error:
+                                    result = {
+                                        "pass": False,
+                                        "error": str(error),
+                                        "geometry": sample["room_preview_geometry"],
+                                    }
+                                    scene_failures.append(f"{scene}: {error}")
+                                (OUT / f"web-{scene}-preview-ink.json").write_text(
+                                    json.dumps(result, indent=2)
+                                )
                             log = "\n".join(messages)
                             (OUT / f"web-{scene}-{label}.log").write_text(log)
                             assert not failures, failures

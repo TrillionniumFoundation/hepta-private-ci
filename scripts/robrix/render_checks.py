@@ -78,3 +78,63 @@ def login_pixels(image):
         "footerRgb": background,
         "inputCenterOffsets": offsets,
     }
+
+
+def room_preview_pixels(image, previews):
+    """Validate real synthetic snippet ink, not just a visible container box."""
+    from math import ceil, floor
+
+    image = image.convert("RGB")
+    assert len(previews) == 6, "Missing real room-preview geometry"
+    records = []
+    for index, preview in enumerate(previews):
+        x, y, width, height = preview["rect"]
+        font_size = preview["font_size"]
+        assert (
+            preview["row_height"] is not None and preview["row_height"] >= font_size
+        ), ("TextFlow still uses missing-font row metrics", index, preview)
+        left, top = ceil(x), floor(y)
+        right, bottom = floor(x + width), ceil(y + height)
+        assert 0 <= left < right <= image.width and 0 <= top < bottom <= image.height
+        foreground = tuple(round(c * 255) for c in preview["font_color"])
+        background = tuple(
+            median(image.getpixel((xx, bottom - 1))[c] for xx in range(left, right))
+            for c in range(3)
+        )
+        rows = []
+        for yy in range(top, bottom):
+            count = sum(
+                max(abs(a - b) for a, b in zip(image.getpixel((xx, yy)), foreground))
+                <= 55
+                and contrast(image.getpixel((xx, yy)), background) >= 4.5
+                for xx in range(left, right)
+            )
+            if count >= 2:
+                rows.append(yy)
+        bands = []
+        for yy in rows:
+            if not bands or yy > bands[-1][-1] + 2:
+                bands.append([])
+            bands[-1].append(yy)
+        record = {
+            "index": index,
+            "rect": preview["rect"],
+            "fontSize": font_size,
+            "rowHeight": preview["row_height"],
+            "bands": [[b[0], b[-1]] for b in bands],
+            "topInkOffset": rows[0] - y if rows else None,
+        }
+        records.append(record)
+        assert bands and len(bands) <= 2, ("Missing/excess snippet ink rows", record)
+        assert rows[0] - y <= font_size * 0.6, (
+            "Snippet ink baseline is displaced",
+            record,
+        )
+        assert all(b[-1] - b[0] + 1 >= ceil(font_size * 0.55) for b in bands), (
+            "Snippet row is sliced through its glyphs",
+            record,
+        )
+        # The fixed Foundation sample deliberately wraps to two real lines.
+        if index == 2:
+            assert len(bands) == 2, ("Two-line sample lost its second ink row", record)
+    return records

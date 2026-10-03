@@ -797,7 +797,7 @@ impl AppMain for App {
         if matches!(event, Event::Draw(_)) {
             crate::shared::hepta_theme::paint(cx);
         }
-        #[cfg(all(feature = "ui-fixture", target_arch = "wasm32"))]
+        #[cfg(feature = "ui-fixture")]
         ui_fixture::observation::observe(self, cx, event);
 
     }

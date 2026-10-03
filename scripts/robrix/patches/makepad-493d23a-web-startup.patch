@@ -265,3 +265,153 @@ index 00000000..907ba1dd
 +    assert_eq!(input.laidout_text.as_ref().unwrap().size_in_lpxs.height, refreshed.size_in_lpxs.height);
 +    cx.end_turtle();
 +}
+diff --git a/widgets/src/text_flow.rs b/widgets/src/text_flow.rs
+--- a/widgets/src/text_flow.rs
++++ b/widgets/src/text_flow.rs
+@@ -669,12 +669,6 @@
+     #[rust]
+     pub inline_code: StackCounter,
+
+-    /// (Ascender, descender) in ems per style slot (normal/bold/italic/
+-    /// bold_italic/fixed), probed lazily via a tiny layout call. Used to
+-    /// baseline-align mixed runs: a 0.85x inline-code run must sit ON the
+-    /// line's baseline, not hang from its top.
+-    #[rust]
+-    style_metrics_em: [Option<(f32, f32)>; 5],
+     #[rust]
+     pub item_counter: u64,
+     #[rust]
+@@ -1352,12 +1346,12 @@
+     }
+
+     /// (Ascender, descender) in ems (descender positive) of one of the five
+-    /// run styles, probed once via a tiny layout call and cached. Slots:
++    /// run styles, probed through DrawText's bounded shared layout cache. Slots:
+     /// 0 normal, 1 bold, 2 italic, 3 bold-italic, 4 fixed.
+     fn style_metrics_em(&mut self, cx: &mut Cx2d, slot: usize) -> (f32, f32) {
+-        if let Some(v) = self.style_metrics_em[slot] {
+-            return v;
+-        }
++        // Fonts arrive asynchronously on the web. A second permanent metrics
++        // cache would retain zero/fallback metrics after the font family changes.
++        // DrawText already caches this tiny probe and tracks font revisions.
+         let style = match slot {
+             1 => self.text_style_bold.clone(),
+             2 => self.text_style_italic.clone(),
+@@ -1381,7 +1375,6 @@
+             asc_lpxs / (PROBE_PT * LPXS_PER_PT),
+             desc_lpxs / (PROBE_PT * LPXS_PER_PT),
+         );
+-        self.style_metrics_em[slot] = Some(em);
+         em
+     }
+
+@@ -2672,3 +2665,7 @@
+         self.redraw(cx);
+     }
+ }
++
++#[cfg(test)]
++#[path = "hepta_text_flow_font_tests.rs"]
++mod hepta_text_flow_font_tests;
+diff --git a/widgets/src/hepta_text_flow_font_tests.rs b/widgets/src/hepta_text_flow_font_tests.rs
+new file mode 100644
+--- /dev/null
++++ b/widgets/src/hepta_text_flow_font_tests.rs
+@@ -0,0 +1,96 @@
++use super::*;
++use makepad_draw::text::{font::FontId, fonts::Fonts, loader::{FontDefinition, FontFamilyDefinition}};
++use std::cell::RefCell;
++
++#[test]
++fn delayed_fonts_refresh_real_text_flow_style_metrics() {
++    let mut cx = Cx::new(Box::new(|_, _| {}));
++    let (mut delayed, mut fresh) = cx.with_vm(|vm| {
++        crate::script_mod(vm);
++        (TextFlow::script_new_with_default(vm), TextFlow::script_new_with_default(vm))
++    });
++    CxDraw::lazy_construct_fonts(&mut cx);
++    let family = delayed.text_style_normal.font_family_id();
++    let fonts = cx.get_global::<Rc<RefCell<Fonts>>>().clone();
++    fonts.borrow_mut().set_font_family_definition(family, FontFamilyDefinition {font_ids: vec![], expected_member_count: 0});
++    let event = DrawEvent::default();
++    let mut draw = CxDraw::new(&mut cx, &event);
++    let mut cx = Cx2d::new(&mut draw);
++    cx.begin_root_turtle(dvec2(275.0, 100.0), Layout::default());
++    let before = delayed.style_metrics_em(&mut cx, 0);
++    let font: FontId = 0x484550544146_u64.into();
++    fonts.borrow_mut().define_font(font, FontDefinition {
++        data: SharedBytes::from_file_mmap_or_read(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("resources/IBMPlexSans-Text.ttf")).unwrap(),
++        index: 0, ascender_fudge_in_ems: -0.1, descender_fudge_in_ems: 0.0,
++        weight: None, variations: vec![],
++    });
++    fonts.borrow_mut().set_font_family_definition(family, FontFamilyDefinition {font_ids: vec![font], expected_member_count: 1});
++    let expected = fresh.style_metrics_em(&mut cx, 0);
++    let actual = delayed.style_metrics_em(&mut cx, 0);
++    assert!(expected.0 > 0.0 && expected.1 > 0.0);
++    assert_ne!(before, expected, "fixture must exercise genuinely unavailable then ready fonts");
++    assert_eq!(actual, expected, "TextFlow retained metrics from before the font response");
++    assert_eq!(delayed.style_metrics_em(&mut cx, 0), expected);
++    delayed.draw_text.text_style = delayed.text_style_normal.clone();
++    delayed.draw_text.text_style.font_size = 100.0;
++    let first = delayed.draw_text.layout(&mut cx, 0.0, 0.0, None, false, Align::default(), "Ag");
++    let again = delayed.draw_text.layout(&mut cx, 0.0, 0.0, None, false, Align::default(), "Ag");
++    assert!(Rc::ptr_eq(&first, &again), "ready fonts must retain bounded shared layout reuse");
++    cx.end_turtle();
++}
++
++#[test]
++fn delayed_html_refreshes_real_row_metrics_without_changing_native_ink_or_body() {
++    use crate::html::Html;
++    let mut cx = Cx::new(Box::new(|_, _| {}));
++    let (mut delayed, mut fresh) = cx.with_vm(|vm| {
++        crate::script_mod(vm);
++        (Html::script_new_with_default(vm), Html::script_new_with_default(vm))
++    });
++    for html in [&mut delayed, &mut fresh] {
++        html.font_size = 9.3;
++        html.text_style_normal.font_size = 9.3;
++        html.text_style_normal.line_spacing = 1.32;
++        html.max_lines = 2;
++        html.layout.flow = makepad_draw::turtle::Flow::Right {wrap: true, row_align: makepad_draw::turtle::RowAlign::Center};
++        html.set_text(&mut cx, "Principles and long-form thinking");
++    }
++    CxDraw::lazy_construct_fonts(&mut cx);
++    let family = delayed.text_style_normal.font_family_id();
++    let fonts = cx.get_global::<Rc<RefCell<Fonts>>>().clone();
++    fonts.borrow_mut().set_font_family_definition(family, FontFamilyDefinition {font_ids: vec![], expected_member_count: 0});
++    let pass = DrawPass::new(&mut cx);
++    pass.set_size(&mut cx, dvec2(300.0, 160.0));
++    let mut list = DrawList::new(&mut cx);
++    let event = DrawEvent::default();
++    let mut draw = CxDraw::new(&mut cx, &event);
++    draw.begin_pass(&pass, None);
++    list.begin_always(&mut draw);
++    let mut offsets = Vec::new();
++    let mut row_heights = Vec::new();
++    {
++        let mut cx = Cx2d::new(&mut draw);
++        cx.begin_root_turtle(dvec2(300.0, 160.0), Layout::flow_down());
++        delayed.style_metrics_em(&mut cx, 0);
++        let font: FontId = 0x484550544147_u64.into();
++        fonts.borrow_mut().define_font(font, FontDefinition {
++            data: SharedBytes::from_file_mmap_or_read(std::path::Path::new(env!("CARGO_MANIFEST_DIR")).join("resources/IBMPlexSans-Text.ttf")).unwrap(),
++            index: 0, ascender_fudge_in_ems: -0.1, descender_fudge_in_ems: 0.0,
++            weight: None, variations: vec![],
++        });
++        fonts.borrow_mut().set_font_family_definition(family, FontFamilyDefinition {font_ids: vec![font], expected_member_count: 1});
++        for html in [&mut delayed, &mut fresh] {
++            html.draw_walk(&mut cx, &mut Scope::empty(), Walk {width: Size::Fixed(140.0), height: Size::Fixed(34.0), ..Walk::default()});
++            let ink = html.draw_text.area();
++            assert!(ink.is_valid(&cx), "real glyph area must be present");
++            offsets.push(ink.rect(&cx).pos.y-html.area.rect(&cx).pos.y);
++            row_heights.push(html.draw_text.align_row_height);
++            assert_eq!(html.lines_drawn, 2, "fixture must exercise two real text rows");
++            assert_eq!(html.body.as_ref(), "Principles and long-form thinking");
++        }
++        cx.end_pass_sized_turtle();
++    }
++    list.end(&mut draw); draw.end_pass(&pass); drop(draw);
++    assert_eq!(row_heights[0], row_heights[1], "real Html handed stale row metrics to DrawText");
++    assert!((offsets[0]-offsets[1]).abs() <= 0.1, "late/fresh real glyph baselines differ: {offsets:?}");
++}

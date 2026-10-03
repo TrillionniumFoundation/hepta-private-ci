@@ -16,6 +16,7 @@ pub(super) fn start(cx: &mut Cx) {
 }
 
 pub(crate) fn observe(app: &App, cx: &mut Cx, event: &Event) {
+    if !super::active(cx) { return; }
     let state = cx.global::<ObservationState>();
     if state.timer.is_event(event).is_none() { return; }
     state.sequence += 1;
@@ -70,8 +71,13 @@ pub(crate) fn observe(app: &App, cx: &mut Cx, event: &Event) {
                 let area = preview.area();
                 if area.is_empty() || !area.is_valid(cx) { continue; }
                 let full = area.rect(cx); let clipped = area.clipped_rect(cx);
+                let html_ref = preview.as_html();
+                let Some(html) = html_ref.borrow() else { continue };
                 preview_geometry.push(serde_json::json!({
                     "height": full.size.y, "clipped_height": clipped.size.y,
+                    "rect": [full.pos.x, full.pos.y, full.size.x, full.size.y],
+                    "font_size": html.font_size, "row_height": html.draw_text.align_row_height,
+                    "font_color": [html.font_color.x, html.font_color.y, html.font_color.z],
                     "visible": clipped.size.x > 1.0 && clipped.size.y > 1.0,
                 }));
             }

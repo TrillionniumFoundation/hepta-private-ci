@@ -207,6 +207,23 @@ def native_tests():
             "-p",
             "makepad-widgets",
             "--lib",
+            "hepta_text_flow_font_tests",
+            "--",
+            "--nocapture",
+        ],
+        "makepad-text-flow-font-tests.log",
+        2,
+    )
+    validate_native_log((OUT / "makepad-text-flow-font-tests.log").read_text())
+    checked_tests(
+        [
+            "cargo",
+            "+1.96.0",
+            "test",
+            "--locked",
+            "-p",
+            "makepad-widgets",
+            "--lib",
             "hepta_nav_tests",
             "--",
             "--nocapture",
@@ -731,7 +748,8 @@ def require_no_scene_failures(failures):
 
 def native_capture():
     from PIL import Image
-    from render_checks import login_pixels
+    from render_checks import login_pixels, room_preview_pixels
+    from chat_usability import snapshots
 
     binary = APP / "target/debug/robrix"
     run(
@@ -833,6 +851,26 @@ def native_capture():
                             (OUT / f"native-login-{label}-pixels.json").write_text(
                                 json.dumps(login_pixels(image), indent=2)
                             )
+                    if scene.startswith("chat-") and label in ("wide", "wide-return"):
+                        sample = snapshots(
+                            (OUT / f"native-{scene}.log").read_text().splitlines()
+                        )[-1]
+                        try:
+                            with Image.open(png) as pixels:
+                                ink = room_preview_pixels(
+                                    pixels, sample["room_preview_geometry"]
+                                )
+                            result = {"pass": True, "ink": ink}
+                        except AssertionError as error:
+                            result = {
+                                "pass": False,
+                                "error": str(error),
+                                "geometry": sample["room_preview_geometry"],
+                            }
+                            scene_failures.append(f"{scene}/{label}: {error}")
+                        (OUT / f"native-{scene}-{label}-preview-ink.json").write_text(
+                            json.dumps(result, indent=2)
+                        )
                 if scene == "login":
                     capture_short_login_scroll(window, process)
             finally:

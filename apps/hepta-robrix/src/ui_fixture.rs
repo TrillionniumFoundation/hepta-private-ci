@@ -5,7 +5,6 @@ use super::*;
 #[path = "ui_fixture_chat.rs"]
 pub(crate) mod chat;
 
-#[cfg(any(target_arch = "wasm32", test))]
 #[path = "ui_fixture_observation.rs"]
 pub(super) mod observation;
 
@@ -49,7 +48,6 @@ pub(super) fn start(app: &mut App, cx: &mut Cx) -> bool {
     host.set_fixture_unconfigured();
     app.ui.label(cx, ids!(hepta_brand)).set_text(cx, "H E P T A · SAMPLE");
     app.update_login_visibility(cx);
-    #[cfg(target_arch = "wasm32")]
     if mode == "login-usability" || mode.starts_with("chat-") { observation::start(cx); }
     cx.redraw_all();
     true

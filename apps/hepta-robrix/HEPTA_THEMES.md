@@ -233,3 +233,35 @@ new browser geometry evidence must show all six fixture previews unclipped.
 The earlier f4 browser clipping remains a real failed visual case until new
 hosted pixels verify this change. Detailed material/reference fidelity and
 broader accessibility remain in progress.
+
+## Delayed-font rich-text correction (hosted proof pending)
+
+58a94b59 passed both jobs, and both ZIPs plus all77 native/99 browser included
+hashes and exact sets were verified. All18 main A/B/C chat PNGs were inspected.
+The browser's first-line snippets improved, but Foundation's wrapped second line
+remained visibly sliced. A fully visible34px Html box was insufficient evidence;
+that visual case remains failed in the preceding result.
+
+Pinned TextFlow had a second permanent per-style metrics cache. A real delayed
+font response left it at(0,-0), while a fresh TextFlow saw(0.92499983,0.27499998).
+A real Html test also handed DrawText row height0 instead of14.879999. Both are
+red on the original cache and green when the probe uses DrawText's existing
+bounded, font-revision-aware layout cache. Ready-font shared-cache reuse,
+two-line wrapping, body contents and native glyph offsets are preserved. The
+native glyph-offset comparison alone was already green before the repair due
+to the Linux batching path; it is not claimed as the browser pixel reproduction.
+
+The unchanged old native/browser PNGs now form a pixel regression outside all
+application resource paths. Using measured fixture geometry, native's first
+ink starts2.7px below the box top; browser's starts9.7px below it and is rejected.
+Fresh native/browser captures must check actual high-contrast ink rows, complete
+two-line sample text, and real TextFlow row metrics. Existing container, font,
+login, focus, draft, theme, resource and zero-error gates remain. Independent
+later captures are preserved even when an ink check fails; failure is not waived.
+
+The same read-only observer is enabled only in explicit account-free native
+fixtures as well as browser fixtures. It exports geometry/metrics and fixed
+sample-state comparisons, never text content or actions. The new core patch is
+exact-SHA guarded and fresh-original application matches the compiled bytes.
+Local18 framework tests, native build/runtime checks and44 script tests pass;
+the full app suite and final web pixel verdict require the new hosted run.

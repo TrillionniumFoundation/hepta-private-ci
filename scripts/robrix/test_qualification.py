@@ -533,3 +533,24 @@ class TestDecorativeResourceIdentity(unittest.TestCase):
                 source.write_bytes(b"changed original")
                 with self.assertRaises(ValueError):
                     validate_hepta_resources(root / "package", root / "source")
+
+
+class TestActualPreviewInk(unittest.TestCase):
+    def test_verified_native_pixels_pass_but_displaced_browser_ink_fails(self):
+        import json
+        import hashlib
+        from PIL import Image
+        from render_checks import room_preview_pixels
+
+        root = Path(__file__).parent / "fixtures/preview-fonts"
+        reference = json.loads((root / "identity.json").read_text())
+        for name, expected in reference["pngSha256"].items():
+            self.assertEqual(
+                hashlib.sha256((root / name).read_bytes()).hexdigest(), expected
+            )
+        with Image.open(root / "native-58a94b59.png") as image:
+            measured = room_preview_pixels(image, reference["geometry"])
+        self.assertEqual(len(measured[2]["bands"]), 2)
+        with Image.open(root / "browser-58a94b59.png") as image:
+            with self.assertRaisesRegex(AssertionError, "baseline is displaced"):
+                room_preview_pixels(image, reference["geometry"])
