@@ -4025,10 +4025,10 @@ impl Session {
                         "notes",
                         "thread_hint",
                         /*environment_id*/ None,
+                        /*arguments*/ None,
                         Some(serde_json::json!({
                             "threadId": self.thread_id().to_string(),
                         })),
-                        /*meta*/ None,
                         /*requested_timeout*/ None,
                         /*wait_for_server*/ false,
                     )
