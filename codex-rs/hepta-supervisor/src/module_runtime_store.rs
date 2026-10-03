@@ -69,6 +69,17 @@ pub struct DurableRuntimeModuleSupervisorV1 {
     supervisor: RuntimeModuleSupervisorV1,
     poisoned: bool,
 }
+
+impl Drop for DurableRuntimeModuleSupervisorV1 {
+    fn drop(&mut self) {
+        // A child spawned by another thread may inherit this open-file
+        // description until exec. Closing only our descriptor can leave its
+        // lock behind; the original owner must release it explicitly.
+        if let Err(error) = self._lock.unlock() {
+            tracing::warn!(%error, "failed to release runtime-module owner lock");
+        }
+    }
+}
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct StoreDto {
@@ -1082,6 +1093,32 @@ mod tests {
             reopened
                 .topology()
                 .expect("healthy durable owner")
+                .active
+                .is_empty()
+        );
+    }
+
+    #[test]
+    fn retired_owner_releases_lock_even_with_an_inherited_descriptor() {
+        let root = tempfile::tempdir().expect("temporary root");
+        let path = root.path().join("runtime-modules.json");
+        let first = DurableRuntimeModuleSupervisorV1::open(&path).expect("first owner");
+        let inherited = first._lock.try_clone().expect("inherited description");
+        assert!(matches!(
+            DurableRuntimeModuleSupervisorV1::open(&path),
+            Err(DurableRuntimeModuleSupervisorErrorV1::Busy)
+        ));
+        drop(first);
+        let reopened = DurableRuntimeModuleSupervisorV1::open(&path).expect("retired lock");
+        drop(inherited);
+        assert!(matches!(
+            DurableRuntimeModuleSupervisorV1::open(&path),
+            Err(DurableRuntimeModuleSupervisorErrorV1::Busy)
+        ));
+        assert!(
+            reopened
+                .topology()
+                .expect("current owner")
                 .active
                 .is_empty()
         );
