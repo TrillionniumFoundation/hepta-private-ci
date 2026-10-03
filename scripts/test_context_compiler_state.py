@@ -108,6 +108,28 @@ class CurrentStateTests(unittest.TestCase):
         for path, content in first.items():
             self.assertIn(digest, content, str(path))
 
+    def test_historical_navigation_is_preserved_without_execution_transfer(self):
+        historical = {
+            "sourceBase": {"commit": "a" * 40, "tree": "b" * 40},
+            "observedAtHead": {"commit": "a" * 40, "tree": "b" * 40},
+            "disposition": "historical_source_navigation_only",
+            "executionEvidenceTransferred": False,
+        }
+        self.state["historicalNavigationAnchors"] = [historical]
+        projection = json.loads(docs.render_all(self.state)[docs.OUTPUTS["map"]])
+        self.assertEqual(projection["historicalNavigationAnchors"], [historical])
+        self.assertFalse(projection["claimBoundary"]["productExecutionProved"])
+        self.assertFalse(projection["claimBoundary"]["independentAcceptance"])
+        for field, invalid_value in (
+            ("executionEvidenceTransferred", True),
+            ("disposition", "execution_evidence"),
+        ):
+            invalid = copy.deepcopy(self.state)
+            invalid["historicalNavigationAnchors"][0][field] = invalid_value
+            self.write_state(invalid)
+            with self.assertRaises(ValueError):
+                docs.load_state(self.root)
+
     def test_consumer_rows_bind_real_source_and_complete_native_inventory(self):
         docs.validate_consumer_execution(self.state)
         broken = copy.deepcopy(self.state)

@@ -50,6 +50,12 @@ def load_state(root=ROOT):
             )
     if state["knownOpenItems"] and state["status"]["v2ProviderClosure"] == "complete":
         raise ValueError("open closure gates contradict complete status")
+    for anchor in state.get("historicalNavigationAnchors", []):
+        if (
+            anchor.get("disposition") != "historical_source_navigation_only"
+            or anchor.get("executionEvidenceTransferred") is not False
+        ):
+            raise ValueError("historical navigation cannot transfer execution evidence")
     return state
 
 
@@ -172,6 +178,8 @@ def repository_map(value, state):
     execution. Preserve the contract inventory and its more detailed statuses.
     Source objects are rebound explicitly with the state, not silently at render.
     """
+    if "historicalNavigationAnchors" in state:
+        value["historicalNavigationAnchors"] = state["historicalNavigationAnchors"]
     root = "codex-rs/hepta-context-compiler"
     operations = []
     callers = []
