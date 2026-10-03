@@ -46,39 +46,79 @@ impl Blueprint {
     pub(super) fn read(source: &InstalledCpuSourceV1) -> Result<(Self, Vec<u8>)> {
         let bytes = configuration::source(source, 262_144)?;
         let blueprint: Self = serde_json::from_slice(&bytes)?;
-        ensure!(blueprint.schema == "hepta.root-parameter-round-blueprint.v1",
-            "original Root round blueprint purpose");
-        for source in [&blueprint.model_resolver, &blueprint.initial_material,
-            &blueprint.initial_registration, &blueprint.plasticity_context_template,
-            &blueprint.dataset_producer, &blueprint.dataset_plan, &blueprint.search_shape,
-            &blueprint.ndu_journal, &blueprint.learning_trust, &blueprint.reviewer_principal,
-            &blueprint.pre_registration_selector_template, &blueprint.raw_evaluation_template,
-            &blueprint.independent_owners_template, &blueprint.independent_client_template,
-            &blueprint.worker_program, &blueprint.material.canary_tick,
-            &blueprint.material.canary_port]
-        {
-            ensure!(source.path.is_absolute() && !source.digest.parse::<Digest32>()?.is_zero(),
-                "whole independently enrolled original Source absent");
+        ensure!(
+            blueprint.schema == "hepta.root-parameter-round-blueprint.v1",
+            "original Root round blueprint purpose"
+        );
+        for source in [
+            &blueprint.model_resolver,
+            &blueprint.initial_material,
+            &blueprint.initial_registration,
+            &blueprint.plasticity_context_template,
+            &blueprint.dataset_producer,
+            &blueprint.dataset_plan,
+            &blueprint.search_shape,
+            &blueprint.ndu_journal,
+            &blueprint.learning_trust,
+            &blueprint.reviewer_principal,
+            &blueprint.pre_registration_selector_template,
+            &blueprint.raw_evaluation_template,
+            &blueprint.independent_owners_template,
+            &blueprint.independent_client_template,
+            &blueprint.worker_program,
+            &blueprint.material.canary_tick,
+            &blueprint.material.canary_port,
+        ] {
+            ensure!(
+                source.path.is_absolute() && !source.digest.parse::<Digest32>()?.is_zero(),
+                "whole independently enrolled original Source absent"
+            );
         }
-        ensure!(blueprint.material.generation_root.is_absolute()
-            && !blueprint.material.generation_root.components().any(|part| matches!(part,
-                std::path::Component::CurDir | std::path::Component::ParentDir))
-            && !blueprint.material.test_plan_digest.parse::<Digest32>()?.is_zero(),
-            "original physical path root and whole test plan pin");
-        ensure!(blueprint.generator.uid > 0 && blueprint.generator.gid > 0
-            && blueprint.generator.inaccessible_paths.len() == 5
-            && blueprint.observer.uid == 0 && blueprint.observer.gid == 0
-            && blueprint.observer.inaccessible_paths.is_empty()
-            && blueprint.pre_registration_selector.uid == 0
-            && blueprint.pre_registration_selector.gid == 0
-            && blueprint.pre_registration_selector.inaccessible_paths.len() == 5,
-            "original finite G/O/S process custody");
-        for route in [&blueprint.generator, &blueprint.observer, &blueprint.pre_registration_selector] {
-            ensure!(route.program.path.is_absolute()
-                && route.configuration_template.path.is_absolute()
-                && !route.program.digest.parse::<Digest32>()?.is_zero()
-                && !route.configuration_template.digest.parse::<Digest32>()?.is_zero(),
-                "whole enrolled native role route changed");
+        ensure!(
+            blueprint.material.generation_root.is_absolute()
+                && !blueprint
+                    .material
+                    .generation_root
+                    .components()
+                    .any(|part| matches!(
+                        part,
+                        std::path::Component::CurDir | std::path::Component::ParentDir
+                    ))
+                && !blueprint
+                    .material
+                    .test_plan_digest
+                    .parse::<Digest32>()?
+                    .is_zero(),
+            "original physical path root and whole test plan pin"
+        );
+        ensure!(
+            blueprint.generator.uid > 0
+                && blueprint.generator.gid > 0
+                && blueprint.generator.inaccessible_paths.len() == 5
+                && blueprint.observer.uid == 0
+                && blueprint.observer.gid == 0
+                && blueprint.observer.inaccessible_paths.is_empty()
+                && blueprint.pre_registration_selector.uid == 0
+                && blueprint.pre_registration_selector.gid == 0
+                && blueprint.pre_registration_selector.inaccessible_paths.len() == 5,
+            "original finite G/O/S process custody"
+        );
+        for route in [
+            &blueprint.generator,
+            &blueprint.observer,
+            &blueprint.pre_registration_selector,
+        ] {
+            ensure!(
+                route.program.path.is_absolute()
+                    && route.configuration_template.path.is_absolute()
+                    && !route.program.digest.parse::<Digest32>()?.is_zero()
+                    && !route
+                        .configuration_template
+                        .digest
+                        .parse::<Digest32>()?
+                        .is_zero(),
+                "whole enrolled native role route changed"
+            );
         }
         Ok((blueprint, bytes))
     }

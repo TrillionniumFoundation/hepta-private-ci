@@ -9,26 +9,26 @@ use codex_hepta_agent_components::intelligence_eval::ParameterPreRegistrationPur
 use codex_hepta_agentd::AgentdSelfIterationRoundV1;
 use codex_hepta_types::Digest32;
 
+#[path = "root_round_admission.rs"]
+mod admission_projection;
+#[path = "root_round_blueprint.rs"]
+mod blueprint;
+#[path = "root_round_bundle.rs"]
+mod bundle_publication;
+#[path = "root_round_context.rs"]
+mod context_projection;
+#[path = "root_round_fresh.rs"]
+mod fresh;
+#[path = "root_round_original_facts.rs"]
+mod original_facts;
 #[path = "root_round_parameter_roles.rs"]
 mod parameter_roles;
 #[path = "root_round_publication_configuration.rs"]
 mod publication_configuration;
-#[path = "root_round_blueprint.rs"]
-mod blueprint;
-#[path = "root_round_original_facts.rs"]
-mod original_facts;
-#[path = "root_round_context.rs"]
-mod context_projection;
 #[path = "root_round_search.rs"]
 mod search_projection;
-#[path = "root_round_admission.rs"]
-mod admission_projection;
 #[path = "root_round_selection.rs"]
 mod selection_projection;
-#[path = "root_round_bundle.rs"]
-mod bundle_publication;
-#[path = "root_round_fresh.rs"]
-mod fresh;
 
 impl RootFrozenGeneratorServiceV1 {
     pub(super) async fn prepare_round(
@@ -168,8 +168,10 @@ impl RootFrozenGeneratorServiceV1 {
             schema_version: 8,
             round_payload_digest: payload_digest.to_string(),
             result: result.unwrap_or_else(|error| {
-                tracing::warn!(%error, %payload_digest, "original round preparation unavailable");
-                RoundPreparationResultV1::Refused { error: FrozenGeneratorErrorCodeV1::Unavailable }
+                eprintln!("original round preparation {payload_digest} unavailable: {error}");
+                RoundPreparationResultV1::Refused {
+                    error: FrozenGeneratorErrorCodeV1::Unavailable,
+                }
             }),
         }
     }

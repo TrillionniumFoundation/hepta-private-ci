@@ -13,24 +13,43 @@ pub(super) fn publish(
     candidates: Vec<PreparedCandidateAdmissionV1>,
     rollback: PreparedCandidateAdmissionV1,
 ) -> Result<()> {
-    let source = recipe::publish(execution_directory, materials, &blueprint.worker_program, context)?;
+    let source = recipe::publish(
+        execution_directory,
+        materials,
+        &blueprint.worker_program,
+        context,
+    )?;
     let recipe_bytes = configuration::source(&source, 16 * 1024)?;
     let original: recipe::PublishedRoundRecipeV3 = serde_json::from_slice(&recipe_bytes)?;
-    let directory = source.path.parent().context("original recipe directory absent")?;
+    let directory = source
+        .path
+        .parent()
+        .context("original recipe directory absent")?;
     let protected = CpuNeuronParameterRootMaterialsV2::from_protected_source(
-        &original.materials, blueprint.worker_program.digest.parse()?)?;
+        &original.materials,
+        blueprint.worker_program.digest.parse()?,
+    )?;
     let client_bytes = configuration::source(&blueprint.independent_client_template, 64 * 1024)?;
-    let mut client: InstalledSelfIterationIndependentOwnersConfigV1 = serde_json::from_slice(&client_bytes)?;
-    ensure!(client.learning_trust == blueprint.learning_trust,
-        "original client learning trust Source changed");
+    let mut client: InstalledSelfIterationIndependentOwnersConfigV1 =
+        serde_json::from_slice(&client_bytes)?;
+    ensure!(
+        client.learning_trust == blueprint.learning_trust,
+        "original client learning trust Source changed"
+    );
     client.round_digest = materials.round().identity_digest().to_string();
     client.canonical_policy_digest = materials.canonical_envelope().digest().to_string();
     client.execution_digest = materials.round().execution_envelope_digest().to_string();
-    client.materials_digest = crate::self_iteration_independent_owner_materials_digest_v1(&protected)?.to_string();
-    let client_source = original_facts::publish(directory, "independent-owner-client.json",
-        &serde_json::to_vec(&client)?, 64 * 1024)?;
+    client.materials_digest =
+        crate::self_iteration_independent_owner_materials_digest_v1(&protected)?.to_string();
+    let client_source = original_facts::publish(
+        directory,
+        "independent-owner-client.json",
+        &serde_json::to_vec(&client)?,
+        64 * 1024,
+    )?;
     let owner_bytes = configuration::source(&blueprint.independent_owners_template, 64 * 1024)?;
-    let mut owner: crate::RootSelfIterationOwnersRoundConfigurationV1 = serde_json::from_slice(&owner_bytes)?;
+    let mut owner: crate::RootSelfIterationOwnersRoundConfigurationV1 =
+        serde_json::from_slice(&owner_bytes)?;
     owner.round_digest = materials.round().identity_digest().to_string();
     owner.client_configuration = client_source.clone();
     owner.materials = original.materials.clone();
@@ -43,24 +62,47 @@ pub(super) fn publish(
     owner.evaluation_directory = effects.join("evaluations");
     super::super::independent_owners::roles::prepare_effect_directory(&owner.consumer_directory)?;
     super::super::independent_owners::roles::prepare_effect_directory(&owner.evaluation_directory)?;
-    let owner_source = original_facts::publish(directory, "independent-owner-service.json",
-        &serde_json::to_vec(&owner)?, 64 * 1024)?;
+    let owner_source = original_facts::publish(
+        directory,
+        "independent-owner-service.json",
+        &serde_json::to_vec(&owner)?,
+        64 * 1024,
+    )?;
     let checked = crate::RootSelfIterationOwnersRoundConfigurationV1::read(
-        &owner_source.path, materials.round())?;
-    ensure!(serde_json::to_vec(&checked.0)? == serde_json::to_vec(&owner)?,
-        "whole installed original owner routing changed");
-    InstalledSelfIterationIndependentOwnersV1::from_protected_source(&client_source,
-        materials.round().clone(), &protected)?;
+        &owner_source.path,
+        materials.round(),
+    )?;
+    ensure!(
+        serde_json::to_vec(&checked.0)? == serde_json::to_vec(&owner)?,
+        "whole installed original owner routing changed"
+    );
+    InstalledSelfIterationIndependentOwnersV1::from_protected_source(
+        &client_source,
+        materials.round().clone(),
+        &protected,
+    )?;
     protected.revalidate_sources()?;
     let bundle = InstalledRoundBundleV1 {
-        schema: "hepta.installed-round-bundle.v1".into(), round: materials.round().clone(),
-        materials: original.materials, plasticity_context: context.clone(),
-        independent_owners: client_source, candidates, rollback,
+        schema: "hepta.installed-round-bundle.v1".into(),
+        round: materials.round().clone(),
+        materials: original.materials,
+        plasticity_context: context.clone(),
+        independent_owners: client_source,
+        candidates,
+        rollback,
     };
-    ensure!(configuration::source(&blueprint.independent_client_template, 64 * 1024)? == client_bytes
-        && configuration::source(&blueprint.independent_owners_template, 64 * 1024)? == owner_bytes
-        && configuration::source(&source, 16 * 1024)? == recipe_bytes,
-        "whole original templates or recipe changed before final publication");
-    original_facts::publish(directory, "bundle.json", &serde_json::to_vec(&bundle)?, 64 * 1024)?;
+    ensure!(
+        configuration::source(&blueprint.independent_client_template, 64 * 1024)? == client_bytes
+            && configuration::source(&blueprint.independent_owners_template, 64 * 1024)?
+                == owner_bytes
+            && configuration::source(&source, 16 * 1024)? == recipe_bytes,
+        "whole original templates or recipe changed before final publication"
+    );
+    original_facts::publish(
+        directory,
+        "bundle.json",
+        &serde_json::to_vec(&bundle)?,
+        64 * 1024,
+    )?;
     Ok(())
 }

@@ -11,7 +11,10 @@ pub fn project_registered_artifact_manifest_configuration_v3(
     subject: &StableId,
     now: u64,
 ) -> HostResult<Vec<u8>> {
-    let source = Source { path: path.to_owned(), digest: pin.to_string() };
+    let source = Source {
+        path: path.to_owned(),
+        digest: pin.to_string(),
+    };
     let bytes = source.read(64 * 1024)?;
     let mut registration: Registration = serde_json::from_slice(&bytes)?;
     let owner = registration.owner.open(now)?;
@@ -26,7 +29,8 @@ pub fn project_registered_artifact_manifest_configuration_v3(
         registration.manifests.iter_mut().zip(manifests).enumerate()
     {
         let source = Source {
-            path: manifest_source.path.clone(), digest: manifest_source.digest.clone(),
+            path: manifest_source.path.clone(),
+            digest: manifest_source.digest.clone(),
         };
         let full = source.read(128 * 1024)?;
         let admission = read_artifact_admission_by_digest(
@@ -43,7 +47,8 @@ pub fn project_registered_artifact_manifest_configuration_v3(
                     registration.predecessor_manifest_digest = None;
                 }
                 [id] if material.runtime.generation.get() > 1 => {
-                    let actual = view.registered_manifest(id)
+                    let actual = view
+                        .registered_manifest(id)
                         .ok_or("actual original model predecessor absent")?;
                     if actual.kind != ArtifactKind::Model
                         || actual.generation.next()? != material.runtime.generation
@@ -51,12 +56,16 @@ pub fn project_registered_artifact_manifest_configuration_v3(
                         return Err("actual original model predecessor generation differs".into());
                     }
                     registration.predecessor_id = Some(id.to_string());
-                    registration.predecessor_manifest_digest = Some(actual.support_digest.to_string());
+                    registration.predecessor_manifest_digest =
+                        Some(actual.support_digest.to_string());
                 }
                 _ => return Err("complete original model predecessor frontier".into()),
             }
         }
-        *slot = ManifestSource { source, admission_digest: admission_digest.to_string() };
+        *slot = ManifestSource {
+            source,
+            admission_digest: admission_digest.to_string(),
+        };
         original_sources.push(full);
     }
     registration.publication_operation_id = acknowledgement.operation_id.to_string();
@@ -80,7 +89,8 @@ pub fn project_registered_artifact_manifest_configuration_v3(
         serde_json::json!({"source": source, "admission_digest": admission.to_string()})
     }).collect());
     whole["predecessor_id"] = serde_json::to_value(&registration.predecessor_id)?;
-    whole["predecessor_manifest_digest"] = serde_json::to_value(&registration.predecessor_manifest_digest)?;
+    whole["predecessor_manifest_digest"] =
+        serde_json::to_value(&registration.predecessor_manifest_digest)?;
     whole["publication_operation_id"] = registration.publication_operation_id.into();
     let projected = serde_json::to_vec(&whole)?;
     if projected.len() > 64 * 1024 {
@@ -97,7 +107,10 @@ pub fn read_registered_artifact_manifest_sources_v3(
     pin: Digest32,
     now: u64,
 ) -> HostResult<[(Vec<u8>, Digest32); 3]> {
-    let source = Source { path: path.to_owned(), digest: pin.to_string() };
+    let source = Source {
+        path: path.to_owned(),
+        digest: pin.to_string(),
+    };
     let original = source.read(64 * 1024)?;
     let registration: Registration = serde_json::from_slice(&original)?;
     let owner = registration.owner.open(now)?;
@@ -106,13 +119,19 @@ pub fn read_registered_artifact_manifest_sources_v3(
         let admission = manifest.admission_digest.parse()?;
         let bytes = match manifest.source.read(128 * 1024) {
             Ok(bytes) => bytes,
-            Err(_) => owner.read_current_manifest_admission_source(&manifest.source.path,
-                manifest.source.digest.parse()?, admission, now)?,
+            Err(_) => owner.read_current_manifest_admission_source(
+                &manifest.source.path,
+                manifest.source.digest.parse()?,
+                admission,
+                now,
+            )?,
         };
         outputs.push((bytes, admission));
     }
     if source.read(64 * 1024)? != original {
         return Err("whole original registration changed during legacy source read".into());
     }
-    Ok(outputs.try_into().map_err(|_| "three complete original manifest Sources")?)
+    Ok(outputs
+        .try_into()
+        .map_err(|_| "three complete original manifest Sources")?)
 }

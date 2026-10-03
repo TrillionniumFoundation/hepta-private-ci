@@ -32,7 +32,8 @@ impl LearningArtifactOwnerHost {
             self.manifest_admission_path(admission.validated_manifest.manifest_digest);
         // Each durable source needs its own inode: root custody readers reject
         // permanent hard links even when both names belong to this owner.
-        match records::write_record_with_limit(&manifest_path, &bytes, MAX_ARTIFACT_ADMISSION_BYTES) {
+        match records::write_record_with_limit(&manifest_path, &bytes, MAX_ARTIFACT_ADMISSION_BYTES)
+        {
             Ok(()) => {}
             Err(ArtifactOwnerHostError::IdentityConflict) => {
                 let existing = read_artifact_admission_by_manifest_digest(

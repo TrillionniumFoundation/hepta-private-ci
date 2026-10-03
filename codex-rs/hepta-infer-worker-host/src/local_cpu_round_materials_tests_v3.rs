@@ -1,11 +1,11 @@
 use super::*;
 use codex_hepta_agent_components::intelligence::encode_parameter_plasticity_request_v1;
 use codex_hepta_neuron::encode_neuron_generation_material_v2;
-#[path = "local_cpu_round_materials_test_fixture_v3.rs"]
-mod fixture;
 #[cfg(feature = "root-frozen-generator")]
 #[path = "root_round_current_manifest_projection_tests.rs"]
 mod current_manifest_projection;
+#[path = "local_cpu_round_materials_test_fixture_v3.rs"]
+mod fixture;
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
 #[cfg(feature = "root-frozen-generator")]
