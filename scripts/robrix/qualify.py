@@ -18,6 +18,7 @@ from package_resources import (
     compiled_resource_root,
     package_inventory,
     validate_pinned_resources,
+    validate_hepta_resources,
 )
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -266,6 +267,7 @@ def native_tests():
     validate_native_log((OUT / "makepad-dock-retirement-tests.log").read_text())
     for module, minimum in [
         ("shared::hepta_theme::tests", 7),
+        ("room::room_input_bar::hepta_send_style_tests", 1),
         ("hepta_console::tests", 4),
         ("home::main_desktop_ui::hepta_dock_tests", 3),
         ("home::main_desktop_ui::hepta_destination_tests", 6),
@@ -504,6 +506,9 @@ def web_build():
         )
     finally:
         transform_binary.unlink(missing_ok=True)
+    resources["verifiedResources"].update(
+        validate_hepta_resources(package, APP / "resources")
+    )
     (OUT / "web-package-resource-identity.json").write_text(
         json.dumps(resources, indent=2)
     )

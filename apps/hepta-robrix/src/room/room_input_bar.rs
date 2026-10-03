@@ -769,14 +769,18 @@ impl RoomInputBar {
         let (fg_color, bg_color) = if !enable {
             (COLOR_FG_DISABLED, COLOR_BG_DISABLED)
         } else if self.is_encrypted {
-            (COLOR_PRIMARY, COLOR_ACTIVE_PRIMARY)
+            (COLOR_BUTTON_INK, COLOR_ACTIVE_PRIMARY)
         } else {
             (COLOR_FG_ACCEPT_GREEN, COLOR_BG_ACCEPT_GREEN)
         };
+        let border_color = if enable && !self.is_encrypted { fg_color } else { vec4(0.0,0.0,0.0,0.0) };
         script_apply_eval!(cx, send_message_button, {
             enabled: #(enable),
             draw_icon.color: #(fg_color),
-            draw_bg.color: #(bg_color),
+            draw_bg +: {
+                color: #(bg_color), color_hover: #(bg_color), color_down: #(bg_color),
+                border_color: #(border_color), border_color_hover: #(border_color), border_color_down: #(border_color),
+            }
         });
     }
 
@@ -1218,4 +1222,38 @@ enum ShowEditingPaneBehavior {
     RestoreExisting {
         editing_pane_state: EditingPaneState,
     },
+}
+
+
+#[cfg(all(test, feature = "ui-fixture"))]
+mod hepta_send_style_tests {
+    use super::*;
+    #[test]
+    fn actual_send_enable_disable_style_keeps_draft_and_capability_separate() {
+        let mut cx = Cx::new(Box::new(|_, _| {}));
+        let mut input = cx.with_vm(|vm| {
+            vm.bx.captured_errors = Some(Vec::new());
+            let _ = <crate::app::App as AppMain>::script_mod(vm);
+            let value = script_eval!(vm, {mod.widgets.RoomInputBar {}});
+            RoomInputBar::script_from_value(vm, value)
+        });
+        let editor = input.view.text_input(&mut cx, ids!(mentionable_text_input.text_input));
+        editor.set_text(&mut cx, "synthetic unsent draft");
+        let uid = editor.widget_uid();
+        for encrypted in [false, true] {
+            input.is_encrypted = encrypted;
+            for enabled in [true, false, true, false] {
+                input.enable_send_message_button(&mut cx, enabled);
+                let button = input.view.button(&mut cx, ids!(send_message_button));
+                let button = button.borrow().unwrap();
+                assert_eq!(button.enabled(), enabled);
+                assert_eq!(button.draw_icon.color, if !enabled {COLOR_FG_DISABLED}
+                    else if encrypted {COLOR_BUTTON_INK} else {COLOR_FG_ACCEPT_GREEN});
+                assert_eq!(editor.text(), "synthetic unsent draft");
+                assert_eq!(editor.widget_uid(), uid);
+                assert!(input.timeline_kind.is_none() && input.room_screen_widget_uid.is_none());
+            }
+        }
+        cx.with_vm(|vm| assert!(vm.take_errors().is_empty()));
+    }
 }

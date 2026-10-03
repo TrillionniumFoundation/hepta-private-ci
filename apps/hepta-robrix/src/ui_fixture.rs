@@ -196,6 +196,15 @@ mod tests {
         let size = area.rect(&cx).size;
         assert!(size.x > 0.0 && size.x <= 320.0 && size.y > 0.0 && size.y <= 96.0,
             "fixture image must fit320x96, got {size:?}");
+        let (_, reply_message) = list.get_item(2).expect("real reply fixture message");
+        let card = reply_message.widget(&mut cx, ids!(reply_card)).area();
+        let body = reply_message.widget(&mut cx, ids!(reply_preview_body)).area();
+        assert!(card.is_valid(&cx) && body.is_valid(&cx));
+        let card = card.rect(&cx);
+        let body = body.rect(&cx);
+        assert!(card.size.x > 0.0 && card.size.y > 0.0 && body.size.y > 0.0);
+        assert!(body.pos.y >= card.pos.y && body.pos.y + body.size.y <= card.pos.y + card.size.y + 1.0,
+            "reply body must remain inside its real recessed card");
         cx.with_vm(|vm| { let errors = vm.take_errors(); assert!(errors.is_empty(), "fixture dynamic script errors: {errors:#?}"); });
         assert_eq!(makepad_widgets::makepad_platform::shader_error::take(), None);
     }
@@ -212,11 +221,15 @@ mod tests {
             // shader scope error cannot hide behind an otherwise valid App.
             let splitter = script_eval!(vm, { mod.widgets.RobrixSplitter {} });
             let _splitter = Splitter::script_from_value(vm, splitter);
+            let tab = script_eval!(vm, {mod.widgets.RobrixTab {}});
+            let _tab = Tab::script_from_value(vm, tab);
             for value in [
                 script_eval!(vm, { mod.widgets.RoomScreen {} }),
                 script_eval!(vm, { mod.widgets.ImageMessage {} }),
                 script_eval!(vm, { mod.widgets.Avatar {} }),
                 script_eval!(vm, { mod.widgets.ReactionList {} }),
+                script_eval!(vm, { mod.widgets.ReplyPreviewContent {} }),
+                script_eval!(vm, { mod.widgets.RoomsListEntryContent {} }),
             ] {
                 let _widget = WidgetRef::script_from_value(vm, value);
             }

@@ -179,3 +179,16 @@ class AdaptiveHandoffGate(unittest.TestCase):
                 ),
                 key,
             )
+
+
+class RoomPreviewGeometryGate(unittest.TestCase):
+    def test_missing_short_or_clipped_snippets_fail(self):
+        from chat_usability import previews_readable
+
+        good = [{"visible": True, "height": 34, "clipped_height": 34} for _ in range(6)]
+        self.assertTrue(previews_readable(good))
+        self.assertFalse(previews_readable(good[:5]))
+        for change in ({"visible": False}, {"height": 4}, {"clipped_height": 4}):
+            bad = copy.deepcopy(good)
+            bad[0].update(change)
+            self.assertFalse(previews_readable(bad))

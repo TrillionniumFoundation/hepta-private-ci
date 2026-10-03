@@ -105,9 +105,22 @@ script_mod! {
         width: 10.0
         margin: Inset{ right: theme.space_2, left: -1 }
         draw_button +: {
+            hepta_owned_material: uniform(1.0)
+            hepta_material: uniform(1.0)
             color: COLOR_TEXT
             color_hover: COLOR_FG_DANGER_RED
             color_active: COLOR_BUTTON_INK
+            pixel: fn() {
+                let sdf = Sdf2d.viewport(self.pos * self.rect_size)
+                let c = self.rect_size * 0.5
+                let r = 2.5 + self.hover * 0.5
+                sdf.move_to(c.x-r, c.y-r)
+                sdf.line_to(c.x+r, c.y+r)
+                sdf.move_to(c.x-r, c.y+r)
+                sdf.line_to(c.x+r, c.y-r)
+                let prism = max(0.0, 1.0-abs(self.hepta_material-1.0))
+                return sdf.stroke(mix(mix(self.color, self.color_active, self.active*prism), self.color_hover, self.hover), 1.0)
+            }
         }
 
         animator: Animator{
@@ -141,11 +154,18 @@ script_mod! {
 
         close_button: mod.widgets.RobrixTabCloseButton {}
         draw_text +: {
+            hepta_owned_material: uniform(1.0)
+            hepta_material: uniform(1.0)
             text_style: theme.font_regular {}
-
             color: COLOR_TEXT
             color_hover: COLOR_ACTIVE_PRIMARY
             color_active: COLOR_BUTTON_INK
+            get_color: fn() {
+                let prism = max(0.0, 1.0-abs(self.hepta_material-1.0))
+                let ceramic = max(0.0, self.hepta_material-1.0)
+                let selected = mix(mix(self.color, self.color_hover, ceramic), self.color_active, prism)
+                return mix(mix(self.color, self.color_hover, self.hover*0.6), selected, self.active)
+            }
         }
 
         draw_bg +: {
@@ -163,6 +183,28 @@ script_mod! {
             // Remove the border and rounded corners from the default Tab style
             border_size: 1.0
             border_radius: 8.0
+            hepta_material: uniform(1.0)
+            color_edge: uniform(#x4c4269)
+            color_selected_surface: uniform(#x382e55)
+            pixel: fn() {
+                let p = self.pos * self.rect_size
+                let sdf = Sdf2d.viewport(p)
+                let prism = max(0.0, 1.0-abs(self.hepta_material-1.0))
+                let ceramic = max(0.0, self.hepta_material-1.0)
+                let selected = mix(self.color_selected_surface, mix(self.color_active, self.color_2_active, self.pos.y), prism)
+                sdf.box_y(1.0, 1.0, self.rect_size.x-2.0, self.rect_size.y, 5.0+prism*3.0, 0.5)
+                sdf.fill_keep(mix(mix(self.color, self.color_hover, self.hover), selected, self.active))
+                sdf.stroke(mix(self.color_edge, self.color_active, self.active*(1.0-prism)*0.45), 0.7)
+                if self.hepta_material < 0.5 {
+                    sdf.box(2.0, self.rect_size.y-3.0, max(0.0, self.rect_size.x-4.0)*self.active, 2.5, 1.0)
+                    sdf.fill(self.color_active)
+                }
+                if ceramic > 0.5 {
+                    sdf.box(5.0, 1.0, max(0.0, self.rect_size.x-10.0)*self.active, 1.0, 0.5)
+                    sdf.fill(self.color_active)
+                }
+                return sdf.result
+            }
         }
 
         animator: Animator{
@@ -218,7 +260,9 @@ script_mod! {
             color: (mod.widgets.COLOR_TEXT)
         }
         draw_fill +: {
+            hepta_owned_material: uniform(1.0)
             color: COLOR_PRIMARY_DARKER
+            pixel: fn() { return self.color * self.hepta_owned_material }
         }
         draw_bg +: {
             hepta_owned_material: uniform(1.0)

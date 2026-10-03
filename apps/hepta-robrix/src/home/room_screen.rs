@@ -3393,7 +3393,8 @@ impl RoomScreen {
             self.show_synthetic_timeline(cx, room_name_id, thread_root_event_id);
             self.room_name_id = Some(room_name_id.clone());
             self.view.label(cx, ids!(room_heading)).set_text(cx, &room_name_id.to_string());
-            self.view.avatar(cx, ids!(room_avatar)).show_text(cx, None, None, &room_name_id.to_string());
+            self.view.avatar(cx, ids!(room_avatar)).show_text(cx, None, None,
+                if room_name_id.room_id().as_str() == "!hepta-fixture-1:example.invalid" { "◯" } else { "◇" });
             self.view.label(cx, ids!(room_subtitle)).set_text(cx, "Synthetic fixture · no account or delivery");
             self.redraw(cx);
             return;

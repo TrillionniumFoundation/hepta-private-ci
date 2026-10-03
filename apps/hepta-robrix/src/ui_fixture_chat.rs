@@ -109,6 +109,7 @@ pub(crate) fn draw(view: &mut View, cx: &mut Cx2d, scope: &mut Scope, walk: Walk
                 if index == 2 {
                     item.widget(cx, ids!(replied_to_message)).set_visible(cx, true);
                     item.label(cx, ids!(reply_preview_username)).set_text(cx, "Mika · synthetic reply");
+                    item.avatar(cx, ids!(reply_preview_avatar)).show_text(cx, None, None, "◯");
                     item.html_or_plaintext(cx, ids!(reply_preview_body)).show_plaintext(cx, "The room list and top tabs feel especially clean.");
                     item.reaction_list(cx, ids!(reaction_list)).set_fixture(cx, room(0).room_id().clone());
                 }

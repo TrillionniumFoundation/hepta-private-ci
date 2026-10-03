@@ -60,8 +60,25 @@ pub(crate) fn observe(app: &App, cx: &mut Cx, event: &Event) {
                 "clipped": [rect.pos.x, rect.pos.y, rect.size.x, rect.size.y],
             }));
         }
+        let mut preview_geometry = Vec::new();
+        if desktop {
+            let rooms = app.ui.widget(cx, ids!(rooms_list));
+            let list = rooms.portal_list(cx, ids!(list));
+            for index in 0..16 {
+                let Some((_, row)) = list.get_item(index) else { continue };
+                let preview = row.widget(cx, ids!(latest_message.html_view.html));
+                let area = preview.area();
+                if area.is_empty() || !area.is_valid(cx) { continue; }
+                let full = area.rect(cx); let clipped = area.clipped_rect(cx);
+                preview_geometry.push(serde_json::json!({
+                    "height": full.size.y, "clipped_height": clipped.size.y,
+                    "visible": clipped.size.x > 1.0 && clipped.size.y > 1.0,
+                }));
+            }
+        }
         log!("[hepta-chat-observation] {}", serde_json::json!({
             "sequence": sequence, "controls": controls,
+            "room_preview_geometry": preview_geometry,
             "theme": cx.global::<crate::shared::hepta_theme::HeptaTheme>(),
             "draft_matches_fixture": editor.text() == "theme-draft-fixture",
             "draft_matches_research": editor.text() == "research-draft",

@@ -29,6 +29,13 @@ def switch_checks(before, after, theme, expected_focus="composer"):
     }
 
 
+def previews_readable(previews):
+    return len(previews) == 6 and all(
+        p["visible"] and p["height"] >= 33 and p["clipped_height"] >= p["height"] - 1
+        for p in previews
+    )
+
+
 def capture_theme_switches(page, messages, out):
     def latest(after=0):
         deadline = time.monotonic() + 5
@@ -52,6 +59,11 @@ def capture_theme_switches(page, messages, out):
         "Header/composer lost their reserved geometry"
     )
     assert timeline[1] >= header[1] + header[3] - 1, "Timeline overlaps room header"
+    previews = initial["room_preview_geometry"]
+    assert previews_readable(previews), (
+        "Room preview line boxes are clipped",
+        previews,
+    )
     click(initial, "composer")
     page.keyboard.type("theme-draft-fixture")
     page.wait_for_timeout(200)

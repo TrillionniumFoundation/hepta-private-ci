@@ -27,7 +27,7 @@ script_mod! {
 
             root := DockSplitter {
                 axis: SplitterAxis.Horizontal
-                align: SplitterAlign.FromA(310.0)
+                align: SplitterAlign.FromA(246.0)
                 a: @rooms_sidebar_tabs
                 b: @main_tabs
             }

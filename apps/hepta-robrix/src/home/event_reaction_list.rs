@@ -37,6 +37,9 @@ script_mod! {
 
             draw_bg +: {
                 hepta_owned_material: uniform(1.0)
+                hepta_material: uniform(1.0)
+                color_accent: uniform(#xbba6ff)
+                fixture_heart: instance(0.0)
                 // Anything that we apply over must be an `instance`,
                 // and their names must be distinct from the base Button type.
                 reaction_bg_color: instance(mod.widgets.COLOR_BUTTON_GREY)
@@ -63,6 +66,20 @@ script_mod! {
                     sdf.fill_keep(self.get_color())
                     if self.border_size > 0.0 {
                         sdf.stroke(self.reaction_border_color, self.border_size)
+                    }
+                    if self.fixture_heart > 0.5 {
+                        let x = 12.0
+                        let y = self.rect_size.y*0.5
+                        let color = if self.hepta_material > 0.5 && self.hepta_material < 1.5 #x72e5dd else self.color_accent
+                        sdf.circle(x-2.6, y-1.5, 3.4)
+                        sdf.fill(color)
+                        sdf.circle(x+2.6, y-1.5, 3.4)
+                        sdf.fill(color)
+                        sdf.move_to(x-5.5, y)
+                        sdf.line_to(x+5.5, y)
+                        sdf.line_to(x, y+6.0)
+                        sdf.close_path()
+                        sdf.fill(color)
                     }
                     return sdf.result;
                 }
@@ -223,10 +240,14 @@ impl ReactionListRef {
         let Some(mut inner) = self.borrow_mut() else { return };
         if !inner.children.is_empty() { return; }
         let mut button = widget_ref_from_live_ptr(cx, inner.item).as_button();
-        button.set_text(cx, "♥  3");
+        button.set_text(cx, "3");
         let bg = EMOJI_BG_COLOR_NOT_INCLUDE_SELF;
         let border = EMOJI_BORDER_COLOR_NOT_INCLUDE_SELF;
-        script_apply_eval!(cx, button, {draw_bg +: {reaction_bg_color: #(bg), reaction_border_color: #(border)}});
+        let padding = Inset {left: 24.0, right: 8.0, top: 6.0, bottom: 6.0};
+        script_apply_eval!(cx, button, {
+            padding: #(padding)
+            draw_bg +: {reaction_bg_color: #(bg), reaction_border_color: #(border), fixture_heart: 1.0}
+        });
         inner.children.push((button, ReactionData {
             reaction: "♥".into(), includes_user: false, reaction_senders: Vec::new(),
             total_reaction_senders: 3, room_id,

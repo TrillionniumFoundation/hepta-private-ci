@@ -198,3 +198,38 @@ binds this replay to the built binary and strict runtime log. A new browser
 continuous replay observes the actual selected Dock/stack owner and checks the
 same destination/draft/authority contract; its hosted outcome is pending.
 All three material replicas remain visually in progress.
+
+## Verified adaptive browser result and material refinement
+
+Exact f4b2a57e qualification37110627397 passed native and browser. The browser
+artifact ZIP, exact source/tree/app-tree and all99 included file hashes/set
+were independently verified. Its11-step continuous trace retains two separate
+fixed drafts through real Dock/stack owner handoffs; compact→short retains the
+same editor, while a new adaptive owner restores the saved state. Three actual
+wide/short/restored-room PNGs visibly confirm the drafts. Login's7 checks and
+all3 pointer/1 keyboard theme checks pass. This does not qualify live SDK
+reply/edit or delivery. `qualification/adaptive-f4b2a57e.json` records the scope.
+
+The next material stage differentiates selected tabs (Titanium cyan underline,
+Prism lilac face, Ceramic amber top seam) and room selection edges. Existing
+reply-preview content gains a recessed Rust panel inside its cached content,
+so ordinary and collapsed previews share the material without changing their
+collapse/action owner. Actual native inspection caught and rejected an initial
+texture-only approach that painted no card for ordinary short previews.
+
+Application-owned SVG icon color now has an explicit shader hook. A real
+before/after shader-identity test catches the earlier untagged DrawSvg fallback;
+all runtime style helpers must preserve owned face/icon shaders. User SVGs,
+explicit avatar colors and image textures remain outside these inputs. The
+composer's real enable/disable routine clears its disabled accent border and
+uses a distinct foreground-on-accent token; no send capability is added.
+Synthetic geometric avatars and the sample reaction symbol use Rust SDF, not
+missing font glyphs. The original approved space texture is only a Titanium
+rail decoration under real Rust controls, with source/package SHA validation.
+
+The default sidebar is246px, without overriding a user's saved Dock layout.
+Two-line previews reserve their line budget in the actual Html/Label widgets;
+new browser geometry evidence must show all six fixture previews unclipped.
+The earlier f4 browser clipping remains a real failed visual case until new
+hosted pixels verify this change. Detailed material/reference fidelity and
+broader accessibility remain in progress.

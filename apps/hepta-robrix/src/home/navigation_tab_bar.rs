@@ -421,7 +421,7 @@ impl Widget for ProfileIcon {
             // If we don't have a profile, default to an unknown avatar.
             our_own_avatar.show_text(
                 cx,
-                Some(COLOR_FG_DISABLED),
+                None, // use the owned fallback material
                 None, // don't make this avatar clickable; we handle clicks on this ProfileIcon widget directly.
                 "",
             );
@@ -439,7 +439,7 @@ impl Widget for ProfileIcon {
         if !drew_avatar {
             our_own_avatar.show_text(
                 cx,
-                Some(COLOR_ROBRIX_PURPLE),
+                None, // use the owned fallback material
                 None, // don't make this avatar clickable; we handle clicks on this ProfileIcon widget directly.
                 own_profile.displayable_name(),
             );

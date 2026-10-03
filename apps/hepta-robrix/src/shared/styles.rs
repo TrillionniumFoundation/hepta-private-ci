@@ -342,6 +342,7 @@ script_mod! {
 
 
 /// #171329
+pub const COLOR_BUTTON_INK: Vec4 = crate::shared::hepta_theme::rgba(0x100d1dff);
 pub const COLOR_PRIMARY:               Vec4 = super::hepta_theme::rgba(0x171329ff);
 /// #BBA6FF
 pub const COLOR_ACTIVE_PRIMARY:        Vec4 = super::hepta_theme::rgba(0xbba6ffff);

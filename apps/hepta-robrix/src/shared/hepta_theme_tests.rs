@@ -75,6 +75,7 @@ fn avatar_ownership_excludes_caller_color_even_when_palette_bytes_match() {
             mod.widgets.SolidView {
                 draw_bg +: {
                     hepta_owned_avatar: uniform(1.0)
+                    hepta_material: uniform(1.0)
                     hepta_color_avatar: uniform(#x382e55)
                     color: #x171329
                     pixel: fn() { return if self.color.x < -0.5 self.hepta_color_avatar else self.color }
@@ -86,7 +87,9 @@ fn avatar_ownership_excludes_caller_color_even_when_palette_bytes_match() {
     let shader = avatar.draw_bg.draw_vars.draw_shader_id.unwrap().index;
     let slots = owned_material(&cx, shader).unwrap();
     assert!(slots.colors.is_empty(), "caller colors never grant theme ownership");
-    assert_eq!(slots.uniforms.iter().map(|s| s.0).collect::<Vec<_>>(), vec![id!(hepta_color_avatar)]);
+    let names: Vec<_> = slots.uniforms.iter().map(|s| s.0).collect();
+    assert_eq!(names.len(), 2);
+    assert!(names.contains(&id!(hepta_color_avatar)) && names.contains(&id!(hepta_material)));
 }
 
 #[test]
@@ -146,12 +149,31 @@ fn runtime_button_style_helpers_do_not_redeclare_shader_uniforms() {
         WidgetRef::script_from_value(vm, value).as_button()
     });
     let uid = button.widget_uid();
+    let initial_shader = button.borrow().unwrap().draw_icon.draw_vars.draw_shader_id.unwrap().index;
+    assert!(owned_material(&cx, initial_shader).is_some(), "initial icon shader {initial_shader} uniforms {:?}", cx.draw_shaders.shaders[initial_shader].mapping.dyn_uniforms.inputs.iter().map(|i| i.id).collect::<Vec<_>>());
     for style in [super::super::styles::apply_positive_button_style,
         super::super::styles::apply_negative_button_style,
         super::super::styles::apply_neutral_button_style,
         super::super::styles::apply_primary_button_style] {
         style(&mut cx, &mut button);
         assert_eq!(button.widget_uid(), uid);
+        let icon = button.borrow().unwrap().draw_icon.draw_vars.draw_shader_id.expect("actual icon shader").index;
+        assert!(owned_material(&cx, icon).is_some(), "runtime icon style must retain explicit material ownership");
+        let pass = DrawPass::new(&mut cx);
+        pass.set_size(&mut cx, dvec2(240.0, 80.0));
+        let mut list = DrawList::new(&mut cx);
+        let event = DrawEvent::default();
+        let mut draw = CxDraw::new(&mut cx, &event);
+        draw.begin_pass(&pass, None);
+        list.begin_always(&mut draw);
+        { let mut cx = Cx2d::new(&mut draw);
+          cx.begin_root_turtle(dvec2(240.0, 80.0), Layout::flow_down());
+          button.draw_all(&mut cx, &mut Scope::empty());
+          cx.end_pass_sized_turtle(); }
+        list.end(&mut draw); draw.end_pass(&pass); drop(draw);
+        let Area::Instance(area) = button.area() else { panic!("real button face") };
+        let shader = cx.draw_lists[area.draw_list_id].draw_items[area.draw_item_id].draw_call().unwrap().draw_shader_id.index;
+        assert!(owned_material(&cx, shader).is_some(), "runtime face style must retain explicit material ownership");
         cx.with_vm(|vm| assert!(vm.take_errors().is_empty(), "runtime style script errors"));
     }
 }

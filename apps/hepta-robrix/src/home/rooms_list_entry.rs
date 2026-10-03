@@ -63,6 +63,9 @@ script_mod! {
         latest_message := HtmlOrPlaintext {
             html_view +: {
                 html +: {
+                    // Reserve two real snippet lines even before deferred web
+                    // fonts settle; the enclosing row already budgets this height.
+                    height: Fit{min: FitBound.Abs(34.0)}
                     font_size: 9.3
                     max_lines: 2
                     text_overflow: Ellipsis
@@ -103,6 +106,7 @@ script_mod! {
             }
             plaintext_view +: {
                 pt_label +: {
+                    height: Fit{min: FitBound.Abs(34.0)}
                     padding: 0
                     max_lines: 2
                     text_overflow: Ellipsis
@@ -126,6 +130,8 @@ script_mod! {
         show_bg: true
         draw_bg +: {
             hepta_owned_material: uniform(1.0)
+            hepta_material: uniform(1.0)
+            color_accent: uniform(#xbba6ff)
             active: instance(0.0)
             hover: instance(0.0)
             color: instance(#0000)
@@ -146,21 +152,21 @@ script_mod! {
             }
 
             pixel: fn() {
-                let sdf = Sdf2d.viewport(self.pos * self.rect_size)
-                sdf.box(
-                    self.border_inset.x + self.border_size,
-                    self.border_inset.y + self.border_size,
-                    self.rect_size.x - (self.border_inset.x + self.border_inset.z + self.border_size * 2.0),
-                    self.rect_size.y - (self.border_inset.y + self.border_inset.w + self.border_size * 2.0),
-                    max(1.0, self.border_radius)
-                )
-                sdf.fill_keep(self.get_color())
-                if self.border_size > 0.0 {
-                    sdf.stroke(self.border_color, self.border_size)
+                let p = self.pos * self.rect_size
+                let sdf = Sdf2d.viewport(p)
+                let prism = max(0.0, 1.0-abs(self.hepta_material-1.0))
+                sdf.box(0.8, 0.8, self.rect_size.x-1.6, self.rect_size.y-1.6, 5.0+prism*6.0)
+                let sheen = (1.0-self.pos.y)*0.14*self.active
+                sdf.fill_keep(mix(self.get_color(), self.color_selected_hover, sheen))
+                sdf.stroke(vec4(self.color_accent.rgb, self.active*(0.35+prism*0.45)), 0.8)
+                if self.hepta_material < 0.5 || self.hepta_material > 1.5 {
+                    sdf.box(1.0, 5.0, 2.5, max(0.0,self.rect_size.y-10.0), 1.0)
+                    sdf.fill(vec4(self.color_accent.rgb, self.active))
                 }
-                return sdf.result;
+                return sdf.result
             }
         }
+
         animator: Animator{
             selected: {
                 default: @off

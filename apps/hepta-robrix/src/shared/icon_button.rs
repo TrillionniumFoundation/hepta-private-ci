@@ -57,7 +57,17 @@ script_mod! {
             border_color_2: vec4(-1.0, -1.0, -1.0, -1.0)
         }
 
-        draw_icon.color: (COLOR_BUTTON_INK)
+        draw_icon: mod.draw.DrawSvg {
+            hepta_owned_material: uniform(1.0)
+            color: (COLOR_BUTTON_INK)
+            get_color: fn() {
+                let base = self.eval_gradient()
+                if self.hepta_owned_material > 0.5 && self.color.x >= 0.0 {
+                    return vec4(self.color.rgb*self.color.a*base.a, self.color.a*base.a)
+                }
+                return base
+            }
+        }
         icon_walk: Walk{width: 16, height: 16}
 
         draw_text +: {

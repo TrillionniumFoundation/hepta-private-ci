@@ -89,7 +89,8 @@ fn owned_material(cx: &Cx, shader: usize) -> Option<MaterialSlots> {
             stride: 0,
             colors: Vec::new(),
             uniforms: mapping.dyn_uniforms.inputs.iter()
-                .filter(|i| i.id == id!(hepta_color_avatar) && i.slots == 4)
+                .filter(|i| (i.id == id!(hepta_color_avatar) && i.slots == 4)
+                    || (i.id == id!(hepta_material) && i.slots == 1))
                 .map(|i| (i.id, i.offset, i.slots)).collect(),
         });
     }
@@ -196,10 +197,8 @@ script_mod! {
 
     mod.widgets.HeptaThemeBar = mod.widgets.HeptaPanel {
         width: Fill, height: 44
-        padding: Inset{left: 20, right: 10, top: 5, bottom: 5}
-        flow: Right
-        spacing: 6
-        align: Align{y: 0.5}
+        padding: 0
+        flow: Overlay
         draw_bg +: {
             color_accent: uniform(#xbba6ff)
             pixel: fn() {
@@ -227,11 +226,34 @@ script_mod! {
                 return sdf.result
             }
         }
+        // Decorative texture only. All text and controls above it stay Rust widgets.
+        titanium_horizon := Image {
+            width: Fill, height: Fill
+            fit: ImageFit.CropToFill
+            src: crate_resource("self://resources/hepta/titanium-horizon.png")
+            draw_bg +: {
+                hepta_owned_material: uniform(1.0)
+                hepta_material: uniform(1.0)
+                pixel: fn() {
+                    if self.hepta_material > 0.5 { return vec4(0.0) }
+                    let c = self.get_color_scale_pan(self.fit_scale, vec2(self.fit_pan.x, 0.19))
+                    let light = 0.18 + smoothstep(0.2, 0.65, self.pos.x)*0.58
+                    return vec4(c.rgb * light, 1.0)
+                }
+            }
+        }
+        View {
+            width: Fill, height: Fill
+            padding: Inset{left: 20, right: 10, top: 5, bottom: 5}
+            flow: Right
+            spacing: 6
+            align: Align{y: 0.5}
         hepta_brand := Label { text: "H E P T A" draw_text +: {color: #xf0edff, text_style: theme.font_regular {font_size: 13}} }
         View {width: Fill, height: Fit}
         theme_a := mod.widgets.HeptaThemeButton { text: "Titanium" }
         theme_b := mod.widgets.HeptaThemeButton { text: "Prism" }
         theme_c := mod.widgets.HeptaThemeButton { text: "Ceramic" }
+        }
     }
 }
 

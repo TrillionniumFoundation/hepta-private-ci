@@ -19,7 +19,7 @@ script_mod! {
         width: Fill
         height: Fit
         flow: Down
-        padding: Inset{left: 16.0, bottom: 5.0, top: 2.0, right: 11.0}
+        padding: Inset{left: 0.0, right: 0.0, top: 0.0, bottom: 0.0}
         cursor: MouseCursor.Hand,
         draw_bg +: {
             fade_start: uniform(1.0)
@@ -33,6 +33,11 @@ script_mod! {
             }
         }
 
+        reply_card := HeptaPanel {
+            width: Fill, height: Fit
+            flow: Down
+            padding: Inset{left: 16.0, bottom: 11.0, top: 10.0, right: 12.0}
+            draw_bg +: {color: #x171329, color_2: #x231e39, border_color: #x4c4269}
         View {
             width: Fill
             height: Fit
@@ -110,6 +115,7 @@ script_mod! {
                 }
             }
         }
+        }
     }
 
     // The show more button (to expand) and show less button (to collapse) a tall reply preview.
@@ -152,7 +158,8 @@ script_mod! {
             visible: false
             show_bg: true
             draw_bg +: {
-                bar_color: instance((USERNAME_TEXT_COLOR))
+                hepta_owned_material: uniform(1.0)
+                bar_color: instance(#xbba6ff)
                 pixel: fn() {
                     return Pal.premul(self.bar_color)
                 }

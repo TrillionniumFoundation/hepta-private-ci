@@ -48,6 +48,7 @@ script_mod! {
                 // Only the fallback paint is theme-owned. Explicit caller colors
                 // and image pixels remain outside theme retargeting.
                 hepta_owned_avatar: uniform(1.0)
+                hepta_material: uniform(1.0)
                 hepta_color_avatar: uniform(COLOR_BG_PREVIEW)
                 color: vec4(-1.0)
                 fixture_shape: instance(0.0)
@@ -55,7 +56,9 @@ script_mod! {
                     let sdf = Sdf2d.viewport(self.pos * self.rect_size)
                     let c = self.rect_size * 0.5
                     sdf.circle(c.x, c.y, min(c.x, c.y) - 0.5)
-                    sdf.fill(if self.color.x < -0.5 self.hepta_color_avatar else self.color)
+                    let fallback = if self.color.x < -0.5 self.hepta_color_avatar else self.color
+                    let lit = clamp(1.2-self.pos.y*0.9 + (1.0-self.pos.x)*0.5, 0.0, 1.8)
+                    sdf.fill(if self.fixture_shape > 0.5 vec4(fallback.rgb*lit, 1.0) else fallback)
                     if self.fixture_shape > 0.5 {
                         let r = min(c.x, c.y) * 0.58
                         if self.fixture_shape < 1.5 {
@@ -73,10 +76,28 @@ script_mod! {
                             sdf.close_path()
                         } else {
                             sdf.box(c.x - r, c.y - r, r * 2.0, r * 2.0, 2.0)
-                            sdf.move_to(c.x - r, c.y)
-                            sdf.line_to(c.x + r, c.y)
                         }
-                        sdf.stroke(vec4(self.hepta_color_avatar.rgb * 2.6, 1.0), 1.2)
+                        let accent = vec4(self.hepta_color_avatar.rgb*2.6, 1.0)
+                        sdf.fill_keep(vec4(self.hepta_color_avatar.rgb*(1.1+self.pos.x*1.8), 1.0))
+                        sdf.stroke(accent, 0.8)
+                        if self.hepta_material < 0.5 {
+                            sdf.move_to(c.x-r*1.3, c.y+r*0.2)
+                            sdf.line_to(c.x+r*1.3, c.y-r*0.2)
+                            sdf.stroke(vec4(accent.rgb, 0.8), 0.7)
+                        } else if self.hepta_material < 1.5 {
+                            sdf.move_to(c.x-r*0.6, c.y-r*0.45)
+                            sdf.line_to(c.x+r*0.5, c.y-r*0.55)
+                            sdf.line_to(c.x+r*0.55, c.y+r*0.65)
+                            sdf.close_path()
+                            sdf.fill(vec4(accent.rgb, 0.35))
+                        } else {
+                            sdf.move_to(c.x-r, c.y-r*0.3)
+                            sdf.line_to(c.x, c.y+r*0.2)
+                            sdf.line_to(c.x+r, c.y-r*0.3)
+                            sdf.move_to(c.x, c.y+r*0.2)
+                            sdf.line_to(c.x, c.y+r)
+                            sdf.stroke(accent, 0.8)
+                        }
                     }
                     return sdf.result
                 }
