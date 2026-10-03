@@ -140,21 +140,24 @@ impl Widget for RoomScreen {
                     // The list action arrives after its own redraw. Repaint the
                     // parent too so the sibling Jump control reflects the new intent.
                     self.view.redraw(cx);
-                } else if let Some(inner) = list.borrow()
-                    && inner.area().is_valid(cx)
-                {
-                    let size = inner.area().rect(cx).size;
-                    if self.scroll_tracker.request_tail_redraw(
-                        follow_latest,
-                        travel,
-                        inner.is_at_end(),
-                        inner.first_id(),
-                        inner.first_scroll(),
-                        [size.x, size.y],
-                    ) {
-                        // The list's own redraw can leave the parent batch cached.
-                        // Re-enter the existing tail correction once per meaningful
-                        // layout state; real gestures and unchanged states win.
+                } else {
+                    let redraw_parent = list.borrow().is_some_and(|inner| {
+                        if !inner.area().is_valid(cx) {
+                            return false;
+                        }
+                        let size = inner.area().rect(cx).size;
+                        self.scroll_tracker.request_tail_redraw(
+                            follow_latest,
+                            travel,
+                            inner.is_at_end(),
+                            inner.first_id(),
+                            inner.first_scroll(),
+                            [size.x, size.y],
+                        )
+                    });
+                    // Drop the PortalList read guard before the parent redraw
+                    // traverses its children and takes their mutable guards.
+                    if redraw_parent {
                         self.view.redraw(cx);
                     }
                 }
