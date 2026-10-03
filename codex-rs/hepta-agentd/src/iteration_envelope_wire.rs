@@ -54,6 +54,35 @@ pub struct CanonicalIterationEnvelopeV1 {
     digest: Digest32,
 }
 
+/// Borrowed policy from the validated canonical envelope. Consumers enforce
+/// these bounds through their original execution owners and retain the exact
+/// envelope digest; this view itself grants no execution authority.
+#[derive(Clone, Copy, Debug)]
+pub struct CanonicalIterationPolicyV1<'a> {
+    pub envelope_id: &'a str,
+    pub base_commit: &'a str,
+    pub base_tree: &'a str,
+    pub objective_digest: &'a str,
+    pub grammar_digest: &'a str,
+    pub allowed_paths: &'a [String],
+    pub denied_authorities: &'a [String],
+    pub maximum_files: u32,
+    pub maximum_bytes: u64,
+    pub maximum_candidates: u32,
+    pub wall_time_micros: u64,
+    pub compute_budget: CanonicalIterationComputeBudgetV1,
+    pub mandatory_checks: &'a [String],
+    pub expires_unix_ms: u64,
+}
+
+/// Declared compute ceilings from the registered, validated budget profile.
+#[derive(Clone, Copy, Debug)]
+pub struct CanonicalIterationComputeBudgetV1 {
+    pub maximum_parallel_sandboxes: u8,
+    pub maximum_memory_bytes: u64,
+    pub maximum_processes: u32,
+}
+
 impl CanonicalIterationEnvelopeV1 {
     pub fn decode(bytes: &[u8]) -> Result<Self, String> {
         if bytes.is_empty() || bytes.len() > MAX_ENCODED_BYTES {
@@ -89,6 +118,30 @@ impl CanonicalIterationEnvelopeV1 {
 
     pub fn digest(&self) -> Digest32 {
         self.digest
+    }
+
+    pub fn policy(&self) -> CanonicalIterationPolicyV1<'_> {
+        let envelope = &self.envelope;
+        CanonicalIterationPolicyV1 {
+            envelope_id: &envelope.envelope_id,
+            base_commit: &envelope.base_commit,
+            base_tree: &envelope.base_tree,
+            objective_digest: &envelope.objective_digest,
+            grammar_digest: &envelope.grammar_digest,
+            allowed_paths: &envelope.allowed_paths,
+            denied_authorities: &envelope.denied_authorities,
+            maximum_files: envelope.maximum_files,
+            maximum_bytes: envelope.maximum_bytes,
+            maximum_candidates: envelope.maximum_candidates,
+            wall_time_micros: envelope.wall_time_micros,
+            compute_budget: CanonicalIterationComputeBudgetV1 {
+                maximum_parallel_sandboxes: envelope.compute_budget.maximum_parallel_sandboxes,
+                maximum_memory_bytes: envelope.compute_budget.maximum_memory_bytes,
+                maximum_processes: envelope.compute_budget.maximum_processes,
+            },
+            mandatory_checks: &envelope.mandatory_checks,
+            expires_unix_ms: envelope.expires_unix_ms,
+        }
     }
 
     /// Authenticate this exact envelope as a Generator submission against the

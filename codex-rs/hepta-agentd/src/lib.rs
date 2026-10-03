@@ -354,7 +354,11 @@ pub use intuition_policy::AgentdIntuitionPolicyHostV1;
 #[cfg(feature = "server")]
 pub use intuition_policy::AgentdIntuitionPolicyPinsV1;
 #[cfg(feature = "server")]
+pub use iteration_envelope_wire::CanonicalIterationComputeBudgetV1;
+#[cfg(feature = "server")]
 pub use iteration_envelope_wire::CanonicalIterationEnvelopeV1;
+#[cfg(feature = "server")]
+pub use iteration_envelope_wire::CanonicalIterationPolicyV1;
 #[cfg(feature = "server")]
 pub use lane_b_runtime::AgentRunCoordinator;
 #[cfg(feature = "server")]
