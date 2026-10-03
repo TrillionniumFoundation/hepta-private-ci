@@ -774,16 +774,14 @@ async fn qualification_prepare_quarantines_expired_registry_attempt_with_h7_evid
 
 #[cfg(not(feature = "qualification-cognitive-write"))]
 #[test]
-fn read_only_profile_preserves_degraded_cognitive_runtime_behavior() {
+fn default_profile_rejects_unavailable_critical_cognitive_owner() {
     let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
         codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
-    ))
-    .expect("read-only profile remains availability tolerant");
+    ));
     assert!(matches!(
         result,
-        CognitiveRuntime::Unavailable(
-            codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable
-        )
+        Err(crate::AgentdError::Protocol(message))
+            if message == "critical cognitive owner unavailable"
     ));
 }
 
@@ -1067,17 +1065,4 @@ async fn generation_monitor_honors_host_cancellation_during_readiness_probe()
     },);
     result?;
     Ok(())
-}
-
-#[cfg(not(feature = "qualification-cognitive-write"))]
-#[test]
-fn default_profile_rejects_unavailable_critical_cognitive_owner() {
-    let result = require_cognitive_runtime_for_profile(CognitiveRuntime::Unavailable(
-        codex_hepta_memory::CognitiveUnavailableReason::StorageUnavailable,
-    ));
-    assert!(matches!(
-        result,
-        Err(crate::AgentdError::Protocol(message))
-            if message == "critical cognitive owner unavailable"
-    ));
 }

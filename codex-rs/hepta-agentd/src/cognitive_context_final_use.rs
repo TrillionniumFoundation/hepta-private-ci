@@ -28,18 +28,30 @@ use crate::CognitiveContextItem;
 use crate::CognitiveContextPlan;
 use crate::CognitiveContextSnapshot;
 
+/// Borrowed claimed context, independently revalidated against a fresh owner cut.
+pub(crate) struct ContextRevalidationInput<'a> {
+    pub(crate) snapshot_digest: &'a str,
+    pub(crate) read_digest: &'a str,
+    pub(crate) omitted_records: u64,
+    pub(crate) items: &'a [CognitiveContextItem],
+    pub(crate) plan: Option<&'a CognitiveContextPlan>,
+}
+
 pub(crate) async fn revalidate_with_retrieval_context(
     store: &CognitiveStore,
     owner: &AgentId,
-    snapshot_digest: &str,
-    read_digest: &str,
-    omitted_records: u64,
-    items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
+    input: ContextRevalidationInput<'_>,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
     body_generation: u64,
     current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
+    let ContextRevalidationInput {
+        snapshot_digest,
+        read_digest,
+        omitted_records,
+        items,
+        plan,
+    } = input;
     let mut operation = OperationObservation::start(Phase::FinalUse);
     if items.len() > 4 {
         return Err(CognitiveStoreError::Invalid(

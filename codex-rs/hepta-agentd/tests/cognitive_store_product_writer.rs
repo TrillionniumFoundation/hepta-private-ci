@@ -143,7 +143,9 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
     let expected = store.recovery_anchor().await?;
+    let predecessor_path = store.path().to_path_buf();
     store.close().await;
+    let predecessor_bytes = fs::read(&predecessor_path)?;
 
     let authority = ProductionAuthorityLease::from_verified_parts(
         owner.clone(),
@@ -183,7 +185,25 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    // Recovery validates the exact predecessor before opening the writer.
+    // Acquiring the new writer lease then legitimately advances owner state.
+    assert_eq!(
+        (
+            &recovered_anchor.profile,
+            &recovered_anchor.owner_agent_id,
+            &recovered_anchor.schema_digest
+        ),
+        (
+            &expected.profile,
+            &expected.owner_agent_id,
+            &expected.schema_digest
+        )
+    );
+    assert_ne!(recovered_anchor.state_digest, expected.state_digest);
+    assert_ne!(host.writer().database_path(), predecessor_path);
+    assert_eq!(fs::read(&predecessor_path)?, predecessor_bytes);
+    assert_eq!(host.writer().lease_id(), "agentd-product-recovery-test");
+    assert_eq!(host.writer().generation(), 1);
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());

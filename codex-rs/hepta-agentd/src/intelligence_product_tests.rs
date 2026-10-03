@@ -662,7 +662,7 @@ fn fixture() -> Fixture {
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_owner_product_path_records_decision_outcome_and_reopens() {
-    let fixture = fixture();
+    let (fixture, trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -670,8 +670,10 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         &fixture.owners,
         fixture.request.snapshot.revocation_frontier_digest(),
     );
-    let runner =
-        AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier()).expect("runner");
+    let runner = AgentdIntelligenceProductRunnerV1::new(authority, authority_verifier())
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("independently activated test evaluation trust");
     let mut coordinator = product_test_coordinator();
     let outcome = runner
         .prepare_and_admit(&mut coordinator, fixture.request, fixture.inputs)
@@ -684,6 +686,8 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
     else {
         panic!("selected real-owner path must be ready");
     };
+    // Consume the pre-release boxed Rust result; the semantic payload is unchanged.
+    let prepared: PreparedAgentdIntelligenceRunV1 = *prepared;
     assert!(!prepared.envelope.utility_receipt_digest.is_zero());
     assert!(!prepared.dispatch_proposal_digest.is_zero());
     assert!(!prepared.envelope.authority.grants_any());
@@ -720,6 +724,43 @@ async fn real_owner_product_path_records_decision_outcome_and_reopens() {
         )
         .expect("decision append");
     assert_eq!(decision.disposition, AppendDisposition::Appended);
+    let records = ledger.records().expect("decision records");
+    let LedgerEvent::Decision(recorded_decision) = &records[0].event else {
+        panic!("expected decision event");
+    };
+    assert_eq!(
+        recorded_decision.candidate_ids,
+        vec![id("abstain"), id("action.read")]
+    );
+    assert_eq!(prepared.candidate_ids, vec![id("action.read")]);
+
+    // Exercise owned pending-payload consumption using the exact event that
+    // already committed. This checks reconciliation representation, not an
+    // injected crash or an inferred provider outcome.
+    let before_replay = std::fs::read(&ledger_path).expect("persisted ledger bytes");
+    let pending =
+        AgentdIntelligenceLedgerError::Indeterminate(Box::new(PendingIntelligenceLedgerAppendV1 {
+            expected_predecessor: Digest32::ZERO,
+            snapshot: prepared.snapshot.clone(),
+            event: records[0].event.clone(),
+        }));
+    let AgentdIntelligenceLedgerError::Indeterminate(pending) = pending else {
+        panic!("pending append changed variant");
+    };
+    let replay = runner
+        .reconcile_ledger_append(&mut ledger, *pending)
+        .expect("reconcile owned boxed payload");
+    assert_eq!(
+        replay,
+        codex_hepta_learning_ledger::AppendReceipt {
+            disposition: AppendDisposition::IdempotentReplay,
+            ..decision.clone()
+        }
+    );
+    assert_eq!(
+        std::fs::read(&ledger_path).expect("unchanged replay bytes"),
+        before_replay
+    );
 
     let outcome = runner
         .append_outcome(
@@ -829,7 +870,7 @@ async fn unsigned_currentness_substitution_fails_before_owner_use() {
 #[cfg(feature = "qualification-legacy-learning-write")]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn final_use_revocation_race_fails_before_decision_publication() {
-    let fixture = fixture();
+    let (fixture, trust) = signed::signed_fixture();
     let temp = tempfile::tempdir().expect("tempdir");
     let authority = temp.path().join("intelligence-authority.json");
     write_authority_file(
@@ -838,7 +879,9 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
         fixture.request.snapshot.revocation_frontier_digest(),
     );
     let runner = AgentdIntelligenceProductRunnerV1::new(authority.clone(), authority_verifier())
-        .expect("runner");
+        .expect("runner")
+        .with_evaluation_trust(trust)
+        .expect("independently activated test evaluation trust");
     let outcome = runner
         .prepare(&product_test_coordinator(), fixture.request, fixture.inputs)
         .await
@@ -846,6 +889,7 @@ async fn final_use_revocation_race_fails_before_decision_publication() {
     let AgentdIntelligenceProductOutcomeV1::Ready(prepared) = outcome else {
         panic!("ready");
     };
+    let prepared: PreparedAgentdIntelligenceRunV1 = *prepared;
 
     write_authority_file(
         &authority,

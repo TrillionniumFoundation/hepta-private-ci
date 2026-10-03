@@ -3,6 +3,10 @@
 //! This profile observes real turn events and token usage. It makes no claim
 //! about local weights, accelerator memory, artifact selection or training.
 
+#[path = "native_output_messages.rs"]
+mod output_messages;
+use output_messages::ObservedAgentMessages;
+
 use std::collections::HashMap;
 use std::future::Future;
 use std::path::PathBuf;
@@ -920,10 +924,11 @@ impl AppServerModelDriver {
         }
         let deadline =
             Instant::now() + observation_budget_from(unix_time_ms()?, binding.intent.deadline_ms);
+        let mut messages = ObservedAgentMessages::default();
         let result = self
             .observe(
                 &mut client,
-                &mut output,
+                (&mut output, &mut messages),
                 deadline,
                 cancellation,
                 Some(&owner),
@@ -933,17 +938,16 @@ impl AppServerModelDriver {
         if let Err(reason) = result {
             output.boundary_status = classify_observation_failure(&reason);
             output.stop_reason = Some(reason.clone());
-            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision) {
-                if let Ok(cancelled) = owner
+            if let (Some(binding), Some(revision)) = (intelligence, intelligence_revision)
+                && let Ok(cancelled) = owner
                     .run_cancel(
                         binding.run_id.clone(),
                         revision,
                         reason.chars().take(512).collect(),
                     )
                     .await
-                {
-                    intelligence_revision = Some(cancelled.receipt.revision);
-                }
+            {
+                intelligence_revision = Some(cancelled.receipt.revision);
             }
             // Persist cancellation intent, but still interrupt if that write
             // fails. A failed journal write fences later admission/settlement.
@@ -963,7 +967,7 @@ impl AppServerModelDriver {
             let _ = self
                 .observe(
                     &mut client,
-                    &mut output,
+                    (&mut output, &mut messages),
                     Instant::now() + INTERRUPT_GRACE,
                     &grace,
                     /*owner*/ None,
@@ -1027,7 +1031,7 @@ impl AppServerModelDriver {
     async fn observe(
         &self,
         client: &mut RemoteAppServerClient,
-        output: &mut NativeRunOutput,
+        (output, messages): (&mut NativeRunOutput, &mut ObservedAgentMessages),
         deadline: Instant,
         cancellation: &CancellationToken,
         owner: Option<&AgentdClient>,
@@ -1049,7 +1053,7 @@ impl AppServerModelDriver {
             };
             match event.event() {
                 AppServerEvent::ServerNotification(_) => {
-                    if observe_event(output, &event, binding)? {
+                    if observe_event(output, messages, &event, binding)? {
                         return Ok(());
                     }
                 }
@@ -1441,6 +1445,7 @@ async fn interrupt(client: &mut RemoteAppServerClient, output: &NativeRunOutput)
 
 fn observe_event(
     output: &mut NativeRunOutput,
+    messages: &mut ObservedAgentMessages,
     observed: &RemoteAppServerObservedEvent,
     binding: &CodexTurnBinding,
 ) -> std::result::Result<bool, String> {
@@ -1451,10 +1456,21 @@ fn observe_event(
         ServerNotification::AgentMessageDelta(delta)
             if delta.thread_id == output.thread_id && delta.turn_id == output.turn_id =>
         {
-            if delta.delta.len() > MAX_OUTPUT_BYTES.saturating_sub(output.output.len()) {
-                return Err("output byte limit exceeded".to_string());
+            messages.delta(&mut output.output, &delta.item_id, &delta.delta)?;
+        }
+        ServerNotification::ItemStarted(started)
+            if started.thread_id == output.thread_id && started.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &started.item {
+                messages.start(&mut output.output, id, text)?;
             }
-            output.output.push_str(&delta.delta);
+        }
+        ServerNotification::ItemCompleted(completed)
+            if completed.thread_id == output.thread_id && completed.turn_id == output.turn_id =>
+        {
+            if let ThreadItem::AgentMessage { id, text, .. } = &completed.item {
+                messages.complete(&mut output.output, id, text)?;
+            }
         }
         ServerNotification::ThreadTokenUsageUpdated(usage)
             if usage.thread_id == output.thread_id && usage.turn_id == output.turn_id =>
@@ -1514,3 +1530,7 @@ fn observe_event(
 #[cfg(test)]
 #[path = "native_app_server_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "native_output_messages_tests.rs"]
+mod output_message_tests;

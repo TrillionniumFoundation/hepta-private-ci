@@ -34,6 +34,7 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
+pub(crate) use self::final_use::ContextRevalidationInput;
 pub(crate) use self::final_use::revalidate_with_retrieval_context;
 use self::observation::OperationObservation;
 use self::observation::Phase;
@@ -48,6 +49,13 @@ const MAX_CONTEXT_JSON_BYTES: usize = crate::MAX_COGNITIVE_CONTEXT_BYTES;
 const MAX_SELECTED_CONTEXT_RECORDS: u16 = 4;
 const CONTEXT_READ_BINDING_DOMAIN: &[u8] = b"hepta.agentd.cognitive-context-read.v1";
 type AdmissionKey = (String, u64, String);
+
+/// Borrowed read inputs; this grouping changes neither wire data nor authority.
+pub(crate) struct ContextReadRequest<'a> {
+    pub(crate) query: &'a str,
+    pub(crate) limit: u16,
+    pub(crate) request_id: Option<u64>,
+}
 
 fn admitted_record_index(
     records: &[ReadProjectionRecordV1],
@@ -126,12 +134,14 @@ pub(crate) async fn read(
         store,
         owner,
         body_generation,
-        query,
-        limit,
+        crate::cognitive_context::ContextReadRequest {
+            query,
+            limit,
+            request_id: None,
+        },
         ranker,
-        None,
-        None,
-        None,
+        /*current_retrieval*/ None,
+        /*learning_sink*/ None,
     )
     .await
 }
@@ -150,12 +160,14 @@ pub(crate) async fn read_with_retrieval_context(
         store,
         owner,
         body_generation,
-        query,
-        limit,
+        crate::cognitive_context::ContextReadRequest {
+            query,
+            limit,
+            request_id: None,
+        },
         ranker,
         current_retrieval,
-        None,
-        None,
+        /*learning_sink*/ None,
     )
     .await
 }
@@ -165,23 +177,19 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
     store: &CognitiveStore,
     owner: &AgentId,
     body_generation: u64,
-    query: &str,
-    limit: u16,
+    request: ContextReadRequest<'_>,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
     current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
-    request_id: Option<u64>,
 ) -> Result<CognitiveContextSnapshot, CognitiveContextError> {
     read_prepared_with_retrieval_context_and_learning(
         store,
         owner,
         body_generation,
-        query,
-        limit,
+        request,
         ranker,
         current_retrieval,
         learning_sink,
-        request_id,
     )
     .await
     .map(|prepared| prepared.snapshot)
@@ -191,13 +199,16 @@ pub(crate) async fn read_prepared_with_retrieval_context_and_learning(
     store: &CognitiveStore,
     owner: &AgentId,
     body_generation: u64,
-    query: &str,
-    limit: u16,
+    request: ContextReadRequest<'_>,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
     current_retrieval: Option<&std::sync::Arc<dyn crate::CurrentMemoryRetrievalContext>>,
     learning_sink: Option<&std::sync::Arc<crate::CognitiveRetrievalLearningSink>>,
-    request_id: Option<u64>,
 ) -> Result<crate::CognitiveContextPreparation, CognitiveContextError> {
+    let ContextReadRequest {
+        query,
+        limit,
+        request_id,
+    } = request;
     let mut operation = OperationObservation::start(Phase::Read);
     if query.is_empty()
         || query.len() > 2048
@@ -585,9 +596,8 @@ pub(crate) async fn read_prepared_with_retrieval_context_and_learning(
     store
         .revalidate_lane_c_selection(&access, &scope, &selected_cut, now_seconds()?)
         .await
-        .map_err(|error| {
+        .inspect_err(|_| {
             cognitive_context_metrics::record_stale_cut_rejection();
-            error
         })?;
     fresh_plan.ensure_current(plan_binding::now_micros()?)?;
     cognitive_context_metrics::record_selected(response.items.len());
@@ -642,24 +652,11 @@ mod budget_tests {
 pub(crate) async fn revalidate(
     store: &CognitiveStore,
     owner: &AgentId,
-    snapshot_digest: &str,
-    read_digest: &str,
-    omitted_records: u64,
-    items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
+    input: ContextRevalidationInput<'_>,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
     revalidate_with_retrieval_context(
-        store,
-        owner,
-        snapshot_digest,
-        read_digest,
-        omitted_records,
-        items,
-        plan,
-        ranker,
-        1,
-        None,
+        store, owner, input, ranker, /*body_generation*/ 1, /*current_retrieval*/ None,
     )
     .await
 }

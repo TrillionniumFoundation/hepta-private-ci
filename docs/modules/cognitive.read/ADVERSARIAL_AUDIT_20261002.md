@@ -165,3 +165,129 @@ change. Migration impact: an unavailable default owner produces an immediate
 startup failure instead of an indefinitely not-ready daemon. This grants no
 writer or degraded-ready capability. These new Agentd cases are pending fresh
 execution; earlier 201/25/6 package counts describe the pre-follow-up source.
+
+## Verified hosted continuation at 8145cc37
+
+The repair checks below initially ran on an unpublished mixed worktree. They
+are historical evidence and are not execution receipts for the independent
+continuation described at the end of this report.
+
+Run `36982711540` produced separate exact-head and synthetic-merge receipts for
+identical tree `d879624146f7ab3183149097e7126608a6647dc5`. Both archives and their
+inner file checksums were verified. Each passed 41 of 47 command gates; the
+overall qualification remains failed. Owner tests passed all 287 cases, and
+Agentd executed 225 passing cases with two failures, including successful real
+socket/provider flows previously blocked locally. The unchanged 17,000-history
+case passed. Delivery, preparation, witness integrity and owner-currentness
+checks passed in both receipts.
+
+The remaining evidence drives a further repair round:
+
+- Migrate the older duplicate degraded-startup unit assertion to the same
+  critical-owner contract; retain one canonical test case.
+- The recovery product test now reaches writer admission. Its pre-writer anchor
+  cannot equal the post-acquisition state after an authenticated lease append.
+  Check unchanged predecessor bytes, owner/schema continuity, a distinct
+  recovered database and the actual new writer lease instead.
+- Reconcile completed assistant-message snapshots with streamed deltas so a
+  successful real turn cannot silently return empty output for valid
+  completed-only messages. Preserve per-item bounds and reject post-completion drift.
+- Reuse the existing independently signed evaluation fixture and activated host
+  trust for the two legacy positive/final-use tests. Do not bypass evaluation
+  admission or change production evidence validation.
+- Route AuthBus SQLite construction through the central owner shim while
+  preserving its durable and transient pool policies; fix mechanical closures.
+- Commit the standalone fuzz workspace lock and require `--locked`; do not
+  exempt an untracked lockfile from source sealing.
+- Build the Codex executable before the Agentd process workflow's library tests
+  that invoke a real App Server.
+
+These are pending repair/verification items, not a passing replacement receipt.
+Exact-head artifact `11217416946` has ZIP SHA-256
+`ebacff2dfb21f175619d7511e46f23fbfb8479d82e62e906f8d55bc27b0d2cef`;
+merge artifact `11218020810` has ZIP SHA-256
+`61bfe3fd9077cf9786753bd69902225a0109d8a5e2ea343dbf0e1b7a4f4dbd89`.
+
+Local repair checks completed so far: the message collector's nine focused
+cases pass on the complete dependency graph, including completed-only text,
+interleaved items, duplicate/conflicting snapshots, foreign turn isolation,
+Unicode byte limits and the 1,024-item bound. Item completion does not establish
+terminal turn success. Cognitive evidence Python tests pass 106 cases; the
+Agentd process workflow tests pass 16 cases. The standalone fuzz harness passes
+its locked all-target compilation; this is not a fuzz campaign receipt.
+
+The blocking workflow at this source also passes Rust formatting, Python SDK
+and all three host-native path checks. Its repository/Bazel preflight fails two
+workspace-manifest test expectations (changed diagnostic wording and a larger
+reviewed exception set); both verifier and tests are byte-identical to stacked
+base `ab60cb27a160dd350a6b89d2ac7dffa33d9a23d1`, and a local run reproduces
+9 passing / 2 failing tests. These failures do not justify weakening the feature
+policy or claiming that the broad blocking workflow passes.
+
+The targeted unavailable-owner and final-use revocation cases pass. The recovery
+product fixture also passes with the new lease-aware assertions after a build
+retry; the initial attempt never executed a test because a concurrent cache
+fetch exhausted disk during linking. Both attempt logs are retained.
+
+The signed legacy positive case exposed a second issue at decision append:
+`MissingAbstainCandidate`. The qualification-only adapter forwarded policy
+actions as a complete ledger universe. The ledger's existing shadow adapter
+reserves and inserts the intrinsic abstain alternative itself; inserting a fake
+policy action in the fixture would change the policy universe. Reuse the narrow
+reviewed `intelligence_learning_candidates` helper from intelligence candidate
+`5dd6acba5b5cc1ab4218953b9aa2924a23cfc86a` only in the qualification-gated legacy
+append path. It rejects empty, duplicate, reserved-abstain and over-capacity
+inputs and produces a sorted fresh ledger candidate list. Canonical bindings,
+modern signed payload construction and persisted records are unchanged. Tests
+also check that the original prepared action list remains unchanged. This
+adapter repair is pending its targeted rerun.
+
+The fresh targeted rerun after the intrinsic-candidate adapter repair passes all
+five selected tests: decision/outcome/reopen, final-use revocation, default
+unavailable owner, canonical projection/rejections and candidate-capacity bound.
+The canonical action list remains unchanged while the new legacy ledger event
+contains the intrinsic abstain alternative. These focused checks do not replace
+the pending full hosted qualification or authorize a production legacy writer.
+
+
+## Independent continuation from 8145cc37
+
+The isolated continuation extracts 15 source, fixture, workflow and documentation
+files from the reviewed repair set. It includes completed-message collection,
+legacy candidate completeness, signed positive fixtures, the default-owner unit
+expectation, recovery lease assertions and building Codex before physical-worker
+library tests. It makes no Cargo manifest or root dependency-lock change.
+
+All nine AuthBus/state-shim/dependency files remain exactly as in the 8145cc37
+base. The separate AuthBus schema fixture and dependency-lock repair is deferred.
+Original strict-lint errors in those unchanged AuthBus files remain unresolved.
+
+Three independent but coupled files are also deferred: the standalone fuzz
+Cargo.lock, the evidence command's --locked flag and its unit test. The repository
+requires a Bazel lock refresh for lockfile changes; that dependency work is
+outside this isolated continuation. The original hosted untracked-fuzz
+lock/source-sealing failure remains visible and unresolved here.
+
+The earlier five Agentd, one recovery and nine output-collector passes were run
+against the mixed worktree and are not transferred to this isolated candidate.
+Fresh isolated verification is recorded below. No executable, activation, independent
+acceptance or release claim is promoted by this extraction.
+
+Fresh isolated lightweight checks pass: 105 cognitive Python cases and 16
+Agentd workflow cases. The earlier 106 count included the deferred fuzz-command
+regression. Fresh isolated Rust checks now pass: five selected Agentd cases, the product
+recovery case, and nine completed-output collector/observation cases. The
+Agentd suite includes both legacy integration cases and the intrinsic-candidate
+rejection/capacity tests. These are new executions with the base AuthBus and
+root lock, not transfers of mixed-worktree results. Full hosted qualification
+and the deferred dependency/source-sealing repairs remain outstanding.
+
+Scoped `just fix` completed; unrelated baseline suggestions were restored, and
+only an equivalent collapsed conditional in the edited worker was retained.
+Repository formatting completed, with unrelated baseline formatting restored.
+A fresh strict all-target Agentd/worker Clippy attempt stops in unchanged
+`core/src/client.rs::map_response_events` (eight arguments, lint limit seven).
+That file is byte-identical to 8145cc37. This is an additional inherited lint
+blocker; it does not establish that downstream AuthBus lint errors are resolved.
+No lint policy or authority validation was relaxed. The focused test receipts
+precede the final mechanical fix/format, following the repository workflow.

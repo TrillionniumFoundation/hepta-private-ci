@@ -73,11 +73,13 @@ async fn real_owner_rejects_plan_receipt_substitution_and_generation_replay() {
     revalidate(
         &store,
         &owner,
-        &context.snapshot_digest,
-        &context.read_digest,
-        context.omitted_records,
-        &context.items,
-        context.plan.as_ref(),
+        crate::cognitive_context::ContextRevalidationInput {
+            snapshot_digest: &context.snapshot_digest,
+            read_digest: &context.read_digest,
+            omitted_records: context.omitted_records,
+            items: &context.items,
+            plan: context.plan.as_ref(),
+        },
         /*ranker*/ None,
     )
     .await
@@ -88,11 +90,13 @@ async fn real_owner_rejects_plan_receipt_substitution_and_generation_replay() {
         revalidate(
             &store,
             &owner,
-            &context.snapshot_digest,
-            &context.read_digest,
-            context.omitted_records,
-            &context.items,
-            Some(&substituted),
+            crate::cognitive_context::ContextRevalidationInput {
+                snapshot_digest: &context.snapshot_digest,
+                read_digest: &context.read_digest,
+                omitted_records: context.omitted_records,
+                items: &context.items,
+                plan: Some(&substituted)
+            },
             /*ranker*/ None,
         )
         .await
@@ -102,11 +106,13 @@ async fn real_owner_rejects_plan_receipt_substitution_and_generation_replay() {
         revalidate_with_retrieval_context(
             &store,
             &owner,
-            &context.snapshot_digest,
-            &context.read_digest,
-            context.omitted_records,
-            &context.items,
-            context.plan.as_ref(),
+            crate::cognitive_context::ContextRevalidationInput {
+                snapshot_digest: &context.snapshot_digest,
+                read_digest: &context.read_digest,
+                omitted_records: context.omitted_records,
+                items: &context.items,
+                plan: context.plan.as_ref()
+            },
             /*ranker*/ None,
             /*body_generation*/ 2,
             /*current_retrieval*/ None,
@@ -120,11 +126,13 @@ async fn real_owner_rejects_plan_receipt_substitution_and_generation_replay() {
         revalidate(
             &store,
             &owner,
-            &context.snapshot_digest,
-            &context.read_digest,
-            context.omitted_records,
-            &oversize,
-            context.plan.as_ref(),
+            crate::cognitive_context::ContextRevalidationInput {
+                snapshot_digest: &context.snapshot_digest,
+                read_digest: &context.read_digest,
+                omitted_records: context.omitted_records,
+                items: &oversize,
+                plan: context.plan.as_ref()
+            },
             /*ranker*/ None,
         )
         .await

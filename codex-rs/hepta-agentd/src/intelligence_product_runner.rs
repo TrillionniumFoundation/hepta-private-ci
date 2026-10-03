@@ -189,7 +189,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                     context_digest: envelope.context_receipt_digest.to_string(),
                     compilation_receipt_digest: envelope.envelope_digest.to_string(),
                 };
-                Ok(AgentdIntelligenceProductOutcomeV1::Ready(
+                Ok(AgentdIntelligenceProductOutcomeV1::Ready(Box::new(
                     PreparedAgentdIntelligenceRunV1 {
                         envelope,
                         dispatch_proposal_digest,
@@ -198,7 +198,7 @@ impl AgentdIntelligenceProductRunnerV1 {
                         run_snapshot,
                         context_attachment,
                     },
-                ))
+                )))
             }
             CanonicalRunOutcomeV1::Abstained(_) => {
                 Ok(AgentdIntelligenceProductOutcomeV1::Abstained)
@@ -291,7 +291,10 @@ impl AgentdIntelligenceProductRunnerV1 {
             episode_id,
             objective_digest: prepared.envelope.objective_digest,
             policy_id,
-            candidate_ids: prepared.candidate_ids.clone(),
+            candidate_ids: crate::intelligence_learning_candidates::learning_candidate_ids_v1(
+                &prepared.candidate_ids,
+            )
+            .map_err(AgentdIntelligenceLedgerError::Currentness)?,
             selected_candidate_id: candidate_id.clone(),
             selected_propensity: *propensity,
             completeness: CandidateSetCompleteness::Complete,
@@ -356,13 +359,15 @@ impl AgentdIntelligenceProductRunnerV1 {
             .map_err(AgentdIntelligenceLedgerError::Currentness)?;
         match journal.append_qualification(expected_predecessor, event.clone()) {
             Ok(receipt) => Ok(receipt),
-            Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => Err(
-                AgentdIntelligenceLedgerError::Indeterminate(PendingIntelligenceLedgerAppendV1 {
-                    expected_predecessor,
-                    snapshot,
-                    event,
-                }),
-            ),
+            Err(DurableLedgerError::Indeterminate | DurableLedgerError::Io(_)) => {
+                Err(AgentdIntelligenceLedgerError::Indeterminate(Box::new(
+                    PendingIntelligenceLedgerAppendV1 {
+                        expected_predecessor,
+                        snapshot,
+                        event,
+                    },
+                )))
+            }
             Err(error) => Err(AgentdIntelligenceLedgerError::Ledger(error)),
         }
     }
