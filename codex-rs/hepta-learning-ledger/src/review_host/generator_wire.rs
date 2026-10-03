@@ -142,3 +142,24 @@ pub(super) fn program_digest(path: &std::path::Path) -> ReviewResult<Digest32> {
         super::files::Access::Immutable,
     )?))
 }
+
+pub(super) fn bounded_generator_controller(
+    program: Digest32,
+    uid: u32,
+    launcher: Digest32,
+    manager: Digest32,
+) -> ReviewResult<StableId> {
+    Ok(StableId::new(format!(
+        "bounded-generator.{}",
+        Digest32::of_bytes(
+            &[
+                program.as_array().as_slice(),
+                uid.to_be_bytes().as_slice(),
+                launcher.as_array(),
+                manager.as_array(),
+                b"clear-groups;all-caps-zero;no-new-privileges;cgroup-memory-256MiB-pids16-cpu100;protected-eval-custody",
+            ]
+            .concat()
+        )
+    ))?)
+}

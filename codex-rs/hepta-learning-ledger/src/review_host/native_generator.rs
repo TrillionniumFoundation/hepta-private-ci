@@ -31,6 +31,11 @@ use std::path::Path;
 use std::process::Command;
 use std::process::Stdio;
 
+#[path = "native_frozen_generator.rs"]
+mod frozen;
+pub use frozen::NativeFrozenGeneratorRequestV1;
+pub(super) use frozen::run as run_frozen;
+
 fn boundary(uid: u32) -> ReviewResult<String> {
     let status = std::fs::read_to_string("/proc/self/status")?;
     let field = |name: &str| {

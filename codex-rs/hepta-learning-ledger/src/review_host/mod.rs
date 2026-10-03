@@ -18,6 +18,7 @@ mod independent_trust;
 mod independent_unlearning;
 pub use independent_unlearning::sign_root_learning_unlearning_v1;
 mod native_generator;
+pub use native_generator::NativeFrozenGeneratorRequestV1;
 mod observations;
 pub use observations::original_numeric_input_causes_v1;
 mod transfer;
@@ -428,6 +429,9 @@ pub fn run_local_calibration_review(request_path: &Path) -> ReviewResult<()> {
 
 pub fn run_native_generator(request: &Path) -> ReviewResult<()> {
     native_generator::run(request)
+}
+pub fn run_native_frozen_generator(request: &Path) -> ReviewResult<()> {
+    native_generator::run_frozen(request)
 }
 pub fn initialize_native_generator_key(path: &Path, uid: u32) -> ReviewResult<()> {
     native_generator::initialize_key(path, uid)

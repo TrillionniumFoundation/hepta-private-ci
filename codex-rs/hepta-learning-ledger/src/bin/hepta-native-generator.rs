@@ -8,13 +8,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
                 &args[1],
             ));
         }
+        if args.len() == 2 && args[0] == "--freeze-iteration" {
+            return codex_hepta_learning_ledger::run_native_frozen_generator(std::path::Path::new(
+                &args[1],
+            ));
+        }
         if args.len() == 4 && args[0] == "--initialize-key" && args[2] == "--uid" {
             return codex_hepta_learning_ledger::initialize_native_generator_key(
                 std::path::Path::new(&args[1]),
                 args[3].to_str().ok_or("UID encoding")?.parse()?,
             );
         }
-        Err("usage: hepta-native-generator --request ROOT_PUBLIC_CONTRACT | --initialize-key USER_PRIVATE_KEY --uid UID".into())
+        Err("usage: hepta-native-generator --request ROOT_PUBLIC_CONTRACT | --freeze-iteration ROOT_FROZEN_REQUEST | --initialize-key USER_PRIVATE_KEY --uid UID".into())
     }
     #[cfg(not(target_os = "linux"))]
     Err("the fixed evaluation controllers require Linux".into())

@@ -4,6 +4,7 @@ use super::cycle_approval::ApprovedCycle;
 use super::files::Access;
 use super::files::ReviewResult;
 use super::files::read_root;
+use super::generator_wire::bounded_generator_controller;
 use super::generator_wire::program_digest;
 use super::independent_unlearning::FixedUnlearningAuthorityConfig;
 use super::independent_unlearning::admitted_unlearning_signer;
@@ -129,7 +130,12 @@ impl IndependentTrust {
         let approval_digest = cycle.as_ref().map_or(Digest32::ZERO, |a| a.digest);
         let launcher = program_digest(Path::new("/usr/bin/setpriv"))?;
         let manager = program_digest(Path::new("/usr/bin/systemd-run"))?;
-        let generator_controller=StableId::new(format!("bounded-generator.{}",Digest32::of_bytes(&[generator_program.as_array().as_slice(),config.generator_uid.to_be_bytes().as_slice(),launcher.as_array(),manager.as_array(),b"clear-groups;all-caps-zero;no-new-privileges;cgroup-memory-256MiB-pids16-cpu100;protected-eval-custody"].concat())))?;
+        let generator_controller = bounded_generator_controller(
+            generator_program,
+            config.generator_uid,
+            launcher,
+            manager,
+        )?;
         let evaluator_controller = StableId::new(format!(
             "fixed-custody-evaluator.{}",
             Digest32::of_bytes(
