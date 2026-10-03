@@ -1229,6 +1229,7 @@ def public_rust_functions(root: str) -> set[str]:
 
 def verify(
     *,
+    modules: list[str] | None = None,
     require_current_source: bool = True,
     expected_sha: str | None = None,
     expected_tree: str | None = None,
@@ -1262,12 +1263,35 @@ def verify(
             )
         if profile == "qualification":
             require_clean_candidate(candidate)
-        modules = load("docs/modules/MODULES.json")["modules"]
-        if not isinstance(modules, list) or not modules:
+        registered_modules = load("docs/modules/MODULES.json")["modules"]
+        if not isinstance(registered_modules, list) or not registered_modules:
             raise ValueError("module registry must be nonempty")
-        ids = [module["id"] for module in modules]
+        ids = [module["id"] for module in registered_modules]
         if len(set(ids)) != len(ids):
             raise ValueError("duplicate module identity")
+        if modules is None:
+            selected_modules = registered_modules
+        else:
+            if (
+                not isinstance(modules, list)
+                or not modules
+                or any(
+                    not isinstance(module_id, str) or not module_id
+                    for module_id in modules
+                )
+            ):
+                raise ValueError(
+                    "module selection must be a nonempty list of module ids"
+                )
+            if len(set(modules)) != len(modules):
+                raise ValueError("duplicate selected module identity")
+            unknown = sorted(set(modules).difference(ids))
+            if unknown:
+                raise ValueError("unknown selected module: " + ", ".join(unknown))
+            requested = set(modules)
+            selected_modules = [
+                module for module in registered_modules if module["id"] in requested
+            ]
         lanes = lane_by_module()
     except (ValueError, OSError, subprocess.CalledProcessError) as exc:
         raise SystemExit(f"FAIL_HEPTA_IMPLEMENTATION_MAPS: {exc}") from exc
@@ -1277,7 +1301,7 @@ def verify(
     candidate_bound_maps = 0
     exact_observed_fallback_maps = 0
     provenance_anchored_exact_blob_maps = 0
-    for module in modules:
+    for module in selected_modules:
         mid = module["id"]
         try:
             row = load(f"docs/modules/{mid}/IMPLEMENTATION_MAP.json")
@@ -1507,8 +1531,13 @@ def verify(
         json.dumps(
             {
                 "status": "PASS_HEPTA_IMPLEMENTATION_MAPS",
-                "modules": len(modules),
-                "maps": len(modules),
+                "modules": len(selected_modules),
+                "maps": len(selected_modules),
+                "selectedModules": [module["id"] for module in selected_modules],
+                "registryModules": len(registered_modules),
+                "verificationScope": (
+                    "module_subset" if modules is not None else "complete_registry"
+                ),
                 "productionImplementationProved": False,
                 "candidateSource": candidate,
                 "verificationProfile": profile,
@@ -1536,7 +1565,7 @@ def main():
         "--module",
         action="append",
         dest="modules",
-        help="rebind only this module (repeatable; migrate only)",
+        help="select this module (repeatable; migrate or verify only)",
     )
     parser.add_argument(
         "--require-current-source",
@@ -1562,8 +1591,8 @@ def main():
         parser.error("--require-current-source requires the qualification profile")
     if args.require_current_source and args.command != "verify":
         parser.error("--require-current-source applies only to verify")
-    if args.modules is not None and args.command != "migrate":
-        parser.error("--module applies only to migrate")
+    if args.modules is not None and args.command not in {"migrate", "verify"}:
+        parser.error("--module applies only to migrate or verify")
     if (
         args.expected_sha is not None or args.expected_tree is not None
     ) and args.command != "verify":
@@ -1574,6 +1603,7 @@ def main():
         {
             "generate": generate,
             "verify": lambda: verify(
+                modules=args.modules,
                 expected_sha=args.expected_sha,
                 expected_tree=args.expected_tree,
                 profile=args.profile,

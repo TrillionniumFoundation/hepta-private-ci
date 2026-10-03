@@ -70,7 +70,7 @@ jobs:
           fi
       - name: Contract authority drift guard
         if: steps.execution.outputs.run_native == 'true'
-        run: python3 -m unittest -v scripts.test_hepta_objective_contracts
+        run: python3 -m unittest -v scripts.test_hepta_objective_contracts scripts.test_hepta_objective_target_measure
       - name: Verify lock and formatting
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs
@@ -87,8 +87,9 @@ jobs:
         run: |
           cargo test --locked -p codex-hepta-objective
           cargo test --locked -p codex-hepta-learning-ledger
-          cargo test --locked -p codex-hepta-intelligence product_objective -- --nocapture
+          cargo test --locked -p codex-hepta-intelligence objective_run -- --nocapture
           cargo test --locked -p codex-hepta-agentd objective -- --nocapture
+          cargo test --locked -p codex-hepta-agentd --test objective_product_e2e -- --nocapture
       - name: Strict lint
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs

@@ -228,6 +228,16 @@ impl AgentRunCoordinator {
         now_ms: u64,
         record: &RunStartRecordV1,
     ) -> Result<RunReceipt, AgentRunError> {
+        let proof = record.admission.objective_admission_proof.as_ref().ok_or(
+            AgentRunError::InvalidRunStart("durable objective admission proof"),
+        )?;
+        if proof.profile_digest() != record.admission.profile_digest
+            || proof.admitted_source_digest() != record.admission.admitted_source_digest
+        {
+            return Err(AgentRunError::InvalidRunStart(
+                "objective admission proof binding",
+            ));
+        }
         if record.objective_function_v1_digest.is_zero()
             || record.objective_function_v1_bytes.is_empty()
         {
@@ -241,12 +251,11 @@ impl AgentRunCoordinator {
         if record.admission.authority.grants_any() {
             return Err(AgentRunError::InvalidRunStart("authority"));
         }
-        let deadline_ms = record
-            .admission
-            .deadline_unix_micros
-            .checked_add(999)
-            .map(|value| value / 1_000)
-            .ok_or(AgentRunError::ArithmeticOverflow)?;
+        // RunStart preserves the exact microsecond deadline while the runtime
+        // coordinator is millisecond-granular. Flooring is fail-closed: the
+        // projection can expire early by less than one millisecond but can
+        // never extend authority beyond the admitted deadline.
+        let deadline_ms = record.admission.deadline_unix_micros / 1_000;
         self.start_run(
             now_ms,
             RunSnapshot {

@@ -121,7 +121,7 @@ fn resource_axis(name: &str, class: ConstraintClass) -> ObjectiveResourceAxisPro
     }
 }
 
-fn objective_profile() -> ObjectiveAdmissionProfileV1 {
+pub(crate) fn objective_profile() -> ObjectiveAdmissionProfileV1 {
     ObjectiveAdmissionProfileV1 {
         profile_id: id("objective.profile.agentd.v1"),
         profile_revision: revision(1),

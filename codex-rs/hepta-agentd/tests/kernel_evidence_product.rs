@@ -1,4 +1,8 @@
 #![cfg(unix)]
+#![allow(
+    clippy::expect_used,
+    reason = "integration assertions and fixture setup must fail the test immediately"
+)]
 
 use std::os::unix::fs::PermissionsExt;
 use std::path::Path;
