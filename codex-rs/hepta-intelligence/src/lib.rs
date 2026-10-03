@@ -6,6 +6,11 @@
 
 #![forbid(unsafe_code)]
 
+mod canonical_port_material_v1;
+pub use canonical_port_material_v1::MAX_CANONICAL_PORT_INPUT_MATERIAL_BYTES_V1;
+pub use canonical_port_material_v1::decode_canonical_port_input_material_v1;
+pub use canonical_port_material_v1::encode_canonical_port_input_material_v1;
+
 mod canonical;
 
 pub use canonical::AdvisoryDecisionReceiptV1;

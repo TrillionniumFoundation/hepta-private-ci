@@ -388,3 +388,8 @@ pub use cpu_generation_material::MAX_CPU_NEURON_GENERATION_MATERIAL_BYTES_V2;
 pub use cpu_generation_material::decode_cpu_neuron_generation_material_v2;
 #[cfg(feature = "fixed-initial-cpu-host")]
 pub use cpu_generation_material::encode_cpu_neuron_generation_material_v2;
+
+#[cfg(feature = "fixed-initial-cpu-host")]
+mod local_cpu_parameter_root_materials_v2;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub use local_cpu_parameter_root_materials_v2::CpuNeuronParameterRootMaterialsV2;
