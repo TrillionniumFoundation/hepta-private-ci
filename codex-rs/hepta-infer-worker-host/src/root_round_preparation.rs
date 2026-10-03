@@ -3,11 +3,14 @@
 use super::*;
 use crate::CpuNeuronParameterRootMaterialsV2;
 use crate::InstalledSelfIterationIndependentOwnersV1;
-use crate::initial_cpu_anchor::InstalledCpuSourceV1;
 use crate::evolving_agentd::installed_cycle::InstalledRoundBundleV1;
+use crate::initial_cpu_anchor::InstalledCpuSourceV1;
 use codex_hepta_agent_components::intelligence_eval::ParameterPreRegistrationPurposeV1;
 use codex_hepta_agentd::AgentdSelfIterationRoundV1;
 use codex_hepta_types::Digest32;
+
+#[path = "root_round_parameter_roles.rs"]
+mod parameter_roles;
 
 impl RootFrozenGeneratorServiceV1 {
     pub(super) async fn prepare_round(

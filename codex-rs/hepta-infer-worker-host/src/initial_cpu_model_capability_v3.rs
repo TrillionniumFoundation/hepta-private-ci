@@ -2,6 +2,8 @@
 //! pointer selects material; original Root/E/S/CURRENT checks grant its use.
 use super::*;
 use serde::Deserialize;
+#[path = "initial_cpu_current_material_projection_v3.rs"]
+mod current_material;
 #[path = "initial_cpu_model_admission_v3.rs"]
 mod model_admission;
 #[path = "initial_cpu_registered_admission_v3.rs"]

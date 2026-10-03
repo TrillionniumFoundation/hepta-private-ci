@@ -11,7 +11,7 @@ use codex_hepta_types::Digest32;
 #[path = "root_self_iteration_owners_native.rs"]
 mod native;
 #[path = "root_self_iteration_owners_execution.rs"]
-mod roles;
+pub(super) mod roles;
 
 use crate::RootSelfIterationOwnersRoundConfigurationV1 as RoundConfiguration;
 use crate::root_self_iteration_owners_configuration_path_v1;

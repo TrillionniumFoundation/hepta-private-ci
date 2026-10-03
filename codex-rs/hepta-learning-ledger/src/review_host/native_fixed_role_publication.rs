@@ -33,7 +33,9 @@ pub enum OriginalFixedRolePurposeV1 {
 impl OriginalFixedRolePurposeV1 {
     fn schema(self) -> &'static str {
         match self {
-            Self::PreRegistrationArtifactPublication => "hepta.native-parameter-artifact-publication-execution.v1",
+            Self::PreRegistrationArtifactPublication => {
+                "hepta.native-parameter-artifact-publication-execution.v1"
+            }
             Self::FrozenGenerator => "hepta.native-frozen-generator-execution.v1",
             Self::ParameterGenerator => "hepta.native-parameter-generator-execution.v1",
             Self::PairedGeneratorRegistration => {

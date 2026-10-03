@@ -10,7 +10,7 @@ use std::path::PathBuf;
 
 #[path = "root_self_iteration_owners_publication.rs"]
 mod publication;
-pub(super) use publication::prepare_effect_directory;
+pub(in crate::root_frozen_generator) use publication::prepare_effect_directory;
 pub(super) use publication::publish_consumer;
 
 pub(super) struct RoleInput {
@@ -156,7 +156,8 @@ pub(super) fn execute(
     let request = role_request(route, configuration, purpose, input.original_request_digest);
     let output = input.directory.join(format!("{label}.output"));
     let original = crate::execute_retained_parameter_role_v1(&request, &output, |bytes| {
-        revalidate(&input).map_err(|error| -> Box<dyn std::error::Error> { format!("{error}").into() })?;
+        revalidate(&input)
+            .map_err(|error| -> Box<dyn std::error::Error> { format!("{error}").into() })?;
         verify_publication(&input, bytes).map_err(|error| format!("{error}").into())
     })
     .map_err(|error| anyhow::anyhow!("{error}"))?;
