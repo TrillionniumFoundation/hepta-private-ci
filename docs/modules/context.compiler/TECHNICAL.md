@@ -1,7 +1,7 @@
 # context.compiler technical development guide
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `40fe7ffa83a5bdf778743dd902cd2ebd090106ba1f2eeb9d34c2f2edf8f71926`. Source anchor: `f19c9022efa6a37880239aea0a3fc67f846a2235`.
+State SHA-256: `f475bbde81d781e839994c5110e55afdb465eb4b571af5576b81595841ba1cfa`. Source anchor: `34b9ee11ac789116fcb2c398d0e7f812fe43d44b`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
@@ -108,6 +108,7 @@ Stage publication uses exact-state -> runtime-state lock order, with no await or
 - Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations.
 - Unix descriptor-relative storage defenses do not establish Windows parity, target-host power-loss durability or resistance to a privileged same-user replace-and-restore adversary.
 - Two seeded remote-v1 compaction policy fixtures have failed intermittently before their required request or terminal counts. Core delivers TurnComplete before terminal flush and admission-fence retirement. Source diagnostics now separately hold flush and idle publication and capture correlated start errors, but exact-head native diagnostic execution and the failing integration Error event are still required before attributing those failures. Retirement alone is neither durable-success proof nor an admission reservation; no lifecycle ordering or admission policy is changed by these diagnostics.
+- The Agentd dependency repair groups existing borrowed inputs and boxes three pre-release Rust payload variants without changing wire, persisted or validation semantics. Its additional recorded-event replay selection is pending exact-head native execution and does not qualify legacy append_decision: the older real-owner fixture lacks signed evaluation and that producer still omits the explicit abstain candidate. Three dormant Plasticity producer/state diagnostic groups retain the production lifetime sender; the documented non-test coordinator remains missing and is not fabricated or suppressed. The earlier compaction diagnostic did not execute because its assertion macro was ambiguous; the explicit import repair requires new native evidence.
 
 ## 6. Verification
 

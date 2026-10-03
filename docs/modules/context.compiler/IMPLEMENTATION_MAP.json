@@ -3,7 +3,7 @@
   "module": "context.compiler",
   "generated": {
     "state": "docs/modules/context.compiler/CURRENT_STATE.json",
-    "stateSha256": "40fe7ffa83a5bdf778743dd902cd2ebd090106ba1f2eeb9d34c2f2edf8f71926",
+    "stateSha256": "f475bbde81d781e839994c5110e55afdb465eb4b571af5576b81595841ba1cfa",
     "generator": "scripts/generate_context_compiler_module_docs.py",
     "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
     "integrationBranch": "codex/context-compiler-v3-closure-20260928"
@@ -85,7 +85,11 @@
     "codex-rs/core/src/client_provider_policy_tests.rs",
     "codex-rs/core/src/session/tests.rs",
     "codex-rs/core/src/session/compaction_admission_tests.rs",
-    "codex-rs/core/tests/suite/model_provider_policy_compaction.rs"
+    "codex-rs/core/tests/suite/model_provider_policy_compaction.rs",
+    "codex-rs/hepta-agentd/src/intelligence_product.rs",
+    "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+    "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+    "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs"
   ],
   "publicSurface": [
     "compile_prompt_registry_v2",
@@ -277,12 +281,13 @@
     "Execute all seventeen lifecycle/capacity/metrics Rust regressions on the final source and merge candidates, including their named-output and bounded-profile validation. Local toolchain availability and local passing tests do not replace immutable CI lane receipts.",
     "Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations.",
     "Unix descriptor-relative storage defenses do not establish Windows parity, target-host power-loss durability or resistance to a privileged same-user replace-and-restore adversary.",
-    "Two seeded remote-v1 compaction policy fixtures have failed intermittently before their required request or terminal counts. Core delivers TurnComplete before terminal flush and admission-fence retirement. Source diagnostics now separately hold flush and idle publication and capture correlated start errors, but exact-head native diagnostic execution and the failing integration Error event are still required before attributing those failures. Retirement alone is neither durable-success proof nor an admission reservation; no lifecycle ordering or admission policy is changed by these diagnostics."
+    "Two seeded remote-v1 compaction policy fixtures have failed intermittently before their required request or terminal counts. Core delivers TurnComplete before terminal flush and admission-fence retirement. Source diagnostics now separately hold flush and idle publication and capture correlated start errors, but exact-head native diagnostic execution and the failing integration Error event are still required before attributing those failures. Retirement alone is neither durable-success proof nor an admission reservation; no lifecycle ordering or admission policy is changed by these diagnostics.",
+    "The Agentd dependency repair groups existing borrowed inputs and boxes three pre-release Rust payload variants without changing wire, persisted or validation semantics. Its additional recorded-event replay selection is pending exact-head native execution and does not qualify legacy append_decision: the older real-owner fixture lacks signed evaluation and that producer still omits the explicit abstain candidate. Three dormant Plasticity producer/state diagnostic groups retain the production lifetime sender; the documented non-test coordinator remains missing and is not fabricated or suppressed. The earlier compaction diagnostic did not execute because its assertion macro was ambiguous; the explicit import repair requires new native evidence."
   ],
   "reviewedBaseSha": "a126987b84737dbc2ee2592442a314117bddb4a2",
   "integrationBranch": "codex/context-compiler-v3-closure-20260928",
-  "runtimeSourceAnchor": "f19c9022efa6a37880239aea0a3fc67f846a2235",
-  "runtimeSourceTree": "2ede876c79ffbb8f5913dd3a4d21bd2989d1cbe4",
+  "runtimeSourceAnchor": "34b9ee11ac789116fcb2c398d0e7f812fe43d44b",
+  "runtimeSourceTree": "264006ebc8582d1a2982de5cce34634b40490ad8",
   "maturity": {
     "sourceExists": true,
     "compiledModuleReachability": "source_composed_pending_exact_head_execution",
@@ -452,7 +457,7 @@
     },
     {
       "path": "scripts/context_compiler_execution.py",
-      "blobSha": "a130854c8756d1aba347a6453c969a938326628a"
+      "blobSha": "d5cf74dc6e5ef47289183730d1b5c4240b0b9451"
     },
     {
       "path": "scripts/context_compiler_named_evidence.py",
@@ -524,7 +529,7 @@
     },
     {
       "path": "scripts/test_context_compiler_execution.py",
-      "blobSha": "c6da2c4b6ac11fe75a6614be18d88ff78619693e"
+      "blobSha": "6c5edf5eb1a6bd4172e13cd67a71e1bfd6035709"
     },
     {
       "path": "scripts/test_context_compiler_execution_boundary.py",
@@ -560,11 +565,27 @@
     },
     {
       "path": "codex-rs/core/src/session/compaction_admission_tests.rs",
-      "blobSha": "54f60826424e6a97c0dde9c1527811048ce07621"
+      "blobSha": "d219796b5048d6db1b1442214b01ef5abca495c8"
     },
     {
       "path": "codex-rs/core/tests/suite/model_provider_policy_compaction.rs",
       "blobSha": "fe8aa763d0a687eb6164ba2fd4380bee59f33a7f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "blobSha": "0df64edc3bfd0c1e8a1993b8c37a03c5ea123830"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "blobSha": "f26fa80a88745922bc7b56af55ebb97db339edff"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "blobSha": "a9d7b2e6d1dc1b0766421801d3954837053c2afd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+      "blobSha": "cf1d3409cb546f2d54951b2bcf0a1dd1532efae0"
     }
   ],
   "consumerExecution": [
@@ -1012,12 +1033,12 @@
     "currentHeadQualification": "absent"
   },
   "sourceBase": {
-    "commit": "f19c9022efa6a37880239aea0a3fc67f846a2235",
-    "tree": "2ede876c79ffbb8f5913dd3a4d21bd2989d1cbe4"
+    "commit": "34b9ee11ac789116fcb2c398d0e7f812fe43d44b",
+    "tree": "264006ebc8582d1a2982de5cce34634b40490ad8"
   },
   "observedAtHead": {
-    "commit": "f19c9022efa6a37880239aea0a3fc67f846a2235",
-    "tree": "2ede876c79ffbb8f5913dd3a4d21bd2989d1cbe4"
+    "commit": "34b9ee11ac789116fcb2c398d0e7f812fe43d44b",
+    "tree": "264006ebc8582d1a2982de5cce34634b40490ad8"
   },
   "observedSourcePaths": [
     "codex-rs/hepta-context-compiler",
@@ -1272,7 +1293,7 @@
     },
     {
       "path": "codex-rs/core/src/session/compaction_admission_tests.rs",
-      "object": "54f60826424e6a97c0dde9c1527811048ce07621"
+      "object": "d219796b5048d6db1b1442214b01ef5abca495c8"
     },
     {
       "path": "codex-rs/core/src/session/tests.rs",
@@ -1331,6 +1352,22 @@
       "object": "34d9667871ffd923d52fdcea5b033e7c466baf08"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "object": "0df64edc3bfd0c1e8a1993b8c37a03c5ea123830"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
+      "object": "f26fa80a88745922bc7b56af55ebb97db339edff"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
+      "object": "cf1d3409cb546f2d54951b2bcf0a1dd1532efae0"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+      "object": "a9d7b2e6d1dc1b0766421801d3954837053c2afd"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/prompt_runtime.rs",
       "object": "c27c932737913ffc99b33c0d49f8bc1623e9cac2"
     },
@@ -1360,11 +1397,11 @@
     },
     {
       "path": "scripts/context_compiler_execution.py",
-      "object": "a130854c8756d1aba347a6453c969a938326628a"
+      "object": "d5cf74dc6e5ef47289183730d1b5c4240b0b9451"
     },
     {
       "path": "scripts/test_context_compiler_execution.py",
-      "object": "c6da2c4b6ac11fe75a6614be18d88ff78619693e"
+      "object": "6c5edf5eb1a6bd4172e13cd67a71e1bfd6035709"
     }
   ],
   "claimBoundary": {
