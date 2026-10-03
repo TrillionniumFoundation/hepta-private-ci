@@ -353,8 +353,8 @@ pub struct AuthorizedEffectRequest<'a> {
 }
 
 /// Registered effect-owner adapter. This synchronous boundary is intentional:
-/// `FinalUseAuthority::with_verified_effect` holds the current revocation fence
-/// through the final check and the actual dispatch call. Drivers must impose
+/// The prepared final-use boundary holds the current revocation fence through
+/// owner preparation, the fresh final check and dispatch. Drivers must impose
 /// their own bounded I/O deadline and return `Indeterminate` after ambiguous
 /// provider contact.
 pub trait AuthorizedEffectDriver {
@@ -565,6 +565,7 @@ where
 // before-contact rejection. Neither branch invokes the provider.
 enum EffectConsumerError {
     Admission(TaskFlowError),
+    Preparation(AuthorizedEffectError),
     Driver(AuthorizedEffectDriverError),
 }
 
@@ -962,11 +963,10 @@ impl AutomationStore {
             }
         };
 
-        let lease_expires_at_ms = self
-            .check_admitted_effect_before_contact(
-                &durable, intent, fence, command_id, now_ms, started_at,
-            )
-            .await?;
+        self.check_admitted_effect_before_contact(
+            &durable, intent, fence, command_id, now_ms, started_at,
+        )
+        .await?;
 
         let request = AuthorizedEffectRequest {
             operation_intent: &operation_intent,
@@ -975,13 +975,38 @@ impl AutomationStore {
             wire_payload,
             binding: expected_binding,
         };
-        let provider = match authority.with_verified_effect(token, expected_binding, || {
-            check_effect_consumer_clock(now_ms, started_at, lease_expires_at_ms)?;
-            driver
-                .dispatch(&request)
-                .map_err(EffectConsumerError::Driver)
-        }) {
+        let provider = match authority
+            .with_prepared_verified_use_async(
+                token,
+                expected_binding,
+                |evidence| {
+                    let durable = &durable;
+                    async move {
+                        self.record_effect_preparation_witness(durable, fence, &evidence)
+                            .await
+                            .map_err(AuthorizedEffectError::from)
+                            .map_err(EffectConsumerError::Preparation)?;
+                        self.check_admitted_effect_before_contact(
+                            durable, intent, fence, command_id, now_ms, started_at,
+                        )
+                        .await
+                        .map_err(EffectConsumerError::Preparation)
+                    }
+                },
+                |lease_expires_at_ms| {
+                    let driver = &mut *driver;
+                    async move {
+                        check_effect_consumer_clock(now_ms, started_at, lease_expires_at_ms)?;
+                        driver
+                            .dispatch(&request)
+                            .map_err(EffectConsumerError::Driver)
+                    }
+                },
+            )
+            .await
+        {
             Ok(Ok(receipt)) => receipt,
+            Ok(Err(EffectConsumerError::Preparation(error))) => return Err(error),
             Ok(Err(EffectConsumerError::Admission(error))) => {
                 let proof = no_contact_digest(&durable, "lease_expired_in_authorized_consumer");
                 let durable = self
@@ -1015,8 +1040,8 @@ impl AutomationStore {
                 return Err(AuthorizedEffectError::Driver(error));
             }
             Err(error) => {
-                // `with_verified_effect` invokes the consumer only after its
-                // final revocation/epoch check succeeds, so this path is a
+                // The prepared boundary invokes the consumer only after its
+                // fresh current-time check succeeds, so this path is a
                 // local proof that the provider driver was not called.
                 let proof = no_contact_digest(&durable, "final_use_pre_dispatch_rejection");
                 let durable = self
@@ -1284,11 +1309,10 @@ impl AutomationStore {
             }
         };
 
-        let lease_expires_at_ms = self
-            .check_admitted_effect_before_contact(
-                &durable, intent, fence, command_id, now_ms, started_at,
-            )
-            .await?;
+        self.check_admitted_effect_before_contact(
+            &durable, intent, fence, command_id, now_ms, started_at,
+        )
+        .await?;
 
         let request = AuthorizedProviderEffectRequest {
             owner_agent_id: self.taskflow_owner_agent_id(),
@@ -1300,16 +1324,38 @@ impl AutomationStore {
             wire_payload,
         };
         let provider = match authority
-            .with_verified_use_async(token, expected_binding, || async {
-                check_effect_consumer_clock(now_ms, started_at, lease_expires_at_ms)?;
-                driver
-                    .dispatch(request)
-                    .await
-                    .map_err(EffectConsumerError::Driver)
-            })
+            .with_prepared_verified_use_async(
+                token,
+                expected_binding,
+                |evidence| {
+                    let durable = &durable;
+                    async move {
+                        self.record_effect_preparation_witness(durable, fence, &evidence)
+                            .await
+                            .map_err(AuthorizedEffectError::from)
+                            .map_err(EffectConsumerError::Preparation)?;
+                        self.check_admitted_effect_before_contact(
+                            durable, intent, fence, command_id, now_ms, started_at,
+                        )
+                        .await
+                        .map_err(EffectConsumerError::Preparation)
+                    }
+                },
+                |lease_expires_at_ms| {
+                    let driver = &mut *driver;
+                    async move {
+                        check_effect_consumer_clock(now_ms, started_at, lease_expires_at_ms)?;
+                        driver
+                            .dispatch(request)
+                            .await
+                            .map_err(EffectConsumerError::Driver)
+                    }
+                },
+            )
             .await
         {
             Ok(Ok(receipt)) => receipt,
+            Ok(Err(EffectConsumerError::Preparation(error))) => return Err(error),
             Ok(Err(EffectConsumerError::Admission(error))) => {
                 let proof = no_contact_digest(&durable, "lease_expired_in_authorized_consumer");
                 let durable = self
@@ -1440,6 +1486,19 @@ impl AutomationStore {
             )
             .into());
         }
+        let step = self
+            .read_taskflow_step(&intent.run_id, &intent.step_id, intent.attempt, fence)
+            .await?
+            .ok_or_else(|| TaskFlowError::Conflict("effect step is missing".into()))?;
+        if step.state != TaskFlowStepState::Claimed
+            || step.intent_digest != intent.digest()?
+            || step.payload_digest != intent.payload_digest
+        {
+            return Err(TaskFlowError::Conflict(
+                "effect step no longer matches claimed admission".into(),
+            )
+            .into());
+        }
         let run = self
             .taskflow_run(&intent.run_id)
             .await?
@@ -1467,6 +1526,13 @@ impl AutomationStore {
         now_ms: u64,
         started_at: Instant,
     ) -> Result<u64, AuthorizedEffectError> {
+        let current = self
+            .effect_dispatch_attempt(&durable.run_id, &durable.step_id, durable.attempt)
+            .await?
+            .ok_or(AuthorizedEffectError::RecoveryRequired)?;
+        if current.observation.is_some() || current.provider_dispatch_status.is_some() {
+            return Err(AuthorizedEffectError::RecoveryRequired);
+        }
         match self
             .check_effect_admission(intent, fence, command_id, now_ms, started_at)
             .await

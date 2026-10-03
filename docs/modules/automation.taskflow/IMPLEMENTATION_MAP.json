@@ -159,6 +159,27 @@
           "symbol": "pub async fn execute_authorized_taskflow_effect_async",
           "ownerModule": "automation.taskflow",
           "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-contracts/src/final_use_async_prepare.rs",
+          "symbol": "pub async fn with_prepared_verified_use_async",
+          "ownerModule": "kernel.authority",
+          "buildTarget": "codex-hepta-contracts"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/effect_preparation_evidence.rs",
+          "symbol": "pub(crate) async fn record_effect_preparation_witness",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/taskflow_step_identity.rs",
+          "symbol": "pub(crate) async fn read_step_authoring_identity",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
         }
       ],
       "tests": [
@@ -191,9 +212,29 @@
           "path": "codex-rs/hepta-automation/tests/taskflow_concurrent_reconcile.rs",
           "kind": "same_store_timer_writer_recovery_snapshot",
           "command": "just test -p codex-hepta-automation --test taskflow_concurrent_reconcile"
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_async_prepare_tests.rs",
+          "kind": "post_preparation_trusted_time_cancellation_nonce_fence",
+          "command": "just test --locked -p codex-hepta-contracts"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/effect_preparation_evidence_tests.rs",
+          "kind": "exact_attempt_preparation_readonly_corruption_reopen",
+          "command": "just test --locked -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/authorized_effect/effect_preparation_tests.rs",
+          "kind": "both_driver_preparation_expiry_cancellation_no_resend",
+          "command": "just test --locked -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+          "kind": "preserved_schema23_history_incompatible_schema20_refusal",
+          "command": "just test --locked -p codex-hepta-automation"
         }
       ],
-      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding with a current dispatch lease before provider entry, appends an immutable provider-attempt row before contact, supports synchronous and async provider-effect drivers with exact wire-payload binding, and composes the optional configured Agentd HTTP execute/reconcile control for already claimed/prepared steps. Version 2 provider keys bind the owning Agent plus TaskFlow run/step under the registered provider scope/destination; stored version 1 attempts retain their historical lookup key. Initial and terminal/proven-absent reconciliation evidence is recorded without blind redispatch; historical exact-attempt observation does not grant new dispatch authority. Generic scheduled-effect/DAG execution and independent host/provider qualification remain separate. New configured HTTP attempts persist an immutable optional provider contract binding before physical dispatch; mismatched remote recovery rejects after local known terminal evidence is settled. Legacy/generic unbound attempts retain their continuity limitations.",
+      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding with a current dispatch lease before provider entry, appends an immutable provider-attempt row before contact, supports synchronous and async provider-effect drivers with exact wire-payload binding, and composes the optional configured Agentd HTTP execute/reconcile control for already claimed/prepared steps. Version 2 provider keys bind the owning Agent plus TaskFlow run/step under the registered provider scope/destination; stored version 1 attempts retain their historical lookup key. Initial and terminal/proven-absent reconciliation evidence is recorded without blind redispatch; historical exact-attempt observation does not grant new dispatch authority. Generic scheduled-effect/DAG execution and independent host/provider qualification remain separate. New configured HTTP attempts persist an immutable optional provider contract binding before physical dispatch; mismatched remote recovery rejects after local known terminal evidence is settled. Legacy/generic unbound attempts retain their continuity limitations. Both existing driver seams persist opaque-token PreparationEntry evidence bound to exact immutable attempt and authored-step identity; current claim/lease and trusted authority time are rechecked after the bounded preparation awaits. Schema24 preserves canonical history1–23 and refuses the incompatible authority20 lineage. Preparation observations never grant settlement or redispatch authority.",
       "operation": "execute_step",
       "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
@@ -354,12 +395,16 @@
     "codex-rs/hepta-agentd/src/state_control.rs",
     "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
     "codex-rs/hepta-automation",
+    "codex-rs/hepta-automation/migrations/0024_effect_preparation_evidence.sql",
     "codex-rs/hepta-automation/src/authorized_effect.rs",
     "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
     "codex-rs/hepta-automation/src/effect_execution_request.rs",
+    "codex-rs/hepta-automation/src/effect_preparation_evidence.rs",
+    "codex-rs/hepta-automation/src/effect_preparation_evidence_tests.rs",
     "codex-rs/hepta-automation/src/effect_recovery_frontier_tests.rs",
     "codex-rs/hepta-automation/src/effect_recovery_scan.rs",
     "codex-rs/hepta-automation/src/effect_recovery_scan_tests.rs",
+    "codex-rs/hepta-automation/src/lib.rs",
     "codex-rs/hepta-automation/src/lifecycle.rs",
     "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
     "codex-rs/hepta-automation/src/queue_contact.rs",
@@ -368,13 +413,22 @@
     "codex-rs/hepta-automation/src/scheduler.rs",
     "codex-rs/hepta-automation/src/store.rs",
     "codex-rs/hepta-automation/src/taskflow_step.rs",
+    "codex-rs/hepta-automation/src/taskflow_step_identity.rs",
     "codex-rs/hepta-automation/tests/authorized_effect.rs",
+    "codex-rs/hepta-automation/tests/authorized_effect/effect_preparation_tests.rs",
     "codex-rs/hepta-automation/tests/automation.rs",
     "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
     "codex-rs/hepta-automation/tests/durable_causal_chain/observer_recovery_tests.rs",
     "codex-rs/hepta-automation/tests/fixtures/kernel_authority_schema20.sql",
     "codex-rs/hepta-automation/tests/taskflow_concurrent_reconcile.rs",
     "codex-rs/hepta-contracts",
+    "codex-rs/hepta-contracts/FINAL_USE.md",
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "codex-rs/hepta-contracts/src/final_use_async_prepare.rs",
+    "codex-rs/hepta-contracts/src/final_use_async_prepare_tests.rs",
+    "codex-rs/hepta-contracts/src/final_use_control.rs",
+    "codex-rs/hepta-contracts/src/lib.rs",
+    "codex-rs/hepta-contracts/src/verified_use_witness.rs",
     "codex-rs/hepta-operations",
     "codex-rs/hepta-operations/src/durable_clock_tests.rs",
     "codex-rs/hepta-operations/src/durable_store.rs",
@@ -382,7 +436,10 @@
     "codex-rs/hepta-operations/src/exact_claim.rs",
     "codex-rs/hepta-types",
     "codex-rs/model-provider/src/provider_effect.rs",
+    "docs/modules/automation.taskflow/AUDIT.md",
     "docs/modules/automation.taskflow/TECHNICAL.md",
+    "docs/modules/kernel.authority/LINEARIZATION.md",
+    "docs/modules/kernel.authority/TECHNICAL.md",
     "scripts/hepta_ci_exec.py",
     "scripts/test_taskflow_owner_workflow.py"
   ],

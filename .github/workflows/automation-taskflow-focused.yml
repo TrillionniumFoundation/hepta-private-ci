@@ -77,7 +77,7 @@ jobs:
         with:
           tool: just@1.51.0,nextest@0.9.103
       - name: Rustfmt changed automation owners
-        run: cargo fmt -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-evidence -p codex-hepta-agentd -p codex-model-provider -p codex-app-server-client -- --check
+        run: cargo fmt -p codex-hepta-contracts -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-evidence -p codex-hepta-agentd -p codex-model-provider -p codex-app-server-client -- --check
       - name: Test owner execution identity adapter
         run: |
           python3 -m unittest discover -s ../scripts -p test_taskflow_owner_workflow.py
@@ -87,6 +87,9 @@ jobs:
         run: cargo check --locked -p codex-hepta-operations -p codex-hepta-automation -p codex-hepta-evidence
       - name: Test kernel operation contract
         run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-owners/operations.json" --minimum-tests 1 -- just test --locked -p codex-hepta-operations
+      - name: Test final-use preparation contracts
+        if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
+        run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-owners/contracts.json" --minimum-tests 1 -- just test --locked -p codex-hepta-contracts
       - name: Test automation package
         if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
         run: python3 ../scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/taskflow-owners/automation.json" --minimum-tests 1 -- just test --locked -p codex-hepta-automation
@@ -119,10 +122,10 @@ jobs:
         run: just test --locked -p codex-hepta-agentd --lib
       - name: Strict Automation library lint
         if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
-        run: cargo clippy --locked -p codex-hepta-automation --lib --features taskflow-structural-qualification -- -D warnings
+        run: cargo clippy --locked -p codex-hepta-contracts -p codex-hepta-automation --lib --features taskflow-structural-qualification -- -D warnings
       - name: Apply scoped recovery lint checks
         if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
-        run: just fix --locked -p codex-hepta-automation -p codex-hepta-evidence --features taskflow-structural-qualification
+        run: just fix --locked -p codex-hepta-contracts -p codex-hepta-automation -p codex-hepta-evidence --features taskflow-structural-qualification
       - name: Verify scoped lint kept the reviewed source
         if: ${{ !cancelled() && steps.compile.outcome == 'success' }}
         run: git diff --exit-code

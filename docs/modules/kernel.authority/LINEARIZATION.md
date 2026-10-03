@@ -36,6 +36,31 @@ durable intent or cross an already-selected local adapter/worker boundary and
 return promptly. It must not contain network waits, provider terminal waits,
 reconciliation loops or arbitrary plugin/user code.
 
+## Owner preparation before provider entry
+
+`FinalUseAuthority::with_prepared_verified_use_async` holds an active-dispatch
+fence across bounded owner preparation and the selected consumer, without
+holding the authority mutex across either await. Its `PreparationEntry` witness
+describes the pre-contact preparation verification only. An opaque
+`VerifiedPreparationEvidence` binds that observation to the actual token's
+unsigned grant; a caller cannot deserialize or construct this provenance.
+
+Preparation can outwait grant expiry. The original token is therefore checked
+again against current trusted time after preparation returns, before the
+consumer future is created. A failed final check never enters the consumer.
+The selected consumer checks its prepared lease immediately before dispatch;
+this API does not turn arbitrary later awaits into final-use verification.
+Trusted revocation commits return `DispatchInProgress` during both futures.
+Error, panic and cancellation release the fence but do not restore the nonce.
+
+TaskFlow schema24 appends exact-attempt preparation observations without
+altering schemas1–23. Its reader independently checks immutable attempt and
+authored-step identity, grant/binding/nonce digests and witness family/boundary.
+Those domain-separated hashes are consistency bindings, not signatures,
+credentials, database-incarnation proofs or a new trust owner. Missing legacy
+observations remain missing. Neither present nor absent preparation evidence
+participates in recovery authority or terminal settlement.
+
 ## Distribution freshness
 
 A valid signature on a revocation head is insufficient by itself.

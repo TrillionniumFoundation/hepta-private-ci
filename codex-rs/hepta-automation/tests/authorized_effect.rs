@@ -1610,3 +1610,6 @@ mod effect_admission_tests;
 
 #[path = "authorized_effect/effect_recovery_tests.rs"]
 mod effect_recovery_tests;
+
+#[path = "authorized_effect/effect_preparation_tests.rs"]
+mod effect_preparation_tests;

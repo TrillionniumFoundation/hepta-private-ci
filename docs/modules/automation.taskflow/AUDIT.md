@@ -110,10 +110,30 @@ then verifies retained state after reopen.
 This source convergence does not merge kernel-owner history. Its migration20
 creates authority witnesses; this branch's migration20 records retirement drain,
 followed by provider migrations21–23. The frozen authority20 fixture verifies
-that schema23's real opener rejects that incompatible lineage without relabelling
-checksums or extending it. The authority-witness adapter and any future migration
-remain separate integration work. Existing Operations post-writer clock sampling,
+that the current real opener rejects that incompatible lineage without relabelling
+checksums or extending it. Schema24 appends a separately defined preparation
+record after the preserved canonical schemas1–23; it does not rename the
+incompatible owner20 migration. Existing Operations post-writer clock sampling,
 exact intent fences and provider admission continuity are preserved.
+
+AF-39 (P1): the separate kernel-owner witness adapter records a dispatch-entry
+observation before awaited SQLite persistence and does not repeat trusted-time
+validation after that wait. Its audit reader's self-hash alone does not bind the
+observation to the immutable attempt. Importing that adapter would therefore
+misstate the recorded boundary and could enter a driver after grant expiry.
+The scoped replacement uses an explicitly named `PreparationEntry` carrier,
+persists a canonical exact-attempt/authored-step/grant record, then rechecks the
+current claim/lease and current trusted authority time before driver entry.
+It is an observation-only schema24 addition, with no history rewrite or backfill.
+The record reader checks semantic binding even when corrupted bytes carry a
+fresh self-hash, bounds materialization, and reads historical authoring identity
+without schema-creation or current-owner requirements. Tests cover both drivers,
+expiry after persistence, concurrent append/replay, cancellation, terminal
+crash cuts, later absence-owner handoff, query-only reads, forged bindings,
+oversized records and missing/replaced immutability triggers. Contracts tests
+also cover preparation failure, time below the grant window/unavailability, both-stage
+cancellation/panic and nonce/fence continuity. Actual candidate execution
+receipts remain required; these test names are not passing-result claims.
 
 The related strict-lint cleanup adopts the kernel owner's
 `AuthorizedEffectDispatchRequest` and `NeuralCircuitSpecV1` input shapes plus
@@ -174,6 +194,6 @@ Verify inherited map ancestry against the current candidate. A scoped TaskFlow n
 ## Operational continuity
 
 Keep existing Agentd ownership, private per-Agent storage and kernel authority; do not add another execution spine to close an integration gap.
-Preserve schema23, immutable observation/reconciliation and provider admission history, provider-key version/contract binding, stable queue identity and unresolved effects during rollback.
+Preserve schemas1–23 and schema24 preparation evidence, immutable observation/reconciliation and provider admission history, provider-key version/contract binding, stable queue identity and unresolved effects during rollback. Use a schema24-compatible binary after upgrade; do not reopen an upgraded store with a schema23-only binary.
 Use a newer fenced compatible owner for handoff; do not revive predecessor handles or restore an old database over current receipts.
 Retain provider status access for pending effects before changing configuration or removing admission; control recovery does not authorize new execution.
