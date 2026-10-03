@@ -22,6 +22,47 @@ pub struct DatasetWindowFreezePlanV3 {
     /// bound its whole envelope, including the full signing payload.
     pub maximum_encoded_bytes: u32,
 }
+/// Complete transport of the original window policy. Parsing grants no
+/// authority and does not validate a policy against a ledger frontier.
+#[derive(Clone, Debug, serde::Deserialize, serde::Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct DatasetWindowFreezePlanWireV3 {
+    pub snapshot_id: String,
+    pub objective_digest: String,
+    pub inclusion_policy_digest: String,
+    pub decision_sequence_start: u64,
+    pub decision_sequence_end: u64,
+    pub maximum_episodes: u32,
+    pub maximum_source_records: u32,
+    pub maximum_encoded_bytes: u32,
+}
+impl DatasetWindowFreezePlanWireV3 {
+    pub fn from_native(plan: &DatasetWindowFreezePlanV3) -> Self {
+        Self {
+            snapshot_id: plan.snapshot_id.to_string(),
+            objective_digest: plan.objective_digest.to_string(),
+            inclusion_policy_digest: plan.inclusion_policy_digest.to_string(),
+            decision_sequence_start: plan.decision_sequence_start,
+            decision_sequence_end: plan.decision_sequence_end,
+            maximum_episodes: plan.maximum_episodes,
+            maximum_source_records: plan.maximum_source_records,
+            maximum_encoded_bytes: plan.maximum_encoded_bytes,
+        }
+    }
+    pub fn native(&self) -> Result<DatasetWindowFreezePlanV3, Box<dyn StdError>> {
+        Ok(DatasetWindowFreezePlanV3 {
+            snapshot_id: StableId::new(self.snapshot_id.clone())?,
+            objective_digest: self.objective_digest.parse()?,
+            inclusion_policy_digest: self.inclusion_policy_digest.parse()?,
+            decision_sequence_start: self.decision_sequence_start,
+            decision_sequence_end: self.decision_sequence_end,
+            maximum_episodes: self.maximum_episodes,
+            maximum_source_records: self.maximum_source_records,
+            maximum_encoded_bytes: self.maximum_encoded_bytes,
+        })
+    }
+}
+
 /// Full policy binding beside the unchanged original receipt. This integrity
 /// digest is not authenticated issuance; the original Evaluator signature is.
 #[derive(Clone, Debug, Eq, PartialEq)]

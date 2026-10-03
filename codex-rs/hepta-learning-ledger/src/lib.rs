@@ -86,6 +86,7 @@ pub use model::Revocation;
 pub use model::UnlearningLineageEventV1;
 pub use production::DatasetFreezePlanV2;
 pub use production::DatasetWindowFreezePlanV3;
+pub use production::DatasetWindowFreezePlanWireV3;
 pub use production::DatasetWindowSnapshotReceiptV3;
 pub use production::DatasetWindowSnapshotWireV3;
 pub use production::LedgerWriter;

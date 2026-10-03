@@ -448,3 +448,57 @@ fn explicit_window_remains_bounded_when_original_complete_history_exceeds_packet
         "whole original history retained"
     );
 }
+
+#[test]
+fn window_plan_transport_preserves_every_signed_field_and_rejects_bad_identity() {
+    let original = plan(3, 11);
+    let wire = crate::DatasetWindowFreezePlanWireV3::from_native(&original);
+    let bytes = serde_json::to_vec(&wire).unwrap();
+    let reopened: crate::DatasetWindowFreezePlanWireV3 = serde_json::from_slice(&bytes).unwrap();
+    assert_eq!(reopened.native().unwrap(), original);
+    assert_eq!(
+        reopened.native().unwrap().policy_digest(),
+        original.policy_digest()
+    );
+    let mut changes = Vec::new();
+    for i in 0..8 {
+        let mut changed = original.clone();
+        match i {
+            0 => changed.snapshot_id = id("different-window"),
+            1 => changed.objective_digest = digest("other-objective"),
+            2 => changed.inclusion_policy_digest = digest("other-inclusion"),
+            3 => changed.decision_sequence_start += 1,
+            4 => changed.decision_sequence_end += 1,
+            5 => changed.maximum_episodes += 1,
+            6 => changed.maximum_source_records += 1,
+            _ => changed.maximum_encoded_bytes -= 1,
+        }
+        let reopened = crate::DatasetWindowFreezePlanWireV3::from_native(&changed)
+            .native()
+            .unwrap();
+        assert_eq!(reopened, changed);
+        assert_ne!(reopened.policy_digest(), original.policy_digest());
+        changes.push(reopened.policy_digest());
+    }
+    changes.sort();
+    changes.dedup();
+    assert_eq!(changes.len(), 8);
+    let mut invalid = wire;
+    invalid.snapshot_id = String::new();
+    assert!(invalid.native().is_err());
+    invalid.snapshot_id = original.snapshot_id.to_string();
+    invalid.objective_digest = "bad digest".into();
+    assert!(invalid.native().is_err());
+    // Valid decoding does not turn an invalid budget into an admitted policy.
+    let mut invalid_budget = original;
+    invalid_budget.maximum_source_records = 0;
+    let parsed = crate::DatasetWindowFreezePlanWireV3::from_native(&invalid_budget)
+        .native()
+        .unwrap();
+    let fixture = Fixture::new();
+    let mut writer = fixture.writer();
+    add_decision(&mut writer, "policy-budget");
+    assert!(
+        dataset_window_freeze_signing_payload_v3(&writer.snapshot().unwrap(), &parsed).is_err()
+    );
+}

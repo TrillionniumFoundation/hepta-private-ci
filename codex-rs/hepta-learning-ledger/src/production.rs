@@ -63,6 +63,7 @@ mod dataset_window;
 #[path = "production_unlearning.rs"]
 mod unlearning;
 pub use dataset_window::DatasetWindowFreezePlanV3;
+pub use dataset_window::DatasetWindowFreezePlanWireV3;
 pub use dataset_window::DatasetWindowSnapshotReceiptV3;
 pub use dataset_window::DatasetWindowSnapshotWireV3;
 pub use dataset_window::MAX_DATASET_WINDOW_ENCODED_BYTES_V3;
