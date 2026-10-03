@@ -144,6 +144,8 @@ mod review;
 mod rmcp_client;
 mod rollout_budget;
 mod rollout_list_find;
+#[path = "root_suspension_recovery_tests.rs"]
+mod root_suspension_recovery;
 mod safety_buffering;
 mod safety_check_downgrade;
 mod search_tool;
