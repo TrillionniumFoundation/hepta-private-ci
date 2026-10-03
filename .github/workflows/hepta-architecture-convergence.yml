@@ -169,6 +169,11 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/iteration-envelope.json" --minimum-tests 9 -- just test --locked -p codex-hepta-agentd --lib -E 'test(iteration_envelope_wire::tests)'
+      - name: Legacy Plasticity rollover boundary (known gap, no V2 admission)
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/plasticity-rollover-boundary.json" --minimum-tests 6 -- just test --locked -p codex-hepta-agentd --lib -E 'test(=plasticity_host::rollover_boundary_tests::known_gap_v1_rollover_reinserts_same_no_change_batch) | test(=plasticity_host::rollover_boundary_tests::known_gap_v1_rollover_forgets_same_proposal_id_content_conflict) | test(=plasticity_host::rollover_boundary_tests::known_gap_v1_rollover_forgets_artifact_window_membership) | test(=plasticity_host::rollover_boundary_tests::known_gap_v1_rollover_forgets_proposal_id_membership_in_another_window) | test(=plasticity_process_bootstrap::lineage_boundary_tests::v1_registry_descriptor_rejects_pinned_but_unimplemented_lineage_fields) | test(=plasticity_process_bootstrap::lineage_boundary_tests::v1_registry_descriptor_rejects_unimplemented_consumption_rollover_modes)'
       - name: Inference owner regressions and streaming digest
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.inference == 'true'
         run: |

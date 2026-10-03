@@ -842,6 +842,12 @@ pub fn bootstrap_agentd_plasticity_writer_v1(
     Ok((writer, anchor_store))
 }
 
+/// Start a new, empty, generation-local V1 proposal registry after checking the
+/// previous independently retained anchor. This does not transfer proposal IDs,
+/// artifact/window membership or lifetime envelope consumption into the new file.
+/// The previous anchor commits predecessor bytes; it is not a reconstructed
+/// consumption index. A caller requiring cross-generation budget conservation
+/// must not infer an unused budget from absence in this new registry.
 pub fn rollover_agentd_plasticity_writer_v1(
     registry_file: File,
     anchor_file: File,
@@ -911,6 +917,10 @@ pub fn reopen_agentd_plasticity_writer_v1(
     )?;
     Ok((writer, anchor_store))
 }
+
+#[cfg(test)]
+#[path = "plasticity_rollover_boundary_tests.rs"]
+mod rollover_boundary_tests;
 
 #[cfg(test)]
 mod tests {

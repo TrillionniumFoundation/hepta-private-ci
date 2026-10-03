@@ -17,6 +17,37 @@ ROOT = Path(__file__).resolve().parents[1]
 
 
 class WorkflowCommandTests(unittest.TestCase):
+    def test_rollover_boundary_requires_real_agentd_and_six_executed_tests(self):
+        workflow = (
+            ROOT / ".github/workflows/hepta-architecture-convergence.yml"
+        ).read_text()
+        names = [
+            "plasticity_host::rollover_boundary_tests::known_gap_v1_rollover_reinserts_same_no_change_batch",
+            "plasticity_host::rollover_boundary_tests::known_gap_v1_rollover_forgets_same_proposal_id_content_conflict",
+            "plasticity_host::rollover_boundary_tests::known_gap_v1_rollover_forgets_artifact_window_membership",
+            "plasticity_host::rollover_boundary_tests::known_gap_v1_rollover_forgets_proposal_id_membership_in_another_window",
+            "plasticity_process_bootstrap::lineage_boundary_tests::v1_registry_descriptor_rejects_pinned_but_unimplemented_lineage_fields",
+            "plasticity_process_bootstrap::lineage_boundary_tests::v1_registry_descriptor_rejects_unimplemented_consumption_rollover_modes",
+        ]
+        expected = [
+            "python3",
+            "scripts/hepta_ci_exec.py",
+            "--output",
+            "$RUNNER_TEMP/hepta-command-records/plasticity-rollover-boundary.json",
+            "--minimum-tests",
+            "6",
+            "--",
+            "just",
+            "test",
+            "--locked",
+            "-p",
+            "codex-hepta-agentd",
+            "--lib",
+            "-E",
+            " | ".join(f"test(={name})" for name in names),
+        ]
+        self.assertIn(expected, workflow_commands(workflow))
+
     def test_only_run_scalars_are_commands(self):
         self.assertEqual(
             workflow_commands("""name: cargo test
@@ -40,7 +71,12 @@ steps:
         with tempfile.TemporaryDirectory() as directory:
             root = Path(directory)
             workflow = root / "owner.yml"
-            registry = [{"validator": "python3 scripts/owner.py verify", "workflow": "owner.yml"}]
+            registry = [
+                {
+                    "validator": "python3 scripts/owner.py verify",
+                    "workflow": "owner.yml",
+                }
+            ]
             workflow.write_text("steps:\n  - run: python3 scripts/owner.py self-test\n")
             verify_owner_self_tests(registry, root)
             for line in (
@@ -48,14 +84,19 @@ steps:
                 "echo python3 scripts/owner.py self-test",
                 "python3 scripts/owner.py verify",
             ):
-                with self.subTest(line=line), self.assertRaisesRegex(ValueError, "must invoke"):
+                with (
+                    self.subTest(line=line),
+                    self.assertRaisesRegex(ValueError, "must invoke"),
+                ):
                     workflow.write_text(f"steps:\n  - run: |\n      {line}\n")
                     verify_owner_self_tests(registry, root)
 
     def test_real_subordinate_workflows_own_their_self_tests(self):
         import json
 
-        registry = json.loads((ROOT / "docs/governance/DOCUMENT_SYSTEM.json").read_text())
+        registry = json.loads(
+            (ROOT / "docs/governance/DOCUMENT_SYSTEM.json").read_text()
+        )
         verify_owner_self_tests(registry["subordinateRegistries"], ROOT)
 
     def test_real_workflow_resolves_composite_action(self):

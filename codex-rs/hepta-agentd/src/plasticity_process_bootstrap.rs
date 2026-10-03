@@ -252,6 +252,9 @@ enum RegistryOpenModeV1 {
     ReopenAnchored,
 }
 
+/// Generation-local storage configuration, not an envelope-consumption lineage
+/// grant. Keep unknown-field rejection: pinning these bytes cannot give V1 an
+/// unimplemented V2 policy projection, reservation or consumption-root contract.
 #[derive(Debug, Deserialize)]
 #[serde(deny_unknown_fields)]
 struct RegistryDescriptorV1 {
@@ -894,6 +897,10 @@ fn parse_hex_32(value: &str, label: &str) -> Result<[u8; 32], AgentdError> {
 fn invalid<T>(message: &str) -> Result<T, AgentdError> {
     Err(AgentdError::Invalid(message.to_string()))
 }
+
+#[cfg(test)]
+#[path = "plasticity_process_bootstrap_lineage_tests.rs"]
+mod lineage_boundary_tests;
 
 #[cfg(test)]
 mod tests {
