@@ -113,7 +113,7 @@ fn conflict_record(run_id: &str, receipt: &[u8]) -> RunStartConflictRecordV1 {
 
 // Inspect the original lock-owning handle: Windows locks also exclude other
 // handles in this process. Restore its cursor before the next journal operation.
-fn locked_bytes(mut file: &File) -> Vec<u8> {
+pub(super) fn locked_bytes(mut file: &File) -> Vec<u8> {
     let position = must(file.stream_position());
     must(file.seek(SeekFrom::Start(0)));
     let mut bytes = Vec::new();

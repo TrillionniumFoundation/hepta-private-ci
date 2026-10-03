@@ -55,11 +55,11 @@ fn mixed_versions_recover_without_synthesizing_proof_or_rewriting_identity() {
         must(reopened.records()),
         originals.iter().collect::<Vec<_>>()
     );
-    assert_eq!(must(fs::read(fixture.path())), before);
+    assert_eq!(locked_bytes(&reopened.file.0), before);
     for legacy in &originals[..2] {
         assert!(reopened.append(predecessor, legacy.clone()).is_err());
     }
-    assert_eq!(must(fs::read(fixture.path())), before);
+    assert_eq!(locked_bytes(&reopened.file.0), before);
     let replay = must(reopened.append(predecessor, originals[2].clone()));
     assert_eq!(
         replay.disposition,
@@ -71,7 +71,7 @@ fn mixed_versions_recover_without_synthesizing_proof_or_rewriting_identity() {
 fn missing_and_cross_bound_proof_are_rejected_before_any_write() {
     let fixture = Fixture::new();
     let mut journal = fixture.create();
-    let before = must(fs::read(fixture.path()));
+    let before = locked_bytes(&journal.file.0);
     let valid = record("run.proof", b"semantic");
     let mut missing = valid.clone();
     missing.admission.objective_admission_proof = None;
@@ -81,7 +81,7 @@ fn missing_and_cross_bound_proof_are_rejected_before_any_write() {
     source_drift.admission.admitted_source_digest = digest("another-source");
     for value in [missing, profile_drift, source_drift] {
         assert!(journal.append(Digest32::ZERO, value).is_err());
-        assert_eq!(must(fs::read(fixture.path())), before);
+        assert_eq!(locked_bytes(&journal.file.0), before);
     }
     let mut conflict = conflict_record("run.conflict", b"conflict");
     conflict.admission.objective_admission_proof = None;
@@ -92,7 +92,7 @@ fn missing_and_cross_bound_proof_are_rejected_before_any_write() {
         legacy
     );
     assert!(journal.append_conflict(Digest32::ZERO, conflict).is_err());
-    assert_eq!(must(fs::read(fixture.path())), before);
+    assert_eq!(locked_bytes(&journal.file.0), before);
 }
 
 #[test]
@@ -121,12 +121,12 @@ fn admission_context_proof_drift_conflicts_after_acknowledged_restart() {
     changed.admission.objective_admission_proof = Some(must(
         RunStartAdmissionProofV1::from_canonical_bytes(&bytes, Digest32::of_bytes(&bytes)),
     ));
-    let before = must(fs::read(fixture.path()));
+    let before = locked_bytes(&reopened.file.0);
     assert_eq!(
         reopened.append(receipt.chain_digest, changed),
         Err(RunStartStoreError::Conflict)
     );
-    assert_eq!(must(fs::read(fixture.path())), before);
+    assert_eq!(locked_bytes(&reopened.file.0), before);
 }
 
 #[test]

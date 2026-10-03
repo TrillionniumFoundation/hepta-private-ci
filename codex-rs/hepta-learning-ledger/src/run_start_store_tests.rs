@@ -24,6 +24,7 @@ use crate::RunStartObjectiveDispositionV1;
 use crate::RunStartRecordV1;
 use crate::RunStartSnapshotV1;
 use crate::RunStartStoreError;
+use crate::run_start::tests::locked_bytes;
 
 fn must<T, E: fmt::Debug>(result: Result<T, E>) -> T {
     match result {
@@ -269,9 +270,10 @@ fn local_history_behind_the_external_frontier_is_rejected() {
     let checkpoint = MemoryCheckpoint::new(RunStartAnchor::ZERO);
     let mut store = must(fixture.open(16, checkpoint.clone()));
     let first = must(store.append_run_start(Digest32::ZERO, record("run.1", 1)));
-    must(fs::copy(
-        fixture.root.join("active.bin"),
+    let active = must(store.active.as_ref().ok_or("active journal after append"));
+    must(fs::write(
         backup.root.join("active.bin"),
+        locked_bytes(&active.file.0),
     ));
     let second = must(store.append_run_start(first.chain_digest, record("run.2", 2)));
     assert_eq!(checkpoint.anchor().sequence, second.sequence);
@@ -693,10 +695,12 @@ fn writer_lease_fences_another_process_during_rotation() {
 fn non_regular_directory_writer_lease_is_rejected_before_history_mutation() {
     let fixture = Fixture::new("writer-not-regular");
     must(fs::create_dir(fixture.root.join(super::WRITER_FILE)));
-    assert!(matches!(
-        fixture.open(1, MemoryCheckpoint::new(RunStartAnchor::ZERO)),
-        Err(RunStartStoreError::NotRegular)
-    ));
+    assert_eq!(
+        fixture
+            .open(1, MemoryCheckpoint::new(RunStartAnchor::ZERO))
+            .err(),
+        Some(RunStartStoreError::NotRegular)
+    );
     assert!(!fixture.root.join("active.bin").exists());
     assert!(!fixture.root.join("segments").exists());
 }
