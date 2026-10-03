@@ -298,6 +298,10 @@
       "object": "341a0ab99fc708d0990f86c0cc874b67f7827170"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "9d917973eec800de54f8ab5717a56cbbd06a3c67"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/client.rs",
       "object": "53fd46e88bdcd05c33c9cda73f44e3940626a3c8"
     },
@@ -382,8 +386,12 @@
       "object": "f92aa208a221ff8dbb3ca09606bd1a0b7271055e"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
+      "object": "d665090378b98817e59dcac0901489ba8a6c761d"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
-      "object": "4a76be61175425dc583b1a0db7324e6b72909d68"
+      "object": "7782c8593e6368e1a0e504722db3855f5ddd2939"
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
@@ -391,7 +399,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
-      "object": "016c961930d1efa872d099160bc0ea9f3f02f047"
+      "object": "06466f2585cd4cfe25d9000143d56d48d238a50d"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lib.rs",
@@ -423,7 +431,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "e249f6780b4525391d107c1afc8dcbe641a67ea5"
+      "object": "1ccd0ae531e5f889a57b01d02c50fafa6c3c3aac"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_effect_snapshot_tests.rs",
+      "object": "9121da3132fa8237dad2d660bee834835bac9fc8"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
@@ -1216,8 +1228,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "8876dbf4cc9292c71281c7e99b96e149e68b181b",
-    "tree": "39c3c247f1f7aa4e4eb9a36581a3789bfd79b21e"
+    "commit": "916785e374ea69e62a2c7f57f491ad0e815b2edf",
+    "tree": "cf4852c0e79fcce605a3af49e12284a5b4ffd5b6"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "revision_bound_shadow_v2_source_candidate",
@@ -1319,6 +1331,7 @@
     "codex-rs/hepta-agent-protocol/src/lib.rs",
     "codex-rs/hepta-agentd/BUILD.bazel",
     "codex-rs/hepta-agentd/Cargo.toml",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
     "codex-rs/hepta-agentd/src/client.rs",
     "codex-rs/hepta-agentd/src/cognitive_context.rs",
     "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
@@ -1340,6 +1353,7 @@
     "codex-rs/hepta-agentd/src/cognitive_retrieval_learning_tests.rs",
     "codex-rs/hepta-agentd/src/intelligence_learning_candidates.rs",
     "codex-rs/hepta-agentd/src/intelligence_learning_candidates_tests.rs",
+    "codex-rs/hepta-agentd/src/intelligence_product.rs",
     "codex-rs/hepta-agentd/src/intelligence_product_runner.rs",
     "codex-rs/hepta-agentd/src/intelligence_product_signed_tests.rs",
     "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
@@ -1351,6 +1365,7 @@
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
     "codex-rs/hepta-agentd/src/state_control.rs",
+    "codex-rs/hepta-agentd/src/state_effect_snapshot_tests.rs",
     "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
     "codex-rs/hepta-agentd/src/test_support.rs",
     "codex-rs/hepta-agentd/tests/cognitive_delivery_join.rs",

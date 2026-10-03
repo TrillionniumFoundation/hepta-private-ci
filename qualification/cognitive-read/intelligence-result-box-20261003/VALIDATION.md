@@ -45,3 +45,5 @@ Automation result box is a separate predecessor commit with its own two snapshot
 conversion tests. Remaining browser/plasticity findings, paused AuthBus lints,
 Darwin release-install failures and the distinct retained runtime generation
 handoff are unchanged. No merge, deployment, trust provisioning or activation.
+
+Published source stages: private Automation `32ff1a2b90d60a6c5f0d05f38d758346fa809b74` (tree `ff2142a81e340077beb44762b23daadbb7a2528e`); Agentd Intelligence `916785e374ea69e62a2c7f57f491ad0e815b2edf` (tree `cf4852c0e79fcce605a3af49e12284a5b4ffd5b6`). The final source is the existing cognitive.read observation target. All228 previous paths remain; 231 exact objects include the additional Automation host, converter tests and Intelligence result declarations. Every historical identity, claim flag and unrelated map is unchanged. Local Python results:105 passes with3 existing skips, then26 passes.
