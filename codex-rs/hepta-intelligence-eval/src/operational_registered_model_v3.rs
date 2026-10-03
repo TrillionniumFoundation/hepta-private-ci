@@ -90,7 +90,7 @@ impl RegisteredOperationalModelBindingV3 {
         Ok(Digest32::of_bytes(&bytes))
     }
 }
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct OwnerSources {
     pub root: PathBuf,
@@ -125,13 +125,13 @@ impl OwnerSources {
         )?)
     }
 }
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct ManifestSource {
     pub source: Source,
     pub admission_digest: String,
 }
-#[derive(Serialize, Deserialize)]
+#[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 pub(super) struct Registration {
     pub subject: String,
@@ -271,7 +271,9 @@ pub fn project_registered_artifact_current_configuration_v3(
         return Err("whole current registration projection changed".into());
     }
     facts.revalidate_current(now)?;
-    let projected = serde_json::to_vec(&registration)?;
+    let mut complete: serde_json::Value = serde_json::from_slice(&bytes)?;
+    complete["publication_operation_id"] = registration.publication_operation_id.into();
+    let projected = serde_json::to_vec(&complete)?;
     if projected.len() > 64 * 1024 {
         return Err("complete current registration exceeds original bound".into());
     }

@@ -34,6 +34,9 @@ use std::sync::Arc;
 use std::time::Duration;
 use tokio_util::sync::CancellationToken;
 
+#[path = "installed_self_iteration_goal.rs"]
+mod goal_identity;
+
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct InstalledSelfIterationCycleConfigV1 {
@@ -182,9 +185,7 @@ pub(crate) async fn run(
                     // Goal is admitted below only with its actual new scope.
                     let (_, scope) = host.current_installed_owner_v3()?;
                     let scope = scope.ok_or_else(|| invalid("actual serving Goal scope absent"))?;
-                    let goal =
-                        StableId::new(format!("goal.{}", scope.identity.subject_scope_digest))
-                            .map_err(invalid)?;
+                    let goal = goal_identity::from_scope(&scope)?;
                     if current.status.round.goal_id() == goal.as_str() {
                         status["state"] = serde_json::json!("completed_original_round");
                         return Ok(());
@@ -196,8 +197,7 @@ pub(crate) async fn run(
             } else {
                 let (_, scope) = host.current_installed_owner_v3()?;
                 let scope = scope.ok_or_else(|| invalid("actual serving Goal scope absent"))?;
-                let goal = StableId::new(format!("goal.{}", scope.identity.subject_scope_digest))
-                    .map_err(invalid)?;
+                let goal = goal_identity::from_scope(&scope)?;
                 runtime
                     .reserve_round(goal, canonical.clone(), envelope.clone())
                     .await?

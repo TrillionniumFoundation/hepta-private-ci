@@ -145,7 +145,12 @@ fn scope_plan(
     identity: &AgentdIdentity,
     scope: &AgentdNeuronGoalScopeV3,
 ) -> HostResult<crate::CpuNeuronGenerationPlanV1> {
-    let plan = project_cpu_neuron_goal_material_v3(original, identity, scope)?;
+    let plan = project_cpu_neuron_goal_material_v3(
+        original,
+        &identity.agent_id,
+        &identity.home_root,
+        scope,
+    )?;
     if scope.ordinal > 1 {
         for path in [&plan.generation_store, &plan.runtime_index, &plan.witness] {
             crate::evolving_agentd::private_parent(path)?;
@@ -158,12 +163,13 @@ fn scope_plan(
 /// directory, store, worker or admission. The held host must authenticate it.
 pub(crate) fn project_cpu_neuron_goal_material_v3(
     original: &crate::CpuNeuronGenerationPlanV1,
-    identity: &AgentdIdentity,
+    agent: &codex_hepta_contracts::AgentId,
+    home_root: &std::path::Path,
     scope: &AgentdNeuronGoalScopeV3,
 ) -> HostResult<crate::CpuNeuronGenerationPlanV1> {
     let mut plan = original.clone();
     let actual_scope = NeuronTickInputV1::journal_scope_for_subject(
-        &id(identity.agent_id.as_str())?,
+        &id(agent.as_str())?,
         scope.identity.objective_digest,
     )?;
     if scope.ordinal == 0
@@ -187,7 +193,7 @@ pub(crate) fn project_cpu_neuron_goal_material_v3(
             let mut value = path.as_os_str().to_os_string();
             value.push(format!(".goal-{}", scope.ordinal));
             *path = PathBuf::from(value);
-            if !path.starts_with(&identity.home_root) {
+            if !path.starts_with(home_root) {
                 return Err("Goal store escaped the original private home".into());
             }
         }

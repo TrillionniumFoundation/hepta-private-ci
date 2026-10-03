@@ -123,7 +123,7 @@ pub(super) fn inspect_frontier(
         decode_neuron_generation_material_v2(
             &source.read(MAX_NEURON_GENERATION_MATERIAL_BYTES_V2 as u64)?,
         )
-        .map_err(|e| Box::<dyn std::error::Error>::from(e))
+        .map_err(Box::<dyn std::error::Error>::from)
     };
     let baseline_material = material(&config.baseline_material)?;
     let plan = material(&config.prospective_material)?;
@@ -199,7 +199,7 @@ pub(super) fn inspect_frontier(
         );
     }
     let head_manifest = super::parameter_pre_registration_head_v1::inspect_head(
-        &config,
+        config,
         &baseline,
         &baseline_material,
         &admission,

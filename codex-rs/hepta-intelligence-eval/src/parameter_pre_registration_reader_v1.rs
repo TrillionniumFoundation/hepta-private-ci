@@ -189,7 +189,7 @@ pub fn inspect_parameter_pre_registration_evaluation_v1(
 }
 fn unhex(value: &str, maximum: usize) -> HostResult<Vec<u8>> {
     if value.len() > maximum.checked_mul(2).ok_or("hex bound")?
-        || value.len() % 2 != 0
+        || !value.len().is_multiple_of(2)
         || !value
             .bytes()
             .all(|v| v.is_ascii_digit() || (b'a'..=b'f').contains(&v))

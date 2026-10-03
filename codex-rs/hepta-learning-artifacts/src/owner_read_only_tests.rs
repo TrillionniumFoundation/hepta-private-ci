@@ -492,7 +492,7 @@ fn root_readonly_completed_ancestor_ack_survives_real_successor_publication_and_
     fs::set_permissions(&root, fs::Permissions::from_mode(0o700)).fixture("Root fixture mode");
     let key = signer();
     let scope = withdrawal_scope();
-    let mut withdrawals = DatasetWithdrawalRegistry::new_scoped(scope.clone());
+    let withdrawals = DatasetWithdrawalRegistry::new_scoped(scope.clone());
     let mut trust = trust(&key, scope.digest());
     for signer in trust
         .writer_signers
@@ -506,7 +506,7 @@ fn root_readonly_completed_ancestor_ack_survives_real_successor_publication_and_
     lease.issued_at = now;
     lease.expires_at = now + 60000;
     lease.signature = key.sign(&lease.signing_bytes()).to_bytes();
-    let owner = LearningArtifactOwnerHost::open(&root, trust.clone(), lease.clone(), now)
+    let owner = LearningArtifactOwnerHost::open(&root, trust.clone(), lease, now)
         .fixture("actual Root writer");
     let mut model = manifest();
     model.created_at = now;
@@ -643,7 +643,11 @@ fn root_readonly_completed_ancestor_ack_survives_real_successor_publication_and_
             current_ack
         );
     }
-    assert!(reader.current_publication_acknowledgement(now + 60001).is_err());
+    assert!(
+        reader
+            .current_publication_acknowledgement(now + 60001)
+            .is_err()
+    );
     assert_eq!(
         reader
             .acknowledged_publication(&id("root-native-history-baseline"), &old_head, now)
@@ -666,7 +670,7 @@ fn root_readonly_completed_ancestor_ack_survives_real_successor_publication_and_
         decode_untrusted_signed_artifact_head_v1(&encoded).fixture("original canonical head bytes"),
         old_head
     );
-    let mut noncanonical = encoded.clone();
+    let mut noncanonical = encoded;
     noncanonical.pop();
     assert!(decode_untrusted_signed_artifact_head_v1(&noncanonical).is_err());
     let mut forged = old_head.clone();

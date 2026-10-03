@@ -15,8 +15,8 @@ fn config(observer: bool) -> HostResult<RegisteredSelfIterationOwnerConfiguratio
         "candidates":[{"candidate_id":"original-candidate","successor":{"configuration":source,"selection":source},"rollback":{"configuration":source,"selection":source}}],
         "inaccessible_paths":if observer {Vec::<&str>::new()} else {vec!["/fixture/private/a","/fixture/private/b","/fixture/private/c","/fixture/private/d","/fixture/private/e"]},
         "observer_custody":if observer {serde_json::json!({"trust_configuration":source,"cycle_approval":null})} else {Value::Null},
-        "selection":if observer {source.clone()} else {Value::Null},
-        "canary":if observer {source} else {Value::Null},
+        "selection":observer.then_some(&source),
+        "canary":observer.then_some(&source),
     }))?)
 }
 #[test]

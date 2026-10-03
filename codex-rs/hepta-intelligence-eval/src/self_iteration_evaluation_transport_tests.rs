@@ -24,7 +24,7 @@ fn fixture() -> (SigningFixture, Publication) {
         crate::paired_supervised_qualification::paired_bundle(&execution, &signing.context())
             .unwrap();
     // A failed measured experiment is still an authenticated, completed round.
-    bundle.metrics[0].candidate = bundle.metrics[0].baseline.clone();
+    bundle.metrics[0].candidate = bundle.metrics[0].baseline;
     let roles: Vec<_> = plan
         .metrics
         .iter()
@@ -34,7 +34,7 @@ fn fixture() -> (SigningFixture, Publication) {
         })
         .collect();
     let evidence = SignedEvaluationEvidenceV1 {
-        generator_plan: execution.registration.generator_evidence.clone(),
+        generator_plan: execution.registration.generator_evidence,
         evaluator_bundle: signing.sign(
             2,
             &crate::evaluation_signing_payload_v2(&bundle, &roles).unwrap(),
