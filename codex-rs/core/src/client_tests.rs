@@ -333,12 +333,16 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     metadata_a.sandbox_mode = Some("workspace-write".to_string());
     metadata_a.request_kind = Some(CodexResponsesRequestKind::Turn);
     metadata_a.turn_started_at_unix_ms = Some(1);
+    metadata_a.turn_id = Some("root-turn-a".to_string());
+    metadata_a.root_turn_id = metadata_a.turn_id.clone();
     let identity_a =
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
             .expect("identity a");
 
     let mut prewarm_metadata = metadata_a.clone();
     prewarm_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
+    prewarm_metadata.turn_id = Some("startup-prewarm".to_string());
+    prewarm_metadata.root_turn_id = None;
     assert_eq!(
         identity_a,
         WebsocketConnectionIdentity::from_provider(
@@ -355,6 +359,14 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         .expect("turn recovery identity");
     assert_ne!(prewarm_recovery, turn_recovery);
     assert_eq!(prewarm_recovery["request_kind"], "prewarm");
+    assert!(prewarm_recovery.get("root_turn_id").is_none());
+    assert_eq!(turn_recovery["root_turn_id"], "root-turn-a");
+    assert!(
+        !prewarm_metadata
+            .client_metadata()
+            .contains_key("root_turn_id")
+    );
+    assert_eq!(metadata_a.client_metadata()["root_turn_id"], "root-turn-a");
     let mut expected_connection = prewarm_recovery;
     expected_connection
         .as_object_mut()
@@ -364,6 +376,16 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         serde_json::to_value(prewarm_metadata.websocket_connection_compatibility_projection())
             .expect("connection projection"),
         expected_connection,
+    );
+    let mut expected_turn_connection = turn_recovery;
+    expected_turn_connection
+        .as_object_mut()
+        .expect("typed turn projection object")
+        .remove("root_turn_id");
+    assert_eq!(
+        serde_json::to_value(metadata_a.websocket_connection_compatibility_projection())
+            .expect("turn connection projection"),
+        expected_turn_connection,
     );
 
     let mut other_kind = metadata_a.clone();
@@ -388,6 +410,7 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
     volatile_metadata.session_id = "session-after-restart".to_string();
     volatile_metadata.window_id = "window-after-restart".to_string();
     volatile_metadata.turn_started_at_unix_ms = Some(2);
+    volatile_metadata.root_turn_id = Some("root-turn-b".to_string());
     assert_eq!(
         identity_a,
         WebsocketConnectionIdentity::from_provider(
@@ -396,6 +419,12 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
             &volatile_metadata,
         )
         .expect("volatile identity")
+    );
+    assert_ne!(
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+            .expect("first root recovery identity"),
+        serde_json::to_value(volatile_metadata.turn_recovery_compatibility_projection())
+            .expect("different root recovery identity"),
     );
 
     let mut changed_metadata = metadata_a.clone();
@@ -414,6 +443,65 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-b"), &metadata_a,)
             .expect("changed beta identity")
     );
+
+    let mut parent_lineage = metadata_a.clone();
+    parent_lineage.parent_turn_id = Some("different-parent-turn".to_string());
+    let mut auto_review = metadata_a.clone();
+    auto_review.auto_review_enabled = Some(true);
+    let mut node_review = metadata_a.clone();
+    node_review.node_repl_auto_review_required = Some(true);
+    let mut node_disabled = metadata_a.clone();
+    node_disabled.node_repl_disabled = Some(true);
+    let mut workspaces = metadata_a.clone();
+    workspaces.workspaces.insert(
+        "workspace-a".to_string(),
+        crate::responses_metadata::TurnMetadataWorkspace {
+            has_changes: Some(true),
+            ..Default::default()
+        },
+    );
+    let mut tools = metadata_a.clone();
+    tools.tool_namespaces_info = Some(std::collections::BTreeMap::from([(
+        "namespace-a".to_string(),
+        crate::responses_metadata::TurnToolNamespaceInfo {
+            name: "namespace-a".to_string(),
+            functions: Default::default(),
+        },
+    )]));
+    for changed in [
+        parent_lineage,
+        auto_review,
+        node_review,
+        node_disabled,
+        workspaces,
+        tools,
+    ] {
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &changed)
+                .expect("changed compatibility field still fences reuse"),
+        );
+    }
+
+    let mut named_provider = provider.clone();
+    named_provider.name = "different-provider".to_string();
+    let mut queried_provider = provider.clone();
+    queried_provider.query_params = Some(HashMap::from([(
+        "api-version".to_string(),
+        "different-version".to_string(),
+    )]));
+    let mut headed_provider = provider.clone();
+    headed_provider.headers.insert(
+        "x-provider-tenant",
+        http::HeaderValue::from_static("different-tenant"),
+    );
+    for changed in [named_provider, queried_provider, headed_provider] {
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(&changed, Some("feature-a"), &metadata_a)
+                .expect("changed provider configuration still fences reuse"),
+        );
+    }
 
     let mut changed_provider = provider;
     changed_provider.base_url = "https://other.example.test/v1".to_string();

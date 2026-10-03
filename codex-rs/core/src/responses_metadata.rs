@@ -384,9 +384,10 @@ impl CodexResponsesMetadata {
     }
 
     /// Connection setup and its following turn may share one WebSocket. Keep
-    /// their durable request fingerprints distinct, while normalizing only the
-    /// prewarm kind in this connection-local compatibility key. All other
-    /// behavior-affecting metadata still fences connection reuse.
+    /// their durable request fingerprints distinct. Startup has no root turn
+    /// yet, so normalize its prewarm kind and root-turn correlation only in
+    /// this connection-local key. Each request still carries its current root
+    /// identity; all other compatibility metadata fences connection reuse.
     pub(crate) fn websocket_connection_compatibility_projection(
         &self,
     ) -> TurnRecoveryCompatibilityProjection<'_> {
@@ -394,6 +395,7 @@ impl CodexResponsesMetadata {
         if matches!(self.request_kind, Some(CodexResponsesRequestKind::Prewarm)) {
             projection.request_kind = None;
         }
+        projection.root_turn_id = None;
         projection
     }
 
