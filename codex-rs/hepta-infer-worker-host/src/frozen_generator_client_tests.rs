@@ -206,6 +206,9 @@ async fn actual_root_process_and_route_binding_returns_only_original_evidence() 
                     assert_eq!(request.request().unwrap(), request_identity);
                     payload.to_vec()
                 }
+                FrozenGeneratorOperationV1::IndependentOwner(_) => {
+                    panic!("original G/failure purpose changed")
+                }
             };
             assert_eq!(decoded, payload);
             stream.write_all(&response).await.unwrap();
