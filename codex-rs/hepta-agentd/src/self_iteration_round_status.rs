@@ -28,6 +28,8 @@ pub struct AgentdSelfIterationRoundStatusV1 {
     pub rejected_proposal: Option<AgentdSelfIterationProposalRejectionV1>,
     #[serde(default, skip_serializing_if = "Vec::is_empty")]
     pub model_stages: Vec<AgentdSelfIterationModelStageStatusV1>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub preparation: Option<AgentdSelfIterationPreparationStatusV1>,
 }
 
 impl AgentdSelfIterationRoundStatusV1 {
@@ -53,6 +55,20 @@ impl AgentdSelfIterationRoundStatusV1 {
     fn validate(&self) -> Result<(), AgentdError> {
         self.round.validate()?;
         super::model_status::validate(self)?;
+        if let Some(preparation) = &self.preparation {
+            preparation.validate_round(&self.round, self.observed_clock_ms)?;
+            if !self.terminal
+                || self.frozen_digest.is_some()
+                || self.rejected_proposal.is_some()
+                || self.candidate_effects != AgentdSelfIterationCandidateEffectsV1::NotStarted
+                || !self.model_stages.is_empty()
+                || self.generator_request_id.is_some()
+            {
+                return Err(invalid(
+                    "preparation terminal conflicts with admitted model facts",
+                ));
+            }
+        }
         if self.maximum_policy_candidates == 0
             || self.maximum_policy_candidates > 32
             || self.admitted_policy_candidates < self.round.candidate_admissions()
@@ -144,6 +160,7 @@ impl RoundJournal {
             terminal: current.terminal,
             rejected_proposal: current.rejected_proposal.as_ref().map(|fact| fact.reason),
             model_stages: super::model_status::project(current)?,
+            preparation: current.preparation.clone(),
         })
     }
 }

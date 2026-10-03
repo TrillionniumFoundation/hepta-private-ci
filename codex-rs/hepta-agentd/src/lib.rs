@@ -635,6 +635,10 @@ pub use self_iteration::AgentdSelfIterationPhaseV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationPhysicalMeasurementV1;
 #[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationPreparationStatusV1;
+#[cfg(feature = "server")]
+pub use self_iteration::AgentdSelfIterationPreparationTerminalV1;
+#[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationProposalRejectionV1;
 #[cfg(feature = "server")]
 pub use self_iteration::AgentdSelfIterationQualificationCaseV1;

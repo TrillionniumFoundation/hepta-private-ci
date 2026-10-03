@@ -139,6 +139,8 @@ struct RoundState {
     #[serde(default, skip_serializing_if = "Option::is_none")]
     candidate_effects: Option<AgentdSelfIterationCandidateEffectsV1>,
     stages: Vec<ModelStage>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    preparation: Option<AgentdSelfIterationPreparationStatusV1>,
 }
 #[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -184,8 +186,12 @@ impl RoundJournal {
                     && current.frozen.is_none()
                     && current.rejected_proposal.is_none()
                     && !failure::failed_before_candidate_effects(current)
+                    && current.preparation.is_none()
             {
                 return Err(invalid("durable round state"));
+            }
+            if let Some(preparation) = &current.preparation {
+                preparation.validate_state(current, self.watermark_ms)?;
             }
             if let Some(rejection) = &current.rejected_proposal {
                 rejection.validate(current)?;
@@ -340,6 +346,7 @@ impl RoundJournal {
             rejected_proposal: None,
             candidate_effects: Some(AgentdSelfIterationCandidateEffectsV1::NotStarted),
             stages: Vec::new(),
+            preparation: None,
         });
         Ok(permit)
     }
@@ -445,6 +452,11 @@ pub(super) mod model;
 
 #[path = "self_iteration_round_failure.rs"]
 mod failure;
+
+#[path = "self_iteration_round_preparation.rs"]
+pub(super) mod preparation;
+pub use preparation::AgentdSelfIterationPreparationStatusV1;
+pub use preparation::AgentdSelfIterationPreparationTerminalV1;
 
 #[path = "self_iteration_round_rejection.rs"]
 mod rejection;
