@@ -76,7 +76,7 @@ impl Drop for DurableRuntimeModuleSupervisorV1 {
         // description until exec. Closing only our descriptor can leave its
         // lock behind; the original owner must release it explicitly.
         if let Err(error) = self._lock.unlock() {
-            tracing::warn!(%error, "failed to release runtime-module owner lock");
+            eprintln!("failed to release runtime-module owner lock: {error}");
         }
     }
 }
