@@ -4,3 +4,12 @@ codex_rust_crate(
     name = "hepta-memory-retrieval",
     crate_name = "codex_hepta_memory_retrieval",
 )
+
+# Exact source evidence read by cognitive.types traceability qualification.
+exports_files(
+    [
+        "src/generation_bound.rs",
+        "src/generation_bound_tests.rs",
+    ],
+    visibility = ["//codex-rs/hepta-cognitive-types:__pkg__"],
+)

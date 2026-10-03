@@ -2,3 +2,18 @@ exports_files(
     ["negative-vectors.json"],
     visibility = ["//codex-rs/hepta-cognitive-types:__pkg__"],
 )
+
+# Exact source evidence read by cognitive.types traceability qualification.
+exports_files(
+    [
+        "quality_checks.py",
+        "run_mutations.py",
+        "test_mutation_runner.py",
+        "test_quality_checks.py",
+        "verify_bound_vector.mjs",
+        "verify_bound_vector.py",
+        "verify_candidate.py",
+        "verify_vectors.py",
+    ],
+    visibility = ["//codex-rs/hepta-cognitive-types:__pkg__"],
+)

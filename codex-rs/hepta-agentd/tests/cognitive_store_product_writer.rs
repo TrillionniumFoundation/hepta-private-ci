@@ -1,8 +1,10 @@
 #![cfg(unix)]
 
+use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fs;
+use std::path::Path;
 use std::sync::Arc;
 use std::sync::atomic::AtomicBool;
 use std::sync::atomic::Ordering;
@@ -10,6 +12,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_agentd::AgentdConfig;
+use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::AgentdProductionWriterHost;
 use codex_hepta_cognitive_store::CognitiveAccess;
 use codex_hepta_cognitive_store::CognitiveRecoveryRequirement;
@@ -25,6 +28,7 @@ use codex_hepta_cognitive_store::MemoryVerification;
 use codex_hepta_cognitive_store::ProductionAuthorityLease;
 use codex_hepta_cognitive_store::ProductionAuthorityToken;
 use codex_hepta_cognitive_store::ProductionAuthorityVerifier;
+use codex_hepta_cognitive_store::ProductionDurableWriter;
 use codex_hepta_cognitive_store::SourceDraft;
 use codex_hepta_cognitive_store::bind_canonical_event_to_product_receipt_v1;
 use codex_hepta_cognitive_types::hnmf::ContractDigestV1;
@@ -49,11 +53,19 @@ use codex_hepta_fleet::ResourceBudget;
 use codex_hepta_fleet::WorkspaceBinding;
 use codex_hepta_memory::LocalOutcomeState;
 use codex_hepta_paths::HeptaFleetRoot;
+use sha2::Digest;
+use sha2::Sha256;
+use sqlx::Connection;
+use sqlx::Row;
+use sqlx::SqliteConnection;
+use sqlx::TypeInfo;
+use sqlx::ValueRef;
+use sqlx::sqlite::SqliteConnectOptions;
 use tempfile::TempDir;
 
 #[tokio::test]
 #[cfg(feature = "qualification-cognitive-write")]
-async fn agentd_product_host_commits_through_canonical_cognitive_store()
+async fn agentd_product_host_admits_and_rolls_back_through_canonical_cognitive_store()
 -> Result<(), Box<dyn Error>> {
     let temp = TempDir::new()?;
     let fleet_root = temp.path().join("fleet");
@@ -106,43 +118,53 @@ async fn agentd_product_host_commits_through_canonical_cognitive_store()
 
     let after = host.writer().recovery_anchor().await?;
     assert_ne!(after, before);
+    let premature_release = host.writer().release().await;
+    let Err(codex_hepta_memory::ProductionWriterError::Local(
+        codex_hepta_memory::LocalLeaseOutboxError::IllegalTransition(message),
+    )) = premature_release
+    else {
+        return Err("pending local intent did not prevent lease release".into());
+    };
+    assert_eq!(
+        message,
+        "cannot terminalize lease with unresolved local occurrences: occurrence:product-writer:1"
+    );
+    assert_eq!(host.writer().recovery_anchor().await?, after);
+    // This qualification seam has no attached external target. Roll back the
+    // local queued intent rather than inventing a provider commit receipt.
+    let rolled_back = host
+        .writer()
+        .rollback_occurrence(
+            "occurrence:product-writer:1",
+            "qualification local intent cancelled",
+        )
+        .await?;
+    assert_eq!(rolled_back.state, LocalOutcomeState::RolledBack);
+    assert!(!rolled_back.external_effect);
+    assert_eq!(
+        host.writer().status("occurrence:product-writer:1").await?,
+        LocalOutcomeState::RolledBack
+    );
     host.writer().release().await?;
+    let released_cut = host.writer().recovery_anchor().await?;
+    let released_state = logical_snapshot(host.writer().database_path()).await?;
     drop(host);
 
     let reopened = DurableCognitiveStore::open(&layout).await?;
-    let reopened_anchor = reopened.recovery_anchor().await?;
-    assert_ne!(reopened_anchor, before);
+    assert_eq!(reopened.recovery_anchor().await?, released_cut);
+    assert_eq!(logical_snapshot(reopened.path()).await?, released_state);
     Ok(())
 }
 
 #[tokio::test]
 async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 -> Result<(), Box<dyn Error>> {
-    let temp = TempDir::new()?;
-    let root = temp.path().canonicalize()?;
-    let fleet_path = root.join("fleet");
-    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())?;
-    let registry = FleetRegistry::initialize(fleet_root.clone())?;
-    let workspace = root.join("workspace");
-    fs::create_dir(&workspace)?;
-    let owner = AgentId::parse("00000000-0000-4000-8000-00000000c059")?;
-    let binding = WorkspaceBinding::new(workspace.clone(), &fleet_root)?;
-    let manifest = AgentManifest::new(owner.clone(), binding, ResourceBudget::local_default())?;
-    let record = registry.register(manifest)?;
-    registry.compare_and_transition(&owner, 0, AgentLifecycle::Starting)?;
-
-    let config = AgentdConfig::load(
-        fleet_path,
-        owner.clone(),
-        1,
-        record.layout.home_root().to_path_buf(),
-        record.layout.run_root().to_path_buf(),
-        record.layout.home_root().to_path_buf(),
-        workspace,
-    )?;
+    let (_temp, config, owner) = recovery_fixture()?;
 
     let store = DurableCognitiveStore::open(&config.identity().layout).await?;
     let expected = store.recovery_anchor().await?;
+    let original_path = store.path().to_path_buf();
+    let before_writer = logical_snapshot(&original_path).await?;
     store.close().await;
 
     let authority = ProductionAuthorityLease::from_verified_parts(
@@ -173,6 +195,29 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         },
     );
 
+    let mut tampered = expected.clone();
+    tampered.state_digest = Sha256Digest::for_bytes(b"tampered exact-cut witness");
+    let rejected = AgentdProductionWriterHost::open_with_recovery(
+        &config,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&tampered),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        1,
+    )
+    .await;
+    let Err(AgentdError::Protocol(message)) = rejected else {
+        return Err("tampered cut did not fail at recovery admission".into());
+    };
+    assert_eq!(
+        message,
+        "recover production cognitive store: cognitive recovery access denied: recovery candidate differs from independently retained current cut"
+    );
+    assert_eq!(logical_snapshot(&original_path).await?, before_writer);
+    let writer_fence = authority.fencing_token_digest()?;
+    let writer_expiry = i64::try_from(authority.lease_expires_at_unix_seconds)?;
+    let acquisition_started = i64::try_from(now_unix_seconds()?)?;
+
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
         CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
@@ -183,7 +228,105 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    // Exact recovery precedes writer acquisition. The new append-only lease
+    // is an intentional owner mutation and must be bound by the new cut.
+    assert_eq!(recovered_anchor.profile, expected.profile);
+    assert_eq!(recovered_anchor.owner_agent_id, expected.owner_agent_id);
+    assert_eq!(recovered_anchor.schema_digest, expected.schema_digest);
+    assert_ne!(recovered_anchor.state_digest, expected.state_digest);
+    let mut after_writer = logical_snapshot(host.writer().database_path()).await?;
+    let mut preserved = before_writer.clone();
+    let empty_lease = preserved
+        .remove("cognitive_local_leases")
+        .ok_or("missing lease table")?;
+    let acquired = after_writer
+        .remove("cognitive_local_leases")
+        .ok_or("missing acquired lease")?;
+    assert!(empty_lease.rows.is_empty());
+    assert_eq!(acquired.columns, empty_lease.columns);
+    assert_eq!(
+        after_writer, preserved,
+        "writer acquisition changed non-lease logical state"
+    );
+    assert_eq!(acquired.rows.len(), 1);
+    let mut lease: BTreeMap<_, _> = acquired
+        .columns
+        .into_iter()
+        .zip(acquired.rows[0].clone())
+        .collect();
+    let recorded = lease
+        .remove("recorded_at_unix_seconds")
+        .ok_or("missing lease timestamp")?;
+    let LogicalValue::Integer(recorded) = recorded else {
+        return Err("invalid lease timestamp type".into());
+    };
+    assert!((acquisition_started..=i64::try_from(now_unix_seconds()?)?).contains(&recorded));
+    let chain_digest = lease.remove("lease_sha256").ok_or("missing lease digest")?;
+    let LogicalValue::Text(chain_digest) = chain_digest else {
+        return Err("invalid lease digest type".into());
+    };
+    let genesis = Sha256Digest::for_bytes(b"hepta-memory:local-lease:genesis:v1");
+    let mut lease_hasher = Sha256::new();
+    for part in [
+        b"hepta-memory:local-lease:v2".as_slice(),
+        b"agentd-product-recovery-test".as_slice(),
+        &1_u64.to_be_bytes(),
+        owner.as_str().as_bytes(),
+        &1_u64.to_be_bytes(),
+        writer_fence.as_str().as_bytes(),
+        b"active".as_slice(),
+        &13_u64.to_be_bytes(),
+        &17_u64.to_be_bytes(),
+        &u64::try_from(writer_expiry)?.to_be_bytes(),
+        genesis.as_str().as_bytes(),
+    ] {
+        lease_hasher.update(u64::try_from(part.len())?.to_be_bytes());
+        lease_hasher.update(part);
+    }
+    assert_eq!(
+        chain_digest,
+        Sha256Digest::from_sha256_output(lease_hasher.finalize()).as_str()
+    );
+    assert_eq!(
+        lease,
+        BTreeMap::from([
+            (
+                "lease_id".to_string(),
+                LogicalValue::Text("agentd-product-recovery-test".to_string())
+            ),
+            ("lease_sequence".to_string(), LogicalValue::Integer(1)),
+            (
+                "owner_agent_id".to_string(),
+                LogicalValue::Text(owner.as_str().to_string())
+            ),
+            ("generation".to_string(), LogicalValue::Integer(1)),
+            (
+                "fencing_token".to_string(),
+                LogicalValue::Text(writer_fence.as_str().to_string())
+            ),
+            (
+                "state".to_string(),
+                LogicalValue::Text("active".to_string())
+            ),
+            ("authority_epoch".to_string(), LogicalValue::Integer(13)),
+            ("owner_epoch".to_string(), LogicalValue::Integer(17)),
+            (
+                "lease_expires_at_unix_seconds".to_string(),
+                LogicalValue::Integer(writer_expiry)
+            ),
+            (
+                "previous_sha256".to_string(),
+                LogicalValue::Text(
+                    Sha256Digest::for_bytes(b"hepta-memory:local-lease:genesis:v1")
+                        .as_str()
+                        .to_string()
+                )
+            ),
+        ])
+    );
+    // The predecessor remains untouched; only the activated generation owns
+    // the new lease. No physical-page comparison is used as a logical witness.
+    assert_eq!(logical_snapshot(&original_path).await?, before_writer);
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());
@@ -440,4 +583,166 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
 
 fn now_unix_seconds() -> Result<u64, std::time::SystemTimeError> {
     Ok(SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs())
+}
+
+// Compare typed logical values, not database pages, WAL layout or FTS shadows.
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
+enum LogicalValue {
+    Null,
+    Integer(i64),
+    Real(u64),
+    Text(String),
+    Blob(Vec<u8>),
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct LogicalTable {
+    columns: Vec<String>,
+    rows: Vec<Vec<LogicalValue>>,
+}
+
+async fn logical_snapshot(path: &Path) -> Result<BTreeMap<String, LogicalTable>, Box<dyn Error>> {
+    let options = SqliteConnectOptions::new().filename(path).read_only(true);
+    let mut connection = SqliteConnection::connect_with(&options).await?;
+    sqlx::query("BEGIN").execute(&mut connection).await?;
+    let mut tables: Vec<String> = sqlx::query_scalar(
+        "SELECT name FROM pragma_table_list WHERE schema = 'main' AND type IN ('table', 'virtual') AND name NOT LIKE 'sqlite_%' ORDER BY name",
+    ).fetch_all(&mut connection).await?;
+    // The logical FTS rows remain included; only their derived shadow pages
+    // are excluded by pragma_table_list's type filter.
+    for logical_fts in ["memory_fts", "kg_entity_fts", "kg_revision_entity_fts"] {
+        assert!(tables.iter().any(|table| table == logical_fts));
+    }
+    tables.push("sqlite_schema".to_string());
+    let mut snapshot = BTreeMap::new();
+    for table in tables {
+        let columns: Vec<String> = if table == "sqlite_schema" {
+            ["type", "name", "tbl_name", "sql"]
+                .map(str::to_string)
+                .to_vec()
+        } else {
+            sqlx::query_scalar("SELECT name FROM pragma_table_info(?) ORDER BY cid")
+                .bind(&table)
+                .fetch_all(&mut connection)
+                .await?
+        };
+        let selection = columns
+            .iter()
+            .map(|column| format!("\"{}\"", column.replace('"', "\"\"")))
+            .collect::<Vec<_>>()
+            .join(", ");
+        // Identifiers come only from this test-owned SQLite schema and are
+        // double-quoted/escaped; no value is interpolated into the query.
+        let mut query = sqlx::QueryBuilder::<sqlx::Sqlite>::new("SELECT ");
+        query
+            .push(selection)
+            .push(" FROM \"")
+            .push(table.replace('"', "\"\""))
+            .push("\"");
+        let mut rows = Vec::new();
+        for row in query.build().fetch_all(&mut connection).await? {
+            let mut values = Vec::new();
+            for index in 0..columns.len() {
+                let raw = row.try_get_raw(index)?;
+                values.push(if raw.is_null() {
+                    LogicalValue::Null
+                } else {
+                    match raw.type_info().name() {
+                        "INTEGER" => LogicalValue::Integer(row.try_get(index)?),
+                        "REAL" => LogicalValue::Real(row.try_get::<f64, _>(index)?.to_bits()),
+                        "TEXT" => LogicalValue::Text(row.try_get(index)?),
+                        "BLOB" => LogicalValue::Blob(row.try_get(index)?),
+                        other => {
+                            return Err(format!("unsupported logical cell type: {other}").into());
+                        }
+                    }
+                });
+            }
+            rows.push(values);
+        }
+        rows.sort();
+        snapshot.insert(table, LogicalTable { columns, rows });
+    }
+    sqlx::query("ROLLBACK").execute(&mut connection).await?;
+    connection.close().await?;
+    Ok(snapshot)
+}
+
+fn recovery_fixture() -> Result<(TempDir, AgentdConfig, AgentId), Box<dyn Error>> {
+    let temp = TempDir::new()?;
+    let root = temp.path().canonicalize()?;
+    let fleet_path = root.join("fleet");
+    let fleet_root = HeptaFleetRoot::parse(fleet_path.clone())?;
+    let registry = FleetRegistry::initialize(fleet_root.clone())?;
+    let workspace = root.join("workspace");
+    fs::create_dir(&workspace)?;
+    let owner = AgentId::parse("00000000-0000-4000-8000-00000000c059")?;
+    let binding = WorkspaceBinding::new(workspace.clone(), &fleet_root)?;
+    let manifest = AgentManifest::new(owner.clone(), binding, ResourceBudget::local_default())?;
+    let record = registry.register(manifest)?;
+    registry.compare_and_transition(&owner, 0, AgentLifecycle::Starting)?;
+
+    let config = AgentdConfig::load(
+        fleet_path,
+        owner.clone(),
+        1,
+        record.layout.home_root().to_path_buf(),
+        record.layout.run_root().to_path_buf(),
+        record.layout.home_root().to_path_buf(),
+        workspace,
+    )?;
+
+    Ok((temp, config, owner))
+}
+
+#[tokio::test]
+async fn agentd_product_host_recovers_existing_active_lease_without_advancing_cut()
+-> Result<(), Box<dyn Error>> {
+    let (_temp, config, owner) = recovery_fixture()?;
+    let store = DurableCognitiveStore::open(&config.identity().layout).await?;
+    let authority = ProductionAuthorityLease::from_verified_parts(
+        owner.clone(),
+        Sha256Digest::for_bytes(b"active-lease-recovery-grant"),
+        13,
+        17,
+        now_unix_seconds()?.saturating_add(300),
+        ProductionAuthorityToken::from_verified_bytes(b"active-lease-recovery-fence".to_vec())?,
+    )?;
+    let verified_authority = authority.clone();
+    let verifier: Arc<dyn ProductionAuthorityVerifier> = Arc::new(
+        move |lease: &ProductionAuthorityLease, expected_owner: &AgentId| -> Result<(), String> {
+            if lease != &verified_authority || expected_owner != &owner {
+                return Err("unexpected recovery authority".to_string());
+            }
+            Ok(())
+        },
+    );
+    let writer = ProductionDurableWriter::open_with_live_verifier(
+        store.clone(),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "existing-active-recovery",
+        1,
+    )
+    .await?;
+    let expected = writer.recovery_anchor().await?;
+    let before = logical_snapshot(writer.database_path()).await?;
+    drop(writer);
+    store.close().await;
+    let host = AgentdProductionWriterHost::open_with_recovery(
+        &config,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
+        authority,
+        verifier,
+        "existing-active-recovery",
+        1,
+    )
+    .await?;
+    assert_eq!(host.writer().recovery_anchor().await?, expected);
+    assert_eq!(
+        logical_snapshot(host.writer().database_path()).await?,
+        before
+    );
+    host.writer().release().await?;
+    Ok(())
 }
