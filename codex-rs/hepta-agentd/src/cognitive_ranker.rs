@@ -5,27 +5,43 @@
 //! This component can only permute already-admitted SQLite records; it cannot
 //! add context, grant access, select a new artifact, train, or dispatch a turn.
 
+#[cfg(any(test, feature = "qualification-unverified-operator-input"))]
 use std::fs::File;
 use std::sync::Arc;
 use std::sync::Mutex;
 
-use codex_hepta_bellman_operator::LoadedTabularOperatorV1;
-use codex_hepta_bellman_operator::TabularPayloadError;
-use codex_hepta_bellman_operator::TabularPayloadPinV1;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_intelligence_eval::VerifiedSelfEvolutionRollbackV1;
-use codex_hepta_intelligence_eval::VerifiedSelfEvolutionSelectionV1;
-use codex_hepta_learning_artifacts::PinnedCandidateSpec;
+#[cfg(any(test, feature = "qualification-unverified-operator-input"))]
+use codex_hepta_agent_components::bellman_operator::LoadedTabularOperatorV1;
+use codex_hepta_agent_components::bellman_operator::TabularPayloadError;
+#[cfg(any(test, feature = "qualification-unverified-operator-input"))]
+use codex_hepta_agent_components::bellman_operator::TabularPayloadPinV1;
+use codex_hepta_agent_components::contracts::AgentId;
+#[cfg(any(test, feature = "qualification-unverified-operator-input"))]
+use codex_hepta_agent_components::intelligence_eval::VerifiedSelfEvolutionRollbackV1;
+#[cfg(any(test, feature = "qualification-unverified-operator-input"))]
+use codex_hepta_agent_components::intelligence_eval::VerifiedSelfEvolutionSelectionV1;
+#[cfg(any(test, feature = "qualification-unverified-operator-input"))]
+use codex_hepta_agent_components::learning_artifacts::PinnedCandidateSpec;
 #[cfg(test)]
-use codex_hepta_learning_artifacts::RegistrySnapshotReceipt;
-use codex_hepta_learning_artifacts::RevalidatingCandidate;
-use codex_hepta_learning_artifacts::VerifiedCurrentRegistryViewV1;
-use codex_hepta_learning_artifacts::load_pinned_candidate;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::ProbabilityQ32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::learning_artifacts::RegistrySnapshotReceipt;
+use codex_hepta_agent_components::learning_artifacts::RevalidatingCandidate;
+use codex_hepta_agent_components::learning_artifacts::VerifiedCurrentRegistryViewV1;
+#[cfg(any(test, feature = "qualification-unverified-operator-input"))]
+use codex_hepta_agent_components::learning_artifacts::load_pinned_candidate;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::ProbabilityQ32;
+use codex_hepta_agent_components::types::StableId;
 
 use crate::CognitiveContextItem;
+
+#[path = "cognitive_ranker_admission_v2.rs"]
+mod admission;
+#[path = "cognitive_ranker_cache.rs"]
+mod candidate_cache;
+pub use admission::CurrentRankerAdmissionV3;
+use admission::EvaluatedUseV2;
+pub use admission::RankerAdmissionSnapshotV3;
+use admission::RankerModel;
 
 /// The artifact authority, not the model or a caller-supplied receipt,
 /// determines currentness. Implementations must return an opaque view issued
@@ -40,13 +56,13 @@ pub(crate) fn verified_fixture_current_view(
     receipt: RegistrySnapshotReceipt,
     expected_predecessor_head_digest: Digest32,
 ) -> Result<VerifiedCurrentRegistryViewV1, String> {
-    use codex_hepta_learning_artifacts::ArtifactOwnerTrustV1;
-    use codex_hepta_learning_artifacts::ArtifactOwnerVerifierV1;
-    use codex_hepta_learning_artifacts::RegistryHeadRequirementV1;
-    use codex_hepta_learning_artifacts::RegistryHeadWitnessV1;
-    use codex_hepta_learning_artifacts::SignedCurrentArtifactHeadV1;
-    use codex_hepta_learning_artifacts::TrustedArtifactSignerV1;
-    use codex_hepta_types::Generation;
+    use codex_hepta_agent_components::learning_artifacts::ArtifactOwnerTrustV1;
+    use codex_hepta_agent_components::learning_artifacts::ArtifactOwnerVerifierV1;
+    use codex_hepta_agent_components::learning_artifacts::RegistryHeadRequirementV1;
+    use codex_hepta_agent_components::learning_artifacts::RegistryHeadWitnessV1;
+    use codex_hepta_agent_components::learning_artifacts::SignedCurrentArtifactHeadV1;
+    use codex_hepta_agent_components::learning_artifacts::TrustedArtifactSignerV1;
+    use codex_hepta_agent_components::types::Generation;
     use ed25519_dalek::Signer;
     use ed25519_dalek::SigningKey;
 
@@ -114,7 +130,8 @@ pub struct PinnedCognitiveRanker {
     owner: AgentId,
     body_generation: u64,
     policy_digest: Digest32,
-    model: LoadedTabularOperatorV1,
+    model: RankerModel,
+    admission: Option<EvaluatedUseV2>,
     current: Arc<dyn CurrentCognitiveRegistry>,
     cache: Mutex<Option<RevalidatingCandidate>>,
 }
@@ -149,6 +166,7 @@ pub fn cognitive_action_id(item: &CognitiveContextItem) -> Result<StableId, Stri
 }
 
 impl PinnedCognitiveRanker {
+    #[cfg(any(test, feature = "qualification-unverified-operator-input"))]
     #[allow(clippy::too_many_arguments)]
     pub(crate) fn load(
         owner: AgentId,
@@ -159,14 +177,18 @@ impl PinnedCognitiveRanker {
         model_pin: TabularPayloadPinV1,
         current: Arc<dyn CurrentCognitiveRegistry>,
     ) -> Result<Self, String> {
-        if selected.manifest.kind != codex_hepta_learning_artifacts::ArtifactKind::Policy
+        if selected.manifest.kind
+            != codex_hepta_agent_components::learning_artifacts::ArtifactKind::Policy
             || body_generation == 0
             || selected.manifest.content_digest != model_pin.payload_digest
             || selected.manifest.objective_digest != model_pin.objective_digest
-            || selected.manifest.support_digest != model_pin.dataset_digest
             || selected.manifest.generation != model_pin.generation
         {
             return Err("ranker owner/model pin binding mismatch".to_string());
+        }
+        let initial_current = current.current()?;
+        if !initial_current.supports_dataset(&selected.manifest, model_pin.dataset_digest) {
+            return Err("ranker dataset differs from current artifact provenance".to_string());
         }
         let candidate = load_pinned_candidate(snapshot, payload, selected)
             .map_err(|error| error.to_string())?;
@@ -175,21 +197,26 @@ impl PinnedCognitiveRanker {
         if model.artifact_id() != &candidate.spec().manifest.artifact_id {
             return Err("model identity differs from selected registry artifact".to_string());
         }
+        let mut candidate = RevalidatingCandidate::new(candidate);
+        candidate
+            .with_current(initial_current, |_| ())
+            .map_err(|error| error.to_string())?;
         let value = Self {
             owner,
             body_generation,
             policy_digest: model_pin.payload_digest,
-            model,
+            model: RankerModel::Legacy(model),
+            admission: None,
             current,
-            cache: Mutex::new(Some(RevalidatingCandidate::new(candidate))),
+            cache: Mutex::new(Some(candidate)),
         };
-        value.revalidate()?;
         Ok(value)
     }
 
     /// Load a candidate only after independent longitudinal evaluation and a
     /// separately authenticated selector have admitted the exact artifact.
     /// The opaque selection token cannot be fabricated from registry metadata.
+    #[cfg(any(test, feature = "qualification-unverified-operator-input"))]
     #[allow(clippy::too_many_arguments)]
     pub fn load_evaluated(
         owner: AgentId,
@@ -207,7 +234,7 @@ impl PinnedCognitiveRanker {
             || selected.manifest.generation != receipt.candidate_generation
             || selected.manifest.content_digest != receipt.candidate_artifact_digest
             || selected.manifest.objective_digest != receipt.objective_digest
-            || selected.manifest.support_digest != receipt.dataset_digest
+            || model_pin.dataset_digest != receipt.dataset_digest
         {
             return Err(
                 "selected ranker does not match independently admitted candidate".to_string(),
@@ -227,6 +254,7 @@ impl PinnedCognitiveRanker {
     /// Reload the exact predecessor only after an independent evaluator has
     /// admitted rollback for the selected candidate. Rollback restores bytes,
     /// not the old runtime generation or a revoked current witness.
+    #[cfg(any(test, feature = "qualification-unverified-operator-input"))]
     #[allow(clippy::too_many_arguments)]
     pub fn load_evaluated_rollback(
         owner: AgentId,
@@ -268,22 +296,39 @@ impl PinnedCognitiveRanker {
     }
 
     fn with_current<T>(&self, consume: impl FnOnce() -> Result<T, String>) -> Result<T, String> {
-        let mut cache = self
-            .cache
-            .lock()
-            .map_err(|_| "ranker lock poisoned".to_string())?;
-        let Some(mut candidate) = cache.take() else {
-            return Err("ranker unavailable; explicit reload required".to_string());
-        };
-        // Keep the cache absent on witness errors, panics and failed refreshes.
-        // The provider cannot inject a bare file/receipt: the artifact authority
-        // must first issue an opaque verified CURRENT view.
-        let current = self.current.current()?;
-        let result = candidate
-            .with_current(current, |_| consume())
-            .map_err(|error| error.to_string())??;
-        *cache = Some(candidate);
-        Ok(result)
+        candidate_cache::with_exclusive_candidate(&self.cache, |candidate| {
+            let current = self.current.current()?;
+            if let Some(admission) = &self.admission {
+                admission.revalidate(&current)?;
+            }
+            let result = candidate
+                .with_current(current, |_| consume())
+                .map_err(|error| error.to_string())??;
+            let finished = self.current.current()?;
+            let final_admission = self
+                .admission
+                .as_ref()
+                .map(|admission| admission.revalidate(&finished))
+                .transpose()?;
+            let final_window = self
+                .admission
+                .as_ref()
+                .map(|_| finished.use_window())
+                .transpose()
+                .map_err(|error| error.to_string())?;
+            candidate
+                .with_current(finished, |_| ())
+                .map_err(|error| error.to_string())?;
+            if let (Some(admission), Some(host)) = (&self.admission, &final_admission) {
+                admission.revalidate_retained(host)?;
+            }
+            if let Some(window) = final_window {
+                window
+                    .revalidate_at(admission::current_wall_millis()?)
+                    .map_err(|error| error.to_string())?;
+            }
+            Ok(result)
+        })
     }
 
     pub(crate) fn revalidate(&self) -> Result<(), String> {
@@ -302,7 +347,8 @@ impl PinnedCognitiveRanker {
             return Err("ranking candidates exceed cognitive read bound".to_string());
         }
         let sensor = cognitive_sensor_id(query)?;
-        self.with_current(|| {
+        let original_items = items.to_vec();
+        let result = self.with_current(|| {
             let mut scored = Vec::with_capacity(items.len());
             for (index, item) in items.iter().enumerate() {
                 match self.model.predict(&sensor, &cognitive_action_id(item)?) {
@@ -330,7 +376,11 @@ impl PinnedCognitiveRanker {
                 propensity: ProbabilityQ32::ONE,
                 applied: true,
             })
-        })
+        });
+        if result.is_err() {
+            items.clone_from_slice(&original_items);
+        }
+        result
     }
 }
 

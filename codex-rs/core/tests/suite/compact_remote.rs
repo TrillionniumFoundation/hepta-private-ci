@@ -1628,8 +1628,10 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
         .await?;
     wait_for_turn_complete(&codex).await;
 
+    let before_compact_durable = super::durable_metadata::read_items(&codex).await?;
     codex.submit(Op::Compact).await?;
     wait_for_turn_complete(&codex).await;
+    let replacement_items = super::durable_metadata::read_replacement_items(&codex).await?;
 
     codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
@@ -1641,10 +1643,9 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
 
     let response_requests = responses_mock.requests();
     let compact_request = &response_requests[3];
-    let item_create_time = |request: &responses::ResponsesRequest, text: &str| {
-        request
-            .input()
-            .into_iter()
+    let item_create_time = |items: &[Value], text: &str| {
+        items
+            .iter()
             .find(|item| {
                 item["content"].as_array().is_some_and(|content| {
                     content.iter().any(|part| {
@@ -1659,9 +1660,10 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
             })
             .expect("matching message should include a creation timestamp")
     };
-    let original_user_create_time = item_create_time(&response_requests[0], "hello remote compact");
+    let original_user_create_time =
+        item_create_time(&before_compact_durable, "hello remote compact");
     let delegated_task_create_time =
-        item_create_time(&response_requests[1], &delegated_task_ciphertext);
+        item_create_time(&before_compact_durable, &delegated_task_ciphertext);
     assert!(
         compact_request
             .inputs_of_type("agent_message")
@@ -1741,16 +1743,20 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
     );
 
     let follow_up_request = response_requests.last().expect("follow-up request missing");
+    for request in &response_requests {
+        super::durable_metadata::assert_wire_has_no_local_metadata(&request.input());
+    }
+    let after_compact_durable = super::durable_metadata::read_items(&codex).await?;
     assert_eq!(
-        item_create_time(follow_up_request, "hello remote compact"),
+        item_create_time(&replacement_items, "hello remote compact"),
         original_user_create_time
     );
     assert_eq!(
-        item_create_time(follow_up_request, &delegated_task_ciphertext),
+        item_create_time(&replacement_items, &delegated_task_ciphertext),
         delegated_task_create_time
     );
     assert!(
-        item_create_time(follow_up_request, "after compact")
+        item_create_time(&after_compact_durable, "after compact")
             .as_f64()
             .is_some_and(|create_time| create_time > 0.0)
     );

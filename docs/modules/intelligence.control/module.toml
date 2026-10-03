@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 20
+id = "intelligence.control"
+plane = "domain"
+kind = "composition_facade"
+lifecycle = "target"
+state = "ephemeral"
+architectureRole = "composition_facade"
+writes = []
+uses = ["objective.compiler", "utility.ndu", "neuron.runtime", "intuition.policy", "prompt.optimizer", "context.compiler", "learning.eval"]
+owner = "intelligence-platform"
+deputy = "qualification-plane"
+denies = ["production_write", "model_authority", "physical_effect"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-intelligence"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "INTELLIGENCE-A0-Q0.63"
+technicalDocument = "docs/modules/intelligence.control/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-intelligence"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-intelligence"
+compileLayer = 5
+ciGroups = ["learning", "objective"]

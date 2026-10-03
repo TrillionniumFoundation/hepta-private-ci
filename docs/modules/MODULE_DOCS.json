@@ -2906,6 +2906,39 @@
       "threats": [
         "self_review_or_self_merge"
       ]
+    },
+    {
+      "module": "runtime.gateway",
+      "path": "docs/modules/runtime.gateway/TECHNICAL.md",
+      "sourceStatus": "existing_bound",
+      "source_root_present": true,
+      "production_implementation": false,
+      "bootstrapWorkPackage": "P0.7A-RUNTIME-BOOTSTRAP",
+      "requiredSections": [
+        "## 1. Identity, mission and ownership",
+        "## 2. Source binding and implementation status",
+        "## 3. Boundary, responsibilities and non-goals",
+        "## 4. Internal architecture and component decomposition",
+        "## 5. Contracts, ports and compatibility",
+        "## 6. Data authority, persistence and migrations",
+        "## 7. Runtime, concurrency and transaction model",
+        "## 8. Failure semantics, recovery and rollback",
+        "## 9. Security, privacy and threat controls",
+        "## 10. Performance, capacity and hot-path policy",
+        "## 11. Observability and operations",
+        "## 12. Verification and qualification",
+        "## 13. Implementation sequence and work packages",
+        "## 14. Activation, compatibility and retirement",
+        "## 15. Definition of module completion",
+        "## 17. Source implementation receipt"
+      ],
+      "producedContracts": [],
+      "consumedContracts": [],
+      "protocols": [],
+      "ownedDomains": [],
+      "readDomains": [],
+      "workPackages": [],
+      "threats": []
     }
   ],
   "authorityFlags": {

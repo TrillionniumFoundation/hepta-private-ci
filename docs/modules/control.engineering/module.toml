@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 39
+id = "control.engineering"
+plane = "engineering"
+kind = "orchestrator"
+lifecycle = "target"
+state = "stateful_projection"
+architectureRole = "engineering_control"
+writes = ["work_assignment_projection", "integration_decision"]
+uses = ["kernel.evidence"]
+owner = "developer-productivity"
+deputy = "architecture"
+denies = ["runtime_capability_issuance", "self_merge"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["tools/hepta-engineering-control"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "ECP-1-ENGINEERING-CONTROL-PLANE"
+technicalDocument = "docs/modules/control.engineering/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "tools/hepta-engineering-control"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/ext/hepta-governance"
+compileLayer = 3
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

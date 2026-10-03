@@ -12,6 +12,7 @@ mod authority;
 mod authority_schema;
 mod authority_store;
 mod host;
+mod operation_lookup;
 mod quota;
 mod quota_store;
 mod recovery;

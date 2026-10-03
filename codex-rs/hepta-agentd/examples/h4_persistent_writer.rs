@@ -27,21 +27,21 @@ use std::time::Duration;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::contracts::Sha256Digest;
+use codex_hepta_agent_components::memory::CognitiveStore;
+use codex_hepta_agent_components::memory::LocalOutcomeState;
+use codex_hepta_agent_components::memory::PRODUCTION_DURABLE_WRITER_JOURNAL_MODE;
+use codex_hepta_agent_components::memory::PRODUCTION_DURABLE_WRITER_SYNCHRONOUS_FULL;
+use codex_hepta_agent_components::memory::ProductionAuthorityLease;
+use codex_hepta_agent_components::memory::ProductionAuthorityToken;
+use codex_hepta_agent_components::memory::ProductionAuthorityVerifier;
+use codex_hepta_agent_components::memory::ProductionLeaseReceipt;
+use codex_hepta_agent_components::memory::ProductionOutcomeReceipt;
+use codex_hepta_agent_components::memory::ProductionQueuedReceipt;
+use codex_hepta_agent_components::memory::ProductionRecoveryReceipt;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
 use codex_hepta_agentd::AgentdProductionWriterHost;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_memory::CognitiveStore;
-use codex_hepta_memory::LocalOutcomeState;
-use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_JOURNAL_MODE;
-use codex_hepta_memory::PRODUCTION_DURABLE_WRITER_SYNCHRONOUS_FULL;
-use codex_hepta_memory::ProductionAuthorityLease;
-use codex_hepta_memory::ProductionAuthorityToken;
-use codex_hepta_memory::ProductionAuthorityVerifier;
-use codex_hepta_memory::ProductionLeaseReceipt;
-use codex_hepta_memory::ProductionOutcomeReceipt;
-use codex_hepta_memory::ProductionQueuedReceipt;
-use codex_hepta_memory::ProductionRecoveryReceipt;
-use codex_hepta_paths::HeptaFleetRoot;
 use serde::Deserialize;
 use serde::Serialize;
 use sqlx::SqlitePool;
@@ -646,10 +646,10 @@ async fn main() -> HarnessResult<()> {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use codex_hepta_memory::ProductionDispatchFuture;
-    use codex_hepta_memory::ProductionDispatchRequest;
-    use codex_hepta_memory::ProductionOutboxTarget;
-    use codex_hepta_memory::ProductionTargetOutcome;
+    use codex_hepta_agent_components::memory::ProductionDispatchFuture;
+    use codex_hepta_agent_components::memory::ProductionDispatchRequest;
+    use codex_hepta_agent_components::memory::ProductionOutboxTarget;
+    use codex_hepta_agent_components::memory::ProductionTargetOutcome;
     use std::sync::Arc;
     use std::sync::atomic::AtomicUsize;
     use std::sync::atomic::Ordering;
@@ -761,7 +761,7 @@ mod tests {
         assert!(matches!(
             retry_result,
             Err(codex_hepta_agentd::AgentdError::ProductionWriter(
-                codex_hepta_memory::ProductionWriterError::StaleReceipt
+                codex_hepta_agent_components::memory::ProductionWriterError::StaleReceipt
             ))
         ));
         assert_eq!(retry_calls.load(Ordering::SeqCst), 0);

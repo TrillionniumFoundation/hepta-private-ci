@@ -5,6 +5,7 @@ Cargo still builds the requested targets and features. Dependency-graph filters,
 workspace runs and reused builds retain nextest's normal metadata path.
 """
 
+import fnmatch
 import json
 import os
 from pathlib import Path
@@ -167,6 +168,75 @@ def scoped_packages(args):
     return packages
 
 
+def with_product_profile(args, cwd):
+    """Select the real process profile when ordinary selection includes its suite.
+
+    This remains one native nextest invocation. Explicit profiles and reused
+    artifacts retain caller control; library and unrelated package development
+    keep Cargo's normal fast profile.
+    """
+    cargo_args = args[: args.index("--") if "--" in args else len(args)]
+    options = {arg.split("=", 1)[0] for arg in cargo_args}
+    if options & {
+        "--cargo-profile",
+        "--release",
+        "--archive-file",
+        "--binaries-metadata",
+        "--cargo-metadata",
+        "--help",
+        "-h",
+    }:
+        return args
+    workspace = Path(__file__).resolve().parents[1] / "codex-rs"
+    manifest = cwd / "Cargo.toml"
+    test_targets = []
+    exclusions = []
+    for index, arg in enumerate(cargo_args):
+        for option, values in (("--test", test_targets), ("--exclude", exclusions)):
+            if arg == option and index + 1 < len(cargo_args):
+                values.append(cargo_args[index + 1])
+            elif arg.startswith(option + "="):
+                values.append(arg.split("=", 1)[1])
+        if arg == "--manifest-path" and index + 1 < len(cargo_args):
+            manifest = cwd / cargo_args[index + 1]
+        elif arg.startswith("--manifest-path="):
+            manifest = cwd / arg.split("=", 1)[1]
+    if not manifest.resolve().is_relative_to(workspace.resolve()):
+        return args
+    product_package = "codex-hepta-agentd"
+    if any(fnmatch.fnmatchcase(product_package, pattern) for pattern in exclusions):
+        return args
+    packages = scoped_packages(args)
+    if (
+        packages
+        and not options & {"--workspace", "--all"}
+        and not any(
+            fnmatch.fnmatchcase(product_package, pattern.split("@", 1)[0])
+            for pattern in packages
+        )
+    ):
+        return args
+    all_tests = bool(options & {"--tests", "--all-targets"})
+    if not all_tests:
+        if test_targets and not any(
+            fnmatch.fnmatchcase("module_selection_product", pattern)
+            for pattern in test_targets
+        ):
+            return args
+        if not test_targets and options & {
+            "--lib",
+            "--bin",
+            "--bins",
+            "--bench",
+            "--benches",
+            "--example",
+            "--examples",
+        }:
+            return args
+    separator = args.index("--") if "--" in args else len(args)
+    return args[:separator] + ["--cargo-profile", "hepta-product"] + args[separator:]
+
+
 def use_scoped_metadata(args, cwd):
     if os.environ.get("HEPTA_NEXTTEST_FULL_METADATA") == "1":
         return False
@@ -220,6 +290,7 @@ def use_scoped_metadata(args, cwd):
 
 
 def run(args):
+    args = with_product_profile(args, Path.cwd())
     command = ["cargo", "nextest", "run", "--no-fail-fast", *args]
     if not use_scoped_metadata(args, Path.cwd()):
         return subprocess.call(command)

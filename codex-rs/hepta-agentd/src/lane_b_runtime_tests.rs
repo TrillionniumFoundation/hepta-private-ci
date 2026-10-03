@@ -1,11 +1,11 @@
 use super::*;
 
-use codex_hepta_learning_ledger::RunStartAdmissionBindingV1;
-use codex_hepta_learning_ledger::RunStartAuthenticationV1;
-use codex_hepta_learning_ledger::RunStartSnapshotV1;
-use codex_hepta_types::AuthorityPosture;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::learning_ledger::RunStartAdmissionBindingV1;
+use codex_hepta_agent_components::learning_ledger::RunStartAuthenticationV1;
+use codex_hepta_agent_components::learning_ledger::RunStartSnapshotV1;
+use codex_hepta_agent_components::types::AuthorityPosture;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::StableId;
 
 fn digest(byte: char) -> String {
     byte.to_string().repeat(64)
@@ -326,78 +326,90 @@ fn recovery_rehydrates_only_an_indeterminate_non_redispatchable_run() {
 }
 
 #[test]
-fn terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed() {
-    let mut coordinator =
-        AgentRunCoordinator::compose_runtime(composition()).expect("compose runtime");
-    coordinator.start_run(100, snapshot()).expect("admit run");
-    coordinator
-        .attach_context(200, 1, attachment())
-        .expect("attach context");
-    coordinator
-        .mark_dispatched(300, "run.1", 2)
-        .expect("dispatch");
-    let completed = coordinator
-        .observe_terminal("run.1", 3, RunPhase::Succeeded, true)
-        .expect("complete");
-    let repeated = coordinator
-        .observe_terminal("run.1", 3, RunPhase::Succeeded, true)
-        .expect("repeat terminal observation");
+fn terminal_observation_is_idempotent_and_only_closed_runs_can_be_removed()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition())?;
+    coordinator.start_run(100, snapshot())?;
+    coordinator.attach_context(200, 1, attachment())?;
+    coordinator.mark_dispatched(300, "run.1", 2)?;
+    let completed = coordinator.observe_terminal("run.1", 3, RunPhase::Succeeded, true)?;
+    let repeated = coordinator.observe_terminal("run.1", 3, RunPhase::Succeeded, true)?;
     assert!(repeated.idempotent);
     assert_eq!(repeated.revision, completed.revision);
-    let removed = coordinator
-        .remove_closed_run("run.1", completed.revision)
-        .expect("remove closed run");
+    let removed = coordinator.remove_closed_run("run.1", completed.revision)?;
     assert_eq!(removed.phase, RunPhase::Succeeded);
-    assert_eq!(coordinator.run("run.1"), None);
+    assert_eq!(coordinator.run("run.1"), Some(removed));
+    assert_eq!(coordinator.active_run_count(), 0);
+    assert_eq!(coordinator.unresolved_run_count(), 0);
+    assert_eq!(
+        coordinator.start_run(100, snapshot()),
+        Err(AgentRunError::Conflict)
+    );
+    Ok(())
 }
 
 #[test]
-fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity() {
-    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
-    for _ in 0..MAX_RETAINED_RUNS + 1 {
-        coordinator
-            .start_run(/*now_ms*/ 100, snapshot())
-            .expect("admit");
-        coordinator
-            .attach_context(
-                /*now_ms*/ 200,
-                /*expected_revision*/ 1,
-                attachment(),
-            )
-            .expect("attach");
-        coordinator
-            .mark_dispatched(/*now_ms*/ 300, "run.1", /*expected_revision*/ 2)
-            .expect("dispatch");
-        let unknown = coordinator
-            .observe_terminal(
-                "run.1",
-                /*expected_revision*/ 3,
-                RunPhase::Indeterminate,
-                /*terminal_observed*/ false,
-            )
-            .expect("unknown outcome");
+fn indeterminate_outcomes_reconcile_without_redispatch_or_leaked_capacity()
+-> Result<(), Box<dyn std::error::Error>> {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition())?;
+    for ordinal in 1..=MAX_RETAINED_RUNS {
+        let run_id = format!("run.{ordinal}");
+        let mut original = snapshot();
+        original.run_id = run_id.clone();
+        let mut exact_attachment = attachment();
+        exact_attachment.run_id = run_id.clone();
+        coordinator.start_run(/*now_ms*/ 100, original)?;
+        coordinator.attach_context(
+            /*now_ms*/ 200,
+            /*expected_revision*/ 1,
+            exact_attachment,
+        )?;
+        coordinator.mark_dispatched(/*now_ms*/ 300, &run_id, /*expected_revision*/ 2)?;
+        let unknown = coordinator.observe_terminal(
+            &run_id,
+            /*expected_revision*/ 3,
+            RunPhase::Indeterminate,
+            /*terminal_observed*/ false,
+        )?;
+        assert_eq!(coordinator.unresolved_run_count(), 1);
         assert_eq!(
-            coordinator.cancel_run(400, "run.1", unknown.revision, "operator_request"),
+            coordinator.cancel_run(400, &run_id, unknown.revision, "operator_request"),
             Err(AgentRunError::TerminalObservationRequired)
         );
         assert_eq!(
-            coordinator.remove_closed_run("run.1", unknown.revision),
+            coordinator.remove_closed_run(&run_id, unknown.revision),
             Err(AgentRunError::InvalidTransition)
         );
-        let observed = coordinator
-            .observe_terminal(
-                "run.1",
-                unknown.revision,
-                RunPhase::Succeeded,
-                /*terminal_observed*/ true,
-            )
-            .expect("owner-observed reconciliation");
-        assert!(observed.terminal_observed);
-        coordinator
-            .remove_closed_run("run.1", observed.revision)
-            .expect("release capacity");
+        let observed = coordinator.observe_terminal(
+            &run_id,
+            unknown.revision,
+            RunPhase::Succeeded,
+            /*terminal_observed*/ true,
+        )?;
+        let released = coordinator.remove_closed_run(&run_id, observed.revision)?;
+        assert_eq!(released, observed);
+        assert_eq!(coordinator.run(&run_id), Some(released));
+        assert_eq!(coordinator.active_run_count(), 0);
+        assert_eq!(coordinator.unresolved_run_count(), 0);
     }
-    assert_eq!(coordinator.run("run.1"), None);
+    let original = coordinator
+        .run("run.1")
+        .ok_or("original tombstone missing")?;
+    assert!(original.terminal_observed);
+    assert_eq!(original.phase, RunPhase::Succeeded);
+    assert_eq!(
+        coordinator.start_run(100, snapshot()),
+        Err(AgentRunError::Conflict)
+    );
+    // Terminal identity retention consumes durable history, never an active
+    // execution permit. Its explicit history bound remains fail closed.
+    let mut next = snapshot();
+    next.run_id = format!("run.{}", MAX_RETAINED_RUNS + 1);
+    assert_eq!(
+        coordinator.start_run(100, next),
+        Err(AgentRunError::CapacityExceeded)
+    );
+    Ok(())
 }
 
 #[test]
@@ -512,4 +524,226 @@ fn revalidated_durable_explicit_abstain_never_enters_runtime_admission() {
         Err(AgentRunError::InvalidRunStart("objective disposition"))
     );
     assert_eq!(coordinator.run("run.abstain"), None);
+}
+
+#[test]
+fn bound_pre_effect_abort_is_nonce_verified_and_nonterminal() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("admit");
+    coordinator
+        .attach_context(200, 1, attachment())
+        .expect("attach");
+
+    let binding = digest('a');
+    let nonce: [u8; 32] = rand::random();
+    let nonce_hex = nonce
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    let commitment = pre_effect_abort_commitment("run.1", &binding, &nonce);
+    let reason = "final-use fence changed";
+    let proof = pre_effect_abort_proof("run.1", &binding, &nonce, reason);
+
+    let dispatched = coordinator
+        .mark_dispatched_bound(300, "run.1", 2, binding.clone(), commitment.clone())
+        .expect("bound dispatch");
+    assert_eq!(dispatched.phase, RunPhase::Dispatched);
+    assert_eq!(
+        dispatched.dispatch_binding_digest.as_deref(),
+        Some(binding.as_str())
+    );
+    assert_eq!(
+        dispatched.pre_effect_abort_commitment_digest.as_deref(),
+        Some(commitment.as_str())
+    );
+
+    assert_eq!(
+        coordinator.abort_before_effect(
+            "run.1",
+            dispatched.revision,
+            &binding,
+            &"00".repeat(32),
+            &proof,
+            reason,
+        ),
+        Err(AgentRunError::Conflict)
+    );
+
+    let aborted = coordinator
+        .abort_before_effect(
+            "run.1",
+            dispatched.revision,
+            &binding,
+            &nonce_hex,
+            &proof,
+            reason,
+        )
+        .expect("abort");
+    assert_eq!(aborted.phase, RunPhase::AbortedBeforeEffect);
+    assert!(!aborted.terminal_observed);
+    assert_eq!(
+        aborted.pre_effect_abort_proof_digest.as_deref(),
+        Some(proof.as_str())
+    );
+    assert_eq!(coordinator.active_run_count(), 0);
+    assert_eq!(coordinator.unresolved_run_count(), 0);
+
+    let repeated = coordinator
+        .abort_before_effect(
+            "run.1",
+            dispatched.revision,
+            &binding,
+            &nonce_hex,
+            &proof,
+            reason,
+        )
+        .expect("idempotent abort");
+    assert!(repeated.idempotent);
+    assert_eq!(
+        coordinator.observe_terminal(
+            "run.1",
+            aborted.revision,
+            RunPhase::Succeeded,
+            /*terminal_observed*/ true,
+        ),
+        Err(AgentRunError::InvalidTransition)
+    );
+}
+
+#[test]
+fn durable_run_store_recovers_bound_abort_and_fences_stale_writer()
+-> Result<(), Box<dyn std::error::Error>> {
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("agent-runs.json");
+    let mut owner = AgentRunCoordinator::open_durable(composition(), path.clone())?;
+    owner.start_run(100, snapshot())?;
+    owner.persist()?;
+    owner.attach_context(200, 1, attachment())?;
+    owner.persist()?;
+
+    let binding = Digest32::of_bytes(b"exact original durable dispatch binding").to_string();
+    let nonce: [u8; 32] = rand::random();
+    let nonce_hex = nonce
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    let commitment = pre_effect_abort_commitment("run.1", &binding, &nonce);
+    let reason = "final-use fence changed";
+    let proof = pre_effect_abort_proof("run.1", &binding, &nonce, reason);
+    let dispatched =
+        owner.mark_dispatched_bound(300, "run.1", 2, binding.clone(), commitment.clone())?;
+    owner.persist()?;
+    drop(owner);
+
+    let mut current = AgentRunCoordinator::open_durable(composition(), path.clone())?;
+    let mut stale = AgentRunCoordinator::open_durable(composition(), path.clone())?;
+    let aborted = current.abort_before_effect(
+        "run.1",
+        dispatched.revision,
+        &binding,
+        &nonce_hex,
+        &proof,
+        reason,
+    )?;
+    assert_eq!(aborted.phase, RunPhase::AbortedBeforeEffect);
+    current.persist()?;
+
+    stale.mark_unresolved_indeterminate("stale writer")?;
+    assert!(matches!(
+        stale.persist(),
+        Err(AgentRunError::Persistence(_))
+    ));
+    drop(current);
+    drop(stale);
+
+    let recovered = AgentRunCoordinator::open_durable(composition(), path)?;
+    let receipt = recovered
+        .run("run.1")
+        .ok_or("retained original run missing")?;
+    assert_eq!(receipt.phase, RunPhase::AbortedBeforeEffect);
+    assert_eq!(
+        receipt.dispatch_binding_digest.as_deref(),
+        Some(binding.as_str())
+    );
+    assert_eq!(
+        receipt.pre_effect_abort_commitment_digest.as_deref(),
+        Some(commitment.as_str())
+    );
+    assert_eq!(
+        receipt.pre_effect_abort_proof_digest.as_deref(),
+        Some(proof.as_str())
+    );
+    Ok(())
+}
+
+#[test]
+fn failed_candidate_publish_does_not_leak_uncommitted_state() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("agent-runs.json");
+    let mut current =
+        AgentRunCoordinator::open_durable(composition(), path.clone()).expect("open current owner");
+    let mut stale =
+        AgentRunCoordinator::open_durable(composition(), path).expect("open stale owner");
+
+    let mut committed = current.clone();
+    let receipt = committed
+        .start_run(100, snapshot())
+        .expect("prepare committed run");
+    current
+        .publish_candidate(committed, receipt)
+        .expect("publish committed run");
+
+    let mut second = snapshot();
+    second.run_id = "run:stale-candidate".to_string();
+    let mut uncommitted = stale.clone();
+    let stale_receipt = uncommitted
+        .start_run(100, second)
+        .expect("prepare stale candidate");
+    assert!(matches!(
+        stale.publish_candidate(uncommitted, stale_receipt),
+        Err(AgentRunError::Persistence(_))
+    ));
+    assert!(stale.run("run:stale-candidate").is_none());
+    assert!(stale.run("run.1").is_none());
+}
+
+#[test]
+fn closed_run_tombstone_survives_reopen_and_blocks_identity_reuse() {
+    let directory = tempfile::tempdir().expect("tempdir");
+    let path = directory.path().join("agent-runs.json");
+    let mut owner =
+        AgentRunCoordinator::open_durable(composition(), path.clone()).expect("open owner");
+    let admitted = owner.start_run(100, snapshot()).expect("start");
+    owner.persist().expect("persist admission");
+    let attached = owner
+        .attach_context(101, admitted.revision, attachment())
+        .expect("attach");
+    owner.persist().expect("persist context");
+    let dispatched = owner
+        .mark_dispatched(102, "run.1", attached.revision)
+        .expect("dispatch");
+    owner.persist().expect("persist dispatch");
+    let terminal = owner
+        .observe_terminal("run.1", dispatched.revision, RunPhase::Succeeded, true)
+        .expect("terminal");
+    owner.persist().expect("persist terminal");
+    owner
+        .remove_closed_run("run.1", terminal.revision)
+        .expect("archive closed run");
+    owner.persist().expect("persist tombstone");
+    drop(owner);
+
+    let mut recovered =
+        AgentRunCoordinator::open_durable(composition(), path).expect("reopen owner");
+    let status = recovered.run("run.1").expect("tombstoned status");
+    assert_eq!(status.phase, RunPhase::Succeeded);
+    assert!(status.terminal_observed);
+    assert!(matches!(
+        recovered.start_run(200, snapshot()),
+        Err(AgentRunError::Conflict)
+    ));
+    let replay = recovered
+        .remove_closed_run("run.1", status.revision)
+        .expect("idempotent tombstone removal");
+    assert!(replay.idempotent);
 }

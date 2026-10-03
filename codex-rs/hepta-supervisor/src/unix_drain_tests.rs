@@ -21,6 +21,7 @@ fn identity(temp: &tempfile::TempDir) -> TestResult<AgentHealthProbeIdentity> {
         agent_id: AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?,
         spawn_generation: 7,
         process_id: std::process::id(),
+        peer_uid: unsafe { libc::geteuid() },
         workspace: temp.path().to_path_buf(),
         home_root: temp.path().join("home"),
         run_root: temp.path().join("run"),

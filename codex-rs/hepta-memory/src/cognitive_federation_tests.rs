@@ -140,11 +140,12 @@ async fn explicit_grant_is_owner_written_consumer_read_only_and_scope_exact() {
         .expect("discover");
     assert_eq!(readers.len(), 1);
     let access = FederationConsumerAccess::new(consumer_id.clone(), consumer_workspace);
-    let (batch, observed_frontier) = readers[0]
+    let (batch, observed_frontier, owner_exhausted) = readers[0]
         .retrieve_with_frontier(&access, &RetrievalRequest::new("orbital", 150))
         .await
         .expect("federated retrieval");
     assert_eq!(observed_frontier, 1);
+    assert!(owner_exhausted);
     assert_eq!(batch.candidates.len(), 1);
     assert_eq!(batch.candidates[0].source_agent_id, owner_id);
     assert_eq!(
@@ -426,4 +427,110 @@ async fn five_agents_keep_private_stores_and_only_explicit_consumers_federate() 
             assert!(batch.candidates.is_empty());
         }
     }
+}
+
+#[tokio::test]
+async fn exact_scope_is_applied_before_channel_ranking_and_top_k() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner_id = agent_id(60);
+    let consumer_id = agent_id(61);
+    let owner_layout = layout(&temp, &owner_id);
+    let owner = CognitiveStore::open(&owner_layout)
+        .await
+        .expect("owner store");
+    let owner_workspace = workspace("exact-scope-owner");
+    let consumer_workspace = workspace("exact-scope-consumer");
+    let workspace_scope = CognitiveScope::WorkspacePrivate {
+        workspace_sha256: owner_workspace.clone(),
+    };
+    let owner_access =
+        CognitiveAccess::workspace_private(owner_id.clone(), owner_workspace.clone());
+
+    let workspace_citation = owner
+        .append_source(
+            &owner_access,
+            &source(
+                workspace_scope.clone(),
+                "workspace-beacon-source",
+                "Beacon exact workspace evidence.",
+            ),
+        )
+        .await
+        .expect("workspace source");
+    owner
+        .remember_memory(
+            &owner_access,
+            &MemoryDraft {
+                stable_key: "workspace-beacon".to_string(),
+                revision: memory_revision(
+                    workspace_scope.clone(),
+                    "Beacon exact workspace evidence.",
+                    workspace_citation,
+                ),
+            },
+        )
+        .await
+        .expect("workspace memory");
+
+    for index in 0..40 {
+        let citation = owner
+            .append_source(
+                &owner_access,
+                &source(
+                    CognitiveScope::AgentPrivate,
+                    &format!("agent-beacon-source-{index}"),
+                    "Beacon higher-volume agent-private evidence.",
+                ),
+            )
+            .await
+            .expect("agent source");
+        owner
+            .remember_memory(
+                &owner_access,
+                &MemoryDraft {
+                    stable_key: format!("agent-beacon-{index}"),
+                    revision: memory_revision(
+                        CognitiveScope::AgentPrivate,
+                        "Beacon higher-volume agent-private evidence.",
+                        citation,
+                    ),
+                },
+            )
+            .await
+            .expect("agent memory");
+    }
+
+    owner
+        .grant_federated_recall(
+            &owner_access,
+            &FederationGrantRequest {
+                consumer_agent_id: consumer_id.clone(),
+                scope: FederationGrantScope::new(
+                    workspace_scope.clone(),
+                    consumer_workspace.clone(),
+                ),
+                effective_at_unix_seconds: 100,
+                expires_at_unix_seconds: 1_000,
+            },
+        )
+        .await
+        .expect("grant");
+
+    let readers = FederatedMemoryReader::discover(&owner_layout, &consumer_id, 150)
+        .await
+        .expect("discover");
+    assert_eq!(readers.len(), 1);
+    let access = FederationConsumerAccess::new(consumer_id, consumer_workspace);
+    let (batch, _frontier, owner_exhausted) = readers[0]
+        .retrieve_with_frontier(&access, &RetrievalRequest::new("Beacon", 150))
+        .await
+        .expect("exact-scope retrieval");
+
+    assert!(owner_exhausted);
+    assert_eq!(batch.candidates.len(), 1);
+    assert_eq!(batch.candidates[0].candidate.memory.scope, workspace_scope);
+    assert_eq!(
+        batch.candidates[0].candidate.memory.content,
+        "Beacon exact workspace evidence."
+    );
 }

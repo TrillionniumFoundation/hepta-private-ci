@@ -8,24 +8,25 @@
 //! and to fail if somebody tries to turn the reference package into a second
 //! authority or contract spine.
 
-pub use codex_hepta_cognitive_types::hnmf::{
-    CrossModalBindingV1, MemoryEventV1, ModalitySpanRefV1,
-};
-pub use codex_hepta_cognitive_types::hnmf_learning::{
-    EngramNodeV1, ForgetPropagationReceiptV1, MemoryCueV1, OutcomeSignalV1,
-    PlasticityBatchV1, RecallPacketV1, ReplaySelectionReceiptV1, SynapseV1,
-    TopologyProposalV1,
-};
-pub use codex_hepta_cognitive_types::wire::{
-    canonical_contract_digest_v1, decode_wire_v1, encode_wire_v1,
-};
+pub use codex_hepta_cognitive_types::hnmf::CrossModalBindingV1;
+pub use codex_hepta_cognitive_types::hnmf::MemoryEventV1;
+pub use codex_hepta_cognitive_types::hnmf::ModalitySpanRefV1;
+pub use codex_hepta_cognitive_types::hnmf_learning::EngramNodeV1;
+pub use codex_hepta_cognitive_types::hnmf_learning::ForgetPropagationReceiptV1;
+pub use codex_hepta_cognitive_types::hnmf_learning::MemoryCueV1;
+pub use codex_hepta_cognitive_types::hnmf_learning::OutcomeSignalV1;
+pub use codex_hepta_cognitive_types::hnmf_learning::PlasticityBatchV1;
+pub use codex_hepta_cognitive_types::hnmf_learning::RecallPacketV1;
+pub use codex_hepta_cognitive_types::hnmf_learning::ReplaySelectionReceiptV1;
+pub use codex_hepta_cognitive_types::hnmf_learning::SynapseV1;
+pub use codex_hepta_cognitive_types::hnmf_learning::TopologyProposalV1;
+pub use codex_hepta_cognitive_types::wire::canonical_contract_digest_v1;
+pub use codex_hepta_cognitive_types::wire::decode_wire_v1;
+pub use codex_hepta_cognitive_types::wire::encode_wire_v1;
 
 pub const CANONICAL_CRATE_PATH: &str = "../../codex-rs/hepta-cognitive-types";
-pub const CANONICAL_CONTRACT_MODULES: [&str; 3] = [
-    "src/hnmf.rs",
-    "src/hnmf_learning.rs",
-    "src/wire.rs",
-];
+pub const CANONICAL_CONTRACT_MODULES: [&str; 3] =
+    ["src/hnmf.rs", "src/hnmf_learning.rs", "src/wire.rs"];
 
 pub const CURRENT_RUN_MUTATION_ALLOWED: bool = false;
 pub const ONLINE_TOPOLOGY_ACTIVATION_ALLOWED: bool = false;
@@ -47,22 +48,35 @@ mod tests {
             ],
             [false; 4]
         );
-        assert_eq!(CANONICAL_CONTRACT_MODULES.len(), 3);
-        assert!(CANONICAL_CRATE_PATH.ends_with("hepta-cognitive-types"));
-        let canonical_types = [
-            std::any::type_name::<ModalitySpanRefV1>(),
-            std::any::type_name::<MemoryEventV1>(),
-            std::any::type_name::<CrossModalBindingV1>(),
-            std::any::type_name::<EngramNodeV1>(),
-            std::any::type_name::<SynapseV1>(),
-            std::any::type_name::<MemoryCueV1>(),
-            std::any::type_name::<RecallPacketV1>(),
-            std::any::type_name::<OutcomeSignalV1>(),
-            std::any::type_name::<ReplaySelectionReceiptV1>(),
-            std::any::type_name::<PlasticityBatchV1>(),
-            std::any::type_name::<TopologyProposalV1>(),
-            std::any::type_name::<ForgetPropagationReceiptV1>(),
-        ];
-        assert!(canonical_types.iter().all(|name| name.contains("codex_hepta_cognitive_types")));
+        // Actual Rust type identity must remain the canonical owner's identity.
+        // Display names, file paths and source declaration spelling are not proof.
+        fn same_type<Reference: 'static, Canonical: 'static>() {
+            assert_eq!(
+                std::any::TypeId::of::<Reference>(),
+                std::any::TypeId::of::<Canonical>()
+            );
+        }
+        same_type::<ModalitySpanRefV1, codex_hepta_cognitive_types::hnmf::ModalitySpanRefV1>();
+        same_type::<MemoryEventV1, codex_hepta_cognitive_types::hnmf::MemoryEventV1>();
+        same_type::<CrossModalBindingV1, codex_hepta_cognitive_types::hnmf::CrossModalBindingV1>();
+        same_type::<EngramNodeV1, codex_hepta_cognitive_types::hnmf_learning::EngramNodeV1>();
+        same_type::<SynapseV1, codex_hepta_cognitive_types::hnmf_learning::SynapseV1>();
+        same_type::<MemoryCueV1, codex_hepta_cognitive_types::hnmf_learning::MemoryCueV1>();
+        same_type::<RecallPacketV1, codex_hepta_cognitive_types::hnmf_learning::RecallPacketV1>();
+        same_type::<OutcomeSignalV1, codex_hepta_cognitive_types::hnmf_learning::OutcomeSignalV1>();
+        same_type::<
+            ReplaySelectionReceiptV1,
+            codex_hepta_cognitive_types::hnmf_learning::ReplaySelectionReceiptV1,
+        >();
+        same_type::<PlasticityBatchV1, codex_hepta_cognitive_types::hnmf_learning::PlasticityBatchV1>(
+        );
+        same_type::<
+            TopologyProposalV1,
+            codex_hepta_cognitive_types::hnmf_learning::TopologyProposalV1,
+        >();
+        same_type::<
+            ForgetPropagationReceiptV1,
+            codex_hepta_cognitive_types::hnmf_learning::ForgetPropagationReceiptV1,
+        >();
     }
 }

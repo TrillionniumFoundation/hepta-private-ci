@@ -6,6 +6,7 @@
 #![forbid(unsafe_code)]
 
 mod durable;
+mod production;
 mod v2;
 
 use std::collections::BTreeMap;
@@ -35,6 +36,7 @@ pub use durable::DurableCognitiveStore;
 pub use durable::DurableCognitiveStoreError;
 pub use durable::ForgetMemoryDraft;
 pub use durable::KgFactSetDraft;
+pub use durable::KgRelationFactDraft;
 pub use durable::LedgerSourceKind;
 pub use durable::MAX_LANE_C_PAGE_ANCESTRY_REVISIONS;
 pub use durable::MAX_LANE_C_PAGE_CITATIONS;
@@ -64,6 +66,8 @@ pub use durable::ProductionWriterError;
 pub use durable::RecoveredCognitiveReadOnly;
 pub use durable::SourceDraft;
 pub use durable::StableMemoryId;
+pub use production::ProductionCognitiveStore;
+pub use production::ProductionCognitiveStoreError;
 
 pub use v2::AdmittedCognitiveStoreV2;
 pub use v2::CanonicalDurableMemoryEventBindingV1;

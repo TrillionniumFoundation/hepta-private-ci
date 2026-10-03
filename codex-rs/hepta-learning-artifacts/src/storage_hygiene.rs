@@ -8,6 +8,8 @@
 use std::fs;
 #[cfg(unix)]
 use std::fs::File;
+use std::fs::OpenOptions;
+use std::fs::TryLockError;
 use std::io;
 use std::path::Path;
 
@@ -27,7 +29,10 @@ pub enum OrphanCleanupDispositionV1 {
 /// function rejects lexical escape and symlink ancestors through the same path
 /// resolver used by contained writers. The final component must be a regular
 /// zero-length file; symlinks, directories, special files and non-empty files
-/// are never removed.
+/// are never removed. An independently opened handle must also acquire the
+/// existing file's exclusive lock before checking its length and removing it;
+/// an active reader or writer therefore returns `Busy` instead of losing its
+/// durable target name.
 ///
 /// A concurrent hostile replacement of trusted path components is outside this
 /// safe-Rust boundary and must be prevented by the host.
@@ -45,6 +50,23 @@ pub fn cleanup_zero_length_orphan_beneath(
     };
 
     if metadata.file_type().is_symlink() || !metadata.is_file() || metadata.len() != 0 {
+        return Ok(OrphanCleanupDispositionV1::NotZeroLengthRegularFile);
+    }
+
+    let file = match OpenOptions::new().read(true).write(true).open(&path) {
+        Ok(file) => file,
+        Err(error) if error.kind() == io::ErrorKind::NotFound => {
+            return Ok(OrphanCleanupDispositionV1::Absent);
+        }
+        Err(error) => return Err(error.into()),
+    };
+    match file.try_lock() {
+        Ok(()) => {}
+        Err(TryLockError::WouldBlock) => return Err(ArtifactStorageError::Busy),
+        Err(TryLockError::Error(error)) => return Err(error.into()),
+    }
+    let metadata = file.metadata()?;
+    if !metadata.is_file() || metadata.len() != 0 {
         return Ok(OrphanCleanupDispositionV1::NotZeroLengthRegularFile);
     }
 
@@ -127,6 +149,42 @@ mod tests {
         assert_eq!(
             cleanup_zero_length_orphan_beneath(&root, "../escape"),
             Err(ArtifactStorageError::InvalidPath)
+        );
+        fs::remove_dir_all(root).fixture("cleanup fixture root");
+    }
+
+    #[test]
+    fn orphan_cleanup_preserves_a_target_held_by_an_active_writer_or_reader() {
+        let root = root("active-lock");
+        fs::create_dir_all(&root).fixture("create fixture root");
+        let path = root.join("reserved.bin");
+        drop(CreateOnlyArtifactFile::create(&path).fixture("reserve orphan"));
+        let held = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .open(&path)
+            .fixture("open reserved target");
+
+        held.try_lock().fixture("hold writer lock");
+        assert_eq!(
+            cleanup_zero_length_orphan_beneath(&root, "reserved.bin"),
+            Err(ArtifactStorageError::Busy)
+        );
+        assert!(path.exists());
+        held.unlock().fixture("release writer lock");
+
+        held.try_lock_shared().fixture("hold reader lock");
+        assert_eq!(
+            cleanup_zero_length_orphan_beneath(&root, "reserved.bin"),
+            Err(ArtifactStorageError::Busy)
+        );
+        assert!(path.exists());
+        held.unlock().fixture("release reader lock");
+        drop(held);
+
+        assert_eq!(
+            cleanup_zero_length_orphan_beneath(&root, "reserved.bin"),
+            Ok(OrphanCleanupDispositionV1::Removed)
         );
         fs::remove_dir_all(root).fixture("cleanup fixture root");
     }

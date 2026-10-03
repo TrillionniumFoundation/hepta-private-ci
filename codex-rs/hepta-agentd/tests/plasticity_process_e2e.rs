@@ -1,3 +1,4 @@
+#![cfg(feature = "server")]
 #![cfg(unix)]
 
 mod support;
@@ -7,30 +8,30 @@ use std::fs::{self};
 use std::path::Path;
 
 use anyhow::Result;
-use codex_hepta_learning_artifacts::ArtifactEvent;
-use codex_hepta_learning_artifacts::ArtifactKind;
-use codex_hepta_learning_artifacts::ArtifactManifest;
-use codex_hepta_learning_artifacts::ArtifactRegistry;
-use codex_hepta_learning_artifacts::CreateOnlyArtifactFile;
-use codex_hepta_learning_artifacts::write_registry_snapshot;
-use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
-use codex_hepta_learning_ledger::CandidateSetCompleteness;
-use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
-use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::EpisodeDecision;
-use codex_hepta_learning_ledger::LedgerEvent;
-use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
-use codex_hepta_ndu::NduProjectionJournalV1;
-use codex_hepta_ndu::NduProjectionKindV1;
-use codex_hepta_neuron::JournalScope;
-use codex_hepta_neuron::SparseConfig;
-use codex_hepta_neuron::SparseJournal;
-use codex_hepta_neuron::SparseTick;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::ProbabilityQ32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::learning_artifacts::ArtifactEvent;
+use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
+use codex_hepta_agent_components::learning_artifacts::ArtifactManifest;
+use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
+use codex_hepta_agent_components::learning_artifacts::CreateOnlyArtifactFile;
+use codex_hepta_agent_components::learning_artifacts::write_registry_snapshot;
+use codex_hepta_agent_components::learning_ledger::AuthenticatedPrincipalV1;
+use codex_hepta_agent_components::learning_ledger::CandidateSetCompleteness;
+use codex_hepta_agent_components::learning_ledger::DatasetFreezeRequestV1;
+use codex_hepta_agent_components::learning_ledger::DurableLedger;
+use codex_hepta_agent_components::learning_ledger::EpisodeDecision;
+use codex_hepta_agent_components::learning_ledger::LedgerEvent;
+use codex_hepta_agent_components::learning_ledger::freeze_dataset_receipt_v3;
+use codex_hepta_agent_components::ndu::NduProjectionJournalV1;
+use codex_hepta_agent_components::ndu::NduProjectionKindV1;
+use codex_hepta_agent_components::neuron::JournalScope;
+use codex_hepta_agent_components::neuron::SparseConfig;
+use codex_hepta_agent_components::neuron::SparseJournal;
+use codex_hepta_agent_components::neuron::SparseTick;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::FixedQ32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::ProbabilityQ32;
+use codex_hepta_agent_components::types::StableId;
 use ed25519_dalek::SigningKey;
 use serde_json::json;
 

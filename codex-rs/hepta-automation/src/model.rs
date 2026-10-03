@@ -7,8 +7,11 @@ use serde::Serialize;
 use uuid::Uuid;
 
 // Leaves room for the strict 64-KiB agentd control frame envelope.
+#[cfg(feature = "runtime")]
 const MAX_PROMPT_BYTES: usize = 32 * 1024;
+#[cfg(feature = "runtime")]
 const MIN_INTERVAL_MS: u64 = 1_000;
+#[cfg(feature = "runtime")]
 const MAX_INTERVAL_MS: u64 = 366 * 24 * 60 * 60 * 1_000;
 
 #[derive(Clone, Copy, Debug, Deserialize, Eq, Hash, Ord, PartialEq, PartialOrd, Serialize)]
@@ -60,6 +63,7 @@ pub enum AutomationSchedule {
     FixedInterval { interval_ms: u64 },
 }
 
+#[cfg(feature = "runtime")]
 impl AutomationSchedule {
     pub(crate) fn validate(self) -> Result<(), AutomationError> {
         match self {
@@ -83,6 +87,7 @@ pub enum AutomationTaskState {
     Completed,
 }
 
+#[cfg(feature = "runtime")]
 impl AutomationTaskState {
     pub(crate) fn parse(value: &str) -> Result<Self, AutomationError> {
         match value {
@@ -124,6 +129,7 @@ impl AutomationTaskDraft {
         }
     }
 
+    #[cfg(feature = "runtime")]
     pub(crate) fn validate(&self) -> Result<(), AutomationError> {
         self.schedule.validate()?;
         let prompt_len = self.prompt.len();
@@ -151,6 +157,33 @@ pub struct AutomationTask {
     pub next_occurrence: u64,
     pub created_at_ms: u64,
     pub updated_at_ms: u64,
+}
+
+/// Position in the owner's immutable (creation time, task identity) ordering.
+/// This is read navigation, not an authorization or a transactional snapshot.
+#[derive(Clone, Copy, Debug, Deserialize, Eq, Ord, PartialEq, PartialOrd, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AutomationTaskCursorV1 {
+    pub created_at_ms: u64,
+    pub task_id: AutomationTaskId,
+}
+
+impl AutomationTaskCursorV1 {
+    pub fn from_task(task: &AutomationTask) -> Self {
+        Self {
+            created_at_ms: task.created_at_ms,
+            task_id: task.task_id,
+        }
+    }
+}
+
+/// A byte-bounded live page. Concurrent state updates do not move existing keys;
+/// a new scan is required to observe insertions before an already-consumed key.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct AutomationTaskPageV1 {
+    pub tasks: Vec<AutomationTask>,
+    pub next_cursor: Option<AutomationTaskCursorV1>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -231,6 +264,7 @@ pub enum AutomationTick {
     },
 }
 
+#[cfg(feature = "runtime")]
 pub(crate) fn client_message_id(
     agent_id: &AgentId,
     task_id: AutomationTaskId,
@@ -241,6 +275,8 @@ pub(crate) fn client_message_id(
 
 #[derive(Clone, Debug, Eq, PartialEq, thiserror::Error)]
 pub enum AutomationError {
+    #[error("automation task exceeds the page byte budget")]
+    PageItemTooLarge,
     #[error("invalid automation request")]
     Invalid,
     #[error("automation owner denied the request")]

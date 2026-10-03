@@ -20,6 +20,7 @@ mod model;
 mod production;
 mod protocol;
 mod retrieval_assignment;
+mod retrieval_preparation;
 mod run_start;
 mod segment_codec;
 mod segments;
@@ -87,6 +88,7 @@ pub use production::DatasetFreezePlanV2;
 pub use production::LedgerWriter;
 pub use production::ProductionDecisionV2;
 pub use production::ProductionLedgerError;
+pub use production::UnlearningLineagePreviewV1;
 pub use production::UnlearningLineageReceiptV1;
 pub use production::UnlearningLineageRequestV1;
 pub use production::candidate_ids_digest_v2;
@@ -123,6 +125,8 @@ pub use retrieval_assignment::RetrievalAssignmentBridgeError;
 pub use retrieval_assignment::retrieval_assignment_event;
 pub use retrieval_assignment::retrieval_assignment_event_with_delivery;
 pub use retrieval_assignment::retrieval_assignment_event_with_delivery_policy;
+pub use retrieval_preparation::RetrievalPreparationFactV1;
+pub use retrieval_preparation::retrieval_preparation_event_v1;
 pub use run_start::DurableRunStartJournal;
 pub use run_start::RunStartAdmissionBindingV1;
 pub use run_start::RunStartAnchor;
@@ -167,6 +171,7 @@ pub use trust_distribution::SignedLearningTrustDistributionV1;
 pub use trust_distribution::activate_learning_trust;
 pub use witness::LedgerWitnessFrontier;
 pub use witness::LedgerWitnessStore;
+pub use witness::inspect_ledger_witness_frontier;
 
 #[cfg(test)]
 #[path = "shadow_tests.rs"]
@@ -175,3 +180,68 @@ mod shadow_tests;
 mod recovery_work;
 pub use recovery_work::LedgerRecoveryWorkV1;
 pub use recovery_work::measure_ledger_recovery_work;
+
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+mod review_host;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::run_local_calibration_review;
+
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::NativeFrozenGeneratorRequestV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::admit_fixed_custody_program;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::execute_root_approved_frozen_generator;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::initialize_native_generator_key;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::observe_root_approved_frozen_generator;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::original_numeric_input_causes_v1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::run_fixed_custody_evaluator;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::run_native_frozen_generator;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::run_native_generator;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::sign_root_learning_unlearning_v1;
+
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::FixedCalibrationCutV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::FixedCalibrationPublicationV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::PrincipalWire;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::ReviewDatasetWireV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::ReviewEvidenceWireV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::ReviewSignerWireV1;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::ReviewTrustWireV1;
+
+mod calibration_cut;
+pub use calibration_cut::CalibrationCutBindingV1;
+pub use calibration_cut::calibration_cut_signing_payload_v1;
+
+mod calibration_cycle;
+pub use calibration_cycle::CalibrationCycleScopeV2;
+pub use calibration_cycle::calibration_cycle_cut_signing_payload_v2;
+
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::CalibrationCycleScopeWireV2;
+#[cfg(all(target_os = "linux", feature = "review-host"))]
+pub use review_host::FixedCalibrationPublicationV2;
+
+mod review_payload;
+pub use review_payload::decode_review_payload_hex;
+#[cfg(target_os = "linux")]
+mod protected_review_files;
+#[cfg(target_os = "linux")]
+mod review_input;
+#[cfg(target_os = "linux")]
+pub use review_input::open_root_review_input;
+#[cfg(target_os = "linux")]
+pub use review_input::read_root_review_input;

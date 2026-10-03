@@ -37,13 +37,30 @@ syncs a valid complete suffix before returning: an earlier sync may have failed
 after writing a full frame. Any write/sync uncertainty returns indeterminate,
 poisons the handle and requires reopen/reconciliation rather than a blind retry.
 
+These exact retry/replay guarantees apply to the sparse mechanism receipt.
+The V1 frames do not store the full `NeuronRuntimeOutputV1` with model execution
+evidence and observed calibration/resource disposition, nor do they bind the
+complete owner model/calibration/resource config. A pending witness retry can
+return its exact owner output only while the same runtime handle retains it in
+memory; successful or reopened owner retries reject. A versioned owner journal
+transaction must bind the complete config digest and persist the full owner
+output before acknowledgement to close that production idempotency gap. It must
+not reinterpret these V1 frames or regenerate historical model measurements.
+
 ## Bounds, migration and rollback
 
 At most 1024 ticks per segment: below 4.6 MB at d=256, plus one incomplete tail.
-Replay and receipt-cache memory are quota-bounded. At capacity the caller stops;
-segment rollover, compaction and cross-segment temporal continuity are not yet
-implemented. This synced disk path has no real-time latency claim. Configuration,
-selected model weights and topology remain immutable throughout a segment.
+Replay and receipt-cache memory are quota-bounded. At capacity the caller stops
+or explicitly opens a bounded successor through `SparseJournal::start_successor`
+and `NeuronRuntime::rollover`. The successor header binds the exact predecessor
+checkpoint and preserves temporal state; `recover_successor` and the runtime's
+chain recovery methods validate that lineage against the separately retained
+witness. Each successor must have the registered segment quota; chain recovery
+requires complete intermediate segments when the witness lies beyond them.
+Compaction, host-owned segment inventory, directory synchronization and retention
+remain separate work. This synced disk path has no real-time latency claim.
+Configuration, selected model weights and topology remain immutable across the
+generation and its successor segments.
 
 The host must revoke/rebuild deleted-data-derived state before reopening it. The V1 journal remains deliberately tied to the single-population/same-width `SparseConfig` replay format. `PopulationSparseConfigV2` is a different mechanism generation and may not be written into this V1 format; durable V2 use requires an explicitly versioned store/migration.
 Encryption and backup deletion remain separate work. Canonical Neuron JSON protocol adapters, an independently synced file-backed acknowledgement witness, and exact inference-control feature-receipt binding are implemented on the closure line; authenticated selected-artifact/current-owner distribution and daemon activation remain separate composition/evidence work. Process-exit

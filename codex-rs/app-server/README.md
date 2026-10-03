@@ -2292,6 +2292,8 @@ $demo-app Pull the latest updates from the team.
 
 The JSON-RPC auth/account surface exposes request/response methods plus server-initiated notifications (no `id`). Use these to determine auth state, start or cancel logins, logout, and inspect ChatGPT rate limits.
 
+An embedding host may set `AppServerRuntimeOptions::credential_profile_home` at startup to use an existing local credential directory while keeping its runtime home, SQLite database, and thread storage private. The canonical AuthManager loads and refreshes that profile directly; credentials are not copied into the runtime home. In this mode `account/read` and model requests remain available, while account login and logout RPCs cannot change the host-owned profile. RPC configuration overrides cannot select another credential directory. With no profile configured, ordinary runtime-local authentication is unchanged.
+
 ### Authentication modes
 
 Codex supports these authentication modes. The current mode is surfaced in `account/updated` (`authMode`), which also includes the current ChatGPT `planType` when available, and can be inferred from `account/read`. Self-serve Business ProLite accounts use the `self_serve_business_prolite` plan type; Enterprise automation accounts use `enterprise_cbp_automation`.
@@ -2708,3 +2710,82 @@ For server-initiated request payloads, annotate the field the same way so schema
    ```bash
    just test -p codex-app-server-protocol
    ```
+
+### Disposing an idle ephemeral runtime
+
+`thread/unsubscribe` keeps its usual unsubscribe and idle-cache behavior when
+`ephemeralDisposal` is omitted or null. A client that owns a disposable ephemeral
+run can explicitly pass `ephemeralDisposal: { "expectedSessionId": "..." }`.
+The server refuses persistent threads, another session, active turns, and other
+subscribers. Only successful shutdown of the exact session and removal of its
+live runtime returns `ephemeralDisposed`; `notLoaded` permits idempotent cleanup.
+Shutdown failure or timeout returns an error and leaves the runtime fenced for
+an exact-session retry. No archive, history deletion, or RSS reclamation is
+implied. Native workers retain their durable cleanup obligation until this
+acknowledgement and must first settle the original control record and any
+Intelligence terminal-publication outbox. Ordinary unsubscribe statuses cannot
+acknowledge ephemeral disposal.
+
+### Retaining an uncertain ephemeral runtime
+
+Native workers call `thread/ephemeral/retain` before admitting an external effect,
+with `protocolVersion: 1`, the original `threadId`, `expectedSessionId`, and
+durable `operationId`. They proceed only after all four bindings match the
+explicit V1 response. An unsupported older server or an ignored field cannot
+promise retention. The server accepts only a subscribed connection and the exact
+loaded ephemeral runtime without persistent history. A repeat of the same
+operation is idempotent; another operation or runtime is refused.
+
+At most 32 runtimes can be retained in one server. Retention survives ordinary
+unsubscribe and connection loss, prevents idle unloading of that exact runtime,
+and returns capacity when its original thread state is torn down after disposal.
+It grants no execution, terminal, or cleanup authority. Native cleanup still
+requires the original control record and its required terminal-publication ACK.
+The server process cannot preserve live memory across a process death; durable
+control and cleanup obligations remain the recovery source. Persistent threads
+and clients that do not opt in keep their existing idle policy.
+
+The experimental `project/readByIdempotencyKey` method reads an existing local
+project by its original creation key. It returns `ProjectReadResponse`; an absent
+or deleted binding fails without creating or repairing a project. Remote stores
+that do not support this read fail with method-not-found.
+
+The experimental `thread/queue/observe` method reads an exact durable
+`clientUserMessageId` and `expectedPayloadSha256`. The caller supplies the protected
+`expectedProjectId`, `expectedCwd`, and `expectedThreadSource`; the local owner
+checks the original thread scope before and after the bounded observation.
+The response distinguishes `pending`, `persisted` (with any explicit terminal
+record), `cancelled`, `missing`, and `unknown`. Missing, incomplete history, and
+end-of-file do not prove completion. Observation does not load or resume a thread,
+reserve or settle a queue row, dispatch input, or publish queue notifications.
+Remote or ephemeral threads without the original local durable row are unavailable.
+
+### Identified creation and explicit crash recovery (experimental)
+
+`thread/start.idempotencyKey` binds the canonical complete requested parameters,
+protected project/cwd/source and one reserved thread ID in the original local
+state owner **before** creation. It requires an explicit absolute `cwd` and
+`ephemeral: false`. The original store makes that exact rollout durable before
+returning its prepared response. A matching committed key returns the original
+receipt without loading a new Core. Pending, deleted, abandoned, changed-parameter and
+changed-scope requests never repeat creation.
+An absent key is omitted to preserve the ordinary unkeyed request wire shape.
+Stores must explicitly support pre-effect identified creation; durable hard-delete
+fencing alone does not provide that guarantee.
+
+`thread/creation/observe` reads the same key, expected parameter digest and
+protected scope without repair. `Pending`, `Missing` and `Unknown` retain the
+original intent. `Materialized` proves only the bounded exact original rollout;
+it is not a committed receipt. The separately authorized
+`thread/creation/reconcile` may repair that rollout's index and prepared receipt
+without starting/resuming a thread or sending model input. Hard deletion keeps a
+permanent key tombstone and blocks late projection from resurrecting the thread.
+
+`thread/creation/abandon` is an explicit user action on the same original key,
+digest and scope. The original owner confirms `Abandoned` only while the
+reservation has no bound rollout path, prepared receipt or thread index. Its
+atomic transition competes with the original lazy recorder's pre-effect path
+binding; a late creation callback cannot revive an abandoned key. A bound path
+with a missing file, materialized rollout, unknown state or committed creation
+cannot be cancelled this way. Repeating an exact abandonment is idempotent. If
+the reply is lost, retain the original creation intent and inspect the same key.

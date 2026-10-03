@@ -36,6 +36,11 @@ file-search *args:
 code-mode-host *args:
     cargo run --bin codex-code-mode-host -- {args}
 
+# Build ordinary product programs with the same profile used by process acceptance.
+# Library development keeps the default fast profile.
+product-build *args:
+    cargo build --profile hepta-product {args}
+
 # Assemble a local Codex package.
 [no-cd]
 assemble-codex-package *args:
@@ -84,9 +89,10 @@ install:
 # Scoped workspace packages use fresh manifest metadata; Cargo still compiles
 # all requested targets/features. Graph filters and full runs use full metadata.
 # Set HEPTA_NEXTTEST_FULL_METADATA=1 to force the normal nextest metadata path.
+# Use --all-features only for an explicit feature-matrix qualification.
 [unix]
 test *args:
-    RUST_MIN_STACK={{ rust_min_stack }} NEXTEST_PROFILE=local {{ python }} ../scripts/run-nextest.py "$@"
+    umask 0077 && RUST_MIN_STACK={{ rust_min_stack }} NEXTEST_PROFILE=local {{ python }} ../scripts/run-nextest.py "$@"
 
 [windows]
 test *args:

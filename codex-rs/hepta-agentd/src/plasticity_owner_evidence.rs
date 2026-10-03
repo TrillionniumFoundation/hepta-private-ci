@@ -11,24 +11,30 @@ use std::sync::Arc;
 use std::sync::Mutex;
 use std::sync::RwLock;
 
-use codex_hepta_learning_artifacts::ArtifactKind;
-use codex_hepta_learning_artifacts::ArtifactManifest;
-use codex_hepta_learning_artifacts::ArtifactRegistry;
-use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
-use codex_hepta_learning_ledger::verify_dataset_snapshot_receipt_v3;
-use codex_hepta_ndu::NduProjectionJournalV1;
-use codex_hepta_neuron::JournalAnchor;
-use codex_hepta_neuron::SparseCheckpoint;
-use codex_hepta_neuron::SparseJournal;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
+use codex_hepta_agent_components::learning_artifacts::ArtifactManifest;
+use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
+use codex_hepta_agent_components::learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_agent_components::learning_ledger::verify_dataset_snapshot_receipt_v3;
+use codex_hepta_agent_components::ndu::NduProjectionJournalV1;
+use codex_hepta_agent_components::neuron::JournalAnchor;
+use codex_hepta_agent_components::neuron::SparseCheckpoint;
+use codex_hepta_agent_components::neuron::SparseJournal;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::FixedQ32;
+use codex_hepta_agent_components::types::StableId;
 
 use crate::PlasticityOwnerEvidenceErrorV1;
 use crate::PlasticityOwnerEvidenceKindV1;
 use crate::PlasticityOwnerEvidenceQueryV1;
 use crate::PlasticityOwnerEvidenceResolverV1;
 use crate::VerifiedPlasticityOwnerEvidenceV1;
+
+#[path = "plasticity_neuron_eligibility_reader.rs"]
+mod neuron_eligibility;
+pub use neuron_eligibility::PlasticityNeuronEligibilityReaderV1;
+pub use neuron_eligibility::PlasticityNeuronEligibilityReaderV2;
+use neuron_eligibility::SparseJournalEligibilityReaderV1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct PlasticityArtifactOwnerBindingV1 {
@@ -121,7 +127,7 @@ impl ConcretePlasticityOwnerEvidenceResolverV1 {
         &self,
         query: &PlasticityOwnerEvidenceQueryV1,
     ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
-        let current_head = self.artifacts.snapshot().head_digest;
+        let current_head = self.artifacts.head_digest();
         if current_head.is_zero() || current_head != query.artifact_registry_head_digest {
             return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
         }
@@ -193,7 +199,7 @@ pub struct PlasticityDynamicOwnerEvidenceResolverV1 {
     ndu_journal: Arc<RwLock<NduProjectionJournalV1>>,
     ndu_prefix: Vec<Digest32>,
     modulator_values: Vec<FixedQ32>,
-    neuron_journal: Arc<Mutex<SparseJournal>>,
+    neuron_reader: Arc<dyn PlasticityNeuronEligibilityReaderV1>,
     acknowledged_neuron_anchor: JournalAnchor,
     broadcast_artifacts: ArtifactRegistry,
     broadcast_artifact_id: StableId,
@@ -212,6 +218,44 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
         ndu_journal: Arc<RwLock<NduProjectionJournalV1>>,
         modulator_values: Vec<FixedQ32>,
         neuron_journal: Arc<Mutex<SparseJournal>>,
+        acknowledged_neuron_anchor: JournalAnchor,
+        broadcast_artifacts: ArtifactRegistry,
+        broadcast_artifact_id: StableId,
+        bindings: Vec<PlasticityDynamicSignalBindingV1>,
+        observed_at: u64,
+        expires_at: u64,
+    ) -> Result<Self, PlasticityOwnerEvidenceErrorV1> {
+        Self::with_neuron_reader(
+            objective_digest,
+            ndu_subject_digest,
+            ndu_owner_id,
+            neuron_owner_id,
+            ndu_journal,
+            modulator_values,
+            Arc::new(SparseJournalEligibilityReaderV1 {
+                journal: neuron_journal,
+            }),
+            acknowledged_neuron_anchor,
+            broadcast_artifacts,
+            broadcast_artifact_id,
+            bindings,
+            observed_at,
+            expires_at,
+        )
+    }
+
+    /// Use the same authoritative dynamic fact calculations with a deployment's
+    /// current acknowledged Neuron owner. The reader must verify the original
+    /// owner and retained anchor, never return a caller-authored checkpoint.
+    #[allow(clippy::too_many_arguments)]
+    pub fn with_neuron_reader(
+        objective_digest: Digest32,
+        ndu_subject_digest: Digest32,
+        ndu_owner_id: StableId,
+        neuron_owner_id: StableId,
+        ndu_journal: Arc<RwLock<NduProjectionJournalV1>>,
+        modulator_values: Vec<FixedQ32>,
+        neuron_reader: Arc<dyn PlasticityNeuronEligibilityReaderV1>,
         acknowledged_neuron_anchor: JournalAnchor,
         broadcast_artifacts: ArtifactRegistry,
         broadcast_artifact_id: StableId,
@@ -250,13 +294,7 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
         }
 
         {
-            let journal = neuron_journal
-                .lock()
-                .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?;
-            let checkpoint = journal
-                .current()
-                .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?
-                .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
+            let checkpoint = neuron_reader.read(acknowledged_neuron_anchor)?;
             if checkpoint.digest() != acknowledged_neuron_anchor.checkpoint_digest {
                 return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
             }
@@ -310,7 +348,7 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
             ndu_journal,
             ndu_prefix,
             modulator_values,
-            neuron_journal,
+            neuron_reader,
             acknowledged_neuron_anchor,
             broadcast_artifacts,
             broadcast_artifact_id,
@@ -352,22 +390,11 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
     fn current_eligibility(
         &self,
     ) -> Result<(Digest32, Digest32, Vec<i64>), PlasticityOwnerEvidenceErrorV1> {
-        let journal = self
-            .neuron_journal
-            .lock()
-            .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?;
-        let checkpoint = journal
-            .current()
-            .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?
-            .ok_or(PlasticityOwnerEvidenceErrorV1::Missing)?;
-        if checkpoint.digest().is_zero()
-            || !journal
-                .contains_anchor(self.acknowledged_neuron_anchor)
-                .map_err(|_| PlasticityOwnerEvidenceErrorV1::Unavailable)?
-        {
+        let checkpoint = self.neuron_reader.read(self.acknowledged_neuron_anchor)?;
+        if checkpoint.digest().is_zero() {
             return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
         }
-        let digest = plasticity_eligibility_digest_v1(checkpoint)?;
+        let digest = plasticity_eligibility_digest_v1(&checkpoint)?;
         Ok((
             digest,
             checkpoint.digest(),
@@ -379,7 +406,7 @@ impl PlasticityDynamicOwnerEvidenceResolverV1 {
         &self,
         artifact_registry_head_digest: Digest32,
     ) -> Result<(Digest32, StableId, Digest32), PlasticityOwnerEvidenceErrorV1> {
-        let head = self.broadcast_artifacts.snapshot().head_digest;
+        let head = self.broadcast_artifacts.head_digest();
         if head.is_zero() || head != artifact_registry_head_digest {
             return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
         }
@@ -773,17 +800,17 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use codex_hepta_learning_artifacts::ArtifactEvent;
-    use codex_hepta_learning_artifacts::ArtifactManifest;
-    use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
-    use codex_hepta_learning_ledger::DatasetFreezeRequestV1;
-    use codex_hepta_learning_ledger::freeze_dataset_receipt_v3;
-    use codex_hepta_ndu::NduProjectionKindV1;
-    use codex_hepta_neuron::JournalScope;
-    use codex_hepta_neuron::SparseConfig;
-    use codex_hepta_neuron::SparseTick;
-    use codex_hepta_plasticity::ProposalWindowV2;
-    use codex_hepta_types::Generation;
+    use codex_hepta_agent_components::learning_artifacts::ArtifactEvent;
+    use codex_hepta_agent_components::learning_artifacts::ArtifactManifest;
+    use codex_hepta_agent_components::learning_ledger::AuthenticatedPrincipalV1;
+    use codex_hepta_agent_components::learning_ledger::DatasetFreezeRequestV1;
+    use codex_hepta_agent_components::learning_ledger::freeze_dataset_receipt_v3;
+    use codex_hepta_agent_components::ndu::NduProjectionKindV1;
+    use codex_hepta_agent_components::neuron::JournalScope;
+    use codex_hepta_agent_components::neuron::SparseConfig;
+    use codex_hepta_agent_components::neuron::SparseTick;
+    use codex_hepta_agent_components::plasticity::ProposalWindowV2;
+    use codex_hepta_agent_components::types::Generation;
     use tempfile::tempfile;
 
     use crate::PlasticityOwnerEvidencePolicyV1;
@@ -894,7 +921,7 @@ mod tests {
                 })
                 .expect("artifact append");
         }
-        let artifact_head = artifacts.snapshot().head_digest;
+        let artifact_head = artifacts.head_digest();
         let resolver = ConcretePlasticityOwnerEvidenceResolverV1::new(
             dataset,
             artifacts,
@@ -1126,7 +1153,7 @@ mod tests {
                 ),
             })
             .expect("broadcast artifact");
-        let artifact_head = artifacts.snapshot().head_digest;
+        let artifact_head = artifacts.head_digest();
 
         let modulator = modulator_values[0];
         let learning_rate = FixedQ32::from_raw(1_i64 << 20);

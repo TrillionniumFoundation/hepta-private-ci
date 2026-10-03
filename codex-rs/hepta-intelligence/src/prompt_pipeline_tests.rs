@@ -15,6 +15,7 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
+use crate::prompt_delivery::tests::ByteTokenizer;
 use crate::prompt_delivery::tests::admitted_registry;
 use crate::prompt_delivery::tests::canonical_selection;
 use crate::prompt_delivery::tests::revoke_registry;
@@ -59,12 +60,13 @@ fn compile_request(exercise: PromptExerciseRequestV1) -> PromptContextCompileReq
 }
 
 #[test]
-fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
+fn exercised_portfolio_counts_final_bytes_and_requires_provider_evidence() {
     let (_temp, registry, portfolio, exercise) = fixture();
     let prepared = compile_exercised_prompt_context_v1(
         &registry,
         &portfolio,
         compile_request(exercise.clone()),
+        &ByteTokenizer,
     )
     .expect("compile exercised portfolio");
     assert_eq!(
@@ -91,11 +93,16 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
             serialized_payload: serialized_payload.clone(),
             attachment_id: id("attachment:1"),
         },
+        &ByteTokenizer,
     )
     .expect("prepare delivery");
     assert_eq!(delivery.serialized_payload, serialized_payload);
     assert_eq!(delivery.materialization, prepared.materialization);
     assert_eq!(delivery.serialization.payload_digest(), payload_digest);
+    assert_eq!(
+        delivery.serialization.serialized_token_count(),
+        serialized_payload.len() as u64
+    );
     assert_eq!(delivery.serialization_proof.occurrences.len(), 1);
     assert_eq!(
         delivery.serialization_proof.occurrences[0].realization_id,
@@ -119,12 +126,121 @@ fn exercised_portfolio_compiles_attaches_and_observes_exact_delivery() {
 }
 
 #[test]
+fn final_payload_framing_counts_against_the_real_budget() {
+    let (_temp, registry, portfolio, exercise) = fixture();
+    let mut request = compile_request(exercise.clone());
+    request.token_budget = b"payload:a".len() as u64;
+    let prepared =
+        compile_exercised_prompt_context_v1(&registry, &portfolio, request, &ByteTokenizer)
+            .expect("candidate fits");
+    let error = prepare_prompt_delivery_v1(
+        &registry,
+        &portfolio,
+        &prepared,
+        PromptDeliveryPrepareRequestV1 {
+            exercise,
+            serialization_id: id("serialization:over-budget"),
+            serialized_payload: b"provider-prefix|payload:a|provider-suffix".to_vec(),
+            attachment_id: id("attachment:over-budget"),
+        },
+        &ByteTokenizer,
+    )
+    .expect_err("framing must exceed budget");
+    assert_eq!(
+        error,
+        PromptPipelineErrorV1::ContextCompiler(format!(
+            "{:?}",
+            ContextCompilerV2Error::SerializedTokenBudgetExceeded {
+                serialized_tokens: 41,
+                token_budget: 9
+            }
+        ))
+    );
+}
+
+struct DriftedTokenizer {
+    identity: Digest32,
+}
+
+impl ExactTokenizerV2 for DriftedTokenizer {
+    fn tokenizer_digest(&self) -> Digest32 {
+        self.identity
+    }
+    fn count_tokens(&self, bytes: &[u8]) -> Result<u64, ContextCompilerV2Error> {
+        Ok(bytes.len() as u64 + 1)
+    }
+}
+
+#[test]
+fn tokenizer_identity_and_registry_cost_drift_fail_closed() {
+    let (_temp, registry, portfolio, exercise) = fixture();
+    for (identity, expected) in [
+        (
+            digest("tokenizer"),
+            PromptPipelineErrorV1::TokenCostMismatch("realization:verify".to_string()),
+        ),
+        (
+            digest("wrong-tokenizer"),
+            PromptPipelineErrorV1::ContextCompiler(format!(
+                "{:?}",
+                ContextCompilerV2Error::TokenizerProfileMismatch
+            )),
+        ),
+    ] {
+        assert_eq!(
+            compile_exercised_prompt_context_v1(
+                &registry,
+                &portfolio,
+                compile_request(exercise.clone()),
+                &DriftedTokenizer { identity }
+            ),
+            Err(expected)
+        );
+    }
+}
+
+#[test]
+fn attachment_refresh_rejects_time_rollback_after_compilation() {
+    let (_temp, registry, portfolio, exercise) = fixture();
+    let prepared = compile_exercised_prompt_context_v1(
+        &registry,
+        &portfolio,
+        compile_request(exercise.clone()),
+        &ByteTokenizer,
+    )
+    .expect("compile");
+    let mut earlier = exercise;
+    earlier.now_unix_ms -= 1;
+    let error = prepare_prompt_delivery_v1(
+        &registry,
+        &portfolio,
+        &prepared,
+        PromptDeliveryPrepareRequestV1 {
+            exercise: earlier,
+            serialization_id: id("serialization:rollback"),
+            serialized_payload: b"payload:a".to_vec(),
+            attachment_id: id("attachment:rollback"),
+        },
+        &ByteTokenizer,
+    )
+    .expect_err("rollback");
+    assert_eq!(
+        error,
+        PromptPipelineErrorV1::ContextCompiler(format!(
+            "{:?}",
+            ContextCompilerV2Error::StaleAdmissionSnapshot
+        ))
+    );
+}
+
+#[test]
 fn materialization_drift_after_compilation_blocks_attachment_preparation() {
     let (_temp, registry, portfolio, exercise) = fixture();
     let mut prepared = compile_exercised_prompt_context_v1(
         &registry,
         &portfolio,
         compile_request(exercise.clone()),
+        &ByteTokenizer,
     )
     .expect("compile");
     prepared.materialization.payloads[0].payload = b"tampered".to_vec();
@@ -138,6 +254,7 @@ fn materialization_drift_after_compilation_blocks_attachment_preparation() {
             serialized_payload: b"payload:a".to_vec(),
             attachment_id: id("attachment:drift"),
         },
+        &ByteTokenizer,
     )
     .expect_err("materialization drift");
     assert_eq!(error, PromptPipelineErrorV1::PayloadMaterializationDrift);
@@ -150,6 +267,7 @@ fn serialization_without_selected_prompt_bytes_fails_closed() {
         &registry,
         &portfolio,
         compile_request(exercise.clone()),
+        &ByteTokenizer,
     )
     .expect("compile exercised portfolio");
 
@@ -163,6 +281,7 @@ fn serialization_without_selected_prompt_bytes_fails_closed() {
             serialized_payload: b"provider-request-without-selected-realization".to_vec(),
             attachment_id: id("attachment:missing-prompt"),
         },
+        &ByteTokenizer,
     )
     .expect_err("missing selected prompt bytes must fail");
     assert_eq!(
@@ -181,6 +300,7 @@ fn revocation_after_compilation_blocks_attachment_preparation() {
         &registry,
         &selected.portfolio,
         compile_request(selected.exercise_request.clone()),
+        &ByteTokenizer,
     )
     .expect("compile");
     revoke_registry(&mut registry, &authority, &signing_key, now);
@@ -194,6 +314,7 @@ fn revocation_after_compilation_blocks_attachment_preparation() {
             serialized_payload: b"payload:a".to_vec(),
             attachment_id: id("attachment:revoked"),
         },
+        &ByteTokenizer,
     )
     .expect_err("revocation must block attachment");
     assert_eq!(

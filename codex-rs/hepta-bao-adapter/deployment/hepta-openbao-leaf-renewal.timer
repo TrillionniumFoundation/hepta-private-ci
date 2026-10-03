@@ -1,0 +1,11 @@
+[Unit]
+Description=Maintain the existing pinned local OpenBao leaf
+
+[Timer]
+OnCalendar=daily
+RandomizedDelaySec=15m
+Persistent=yes
+Unit=hepta-openbao-leaf-renewal.service
+
+[Install]
+WantedBy=timers.target

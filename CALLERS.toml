@@ -7,7 +7,30 @@ rule = "Every privileged Hepta boundary has an exact closed set of product call 
 
 [privileged_inventory]
 required_boundary_ids = [
+  "fleet_verified_execution_prepare",
+  "bao_operation_consumer_registration",
+  "public_development_source_custody_prepare",
+  "original_paired_custody_execution",
+  "original_paired_custody_finish",
+  "original_consumed_custody_effect",
+  "original_paired_numeric_process",
+  "original_paired_readonly_withdrawal",
+  "paired_withdrawal_provider_assignment",
+  "first_public_development_physical_measurement",
+  "paired_custody_program_admission",
+  "public_paired_generator_preregistration",
+  "independent_paired_review_evaluator",
+  "readonly_paired_review_execution_recompute",
+  "paired_original_cas_consumption_reader",
+  "paired_protected_observer_provider",
+  "climate_source_custody_prepare",
+  "fixed_source_custody_initialize",
   "supervisor_authorized_boot",
+  "ordinary_model_issuer_boot",
+  "ordinary_model_issuer_publication",
+  "ordinary_model_protected_clock",
+  "ordinary_model_protected_frontier",
+  "production_final_use_trust_port",
   "memory_production_writer_open",
   "cognitive_store_recovery_open",
   "cognitive_production_mutation_capability",
@@ -15,6 +38,7 @@ required_boundary_ids = [
   "agentd_production_operation_runtime",
   "learning_artifact_owner_bootstrap",
   "learning_artifact_owner_restart",
+  "learning_artifact_owner_renewal",
   "learning_artifact_verified_current_view",
   "provider_effect_coordinator",
   "http_provider_effect_adapter",
@@ -51,8 +75,49 @@ required_boundary_ids = [
   "authority_lease_dispatch_witness",
   "final_use_async_dispatch_fence",
   "automation_taskflow_provider_effect_bridge",
-  "final_use_guarded_effect"
+  "final_use_guarded_effect",
+  "secrets_authority_service_boot",
+  "secrets_operator_service_boot",
+  "secrets_original_authorization",
+  "secrets_original_durable_begin",
+  "secrets_operator_independent_approval",
+  "secrets_consumer_service_boot",
+  "secrets_consumer_receipt_preflight",
+  "secrets_consumer_credential_effect",
+  "secrets_consumer_settlement",
+  "secrets_runtime_settlement_request",
+  "final_use_current_head_freshness",
+  "secrets_runtime_service_boot",
+  "secrets_runtime_once_authorization",
+  "secrets_original_once_issuer",
+  "secrets_original_effect_clock_budget",
+  "secrets_agent_runtime_consume",
+  "bao_receipt_consumer_registration",
+  "secrets_root_policy_maintenance",
+  "independent_operational_model_lease_evaluator_v2",
+  "verified_operational_model_lease_v2",
+  "independent_installed_cpu_model_use_v2",
+  "closed_cpu_objective_root_signing",
+  "ordinary_cpu_objective_delivery",
+  "original_agent_offline_authbus_checkpoint"
 ]
+
+[[boundary]]
+id = "paired_custody_program_admission"
+symbol = "admit_fixed_custody_program"
+call_pattern = '\badmit_fixed_custody_program\s*\('
+definition_path = "codex-rs/hepta-learning-ledger/src/review_host/mod.rs"
+definition_markers = ["pub fn admit_fixed_custody_program", "IndependentTrust::open_for_cycle", "ReviewTrustWireV1::from_native(", "&trust.root", "&trust.distribution"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/fixed_holdout_custody.rs"]
+caller_markers = ["pub fn admit_fixed_paired_custody", "boundary()?", "wire.native()?", "codex_hepta_learning_ledger::admit_fixed_custody_program"]
+
+[[boundary]]
+id = "secrets_root_policy_maintenance"
+symbol = "maintain_secrets_runtime_policy"
+definition_path = "codex-rs/hepta-bao-adapter/src/runtime_maintenance.rs"
+definition_markers = ["pub async fn maintain_secrets_runtime_policy", "BoundSocket::bind", "AuthBusAuthorityHost::open", "config.roles.authority.trusted_time()", "observe_trusted_time_attestation", "host.replace_policy", "host.revoke_policy", "host.close().await"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["maintain-runtime-policy", "codex_hepta_bao_adapter::maintain_secrets_runtime_policy"]
 
 [[boundary]]
 id = "supervisor_authorized_boot"
@@ -123,11 +188,19 @@ caller_markers = ["LearningArtifactOwnerHost::open_with_required_current_head", 
 [[boundary]]
 id = "learning_artifact_verified_current_view"
 symbol = "RevalidatingCandidate::with_current"
-call_pattern = '\bcandidate\s*\.\s*with_current\s*\('
+call_pattern = '(?:\bRevalidatingCandidate\s*::\s*|\.\s*)with_current\s*\('
 definition_path = "codex-rs/hepta-learning-artifacts/src/pinned.rs"
 definition_markers = ["pub struct VerifiedCurrentRegistryViewV1", "pub fn with_current", "with_verified_registry"]
-product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs", "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"]
-caller_markers = ["VerifiedCurrentRegistryViewV1", "with_current"]
+product_callers = ["codex-rs/hepta-agentd/src/cognitive_ranker.rs", "codex-rs/hepta-agentd/src/cognitive_ranker_admission_v2.rs", "codex-rs/hepta-agentd/src/learning_operator_shadow_loader.rs", "codex-rs/hepta-agentd/src/neuron_artifact_admission.rs", "codex-rs/hepta-infer-worker-host/src/initial_cpu_withdrawal_delivery.rs", "codex-rs/hepta-infer-worker-host/src/initial_cpu_withdrawal_inspection.rs", "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs"]
+caller_markers = []
+
+[[boundary]]
+id = "learning_artifact_owner_renewal"
+symbol = "LearningArtifactOwnerHost::open_for_fresh_evidence_publication"
+definition_path = "codex-rs/hepta-learning-artifacts/src/owner_publication_ancestor.rs"
+definition_markers = ["pub(crate) fn open_for_fresh_evidence_publication", "Self::open_internal", "host.discover_publication_predecessor"]
+product_callers = ["codex-rs/hepta-learning-artifacts/src/owner_service_operational_renewal.rs"]
+caller_markers = ["LearningArtifactOwnerService", ".required_current_head", "recover_publication_registry"]
 
 [[boundary]]
 id = "provider_effect_coordinator"
@@ -148,9 +221,10 @@ caller_markers = ["HttpProviderEffectAdapter::new", "HttpProviderEffectContractA
 [[boundary]]
 id = "final_use_open_state"
 symbol = "FinalUseAuthority::open_state_dir"
+call_pattern = '\bFinalUseAuthority::open_state_dir(?:_with_clock|_with_trust|_with_recovered_trust|_with_issuer_keys)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
-definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
+definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "pub fn open_state_dir_with_recovered_trust(", "pub fn open_state_dir_with_issuer_keys(", "InvalidTrust", "Store::open"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-supervisor/src/local_model_authority.rs", "codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
 caller_markers = ["FinalUseAuthority", "verifying_key"]
 
 [[boundary]]
@@ -158,7 +232,7 @@ id = "final_use_claim"
 symbol = "claim_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn claim_final_use(", "authority.claim(signed, expected)"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs", "codex-rs/hepta-agentd/src/browser_servo.rs"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/provider_final_use_dispatch.rs", "codex-rs/hepta-agentd/src/browser_servo.rs", "codex-rs/hepta-supervisor/src/local_model_relay.rs"]
 caller_markers = ["claim_final_use"]
 
 [[boundary]]
@@ -175,8 +249,8 @@ id = "final_use_delivery"
 symbol = "deliver_final_use"
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn deliver_final_use", "authority.with_verified_use(token, expected, consumer)"]
-product_callers = ["codex-rs/hepta-bao-adapter/src/https_consumer.rs"]
-caller_markers = ["deliver_final_use", "deliver_final_use(authority, verified, &binding", "ConsumerIndeterminate"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/provider_final_use_dispatch.rs"]
+caller_markers = ["deliver_final_use(authority, verified, &binding", "prepare_delivery(&receipt).await"]
 
 [[boundary]]
 id = "final_use_delivery_witness"
@@ -193,8 +267,10 @@ receiver_type = "FinalUseAuthority"
 receiver_methods = ["with_verified_use", "enter_verified_use"]
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_use", "pub fn enter_verified_use", "Arc::ptr_eq", "validate_live"]
-product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs"]
-caller_markers = ["with_verified_use", "binding"]
+product_callers = ["codex-rs/hepta-memory/src/production_writer.rs", "codex-rs/hepta-ndu/src/owner.rs", "codex-rs/hepta-operations/src/durable_store.rs", "codex-rs/hepta-prompt-registry/src/admission.rs", "codex-rs/hepta-prompt-registry/src/durable.rs", "codex-rs/hepta-runtime/src/organs.rs", "codex-rs/hepta-supervisor/src/local_model_relay.rs"]
+# Both typed entry methods above require the same binding. Requiring only the
+# older method's spelling would reject a real entered-use witness.
+caller_markers = ["binding"]
 
 [[boundary]]
 id = "final_use_dispatch"
@@ -227,7 +303,7 @@ symbol = "FinalUseAuthority::update_revocations"
 call_pattern = "authority\\s*\\.\\s*update_revocations\\s*\\("
 definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn update_revocations", "StaleRevocationHead", "store.persist"]
-product_callers = ["codex-rs/hepta-agentd/src/automation_effect_host.rs", "codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
+product_callers = ["codex-rs/hepta-agentd/src/automation_effect_worker.rs", "codex-rs/hepta-contracts/src/final_use_control.rs", "codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs", "codex-rs/hepta-supervisor/src/local_model_authority.rs"]
 caller_markers = ["update_revocations"]
 
 [[boundary]]
@@ -235,8 +311,8 @@ id = "final_use_approval_trust"
 symbol = "FinalUseApprovalVerifier::new"
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
 definition_markers = ["impl FinalUseApprovalVerifier", "pub fn new(", "InvalidTrust"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-bao-adapter/src/authority_role_config.rs", "codex-rs/hepta-bao-adapter/src/operator_approval.rs", "codex-rs/hepta-bao-adapter/src/role_client.rs", "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs", "codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
+caller_markers = ["FinalUseApprovalVerifier::new"]
 
 [[boundary]]
 id = "final_use_approval_verify"
@@ -252,8 +328,8 @@ id = "final_use_revocation_feed_trust"
 symbol = "FinalUseRevocationFeedVerifier::new"
 definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
 definition_markers = ["impl FinalUseRevocationFeedVerifier", "pub fn new(", "InvalidTrust"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
+caller_markers = ["FinalUseRevocationFeedVerifier::new"]
 
 [[boundary]]
 id = "final_use_revocation_feed_apply"
@@ -293,18 +369,27 @@ caller_markers = []
 [[boundary]]
 id = "bao_registered_consumer_new"
 symbol = "RegisteredBaoConsumer::new"
-definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_registration.rs"
 definition_markers = ["impl RegisteredBaoConsumer", "pub fn new(", "ConsumerId"]
 product_callers = []
 caller_markers = []
+
+[[boundary]]
+id = "bao_operation_consumer_registration"
+symbol = "RegisteredBaoConsumer::for_prepared_operations"
+call_pattern = '\bRegisteredBaoConsumer\s*::\s*(?:for_operations|for_prepared_operations)\s*\('
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_registration.rs"
+definition_markers = ["pub fn for_operations", "pub fn for_prepared_operations", "configuration_sha256 == [0; 32]", "registration.operation_preparer = Some(preparer)"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/consumer_port.rs"]
+caller_markers = ["RegisteredBaoConsumer::for_prepared_operations", "prepare_receipt"]
 
 [[boundary]]
 id = "bao_final_use_host_new"
 symbol = "BaoFinalUseHost::new"
 definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
 definition_markers = ["impl BaoFinalUseHost", "pub fn new(", "DuplicateConsumer"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
+caller_markers = ["BaoFinalUseHost::new", "consumer.registration()"]
 
 [[boundary]]
 id = "bao_registered_revocation_update"
@@ -312,33 +397,35 @@ symbol = "BaoFinalUseHost::apply_revocation_update"
 call_pattern = "\\.\\s*apply_revocation_update\\s*\\("
 definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
 definition_markers = ["pub fn apply_revocation_update", "revocation_verifier", ".apply(&self.authority, update, now_unix_ms)"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
+caller_markers = ["apply_revocation_update"]
 
 [[boundary]]
 id = "bao_registered_final_use_host"
 symbol = "BaoFinalUseHost::consume_kv_v2"
 call_pattern = '(?:bao_host|final_use_host|BaoFinalUseHost)\s*(?:\.|::)\s*consume_kv_v2\s*\('
-definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
-definition_markers = ["pub struct BaoFinalUseHost", "pub async fn consume_kv_v2", "approval_verifier", "consumers"]
+definition_path = "codex-rs/hepta-bao-adapter/src/final_use_host_ingress.rs"
+definition_markers = ["impl BaoFinalUseHost", "pub async fn consume_kv_v2", "self.approved_consumer", "self.ensure_revocation_fresh()", "consume_kv_v2_guarded"]
 product_callers = []
 caller_markers = []
 
 [[boundary]]
 id = "authority_lease_open_state"
 symbol = "AuthorityLeaseRegistry::open_state_dir"
+call_pattern = '\bAuthorityLeaseRegistry::open_state_dir(?:_with_frontier_store|_with_clock|_with_trust)?\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
-definition_markers = ["pub fn open_state_dir(", "trusted_frontier", "Store::open"]
-product_callers = []
-caller_markers = []
+definition_markers = ["pub fn open_state_dir(", "pub fn open_state_dir_with_trust(", "trusted_frontier", "Store::open"]
+product_callers = ["codex-rs/hepta-supervisor/src/local_fleet_host.rs"]
+caller_markers = ["AuthorityLeaseRegistry::open_state_dir_with_trust", "trust::read_root_file", "RootResourceFrontier::open", "unsafe { libc::geteuid() } != 0"]
 
 [[boundary]]
 id = "authority_lease_put"
 symbol = "AuthorityLeaseRegistry::put_lease"
+call_pattern = '(?:AuthorityLeaseRegistry\s*::|\.\s*)put_lease\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub struct AuthorityLeaseRegistry", "pub fn put_lease(", "expected_revision"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-supervisor/src/local_fleet_host.rs"]
+caller_markers = ["fn authorize(", "self.authority", ".put_lease(lease, previous)", "frontier()", "issued_at_unix_ms"]
 
 [[boundary]]
 id = "authority_lease_revoke"
@@ -351,18 +438,20 @@ caller_markers = []
 [[boundary]]
 id = "authority_lease_prune"
 symbol = "AuthorityLeaseRegistry::prune_expired_leases"
+call_pattern = '(?:AuthorityLeaseRegistry\s*::|\.\s*)prune_expired_leases\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn prune_expired_leases(", "MAX_AUTHORITY_PRUNE_BATCH", "expires_at_unix_ms"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-supervisor/src/local_fleet_maintenance.rs"]
+caller_markers = ["impl LocalFleetHost", "self.authority", ".prune_expired_leases(1024)", "launch_gate.lock().await"]
 
 [[boundary]]
 id = "authority_lease_epoch_advance"
 symbol = "AuthorityLeaseRegistry::advance_epoch"
+call_pattern = '(?:AuthorityLeaseRegistry\s*::|\bauthority\s*\.\s*)advance_epoch\s*\('
 definition_path = "codex-rs/hepta-contracts/src/authority_lease.rs"
 definition_markers = ["pub fn advance_epoch(", "new_authority_epoch", "next.leases.clear()"]
-product_callers = []
-caller_markers = []
+product_callers = ["codex-rs/hepta-supervisor/src/local_fleet_maintenance.rs"]
+caller_markers = ["roll_resource_epoch_if_needed", "rollover_required_with_reserve", "checked_add(1)", ".advance_epoch(frontier.store_revision, next_epoch)"]
 
 [[boundary]]
 id = "authority_lease_verify_use"
@@ -412,17 +501,17 @@ forbidden = ["H7H89ProductionGrantVerifier::default"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/production_writer_host.rs"
-required = ["codex_hepta_cognitive_store::DurableCognitiveStore", "ProductionDurableWriter::open_with_live_verifier", "CognitiveStore::open_with_recovery", "ProductionAuthorityVerifier", "cognitive_mutation_capability", "production_mutation"]
+required = ["codex_hepta_agent_components::cognitive_store::DurableCognitiveStore", "ProductionDurableWriter::open_with_live_verifier", "CognitiveStore::open_with_recovery", "ProductionAuthorityVerifier", "cognitive_mutation_capability", "production_mutation"]
 forbidden = ["codex_hepta_memory::CognitiveStore", "AllowVerifier", "permit_all", ".writer.store()"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/runtime.rs"
-required = ["codex_hepta_cognitive_store::DurableCognitiveStore", "CognitiveStore::open"]
+required = ["codex_hepta_agent_components::cognitive_store::DurableCognitiveStore", "CognitiveStore::open"]
 forbidden = ["codex_hepta_memory::CognitiveStore"]
 
 [[protected_file]]
 path = "codex-rs/hepta-agentd/src/app_runtime.rs"
-required = ["production_writer_host.and_then", "host.production_mutation", "hepta_cognitive_production_mutation"]
+required = ["production_writer_host.and_then", "host.production_mutation", "HeptaAppServerHostOptions", "production_cognitive_mutation", "codex_hepta_app_host::run"]
 forbidden = ["ProductionDurableWriter", "CognitiveStore::open_with_recovery"]
 
 [[protected_file]]
@@ -477,13 +566,28 @@ forbidden = ["impl Default for AuthorityLeaseRegistry", "permit_all"]
 
 [[protected_file]]
 path = "codex-rs/hepta-bao-adapter/src/https_consumer.rs"
-required = ["pub async fn consume_kv_v2", "claim_final_use(authority, grant, &binding)", "deliver_final_use(authority, verified, &binding"]
+required = ["pub struct BaoClient", "pub async fn consume_kv_v2", "HttpClientBuilder::build_pinned_https_direct", "pub fn binding"]
 forbidden = ["impl Default for BaoClient", ".claim(grant, &binding)", ".with_verified_use(verified"]
 
 [[protected_file]]
+path = "codex-rs/hepta-bao-adapter/src/provider_final_use_dispatch.rs"
+required = ["pub(crate) async fn consume_kv_v2_guarded_async", "claim_final_use(authority, grant, &binding)", "prepare_delivery(&receipt).await", "deliver_final_use(authority, verified, &binding"]
+forbidden = [".claim(grant, &binding)", ".with_verified_use(verified"]
+
+[[protected_file]]
+path = "codex-rs/hepta-bao-adapter/src/consumer_registration.rs"
+required = ["pub struct RegisteredBaoConsumer", "impl RegisteredBaoConsumer", "pub fn new(", "ConsumerId"]
+forbidden = ["impl Default for RegisteredBaoConsumer", "permit_all"]
+
+[[protected_file]]
 path = "codex-rs/hepta-bao-adapter/src/final_use_host.rs"
-required = ["pub struct RegisteredBaoConsumer", "pub struct BaoFinalUseHost", "pub fn apply_revocation_update", "pub async fn consume_kv_v2", "StaleRevocationFeed", "AuthorityClock", "UnregisteredConsumer", "approval_verifier", "revocation_verifier"]
+required = ["pub struct BaoFinalUseHost", "pub fn apply_revocation_update", "StaleRevocationFeed", "AuthorityClock", "UnregisteredConsumer", "approval_verifier", "revocation_verifier"]
 forbidden = ["impl Default for BaoFinalUseHost", "permit_all"]
+
+[[protected_file]]
+path = "codex-rs/hepta-bao-adapter/src/final_use_host_ingress.rs"
+required = ["pub async fn consume_kv_v2", "self.approved_consumer", "self.ensure_revocation_fresh()", "consume_kv_v2_guarded"]
+forbidden = ["permit_all"]
 
 [authority]
 runtime_authority = false
@@ -520,3 +624,533 @@ definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect", "enter_verified_effect", "active_dispatches"]
 product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
 caller_markers = ["with_verified_effect"]
+
+
+[[boundary]]
+id = "ordinary_model_issuer_boot"
+symbol = "run_local_model_authority"
+definition_path = "codex-rs/hepta-supervisor/src/local_model_authority.rs"
+definition_markers = ["pub async fn run_local_model_authority", "rustix::process::geteuid().as_raw() == 0", "capture_peer", "ProtectedFrontier::open", "ProtectedClock::open"]
+product_callers = ["codex-rs/hepta-supervisor/src/bin/hepta-model-authority.rs"]
+caller_markers = ["codex_hepta_supervisor::run_local_model_authority", "--config"]
+
+[[boundary]]
+id = "ordinary_model_protected_clock"
+symbol = "ProtectedClock::open"
+definition_path = "codex-rs/hepta-supervisor/src/local_model_authority_store.rs"
+definition_markers = ["pub(super) struct ProtectedClock", "impl AuthorityClock for ProtectedClock", "clock floor"]
+product_callers = ["codex-rs/hepta-supervisor/src/local_model_authority.rs"]
+caller_markers = ["ProtectedClock::open", "protected_directory(&config.trust_directory)", "clock-floor"]
+
+[[boundary]]
+id = "ordinary_model_protected_frontier"
+symbol = "ProtectedFrontier::open"
+definition_path = "codex-rs/hepta-supervisor/src/local_model_authority_store.rs"
+definition_markers = ["pub(super) struct ProtectedFrontier", "impl AuthorityFrontierStore<FinalUseFrontier> for ProtectedFrontier", "lock.try_lock()", "fn compare_and_set"]
+product_callers = ["codex-rs/hepta-supervisor/src/local_model_authority.rs"]
+caller_markers = ["ProtectedFrontier::open", "protected_directory(&config.trust_directory)", "FinalUseAuthority::open_state_dir_with_recovered_trust"]
+
+[[boundary]]
+id = "production_final_use_trust_port"
+symbol = "UnixFinalUseTrustPort::for_production"
+definition_path = "codex-rs/hepta-infer-worker-host/src/final_use_trust_port.rs"
+definition_markers = ["pub(crate) fn for_production", "config.issuer_uid != 0", "process_attestation", "validate_connected_issuer_with_attestation", "impl AuthorityClock", "impl AuthorityFrontierStore"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/final_use_authorizer.rs"]
+caller_markers = ["UnixFinalUseTrustPort::for_production", "trust.load_startup_snapshot()", "FinalUseAuthority::open_state_dir_with_trust"]
+
+[[protected_file]]
+path = "codex-rs/hepta-supervisor/src/local_model_authority.rs"
+required = ["rustix::process::geteuid().as_raw() == 0", "capture_peer", "request.binding.subject_id == peer.subject", "FinalUseAuthority::open_state_dir_with_recovered_trust", "MODEL_TRUST_CAS", "MODEL_TRUST_LOAD", "startup::publish_listener(&config)"]
+forbidden = ["permit_all", "SigningKey::generate", "AuthorityPosture::ALLOW_ALL"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/final_use_trust_port.rs"
+required = ["config.issuer_uid != 0", "validate_connected_issuer_with_attestation", "guard", "revalidate()", "response.frontier != *next", "impl AuthorityClock", "impl AuthorityFrontierStore"]
+forbidden = ["SystemAuthorityClock", "permit_all"]
+
+[[boundary]]
+id = "secrets_authority_service_boot"
+symbol = "serve_secrets_authority"
+definition_path = "codex-rs/hepta-bao-adapter/src/authority_role.rs"
+definition_markers = ["pub async fn serve_secrets_authority", "BoundSocket::bind", "AuthorityRoleOwner::open"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["serve_secrets_authority", "SecretsAuthorityServiceConfig::load_root_owned"]
+
+[[boundary]]
+id = "secrets_operator_service_boot"
+symbol = "serve_secrets_operator"
+definition_path = "codex-rs/hepta-bao-adapter/src/operator_role.rs"
+definition_markers = ["pub async fn serve_secrets_operator", "BoundSocket::bind", "OperatorRoleOwner::open"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["serve_secrets_operator", "SecretsOperatorServiceConfig::load_root_owned"]
+
+[[boundary]]
+id = "secrets_original_authorization"
+symbol = "SecretsAuthorityClient::authorize_original"
+definition_path = "codex-rs/hepta-bao-adapter/src/role_client.rs"
+definition_markers = ["pub fn authorize_original", "self.refresh_revocations()?", "verify_grant"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["authorize_original", "SecretsRoleClientConfig::load_root_owned"]
+call_pattern = "client\\s*\\.\\s*authorize_original\\s*\\("
+
+[[boundary]]
+id = "secrets_original_durable_begin"
+symbol = "AuthorityRoleOwner::begin_original"
+definition_path = "codex-rs/hepta-bao-adapter/src/authority_grants.rs"
+definition_markers = ["pub async fn begin_original", ".verify(&grant, approval)", "self.commit(tx, guard).await?"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/authority_role.rs"]
+caller_markers = ["begin_original", "AuthorityResponse::OriginalAdmitted"]
+call_pattern = "self\\s*\\.\\s*begin_original\\s*\\("
+
+[[boundary]]
+id = "secrets_operator_independent_approval"
+symbol = "OperatorRoleOwner::approve"
+definition_path = "codex-rs/hepta-bao-adapter/src/operator_approval.rs"
+definition_markers = ["pub async fn approve", "verify_grant", "self.config.frozen_binding", "self.commit(tx, guard).await?"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/operator_role.rs"]
+caller_markers = ["self.approve", "OperatorRequest::Approve"]
+call_pattern = "self\\s*\\.\\s*approve\\s*\\("
+
+[[boundary]]
+id = "secrets_consumer_service_boot"
+symbol = "serve_credential_consumer"
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_server.rs"
+definition_markers = ["pub async fn serve_credential_consumer", "ReceiptConsumerRole::open", "LocalServiceConfig"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["serve_credential_consumer", "CredentialConsumerServiceConfig::load_root_owned"]
+
+[[boundary]]
+id = "secrets_consumer_receipt_preflight"
+symbol = "ReceiptConsumerRole::prepare"
+call_pattern = 'role\s*\.\s*prepare\s*\('
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs"
+definition_markers = ["pub async fn prepare", "OriginalDetails", "retain_preparation"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/consumer_server.rs"]
+caller_markers = ["PrepareReceipt", ".prepare(&intent, &receipt, lifetime_limit_ms, &self.key)"]
+
+[[boundary]]
+id = "secrets_consumer_credential_effect"
+symbol = "ReceiptConsumerRole::authenticate"
+call_pattern = 'role\s*\.\s*authenticate\s*\('
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs"
+definition_markers = ["pub async fn authenticate", "verify_proof", "acknowledge("]
+product_callers = ["codex-rs/hepta-bao-adapter/src/consumer_server.rs"]
+caller_markers = ["AuthenticatePrepared", "role", ".authenticate("]
+
+[[boundary]]
+id = "secrets_consumer_settlement"
+symbol = "ReceiptConsumerRole::settlement"
+call_pattern = 'role\s*\.\s*settlement\s*\('
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_settlement.rs"
+definition_markers = ["pub async fn settlement", "receipt_status", "credential_settlement_binding", "commit_receipt"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/consumer_server.rs"]
+caller_markers = ["ConsumerRequest::Settlement", "role.settlement"]
+
+[[boundary]]
+id = "secrets_runtime_settlement_request"
+symbol = "ConsumerEvidenceClient::completed_original"
+call_pattern = '(?:client|self)\s*\.\s*completed_original\s*\('
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_evidence_client.rs"
+definition_markers = ["pub fn completed_original", "ConsumerRequest::Settlement", "settlement_verifying_key"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["ConsumerEvidenceClient::new", "completed_original"]
+
+[[boundary]]
+id = "bao_receipt_consumer_registration"
+symbol = "RegisteredBaoConsumer::for_prepared_receipts"
+definition_path = "codex-rs/hepta-bao-adapter/src/consumer_registration.rs"
+definition_markers = ["pub fn for_prepared_receipts", "receipt_preparer = Some", "Self::for_operations"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/consumer_port.rs"]
+caller_markers = ["RegisteredBaoConsumer::for_prepared_receipts", "prepare_receipt"]
+
+[[boundary]]
+id = "final_use_current_head_freshness"
+symbol = "FinalUseRevocationFeedVerifier::authenticate_current_head"
+definition_path = "codex-rs/hepta-contracts/src/final_use_control.rs"
+definition_markers = ["pub fn authenticate_current_head", "self.verify_signed(signed, now_unix_ms)?", "!= signed.update.head"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/final_use_host.rs"]
+caller_markers = ["authenticate_current_head", "current == update.update.head"]
+call_pattern = 'revocation_verifier\s*\.\s*authenticate_current_head\s*\('
+
+[[boundary]]
+id = "secrets_runtime_service_boot"
+symbol = "serve_secrets_runtime"
+definition_path = "codex-rs/hepta-bao-adapter/src/runtime_service.rs"
+definition_markers = ["pub async fn serve_secrets_runtime", "FinalUseAuthority::open_state_dir_with_recovered_trust", "open_authbus", "compose_hepta_secrets_runtime"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs"]
+caller_markers = ["serve_secrets_runtime", "SecretsRuntimeServiceConfig::load_root_owned"]
+
+[[boundary]]
+id = "secrets_runtime_once_authorization"
+symbol = "SecretsAuthorityClient::authorize_original_once"
+definition_path = "codex-rs/hepta-bao-adapter/src/role_client.rs"
+definition_markers = ["pub(crate) fn authorize_original_once", "IssueOnce", "self.refresh_revocations()?"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
+caller_markers = ["authorize_original_once", "apply_revocation_update(&update)"]
+call_pattern = 'authority\s*\.\s*authorize_original_once\s*\('
+
+[[boundary]]
+id = "secrets_original_once_issuer"
+symbol = "AuthorityRoleOwner::issue_once"
+definition_path = "codex-rs/hepta-bao-adapter/src/authority_grants.rs"
+definition_markers = ["pub async fn issue_once", "ExistingGrant::RefuseNewAdmission"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/authority_role.rs"]
+caller_markers = ["IssueOnce", "self.issue_once"]
+call_pattern = 'self\s*\.\s*issue_once\s*\('
+
+[[boundary]]
+id = "secrets_original_effect_clock_budget"
+symbol = "RuntimeProtectedClock::begin_original_deadline"
+definition_path = "codex-rs/hepta-bao-adapter/src/runtime_clock.rs"
+definition_markers = ["pub fn begin_original_deadline", "original_deadline", "Instant::now() >= deadline", "impl AuthorityClock"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/runtime_service.rs"]
+caller_markers = ["begin_original_deadline(deadline)", "transport_deadline.min"]
+call_pattern = 'clock\s*\.\s*begin_original_deadline\s*\('
+
+[[boundary]]
+id = "secrets_agent_runtime_consume"
+symbol = "SecretsRuntimeClient::consume_original"
+definition_path = "codex-rs/hepta-bao-adapter/src/runtime_client.rs"
+definition_markers = ["pub fn consume_original", "RuntimeRequest::Consume", "SecretsRuntimeResponse::Unknown", "config.agent_uid != rustix::process::geteuid().as_raw()"]
+product_callers = ["codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs", "codex-rs/hepta-agentd/src/secrets_host.rs"]
+caller_markers = ["client.consume_original"]
+call_pattern = 'client\s*\.\s*consume_original\s*\('
+
+
+[[boundary]]
+id = "ordinary_model_issuer_publication"
+symbol = "publish_listener"
+definition_path = "codex-rs/hepta-supervisor/src/local_model_startup.rs"
+definition_markers = ["fn publish_listener", "ModelIssuerProcessIdentity", "store::publish_identity", "std::fs::rename", "Permissions::from_mode(0o660)"]
+product_callers = ["codex-rs/hepta-supervisor/src/local_model_authority.rs"]
+caller_markers = ["startup::publish_listener(&config)", "ProtectedFrontier::open", "FinalUseAuthority::open_state_dir_with_recovered_trust"]
+
+[[protected_file]]
+path = "codex-rs/hepta-supervisor/src/local_model_startup.rs"
+required = ["protected_directory(parent)", "model issuer already active", "ModelIssuerProcessIdentity", "store::publish_identity", "UnixListener::bind(&temporary)", "std::fs::rename(&temporary, &config.issuer_socket)", "Some(0), Some(config.socket_gid)"]
+forbidden = ["SigningKey", "SignedFinalUseGrant", "MODEL_TRUST_CAS", "authority.claim"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/final_use_startup.rs"
+required = ["load_startup_snapshot", "remaining(deadline)", "socket_peercred", "validate_connected_issuer_with_attestation", "exchange_connected", "MODEL_TRUST_LOAD", "CONNREFUSED"]
+forbidden = ["MODEL_TRUST_CAS", "SignedFinalUseGrant", "SystemAuthorityClock"]
+
+
+[[boundary]]
+id = "independent_operational_model_lease_evaluator_v2"
+symbol = "run_operational_model_lease_evaluator_v2"
+call_pattern = '\brun_operational_model_lease_evaluator_v2\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2.rs"
+definition_markers = ["pub fn run_operational_model_lease_evaluator_v2", "boundary(config.uid, config.gid)", "verify_actual_reviewer", "key(&config.private_key_path, config.uid)", "verify_signed_actor_separation", "reinspect_inputs", "hepta.intelligence-eval.operational-model-lease.v2"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs"]
+caller_markers = ["--operational-model-lease-v2", "codex_hepta_intelligence_eval::run_operational_model_lease_evaluator_v2"]
+
+[[boundary]]
+id = "verified_operational_model_lease_v2"
+symbol = "inspect_operational_model_lease_v2"
+call_pattern = '\binspect_operational_model_lease_v2\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2.rs"
+definition_markers = ["pub struct VerifiedOperationalModelLeaseV2", "pub fn inspect_operational_model_lease_v2", "pub fn revalidate_current", "observe_clock", "verify_signed_actor_separation", "reinspect_inputs"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs", "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_v2.rs", "codex-rs/hepta-infer-worker-host/src/initial_cpu_evidence.rs"]
+caller_markers = ["inspect_operational_model_lease_v2", "revalidate_current"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/operational_model_lease_reader_v2.rs"
+required = ["VerifiedOperationalModelLeaseV2", "AtomicU64", "MaterialAdmission::Retained", "observe_clock", "current.authentication_digest != self.authentication_digest"]
+forbidden = ["SigningKey", "pub fn permit_all", "pub fn from_unverified", "pub config:", "pub body:"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/operational_model_lease_host_v2.rs"
+required = ["hepta.intelligence-eval.operational-model-lease.v2", "verify_actual_reviewer", "verify_signed_actor_separation", "reinspect_inputs", "cpu_answer_acceptance_permitted", "execution_ceilings_independently_measured"]
+forbidden = ["calibration_preflight_signing_payload_v1", "holdout.consume", "AuthorityPosture::ALLOW_ALL"]
+
+[[boundary]]
+id = "climate_source_custody_prepare"
+symbol = "prepare_climate_source_holdout"
+call_pattern = '\bprepare_climate_source_holdout\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/climate_holdout_custody.rs"
+definition_markers = ["pub fn prepare_climate_source_holdout", "boundary()?", "cut.validate", "initialize_private_holdout", "NOT_ENOUGH_INFO"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-holdout-custody.rs"]
+caller_markers = ["--prepare-climate", "codex_hepta_intelligence_eval::prepare_climate_source_holdout"]
+
+[[boundary]]
+id = "fixed_source_custody_initialize"
+symbol = "initialize_private_holdout"
+call_pattern = '\binitialize_private_holdout\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_holdout_custody.rs"
+definition_markers = ["pub(super) fn initialize_private_holdout", "LockedFileFinalHoldoutCasStoreV1::create", "FencedFinalHoldoutOwnerV1::initialize", "create_private(witness_path"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/climate_holdout_custody.rs", "codex-rs/hepta-intelligence-eval/src/public_development_custody.rs"]
+caller_markers = ["initialize_private_holdout(", "config_digest"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/climate_holdout_custody.rs"
+required = ["hepta.fixed-climate-holdout.config.v1", "hepta.climate-fever.feature-cut.v1", "annotation_values_used", "old_gold_keys_cas_opened", "original_source_pins", "SUPPORTS", "REFUTES", "NOT_ENOUGH_INFO", "source_component_claim_ids", "inspect_private_holdout"]
+forbidden = ["SigningKey", "holdout.consume", "AuthorityPosture::ALLOW_ALL", "IdempotentReplay"]
+
+[[boundary]]
+id = "independent_installed_cpu_model_use_v2"
+symbol = "select_cpu_model_use_v2"
+call_pattern = '\bselect_cpu_model_use_v2\s*\('
+definition_path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_v2.rs"
+definition_markers = ["pub fn select_cpu_model_use_v2", "actual_role_for_program", "key.sign", "inputs.body(body.issued_at)? != body"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/bin/hepta-initial-cpu-anchor.rs"]
+caller_markers = ["select-installed-model-use-v2", "select_cpu_model_use_v2"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_v2.rs"
+required = ["VerifiedOperationalModelLeaseV2", "super::model_use_binding::verify", "protected_current_head", "eligible_manifest(&expected.artifact_id)", "verify_first_installation", "verify_strict", "installed-abstention-model-use.v2", "selector_program", "selector_program.revalidate()?"]
+forbidden = ["SignedArtifactSelectionV1", "permit_all", "from_unverified", "SigningKey::generate"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_binding_v2.rs"
+required = ["VerifiedOperationalModelLeaseV2", "ConservativeCpuAbstentionOnlyV1", "binding.model_generation != 1", "runtime.normalization_digest", "profile.calibration_gates"]
+forbidden = ["SigningKey", "unwrap_or_default", "set_permissions"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_program_v2.rs"
+required = ["open_root_review_input", "Digest32::of_reader", "self.file.metadata()", "self.original", "512 * 1024 * 1024"]
+forbidden = ["SigningKey", "set_permissions", "write_all", "pub struct Program"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_goal_factory_v3.rs"
+required = ["impl AgentdNeuronGoalScopeFactoryV3 for Factory", "read_agentd_neuron_live_goal_scope_state_v3", "StoreRequirement::Existing", "state.reload_target_scope", "retained.push(state.active_scope)", "self.physical.clone()", "model_use_current::Admission::open", "AgentdNeuronGoalScopeV3::capture", "scope.identity.runtime_configuration_digest", "scope.identity.body_bundle_digest", "open_shared_v2", "with_goal_scope_factory_v3", "with_retained_goal_scope_v3"]
+forbidden = ["SigningKey", "SignedArtifactSelectionV1", "DurableInferenceControl::open", "remove_file", "set_permissions", "AuthorityPosture::ALLOW_ALL"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_model_use_current_v2.rs"
+required = ["current-installed-model-use-pointer.v2", "inspect_cpu_model_use_v2", "revalidate_current", "verify_first_installation", "declared.workload_uid", "before.storage_binding()", "frontier_extends", "fresh.verified.binding() != &self.binding", "NeuronAdmissionError::BindingMismatch", "NeuronAdmissionError::Unavailable", "after >= state.active.verified.expires_at()"]
+forbidden = ["SigningKey", "SignedArtifactSelectionV1", "submit_current_selections", "AuthorityPosture::ALLOW_ALL", "unwrap_or_default"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_tick.rs"
+required = ["GoalMode::ActualCompiledGoal", "encoder_manifest_sha256", "encoder_manifest_digest", "tokenizer_digest", "validate_encoder_domains(&response)", "socket_peercred", "fixed-pair-tick-provider.v3", "self.source.read", "stage.predecessor_digest"]
+forbidden = ["SigningKey", "Command::new", "set_permissions", "AuthorityPosture::ALLOW_ALL"]
+
+[[boundary]]
+id = "paired_original_cas_consumption_reader"
+symbol = "paired_consumption_reader"
+call_pattern = '\.paired_consumption_reader\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/paired_holdout_consumption.rs"
+definition_markers = ["pub(crate) fn paired_consumption_reader", "open_root_review_input", "self.file.try_clone()", "reader.read_state()", "read_exact_at", "decode_locked_state"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/protected_paired_provider.rs"]
+caller_markers = ["paired_consumption_reader", "hepta.fixed-source-holdout.witness.v1", "FinalHoldoutCasAnchorV1"]
+
+[[boundary]]
+id = "paired_protected_observer_provider"
+symbol = "protected_observer_provider"
+call_pattern = '\.protected_observer_provider\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fenced_holdout.rs"
+definition_markers = ["pub(crate) fn protected_observer_provider", "self.poisoned", "ProtectedPairedObservationProviderV1::open"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/paired_supervised_facade.rs", "codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs", "codex-rs/hepta-intelligence-eval/src/fixed_paired_finish_host.rs"]
+caller_markers = ["protected_observer_provider(", "clock.sample_registered"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/protected_paired_provider.rs"
+required = ["read_root_review_input", "private_gold_digest", "hepta.fixed-source-holdout.binding.v1", "paired_consumption_reader", "self.consumption", "self.attempted = true", "decode_transport"]
+forbidden = ["SigningKey", "AuthorityPosture::ALLOW_ALL", "Command::new", "new_generation"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_observer_transport.rs"
+required = ["deny_unknown_fields", "hepta.eval.paired-supervised.observer-cut.v1", "signature_hex.len() != 128", "paired_observation_cut_signing_payload_v1(&cut)? != bytes", "original_elapsed_micros"]
+forbidden = ["SigningKey", "AuthorityPosture::ALLOW_ALL"]
+
+[[boundary]]
+id = "independent_paired_review_evaluator"
+symbol = "run_fixed_paired_review_evaluator"
+call_pattern = '\brun_fixed_paired_review_evaluator\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_review_host.rs"
+definition_markers = ["pub fn run_fixed_paired_review_evaluator", "boundary(config.uid, config.gid)", "verify_actual_reviewer", "Publication::read", "publication.recompute", "key(&config.private_key_path, config.uid)", "clock.sample_registered", "original_custody_verification_required"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-calibration-evaluator.rs"]
+caller_markers = ["--paired-review", "codex_hepta_intelligence_eval::run_fixed_paired_review_evaluator"]
+
+[[boundary]]
+id = "readonly_paired_review_execution_recompute"
+symbol = "review_execution"
+call_pattern = '\breview_execution\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/paired_supervised_runner.rs"
+definition_markers = ["pub(crate) fn review_execution", "registration.verify_current", "verify_cut", "estimate_paired_cut", "holdout.record_digest != holdout.head_digest"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/paired_review_transport.rs"]
+caller_markers = ["review_execution("]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_review_plan.rs"
+required = ["review-plan-inputs.v1", "FrozenTaskSourceLineageV1::freeze", "freeze_paired_supervised_plan_v1", "self.base_plan.folds.is_empty()", "input.finish()"]
+forbidden = ["SigningKey", "LockedFileFinalHoldoutCasStore", "AuthorityPosture::ALLOW_ALL"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_review_transport.rs"
+required = ["review-publication.v1", "source.freeze()? != execution.registration.plan", "trust.revalidate_at(now)", "AuthenticatedPairedRegistrationV1::verify", "execution.execution_digest", "deny_unknown_fields"]
+forbidden = ["SigningKey", "LockedFileFinalHoldoutCasStore", "pub fn decode", "AuthorityPosture::ALLOW_ALL"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_review_host.rs"
+required = ["hepta.fixed-paired-review-config.v1", "verify_actual_reviewer", "publication.recompute", "decide_independently_v2", "verify_independent_roles", "clock.sample_registered", "original_custody_verification_required", "paired_evaluation_signing_payload_v1"]
+forbidden = ["LockedFileFinalHoldoutCasStore", "holdout.consume", "AuthorityPosture::ALLOW_ALL", "payload_hex:"]
+
+[[boundary]]
+id = "public_paired_generator_preregistration"
+symbol = "run_fixed_paired_generator"
+call_pattern = '\brun_fixed_paired_generator\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_generator_host.rs"
+definition_markers = ["pub fn run_fixed_paired_generator", "boundary_in_service", "actual_limits(&cgroup)", "actual_generator", "structural.freeze()", "measured_contract", "signing.sign", "final_holdout_consumed"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-product-evaluation.rs"]
+caller_markers = ["--paired-preregister", "codex_hepta_intelligence_eval::run_fixed_paired_generator"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_development_transport.rs"
+required = ["PublicDevelopmentMeasurementOnlyV1", "socket_peercred", "remaining(deadline)", "entire-encoder-and-backend-service-conservative", "std::process::id()", "deny_unknown_fields", "64 * 1024"]
+forbidden = ["SigningKey", "FinalHoldoutCas", "AuthorityPosture::ALLOW_ALL"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_generator_host.rs"
+required = ["hepta.fixed-paired-generator-config.v1", "structural.freeze()", "source.freeze()", "config.source.read", "actual_generator", "native-unprivileged-generator", "inputs.trust.expires_at", "signing.sign", "original_source_digest"]
+forbidden = ["holdout.consume", "release_after_consumption", "AuthorityPosture::ALLOW_ALL"]
+
+[[boundary]]
+id = "first_public_development_physical_measurement"
+symbol = "run_fixed_public_development_measurement"
+call_pattern = '\brun_fixed_public_development_measurement\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_public_development_host.rs"
+definition_markers = ["pub fn run_fixed_public_development_measurement", "actual_limits", "actual_generator", "inputs.validate()", "activate_learning_trust", "sample(&trust", "config.source.read", "checked_sub(measured_at_ms)", "measure(", "holdout_consumed"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-product-evaluation.rs"]
+caller_markers = ["--public-development-measure", "codex_hepta_intelligence_eval::run_fixed_public_development_measurement"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/fixed_public_development_host.rs"
+required = ["hepta.fixed-public-development-measurement-config.v1", "PURPOSE", "deny_unknown_fields", "boundary_in_service", "PermissionDenied", "actual_generator", "expires_at()", "Vec<Response>", "learning_evidence_signed", "production_activation"]
+forbidden = ["SigningKey", "private_key_path", "FinalHoldoutCasStore", "holdout.consume", "signing.sign", "source.freeze()"]
+
+[[boundary]]
+id = "original_paired_custody_execution"
+symbol = "run_fixed_paired_custody"
+call_pattern = '\brun_fixed_paired_custody\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs"
+definition_markers = ["pub fn run_fixed_paired_custody", "root_boundary()", "inputs.verify_registration", "paired_custody_retention::preflight", "withdrawal-preflight", "evaluate_paired_with_clock"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-holdout-custody.rs"]
+caller_markers = ["--paired-execute", "codex_hepta_intelligence_eval::run_fixed_paired_custody"]
+
+[[boundary]]
+id = "original_paired_custody_finish"
+symbol = "finish_fixed_paired_custody"
+call_pattern = '\bfinish_fixed_paired_custody\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/fixed_paired_finish_host.rs"
+definition_markers = ["pub fn finish_fixed_paired_custody", "publication.recompute", "held.authorize_original_consumption", "decide_independently_v2", "LockedFileProductEvidenceSinkV1::open", "qualify_paired_with_clock"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-holdout-custody.rs"]
+caller_markers = ["--paired-finish", "codex_hepta_intelligence_eval::finish_fixed_paired_custody"]
+
+[[boundary]]
+id = "original_consumed_custody_effect"
+symbol = "authorize_original_consumption"
+call_pattern = '\.authorize_original_consumption\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/protected_paired_provider.rs"
+definition_markers = ["fn authorize_original_consumption", "if self.attempted", "self.consumption", "self.attempted = true"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs", "codex-rs/hepta-intelligence-eval/src/fixed_paired_finish_host.rs"]
+caller_markers = ["authorize_original_consumption(", "clock.sample_registered"]
+
+[[boundary]]
+id = "original_paired_numeric_process"
+symbol = "paired_custody_numeric::execute"
+call_pattern = '\bpaired_custody_numeric::execute\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/paired_custody_numeric.rs"
+definition_markers = ["fn execute(", "model.verify()", "create_private(&intent_path", "JoinedChild", "child.0.wait()", "create_private(&status_path"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs", "codex-rs/hepta-intelligence-eval/src/paired_custody_retention.rs"]
+caller_markers = ["paired_custody_numeric::execute(", "clock.sample_registered"]
+
+[[boundary]]
+id = "original_paired_readonly_withdrawal"
+symbol = "paired_custody_withdrawal::inspect"
+call_pattern = '\bpaired_custody_withdrawal::inspect\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/paired_custody_withdrawal.rs"
+definition_markers = ["fn inspect(", "inspect-learning-withdrawal", "config.probe.read", "JoinedChild", "parse(&bytes", "create_private(&directory.join"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/paired_custody_observations.rs"]
+caller_markers = ["paired_custody_withdrawal::inspect(", "inspection.causal_dependencies()", "same_current_authority"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_custody_withdrawal.rs"
+required = ["deny_unknown_fields", "withdrawal_request.read", "current_owner.read", "record.dependency_ids.contains", "targets != binding.targets", "same_original_facts", "model_weight_forgetting_claimed", "child.0.wait()"]
+forbidden = ["SigningKey", "append_unlearning", "recover_ledger", "sign_root_learning_unlearning", "AuthorityPosture::ALLOW_ALL"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_custody_numeric.rs"
+required = ["weights_filename", ".join(filename)", "self.weights.path", "intent_path.exists()", "status_path.exists()", "model.verify()", "terminal_observed", "input_line_digest", "child.0.wait()"]
+forbidden = ["SigningKey", "FinalHoldoutCas", "AuthorityPosture::ALLOW_ALL", "weights_digest ="]
+
+[[boundary]]
+id = "public_development_source_custody_prepare"
+symbol = "prepare_public_development_custody"
+call_pattern = '\bprepare_public_development_custody\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/public_development_custody.rs"
+definition_markers = ["pub fn prepare_public_development_custody", "boundary()?", "complete_feature_graph.digest != GRAPH", "feature_membership.digest != MEMBERSHIP", "initialize_private_holdout"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/bin/hepta-fixed-holdout-custody.rs"]
+caller_markers = ["--prepare-public-development", "codex_hepta_intelligence_eval::prepare_public_development_custody"]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/public_development_custody.rs"
+required = ["deny_unknown_fields", "row.feature.digest()", "label.component_sha256", "partitions", ".get(&member.component_digest)", "p != &member.partition", "complete_features", "unscored_component_feature_rows", "Repeated public HealthVer train task subset"]
+forbidden = ["SigningKey", "holdout.consume", "signing.sign", "source.freeze", "FinalHoldoutCasStoreV1::create"]
+
+[[boundary]]
+id = "fleet_verified_execution_prepare"
+symbol = "DurableFleetStore::prepare_local_verified_execution"
+call_pattern = '\.\s*prepare_local_verified_execution\s*\('
+definition_path = "codex-rs/hepta-fleet/src/durable_execution.rs"
+definition_markers = ["pub async fn prepare_local_verified_execution", "let launch: String = program", "context.manifest_digest != launch", "Some(program.program_sha256())", "program.verify_current()", "fleet_execution_program_facts"]
+product_callers = ["codex-rs/hepta-supervisor/src/local_fleet_host.rs"]
+caller_markers = ["prepare_local_verified_execution", "program: &codex_hepta_fleet::VerifiedLaunchProgram"]
+
+[[boundary]]
+id = "paired_withdrawal_provider_assignment"
+symbol = "paired_custody_observations::Config::bind"
+call_pattern = '\bwithdrawal\s*\.bind\s*\('
+definition_path = "codex-rs/hepta-intelligence-eval/src/paired_custody_observations.rs"
+definition_markers = ["fn bind(", "config.assignment_map(source)", "withdrawal::descriptor", "Some(observation.dependencies()?)"]
+product_callers = ["codex-rs/hepta-intelligence-eval/src/fixed_paired_custody_host.rs", "codex-rs/hepta-intelligence-eval/src/paired_custody_retention.rs"]
+caller_markers = ["assignment_contract", "withdrawal", "bind("]
+
+[[protected_file]]
+path = "codex-rs/hepta-intelligence-eval/src/paired_custody_observations.rs"
+required = ["deny_unknown_fields", "withdrawal.v2.", "original causal graph edges", "same_current_authority", "inspection.causal_dependencies()", "same_original_facts", "delivery_denial_fraction", "observations.len() > 64"]
+forbidden = ["SigningKey", "append_unlearning", "LockedFileFinalHoldoutCasStore", "AuthorityPosture::ALLOW_ALL", "minimum_independent_clusters ="]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_withdrawal_inspection_dependencies.rs"
+required = ["historical.snapshot()", "current_snapshot", "get(..historical_snapshot", "predecessor_id", "record.event_digest", "ids.len() > 126"]
+forbidden = ["SigningKey", "append_unlearning", "LedgerWriter", "AuthorityPosture::ALLOW_ALL"]
+
+
+[[boundary]]
+id = "closed_cpu_objective_root_signing"
+symbol = "sign_initial_cpu_objective"
+call_pattern = '\bsign_initial_cpu_objective\s*\('
+definition_path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_anchor.rs"
+definition_markers = ["pub fn sign_initial_cpu_objective", "goal_ingress::sign(path, pin)"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/bin/hepta-initial-cpu-anchor.rs"]
+caller_markers = ["sign-cpu-objective", "sign_initial_cpu_objective"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_goal_ingress.rs"
+required = ["role::actual_role_for_program", "transport::observe(&cfg)", "model_use_current::inspect_current", "current.worker_program()?", "current.current_payload_digests()?", "current_goal_bindings", "goal::preview", "objective_ingress_signing_claims_v1", "current.revalidate_current()?", "expires <= now_ms()?"]
+forbidden = ["SigningKey::generate", "unwrap_or_default", "AuthorityPosture::ALLOW_ALL"]
+
+[[boundary]]
+id = "ordinary_cpu_objective_delivery"
+symbol = "deliver_initial_cpu_objective"
+call_pattern = '\bdeliver_initial_cpu_objective\s*\('
+definition_path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_anchor.rs"
+definition_markers = ["pub async fn deliver_initial_cpu_objective", "goal_ingress::deliver(path, pin).await"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/bin/hepta-initial-cpu-anchor.rs"]
+caller_markers = ["deliver-cpu-objective", "deliver_initial_cpu_objective"]
+
+[[protected_file]]
+path = "codex-rs/hepta-infer-worker-host/src/initial_cpu_goal_transport.rs"
+required = ["--require-program-sha256", "resource-observe", "process_start_ticks", "grant.expires_at_ms <= now", "record.lifecycle.lifecycle != AgentLifecycle::Running", "packet.ingress.body.spawn_generation != cfg.spawn_generation", "AgentdClient::new", "with_peer_process(home.uid(), cfg.process_id)?", "client.health().await?", "client.objective_start(packet.ingress).await?"]
+forbidden = ["SigningKey", "loop { client.objective_start", "set_permissions", "AuthorityPosture::ALLOW_ALL"]
+
+[[boundary]]
+id = "original_agent_offline_authbus_checkpoint"
+symbol = "initialize_offline_authbus_checkpoint_v1"
+call_pattern = '\binitialize_offline_authbus_checkpoint_v1\s*\('
+definition_path = "codex-rs/hepta-agentd/src/authbus_offline_initialization.rs"
+definition_markers = ["pub async fn initialize_offline_authbus_checkpoint_v1", "AgentLifecycle::Stopped", "lock.try_lock()", "open_existing_read_only", "authbus_replay_frontier_digest", "reconcile_authbus_restore_checkpoint", "advance_authbus_restore_checkpoint", "create_new(true)"]
+product_callers = ["codex-rs/hepta-infer-worker-host/src/initial_cpu_goal_checkpoint.rs"]
+caller_markers = ["initialize_offline_authbus_checkpoint_v1", "cfg.fleet_root", "cfg.checkpoint"]

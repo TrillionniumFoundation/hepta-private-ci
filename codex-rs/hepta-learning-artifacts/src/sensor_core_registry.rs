@@ -65,7 +65,7 @@ pub fn project_operator_sensor_core_registry_v1(
         .collect::<Vec<_>>();
     entries.sort_by(|left, right| left.manifest.artifact_id.cmp(&right.manifest.artifact_id));
 
-    let source_registry_head_digest = registry.snapshot().head_digest;
+    let source_registry_head_digest = registry.head_digest();
     let projection_digest = digest_projection(source_registry_head_digest, &entries);
     OperatorSensorCoreRegistryV1 {
         entries,
@@ -164,7 +164,7 @@ mod tests {
         assert!(projection.entries()[0].eligible);
         assert_eq!(
             projection.source_registry_head_digest,
-            registry.snapshot().head_digest
+            registry.head_digest()
         );
         assert!(!projection.projection_digest.is_zero());
         assert_eq!(projection.authority, AuthorityPosture::DENY_ALL);

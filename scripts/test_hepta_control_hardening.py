@@ -11,6 +11,7 @@ import unittest
 from unittest.mock import patch
 
 import hepta_repository_controls as controls
+from hepta_workflow_commands import load_workflow, workflow_run, workflow_step_by_id
 
 SHA = "1" * 40
 APP = 123456
@@ -360,13 +361,10 @@ class FormattingCommandTests(unittest.TestCase):
             Path(__file__).resolve().parents[1]
             / ".github/workflows/hepta-converged-learning.yml"
         )
-        block = path.read_text().split(
-            "      - name: Formatting without tested-source mutation\n", 1
-        )[1]
-        block = block.split("      - name:", 1)[0]
-        script = "\n".join(
-            line[10:] for line in block.split("        run: |\n", 1)[1].splitlines()
-        )
+        workflow = load_workflow(path.read_text())
+        step = workflow_step_by_id(workflow, "formatting", "formatting")
+        self.assertEqual(step.get("shell"), "bash")
+        script = workflow_run(step)
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             cargo = root / "cargo"

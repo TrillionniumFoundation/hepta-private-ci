@@ -10,8 +10,131 @@
 /// Model-manifest/grant state machine for native driver implementations.
 pub mod model_worker;
 
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+mod fleet_worker_resource_port_v2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use fleet_worker_resource_port_v2::CurrentFleetWorkerResourcesV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use fleet_worker_resource_port_v2::FleetWorkerProcessBindingV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use fleet_worker_resource_port_v2::FleetWorkerResourcePortV2;
+
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub mod initial_cpu_anchor;
+
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+mod frozen_generator_client;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use frozen_generator_client::CpuNeuronFrozenGeneratorClientV1;
+
+#[cfg(feature = "agentd-host")]
+mod local_cpu_control;
+#[cfg(feature = "agentd-host")]
+mod local_cpu_generation;
+pub mod local_cpu_model;
+#[cfg(feature = "agentd-host")]
+mod local_cpu_parameter_compiler;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_control::CpuNeuronControlConfigV1;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_control::CpuNeuronControlConfigV2;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_control::CpuNeuronInferenceControlV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_control::SharedCpuNeuronInferenceControlV3;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_generation::CpuNeuronGenerationCompositionReaderV2;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_generation::CpuNeuronGenerationCompositionV2;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_generation::CpuNeuronGenerationOpenModeV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_generation::CpuNeuronGenerationPlanV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_generation::bootstrap_installed_cpu_neuron_v1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_generation::open_installed_cpu_neuron_generation_v1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_generation::open_shared_cpu_neuron_goal_scope_v3;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::CpuNeuronGovernedParameterCompilerV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterAdviceContextV2;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterCandidatePlanV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerOwnersV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerPlanV1;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterMaterialCandidateV2;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterMaterialPlanV2;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::describe_cpu_neuron_parameter_choices_v2;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub use local_cpu_parameter_compiler::sparse_cpu_neuron_parameter_diff_v2;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub use local_cpu_parameter_compiler::validate_cpu_neuron_generation_material_v2;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::validate_cpu_neuron_parameter_advice_v2;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::validate_cpu_neuron_parameter_materials_v2;
+#[cfg(feature = "agentd-host")]
+pub use local_cpu_parameter_compiler::validate_cpu_neuron_parameter_receipt_v2;
+
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CPU_PARAMETER_CHECKS_V1;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CPU_PARAMETER_OPERAND_V1;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronGeneratorIssuancePortV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterCandidatePlanV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerOwnersV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerPlanV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterPolicyV2;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronRoundMaterialBlueprintV3;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronRoundMaterialCandidateV3;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::CpuNeuronRoundMaterialsV3;
+#[cfg(all(target_os = "linux", feature = "agentd-host"))]
+pub use local_cpu_parameter_compiler::derive_cpu_neuron_round_materials_v3;
+
 pub mod final_use_authorizer;
+mod final_use_trust_port;
 pub mod native_app_server;
+mod native_cleanup_owner;
+mod native_cleanup_store;
+mod native_deadline;
+mod native_thread_lifecycle;
+pub use native_cleanup_store::NativeCleanupBacklogMetrics;
+pub use native_thread_lifecycle::NativeCleanupMetrics;
+pub use native_thread_lifecycle::native_cleanup_metrics;
+pub mod runtime_codex_attempt;
+pub mod runtime_codex_quarantine;
+mod self_iteration_model;
+mod sqlite;
+pub use self_iteration_model::AppServerSelfIterationModelPortV1;
+#[cfg(feature = "agentd-host")]
+pub use self_iteration_model::NativeModelReceiptReaderV1;
+pub use self_iteration_model::NativeReferenceObservationV1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use self_iteration_model::RootNativeAssessmentScopeV1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use self_iteration_model::validate_root_native_assessment_facts_v1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use self_iteration_model::validate_root_native_failure_facts_v1;
+
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+mod root_frozen_generator;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_frozen_generator::RootFrozenGeneratorServiceV1;
 
 use std::error::Error as StdError;
 use std::fmt;
@@ -267,3 +390,28 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(feature = "agentd-host")]
+pub mod evolving_agentd;
+
+#[cfg(feature = "agentd-host")]
+#[path = "local_cpu_generation_material_codec_v2.rs"]
+mod cpu_generation_material;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub use cpu_generation_material::MAX_CPU_NEURON_GENERATION_MATERIAL_BYTES_V2;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub use cpu_generation_material::decode_cpu_neuron_generation_material_v2;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub use cpu_generation_material::encode_cpu_neuron_generation_material_v2;
+
+#[cfg(feature = "fixed-initial-cpu-host")]
+mod local_cpu_parameter_root_materials_v2;
+#[cfg(feature = "fixed-initial-cpu-host")]
+pub use local_cpu_parameter_root_materials_v2::CpuNeuronParameterRootMaterialsV2;
+
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+mod root_parameter_role_inputs_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use root_parameter_role_inputs_v3::prepare_root_parameter_generator_inputs_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use root_parameter_role_inputs_v3::prepare_root_parameter_observer_inputs_v1;

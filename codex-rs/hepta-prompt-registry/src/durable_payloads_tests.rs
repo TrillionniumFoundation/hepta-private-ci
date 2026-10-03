@@ -28,7 +28,10 @@ fn factor(index: usize) -> PromptFactor {
     }
 }
 
-fn add_payload(core: &mut PromptRegistry, index: usize) -> Result<RegistryReceipt, Error> {
+pub(super) fn add_payload(
+    core: &mut PromptRegistry,
+    index: usize,
+) -> Result<RegistryReceipt, Error> {
     let factor = factor(index);
     let factor_id = factor.factor_id.clone();
     core.register_factor(factor)?;
@@ -236,7 +239,7 @@ fn v2_migration_preserves_payloads_frontiers_and_semantic_identity() {
     let manifest: serde_json::Value =
         serde_json::from_slice(&std::fs::read(path.join("registry.json")).must("manifest"))
             .must("json");
-    assert_eq!(manifest["schema"], 3);
+    assert_eq!(manifest["schema"], 4);
     assert_eq!(manifest["state"]["payloads"], serde_json::json!([]));
     assert!(path.join(payloads::FILE_NAME).is_file());
 }
@@ -309,7 +312,7 @@ fn malformed_extent_manifests_cannot_reinterpret_or_trim_committed_bytes() {
                     {"realization_id": "realization:0", "payload": [1]}
                 ])
             }
-            "schema" => value["schema"] = 4.into(),
+            "schema" => value["schema"] = 5.into(),
             _ => unreachable!(),
         }
         std::fs::write(&manifest, serde_json::to_vec(&value).must("encode")).must("mutate");

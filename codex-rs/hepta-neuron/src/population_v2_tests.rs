@@ -1,5 +1,7 @@
 use super::*;
 
+use pretty_assertions::assert_eq;
+
 fn checked<T, E: std::fmt::Debug>(value: Result<T, E>) -> T {
     match value {
         Ok(value) => value,
@@ -146,5 +148,76 @@ fn every_activation_requires_a_registered_temporal_projection() {
     assert_eq!(
         invalid.digest().err(),
         Some(PopulationSparseError::InvalidConfig)
+    );
+}
+
+#[test]
+fn projection_and_inhibition_sections_have_distinct_configuration_identity() {
+    let mut projected = config();
+    projected.temporal_width = 5;
+    projected.activation_width = 5;
+    projected.projection = (0..5)
+        .map(|target_activation| TemporalProjectionEdgeV2 {
+            source_temporal: 0,
+            target_activation,
+            weight_q24: Q,
+        })
+        .collect();
+    projected.populations = vec![ActivationPopulationV2 {
+        start: 0,
+        len: 5,
+        top_k: 1,
+    }];
+    let mut inhibited = projected.clone();
+    // Without section framing, these two edge tuples occupy identical bytes.
+    projected.projection.push(TemporalProjectionEdgeV2 {
+        source_temporal: 4,
+        target_activation: 0,
+        weight_q24: Q,
+    });
+    inhibited.inhibition.push(InhibitoryEdge {
+        source: 4,
+        target: 0,
+        weight_q24: Q,
+    });
+    assert_ne!(checked(projected.digest()), checked(inhibited.digest()));
+
+    let mut first_input = tick(1, 10);
+    first_input.temporal_drive_q24 = vec![0, 0, 0, 0, Q];
+    first_input.prediction_q24 = vec![0; 5];
+    let (checkpoint, signal) = checked(population_sparse_tick_v2(&projected, &first_input, None));
+    let (_, inhibited_signal) = checked(population_sparse_tick_v2(&inhibited, &first_input, None));
+    assert_ne!(signal.activation_q24, inhibited_signal.activation_q24);
+
+    first_input.sequence = 2;
+    first_input.monotonic_micros = 20;
+    assert_eq!(
+        population_sparse_tick_v2(&inhibited, &first_input, Some(&checkpoint)),
+        Err(PopulationSparseError::ConfigDrift)
+    );
+}
+
+#[test]
+fn projection_and_inhibition_order_does_not_change_configuration_identity() {
+    let mut original = config();
+    original.inhibition = vec![
+        InhibitoryEdge {
+            source: 0,
+            target: 1,
+            weight_q24: Q / 2,
+        },
+        InhibitoryEdge {
+            source: 1,
+            target: 0,
+            weight_q24: Q / 2,
+        },
+    ];
+    let mut reordered = original.clone();
+    reordered.projection.reverse();
+    reordered.inhibition.reverse();
+    assert_eq!(checked(original.digest()), checked(reordered.digest()));
+    assert_eq!(
+        checked(population_sparse_tick_v2(&original, &tick(1, 10), None)),
+        checked(population_sparse_tick_v2(&reordered, &tick(1, 10), None))
     );
 }

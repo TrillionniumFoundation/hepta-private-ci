@@ -79,6 +79,9 @@ pub use codex_protocol::protocol::SessionMeta;
 pub use compression::RolloutLineReader;
 pub use compression::existing_rollout_path;
 pub use compression::open_rollout_line_reader;
+mod bounded_reader;
+pub use bounded_reader::BoundedRolloutLineReader;
+pub use bounded_reader::open_bounded_rollout_line_reader;
 pub use compression::plain_rollout_path;
 pub use compression::spawn_rollout_compression_worker;
 

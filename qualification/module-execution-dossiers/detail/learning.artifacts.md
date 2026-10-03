@@ -33,6 +33,10 @@ New/hardened operations include:
 - `DatasetWithdrawalRegistry::new_scoped`, `append` and `admit_manifest`;
 - `admit_manifest_at_withdrawal_head_v3`,
   `verify_artifact_admission_v3` and `validate_artifact_publication_v3`;
+- `write_artifact_admission_beneath`, `read_artifact_admission`,
+  `read_artifact_admission_by_digest` and
+  `read_artifact_admission_by_manifest_digest`; the full canonical V3 sidecar
+  requires an independently retained file receipt or semantic commitment;
 - `ArtifactPublicationTransactionV1::{begin, record_payload_durable,
   record_registry_durable, record_witness_durable, acknowledge, status, snapshot,
   from_snapshot}`;
@@ -43,6 +47,9 @@ New/hardened operations include:
 - `validate_iteration_transition` and
   `IterationLedgerV1::{append_candidate, transition, snapshot, from_snapshot}`.
 - `ArtifactSelectionVerifierV1::verify`, `record_verified_selection` and `load_selected_candidate`; selector trust is bound to the artifact-owner trust snapshot but uses a disjoint selector key set.
+- `VerifiedCurrentRegistryViewV1::supports_dataset`; owner-service views check
+  complete retained source membership, while raw V1 views preserve only the
+  explicit legacy direct support-digest profile.
 
 Candidate registration or admission is not selection. A successful read is not
 execution or activation. Iteration records do not run a sandbox, merge source,
@@ -60,13 +67,15 @@ A scoped registry has a scope-specific genesis/head; V3 admission additionally
 binds that scope digest and withdrawal head. Unscoped registries cannot issue
 V3 admissions.
 
-The stable V1 registry is a compatibility index and cannot represent all V2
-lineage. The implementation therefore does not collapse multiple V2
-predecessors or datasets into one V1 field. `ArtifactPublicationTransactionV1`
-retains the complete V3 admission as the authoritative V2 sidecar and verifies
-that the final V1 registration agrees only on faithfully representable fields:
-identity, kind, generation, payload digest, producer, compatibility digest and
-exact byte length.
+The stable V1 registry cannot represent all V2 lineage. The complete V3
+admission has a canonical `HEPTAA03` sidecar, bounded at 128 KiB and persisted
+before Prepared. Recovery verifies its independent admission commitment and
+manifest index. Multiple-parent manifests remain representable in V2/V3
+admission/storage, but publication and transaction replay reject them until a
+versioned reader can enforce all ancestor relationships at final use. The V1
+projection binds identity, kind, generation, payload, producer, objective,
+complete manifest support digest, compatibility, byte length and the sole
+predecessor. Single-parent children must retain their parent's datasets.
 
 Publication is an ordered durability protocol:
 
@@ -85,6 +94,20 @@ Acknowledgement before durable current-head witness evidence is rejected. The
 host must persist the transaction snapshot under its writer fence before treating
 a phase as durable; this is a hard host transaction contract, not a false claim
 of atomic multi-file fsync.
+
+The public Owner host requires every phase mutation/resume to match its latest
+complete durable checkpoint and the current signed writer lease's
+producer/scope. Public transaction values cannot bypass Prepared admission,
+restore stale phases or transfer another producer's transaction. Same-producer
+lease rotation retains the original durable lease commitment.
+
+New operation Prepared state binds the current signed predecessor/trusted
+genesis. Owner registration commits the complete publication intent in
+`artifact-publication:<intent_digest>`, preventing local checkpoint rename/hash
+replay from inventing another signed operation. Current inventory verifies
+historical operation associations against its signed prefix, with at most one
+unfinished RegistryDurable snapshot checked separately. Each checkpoint must
+publish successfully before in-memory phase advancement.
 
 ## 4. Deterministic algorithm and scheduling
 
@@ -122,7 +145,14 @@ registry could accept more records than the durable snapshot format.
 Candidate payloads are bounded at 64 MiB; V1/auxiliary snapshots are bounded.
 V2 manifests bound datasets, lineage and predecessor vectors. Iteration
 envelopes separately cap candidates, files, semantic diff bytes and named
-parallel sandboxes.
+parallel sandboxes. Iteration snapshot replay checks candidate and event counts
+before cloning candidate states or rebuilding the event ledger.
+
+V1 lineage eligibility is a private replay-derived index. Registry changes
+iteratively invalidate affected descendants and never revive excluded entries;
+replay/clone reproduce the same eligibility without changing durable event or
+chain digests. This reduces repeated predecessor walks and does not replace
+full current source-provenance validation.
 
 For new path-based host integration, use the `*_beneath` writers. They validate
 before final-path creation and reject absolute paths, `..`, non-normal
@@ -185,12 +215,26 @@ Every canonical Lane E case remains mapped in
 `../../lane-e/TEST_TRACEABILITY.json`. Source test identity is not an execution
 receipt.
 
+Supplementary references under the existing ART cases cover the complete
+admission codec, exact projection, rejected-CURRENT side effects, partial-record
+recovery, lease rotation, terminal retry identity, inherited source closure,
+expiry/withdrawal exclusions and selector credential limits. They preserve the
+canonical case inventory and do not convert test source into a pass receipt.
+Checkpoint tests additionally prove complete intent/state replay, immutable
+receipt progression and rejection of terminal corruption by startup, current
+reads and retry. Later source withdrawal preserves valid historical terminal
+recovery while closing affected current eligibility.
+
 ## 7. Integration, rollback and capability ceiling
 
 `RevalidatingCandidate::with_current` guards cached consumption with a
 monotonic current registry prefix and exact lineage eligibility. Any failed
 refresh closes the consumer. A valid old snapshot cannot be substituted to
 resurrect a revoked candidate.
+Selected consumers retain their verified owner trust and provenance requirement;
+generic pinned consumers bind the first accepted trust. Once complete provenance
+is accepted, even a same-trust raw V1 view is a rejected downgrade. Trust changes
+and provenance downgrades require explicit new admission.
 
 The persistent scoped withdrawal registry closes future admission of withdrawn
 datasets. Snapshot-local `prepare_dataset_revocation` remains the batch that
@@ -205,6 +249,13 @@ authenticated and fenced host operation.
 ## 8. Current native implementation
 
 Authenticated CURRENT discovery supports bounded signer rotation: historical pre-revocation heads remain replayable, while the newest head requires a currently valid signer and non-regressing authority epoch.
+Live global generation/epoch floors apply to the newest CURRENT. Historical
+heads and anchors retain original enrolled per-key signature/epoch/time checks,
+with strictly increasing generations and non-regressing epochs/issue times.
+
+A terminal maximum-generation CURRENT stays readable and restartable. A checked
+next generation is required for a new operation; exhausted-generation extension
+rejects before admission/Prepared publication without replacing the existing head.
 
 `ArtifactOwnerVerifierV1::verify_current_registry_view` and
 `LearningArtifactOwnerHost::current_registry_view` issue the same opaque
@@ -228,9 +279,31 @@ instead of a caller-constructible file/receipt pair.
 - **Operating references:** `STORAGE.md`, `READ_BOUNDARY.md`,
   `PINNED_LOAD.md`, `DATASET_REVOCATION.md`, `NATIVE_MAPPING.md`.
 
-The repository-controlled source gap is now primarily exact-candidate
-qualification, not missing core data structures. Current CI must still prove the
-exact head and actual-base synthetic merge.
+Detailed owner configuration, trust, restart, upgrade and recovery contracts
+are in `../../../codex-rs/hepta-learning-artifacts/OWNER_SERVICE.md`.
+Complete admissions are implemented in `admission_storage.rs`; owner lineage
+and current per-artifact expiry/withdrawal exclusions are in
+`owner_admissions.rs`. The service returns the exclusions as a read-eligibility
+overlay; selectors and cached consumers honor `view.is_eligible`, preserving
+valid unrelated candidates. Raw owner/verifier CURRENT views prove V1 history
+only. Missing or corrupt full provenance closes service view acquisition.
+
+The explicit Agentd plasticity descriptor/bootstrap already consumes a
+receipt-pinned V1 artifact snapshot for parameter/topology baselines and policy
+evidence. Its retained registry eligibility checks do not acquire the Owner's
+complete current provenance or a newer withdrawal frontier. Recomputing that
+snapshot head or keeping its descriptor within TTL does not detect intervening
+expiry/source withdrawal. An explicit supported provenance profile and current
+provider integration are still required; V1 support digests cannot identify
+legacy versus full-manifest semantics. This existing compatibility path is
+distinct from the absent complete Owner/ranker bootstrap.
+
+Normal executable bootstrap still does not compose the writer service,
+authenticated withdrawal/current provider and independently selected Agentd
+ranker. Multi-parent final-use ancestry and trusted legacy admission backfill
+also remain repository integration work. Old checkpoints lacking full
+admission sidecars cannot transparently reopen. Exact-candidate and actual-base
+synthetic-merge qualification remain separate from these source facts.
 
 ## 9. Native closure and remaining evidence
 

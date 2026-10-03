@@ -122,6 +122,7 @@ impl AutomationStore {
                     self.timer_epoch(),
                 )
                 .await?;
+                self.ensure_timer_not_retired()?;
                 if phase != TimerPhase::Active {
                     return Err(AutomationError::Conflict);
                 }

@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 13
+id = "objective.compiler"
+plane = "domain"
+kind = "compiler"
+lifecycle = "target"
+state = "stateless"
+architectureRole = "objective_compiler"
+writes = []
+uses = ["platform.types", "cognitive.read"]
+owner = "intelligence-platform"
+deputy = "kernel-contracts"
+denies = ["runtime_objective_rewrite", "hard_constraint_mutation"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = true
+sourceEvidenceRoots = ["codex-rs/hepta-objective"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "OBJ-0-OBJECTIVE-CONTRACTS"
+technicalDocument = "docs/modules/objective.compiler/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-objective"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-objective"
+compileLayer = 1
+ciGroups = ["learning", "objective"]

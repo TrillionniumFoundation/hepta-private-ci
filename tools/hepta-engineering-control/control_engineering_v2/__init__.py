@@ -131,6 +131,12 @@ from .production import (
     ProductionReadinessFacts,
     evaluate_production_readiness,
 )
+from .pull_request import (
+    DraftPullRequestReceipt,
+    DraftPullRequestRequest,
+    github_api,
+    open_draft_pull_request,
+)
 from .hardening import (
     AttestedSandboxParity,
     BoundEvidenceDecision,
@@ -182,6 +188,8 @@ __all__ = [
     "EngineeringPlan",
     "EngineeringWorkPackage",
     "DistributedFenceReceipt",
+    "DraftPullRequestReceipt",
+    "DraftPullRequestRequest",
     "DistributedRevocationFrontierReceipt",
     "EngineeringError",
     "EngineeringStore",
@@ -244,6 +252,8 @@ __all__ = [
     "execute_candidate_sandbox",
     "generate_candidate",
     "generate_candidates",
+    "github_api",
+    "open_draft_pull_request",
     "hardened_execute_candidate_sandbox",
     "hardened_prepare_assimilation_candidate",
     "hardened_record_integration_decision",

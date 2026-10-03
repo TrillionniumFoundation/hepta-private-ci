@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 2
+id = "kernel.authority"
+plane = "kernel"
+kind = "authority"
+lifecycle = "existing"
+state = "stateful"
+architectureRole = "immutable_kernel"
+writes = ["authority_lease", "capability_revocation"]
+uses = ["platform.types"]
+owner = "security-authority"
+deputy = "kernel-contracts"
+denies = ["physical_effect", "self_issued_acceptance", "learned_hard_constraint"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-contracts", "codex-rs/ext/hepta-governance"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "P0.7B-B0-VERIFIED-USE"
+technicalDocument = "docs/modules/kernel.authority/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-contracts"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-contracts"
+compileLayer = 0
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

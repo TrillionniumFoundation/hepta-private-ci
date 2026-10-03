@@ -14,29 +14,39 @@ import tomllib
 from fnmatch import fnmatchcase
 from pathlib import Path
 
+from v8_canary_inputs import SCOPED_INPUTS
+from v8_canary_inputs import v8_dependency_closure
+
 
 ROOT = Path(__file__).resolve().parents[2]
 # These patterns replace the old pull_request/push path filters. Include parent
 # workflow changes because they can alter whether the canary is invoked.
 CANARY_PATH_PATTERNS = {
     ".bazelrc",
+    ".bazelversion",
     ".github/actions/setup-bazel-ci/**",
     ".github/actions/setup-ci/**",
+    ".github/actions/setup-rusty-v8/**",
     ".github/scripts/run_bazel_with_buildbuddy.py",
     ".github/scripts/rusty_v8_bazel.py",
     ".github/scripts/rusty_v8_module_bazel.py",
     ".github/scripts/setup-dev-drive.ps1",
     ".github/scripts/v8_canary_changes.py",
+    ".github/scripts/v8_canary_inputs.py",
     ".github/workflows/postmerge-ci.yml",
     ".github/workflows/rusty-v8-release.yml",
     ".github/workflows/v8-canary.yml",
     "MODULE.bazel",
     "MODULE.bazel.lock",
     "codex-rs/Cargo.toml",
+    "codex-rs/.cargo/**",
+    "codex-rs/rust-toolchain.toml",
+    "codex-rs/v8-poc/**",
+    "bazel/toolchains/**",
+    "bazel/platforms/**",
+    "bazel/modules/**",
     "patches/BUILD.bazel",
-    "patches/llvm_*.patch",
-    "patches/rules_cc_*.patch",
-    "patches/v8_*.patch",
+    "patches/*.patch",
     "third_party/v8/**",
 }
 # Windows source builds are a narrower, more expensive subset of the canary.
@@ -47,6 +57,7 @@ WINDOWS_SOURCE_BUILD_PATHS = {
     ".github/scripts/rusty_v8_module_bazel.py",
     ".github/scripts/setup-dev-drive.ps1",
     ".github/scripts/v8_canary_changes.py",
+    ".github/scripts/v8_canary_inputs.py",
     ".github/workflows/rusty-v8-release.yml",
     ".github/workflows/v8-canary.yml",
 }
@@ -67,10 +78,12 @@ def canary_required(
     head_v8_version: str,
     *,
     force: bool = False,
+    dependency_changed: bool = False,
 ) -> bool:
     """Return whether the general V8 build matrix should run."""
     return (
         force
+        or dependency_changed
         or base_v8_version != head_v8_version
         or bool(matching_canary_paths(changed_files))
     )
@@ -104,10 +117,12 @@ def windows_source_required(
     head_v8_version: str,
     *,
     force: bool = False,
+    dependency_changed: bool = False,
 ) -> bool:
     """Return whether Windows must rebuild rusty_v8 from source."""
     return (
         force
+        or dependency_changed
         or base_v8_version != head_v8_version
         or bool(matching_windows_source_paths(changed_files))
     )
@@ -121,6 +136,33 @@ def v8_version_at_revision(revision: str, *, root: Path = ROOT) -> str:
     return resolved_v8_version(
         git_output("show", f"{revision}:codex-rs/Cargo.lock", root=root)
     )
+
+
+def scoped_canary_files(
+    files: set[str], base: str, head: str, *, root: Path = ROOT
+) -> tuple[set[str], bool]:
+    """Remove only changes whose V8 inputs are demonstrably unchanged."""
+    base_closure = v8_dependency_closure(
+        git_output("show", f"{base}:codex-rs/Cargo.lock", root=root)
+    )
+    head_closure = v8_dependency_closure(
+        git_output("show", f"{head}:codex-rs/Cargo.lock", root=root)
+    )
+    scoped = files.copy()
+    for path, project in SCOPED_INPUTS.items():
+        if path in files:
+            before = project(
+                git_output("show", f"{base}:{path}", root=root), base_closure
+            )
+            after = project(
+                git_output("show", f"{head}:{path}", root=root), head_closure
+            )
+            if before == after:
+                scoped.remove(path)
+    # Cargo.lock does not bind local path source bytes. Until those inputs have
+    # a dedicated source closure, keep changed ranges conservative.
+    local_source = any("source" not in package for package in head_closure)
+    return scoped, base_closure != head_closure or local_source and bool(files)
 
 
 def merge_base(base: str, head: str, *, root: Path = ROOT) -> str:
@@ -161,14 +203,24 @@ def main() -> None:
         raise SystemExit("--base and --head are required unless --force is set")
     else:
         files = changed_files(args.base, args.head)
-        base_version = v8_version_at_revision(merge_base(args.base, args.head))
+        comparison_base = merge_base(args.base, args.head)
+        files, dependency_changed = scoped_canary_files(
+            files, comparison_base, args.head
+        )
+        base_version = v8_version_at_revision(comparison_base)
         head_version = v8_version_at_revision(args.head)
 
         matched_canary_paths = sorted(matching_canary_paths(files))
-        canary = canary_required(files, base_version, head_version)
-        windows_source = windows_source_required(files, base_version, head_version)
-        if base_version != head_version:
-            canary_reason = f"v8 version changed from {base_version} to {head_version}"
+        canary = canary_required(
+            files, base_version, head_version, dependency_changed=dependency_changed
+        )
+        windows_source = windows_source_required(
+            files, base_version, head_version, dependency_changed=dependency_changed
+        )
+        if base_version != head_version or dependency_changed:
+            canary_reason = (
+                f"v8 dependency closure changed ({base_version} -> {head_version})"
+            )
             windows_source_reason = canary_reason
         else:
             canary_reason = (

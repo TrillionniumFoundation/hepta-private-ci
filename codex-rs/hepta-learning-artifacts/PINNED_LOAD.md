@@ -19,9 +19,15 @@ that receipt from the file under inspection only proves self-consistency and is
 forbidden. Final-use revalidation is stronger: `LearningArtifactOwnerHost` /
 `LearningArtifactOwnerService` discovers and verifies signed CURRENT, while a
 read-only proxy may use `ArtifactOwnerVerifierV1::verify_current_registry_view`.
-Both routes issue the same opaque `VerifiedCurrentRegistryViewV1`. The host also
-owns trusted parent traversal, file ownership, scope binding, and generation
-fencing.
+These routes issue the same opaque `VerifiedCurrentRegistryViewV1`, but their
+guarantees differ. Raw owner-host/verifier views authenticate the signed V1
+compatibility registry. `LearningArtifactOwnerService::current_registry_view`
+also checks complete durable V2 provenance, manifest expiry and current source
+withdrawals and excludes affected artifacts and descendants through an internal
+eligibility overlay. Product providers must perform these full service-level
+checks; opaque V1 currentness alone does not prove them. The host also owns
+trusted parent traversal, file ownership, scope binding and generation fencing.
+See [`OWNER_SERVICE.md`](OWNER_SERVICE.md) for the complete provider contract.
 
 A successfully verified snapshot is not necessarily the newest snapshot. The
 loader proves lineage eligibility only relative to the supplied snapshot. It
@@ -57,10 +63,26 @@ or `ArtifactOwnerVerifierV1` must first verify the signed CURRENT head, signer
 context/authority epoch, exact registry binding and immutable snapshot. The
 candidate then checks nondecreasing record count and the actual previous chain
 prefix (including longer-fork rejection), exact manifest and ancestor
-eligibility before invoking the read-only consumer. It does not reread or
-retrain the immutable payload.
+eligibility before invoking the read-only consumer. Its `view.is_eligible`
+check also honors the service's per-artifact expiry/withdrawal overlay. It does
+not reread or retrain the immutable payload.
 
-Every failed refresh closes that consumer permanently. Restoring an old snapshot
+An independently selected consumer inherits the verified selection's owner
+trust and required provenance strength. A generic host-pinned consumer binds the
+first accepted view's trust. After either path accepts complete V2 provenance,
+it rejects a later raw V1 view even with the same signed registry and owner trust.
+Trust substitution or this provenance downgrade permanently closes the
+consumer; trust rotation requires explicit new admission.
+
+`VerifiedCurrentRegistryViewV1::supports_dataset` separately checks an exact
+eligible manifest and a nonzero dataset digest. Full service views use retained
+V2 source membership, including an explicitly empty set; raw V1 views retain
+only the legacy direct support-digest binding. A complete V2 manifest commitment
+must not be compared to a model's dataset digest as if they were the same field.
+
+Every failed refresh closes that consumer permanently. When current-view
+acquisition fails before `with_current` can run, the embedding must discard the
+cached candidate instead of reusing an old opaque view. Restoring an old snapshot
 cannot revive it: explicit admission of a new consumer is required. The host
 still owns latest-view discovery, publication/use serialization, body generation
 and the final effect boundary. Cached output is not a future-use capability.

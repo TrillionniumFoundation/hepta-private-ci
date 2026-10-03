@@ -5,6 +5,7 @@
 mod authbus;
 mod capabilities;
 mod evidence;
+mod module_selection;
 pub use authbus::AuthBusObjectiveBody;
 pub use authbus::AuthBusObjectiveIngress;
 pub use authbus::AuthBusTextBody;
@@ -15,6 +16,7 @@ pub use authbus::ObjectiveRunAdmission;
 pub use authbus::ObjectiveStartOutcome;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_CALENDAR_V2;
 pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_EXTERNAL_EFFECT;
+pub use capabilities::AGENTD_CAPABILITY_AUTOMATION_LIST_PAGE_V1;
 pub use capabilities::AGENTD_CAPABILITY_CANONICAL_INTELLIGENCE_V1;
 pub use capabilities::AGENTD_CAPABILITY_SCHEMA_VERSION;
 pub use capabilities::AgentdCapability;
@@ -28,6 +30,11 @@ pub use evidence::KernelEvidenceResult;
 pub use evidence::KernelEvidenceVerifyV1;
 pub use evidence::MAX_KERNEL_EVIDENCE_ENVELOPE_BYTES;
 pub use evidence::MAX_KERNEL_EVIDENCE_REQUIRED_ROLES;
+pub use module_selection::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
+pub use module_selection::RuntimeModuleBindingV1;
+pub use module_selection::RuntimeModuleSelectionV1;
+pub use module_selection::SUPERVISORD_CONTROL_SCHEMA_VERSION;
+pub use module_selection::validate_runtime_module_id;
 
 use std::path::PathBuf;
 
@@ -36,8 +43,10 @@ use codex_hepta_automation::AutomationCalendarScheduleV2;
 use codex_hepta_automation::AutomationMissedRunPolicy;
 use codex_hepta_automation::AutomationOverlapPolicy;
 use codex_hepta_automation::AutomationTask;
+use codex_hepta_automation::AutomationTaskCursorV1;
 use codex_hepta_automation::AutomationTaskDraft;
 use codex_hepta_automation::AutomationTaskId;
+use codex_hepta_automation::AutomationTaskPageV1;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_contracts::SignedFinalUseGrant;
@@ -51,6 +60,8 @@ pub const AGENTD_CONTROL_SCHEMA_VERSION: u32 = 2;
 /// runtime yet; it gives a future host/supervisor seam one strict wire shape.
 pub const HOST_TURN_AUTHORITY_BINDING_SCHEMA_VERSION: u32 = 1;
 pub const MAX_CONTROL_FRAME_BYTES: u64 = 65_536;
+/// Keep a bounded page plus cursor below the unchanged control-frame envelope.
+pub const MAX_AUTOMATION_LIST_PAGE_BYTES: usize = 60 * 1024;
 pub const MAX_AUTOMATION_EFFECT_WIRE_BYTES: usize = 24 * 1024;
 /// Maximum serialized cognitive context accepted by both Agentd and the final model consumer.
 pub const MAX_COGNITIVE_CONTEXT_BYTES: usize = 8 * 1024;
@@ -59,7 +70,7 @@ pub const MAX_EVENT_BATCH: u16 = 256;
 pub const MAX_FEDERATION_CONTROL_LIST: u16 = 128;
 pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_ID: &str = "run.lifecycle";
 pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MAJOR: u16 = 1;
-pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR: u16 = 1;
+pub const AGENTD_RUN_LIFECYCLE_CAPABILITY_MINOR: u16 = 2;
 pub const MAX_RUN_CANCEL_REASON_BYTES: usize = 512;
 pub const AGENTD_OVERLOAD_RETRY_AFTER_MS: u64 = 50;
 pub const AGENTD_CONTROL_OVERLOAD_FRAME: &[u8] =
@@ -129,6 +140,7 @@ pub enum AgentRunPhase {
     Admitted,
     ContextAttached,
     Dispatched,
+    AbortedBeforeEffect,
     Cancelling,
     Cancelled,
     Succeeded,
@@ -187,6 +199,12 @@ pub struct AgentRunReceipt {
     pub generation: u64,
     pub fence_digest: String,
     pub deadline_ms: u64,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub dispatch_binding_digest: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pre_effect_abort_commitment_digest: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub pre_effect_abort_proof_digest: Option<String>,
     pub cancel_reason: Option<String>,
     pub cancel_ack_deadline_ms: Option<u64>,
     pub terminal_observed: bool,
@@ -338,7 +356,7 @@ impl AgentdRequest {
             method: AgentdMethod::AutomationExecuteEffect {
                 intent,
                 wire_payload_hex,
-                signed_grant,
+                signed_grant: Box::new(signed_grant),
                 command_id,
             },
         }
@@ -360,6 +378,20 @@ impl AgentdRequest {
                 step_id,
                 attempt,
             },
+        }
+    }
+
+    pub fn automation_list_page_v1(
+        request_id: u64,
+        spawn_generation: u64,
+        limit: u16,
+        after: Option<AutomationTaskCursorV1>,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::AutomationListPageV1 { limit, after },
         }
     }
 
@@ -501,6 +533,52 @@ impl AgentdRequest {
         }
     }
 
+    pub fn run_mark_dispatched_bound(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        pre_effect_abort_commitment_digest: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunMarkDispatchedBound {
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                pre_effect_abort_commitment_digest,
+            },
+        }
+    }
+
+    pub fn run_abort_before_effect(
+        request_id: u64,
+        spawn_generation: u64,
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        abort_nonce_hex: String,
+        proof_digest: String,
+        reason: String,
+    ) -> Self {
+        Self {
+            schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
+            request_id,
+            spawn_generation,
+            method: AgentdMethod::RunAbortBeforeEffect {
+                run_id,
+                expected_revision,
+                dispatch_binding_digest,
+                abort_nonce_hex,
+                proof_digest,
+                reason,
+            },
+        }
+    }
+
     pub fn run_cancel(
         request_id: u64,
         spawn_generation: u64,
@@ -568,9 +646,72 @@ impl AgentdRequest {
     }
 }
 
+/// Exact original live Neuron operation requested by the authenticated Root peer.
+/// These identities select observations and grant no execution authority.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct CanaryOperationQueryV2 {
+    pub model_generation: u64,
+    pub configuration_digest: String,
+    pub body_digest: String,
+    pub scope_digest: String,
+    pub objective_digest: String,
+    pub tick_id: String,
+    pub input_semantic_digest: String,
+}
+
+/// Complete factual inputs to the original parameter admission owner. The
+/// profile uses its original bounded codec; this query grants no mutation.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ParameterAdmissionQueryV1 {
+    pub baseline_id: String,
+    pub objective_digest: String,
+    pub profile_hex: String,
+    pub baseline_generation: u64,
+    pub candidate_generation: u64,
+    pub dataset_digest: String,
+    pub update_rule_digest: String,
+    pub modulator_digest: String,
+    pub modulator_broadcast_digest: String,
+    pub eligibility_digest: String,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
+    ResolveParameterAdmissionV1 {
+        query: ParameterAdmissionQueryV1,
+    },
+    PreparedGenerationV2 {
+        generation: u64,
+        configuration_digest: String,
+        body_digest: String,
+    },
+    CanaryOperationReceipt {
+        query: CanaryOperationQueryV2,
+    },
+    NativeModelReceipt {
+        request_id: String,
+    },
+    PlasticityCompletedProposal {
+        proposal_id: String,
+    },
+    SelfIterationRoundStatus {
+        goal_id: String,
+        canonical_policy_digest: String,
+    },
+    SelfIterationCurrentRound,
+    SecretsConsumeOriginal {
+        original_id: String,
+        budget_ms: u64,
+    },
+    SecretsOriginalStatus {
+        original_id: String,
+    },
+    SecretsRecoverOriginal {
+        original_id: String,
+    },
     Capabilities,
     Health,
     Lifecycle,
@@ -621,6 +762,20 @@ pub enum AgentdMethod {
         run_id: String,
         expected_revision: u64,
     },
+    RunMarkDispatchedBound {
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        pre_effect_abort_commitment_digest: String,
+    },
+    RunAbortBeforeEffect {
+        run_id: String,
+        expected_revision: u64,
+        dispatch_binding_digest: String,
+        abort_nonce_hex: String,
+        proof_digest: String,
+        reason: String,
+    },
     RunCancel {
         run_id: String,
         expected_revision: u64,
@@ -651,7 +806,7 @@ pub enum AgentdMethod {
     AutomationExecuteEffect {
         intent: AuthorizedEffectIntent,
         wire_payload_hex: String,
-        signed_grant: SignedFinalUseGrant,
+        signed_grant: Box<SignedFinalUseGrant>,
         command_id: String,
     },
     AutomationReconcileEffect {
@@ -661,6 +816,10 @@ pub enum AgentdMethod {
     },
     AutomationList {
         limit: u16,
+    },
+    AutomationListPageV1 {
+        limit: u16,
+        after: Option<AutomationTaskCursorV1>,
     },
     AutomationCancel {
         task_id: AutomationTaskId,
@@ -734,6 +893,35 @@ pub struct AgentdResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    ParameterAdmissionV1 {
+        query: ParameterAdmissionQueryV1,
+        admission_hex: String,
+    },
+    PreparedGenerationV2 {
+        generation: u64,
+        configuration_digest: String,
+        body_digest: String,
+        prepared_hex: Option<String>,
+    },
+    PlasticityCompletedProposal {
+        proposal_id: String,
+        observation_hex: Option<String>,
+    },
+    SelfIterationRoundStatus {
+        goal_id: String,
+        canonical_policy_digest: String,
+        round_status_json: String,
+    },
+    SelfIterationCurrentRound {
+        round_status_json: Option<String>,
+        has_pending_model_requests: bool,
+    },
+    CanaryOperationReceipt {
+        query: CanaryOperationQueryV2,
+        source_digest: String,
+        receipt_hex: String,
+    },
+    SecretsOriginal(SecretsOriginalObservation),
     Capabilities(AgentdCapabilitySet),
     Health(HealthSnapshot),
     Lifecycle(LifecycleSnapshot),
@@ -755,12 +943,17 @@ pub enum AgentdPayload {
     RunStatus {
         run: Option<AgentRunReceipt>,
     },
+    NativeModelReceipt {
+        request_id: String,
+        native_record_json: Option<String>,
+    },
     AutomationTask(AutomationTask),
     AutomationEffect(AutomationEffectSnapshot),
     AutomationEffectReconcile(AutomationEffectReconcileSnapshot),
     AutomationTasks {
         tasks: Vec<AutomationTask>,
     },
+    AutomationTasksPageV1(AutomationTaskPageV1),
     MemoryFederationCapability(MemoryFederationCapabilitySnapshot),
     MemoryFederationCapabilities {
         capabilities: Vec<MemoryFederationCapabilitySnapshot>,
@@ -1072,7 +1265,7 @@ mod tests {
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1318,13 +1511,8 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
-            14,
-            3,
-            snapshot.run_id.clone(),
-            2,
-            "operator_request".to_string(),
-        );
+        let cancel =
+            AgentdRequest::run_cancel(14, 3, snapshot.run_id, 2, "operator_request".to_string());
         let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
         assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(
@@ -1338,6 +1526,44 @@ mod tests {
         assert_eq!(
             serde_json::from_slice::<AgentdRequest>(&release_bytes).expect("parse release"),
             release
+        );
+    }
+
+    #[test]
+    fn bound_dispatch_and_pre_effect_abort_wire_are_strict_and_bounded() {
+        let binding = "a".repeat(64);
+        let commitment = "b".repeat(64);
+        let proof = "c".repeat(64);
+        let mark = AgentdRequest::run_mark_dispatched_bound(
+            17,
+            4,
+            "run.1".to_string(),
+            2,
+            binding.clone(),
+            commitment,
+        );
+        let mark_bytes = serde_json::to_vec(&mark).expect("serialize bound mark");
+        assert!(mark_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&mark_bytes).expect("parse bound mark"),
+            mark
+        );
+
+        let abort = AgentdRequest::run_abort_before_effect(
+            18,
+            4,
+            "run.1".to_string(),
+            3,
+            binding,
+            "11".repeat(32),
+            proof,
+            "final-use fence changed".to_string(),
+        );
+        let abort_bytes = serde_json::to_vec(&abort).expect("serialize pre-effect abort");
+        assert!(abort_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
+        assert_eq!(
+            serde_json::from_slice::<AgentdRequest>(&abort_bytes).expect("parse pre-effect abort"),
+            abort
         );
     }
 
@@ -1390,3 +1616,24 @@ mod tests {
 #[cfg(test)]
 #[path = "objective_tests.rs"]
 mod objective_tests;
+
+/// Metadata observed from the protected daemon's actual consumer ACK and settlement.
+/// An Unknown coordinate is retained for Status/Recover and never proves absence.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(tag = "state", rename_all = "snake_case", deny_unknown_fields)]
+pub enum SecretsOriginalObservation {
+    Completed {
+        original_operation_id: String,
+        reservation_id: String,
+        observed_cost: u64,
+        receipt_digest: String,
+    },
+    Unknown {
+        original_operation_id: String,
+    },
+    Rejected {},
+}
+
+#[cfg(test)]
+#[path = "secrets_protocol_tests.rs"]
+mod secrets_protocol_tests;

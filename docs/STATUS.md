@@ -12,13 +12,13 @@ Dynamic Git, branch, pull-request, CI, review, operator, selection, promotion an
 
 ## Registry closure
 
-- Modules: **40**
+- Modules: **41**
 - Contracts: **205**
 - Critical protocols: **58**
 - Durable data domains: **67**
 - Work packages: **91**
-- Module technical guides: **40**
-- Source bindings: **40**
+- Module technical guides: **41**
+- Source bindings: **41**
 - Adaptive algorithm specifications: **6**
 - Paper source locks: **4**
 - Pre-coding readiness specifications: **9**

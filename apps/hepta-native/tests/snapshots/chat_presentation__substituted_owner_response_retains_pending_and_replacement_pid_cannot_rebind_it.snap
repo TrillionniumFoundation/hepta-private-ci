@@ -1,0 +1,16 @@
+---
+source: tests/chat_presentation.rs
+expression: chat.presentation()
+---
+ChatPresentation {
+    agent_id: None,
+    conversations: [],
+    messages: [],
+    selected_thread: None,
+    active_turn: None,
+    previous_action_pending: true,
+    previous_creation_pending: false,
+    connection_ready: false,
+    approval_required: false,
+    last_submission: None,
+}

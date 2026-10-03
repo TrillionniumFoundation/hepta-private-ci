@@ -132,14 +132,17 @@ pub fn summarize_resource_samples(
         && maximum_write_amplification_ppm <= envelope.write_amplification_ppm;
 
     let mut canonical = samples.to_vec();
-    canonical.sort_by(|left, right| {
-        left.observed_at_micros
-            .cmp(&right.observed_at_micros)
-            .then_with(|| {
-                left.receipt
-                    .execution_micros
-                    .cmp(&right.receipt.execution_micros)
-            })
+    canonical.sort_by_key(|sample| {
+        (
+            sample.observed_at_micros,
+            sample.receipt.execution_micros,
+            sample.receipt.transient_allocation_bytes,
+            sample.receipt.checkpoint_bytes,
+            sample.receipt.journal_bytes_written,
+            sample.receipt.write_amplification_ppm,
+            sample.receipt.saturation_count,
+            sample.receipt.queue_age_micros,
+        )
     });
     let mut bytes = b"hepta.neuron.resource-samples.v1".to_vec();
     bytes.extend_from_slice(host.as_array());

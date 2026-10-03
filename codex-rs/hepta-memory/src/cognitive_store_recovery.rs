@@ -259,6 +259,21 @@ impl CognitiveStore {
                 return Err(error);
             }
 
+            // Copying, checking, checkpointing and reopening can suspend long
+            // enough for the original authority to expire or be withdrawn.
+            // Recheck it at publication, with no await on the successful path.
+            if let Err(error) = verifier
+                .verify(authority, layout.agent_id())
+                .map_err(CognitiveRecoveryError::AccessDenied)
+                .and_then(|()| {
+                    authority
+                        .validate_for_agent(layout.agent_id())
+                        .map_err(|error| CognitiveRecoveryError::AccessDenied(error.to_string()))
+                })
+            {
+                pool.close().await;
+                return Err(error);
+            }
             publish_active_database(&canonical_root, &candidate)
                 .map_err(|error| CognitiveRecoveryError::Unavailable(error.to_string()))?;
             // Keep the recovery fence exclusive for this recovered writer
@@ -270,6 +285,7 @@ impl CognitiveStore {
                 owner_agent_id: layout.agent_id().clone(),
                 path: candidate.clone(),
                 _open_guard: Some(std::sync::Arc::new(exclusive_guard)),
+                federation_peer_pools: std::sync::Arc::default(),
             })
         }
         .await;

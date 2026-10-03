@@ -697,6 +697,15 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         row = maps.map_for(self.modules[0], self.anchor, {"alpha": "test-lane"})
         self.assertIs(row["claimBoundary"]["nativeSourceMappingComplete"], False)
 
+    def test_new_native_owner_can_generate_without_a_historical_lane(self):
+        row = maps.map_for(self.modules[0], self.anchor, {})
+        self.assertIsNone(row["laneId"])
+        migrated = maps.migrate_map(row, self.modules[0], {}, self.anchor)
+        self.assertIsNone(migrated["laneId"])
+        self.assertEqual(migrated["declaredRoots"], row["declaredRoots"])
+        self.assertIs(migrated["productionImplementation"], False)
+        self.assertIs(migrated["claimBoundary"]["productExecutionProved"], False)
+
     def test_selected_migration_leaves_other_module_bytes_unchanged(self):
         beta = self.root / "docs/modules/beta/IMPLEMENTATION_MAP.json"
         before = beta.read_bytes()

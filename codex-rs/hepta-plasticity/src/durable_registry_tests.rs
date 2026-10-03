@@ -399,3 +399,88 @@ fn a_full_registry_can_recover_an_incomplete_tail() -> Result<(), Box<dyn StdErr
     assert_eq!(std::fs::read(&fixture.path)?, valid_bytes);
     Ok(())
 }
+
+#[path = "durable_registry_final_gate_tests.rs"]
+mod final_gate_tests;
+
+#[test]
+fn completed_observation_after_cold_reopen_preserves_original_row_under_later_head() {
+    let fixture = TestFile::new("completed-original-row");
+    let scope = digest(b"completed-scope");
+    let first = proposal("proposal:completed:first", b"first-window");
+    let other = proposal("proposal:completed:other", b"other-window");
+    let later = crate::propose_v2(ParameterProposalRequestV2 {
+        proposal_id: other.proposal_id.clone(),
+        proposer_id: other.proposer_id.clone(),
+        evaluator_id: other.evaluator_id.clone(),
+        selected_artifact_digest: other.selected_artifact_digest,
+        window: ProposalWindowV2 {
+            window_id: id("window:completed:later"),
+            window_digest: other.window.window_digest,
+        },
+        baseline_generation: other.baseline_generation,
+        candidate_generation: other.candidate_generation,
+        dataset_digest: other.dataset_digest,
+        update_rule_digest: other.update_rule_digest,
+        modulator_digest: other.modulator_digest,
+        modulator_broadcast_digest: other.modulator_broadcast_digest,
+        eligibility_digest: other.eligibility_digest,
+        evaluation_digest: other.evaluation_digest,
+        rollback_predecessor_digest: other.rollback_predecessor_digest,
+        norm_layers: vec![LayerNormDenominatorV2 {
+            layer_id: id("layer:adapter"),
+            baseline_squared_l2_raw_q64: 1_000_000,
+        }],
+        candidates: other
+            .candidates
+            .iter()
+            .map(|candidate| ParameterCandidateRequestV2 {
+                candidate_id: candidate.candidate_id.clone(),
+                kind: candidate.kind,
+                parameter_deltas: candidate.parameter_deltas.clone(),
+            })
+            .collect(),
+    })
+    .expect("later separate original slot");
+    let (original, head) = {
+        let mut store =
+            DurableProposalRegistry::open_bootstrap_empty(fixture.create(), scope, 7, 8)
+                .expect("owner");
+        let original = store
+            .append_v2(Digest32::ZERO, first.clone())
+            .expect("first actual append");
+        store
+            .append_v2(original.frame_digest, later)
+            .expect("later actual append");
+        (
+            original,
+            store
+                .current_anchor()
+                .expect("head")
+                .expect("committed frames"),
+        )
+    };
+    let before = std::fs::read(&fixture.path).expect("before");
+    let cold = DurableProposalRegistry::open_anchored(fixture.open(), scope, 7, 8, head)
+        .expect("actual cold owner");
+    assert!(cold.observe_completed_v1(&first.proposal_id, None).is_err());
+    let row = cold
+        .observe_completed_v1(&first.proposal_id, Some(head))
+        .expect("completed")
+        .expect("original row");
+    assert_eq!(row.receipt, original);
+    assert_eq!(row.proposal, first);
+    assert_eq!(row.acknowledged_head, head);
+    assert_ne!(row.receipt.frame_digest, head.frame_digest);
+    let bytes = row.to_bytes().expect("whole frame");
+    assert_eq!(
+        DurableCompletedProposalV1::from_bytes(&bytes).expect("raw integrity"),
+        row
+    );
+    assert!(
+        cold.observe_completed_v1(&id("proposal:missing"), Some(head))
+            .expect("absent observed")
+            .is_none()
+    );
+    assert_eq!(std::fs::read(&fixture.path).expect("after"), before);
+}

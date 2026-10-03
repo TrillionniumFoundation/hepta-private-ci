@@ -1,0 +1,50 @@
+schema = "hepta.module-manifest.v1"
+order = 11
+id = "inference.control"
+plane = "domain"
+kind = "service"
+lifecycle = "existing"
+state = "stateful"
+architectureRole = "execution_plant"
+writes = ["inference_request", "inference_reservation", "inference_receipt"]
+uses = ["kernel.authority", "kernel.operations"]
+owner = "inference-platform"
+deputy = "runtime-control"
+denies = ["raw_provider_escape", "memory_write"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-infer-core", "codex-rs/hepta-inferd"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "P0.7B-B1A-PROVIDER-BOUNDARY"
+technicalDocument = "docs/modules/inference.control/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-infer-core"
+mode = "exclusive"
+
+[[rootBindings]]
+path = "codex-rs/hepta-inferd"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-infer-core"
+compileLayer = 1
+ciGroups = ["inference"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-inferd"
+compileLayer = 1
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

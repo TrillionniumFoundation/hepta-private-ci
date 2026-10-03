@@ -608,3 +608,50 @@ The bootstrap source-location obligation for `learning.eval` is implemented by w
 - `codex-rs/hepta-intelligence-eval`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+### Multiple structural withdrawal observations
+
+The ordinary Root `--paired-execute` entry accepts a separate v2 execution
+configuration and `hepta.paired-public-measurement-contract.v2`. Its typed
+`hepta.paired-withdrawal-observations.v2` assigns every final task to one of at
+most 64 original withdrawals. Every observation is used; incomplete, duplicate
+or foreign assignments fail before the original holdout CAS is opened.
+
+The original normal Anchor `inspect-learning-withdrawal` accepts a v2 probe
+containing the complete currently published withdrawal prefix and mandatory
+`source_observations` (one to three pinned original G batch and O candidate /
+baseline numeric archives). It authenticates
+the original historical Ledger/Witness FULL ACK and Artifact publication ACK,
+then physically checks every source/descendant delivery against the original
+independently current owner. The v1 probe retains its exact-prefix behavior.
+V2 causal identities comprise the actual SourceACK event, its authenticated
+decision/outcome correction ancestry and original support digests, stable
+Q24 `input_digest` values extracted from each exact authenticated support line,
+the original withdrawal event, and affected registration events including predecessor
+lineage. Unsupported legacy source event kinds are closed in this V2 provider;
+the original V1 history reader is unchanged. The
+entire Dataset receipt and common CURRENT/signing frontier authenticate these
+facts; unrelated records in those frontiers are not statistical causes.
+
+The G-signed, frozen native source graph must contain precisely these declared
+causes for the assigned observation. The real inspector must reproduce them
+before CAS and after measurement. Shared original events or artifact ancestors
+merge transitively even when request names differ. New request IDs, execution
+times, model weights or Register events cannot split a shared real input:
+the original signed support must join its exact complete LF numeric line and
+its authenticated decision policy (weights), or V2 refuses before CAS. Missing
+original archives cannot fall back to whole-line hashes as input identities.
+Disjoint causes may remain
+separate under one CURRENT authority. The original minimum of two independent
+clusters, metric thresholds, budget, signatures and CAS remain unchanged. A
+single shared withdrawal still yields Insufficient, and structural delivery
+denial never represents forgetting in weights or qualification of accuracy.
+
+This is a source-qualified provider extension, not evidence that multiple
+production withdrawals, fresh independent calibration or a superior trained
+candidate exist. Candidate generations continue through independent E,
+selection and Artifact CURRENT; the generation-one abstention lease grants no
+model upgrade. The observed public 147-row constant comparator remains a
+measurement rather than quality acceptance. New candidate training and fresh
+DatasetV3/E2 publications must supply actual numerical and independent evidence.

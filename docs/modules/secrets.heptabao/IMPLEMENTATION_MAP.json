@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "3659cee8f716511219547fd5f329dbd83faf324b",
-    "tree": "08dfb5cb2f319e047e58499600c6b0e36380bbef"
+    "commit": "97809646d131b6ba99737887d130d9ae73b2dcd9",
+    "tree": "35c60b8938a43ec61fd6640edcd52d242ecb5b50"
   },
   "laneId": "LANE-A-FOUNDATION",
   "module": "secrets.heptabao",
@@ -20,8 +20,8 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "not_composed",
-  "productionWriterState": "not_established",
+  "productCallerState": "optional_exact_kv_v2_agentd_source_composed_installed_activation_pending",
+  "productionWriterState": "native_full_sql_protected_daemon_and_ordinary_agentd_nondev_exact_kv2_original_ack_authbus_settlement_qualified_installed_activation_pending",
   "operations": [
     {
       "operation": "consume_kv_v2",
@@ -78,12 +78,269 @@
       "designOperation": "ambiguous outcome reconciliation",
       "mappingClass": "owner_native",
       "delegatedCallees": []
+    },
+    {
+      "operation": "serve_authority",
+      "nativeSymbol": "serve_secrets_authority",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/authority_role.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "root_frozen_config_and_kernel_peer",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "serve_authority",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "issuer_original_begin",
+      "nativeSymbol": "AuthorityRoleOwner::issue/begin_original/original_status",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/authority_grants.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "separate_issuer_and_pinned_independent_approval",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "issuer_original_begin",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "external_frontier_cas",
+      "nativeSymbol": "AuthorityRoleOwner::apply_revocations/compare_and_set",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/authority_frontier.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "independent_signed_governed_head_and_exact_external_cas",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "external_frontier_cas",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "protected_host_time",
+      "nativeSymbol": "AuthorityRoleOwner::time",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/authority_role_owner.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "separate_uid_private_time_key_and_persisted_host_wall_floor",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "protected_host_time",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "serve_operator",
+      "nativeSymbol": "serve_secrets_operator",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/operator_role.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "root_frozen_scope_head_and_kernel_peer",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "serve_operator",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "independent_original_approval",
+      "nativeSymbol": "OperatorRoleOwner::approve",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/operator_approval.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "pinned_issuer_exact_frozen_binding_and_separate_approval_key",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "independent_original_approval",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authorize_original",
+      "nativeSymbol": "SecretsAuthorityClient::authorize_original",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/role_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel_peer_and_pinned_separate_issuer_approval",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "authorize_original",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "serve_credential_consumer",
+      "nativeSymbol": "serve_credential_consumer",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumer_server.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "root_frozen_credential_hmac_and_durable_independent_ack",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/consumer_port_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "serve_credential_consumer",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "original_details",
+      "nativeSymbol": "AuthorityRoleOwner::original_details",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/authority_grants.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "verified_original_full_grant_approval_and_begin_read_only",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "original_details",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prepare_receipt",
+      "nativeSymbol": "ReceiptConsumerRole::prepare",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "independent_original_pair_exact_root_scope_receipt_and_remaining_original_budget",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/consumer_receipt_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepare_receipt",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "authenticate_prepared_receipt",
+      "nativeSymbol": "ReceiptConsumerRole::authenticate",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "original_nonce_actual_credential_hmac_and_full_independent_ack",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/consumer_receipt_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "authenticate_prepared_receipt",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "ack_backed_settlement",
+      "nativeSymbol": "ReceiptConsumerRole::settlement",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumer_settlement.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "actual_retained_original_receipt_and_signed_full_ack_immutable_first_tuple",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/consumer_receipt_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "ack_backed_settlement",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "prepared_receipt_callback",
+      "nativeSymbol": "ConsumerPortClient::prepare_receipt",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumer_receipt_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "preflight_before_final_use_then_first_fd_effect_with_original_absolute_deadline",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/prepared_consumer_saga_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "prepared_receipt_callback",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "consumer_evidence_sdk",
+      "nativeSymbol": "ConsumerEvidenceClient::completed_original",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/consumer_evidence_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "kernel_peer_and_independent_exact_original_operation_reservation_signed_evidence",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/prepared_consumer_saga_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "consumer_evidence_sdk",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "serve_runtime",
+      "nativeSymbol": "serve_secrets_runtime",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/runtime_service.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "root_frozen_uid_provider_policy_and_independent_roles",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/runtime_clock_tests.rs",
+        "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "serve_runtime",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "consume_original",
+      "nativeSymbol": "SecretsRuntimeClient::consume_original",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/runtime_client.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "exact_enrolled_kernel_uid_original_agent_identity_and_operation_budget",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "consume_original",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "original_status_and_recovery",
+      "nativeSymbol": "SecretsRuntimeOwner::status/recover",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/runtime_service.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "original_independent_full_ack_and_exact_authbus_reservation_no_redispatch",
+      "tests": [],
+      "sourcePathExists": true,
+      "designOperation": "original_status_and_recovery",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "original_effect_clock",
+      "nativeSymbol": "RuntimeProtectedClock::begin_original_deadline",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/runtime_clock.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "verified_independent_time_floor_and_original_monotonic_budget",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/runtime_clock_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "original_effect_clock",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "maintain_original_runtime_policy",
+      "nativeSymbol": "maintain_secrets_runtime_policy",
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/runtime_maintenance.rs",
+      "state": "original_owner_offline_signed_clock_revision_cas_qualified_installed_activation_pending",
+      "authority": "root_exact_configuration_and_original_authbus_revision_owner",
+      "tests": [
+        "codex-rs/hepta-bao-adapter/src/runtime_maintenance_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "explicit original policy expiry extension/revocation without replacing quota or history",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
-    "Bind the lease lifecycle owner to an authenticated product caller and durable host composition.",
-    "Add provider-native dynamic lease issue/renew/revoke dispatch only after the exact HeptaBao/OpenBao endpoint contract is qualified; current compatibility status is blocking partial.",
-    "Run exact-source package tests, crash/fault injection and deterministic synthetic-merge qualification for this candidate."
+    "Install the qualified Root-enrolled Agentd original-operation capability with the original Fleet identities/history, and validate the actual installed Agentd PIDs. Two isolated ordinary Agentd processes are qualified; installed activation is separate.",
+    "Qualify enabled provider-native dynamic lease issue/renew/revoke endpoints before enabling them. Other partial/gap matrix rows remain closed and block full OpenBao replacement claims; disabled optional capabilities do not gate the exact KV product.",
+    "Install the qualified protected services with Root-frozen exact provider/role configuration and socket ACLs, then validate the complete installed Fleet caller."
   ],
   "externalEvidenceGates": [
     "independent semantic review",
@@ -103,5 +360,318 @@
   "sourceRoot": [
     "external/HeptaBao",
     "codex-rs/hepta-bao-adapter"
+  ],
+  "roleQualification": {
+    "authorityUid": 982,
+    "operatorUid": 981,
+    "runtimeUid": 992,
+    "actualChecks": 14,
+    "scope": "original signed issuance/approval/FULL begin; receipt-bound actual credential HMAC, FULL independent ACK and original-tuple signed settlement; four concurrent evidence calls, direct Agent kernel UID rejection, explicit expiry and physical restart/drain. Synthetic credential only; no non-dev provider, complete runtime, installed Fleet or dynamic capability qualification.",
+    "consumerUid": 983,
+    "agentUidsRejectedAtPrivateRoleEndpoints": [
+      986,
+      969
+    ],
+    "rpcTimeoutMs": 4000,
+    "rootPreparationMs": 4000,
+    "explicitExpiryTicketMs": 2000
+  },
+  "roleServiceState": "concrete_issuer_operator_consumer_and_single_protected_runtime_with_optional_ordinary_agentd_client_qualified",
+  "protectedRuntimeQualification": {
+    "actualChecks": 11,
+    "authorityUid": 982,
+    "operatorUid": 981,
+    "runtimeUid": 992,
+    "consumerUid": 983,
+    "agentUids": [
+      986,
+      969
+    ],
+    "provider": "non-dev OpenBao KV v2 exact version1 with Rust pinned TLS",
+    "durability": "FULL SQL and independent original ACK/settlement on Root canonical /var/lib namespace backed by actual ext4 SSD",
+    "scope": "Same-ID repetition, expired revocation feed refresh, short-budget Unknown, four-role original-store restart and actual fixed Root policy expiry preserve original nonce, ACK and settled quota. Installed Agentd and dynamic capabilities not composed.",
+    "newRuntimeOperationBudgetMs": 30000,
+    "roleRpcMs": 4000,
+    "roleHardMaximumMs": 5000,
+    "rootPreparationMs": 4000,
+    "originalGrantAndPolicyExpiryUnchanged": true
+  },
+  "productCallers": [
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/process_configuration.rs",
+      "nativeSymbol": "with_secrets_runtime_client_file",
+      "state": "explicit_root_enrollment_for_single_protected_runtime"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/runtime.rs",
+      "nativeSymbol": "AgentdSecretsHost::open",
+      "state": "linux_optional_original_agent_identity_and_physical_owner_lifecycle"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/secrets_host.rs",
+      "nativeSymbol": "consume_original",
+      "state": "generation_readiness_original_budget_checked_physical_worker_to_enrolled_sdk"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "nativeSymbol": "SecretsConsumeOriginal",
+      "state": "ordinary_private_agentd_control_routes_exact_original_operation"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs",
+      "nativeSymbol": "maintain_secrets_runtime_policy",
+      "state": "enrolled_uid992_strict_root_configuration_and_original_intent"
+    },
+    {
+      "sourcePath": "scripts/hepta-install-secrets-product",
+      "nativeSymbol": "prepare",
+      "state": "root_exclusive_new_instance_emits_units_no_installed_activation"
+    },
+    {
+      "sourcePath": "scripts/hepta-maintain-secrets-product",
+      "nativeSymbol": "apply",
+      "state": "root_original_revision_cas_and_same_pending_publication_recovery"
+    },
+    {
+      "sourcePath": "scripts/hepta-upgrade-secrets-product",
+      "nativeSymbol": "apply",
+      "state": "root_existing_software_revision_cas_and_same_pending_publication_recovery",
+      "tests": [
+        "scripts/test_hepta_secrets_software_upgrade.py"
+      ]
+    }
+  ],
+  "sourceObjects": [
+    {
+      "path": "codex-rs/hepta-agentd/src/process_configuration.rs",
+      "object": "d275bff058433ba7a0977976ea7d2c0c290d78f1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "a391a70bbbb48b71b1684c4f7524bf044ccf0b72"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/secrets_host.rs",
+      "object": "f957d6fe413e6b3808c95347e1ceebe3d4d66e31"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "8a7a32146211d5566bb88b2a78d2448e67b8171c"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter",
+      "object": "ee5abb530d09772321da7625cdb4fbf7bcb785c1"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/authority_frontier.rs",
+      "object": "e906012b4e3eada47f7827dbc5659453b9cb4156"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/authority_grants.rs",
+      "object": "25af7bfbb5fa23683e5bb109140cc525eefe4d72"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/authority_role.rs",
+      "object": "fe38f027d197554a5344f12c1c5dc9d561b70103"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/authority_role_owner.rs",
+      "object": "1898f882ade0b733afaa96908e144d708fc0803a"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/authority_role_tests.rs",
+      "object": "bc580618be1ba880bdbc395f586d2176db517a13"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/bin/hepta-secrets-runtime.rs",
+      "object": "c64830a73f386bcab0a6a140545a9d31e5103a5f"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_evidence_client.rs",
+      "object": "43c0181ff42792230a7b3406a0c93a9d7f8c11bf"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_port_tests.rs",
+      "object": "4affeeb96931dbd71eaed3d71e5c143ed6fa4f01"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_receipt_client.rs",
+      "object": "62c8cc396730e4bef4e511be30916338329faf6d"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_receipt_role.rs",
+      "object": "c9c47e38935db695a380ec0bef3b328bec43f5eb"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_receipt_tests.rs",
+      "object": "cb2be5bd6d82a21b9ec4e1195a1629902f2ae244"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_server.rs",
+      "object": "369443c28fcba457d82e4d80b5ada17be509bcb1"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/consumer_settlement.rs",
+      "object": "72d8c6e9fce07c16fdfe841771c9abfffa2b2ee4"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer.rs",
+      "object": "442284b8af6232ea28dc12de185dfeb03854833f"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/https_consumer_tests.rs",
+      "object": "68c837247da949d5e41f974271a33af24327f3c6"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle.rs",
+      "object": "bfb0aaafbe5f7f67ca97d9e91966caa6954a93e4"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/lease_lifecycle_tests.rs",
+      "object": "dc0f42f55a7a61349c5378294bbc421681435846"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/operator_approval.rs",
+      "object": "135c49ff0915b761cea36bbcb658589f93b9b0c1"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/operator_role.rs",
+      "object": "4e580619cac39d2a054a5713728c40ff21feb401"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/prepared_consumer_saga_tests.rs",
+      "object": "4dccc942aa08badfe5e1454ed444dfcc6dfef56d"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/role_client.rs",
+      "object": "d9490a5866fb1c0068d02deddc6a413fe6209fd6"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/runtime_client.rs",
+      "object": "f6b8467b546d1c337e19a0e6da53da98ce4043b2"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/runtime_clock.rs",
+      "object": "29a8bab1c54e51af59cb7afb86ac360fb159b720"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/runtime_clock_tests.rs",
+      "object": "408e65f1d81d7c44be59ba8906db1ad5be358180"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/runtime_maintenance.rs",
+      "object": "58348977ab69fac473139157f6e69d11574792a6"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/runtime_maintenance_tests.rs",
+      "object": "a99c1e6d78edb87014cbb6a5ffa63f38df47d118"
+    },
+    {
+      "path": "codex-rs/hepta-bao-adapter/src/runtime_service.rs",
+      "object": "7b09b5e8db820078af9f0c497871295bc96f200c"
+    },
+    {
+      "path": "docs/modules/secrets.heptabao/TECHNICAL.md",
+      "object": "fbcfc194f3bc780510bbba4b0b908b6514288be0"
+    },
+    {
+      "path": "external/HeptaBao",
+      "object": "6a053b487ff726d39eaa1c921d02dc3bf95fb44f"
+    },
+    {
+      "path": "scripts/hepta-install-secrets-product",
+      "object": "be2749cdef06e14830d7a8336ac0fdeb4de66eab"
+    },
+    {
+      "path": "scripts/hepta-maintain-secrets-product",
+      "object": "3e791bb190184693287700e57864bc31fdc498f3"
+    },
+    {
+      "path": "scripts/hepta-upgrade-secrets-product",
+      "object": "7ccf32d61e3a60d2808b9a008c52b59cbb372756"
+    }
+  ],
+  "agentdQualification": {
+    "actualChecks": 9,
+    "agentUids": [
+      986,
+      969
+    ],
+    "agentGid": 975,
+    "agentSupplementaryGroups": [
+      975
+    ],
+    "originalAgentIds": [
+      "3ad2bb64-09ba-4811-b892-466c5fd952df",
+      "10b204bc-ec72-48a2-a2c2-cf5d2f5ed730"
+    ],
+    "sourceCommit": "9147053369b97247a6ea9d8c2e132f1a8d77c783",
+    "scope": "Ordinary Agentd main/Root enrollment; first control connection disconnect, same-ID Status/Recover, non-dev exact KVv2 version1, independent consumer FULL signed ACK and AuthBus settled quota, zero-budget/stale-generation rejection, original 1ms Unknown, all physical owner joins. Isolated Root canonical ext4 SSD; installed Fleet remains unchanged.",
+    "originalControlIoTimeoutMs": 2000,
+    "newIsolatedRootPolicyMs": 120000,
+    "roleRpcMs": 4000,
+    "newOriginalOperationMaximumMs": 30000,
+    "installedCaller": false,
+    "dynamicCapabilitiesEnabled": false
+  },
+  "originalPolicyMaintenanceQualification": {
+    "packageNativePassed": 128,
+    "packageOriginalSkips": 2,
+    "testThreads": 2,
+    "retries": 0,
+    "actualNondevChecks": 12,
+    "roleUids": [
+      982,
+      981,
+      983,
+      992
+    ],
+    "agentUids": [
+      986,
+      969
+    ],
+    "agentPrimaryGid": 975,
+    "durability": "FULL SQL and original external frontier on protected /var/lib SSD namespace device2067",
+    "scope": "Real policy expiry, original-writer exclusion, interrupted publication after committed revision2, same-intent resume, original four-owner restart, new KV2 operation using revision2 and independent FULL ACK/settlement, explicit revoke3 with retained terminal Status/Recover, second Root writer rejection and missing volatile endpoint-parent recovery. Installed activation remains pending.",
+    "oldGrantNonceQuotaReservationAckReplaced": false,
+    "retirementOrQuotaMutationEnabled": false
+  },
+  "firstInstallConfiguration": {
+    "defaultPolicyDays": 7,
+    "defaultPerAgentOriginalPeriodQuota": 1000,
+    "newOriginalOperationMaximumMs": 30000,
+    "roleRpcAndPreparationMs": 4000,
+    "originalAgentControlDeadlineMs": 2000,
+    "existingGrantAndOperationExpiryClipped": true,
+    "formalInstalledActivation": false
+  },
+  "originalSoftwareUpgradeQualification": {
+    "packageNativePassed": 129,
+    "packageOriginalSkips": 2,
+    "actualNondevChecks": 14,
+    "owningFileLockAndPolicyChecks": 7,
+    "roleUids": [
+      982,
+      981,
+      983,
+      992
+    ],
+    "agentUids": [
+      986,
+      969
+    ],
+    "agentPrimaryGid": 975,
+    "scope": "Actual old/new runtime executables, original four stable writer locks, same-intent image/manifest/completion interruption recovery, exact original grant/ACK/quota preservation, new UID969 pinned TLS KV consumption in the same period, completed replay and policy/software publication exclusion. Isolated original SSD instance; installed activation remains pending.",
+    "ownerDatabaseKeysQuotaPeriodOrAckReplaced": false,
+    "servicesStartedByUpgrader": false,
+    "installedCaller": false
+  },
+  "observedAtHead": {
+    "commit": "97809646d131b6ba99737887d130d9ae73b2dcd9",
+    "tree": "35c60b8938a43ec61fd6640edcd52d242ecb5b50"
+  },
+  "observedSourcePaths": [
+    "codex-rs/hepta-bao-adapter",
+    "external/HeptaBao"
   ]
 }

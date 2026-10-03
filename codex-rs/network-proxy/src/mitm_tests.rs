@@ -8,7 +8,6 @@ use crate::runtime::network_proxy_state_for_policy;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 use rama_core::extensions::Extensions;
-use rama_core::extensions::ExtensionsMut;
 use rama_core::extensions::ExtensionsRef;
 use rama_http::Body;
 use rama_http::HeaderMap;
@@ -74,12 +73,6 @@ impl AsyncWrite for TestStream {
 impl ExtensionsRef for TestStream {
     fn extensions(&self) -> &Extensions {
         &self.extensions
-    }
-}
-
-impl ExtensionsMut for TestStream {
-    fn extensions_mut(&mut self) -> &mut Extensions {
-        &mut self.extensions
     }
 }
 
@@ -251,6 +244,8 @@ async fn mitm_policy_allows_matching_hooked_write_in_full_mode() {
         mitm: true,
         mitm_hooks: vec![hook],
         mode: NetworkMode::Full,
+        // This hook test exercises method admission, independently of public DNS.
+        allow_local_binding: true,
         ..NetworkProxyConfig::default()
     };
     network.set_allowed_domains(vec!["api.github.com".to_string()]);
@@ -288,6 +283,8 @@ async fn mitm_policy_blocks_encoded_path_traversal_for_repository_allowlist() {
         mitm: true,
         mitm_hooks: vec![hook],
         mode: NetworkMode::Full,
+        // Local/private target rejection has dedicated tests; this one checks paths.
+        allow_local_binding: true,
         ..NetworkProxyConfig::default()
     };
     network.set_allowed_domains(vec!["github.com".to_string()]);
@@ -356,6 +353,8 @@ async fn mitm_policy_blocks_matching_hooked_write_in_limited_mode() {
         mitm: true,
         mitm_hooks: vec![hook],
         mode: NetworkMode::Limited,
+        // Exercise the method clamp independently of public DNS availability.
+        allow_local_binding: true,
         ..NetworkProxyConfig::default()
     };
     network.set_allowed_domains(vec!["api.github.com".to_string()]);

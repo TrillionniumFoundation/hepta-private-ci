@@ -30,6 +30,18 @@ impl From<serde_json::Error> for ProcessDriverError {
 
 #[derive(Debug, Error)]
 pub enum SupervisorError {
+    /// A read-only cached observation is absent or expired. This says nothing
+    /// about mutation admission; a lifecycle request must never use this retry.
+    #[error("supervisord read-only observation is unavailable or expired")]
+    ObservationUnavailable,
+    #[error("supervisord owner is busy; this request was not admitted")]
+    NotAdmittedBusy,
+    #[error("supervisord rejected stale_control_fence; this request was not admitted")]
+    StaleControlFence,
+    #[error("installed release validation failed before admission")]
+    ReleaseValidationRejected,
+    #[error("configuration was not admitted: {0}")]
+    ConfigurationNotReady(String),
     #[error("invalid supervisor value: {0}")]
     Invalid(String),
     #[error("unknown fleet agent {0}")]

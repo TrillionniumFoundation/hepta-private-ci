@@ -5,7 +5,6 @@ import copy
 import importlib.util
 import io
 from pathlib import Path
-from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -37,19 +36,14 @@ class ModuleNavigationTests(unittest.TestCase):
                 transform(path, document)
             return document
 
-        # Implementation-map behavior has its own regression suite. This suite
-        # exercises the complete module verifier, without running its child again.
+        # Exercise the complete current module verifier. Ordinary navigation
+        # no longer delegates to a source-map child; no success stub is needed.
         with (
             mock.patch.object(DOCS, "load", side_effect=load),
             mock.patch.object(Path, "read_text", read),
-            mock.patch.object(
-                DOCS.subprocess,
-                "run",
-                return_value=SimpleNamespace(returncode=0, stderr="", stdout=""),
-            ),
             contextlib.redirect_stdout(io.StringIO()),
         ):
-            return DOCS.verify()
+            return DOCS.verify("development")
 
     def test_prose_layout_and_cached_metrics_are_not_acceptance_evidence(self):
         self.assertEqual(

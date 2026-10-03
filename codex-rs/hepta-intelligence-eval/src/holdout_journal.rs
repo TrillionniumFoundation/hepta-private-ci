@@ -81,6 +81,21 @@ impl FinalHoldoutJournalV1 {
         })
     }
 
+    /// Recovered admission policy belongs to the new owner, not cached wire state.
+    pub(crate) fn adopt_record_limit(
+        &mut self,
+        record_limit: usize,
+    ) -> Result<(), FinalHoldoutJournalError> {
+        if record_limit == 0
+            || record_limit > MAX_JOURNAL_RECORDS
+            || self.records.len() > record_limit
+        {
+            return Err(FinalHoldoutJournalError::RecordLimit);
+        }
+        self.record_limit = record_limit;
+        Ok(())
+    }
+
     #[must_use]
     pub fn head_digest(&self) -> Digest32 {
         self.head_digest

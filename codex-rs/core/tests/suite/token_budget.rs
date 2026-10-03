@@ -267,11 +267,21 @@ async fn token_budget_guidance_precedes_standalone_context_window() -> Result<()
     test.submit_turn("inspect context guidance").await?;
 
     let request = response.single_request();
-    assert!(request.has_content_kinds(&[
-        "token_budget.context_window_guidance",
-        "permissions.instructions",
-    ]));
-    assert!(request.has_content_kinds(&["token_budget.context_window"]));
+    super::durable_metadata::assert_content_kinds(
+        &test.codex,
+        &request,
+        &[
+            "token_budget.context_window_guidance",
+            "permissions.instructions",
+        ],
+    )
+    .await?;
+    super::durable_metadata::assert_content_kinds(
+        &test.codex,
+        &request,
+        &["token_budget.context_window"],
+    )
+    .await?;
     let developer_texts = request.message_input_texts("developer");
     let context_window_index = developer_texts
         .iter()

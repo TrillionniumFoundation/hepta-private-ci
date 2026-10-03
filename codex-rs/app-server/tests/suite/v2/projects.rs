@@ -904,3 +904,6 @@ async fn assigned_forks_inherit_projects_for_persistent_and_ephemeral_children()
     assert!(ephemeral_fork.thread.path.is_none());
     Ok(())
 }
+
+#[path = "project_read_by_idempotency.rs"]
+mod read_by_idempotency;

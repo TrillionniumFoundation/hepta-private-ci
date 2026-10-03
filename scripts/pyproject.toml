@@ -7,3 +7,9 @@ dependencies = ["ruff>=0.15.8"]
 [tool.uv]
 exclude-newer = "7 days"
 index-strategy = "first-index"
+
+[dependency-groups]
+ci = [
+    "cryptography>=46",
+    "PyYAML==6.0.3",
+]

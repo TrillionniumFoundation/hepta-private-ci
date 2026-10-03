@@ -128,6 +128,18 @@ exercises evidence, freeze, fit, persistence, reload, a later generation and
 withdrawal. This is a deterministic table baseline, not a Laya backend, general
 Bellman solver, causal policy-improvement proof or deployment selection.
 
+The Agentd shared-replay host requires `with_current_artifacts` before loading or
+predicting with a candidate. The source opens the original protected read-only
+artifact owner on every use; the caller's registry remains the expected immutable
+manifest. The complete manifest must match an eligible authenticated CURRENT, and
+its use window must remain valid after loading or prediction. Missing, unreadable,
+withdrawn, changed or expired CURRENT rejects without a cached fallback. Candidate
+training still uses the original Memory sharing and Ledger gates. The
+[shared-replay integration case](../../../codex-rs/hepta-agentd/src/shared_terminal_cell_current_tests.rs)
+keeps an old eligible caller snapshot and loaded model while the separate CURRENT
+withdraws the artifact; both loading and prediction reject. Its signed unit view
+does not qualify an installed protected owner or grant deployment authority.
+
 ## 5. Contracts, ports and compatibility
 
 Produced contracts:
@@ -222,6 +234,90 @@ The [module-specific implementation design](../../../qualification/module-execut
 ## 11. Observability and operations
 
 Offline/reference learning library. Qualification training first verifies a self-describing `DatasetSnapshotReceiptV3` and exact source-record evidence set, then fits through opaque verified inputs. Applicability and regularity qualification reuse the ledger-owned signed-evidence verifier with generator/evaluator role separation. Bind immutable dataset/sensor profiles and emit candidates through the artifact owner. Distinguish the deterministic reference, simplest-sufficient learner and action-conditioned world model; synthetic trajectories cannot supply independent production outcome evidence. A real Agentd `PinnedCognitiveRanker` consumes an externally selected pinned tabular artifact at the cognitive read boundary, but the default training/evaluation/selection loop remains uncomposed.
+
+The bounded public-development adapter is
+[`hepta_train_public_healthver.py`](../../../codex-rs/hepta-infer-worker-host/tools/hepta_train_public_healthver.py)
+with numerical core
+[`public_cpu_training.py`](../../../codex-rs/hepta-infer-worker-host/tools/public_cpu_training.py).
+It consumes the checksum-pinned original 147 physical Nomic measurements and
+public HealthVer TRAIN annotations. It fixes whole feature components before
+opening the annotations, fits a deterministic 512 × 96 × 10 Q24 candidate,
+then invokes the checksum-pinned ordinary `hepta-cpu-neuron-score` on its actual
+serialized weights. Development labels cannot choose optimizer parameters,
+epochs, tensor masks or weights. The two binary heads share the declared
+supervision target; their eight unused outputs are frozen.
+
+Its closed `hepta.healthver-public-train-candidate-config.v1` has `sources`
+(`observations`, `membership`, `feature_graph`, `public_train_labels`,
+`baseline_observations`, `baseline_manifest`, `scorer`), each using the physical
+`{path, sha256, size}` source contract. The remaining fields are
+`hyperparameters` (`seed`, `epochs`, `learning_rate`, `development_components`,
+`timeout_seconds`), `output_directory`, and `model_id`. The normal entry is
+`python3 -I -B hepta_train_public_healthver.py ROOT_CONFIG SHA256`. Installation
+freezes the script, numerical core and existing `fixed_encoder_sources.py`
+together under Root-owned immutable ancestors; isolated Python imports only
+this explicit sibling closure and its installed numeric runtime.
+
+The actual G process must have UID/GID 1000, no additional role groups, NNP,
+all five capability sets empty, and its own finite cgroup at most 1 CPU and
+256 MiB. The single 180-second deadline covers source validation, fitting,
+physical scoring and output verification; the service deadline includes
+interpreter startup. Failure preserves partial output in the original private
+output directory. A new run cannot overwrite it. The original component cut,
+weights, model manifest, scorer input, complete stdout/stderr, and result are
+fsynced. The original degenerate baseline remains a separately pinned source.
+
+This adapter emits unqualified material and public reused-development metrics.
+It never signs, appends to a learning ledger, consumes holdout, selects an
+artifact, or activates a model. Its currently reviewed 147-row source adapter
+does not reopen the old private 99/72 or the new 91-component cohort. A trained
+candidate still requires the existing verified DatasetV3, independent evaluator,
+selection and Artifact CURRENT path, including measured resource admission.
+The qualified generation-1 abstention-only operational lease cannot authorize
+that candidate or turn development accuracy into scientific acceptance.
+
+The separate
+[`hepta_prepare_public_healthver_supply.py`](../../../codex-rs/hepta-infer-worker-host/tools/hepta_prepare_public_healthver_supply.py)
+prepares the existing approved public TRAIN698 feature supply. Its closed
+`hepta.healthver-public-train-supply-config.v1` contains `sources`
+(`approved_public_train`, `complete_feature_graph`, `original_membership`,
+`original_training_cut`, `original_observations`) and `output_directory`.
+It verifies the complete claim/evidence component graph, including unmeasured
+neutral and official-dev bridges. The original diagnosed development components
+remain development; one new component is assigned development by the fixed
+feature hash extension cut. Annotation values do not enter the masked bytes,
+split or batch identities. All partitions remain public development inputs.
+
+Its ordinary Root/cap0/NNP entry is
+`python3 -I -B -S hepta_prepare_public_healthver_supply.py ROOT_CONFIG SHA256`.
+It only creates exclusive fsynced feature files and pending pair lists using
+the existing G codec. It preserves the original 147 physical observations and
+splits 551 pending rows into four batches of at most 147 rows. Actual G uses
+fresh Root registration and trust with the original 120-second, 1 CPU/256 MiB
+budget per batch; the old public window grants no new work. The trainer's explicit
+`hepta.healthver-public-train-candidate-config.v2` consumes the original supply
+plan and five exact physical observation Sources (the preserved 147 and four
+new batches). Its closed source roster is `supply`, `observations`,
+`baseline_manifest`, `baseline_weights`, and `scorer`. Missing, duplicated,
+mismatched or unmeasured rows are refused before training. The component cut
+retains the original 70 development rows and all other rows in those components;
+the reviewed extension assigns 570 TRAIN and 128 development rows. These are
+public development partitions, without unseen acceptance claims.
+
+V2 uses the actual original Root run's seed 20261002, 300 epochs, learning rate
+0.01 and original 180-second
+whole training/scoring budget. It executes the original degenerate baseline
+and candidate through the actual pinned normal scorer on all 698 measured inputs.
+The deadline includes source validation, training, both scorer calls and output
+verification. Encoder measurement has its separate declared per-batch budget.
+`public_cpu_training_supply.py` owns the complete source/component join;
+`public_cpu_training_execution.py` joins the actual child and fsyncs original
+stdout/stderr, including partial timeout/refusal bytes. Freeze these siblings,
+the existing supply preparer and source checker with the trainer and numerical
+core. The preserved V1 adapter keeps its original fixed 147-row Sources.
+Neither adapter issues DatasetV3, signs learning evidence or touches holdout;
+new candidate generations still enter through independent evaluation, selection
+and Artifact CURRENT, rather than the generation-1 abstention-only lease.
 
 Current operating and state-format references:
 

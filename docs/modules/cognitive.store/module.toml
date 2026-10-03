@@ -1,0 +1,46 @@
+schema = "hepta.module-manifest.v1"
+order = 22
+id = "cognitive.store"
+plane = "domain"
+kind = "store"
+lifecycle = "target"
+state = "stateful"
+architectureRole = "authoritative_store"
+writes = ["memory_ledger", "knowledge_fact_ledger"]
+uses = ["cognitive.types", "kernel.operations"]
+owner = "cognitive-platform"
+deputy = "durability-kernel"
+denies = ["federated_network_read", "model_call", "learning_policy_write"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = true
+sourceEvidenceRoots = ["codex-rs/hepta-cognitive-store", "codex-rs/hepta-memory"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "MEM-1-STORE"
+technicalDocument = "docs/modules/cognitive.store/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-cognitive-store"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-cognitive-store"
+compileLayer = 4
+ciGroups = ["learning", "lifecycle"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-memory"
+compileLayer = 3
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

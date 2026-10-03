@@ -11,28 +11,27 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
 
-use codex_hepta_intelligence::AnchoredPlasticityWriterErrorV1;
-use codex_hepta_intelligence::AnchoredPlasticityWriterV1;
-use codex_hepta_intelligence::ParameterPlasticityProductErrorV1;
-use codex_hepta_intelligence::ParameterPlasticityProductReceiptV1;
-use codex_hepta_intelligence::ParameterPlasticityProductRequestV1;
-use codex_hepta_intelligence::PlasticityAdmissionEvidenceV1;
-use codex_hepta_intelligence::PlasticityAnchorCommitterV1;
-use codex_hepta_intelligence::propose_authenticated_parameter_plasticity_v1;
-use codex_hepta_learning_artifacts::ArtifactKind;
-use codex_hepta_learning_artifacts::ArtifactRegistry;
-use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::DurableLedgerError;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
-use codex_hepta_plasticity::DurableRegistryAnchorV1;
-use codex_hepta_plasticity::GeneratedParameterCandidateSetV3;
-use codex_hepta_plasticity::ParameterGeneratorProfileV3;
-use codex_hepta_plasticity::ParameterPlasticitySignalV3;
-use codex_hepta_plasticity::ProposalWindowV2;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::FixedQ32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::intelligence::AnchoredPlasticityWriterErrorV1;
+use codex_hepta_agent_components::intelligence::AnchoredPlasticityWriterV1;
+use codex_hepta_agent_components::intelligence::ParameterPlasticityProductErrorV1;
+use codex_hepta_agent_components::intelligence::ParameterPlasticityProductReceiptV1;
+use codex_hepta_agent_components::intelligence::ParameterPlasticityProductRequestV1;
+use codex_hepta_agent_components::intelligence::PlasticityAdmissionEvidenceV1;
+use codex_hepta_agent_components::intelligence::PlasticityAnchorCommitterV1;
+use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
+use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
+use codex_hepta_agent_components::learning_ledger::DurableLedger;
+use codex_hepta_agent_components::learning_ledger::DurableLedgerError;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_agent_components::plasticity::DurableRegistryAnchorV1;
+use codex_hepta_agent_components::plasticity::GeneratedParameterCandidateSetV3;
+use codex_hepta_agent_components::plasticity::ParameterGeneratorProfileV3;
+use codex_hepta_agent_components::plasticity::ParameterPlasticitySignalV3;
+use codex_hepta_agent_components::plasticity::ProposalWindowV2;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::FixedQ32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 
 use crate::plasticity_anchor_journal::AdaptiveAnchorJournalErrorV1;
 use crate::plasticity_anchor_journal::AdaptiveAnchorJournalV1;
@@ -168,7 +167,7 @@ impl PlasticityOwnerEvidencePolicyV1 {
         Ok(Self { allowed_owners })
     }
 
-    fn allows(&self, kind: PlasticityOwnerEvidenceKindV1, owner_id: &StableId) -> bool {
+    pub(crate) fn allows(&self, kind: PlasticityOwnerEvidenceKindV1, owner_id: &StableId) -> bool {
         self.allowed_owners
             .get(&kind)
             .is_some_and(|owners| owners.contains(owner_id))
@@ -442,6 +441,7 @@ impl From<AdaptiveAnchorJournalErrorV1> for AgentdPlasticityHostErrorV1 {
             AdaptiveAnchorJournalErrorV1::InvalidScope
             | AdaptiveAnchorJournalErrorV1::Corrupt
             | AdaptiveAnchorJournalErrorV1::GenerationPending
+            | AdaptiveAnchorJournalErrorV1::Poisoned
             | AdaptiveAnchorJournalErrorV1::Capacity => Self::AnchorCorrupt,
         }
     }
@@ -665,7 +665,7 @@ pub fn resolve_agentd_plasticity_admission_v1(
     {
         return Err(AgentdPlasticityHostErrorV1::ArtifactBinding);
     }
-    let artifact_registry_head_digest = artifacts.snapshot().head_digest;
+    let artifact_registry_head_digest = artifacts.head_digest();
     let ledger_snapshot = ledger.snapshot()?;
     if artifact_registry_head_digest.is_zero() || ledger_snapshot.head_digest.is_zero() {
         return Err(AgentdPlasticityHostErrorV1::ArtifactBinding);
@@ -702,7 +702,7 @@ pub fn resolve_agentd_plasticity_admission_v1(
 /// before the product adapter runs, so a stale Observer signature cannot be
 /// transplanted across artifact/ledger changes.
 pub fn propose_agentd_plasticity_v1(
-    mut request: ParameterPlasticityProductRequestV1,
+    request: ParameterPlasticityProductRequestV1,
     artifacts: &ArtifactRegistry,
     ledger: &DurableLedger,
     owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
@@ -712,32 +712,18 @@ pub fn propose_agentd_plasticity_v1(
     anchor_store: &mut AgentdPlasticityAnchorStoreV1,
     now: u64,
 ) -> Result<ParameterPlasticityProductReceiptV1, AgentdPlasticityHostErrorV1> {
-    let resolved = resolve_agentd_plasticity_admission_v1(
-        &AgentdPlasticityAdmissionInputV1 {
-            baseline_id: request.admission.baseline_id.clone(),
-            objective_digest: request.admission.objective_digest,
-            generator_profile: request.generator_profile.clone(),
-            generated: request.generated.clone(),
-            baseline_generation: request.admission.baseline_generation,
-            candidate_generation: request.admission.candidate_generation,
-            dataset_digest: request.admission.dataset_digest,
-            update_rule_digest: request.admission.update_rule_digest,
-            modulator_digest: request.admission.modulator_digest,
-            modulator_broadcast_digest: request.admission.modulator_broadcast_digest,
-            eligibility_digest: request.admission.eligibility_digest,
-        },
+    propose_agentd_plasticity_with_clock_v1(
+        request,
         artifacts,
         ledger,
         owner_evidence_resolver,
         owner_evidence_policy,
+        verifier,
+        writer,
+        anchor_store,
         now,
-    )?;
-    if resolved != request.admission {
-        return Err(AgentdPlasticityHostErrorV1::AdmissionDrift);
-    }
-    request.admission = resolved;
-    propose_authenticated_parameter_plasticity_v1(request, verifier, writer, anchor_store, now)
-        .map_err(Into::into)
+        &mut || Ok(now),
+    )
 }
 
 pub fn bootstrap_agentd_plasticity_writer_v1(
@@ -965,14 +951,15 @@ mod tests {
             window_id: StableId::new("window:set").expect("id"),
             window_digest: digest(b"window"),
         };
-        let mutation_policy = codex_hepta_plasticity::build_parameter_mutation_policy_v1(
-            StableId::new("policy:set").expect("id"),
-            digest(b"mutation-grammar"),
-            selected_artifact_digest,
-            window.clone(),
-            Vec::new(),
-        )
-        .expect("mutation policy");
+        let mutation_policy =
+            codex_hepta_agent_components::plasticity::build_parameter_mutation_policy_v1(
+                StableId::new("policy:set").expect("id"),
+                digest(b"mutation-grammar"),
+                selected_artifact_digest,
+                window.clone(),
+                Vec::new(),
+            )
+            .expect("mutation policy");
         let profile = ParameterGeneratorProfileV3 {
             selected_artifact_digest,
             window: window.clone(),
@@ -1094,36 +1081,42 @@ mod tests {
         );
     }
 
-    fn durable_no_change_proposal() -> codex_hepta_plasticity::ParameterProposalV2 {
+    fn durable_no_change_proposal() -> codex_hepta_agent_components::plasticity::ParameterProposalV2
+    {
         let selected = digest(b"rollback-artifact");
-        codex_hepta_plasticity::propose_v2(codex_hepta_plasticity::ParameterProposalRequestV2 {
-            proposal_id: StableId::new("proposal:rollback-domain").expect("id"),
-            proposer_id: StableId::new("generator:rollback-domain").expect("id"),
-            evaluator_id: StableId::new("evaluator:rollback-domain").expect("id"),
-            selected_artifact_digest: selected,
-            window: ProposalWindowV2 {
-                window_id: StableId::new("window:rollback-domain").expect("id"),
-                window_digest: digest(b"rollback-window"),
-            },
-            baseline_generation: Generation::new(1).expect("generation"),
-            candidate_generation: Generation::new(2).expect("generation"),
-            dataset_digest: digest(b"rollback-dataset"),
-            update_rule_digest: digest(b"rollback-update-rule"),
-            modulator_digest: digest(b"rollback-modulator"),
-            modulator_broadcast_digest: digest(b"rollback-broadcast"),
-            eligibility_digest: digest(b"rollback-eligibility"),
-            evaluation_digest: digest(b"rollback-evaluation"),
-            rollback_predecessor_digest: selected,
-            norm_layers: vec![codex_hepta_plasticity::LayerNormDenominatorV2 {
-                layer_id: StableId::new("layer:rollback-domain").expect("id"),
-                baseline_squared_l2_raw_q64: 1_u128 << 64,
-            }],
-            candidates: vec![codex_hepta_plasticity::ParameterCandidateRequestV2 {
+        codex_hepta_agent_components::plasticity::propose_v2(
+            codex_hepta_agent_components::plasticity::ParameterProposalRequestV2 {
+                proposal_id: StableId::new("proposal:rollback-domain").expect("id"),
+                proposer_id: StableId::new("generator:rollback-domain").expect("id"),
+                evaluator_id: StableId::new("evaluator:rollback-domain").expect("id"),
+                selected_artifact_digest: selected,
+                window: ProposalWindowV2 {
+                    window_id: StableId::new("window:rollback-domain").expect("id"),
+                    window_digest: digest(b"rollback-window"),
+                },
+                baseline_generation: Generation::new(1).expect("generation"),
+                candidate_generation: Generation::new(2).expect("generation"),
+                dataset_digest: digest(b"rollback-dataset"),
+                update_rule_digest: digest(b"rollback-update-rule"),
+                modulator_digest: digest(b"rollback-modulator"),
+                modulator_broadcast_digest: digest(b"rollback-broadcast"),
+                eligibility_digest: digest(b"rollback-eligibility"),
+                evaluation_digest: digest(b"rollback-evaluation"),
+                rollback_predecessor_digest: selected,
+                norm_layers: vec![
+                    codex_hepta_agent_components::plasticity::LayerNormDenominatorV2 {
+                        layer_id: StableId::new("layer:rollback-domain").expect("id"),
+                        baseline_squared_l2_raw_q64: 1_u128 << 64,
+                    },
+                ],
+                candidates:
+                    vec![codex_hepta_agent_components::plasticity::ParameterCandidateRequestV2 {
                 candidate_id: StableId::new("candidate:rollback-no-change").expect("id"),
-                kind: codex_hepta_plasticity::ParameterCandidateKindV2::NoChange,
+                kind: codex_hepta_agent_components::plasticity::ParameterCandidateKindV2::NoChange,
                 parameter_deltas: Vec::new(),
             }],
-        })
+            },
+        )
         .expect("proposal")
     }
 
@@ -1141,7 +1134,7 @@ mod tests {
         let fence = anchor_store.issue_next_fence().expect("issue fence");
         assert_eq!(fence, 1);
 
-        let mut registry = codex_hepta_plasticity::DurableProposalRegistry::open_bootstrap_empty(
+        let mut registry = codex_hepta_agent_components::plasticity::DurableProposalRegistry::open_bootstrap_empty(
             registry_file.try_clone().expect("registry clone"),
             scope,
             fence,
@@ -1188,7 +1181,7 @@ mod tests {
             result,
             Err(AgentdPlasticityHostErrorV1::Writer(
                 AnchoredPlasticityWriterErrorV1::Registry(
-                    codex_hepta_plasticity::DurableProposalRegistryError::AcknowledgedHistoryMissing
+                    codex_hepta_agent_components::plasticity::DurableProposalRegistryError::AcknowledgedHistoryMissing
                 )
             ))
         ));
@@ -1222,7 +1215,7 @@ mod tests {
             result,
             Err(AgentdPlasticityHostErrorV1::Writer(
                 AnchoredPlasticityWriterErrorV1::Registry(
-                    codex_hepta_plasticity::DurableProposalRegistryError::AcknowledgedHistoryMissing
+                    codex_hepta_agent_components::plasticity::DurableProposalRegistryError::AcknowledgedHistoryMissing
                 )
             ))
         ));
@@ -1248,3 +1241,9 @@ mod tests {
         assert_eq!(reopened.anchor(), Some(expected));
     }
 }
+
+#[path = "plasticity_host_final_time.rs"]
+mod final_time;
+pub(crate) use final_time::propose_agentd_plasticity_with_clock_v1;
+
+pub(crate) use final_time::observe_completed_agentd_plasticity_with_clock_v1;

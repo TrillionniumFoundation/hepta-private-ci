@@ -3,20 +3,18 @@ use std::sync::Mutex;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_app_server::AppServerDrainHandle;
+use codex_hepta_agent_components::authbus::SignedMessage;
+use codex_hepta_agent_components::authbus::SignedMessageClaims;
+use codex_hepta_agent_components::cognitive_store::DurableCognitiveStore as CognitiveStore;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::learning_ledger::DurableRunStartJournal;
+use codex_hepta_agent_components::learning_ledger::RunStartRecordV1;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 use codex_hepta_agent_protocol::DrainSnapshot;
-use codex_hepta_authbus::SignedMessage;
-use codex_hepta_authbus::SignedMessageClaims;
-use codex_hepta_automation::AutomationStore;
-use codex_hepta_cognitive_store::DurableCognitiveStore as CognitiveStore;
-use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_learning_ledger::DurableRunStartJournal;
-use codex_hepta_learning_ledger::RunStartRecordV1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_app_host::AppServerDrainHandle;
 
 use crate::AgentRunCoordinator;
 use crate::AgentRunError;
@@ -25,12 +23,40 @@ use crate::AgentdEventKind;
 use crate::AgentdIdentity;
 use crate::EventBuffer;
 use crate::RunReceipt;
-use crate::RuntimeComposition;
+
+#[path = "automation_attachment.rs"]
+mod automation_attachment;
+use automation_attachment::AutomationAttachment;
+
+#[path = "state_self_iteration_round.rs"]
+mod self_iteration_round;
 
 #[path = "state_control.rs"]
 mod control;
 
+#[path = "state_admission.rs"]
+mod admission;
+
+#[path = "state_historical_observation.rs"]
+mod historical_observation;
+
+#[path = "state_secrets.rs"]
+mod secrets;
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "state_secrets_tests.rs"]
+mod secrets_tests;
+
 pub(crate) struct AgentdState {
+    pub(crate) prepared_generation_reader:
+        std::sync::OnceLock<Arc<dyn crate::AgentdPreparedGenerationReaderV2>>,
+    #[cfg(target_os = "linux")]
+    pub(crate) secrets_host: std::sync::OnceLock<Arc<crate::secrets_host::AgentdSecretsHost>>,
+    pub(crate) retrieval_executor: crate::retrieval_executor::RetrievalExecutor,
+    pub(crate) self_iteration_handle: std::sync::OnceLock<crate::AgentdSelfIterationHandleV1>,
+    pub(crate) neuron_runtime_v2: std::sync::OnceLock<Arc<crate::AgentdNeuronRuntimeV2Host>>,
+    pub(crate) native_model_receipt_reader:
+        std::sync::OnceLock<Arc<dyn crate::AgentdNativeModelReceiptReaderV1>>,
     pub(crate) intelligence_product:
         std::sync::OnceLock<Arc<crate::AgentdIntelligenceProductRunnerV1>>,
     pub(crate) intelligence_invocation:
@@ -55,7 +81,7 @@ pub(crate) struct AgentdState {
     registry: FleetRegistry,
     runtime: Mutex<RuntimeState>,
     events: Mutex<EventBuffer>,
-    automation: Mutex<Option<AutomationStore>>,
+    automation: Mutex<AutomationAttachment>,
     cognitive: Mutex<Option<Arc<CognitiveStore>>>,
     runs: Mutex<AgentRunCoordinator>,
     app_server_drain: AppServerDrainHandle,
@@ -70,6 +96,7 @@ struct RuntimeState {
     revocation_ready: bool,
     required_ports_ready: bool,
     admission_open: bool,
+    draining: bool,
     fenced: bool,
 }
 
@@ -79,38 +106,39 @@ impl AgentdState {
         registry: FleetRegistry,
         event_capacity: usize,
     ) -> Result<Self, AgentdError> {
+        Self::new_inner(identity, registry, event_capacity, /*restart*/ None)
+    }
+
+    pub(crate) fn new_with_verified_restart(
+        identity: AgentdIdentity,
+        registry: FleetRegistry,
+        event_capacity: usize,
+        restart: &crate::config::VerifiedRunStoreRestart,
+    ) -> Result<Self, AgentdError> {
+        restart.validate_host_binding(&identity, &registry)?;
+        Self::new_inner(identity, registry, event_capacity, Some(restart))
+    }
+
+    fn new_inner(
+        identity: AgentdIdentity,
+        registry: FleetRegistry,
+        event_capacity: usize,
+        restart: Option<&crate::config::VerifiedRunStoreRestart>,
+    ) -> Result<Self, AgentdError> {
         let mut events = EventBuffer::new(event_capacity)?;
         events.push(AgentdEventKind::Bootstrapped);
         events.push(AgentdEventKind::Lifecycle {
             lifecycle: AgentLifecycle::Starting,
             generation: identity.spawn_generation,
         });
-        let configuration_material = format!(
-            "{}|{}|{}|{}|{}",
-            identity.agent_id,
-            identity.spawn_generation,
-            identity.workspace.display(),
-            identity.home_root.display(),
-            identity.run_root.display()
-        );
-        let ports_material = format!(
-            "{}|{}|{}",
-            identity.control_socket.display(),
-            identity.app_server_socket.display(),
-            crate::AGENTD_CONTROL_SCHEMA_VERSION
-        );
-        let run_coordinator = AgentRunCoordinator::compose_runtime(RuntimeComposition {
-            agent_id: identity.agent_id.as_str().to_string(),
-            supervisor_generation: identity.spawn_generation,
-            agentd_generation: identity.spawn_generation,
-            configuration_digest: Sha256Digest::for_bytes(configuration_material.as_bytes())
-                .as_str()
-                .to_string(),
-            ports_digest: Sha256Digest::for_bytes(ports_material.as_bytes())
-                .as_str()
-                .to_string(),
-            max_active_runs: usize::from(identity.resources.max_concurrent_turns),
-        })
+        let composition = crate::config::runtime_composition(&identity, identity.spawn_generation);
+        let run_store_path = identity.run_root.join("runtime-codex-agent-runs-v1.json");
+        let run_coordinator = match restart {
+            Some(proof) => {
+                AgentRunCoordinator::open_durable_for_restart(composition, run_store_path, proof)
+            }
+            None => AgentRunCoordinator::open_durable(composition, run_store_path),
+        }
         .map_err(run_error)?;
 
         let prompt_registry_root = identity.home_root.join("prompt-registry");
@@ -127,8 +155,15 @@ impl AgentdState {
         })?;
         let prompt_pipeline = Arc::new(prompt_pipeline);
         Ok(Self {
+            #[cfg(target_os = "linux")]
+            secrets_host: std::sync::OnceLock::new(),
+            retrieval_executor: crate::retrieval_executor::RetrievalExecutor::new(),
             authbus: std::sync::OnceLock::new(),
             intelligence_product: std::sync::OnceLock::new(),
+            neuron_runtime_v2: std::sync::OnceLock::new(),
+            native_model_receipt_reader: std::sync::OnceLock::new(),
+            prepared_generation_reader: std::sync::OnceLock::new(),
+            self_iteration_handle: std::sync::OnceLock::new(),
             intelligence_invocation: std::sync::OnceLock::new(),
             evidence: std::sync::OnceLock::new(),
             automation_effect: std::sync::OnceLock::new(),
@@ -147,12 +182,13 @@ impl AgentdState {
                 revocation_ready: false,
                 required_ports_ready: false,
                 admission_open: false,
+                draining: false,
                 fenced: false,
             }),
             identity,
             registry,
             events: Mutex::new(events),
-            automation: Mutex::new(None),
+            automation: Mutex::new(AutomationAttachment::default()),
             cognitive: Mutex::new(None),
             runs: Mutex::new(run_coordinator),
             app_server_drain: AppServerDrainHandle::new(),
@@ -173,14 +209,20 @@ impl AgentdState {
             .map_err(|_| AgentdError::Protocol("plasticity runtime already attached".to_string()))
     }
 
+    pub(crate) fn plasticity_runtime_handle(&self) -> Option<crate::PlasticityRuntimeHandleV1> {
+        self.plasticity_runtime.get().map(
+            crate::plasticity_learning_producer::AgentdLearningPlasticityProducerV1::runtime_handle,
+        )
+    }
+
     /// Named Agentd-owned producer boundary for governed parameter plasticity.
     /// Callers never receive the mutable writer or a second owner handle.
     pub(crate) async fn submit_parameter_plasticity_v1(
         &self,
-        request: codex_hepta_intelligence::ParameterPlasticityProductRequestV1,
+        request: codex_hepta_agent_components::intelligence::ParameterPlasticityProductRequestV1,
         now: u64,
     ) -> Result<
-        codex_hepta_intelligence::ParameterPlasticityProductReceiptV1,
+        codex_hepta_agent_components::intelligence::ParameterPlasticityProductReceiptV1,
         crate::PlasticityRuntimeCallErrorV1,
     > {
         let producer = self
@@ -194,10 +236,10 @@ impl AgentdState {
     /// The long-lived owner performs final artifact/ledger/trust/anchor checks.
     pub(crate) async fn submit_topology_plasticity_v1(
         &self,
-        request: codex_hepta_intelligence::TopologyPlasticityProductRequestV1,
+        request: codex_hepta_agent_components::intelligence::TopologyPlasticityProductRequestV1,
         now: u64,
     ) -> Result<
-        codex_hepta_intelligence::TopologyPlasticityProductReceiptV1,
+        codex_hepta_agent_components::intelligence::TopologyPlasticityProductReceiptV1,
         crate::PlasticityRuntimeCallErrorV1,
     > {
         let producer = self
@@ -242,25 +284,6 @@ impl AgentdState {
         })
     }
 
-    pub(crate) fn attach_automation_store(
-        &self,
-        store: AutomationStore,
-    ) -> Result<(), AgentdError> {
-        if store.owner_agent_id() != &self.identity.agent_id {
-            return Err(AgentdError::GenerationFenced(
-                "automation store owner does not match agentd identity".to_string(),
-            ));
-        }
-        let mut automation = self.automation.lock().map_err(poisoned_state)?;
-        if automation.is_some() {
-            return Err(AgentdError::Protocol(
-                "automation store was attached more than once".to_string(),
-            ));
-        }
-        *automation = Some(store);
-        Ok(())
-    }
-
     pub(crate) fn attach_automation_effect_host(
         &self,
         host: Arc<crate::automation_effect_host::AgentdAutomationEffectHost>,
@@ -274,15 +297,6 @@ impl AgentdState {
         &self,
     ) -> Option<Arc<crate::automation_effect_host::AgentdAutomationEffectHost>> {
         self.automation_effect.get().cloned()
-    }
-
-    pub(crate) fn mark_automation_unavailable(&self) -> Result<(), AgentdError> {
-        self.automation.lock().map_err(poisoned_state)?.take();
-        Ok(())
-    }
-
-    pub(crate) fn automation_is_available(&self) -> Result<bool, AgentdError> {
-        Ok(self.automation.lock().map_err(poisoned_state)?.is_some())
     }
 
     pub(crate) fn identity(&self) -> &AgentdIdentity {
@@ -366,6 +380,7 @@ impl AgentdState {
                 runtime.lifecycle,
                 AgentLifecycle::Draining | AgentLifecycle::Stopped | AgentLifecycle::Failed
             ) {
+                runtime.draining = true;
                 runtime.app_server_ready = false;
                 runtime.required_ports_ready = false;
             }
@@ -374,6 +389,7 @@ impl AgentdState {
                 && runtime.critical_stores_ready
                 && runtime.revocation_ready
                 && runtime.required_ports_ready
+                && !runtime.draining
                 && !runtime.fenced
             {
                 runtime.admission_open = true;
@@ -386,11 +402,12 @@ impl AgentdState {
                     generation: record.lifecycle.generation,
                 });
             if runtime.lifecycle == AgentLifecycle::Draining {
-                self.runs
-                    .lock()
-                    .map_err(poisoned_state)?
+                let mut runs = self.runs.lock().map_err(poisoned_state)?;
+                let mut candidate = runs.clone();
+                candidate
                     .begin_drain(unix_now_ms()?, "supervisor_draining")
                     .map_err(run_error)?;
+                runs.publish_candidate(candidate, ()).map_err(run_error)?;
             }
         }
         Ok(())
@@ -434,12 +451,13 @@ impl AgentdState {
 
     pub(crate) fn mark_app_server_ready(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
-        if !runtime.app_server_ready {
+        if !runtime.draining && !runtime.fenced && !runtime.app_server_ready {
             runtime.app_server_ready = true;
             runtime.required_ports_ready = true;
             if runtime.lifecycle == AgentLifecycle::Running
                 && runtime.critical_stores_ready
                 && runtime.revocation_ready
+                && !runtime.draining
                 && !runtime.fenced
             {
                 runtime.admission_open = true;
@@ -454,6 +472,7 @@ impl AgentdState {
 
     pub(crate) fn mark_draining(&self) -> Result<(), AgentdError> {
         let mut runtime = self.runtime.lock().map_err(poisoned_state)?;
+        runtime.draining = true;
         runtime.app_server_ready = false;
         runtime.required_ports_ready = false;
         runtime.admission_open = false;
@@ -463,11 +482,12 @@ impl AgentdState {
             .map_err(poisoned_state)?
             .push(AgentdEventKind::Draining);
         drop(runtime);
-        self.runs
-            .lock()
-            .map_err(poisoned_state)?
+        let mut runs = self.runs.lock().map_err(poisoned_state)?;
+        let mut candidate = runs.clone();
+        candidate
             .begin_drain(unix_now_ms()?, "agentd_shutdown")
             .map_err(run_error)?;
+        runs.publish_candidate(candidate, ()).map_err(run_error)?;
         Ok(())
     }
 
@@ -475,10 +495,7 @@ impl AgentdState {
         self.app_server_drain.clone()
     }
 
-    pub(crate) async fn request_drain(
-        &self,
-        automation: Option<&AutomationStore>,
-    ) -> Result<DrainSnapshot, AgentdError> {
+    pub(crate) async fn request_drain(&self) -> Result<DrainSnapshot, AgentdError> {
         self.refresh_generation()?;
         {
             let runtime = self.runtime.lock().map_err(poisoned_state)?;
@@ -490,10 +507,8 @@ impl AgentdState {
             }
         }
         self.mark_draining()?;
-        let automation_blockers = match automation {
-            Some(store) => store.drain_blockers().await?,
-            None => 1,
-        };
+        let attachment = self.automation.lock().map_err(poisoned_state)?.clone();
+        let automation_blockers = attachment.drain_blockers().await?;
         self.drain_snapshot(automation_blockers)
     }
 
@@ -506,16 +521,24 @@ impl AgentdState {
         let running_turns = u32::try_from(self.app_server_drain.running_turns()).map_err(|_| {
             AgentdError::Protocol("running assistant turn count exceeds u32".to_string())
         })?;
+        let effect_workers = self
+            .automation_effect_host()
+            .map(|host| host.pending_effect_workers())
+            .unwrap_or(0);
         Ok(DrainSnapshot {
             admission_closed: runtime.lifecycle == AgentLifecycle::Draining
                 && !runtime.app_server_ready
+                && runtime.draining
                 && !runtime.fenced,
             running_turns,
             drained: runtime.lifecycle == AgentLifecycle::Draining
+                && runtime.draining
                 && !runtime.fenced
                 && self.app_server_drain.drained()
                 && running_turns == 0
-                && automation_blockers == 0,
+                && automation_blockers == 0
+                && effect_workers == 0
+                && self.pending_secrets_workers() == 0,
             lifecycle: runtime.lifecycle,
             fenced: runtime.fenced,
         })
@@ -532,11 +555,13 @@ impl AgentdState {
             events.push(AgentdEventKind::GenerationFenced);
         }
         if let Ok(mut runs) = self.runs.lock() {
-            runs.close_admissions();
+            let mut candidate = runs.clone();
+            candidate.close_admissions();
             if let Ok(now_ms) = unix_now_ms() {
-                let _ = runs.begin_drain(now_ms, "generation_fenced");
+                let _ = candidate.begin_drain(now_ms, "generation_fenced");
             }
-            let _ = runs.mark_unresolved_indeterminate("generation_fenced");
+            let _ = candidate.mark_unresolved_indeterminate("generation_fenced");
+            let _ = runs.publish_candidate(candidate, ());
         }
     }
 
@@ -564,6 +589,7 @@ impl AgentdState {
         let runtime = self.runtime.lock().map_err(poisoned_state)?;
         Ok(runtime.lifecycle == AgentLifecycle::Running
             && runtime.app_server_ready
+            && !runtime.draining
             && !runtime.fenced)
     }
     pub(crate) fn canonical_intelligence_enabled(&self) -> bool {
@@ -586,7 +612,18 @@ impl AgentdState {
             return Ok(None);
         };
 
-        let invocation = provider.build(&self.identity, record)?;
+        // Authenticate the durable owner and current Fleet fence before any
+        // provider is allowed to derive seven-owner inputs. This applies to
+        // abstain and slow-path outcomes as well as a Ready continuation.
+        let first_now = self.require_current_run_start(record)?;
+        let (invocation, neuron) = runner
+            .build_host_invocation(
+                Arc::clone(provider),
+                self.identity.clone(),
+                record.clone(),
+                self.neuron_runtime_v2.get().cloned(),
+            )
+            .await?;
         invocation.validate(&self.identity, record)?;
 
         // Freeze only the small immutable composition while holding the run
@@ -598,27 +635,41 @@ impl AgentdState {
             .map_err(poisoned_state)?
             .composition()
             .clone();
-        let outcome = runner
-            .prepare_for_composition(&composition, invocation.request, invocation.inputs)
-            .await
-            .map_err(|error| {
-                AgentdError::Protocol(format!(
-                    "canonical intelligence preparation failed: {error}"
-                ))
-            })?;
+        let outcome = match neuron {
+            Some(neuron) => {
+                runner
+                    .prepare_for_composition_with_deferred_neuron_v2(
+                        &composition,
+                        invocation.request,
+                        invocation.inputs,
+                        neuron,
+                    )
+                    .await
+            }
+            None => {
+                runner
+                    .prepare_for_composition(&composition, invocation.request, invocation.inputs)
+                    .await
+            }
+        }
+        .map_err(|error| {
+            AgentdError::Protocol(format!(
+                "canonical intelligence preparation failed: {error}"
+            ))
+        })?;
 
+        // Owner preparation is asynchronous. Revalidate the durable signed
+        // Objective and Fleet fence after it completes before reporting any
+        // canonical disposition or mutating the run coordinator.
+        let second_now = self.require_current_run_start(record)?;
+        let now_ms = first_now.max(second_now);
         match outcome {
             crate::AgentdIntelligenceProductOutcomeV1::Ready(prepared) => {
-                // Owner preparation is asynchronous. Revalidate the durable
-                // signed Objective and Fleet fence again after it completes,
-                // twice as the compatibility path does at its final boundary.
-                let first_now = self.require_current_run_start(record)?;
-                let second_now = self.require_current_run_start(record)?;
-                let now_ms = first_now.max(second_now);
                 let snapshot = prepared.run_snapshot();
                 let attachment = prepared.context_attachment();
                 let mut runs = self.runs.lock().map_err(poisoned_state)?;
-                let admitted = runs
+                let mut candidate = runs.clone();
+                let admitted = candidate
                     .start_run(
                         now_ms,
                         crate::RunSnapshot {
@@ -634,7 +685,7 @@ impl AgentdState {
                         },
                     )
                     .map_err(run_error)?;
-                let run_receipt = runs
+                let run_receipt = candidate
                     .attach_context(
                         now_ms,
                         admitted.revision,
@@ -653,6 +704,7 @@ impl AgentdState {
                         },
                     )
                     .map_err(run_error)?;
+                runs.publish_candidate(candidate, ()).map_err(run_error)?;
                 Ok(Some(crate::AgentdIntelligenceAdmittedOutcomeV1::Ready {
                     prepared,
                     run_receipt,
@@ -696,11 +748,15 @@ impl AgentdState {
         // first validation must not survive into runtime admission.
         let final_now_ms = self.require_current_run_start(record)?;
         let now_ms = now_ms.max(final_now_ms);
-        self.runs
-            .lock()
-            .map_err(poisoned_state)?
+        let mut runs = self.runs.lock().map_err(poisoned_state)?;
+        let mut candidate = runs.clone();
+        let receipt = candidate
             .start_revalidated_run_start(now_ms, record)
-            .map_err(run_error)
+            .map_err(run_error)?;
+        if !receipt.idempotent {
+            runs.publish_candidate(candidate, ()).map_err(run_error)?;
+        }
+        Ok(receipt)
     }
 
     fn require_current_run_start(&self, record: &RunStartRecordV1) -> Result<u64, AgentdError> {
@@ -756,11 +812,15 @@ impl AgentdState {
     }
 
     pub(crate) fn expire_run_deadlines(&self) -> Result<usize, AgentdError> {
-        self.runs
-            .lock()
-            .map_err(poisoned_state)?
+        let mut runs = self.runs.lock().map_err(poisoned_state)?;
+        let mut candidate = runs.clone();
+        let changed = candidate
             .expire_deadlines(unix_now_ms()?)
-            .map_err(run_error)
+            .map_err(run_error)?;
+        if changed != 0 {
+            runs.publish_candidate(candidate, ()).map_err(run_error)?;
+        }
+        Ok(changed)
     }
 
     pub(crate) fn active_run_count(&self) -> Result<usize, AgentdError> {
@@ -779,11 +839,15 @@ impl AgentdState {
         &self,
         reason: &str,
     ) -> Result<usize, AgentdError> {
-        self.runs
-            .lock()
-            .map_err(poisoned_state)?
+        let mut runs = self.runs.lock().map_err(poisoned_state)?;
+        let mut candidate = runs.clone();
+        let changed = candidate
             .mark_unresolved_indeterminate(reason)
-            .map_err(run_error)
+            .map_err(run_error)?;
+        if changed != 0 {
+            runs.publish_candidate(candidate, ()).map_err(run_error)?;
+        }
+        Ok(changed)
     }
 }
 
@@ -798,11 +862,12 @@ fn objective_run_scope(identity: &AgentdIdentity) -> Digest32 {
 }
 
 pub(crate) fn objective_run_fence(identity: &AgentdIdentity, current_generation: u64) -> String {
-    let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
-    bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
-    bytes.extend_from_slice(&current_generation.to_be_bytes());
-    Sha256Digest::for_bytes(&bytes).as_str().to_string()
+    crate::objective_run_fence_digest_v1(
+        identity.agent_id.as_str(),
+        identity.spawn_generation,
+        current_generation,
+    )
+    .to_string()
 }
 
 fn unix_now_ms() -> Result<u64, AgentdError> {
@@ -821,3 +886,24 @@ fn poisoned_state<T>(_error: std::sync::PoisonError<T>) -> AgentdError {
 #[cfg(test)]
 #[path = "state_isolation_tests.rs"]
 mod isolation_tests;
+
+#[cfg(test)]
+#[path = "run_store_dispatch_tests.rs"]
+mod run_store_dispatch_tests;
+
+#[path = "state_plasticity.rs"]
+mod plasticity;
+
+/// Serializes final admission with local draining/fencing until synchronous
+/// append and original anchor commit finish; it grants no effect authority.
+pub(crate) struct PlasticityFinalAdmissionGuardV1<'a> {
+    _runtime: std::sync::MutexGuard<'a, RuntimeState>,
+}
+
+#[path = "state_parameter_admission.rs"]
+mod parameter_admission;
+#[path = "state_plasticity_observation.rs"]
+mod plasticity_observation;
+#[cfg(all(test, target_os = "linux"))]
+#[path = "state_prepared_generation_tests.rs"]
+mod prepared_generation_tests;

@@ -45,6 +45,7 @@ async fn connect_test_websocket(
         },
         current_enrollment,
         RemoteControlConnectOptions {
+            http_client: &create_client_without_request_logging(),
             installation_id: TEST_INSTALLATION_ID,
             server_name: "test-server",
             subscribe_cursor: None,

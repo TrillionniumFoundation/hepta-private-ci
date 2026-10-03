@@ -107,3 +107,17 @@ fn config_rejects_a_generation_that_does_not_own_the_running_agentd() {
     .expect_err("wrong spawn generation must be fenced");
     assert!(matches!(error, MatrixdConfigError::GenerationFenced(_)));
 }
+
+#[test]
+fn running_config_does_not_read_or_migrate_an_unrelated_private_peer() {
+    let (_temp, fleet_root, agent_id) = configured_fleet();
+    let peer = HeptaFleetRoot::parse(fleet_root.clone())
+        .unwrap()
+        .layout()
+        .agent(&AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13").unwrap());
+    fs::create_dir(peer.agent_root()).unwrap();
+    let record = running_record(&fleet_root, &agent_id, 1).expect("own running record");
+    assert_eq!(record.manifest.agent_id, agent_id);
+    assert!(!peer.matrix_root().exists());
+    assert!(running_record(&fleet_root, &record.manifest.agent_id, 2).is_err());
+}
