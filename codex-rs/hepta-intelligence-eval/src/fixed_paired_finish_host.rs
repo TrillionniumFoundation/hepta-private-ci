@@ -450,3 +450,7 @@ pub fn finish_fixed_paired_custody(path: &Path) -> HostResult<()> {
     println!("{report}");
     Ok(())
 }
+
+#[path = "fixed_paired_finish_write_paths.rs"]
+mod write_paths;
+pub use write_paths::fixed_paired_finish_write_paths_v1;

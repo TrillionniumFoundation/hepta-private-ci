@@ -12,6 +12,8 @@ use std::process::ExitStatus;
 use std::process::Stdio;
 
 type HostResult<T> = Result<T, Box<dyn std::error::Error>>;
+#[path = "parameter_role_write_paths.rs"]
+mod write_paths;
 
 /// Original exclusive output consumption and cold observation, with the same
 /// finite program runner. The Root caller verifies the actual signed whole
@@ -255,6 +257,7 @@ pub fn execute_parameter_role_v1(
     let program_pin: Digest32 = request.program.digest.parse()?;
     verify_registered_operational_program_v3(&request.program.path, program_pin)?;
     let configuration = read_configuration(&request.configuration)?;
+    let writable = write_paths::derive(request, &configuration)?;
     let output_guard = output.try_clone()?;
     let error_guard = error.try_clone()?;
     for file in [&output_guard, &error_guard] {
@@ -298,6 +301,17 @@ pub fn execute_parameter_role_v1(
             "--property=RuntimeMaxSec=120",
             "--property=LimitCORE=0",
         ]);
+    if !writable.is_empty() {
+        command.arg(format!(
+            "--property=ReadWritePaths={}",
+            writable
+                .iter()
+                .map(|path| path.display().to_string())
+                .collect::<Vec<_>>()
+                .join(" ")
+        ));
+    }
+
     for path in &request.inaccessible_paths {
         if !path.is_absolute()
             || path.components().any(|part| {
@@ -350,7 +364,9 @@ pub fn execute_parameter_role_v1(
     output_guard.sync_all()?;
     error_guard.sync_all()?;
     verify_registered_operational_program_v3(&request.program.path, program_pin)?;
-    if read_configuration(&request.configuration)? != configuration {
+    if read_configuration(&request.configuration)? != configuration
+        || write_paths::derive(request, &configuration)? != writable
+    {
         return Err("finite role program/configuration changed during actual effect".into());
     }
     Ok(status)

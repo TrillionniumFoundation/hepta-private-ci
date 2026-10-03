@@ -594,3 +594,7 @@ pub fn verify_original_observer_controller(
     }
     Ok(())
 }
+
+#[path = "fixed_paired_custody_write_paths.rs"]
+mod write_paths;
+pub use write_paths::fixed_paired_execution_write_paths_v1;

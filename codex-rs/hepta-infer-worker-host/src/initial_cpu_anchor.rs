@@ -15,6 +15,9 @@ use serde_json::Value;
 use std::path::Path;
 
 type HostResult<T> = Result<T, Box<dyn std::error::Error>>;
+#[path = "initial_cpu_publication_write_paths.rs"]
+mod publication_write_paths;
+pub(crate) use publication_write_paths::original_publication_write_paths;
 #[path = "initial_cpu_profile.rs"]
 mod profile;
 use profile::Profile;
