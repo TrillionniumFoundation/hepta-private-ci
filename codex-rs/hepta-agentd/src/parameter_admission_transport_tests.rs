@@ -215,5 +215,7 @@ fn profile_query_rejects_partial_uppercase_and_over_frame_material() {
 
 include!("parameter_preparation_client_tests.rs");
 
+#[path = "parameter_preparation_actual_root_tests.rs"]
+mod actual_root_preparation_tests;
 #[path = "parameter_context_refresh_client_tests.rs"]
 mod refresh_client_tests;
