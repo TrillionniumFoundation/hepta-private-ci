@@ -51,6 +51,11 @@ const MAX_FRAME_BYTES: usize = 8 + 32 + 4 + MAX_PAYLOAD_BYTES + 32;
 const MAX_FILE_BYTES: u64 = 512 * 1024 * 1024;
 const PAYLOAD_MAGIC: &[u8; 8] = b"HPTPPV02";
 
+#[path = "durable_registry_observation.rs"]
+mod observation;
+pub use observation::DurableCompletedProposalV1;
+pub use observation::MAX_COMPLETED_PROPOSAL_BYTES_V1;
+
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 pub struct DurableRegistryAnchorV1 {
     pub sequence: u64,

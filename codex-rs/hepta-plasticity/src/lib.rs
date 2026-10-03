@@ -20,10 +20,12 @@ mod topology_registry;
 mod topology_v2;
 mod types;
 
+pub use durable_registry::DurableCompletedProposalV1;
 pub use durable_registry::DurableProposalAppendReceiptV1;
 pub use durable_registry::DurableProposalRegistry;
 pub use durable_registry::DurableProposalRegistryError;
 pub use durable_registry::DurableRegistryAnchorV1;
+pub use durable_registry::MAX_COMPLETED_PROPOSAL_BYTES_V1;
 pub use generator_v3::GeneratedParameterCandidateSetV3;
 pub use generator_v3::ParameterGeneratorErrorV3;
 pub use generator_v3::ParameterGeneratorProfileV3;
