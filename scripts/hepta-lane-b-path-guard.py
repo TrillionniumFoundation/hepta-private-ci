@@ -10,6 +10,8 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
+from hepta_module_source_roots import resolve_source_roots
+
 ROOT = Path(__file__).resolve().parents[1]
 TRUTH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
 
@@ -188,6 +190,30 @@ def verify(root: Path = ROOT) -> int:
             canonical_path(root, owner_root, f"{module}: owner root", require_file=None)
         maps[module] = row
         roots[module] = resolved_roots
+
+    # Lane membership is not repository ownership. Resolve only named owners
+    # through the same canonical registry used by source truth verification.
+    registered = load(root / "docs/modules/MODULES.json").get("modules")
+    need(isinstance(registered, list), "registered module index")
+    owners = {}
+    for entry in registered:
+        need(
+            isinstance(entry, dict) and isinstance(entry.get("id"), str),
+            "registered module identity",
+        )
+        need(entry["id"] not in owners, "duplicate registered owner")
+        owners[entry["id"]] = entry
+    for module, row in maps.items():
+        for operation in row.get("operations", []):
+            for delegate in operation.get("delegatedCallees", []):
+                owner = delegate.get("ownerModule")
+                need(owner in owners, f"{module}: unregistered delegated owner")
+                if owner not in roots:
+                    roots[owner] = resolve_source_roots(root, owners[owner])
+                    need(
+                        bool(roots[owner]),
+                        f"{module}: delegated owner has no canonical source",
+                    )
 
     operations = tests = delegates = 0
     for module, row in maps.items():

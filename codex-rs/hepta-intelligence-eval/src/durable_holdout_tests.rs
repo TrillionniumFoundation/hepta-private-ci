@@ -52,6 +52,17 @@ impl Drop for Directory {
         let _ = fs::remove_dir_all(&self.0);
     }
 }
+// Inspect the original lock-owning handle: Windows locks also exclude other
+// handles in this process. Restore its cursor before the next journal operation.
+fn locked_bytes(mut file: &File) -> Vec<u8> {
+    let position = file.stream_position().unwrap();
+    file.seek(SeekFrom::Start(0)).unwrap();
+    let mut bytes = Vec::new();
+    file.read_to_end(&mut bytes).unwrap();
+    file.seek(SeekFrom::Start(position)).unwrap();
+    bytes
+}
+
 fn id(value: &str) -> StableId {
     StableId::new(value).unwrap()
 }
@@ -163,7 +174,7 @@ fn consumption_survives_a_distinct_process() {
 fn independent_anchor_rejects_old_backup_and_partial_tail() {
     let directory = Directory::new();
     let mut store = directory.create();
-    let old = fs::read(directory.path()).unwrap();
+    let old = locked_bytes(&store.file);
     store
         .consume_single_host_trusted(store.anchor(), &plan("plan-1"))
         .unwrap();
@@ -194,7 +205,7 @@ fn lock_binding_cas_and_invalid_plan_do_not_mutate_storage() {
         DurableFinalHoldoutJournalV1::recover(directory.file(), digest("binding"), store.anchor()),
         Err(DurableHoldoutError::Busy)
     ));
-    let before = fs::read(directory.path()).unwrap();
+    let before = locked_bytes(&store.file);
     assert_eq!(
         store.consume_single_host_trusted(
             HoldoutAnchorV1 {
@@ -211,7 +222,7 @@ fn lock_binding_cas_and_invalid_plan_do_not_mutate_storage() {
         store.consume_single_host_trusted(store.anchor(), &invalid),
         Err(DurableHoldoutError::Semantic)
     );
-    assert_eq!(fs::read(directory.path()).unwrap(), before);
+    assert_eq!(locked_bytes(&store.file), before);
     let anchor = store.anchor();
     drop(store);
     assert!(matches!(
@@ -228,11 +239,11 @@ fn idempotent_retry_does_not_append_and_byte_corruption_rejects() {
         .consume_single_host_trusted(store.anchor(), &plan("plan-1"))
         .unwrap();
     let anchor = store.anchor();
-    let before = fs::read(directory.path()).unwrap();
+    let before = locked_bytes(&store.file);
     store
         .consume_single_host_trusted(anchor, &plan("plan-1"))
         .unwrap();
-    assert_eq!(fs::read(directory.path()).unwrap(), before);
+    assert_eq!(locked_bytes(&store.file), before);
     drop(store);
     let mut bad = before;
     bad[HEADER + 8] ^= 1;
@@ -314,7 +325,7 @@ fn fenced_anchor_cas_rejects_stale_replicas_without_mutation() {
     let primary_directory = Directory::new();
     let replica_directory = Directory::new();
     let primary = primary_directory.create();
-    let initial = fs::read(primary_directory.path()).unwrap();
+    let initial = locked_bytes(&primary.file);
     let start = primary.anchor();
     drop(primary);
     fs::write(replica_directory.path(), &initial).unwrap();
@@ -335,7 +346,7 @@ fn fenced_anchor_cas_rejects_stale_replicas_without_mutation() {
     let mut stale =
         DurableFinalHoldoutJournalV1::recover(replica_directory.file(), digest("binding"), start)
             .unwrap();
-    let before = fs::read(replica_directory.path()).unwrap();
+    let before = locked_bytes(&stale.file);
     for index in 0..128 {
         assert_eq!(
             stale.consume_fenced(&mut authority, start, &plan(&format!("stale-plan-{index}"))),
@@ -343,7 +354,7 @@ fn fenced_anchor_cas_rejects_stale_replicas_without_mutation() {
         );
     }
     assert_eq!(stale.anchor(), start);
-    assert_eq!(fs::read(replica_directory.path()).unwrap(), before);
+    assert_eq!(locked_bytes(&stale.file), before);
 }
 
 #[test]
@@ -351,7 +362,7 @@ fn fenced_anchor_error_after_commit_poisoned_without_local_append() {
     let directory = Directory::new();
     let mut store = directory.create();
     let start = store.anchor();
-    let before = fs::read(directory.path()).unwrap();
+    let before = locked_bytes(&store.file);
     let mut authority = CommitThenFailAnchorAuthority {
         binding: digest("binding"),
         anchor: start,
@@ -364,7 +375,7 @@ fn fenced_anchor_error_after_commit_poisoned_without_local_append() {
     assert_eq!(authority.anchor.sequence, 1);
     let advanced = authority.anchor;
     assert_eq!(store.anchor(), start);
-    assert_eq!(fs::read(directory.path()).unwrap(), before);
+    assert_eq!(locked_bytes(&store.file), before);
     assert_eq!(
         store.consume_fenced(&mut authority, advanced, &plan("plan-1")),
         Err(DurableHoldoutError::Poisoned)

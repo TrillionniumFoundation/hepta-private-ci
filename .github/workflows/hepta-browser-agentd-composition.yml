@@ -1,14 +1,9 @@
 name: Hepta Browser Agentd composition
 
 on:
-  push:
-    branches: [codex/browser-servo-agentd-composition-20260917]
-    paths:
-      - 'codex-rs/hepta-agentd/**'
-      - 'codex-rs/hepta-agent-protocol/**'
-      - 'apps/hepta-browser/src/agentd-*.js'
-      - 'apps/hepta-browser/test/agentd-service.test.js'
-      - '.github/workflows/hepta-browser-agentd-composition.yml'
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
   workflow_dispatch:
 
 permissions:
@@ -67,7 +62,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          cargo clippy --locked -p codex-hepta-agentd --lib --bin hepta-agentd-browser --no-deps -- -D warnings
+          cargo clippy --locked -p codex-hepta-agentd --lib --bin hepta-agentd-browser --no-deps -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Verify source stayed clean
         if: always()

@@ -389,9 +389,7 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         self.write("src/alpha/lib.rs", "pub fn calculate() { let _x = 9; }\n")
         current = self.commit("change exact blob implementation")
         result = self.migrate(["alpha"])
-        self.assertEqual(
-            result["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"]
-        )
+        self.assertEqual(result["maps"], ["docs/modules/alpha/IMPLEMENTATION_MAP.json"])
         migrated = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
         self.assertEqual(migrated["sourceBase"], provenance)
         self.assertEqual(migrated["observedAtHead"], current)
@@ -403,9 +401,7 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         result = self.verify()
         self.assertEqual(result["provenanceAnchoredExactBlobMaps"], 1)
 
-        before = (
-            self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json"
-        ).read_bytes()
+        before = (self.root / "docs/modules/alpha/IMPLEMENTATION_MAP.json").read_bytes()
         self.write("README.md", "later prose must not rewrite provenance\n")
         self.commit("prose after exact blob observation")
         self.assertEqual(self.migrate(["alpha"])["migrated"], 0)
@@ -1312,6 +1308,48 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         with self.assertRaises(ValueError):
             self.migrate()
         self.assertEqual(before, self.map_bytes())
+
+    def test_development_edit_keeps_navigation_without_qualifying_old_evidence(self):
+        self.write("src/alpha/lib.rs", "pub fn calculate() { let _changed = 1; }\n")
+        output = io.StringIO()
+        with contextlib.redirect_stdout(output):
+            maps.verify(profile="development")
+        result = json.loads(output.getvalue())
+        self.assertFalse(result["historicalEvidenceRevalidated"])
+        self.assertFalse(result["currentSourceIdentityRequired"])
+        self.reject()
+
+    def test_development_rejects_missing_observed_source(self):
+        self.rows["alpha"]["observedSourcePaths"] = ["src/missing.rs"]
+        self.change_maps()
+        with self.assertRaisesRegex(SystemExit, "missing observed source/evidence"):
+            maps.verify(profile="development")
+
+    def test_development_rejects_malformed_provenance(self):
+        self.rows["alpha"]["sourceBase"]["tree"] = "main"
+        self.change_maps()
+        with self.assertRaisesRegex(SystemExit, "literal commit/tree SHA-1"):
+            maps.verify(profile="development")
+
+    def test_qualification_after_development_still_rejects_false_tree(self):
+        self.exact_blob_row_with_detached_provenance()
+        self.rows["alpha"]["sourceBase"]["tree"] = "0" * 40
+        self.change_maps()
+        with contextlib.redirect_stdout(io.StringIO()):
+            maps.verify(profile="development")
+        with self.assertRaisesRegex(SystemExit, "source tree mismatch"):
+            self.verify()
+
+    def test_qualification_git_failure_cannot_fall_back_to_development(self):
+        original = maps.git
+
+        def fail_object_read(*args, **kwargs):
+            if args[0] == "cat-file":
+                raise subprocess.CalledProcessError(128, "git cat-file")
+            return original(*args, **kwargs)
+
+        with patch.object(maps, "git", side_effect=fail_object_read):
+            self.reject()
 
 
 if __name__ == "__main__":

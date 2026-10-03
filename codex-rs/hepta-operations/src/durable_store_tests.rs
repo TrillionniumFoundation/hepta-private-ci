@@ -9,8 +9,9 @@ use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqlitePoolOptions;
+
+#[path = "durable_clock_tests.rs"]
+mod clock_tests;
 
 fn stable_id(value: &str) -> StableId {
     StableId::new(value).expect("test identifier")
@@ -260,17 +261,17 @@ async fn acknowledgement_loss_stays_indeterminate_until_terminal_observer() {
     let operation = intent(b"payload");
     let store = DurableOperationStore::open(&path).await.expect("open");
     store.prepare_intent(&operation).await.expect("prepare");
+    let (authority, signed, _authority_dir) = authority_fixture(&operation, 6);
     let claim = store
         .claim_next(
             &operation.destination,
             &stable_id("worker:one"),
             generation(1),
-            Duration::from_secs(1),
+            Duration::from_secs(30),
         )
         .await
         .expect("claim")
         .expect("row");
-    let (authority, signed, _authority_dir) = authority_fixture(&claim.intent, 6);
     let authorized = store
         .authorize_dispatch(&authority, &signed, &claim)
         .await
@@ -422,17 +423,17 @@ async fn proven_not_dispatched_requeues_with_a_new_fence() {
     let operation = intent(b"payload");
     let store = DurableOperationStore::open(&path).await.expect("open");
     store.prepare_intent(&operation).await.expect("prepare");
+    let (authority, signed, _authority_dir) = authority_fixture(&operation, 7);
     let claim = store
         .claim_next(
             &operation.destination,
             &stable_id("worker:one"),
             generation(1),
-            Duration::from_secs(1),
+            Duration::from_secs(30),
         )
         .await
         .expect("claim")
         .expect("row");
-    let (authority, signed, _authority_dir) = authority_fixture(&claim.intent, 7);
     let authorized = store
         .authorize_dispatch(&authority, &signed, &claim)
         .await
@@ -450,7 +451,7 @@ async fn proven_not_dispatched_requeues_with_a_new_fence() {
             &operation.destination,
             &stable_id("worker:two"),
             generation(1),
-            Duration::from_secs(1),
+            Duration::from_secs(30),
         )
         .await
         .expect("reclaim")
@@ -590,9 +591,7 @@ async fn migration_checksum_tamper_fails_reopen() {
     let path = directory.path().join("operations.sqlite3");
     let store = DurableOperationStore::open(&path).await.expect("open");
     store.close().await;
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(SqliteConnectOptions::new().filename(&path))
+    let pool = crate::sqlite::open_durable_pool(&path)
         .await
         .expect("raw open");
     sqlx::query("UPDATE _sqlx_migrations SET checksum = X'00' WHERE version = 1")
@@ -612,9 +611,7 @@ async fn future_migration_lineage_blocks_old_binary_reopen() {
     let path = directory.path().join("operations.sqlite3");
     let store = DurableOperationStore::open(&path).await.expect("open");
     store.close().await;
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(SqliteConnectOptions::new().filename(&path))
+    let pool = crate::sqlite::open_durable_pool(&path)
         .await
         .expect("raw open");
     sqlx::query(

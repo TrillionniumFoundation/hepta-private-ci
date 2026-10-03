@@ -2,6 +2,11 @@
 //! This measures fixture-based signature verification and policy admission only;
 //! it does not measure an Agentd process, signature generation or ledger fsync.
 
+#![allow(
+    clippy::expect_used,
+    reason = "this local qualification example uses fixed fixtures and does not grant production authority"
+)]
+
 use std::time::Duration;
 use std::time::Instant;
 

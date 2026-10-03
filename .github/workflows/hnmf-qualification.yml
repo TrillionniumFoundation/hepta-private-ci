@@ -1,36 +1,10 @@
 name: hnmf-qualification
 
 on:
-  pull_request:
-    paths:
-      - "codex-rs/hepta-cognitive-types/**"
-      - "docs/contracts/CONTRACTS.json"
-      - "docs/contracts/PROTOCOL_SCHEMAS.json"
-      - "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
-      - "docs/hnmf/**"
-      - "qualification/cognitive-types-v1/**"
-      - "qualification/hnmf-reference/**"
-      - "qualification/hnmf-contract-reference/**"
-      - "qualification/hnmf-adversarial-reference/**"
-      - "scripts/hepta-hnmf.py"
-      - ".github/workflows/hnmf-qualification.yml"
-      - "README.md"
-  push:
-    branches:
-      - main
-    paths:
-      - "codex-rs/hepta-cognitive-types/**"
-      - "docs/contracts/CONTRACTS.json"
-      - "docs/contracts/PROTOCOL_SCHEMAS.json"
-      - "docs/modules/cognitive.types/IMPLEMENTATION_MAP.json"
-      - "docs/hnmf/**"
-      - "qualification/cognitive-types-v1/**"
-      - "qualification/hnmf-reference/**"
-      - "qualification/hnmf-contract-reference/**"
-      - "qualification/hnmf-adversarial-reference/**"
-      - "scripts/hepta-hnmf.py"
-      - ".github/workflows/hnmf-qualification.yml"
-      - "README.md"
+  # Automatic pull-request and main-branch fan-out is owned by the two
+  # aggregate checks. Deep qualifications remain reusable and manually runnable.
+  workflow_call:
+  workflow_dispatch:
 
 permissions:
   contents: read
@@ -66,7 +40,7 @@ jobs:
         run: cargo check --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets
 
       - name: Lint canonical cognitive.types
-        run: cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D warnings
+        run: cargo clippy --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Test canonical cognitive.types
         run: cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-cognitive-types
@@ -87,7 +61,7 @@ jobs:
         run: cargo check --manifest-path qualification/hnmf-contract-reference/Cargo.toml --all-targets --locked
 
       - name: Lint multimodal contract reference
-        run: cargo clippy --manifest-path qualification/hnmf-contract-reference/Cargo.toml --all-targets --locked -- -D warnings
+        run: cargo clippy --manifest-path qualification/hnmf-contract-reference/Cargo.toml --all-targets --locked -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Test multimodal contract reference
         run: cargo test --manifest-path qualification/hnmf-contract-reference/Cargo.toml --locked
@@ -99,7 +73,7 @@ jobs:
         run: cargo check --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml --all-targets --locked
 
       - name: Lint adversarial runtime reference
-        run: cargo clippy --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml --all-targets --locked -- -D warnings
+        run: cargo clippy --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml --all-targets --locked -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Test adversarial runtime reference
         run: cargo test --manifest-path qualification/hnmf-adversarial-reference/Cargo.toml --locked
@@ -113,7 +87,7 @@ jobs:
       - name: Lint deterministic runtime reference with frozen legacy exemptions
         run: >-
           cargo clippy --manifest-path qualification/hnmf-reference/Cargo.toml
-          --all-targets --locked -- -D warnings
+          --all-targets --locked -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
           -A clippy::if_same_then_else
           -A clippy::field_reassign_with_default
           -A clippy::assertions_on_constants

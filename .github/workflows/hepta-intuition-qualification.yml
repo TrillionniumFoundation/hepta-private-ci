@@ -1,6 +1,7 @@
 name: intuition.policy Qualification
 
 on:
+  workflow_call:
   pull_request:
     paths:
       - "codex-rs/hepta-intuition/**"

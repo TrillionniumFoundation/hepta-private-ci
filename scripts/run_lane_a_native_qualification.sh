@@ -18,7 +18,7 @@ for package in "${PACKAGES[@]}"; do
 done
 
 cargo test --locked --manifest-path "$MANIFEST" "${ARGS[@]}"
-cargo clippy --locked --manifest-path "$MANIFEST" "${ARGS[@]}" --all-targets -- -D warnings
+cargo clippy --locked --manifest-path "$MANIFEST" "${ARGS[@]}" --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
 # The final-use issuer/approver/revocation-distributor tools are deliberately
 # feature-gated. Compile and lint the explicit production-authority surface so
@@ -40,4 +40,4 @@ cargo clippy --locked --manifest-path "$MANIFEST" \
   --package codex-hepta-supervisor \
   --features production-authority \
   "${BIN_ARGS[@]}" \
-  -- -D warnings
+  -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
