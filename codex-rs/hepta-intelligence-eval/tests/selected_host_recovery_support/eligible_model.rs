@@ -1,6 +1,6 @@
 //! Synthetic paired measurements for an actually eligible native multi-outcome
 //! receipt. This exercises estimators; it is not real learning-efficacy evidence.
-use crate::FixtureResult;
+use super::FixtureResult;
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;

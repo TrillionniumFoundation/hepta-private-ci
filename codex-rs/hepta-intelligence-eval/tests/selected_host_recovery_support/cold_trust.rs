@@ -1,7 +1,7 @@
 //! Fixed synthetic trust configuration for cold-recovery and consumer fixtures.
 //! A recovering child loads this host configuration without constructing a
 //! model, dataset, qualification bundle or cached decision.
-use crate::FixtureResult;
+use super::FixtureResult;
 use std::collections::VecDeque;
 
 use codex_hepta_intelligence_eval::product::SelectedHostClockErrorV1;

@@ -1,6 +1,6 @@
 //! Test-only disk anchor and crash cut. This fixture has real process/file I/O
 //! but lives in the test directory, NOT an independently authenticated host.
-use crate::FixtureResult;
+use super::FixtureResult;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
