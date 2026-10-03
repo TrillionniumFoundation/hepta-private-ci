@@ -679,3 +679,9 @@ pub use outcome_channels::product_outcome_inputs_digest_v1;
 pub use outcome_receipt::ProductOutcomeEstimateV1;
 pub use outcome_receipt::ProductOutcomeEvaluationReceiptV1;
 pub use outcome_receipt::ProductOutcomeQualificationReceiptV1;
+
+mod plasticity_untrusted_material_codec;
+pub use plasticity_untrusted_material_codec::decode_untrusted_plasticity_evaluation_v1;
+pub use plasticity_untrusted_material_codec::decode_untrusted_plasticity_learning_evidence_v1;
+pub use plasticity_untrusted_material_codec::encode_untrusted_plasticity_evaluation_v1;
+pub use plasticity_untrusted_material_codec::encode_untrusted_plasticity_learning_evidence_v1;
