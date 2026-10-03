@@ -57,6 +57,13 @@ pub enum ThreadStartSource {
 #[serde(rename_all = "camelCase")]
 #[ts(export_to = "v2/")]
 pub struct ThreadStartParams {
+    /// Bind this creation before effects. Requires an explicit absolute cwd and
+    /// `ephemeral: false`; matching unknown requests are inspected, never replayed.
+    #[experimental("thread/start.idempotencyKey")]
+    // Preserve the established wire shape for ordinary unkeyed clients.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional = nullable)]
+    pub idempotency_key: Option<String>,
     #[ts(optional = nullable)]
     pub model: Option<String>,
     #[ts(optional = nullable)]

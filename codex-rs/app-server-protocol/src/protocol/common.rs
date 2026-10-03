@@ -608,6 +608,26 @@ client_request_definitions! {
         serialization: thread_id(params.thread_id),
         response: v2::ThreadQueueReconcileResponse,
     },
+    #[experimental("thread/creation/observe")]
+    ThreadCreationObserve => "thread/creation/observe" {
+        params: v2::ThreadCreationObserveParams,
+        serialization: None,
+        response: v2::ThreadCreationObserveResponse,
+    },
+    #[experimental("thread/creation/reconcile")]
+    ThreadCreationReconcile => "thread/creation/reconcile" {
+        params: v2::ThreadCreationObserveParams,
+        serialization: None,
+        manual_payload_conversion: manual,
+        response: v2::ThreadCreationObserveResponse,
+    },
+    #[experimental("thread/creation/abandon")]
+    ThreadCreationAbandon => "thread/creation/abandon" {
+        params: v2::ThreadCreationObserveParams,
+        serialization: None,
+        manual_payload_conversion: manual,
+        response: v2::ThreadCreationObserveResponse,
+    },
     #[experimental("thread/queue/observe")]
     ThreadQueueObserve => "thread/queue/observe" {
         params: v2::ThreadQueueObserveParams,

@@ -77,3 +77,6 @@ pub use windows_sandbox::*;
 
 #[cfg(test)]
 mod tests;
+
+mod thread_creation;
+pub use thread_creation::*;

@@ -20024,6 +20024,142 @@
         "title": "ThreadCompactStartResponse",
         "type": "object"
       },
+      "ThreadCreationObserveOutcome": {
+        "oneOf": [
+          {
+            "properties": {
+              "threadId": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "pending"
+                ],
+                "title": "PendingThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "threadId",
+              "type"
+            ],
+            "title": "PendingThreadCreationObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "threadId": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "materialized"
+                ],
+                "title": "MaterializedThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "threadId",
+              "type"
+            ],
+            "title": "MaterializedThreadCreationObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "response": {
+                "$ref": "#/definitions/v2/ThreadStartResponse"
+              },
+              "type": {
+                "enum": [
+                  "created"
+                ],
+                "title": "CreatedThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "response",
+              "type"
+            ],
+            "title": "CreatedThreadCreationObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "threadId": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "deleted"
+                ],
+                "title": "DeletedThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "threadId",
+              "type"
+            ],
+            "title": "DeletedThreadCreationObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "threadId": {
+                "type": "string"
+              },
+              "type": {
+                "enum": [
+                  "abandoned"
+                ],
+                "title": "AbandonedThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "threadId",
+              "type"
+            ],
+            "title": "AbandonedThreadCreationObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "type": {
+                "enum": [
+                  "missing"
+                ],
+                "title": "MissingThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "MissingThreadCreationObserveOutcome",
+            "type": "object"
+          },
+          {
+            "properties": {
+              "type": {
+                "enum": [
+                  "unknown"
+                ],
+                "title": "UnknownThreadCreationObserveOutcomeType",
+                "type": "string"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "title": "UnknownThreadCreationObserveOutcome",
+            "type": "object"
+          }
+        ]
+      },
       "ThreadDeleteParams": {
         "$schema": "http://json-schema.org/draft-07/schema#",
         "properties": {
