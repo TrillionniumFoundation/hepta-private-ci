@@ -8,6 +8,9 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let path = std::path::Path::new(&arguments[1]);
     let pin = arguments[2].parse()?;
     let report = match arguments[0].as_str() {
+        "select-self-iteration-stage" => {
+            codex_hepta_infer_worker_host::initial_cpu_anchor::select_cpu_self_iteration_stage(path, pin)?
+        }
         "initialize-offline-authbus-checkpoint" => {
             tokio::runtime::Runtime::new()?.block_on(
                 codex_hepta_infer_worker_host::initial_cpu_anchor::initialize_initial_cpu_authbus_checkpoint(path, pin),
