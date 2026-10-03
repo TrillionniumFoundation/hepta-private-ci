@@ -1,0 +1,95 @@
+name: Kernel evidence publication expiry reproduction
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+    paths:
+      - "codex-rs/hepta-evidence/src/publication_tests.rs"
+      - ".github/workflows/kernel-evidence-publication-expiry-reproduction.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  native-expiry-reproduction:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASELINE_SHA: 618833d0b33c16b2c44e9eaae041cfae174c20ea
+      RUSTUP_TOOLCHAIN: 1.95.0
+      CARGO_TERM_COLOR: never
+      CARGO_BUILD_JOBS: 2
+      CARGO_INCREMENTAL: 0
+      CARGO_PROFILE_DEV_DEBUG: 0
+      CARGO_PROFILE_TEST_DEBUG: 0
+    steps:
+      - name: Initialize retained diagnostics
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/evidence-publication-expiry"
+          echo "RECORDS=$RUNNER_TEMP/evidence-publication-expiry" >> "$GITHUB_ENV"
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind unchanged production implementation
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          changed=$(git diff --name-only "$BASELINE_SHA" "$SOURCE_SHA")
+          test "$changed" = $'.github/workflows/kernel-evidence-publication-expiry-reproduction.yml\ncodex-rs/hepta-evidence/src/publication_tests.rs'
+          mkdir -p "$RUNNER_TEMP/evidence-publication-expiry"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/evidence-publication-expiry/candidate-before.txt"
+          git rev-parse "$BASELINE_SHA" "$BASELINE_SHA^{tree}" > "$RUNNER_TEMP/evidence-publication-expiry/baseline.txt"
+          git diff "$BASELINE_SHA" "$SOURCE_SHA" -- codex-rs/hepta-evidence/src/publication_tests.rs > "$RUNNER_TEMP/evidence-publication-expiry/regression.patch"
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: cargo-nextest@0.9.103
+      - name: Require the actual native expired-owner failure
+        shell: bash
+        run: |
+          python3 - <<'PY'
+          import hashlib, json, os, re, subprocess
+          from pathlib import Path
+          records = Path(os.environ['RECORDS'])
+          command = ['just', 'test', '--locked', '-p', 'codex-hepta-evidence', '--lib', '-E', 'test(=publication::tests::dispatch_rejects_owner_expired_while_waiting_for_writer)', '--no-tests', 'fail']
+          log = records / 'native-expiry.log'
+          with log.open('wb') as output:
+              result = subprocess.run(command, stdout=output, stderr=subprocess.STDOUT)
+          output = log.read_text(errors='replace')
+          reproduced = result.returncode == 100 and bool(re.search(r'Summary[^\n]*1 test run: 0 passed, 1 failed', output)) and 'EXPIRED_PUBLICATION_DISPATCH_ACCEPTED:' in output
+          receipt = {'source': os.environ['SOURCE_SHA'], 'baseline': os.environ['BASELINE_SHA'], 'command': command, 'exitCode': result.returncode, 'nativeExpiryDefectReproduced': reproduced, 'productionImplementationChanged': False, 'independentAcceptance': False, 'activation': False, 'logSha256': hashlib.sha256(log.read_bytes()).hexdigest()}
+          (records / 'receipt.json').write_text(json.dumps(receipt, indent=2) + '\n')
+          print(output[-20000:])
+          if not reproduced:
+              raise SystemExit('native expiry defect was not reproduced; compilation/setup/zero-test failures do not qualify')
+          PY
+      - name: Retain exact source and diagnostic-only claim
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RECORDS"
+          git rev-parse HEAD HEAD^{tree} > "$RECORDS/candidate-after.txt"
+          git status --porcelain > "$RECORDS/source-after.txt"
+          printf '%s\n' 'Expected native RED on unchanged production code; no repair, provider effect, acceptance or activation claim.' > "$RECORDS/SCOPE.txt"
+          (cd "$RECORDS" && sha256sum *.txt *.json *.log *.patch > SHA256SUMS)
+          cmp "$RECORDS/candidate-before.txt" "$RECORDS/candidate-after.txt"
+          test ! -s "$RECORDS/source-after.txt"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: evidence-publication-expiry-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/evidence-publication-expiry/
+          if-no-files-found: error
+          retention-days: 14
