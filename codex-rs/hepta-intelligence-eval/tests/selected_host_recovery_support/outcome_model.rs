@@ -1,3 +1,4 @@
+use crate::FixtureResult;
 use codex_hepta_intelligence_eval::ClusterAssignment;
 use codex_hepta_intelligence_eval::ClusterConfidencePlan;
 use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
@@ -14,7 +15,6 @@ use codex_hepta_intelligence_eval::OpeAction;
 use codex_hepta_intelligence_eval::OpePlan;
 use codex_hepta_intelligence_eval::OpeRow;
 use codex_hepta_intelligence_eval::OutcomeTrainingSample;
-use codex_hepta_intelligence_eval::ProductEvaluationError;
 use codex_hepta_intelligence_eval::ProductFrozenOutcomePlanV1;
 use codex_hepta_intelligence_eval::ProductMetricSourceContractV1;
 use codex_hepta_intelligence_eval::ProductMetricSourceV1;
@@ -31,22 +31,22 @@ use codex_hepta_types::FixedQ32;
 use codex_hepta_types::ProbabilityQ32;
 use codex_hepta_types::StableId;
 
-pub fn id(value: &str) -> StableId {
-    StableId::new(value.to_owned()).expect("valid id")
+pub fn id(value: &str) -> Result<StableId, codex_hepta_types::IdentityError> {
+    StableId::new(value)
 }
 
 pub fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn temporal(name: &str) -> TemporalEvaluationPlan {
+fn temporal(name: &str) -> FixtureResult<TemporalEvaluationPlan> {
     let mut plan = TemporalEvaluationPlan {
         plan_digest: Digest32::ZERO,
-        evaluation_id: id(name),
+        evaluation_id: id(name)?,
         objective_digest: digest("objective"),
         fold: TemporalFoldPlan {
             plan_digest: digest(&format!("{name}-fold")),
-            fold_id: id(name),
+            fold_id: id(name)?,
             training_watermark: 10,
             evaluation_start: 20,
             minimum_per_action: 2,
@@ -66,94 +66,100 @@ fn temporal(name: &str) -> TemporalEvaluationPlan {
             minimum_clusters: 2,
         },
     };
-    plan.plan_digest = plan.canonical_digest().expect("canonical plan");
-    plan
+    plan.plan_digest = plan.canonical_digest()?;
+    Ok(plan)
 }
 
-fn inputs(channel: &str, outcome: FixedQ32) -> TemporalComparisonInputsV1 {
+fn inputs(channel: &str, outcome: FixedQ32) -> FixtureResult<TemporalComparisonInputsV1> {
     let training = (0..2)
-        .map(|index| OutcomeTrainingSample {
-            decision_id: id(&format!("{channel}-training-{index}")),
-            principal_lineage: id(&format!("{channel}-training-principal-{index}")),
-            episode_lineage: id(&format!("{channel}-training-episode-{index}")),
-            window_id: id(&format!("{channel}-training-window")),
-            action_id: id("action"),
-            outcome,
-            observed_at: 5,
-            evidence_digest: digest(channel),
+        .map(|index| {
+            Ok(OutcomeTrainingSample {
+                decision_id: id(&format!("{channel}-training-{index}"))?,
+                principal_lineage: id(&format!("{channel}-training-principal-{index}"))?,
+                episode_lineage: id(&format!("{channel}-training-episode-{index}"))?,
+                window_id: id(&format!("{channel}-training-window"))?,
+                action_id: id("action")?,
+                outcome,
+                observed_at: 5,
+                evidence_digest: digest(channel),
+            })
         })
-        .collect();
+        .collect::<FixtureResult<Vec<_>>>()?;
     let targets = (0..128)
-        .map(|index| HeldOutTarget {
-            decision_id: id(&format!("decision-{index}")),
-            principal_lineage: id(&format!("principal-{index}")),
-            episode_lineage: id(&format!("episode-{index}")),
-            window_id: id("final-window"),
-            decision_at: 20,
-            actions: vec![id("action")],
+        .map(|index| {
+            Ok(HeldOutTarget {
+                decision_id: id(&format!("decision-{index}"))?,
+                principal_lineage: id(&format!("principal-{index}"))?,
+                episode_lineage: id(&format!("episode-{index}"))?,
+                window_id: id("final-window")?,
+                decision_at: 20,
+                actions: vec![id("action")?],
+            })
         })
-        .collect();
+        .collect::<FixtureResult<Vec<_>>>()?;
     let rows: Vec<_> = (0..128)
-        .map(|index| OpeRow {
-            decision_id: id(&format!("decision-{index}")),
-            chosen_action: id("action"),
-            complete_candidates: true,
-            actions: vec![OpeAction {
-                action_id: id("action"),
-                behavior_probability: ProbabilityQ32::from_raw(1 << 32)
-                    .expect("probability"),
-                evaluation_probability: ProbabilityQ32::from_raw(1 << 32)
-                    .expect("probability"),
-                predicted_outcome: FixedQ32::ZERO,
-            }],
-            finalized_outcome: Some(outcome),
-            outcome_observed_at: 50,
-            outcome_evidence: digest(channel),
-            outcome_model_evidence: digest("replaced-model"),
+        .map(|index| {
+            Ok(OpeRow {
+                decision_id: id(&format!("decision-{index}"))?,
+                chosen_action: id("action")?,
+                complete_candidates: true,
+                actions: vec![OpeAction {
+                    action_id: id("action")?,
+                    behavior_probability: ProbabilityQ32::from_raw(1 << 32)?,
+                    evaluation_probability: ProbabilityQ32::from_raw(1 << 32)?,
+                    predicted_outcome: FixedQ32::ZERO,
+                }],
+                finalized_outcome: Some(outcome),
+                outcome_observed_at: 50,
+                outcome_evidence: digest(channel),
+                outcome_model_evidence: digest("replaced-model"),
+            })
         })
-        .collect();
+        .collect::<FixtureResult<Vec<_>>>()?;
     let assignments = (0..128)
-        .map(|index| ClusterAssignment {
-            decision_id: id(&format!("decision-{index}")),
-            cluster_id: id(&format!("cluster-{index}")),
+        .map(|index| {
+            Ok(ClusterAssignment {
+                decision_id: id(&format!("decision-{index}"))?,
+                cluster_id: id(&format!("cluster-{index}"))?,
+            })
         })
-        .collect();
-    TemporalComparisonInputsV1 {
+        .collect::<FixtureResult<Vec<_>>>()?;
+    Ok(TemporalComparisonInputsV1 {
         training,
         targets,
         candidate_observations: rows.clone(),
         baseline_observations: rows,
         assignments,
-        snapshot_ids: vec![id("snapshot")],
-        future_window_ids: vec![id("final-window")],
-    }
+        snapshot_ids: vec![id("snapshot")?],
+        future_window_ids: vec![id("final-window")?],
+    })
 }
 
 fn channel(
     name: &str,
     data: &TemporalComparisonInputsV1,
-) -> ProductOutcomeChannelContractV1 {
-    ProductOutcomeChannelContractV1 {
-        metric_id: id(name),
-        channel_id: id(name),
+) -> FixtureResult<ProductOutcomeChannelContractV1> {
+    Ok(ProductOutcomeChannelContractV1 {
+        metric_id: id(name)?,
+        channel_id: id(name)?,
         schema_digest: digest("scalar-schema"),
-        unit_id: id("unit-interval"),
+        unit_id: id("unit-interval")?,
         normalization_digest: digest("identity-normalization"),
         subgroup_digest: digest("all-enrolled"),
-        window_id: id("final-window"),
+        window_id: id("final-window")?,
         measurement_start_micros: 20,
         measurement_end_micros: 100,
         provenance_digest: digest(&format!("custodian-{name}")),
-        inputs_digest: product_outcome_inputs_digest_v1(data).expect("input digest"),
-        candidate_plan: temporal(&format!("{name}-candidate")),
-        baseline_plan: temporal(&format!("{name}-baseline")),
-    }
+        inputs_digest: product_outcome_inputs_digest_v1(data)?,
+        candidate_plan: temporal(&format!("{name}-candidate"))?,
+        baseline_plan: temporal(&format!("{name}-baseline"))?,
+    })
 }
 
 fn freeze(
     channels: Vec<ProductOutcomeChannelContractV1>,
     roles: Vec<MetricRoleContractV2>,
-) -> Result<ProductFrozenOutcomePlanV1, ProductEvaluationError> {
+) -> FixtureResult<ProductFrozenOutcomePlanV1> {
     let metrics: Vec<_> = channels
         .iter()
         .map(|row| MetricContractV1 {
@@ -171,28 +177,30 @@ fn freeze(
         .collect();
     let folds = ["a", "b"]
         .into_iter()
-        .map(|suffix| CrossFoldPartitionV1 {
-            fold_id: id(&format!("fold-{suffix}")),
-            training_principals: vec![id(&format!("train-principal-{suffix}"))],
-            training_episodes: vec![id(&format!("train-episode-{suffix}"))],
-            training_windows: vec![id(&format!("train-window-{suffix}"))],
-            holdout_principals: vec![id(&format!("holdout-principal-{suffix}"))],
-            holdout_episodes: vec![id(&format!("holdout-episode-{suffix}"))],
-            holdout_windows: vec![id(if suffix == "b" {
-                "final-window"
-            } else {
-                "other-window"
-            })],
-            model_digest: digest(&format!("model-{suffix}")),
-            predictions_digest: digest(&format!("predictions-{suffix}")),
+        .map(|suffix| {
+            Ok(CrossFoldPartitionV1 {
+                fold_id: id(&format!("fold-{suffix}"))?,
+                training_principals: vec![id(&format!("train-principal-{suffix}"))?],
+                training_episodes: vec![id(&format!("train-episode-{suffix}"))?],
+                training_windows: vec![id(&format!("train-window-{suffix}"))?],
+                holdout_principals: vec![id(&format!("holdout-principal-{suffix}"))?],
+                holdout_episodes: vec![id(&format!("holdout-episode-{suffix}"))?],
+                holdout_windows: vec![id(if suffix == "b" {
+                    "final-window"
+                } else {
+                    "other-window"
+                })?],
+                model_digest: digest(&format!("model-{suffix}")),
+                predictions_digest: digest(&format!("predictions-{suffix}")),
+            })
         })
-        .collect();
-    freeze_product_outcome_plan_v1(
+        .collect::<FixtureResult<Vec<_>>>()?;
+    Ok(freeze_product_outcome_plan_v1(
         CrossFoldPlanV1 {
-            plan_id: id("selected-host-outcome-plan"),
+            plan_id: id("selected-host-outcome-plan")?,
             claim_scope: EvaluationClaimScopeV1::Qualification,
-            candidate_id: id("candidate"),
-            baseline_id: id("baseline"),
+            candidate_id: id("candidate")?,
+            baseline_id: id("baseline")?,
             objective_digest: digest("objective"),
             dataset_digest: digest("dataset"),
             estimand_digest: digest("estimand"),
@@ -200,13 +208,13 @@ fn freeze(
             family_alpha_ppm: 50_000,
             simultaneous_comparisons: 4,
             folds,
-            final_holdout_window_id: id("final-window"),
+            final_holdout_window_id: id("final-window")?,
             final_holdout_digest: digest("outcome-manifest"),
         },
         roles,
         sources,
         channels,
-    )
+    )?)
 }
 
 pub struct OutcomeProvider {
@@ -226,16 +234,16 @@ impl FinalOutcomeHoldoutProviderV1 for OutcomeProvider {
     }
 }
 
-pub fn fixture() -> (
+pub fn fixture() -> FixtureResult<(
     ProductFrozenOutcomePlanV1,
     OutcomeProvider,
     Vec<MetricRoleContractV2>,
-) {
+)> {
     let data = [
-        inputs("accuracy", FixedQ32::ONE),
-        inputs("cost", FixedQ32::ZERO),
+        inputs("accuracy", FixedQ32::ONE)?,
+        inputs("cost", FixedQ32::ZERO)?,
     ];
-    let channels = vec![channel("accuracy", &data[0]), channel("cost", &data[1])];
+    let channels = vec![channel("accuracy", &data[0])?, channel("cost", &data[1])?];
     let roles: Vec<_> = channels
         .iter()
         .map(|row| MetricRoleContractV2 {
@@ -245,16 +253,18 @@ pub fn fixture() -> (
             },
         })
         .collect();
-    let plan = freeze(channels, roles.clone()).expect("frozen outcome plan");
+    let plan = freeze(channels, roles.clone())?;
     let batch = plan
         .channels()
         .iter()
         .zip(data)
-        .map(|(contract, inputs)| ProductOutcomeInputV1 {
-            channel_id: contract.channel_id.clone(),
-            contract_digest: contract.canonical_digest().expect("contract digest"),
-            inputs,
+        .map(|(contract, inputs)| {
+            Ok(ProductOutcomeInputV1 {
+                channel_id: contract.channel_id.clone(),
+                contract_digest: contract.canonical_digest()?,
+                inputs,
+            })
         })
-        .collect();
-    (plan, OutcomeProvider { batch }, roles)
+        .collect::<FixtureResult<Vec<_>>>()?;
+    Ok((plan, OutcomeProvider { batch }, roles))
 }

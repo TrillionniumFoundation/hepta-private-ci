@@ -12,18 +12,20 @@ use std::time::Instant;
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_types::Digest32;
 
-#[path = "selected_host_recovery_support/eligible_model.rs"]
-mod outcome_model;
-#[allow(dead_code)]
-#[path = "selected_host_recovery_support/cold_temporal_model.rs"]
-mod temporal_model;
-#[path = "selected_host_recovery_support/cold_storage.rs"]
-mod storage;
+#[path = "selected_host_recovery_support/controller_tests.rs"]
+mod controller_tests;
 #[allow(dead_code)]
 #[path = "selected_host_recovery_support/cold_trust.rs"]
 mod host;
-#[path = "selected_host_recovery_support/controller_tests.rs"]
-mod controller_tests;
+#[path = "selected_host_recovery_support/eligible_model.rs"]
+mod outcome_model;
+#[path = "selected_host_recovery_support/cold_storage.rs"]
+mod storage;
+#[allow(dead_code)]
+#[path = "selected_host_recovery_support/cold_temporal_model.rs"]
+mod temporal_model;
+
+type FixtureResult<T> = Result<T, Box<dyn std::error::Error>>;
 
 static NEXT_ROOT: AtomicU64 = AtomicU64::new(0);
 
@@ -37,46 +39,41 @@ fn host_binding() -> Digest32 {
     host::digest("cold-selected-host")
 }
 
-fn fence() -> HoldoutWriterFenceV1 {
-    HoldoutWriterFenceV1 {
-        owner_id: host::id("cold-native-owner"),
+fn fence() -> FixtureResult<HoldoutWriterFenceV1> {
+    Ok(HoldoutWriterFenceV1 {
+        owner_id: host::id("cold-native-owner")?,
         generation: 1,
         lease_digest: host::digest("cold-native-lease"),
-    }
+    })
 }
 
-fn produce(root: &Path, family: &str, cut: u64) {
+fn produce(root: &Path, family: &str, cut: u64) -> FixtureResult<()> {
     let store = LockedFileFinalHoldoutCasStoreV1::create(
-        storage::create(&root.join("holdout.cas")),
+        storage::create(&root.join("holdout.cas"))?,
         namespace(),
-    )
-    .expect("create holdout store");
-    let owner = FencedFinalHoldoutOwnerV1::initialize(store, namespace(), fence())
-        .expect("create owner");
+    )?;
+    let owner = FencedFinalHoldoutOwnerV1::initialize(store, namespace(), fence()?)?;
     let mut runner = RecordedProductEvaluationRunnerV1::new(owner);
     let mut journal = AnchoredProductEvaluationAttemptJournalV1::create(
-        storage::create(&root.join("attempt.journal")),
+        storage::create(&root.join("attempt.journal"))?,
         attempt_binding(),
-        storage::DiskAnchor::new(&root.join("anchor"), Some(cut)),
-    )
-    .expect("create anchored journal");
-    let attempt = host::id("cold-process-attempt");
-    let context = host::context();
-    let trust = host::activate();
+        storage::DiskAnchor::new(&root.join("anchor"), Some(cut))?,
+    )?;
+    let attempt = host::id("cold-process-attempt")?;
+    let context = host::context()?;
+    let trust = host::activate()?;
     let mut clock = host::clock(85);
     if family == "outcome" {
-        let (plan, mut provider, roles) = outcome_model::fixture();
-        let receipt = runner
-            .evaluate_outcome_comparison(attempt.clone(), &plan, &mut provider, &mut journal)
-            .expect("native multi-outcome estimation");
-        storage::retain_holdout_anchor(
-            &root.join("holdout.anchor"),
-            runner.holdout_anchor(),
-        );
-        let bundle = runner
-            .outcome_qualification_bundle(&receipt, &context)
-            .expect("outcome bundle");
-        let evidence = host::evidence(&bundle, &roles, None);
+        let (plan, mut provider, roles) = outcome_model::fixture()?;
+        let receipt = runner.evaluate_outcome_comparison(
+            attempt.clone(),
+            &plan,
+            &mut provider,
+            &mut journal,
+        )?;
+        storage::retain_holdout_anchor(&root.join("holdout.anchor"), runner.holdout_anchor())?;
+        let bundle = runner.outcome_qualification_bundle(&receipt, &context)?;
+        let evidence = host::evidence(&bundle, &roles, None)?;
         let result = runner.qualify_outcomes_and_persist_on_selected_host(
             &attempt,
             &receipt,
@@ -93,26 +90,19 @@ fn produce(root: &Path, family: &str, cut: u64) {
         panic!("producer did not terminate at the requested native durability cut: {result:?}");
     } else {
         let longitudinal = family == "longitudinal";
-        let (plan, candidate, baseline, mut provider) = temporal_model::fixture(longitudinal);
-        let receipt = runner
-            .evaluate_temporal_comparison(
-                attempt.clone(),
-                &plan,
-                &candidate,
-                &baseline,
-                &mut provider,
-                &mut journal,
-            )
-            .expect("native temporal estimation");
-        storage::retain_holdout_anchor(
-            &root.join("holdout.anchor"),
-            runner.holdout_anchor(),
-        );
-        let bundle = runner
-            .qualification_bundle(&receipt, &context)
-            .expect("temporal bundle");
-        let timing = longitudinal.then(|| host::timing(&bundle));
-        let evidence = host::evidence(&bundle, &plan.metric_roles, timing.as_ref());
+        let (plan, candidate, baseline, mut provider) = temporal_model::fixture(longitudinal)?;
+        let receipt = runner.evaluate_temporal_comparison(
+            attempt.clone(),
+            &plan,
+            &candidate,
+            &baseline,
+            &mut provider,
+            &mut journal,
+        )?;
+        storage::retain_holdout_anchor(&root.join("holdout.anchor"), runner.holdout_anchor())?;
+        let bundle = runner.qualification_bundle(&receipt, &context)?;
+        let timing = longitudinal.then(|| host::timing(&bundle)).transpose()?;
+        let evidence = host::evidence(&bundle, &plan.metric_roles, timing.as_ref())?;
         let timing = match timing.as_ref() {
             Some(timing) => ProductTimingEvidenceV1::SystemLongitudinal {
                 timing,
@@ -137,30 +127,27 @@ fn produce(root: &Path, family: &str, cut: u64) {
     }
 }
 
-fn recover(root: &Path, family: &str, mode: &str) {
+fn recover(root: &Path, family: &str, mode: &str) -> FixtureResult<()> {
     // This function must not invoke any model/provider/bundle/evidence fixture.
     // It only reconstructs owners from disk and loads current host trust.
     let store = LockedFileFinalHoldoutCasStoreV1::recover(
-        storage::reopen(&root.join("holdout.cas")),
+        storage::reopen(&root.join("holdout.cas"))?,
         namespace(),
-        Some(storage::load_holdout_anchor(&root.join("holdout.anchor"))),
-    )
-    .expect("recover holdout bytes");
-    let owner = FencedFinalHoldoutOwnerV1::recover(store, namespace(), fence())
-        .expect("recover owner");
+        Some(storage::load_holdout_anchor(&root.join("holdout.anchor"))?),
+    )?;
+    let owner = FencedFinalHoldoutOwnerV1::recover(store, namespace(), fence()?)?;
     let runner = RecordedProductEvaluationRunnerV1::new(owner);
     let mut journal = AnchoredProductEvaluationAttemptJournalV1::recover(
-        storage::reopen(&root.join("attempt.journal")),
+        storage::reopen(&root.join("attempt.journal"))?,
         attempt_binding(),
-        storage::DiskAnchor::new(&root.join("anchor"), None),
-    )
-    .expect("recover anchored history");
-    let attempt = host::id("cold-process-attempt");
-    let before = journal.latest(&attempt).expect("before").expect("attempt");
+        storage::DiskAnchor::new(&root.join("anchor"), None)?,
+    )?;
+    let attempt = host::id("cold-process-attempt")?;
+    let before = journal.latest(&attempt)?.ok_or("attempt")?;
     let result = if matches!(mode, "page-first" | "page-next") {
-        match controller_tests::recover_page(&runner, &mut journal, root, mode, &before) {
+        match controller_tests::recover_page(&runner, &mut journal, root, mode, &before)? {
             Some(published) => published,
-            None => return,
+            None => return Ok(()),
         }
     } else if mode == "reconcile" {
         RecordedProductEvaluationRunnerV1::<LockedFileFinalHoldoutCasStoreV1>::reconcile_selected_host_publication(
@@ -168,13 +155,12 @@ fn recover(root: &Path, family: &str, mode: &str) {
             &attempt,
             root.join("publications"),
             host_binding(),
-        )
-        .expect("read existing publication")
+        )?
     } else {
         let trust = if mode == "revoked" {
-            host::activate_revoked()
+            host::activate_revoked()?
         } else {
-            host::activate()
+            host::activate()?
         };
         let binding = if mode == "wrong-host" {
             host::digest("wrong-host")
@@ -205,27 +191,20 @@ fn recover(root: &Path, family: &str, mode: &str) {
             )
         };
         if matches!(mode, "revoked" | "expired" | "wrong-host" | "corrupt") {
-            assert!(result.is_err(), "invalid recovery must not reach publication");
-            assert_eq!(journal.latest(&attempt).expect("unchanged"), Some(before));
-            assert_eq!(
-                fs::read_dir(root.join("publications"))
-                    .expect("publication directory")
-                    .count(),
-                0
+            assert!(
+                result.is_err(),
+                "invalid recovery must not reach publication"
             );
-            return;
+            assert_eq!(journal.latest(&attempt)?, Some(before));
+            assert_eq!(fs::read_dir(root.join("publications"))?.count(), 0);
+            return Ok(());
         }
-        result.expect("cold decode and internal current signature verification")
+        result?
     };
     use ProductEvaluationAttemptPhaseV1 as Phase;
     assert_eq!(result.transition.phase, Phase::Published);
-    assert_eq!(
-        fs::read_dir(root.join("publications"))
-            .expect("publications")
-            .count(),
-        1
-    );
-    let history = journal.history(&attempt).expect("history");
+    assert_eq!(fs::read_dir(root.join("publications"))?.count(), 1);
+    let history = journal.history(&attempt)?;
     assert_eq!(
         history
             .iter()
@@ -245,15 +224,16 @@ fn recover(root: &Path, family: &str, mode: &str) {
     let unchanged = runner.holdout_anchor();
     assert_eq!(
         unchanged,
-        storage::load_holdout_anchor(&root.join("holdout.anchor")),
+        storage::load_holdout_anchor(&root.join("holdout.anchor"))?,
         "cold qualification must not consume or release another final holdout"
     );
+    Ok(())
 }
 
 #[test]
-fn cold_process_entry() {
+fn cold_process_entry() -> FixtureResult<()> {
     let Some(root) = std::env::var_os("HEPTA_EVAL_COLD_TEST_ROOT") else {
-        return;
+        return Ok(());
     };
     let family = std::env::var("HEPTA_EVAL_COLD_TEST_FAMILY").expect("family");
     let mode = std::env::var("HEPTA_EVAL_COLD_TEST_MODE").expect("mode");
@@ -263,14 +243,15 @@ fn cold_process_entry() {
             .expect("cut")
             .parse()
             .expect("numeric cut");
-        produce(root, &family, cut);
+        produce(root, &family, cut)?;
     } else {
-        recover(root, &family, &mode);
+        recover(root, &family, &mode)?;
     }
+    Ok(())
 }
 
-fn child(root: &Path, family: &str, mode: &str, cut: u64) -> ExitStatus {
-    let mut child = Command::new(std::env::current_exe().expect("test executable"))
+fn child(root: &Path, family: &str, mode: &str, cut: u64) -> FixtureResult<ExitStatus> {
+    let mut child = Command::new(std::env::current_exe()?)
         .arg("--exact")
         .arg("cold_process_entry")
         .arg("--nocapture")
@@ -278,12 +259,11 @@ fn child(root: &Path, family: &str, mode: &str, cut: u64) -> ExitStatus {
         .env("HEPTA_EVAL_COLD_TEST_FAMILY", family)
         .env("HEPTA_EVAL_COLD_TEST_MODE", mode)
         .env("HEPTA_EVAL_COLD_TEST_CUT", cut.to_string())
-        .spawn()
-        .expect("start a fresh test process");
+        .spawn()?;
     let started = Instant::now();
     loop {
-        if let Some(status) = child.try_wait().expect("observe child") {
-            return status;
+        if let Some(status) = child.try_wait()? {
+            return Ok(status);
         }
         if started.elapsed() > Duration::from_secs(90) {
             let _ = child.kill();
@@ -295,7 +275,7 @@ fn child(root: &Path, family: &str, mode: &str, cut: u64) -> ExitStatus {
 }
 
 #[test]
-fn cold_process_recovery_uses_only_persisted_inputs_and_current_trust() {
+fn cold_process_recovery_uses_only_persisted_inputs_and_current_trust() -> FixtureResult<()> {
     for family in ["temporal", "outcome", "longitudinal"] {
         for cut in [4, 5] {
             let ordinal = NEXT_ROOT.fetch_add(1, Ordering::Relaxed);
@@ -304,7 +284,7 @@ fn cold_process_recovery_uses_only_persisted_inputs_and_current_trust() {
                 std::process::id()
             ));
             fs::create_dir(&root).expect("root");
-            let status = child(&root, family, "produce", cut);
+            let status = child(&root, family, "produce", cut)?;
             assert_eq!(
                 status.code(),
                 Some(73),
@@ -313,7 +293,7 @@ fn cold_process_recovery_uses_only_persisted_inputs_and_current_trust() {
             let holdout_before = fs::read(root.join("holdout.cas")).expect("holdout bytes");
             for invalid in ["expired", "revoked", "wrong-host"] {
                 assert!(
-                    child(&root, family, invalid, cut).success(),
+                    child(&root, family, invalid, cut)?.success(),
                     "{family}/{invalid}/{cut}"
                 );
             }
@@ -328,14 +308,14 @@ fn cold_process_recovery_uses_only_persisted_inputs_and_current_trust() {
             let last = corrupt.len() - 1;
             corrupt[last] ^= 1;
             fs::write(&path, corrupt).expect("inject corruption");
-            assert!(child(&root, family, "corrupt", cut).success());
+            assert!(child(&root, family, "corrupt", cut)?.success());
             fs::write(&path, original).expect("restore exact fixture bytes");
             assert!(
-                child(&root, family, "recover", cut).success(),
+                child(&root, family, "recover", cut)?.success(),
                 "{family}/recover/{cut}"
             );
             let published = fs::read(root.join("attempt.journal")).expect("published journal");
-            assert!(child(&root, family, "reconcile", cut).success());
+            assert!(child(&root, family, "reconcile", cut)?.success());
             assert_eq!(
                 fs::read(root.join("attempt.journal")).expect("journal"),
                 published,
@@ -349,4 +329,5 @@ fn cold_process_recovery_uses_only_persisted_inputs_and_current_trust() {
             fs::remove_dir_all(root).expect("remove fixture");
         }
     }
+    Ok(())
 }

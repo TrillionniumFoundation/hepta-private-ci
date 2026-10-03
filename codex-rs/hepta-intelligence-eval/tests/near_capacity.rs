@@ -11,6 +11,8 @@ use codex_hepta_intelligence_eval::ProductEvaluationAttemptTransitionV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+type FixtureResult<T> = Result<T, Box<dyn std::error::Error>>;
+
 static NEXT_FILE: AtomicU64 = AtomicU64::new(0);
 const HEADER_BYTES: u64 = 72;
 const ONE_BYTE_ID_FRAME: u64 = 136;
@@ -22,21 +24,21 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn id(value: &str) -> StableId {
-    StableId::new(value).expect("stable id")
+fn id(value: &str) -> Result<StableId, codex_hepta_types::IdentityError> {
+    StableId::new(value)
 }
 
-fn open(path: &std::path::Path, create: bool) -> std::fs::File {
+fn open(path: &std::path::Path, create: bool) -> std::io::Result<std::fs::File> {
     OpenOptions::new()
         .read(true)
         .write(true)
         .create_new(create)
         .open(path)
-        .expect("journal file")
 }
 
 #[test]
-fn near_capacity_rejects_new_admission_but_reserved_attempt_reaches_terminal() {
+fn near_capacity_rejects_new_admission_but_reserved_attempt_reaches_terminal() -> FixtureResult<()>
+{
     let ordinal = NEXT_FILE.fetch_add(1, Ordering::Relaxed);
     let path = std::env::temp_dir().join(format!(
         "hepta-learning-eval-near-capacity-{}-{ordinal}",
@@ -45,14 +47,14 @@ fn near_capacity_rejects_new_admission_but_reserved_attempt_reaches_terminal() {
     let binding = digest("qualification-capacity-binding");
     let mut journal =
         LockedFileProductEvaluationAttemptJournalV1::create_with_qualification_limits(
-            open(&path, true),
+            open(&path, true)?,
             binding,
             COMPLETE_LIFECYCLE_BYTES,
             COMPLETE_LIFECYCLE_EVENTS,
         )
         .expect("qualification journal");
 
-    let attempt = id("a");
+    let attempt = id("a")?;
     let plan = digest("plan-a");
     let holdout = digest("holdout-a");
     let execution = digest("execution-a");
@@ -70,7 +72,7 @@ fn near_capacity_rejects_new_admission_but_reserved_attempt_reaches_terminal() {
         .expect("reserve the complete lifecycle");
 
     let rejected = journal.append(ProductEvaluationAttemptTransitionV1::intent(
-        id("b"),
+        id("b")?,
         digest("plan-b"),
         binding,
         digest("owner-state-b"),
@@ -79,7 +81,11 @@ fn near_capacity_rejects_new_admission_but_reserved_attempt_reaches_terminal() {
         rejected,
         Err(ProductEvaluationAttemptJournalErrorV1::Capacity)
     ));
-    assert_eq!(journal.event_count(), 1, "rejected admission must not append");
+    assert_eq!(
+        journal.event_count(),
+        1,
+        "rejected admission must not append"
+    );
 
     journal
         .append(ProductEvaluationAttemptTransitionV1::holdout_consumed(
@@ -136,7 +142,7 @@ fn near_capacity_rejects_new_admission_but_reserved_attempt_reaches_terminal() {
 
     let mut recovered =
         LockedFileProductEvaluationAttemptJournalV1::recover_with_qualification_limits(
-            open(&path, false),
+            open(&path, false)?,
             binding,
             COMPLETE_LIFECYCLE_BYTES,
             COMPLETE_LIFECYCLE_EVENTS,
@@ -155,7 +161,7 @@ fn near_capacity_rejects_new_admission_but_reserved_attempt_reaches_terminal() {
     );
     assert!(matches!(
         recovered.append(ProductEvaluationAttemptTransitionV1::intent(
-            id("b"),
+            id("b")?,
             digest("plan-b"),
             binding,
             digest("owner-state-b"),
@@ -165,26 +171,27 @@ fn near_capacity_rejects_new_admission_but_reserved_attempt_reaches_terminal() {
 
     drop(recovered);
     fs::remove_file(path).expect("remove fixture");
+    Ok(())
 }
 
 #[test]
-fn qualification_limits_can_only_tighten_hard_backend_bounds() {
+fn qualification_limits_can_only_tighten_hard_backend_bounds() -> FixtureResult<()> {
     let ordinal = NEXT_FILE.fetch_add(1, Ordering::Relaxed);
     let path = std::env::temp_dir().join(format!(
         "hepta-learning-eval-invalid-capacity-{}-{ordinal}",
         std::process::id()
     ));
     let binding = digest("invalid-capacity-binding");
-    let too_small =
-        LockedFileProductEvaluationAttemptJournalV1::create_with_qualification_limits(
-            open(&path, true),
-            binding,
-            COMPLETE_LIFECYCLE_BYTES - 1,
-            COMPLETE_LIFECYCLE_EVENTS,
-        );
+    let too_small = LockedFileProductEvaluationAttemptJournalV1::create_with_qualification_limits(
+        open(&path, true)?,
+        binding,
+        COMPLETE_LIFECYCLE_BYTES - 1,
+        COMPLETE_LIFECYCLE_EVENTS,
+    );
     assert!(matches!(
         too_small,
         Err(ProductEvaluationAttemptJournalErrorV1::Capacity)
     ));
     fs::remove_file(path).expect("remove fixture");
+    Ok(())
 }

@@ -17,12 +17,14 @@ use codex_hepta_intelligence_eval::ProductEvaluationAttemptTransitionV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 
+type FixtureResult<T> = Result<T, Box<dyn std::error::Error>>;
+
 static NEXT_FILE: AtomicU64 = AtomicU64::new(0);
 
 struct JournalFile(PathBuf);
 
 impl JournalFile {
-    fn new() -> Self {
+    fn new() -> std::io::Result<Self> {
         let ordinal = NEXT_FILE.fetch_add(1, Ordering::Relaxed);
         let path = std::env::temp_dir().join(format!(
             "hepta-eval-anchor-ack-{}-{ordinal}",
@@ -32,17 +34,12 @@ impl JournalFile {
             .read(true)
             .write(true)
             .create_new(true)
-            .open(&path)
-            .expect("unique journal file");
-        Self(path)
+            .open(&path)?;
+        Ok(Self(path))
     }
 
-    fn open(&self) -> File {
-        OpenOptions::new()
-            .read(true)
-            .write(true)
-            .open(&self.0)
-            .expect("open journal")
+    fn open(&self) -> std::io::Result<File> {
+        OpenOptions::new().read(true).write(true).open(&self.0)
     }
 }
 
@@ -109,146 +106,162 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn attempt_id() -> StableId {
-    StableId::new("attempt:anchor-ack").expect("valid id")
+fn attempt_id() -> Result<StableId, codex_hepta_types::IdentityError> {
+    StableId::new("attempt:anchor-ack")
 }
 
-fn intent() -> ProductEvaluationAttemptTransitionV1 {
-    ProductEvaluationAttemptTransitionV1::intent(
-        attempt_id(),
+fn intent() -> FixtureResult<ProductEvaluationAttemptTransitionV1> {
+    Ok(ProductEvaluationAttemptTransitionV1::intent(
+        attempt_id()?,
         digest("plan"),
         digest("owner-namespace"),
         digest("owner-state"),
-    )
+    ))
 }
 
-fn consumed() -> ProductEvaluationAttemptTransitionV1 {
-    ProductEvaluationAttemptTransitionV1::holdout_consumed(
-        attempt_id(),
+fn consumed() -> FixtureResult<ProductEvaluationAttemptTransitionV1> {
+    Ok(ProductEvaluationAttemptTransitionV1::holdout_consumed(
+        attempt_id()?,
         digest("plan"),
         digest("consumed-owner-record"),
-    )
+    ))
 }
 
-fn assert_poisoned(journal: &mut AnchoredProductEvaluationAttemptJournalV1<TestAuthority>) {
+fn assert_poisoned(
+    journal: &mut AnchoredProductEvaluationAttemptJournalV1<TestAuthority>,
+) -> FixtureResult<()> {
     assert_eq!(journal.anchor(), Err(JournalError::Indeterminate));
     assert_eq!(
-        journal.latest(&attempt_id()),
+        journal.latest(&attempt_id()?),
         Err(JournalError::Indeterminate)
     );
     assert_eq!(
-        journal.history(&attempt_id()),
+        journal.history(&attempt_id()?),
         Err(JournalError::Indeterminate)
     );
     assert_eq!(journal.pending(None, 1), Err(JournalError::Indeterminate));
-    assert_eq!(journal.append(intent()), Err(JournalError::Indeterminate));
+    assert_eq!(journal.append(intent()?), Err(JournalError::Indeterminate));
+    Ok(())
 }
 
 #[test]
-fn accepted_anchor_with_lost_ack_blocks_every_operation_until_recovery() {
-    let file = JournalFile::new();
+fn accepted_anchor_with_lost_ack_blocks_every_operation_until_recovery() -> FixtureResult<()> {
+    let file = JournalFile::new()?;
     let authority = TestAuthority::default();
     let binding = digest("anchor-binding");
     let mut journal =
-        AnchoredProductEvaluationAttemptJournalV1::create(file.open(), binding, authority.clone())
+        AnchoredProductEvaluationAttemptJournalV1::create(file.open()?, binding, authority.clone())
             .expect("create");
     authority.0.borrow_mut().next = NextAck::CommitThenLoseAck;
-    assert_eq!(journal.append(intent()), Err(JournalError::Indeterminate));
-    assert_poisoned(&mut journal);
+    assert_eq!(journal.append(intent()?), Err(JournalError::Indeterminate));
+    assert_poisoned(&mut journal)?;
     drop(journal);
 
     let mut recovered =
-        AnchoredProductEvaluationAttemptJournalV1::recover(file.open(), binding, authority)
+        AnchoredProductEvaluationAttemptJournalV1::recover(file.open()?, binding, authority)
             .expect("recover acknowledged authority history");
     let latest = recovered
-        .latest(&attempt_id())
+        .latest(&attempt_id()?)
         .expect("latest")
         .expect("intent");
-    assert_eq!(latest.transition, intent());
+    assert_eq!(latest.transition, intent()?);
     assert_eq!(latest.sequence, 1);
     assert_eq!(
         recovered.pending(None, 1).expect("pending"),
         vec![latest.clone()]
     );
     assert_eq!(
-        recovered.append(intent()).expect("idempotent retry"),
+        recovered.append(intent()?).expect("idempotent retry"),
         latest
     );
-    assert_eq!(recovered.append(consumed()).expect("consume").sequence, 2);
+    assert_eq!(recovered.append(consumed()?).expect("consume").sequence, 2);
+    Ok(())
 }
 
 #[test]
-fn durable_tail_before_anchor_commit_is_reconciled_without_reexecution() {
-    let file = JournalFile::new();
+fn durable_tail_before_anchor_commit_is_reconciled_without_reexecution() -> FixtureResult<()> {
+    let file = JournalFile::new()?;
     let authority = TestAuthority::default();
     let binding = digest("tail-binding");
     let mut journal =
-        AnchoredProductEvaluationAttemptJournalV1::create(file.open(), binding, authority.clone())
+        AnchoredProductEvaluationAttemptJournalV1::create(file.open()?, binding, authority.clone())
             .expect("create");
     let before = journal.anchor().expect("genesis anchor");
     authority.0.borrow_mut().next = NextAck::RejectBeforeCommit;
-    assert_eq!(journal.append(intent()), Err(JournalError::Indeterminate));
+    assert_eq!(journal.append(intent()?), Err(JournalError::Indeterminate));
     assert_eq!(authority.0.borrow().anchor, Some(before));
-    assert_poisoned(&mut journal);
+    assert_poisoned(&mut journal)?;
     drop(journal);
 
-    let mut recovered =
-        AnchoredProductEvaluationAttemptJournalV1::recover(file.open(), binding, authority.clone())
-            .expect("prove prefix and retain committed tail");
+    let mut recovered = AnchoredProductEvaluationAttemptJournalV1::recover(
+        file.open()?,
+        binding,
+        authority.clone(),
+    )
+    .expect("prove prefix and retain committed tail");
     let after = recovered.anchor().expect("reconciled anchor");
     assert_eq!(authority.0.borrow().anchor, Some(after));
     assert_ne!(after, before);
-    assert_eq!(recovered.history(&attempt_id()).expect("history").len(), 1);
-    assert_eq!(recovered.append(intent()).expect("same intent").sequence, 1);
+    assert_eq!(recovered.history(&attempt_id()?).expect("history").len(), 1);
+    assert_eq!(
+        recovered.append(intent()?).expect("same intent").sequence,
+        1
+    );
+    Ok(())
 }
 
 #[test]
-fn known_no_write_transition_rejection_preserves_wrapper_and_reserved_work() {
-    let file = JournalFile::new();
+fn known_no_write_transition_rejection_preserves_wrapper_and_reserved_work() -> FixtureResult<()> {
+    let file = JournalFile::new()?;
     let binding = digest("conflict-binding");
     let authority = TestAuthority::default();
     let mut journal =
-        AnchoredProductEvaluationAttemptJournalV1::create(file.open(), binding, authority.clone())
+        AnchoredProductEvaluationAttemptJournalV1::create(file.open()?, binding, authority.clone())
             .expect("create");
-    let first = journal.append(intent()).expect("persist intent");
+    let first = journal.append(intent()?).expect("persist intent");
     let retained = journal.anchor().expect("retained anchor");
     let original = std::fs::read(&file.0).expect("original bytes");
     let illegal = ProductEvaluationAttemptTransitionV1 {
         phase: ProductEvaluationAttemptPhaseV1::Published,
         terminal_digest: digest("unverified-publication"),
-        ..consumed()
+        ..consumed()?
     };
     assert_eq!(journal.append(illegal), Err(JournalError::Conflict));
     // This rejection occurred before any file write or authority call. It must
     // not strand a lifecycle that was already admitted and reserved.
     assert_eq!(journal.anchor(), Ok(retained));
     assert_eq!(authority.0.borrow().anchor, Some(retained));
-    assert_eq!(journal.latest(&attempt_id()), Ok(Some(first.clone())));
-    assert_eq!(journal.history(&attempt_id()), Ok(vec![first.clone()]));
+    assert_eq!(journal.latest(&attempt_id()?), Ok(Some(first.clone())));
+    assert_eq!(journal.history(&attempt_id()?), Ok(vec![first.clone()]));
     assert_eq!(journal.pending(None, 1), Ok(vec![first.clone()]));
-    assert_eq!(journal.append(intent()), Ok(first));
+    assert_eq!(journal.append(intent()?), Ok(first));
     assert_eq!(std::fs::read(&file.0).expect("unchanged bytes"), original);
-    let next = journal.append(consumed()).expect("continue reserved work");
-    assert_eq!(next.transition, consumed());
+    let next = journal.append(consumed()?).expect("continue reserved work");
+    assert_eq!(next.transition, consumed()?);
     assert_eq!(next.sequence, 2);
+    Ok(())
 }
 
 #[test]
-fn complete_old_backup_is_rejected_without_lowering_the_independent_anchor() {
-    let file = JournalFile::new();
+fn complete_old_backup_is_rejected_without_lowering_the_independent_anchor() -> FixtureResult<()> {
+    let file = JournalFile::new()?;
     let authority = TestAuthority::default();
     let binding = digest("rollback-binding");
     let mut journal =
-        AnchoredProductEvaluationAttemptJournalV1::create(file.open(), binding, authority.clone())
+        AnchoredProductEvaluationAttemptJournalV1::create(file.open()?, binding, authority.clone())
             .expect("create");
-    journal.append(intent()).expect("intent");
+    journal.append(intent()?).expect("intent");
     let old = std::fs::read(&file.0).expect("complete backup");
-    journal.append(consumed()).expect("consumed");
+    journal.append(consumed()?).expect("consumed");
     let retained = authority.0.borrow().anchor;
     drop(journal);
     std::fs::write(&file.0, old).expect("restore old complete backup");
-    let recovered =
-        AnchoredProductEvaluationAttemptJournalV1::recover(file.open(), binding, authority.clone());
+    let recovered = AnchoredProductEvaluationAttemptJournalV1::recover(
+        file.open()?,
+        binding,
+        authority.clone(),
+    );
     assert!(recovered.is_err());
     assert_eq!(authority.0.borrow().anchor, retained);
+    Ok(())
 }

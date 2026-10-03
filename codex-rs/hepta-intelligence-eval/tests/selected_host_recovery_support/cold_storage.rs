@@ -1,5 +1,6 @@
 //! Test-only disk anchor and crash cut. This fixture has real process/file I/O
 //! but lives in the test directory, NOT an independently authenticated host.
+use super::FixtureResult;
 use std::fs;
 use std::fs::File;
 use std::fs::OpenOptions;
@@ -21,18 +22,29 @@ pub struct DiskAnchor {
 }
 
 impl DiskAnchor {
-    pub fn new(root: &Path, crash_at: Option<u64>) -> Self {
-        fs::create_dir_all(root).expect("fixture anchor directory");
-        let lock = OpenOptions::new().read(true).write(true).create(true).truncate(false)
-            .open(root.join("anchor.lock")).expect("fixture anchor lock");
-        lock.try_lock().expect("exclusive fixture anchor");
-        Self { root: root.to_owned(), _lock: lock, crash_at }
+    pub fn new(root: &Path, crash_at: Option<u64>) -> FixtureResult<Self> {
+        fs::create_dir_all(root)?;
+        let lock = OpenOptions::new()
+            .read(true)
+            .write(true)
+            .create(true)
+            .truncate(false)
+            .open(root.join("anchor.lock"))?;
+        lock.try_lock()?;
+        Ok(Self {
+            root: root.to_owned(),
+            _lock: lock,
+            crash_at,
+        })
     }
 }
 
 impl ProductEvaluationAttemptAnchorStoreV1 for DiskAnchor {
-    fn load(&mut self, binding: Digest32)
-        -> Result<Option<ProductEvaluationAttemptAnchorV1>, ProductEvaluationAttemptJournalErrorV1> {
+    fn load(
+        &mut self,
+        binding: Digest32,
+    ) -> Result<Option<ProductEvaluationAttemptAnchorV1>, ProductEvaluationAttemptJournalErrorV1>
+    {
         let path = self.root.join("retained");
         let file = match File::open(path) {
             Ok(value) => value,
@@ -40,28 +52,51 @@ impl ProductEvaluationAttemptAnchorStoreV1 for DiskAnchor {
             Err(error) => return Err(ProductEvaluationAttemptJournalErrorV1::Io(error.kind())),
         };
         let mut bytes = Vec::new();
-        file.take(105).read_to_end(&mut bytes).map_err(|error|
-            ProductEvaluationAttemptJournalErrorV1::Io(error.kind()))?;
+        file.take(105)
+            .read_to_end(&mut bytes)
+            .map_err(|error| ProductEvaluationAttemptJournalErrorV1::Io(error.kind()))?;
         if bytes.len() != 104 || bytes[72..] != Digest32::of_bytes(&bytes[..72]).as_array()[..] {
             return Err(ProductEvaluationAttemptJournalErrorV1::Corrupt);
         }
         let anchor = ProductEvaluationAttemptAnchorV1 {
-            binding: Digest32::from_array(bytes[..32].try_into().expect("binding width")),
-            event_count: u64::from_be_bytes(bytes[32..40].try_into().expect("count width")),
-            state_digest: Digest32::from_array(bytes[40..72].try_into().expect("digest width")),
+            binding: Digest32::from_array(
+                bytes[..32]
+                    .try_into()
+                    .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Corrupt)?,
+            ),
+            event_count: u64::from_be_bytes(
+                bytes[32..40]
+                    .try_into()
+                    .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Corrupt)?,
+            ),
+            state_digest: Digest32::from_array(
+                bytes[40..72]
+                    .try_into()
+                    .map_err(|_| ProductEvaluationAttemptJournalErrorV1::Corrupt)?,
+            ),
         };
-        if anchor.binding != binding { return Err(ProductEvaluationAttemptJournalErrorV1::Binding); }
+        if anchor.binding != binding {
+            return Err(ProductEvaluationAttemptJournalErrorV1::Binding);
+        }
         Ok(Some(anchor))
     }
 
-    fn compare_and_swap(&mut self, binding: Digest32,
-        expected: Option<ProductEvaluationAttemptAnchorV1>, next: ProductEvaluationAttemptAnchorV1)
-        -> Result<(), ProductEvaluationAttemptJournalErrorV1> {
-        if binding.is_zero() || next.binding != binding || next.state_digest.is_zero()
-            || self.load(binding)? != expected {
+    fn compare_and_swap(
+        &mut self,
+        binding: Digest32,
+        expected: Option<ProductEvaluationAttemptAnchorV1>,
+        next: ProductEvaluationAttemptAnchorV1,
+    ) -> Result<(), ProductEvaluationAttemptJournalErrorV1> {
+        if binding.is_zero()
+            || next.binding != binding
+            || next.state_digest.is_zero()
+            || self.load(binding)? != expected
+        {
             return Err(ProductEvaluationAttemptJournalErrorV1::Conflict);
         }
-        if expected == Some(next) { return Ok(()); }
+        if expected == Some(next) {
+            return Ok(());
+        }
         if expected.is_some_and(|old| next.event_count <= old.event_count) {
             return Err(ProductEvaluationAttemptJournalErrorV1::Conflict);
         }
@@ -77,7 +112,10 @@ impl ProductEvaluationAttemptAnchorStoreV1 for DiskAnchor {
         bytes.extend_from_slice(Digest32::of_bytes(&bytes).as_array());
         let temporary = self.root.join(format!("anchor-{}.tmp", std::process::id()));
         let result = (|| -> std::io::Result<()> {
-            let mut file = OpenOptions::new().write(true).create_new(true).open(&temporary)?;
+            let mut file = OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&temporary)?;
             file.write_all(&bytes)?;
             file.sync_all()?;
             fs::rename(&temporary, self.root.join("retained"))?;
@@ -88,31 +126,36 @@ impl ProductEvaluationAttemptAnchorStoreV1 for DiskAnchor {
     }
 }
 
-pub fn create(path: &Path) -> File {
-    OpenOptions::new().read(true).write(true).create_new(true).open(path).expect("create fixture file")
+pub fn create(path: &Path) -> std::io::Result<File> {
+    OpenOptions::new()
+        .read(true)
+        .write(true)
+        .create_new(true)
+        .open(path)
 }
 
-pub fn reopen(path: &Path) -> File {
-    OpenOptions::new().read(true).write(true).open(path).expect("open fixture file")
+pub fn reopen(path: &Path) -> std::io::Result<File> {
+    OpenOptions::new().read(true).write(true).open(path)
 }
 
-pub fn retain_holdout_anchor(path: &Path, anchor: FinalHoldoutCasAnchorV1) {
+pub fn retain_holdout_anchor(path: &Path, anchor: FinalHoldoutCasAnchorV1) -> FixtureResult<()> {
     let mut bytes = Vec::new();
     bytes.extend_from_slice(&anchor.fence_generation.to_be_bytes());
     bytes.extend_from_slice(&anchor.record_count.to_be_bytes());
     bytes.extend_from_slice(anchor.state_digest.as_array());
-    let mut file = create(path);
-    file.write_all(&bytes).expect("write holdout anchor");
-    file.sync_all().expect("sync holdout anchor");
-    File::open(path.parent().expect("anchor parent")).expect("parent").sync_all().expect("sync parent");
+    let mut file = create(path)?;
+    file.write_all(&bytes)?;
+    file.sync_all()?;
+    File::open(path.parent().ok_or("anchor parent")?)?.sync_all()?;
+    Ok(())
 }
 
-pub fn load_holdout_anchor(path: &Path) -> FinalHoldoutCasAnchorV1 {
-    let bytes = fs::read(path).expect("holdout anchor");
+pub fn load_holdout_anchor(path: &Path) -> FixtureResult<FinalHoldoutCasAnchorV1> {
+    let bytes = fs::read(path)?;
     assert_eq!(bytes.len(), 48);
-    FinalHoldoutCasAnchorV1 {
-        fence_generation: u64::from_be_bytes(bytes[..8].try_into().expect("generation")),
-        record_count: u64::from_be_bytes(bytes[8..16].try_into().expect("count")),
-        state_digest: Digest32::from_array(bytes[16..].try_into().expect("digest")),
-    }
+    Ok(FinalHoldoutCasAnchorV1 {
+        fence_generation: u64::from_be_bytes(bytes[..8].try_into()?),
+        record_count: u64::from_be_bytes(bytes[8..16].try_into()?),
+        state_digest: Digest32::from_array(bytes[16..].try_into()?),
+    })
 }

@@ -19,6 +19,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+type FixtureResult<T> = Result<T, Box<dyn std::error::Error>>;
+
 static NEXT_TEMP: AtomicU64 = AtomicU64::new(0);
 
 struct TempFile {
@@ -26,7 +28,7 @@ struct TempFile {
 }
 
 impl TempFile {
-    fn new(label: &str) -> Self {
+    fn new(label: &str) -> std::io::Result<Self> {
         let path = std::env::temp_dir().join(format!(
             "hepta-learning-eval-{label}-{}-{}",
             std::process::id(),
@@ -36,17 +38,12 @@ impl TempFile {
             .create_new(true)
             .read(true)
             .write(true)
-            .open(&path)
-            .expect("create temporary file");
-        Self { path }
+            .open(&path)?;
+        Ok(Self { path })
     }
 
-    fn reopen(&self) -> File {
-        OpenOptions::new()
-            .read(true)
-            .write(true)
-            .open(&self.path)
-            .expect("reopen temporary file")
+    fn reopen(&self) -> std::io::Result<File> {
+        OpenOptions::new().read(true).write(true).open(&self.path)
     }
 }
 
@@ -56,25 +53,25 @@ impl Drop for TempFile {
     }
 }
 
-fn id(value: &str) -> StableId {
-    StableId::new(value).expect("valid test id")
+fn id(value: &str) -> Result<StableId, codex_hepta_types::IdentityError> {
+    StableId::new(value)
 }
 
 fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn frozen_plan() -> codex_hepta_intelligence_eval::CrossFoldPlanReceiptV1 {
-    freeze_cross_fold_plan(CrossFoldPlanV1 {
-        plan_id: id("compaction-plan"),
+fn frozen_plan() -> FixtureResult<codex_hepta_intelligence_eval::CrossFoldPlanReceiptV1> {
+    Ok(freeze_cross_fold_plan(CrossFoldPlanV1 {
+        plan_id: id("compaction-plan")?,
         claim_scope: EvaluationClaimScopeV1::Qualification,
-        candidate_id: id("candidate"),
-        baseline_id: id("baseline"),
+        candidate_id: id("candidate")?,
+        baseline_id: id("baseline")?,
         objective_digest: digest("objective"),
         dataset_digest: digest("dataset"),
         estimand_digest: digest("estimand"),
         metric_contracts: vec![MetricContractV1 {
-            metric_id: id("utility"),
+            metric_id: id("utility")?,
             direction: EvaluationDirectionV1::Maximize,
             safety_floor: Some(FixedQ32::ZERO),
         }],
@@ -82,49 +79,50 @@ fn frozen_plan() -> codex_hepta_intelligence_eval::CrossFoldPlanReceiptV1 {
         simultaneous_comparisons: 1,
         folds: vec![
             CrossFoldPartitionV1 {
-                fold_id: id("fold-a"),
-                training_principals: vec![id("train-principal-a")],
-                training_episodes: vec![id("train-episode-a")],
-                training_windows: vec![id("train-window-a")],
-                holdout_principals: vec![id("holdout-principal-a")],
-                holdout_episodes: vec![id("holdout-episode-a")],
-                holdout_windows: vec![id("holdout-window-a")],
+                fold_id: id("fold-a")?,
+                training_principals: vec![id("train-principal-a")?],
+                training_episodes: vec![id("train-episode-a")?],
+                training_windows: vec![id("train-window-a")?],
+                holdout_principals: vec![id("holdout-principal-a")?],
+                holdout_episodes: vec![id("holdout-episode-a")?],
+                holdout_windows: vec![id("holdout-window-a")?],
                 model_digest: digest("model-a"),
                 predictions_digest: digest("predictions-a"),
             },
             CrossFoldPartitionV1 {
-                fold_id: id("fold-b"),
-                training_principals: vec![id("train-principal-b")],
-                training_episodes: vec![id("train-episode-b")],
-                training_windows: vec![id("train-window-b")],
-                holdout_principals: vec![id("holdout-principal-b")],
-                holdout_episodes: vec![id("holdout-episode-b")],
-                holdout_windows: vec![id("final-window")],
+                fold_id: id("fold-b")?,
+                training_principals: vec![id("train-principal-b")?],
+                training_episodes: vec![id("train-episode-b")?],
+                training_windows: vec![id("train-window-b")?],
+                holdout_principals: vec![id("holdout-principal-b")?],
+                holdout_episodes: vec![id("holdout-episode-b")?],
+                holdout_windows: vec![id("final-window")?],
                 model_digest: digest("model-b"),
                 predictions_digest: digest("predictions-b"),
             },
         ],
-        final_holdout_window_id: id("final-window"),
+        final_holdout_window_id: id("final-window")?,
         final_holdout_digest: digest("final-holdout"),
-    })
-    .expect("freeze plan")
+    })?)
 }
 
 #[test]
-fn compaction_replays_nonempty_holdout_journal_without_semantic_drift() {
-    let source_file = TempFile::new("source");
-    let compacted_file = TempFile::new("compacted");
+fn compaction_replays_nonempty_holdout_journal_without_semantic_drift() -> FixtureResult<()> {
+    let source_file = TempFile::new("source")?;
+    let compacted_file = TempFile::new("compacted")?;
     let binding = digest("compaction-binding-with-record");
-    let store = LockedFileFinalHoldoutCasStoreV1::create(source_file.reopen(), binding)
+    let store = LockedFileFinalHoldoutCasStoreV1::create(source_file.reopen()?, binding)
         .expect("create source store");
     let fence = HoldoutWriterFenceV1 {
-        owner_id: id("owner"),
+        owner_id: id("owner")?,
         generation: 1,
         lease_digest: digest("lease"),
     };
-    let mut owner = FencedFinalHoldoutOwnerV1::initialize(store, binding, fence)
-        .expect("initialize owner");
-    let use_receipt = owner.consume(&frozen_plan()).expect("consume holdout plan");
+    let mut owner =
+        FencedFinalHoldoutOwnerV1::initialize(store, binding, fence).expect("initialize owner");
+    let use_receipt = owner
+        .consume(&frozen_plan()?)
+        .expect("consume holdout plan");
     assert!(!use_receipt.record_digest.is_zero());
     let source_anchor = owner.anchor();
     assert_eq!(source_anchor.record_count, 1);
@@ -135,7 +133,7 @@ fn compaction_replays_nonempty_holdout_journal_without_semantic_drift() {
         .expect("load source state")
         .expect("source state exists");
     let (mut compacted, compaction_receipt) = source_store
-        .compact_into(compacted_file.reopen())
+        .compact_into(compacted_file.reopen()?)
         .expect("compact source");
     compaction_receipt
         .validate_integrity()
@@ -150,7 +148,7 @@ fn compaction_replays_nonempty_holdout_journal_without_semantic_drift() {
     drop(compacted);
 
     let mut recovered = LockedFileFinalHoldoutCasStoreV1::recover(
-        compacted_file.reopen(),
+        compacted_file.reopen()?,
         binding,
         Some(source_anchor),
     )
@@ -160,4 +158,5 @@ fn compaction_replays_nonempty_holdout_journal_without_semantic_drift() {
         recovered.load(binding).expect("load recovered state"),
         Some(source_state)
     );
+    Ok(())
 }

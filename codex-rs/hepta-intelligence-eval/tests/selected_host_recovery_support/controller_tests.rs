@@ -12,17 +12,15 @@ pub(super) fn recover_page<
     root: &Path,
     mode: &str,
     before: &ProductEvaluationAttemptReceiptV1,
-) -> Option<ProductEvaluationAttemptReceiptV1> {
-    let blocked = host::id("a:unresolved-attempt");
+) -> FixtureResult<Option<ProductEvaluationAttemptReceiptV1>> {
+    let blocked = host::id("a:unresolved-attempt")?;
     if mode == "page-first" {
-        journal
-            .append(ProductEvaluationAttemptTransitionV1::intent(
-                blocked,
-                host::digest("unresolved-plan"),
-                namespace(),
-                host::digest("unresolved-owner-state"),
-            ))
-            .expect("record a prior unresolved attempt");
+        journal.append(ProductEvaluationAttemptTransitionV1::intent(
+            blocked,
+            host::digest("unresolved-plan"),
+            namespace(),
+            host::digest("unresolved-owner-state"),
+        ))?;
     }
     let cursor_path = root.join("recovery.cursor");
     let cursor = OpenOptions::new()
@@ -30,11 +28,8 @@ pub(super) fn recover_page<
         .write(true)
         .create(true)
         .truncate(false)
-        .open(&cursor_path)
-        .expect("open cursor file");
-    File::open(root)
-        .and_then(|file| file.sync_all())
-        .expect("durable cursor directory");
+        .open(&cursor_path)?;
+    File::open(root).and_then(|file| file.sync_all())?;
 
     if mode == "page-first" {
         // The first identity is durably handled with one active trust snapshot.
@@ -52,7 +47,9 @@ pub(super) fn recover_page<
             &mut clock,
             || {
                 calls += 1;
-                Ok::<_, RecordedProductEvaluationErrorV1>(host::activate())
+                host::activate().map_err(|_| {
+                    RecordedProductEvaluationErrorV1::Invariant("fixture trust activation failed")
+                })
             },
             Duration::from_secs(30),
             2,
@@ -65,49 +62,45 @@ pub(super) fn recover_page<
         ));
         assert_eq!(calls, 2, "active trust must be resolved per attempt");
         assert!(
-            !fs::read(&cursor_path).expect("persisted cursor").is_empty(),
+            !fs::read(&cursor_path)?.is_empty(),
             "the first handled identity must survive the later page abort"
         );
         assert_eq!(
-            journal
-                .latest(&before.transition.attempt_id)
-                .expect("actual attempt"),
+            journal.latest(&before.transition.attempt_id)?,
             Some(before.clone())
         );
-        assert_eq!(
-            fs::read_dir(root.join("publications"))
-                .expect("publications")
-                .count(),
-            0
-        );
-        return None;
+        assert_eq!(fs::read_dir(root.join("publications"))?.count(), 0);
+        return Ok(None);
     }
 
     let mut clock = host::clock(85);
-    let mut result = runner
-        .recover_selected_host_pending_page(
-            journal,
-            cursor,
-            &root.join("artifacts"),
-            &root.join("publications"),
-            host_binding(),
-            &mut clock,
-            || Ok(host::activate()),
-            Duration::from_secs(30),
-            1,
-        )
-        .expect("bounded persistent recovery page");
+    let mut result = runner.recover_selected_host_pending_page(
+        journal,
+        cursor,
+        &root.join("artifacts"),
+        &root.join("publications"),
+        host_binding(),
+        &mut clock,
+        || {
+            host::activate().map_err(|_| {
+                RecordedProductEvaluationErrorV1::Invariant("fixture trust activation failed")
+            })
+        },
+        Duration::from_secs(30),
+        1,
+    )?;
     assert_eq!(result.len(), 1);
-    let (attempt, result) = result.pop().expect("one result");
+    let (attempt, result) = result.pop().ok_or("one result")?;
     assert_eq!(
         attempt, before.transition.attempt_id,
         "fresh process must advance past the unresolved predecessor"
     );
-    Some(result.expect("native archive recovery through persistent controller"))
+    Ok(Some(result?))
 }
 
 #[test]
-fn persistent_page_controller_advances_past_unresolved_work_across_processes() {
+fn persistent_page_controller_advances_past_unresolved_work_across_processes() -> FixtureResult<()>
+{
     for family in ["temporal", "outcome", "longitudinal"] {
         let ordinal = NEXT_ROOT.fetch_add(1, Ordering::Relaxed);
         let root = std::env::temp_dir().join(format!(
@@ -115,18 +108,18 @@ fn persistent_page_controller_advances_past_unresolved_work_across_processes() {
             std::process::id()
         ));
         fs::create_dir(&root).expect("root");
-        let status = child(&root, family, "produce", 4);
+        let status = child(&root, family, "produce", 4)?;
         assert_eq!(status.code(), Some(73));
         let holdout_before = fs::read(root.join("holdout.cas")).expect("holdout");
-        assert!(child(&root, family, "page-first", 4).success());
+        assert!(child(&root, family, "page-first", 4)?.success());
         let cursor_before = fs::read(root.join("recovery.cursor")).expect("cursor");
-        assert!(child(&root, family, "page-next", 4).success());
+        assert!(child(&root, family, "page-next", 4)?.success());
         assert_ne!(
             fs::read(root.join("recovery.cursor")).expect("advanced cursor"),
             cursor_before
         );
         let published = fs::read(root.join("attempt.journal")).expect("journal");
-        assert!(child(&root, family, "reconcile", 4).success());
+        assert!(child(&root, family, "reconcile", 4)?.success());
         assert_eq!(
             fs::read(root.join("attempt.journal")).expect("unchanged journal"),
             published
@@ -137,4 +130,5 @@ fn persistent_page_controller_advances_past_unresolved_work_across_processes() {
         );
         fs::remove_dir_all(root).expect("remove fixture");
     }
+    Ok(())
 }
