@@ -39,7 +39,7 @@ index 75c246e..7d0b5be 100644
  
      pub fn null_texture(&self) -> Texture {
 diff --git a/src/script/res.rs b/src/script/res.rs
-index fef110a..d74195f 100644
+index fef110a..28fcaef 100644
 --- a/src/script/res.rs
 +++ b/src/script/res.rs
 @@ -366,6 +366,20 @@ impl Cx {
@@ -63,3 +63,24 @@ index fef110a..d74195f 100644
          // On wasm, skip loading if we haven't received ToWasmInit yet (os_type is Unknown).
          #[cfg(target_arch = "wasm32")]
          if matches!(self.os_type(), crate::cx::OsType::Unknown) {
+@@ -907,6 +921,20 @@ fn resolve_crate_resource_paths(
+             ScriptSource::Mod(script_mod) => script_mod,
+             _ => return None,
+         };
++        // The pinned DrawText default still uses this historical backreference.
++        // Map only that exact module/literal to the already embedded logical
++        // asset; unknown modules/paths retain the normal fail-closed behavior.
++        if script_mod.module_path == "makepad_draw::shader::draw_text"
++            && file_path == "../../widgets/resources/IBMPlexSans-Text.ttf"
++        {
++            let manifests = vm.bx.code.crate_manifests.borrow();
++            let widgets = manifests.get("makepad_widgets")?;
++            return Some((
++                format!("{widgets}/resources/IBMPlexSans-Text.ttf"),
++                Some("makepad_widgets/resources/IBMPlexSans-Text.ttf".to_owned()),
++                None,
++            ));
++        }
+         let mut abs_path = script_mod.cargo_manifest_path.clone();
+         abs_path.push('/');
+         abs_path.push_str(file_path);

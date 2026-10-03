@@ -79,3 +79,7 @@ pub fn write_notices(output: &mut impl Write) -> std::io::Result<()> {
 pub fn write_liberation_source(output: &mut impl Write) -> std::io::Result<()> {
     output.write_all(LIBERATION_SOURCE)
 }
+
+#[cfg(test)]
+#[path = "native_assets_tests.rs"]
+mod tests;

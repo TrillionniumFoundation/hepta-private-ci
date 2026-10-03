@@ -305,6 +305,13 @@ PREVIEW_REQUIRED = {
     )
 }
 
+PREVIEW_REQUIRED.add(
+    (
+        "hepta-native",
+        "native_assets::tests::actual_shared_app_resources_are_complete_and_foreign_aliases_fail_closed",
+    )
+)
+
 
 def verify_preview_tests(root, inventory_path, junit_path, receipt_path):
     if receipt_path.exists() or receipt_path.is_symlink():

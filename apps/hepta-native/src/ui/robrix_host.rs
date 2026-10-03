@@ -162,6 +162,18 @@ impl NativeHost for RobrixHost {
     }
 
     fn rendering_failed(&mut self, detail: &str) {
+        let reason_code = if detail.starts_with("Native embedded resource unavailable:") {
+            "embedded_resource_unavailable"
+        } else if detail == "GUI callback identity exhausted" {
+            "callback_counter_exhausted"
+        } else {
+            "renderer_contract_failed"
+        };
+        // Emit a bounded code only. The detailed owner-facing error can contain
+        // runtime paths and must not be copied into qualification artifacts.
+        observation(serde_json::json!({
+            "event": "renderer_failure", "reasonCode": reason_code,
+        }));
         self.app.fail_readiness(detail.to_owned());
     }
 
