@@ -4,6 +4,8 @@ use super::*;
 mod current_tests;
 #[path = "self_iteration_round_effects_tests.rs"]
 mod effect_tests;
+#[path = "self_iteration_round_failure_tests.rs"]
+mod failure_tests;
 #[path = "self_iteration_round_rejection_tests.rs"]
 mod rejection_tests;
 fn inputs(maximum: u32) -> (crate::CanonicalIterationEnvelopeV1, IterationEnvelopeV1) {
