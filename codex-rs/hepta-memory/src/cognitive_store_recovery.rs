@@ -93,6 +93,13 @@ pub enum CognitiveRecoveryError {
 }
 
 impl CognitiveStore {
+    /// Close every SQLite connection before an external owner captures or
+    /// reopens the database as one immutable recovery image. Dropping a pool
+    /// only releases one handle; it does not wait for checked-out connections.
+    pub async fn close(self) {
+        self.pool.close().await;
+    }
+
     /// Capture one coherent bounded owner cut. The host retains/authenticates it
     /// independently; this method does not publish an acknowledgement witness.
     pub async fn recovery_anchor(&self) -> Result<CognitiveRecoveryAnchor, CognitiveStoreError> {

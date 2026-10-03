@@ -162,17 +162,17 @@ pub use pipeline_v2::LaneFRunRequestV2;
 pub use pipeline_v2::LaneFShadowPipelineReceiptV2;
 pub use pipeline_v2::PipelineErrorV2;
 pub use pipeline_v2::run_shadow_pipeline_v2;
-#[cfg(feature = "legacy-prompt-context-v1")]
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
 pub use prompt_delivery::PromptRegistryCompilationErrorV2;
-#[cfg(feature = "legacy-prompt-context-v1")]
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
 pub use prompt_delivery::PromptRegistryCompilationRequestV2;
-#[cfg(feature = "legacy-prompt-context-v1")]
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
 pub use prompt_delivery::PromptRegistryCompiledContextV2;
-#[cfg(feature = "legacy-prompt-context-v1")]
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
 pub use prompt_delivery::PromptRegistryDeliveryPreparationV2;
-#[cfg(feature = "legacy-prompt-context-v1")]
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
 pub use prompt_delivery::compile_prompt_registry_v2;
-#[cfg(feature = "legacy-prompt-context-v1")]
+#[cfg(any(feature = "legacy-prompt-context-v1", test))]
 pub use prompt_delivery::prepare_prompt_registry_delivery_v2;
 
 pub use prompt_product_v3::PreparedPromptDeliveryV3;
