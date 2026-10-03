@@ -412,6 +412,12 @@ pub use local_cpu_parameter_root_materials_v2::CpuNeuronParameterRootMaterialsV2
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 mod root_parameter_role_inputs_v3;
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use root_parameter_role_inputs_v3::RootParameterObserverBaselineV1;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use root_parameter_role_inputs_v3::RootParameterObserverCurrentV1;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 pub use root_parameter_role_inputs_v3::prepare_root_parameter_generator_inputs_v3;
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+pub use root_parameter_role_inputs_v3::prepare_root_parameter_observer_current_inputs_v1;
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 pub use root_parameter_role_inputs_v3::prepare_root_parameter_observer_inputs_v1;
