@@ -62,7 +62,7 @@ pub(crate) fn finish_canonical_admission(
             binding_digest: Some(digest),
         }),
         Err(source) => Err(AgentdIntuitionServiceErrorV1::AdmissionFailedAfterPolicy {
-            receipt,
+            receipt: Box::new(receipt),
             source: Box::new(source),
         }
         .into()),

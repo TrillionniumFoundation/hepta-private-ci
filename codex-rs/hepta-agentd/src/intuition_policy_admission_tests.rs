@@ -123,7 +123,7 @@ fn intuition_policy_admission_mismatch_keeps_policy_receipt_and_typed_cause() {
     else {
         panic!("lost post-policy error classification");
     };
-    assert_eq!(receipt, expected);
+    assert_eq!(*receipt, expected);
     assert!(matches!(*source, AgentdError::Protocol(_)));
 }
 

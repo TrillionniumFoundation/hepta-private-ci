@@ -183,7 +183,7 @@ where
         if let Err(source) = final_check {
             return Err(
                 crate::AgentdIntuitionServiceErrorV1::AdmissionFailedAfterPolicy {
-                    receipt: committed,
+                    receipt: Box::new(committed),
                     source: Box::new(source),
                 }
                 .into(),

@@ -96,6 +96,36 @@ COMMANDS = [
         cargo_test("codex-hepta-agentd", "--lib", "intelligence_product"),
     ),
     (
+        "agentd-automation-fixture-test",
+        cargo_test(
+            "codex-hepta-agentd",
+            "--lib",
+            "automation_effect_host::tests::host_dispatches_exact_wire_payload_once",
+            "--",
+            "--exact",
+        ),
+    ),
+    (
+        "agentd-cognitive-tombstone-fixture-test",
+        cargo_test(
+            "codex-hepta-agentd",
+            "--lib",
+            "cognitive_context::tests::context_reads_real_owner_content_and_removes_committed_tombstones",
+            "--",
+            "--exact",
+        ),
+    ),
+    (
+        "agentd-cognitive-owner-cut-fixture-test",
+        cargo_test(
+            "codex-hepta-agentd",
+            "--lib",
+            "cognitive_context::tests::final_use_binds_complete_owner_cut_not_only_memory_snapshot",
+            "--",
+            "--exact",
+        ),
+    ),
+    (
         "ledger-production-tests",
         cargo_test("codex-hepta-learning-ledger", "production"),
     ),

@@ -483,24 +483,29 @@ pub(crate) async fn read_with_retrieval_context_and_learning(
 }
 
 #[cfg(test)]
-pub(crate) async fn revalidate(
+struct RevalidationInput<'a> {
+    snapshot_digest: &'a str,
+    read_digest: &'a str,
+    omitted_records: u64,
+    items: &'a [CognitiveContextItem],
+    plan: Option<&'a CognitiveContextPlan>,
+}
+
+#[cfg(test)]
+async fn revalidate(
     store: &CognitiveStore,
     owner: &AgentId,
-    snapshot_digest: &str,
-    read_digest: &str,
-    omitted_records: u64,
-    items: &[CognitiveContextItem],
-    plan: Option<&CognitiveContextPlan>,
+    input: RevalidationInput<'_>,
     ranker: Option<&std::sync::Arc<crate::PinnedCognitiveRanker>>,
 ) -> Result<CognitiveContextRevalidation, CognitiveContextError> {
     revalidate_with_retrieval_context(
         store,
         owner,
-        snapshot_digest,
-        read_digest,
-        omitted_records,
-        items,
-        plan,
+        input.snapshot_digest,
+        input.read_digest,
+        input.omitted_records,
+        input.items,
+        input.plan,
         ranker,
         1,
         None,
