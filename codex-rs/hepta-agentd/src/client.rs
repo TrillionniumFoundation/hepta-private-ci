@@ -50,6 +50,10 @@ mod automation_listing;
 
 #[path = "client_native_model_receipt.rs"]
 mod native_model_receipt;
+#[cfg(feature = "server")]
+#[path = "client_plasticity_observation.rs"]
+mod plasticity_observation;
+#[cfg(feature = "server")]
 #[path = "client_self_iteration_round.rs"]
 mod self_iteration_round;
 
@@ -866,7 +870,7 @@ impl AgentdClient {
     }
 }
 
-fn encode_hex(bytes: &[u8]) -> String {
+pub(crate) fn encode_hex(bytes: &[u8]) -> String {
     const HEX: &[u8; 16] = b"0123456789abcdef";
     let mut output = String::with_capacity(bytes.len().saturating_mul(2));
     for byte in bytes {

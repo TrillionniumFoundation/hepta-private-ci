@@ -109,6 +109,7 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
         &request.method,
         crate::AgentdMethod::NativeModelReceipt { .. }
             | crate::AgentdMethod::SelfIterationRoundStatus { .. }
+            | crate::AgentdMethod::PlasticityCompletedProposal { .. }
     ) && root_peer.is_err()
     {
         error_response(
@@ -117,6 +118,11 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             request.spawn_generation,
             "root_peer_required",
             if matches!(
+                &request.method,
+                crate::AgentdMethod::PlasticityCompletedProposal { .. }
+            ) {
+                "plasticity observation requires the actual Root kernel peer"
+            } else if matches!(
                 &request.method,
                 crate::AgentdMethod::SelfIterationRoundStatus { .. }
             ) {

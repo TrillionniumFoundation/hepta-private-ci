@@ -652,6 +652,9 @@ pub enum AgentdMethod {
     NativeModelReceipt {
         request_id: String,
     },
+    PlasticityCompletedProposal {
+        proposal_id: String,
+    },
     SelfIterationRoundStatus {
         goal_id: String,
         canonical_policy_digest: String,
@@ -847,6 +850,10 @@ pub struct AgentdResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    PlasticityCompletedProposal {
+        proposal_id: String,
+        observation_hex: Option<String>,
+    },
     SelfIterationRoundStatus {
         goal_id: String,
         canonical_policy_digest: String,

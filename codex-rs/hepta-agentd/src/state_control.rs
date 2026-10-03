@@ -92,6 +92,9 @@ impl AgentdState {
         // represented by critical_stores_ready, which is frozen only after
         // owner-local startup completes under the generation fence.
         let payload = match method {
+            crate::AgentdMethod::PlasticityCompletedProposal { proposal_id } => {
+                self.plasticity_completed_proposal(proposal_id).await?
+            }
             crate::AgentdMethod::SelfIterationRoundStatus {
                 goal_id,
                 canonical_policy_digest,
