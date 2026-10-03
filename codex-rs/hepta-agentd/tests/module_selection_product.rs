@@ -227,7 +227,9 @@ async fn snapshot_after_busy(
     loop {
         match client.snapshot(agent.clone()).await {
             Ok(status) => return Ok(status),
-            Err(SupervisorError::NotAdmittedBusy) => sleep(Duration::from_millis(25)).await,
+            Err(SupervisorError::NotAdmittedBusy | SupervisorError::ObservationUnavailable) => {
+                sleep(Duration::from_millis(25)).await
+            }
             Err(error) => return Err(error.into()),
         }
     }
@@ -414,6 +416,7 @@ async fn run_product_case(case: ProfileCase) -> Result<()> {
     let stop = CancellationToken::new();
     let daemon = tokio::spawn(run_supervisord(fleet, stop.clone()));
     let client = SupervisordClient::new(registry.layout().supervisor_socket().to_path_buf())?;
+    let observed_start = std::time::Instant::now();
     let result = async {
         timeout(Duration::from_secs(5), async {
             while client.health().await.is_err() {
@@ -483,6 +486,33 @@ async fn run_product_case(case: ProfileCase) -> Result<()> {
     }
     .await;
     if result.is_err() {
+        eprintln!(
+            "failed product case {case:?}: elapsed_ms={} fleet_root={}",
+            observed_start.elapsed().as_millis(),
+            root.display()
+        );
+        match registry.load_agent(&agent) {
+            Ok(record) => eprintln!(
+                "failed product case {case:?}: original registry lifecycle={:?} release={:?}",
+                record.lifecycle, record.release_state
+            ),
+            Err(error) => {
+                eprintln!("failed product case {case:?}: original registry unavailable={error}")
+            }
+        }
+        match timeout(
+            Duration::from_millis(500),
+            client.diagnostics(agent.clone()),
+        )
+        .await
+        {
+            Ok(Ok(entries)) => {
+                eprintln!("failed product case {case:?}: original child diagnostics={entries:?}")
+            }
+            result => eprintln!(
+                "failed product case {case:?}: original diagnostics unavailable={result:?}"
+            ),
+        }
         // Read the original owner record before containment and temporary
         // directory cleanup; an ambiguous mutation must never be replayed.
         match codex_hepta_supervisor::read_mutation_status(layout.owner_run_root()) {
@@ -514,6 +544,12 @@ async fn run_product_case(case: ProfileCase) -> Result<()> {
     }
     stop.cancel();
     daemon.await??;
+    if result.is_err() {
+        eprintln!(
+            "failed product case {case:?}: retained original fixture after containment={}",
+            temp.keep().display()
+        );
+    }
     result?;
     if matches!(case, ProfileCase::Absent | ProfileCase::WrongImage) {
         ensure!(

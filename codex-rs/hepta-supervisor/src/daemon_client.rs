@@ -447,6 +447,12 @@ impl SupervisordClient {
         request_id: u64,
         method: SupervisordMethod,
     ) -> Result<SupervisordPayload, SupervisorError> {
+        let observation = matches!(
+            &method,
+            SupervisordMethod::Health
+                | SupervisordMethod::Roster { .. }
+                | SupervisordMethod::Snapshot { .. }
+        );
         let configuration = matches!(
             &method,
             SupervisordMethod::RegisterAgent { .. }
@@ -499,6 +505,13 @@ impl SupervisordClient {
             ));
         }
         match response.payload {
+            SupervisordPayload::Error { code, message, .. }
+                if observation
+                    && code == "control_state_unavailable"
+                    && message == crate::daemon_protocol::OBSERVATION_UNAVAILABLE_MESSAGE =>
+            {
+                Err(SupervisorError::ObservationUnavailable)
+            }
             SupervisordPayload::Error { code, .. } if code == "not_admitted_busy" => {
                 Err(SupervisorError::NotAdmittedBusy)
             }
@@ -541,6 +554,9 @@ fn unexpected<T>(payload: SupervisordPayload) -> Result<T, SupervisorError> {
     )))
 }
 
+#[cfg(all(test, unix))]
+#[path = "daemon_observation_client_tests.rs"]
+mod observation_tests;
 #[cfg(all(test, unix))]
 #[path = "daemon_client_peer_tests.rs"]
 mod peer_tests;

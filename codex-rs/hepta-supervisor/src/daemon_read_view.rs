@@ -168,7 +168,7 @@ impl ReadView {
 pub(super) fn unavailable() -> SupervisordPayload {
     error_payload(
         "control_state_unavailable",
-        "supervisord observation is unavailable or expired; refresh before retry",
+        crate::daemon_protocol::OBSERVATION_UNAVAILABLE_MESSAGE,
         /*actual*/ None,
     )
 }

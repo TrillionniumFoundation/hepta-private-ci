@@ -1464,6 +1464,7 @@ fn safe_rejection(
         );
     }
     match error {
+        SupervisorError::ObservationUnavailable => read_view::unavailable(),
         SupervisorError::ReleaseValidationRejected => error_payload(
             "release_validation_rejected",
             "installed program validation failed; no operation was admitted",

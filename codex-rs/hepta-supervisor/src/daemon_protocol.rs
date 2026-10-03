@@ -21,6 +21,8 @@ use crate::ProductionRecoveryDecision;
 pub use codex_hepta_agent_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
 pub use codex_hepta_agent_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
 pub const MAX_SUPERVISORD_ROSTER: u16 = 256;
+pub(crate) const OBSERVATION_UNAVAILABLE_MESSAGE: &str =
+    "supervisord observation is unavailable or expired; refresh before retry";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
