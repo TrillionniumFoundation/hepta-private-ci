@@ -74,6 +74,14 @@ pub(crate) async fn commit_admitted(
     mut transaction: Transaction<'_, Sqlite>,
 ) -> Result<(), CognitiveStoreError> {
     admit_commit_state(&mut transaction).await?;
+    #[cfg(feature = "cognitive-perf-observe")]
+    {
+        crate::cognitive_perf_observation::Guard::start(
+            crate::cognitive_perf_observation::Phase::Commit,
+        )
+        .finish_result(transaction.commit().await.map_err(unavailable))
+    }
+    #[cfg(not(feature = "cognitive-perf-observe"))]
     transaction.commit().await.map_err(unavailable)
 }
 
@@ -85,6 +93,10 @@ pub(crate) async fn commit_admitted(
 pub(crate) async fn admit_commit_state(
     connection: &mut SqliteConnection,
 ) -> Result<(), CognitiveStoreError> {
+    #[cfg(feature = "cognitive-perf-observe")]
+    let observation = crate::cognitive_perf_observation::Guard::start(
+        crate::cognitive_perf_observation::Phase::AdmissionSchema,
+    );
     // Full-schema admission reads the migration ledger after its executable
     // definition has been authenticated. Retain that precondition here so an
     // owner-supplied generated column cannot execute before ledger bounds.
@@ -98,12 +110,21 @@ pub(crate) async fn admit_commit_state(
     // ledger, extra objects and FTS shadows, without separately fetching and
     // hashing each required definition as startup's public verifier does.
     super::schema::verify_full_schema(connection).await?;
+    #[cfg(feature = "cognitive-perf-observe")]
+    observation.finish();
+    #[cfg(feature = "cognitive-perf-observe")]
+    let observation = crate::cognitive_perf_observation::Guard::start(
+        crate::cognitive_perf_observation::Phase::AdmissionBudget,
+    );
+
     // The admitted schema equals the complete compiled schema. Reuse only its
     // immutable query text and column metadata, built from a separate fresh
     // in-memory database. Every aggregate still reads actual owner state in
     // this same transaction; no data or usage totals survive between commits.
     let mut budget = Budget::default();
     for query in plan::queries().await? {
+        #[cfg(feature = "cognitive-perf-observe")]
+        observation.work_unit();
         // This plan contains only quoted compiled-schema identifiers and SQL
         // expressions; the changing row limit remains a bound parameter.
         let (count, bytes, largest): (i64, i64, i64) =
@@ -114,6 +135,8 @@ pub(crate) async fn admit_commit_state(
                 .map_err(unavailable)?;
         budget.admit(count, bytes, largest)?;
     }
+    #[cfg(feature = "cognitive-perf-observe")]
+    observation.finish();
     Ok(())
 }
 

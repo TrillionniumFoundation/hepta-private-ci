@@ -29,6 +29,8 @@ on:
       - "justfile"
       - "codex-rs/justfile"
       - "scripts/hepta_ci_exec.py"
+      - "scripts/hepta_store_diagnostic_ci.py"
+      - ".github/hepta-cognitive-diagnostic.json"
       - ".github/actions/hepta-synthetic-merge/**"
       - ".github/workflows/hepta-cognitive-store-native.yml"
 
@@ -118,6 +120,10 @@ jobs:
           test -z "$(git status --porcelain --untracked-files=normal)"
           printf 'TESTED_SHA=%s\n' "$TESTED_SHA" >> "$GITHUB_ENV"
           printf 'HEPTA_CI_LANE=%s\n' "$HEPTA_CI_LANE" >> "$GITHUB_ENV"
+      - name: Read repository-local diagnostic opt-ins
+        id: diagnostic_options
+        if: ${{ steps.candidate.outcome == 'success' }}
+        run: python3 scripts/hepta_store_diagnostic_ci.py >> "$GITHUB_OUTPUT"
       - name: Prepare native owner-test prerequisites
         run: |
           printf 'CARGO_TARGET_DIR=%s\n' "$RUNNER_TEMP/hepta-cognitive-native-target" >> "$GITHUB_ENV"
@@ -144,6 +150,43 @@ jobs:
             --output "$RUNNER_TEMP/hepta-command-records/owner-test.json" --minimum-tests 1 -- \
             just test --locked --lib --no-tests fail \
               -p codex-hepta-cognitive-store -p codex-hepta-memory
+      - name: Check opt-in diagnostic feature strictly
+        id: diagnostic_strict
+        if: ${{ always() && steps.diagnostic_options.outputs.feature == 'true' && steps.candidate.outcome == 'success' && steps.native_ready.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/diagnostic-feature-clippy.json" -- \
+            cargo clippy --locked -p codex-hepta-memory --lib --example cognitive_store_perf \
+              --features cognitive-perf-observe -- -D warnings
+      - name: Test bounded diagnostic counters and cancellation
+        id: diagnostic_counters
+        if: ${{ always() && steps.diagnostic_options.outputs.feature == 'true' && steps.candidate.outcome == 'success' && steps.native_ready.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/diagnostic-counter-tests.json" --minimum-tests 3 -- \
+            just test --locked --lib -p codex-hepta-memory --features cognitive-perf-observe \
+              --no-tests fail -E 'test(cognitive_perf_observation::tests::)'
+      - name: Test diagnostic identity and output isolation
+        id: diagnostic_example
+        if: ${{ always() && steps.diagnostic_options.outputs.feature == 'true' && steps.candidate.outcome == 'success' && steps.native_ready.outcome == 'success' }}
+        working-directory: codex-rs
+        run: |
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/diagnostic-example-tests.json" --minimum-tests 2 -- \
+            cargo test --locked -p codex-hepta-memory --example cognitive_store_perf \
+              --features cognitive-perf-observe observation_tests::
+      - name: Observe maximum-retained diagnostic phases (not qualification)
+        if: ${{ always() && steps.diagnostic_options.outputs.feature == 'true' && steps.diagnostic_options.outputs.maximum == 'true' && steps.diagnostic_strict.outcome == 'success' && steps.diagnostic_counters.outcome == 'success' && steps.diagnostic_example.outcome == 'success' }}
+        working-directory: codex-rs
+        env:
+          HEPTA_COGNITIVE_PERF_RECORDS: "16384"
+          HEPTA_COGNITIVE_PERF_DIAGNOSTIC_OUTPUT: ${{ runner.temp }}/hepta-command-records/cognitive-perf-diagnostic-max-metrics.json
+        run: |
+          python3 ../scripts/hepta_ci_exec.py \
+            --output "$RUNNER_TEMP/hepta-command-records/cognitive-perf-diagnostic-max-command.json" --timeout-seconds 1200 -- \
+            cargo run --locked -p codex-hepta-memory --example cognitive_store_perf --features cognitive-perf-observe
       - name: Qualify cognitive child-process crash and reopen
         if: ${{ matrix.lane == 'source-head' && steps.owner_tests.outcome == 'success' }}
         working-directory: codex-rs

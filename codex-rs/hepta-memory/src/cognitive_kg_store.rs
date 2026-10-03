@@ -738,6 +738,10 @@ impl CognitiveStore {
         trigger_source: &SourceRevisionId,
         trigger_facts: &CanonicalFactSet,
     ) -> Result<CognitiveProjectionReceipt, CognitiveStoreError> {
+        #[cfg(feature = "cognitive-perf-observe")]
+        let observation = crate::cognitive_perf_observation::Guard::start(
+            crate::cognitive_perf_observation::Phase::Projection,
+        );
         let projection_scope = scope.projection_key();
         let projection_scope_exists: bool = sqlx::query_scalar(
             "SELECT EXISTS(
@@ -1060,22 +1064,24 @@ impl CognitiveStore {
                 "projection trigger source is not the revision's exact citation".to_string(),
             ));
         }
-        Ok(CognitiveProjectionReceipt {
-            generation: ProjectionGeneration(
-                u64::try_from(next).map_err(|_| {
+        let receipt =
+            CognitiveProjectionReceipt {
+                generation: ProjectionGeneration(u64::try_from(next).map_err(|_| {
                     CognitiveStoreError::Corrupt("negative KG generation".to_string())
-                })?,
-            ),
-            fact_set_sha256: trigger_facts.digest.clone(),
-            input_heads_sha256,
-            output_sha256,
-            generation_sha256,
-            publication_sha256,
-            entity_count: u64::try_from(trigger_facts.entities.len()).unwrap_or(u64::MAX),
-            relation_count: u64::try_from(trigger_facts.relations.len()).unwrap_or(u64::MAX),
-            node_count: u64::try_from(nodes.len()).unwrap_or(u64::MAX),
-            edge_count: u64::try_from(edges.len()).unwrap_or(u64::MAX),
-        })
+                })?),
+                fact_set_sha256: trigger_facts.digest.clone(),
+                input_heads_sha256,
+                output_sha256,
+                generation_sha256,
+                publication_sha256,
+                entity_count: u64::try_from(trigger_facts.entities.len()).unwrap_or(u64::MAX),
+                relation_count: u64::try_from(trigger_facts.relations.len()).unwrap_or(u64::MAX),
+                node_count: u64::try_from(nodes.len()).unwrap_or(u64::MAX),
+                edge_count: u64::try_from(edges.len()).unwrap_or(u64::MAX),
+            };
+        #[cfg(feature = "cognitive-perf-observe")]
+        observation.finish();
+        Ok(receipt)
     }
 }
 

@@ -35,6 +35,16 @@ const RECOVERY_LOGICAL_BUDGET_BYTES: usize = 128 * 1024 * 1024;
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
+    #[cfg(feature = "cognitive-perf-observe")]
+    let diagnostic_output = diagnostic_output_path(
+        std::env::var_os("HEPTA_COGNITIVE_PERF_OUTPUT"),
+        std::env::var_os("HEPTA_COGNITIVE_PERF_DIAGNOSTIC_OUTPUT"),
+    )?;
+    #[cfg(feature = "cognitive-perf-observe")]
+    let observation_identity = diagnostic_identity(
+        std::env::var("SOURCE_SHA").ok().as_deref(),
+        std::env::var("TESTED_SHA").ok().as_deref(),
+    );
     let requested = std::env::var("HEPTA_COGNITIVE_PERF_RECORDS")
         .ok()
         .map(|value| value.parse::<usize>())
@@ -64,6 +74,8 @@ async fn main() -> Result<(), Box<dyn Error>> {
     let mut remember_us = Vec::with_capacity(active_heads);
     let mut correction_us = Vec::with_capacity(requested - active_heads);
     let mut heads = Vec::<MemoryRevisionRecord>::with_capacity(active_heads);
+    #[cfg(feature = "cognitive-perf-observe")]
+    let observation_baseline = codex_hepta_memory::cognitive_perf_observation::snapshot();
     let workload_started = Instant::now();
     for index in 0..requested {
         let head_index = index % active_heads;
@@ -135,6 +147,18 @@ async fn main() -> Result<(), Box<dyn Error>> {
                 "committed {} of {requested} retained revisions across {} active heads",
                 index + 1,
                 heads.len(),
+            );
+            #[cfg(feature = "cognitive-perf-observe")]
+            eprintln!(
+                "{}",
+                json!({
+                    "schema": "hepta.perf-durable.stage-observation.v1",
+                    "diagnosticOnly": true,
+                    "identity": observation_identity,
+                    "requestedRecords": requested,
+                    "completedRecords": index + 1,
+                    "phases": codex_hepta_memory::cognitive_perf_observation::since(&observation_baseline),
+                })
             );
         }
     }
@@ -257,10 +281,28 @@ async fn main() -> Result<(), Box<dyn Error>> {
         "exactRecoveryStateDigest": anchor.state_digest.as_str(),
         "exactCutPreserved": true,
     });
+    #[cfg(feature = "cognitive-perf-observe")]
+    let metrics = {
+        let mut diagnostic = metrics;
+        diagnostic["profile"] = json!("PERF-DURABLE-DIAGNOSTIC");
+        diagnostic["diagnosticOnly"] = json!(true);
+        diagnostic["sourceSha"] = observation_identity["sourceSha"].clone();
+        diagnostic["testedSha"] = observation_identity["testedSha"].clone();
+        diagnostic["identityUnverified"] = json!(true);
+        diagnostic["identityScope"] = json!("environment_only");
+        diagnostic["phaseObservation"] = json!(
+            codex_hepta_memory::cognitive_perf_observation::since(&observation_baseline)
+        );
+        diagnostic
+    };
     let rendered = serde_json::to_string_pretty(&metrics)?;
     println!("{rendered}");
 
-    if let Some(output) = std::env::var_os("HEPTA_COGNITIVE_PERF_OUTPUT") {
+    #[cfg(feature = "cognitive-perf-observe")]
+    let output = diagnostic_output;
+    #[cfg(not(feature = "cognitive-perf-observe"))]
+    let output = std::env::var_os("HEPTA_COGNITIVE_PERF_OUTPUT");
+    if let Some(output) = output {
         let output = PathBuf::from(output);
         if let Some(parent) = output.parent() {
             std::fs::create_dir_all(parent)?;
@@ -321,4 +363,80 @@ fn file_len(path: &Path) -> u64 {
 fn now_unix_seconds() -> Result<i64, Box<dyn Error>> {
     let seconds = SystemTime::now().duration_since(UNIX_EPOCH)?.as_secs();
     Ok(i64::try_from(seconds)?)
+}
+
+#[cfg(feature = "cognitive-perf-observe")]
+fn diagnostic_identity(source: Option<&str>, tested: Option<&str>) -> serde_json::Value {
+    let literal = |value: &&str| {
+        value.len() == 40
+            && value
+                .bytes()
+                .all(|byte| byte.is_ascii_digit() || (b'a'..=b'f').contains(&byte))
+    };
+    // Environment strings are labels, not proof. The external hepta_ci_exec
+    // record must independently validate the clean tested checkout and lane.
+    // Invalid labels are omitted, rather than reflecting arbitrary env data.
+    json!({
+        "sourceSha": source.filter(literal),
+        "testedSha": tested.filter(literal),
+        "identityUnverified": true,
+        "identityScope": "environment_only",
+    })
+}
+
+#[cfg(feature = "cognitive-perf-observe")]
+fn diagnostic_output_path(
+    normal: Option<OsString>,
+    diagnostic: Option<OsString>,
+) -> Result<Option<OsString>, Box<dyn Error>> {
+    if normal.is_some() {
+        return Err("diagnostic builds cannot populate normal PERF-DURABLE output".into());
+    }
+    Ok(diagnostic)
+}
+
+#[cfg(all(test, feature = "cognitive-perf-observe"))]
+mod observation_tests {
+    use super::*;
+    use pretty_assertions::assert_eq;
+
+    #[test]
+    fn absent_invalid_and_valid_labels_never_self_authenticate() {
+        for invalid in [
+            None,
+            Some("main"),
+            Some("not-a-commit"),
+            Some("0123456789012345678901234567890123456789\n"),
+        ] {
+            let identity = diagnostic_identity(invalid, invalid);
+            assert!(identity["sourceSha"].is_null());
+            assert!(identity["testedSha"].is_null());
+            assert_eq!(identity["identityUnverified"], true);
+        }
+        let identity = diagnostic_identity(
+            Some("0123456789012345678901234567890123456789"),
+            Some("abcdefabcdefabcdefabcdefabcdefabcdefabcd"),
+        );
+        assert!(identity["sourceSha"].is_string());
+        assert_eq!(identity["identityUnverified"], true);
+        assert_eq!(identity["identityScope"], "environment_only");
+    }
+
+    #[test]
+    fn diagnostic_output_cannot_be_mistaken_for_normal_profile() -> Result<(), Box<dyn Error>> {
+        let path = OsString::from("diagnostic-metrics.json");
+        assert!(
+            diagnostic_output_path(
+                Some(OsString::from("normal-metrics.json")),
+                Some(path.clone())
+            )
+            .is_err()
+        );
+        assert_eq!(
+            diagnostic_output_path(None, Some(path.clone()))?,
+            Some(path)
+        );
+        assert_eq!(diagnostic_output_path(None, None)?, None);
+        Ok(())
+    }
 }
