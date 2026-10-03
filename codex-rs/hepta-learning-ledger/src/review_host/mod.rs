@@ -33,7 +33,6 @@ pub use transfer::ReviewDatasetWireV1;
 pub use transfer::ReviewEvidenceWireV1;
 pub use transfer::ReviewSignerWireV1;
 pub use transfer::ReviewTrustWireV1;
-pub use transfer::decode_review_payload_hex;
 
 use std::collections::BTreeMap;
 use std::path::Path;
@@ -457,6 +456,3 @@ pub fn admit_fixed_custody_program(policy: &Path) -> ReviewResult<ReviewTrustWir
         &trust.distribution,
     ))
 }
-
-pub use crate::open_root_review_input;
-pub use crate::read_root_review_input;
