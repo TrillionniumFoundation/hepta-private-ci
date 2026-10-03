@@ -193,13 +193,13 @@ async fn execute_publication_request(
         Sha256Digest::for_bytes(owner_identity.as_bytes()).as_str()
     );
     let lease = store
-        .claim_publication_owner(&owner_id, current_time_millis()?, 120_000)
+        .claim_publication_owner(&owner_id, 120_000)
         .await
         .map_err(evidence_error)?;
     match action {
         EvidencePublicationActionV1::Prepare { maximum_intents } => {
             let batch = store
-                .prepare_publication_batch(&lease, current_time_millis()?, maximum_intents)
+                .prepare_publication_batch(&lease, maximum_intents)
                 .await
                 .map_err(evidence_error)?;
             Ok(serde_json::to_string(&batch)?)
@@ -286,7 +286,6 @@ async fn execute_publication_request(
                     &batch_id,
                     &digest,
                     &config.backend_identity_sha256,
-                    current_time_millis()?,
                 )
                 .await
                 .map_err(evidence_error)?;
@@ -311,11 +310,7 @@ async fn execute_publication_request(
                         predecessor,
                     )?;
                     let cas_now = current_time_millis()?;
-                    validate_publication_freshness(
-                        &proposed,
-                        cas_now,
-                        config.frontier_max_age_ms,
-                    )?;
+                    validate_publication_freshness(&proposed, cas_now, config.frontier_max_age_ms)?;
                     validate_backup_publication(
                         &backup,
                         &proposed,
@@ -329,7 +324,6 @@ async fn execute_publication_request(
                             &batch_id,
                             &digest,
                             &config.backend_identity_sha256,
-                            current_time_millis()?,
                         )
                         .await
                         .map_err(evidence_error)?;
@@ -347,7 +341,7 @@ async fn execute_publication_request(
                     // A failed local status update must not erase the durable
                     // Dispatching fence or replace the original backend error.
                     let status_result = store
-                        .mark_publication_indeterminate(&lease, &batch_id, current_time_millis()?)
+                        .mark_publication_indeterminate(&lease, &batch_id)
                         .await;
                     return Err(recovery_required(&format!(
                         "publication unresolved: {error}; durable-status update: {status_result:?}"
@@ -365,12 +359,7 @@ async fn execute_publication_request(
                 predecessor,
             )?;
             store
-                .acknowledge_publication(
-                    &lease,
-                    &batch_id,
-                    &acknowledgement,
-                    current_time_millis()?,
-                )
+                .acknowledge_publication(&lease, &batch_id, &acknowledgement)
                 .await
                 .map_err(evidence_error)?;
             Ok(serde_json::to_string(&acknowledgement)?)

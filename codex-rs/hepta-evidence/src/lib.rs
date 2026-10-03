@@ -42,6 +42,7 @@ mod provider_store;
     reason = "publication retains explicit state decoding and bounded non-empty query invariants while the product publisher is qualified"
 )]
 mod publication;
+mod publication_time;
 mod qualification {
     /// SQLx 0.9 requires an explicit safety witness for runtime-owned SQL text.
     /// This adapter is scoped to qualification.rs, whose dynamic strings only

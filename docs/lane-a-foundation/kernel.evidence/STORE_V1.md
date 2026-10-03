@@ -201,3 +201,36 @@ backend exists. Exact-candidate workflow success, independent storage
 deployment, real target-platform backup/restore and power-loss qualification,
 independent acceptance, canary and release remain separate receipt-bearing
 gates.
+
+## Publication writer-time API migration
+
+The five publication write APIs (`claim_publication_owner`,
+`prepare_publication_batch`, `mark_publication_dispatched`,
+`mark_publication_indeterminate`, and `acknowledge_publication`) no longer accept
+caller-sampled time. This is a Rust source API change; callers remove that
+argument without substituting a timestamp, capability or configuration flag.
+The store samples its fallible host wall clock after `BEGIN IMMEDIATE` admits
+the writer, so a timestamp captured before a pool/SQLite writer wait cannot
+extend an expired owner or authorize a late dispatch marker.
+
+The persisted owner timestamp is checked as a clock floor and advances with
+successful publication mutations in the same transaction. Affected batches
+retain their own timestamp-floor checks; new preparation also checks the latest
+accepted frontier's time. Pre-commit failure or cancellation rolls back the owner
+update along with the batch/projection. An interruption or storage error
+overlapping `COMMIT` may have a committed or unknown result: reread the exact
+durable owner and batch before deciding recovery; it never authorizes a provider
+resend. Owner identity, generation, exact lease expiry,
+batch identity, immutable snapshots and acknowledgement matching are unchanged.
+Clock range/expiry overflow, backward time behind these persisted floors and
+exact lease expiry fail closed. A private test clock exists only in unit-test
+builds; production callers cannot inject a clock through the public API.
+
+This host clock is not independent attestation. There is no schema change or
+backfill claiming a maximum timestamp over all pre-repair terminal history.
+An already affected legacy batch is checked when it is used; the owner floor
+then tracks successful admissions going forward. A process or restored database
+still needs the existing independent trust/anti-rollback controls. Sampling at
+writer admission does not authorize an external provider effect or prove that
+Agentd's authority/control files remain current across its later awaited fence
+and external CAS boundary; that separate final-use gap remains open.

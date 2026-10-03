@@ -26,6 +26,8 @@ impl HeptaEvidenceStore {
             pool,
             path,
             provider_effect_boundary_lock: Arc::new(tokio::sync::Mutex::new(())),
+            #[cfg(test)]
+            publication_test_time_ms: None,
         })
     }
 }

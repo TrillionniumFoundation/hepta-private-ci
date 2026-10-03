@@ -69,6 +69,8 @@ pub struct HeptaEvidenceStore {
     /// Serializes adapter-boundary operations for clones of one opened store.
     /// Separate opens/processes still require provider-owned idempotency.
     pub(crate) provider_effect_boundary_lock: Arc<tokio::sync::Mutex<()>>,
+    #[cfg(test)]
+    pub(crate) publication_test_time_ms: Option<Arc<std::sync::atomic::AtomicU64>>,
 }
 
 impl HeptaEvidenceStore {
@@ -94,6 +96,8 @@ impl HeptaEvidenceStore {
             pool,
             path,
             provider_effect_boundary_lock: Arc::new(tokio::sync::Mutex::new(())),
+            #[cfg(test)]
+            publication_test_time_ms: None,
         })
     }
 
@@ -120,6 +124,8 @@ impl HeptaEvidenceStore {
             pool,
             path,
             provider_effect_boundary_lock: Arc::new(tokio::sync::Mutex::new(())),
+            #[cfg(test)]
+            publication_test_time_ms: None,
         })
     }
 
