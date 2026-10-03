@@ -2,6 +2,9 @@
 use super::*;
 use codex_hepta_agent_components::learning_ledger::open_root_review_input;
 use std::fs::File;
+use std::io::Read;
+use std::io::Seek;
+use std::io::SeekFrom;
 use std::os::unix::fs::MetadataExt;
 type Identity = (u64, u64, u64, i64, i64, i64, i64);
 fn identity(meta: &std::fs::Metadata) -> Identity {
@@ -31,6 +34,12 @@ impl VerifiedWorker {
         let mut file =
             open_root_review_input(&source.path).map_err(|error| invalid(error.to_string()))?;
         let before = identity(&file.metadata()?);
+        let mut magic = [0_u8; 4];
+        file.read_exact(&mut magic)?;
+        if magic != *b"\x7fELF" {
+            return Err(invalid("original protected Worker input is not ELF"));
+        }
+        file.seek(SeekFrom::Start(0))?;
         if Digest32::of_reader(&mut file, 512 * 1024 * 1024)
             .map_err(|error| invalid(error.to_string()))?
             != expected
@@ -56,3 +65,7 @@ impl VerifiedWorker {
         Ok(())
     }
 }
+
+#[cfg(test)]
+#[path = "local_cpu_parameter_root_worker_tests_v2.rs"]
+mod tests;
