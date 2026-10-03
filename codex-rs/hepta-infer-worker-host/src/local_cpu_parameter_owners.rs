@@ -29,6 +29,26 @@ pub trait CpuNeuronGeneratorIssuancePortV2: Send + Sync {
                 + 'a,
         >,
     >;
+    /// Read only a completed publication for these exact original frozen facts.
+    /// Missing or unknown output grants nothing and must never trigger issuance.
+    fn observe_publication<'a>(
+        &'a self,
+        _candidate: &'a AgentdSelfIterationCandidateV1,
+    ) -> std::pin::Pin<
+        Box<
+            dyn std::future::Future<
+                    Output = Result<
+                        Option<
+                            codex_hepta_agent_components::learning_ledger::SignedLearningEvidenceV1,
+                        >,
+                        AgentdError,
+                    >,
+                > + Send
+                + 'a,
+        >,
+    > {
+        Box::pin(std::future::ready(Ok(None)))
+    }
 }
 
 #[cfg(target_os = "linux")]

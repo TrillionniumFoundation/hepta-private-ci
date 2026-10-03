@@ -143,29 +143,50 @@ async fn actual_root_process_and_route_binding_returns_only_original_evidence() 
         payload_digest: Digest32::of_bytes(payload),
         signature: [0; 64],
     };
-    let response = FrozenGeneratorResponseV1::Granted(Box::new(
-        codex_hepta_agent_components::learning_ledger::ReviewEvidenceWireV1::from_native(&evidence),
-    ));
+    let granted = || {
+        FrozenGeneratorResponseV1::Granted(Box::new(
+            codex_hepta_agent_components::learning_ledger::ReviewEvidenceWireV1::from_native(
+                &evidence,
+            ),
+        ))
+    };
+    let responses = [
+        granted(),
+        granted(),
+        FrozenGeneratorResponseV1::Refused(FrozenGeneratorFailureV1 {
+            error: FrozenGeneratorErrorCodeV1::Pending,
+        }),
+    ];
     let server = tokio::spawn(async move {
-        let (mut stream, _) = listener.accept().await.unwrap();
-        let mut request = Vec::new();
-        stream.read_to_end(&mut request).await.unwrap();
-        assert_eq!(
-            decode_frozen_generator_request_v1(&request)
-                .unwrap()
-                .payload()
-                .unwrap(),
-            payload
-        );
-        stream
-            .write_all(&encode_frozen_generator_response_v1(&response).unwrap())
-            .await
-            .unwrap();
-        stream.write_all(b"\n").await.unwrap();
+        for (index, response) in responses.into_iter().enumerate() {
+            let (mut stream, _) = listener.accept().await.unwrap();
+            let mut request = Vec::new();
+            stream.read_to_end(&mut request).await.unwrap();
+            let decoded = match decode_frozen_generator_operation_v1(&request).unwrap() {
+                FrozenGeneratorOperationV1::Issue(request) => {
+                    assert_eq!(index, 0);
+                    request.payload().unwrap()
+                }
+                FrozenGeneratorOperationV1::Observe(request) => {
+                    assert!(index > 0);
+                    request.payload().unwrap()
+                }
+            };
+            assert_eq!(decoded, payload);
+            stream
+                .write_all(&encode_frozen_generator_response_v1(&response).unwrap())
+                .await
+                .unwrap();
+            stream.write_all(b"\n").await.unwrap();
+        }
     });
-    let returned = client.exchange(payload).await.unwrap();
+    assert_eq!(client.exchange(payload).await.unwrap(), evidence);
+    assert_eq!(
+        client.observe_payload(payload).await.unwrap(),
+        Some(evidence)
+    );
+    assert!(client.observe_payload(payload).await.unwrap().is_none());
     server.await.unwrap();
-    assert_eq!(returned, evidence);
     // The transport cannot reinterpret a changed Root route as the old pin.
     std::fs::write(&route_path, b"{}").unwrap();
     assert!(client.exchange(payload).await.is_err());

@@ -46,20 +46,52 @@ impl CpuNeuronFrozenGeneratorClientV1 {
     }
 
     async fn exchange(&self, payload: &[u8]) -> Result<SignedLearningEvidenceV1, AgentdError> {
-        let route = Route::read(&self.route_path, self.route_digest).map_err(protocol)?;
         let request = encode_frozen_generator_request_v1(
             &FrozenGeneratorRequestV1::from_payload(payload).map_err(protocol)?,
         )
         .map_err(protocol)?;
+        self.exchange_payload(payload, &request, PublicationMode::Issue)
+            .await?
+            .ok_or_else(|| AgentdError::Protocol("frozen Generator issuance absent".into()))
+    }
+
+    async fn observe_payload(
+        &self,
+        payload: &[u8],
+    ) -> Result<Option<SignedLearningEvidenceV1>, AgentdError> {
+        let request = encode_frozen_generator_observation_request_v2(
+            &FrozenGeneratorObservationRequestV2::from_payload(payload).map_err(protocol)?,
+        )
+        .map_err(protocol)?;
+        self.exchange_payload(payload, &request, PublicationMode::Observe)
+            .await
+    }
+
+    async fn exchange_payload(
+        &self,
+        payload: &[u8],
+        request: &[u8],
+        mode: PublicationMode,
+    ) -> Result<Option<SignedLearningEvidenceV1>, AgentdError> {
+        let route = Route::read(&self.route_path, self.route_digest).map_err(protocol)?;
         let exchange = async {
             validate_issuer_socket(&route.socket, /*issuer_uid*/ 0).map_err(protocol)?;
             let mut stream = UnixStream::connect(&route.socket).await?;
-            let response = exchange_connected(&mut stream, &route, &request).await?;
+            let response = exchange_connected(&mut stream, &route, request).await?;
             // Recheck the independently pinned route after the actual exchange.
             Route::read(&self.route_path, self.route_digest).map_err(protocol)?;
             let wire = match response {
                 FrozenGeneratorResponseV1::Granted(wire) => wire,
                 FrozenGeneratorResponseV1::Refused(refusal) => {
+                    if matches!(mode, PublicationMode::Observe)
+                        && matches!(
+                            refusal.error,
+                            FrozenGeneratorErrorCodeV1::Pending
+                                | FrozenGeneratorErrorCodeV1::Unavailable
+                        )
+                    {
+                        return Ok(None);
+                    }
                     return Err(AgentdError::Protocol(format!(
                         "independent frozen Generator refused: {:?}",
                         refusal.error
@@ -75,7 +107,7 @@ impl CpuNeuronFrozenGeneratorClientV1 {
                     "independent frozen Generator evidence binding mismatch".into(),
                 ));
             }
-            Ok(evidence)
+            Ok(Some(evidence))
         };
         tokio::time::timeout(
             Duration::from_millis(route.maximum_request_duration_ms),
@@ -110,6 +142,29 @@ impl CpuNeuronGeneratorIssuancePortV2 for CpuNeuronFrozenGeneratorClientV1 {
             self.exchange(&payload).await
         })
     }
+    fn observe_publication<'a>(
+        &'a self,
+        candidate: &'a AgentdSelfIterationCandidateV1,
+    ) -> Pin<
+        Box<dyn Future<Output = Result<Option<SignedLearningEvidenceV1>, AgentdError>> + Send + 'a>,
+    > {
+        Box::pin(async move {
+            if candidate.round.is_none()
+                || candidate.canonical_envelope.is_none()
+                || candidate.model_assessment.is_none()
+            {
+                return Err(AgentdError::Invalid("installed Generator observation requires original sealed round and full policy/model facts".into()));
+            }
+            self.observe_payload(&self_iteration_frozen_candidate_payload_v1(candidate)?)
+                .await
+        })
+    }
+}
+
+#[derive(Clone, Copy)]
+enum PublicationMode {
+    Issue,
+    Observe,
 }
 
 async fn exchange_connected(
