@@ -5,12 +5,14 @@ from pathlib import Path
 
 from PIL import Image, ImageOps
 
-source, destination = map(Path, sys.argv[1:3])
+raw = sys.argv[-1] == "--raw"
+arguments = sys.argv[:-1] if raw else sys.argv
+source, destination = map(Path, arguments[1:3])
 with Image.open(source) as image:
     if image.format != "PNG" or image.width * image.height > 8_000_000:
         raise ValueError("Expected a bounded actual host PNG")
-    if len(sys.argv) == 7:
-        left, top, width, height = map(int, sys.argv[3:])
+    if len(arguments) == 7:
+        left, top, width, height = map(int, arguments[3:])
         if not (
             0 <= left < image.width
             and 0 <= top < image.height
@@ -19,9 +21,12 @@ with Image.open(source) as image:
         ):
             raise ValueError("Observed OCR region must be fully inside the real PNG")
         image = image.crop((left, top, left + width, top + height))
-    elif len(sys.argv) != 3:
+    elif len(arguments) != 3:
         raise ValueError("Expected one image and optionally one observed region")
-    pixels = ImageOps.autocontrast(ImageOps.invert(ImageOps.grayscale(image)))
-    pixels.resize((pixels.width * 3, pixels.height * 3), Image.Resampling.BICUBIC).save(
-        destination, format="PNG"
-    )
+    if raw:
+        image.save(destination, format="PNG")
+    else:
+        pixels = ImageOps.autocontrast(ImageOps.invert(ImageOps.grayscale(image)))
+        pixels.resize(
+            (pixels.width * 3, pixels.height * 3), Image.Resampling.BICUBIC
+        ).save(destination, format="PNG")

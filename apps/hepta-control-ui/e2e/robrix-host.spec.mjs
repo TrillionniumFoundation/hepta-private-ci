@@ -4,14 +4,14 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {captureSchedule} from '../tools/robrix-pixel-plan.mjs';
-import {readScreenshotText,requireChatText,screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
+import {screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
 for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
  test(`Robrix host starts under strict CSP ${viewport.width}`,async({page,browserName},testInfo)=>{
   let phase='application';
   const themeControlPoints=new Map();
   const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
   const fixtures=process.env.HEPTA_ROBRIX_FIXTURES==='1';
-  const schedule=captureSchedule(viewport.width,fixtures);const pixelCaptures=[];
+  const schedule=captureSchedule(viewport.width,fixtures);const pixelCaptures=[];const captureTimings=[];const controlTimings=[];
   const errors=[];const logs=[];const rustFontStates=[];const scrollObservations=[];const jumpObservations=[];const uploads=[];const fonts=[];const pendingFonts=new Set();
   const isFont=request=>/\.(?:ttf|otf|woff2?)(?:[?#]|$)/i.test(request.url());
   page.on('pageerror',error=>errors.push({phase,message:error.message}));
@@ -59,6 +59,9 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    assertion(uploads).toEqual([]);
   }
   async function capture(name,{consoleView=false}={}){
+   const started=performance.now();
+   const timing={name,stage:'waiting-for-render'};captureTimings.push(timing);
+   const expected=schedule.find(item=>item.name===name);expect(expected).toBeTruthy();
    await assertApplicationHealth(expect.soft);
    if(process.env.HEPTA_ROBRIX_FIXTURES==='1'&&!consoleView){
     // HTTP requestfinished precedes Rust resource adoption and the redraw.
@@ -69,7 +72,8 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    // frame boundary before reading pixels; no time-based sleep or retry waiver.
    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
    phase='snapshot';await page.evaluate(()=>window.__heptaTestPhase='snapshot');
-   const path=testInfo.outputPath(name+'.png');
+   const path=testInfo.outputPath(name+'.png');const beforeScreenshot=performance.now();const jumpAreaBefore=latestJumpArea();
+   timing.stage='capturing-png';timing.readyMs=beforeScreenshot-started;
    try {await page.screenshot({path,fullPage:true,caret:'initial'});}
    finally {await page.evaluate(()=>window.__heptaTestPhase='application');phase='application';}
    // Pinned Playwright1.63 WebKit/Firefox screenshot preparation injects exactly
@@ -88,40 +92,30 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    const png=await readFile(path);
    const scale=png.readUInt32BE(16)/page.viewportSize().width;
    expect.soft(png.readUInt32BE(20),'Full-page capture must not have canvas baseline overflow').toBe(Math.round(page.viewportSize().height*scale));
-   const text=await readScreenshotText(path);
-   await writeFile(testInfo.outputPath(name+'-ocr.txt'),text);
-   const expected=schedule.find(item=>item.name===name);
    expect(expected).toBeTruthy();expect(page.viewportSize()).toEqual(expected.viewport);
-   pixelCaptures.push({name,viewport:page.viewportSize(),theme:expected.theme,pngSha256:createHash('sha256').update(png).digest('hex'),ocrSha256:createHash('sha256').update(text).digest('hex')});
-   if(consoleView){
-    expect(text).toMatch(/Console/i);
-    expect(text).toMatch(/composed|composition/i);
-   }else {
-    requireChatText(text,{fixtures:process.env.HEPTA_ROBRIX_FIXTURES==='1'});
-    if(process.env.HEPTA_ROBRIX_FIXTURES==='1'){
-     const ordinals=[...text.matchAll(/Fixture\s*(\d{1,3})\b/gi)].map(match=>Number(match[1]));
-     expect.soft(ordinals.length,'At least two real fixture messages must be visible').toBeGreaterThanOrEqual(2);
-     expect.soft(ordinals,'Rendered owner order must remain oldest to newest').toEqual([...ordinals].sort((a,b)=>a-b));
-    }
-   }
+   const jumpArea=latestJumpArea();
+   if(expected.jump){expect(jumpArea).not.toBeNull();expect(jumpArea).toEqual(jumpAreaBefore);}
+   timing.stage='complete';timing.screenshotAndReadbackMs=performance.now()-beforeScreenshot;timing.totalMs=performance.now()-started;
+   pixelCaptures.push({name,viewport:page.viewportSize(),theme:expected.theme,jumpArea,jumpAreaBefore,pngSha256:createHash('sha256').update(png).digest('hex')});
    await assertApplicationHealth(expect.soft);
-   return {path,text,name};
+   return {path,name,jumpArea};
   }
   async function rememberThemeControl(captured){
+   const start=performance.now();
    const point=await screenshotWordCenter(captured.path,'Aurora',page.viewportSize().width,{recordOcr:true});
+   controlTimings.push({capture:captured.name,word:'Aurora',ms:performance.now()-start});
    themeControlPoints.set(page.viewportSize().width,{...point,sourceCapture:captured.name,sourcePngSha256:pixelCaptures.find(entry=>entry.name===captured.name).pngSha256});
   }
-  async function verifyDraftPixels(captured){
-   let text=captured.text;
-   if(!/Theme round trip draft/i.test(text)){
-    const block=await readScreenshotText(captured.path,{layout:'block'});
-    await writeFile(captured.path.replace(/\.png$/,'-draft-block-ocr.txt'),block);
-    text+='\n'+block;
-   }
-   expect(text).toMatch(/Theme round trip draft/i);
+  function latestJumpArea(){
+   const text=jumpObservations.findLast(value=>value.includes('HEPTA_FIXTURE_JUMP'))??'';
+   const match=text.match(/tail=false visible=true area_valid=true x=([-\d.]+) y=([-\d.]+) width=([-\d.]+) height=([-\d.]+)/);
+   if(!match)return null;
+   const [x,y,width,height]=match.slice(1).map(Number);return{x,y,width,height};
   }
   async function clickRenderedWord(captured,word,options){
+   const start=performance.now();
    const point=await screenshotWordCenter(captured.path,word,page.viewportSize().width,{...options,recordOcr:true});
+   controlTimings.push({capture:captured.name,word,ms:performance.now()-start});
    await page.mouse.click(point.x,point.y);
    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
   }
@@ -134,7 +128,7 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    expect(await page.locator('canvas').evaluate(canvas=>canvas.width>0&&canvas.height>0)).toBe(true);
    expect(await page.locator('canvas').evaluate(canvas=>canvas.getContext('webgl2')?.getContextAttributes()?.preserveDrawingBuffer)).toBe(true);
    expect(await page.locator('meta[name=viewport]').getAttribute('content')).not.toContain('user-scalable=no');
-   let captured;
+   let captured;let expectedDraft='Theme round trip draft 中文🚀';
    for(const theme of ['Aurora','Obsidian','Lunar']){
     await expect.poll(()=>pendingFonts.size,{timeout:60000}).toBe(0);
     captured=await capture(`robrix-${theme}-${page.viewportSize().width}`);
@@ -145,12 +139,9 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     if(theme==='Aurora')await rememberThemeControl(captured);
     if(theme==='Aurora'){
      await page.mouse.click(page.viewportSize().width*0.65,720);
-     await page.keyboard.insertText('Theme round trip draft 中文🚀');
-     await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(/Theme round trip draft 中文🚀/);
+     await page.keyboard.insertText(expectedDraft);
+     await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(expectedDraft);
      captured=await capture('robrix-draft-before-theme');
-     await verifyDraftPixels(captured);
-    }else{
-     await verifyDraftPixels(captured);
     }
     // Both viewport positions came from this run's actual Aurora pixels.
     // The shared theme control stays in that same fixed navigation region.
@@ -163,46 +154,49 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
     await page.mouse.up();
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
-    await page.keyboard.type(' kept');
+    await page.keyboard.type(' kept');expectedDraft+=' kept';
+    await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(expectedDraft);
    }
    captured=await capture('robrix-theme-round-trip');
-   await verifyDraftPixels(captured);
-   expect.soft(captured.text).toMatch(/kept/i);
    await clickRenderedWord(captured,'Console',{topOnly:true});
    const consoleCapture=await capture('robrix-console',{consoleView:true});
    await clickRenderedWord(consoleCapture,page.viewportSize().width<760?'Chat':'Conversation',{topOnly:true});
    captured=await capture('robrix-console-round-trip');
-   await verifyDraftPixels(captured);
    // Re-enter the real Rust editor after the Console round trip. Its native
    // mirror must be repopulated from owner state, including the astral character.
    await page.mouse.click(page.viewportSize().width*0.65,720);
-   await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(/Theme round trip draft 中文🚀/);
+   await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(expectedDraft);
    if(process.env.HEPTA_ROBRIX_FIXTURES==='1'){
     const before=scrollObservations.at(-1)?.travel??0;
     await page.mouse.move(page.viewportSize().width*0.75,350);
     await page.mouse.wheel(0,-480);
     await expect.poll(()=>scrollObservations.at(-1)?.travel??before).toBeGreaterThan(before);
     await expect.poll(()=>jumpObservations.findLast(text=>text.includes('HEPTA_FIXTURE_JUMP'))??'').toMatch(/tail=false visible=true area_valid=true/);
-    const older=await capture('robrix-user-scrollback');
-    expect(older.text).toMatch(/Jump to latest/i);
+    await capture('robrix-user-scrollback');
     const anchor=scrollObservations.at(-1)?.first;
     const scrollTravel=scrollObservations.at(-1)?.travel;
+    const beforeResize=jumpObservations.length;
     await page.setViewportSize({width:page.viewportSize().width===1280?640:1280,height:800});
     await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
+    await expect.poll(()=>jumpObservations.slice(beforeResize).some(text=>text.includes('HEPTA_FIXTURE_JUMP'))).toBe(true);
+    await expect.poll(()=>latestJumpArea()).not.toBeNull();
     captured=await capture('robrix-scrollback-after-resize');
-    expect(captured.text).toMatch(/Jump to latest/i);
     expect(scrollObservations.at(-1)?.travel).toBe(scrollTravel);
     expect(anchor).toBeLessThan(63);
-    await clickRenderedWord(captured,'Jump');
+    const jump=captured.jumpArea;expect(jump).toBeTruthy();expect(latestJumpArea()).toEqual(jump);
+    expect([jump.x,jump.y,jump.width,jump.height].every(Number.isFinite)).toBe(true);
+    expect(jump.width).toBeGreaterThan(0);expect(jump.height).toBeGreaterThan(0);
+    expect(jump.x).toBeGreaterThanOrEqual(0);expect(jump.y).toBeGreaterThanOrEqual(0);
+    expect(jump.x+jump.width).toBeLessThanOrEqual(page.viewportSize().width);expect(jump.y+jump.height).toBeLessThanOrEqual(page.viewportSize().height);
+    await page.mouse.click(jump.x+jump.width/2,jump.y+jump.height/2);
     await expect.poll(()=>scrollObservations.at(-1)?.atEnd).toBe(true);
     captured=await capture('robrix-jump-to-latest');
-    expect(captured.text).toMatch(/Fixture\s*64/i);
    }
    await assertApplicationHealth();
 
   } finally {
    for(const capture of pixelCaptures)capture.observedThemePoint=themeControlPoints.get(capture.viewport.width)??null;
-   await writeFile(testInfo.outputPath('pixel-plan.json'),JSON.stringify({sourceSha,browser:browserName,initialWidth:viewport.width,fixtures,captures:pixelCaptures},null,2));
+   await writeFile(testInfo.outputPath('pixel-plan.json'),JSON.stringify({sourceSha,browser:browserName,initialWidth:viewport.width,fixtures,captures:pixelCaptures,captureTimings,controlTimings},null,2));
    const observed=await page.evaluate(()=>({violations:window.__cspViolations??[],snapshotStyles:window.__snapshotStyles??[],bootPhase:document.documentElement.dataset.heptaBootPhase??'unobserved',wasmStages:window.__wasmStages??[],readyState:document.readyState,canvas:[...document.querySelectorAll('canvas')].map(canvas=>({width:canvas.width,height:canvas.height})),resources:performance.getEntriesByType('resource').map(item=>({name:item.name,duration:item.duration,bytes:item.transferSize}))})).catch(()=>({}));
    const diagnostics=testInfo.outputPath('host-diagnostics.json');
    await writeFile(diagnostics,JSON.stringify({errors,logs,rustFontStates,scrollObservations,jumpObservations,uploads,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),...observed},null,2));

@@ -21,7 +21,23 @@ export async function prepareObservedControlForOcr(path,output,point,viewport){
  const top=Math.max(0,Math.floor((point.y-28)*scale));
  const region={left,top,width:Math.min(width-left,Math.ceil(280*scale)),height:Math.min(height-top,Math.ceil(56*scale)),observedPoint:point,viewport};
  await run('python3',[fileURLToPath(new URL('./prepare-ocr-pixels.py',import.meta.url)),path,output,...[region.left,region.top,region.width,region.height].map(String)],{timeout:20000,maxBuffer:65536});
- return region;
+ const rawPath=output.replace(/\.png$/,'-raw.png');
+ await run('python3',[fileURLToPath(new URL('./prepare-ocr-pixels.py',import.meta.url)),path,rawPath,...[region.left,region.top,region.width,region.height].map(String),'--raw'],{timeout:20000,maxBuffer:65536});
+ const result={...region,rawPath};
+ if(point.textBounds){
+  const bounds=point.textBounds;
+  assert.ok([bounds.left,bounds.top,bounds.width,bounds.height].every(Number.isFinite)&&bounds.width>0&&bounds.height>0,'Observed text bounds must be finite and positive');
+  assert.ok(bounds.left>=0&&bounds.top>=0&&bounds.left+bounds.width<=viewport.width&&bounds.top+bounds.height<=viewport.height,'Observed text bounds must be within this viewport');
+  assert.ok(point.x>=bounds.left&&point.x<=bounds.left+bounds.width&&point.y>=bounds.top&&point.y<=bounds.top+bounds.height,'Observed center must belong to the recorded glyph bounds');
+  const textRegion={left:region.left,top:Math.max(0,Math.floor((bounds.top-4)*scale)),width:region.width,height:Math.ceil((bounds.height+8)*scale)};
+  assert.ok(textRegion.top+textRegion.height<=height,'Observed text line must remain within the screenshot');
+  const textPath=output.replace(/\.png$/,'-text-line.png'),textRawPath=output.replace(/\.png$/,'-text-line-raw.png');
+  const args=[textRegion.left,textRegion.top,textRegion.width,textRegion.height].map(String);
+  await run('python3',[fileURLToPath(new URL('./prepare-ocr-pixels.py',import.meta.url)),path,textPath,...args],{timeout:20000,maxBuffer:65536});
+  await run('python3',[fileURLToPath(new URL('./prepare-ocr-pixels.py',import.meta.url)),path,textRawPath,...args,'--raw'],{timeout:20000,maxBuffer:65536});
+  Object.assign(result,{textRegion,textPath,textRawPath});
+ }
+ return result;
 }
 export async function prepareObservedFixtureRows(path,normalized,prefix,viewportWidth){
  const original=await readFile(path),processed=await readFile(normalized);
@@ -56,6 +72,18 @@ export async function prepareObservedFixtureRows(path,normalized,prefix,viewport
  await writeFile(prefix+'-cjk-regions.json',JSON.stringify(regions,null,2));
  return regions;
 }
+export async function prepareObservedAreaForOcr(path,output,area,viewport){
+ const bytes=await readFile(path),scale=bytes.readUInt32BE(16)/viewport.width;
+ assert.equal(bytes.readUInt32BE(20),Math.round(viewport.height*scale));
+ assert.ok([area.x,area.y,area.width,area.height].every(Number.isFinite));
+ assert.ok(area.x>=0&&area.y>=0&&area.width>0&&area.height>0&&area.x+area.width<=viewport.width&&area.y+area.height<=viewport.height,'Rendered area must be visible and inside the viewport');
+ const region={left:Math.floor(area.x*scale),top:Math.floor(area.y*scale),width:Math.ceil(area.width*scale),height:Math.ceil(area.height*scale),observedArea:area};
+ const args=[region.left,region.top,region.width,region.height].map(String);
+ await run('python3',[fileURLToPath(new URL('./prepare-ocr-pixels.py',import.meta.url)),path,output,...args],{timeout:20000,maxBuffer:65536});
+ const rawPath=output.replace(/\.png$/,'-raw.png');
+ await run('python3',[fileURLToPath(new URL('./prepare-ocr-pixels.py',import.meta.url)),path,rawPath,...args,'--raw'],{timeout:20000,maxBuffer:65536});
+ return {...region,rawPath};
+}
 export async function readScreenshotText(path,{language='eng',layout='sparse'}={}){
  assert.ok(['eng','eng+chi_sim'].includes(language),'Only pinned QA OCR languages are accepted');
  assert.ok(['sparse','block'].includes(layout),'Only fixed QA layout modes are accepted');
@@ -76,7 +104,7 @@ export async function screenshotWordCenter(path,word,viewportWidth,{topOnly=fals
   if(row)break;
  }
  assert.ok(row,`Actual rendered control ${word} must be readable before activation`);
- return{x:(Number(row[6])+Number(row[8])/2)/ratio,y:(Number(row[7])+Number(row[9])/2)/ratio};
+ return{x:(Number(row[6])+Number(row[8])/2)/ratio,y:(Number(row[7])+Number(row[9])/2)/ratio,textBounds:{left:Number(row[6])/ratio,top:Number(row[7])/ratio,width:Number(row[8])/ratio,height:Number(row[9])/ratio}};
 }
 export function requireChatText(text,{fixtures=false}={}){
  assert.match(text,/\bconversations?\b/i,'Actual canvas screenshot must contain readable conversation navigation');
