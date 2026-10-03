@@ -6,6 +6,8 @@ mod current_tests;
 mod effect_tests;
 #[path = "self_iteration_round_failure_tests.rs"]
 mod failure_tests;
+#[path = "self_iteration_round_preparation_tests.rs"]
+mod preparation_tests;
 #[path = "self_iteration_round_rejection_tests.rs"]
 mod rejection_tests;
 fn inputs(maximum: u32) -> (crate::CanonicalIterationEnvelopeV1, IterationEnvelopeV1) {
