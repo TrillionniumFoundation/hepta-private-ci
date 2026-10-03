@@ -37,7 +37,7 @@ fn reserved(directory: &Path, input: &str) -> anyhow::Result<Observation> {
     );
     let request = http::Request {
         body: serde_json::to_vec(&serde_json::json!({
-            "model":"fixture.model",
+            "model":"fixture.model", "stream":true, "store":false,
             "input":[{"role":"user","content":[{"type":"input_text","text":prompt}]}],
         }))?,
         headers: Default::default(),
