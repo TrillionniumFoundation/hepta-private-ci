@@ -4,6 +4,7 @@ use codex_app_server_protocol::AgentMessageDeltaNotification;
 use codex_app_server_protocol::Turn;
 use codex_app_server_protocol::TurnCompletedNotification;
 use codex_app_server_protocol::TurnItemsView;
+use codex_app_server_protocol::TurnStartParams;
 use codex_app_server_protocol::TurnStartedNotification;
 
 fn binding() -> CodexTurnBinding {
@@ -397,26 +398,6 @@ async fn success_requires_both_matching_completion_and_final_ready_owner() {
     assert!(!output.succeeded());
 }
 
-#[test]
-fn cognitive_final_use_revalidation_follows_durable_dispatch_and_precedes_turn_start() {
-    let source = include_str!("native_app_server.rs");
-    let durable_dispatch = source
-        .find("control.dispatch_native_with_pre_effect_abort(")
-        .expect("durable native dispatch");
-    let revalidation = source
-        .find("owner.revalidate_cognitive_context(snapshot).await")
-        .expect("final-use cognitive revalidation");
-    let turn_start = source
-        .find("client.request_typed::<TurnStartResponse>(ClientRequest::TurnStart")
-        .expect("physical turn start");
-    let durable_stop = source
-        .find("control.abort_native_before_effect(")
-        .expect("durable pre-turn stop");
-    assert!(durable_dispatch < revalidation);
-    assert!(revalidation < turn_start);
-    assert!(durable_stop < turn_start);
-}
-
 #[cfg(unix)]
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombstone() -> Result<()> {
@@ -450,8 +431,14 @@ async fn real_agentd_worker_accepts_fresh_context_and_rejects_final_use_tombston
     let nonce = SystemTime::now().duration_since(UNIX_EPOCH)?.as_nanos();
     let root = std::env::temp_dir().join(format!("hepta-cognitive-worker-e2e-{nonce}"));
     let agent_id = codex_hepta_contracts::AgentId::parse(AGENT_ID)?;
-    let host =
-        CognitiveTestHost::start(root, agent_id, MODEL, &format!("{}/v1", server.uri())).await?;
+    let host = CognitiveTestHost::start_with_executable(
+        root,
+        agent_id,
+        MODEL,
+        &format!("{}/v1", server.uri()),
+        codex_utils_cargo_bin::cargo_bin("codex")?,
+    )
+    .await?;
     let _accepted_memory = host
         .seed_verified_memory("worker-final-use-accept", ACCEPT_MEMORY)
         .await?;
@@ -763,4 +750,53 @@ fn final_use_fence_rejects_owner_ingress_cancel_and_deadline_drift() {
         )
         .is_err()
     );
+}
+
+#[test]
+fn agentd_effect_entry_cas_is_the_last_fallible_gate_before_physical_send() {
+    let source = include_str!("native_execution.rs");
+    let final_context = source
+        .find("owner.revalidate_cognitive_context(snapshot)")
+        .expect("final context revalidation");
+    let token_entry = source
+        .find("verified_use.enter(&authority_binding)")
+        .expect("final-use token entry");
+    let owner_fence = source
+        .find(".run_mark_dispatched_exact(")
+        .expect("Agentd effect-entry CAS");
+    let proof_destroy = source
+        .find("drop(pre_effect_abort);")
+        .expect("local abort proof destruction");
+    let physical_send = source
+        .find("send_authorized_turn_start(&mut client")
+        .expect("physical turn/start");
+
+    assert!(final_context < token_entry);
+    assert!(token_entry < owner_fence);
+    assert!(owner_fence < proof_destroy);
+    assert!(proof_destroy < physical_send);
+    assert!(source.contains("Agentd effect-entry fence was already committed; reconcile only"));
+    assert!(source.contains("effect-entry fence requires same-operation reconciliation"));
+}
+
+#[test]
+fn typed_pre_admission_rejection_is_prepared_before_owner_terminal_and_local_release() {
+    let execution = include_str!("native_execution.rs");
+    let control = include_str!("native_run_control.rs");
+    let prepare = execution
+        .find(".prepare_native_rejection_before_start(")
+        .expect("durable rejection prepare");
+    let reconcile = execution
+        .find(".reconcile_pending_pre_admission_rejection(")
+        .expect("Agentd rejection settlement");
+    let local_complete = control
+        .find("control.complete_native_rejection_before_start(")
+        .expect("local rejection completion");
+    let owner_terminal = control
+        .find(".run_observe_terminal(")
+        .expect("Agentd terminal transition");
+    assert!(prepare < reconcile);
+    assert!(owner_terminal < local_complete);
+    assert!(control.contains("pending pre-admission rejection"));
+    assert!(execution.contains("local slot retained"));
 }

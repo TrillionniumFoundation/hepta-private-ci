@@ -28,9 +28,18 @@ fn revocations(revision: u64, revoked: &[&str]) -> FinalUseRevocations {
 }
 
 fn config(root: &Path, socket: PathBuf, verifying_key: [u8; 32]) -> FinalUseAuthorizerConfig {
+    let issuer_uid = rustix::process::geteuid().as_raw();
+    #[cfg(target_os = "linux")]
+    let issuer_process = Some(
+        capture_issuer_process_identity(std::process::id(), issuer_uid)
+            .expect("capture test issuer process"),
+    );
+    #[cfg(not(target_os = "linux"))]
+    let issuer_process = None;
     FinalUseAuthorizerConfig {
         issuer_socket: socket,
-        issuer_uid: rustix::process::geteuid().as_raw(),
+        issuer_uid,
+        issuer_process,
         signer_id: "authority-owner".to_string(),
         verifying_key,
         authority_state_dir: root.join("authority-state"),
