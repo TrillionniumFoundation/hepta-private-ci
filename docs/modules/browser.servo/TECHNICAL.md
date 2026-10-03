@@ -159,6 +159,13 @@ Owner recovery must first confirm the old writer has stopped, inspect and reconc
 
 On a qualified local filesystem, replay caching binds `dev`, `ino`, `size`, `mtimeNs` and `ctimeNs`; an external append, replacement or timestamp change forces full validated replay. A loaded owner additionally anchors the admitted append-only prefix; deletion, truncation, replacement or rewriting of that history fences the owner rather than becoming an empty journal. Before the first admitted load, deleting all history and its retained lock cannot be detected without an external trusted history anchor. Filesystems without reliable coherent metadata/durability semantics need separate qualification. An identical intent/observation retry appends zero bytes.
 
+The raw admitted-prefix comparison precedes UTF-8, JSON and checksum replay.
+Malformed replacement bytes therefore cannot exit through a decoder error and
+release the recovery lock before history loss is fenced. Restoring the original
+bytes does not clear that live owner's poison or the retained cross-process lock;
+explicit stopped-writer recovery is still required. The persisted format and
+cache-hit/read-cost policy are unchanged.
+
 Raw credential bytes are not journal fields. Credential references remain external identities until a separately qualified credential broker resolves them at the isolated use boundary.
 
 ## 7. Runtime, concurrency and transaction model

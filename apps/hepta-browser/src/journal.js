@@ -347,6 +347,16 @@ export class FileBrowserOperationJournal {
         this.#historyFailure("changed while reading");
       }
       requirePrivateFile(after);
+      // Fence loss of already-admitted history before any UTF-8/JSON/schema
+      // rejection can exit replay and release this owner's recovery lock.
+      if (
+        this.#cacheIdentity !== null &&
+        (raw.length < this.#cacheSize ||
+          checksumBytes(raw.subarray(0, this.#cacheSize)) !==
+            this.#cacheHash.copy().digest("hex"))
+      ) {
+        this.#historyFailure("was truncated or rewritten");
+      }
       try {
         bytes = STRICT_UTF8.decode(raw);
       } catch {
@@ -398,14 +408,6 @@ export class FileBrowserOperationJournal {
         throw new TypeError("browser journal record type is unsupported");
       }
       records.set(key, applyRecord(prior, record, envelope.type));
-    }
-    if (
-      this.#cacheIdentity !== null &&
-      (raw.length < this.#cacheSize ||
-        checksumBytes(raw.subarray(0, this.#cacheSize)) !==
-          this.#cacheHash.copy().digest("hex"))
-    ) {
-      this.#historyFailure("was truncated or rewritten");
     }
     this.#cacheIdentity = identity;
     this.#cacheRecords = records;
