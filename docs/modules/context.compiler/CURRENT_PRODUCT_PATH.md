@@ -1,7 +1,7 @@
 # context.compiler current product path
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `e2336f86d410a4e9e1f8d42eb6442f07f0c73a1e3c09896a31d23a269e296632`. Source anchor: `8a7731b094cb014ffe6b76c474f57209a68b98b0`.
+State SHA-256: `40fe7ffa83a5bdf778743dd902cd2ebd090106ba1f2eeb9d34c2f2edf8f71926`. Source anchor: `f19c9022efa6a37880239aea0a3fc67f846a2235`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
@@ -107,6 +107,7 @@ Stage publication uses exact-state -> runtime-state lock order, with no await or
 - Execute all seventeen lifecycle/capacity/metrics Rust regressions on the final source and merge candidates, including their named-output and bounded-profile validation. Local toolchain availability and local passing tests do not replace immutable CI lane receipts.
 - Connect public cleanup and raw-free diagnostics to authenticated turn lifecycle/operations consumers; a method definition or a direct owner fixture is not proof of ordinary App Server ingress, cross-host safety or production operations.
 - Unix descriptor-relative storage defenses do not establish Windows parity, target-host power-loss durability or resistance to a privileged same-user replace-and-restore adversary.
+- Two seeded remote-v1 compaction policy fixtures have failed intermittently before their required request or terminal counts. Core delivers TurnComplete before terminal flush and admission-fence retirement. Source diagnostics now separately hold flush and idle publication and capture correlated start errors, but exact-head native diagnostic execution and the failing integration Error event are still required before attributing those failures. Retirement alone is neither durable-success proof nor an admission reservation; no lifecycle ordering or admission policy is changed by these diagnostics.
 
 ## 6. Verification
 
