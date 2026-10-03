@@ -25,6 +25,23 @@ use super::http;
 const PURPOSE: &str = "Provide candidate or assessment text for this self-iteration role.";
 const MAX_EVENT_BYTES: usize = 1024 * 1024;
 
+#[path = "local_model_relay_witness_reader.rs"]
+mod reader;
+
+fn original_identity(subject: &str, request_id: &str) -> anyhow::Result<String> {
+    anyhow::ensure!(
+        !subject.is_empty() && subject.len() <= 512 && !subject.as_bytes().contains(&0),
+        "original model subject bound"
+    );
+    StableId::new(request_id)?;
+    Ok(Digest32::of_bytes(&serde_json::to_vec(&(
+        "hepta.root-model-terminal.identity.v1",
+        subject,
+        request_id,
+    ))?)
+    .to_string())
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct RootModelAssessmentBindingV1 {
@@ -227,12 +244,7 @@ impl Observation {
         let Some((native, native_prompt)) = observed else {
             return Ok(None);
         };
-        let identity = Digest32::of_bytes(&serde_json::to_vec(&(
-            "hepta.root-model-terminal.identity.v1",
-            &peer.subject,
-            &native.request_id,
-        ))?)
-        .to_string();
+        let identity = original_identity(&peer.subject, &native.request_id)?;
         let fact = RootModelTerminalReceiptV1 {
             schema: "hepta.root-model-terminal.v1".to_string(),
             binding: native,

@@ -59,6 +59,20 @@ impl RootAdmittedFleetPeerV1 {
 }
 
 impl RootFleetPeerAdmissionV1 {
+    /// Reuse the original bounded, no-follow Root source reader. Reading a
+    /// factual source does not open an issuer, signing key or owner frontier.
+    pub fn read_protected_source(
+        path: &Path,
+        maximum: usize,
+        private: bool,
+    ) -> anyhow::Result<Vec<u8>> {
+        anyhow::ensure!(
+            rustix::process::geteuid().as_raw() == 0 && (1..=1024 * 1024).contains(&maximum),
+            "bounded protected source reading requires the actual Root owner"
+        );
+        read_protected(path, maximum, private)
+    }
+
     pub async fn open(policy_path: &Path) -> anyhow::Result<Self> {
         anyhow::ensure!(
             rustix::process::geteuid().as_raw() == 0,
@@ -90,6 +104,28 @@ impl RootFleetPeerAdmissionV1 {
             uid: stream.peer_cred()?.uid(),
             peer,
         })
+    }
+
+    /// Validate an independently Root-custodied historical model observation
+    /// against the original enrollment. This does not assert its old PID is
+    /// alive or substitute it for authentication of the current held socket.
+    pub fn validate_historical_model_scope(
+        &self,
+        current: &RootAdmittedFleetPeerV1,
+        subject: &str,
+        cgroup: &str,
+        executable_sha256: &str,
+    ) -> anyhow::Result<()> {
+        anyhow::ensure!(
+            current.policy_sha256 == self.policy_sha256
+                && read_protected(&self.policy_path, 64 * 1024, /*private*/ true)?
+                    == self.policy_bytes
+                && current.subject() == subject
+                && self.config.admitted_subject(current.uid(), cgroup)? == subject
+                && self.config.allowed_executable_sha256.contains(executable_sha256),
+            "historical native observation differs from original model enrollment"
+        );
+        Ok(())
     }
 
     /// The same held socket must still resolve to the original policy and
