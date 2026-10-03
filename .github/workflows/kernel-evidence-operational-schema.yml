@@ -122,6 +122,7 @@ jobs:
               'evidence-tests': ['just', 'test', '--locked', '-p', 'codex-hepta-evidence'],
               'automation-effect-tests': ['just', 'test', '--locked', '-p', 'codex-hepta-automation', '--test', 'authorized_effect', '--no-tests', 'fail'],
               'automation-library-tests': ['just', 'test', '--locked', '-p', 'codex-hepta-automation', '--lib', '--no-tests', 'fail'],
+              'automation-retirement-tests': ['just', 'test', '--locked', '-p', 'codex-hepta-automation', '--test', 'retirement_recovery', '--no-tests', 'fail'],
               'memory-library-tests': ['just', 'test', '--locked', '-p', 'codex-hepta-memory', '--lib', '--no-tests', 'fail'],
               'evidence-clippy': ['cargo', 'clippy', '--manifest-path', 'codex-rs/Cargo.toml', '--locked', '-p', 'codex-hepta-evidence', '--all-targets', '--', '-D', 'warnings'],
               'automation-clippy': ['cargo', 'clippy', '--manifest-path', 'codex-rs/Cargo.toml', '--locked', '-p', 'codex-hepta-automation', '--all-targets', '--', '-D', 'warnings'],
