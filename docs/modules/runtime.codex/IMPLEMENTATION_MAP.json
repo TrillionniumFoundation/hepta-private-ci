@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "4a0ffa709a07b0e34d872271908b433a4feb7ee4",
-    "tree": "9baadf1176b29c6e19fe50c72d4d308f7fdae752"
+    "commit": "e2d1c12855e7f598c317b83b76cecab79b6e1d4a",
+    "tree": "e93854c35e2deb4e7a8ef4c4b0d67574ceeeb33b"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.codex",
@@ -309,7 +309,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/app-server",
-      "object": "b9367f7003dc4898367ab2082076ea51e2b9bed0"
+      "object": "369db165729574a745833cb651a17faf3fd00a46"
     },
     {
       "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
@@ -349,11 +349,22 @@
     },
     {
       "path": "codex-rs/hepta-codex-adapter",
-      "object": "81ba5942eca651392e1d64e88fe19f17842da527"
+      "object": "721282f0c9f69fcfdd869865ecc0ab37f7d30386"
     },
     {
       "path": "docs/modules/runtime.codex/TECHNICAL.md",
       "object": "28590a009a9a3b47042547bb5c6fe23f60bdffad"
+    }
+  ],
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "4a0ffa709a07b0e34d872271908b433a4feb7ee4",
+        "tree": "9baadf1176b29c6e19fe50c72d4d308f7fdae752"
+      },
+      "observedAtHead": null,
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
     }
   ]
 }
