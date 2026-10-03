@@ -8,6 +8,7 @@ on:
       - "codex-rs/rust-toolchain.toml"
       - "codex-rs/hepta-prompt-registry/**"
       - "codex-rs/hepta-prompt-optimizer/**"
+      - "codex-rs/hepta-intelligence/**"
       - ".github/workflows/prompt-live-integrity-regression.yml"
   workflow_dispatch:
 
@@ -52,20 +53,20 @@ jobs:
           git rev-parse HEAD HEAD^{tree}
       - name: Test registry owner and optimizer consumer
         shell: bash
-        run: just test -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer --locked
-      - name: Check source formatting and strict prompt lint
+        run: just test -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer -p codex-hepta-intelligence --locked
+      - name: Check source formatting and strict registry/optimizer lint
         shell: bash
         run: |
           set -euo pipefail
-          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer -- --check
+          cargo fmt --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer -p codex-hepta-intelligence -- --check
           cargo clippy --manifest-path codex-rs/Cargo.toml -p codex-hepta-prompt-registry -p codex-hepta-prompt-optimizer --locked --all-targets --no-deps -- -D warnings
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --exit-code
           git diff --cached --exit-code
-      - name: Report bounded live-read fixture cost
+      - name: Verify actual 16-selection consumer read cost
         shell: bash
         run: |
-          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-prompt-registry live_integrity_read_cost_is_reported -- --nocapture
+          cargo test --manifest-path codex-rs/Cargo.toml --locked -p codex-hepta-intelligence sixteen_selected_payloads -- --nocapture
           test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
           git diff --exit-code
           git diff --cached --exit-code

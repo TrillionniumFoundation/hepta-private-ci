@@ -338,7 +338,10 @@ most the bounded metadata file plus selected payload prefix (each capped at
 32 MiB, with the payload header and one metadata overflow-probe byte in addition). It is linear in selected bytes,
 not a constant-time hot read. No payload rewrite is introduced. The
 [live-integrity audit](LIVE_INTEGRITY_AUDIT_2026-10-03.md) records the local fixture
-and preserves target-host latency and scale acceptance as open gates.
+and preserves target-host latency and scale acceptance as open gates. Intelligence
+compile and prepare each acquire one freshly validated immutable view and reuse
+it only within that operation, avoiding one full-store read per selected item.
+The next public boundary revalidates; no view is cached across calls.
 
 ## 11. Observability and operations
 

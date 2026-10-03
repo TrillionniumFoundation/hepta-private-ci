@@ -343,38 +343,3 @@ fn first_integrity_rejection_preserves_the_unclaimed_final_use_grant() {
         .admit_factor_final_use(&authority, &signed, &factor.factor_id, scope, evidence)
         .must("same grant was not consumed by either rejection");
 }
-
-#[test]
-fn live_integrity_read_cost_is_reported_for_one_mib_selected_payload() {
-    let temp = tempfile::tempdir().must("temp");
-    let path = temp.path().join("owner");
-    let mut owner =
-        DurablePromptRegistry::open_state_dir(&path, /*maximum_records*/ 512).must("owner");
-    owner
-        .commit(|core| {
-            for index in 0..64 {
-                payload_tests::add_payload(core, index)?;
-            }
-            Ok(core.receipt(crate::MutationDisposition::Inserted))
-        })
-        .must("one MiB selected payload");
-    let manifest_before = std::fs::read(path.join("registry.json")).must("manifest");
-    let payload_before = std::fs::read(path.join(payloads::FILE_NAME)).must("payload");
-    let started = std::time::Instant::now();
-    for _ in 0..8 {
-        owner.registry().must("validated read");
-    }
-    let elapsed = started.elapsed().as_micros();
-    assert_eq!(
-        std::fs::read(path.join("registry.json")).must("manifest"),
-        manifest_before
-    );
-    assert_eq!(
-        std::fs::read(path.join(payloads::FILE_NAME)).must("payload"),
-        payload_before
-    );
-    eprintln!(
-        "PREG_LIVE_INTEGRITY reads=8 payload_bytes=1048576 manifest_bytes={} total_us={elapsed} rewritten_bytes=0",
-        manifest_before.len()
-    );
-}

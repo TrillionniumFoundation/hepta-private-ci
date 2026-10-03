@@ -43,6 +43,8 @@ use codex_hepta_prompt_optimizer::canonical::PromptExerciseRequestV1;
 use codex_hepta_prompt_optimizer::canonical::SelectedPromptPortfolioV1;
 use codex_hepta_prompt_optimizer::canonical::exercise_v1;
 use codex_hepta_prompt_registry::DurablePromptRegistry;
+use codex_hepta_prompt_registry::DurableRegistryError;
+use codex_hepta_prompt_registry::PromptRegistry;
 use codex_hepta_prompt_registry::PromptRoleV2;
 use codex_hepta_prompt_registry::RealizationDeliveryV2;
 use codex_hepta_types::AuthorityPosture;
@@ -301,7 +303,7 @@ pub fn compile_exercised_prompt_context_v1(
     let exercise = exercise_v1(current_registry, portfolio, request.exercise)
         .map_err(|error| PromptPipelineErrorV1::Optimizer(format!("{error:?}")))?;
     ensure_exercisable(exercise.decision)?;
-    let materialization = materialize_prompt_payloads(registry, portfolio, now_unix_ms)?;
+    let materialization = materialize_prompt_payloads(current_registry, portfolio, now_unix_ms)?;
     let (scope_digest, authority_domain_digest, verifier_digest) =
         admission_domains(portfolio, &materialization);
     let verifier = RegistryAdmissionVerifier {
@@ -455,7 +457,7 @@ pub fn prepare_prompt_delivery_v1(
     let exercise = exercise_v1(current_registry, portfolio, exercise_request)
         .map_err(|error| PromptPipelineErrorV1::Optimizer(format!("{error:?}")))?;
     ensure_exercisable(exercise.decision)?;
-    let materialization = materialize_prompt_payloads(registry, portfolio, now_unix_ms)?;
+    let materialization = materialize_prompt_payloads(current_registry, portfolio, now_unix_ms)?;
     if materialization != prepared.materialization {
         return Err(PromptPipelineErrorV1::PayloadMaterializationDrift);
     }
@@ -548,12 +550,15 @@ pub fn observe_prompt_delivery_v1(
 }
 
 fn materialize_prompt_payloads(
-    registry: &DurablePromptRegistry,
+    // Reuse this operation's already-validated immutable borrow. The next
+    // public compile/prepare boundary must obtain a fresh durable view.
+    registry: &PromptRegistry,
     portfolio: &SelectedPromptPortfolioV1,
     now_unix_ms: u64,
 ) -> Result<PromptPayloadMaterializationV1, PromptPipelineErrorV1> {
     let snapshot = registry
         .snapshot_v2(portfolio.generation_vector_digest, &portfolio.model_tuple)
+        .map_err(DurableRegistryError::Read)
         .map_err(|error| PromptPipelineErrorV1::Registry(format!("{error:?}")))?;
     let mut payloads = Vec::with_capacity(portfolio.selected.len());
     for selected in &portfolio.selected {
@@ -565,6 +570,7 @@ fn materialize_prompt_payloads(
                 &portfolio.model_tuple,
                 now_unix_ms,
             )
+            .map_err(DurableRegistryError::Read)
             .map_err(|error| PromptPipelineErrorV1::Registry(format!("{error:?}")))?;
         if payload.binding != selected.realization
             || payload.binding.digest() != selected.binding_digest
@@ -730,3 +736,7 @@ mod tests;
 #[cfg(test)]
 #[path = "prompt_pipeline_fragment_bounds_tests.rs"]
 mod fragment_bounds_tests;
+
+#[cfg(all(test, unix))]
+#[path = "prompt_pipeline_live_integrity_tests.rs"]
+mod live_integrity_tests;
