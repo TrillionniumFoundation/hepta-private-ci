@@ -268,6 +268,16 @@ impl StdError for PlasticityOwnerEvidenceErrorV1 {}
 /// owner store and authenticate the returned owner receipt. There is deliberately
 /// no permissive/default implementation in Agentd.
 pub trait PlasticityOwnerEvidenceResolverV1 {
+    /// Rebuild unsigned search signals from the same held owner facts. This
+    /// neither proposes nor signs; unsupported deployment adapters reject.
+    fn prepare_parameter_input(
+        &self,
+        _input: AgentdPlasticityAdmissionInputV1,
+        _now: u64,
+    ) -> Result<AgentdPlasticityAdmissionInputV1, PlasticityOwnerEvidenceErrorV1> {
+        Err(PlasticityOwnerEvidenceErrorV1::Unavailable)
+    }
+
     fn resolve(
         &self,
         query: &PlasticityOwnerEvidenceQueryV1,

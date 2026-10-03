@@ -64,6 +64,10 @@ async fn actual_non_root_peer_cannot_resolve_seven_owner_facts_or_sample_owner_c
         matches!(client.resolve_parameter_admission_v1(request).await,
         Err(AgentdError::Protocol(message)) if message.contains("root_peer_required"))
     );
+    assert!(matches!(client.prepare_parameter_input_v1(
+        super::input_context_tests::fixture_round(),std::path::PathBuf::from("/missing/root-search"),
+        digest("protected search pin")).await,
+        Err(AgentdError::Protocol(message)) if message.contains("root_peer_required")));
     assert_eq!(reads.load(std::sync::atomic::Ordering::SeqCst), 0);
     client
         .health()
@@ -197,3 +201,5 @@ fn profile_query_rejects_partial_uppercase_and_over_frame_material() {
         assert!(crate::parameter_admission_query::decode_query(&altered).is_err());
     }
 }
+
+include!("parameter_preparation_client_tests.rs");

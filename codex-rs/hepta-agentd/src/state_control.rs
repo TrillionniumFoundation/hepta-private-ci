@@ -95,6 +95,14 @@ impl AgentdState {
             crate::AgentdMethod::SelfIterationCurrentRound => {
                 self.self_iteration_current_round().await?
             }
+            crate::AgentdMethod::PrepareParameterInputV1 {
+                round_hex,
+                search_source,
+                search_digest,
+            } => {
+                self.prepare_parameter_input_payload(round_hex, search_source, search_digest)
+                    .await?
+            }
             crate::AgentdMethod::ResolveParameterAdmissionV1 { query } => {
                 self.resolve_parameter_admission(query).await?
             }

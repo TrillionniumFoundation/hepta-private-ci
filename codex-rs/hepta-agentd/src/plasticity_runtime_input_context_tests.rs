@@ -1,7 +1,7 @@
 use super::*;
 use crate::plasticity_runtime::input_context::PlasticityInputContextV2;
 
-fn fixture_round() -> crate::AgentdSelfIterationRoundV1 {
+pub(super) fn fixture_round() -> crate::AgentdSelfIterationRoundV1 {
     let round:crate::AgentdSelfIterationRoundV1=serde_json::from_value(serde_json::json!({
         "goal":"goal.context", "ordinal":1, "candidate_admissions":2,
         "policy":digest("window.context").to_string(),"execution":digest("execution.context").to_string(),
@@ -16,6 +16,8 @@ fn context(
     pin: Digest32,
 ) -> PlasticityInputContextV2 {
     PlasticityInputContextV2 {
+        baseline_source: None,
+        baseline_material: None,
         round: fixture_round(),
         source: (PathBuf::from("/fixture/root-context"), pin),
         predecessor: fixture.owner.artifacts.head_digest(),
@@ -133,4 +135,50 @@ fn stale_predecessor_and_changed_packet_for_same_round_preserve_the_original_con
     );
     assert_eq!(fixture.owner.artifacts.head_digest(), selected);
     assert_eq!(persistent_bytes(&fixture.files), before);
+}
+
+#[test]
+fn selected_parameter_artifact_identity_is_distinct_from_stable_runtime_model_identity() {
+    use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
+    use codex_hepta_agent_components::learning_artifacts::ArtifactManifest;
+    use codex_hepta_agent_components::types::Generation;
+    let model = id("model.runtime.stable");
+    let selected = ArtifactManifest {
+        artifact_id: id("artifact.parameters.generation2"),
+        kind: ArtifactKind::Parameters,
+        generation: Generation::new(2).expect("successor"),
+        predecessor_id: Some(id("artifact.parameters.generation1")),
+        content_digest: digest("actual frozen native head"),
+        objective_digest: digest("training objective"),
+        support_digest: digest("full original artifact admission"),
+        producer_id: id("original.parameter.generator"),
+        compatibility_digest: digest("original runtime profile"),
+        encoded_size_bytes: 128,
+    };
+    assert_ne!(selected.artifact_id, model);
+    crate::plasticity_process_bootstrap::validate_context_baseline_artifact(
+        &selected,
+        selected.generation,
+        selected.content_digest,
+        selected.objective_digest,
+    )
+    .expect("original selected parameter artifact matches full actual head tuple");
+    assert!(
+        crate::plasticity_process_bootstrap::validate_context_baseline_artifact(
+            &selected,
+            selected.generation.next().expect("foreign generation"),
+            selected.content_digest,
+            selected.objective_digest,
+        )
+        .is_err()
+    );
+    assert!(
+        crate::plasticity_process_bootstrap::validate_context_baseline_artifact(
+            &selected,
+            selected.generation,
+            digest("foreign native head"),
+            selected.objective_digest,
+        )
+        .is_err()
+    );
 }

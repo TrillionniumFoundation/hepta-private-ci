@@ -680,6 +680,11 @@ pub struct ParameterAdmissionQueryV1 {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdMethod {
+    PrepareParameterInputV1 {
+        round_hex: String,
+        search_source: String,
+        search_digest: String,
+    },
     ResolveParameterAdmissionV1 {
         query: ParameterAdmissionQueryV1,
     },
@@ -890,9 +895,36 @@ pub struct AgentdResponse {
     pub payload: AgentdPayload,
 }
 
+/// Read-only source facts from the original admitted plasticity context.
+/// The receiver must independently authenticate CURRENT and the protected source.
+#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
+#[serde(deny_unknown_fields)]
+pub struct ParameterPreparationBaselineV1 {
+    pub agent_id: String,
+    pub artifact_id: String,
+    pub model_id: String,
+    pub model_generation: u64,
+    pub model_content_digest: String,
+    pub runtime_configuration_digest: String,
+    pub body_digest: String,
+    pub registry_head_digest: String,
+    pub material_source: String,
+    pub material_digest: String,
+    pub context_source: String,
+    pub context_digest: String,
+}
+
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum AgentdPayload {
+    PreparedParameterInputV1 {
+        round_hex: String,
+        search_source: String,
+        search_digest: String,
+        query: ParameterAdmissionQueryV1,
+        admission_hex: String,
+        baseline: ParameterPreparationBaselineV1,
+    },
     ParameterAdmissionV1 {
         query: ParameterAdmissionQueryV1,
         admission_hex: String,
