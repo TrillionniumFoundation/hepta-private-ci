@@ -1,7 +1,7 @@
 # context.compiler technical development guide
 <!-- GENERATED CURRENT STATE: edit CURRENT_STATE.json; detailed design is retained separately. -->
 
-State SHA-256: `748a574efee23b2c44cb4856b3b157a37ac04e7388e092daf74ff0aee0bd008c`. Source anchor: `b0f6ebf61c00f67b321e02f720525a632425ad61`.
+State SHA-256: `3738afec6f9120f67ce14618bdfbe0ff46d24da404ee9d6247eee1e4e058e5d6`. Source anchor: `d0822c07dcdc47944f13915adae9bda3bd569bbe`.
 The source anchor is provenance, not the final tested head. Only external execution receipts bind a final source/merge object.
 
 ## 1. Current implementation and evidence state
@@ -59,6 +59,7 @@ The source anchor is provenance, not the final tested head. Only external execut
 - Require archived preparation/snapshot/time/thread/turn/attempt consistency at persisted-state admission.
 - Short-circuit final byte ambiguity after the second occurrence without retaining all offsets.
 - Converge legacy wire token accounting with the reviewed V2 bridge and repair the actual opaque-diagnostic caller.
+- The canonical V3 product diagnostic now emits only stable reason codes for Debug as well as Display. Delivery observation recomputes the preparation binding from the supplied preparation, retained authority-successor lineage, compiled source binding and tokenization proof before invoking the existing delivery verifier. Four controls cover diagnostic redaction, public preparation replacement, exclusive deadlines and mutated public compiled inputs.
 
 ## 3. Current product call path
 
