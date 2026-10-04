@@ -1192,7 +1192,12 @@ async fn cold_resume_reresolves_persisted_active_permission_profile() -> Result<
             ..
         } = timeout(DEFAULT_READ_TIMEOUT, mcp.read_response(resume_id)).await??;
 
-        assert!(matches!(sandbox, AppSandboxPolicy::ReadOnly { .. }));
+        assert_eq!(
+            sandbox,
+            AppSandboxPolicy::ReadOnly {
+                network_access: false,
+            }
+        );
         assert_eq!(
             active_permission_profile,
             Some(ActivePermissionProfile {
@@ -1200,10 +1205,11 @@ async fn cold_resume_reresolves_persisted_active_permission_profile() -> Result<
                 extends: Some(BUILT_IN_PERMISSION_PROFILE_READ_ONLY.to_string()),
             })
         );
-        assert!(
-            !runtime_workspace_roots.contains(&AbsolutePathBuf::from_absolute_path(
+        assert_eq!(
+            runtime_workspace_roots,
+            vec![AbsolutePathBuf::from_absolute_path(
                 previous_workspace_root.path(),
-            )?)
+            )?]
         );
     }
     Ok(())

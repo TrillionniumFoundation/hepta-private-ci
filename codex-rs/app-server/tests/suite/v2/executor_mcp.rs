@@ -127,6 +127,7 @@ async fn selected_executor_discovers_browser_mcp_with_executor_only_bearer_token
     let executor_home = TempDir::new()?;
     MockResponsesConfig::new(&responses_server.uri())
         .with_sandbox_mode("danger-full-access")
+        .with_features(&BTreeMap::from([(Feature::ExecutorCapabilityDiscovery, true)]))
         .write(codex_home.path())?;
     std::fs::write(
         codex_home.path().join("requirements.toml"),
@@ -174,6 +175,14 @@ async fn selected_executor_discovers_browser_mcp_with_executor_only_bearer_token
         &responses_server,
         vec![
             responses::sse(vec![
+                responses::ev_response_created("resp-browser-mcp-search"),
+                responses::ev_tool_search_call(
+                    "browser-mcp-search",
+                    &json!({"query": "echo"}),
+                ),
+                responses::ev_completed("resp-browser-mcp-search"),
+            ]),
+            responses::sse(vec![
                 responses::ev_response_created("resp-browser-mcp-call"),
                 responses::ev_function_call_with_namespace(
                     "browser-mcp-call",
@@ -209,9 +218,9 @@ async fn selected_executor_discovers_browser_mcp_with_executor_only_bearer_token
     )
     .await??;
     let requests = response_mock.requests();
-    assert_eq!(requests.len(), 2);
-    assert!(requests[0].tool_by_name(&namespace, "echo").is_some());
-    let output = requests[1].function_call_output("browser-mcp-call");
+    assert_eq!(requests.len(), 3);
+    assert!(requests[1].tool_by_name(&namespace, "echo").is_some());
+    let output = requests[2].function_call_output("browser-mcp-call");
     assert!(
         output
             .get("output")
