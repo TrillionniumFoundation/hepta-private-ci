@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "7333c0c783f500ae5e46a2b0e4113cbda589ed5a",
+    "tree": "08ae671b6dcbe345a92ef661f4fbf7c257521a40"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.read",
@@ -163,10 +163,18 @@
   ],
   "observedImplementationBase": {
     "commit": "a74246c4d7657d4c6b09fc50c41f1d715ace5e0e",
-    "interpretation": "latest reviewed main base for this rebased closure candidate; sourceBase remains repository-wide generated-map baseline while exact production source objects bind current candidate bytes"
+    "interpretation": "Retained historical implementation context for the earlier rebased closure; this commit is not the current source observation. Current sourceBase and observedAtHead identify the exact current source, and historicalSourceDeclarations preserves the original committed map declarations."
   },
-  "sourceIdentityMode": "repository_baseline_plus_exact_head_objects",
+  "sourceIdentityMode": "current_observation_plus_exact_head_objects_and_preserved_historical_declarations",
   "sourceObjects": [
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "8a9eab30d8957daab7dd027e86e88ca792e04a1c"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "d2703b590935ab17316e6c258657c0ce5ab7412a"
+    },
     {
       "path": "codex-rs/hepta-agent-protocol/src/lib.rs",
       "object": "2379d7a33ac80ccb60fa381373537b5dcfac6b54"
@@ -189,7 +197,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
-      "object": "28e565a3569f9148e3d371b0150a02e14bf2fde4"
+      "object": "4274d46fb803624ef9b33bae7692f8850e70e369"
     },
     {
       "path": "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
@@ -201,7 +209,7 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-      "object": "4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"
+      "object": "ef90d7f993365627c4fcbc69d3b75b380958738d"
     },
     {
       "path": "codex-rs/hepta-agentd/src/test_support.rs",
@@ -273,7 +281,7 @@
     },
     {
       "path": "scripts/hepta-implementation-maps.py",
-      "object": "e8ae0fd675b7e3ca2911b80af92cc21021789fbe"
+      "object": "029bc86985bba2e63c90834d6f0de450581347cf"
     }
   ],
   "productCallers": [
@@ -318,10 +326,10 @@
     "mode": "runtime_verifier",
     "statement": "hepta-implementation-maps.py verify emits current HEAD/tree; tracked maps bind exact relevant HEAD blobs to avoid self-referential commit/tree hashes"
   },
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "sourceIdentityPolicy": "current_observation_with_declared_history_v2",
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "7333c0c783f500ae5e46a2b0e4113cbda589ed5a",
+    "tree": "08ae671b6dcbe345a92ef661f4fbf7c257521a40"
   },
   "canonicalMemoryEventReadMigration": {
     "state": "authoritative_shadow_adapter_source_candidate",
@@ -340,6 +348,52 @@
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-cognitive-read"
-  ]
+    "codex-rs/hepta-agent-protocol/src/lib.rs",
+    "codex-rs/hepta-agentd/src/client.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_budget_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_context_tests.rs",
+    "codex-rs/hepta-agentd/src/cognitive_ranker.rs",
+    "codex-rs/hepta-agentd/src/cognitive_ranker_tests.rs",
+    "codex-rs/hepta-agentd/src/state_control.rs",
+    "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
+    "codex-rs/hepta-agentd/src/test_support.rs",
+    "codex-rs/hepta-agentd/tests/cognitive_product_e2e.rs",
+    "codex-rs/hepta-cognitive-read",
+    "codex-rs/hepta-cognitive-read/src/authoritative.rs",
+    "codex-rs/hepta-cognitive-read/src/authoritative_tests.rs",
+    "codex-rs/hepta-cognitive-read/src/ids.rs",
+    "codex-rs/hepta-cognitive-read/src/ids_tests.rs",
+    "codex-rs/hepta-cognitive-read/src/lib.rs",
+    "codex-rs/hepta-cognitive-read/src/v2.rs",
+    "codex-rs/hepta-cognitive-read/src/v2_tests.rs",
+    "codex-rs/hepta-infer-core/src/native_control.rs",
+    "codex-rs/hepta-infer-core/src/native_control_tests.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+    "codex-rs/hepta-infer-worker-host/src/native_app_server_tests.rs",
+    "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
+    "codex-rs/hepta-memory/src/lane_c_snapshot_tests.rs",
+    "docs/modules/cognitive.read/TECHNICAL.md",
+    "scripts/hepta-implementation-maps.py"
+  ],
+  "historicalSourceDeclarations": {
+    "schema": "hepta.map-historical-source-declarations.v1",
+    "records": [
+      {
+        "recordedAt": {
+          "commit": "65c11d17d7519231a53096f19d72d130c5f0774e",
+          "tree": "1c3334b9181d36f15adc9bef6c4262f395d7b604"
+        },
+        "mapBlob": "757935cc9c1a034a3b4ee55104ae813687012c63",
+        "declaredSourceBase": {
+          "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+          "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+        },
+        "declaredObservedAtHead": {
+          "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+          "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+        }
+      }
+    ]
+  }
 }

@@ -67,6 +67,7 @@ use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 
 use super::*;
 
@@ -415,7 +416,11 @@ fn fixture() -> Fixture {
     }
 }
 
-fn verified_current_view(fixture: &Fixture, now: u64) -> VerifiedCurrentRegistryViewV1 {
+fn verified_current_view(
+    fixture: &Fixture,
+    now: u64,
+    admission: Option<&WithdrawalBoundArtifactAdmissionV3>,
+) -> VerifiedCurrentRegistryViewV1 {
     let key = SigningKey::from_bytes(&[41; 32]);
     let signer_id = id("artifact-current-head-signer");
     let scope = fixture
@@ -459,26 +464,37 @@ fn verified_current_view(fixture: &Fixture, now: u64) -> VerifiedCurrentRegistry
         signature: [0; 64],
     };
     signed.signature = key.sign(&signed.signing_bytes()).to_bytes();
-    verifier
-        .verify_current_registry_view(
-            File::open(&fixture.snapshot_path).expect("current snapshot"),
+    let snapshot = File::open(&fixture.snapshot_path).expect("current snapshot");
+    let requirement = RegistryHeadRequirementV1 {
+        registry_id: id("artifact-registry"),
+        minimum_generation: Generation::new(1).expect("generation"),
+        expected_predecessor_head_digest: Digest32::ZERO,
+        minimum_authority_epoch: 1,
+        now,
+    };
+    let result = match admission {
+        Some(admission) => verifier.verify_current_registry_view_with_admission_closure(
+            snapshot,
             fixture.snapshot_receipt,
             &signed,
-            &RegistryHeadRequirementV1 {
-                registry_id: id("artifact-registry"),
-                minimum_generation: Generation::new(1).expect("generation"),
-                expected_predecessor_head_digest: Digest32::ZERO,
-                minimum_authority_epoch: 1,
-                now,
-            },
-        )
-        .expect("verified current registry view")
+            &requirement,
+            vec![admission.clone()],
+            &fixture.withdrawal_registry,
+        ),
+        None => verifier.verify_current_registry_view(
+            snapshot,
+            fixture.snapshot_receipt,
+            &signed,
+            &requirement,
+        ),
+    };
+    result.expect("verified current registry view")
 }
 
 #[test]
 fn current_artifact_and_independent_evidence_compose_to_deny_all_admission() {
     let mut fixture = fixture();
-    let current_view = verified_current_view(&fixture, 50);
+    let current_view = verified_current_view(&fixture, 50, /*admission*/ None);
     let request = NduStochasticAdmissionRequestV1 {
         artifact_admission: &fixture.artifact_admission,
         current_withdrawal_head: fixture.withdrawal_registry.snapshot().head_digest,
@@ -527,7 +543,7 @@ fn withdrawal_frontier_change_invalidates_previously_admitted_artifact() {
         })
         .expect("withdrawal");
 
-    let current_view = verified_current_view(&fixture, 52);
+    let current_view = verified_current_view(&fixture, 52, /*admission*/ None);
     let request = NduStochasticAdmissionRequestV1 {
         artifact_admission: &fixture.artifact_admission,
         current_withdrawal_head: fixture.withdrawal_registry.snapshot().head_digest,
@@ -546,4 +562,113 @@ fn withdrawal_frontier_change_invalidates_previously_admitted_artifact() {
             codex_hepta_learning_artifacts::ArtifactAdmissionError::WithdrawalHeadChanged
         ))
     ));
+}
+
+fn strict_fixture(
+    update: impl FnOnce(&mut LearningArtifactManifestV2),
+) -> (Fixture, WithdrawalBoundArtifactAdmissionV3) {
+    let mut fixture = fixture();
+    let mut manifest = fixture
+        .artifact_admission
+        .validated_manifest
+        .manifest
+        .clone();
+    update(&mut manifest);
+    let admission = admit_manifest_at_withdrawal_head_v3(
+        &fixture.withdrawal_registry,
+        fixture.withdrawal_registry.head_digest(),
+        manifest,
+        /*now*/ 50,
+    )
+    .expect("stored admission");
+    let full = &admission.validated_manifest.manifest;
+    let projection = ArtifactManifest {
+        artifact_id: full.artifact_id.clone(),
+        kind: full.kind,
+        generation: full.generation,
+        predecessor_id: None,
+        content_digest: full.bytes_digest,
+        objective_digest: full.objective_class_digest,
+        support_digest: admission.validated_manifest.manifest_digest,
+        producer_id: full.producer_id.clone(),
+        compatibility_digest: full.compatibility_digest,
+        encoded_size_bytes: full.encoded_size_bytes,
+    };
+    let mut registry = ArtifactRegistry::new();
+    registry
+        .append(ArtifactEvent::Register {
+            event_id: id("register-strict"),
+            manifest: projection.clone(),
+        })
+        .expect("strict registry");
+    fixture.snapshot_path = fixture._dir.path().join("strict.snapshot");
+    fixture.snapshot_receipt = write_registry_snapshot(
+        CreateOnlyArtifactFile::create(&fixture.snapshot_path).expect("strict file"),
+        &registry,
+        fixture.snapshot_receipt.binding,
+    )
+    .expect("strict snapshot");
+    fixture.candidate = RevalidatingCandidate::new(
+        load_pinned_candidate(
+            File::open(&fixture.snapshot_path).expect("strict snapshot"),
+            File::open(fixture._dir.path().join("candidate.payload")).expect("payload"),
+            PinnedCandidateSpec {
+                registry_receipt: fixture.snapshot_receipt,
+                manifest: projection,
+            },
+        )
+        .expect("strict candidate"),
+    );
+    (fixture, admission)
+}
+
+fn strict_current_ndu_admission(
+    update: impl FnOnce(&mut LearningArtifactManifestV2),
+    use_time: u64,
+) -> Result<NduStochasticAdmissionReceiptV1, NduStochasticAdmissionError> {
+    let (mut fixture, stored_admission) = strict_fixture(update);
+    let current = verified_current_view(&fixture, 50, Some(&stored_admission));
+    let request = NduStochasticAdmissionRequestV1 {
+        artifact_admission: &fixture.artifact_admission,
+        current_withdrawal_head: fixture.withdrawal_registry.head_digest(),
+        coefficient_profile: &fixture.coefficient_profile,
+        projection: &fixture.projection,
+        convergence: &fixture.convergence,
+        well_posedness: &fixture.well_posedness,
+        objective_class_digest: digest("objective-class"),
+        operating_domain_digest: digest("operating-domain"),
+        expected_compatibility_digest: digest("ndu-runtime-compatibility"),
+    };
+    admit_ndu_stochastic_candidate_v1(&mut fixture.candidate, current, request, use_time)
+}
+
+#[test]
+fn strict_current_ndu_admission_accepts_matching_provenance_at_verification_time() {
+    let receipt = strict_current_ndu_admission(|_| {}, /*use_time*/ 50).expect("strict admission");
+    assert_eq!(receipt.authority, AuthorityPosture::DENY_ALL);
+}
+
+#[test]
+fn strict_current_ndu_admission_rejects_changed_use_time() {
+    assert_eq!(
+        strict_current_ndu_admission(|_| {}, /*use_time*/ 51),
+        Err(NduStochasticAdmissionError::ArtifactMismatch(
+            "current verification time"
+        )),
+    );
+}
+
+#[test]
+fn strict_current_ndu_admission_rejects_mismatched_current_provenance() {
+    assert_eq!(
+        strict_current_ndu_admission(
+            |manifest| {
+                manifest.training_code_digest = digest("another-training-code");
+            },
+            /*use_time*/ 50
+        ),
+        Err(NduStochasticAdmissionError::ArtifactMismatch(
+            "current admission"
+        )),
+    );
 }
