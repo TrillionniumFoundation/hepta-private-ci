@@ -70,7 +70,7 @@ async fn context_replacement_type_isolation_and_clone_extraction()
         },
     );
     client
-        .sync_once(SyncSettings::new().timeout(Duration::from_millis(100)))
+        .sync_once(SyncSettings::new().timeout(Duration::from_millis(/*millis*/ 100)))
         .await?;
     assert_eq!(
         *observed.lock().map_err(|_| "fixture mutex")?,
