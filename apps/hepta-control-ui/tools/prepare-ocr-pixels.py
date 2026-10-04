@@ -6,8 +6,8 @@ from pathlib import Path
 from PIL import Image, ImageOps
 
 raw = sys.argv[-1] == "--raw"
-navigation_binary = sys.argv[-1] == "--navigation-binary"
-arguments = sys.argv[:-1] if raw or navigation_binary else sys.argv
+navigation_neutral = sys.argv[-1] == "--navigation-neutral"
+arguments = sys.argv[:-1] if raw or navigation_neutral else sys.argv
 source, destination = map(Path, arguments[1:3])
 with Image.open(source) as image:
     if image.format != "PNG" or image.width * image.height > 8_000_000:
@@ -26,14 +26,15 @@ with Image.open(source) as image:
         raise ValueError("Expected one image and optionally one observed region")
     if raw:
         image.save(destination, format="PNG")
-    elif navigation_binary:
-        # A single fixed additional observation for light navigation glyphs.
-        # No adaptive thresholds, OCR confidence selection, or generated text.
-        pixels = ImageOps.invert(ImageOps.grayscale(image)).point(
-            lambda value: 255 if value > 100 else 0
-        )
+    elif navigation_neutral:
+        # One fixed per-pixel projection suppresses chromatic decoration around
+        # neutral text. No expected word, glyph mask, target or OCR confidence.
+        rgb = image.convert("RGB")
+        neutral = Image.new("L", rgb.size)
+        neutral.putdata([max(0, 2 * min(pixel) - max(pixel)) for pixel in rgb.getdata()])
+        pixels = ImageOps.autocontrast(ImageOps.invert(neutral))
         pixels.resize(
-            (pixels.width * 3, pixels.height * 3), Image.Resampling.NEAREST
+            (pixels.width * 3, pixels.height * 3), Image.Resampling.BICUBIC
         ).save(destination, format="PNG")
     else:
         pixels = ImageOps.autocontrast(ImageOps.invert(ImageOps.grayscale(image)))

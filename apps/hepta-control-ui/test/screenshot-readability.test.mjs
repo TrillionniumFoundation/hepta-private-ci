@@ -166,13 +166,25 @@ for(const source of regionSources){
 }
 
 const webkitSources=JSON.parse(await readFile(new URL('webkit-010-source.json',fixtureRoot),'utf8'));
+const materialSource=JSON.parse(await readFile(new URL('navigation-neutral-06a-source.json',fixtureRoot),'utf8'));
+test('real 06a material failure retains exact navigation after fixed neutral projection',async()=>{
+ const path=fileURLToPath(new URL(materialSource.fixture,fixtureRoot));
+ const bytes=await readFile(path);
+ assert.equal(createHash('sha256').update(bytes).digest('hex'),materialSource.sha256);
+ const result=await screenshotConversationTabs(path,materialSource.entry.viewport);
+ assert.equal(result.normalization,'navigation-neutral');
+ assert.equal(result.sourcePngSha256,materialSource.sha256);
+ assert.ok(result.Chat.x<result.Console.x);
+ assert.ok(result.Console.y>92&&result.Console.y<144);
+ assert.deepEqual(await readFile(path),bytes);
+});
 for(const source of webkitSources){
  test(`real WebKit 010 pixels retain exact requirements: ${source.role}`,async()=>{
   const path=fileURLToPath(new URL(source.fixture,fixtureRoot));
   const bytes=await readFile(path);assert.equal(createHash('sha256').update(bytes).digest('hex'),source.sha256);
   if(source.role==='navigation'){
    const result=await screenshotConversationTabs(path,source.entry.viewport);
-   assert.equal(result.normalization,'navigation-binary');
+   assert.equal(result.normalization,'navigation-neutral');
    assert.equal(result.sourcePngSha256,source.sha256);
    assert.ok(result.Chat.x<result.Console.x);
    assert.ok(result.Console.y>92&&result.Console.y<144);
@@ -211,7 +223,7 @@ test('visible timeline intersection cannot rescue invisible panes, clipped compo
   assert.throws(()=>validateTailStatusGeometry(bad),/fit/);
  }
 });
-test('normalization is fixed and binary OCR retains band clipping and ambiguity rejection',async()=>{
+test('normalization is fixed and neutral OCR retains band clipping and ambiguity rejection',async()=>{
  const path=fileURLToPath(new URL(webkitSources[0].fixture,fixtureRoot));
  await assert.rejects(()=>prepareVerifiedRegionForOcr(path,'unused.png',{left:0,top:0,width:10,height:10},{width:640,height:800},{normalization:'adaptive'}),/fixed region/);
  const size={width:2560,height:1600},processed={width:5832,height:312};
@@ -222,8 +234,8 @@ test('normalization is fixed and binary OCR retains band clipping and ambiguity 
  assert.equal(conversationTabsFromOcr(rebaseNavigationOcr(tsv([]),size,viewport,processed),size,viewport),null);
 });
 
-test('actual pixel mutations fail after binary OCR, including a correctly sized unreadable viewport',async()=>{
- const directory=await mkdtemp(join(tmpdir(),'robrix-binary-pixel-negatives-'));
+test('actual pixel mutations fail after neutral OCR, including a correctly sized unreadable viewport',async()=>{
+ const directory=await mkdtemp(join(tmpdir(),'robrix-neutral-pixel-negatives-'));
  const run=promisify(execFile);
  const unreadable=fileURLToPath(new URL('unreadable-e51a1d0f.png',fixtureRoot));
  const source=fileURLToPath(new URL(webkitSources[0].fixture,fixtureRoot));
@@ -251,23 +263,39 @@ with Image.open(source) as image:
     ambiguous=image.copy()
     ambiguous.paste(button,(900,196))
     ambiguous.save(out/'ambiguous-console.png')
+    # Full-size blank and body-only controls use the original image's pixels.
+    # Neither may substitute for an actual pair inside the navigation band.
+    background=image.getpixel((600,300))
+    blank=Image.new(image.mode,image.size,background)
+    blank.save(out/'blank-navigation.png')
+    body_only=blank.copy()
+    body_only.paste(image.crop((260,196,400,276)),(260,700))
+    body_only.paste(button,(400,700))
+    body_only.save(out/'body-only-navigation.png')
 (out/'synthetic-provenance.json').write_text(json.dumps({
     'kind':'synthetic-negative-mutations-not-CI-evidence',
     'sourcePngSha256':hashlib.sha256(source.read_bytes()).hexdigest(),
     'unreadableSourcePngSha256':hashlib.sha256(unreadable.read_bytes()).hexdigest(),
     'mutations':{'unreadable-sized':'remove bottom four rows only',
                  'clipped-console':'move original button upward 50 source pixels across navigation crop',
-                 'ambiguous-console':'duplicate original button within navigation row'}
+                 'ambiguous-console':'duplicate original button within navigation row',
+                 'blank-navigation':'uniform original background, original full dimensions',
+                 'body-only-navigation':'original Chat/Console pixels only below the navigation band'}
 }))
 `,source,unreadable,directory]);
   const sized=join(directory,'unreadable-sized.png');
   await assert.rejects(()=>screenshotConversationTabs(sized,{width:1280,height:800},{recordOcr:true}),/must be readable/);
-  // Existence proves that the dimension-valid negative reached both binary
+  // Existence proves that the dimension-valid negative reached both neutral
   // OCR modes instead of failing at the earlier full-viewport assertion.
-  for(const mode of ['11','6'])await readFile(sized.replace(/\.png$/,`-navigation-binary-psm${mode}-ocr.txt`));
+  for(const mode of ['11','6'])await readFile(sized.replace(/\.png$/,`-navigation-neutral-psm${mode}-ocr.txt`));
+  for(const name of ['blank-navigation','body-only-navigation']){
+   const path=join(directory,name+'.png');
+   await assert.rejects(()=>screenshotConversationTabs(path,{width:640,height:800},{recordOcr:true}),/must be readable/);
+   for(const mode of ['11','6'])await readFile(path.replace(/\.png$/,`-navigation-neutral-psm${mode}-ocr.txt`));
+  }
   for(const [name,error] of [['clipped-console',/completely inside|crop edge|must be readable/],['ambiguous-console',/Ambiguous/]]){
-   const path=join(directory,name+'.png'),output=join(directory,name+'-binary.png');
-   const input=await prepareVerifiedRegionForOcr(path,output,{left:0,top:88,width:640,height:60},{width:640,height:800},{normalization:'navigation-binary'});
+   const path=join(directory,name+'.png'),output=join(directory,name+'-neutral.png');
+   const input=await prepareVerifiedRegionForOcr(path,output,{left:0,top:88,width:640,height:60},{width:640,height:800},{normalization:'navigation-neutral'});
    for(const mode of ['11','6']){
     const {stdout}=await run('tesseract',[output,'stdout','-l','eng','--psm',mode,'tsv'],{env:{...process.env,OMP_THREAD_LIMIT:'1'}});
     assert.throws(()=>{

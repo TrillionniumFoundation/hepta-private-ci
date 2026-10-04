@@ -134,7 +134,22 @@ script_mod! {
  mod.widgets.RoomsSideBar = #(RoomsSideBar::register_widget(vm)) {
   width: Fill height: Fill flow: Down spacing: 12 padding: 12
   show_bg: true
-  draw_bg +: {color: uniform(COLOR_SECONDARY) accent: uniform(COLOR_ROBRIX_PURPLE) pixel: fn() {
+  draw_bg +: {color: uniform(COLOR_SECONDARY) material: uniform(1.0) accent: uniform(COLOR_ROBRIX_PURPLE) secondary: uniform(COLOR_AURORA_CORAL) pixel: fn() {
+   if self.material > 1.5 {
+    let top_light = max(0.0, 1.0 - self.pos.y * 2.5)
+    let top_edge = max(0.0, 1.0 - self.pos.y * self.rect_size.y)
+    let right_edge = max(0.0, 1.0 - (1.0 - self.pos.x) * self.rect_size.x)
+    let lower_shade = max(0.0, self.pos.y - 0.45)
+    let face = mix(mix(self.color, #xf9f8f6, top_light * top_light * 0.14), #xb6afa5, lower_shade * 0.035)
+    return mix(mix(face, #xffffff, top_edge * 0.65), #xbcb7af, right_edge * 0.4)
+   }
+   if self.material > 0.5 {
+    let top_glow = max(0.0, 1.0 - self.pos.y * 4.0)
+    let top_edge = max(0.0, 1.0 - self.pos.y * self.rect_size.y)
+    let edge = mix(self.accent, self.secondary, self.pos.x)
+    let face = mix(self.color, edge, top_glow * top_glow * 0.025)
+    return mix(face, edge, top_edge * 0.22)
+   }
    let curve = 0.96 - 0.20 * self.pos.x * self.pos.x
    let light = max(0.0, 1.0 - abs(self.pos.y - curve) * 65.0)
    let second_curve = 1.04 - 0.29 * self.pos.x * self.pos.x
@@ -143,8 +158,22 @@ script_mod! {
    let upper_depth = max(0.0, 1.0 - length((self.pos - vec2(0.2, 0.0)) * vec2(0.8, 2.0)))
    return mix(self.color, self.accent, light * 0.18 + fine_edge * 0.10 + haze * haze * 0.10 + upper_depth * 0.025)
   }}
+  sidebar_brand := Label {
+   width: Fill height: 28 align: Align{x: 0.0, y: 0.5}
+   text: "HEPTA" draw_text.text_style: mod.widgets.HEPTA_BOLD{font_size: 14}
+  }
   room_filter := TextInput {width: Fill height: 40 padding: 10 empty_text: "Find a conversation"}
-  new_draft := mod.widgets.AuroraNewConversation {width: Fill text: "+  New draft"}
+  View {
+   width: Fill height: 44 flow: Right spacing: 8 align: Align{x: 0.0, y: 0.5}
+   conversation_group := Label {
+    width: Fill height: Fit max_lines: 1 text_overflow: Ellipsis
+    text: "CONVERSATIONS" draw_text.text_style: mod.widgets.HEPTA_REGULAR{font_size: 9}
+   }
+   new_draft := mod.widgets.AuroraNewConversation {
+    width: 104 height: 44 padding: Inset{left: 8, right: 8, top: 8, bottom: 8}
+    text: "+ New draft"
+   }
+  }
   list := PortalList {width: Fill height: Fill flow: Down Room := mod.widgets.RoomsListEntry {}}
   theme_switch := mod.widgets.AuroraButton {width: Fill grab_key_focus: false text: "Aurora Graphite"}
  }
@@ -275,6 +304,8 @@ impl Widget for RoomsSideBar {
                 .set_enabled(cx, !workspace.composing);
             self.rendered = Some(key);
         }
+        #[cfg(feature = "ui-fixtures")]
+        let mut fixture_rows = Vec::new();
         while let Some(widget) = self.view.draw_walk(cx, scope, walk).step() {
             let portal = widget.as_portal_list();
             let Some(mut list) = portal.borrow_mut() else {
@@ -313,7 +344,20 @@ impl Widget for RoomsSideBar {
                         selected: room.selected,
                     }),
                 );
+                #[cfg(feature = "ui-fixtures")]
+                fixture_rows.push((room.id.local_id, item.area()));
             }
+        }
+        #[cfg(feature = "ui-fixtures")]
+        {
+            let areas = [
+                self.view.area(),
+                self.view.label(cx, ids!(sidebar_brand)).area(),
+                self.view.label(cx, ids!(conversation_group)).area(),
+                self.view.text_input(cx, ids!(room_filter)).area(),
+                self.view.button(cx, ids!(new_draft)).area(),
+            ];
+            super::sidebar_fixture::remember_draw(cx, areas, fixture_rows);
         }
         DrawStep::done()
     }

@@ -168,11 +168,11 @@ export function sourcePixelRegion(area,viewport,imageSize){
  return {left,top,width:right-left,height:bottom-top};
 }
 export async function prepareVerifiedRegionForOcr(path,output,area,viewport,{normalization='continuous'}={}){
- assert.ok(['continuous','navigation-binary'].includes(normalization),'Only fixed region normalizations are supported');
+ assert.ok(['continuous','navigation-neutral'].includes(normalization),'Only fixed region normalizations are supported');
  const bytes=await readFile(path);assert.equal(bytes.subarray(1,4).toString(),'PNG');
  const imageSize={width:bytes.readUInt32BE(16),height:bytes.readUInt32BE(20)};
  const crop=sourcePixelRegion(area,viewport,imageSize);
- await run('python3',[fileURLToPath(new URL('./prepare-ocr-pixels.py',import.meta.url)),path,output,...[crop.left,crop.top,crop.width,crop.height].map(String),...(normalization==='navigation-binary'?['--navigation-binary']:[])],{timeout:20000,maxBuffer:65536});
+ await run('python3',[fileURLToPath(new URL('./prepare-ocr-pixels.py',import.meta.url)),path,output,...[crop.left,crop.top,crop.width,crop.height].map(String),...(normalization==='navigation-neutral'?['--navigation-neutral']:[])],{timeout:20000,maxBuffer:65536});
  assert.deepEqual(await readFile(path),bytes,'Original PNG changed during fixed region processing');
  const processed=await readFile(output);
  assert.equal(processed.subarray(1,4).toString(),'PNG');
@@ -195,8 +195,8 @@ export function rebaseNavigationOcr(tsv,imageSize,viewport,processedSize){
 export async function screenshotConversationTabs(path,viewport,{recordOcr=false}={}){
  const temporary=recordOcr?null:await mkdtemp(join(tmpdir(),'robrix-navigation-ocr-'));
  try{
-  for(const normalization of ['continuous','navigation-binary']){
-   const suffix=normalization==='continuous'?'': '-binary';
+  for(const normalization of ['continuous','navigation-neutral']){
+   const suffix=normalization==='continuous'?'': '-neutral';
    const normalized=recordOcr?path.replace(/\.png$/,`-navigation${suffix}-normalized.png`):join(temporary,`navigation${suffix}.png`);
    const input=await prepareVerifiedRegionForOcr(path,normalized,navigationOcrContext(viewport),viewport,{normalization});
    for(const mode of ['11','6']){

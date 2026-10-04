@@ -253,7 +253,7 @@ jobs:
           cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
           just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
           cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
-          node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs
+          node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs
       - id: default_build
         name: Build canonical strict-CSP no-threads artifact
         run: |
@@ -308,7 +308,9 @@ jobs:
         if: always()
         env:
           SOURCE_SHA: ${{ needs.identity.outputs.source_sha }}
-        run: python3 apps/hepta-control-ui/tools/group-robrix-evidence.py
+        run: |
+          python3 -m unittest discover -s apps/hepta-control-ui/test -p 'test_group_robrix_evidence.py' -v
+          python3 apps/hepta-control-ui/tools/group-robrix-evidence.py
       - if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
@@ -349,6 +351,27 @@ jobs:
         with:
           name: robrix-host-fixtures-webkit-${{ needs.identity.outputs.source_sha }}
           path: apps/hepta-control-ui/test-results/evidence-groups/fixtures-webkit/
+          include-hidden-files: true
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: robrix-host-sidebar-chromium-${{ needs.identity.outputs.source_sha }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/sidebar-chromium/
+          include-hidden-files: true
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: robrix-host-sidebar-firefox-${{ needs.identity.outputs.source_sha }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/sidebar-firefox/
+          include-hidden-files: true
+          if-no-files-found: warn
+      - if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: robrix-host-sidebar-webkit-${{ needs.identity.outputs.source_sha }}
+          path: apps/hepta-control-ui/test-results/evidence-groups/sidebar-webkit/
           include-hidden-files: true
           if-no-files-found: warn
       - if: always()

@@ -4,4 +4,6 @@ pub mod home;
 pub mod hover_highlight;
 pub mod room;
 pub mod rooms;
+#[cfg(feature = "ui-fixtures")]
+pub(crate) mod sidebar_fixture;
 pub mod styles;

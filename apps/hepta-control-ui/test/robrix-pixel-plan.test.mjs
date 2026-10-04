@@ -88,3 +88,48 @@ test('follow-latest rejects clipped, stale, unfinished and missing final status 
  assert.throws(()=>validateTailStatusGeometry({...entry(geometry),geometryAfter:{...geometry,frame:11}}),/changed during capture/);
  assert.throws(()=>validateTailStatusGeometry({viewport:{width:640,height:800}}),/requires real Rust geometry/);
 });
+
+
+// Regression controls for the independently recorded sidebar surface/labels.
+const {validateSidebarSurface,requireSidebarLabel,requireCompletedSidebarEvidence}=await import('../tools/robrix-sidebar-evidence.mjs');
+function observedSidebarSurface(){return{viewport:{width:640,height:800},metrics:{dpr:2,css:{x:0,y:0,width:640,height:800},buffer:{width:960,height:1200},drawingBuffer:{width:960,height:1200},contextLost:false,retained:true},drawDpiFactor:1.5,pngSize:{width:1280,height:1600}};}
+test('budgeted Rust draw scale and browser screenshot DPR are independently verified',()=>{
+ validateSidebarSurface(observedSidebarSurface());
+ const wrongPass=observedSidebarSurface();wrongPass.drawDpiFactor=2;
+ assert.throws(()=>validateSidebarSurface(wrongPass),/Backing dimensions/);
+ const wrongPng=observedSidebarSurface();wrongPng.pngSize={width:960,height:1200};
+ assert.throws(()=>validateSidebarSurface(wrongPng),/PNG dimensions/);
+});
+test('mismatched GL axes, lost context and invalid scale cannot prove sidebar coordinates',()=>{
+ for(const mutate of [value=>value.metrics.drawingBuffer.width++,value=>value.metrics.buffer.height++,value=>value.metrics.contextLost=true,value=>value.drawDpiFactor=NaN,value=>value.metrics.css.x=1]){
+  const value=observedSidebarSurface();mutate(value);assert.throws(()=>validateSidebarSurface(value));
+ }
+});
+test('the actual first-glyph-only brand failure is not a complete sidebar label',()=>{
+ assert.throws(()=>requireSidebarLabel('H\n','brand'),/complete exact sidebar label/);
+ assert.throws(()=>requireSidebarLabel('C\n','group'),/complete exact sidebar label/);
+ assert.throws(()=>requireSidebarLabel('New','newDraft'),/complete exact sidebar label/);
+ requireSidebarLabel('HEPTA','brand');requireSidebarLabel('CONVERSATIONS','group');requireSidebarLabel('+ New draft','newDraft');
+});
+test('provisional passed status cannot qualify an interrupted sidebar scenario',()=>{
+ const finalTest={status:'expected',expectedStatus:'passed',results:[{status:'passed'}]};
+ assert.throws(()=>requireCompletedSidebarEvidence({status:'passed'},finalTest),/required input actions/);
+ assert.throws(()=>requireCompletedSidebarEvidence({scenarioComplete:false},finalTest),/required input actions/);
+ requireCompletedSidebarEvidence({scenarioComplete:true},finalTest);
+});
+test('completed input evidence still requires the authoritative final passed execution',()=>{
+ for(const finalTest of [{status:'unexpected',expectedStatus:'passed',results:[{status:'failed'}]},{status:'expected',expectedStatus:'failed',results:[{status:'failed'}]},{status:'expected',expectedStatus:'passed',results:[{status:'failed'},{status:'passed'}]},{status:'expected',expectedStatus:'passed',results:[{status:'failed'}]}])assert.throws(()=>requireCompletedSidebarEvidence({scenarioComplete:true},finalTest));
+});
+
+
+test('pixel-aligned full-pass overscan cannot masquerade as a wholly visible action or DPI probe',async()=>{
+ const {observedAreaCenter}=await import('../tools/robrix-sidebar-evidence.mjs');
+ const viewport={width:1280,height:800};
+ // Exact recorded ac58 overscan remains rejected, without epsilon or clipping
+ // guessed from the expected label. A real interior Area uses the same rule.
+ assert.throws(()=>observedAreaCenter([0,0,1280.14892578125,68],viewport),/strictly inside/);
+ assert.throws(()=>observedAreaCenter([1270,10,20,20],viewport),/strictly inside/);
+ assert.throws(()=>observedAreaCenter([10,790,20,20],viewport),/strictly inside/);
+ assert.deepEqual(observedAreaCenter([33,12,44,44],viewport),{x:55,y:34});
+ assert.deepEqual(observedAreaCenter([1176,10,104,44],viewport),{x:1228,y:32});
+});
