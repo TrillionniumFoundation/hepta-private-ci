@@ -15,13 +15,14 @@ workspace = true
 
 [features]
 default = []
-durable-store = ["dep:sqlx"]
+durable-store = ["dep:codex-state", "dep:sqlx"]
 
 [dependencies]
 aws-lc-rs = { version = "=1.18.1", default-features = false, features = ["alloc", "non-fips"] }
 libc = { workspace = true }
 codex-hepta-contracts = { workspace = true }
 codex-hepta-paths = { workspace = true }
+codex-state = { workspace = true, optional = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }

@@ -324,6 +324,20 @@ impl SqliteConfig {
     /// not route authoritative corruption through the rebuildable state-DB
     /// recovery path.
     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        Self::open_owner_durable_evidence_pool(path, /*max_connections*/ 5).await
+    }
+
+    /// Open an owner's evidence pool without changing its concurrency budget.
+    /// Schema initialization and recovery remain the original owner's responsibility.
+    pub async fn open_owner_durable_evidence_pool(
+        path: &Path,
+        max_connections: u32,
+    ) -> Result<SqlitePool, Error> {
+        if max_connections == 0 {
+            return Err(Error::Protocol(
+                "SQLite pool requires a connection".to_string(),
+            ));
+        }
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
@@ -333,7 +347,7 @@ impl SqliteConfig {
             .busy_timeout(Duration::from_secs(5))
             .log_statements(LevelFilter::Off);
         SqlitePoolOptions::new()
-            .max_connections(5)
+            .max_connections(max_connections)
             .connect_with(options)
             .await
     }
@@ -397,13 +411,29 @@ impl SqliteConfig {
 
     /// Open an existing Codex SQLite database without creating or modifying it.
     pub async fn open_read_only_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        Self::open_owner_read_only_pool(path, /*max_connections*/ 1, Duration::from_secs(5)).await
+    }
+
+    /// Observe an existing owner database with bounded contention and concurrency.
+    /// This never creates the database, initializes schema or advances an owner clock.
+    pub async fn open_owner_read_only_pool(
+        path: &Path,
+        max_connections: u32,
+        busy_timeout: Duration,
+    ) -> Result<SqlitePool, Error> {
+        if max_connections == 0 || busy_timeout.as_millis() > i32::MAX as u128 {
+            return Err(Error::Protocol(
+                "invalid SQLite reader pool limits".to_string(),
+            ));
+        }
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(false)
             .read_only(true)
+            .busy_timeout(busy_timeout)
             .log_statements(LevelFilter::Off);
         SqlitePoolOptions::new()
-            .max_connections(1)
+            .max_connections(max_connections)
             .connect_with(options)
             .await
     }

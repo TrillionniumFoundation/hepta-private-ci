@@ -3,18 +3,14 @@ use std::path::PathBuf;
 use std::sync::Arc;
 use std::sync::atomic::AtomicU64;
 use std::sync::atomic::Ordering;
-use std::time::Duration;
 
 use codex_hepta_contracts::AuthorityClock;
 use codex_hepta_contracts::SystemAuthorityClock;
+use codex_state::SqliteConfig;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
 use sqlx::Transaction;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqliteJournalMode;
-use sqlx::sqlite::SqlitePoolOptions;
-use sqlx::sqlite::SqliteSynchronous;
 
 use crate::DurableFleetError;
 use crate::FleetMutationKindV1;
@@ -65,16 +61,7 @@ impl DurableFleetStore {
             std::fs::create_dir_all(parent)
                 .map_err(|error| DurableFleetError::Unavailable(error.to_string()))?;
         }
-        let options = SqliteConnectOptions::new()
-            .filename(path)
-            .create_if_missing(true)
-            .journal_mode(SqliteJournalMode::Wal)
-            .synchronous(SqliteSynchronous::Full)
-            .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5));
-        let pool = SqlitePoolOptions::new()
-            .max_connections(4)
-            .connect_with(options)
+        let pool = SqliteConfig::open_owner_durable_evidence_pool(path, /*max_connections*/ 4)
             .await
             .map_err(sqlx_error)?;
         let now_ms = match initialize_schema(&pool, clock.as_ref()).await {
