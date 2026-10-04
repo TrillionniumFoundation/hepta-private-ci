@@ -2,6 +2,24 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "hepta-supervisor",
+    binary_feature_groups = {
+        # Match Cargo's opt-in tools without exposing signing APIs through the
+        # ordinary supervisor library or hepta-supervisord.
+        "offline-authority-tools": {
+            "binaries": [
+                "hepta-supervisor-authority-bundle",
+                "hepta-authority-signer",
+                "hepta-final-use-signer",
+                "hepta-final-use-approver",
+                "hepta-final-use-revocation-signer",
+            ],
+            "features": [
+                "offline-authority-tools",
+                "production-verifier",
+                "production-authority",
+            ],
+        },
+    },
     crate_name = "codex_hepta_supervisor",
     unit_test_dependency_replacements = {
         "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
