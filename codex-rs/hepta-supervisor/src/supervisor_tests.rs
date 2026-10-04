@@ -43,6 +43,9 @@ use crate::SupervisorEventKind;
 use crate::TickReport;
 use crate::driver::SpawnedProcess;
 
+#[path = "matrix_restart_recovery_tests.rs"]
+mod matrix_restart_recovery;
+
 const FIRST_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 const SECOND_AGENT_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75dd3";
 
@@ -134,13 +137,6 @@ fn fake_program(relative: &str) -> PathBuf {
 
 fn command() -> Result<AgentCommand, SupervisorError> {
     AgentCommand::new(fake_program("hepta-agentd"), Vec::new())
-}
-
-fn release(identity: &str, program: &str) -> Result<AgentRelease, SupervisorError> {
-    AgentRelease::new(
-        identity,
-        AgentCommand::new(fake_program(program), Vec::new())?,
-    )
 }
 
 fn config() -> SupervisorConfig {

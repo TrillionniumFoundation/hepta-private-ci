@@ -24,6 +24,15 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Iterable
 
+try:
+    from scripts.hepta_ci_git_objects import GitTree
+    from scripts.hepta_ci_module_paths import literal_module_paths
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_ci_git_objects import GitTree
+    from hepta_ci_module_paths import literal_module_paths
+
 OID = re.compile(r"[0-9a-f]{40}\Z")
 WORKSPACE = "codex-rs"
 SHARED = {
@@ -99,9 +108,7 @@ INCLUDE_LITERAL = re.compile(
 )
 
 
-MODULE_PATH = re.compile(r"#\s*\[\s*path\s*=")
 OUTLINED_MODULE = re.compile(r"\bmod\s+(?:r#)?([A-Za-z_][A-Za-z0-9_]*)\s*;")
-INLINE_MODULE = re.compile(r"\bmod\s+(?:r#)?[A-Za-z_][A-Za-z0-9_]*\s*\{")
 
 
 def module_source_inputs(path: str, text: str, tracked: set[str]):
@@ -115,15 +122,11 @@ def module_source_inputs(path: str, text: str, tracked: set[str]):
     bounded discovery, not a replacement compiler or a proof of valid Rust.
     """
     targets = set()
-    opaque = bool(INLINE_MODULE.search(text)) and bool(MODULE_PATH.search(text))
-    opaque |= bool(re.search(r"#\s*\[\s*cfg_attr\b", text)) and bool(
-        re.search(r"\bpath\s*=", text)
-    )
+    literals, opaque = literal_module_paths(text)
     directory = posixpath.dirname(path)
-    for attribute in MODULE_PATH.finditer(text):
-        start = re.compile(r"\s*").match(text, attribute.end()).end()
-        literal = INCLUDE_LITERAL.match(text, start)
-        if literal is None or not re.match(r"\s*\]", text[literal.end() :]):
+    for spelling in literals:
+        literal = INCLUDE_LITERAL.fullmatch(spelling)
+        if literal is None:
             opaque = True
             continue
         try:
@@ -222,6 +225,8 @@ def embedded_inputs(
     revision: str,
     owners: dict[str, str],
     source_inputs: frozenset[tuple[str, str]] = frozenset(),
+    *,
+    tree: GitTree | None = None,
 ):
     """Read exact-tree includes without executing candidate build scripts.
 
@@ -231,11 +236,10 @@ def embedded_inputs(
     and byte payloads are not parsed as Rust. Comments may over-select. Both old
     and new graphs retain removed edges. Cycles are bounded by (path, owner).
     """
-    tracked = set(
-        git(root, "ls-tree", "-r", "--name-only", "-z", revision)
-        .decode("utf-8")
-        .split("\0")
-    )
+    if tree is None:
+        with GitTree(root, revision) as tree:
+            return embedded_inputs(root, revision, owners, source_inputs, tree=tree)
+    tracked = set(tree.objects)
     result = subprocess.run(
         [
             "git",
@@ -278,7 +282,7 @@ def embedded_inputs(
     @lru_cache(maxsize=None)
     def references(path: str):
         try:
-            text = git(root, "show", f"{revision}:{path}").decode("utf-8")
+            text = tree.read(path).decode("utf-8")
         except (subprocess.CalledProcessError, UnicodeDecodeError):
             # A comment can mention a nonexistent fragment. Preserve unknown
             # input dependence instead of either breaking unrelated prose work
@@ -335,17 +339,16 @@ def embedded_inputs(
 
 
 def graph(root: Path, revision: str) -> Graph:
-    if not OID.fullmatch(revision):
-        raise ValueError("revision must be an exact Git SHA")
-    paths = set(
-        git(root, "ls-tree", "-r", "--name-only", "-z", revision)
-        .decode("utf-8")
-        .split("\0")
-    )
+    with GitTree(root, revision) as tree:
+        return _graph(root, revision, tree)
+
+
+def _graph(root: Path, revision: str, tree: GitTree) -> Graph:
+    paths = set(tree.objects)
 
     @lru_cache(maxsize=None)
     def load(path: str) -> dict:
-        return tomllib.loads(git(root, "show", f"{revision}:{path}").decode("utf-8"))
+        return tomllib.loads(tree.read(path).decode("utf-8"))
 
     root_manifest = load(f"{WORKSPACE}/Cargo.toml")
     workspace = root_manifest["workspace"]
@@ -431,7 +434,7 @@ def graph(root: Path, revision: str) -> Graph:
     # semantics. Keep the conservative escape hatch instead of guessing.
     conservative = bool(root_manifest.get("replace"))
     source_inputs = cargo_source_inputs(manifests, owners)
-    inputs, opaque = embedded_inputs(root, revision, owners, source_inputs)
+    inputs, opaque = embedded_inputs(root, revision, owners, source_inputs, tree=tree)
     # Build scripts are programs, not just include! declarations. They can read
     # an input under another Cargo owner's directory, even without an include
     # macro. Do not execute them or trust candidate-declared input lists while

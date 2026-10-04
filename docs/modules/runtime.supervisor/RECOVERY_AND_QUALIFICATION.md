@@ -32,6 +32,14 @@ The restart counter is persisted in the agent run root as `supervisor-restart-bu
 
 The restart-attempt count therefore survives supervisord process restart. The exact pending retry timer is intentionally not a durable command queue: a supervisord crash may lose a future retry deadline and therefore perform **fewer** automatic restarts, but it must not gain an additional attempt. Target-host SIGKILL/fault-injection evidence is still required before claiming this behavior is deployment-qualified.
 
+The native Matrix recovery path reads and validates its window before process
+adoption can charge another attempt. Because that companion window has no durable
+next-eligible timestamp, recovery reapplies the complete backoff for its charged
+attempt. Exhausted windows remain visibly degraded. Clock normalization and
+companion publication retain the separate canonical main-process budget,
+including its pending intent. A committed release name that differs from an
+in-flight target lease does not clear an already charged Matrix window.
+
 ## 2. Signed production mutation effect boundary
 
 `apply_production_grant()` has a strict semantic boundary:

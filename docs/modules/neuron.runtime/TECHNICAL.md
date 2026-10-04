@@ -140,6 +140,15 @@ Every producer validates output before publication and binds semantic fields int
 
 Rust types and canonical JSON represent identical semantics. Tests cover round trips, maximum bounds, missing fields, unknown fields, invalid enums, canonical ordering and digest stability. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
+All five registered records and their eight nested profile/resource/summary
+records require JSON objects with named fields. Positional arrays are rejected;
+arrays remain valid for the declared numeric vectors and index lists. The
+streaming map decoder retains duplicate-field and unknown-field rejection,
+including duplicate escaped names, and rejects trailing JSON values without
+normalizing through an intermediate map. Canonical object encodings, digest
+domains and durable journal/witness formats remain unchanged. Regression coverage
+is in [protocol_shape_tests.rs](../../../codex-rs/hepta-neuron/src/protocol_shape_tests.rs).
+
 ## 6. Data authority, persistence and migrations
 
 Owned authoritative or rebuildable domains:
