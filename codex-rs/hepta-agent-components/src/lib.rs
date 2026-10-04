@@ -10,7 +10,7 @@
 #![forbid(unsafe_code)]
 
 /// Bounded transport for the installed independent Generator purpose.
-#[cfg(feature = "fixed-eval-host")]
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 pub mod frozen_generator_wire;
 
 pub mod automation {

@@ -1,4 +1,4 @@
-#![cfg(feature = "fixed-eval-host")]
+#![cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
 use codex_hepta_agent_components::frozen_generator_wire::*;
 use serde_json::json;
 

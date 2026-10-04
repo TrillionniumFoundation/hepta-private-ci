@@ -2,8 +2,20 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "hepta-agent-components",
-    crate_features = ["fixed-eval-host"],
+    # The frozen Generator wire API follows Eval's Linux-only host contract.
+    crate_features = select({
+        "@platforms//os:linux": ["fixed-eval-host"],
+        "//conditions:default": [],
+    }),
     crate_name = "codex_hepta_agent_components",
+    # Optional Cargo externs must be explicit in the Bazel host profile.
+    deps_extra = select({
+        "@platforms//os:linux": [
+            "@crates//:serde",
+            "@crates//:serde_json",
+        ],
+        "//conditions:default": [],
+    }),
     # Match the Cargo dev façade while keeping one physical ledger type.
     unit_test_dependency_replacements = {
         "//codex-rs/hepta-bellman-operator": "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
