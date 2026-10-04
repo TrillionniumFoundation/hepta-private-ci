@@ -19,14 +19,17 @@ pub(super) enum PreparedDataset {
 // Inspect the same protected descriptor whose complete original bytes were
 // admitted; a second path read cannot pin the descriptor used by the parser.
 fn pinned_source_file(source: &InstalledCpuSourceV1, expected: &[u8]) -> Result<std::fs::File> {
-    let mut file = open_root_review_input(&source.path)
-        .map_err(|error| anyhow::anyhow!("{error}"))?;
-    let maximum = u64::try_from(expected.len())?.checked_add(1)
+    let mut file =
+        open_root_review_input(&source.path).map_err(|error| anyhow::anyhow!("{error}"))?;
+    let maximum = u64::try_from(expected.len())?
+        .checked_add(1)
         .context("whole original Window Source size")?;
     let mut bytes = Vec::new();
     (&mut file).take(maximum).read_to_end(&mut bytes)?;
-    ensure!(bytes == expected && Digest32::of_bytes(&bytes) == source.digest.parse()?,
-        "whole original Window Source differs on inspected descriptor");
+    ensure!(
+        bytes == expected && Digest32::of_bytes(&bytes) == source.digest.parse()?,
+        "whole original Window Source differs on inspected descriptor"
+    );
     file.rewind()?;
     Ok(file)
 }
@@ -172,7 +175,7 @@ pub(super) async fn collect(
         configuration::source(&window.evaluator.configuration_template, 32 * 1024)?;
     let mut config: serde_json::Value = serde_json::from_slice(&template_bytes)?;
     config["inputs_path"] = serde_json::to_value(&inputs_source.path)?;
-    config["inputs_digest"] = inputs_source.digest.clone().into();
+    config["inputs_digest"] = inputs_source.digest.into();
     config["program_digest"] = window.evaluator.program.digest.clone().into();
     let config_bytes = serde_json::to_vec(&config)?;
     let actual: FixedParameterEvaluatorConfigV1 = serde_json::from_slice(&config_bytes)?;
