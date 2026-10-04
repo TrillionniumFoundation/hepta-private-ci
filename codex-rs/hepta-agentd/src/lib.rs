@@ -544,6 +544,8 @@ pub use plasticity_owner_evidence::plasticity_parameter_signal_digest_v1;
 #[cfg(all(target_os = "linux", feature = "server"))]
 pub use plasticity_process_bootstrap::ParameterInputContextProjectionV2;
 #[cfg(feature = "server")]
+pub use plasticity_process_bootstrap::load_plasticity_process_bootstrap_pending_v2;
+#[cfg(feature = "server")]
 pub use plasticity_process_bootstrap::load_plasticity_process_bootstrap_v1;
 #[cfg(feature = "server")]
 pub use plasticity_process_bootstrap::load_plasticity_process_bootstrap_v2;

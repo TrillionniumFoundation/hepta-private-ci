@@ -153,6 +153,12 @@ pub async fn run(
             AgentdError::Invalid("original iteration handle already attached".into())
         })?;
     }
+    if let Some(host) = neuron_runtime_v2.as_ref() {
+        state
+            .neuron_runtime_v2
+            .set(Arc::clone(host))
+            .map_err(|_| AgentdError::Invalid("Neuron V2 host already attached".to_string()))?;
+    }
     let plasticity_runtime =
         crate::plasticity_runtime::compose_plasticity_runtime_v1(&state, plasticity_bootstrap)?;
     if let Some(host) = intuition_policy_host {
@@ -175,12 +181,6 @@ pub async fn run(
         state.intelligence_invocation.set(provider).map_err(|_| {
             AgentdError::Invalid("intelligence invocation provider already attached".to_string())
         })?;
-    }
-    if let Some(host) = neuron_runtime_v2.as_ref() {
-        state
-            .neuron_runtime_v2
-            .set(Arc::clone(host))
-            .map_err(|_| AgentdError::Invalid("Neuron V2 host already attached".to_string()))?;
     }
     if let Some(current) = retrieval_context {
         state

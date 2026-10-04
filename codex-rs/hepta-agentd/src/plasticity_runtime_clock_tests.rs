@@ -18,6 +18,8 @@ mod parameter_admission_tests;
 #[cfg(target_os = "linux")]
 #[path = "parameter_admission_transport_tests.rs"]
 mod parameter_admission_transport_tests;
+#[path = "plasticity_runtime_pending_v2_tests.rs"]
+mod pending_v2_tests;
 
 struct ClockFixture {
     _daemon: AgentdFixture,

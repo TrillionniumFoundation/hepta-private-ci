@@ -78,6 +78,9 @@ pub struct SelfIterationHostConfigV1 {
     #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
     #[serde(default)]
     pub installed_cycle: Option<crate::initial_cpu_anchor::InstalledCpuSourceV1>,
+    #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
+    #[serde(default)]
+    pub plasticity_bootstrap: Option<crate::initial_cpu_anchor::InstalledCpuSourceV1>,
 }
 
 pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfig, AgentdError> {
@@ -123,14 +126,23 @@ pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfi
             Ok(cpu) => {
                 if let Some(resolver) = cpu.model_resolver() {
                     cycle_composition = Some(installed_cycle::Composition {
-                        resolver, reader:cpu.original_generation_reader(),
-                        resources:cpu.original_resource_port(), control:control.clone(),
+                        resolver, reader: cpu.original_generation_reader(),
+                        resources: cpu.original_resource_port(), control: control.clone(),
                     });
                 }
-                (cpu.attach(config)?, serde_json::json!({
+                let config = match installed.plasticity_bootstrap.as_ref() {
+                    Some(source) => cpu.attach_with_plasticity_bootstrap(config, source)?,
+                    None => cpu.attach(config)?,
+                };
+                (config, serde_json::json!({
                     "state":"attached_pending_first_tick", "actual_neuron_tick":false,
                 }))
             },
+            Err(error) if installed.plasticity_bootstrap.is_some() => {
+                return Err(invalid(format!(
+                    "installed plasticity requires the admitted CPU V2: {error}"
+                )));
+            }
             Err(error) => (
                 config,
                 serde_json::json!({
@@ -140,6 +152,9 @@ pub fn compose_installed_model_owner(config: AgentdConfig) -> Result<AgentdConfi
             ),
         }
     } else {
+        if installed.plasticity_bootstrap.is_some() {
+            return Err(invalid("installed plasticity requires a CPU V2 Source"));
+        }
         (config, cpu_status)
     };
     config.with_self_iteration_model_owner_context(move |context, cancellation| async move {

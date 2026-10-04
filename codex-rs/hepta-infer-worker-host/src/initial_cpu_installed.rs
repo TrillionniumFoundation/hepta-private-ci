@@ -178,4 +178,21 @@ impl Composition {
             .with_intelligence_product_runner(self.runner)?
             .with_intelligence_invocation_provider(self.provider)
     }
+
+    pub(crate) fn attach_with_plasticity_bootstrap(
+        self,
+        config: AgentdConfig,
+        source: &InstalledCpuSourceV1,
+    ) -> Result<AgentdConfig, AgentdError> {
+        let bootstrap = codex_hepta_agentd::load_plasticity_process_bootstrap_pending_v2(
+            &source.path,
+            source
+                .digest
+                .parse()
+                .map_err(|_| AgentdError::Invalid("plasticity bootstrap source digest".into()))?,
+            config.identity(),
+        )?;
+        self.attach(config)?
+            .with_plasticity_runtime_bootstrap(bootstrap)
+    }
 }

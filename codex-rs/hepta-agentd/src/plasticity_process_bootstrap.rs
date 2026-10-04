@@ -812,6 +812,10 @@ fn validate_process_path_separation(
         descriptor.topology_registry.registry_path.as_path(),
         descriptor.topology_registry.anchor_path.as_path(),
     ];
+    validate_mutable_owner_paths(&paths)
+}
+
+fn validate_mutable_owner_paths(paths: &[&Path]) -> Result<(), AgentdError> {
     for (index, left) in paths.iter().enumerate() {
         for right in paths.iter().skip(index + 1) {
             if left == right {
@@ -984,6 +988,10 @@ pub(crate) use input_context::validate_context_baseline_artifact;
 #[path = "plasticity_process_bootstrap_v2.rs"]
 mod v2;
 pub use v2::load_plasticity_process_bootstrap_v2;
+
+#[path = "plasticity_process_bootstrap_pending_v2.rs"]
+mod pending_v2;
+pub use pending_v2::load_plasticity_process_bootstrap_pending_v2;
 
 #[cfg(test)]
 #[path = "plasticity_process_bootstrap_trust_tests.rs"]

@@ -185,6 +185,11 @@ impl PlasticityRuntimeHandleV1 {
 /// the resulting owner/handle pair for its generation.
 pub struct PlasticityRuntimeBootstrapV1 {
     capacity: usize,
+    pub(crate) requires_neuron_v2: bool,
+    pub(crate) pending_v2_context: Option<(
+        std::path::PathBuf,
+        codex_hepta_agent_components::types::Digest32,
+    )>,
     artifacts: ArtifactRegistry,
     pub(crate) current_artifacts: Option<PlasticityCurrentArtifactsV1>,
     pub(crate) restore_input_context_on_start: bool,
@@ -222,6 +227,8 @@ impl PlasticityRuntimeBootstrapV1 {
         validate_plasticity_runtime_capacity(capacity)?;
         Ok(Self {
             capacity,
+            requires_neuron_v2: false,
+            pending_v2_context: None,
             artifacts,
             current_artifacts: None,
             restore_input_context_on_start: false,
@@ -328,7 +335,7 @@ pub fn plasticity_runtime_channel_v1(
     ))
 }
 
-fn validate_plasticity_runtime_capacity(capacity: usize) -> Result<(), AgentdError> {
+pub(crate) fn validate_plasticity_runtime_capacity(capacity: usize) -> Result<(), AgentdError> {
     if !(1..=MAX_PLASTICITY_RUNTIME_QUEUE).contains(&capacity) {
         return Err(AgentdError::Invalid(format!(
             "plasticity runtime queue capacity must be within 1..={MAX_PLASTICITY_RUNTIME_QUEUE}"
@@ -360,7 +367,31 @@ pub(crate) fn compose_plasticity_runtime_v1(
     bootstrap: Option<PlasticityRuntimeBootstrapV1>,
 ) -> Result<Option<PlasticityRuntimeOwnerV1>, AgentdError> {
     match bootstrap {
-        Some(bootstrap) => {
+        Some(mut bootstrap) => {
+            if bootstrap.requires_neuron_v2 {
+                let host = state.neuron_runtime_v2.get().ok_or_else(|| {
+                    AgentdError::Invalid(
+                        "pending plasticity bootstrap requires the actual held Neuron V2".into(),
+                    )
+                })?;
+                if let Some((path, pin)) = bootstrap.pending_v2_context.take() {
+                    let context = crate::plasticity_process_bootstrap::load_input_context_v2(
+                        &path,
+                        pin,
+                        state.identity(),
+                        &bootstrap.ledger,
+                        Arc::clone(host),
+                        crate::authbus_ingress::now_ms()?,
+                    )?;
+                    bootstrap.artifacts = context.artifacts;
+                    bootstrap.current_artifacts = Some(context.current_artifacts);
+                    bootstrap.owner_evidence_resolver = context.resolver;
+                    bootstrap.owner_evidence_policy = context.policy;
+                    bootstrap.verifier = context.verifier;
+                    bootstrap.input_context = Some((context.round, context.source));
+                    bootstrap.restore_input_context_on_start = true;
+                }
+            }
             let (handle, owner) = bootstrap.into_channel()?;
             state.attach_plasticity_runtime(handle)?;
             Ok(Some(owner))
