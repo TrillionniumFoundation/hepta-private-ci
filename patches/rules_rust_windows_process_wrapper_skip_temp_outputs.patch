@@ -1,5 +1,7 @@
 # Scope: skip only transient Windows linker outputs during dependency consolidation.
 # Upstream: hermeticbuild/rules_rust f19661ba71f77c993ce1eb082053692610fe4313.
+diff --git a/util/process_wrapper/main.rs b/util/process_wrapper/main.rs
+index 3139b45..1d12c8a 100644
 --- a/util/process_wrapper/main.rs
 +++ b/util/process_wrapper/main.rs
 @@ -198,6 +198,26 @@
@@ -51,6 +53,9 @@
 
  #[cfg(not(windows))]
  fn consolidate_dependency_search_paths(
+diff --git a/util/process_wrapper/dependency_search_paths_tests.rs b/util/process_wrapper/dependency_search_paths_tests.rs
+new file mode 100644
+index 0000000..34bd0b4
 --- /dev/null
 +++ b/util/process_wrapper/dependency_search_paths_tests.rs
 @@ -0,0 +1,142 @@
