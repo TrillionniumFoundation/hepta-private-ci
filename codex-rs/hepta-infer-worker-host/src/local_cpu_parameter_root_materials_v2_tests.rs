@@ -30,7 +30,7 @@ fn actual_root_reads_the_complete_maximum_frontier_and_refuses_an_oversized_sour
 -> Result<(), Box<dyn std::error::Error>> {
     use std::os::unix::fs::PermissionsExt;
 
-    assert_eq!(unsafe { libc::geteuid() }, 0, "actual protected Source owner");
+    assert_eq!(rustix::process::geteuid().as_raw(), 0, "actual protected Source owner");
     let directory = tempfile::tempdir()?;
     let long_directory = format!("/original/{}", "retained-round/".repeat(64));
     let source = |ordinal: usize, purpose: &str| serde_json::json!({
