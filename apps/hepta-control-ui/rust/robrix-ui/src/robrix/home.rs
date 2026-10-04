@@ -13,30 +13,26 @@ use makepad_widgets::*;
 script_mod! {
  use mod.prelude.widgets.*
  use mod.widgets.*
- mod.widgets.MainDesktopUI = #(MainDesktopUI::register_widget(vm)) {
-  flow: Right show_bg: true draw_bg.color: COLOR_PRIMARY
-  rail := SolidView {
-   width: 64 height: Fill flow: Down spacing: 16 padding: 8 draw_bg.color: COLOR_PRIMARY
-   brand_mark := mod.widgets.HeptaMark {}
-   rail_chat := mod.widgets.RailButton {text: "Chat"}
-   rail_console := mod.widgets.RailButton {text: "Console" draw_bg.icon_kind: 1.0}
-  }
+ mod.widgets.HeptaBrandBar = View {
+  width: Fill height: 68 flow: Right align: Align{y: 0.5}
+  padding: Inset{left: 33, right: 24} spacing: 20
+  show_bg: true draw_bg.color: COLOR_PRIMARY
+  brand_mark := mod.widgets.HeptaMark {width: 44 height: 44}
+  brand_title := Label {text: "H E P T A" padding: 0 draw_text +: {color: COLOR_TEXT text_style: theme.font_regular{font_size: 20}}}
+ }
+ mod.widgets.MainConversationUI = #(MainConversationUI::register_widget(vm)) {
+  width: Fill height: Fill flow: Down
+  channel_heading := mod.widgets.ConversationHeading {}
   dock := mod.widgets.RobrixDock {
    width: Fill height: Fill padding: 0 spacing: 0 margin: 0
    tab_bar +: {
+    height: 44
     CloseableTab := mod.widgets.RobrixTab {closeable: true}
-    PermanentTab := mod.widgets.RobrixTab {closeable: false width: Fit padding: 9}
+    PermanentTab := mod.widgets.RobrixTab {closeable: false width: Fit padding: Inset{left: 24, right: 24}}
    }
-   root := DockSplitter {
-    axis: SplitterAxis.Horizontal align: SplitterAlign.FromA(248.0)
-    a: @rooms_sidebar_tabs b: @main_tabs
-   }
-   rooms_sidebar_tabs := DockTabs {tabs: [@rooms_sidebar_tab] selected: 0 hide_tab_bar: true}
-   main_tabs := DockTabs {tabs: [@home_tab, @console_tab] selected: 0}
-   rooms_sidebar_tab := DockTab {kind: @rooms_sidebar template: @PermanentTab}
-   home_tab := DockTab {name: "Conversation" kind: @room_screen template: @PermanentTab}
+   root := DockTabs {tabs: [@home_tab, @console_tab] selected: 0}
+   home_tab := DockTab {name: "Chat" kind: @room_screen template: @PermanentTab}
    console_tab := DockTab {name: "Console" kind: @console_screen template: @PermanentTab}
-   rooms_sidebar := CachedWidget {rooms_sidebar := mod.widgets.RoomsSideBar {}}
    room_screen := CachedWidget {room_screen := mod.widgets.RoomScreen {}}
    console_screen := View {
     flow: Down padding: 24 spacing: 12
@@ -45,15 +41,47 @@ script_mod! {
    }
   }
  }
+ mod.widgets.MainDesktopUI = #(MainDesktopUI::register_widget(vm)) {
+  flow: Right show_bg: true draw_bg.color: COLOR_PRIMARY
+  rail := SolidView {
+   width: 64 height: Fill flow: Down spacing: 16 padding: 8 draw_bg.color: COLOR_PRIMARY
+   rail_chat := mod.widgets.RailButton {text: "Chat"}
+   rail_console := mod.widgets.RailButton {text: "Console" draw_bg.icon_kind: 1.0}
+  }
+  layout_dock := mod.widgets.RobrixDock {
+   width: Fill height: Fill padding: 0 spacing: 0 margin: 0
+   tab_bar +: {
+    CloseableTab := mod.widgets.RobrixTab {closeable: true}
+    PermanentTab := mod.widgets.RobrixTab {closeable: false width: Fit padding: 9}
+   }
+   root := DockSplitter {
+    axis: SplitterAxis.Horizontal align: SplitterAlign.FromA(248.0)
+    a: @rooms_sidebar_tabs b: @main_workspace_tabs
+   }
+   rooms_sidebar_tabs := DockTabs {tabs: [@rooms_sidebar_tab] selected: 0 hide_tab_bar: true}
+   main_workspace_tabs := DockTabs {tabs: [@main_workspace_tab] selected: 0 hide_tab_bar: true}
+   rooms_sidebar_tab := DockTab {kind: @rooms_sidebar template: @PermanentTab}
+   main_workspace_tab := DockTab {kind: @main_workspace template: @PermanentTab}
+   rooms_sidebar := CachedWidget {rooms_sidebar := mod.widgets.RoomsSideBar {}}
+   main_workspace := mod.widgets.MainConversationUI {}
+  }
+ }
  mod.widgets.HomeScreen = #(HomeScreen::register_widget(vm)) {
   main_adaptive_view := AdaptiveView {
    Desktop := SolidView {
-    width: Fill height: Fill flow: Right padding: 0 margin: 0
+    width: Fill height: Fill flow: Down padding: 0 margin: 0
     draw_bg.color: COLOR_SECONDARY
+    brand_bar := mod.widgets.HeptaBrandBar {}
     CachedWidget {desktop_ui := mod.widgets.MainDesktopUI {}}
    }
    Mobile := SolidView {
     width: Fill height: Fill flow: Down draw_bg.color: COLOR_SECONDARY
+    brand_bar := mod.widgets.HeptaBrandBar {
+     height: 44 padding: Inset{left: 12, right: 12} spacing: 10
+     brand_mark +: {width: 28 height: 28}
+     brand_title +: {draw_text.text_style.font_size: 14}
+    }
+    channel_heading := mod.widgets.ConversationHeading {compact: true}
     View {width: Fill height: Fit flow: Flow.Right{wrap: true} spacing: 6 padding: 6
      conversations := mod.widgets.AuroraButton {text: "Conversations"}
      chat_tab := mod.widgets.AuroraButton {text: "Chat"}
@@ -76,6 +104,40 @@ script_mod! {
   }
  }
 }
+/// The existing Chat/Console Dock, under a shared display-only room heading.
+/// It receives the original workspace and forwards every event unchanged.
+#[derive(Script, ScriptHook, Widget)]
+pub struct MainConversationUI {
+    #[deref]
+    view: View,
+}
+impl Widget for MainConversationUI {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.view.handle_event(cx, event, scope);
+    }
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
+        // This child is created lazily by the outer layout Dock. Select here,
+        // before its first draw, so a cached Console stays Console on resize.
+        if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
+            self.view.dock(cx, ids!(dock)).select_tab(
+                cx,
+                if workspace.tab == WorkspaceTab::Console {
+                    id!(console_tab)
+                } else {
+                    id!(home_tab)
+                },
+            );
+        }
+        self.view.draw_walk(cx, scope, walk)
+    }
+}
+/// Only ordinary visible selection, used to invalidate retained draw lists.
+struct VisualSelection {
+    room: RoomKey,
+    title: String,
+    tab: WorkspaceTab,
+    navigation_open: bool,
+}
 #[derive(Script, Widget)]
 pub struct HomeScreen {
     #[deref]
@@ -84,6 +146,10 @@ pub struct HomeScreen {
     rendered: Option<RoomKey>,
     #[rust]
     theme_return_focus: Option<(RoomKey, TextInputRef)>,
+    #[rust]
+    visual_selection: Option<VisualSelection>,
+    #[rust]
+    pending_visual_redraw: Option<NextFrame>,
 }
 impl ScriptHook for HomeScreen {
     fn on_after_new(&mut self, vm: &mut ScriptVm) {
@@ -189,6 +255,47 @@ impl Widget for HomeScreen {
             );
             self.view.redraw(cx);
         }
+        // A sidebar action can update selection while only invalidating the
+        // sidebar. Invalidate the common view after the action, before Draw:
+        // the nested Dock may otherwise reuse a clean main contents list and
+        // skip both its title and selected-tab synchronization. Never record
+        // an invalidation suppressed by the framework's in-draw guard. A
+        // display change during drawing requests one deferred frame instead
+        // of waiting for another user event or recursively dispatching one.
+        if self
+            .pending_visual_redraw
+            .is_some_and(|frame| frame.is_event(event).is_some())
+        {
+            self.pending_visual_redraw = None;
+        }
+        let room = RoomKey {
+            epoch: workspace.presentation_epoch(),
+            local_id: workspace.active_id(),
+        };
+        let title = workspace
+            .title_for(workspace.active_id())
+            .unwrap_or("New conversation");
+        if self.visual_selection.as_ref().is_none_or(|previous| {
+            previous.room != room
+                || previous.title != title
+                || previous.tab != workspace.tab
+                || previous.navigation_open != workspace.navigation_open
+        }) {
+            if cx.in_draw_event() {
+                if self.pending_visual_redraw.is_none() {
+                    self.pending_visual_redraw = Some(cx.new_next_frame());
+                }
+            } else {
+                self.view.redraw(cx);
+                self.visual_selection = Some(VisualSelection {
+                    room,
+                    title: title.to_owned(),
+                    tab: workspace.tab,
+                    navigation_open: workspace.navigation_open,
+                });
+                self.pending_visual_redraw = None;
+            }
+        }
     }
     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
         if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
@@ -275,7 +382,7 @@ impl Widget for MainDesktopUI {
         // post-event recolour traversal after the old splitter was drawn.
         let theme = cx.global::<crate::visual_theme::ThemeState>().selected;
         if self.layout_theme != Some(theme)
-            && self.view.dock(cx, ids!(dock)).set_splitter_align(
+            && self.view.dock(cx, ids!(layout_dock)).set_splitter_align(
                 cx,
                 id!(root),
                 SplitterAlign::FromA(theme.sidebar_width()),
@@ -291,14 +398,6 @@ impl Widget for MainDesktopUI {
                 epoch: workspace.presentation_epoch(),
                 local_id: workspace.active_id(),
             });
-            self.view.dock(cx, ids!(dock)).select_tab(
-                cx,
-                if workspace.tab == WorkspaceTab::Console {
-                    id!(console_tab)
-                } else {
-                    id!(home_tab)
-                },
-            );
         }
         self.view.draw_walk(cx, scope, walk)
     }

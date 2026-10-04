@@ -143,7 +143,6 @@ script_mod! {
    let upper_depth = max(0.0, 1.0 - length((self.pos - vec2(0.2, 0.0)) * vec2(0.8, 2.0)))
    return mix(self.color, self.accent, light * 0.18 + fine_edge * 0.10 + haze * haze * 0.10 + upper_depth * 0.025)
   }}
-  Label {height: Fit padding: Inset{top: 14, bottom: 18} text: "H E P T A" draw_text +: {color: COLOR_TEXT text_style: theme.font_regular{font_size: 15}}}
   room_filter := TextInput {width: Fill height: 40 padding: 10 empty_text: "Find a conversation"}
   new_draft := mod.widgets.AuroraNewConversation {width: Fill text: "+  New draft"}
   list := PortalList {width: Fill height: Fill flow: Down Room := mod.widgets.RoomsListEntry {}}

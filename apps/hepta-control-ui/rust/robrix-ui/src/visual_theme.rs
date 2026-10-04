@@ -31,6 +31,14 @@ impl VisualTheme {
             Self::AuroraGraphite => 248.0,
         }
     }
+    /// Display-only header geometry, measured inside the shared chat shell.
+    pub fn channel_heading_height(self) -> f64 {
+        match self {
+            Self::ObsidianIce => 84.0,
+            Self::LunarTitanium => 90.0,
+            Self::AuroraGraphite => 92.0,
+        }
+    }
     pub fn tokens(self) -> Tokens {
         let values = match self {
             Self::ObsidianIce => [
@@ -122,7 +130,7 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
             secondary,
         } = tokens;
         if widget.borrow::<Label>().is_some() {
-            if name == id!(username) || name == id!(room_name) {
+            if name == id!(username) || name == id!(room_name) || name == id!(room_actions) {
                 script_apply_eval!(cx,widget,{draw_text +: {text_style +: {font_family: mod.widgets.HEPTA_BOLD.font_family}}});
             } else {
                 script_apply_eval!(cx,widget,{draw_text +: {text_style +: {font_family: mod.widgets.HEPTA_REGULAR.font_family}}});
@@ -181,13 +189,15 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
         {
             script_apply_eval!(cx,widget,{draw_bg +: {color_hover: #(surface) color_selected: #(selected) color_selected_hover: #(selected)}});
         } else if widget.borrow::<Dock>().is_some() {
-            let width = theme.sidebar_width();
-            widget.as_dock().set_splitter_align(
-                cx,
-                id!(root),
-                SplitterAlign::FromA(width),
-                /*mark_dirty*/ false,
-            );
+            if name == id!(layout_dock) {
+                let width = theme.sidebar_width();
+                widget.as_dock().set_splitter_align(
+                    cx,
+                    id!(root),
+                    SplitterAlign::FromA(width),
+                    /*mark_dirty*/ false,
+                );
+            }
         } else if widget.borrow::<Image>().is_some() && name == id!(lunar_background) {
             widget
                 .as_image()
