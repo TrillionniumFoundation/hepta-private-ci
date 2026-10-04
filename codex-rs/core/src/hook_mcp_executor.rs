@@ -55,6 +55,14 @@ impl HookMcpExecutor for CoreHookMcpExecutor {
                         call.tool
                     )
                 })?;
+            if let Some(environment_id) = call.environment_id.as_deref()
+                && prepared_call.server_environment_id() != environment_id
+            {
+                bail!(
+                    "hook MCP server `{}` belongs to a different executor environment",
+                    call.server
+                );
+            }
             let mut metadata = call.metadata.unwrap_or_default();
             metadata.insert(
                 "threadId".to_string(),

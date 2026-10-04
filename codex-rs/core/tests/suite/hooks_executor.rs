@@ -232,15 +232,17 @@ async fn executor_stop_hook_rejects_mismatched_environment() -> Result<()> {
         .refresh_mcp_config(mismatched_config)
         .await;
     wait_for_mcp_server(&fixture.test.codex, "node_repl").await?;
-    assert_eq!(
-        fixture
-            .test
-            .codex
-            .inspect_selected_capability_roots()
-            .ready_roots
-            .len(),
-        1
-    );
+    let ready_roots = fixture.test.codex.inspect_selected_capability_roots().ready_roots;
+    let plugin_roots = ready_roots
+        .iter()
+        .filter(|root| root.id == "computer-use@openai-bundled")
+        .collect::<Vec<_>>();
+    assert_eq!(plugin_roots.len(), 1);
+    assert!(matches!(
+        &plugin_roots[0].location,
+        CapabilityRootLocation::Environment { environment_id, .. }
+            if environment_id == &selection.environment_id
+    ));
     fixture
         .test
         .submit_text_turn("when Node REPL belongs to a different executor")
