@@ -103,7 +103,7 @@ impl RootFrozenGeneratorServiceV1 {
             }
             execution::protected_directory(&directory)?;
             let bytes = codex_hepta_supervisor::RootFleetPeerAdmissionV1::read_protected_source(
-                &path, crate::local_cpu_parameter_root_materials_v2::MAX_PARAMETER_ROUND_DESCRIPTOR_BYTES_V2, /*private*/ false)?;
+                &path, usize::try_from(crate::local_cpu_parameter_root_materials_v2::MAX_PARAMETER_ROUND_DESCRIPTOR_BYTES_V2)?, /*private*/ false)?;
             let bundle: InstalledRoundBundleV1 = serde_json::from_slice(&bytes)?;
             let recipe = recipe::retained(&self.configuration.execution_directory, &round)?;
             ensure!(bundle.schema == "hepta.installed-round-bundle.v1"
@@ -167,7 +167,7 @@ impl RootFrozenGeneratorServiceV1 {
             after.observed_clock_ms = status.observed_clock_ms;
             ensure!(after == status
                 && codex_hepta_supervisor::RootFleetPeerAdmissionV1::read_protected_source(
-                    &path, crate::local_cpu_parameter_root_materials_v2::MAX_PARAMETER_ROUND_DESCRIPTOR_BYTES_V2, /*private*/ false)? == bytes,
+                    &path, usize::try_from(crate::local_cpu_parameter_root_materials_v2::MAX_PARAMETER_ROUND_DESCRIPTOR_BYTES_V2)?, /*private*/ false)? == bytes,
                 "actual original preparation changed before return");
             Ok::<_, anyhow::Error>(RoundPreparationResultV1::Prepared {
                 bundle: RoundPreparationSourceV1 { path, digest: Digest32::of_bytes(&bytes).to_string() },

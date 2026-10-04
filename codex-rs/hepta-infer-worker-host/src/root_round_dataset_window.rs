@@ -5,6 +5,8 @@ use codex_hepta_agent_components::intelligence_eval::*;
 use codex_hepta_agent_components::learning_ledger::*;
 use codex_hepta_agentd::PreparedParameterDatasetV1;
 use codex_hepta_agentd::PreparedParameterDatasetWindowV3;
+use std::io::Read;
+use std::io::Seek;
 
 pub(super) enum PreparedDataset {
     OriginalV2(PreparedParameterDatasetV1),
@@ -12,6 +14,21 @@ pub(super) enum PreparedDataset {
         facts: PreparedParameterDatasetWindowV3,
         evaluation: FixedDatasetWindowEvaluationV3,
     },
+}
+
+// Inspect the same protected descriptor whose complete original bytes were
+// admitted; a second path read cannot pin the descriptor used by the parser.
+fn pinned_source_file(source: &InstalledCpuSourceV1, expected: &[u8]) -> Result<std::fs::File> {
+    let mut file = open_root_review_input(&source.path)
+        .map_err(|error| anyhow::anyhow!("{error}"))?;
+    let maximum = u64::try_from(expected.len())?.checked_add(1)
+        .context("whole original Window Source size")?;
+    let mut bytes = Vec::new();
+    (&mut file).take(maximum).read_to_end(&mut bytes)?;
+    ensure!(bytes == expected && Digest32::of_bytes(&bytes) == source.digest.parse()?,
+        "whole original Window Source differs on inspected descriptor");
+    file.rewind()?;
+    Ok(file)
 }
 
 pub(super) async fn collect(
@@ -81,8 +98,20 @@ pub(super) async fn collect(
     let ledger_bytes = facts.ledger_source_bytes()?;
     let witness_bytes = configuration::source(&window.witness, 8 * 1024 * 1024)?;
     let binding = facts.ledger_binding.parse()?;
+    let ledger = original_facts::publish(
+        public,
+        "frozen-ledger.bin",
+        &ledger_bytes,
+        MAX_LEDGER_CANONICAL_SOURCE_BYTES_V1,
+    )?;
+    let witness_source = original_facts::publish(
+        public,
+        "original-witness.bin",
+        &witness_bytes,
+        8 * 1024 * 1024,
+    )?;
     let witness = inspect_ledger_witness_frontier(
-        std::io::Cursor::new(&witness_bytes),
+        pinned_source_file(&witness_source, &witness_bytes)?,
         binding,
         window.maximum_witness_frames as usize,
     )
@@ -96,24 +125,12 @@ pub(super) async fn collect(
     );
     let maximum_records = u32::try_from(facts.maximum_ledger_records)?;
     let snapshot = inspect_ledger(
-        std::io::Cursor::new(&ledger_bytes),
+        pinned_source_file(&ledger, &ledger_bytes)?,
         binding,
         maximum_records as usize,
         witness.anchor,
     )
     .map_err(|error| anyhow::anyhow!("{error}"))?;
-    let ledger = original_facts::publish(
-        public,
-        "frozen-ledger.bin",
-        &ledger_bytes,
-        MAX_LEDGER_CANONICAL_SOURCE_BYTES_V1,
-    )?;
-    let witness_source = original_facts::publish(
-        public,
-        "original-witness.bin",
-        &witness_bytes,
-        8 * 1024 * 1024,
-    )?;
     let role = |source: &InstalledCpuSourceV1| ParameterRoleSourceV3 {
         path: source.path.clone(),
         digest: source.digest.clone(),

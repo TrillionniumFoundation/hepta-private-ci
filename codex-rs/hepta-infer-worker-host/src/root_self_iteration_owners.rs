@@ -95,7 +95,7 @@ impl RootFrozenGeneratorServiceV1 {
             let Some(native_binding) = native_binding else {
                 return Ok(None);
             };
-            let _permit = self.issuance.acquire().await?;
+            let _permit = self.issuance.acquire(&scope.agent_id).await?;
             self.revalidate(stream, peer, scope, &before).await?;
             let goal = StableId::new(status.round.goal_id())?;
             let fresh_status = self.status(scope, &before, &client, &goal).await?;
