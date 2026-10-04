@@ -16,6 +16,19 @@ use makepad_widgets::*;
 script_mod! {
  use mod.prelude.widgets.*
  use mod.widgets.*
+ mod.widgets.ConversationHeading = #(ConversationHeading::register_widget(vm)) {
+  width: Fill height: 84 flow: Down
+  heading_surface := View {
+   width: Fill height: Fill flow: Right align: Align{y: 0.5}
+   padding: Inset{left: 30, right: 24}
+   show_bg: true draw_bg.color: COLOR_PRIMARY
+   room_actions := Label {
+    width: Fill height: Fit padding: 0 max_lines: 1 text_overflow: Ellipsis
+    text: "New conversation"
+    draw_text +: {color: COLOR_TEXT text_style: USERNAME_TEXT_STYLE{font_size: 26}}
+   }
+  }
+ }
  mod.widgets.Message = View {
   width: Fill height: Fit margin: 0 flow: Down spacing: 0
   body := View {
@@ -54,12 +67,7 @@ script_mod! {
  }
  mod.widgets.RoomScreen = #(RoomScreen::register_widget(vm)) {
   width: Fill height: Fill cursor: MouseCursor.Default flow: Down spacing: 0
-  conversation_header := View {
-   width: Fill height: Fit flow: Right align: Align{y: 0.5} spacing: 14
-   padding: Inset{left: 20, right: 20, top: 5, bottom: 8}
-   room_actions := Label {width: Fit{max: FitBound.Abs(240)} height: Fit padding: 0 max_lines: 1 text_overflow: Ellipsis text: "New conversation" draw_text.color: COLOR_TEXT}
-   presentation_note := Label {visible: false width: Fill height: Fit padding: 0 flow: Flow.Right{wrap:true} draw_text.color: TIMESTAMP_TEXT_COLOR}
-  }
+  presentation_note := Label {visible: false width: Fill height: Fit padding: Inset{left: 20, right: 20, top: 5, bottom: 8} flow: Flow.Right{wrap:true} draw_text.color: TIMESTAMP_TEXT_COLOR}
   room_screen_wrapper := SolidView {
    width: Fill height: Fill flow: Overlay
    draw_bg +: {color: COLOR_PRIMARY_DARKER accent: uniform(COLOR_ROBRIX_PURPLE) secondary: uniform(COLOR_AURORA_CORAL)
@@ -79,6 +87,39 @@ script_mod! {
    }
   }
  }
+}
+/// Displays the existing conversation title without changing workspace state.
+#[derive(Script, ScriptHook, Widget)]
+pub struct ConversationHeading {
+    #[deref]
+    view: View,
+    #[live]
+    compact: bool,
+}
+impl Widget for ConversationHeading {
+    fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
+        self.view.handle_event(cx, event, scope);
+    }
+    fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, mut walk: Walk) -> DrawStep {
+        let theme = cx.global::<crate::visual_theme::ThemeState>().selected;
+        walk.height = Size::Fixed(if self.compact {
+            48.0
+        } else {
+            theme.channel_heading_height()
+        });
+        if let Some(mut title) = self.view.label(cx, ids!(room_actions)).borrow_mut() {
+            title.draw_text.text_style.font_size = if self.compact { 16.0 } else { 26.0 };
+        }
+        if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
+            self.view.label(cx, ids!(room_actions)).set_text(
+                cx,
+                workspace
+                    .title_for(workspace.active_id())
+                    .unwrap_or("New conversation"),
+            );
+        }
+        self.view.draw_walk(cx, scope, walk)
+    }
 }
 #[derive(Default)]
 struct RoomViewMemory {
@@ -376,12 +417,6 @@ impl Widget for RoomScreen {
             self.view
                 .button(cx, ids!(jump_to_latest))
                 .set_visible(cx, !presentation.timeline.stick_to_bottom);
-            self.view.label(cx, ids!(room_actions)).set_text(
-                cx,
-                workspace
-                    .title_for(workspace.active_id())
-                    .unwrap_or("New conversation"),
-            );
             let show_notice = presentation.timeline.empty_state.is_some()
                 || presentation.timeline.status == TimelineStatus::ResyncRequired;
             self.view
