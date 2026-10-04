@@ -1029,7 +1029,7 @@ def verify_cleanup_base(system):
     }
 
 
-def verify(profile="qualification") -> int:
+def verify(profile="development") -> int:
     need(profile in {"development", "qualification"}, "verification profile")
     verify_exact_workflow_references()
     module_index = load(FILES["module_docs"])
@@ -2125,7 +2125,7 @@ def main():
     sp = ap.add_subparsers(dest="cmd", required=True)
     verification = sp.add_parser("verify")
     verification.add_argument(
-        "--profile", choices=["development", "qualification"], default="qualification"
+        "--profile", choices=["development", "qualification"], default="development"
     )
     for name in ["generate-status", "inventory-legacy", "self-test"]:
         sp.add_parser(name)

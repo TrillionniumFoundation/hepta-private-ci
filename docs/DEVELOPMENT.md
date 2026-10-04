@@ -63,7 +63,9 @@ independent evaluation, candidate execution, promotion or release. Readiness
 dossiers, paper locks, synthetic merge receipts and capability evidence must not
 be added to an ordinary source-only change just to satisfy a document gate.
 Path-filtered CI selects the qualification checks from the changed boundary;
-it does not use a global checklist as a proxy for evidence.
+it does not use a global checklist as a proxy for evidence. The local document
+verifiers default to `development`; pass `--profile qualification` explicitly
+when revalidating historical execution evidence or an activation boundary.
 
 Ordinary authorized development has no hard changed-path quota. Work packages
 are bounded by semantic scope, ownership, authority change, durable-domain
