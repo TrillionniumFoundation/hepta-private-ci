@@ -273,7 +273,27 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(thread_id).await?, 1);
+    // Lose only the materialized index row. The real hard-delete API also
+    // seals the durable thread and must never be used to model missing metadata.
+    let pool = state_db
+        .sqlite()
+        .open_read_write_pool(&state_db.sqlite().state_db_path())
+        .await?;
+    assert_eq!(
+        sqlx::query("DELETE FROM threads WHERE id = ?")
+            .bind(thread_id.to_string())
+            .execute(&pool)
+            .await?
+            .rows_affected(),
+        1
+    );
+    pool.close().await;
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(thread_id)
+            .await?
+    );
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
@@ -336,7 +356,27 @@ async fn exec_resume_last_trusts_usable_state_db_candidate() -> anyhow::Result<(
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(newer_thread_id).await?, 1);
+    // Lose only the materialized index row. The real hard-delete API also
+    // seals the durable thread and must never be used to model missing metadata.
+    let pool = state_db
+        .sqlite()
+        .open_read_write_pool(&state_db.sqlite().state_db_path())
+        .await?;
+    assert_eq!(
+        sqlx::query("DELETE FROM threads WHERE id = ?")
+            .bind(newer_thread_id.to_string())
+            .execute(&pool)
+            .await?
+            .rows_affected(),
+        1
+    );
+    pool.close().await;
+    assert!(
+        !state_db
+            .thread_queue()
+            .thread_queue_is_sealed_for_deletion(newer_thread_id)
+            .await?
+    );
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
