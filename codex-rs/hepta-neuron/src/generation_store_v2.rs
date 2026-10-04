@@ -6,6 +6,7 @@
 //! separate anti-rollback authority; an acknowledgement frame clears the local
 //! outbox only after the external compare-and-swap has been observed.
 
+use std::cell::Cell;
 use std::collections::BTreeMap;
 use std::error::Error as StdError;
 use std::fmt;
@@ -213,7 +214,7 @@ pub struct FileNeuronGenerationStoreV2 {
     event_frontier: Digest32,
     end_offset: u64,
     pending_ack_bytes: u64,
-    poisoned: bool,
+    poisoned: Cell<bool>,
     #[cfg(test)]
     failpoint: Option<GenerationStoreFailpointV2>,
 }
@@ -252,7 +253,7 @@ impl FileNeuronGenerationStoreV2 {
             event_frontier: Digest32::ZERO,
             end_offset: HEADER_BYTES as u64,
             pending_ack_bytes: 0,
-            poisoned: false,
+            poisoned: Cell::new(false),
             #[cfg(test)]
             failpoint: None,
         })
@@ -354,7 +355,7 @@ impl FileNeuronGenerationStoreV2 {
             event_frontier,
             end_offset,
             pending_ack_bytes,
-            poisoned: false,
+            poisoned: Cell::new(false),
             #[cfg(test)]
             failpoint: None,
         })
@@ -442,6 +443,7 @@ impl FileNeuronGenerationStoreV2 {
         self.event_frontier = event_digest_from_payload(&payload)?;
         self.records.push(record.clone());
         self.pending_ack_bytes = pending_ack_bytes;
+        self.ensure_healthy()?;
         Ok(NeuronGenerationCommitResultV2::Committed(record))
     }
 
@@ -489,6 +491,7 @@ impl FileNeuronGenerationStoreV2 {
         self.witness_frontier = Some(anchor);
         self.pending_ack_bytes = pending_ack_bytes;
         self.event_frontier = event_digest_from_payload(&payload)?;
+        self.ensure_healthy()?;
         Ok(())
     }
 
@@ -672,7 +675,7 @@ impl FileNeuronGenerationStoreV2 {
         let length_bytes = payload_len.to_be_bytes();
         let checksum = Digest32::of_parts(&[&length_bytes, payload]);
         let added = framed_bytes(payload.len())?;
-        self.poisoned = true;
+        self.poisoned.set(true);
         if self.file.seek(SeekFrom::End(0))? != self.end_offset {
             return Err(GenerationStoreError::Corrupt);
         }
@@ -712,17 +715,8 @@ impl FileNeuronGenerationStoreV2 {
             .end_offset
             .checked_add(added)
             .ok_or(GenerationStoreError::Capacity)?;
-        self.poisoned = false;
+        self.poisoned.set(false);
         Ok(())
-    }
-
-    fn ensure_healthy(&self) -> Result<(), GenerationStoreError> {
-        self.file.verify_identity()?;
-        if self.poisoned {
-            Err(GenerationStoreError::Poisoned)
-        } else {
-            Ok(())
-        }
     }
 
     #[cfg(test)]
@@ -1264,5 +1258,8 @@ fn sync_parent_directory(_path: &Path) -> Result<(), GenerationStoreError> {
 #[cfg(test)]
 #[path = "generation_store_v2_tests.rs"]
 mod tests;
+
+#[path = "generation_store_v2_integrity.rs"]
+mod integrity;
 
 include!("generation_store_v2_prepared.rs");

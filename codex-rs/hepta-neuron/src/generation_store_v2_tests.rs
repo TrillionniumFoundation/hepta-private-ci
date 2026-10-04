@@ -330,3 +330,115 @@ fn during_write_uncertainty_does_not_fabricate_success() {
     assert_eq!(checked(reopened.find_operation(&value.key)), None);
     assert_eq!(checked(reopened.current_anchor()), None);
 }
+
+// Inject same-inode retained-byte faults through the already-held fixture
+// descriptor. Windows also enforces its owner lock against separate handles.
+fn overwrite_held_fixture(store: &mut FileNeuronGenerationStoreV2, bytes: &[u8]) {
+    let position = checked(store.file.stream_position());
+    checked(store.file.seek(SeekFrom::Start(0)));
+    checked(store.file.write_all(bytes));
+    checked(store.file.set_len(bytes.len() as u64));
+    checked(store.file.sync_data());
+    checked(store.file.seek(SeekFrom::Start(position)));
+}
+
+#[test]
+fn live_retained_same_length_corruption_cannot_return_historical_result() {
+    let fixture = Fixture::new();
+    let mut store = checked(FileNeuronGenerationStoreV2::create(
+        &fixture.file,
+        context(),
+    ));
+    let request = commit(1);
+    checked(store.commit_result(request.clone()));
+    let original = store.held_fixture_bytes();
+    let mut changed = original.clone();
+    let last = changed.len() - 1;
+    changed[last] ^= 1;
+    overwrite_held_fixture(&mut store, &changed);
+    assert!(
+        store.find_operation(&request.key).is_err(),
+        "changed live bytes returned cached success"
+    );
+    overwrite_held_fixture(&mut store, &original);
+    assert!(matches!(
+        store.current_anchor(),
+        Err(GenerationStoreError::Poisoned)
+    ));
+}
+
+#[test]
+fn live_retained_truncation_cannot_admit_from_a_cached_frontier() {
+    let fixture = Fixture::new();
+    let mut store = checked(FileNeuronGenerationStoreV2::create(
+        &fixture.file,
+        context(),
+    ));
+    checked(store.commit_result(commit(1)));
+    let original = store.held_fixture_bytes();
+    checked(store.file.set_len(HEADER_BYTES as u64));
+    let request = commit(2);
+    assert!(
+        store
+            .admit_operation(
+                &request.key,
+                Some(anchor(1)),
+                request.checkpoint_bytes.len(),
+                request.full_receipt_bytes.len()
+            )
+            .is_err(),
+        "missing retained history admitted another model operation"
+    );
+    overwrite_held_fixture(&mut store, &original);
+    assert!(matches!(
+        store.find_operation(&commit(1).key),
+        Err(GenerationStoreError::Poisoned)
+    ));
+}
+
+#[test]
+fn live_retained_header_substitution_blocks_append_without_overwriting() {
+    let fixture = Fixture::new();
+    let mut store = checked(FileNeuronGenerationStoreV2::create(
+        &fixture.file,
+        context(),
+    ));
+    checked(store.commit_result(commit(1)));
+    let mut changed = store.held_fixture_bytes();
+    changed[8] ^= 1;
+    overwrite_held_fixture(&mut store, &changed);
+    assert!(
+        store.commit_result(commit(2)).is_err(),
+        "a changed live header admitted another commit"
+    );
+    assert_eq!(store.held_fixture_bytes(), changed);
+}
+
+#[test]
+fn live_retained_rehashed_alternate_history_cannot_replace_cached_frontier() {
+    let fixture = Fixture::new();
+    let mut store = checked(FileNeuronGenerationStoreV2::create(
+        &fixture.file,
+        context(),
+    ));
+    let request = commit(1);
+    checked(store.commit_result(request.clone()));
+    let original = store.held_fixture_bytes();
+    let alternate_path = fixture.root.join("alternate.hptngs02");
+    let mut alternate = checked(FileNeuronGenerationStoreV2::create(
+        &alternate_path,
+        context(),
+    ));
+    let mut changed_request = request.clone();
+    changed_request.full_receipt_bytes[0] ^= 1;
+    checked(alternate.commit_result(changed_request));
+    drop(alternate);
+    let alternate_bytes = checked(fs::read(&alternate_path));
+    assert_eq!(alternate_bytes.len(), original.len());
+    overwrite_held_fixture(&mut store, &alternate_bytes);
+    assert!(
+        store.find_operation(&request.key).is_err(),
+        "valid frame hashes were accepted against a different retained frontier"
+    );
+    assert_eq!(store.held_fixture_bytes(), alternate_bytes);
+}
