@@ -151,6 +151,7 @@ pub(crate) fn decide_independently(
     bundle: IndependentEvaluationBundleV1,
     now: u64,
 ) -> Result<IndependentEvaluationDecisionV1, EvaluationClosureError> {
+    validate_metric_count(bundle.metrics.len())?;
     let contract_digest = digest_metric_contracts(&mut metric_contracts(&bundle.metrics))?;
     decide_with_metric_contract(bundle, now, contract_digest, |metric| {
         match metric.direction {
@@ -816,6 +817,13 @@ pub(crate) fn digest_evaluation_bundle(
     disposition: IndependentEvaluationDispositionV1,
     failed_metrics: &[StableId],
 ) -> Result<Digest32, EvaluationClosureError> {
+    validate_metric_count(bundle.metrics.len())?;
+    validate_metric_count(failed_metrics.len())?;
+    if bundle.snapshot_ids.len() > MAX_LINEAGE_IDS
+        || bundle.future_window_ids.len() > MAX_LINEAGE_IDS
+    {
+        return Err(EvaluationClosureError::FoldLineageLimit);
+    }
     let mut bytes = b"hepta.intelligence-eval.independent-decision.v1".to_vec();
     push_id(&mut bytes, &bundle.evaluation_id);
     push_id(&mut bytes, &bundle.candidate_id);
@@ -963,6 +971,13 @@ fn validate_frozen_evaluation_binding(
         return Err(EvaluationClosureError::HoldoutUseBindingMismatch(
             "use digest",
         ));
+    }
+    Ok(())
+}
+
+pub(crate) fn validate_metric_count(count: usize) -> Result<(), EvaluationClosureError> {
+    if count > MAX_METRICS {
+        return Err(EvaluationClosureError::MetricLimit);
     }
     Ok(())
 }

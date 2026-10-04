@@ -35,6 +35,8 @@ pub fn freeze_cross_fold_plan_v2(
     plan: CrossFoldPlanV1,
     mut metric_roles: Vec<MetricRoleContractV2>,
 ) -> Result<CrossFoldPlanReceiptV1, EvaluationClosureError> {
+    validate_metric_count(plan.metric_contracts.len())?;
+    validate_metric_count(metric_roles.len())?;
     let mut contracts = plan.metric_contracts.clone();
     let contract_digest = digest_role_contracts(&mut contracts, &mut metric_roles)?;
     let mut receipt = freeze_cross_fold_plan(plan)?;
@@ -86,6 +88,8 @@ pub(crate) fn digest_evaluation_roles(
     bundle: &IndependentEvaluationBundleV1,
     metric_roles: &[MetricRoleContractV2],
 ) -> Result<Digest32, EvaluationClosureError> {
+    validate_metric_count(bundle.metrics.len())?;
+    validate_metric_count(metric_roles.len())?;
     digest_role_contracts(
         &mut metric_contracts(&bundle.metrics),
         &mut metric_roles.to_vec(),
