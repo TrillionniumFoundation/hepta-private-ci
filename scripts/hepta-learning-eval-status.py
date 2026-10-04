@@ -218,10 +218,16 @@ def validate_map(model: dict) -> None:
     git("merge-base", "--is-ancestor", commit, "HEAD")
     for caller in model["sourceFacts"]["callers"]:
         checked_paths.add(caller["sourcePath"])
-    changed = [
-        path for path in sorted(checked_paths)
-        if git("diff", "--quiet", commit, "--", path, check=False).returncode == 1
-    ]
+    changed: list[str] = []
+    for path in sorted(checked_paths):
+        result = git("diff", "--quiet", commit, "--", path, check=False)
+        if result.returncode == 1:
+            changed.append(path)
+        elif result.returncode != 0:
+            raise SystemExit(
+                f"mapped source comparison failed for {path} "
+                f"(git diff exit {result.returncode})"
+            )
     if changed:
         raise SystemExit("mapped executable source changed after observation: " + ", ".join(changed))
 
