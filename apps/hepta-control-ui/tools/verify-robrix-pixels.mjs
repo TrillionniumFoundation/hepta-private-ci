@@ -106,6 +106,64 @@ export async function screenshotWordCenter(path,word,viewportWidth,{topOnly=fals
  assert.ok(row,`Actual rendered control ${word} must be readable before activation`);
  return{x:(Number(row[6])+Number(row[8])/2)/ratio,y:(Number(row[7])+Number(row[9])/2)/ratio,textBounds:{left:Number(row[6])/ratio,top:Number(row[7])/ratio,width:Number(row[8])/ratio,height:Number(row[9])/ratio}};
 }
+// Expected Aurora navigation bands for the two actual browser test viewports.
+// The theme cycle returns to Aurora before either tab is activated.
+// Rust source: home.rs brand heights 68/44, rail 64 and mobile row padding 6;
+// visual_theme.rs Aurora sidebar 248 and heading 92; room.rs compact heading 48;
+// home.rs Dock tabs 44; styles.rs AuroraButton height 40.
+// These are layout assertions, never fallback click coordinates. A deliberate
+// layout/viewport change must update this contract and its real-pixel fixtures.
+export function conversationNavigationRegion(viewport){
+ assert.equal(viewport.height,800,'Navigation OCR requires an explicitly covered viewport');
+ assert.ok([640,1280].includes(viewport.width),'Navigation OCR requires an explicitly covered viewport');
+ return viewport.width===1280
+  ? {left:64+248,top:68+92,width:viewport.width-64-248,height:44}
+  : {left:0,top:44+48,width:viewport.width,height:40+6+6};
+}
+export function conversationTabsFromOcr(tsv,imageSize,viewport){
+ const region=conversationNavigationRegion(viewport);
+ assert.ok(Number.isInteger(imageSize.width)&&imageSize.width>0&&Number.isInteger(imageSize.height)&&imageSize.height>0,'Screenshot dimensions must be positive integers');
+ const ratio=imageSize.width/viewport.width;
+ assert.equal(imageSize.height,Math.round(viewport.height*ratio),'Navigation OCR requires a verified full-viewport capture');
+ const words={chat:[],console:[]};
+ for(const line of tsv.trim().split('\n').slice(1)){
+  const c=line.split('\t');
+  if(c.length<12||c[0]!=='5')continue;
+  const name=c[11].toLowerCase();if(!Object.hasOwn(words,name))continue;
+  const [left,top,width,height]=c.slice(6,10).map(value=>Number(value)/ratio);
+  assert.ok([left,top,width,height].every(Number.isFinite)&&width>0&&height>0,'Observed navigation glyph bounds must be finite and positive');
+  const right=left+width,bottom=top+height;
+  const intersects=left<region.left+region.width&&right>region.left&&top<region.top+region.height&&bottom>region.top;
+  if(!intersects)continue;
+  assert.ok(left>=region.left&&top>=region.top&&right<=region.left+region.width&&bottom<=region.top+region.height,'Navigation labels must be completely inside the expected visible tab band');
+  words[name].push({x:left+width/2,y:top+height/2,textBounds:{left,top,width,height}});
+ }
+ assert.ok(words.chat.length<=1&&words.console.length<=1,'Ambiguous Chat/Console navigation labels must not be activated');
+ if(words.chat.length!==1||words.console.length!==1)return null;
+ const [chat,console]=[words.chat[0],words.console[0]];
+ const a=chat.textBounds,b=console.textBounds;
+ const overlap=Math.min(a.top+a.height,b.top+b.height)-Math.max(a.top,b.top);
+ assert.ok(a.left+a.width<=b.left&&overlap>=Math.min(a.height,b.height)/2,'Chat and Console must form one left-to-right rendered navigation row');
+ return {Chat:chat,Console:console,region};
+}
+export async function screenshotConversationTabs(path,viewport,{recordOcr=false}={}){
+ const bytes=await readFile(path);assert.equal(bytes.subarray(1,4).toString(),'PNG');
+ const imageSize={width:bytes.readUInt32BE(16),height:bytes.readUInt32BE(20)};
+ for(const mode of ['11','6']){
+  const {stdout,stderr}=await run('tesseract',[path,'stdout','-l','eng','--psm',mode,'tsv'],{env:{...process.env,OMP_THREAD_LIMIT:'1'},timeout:20000,maxBuffer:256*1024});
+  assert.doesNotMatch(stderr,/Failed loading language|Error opening data file|Can't open tsv/i);
+  if(recordOcr)await writeFile(path.replace(/\.png$/,`-navigation-psm${mode}-ocr.txt`),stdout);
+  // Only a missing exact label may try the other existing OCR layout mode.
+  // Ambiguity, clipping or a broken row fails immediately, never by confidence.
+  const observed=conversationTabsFromOcr(stdout,imageSize,viewport);
+  if(observed){
+   const result={...observed,viewport,imageSize,ocrMode:mode};
+   if(recordOcr)await writeFile(path.replace(/\.png$/,'-navigation-controls.json'),JSON.stringify(result,null,2));
+   return result;
+  }
+ }
+ assert.fail('Actual rendered Chat/Console pair must be readable inside the navigation band before activation');
+}
 export function requireChatText(text,{fixtures=false}={}){
  assert.match(text,/\bconversations?\b/i,'Actual canvas screenshot must contain readable conversation navigation');
  assert.match(text,fixtures?/\bfixture\b/i:/\bdraft\b/i,'Actual canvas screenshot must contain its truthful draft/fixture state');

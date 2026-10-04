@@ -4,7 +4,7 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {captureSchedule} from '../tools/robrix-pixel-plan.mjs';
-import {screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
+import {screenshotWordCenter,screenshotConversationTabs} from '../tools/verify-robrix-pixels.mjs';
 for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
  test(`Robrix host starts under strict CSP ${viewport.width}`,async({page,browserName},testInfo)=>{
   let phase='application';
@@ -117,9 +117,11 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
    if(!match)return null;
    const [x,y,width,height]=match.slice(1).map(Number);return{x,y,width,height};
   }
-  async function clickRenderedWord(captured,word,options){
+  async function clickConversationTab(captured,word){
    const start=performance.now();
-   const point=await screenshotWordCenter(captured.path,word,page.viewportSize().width,{...options,recordOcr:true});
+   expect(['Chat','Console']).toContain(word);
+   const tabs=await screenshotConversationTabs(captured.path,page.viewportSize(),{recordOcr:true});
+   const point=tabs[word];
    controlTimings.push({capture:captured.name,word,ms:performance.now()-start});
    await page.mouse.click(point.x,point.y);
    await page.evaluate(()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve))));
@@ -163,9 +165,9 @@ for(const viewport of [{width:1280,height:800},{width:640,height:800}]) {
     await expect(page.locator('textarea.cx_webgl_textinput')).toHaveValue(expectedDraft);
    }
    captured=await capture('robrix-theme-round-trip');
-   await clickRenderedWord(captured,'Console',{topOnly:true});
+   await clickConversationTab(captured,'Console');
    const consoleCapture=await capture('robrix-console',{consoleView:true});
-   await clickRenderedWord(consoleCapture,page.viewportSize().width<760?'Chat':'Conversation',{topOnly:true});
+   await clickConversationTab(consoleCapture,'Chat');
    captured=await capture('robrix-console-round-trip');
    // Re-enter the real Rust editor after the Console round trip. Its native
    // mirror must be repopulated from owner state, including the astral character.
