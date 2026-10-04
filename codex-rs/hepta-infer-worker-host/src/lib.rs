@@ -96,6 +96,7 @@ pub use local_cpu_parameter_compiler::validate_cpu_neuron_parameter_advice_v2;
 pub use local_cpu_parameter_compiler::validate_cpu_neuron_parameter_materials_v2;
 #[cfg(feature = "agentd-host")]
 pub use local_cpu_parameter_compiler::validate_cpu_neuron_parameter_receipt_v2;
+pub use local_cpu_parameter_compiler::validate_cpu_neuron_parameter_rollback_pairs_v2;
 
 #[cfg(all(target_os = "linux", feature = "agentd-host"))]
 pub use local_cpu_parameter_compiler::CPU_PARAMETER_CHECKS_V1;
@@ -111,6 +112,8 @@ pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerOwnersV2;
 pub use local_cpu_parameter_compiler::CpuNeuronParameterCompilerPlanV2;
 #[cfg(all(target_os = "linux", feature = "agentd-host"))]
 pub use local_cpu_parameter_compiler::CpuNeuronParameterPolicyV2;
+#[cfg(target_os = "linux")]
+pub use local_cpu_parameter_compiler::CpuNeuronParameterRollbackPlanV2;
 #[cfg(all(target_os = "linux", feature = "agentd-host"))]
 pub use local_cpu_parameter_compiler::CpuNeuronRoundMaterialBlueprintV3;
 #[cfg(all(target_os = "linux", feature = "agentd-host"))]
@@ -456,5 +459,7 @@ pub use root_frozen_generator::OriginalParameterEvaluationPublicationsV1;
 pub use root_frozen_generator::OriginalParameterEvaluationTemplateV1;
 #[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
 pub use root_frozen_generator::OriginalParameterRoleProgramV1;
+#[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
+pub use root_frozen_generator::OriginalParameterRollbackPublicationV2;
 #[cfg(all(target_os = "linux", feature = "root-frozen-generator"))]
 pub use root_frozen_generator::prepare_original_parameter_evaluation_publications_v1;

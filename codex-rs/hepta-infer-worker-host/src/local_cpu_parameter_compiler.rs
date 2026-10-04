@@ -48,6 +48,7 @@ pub use materials::validate_cpu_neuron_generation_material_v2;
 pub use materials::validate_cpu_neuron_parameter_advice_v2;
 pub use materials::validate_cpu_neuron_parameter_materials_v2;
 pub use materials::validate_cpu_neuron_parameter_receipt_v2;
+pub use materials::validate_cpu_neuron_parameter_rollback_pairs_v2;
 
 #[cfg(target_os = "linux")]
 #[path = "local_cpu_round_materials_v3.rs"]
@@ -102,6 +103,11 @@ pub use owners::CpuNeuronParameterCompilerOwnersV2;
 use owners::Materialized;
 use owners::Worker;
 #[cfg(target_os = "linux")]
+#[path = "local_cpu_parameter_rollback_pairs_v2.rs"]
+mod rollback_pairs;
+#[cfg(target_os = "linux")]
+pub use rollback_pairs::CpuNeuronParameterRollbackPlanV2;
+#[cfg(target_os = "linux")]
 #[path = "local_cpu_parameter_policy.rs"]
 mod policy;
 #[cfg(target_os = "linux")]
@@ -130,6 +136,8 @@ pub struct CpuNeuronGovernedParameterCompilerV1 {
     issuance: Option<owners::Issuance>,
     materialized: Option<AgentdSelfIterationCandidateV1>,
     physical_generations: crate::CpuNeuronGenerationCompositionReaderV2,
+    #[cfg(target_os = "linux")]
+    candidate_rollbacks: Option<Vec<rollback_pairs::RetainedRollback>>,
 }
 
 impl CpuNeuronGovernedParameterCompilerV1 {
@@ -204,6 +212,8 @@ impl CpuNeuronGovernedParameterCompilerV1 {
             issuance: None,
             materialized: None,
             physical_generations: crate::CpuNeuronGenerationCompositionReaderV2::default(),
+            #[cfg(target_os = "linux")]
+            candidate_rollbacks: None,
         })
     }
 
@@ -277,6 +287,11 @@ impl AgentdGovernedParameterGenerationCompilerV1 for CpuNeuronGovernedParameterC
     ) -> Result<(), AgentdError> {
         #[cfg(target_os = "linux")]
         if let Some(policy) = &self.policy {
+            if self.plan.candidates.len() > 1 && self.candidate_rollbacks.is_none() {
+                return Err(error(
+                    "multi-Update production requires every exact original rollback pair",
+                ));
+            }
             if canonical.canonical_bytes() != policy.canonical().canonical_bytes()
                 || self
                     .round
@@ -380,14 +395,19 @@ impl AgentdGovernedParameterGenerationCompilerV1 for CpuNeuronGovernedParameterC
                 .position(|value| value.candidate_id == id)
                 .ok_or_else(|| error("CPU compiler consumed generation plan requires recovery"))?;
             let selected = self.plan.candidates.remove(position);
-            let rollback = self.plan.rollback.clone();
-            let rollback_worker = self.plan.rollback_worker.clone();
-            let control = self.owners.control.clone();
-            let clock = Arc::clone(&self.owners.clock);
-            let rollback_admission =
+            #[cfg(target_os = "linux")]
+            let (rollback, rollback_worker, rollback_admission) =
+                self.take_original_rollback(&id)?;
+            #[cfg(not(target_os = "linux"))]
+            let (rollback, rollback_worker, rollback_admission) = (
+                self.plan.rollback.clone(),
+                self.plan.rollback_worker.clone(),
                 self.plan.rollback_admission.take().ok_or_else(|| {
                     error("CPU compiler rollback requires original owner recovery")
-                })?;
+                })?,
+            );
+            let control = self.owners.control.clone();
+            let clock = Arc::clone(&self.owners.clock);
             self.creation = Some(owners::start_generation(
                 selected,
                 rollback,

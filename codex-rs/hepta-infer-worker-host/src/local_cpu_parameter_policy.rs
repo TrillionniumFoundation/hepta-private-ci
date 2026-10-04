@@ -185,13 +185,22 @@ impl CpuNeuronParameterPolicyV2 {
             .map(|candidate| &candidate.worker)
             .chain(std::iter::once(&plan.rollback_worker))
         {
-            if !Arc::ptr_eq(&worker.resources, &owners.resources)
-                || worker.maximum_request_duration > self.remaining()?
-            {
-                return Err(error(
-                    "sparse generation changed original resource owner or deadline",
-                ));
-            }
+            self.validate_worker(worker, &owners.resources)?;
+        }
+        Ok(())
+    }
+
+    pub(super) fn validate_worker(
+        &self,
+        worker: &crate::CpuNeuronControlConfigV2,
+        resources: &Arc<crate::FleetWorkerResourcePortV2>,
+    ) -> Result<(), AgentdError> {
+        if !Arc::ptr_eq(&worker.resources, resources)
+            || worker.maximum_request_duration > self.remaining()?
+        {
+            return Err(error(
+                "sparse generation changed original resource owner or deadline",
+            ));
         }
         Ok(())
     }
