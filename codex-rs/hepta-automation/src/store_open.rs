@@ -16,7 +16,7 @@ use super::AutomationStore;
 use super::MIGRATOR;
 use super::create_private_directory;
 use super::protect_database_file;
-use super::reconcile_legacy_migration_ids;
+use super::reconcile_legacy_migration_ids_connection;
 use super::unavailable;
 use super::verify_store;
 
@@ -42,24 +42,11 @@ impl AutomationStore {
             pool.close().await;
             return Err(error);
         }
-        if let Err(error) = reconcile_legacy_migration_ids(&pool).await {
+        if let Err(error) = migrate_owner(&pool, &owner_agent_id).await {
             pool.close().await;
             return Err(error);
         }
-        if MIGRATOR.run(&pool).await.is_err() {
-            pool.close().await;
-            return Err(AutomationError::Unavailable);
-        }
         protect_database_file(&path)?;
-        sqlx::query(
-            "INSERT INTO automation_meta (singleton, schema_version, owner_agent_id)
-             VALUES (1, ?, ?) ON CONFLICT(singleton) DO NOTHING",
-        )
-        .bind(i64::from(AUTOMATION_SCHEMA_VERSION))
-        .bind(owner_agent_id.as_str())
-        .execute(&pool)
-        .await
-        .map_err(unavailable)?;
         verify_store(&pool, &owner_agent_id).await?;
         let timer = sqlx::query(
             "SELECT writer_epoch, phase FROM automation_timer_lifecycle WHERE singleton = 1",
@@ -88,4 +75,73 @@ impl AutomationStore {
             timer_epoch,
         })
     }
+}
+
+/// Fence logical owner qualification and schema changes on one connection.
+/// The existing pool has already opened/configured SQLite. This is not a
+/// side-effect-free filesystem preflight or a descriptor-bound writer admission.
+async fn migrate_owner(
+    pool: &sqlx::SqlitePool,
+    owner_agent_id: &AgentId,
+) -> Result<(), AutomationError> {
+    let mut transaction = pool
+        .begin_with("BEGIN IMMEDIATE")
+        .await
+        .map_err(unavailable)?;
+    let has_meta: i64 = sqlx::query_scalar(
+        "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = 'automation_meta'",
+    )
+    .fetch_one(&mut *transaction)
+    .await
+    .map_err(unavailable)?;
+    if has_meta == 0 {
+        let objects: i64 = sqlx::query_scalar("SELECT COUNT(*) FROM main.sqlite_schema")
+            .fetch_one(&mut *transaction)
+            .await
+            .map_err(unavailable)?;
+        if objects != 0 {
+            return Err(AutomationError::Corrupt);
+        }
+    } else {
+        let rows = sqlx::query(
+            "SELECT singleton, schema_version, owner_agent_id FROM automation_meta LIMIT 2",
+        )
+        .fetch_all(&mut *transaction)
+        .await
+        .map_err(|_| AutomationError::Corrupt)?;
+        if rows.len() != 1 {
+            return Err(AutomationError::Corrupt);
+        }
+        let row = &rows[0];
+        let singleton: i64 = row
+            .try_get("singleton")
+            .map_err(|_| AutomationError::Corrupt)?;
+        let schema: i64 = row
+            .try_get("schema_version")
+            .map_err(|_| AutomationError::Corrupt)?;
+        let owner: String = row
+            .try_get("owner_agent_id")
+            .map_err(|_| AutomationError::Corrupt)?;
+        // Relocated migrations 17/18 emitted legacy metadata versions 4/5.
+        // They never defined owner schema versions 17/18.
+        if singleton != 1 || !matches!(schema, 1..=16 | 19 | 20) || AgentId::parse(&owner).is_err()
+        {
+            return Err(AutomationError::Corrupt);
+        }
+        if owner != owner_agent_id.as_str() {
+            return Err(AutomationError::AccessDenied);
+        }
+    }
+    reconcile_legacy_migration_ids_connection(&mut transaction).await?;
+    MIGRATOR.run(&mut *transaction).await.map_err(unavailable)?;
+    sqlx::query(
+        "INSERT INTO automation_meta (singleton, schema_version, owner_agent_id)
+         VALUES (1, ?, ?) ON CONFLICT(singleton) DO NOTHING",
+    )
+    .bind(i64::from(AUTOMATION_SCHEMA_VERSION))
+    .bind(owner_agent_id.as_str())
+    .execute(&mut *transaction)
+    .await
+    .map_err(unavailable)?;
+    transaction.commit().await.map_err(unavailable)
 }

@@ -1276,19 +1276,26 @@ fn protect_database_file(_path: &Path) -> Result<(), AutomationError> {
 /// imports collided. Only exact original checksums can move to versions 17/18.
 /// This transaction changes migration identities, never their SQL, checksums,
 /// timestamps or product data. Unknown/dirty/duplicate histories fail closed.
+#[cfg(test)]
 async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), AutomationError> {
     let mut transaction = pool
         .begin_with("BEGIN IMMEDIATE")
         .await
         .map_err(unavailable)?;
+    reconcile_legacy_migration_ids_connection(&mut transaction).await?;
+    transaction.commit().await.map_err(unavailable)
+}
+
+async fn reconcile_legacy_migration_ids_connection(
+    connection: &mut sqlx::SqliteConnection,
+) -> Result<(), AutomationError> {
     let exists: i64 = sqlx::query_scalar(
         "SELECT COUNT(*) FROM sqlite_master WHERE type = 'table' AND name = '_sqlx_migrations'",
     )
-    .fetch_one(&mut *transaction)
+    .fetch_one(&mut *connection)
     .await
     .map_err(unavailable)?;
     if exists == 0 {
-        transaction.commit().await.map_err(unavailable)?;
         return Ok(());
     }
     let maximum = MIGRATOR.iter().count() + 2;
@@ -1296,7 +1303,7 @@ async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), Automat
         "SELECT version, checksum, success FROM _sqlx_migrations ORDER BY version LIMIT ?",
     )
     .bind(i64::try_from(maximum + 1).map_err(|_| AutomationError::Corrupt)?)
-    .fetch_all(&mut *transaction)
+    .fetch_all(&mut *connection)
     .await
     .map_err(unavailable)?;
     if rows.len() > maximum {
@@ -1337,14 +1344,14 @@ async fn reconcile_legacy_migration_ids(pool: &SqlitePool) -> Result<(), Automat
         .bind(relocated)
         .bind(version)
         .bind(checksum)
-        .execute(&mut *transaction)
+        .execute(&mut *connection)
         .await
         .map_err(unavailable)?;
         if updated.rows_affected() != 1 {
             return Err(AutomationError::Corrupt);
         }
     }
-    transaction.commit().await.map_err(unavailable)
+    Ok(())
 }
 
 #[cfg(test)]
@@ -1353,3 +1360,7 @@ mod migration_convergence_tests;
 
 #[path = "store_open.rs"]
 mod open;
+
+#[cfg(test)]
+#[path = "owner_preflight_tests.rs"]
+mod owner_preflight_tests;
