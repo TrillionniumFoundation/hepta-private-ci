@@ -203,7 +203,9 @@ fn withdraw_with_clock(
         publication_request = Some(Box::new(request.clone()));
         phase = HostLearningWithdrawalPhaseV1::PublicationUncertain;
         let receipt = owner
-            .publish_with_state_changes(request, &changes)
+            .publish_with_state_changes_and_clock(request, &changes, &mut || {
+                now().map_err(|_| artifacts::LearningArtifactOwnerServiceError::ClockUnavailable)
+            })
             .map_err(|e| e.to_string())?;
         publication_ack = Some(receipt.clone());
         phase = HostLearningWithdrawalPhaseV1::ArtifactAcknowledged;
