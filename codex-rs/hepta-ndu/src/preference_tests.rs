@@ -46,6 +46,7 @@ fn damped_preference_update_emits_local_solver_receipts() {
         }],
     ));
     let predecessor = initial.state_digest;
+    let initial_residual_raw = FixedQ32::ONE.raw() - initial.values[0].value.raw();
     let (terminal, termination, receipts) = must(solve_preference_target(
         initial,
         vec![AxisValue {
@@ -76,6 +77,14 @@ fn damped_preference_update_emits_local_solver_receipts() {
             .max()
             .expect("maximum residual")
     );
+    // The local termination maximum covers emitted post-step receipts, not
+    // the pre-iteration input. With eta=1/4, residual 1 becomes 3/4.
+    assert_eq!(initial_residual_raw, FixedQ32::ONE.raw());
+    assert_eq!(
+        receipts.first().expect("first iteration").residual_raw,
+        3_i64 << 30
+    );
+    assert!(termination.maximum_residual_raw < initial_residual_raw);
     assert!(receipts.iter().all(|receipt| receipt.validate().is_ok()));
 }
 
