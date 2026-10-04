@@ -242,7 +242,7 @@ pub(crate) async fn run(
                 }
             };
             let bundle: InstalledRoundBundleV1 =
-                serde_json::from_slice(&read(&bundle_source, 64 * 1024)?)?;
+                serde_json::from_slice(&read(&bundle_source, crate::local_cpu_parameter_root_materials_v2::MAX_PARAMETER_ROUND_DESCRIPTOR_BYTES_V2)?)?;
             let unique_candidates: std::collections::BTreeSet<_> = bundle
                 .candidates
                 .iter()

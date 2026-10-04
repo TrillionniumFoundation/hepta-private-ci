@@ -19,6 +19,14 @@ pub(super) struct MaterialBlueprint {
 
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
+pub(super) struct DatasetWindowBlueprint {
+    pub witness: InstalledCpuSourceV1,
+    pub maximum_witness_frames: u32,
+    pub evaluator: RootSelfIterationRoleRouteV1,
+}
+
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
 pub(super) struct Blueprint {
     pub schema: String,
     pub model_resolver: InstalledCpuSourceV1,
@@ -27,6 +35,8 @@ pub(super) struct Blueprint {
     pub plasticity_context_template: InstalledCpuSourceV1,
     pub dataset_producer: InstalledCpuSourceV1,
     pub dataset_plan: InstalledCpuSourceV1,
+    #[serde(default)]
+    pub dataset_window: Option<DatasetWindowBlueprint>,
     pub search_shape: InstalledCpuSourceV1,
     pub ndu_journal: InstalledCpuSourceV1,
     pub material: MaterialBlueprint,
@@ -118,6 +128,31 @@ impl Blueprint {
                         .parse::<Digest32>()?
                         .is_zero(),
                 "whole enrolled native role route changed"
+            );
+        }
+        if let Some(window) = &blueprint.dataset_window {
+            ensure!(
+                window.witness.path.is_absolute()
+                    && !window.witness.digest.parse::<Digest32>()?.is_zero()
+                    && (1..=8192).contains(&window.maximum_witness_frames)
+                    && window.evaluator.uid > 0
+                    && window.evaluator.gid > 0
+                    && window.evaluator.inaccessible_paths.len() == 5
+                    && window.evaluator.program.path.is_absolute()
+                    && !window
+                        .evaluator
+                        .program
+                        .digest
+                        .parse::<Digest32>()?
+                        .is_zero()
+                    && window.evaluator.configuration_template.path.is_absolute()
+                    && !window
+                        .evaluator
+                        .configuration_template
+                        .digest
+                        .parse::<Digest32>()?
+                        .is_zero(),
+                "original finite Window Evaluator and independent witness Sources"
             );
         }
         Ok((blueprint, bytes))

@@ -34,6 +34,8 @@ mod facts;
 mod failure;
 #[path = "root_self_iteration_owners.rs"]
 mod independent_owners;
+#[path = "root_frozen_generator_issuance.rs"]
+mod issuance;
 #[path = "root_round_preparation.rs"]
 mod preparation;
 #[path = "root_frozen_generator_prepared.rs"]
@@ -60,7 +62,7 @@ pub struct RootFrozenGeneratorServiceV1 {
     admission: RootFleetPeerAdmissionV1,
     layout: HeptaFleetLayout,
     supervisor: SupervisordClient,
-    issuance: tokio::sync::Semaphore,
+    issuance: issuance::IssuanceGates,
 }
 
 impl RootFrozenGeneratorServiceV1 {
@@ -71,6 +73,13 @@ impl RootFrozenGeneratorServiceV1 {
         let layout = HeptaFleetRoot::parse(&configuration.fleet_root)?.layout();
         let supervisor =
             SupervisordClient::new(layout.supervisor_socket().to_owned())?.with_owner_uid(0);
+        let issuance = issuance::IssuanceGates::new(
+            configuration
+                .agents
+                .iter()
+                .map(|scope| scope.agent_id.clone()),
+            configuration.maximum_parallel_issuance.unwrap_or(1),
+        )?;
         Ok(Self {
             configuration_path: path,
             configuration_bytes,
@@ -78,7 +87,7 @@ impl RootFrozenGeneratorServiceV1 {
             admission,
             layout,
             supervisor,
-            issuance: tokio::sync::Semaphore::new(1),
+            issuance,
         })
     }
 
@@ -198,7 +207,7 @@ impl RootFrozenGeneratorServiceV1 {
                 GeneratorPublication::Issue(_) => {
                     // Full model materials stay within the installed service's
                     // memory budget while read-only observations remain available.
-                    let _issuance = self.issuance.acquire().await?;
+                    let _issuance = self.issuance.acquire(&scope.agent_id).await?;
                     self.revalidate(stream, peer, scope, &before).await?;
                     self.issue(stream, peer, scope, &before, &client, &status, &payload).await
                 }

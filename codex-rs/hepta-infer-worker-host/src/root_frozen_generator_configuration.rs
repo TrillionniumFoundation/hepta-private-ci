@@ -48,6 +48,8 @@ pub(super) struct Configuration {
     pub generator_private_key_path: PathBuf,
     pub generator_inaccessible_paths: Vec<PathBuf>,
     pub agents: Vec<AgentScope>,
+    #[serde(default)]
+    pub maximum_parallel_issuance: Option<usize>,
 }
 
 fn absolute(path: &Path) -> Result<()> {
@@ -95,6 +97,10 @@ impl Configuration {
             /*private*/ true,
         )?;
         let configuration: Self = serde_json::from_slice(&bytes)?;
+        ensure!(
+            (1..=4).contains(&configuration.maximum_parallel_issuance.unwrap_or(1)),
+            "bounded original Generator material concurrency"
+        );
         ensure!(
             configuration.schema == "hepta.root-frozen-generator-composition.v1"
                 && configuration.generator_uid != 0

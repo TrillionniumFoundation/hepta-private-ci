@@ -15,8 +15,12 @@ mod admission_projection;
 mod blueprint;
 #[path = "root_round_bundle.rs"]
 mod bundle_publication;
+#[path = "root_round_checkpoint.rs"]
+mod checkpoint_projection;
 #[path = "root_round_context.rs"]
 mod context_projection;
+#[path = "root_round_dataset_window.rs"]
+mod dataset_projection;
 #[path = "root_round_fresh.rs"]
 mod fresh;
 #[path = "root_round_original_facts.rs"]
@@ -75,7 +79,7 @@ impl RootFrozenGeneratorServiceV1 {
             }
             ensure!(!status.terminal && now_ms()? < round.deadline_ms(),
                 "actual original round is terminal or expired");
-            let _permit = self.issuance.acquire().await?;
+            let _permit = self.issuance.acquire(&scope.agent_id).await?;
             self.revalidate(stream, peer, scope, &before).await?;
             let directory = self.configuration.execution_directory
                 .join(format!("round-materials-{}", round.identity_digest()));
@@ -99,7 +103,7 @@ impl RootFrozenGeneratorServiceV1 {
             }
             execution::protected_directory(&directory)?;
             let bytes = codex_hepta_supervisor::RootFleetPeerAdmissionV1::read_protected_source(
-                &path, 64 * 1024, /*private*/ false)?;
+                &path, crate::local_cpu_parameter_root_materials_v2::MAX_PARAMETER_ROUND_DESCRIPTOR_BYTES_V2, /*private*/ false)?;
             let bundle: InstalledRoundBundleV1 = serde_json::from_slice(&bytes)?;
             let recipe = recipe::retained(&self.configuration.execution_directory, &round)?;
             ensure!(bundle.schema == "hepta.installed-round-bundle.v1"
@@ -163,7 +167,7 @@ impl RootFrozenGeneratorServiceV1 {
             after.observed_clock_ms = status.observed_clock_ms;
             ensure!(after == status
                 && codex_hepta_supervisor::RootFleetPeerAdmissionV1::read_protected_source(
-                    &path, 64 * 1024, /*private*/ false)? == bytes,
+                    &path, crate::local_cpu_parameter_root_materials_v2::MAX_PARAMETER_ROUND_DESCRIPTOR_BYTES_V2, /*private*/ false)? == bytes,
                 "actual original preparation changed before return");
             Ok::<_, anyhow::Error>(RoundPreparationResultV1::Prepared {
                 bundle: RoundPreparationSourceV1 { path, digest: Digest32::of_bytes(&bytes).to_string() },

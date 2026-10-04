@@ -9,7 +9,6 @@ use codex_hepta_agentd::AgentdNeuronGoalScopeV3;
 use codex_hepta_agentd::AgentdNeuronScopeIdentityV3;
 use codex_hepta_agentd::ParameterServingScopeV1;
 use codex_hepta_agentd::PreparedParameterCheckpointV1;
-use codex_hepta_agentd::PreparedParameterDatasetV1;
 use codex_hepta_neuron::NeuronGenerationMaterialV2;
 use codex_hepta_neuron::encode_neuron_generation_material_v2;
 use std::os::unix::fs::MetadataExt;
@@ -25,7 +24,8 @@ pub(super) struct OriginalFacts {
     pub serving: ParameterServingScopeV1,
     pub serving_source: InstalledCpuSourceV1,
     pub checkpoint: PreparedParameterCheckpointV1,
-    pub dataset: PreparedParameterDatasetV1,
+    pub checkpoint_source: InstalledCpuSourceV1,
+    pub dataset: dataset_projection::PreparedDataset,
     pub snapshot: InstalledCpuSourceV1,
     pub snapshot_receipt: RegistrySnapshotReceipt,
     pub public: PathBuf,
@@ -235,14 +235,16 @@ pub(super) async fn collect(
         path: response_path,
         digest: Digest32::of_bytes(&response_bytes).to_string(),
     };
-    let (generation, checkpoint) = client
-        .prepare_parameter_checkpoint_v1(
-            round.clone(),
-            goal_material_source.path.clone(),
-            goal_material_source.digest.parse()?,
-        )
-        .await?;
-    current::validate_runtime_generation(before, generation)?;
+    let (checkpoint, checkpoint_source) = checkpoint_projection::collect(
+        client,
+        before,
+        agent,
+        round,
+        &goal_material,
+        &goal_material_source,
+        &public,
+    )
+    .await?;
     checkpoint.checkpoint(&goal_material)?;
     ensure!(
         checkpoint.scope == serving.scope
@@ -298,16 +300,11 @@ pub(super) async fn collect(
         &snapshot_bytes,
         64 * 1024 * 1024,
     )?;
-    let (generation, dataset) = client
-        .prepare_parameter_dataset_v1(
-            round.clone(),
-            blueprint.dataset_producer.path.clone(),
-            blueprint.dataset_producer.digest.parse()?,
-            blueprint.dataset_plan.path.clone(),
-            blueprint.dataset_plan.digest.parse()?,
-        )
-        .await?;
-    current::validate_runtime_generation(before, generation)?;
+    let Some(dataset) =
+        dataset_projection::collect(blueprint, client, before, round, &public, &effects).await?
+    else {
+        return Ok(None);
+    };
     let (generation, after_serving, _) = client
         .inspect_parameter_serving_scope_source_v1(round.clone())
         .await?;
@@ -332,6 +329,7 @@ pub(super) async fn collect(
         serving,
         serving_source,
         checkpoint,
+        checkpoint_source,
         dataset,
         snapshot,
         snapshot_receipt,

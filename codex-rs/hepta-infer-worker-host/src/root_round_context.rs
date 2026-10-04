@@ -2,8 +2,10 @@
 //! Only the final phase installs a context on the same held Agentd owner.
 use super::*;
 use codex_hepta_agent_components::learning_artifacts::RegistrySnapshotReceipt;
-use codex_hepta_agentd::ParameterInputContextProjectionV2;
-use codex_hepta_agentd::project_parameter_input_context_v2;
+use codex_hepta_agentd::ParameterInputContextDatasetV3;
+use codex_hepta_agentd::ParameterInputContextFrozenNeuronV3;
+use codex_hepta_agentd::ParameterInputContextProjectionV3;
+use codex_hepta_agentd::project_parameter_input_context_v3;
 use original_facts::OriginalFacts;
 
 pub(super) fn project(
@@ -63,9 +65,22 @@ pub(super) fn project(
         now_ms()? < expires,
         "original complete context observation expired"
     );
-    let bytes = project_parameter_input_context_v2(
+    let dataset = match &facts.dataset {
+        dataset_projection::PreparedDataset::OriginalV2(dataset) => {
+            ParameterInputContextDatasetV3::OriginalV2(dataset)
+        }
+        dataset_projection::PreparedDataset::WindowV3 { facts, evaluation } => {
+            ParameterInputContextDatasetV3::WindowV3 {
+                facts,
+                plan: &evaluation.plan,
+                window: &evaluation.window,
+                evaluator: &evaluation.evaluator_evidence,
+            }
+        }
+    };
+    let bytes = project_parameter_input_context_v3(
         &template,
-        &ParameterInputContextProjectionV2 {
+        &ParameterInputContextProjectionV3 {
             subject,
             spawn_generation: spawn,
             round,
@@ -77,7 +92,17 @@ pub(super) fn project(
             ),
             artifact_snapshot_source: &snapshot.path,
             artifact_snapshot_receipt: receipt,
-            dataset: &facts.dataset,
+            dataset,
+            frozen_neuron: Some(ParameterInputContextFrozenNeuronV3 {
+                checkpoint_response: (
+                    &facts.checkpoint_source.path,
+                    facts.checkpoint_source.digest.parse()?,
+                ),
+                goal_material: (
+                    &facts.goal_material_source.path,
+                    facts.goal_material_source.digest.parse()?,
+                ),
+            }),
             ndu_journal_source: (
                 &blueprint.ndu_journal.path,
                 blueprint.ndu_journal.digest.parse()?,

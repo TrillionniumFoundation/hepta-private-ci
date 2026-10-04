@@ -111,7 +111,7 @@ pub(super) fn publish(
         directory,
         "bundle.json",
         &serde_json::to_vec(&bundle)?,
-        64 * 1024,
+        crate::local_cpu_parameter_root_materials_v2::MAX_PARAMETER_ROUND_DESCRIPTOR_BYTES_V2 as usize,
     )?;
     Ok(())
 }

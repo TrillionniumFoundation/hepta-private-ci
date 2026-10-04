@@ -173,7 +173,7 @@ pub(crate) fn publish(
         &directory,
         "materials.json",
         &serde_json::to_vec(&descriptor)?,
-        64 * 1024,
+        crate::local_cpu_parameter_root_materials_v2::MAX_PARAMETER_ROUND_DESCRIPTOR_BYTES_V2 as usize,
     )?;
     let recipe = PublishedRoundRecipeV3 {
         schema: "hepta.cpu-neuron.round-recipe.v3".into(),
@@ -215,7 +215,7 @@ pub(crate) fn retained(
         canonical.digest() == round.canonical_policy_digest(),
         "retained canonical policy differs from the original reservation"
     );
-    configuration::source(&recipe.materials, 64 * 1024)?;
+    configuration::source(&recipe.materials, crate::local_cpu_parameter_root_materials_v2::MAX_PARAMETER_ROUND_DESCRIPTOR_BYTES_V2 as usize)?;
     configuration::source(&recipe.plasticity_context, 1024 * 1024)?;
     Ok(recipe)
 }

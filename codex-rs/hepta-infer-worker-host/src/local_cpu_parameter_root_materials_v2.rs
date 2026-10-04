@@ -14,7 +14,9 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
 use serde::Deserialize;
 
-const MAX_DESCRIPTOR_BYTES: u64 = 64 * 1024;
+/// Whole descriptors contain up to 32 candidate and exact-rollback Source
+/// pairs. Keep producers and consumers bounded by the same full-object limit.
+pub(crate) const MAX_PARAMETER_ROUND_DESCRIPTOR_BYTES_V2: u64 = 1024 * 1024;
 #[derive(Deserialize)]
 #[serde(deny_unknown_fields)]
 struct Descriptor {
@@ -71,7 +73,7 @@ impl CpuNeuronParameterRootMaterialsV2 {
         source: &InstalledCpuSourceV1,
         expected_worker_elf: Digest32,
     ) -> Result<Self, AgentdError> {
-        let descriptor_bytes = read(source, MAX_DESCRIPTOR_BYTES)?;
+        let descriptor_bytes = read(source, MAX_PARAMETER_ROUND_DESCRIPTOR_BYTES_V2)?;
         let descriptor: Descriptor = serde_json::from_slice(&descriptor_bytes)?;
         if descriptor.schema != "hepta.cpu-neuron.parameter-root-materials.v2"
             || descriptor.candidates.is_empty()
@@ -81,7 +83,7 @@ impl CpuNeuronParameterRootMaterialsV2 {
             return Err(invalid("bounded protected CPU material descriptor"));
         }
         let worker = worker::VerifiedWorker::open(&descriptor.worker_program, expected_worker_elf)?;
-        let mut sources = vec![(source.clone(), MAX_DESCRIPTOR_BYTES)];
+        let mut sources = vec![(source.clone(), MAX_PARAMETER_ROUND_DESCRIPTOR_BYTES_V2)];
         let canonical = CanonicalIterationEnvelopeV1::decode(&read_retained(
             &descriptor.canonical_envelope,
             262_144,
