@@ -17,12 +17,19 @@ export function validateFixtureTextRegion(entry,kind){
  const checked=name=>{
   const rect=g[name];assert.ok(Array.isArray(rect)&&rect.length===4&&rect.every(Number.isFinite),'Rendered region must contain four finite coordinates');
   const [left,top,width,height]=rect;
-  assert.ok(width>0&&height>0&&left>=0&&top>=0&&left+width<=entry.viewport.width&&top+height<=entry.viewport.height,'Rendered region must be positive and wholly inside the actual viewport');
+  assert.ok(width>0&&height>0&&left>=0&&top>=0&&left<entry.viewport.width&&top+height<=entry.viewport.height,'Rendered region must be positive and vertically inside the actual viewport');
+  if(name==='composer')assert.ok(left+width<=entry.viewport.width,'Composer must be wholly inside the actual viewport');
   return {left,top,width,height};
  };
  const timeline=checked('viewport'),composer=checked('composer');
  assert.ok(timeline.top+timeline.height<=composer.top&&composer.left>=timeline.left&&composer.left+composer.width<=timeline.left+timeline.width,'Timeline and composer regions must be separate and belong to the same visible pane');
- return kind==='viewport'?timeline:composer;
+ // The allocated timeline can extend beyond the right raster edge. Observe
+ // only its explicit visible intersection, retaining the original allocation
+ // in evidence. This does not make clipped content or status glyphs visible;
+ // validateTailStatusGeometry still independently enforces those bounds.
+ const visible={...timeline,width:Math.min(entry.viewport.width,timeline.left+timeline.width)-timeline.left};
+ assert.ok(composer.left+composer.width<=visible.left+visible.width,'Composer must belong to the visible timeline pane');
+ return kind==='viewport'?visible:composer;
 }
 export function fixtureMessageObservation(text,total){
  // One independent OCR result only: never concatenate passes to count a
@@ -100,7 +107,7 @@ export async function verifyCapture(directory,entry,expected){
    assert.equal(input.sourcePngSha256,entry.pngSha256,'Region must come from the exact captured PNG');
    const text=await readScreenshotText(regionPath,{layout:'block'});
    await writeFile(regionPath.replace(/\.png$/,'-ocr.txt'),text);
-   await writeFile(regionPath.replace(/\.png$/,'.json'),JSON.stringify({...input,geometry:entry.geometryBefore,ocrSha256:sha(text)}));
+   await writeFile(regionPath.replace(/\.png$/,'.json'),JSON.stringify({...input,geometry:entry.geometryBefore,...(kind==='viewport'?{visibleTimelineIntersection:area}:{}),ocrSha256:sha(text)}));
    regionTexts.set(kind,text);
   }
   return regionTexts.get(kind);
