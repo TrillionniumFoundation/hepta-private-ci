@@ -385,7 +385,6 @@ impl fmt::Debug for PreparedPromptDeliveryV3 {
     }
 }
 
-#[derive(Debug)]
 pub enum PromptProductV3Error {
     InvalidTime,
     EmptySelection,
@@ -422,6 +421,12 @@ impl PromptProductV3Error {
             Self::Integrity => "prompt_product_v3_integrity",
             Self::Arithmetic => "prompt_product_v3_arithmetic",
         }
+    }
+}
+
+impl fmt::Debug for PromptProductV3Error {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter.write_str(self.code())
     }
 }
 
@@ -845,6 +850,13 @@ pub fn observe_prompt_delivery_v3(
     compiled.validate()?;
     if prepared.authority.grants_any()
         || prepared.preparation_binding_digest.is_zero()
+        || prepared.preparation_binding_digest
+            != preparation_binding_digest(
+                &prepared.preparation,
+                prepared.authority_successor.lineage_digest(),
+                compiled.source_binding_digest,
+                compiled.tokenization_proof_digest,
+            )
         || prepared.preparation.payload_digest()
             != compiled.serialized_context.receipt().payload_digest()
     {
@@ -1180,5 +1192,217 @@ mod tests {
         )
         .expect("canonical V3 compilation");
         assert!(!format!("{output:?}").contains(secret_marker));
+    }
+
+    #[test]
+    fn product_error_diagnostics_redact_dynamic_owner_details() {
+        let marker = "PRIVATE-PROMPT-AND-OWNER-PATH";
+        for error in [
+            PromptProductV3Error::Registry(marker.to_owned()),
+            PromptProductV3Error::Optimizer(marker.to_owned()),
+            PromptProductV3Error::Context(ContextCompilerV2Error::UnknownMandatoryItem(
+                marker.to_owned(),
+            )),
+        ] {
+            assert_eq!(format!("{error}"), error.code());
+            assert_eq!(format!("{error:?}"), error.code());
+            assert_eq!(format!("{error:#?}"), error.code());
+            assert!(std::error::Error::source(&error).is_none());
+        }
+    }
+
+    #[test]
+    fn substituted_preparation_cannot_reuse_another_registry_successor_binding() {
+        use codex_hepta_context_compiler::ContextProviderDeliveryDecisionV2;
+        use codex_hepta_contracts::PROVIDER_EVIDENCE_SCHEMA_VERSION;
+        use codex_hepta_contracts::ProviderInvocationIntent;
+        use codex_hepta_contracts::ProviderRequestBinding;
+        use codex_hepta_contracts::ProviderRequestKind;
+        use codex_hepta_contracts::ProviderTerminal;
+        use codex_hepta_contracts::ProviderTransport;
+        use codex_hepta_contracts::Sha256Digest;
+
+        struct DeliveryVerifier;
+        impl ContextProviderDeliveryVerifierV2 for DeliveryVerifier {
+            fn verifier_digest(&self) -> Digest32 {
+                digest("delivery-verifier")
+            }
+
+            fn verify_delivery(
+                &self,
+                receipt: &ProviderInvocationReceipt,
+                preparation: &ContextDeliveryPreparationV2,
+            ) -> Result<ContextProviderDeliveryDecisionV2, String> {
+                if receipt.intent.binding.ephemeral_input_witness_sha256
+                    != Some(Sha256Digest::for_bytes(
+                        preparation.preparation_digest().as_array(),
+                    ))
+                {
+                    return Err("wrong preparation witness".to_owned());
+                }
+                Ok(ContextProviderDeliveryDecisionV2 {
+                    evidence_digest: digest("delivery-evidence"),
+                    recorded_at_unix_ms: 202,
+                })
+            }
+        }
+
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let root = temporary.path().join("registry-preparation-binding");
+        let (registry, tuple, _authority, _key, _grant_now) =
+            admitted_registry(&root, b"Bound instruction");
+        let selected = canonical_selection(&registry, &tuple, 100);
+        let output = compile_prompt_registry_v3(
+            &registry,
+            &selected.portfolio,
+            &selected.exercise_request,
+            request(&tuple, 16_384),
+            &tokenizer(&tuple),
+        )
+        .expect("canonical V3 compilation");
+        let mut first =
+            prepare_prompt_delivery_v3(&registry, &output, 200, id("preparation:first"))
+                .expect("first preparation");
+        let second = prepare_prompt_delivery_v3(&registry, &output, 201, id("preparation:second"))
+            .expect("second preparation");
+        let binding = ProviderRequestBinding {
+            schema_version: PROVIDER_EVIDENCE_SCHEMA_VERSION,
+            thread_id: "thread-1".to_owned(),
+            turn_id: "turn-1".to_owned(),
+            host_request_binding_id_sha256: Sha256Digest::for_bytes(b"host-request"),
+            request_kind: ProviderRequestKind::Turn,
+            provider_id: output.execution_profile.provider_id.clone(),
+            provider_config_sha256: Sha256Digest::for_bytes(b"provider-config"),
+            model: output.execution_profile.provider_model.clone(),
+            transport: ProviderTransport::Http,
+            endpoint_sha256: Sha256Digest::for_bytes(b"/responses"),
+            logical_request_sha256: Sha256Digest::for_bytes(b"logical-request"),
+            wire_semantic_sha256: Sha256Digest::for_bytes(b"wire-semantics"),
+            ephemeral_input_sha256: Some(Sha256Digest::for_bytes(output.payload())),
+            ephemeral_input_witness_sha256: Some(Sha256Digest::for_bytes(
+                second.preparation.preparation_digest().as_array(),
+            )),
+            previous_response_id_sha256: None,
+            generate: true,
+        };
+        let receipt = ProviderInvocationReceipt::new(
+            ProviderInvocationIntent::for_host_attempt_id("host-attempt", binding),
+            ProviderTerminal::Completed {
+                response_id_sha256: Sha256Digest::for_bytes(b"response-id"),
+                response_items_sha256: Sha256Digest::for_bytes(b"response-items"),
+                token_usage_sha256: Sha256Digest::for_bytes(b"token-usage"),
+                end_turn: Some(true),
+            },
+        );
+        observe_prompt_delivery_v3(
+            &output,
+            &second,
+            id("delivery:original"),
+            &receipt,
+            &DeliveryVerifier,
+            203,
+        )
+        .expect("unchanged preparation is observable");
+
+        first.preparation = second.preparation;
+        let observed = observe_prompt_delivery_v3(
+            &output,
+            &first,
+            id("delivery:substituted"),
+            &receipt,
+            &DeliveryVerifier,
+            203,
+        );
+        assert!(
+            matches!(&observed, Err(PromptProductV3Error::Integrity)),
+            "substituted preparation returned {observed:?}"
+        );
+    }
+
+    #[test]
+    fn preparation_enforces_zero_and_exact_portfolio_deadline() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let root = temporary.path().join("registry-preparation-deadline");
+        let (registry, tuple, _authority, _key, _grant_now) =
+            admitted_registry(&root, b"Bound instruction");
+        let selected = canonical_selection(&registry, &tuple, 100);
+        let output = compile_prompt_registry_v3(
+            &registry,
+            &selected.portfolio,
+            &selected.exercise_request,
+            request(&tuple, 16_384),
+            &tokenizer(&tuple),
+        )
+        .expect("canonical V3 compilation");
+        let deadline = output.portfolio_valid_until_unix_ms();
+        assert!(deadline > output.authority_observed_unix_ms());
+        let original = output.clone();
+        assert!(matches!(
+            prepare_prompt_delivery_v3(&registry, &output, 0, id("preparation:zero")),
+            Err(PromptProductV3Error::InvalidTime)
+        ));
+        prepare_prompt_delivery_v3(
+            &registry,
+            &output,
+            deadline - 1,
+            id("preparation:before-deadline"),
+        )
+        .expect("unrevoked current selection remains preparable before its deadline");
+        for observed in [
+            deadline,
+            deadline.checked_add(1).expect("finite test deadline"),
+        ] {
+            assert!(matches!(
+                prepare_prompt_delivery_v3(
+                    &registry,
+                    &output,
+                    observed,
+                    id("preparation:at-or-after-deadline"),
+                ),
+                Err(PromptProductV3Error::PortfolioExpired)
+            ));
+        }
+        assert_eq!(
+            output, original,
+            "preparation must preserve the compiled evidence"
+        );
+    }
+
+    #[test]
+    fn preparation_rejects_mutated_public_profile_and_selected_payload() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let root = temporary
+            .path()
+            .join("registry-preparation-public-mutation");
+        let (registry, tuple, _authority, _key, _grant_now) =
+            admitted_registry(&root, b"Bound instruction");
+        let selected = canonical_selection(&registry, &tuple, 100);
+        let output = compile_prompt_registry_v3(
+            &registry,
+            &selected.portfolio,
+            &selected.exercise_request,
+            request(&tuple, 16_384),
+            &tokenizer(&tuple),
+        )
+        .expect("canonical V3 compilation");
+        prepare_prompt_delivery_v3(&registry, &output, 200, id("preparation:unchanged"))
+            .expect("unchanged compiled context remains preparable");
+
+        let mut changed_profile = output.clone();
+        changed_profile.execution_profile.provider_revision = "other-valid-revision".to_owned();
+        assert!(matches!(
+            prepare_prompt_delivery_v3(&registry, &changed_profile, 200, id("preparation:profile")),
+            Err(PromptProductV3Error::Integrity)
+        ));
+
+        let mut changed_payload = output.clone();
+        changed_payload.selected_deliveries[0].payload.push(b'!');
+        assert!(matches!(
+            prepare_prompt_delivery_v3(&registry, &changed_payload, 200, id("preparation:payload")),
+            Err(PromptProductV3Error::Registry(_))
+        ));
+        output
+            .validate()
+            .expect("original compiled evidence is unchanged");
     }
 }
