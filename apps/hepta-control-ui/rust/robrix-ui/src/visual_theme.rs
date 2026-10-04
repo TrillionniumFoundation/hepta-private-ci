@@ -137,7 +137,11 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
             secondary,
         } = tokens;
         if widget.borrow::<Label>().is_some() {
-            if name == id!(username) || name == id!(room_name) || name == id!(room_actions) {
+            if name == id!(username)
+                || name == id!(room_name)
+                || name == id!(room_actions)
+                || name == id!(sidebar_brand)
+            {
                 script_apply_eval!(cx,widget,{draw_text +: {text_style +: {font_family: mod.widgets.HEPTA_BOLD.font_family}}});
             } else {
                 script_apply_eval!(cx,widget,{draw_text +: {text_style +: {font_family: mod.widgets.HEPTA_REGULAR.font_family}}});
@@ -148,6 +152,7 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
                     || name == id!(cannot_send_notice)
                     || name == id!(preview)
                     || name == id!(presentation_note)
+                    || name == id!(conversation_group)
                 {
                     muted
                 } else {

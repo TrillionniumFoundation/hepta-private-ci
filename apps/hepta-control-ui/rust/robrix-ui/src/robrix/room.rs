@@ -238,6 +238,7 @@ pub(crate) fn finish_fixture_geometry(cx: &mut Cx) {
             rect(sample.areas[4], true),
             rect(sample.areas[5], false)
         );
+        super::sidebar_fixture::remember_room_geometry(cx, serialized.clone());
         if cx
             .global::<RoomViewMemory>()
             .geometry_samples

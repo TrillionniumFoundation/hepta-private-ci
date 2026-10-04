@@ -42,6 +42,14 @@ column, and the existing Dock. Below the existing 760 px breakpoint, the same
 workspace uses the Robrix adaptive navigation path. The main tabs remain Chat
 and Console. The theme selector is available in both layouts.
 
+The conversation sidebar uses a static HEPTA brand label, its existing search,
+and a CONVERSATIONS group heading beside the original New draft command. These
+labels describe the visible conversation group; they do not claim a selected
+server workspace, membership, account or project. The existing button keeps
+its event ID, enabled condition and local-draft behavior, with a 104×44 px hit
+area. The same sidebar subtree is used in the compact navigation view. Existing
+room data, filtering and PortalList order remain authoritative.
+
 Typography uses 12 pt body and author text (approximately 16 CSS px), with
 explicit IBM Plex, LXGW CJK and emoji fallback chains. Identity marks are code
 drawn initials in 36 px framed avatars. Search is 40 px high; the composer has a
@@ -87,10 +95,17 @@ The preceding B/C material and navigation-observation stage was rendered at
 `c92e4ffc16dae97f07b4fc3fef78b73e0c12ceaa`: hosted run `37196005650` passed
 default 6/6 browser cases, 60/60 captures and 138/138 semantic checks, and
 populated 6/6 cases, 78/78 captures and 438/438 checks. Those results qualify
-that exact Web stage, not native/platform readiness or this new message-column
-revision. The new row layout still requires its own build and actual frames.
+that exact Web stage, not native/platform readiness or later revisions.
 
-The full original composition still requires workspace/group navigation,
+That row-layout revision was subsequently rendered at
+`d05aacbd499ac607f4bea87a07c91cce84bf1eec` in hosted run `37202847450`:
+default 6/6 cases, 60/60 captures and 138/138 semantic checks; populated 6/6,
+78/78 and 438/438. Fourteen actual wide/narrow, Console-return and scrollback
+frames were reviewed for the shared role/text column. These results do not
+qualify the new sidebar-group layout, which still needs fresh rendering and
+focus/hit/hidden-navigation checks.
+
+The full original composition still requires genuinely sourced workspace/project navigation,
 channel controls, appropriately sourced author/time presentation, a shared
 file-card view and the attachment tool area. No missing data or live capability
 is invented to make a product screenshot match illustrative design content.

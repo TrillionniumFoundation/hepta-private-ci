@@ -123,5 +123,7 @@ impl AppMain for App {
         if matches!(event, Event::Draw(_)) {
             crate::robrix::room::finish_fixture_geometry(cx);
         }
+        #[cfg(feature = "ui-fixtures")]
+        crate::robrix::sidebar_fixture::after_event(cx, &self.workspace, &self.ui, event);
     }
 }
