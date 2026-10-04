@@ -2,8 +2,11 @@
 import {execFile} from 'node:child_process';
 import {promisify} from 'node:util';
 import assert from 'node:assert/strict';
-import {readFile,writeFile} from 'node:fs/promises';
+import {readFile,writeFile,mkdtemp,rm} from 'node:fs/promises';
 import {fileURLToPath} from 'node:url';
+import {tmpdir} from 'node:os';
+import {join} from 'node:path';
+import {createHash} from 'node:crypto';
 const run=promisify(execFile);
 export async function prepareScreenshotForOcr(path,output){
  await run('python3',[fileURLToPath(new URL('./prepare-ocr-pixels.py',import.meta.url)),path,output],{timeout:20000,maxBuffer:65536});
@@ -120,6 +123,13 @@ export function conversationNavigationRegion(viewport){
   ? {left:64+248,top:68+92,width:viewport.width-64-248,height:44}
   : {left:0,top:44+48,width:viewport.width,height:40+6+6};
 }
+function navigationOcrContext(viewport){
+ const band=conversationNavigationRegion(viewport),padding=4;
+ // Preserve a fixed context outside the acceptance band so OCR can observe
+ // glyphs that cross its edge. The accepted navigation band never expands.
+ const left=Math.max(0,band.left-padding),top=Math.max(0,band.top-padding);
+ return {left,top,width:Math.min(viewport.width,band.left+band.width+padding)-left,height:Math.min(viewport.height,band.top+band.height+padding)-top};
+}
 export function conversationTabsFromOcr(tsv,imageSize,viewport){
  const region=conversationNavigationRegion(viewport);
  assert.ok(Number.isInteger(imageSize.width)&&imageSize.width>0&&Number.isInteger(imageSize.height)&&imageSize.height>0,'Screenshot dimensions must be positive integers');
@@ -146,23 +156,67 @@ export function conversationTabsFromOcr(tsv,imageSize,viewport){
  assert.ok(a.left+a.width<=b.left&&overlap>=Math.min(a.height,b.height)/2,'Chat and Console must form one left-to-right rendered navigation row');
  return {Chat:chat,Console:console,region};
 }
-export async function screenshotConversationTabs(path,viewport,{recordOcr=false}={}){
+export function sourcePixelRegion(area,viewport,imageSize){
+ assert.ok([viewport.width,viewport.height,imageSize.width,imageSize.height].every(value=>Number.isInteger(value)&&value>0),'Source and viewport dimensions must be positive integers');
+ const scale=imageSize.width/viewport.width;
+ assert.equal(imageSize.height,Math.round(viewport.height*scale),'Region OCR requires a verified full-viewport capture');
+ assert.ok([area.left,area.top,area.width,area.height].every(Number.isFinite)&&area.width>0&&area.height>0,'Region geometry must be finite and positive');
+ assert.ok(area.left>=0&&area.top>=0&&area.left+area.width<=viewport.width&&area.top+area.height<=viewport.height,'Region must be completely inside the real viewport');
+ const left=Math.floor(area.left*scale),top=Math.floor(area.top*scale);
+ const right=Math.ceil((area.left+area.width)*scale),bottom=Math.ceil((area.top+area.height)*scale);
+ assert.ok(right<=imageSize.width&&bottom<=imageSize.height&&right>left&&bottom>top,'Pixel crop must remain inside the source PNG');
+ return {left,top,width:right-left,height:bottom-top};
+}
+export async function prepareVerifiedRegionForOcr(path,output,area,viewport){
  const bytes=await readFile(path);assert.equal(bytes.subarray(1,4).toString(),'PNG');
  const imageSize={width:bytes.readUInt32BE(16),height:bytes.readUInt32BE(20)};
- for(const mode of ['11','6']){
-  const {stdout,stderr}=await run('tesseract',[path,'stdout','-l','eng','--psm',mode,'tsv'],{env:{...process.env,OMP_THREAD_LIMIT:'1'},timeout:20000,maxBuffer:256*1024});
-  assert.doesNotMatch(stderr,/Failed loading language|Error opening data file|Can't open tsv/i);
-  if(recordOcr)await writeFile(path.replace(/\.png$/,`-navigation-psm${mode}-ocr.txt`),stdout);
-  // Only a missing exact label may try the other existing OCR layout mode.
-  // Ambiguity, clipping or a broken row fails immediately, never by confidence.
-  const observed=conversationTabsFromOcr(stdout,imageSize,viewport);
-  if(observed){
-   const result={...observed,viewport,imageSize,ocrMode:mode};
-   if(recordOcr)await writeFile(path.replace(/\.png$/,'-navigation-controls.json'),JSON.stringify(result,null,2));
-   return result;
+ const crop=sourcePixelRegion(area,viewport,imageSize);
+ await run('python3',[fileURLToPath(new URL('./prepare-ocr-pixels.py',import.meta.url)),path,output,...[crop.left,crop.top,crop.width,crop.height].map(String)],{timeout:20000,maxBuffer:65536});
+ assert.deepEqual(await readFile(path),bytes,'Original PNG changed during fixed region processing');
+ const processed=await readFile(output);
+ assert.equal(processed.subarray(1,4).toString(),'PNG');
+ const processedSize={width:processed.readUInt32BE(16),height:processed.readUInt32BE(20)};
+ assert.deepEqual(processedSize,{width:crop.width*3,height:crop.height*3},'Region OCR must use the existing fixed three-times normalization');
+ return {sourcePngSha256:createHash('sha256').update(bytes).digest('hex'),imageSize,processedSize,crop,area,viewport,normalizationScale:3};
+}
+export function rebaseNavigationOcr(tsv,imageSize,viewport,processedSize){
+ const crop=sourcePixelRegion(navigationOcrContext(viewport),viewport,imageSize);
+ assert.deepEqual(processedSize,{width:crop.width*3,height:crop.height*3},'Navigation OCR dimensions must match the fixed source crop');
+ return tsv.split('\n').map((line,index)=>{
+  const c=line.split('\t');if(index===0||c.length<12||c[0]!=='5'||!c[11].trim())return line;
+  const [x,y,w,h]=c.slice(6,10).map(Number);
+  assert.ok([x,y,w,h].every(Number.isFinite)&&x>=0&&y>=0&&w>0&&h>0&&x+w<=processedSize.width&&y+h<=processedSize.height,'OCR glyph bounds must belong to the actual processed region');
+  if(['chat','console'].includes(c[11].toLowerCase()))assert.ok(x>0&&y>0&&x+w<processedSize.width&&y+h<processedSize.height,'Navigation glyph touching the OCR crop edge cannot prove complete visibility');
+  c.splice(6,4,String(crop.left+x/3),String(crop.top+y/3),String(w/3),String(h/3));
+  return c.join('\t');
+ }).join('\n');
+}
+export async function screenshotConversationTabs(path,viewport,{recordOcr=false}={}){
+ const temporary=recordOcr?null:await mkdtemp(join(tmpdir(),'robrix-navigation-ocr-'));
+ const normalized=recordOcr?path.replace(/\.png$/,'-navigation-normalized.png'):join(temporary,'navigation.png');
+ try{
+  const input=await prepareVerifiedRegionForOcr(path,normalized,navigationOcrContext(viewport),viewport);
+  for(const mode of ['11','6']){
+   const {stdout,stderr}=await run('tesseract',[normalized,'stdout','-l','eng','--psm',mode,'tsv'],{env:{...process.env,OMP_THREAD_LIMIT:'1'},timeout:20000,maxBuffer:256*1024});
+   assert.doesNotMatch(stderr,/Failed loading language|Error opening data file|Can't open tsv/i);
+   const rebased=rebaseNavigationOcr(stdout,input.imageSize,viewport,input.processedSize);
+   if(recordOcr){
+    await writeFile(path.replace(/\.png$/,`-navigation-psm${mode}-ocr.txt`),stdout);
+    await writeFile(path.replace(/\.png$/,`-navigation-psm${mode}-source-coordinates.tsv`),rebased);
+   }
+   // Only a missing exact label may try the other existing OCR layout mode.
+   // Ambiguity, clipping or a broken row fails immediately, never by confidence.
+   const observed=conversationTabsFromOcr(rebased,input.imageSize,viewport);
+   if(observed){
+    const result={...observed,...input,ocrMode:mode};
+    if(recordOcr)await writeFile(path.replace(/\.png$/,'-navigation-controls.json'),JSON.stringify(result,null,2));
+    return result;
+   }
   }
+  assert.fail('Actual rendered Chat/Console pair must be readable inside the navigation band before activation');
+ }finally{
+  if(temporary)await rm(temporary,{recursive:true,force:true});
  }
- assert.fail('Actual rendered Chat/Console pair must be readable inside the navigation band before activation');
 }
 export function requireChatText(text,{fixtures=false}={}){
  assert.match(text,/\bconversations?\b/i,'Actual canvas screenshot must contain readable conversation navigation');

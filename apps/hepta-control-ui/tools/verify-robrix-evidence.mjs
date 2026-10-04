@@ -5,8 +5,46 @@ import {createHash} from 'node:crypto';
 import {join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {captureSchedule,expectedPixelChecks} from './robrix-pixel-plan.mjs';
-import {readScreenshotText,requireChatText,prepareScreenshotForOcr,prepareObservedControlForOcr,prepareObservedFixtureRows,prepareObservedAreaForOcr} from './verify-robrix-pixels.mjs';
+import {readScreenshotText,requireChatText,prepareScreenshotForOcr,prepareObservedControlForOcr,prepareObservedFixtureRows,prepareObservedAreaForOcr,prepareVerifiedRegionForOcr} from './verify-robrix-pixels.mjs';
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+export function validateFixtureTextRegion(entry,kind){
+ assert.ok(['viewport','composer'].includes(kind),'Unknown fixture text region');
+ assert.ok(entry.viewport&&[entry.viewport.width,entry.viewport.height].every(value=>Number.isInteger(value)&&value>0),'Actual capture viewport is required');
+ const g=entry.geometryBefore;
+ assert.ok(g&&g.layoutFinalized===true&&Number.isInteger(g.frame)&&g.frame>0,'Region OCR requires finalized actual Rust draw geometry');
+ assert.deepEqual(g,entry.geometryAfter,'Region geometry changed during the actual capture');
+ assert.ok(Number.isInteger(g.total)&&g.total>0,'Region geometry requires its rendered message population');
+ const checked=name=>{
+  const rect=g[name];assert.ok(Array.isArray(rect)&&rect.length===4&&rect.every(Number.isFinite),'Rendered region must contain four finite coordinates');
+  const [left,top,width,height]=rect;
+  assert.ok(width>0&&height>0&&left>=0&&top>=0&&left+width<=entry.viewport.width&&top+height<=entry.viewport.height,'Rendered region must be positive and wholly inside the actual viewport');
+  return {left,top,width,height};
+ };
+ const timeline=checked('viewport'),composer=checked('composer');
+ assert.ok(timeline.top+timeline.height<=composer.top&&composer.left>=timeline.left&&composer.left+composer.width<=timeline.left+timeline.width,'Timeline and composer regions must be separate and belong to the same visible pane');
+ return kind==='viewport'?timeline:composer;
+}
+export function fixtureMessageObservation(text,total){
+ // One independent OCR result only: never concatenate passes to count a
+ // single visible message twice. Duplicate ordinals do not add messages.
+ assert.equal(typeof text,'string','Message observation accepts one independent OCR string');
+ assert.ok(Number.isInteger(total)&&total>0,'Message observation requires the actual rendered population');
+ const ordinals=[];let tokensValid=true;
+ // Read the complete token, including malformed decimals or oversized values.
+ // A bad later marker invalidates the observation; it cannot disappear through
+ // a three-digit regex cap or contribute only its numeric prefix.
+ for(const marker of text.matchAll(/(?<![\p{L}\p{N}_])Fixture(?![\p{L}_])/giu)){
+  const tail=text.slice(marker.index+marker[0].length);
+  const token=tail.match(/^\s*([^\s\]\)}]*)/u)?.[1]??'';
+  if(!/^[1-9][0-9]*$/.test(token)){tokensValid=false;continue;}
+  const value=Number(token);
+  if(!Number.isSafeInteger(value)){tokensValid=false;continue;}
+  ordinals.push(value);
+ }
+ const count=new Set(ordinals).size;
+ const populationMatches=ordinals.every(value=>value>=1&&value<=total);
+ return {ordinals,count,countPassed:tokensValid&&populationMatches&&count>=2,orderPassed:tokensValid&&populationMatches&&count>=2&&JSON.stringify(ordinals)===JSON.stringify([...ordinals].sort((a,b)=>a-b))};
+}
 export function validateTailStatusGeometry(entry){
  const g=entry.geometryBefore;
  assert.ok(g,'Follow-latest capture requires real Rust geometry');
@@ -52,6 +90,21 @@ export async function verifyCapture(directory,entry,expected){
   if(blockText===undefined){blockText=await readScreenshotText(path,{layout:'block'});await writeFile(join(directory,expected.name+'-block-ocr.txt'),blockText);}
   return original+'\n'+blockText;
  };
+ const regionTexts=new Map();
+ const withFixtureRegion=async kind=>{
+  assert.equal(expected.fixtures,true,'Only actual fixture draw observations can define these regions');
+  if(!regionTexts.has(kind)){
+   const area=validateFixtureTextRegion(entry,kind);
+   const regionPath=join(directory,expected.name+`-${kind}-readability-region.png`);
+   const input=await prepareVerifiedRegionForOcr(path,regionPath,area,expected.viewport);
+   assert.equal(input.sourcePngSha256,entry.pngSha256,'Region must come from the exact captured PNG');
+   const text=await readScreenshotText(regionPath,{layout:'block'});
+   await writeFile(regionPath.replace(/\.png$/,'-ocr.txt'),text);
+   await writeFile(regionPath.replace(/\.png$/,'.json'),JSON.stringify({...input,geometry:entry.geometryBefore,ocrSha256:sha(text)}));
+   regionTexts.set(kind,text);
+  }
+  return regionTexts.get(kind);
+ };
  if(expected.consoleView){
   const text=/Console/i.test(original)&&/composed|composition/i.test(original)?original:await withBlock();
   outcomes.push({check:'console-label',passed:/Console/i.test(text)},{check:'console-unavailable-reason',passed:/composed|composition/i.test(text)});
@@ -59,12 +112,12 @@ export async function verifyCapture(directory,entry,expected){
   let readable=true;try{requireChatText(original,{fixtures:expected.fixtures});}catch{try{requireChatText(await withBlock(),{fixtures:expected.fixtures});}catch{readable=false;}}
   outcomes.push({check:'chat-readability',passed:readable});
   if(expected.fixtures){
-   const ordinals=[...original.matchAll(/Fixture\s*(\d{1,3})\b/gi)].map(match=>Number(match[1]));
-   outcomes.push({check:'visible-message-count',passed:ordinals.length>=2},{check:'owner-message-order',passed:JSON.stringify(ordinals)===JSON.stringify([...ordinals].sort((a,b)=>a-b))});
+   const observed=fixtureMessageObservation(await withFixtureRegion('viewport'),entry.geometryBefore.total);
+   outcomes.push({check:'visible-message-count',passed:observed.countPassed},{check:'owner-message-order',passed:observed.orderPassed});
   }
  }
- if(expected.draft)outcomes.push({check:'draft-visible',passed:/Theme round trip draft/i.test(original)||/Theme round trip draft/i.test(await withBlock())});
- if(expected.kept)outcomes.push({check:'focus-kept-text',passed:/kept/i.test(original)||/kept/i.test(await withBlock())});
+ if(expected.draft)outcomes.push({check:'draft-visible',passed:expected.fixtures?/Theme round trip draft/i.test(await withFixtureRegion('composer')):/Theme round trip draft/i.test(original)||/Theme round trip draft/i.test(await withBlock())});
+ if(expected.kept)outcomes.push({check:'focus-kept-text',passed:expected.fixtures?/kept/i.test(await withFixtureRegion('composer')):/kept/i.test(original)||/kept/i.test(await withBlock())});
  if(expected.lastMessage)outcomes.push({check:'last-owner-message-visible',passed:/Fixture\s*64/i.test(original)||/Fixture\s*64/i.test(await withBlock())});
  if(expected.fixtures&&!expected.consoleView&&!expected.jump){
   const area=validateTailStatusGeometry(entry);
