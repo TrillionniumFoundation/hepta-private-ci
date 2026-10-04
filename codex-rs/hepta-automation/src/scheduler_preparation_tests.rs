@@ -30,7 +30,7 @@ async fn store()
 -> Result<(tempfile::TempDir, AutomationStore), Box<dyn std::error::Error + Send + Sync>> {
     let root = tempfile::tempdir()?;
     let store = AutomationStore::open_root(
-        root.path().join("owner"),
+        root.path().canonicalize()?.join("owner"),
         AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12")?,
     )
     .await?;
@@ -125,9 +125,11 @@ async fn expiry_after_preparation_or_fence_retains_original_run_without_queue_en
             Some(original.clone())
         );
         store.close().await;
-        let reopened =
-            AutomationStore::open_root(root.path().join("owner"), store.owner_agent_id().clone())
-                .await?;
+        let reopened = AutomationStore::open_root(
+            root.path().canonicalize()?.join("owner"),
+            store.owner_agent_id().clone(),
+        )
+        .await?;
         assert_eq!(
             reopened.taskflow_run(&original.run_id).await?,
             Some(original)

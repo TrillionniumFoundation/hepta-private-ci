@@ -7,7 +7,8 @@ const THREAD: &str = "019153a4-3088-7e03-a56a-9b1964f75ddd";
 async fn fixture() -> TestResult<(tempfile::TempDir, AutomationStore)> {
     let temp = tempfile::tempdir()?;
     let owner = AgentId::parse("019153a4-3088-7e03-a56a-9b1964f75dd3")?;
-    let store = AutomationStore::open_root(temp.path().join("owner"), owner).await?;
+    let store =
+        AutomationStore::open_root(temp.path().canonicalize()?.join("owner"), owner).await?;
     Ok((temp, store))
 }
 
@@ -126,7 +127,8 @@ async fn cursor_survives_owner_updates_and_reopen_without_reordering() -> TestRe
     let expected = store.list_tasks(6).await?;
     let owner = store.owner_agent_id.clone();
     store.close().await;
-    let store = AutomationStore::open_root(temp.path().join("owner"), owner).await?;
+    let store =
+        AutomationStore::open_root(temp.path().canonicalize()?.join("owner"), owner).await?;
     let tail = store.list_task_page_v1(6, Some(after), 4096).await?;
     assert_eq!(tail.tasks, expected[2..]);
     assert!(tail.next_cursor.is_none());
@@ -162,7 +164,7 @@ async fn missing_listing_index_is_rejected_instead_of_unbounded_fallback() -> Te
         .await?;
     store.close().await;
     assert!(matches!(
-        AutomationStore::open_root(temp.path().join("owner"), owner).await,
+        AutomationStore::open_root(temp.path().canonicalize()?.join("owner"), owner).await,
         Err(AutomationError::Corrupt)
     ));
     Ok(())
@@ -190,7 +192,7 @@ async fn substituted_index_cannot_advertise_the_listing_contract() -> TestResult
         store.close().await;
         assert!(
             matches!(
-                AutomationStore::open_root(temp.path().join("owner"), owner).await,
+                AutomationStore::open_root(temp.path().canonicalize()?.join("owner"), owner).await,
                 Err(AutomationError::Corrupt)
             ),
             "accepted substituted index: {replacement}"
