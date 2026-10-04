@@ -90,9 +90,8 @@ Qualification requires the exact final commit, not results from the old compiler
 
 ## Current qualification status
 
-The first draft is a source proposal. Its original generated Bazel and Nix
-locks deliberately remain unchanged until the existing manual
-`hepta-diagnostic-source-export.yml` workflow is explicitly dispatched on the
+The first draft retained its original generated Bazel and Nix locks until the
+existing manual `hepta-diagnostic-source-export.yml` workflow was dispatched on the
 upgrade branch with `rust_toolchain_locks=true`. The added job produces real,
 source-bound lock artifacts; the default false value preserves all existing
 diagnostic jobs. This extends the workflow's original Bazel-lock diagnostic
@@ -116,3 +115,33 @@ No lock-generation receipt is a compilation/test pass. Results must distinguish
 passed, failed, skipped and unrun work. This is not a completed upgrade,
 release, or merge-ready change until applicable qualification succeeds.
 No merge or deployment is part of this change.
+
+### Generated locks accepted for compiler qualification
+
+Manual [run 37193654373](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/37193654373)
+completed successfully on source `143ac2b22326db719019bfe13614cc96ee064ef9`,
+tree `e78936205b233f24a2c4e8c727f63c827049b728`. Its explicit lock-only job
+ran; the five ordinary diagnostic jobs were skipped as selected. Actual Bazel
+generation and strict lock recheck passed; Nix refreshed only rust-overlay and
+evaluated eight package/development-shell derivations across the four systems.
+
+Artifact `11300405315` has ZIP SHA-256
+`801f86ad6f67cc27196624bdacd5a891f7256fcc1994d9be34f63872da2ae4f7`.
+Its exact source/run receipt, every declared artifact digest and both original
+input locks were independently checked. The bundled manifest is byte-identical
+to the separately retrieved official Rust 1.99.0 manifest. All 101 generated
+archive hashes match it, with identical target/component coverage, including
+compiler source and target-independent rust-src.
+
+- `MODULE.bazel.lock` SHA-256:
+  `60754b2f9a7a49ac5f08e44bd7c8fcfd829763e6b211c9beb218a1b29ceb4585`.
+  Only the 101 old/new stable Rust archive facts changed; all other JSON values
+  are unchanged.
+- `flake.lock` SHA-256:
+  `2d7760939fdfb6faf943cf17b1bf978cbbeb1402bc2532fa7fe361a78b0d61e6`.
+  Only rust-overlay's revision, NAR hash and timestamp changed. Its revision is
+  `dbc715a4b7c0ace63b9769a032d1dd34cd89e5bd`; all other inputs and wiring remain.
+
+These accepted generated files are prerequisites for the subsequent exact-head
+compiler matrix. They do not prove Rust compilation, native runtime tests,
+whole-repository compatibility or release readiness.
