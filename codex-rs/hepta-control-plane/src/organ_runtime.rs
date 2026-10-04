@@ -455,7 +455,7 @@ impl OrganHostV1 {
         Ok(())
     }
 
-    fn validate_read_only_successor(
+    pub(crate) fn validate_read_only_successor(
         &self,
         expected: Generation,
         proposed: Generation,
@@ -875,6 +875,11 @@ impl Drop for OrganHostV1 {
         let _ = self.stop_all();
     }
 }
+
+// Keep panic containment local to registry-mediated healthy replacement.
+// Owner migration/recovery continues to use the original lifecycle methods.
+#[path = "organ_registry_lifecycle.rs"]
+mod registry_lifecycle;
 
 #[cfg(test)]
 #[path = "organ_runtime_tests.rs"]
