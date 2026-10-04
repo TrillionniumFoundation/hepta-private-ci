@@ -211,14 +211,79 @@ async fn actual_root_checkpoint_socket_reads_whole_current_state_and_rejects_rou
             .expect("same readonly Scope"),
         (scope_generation, serving)
     );
-    let (generation, first) = client
-        .prepare_parameter_checkpoint_v1(round.clone(), material_source.clone(), pin)
+    let (generation, first, checkpoint_response) = client
+        .prepare_parameter_checkpoint_source_v1(round.clone(), material_source.clone(), pin)
         .await
         .expect("whole actual Root observation");
     assert_eq!(generation, 2);
     assert_eq!(first.round, round);
     assert_eq!(first.anchor.sequence, 1);
     assert_eq!(first.goal_ordinal, None);
+    let original_checkpoint: crate::AgentdResponse =
+        serde_json::from_slice(&checkpoint_response).expect("whole original checkpoint response");
+    assert_eq!(
+        original_checkpoint.request_id, 3,
+        "one query, no response reconstruction"
+    );
+    assert_eq!(
+        crate::decode_prepared_parameter_checkpoint_response_v3(
+            &checkpoint_response,
+            &state.identity.agent_id,
+            state.identity.spawn_generation,
+            &round,
+            &material,
+        )
+        .expect("sole original whole response decoder"),
+        (generation, first.clone()),
+    );
+    for field in [
+        "agent_id",
+        "spawn_generation",
+        "current_generation",
+        "body_bundle_digest",
+        "anchor_checkpoint_digest",
+        "round_hex",
+    ] {
+        let mut bad = serde_json::to_value(&original_checkpoint).expect("original response");
+        match field {
+            "agent_id" => bad[field] = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13".into(),
+            "spawn_generation" | "current_generation" => bad[field] = 0.into(),
+            "round_hex" => bad["payload"][field] = "00".into(),
+            _ => {
+                bad["payload"][field] = Digest32::of_bytes(b"foreign original fact")
+                    .to_string()
+                    .into()
+            }
+        }
+        let parsed: crate::AgentdResponse =
+            serde_json::from_value(bad).expect("typed malformed fact");
+        let mut bytes = serde_json::to_vec(&parsed).expect("canonical original shape");
+        bytes.push(b'\n');
+        assert!(
+            crate::decode_prepared_parameter_checkpoint_response_v3(
+                &bytes,
+                &state.identity.agent_id,
+                state.identity.spawn_generation,
+                &round,
+                &material
+            )
+            .is_err(),
+            "{field}"
+        );
+    }
+    let mut noncanonical = checkpoint_response.clone();
+    noncanonical.insert(0, b' ');
+    assert!(
+        crate::decode_prepared_parameter_checkpoint_response_v3(
+            &noncanonical,
+            &state.identity.agent_id,
+            state.identity.spawn_generation,
+            &round,
+            &material
+        )
+        .is_err()
+    );
+
     assert_eq!(
         first
             .checkpoint(&material)
@@ -237,7 +302,7 @@ async fn actual_root_checkpoint_socket_reads_whole_current_state_and_rejects_rou
         .prepare_parameter_checkpoint_v1(round.clone(), material_source.clone(), pin)
         .await
         .expect("repeat only read");
-    assert_eq!(repeated, (generation, first));
+    assert_eq!(repeated, (generation, first.clone()));
     assert_eq!(
         [
             std::fs::read(&journal).expect("journal"),
@@ -247,6 +312,92 @@ async fn actual_root_checkpoint_socket_reads_whole_current_state_and_rejects_rou
         ],
         before
     );
+
+    let response_source = root.join("frozen-original-checkpoint-response.json");
+    std::fs::write(&response_source, &checkpoint_response).expect("immutable original response");
+    std::fs::set_permissions(&response_source, std::fs::Permissions::from_mode(0o444))
+        .expect("protected response");
+    let frozen_inputs = crate::FrozenParameterCheckpointSourcesV3 {
+        identity: &state.identity,
+        round: &round,
+        baseline_material: &material,
+        checkpoint_response_path: &response_source,
+        checkpoint_response_digest: Digest32::of_bytes(&checkpoint_response),
+        goal_material_path: &material_source,
+        goal_material_digest: pin,
+    };
+    let frozen_reader = crate::PlasticityFrozenNeuronEligibilityReaderV3::from_protected_sources(
+        host.clone(),
+        &frozen_inputs,
+    )
+    .expect("same held owner authenticates exact original Sources");
+    let frozen_before =
+        crate::PlasticityNeuronEligibilityReaderV1::read(&frozen_reader, first.anchor)
+            .expect("whole frozen numerics");
+    let next_anchor = crate::neuron_runtime_v2::parameter_checkpoint_tests::advance_fixture(
+        &runtime,
+        &host,
+        &material,
+        first.anchor,
+    );
+    assert_ne!(next_anchor, first.anchor);
+    let current_reader = crate::PlasticityNeuronEligibilityReaderV2::new(
+        host.clone(),
+        crate::neuron_runtime_v2::AgentdNeuronGenerationIdV2::from_generation(
+            material.runtime.generation,
+        ),
+        first.configuration_digest,
+        first.body_bundle_digest,
+        first.scope,
+    )
+    .expect("original current reader");
+    let live = crate::PlasticityNeuronEligibilityReaderV1::read(&current_reader, first.anchor)
+        .expect("historical ACK retained, latest current numerics");
+    assert_eq!(live.digest(), next_anchor.checkpoint_digest);
+    assert_ne!(
+        live.digest(),
+        frozen_before.digest(),
+        "baseline counterexample: historical ACK alone never freezes numerics"
+    );
+    let physical_before = [
+        std::fs::read(&journal).expect("Round"),
+        std::fs::read(&material.generation_store).expect("store"),
+        std::fs::read(&material.runtime_index).expect("index"),
+        std::fs::read(&material.witness).expect("witness"),
+    ];
+    let frozen_after =
+        crate::PlasticityNeuronEligibilityReaderV1::read(&frozen_reader, first.anchor)
+            .expect("same original numerics after real second tick");
+    assert_eq!(
+        frozen_after
+            .encode_observation_v1()
+            .expect("whole original vectors"),
+        frozen_before
+            .encode_observation_v1()
+            .expect("whole frozen vectors")
+    );
+    assert!(crate::PlasticityNeuronEligibilityReaderV1::read(&frozen_reader, next_anchor).is_err());
+    assert_eq!(
+        physical_before,
+        [
+            std::fs::read(&journal).expect("Round"),
+            std::fs::read(&material.generation_store).expect("store"),
+            std::fs::read(&material.runtime_index).expect("index"),
+            std::fs::read(&material.witness).expect("witness")
+        ]
+    );
+    std::fs::write(&response_source, b"corrupt original Source\n").expect("actual Root tamper");
+    assert!(
+        crate::PlasticityNeuronEligibilityReaderV1::read(&frozen_reader, first.anchor).is_err()
+    );
+    std::fs::write(&response_source, &checkpoint_response).expect("restore original Source");
+    std::fs::write(&material_source, b"foreign whole Goal material")
+        .expect("actual Root Goal Source tamper");
+    assert!(
+        crate::PlasticityNeuronEligibilityReaderV1::read(&frozen_reader, first.anchor).is_err()
+    );
+    std::fs::write(&material_source, &encoded_material).expect("restore original Goal Source");
+    assert!(crate::PlasticityNeuronEligibilityReaderV1::read(&frozen_reader, first.anchor).is_ok());
     let mut wrong = serde_json::to_value(&round).expect("Round");
     wrong["goal"] = "other.goal".into();
     let wrong: crate::AgentdSelfIterationRoundV1 =
@@ -306,7 +457,11 @@ async fn actual_root_checkpoint_socket_reads_whole_current_state_and_rejects_rou
             .is_err()
     );
     assert_eq!(std::fs::read(&journal).expect("journal"), pending);
-    assert_eq!(runtime.calls.load(std::sync::atomic::Ordering::SeqCst), 1);
+    host.begin_quiesce().expect("actual held owner quiesce");
+    assert!(
+        crate::PlasticityNeuronEligibilityReaderV1::read(&frozen_reader, first.anchor).is_err()
+    );
+    assert_eq!(runtime.calls.load(std::sync::atomic::Ordering::SeqCst), 2);
     cancel.cancel();
     server_task.await.expect("server retire").expect("server");
     iteration_cancel.cancel();

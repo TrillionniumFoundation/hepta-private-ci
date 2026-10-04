@@ -86,29 +86,12 @@ fn whole_checkpoint_observes_actual_ack_without_provider_or_store_changes() {
     );
     // Advance the actual same owner, then observe its current ACK rather than
     // borrow the already acknowledged prior tick receipt.
-    let mut next_input = runtime.input.clone();
-    next_input.tick_id = StableId::new("checkpoint.actual.second").expect("id");
-    next_input.logical_sequence = 2;
-    next_input.monotonic_time_micros = 2000;
-    next_input.checkpoint_digest = anchor.checkpoint_digest;
-    let mut canonical = runtime.canonical.clone();
-    canonical.run_id = next_input.tick_id.clone();
-    let invocation = host
-        .controller
-        .prepare(
-            next_input.tick_id.clone(),
-            material.body.semantic_digest().expect("body"),
-            next_input,
-        )
-        .expect("same owner next tick");
-    let committed = invocation
-        .execute(&canonical, &mut Allow)
-        .expect("actual next model/tick/ACK");
+    let committed = advance_fixture(&runtime, &host, &material, anchor);
     let (current, next_bytes, next_ordinal) = host
         .prepare_parameter_checkpoint_observation(&material)
         .expect("actual latest complete state");
     assert_eq!(next_ordinal, ordinal);
-    assert_eq!(current, committed.next_anchor);
+    assert_eq!(current, committed);
     assert_eq!(current.sequence, 2);
     assert_ne!(current, anchor);
     assert_ne!(next_bytes, bytes);
@@ -130,4 +113,33 @@ fn whole_checkpoint_observes_actual_ack_without_provider_or_store_changes() {
             .is_err()
     );
     assert_eq!(runtime.calls.load(Ordering::SeqCst), 2);
+}
+
+// Execute a real second tick through the original held controller for both the
+// plain observation fixture and the protected socket/frozen-input regression.
+pub(crate) fn advance_fixture(
+    runtime: &lock_metrics_tests::RuntimeFixture,
+    host: &Arc<AgentdNeuronRuntimeV2Host>,
+    material: &NeuronGenerationMaterialV2,
+    anchor: codex_hepta_agent_components::neuron::JournalAnchor,
+) -> codex_hepta_agent_components::neuron::JournalAnchor {
+    let mut next_input = runtime.input.clone();
+    next_input.tick_id = StableId::new("checkpoint.actual.second").expect("id");
+    next_input.logical_sequence = 2;
+    next_input.monotonic_time_micros = 2000;
+    next_input.checkpoint_digest = anchor.checkpoint_digest;
+    let mut canonical = runtime.canonical.clone();
+    canonical.run_id = next_input.tick_id.clone();
+    let invocation = host
+        .controller
+        .prepare(
+            next_input.tick_id.clone(),
+            material.body.semantic_digest().expect("body"),
+            next_input,
+        )
+        .expect("same owner next tick");
+    let committed = invocation
+        .execute(&canonical, &mut Allow)
+        .expect("actual next model/tick/ACK");
+    committed.next_anchor
 }

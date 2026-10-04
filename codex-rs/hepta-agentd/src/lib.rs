@@ -88,6 +88,16 @@ pub use objective_runtime::objective_ingress_signing_claims_v1;
 pub use parameter_checkpoint::ParameterServingScopeV1;
 #[cfg(feature = "server")]
 pub use parameter_checkpoint::PreparedParameterCheckpointV1;
+#[cfg(feature = "server")]
+pub use parameter_checkpoint::decode_prepared_parameter_checkpoint_response_v3;
+#[cfg(feature = "server")]
+mod plasticity_frozen_neuron_eligibility_reader_v3;
+#[cfg(feature = "server")]
+pub use plasticity_frozen_neuron_eligibility_reader_v3::FrozenParameterCheckpointSourcesV3;
+#[cfg(feature = "server")]
+pub use plasticity_frozen_neuron_eligibility_reader_v3::PlasticityFrozenNeuronEligibilityReaderV3;
+#[cfg(feature = "server")]
+pub use plasticity_frozen_neuron_eligibility_reader_v3::validate_parameter_goal_material_projection_v3;
 #[cfg(all(unix, feature = "server"))]
 mod operator_namespace;
 #[cfg(feature = "server")]
