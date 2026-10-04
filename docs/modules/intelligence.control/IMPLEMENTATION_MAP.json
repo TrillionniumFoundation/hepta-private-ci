@@ -1,19 +1,54 @@
 {
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "sourceIdentityPolicy": "current_observation_with_declared_history_v2",
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "53f6bcd138f689ab0ba16f3f1eefc0d8fbee8eb8",
+    "tree": "7e01336d29f574e56027d163e0fe37e6892ce688"
   },
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "53f6bcd138f689ab0ba16f3f1eefc0d8fbee8eb8",
+    "tree": "7e01336d29f574e56027d163e0fe37e6892ce688"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
-    "codex-rs/hepta-intelligence"
+    "codex-rs/hepta-agentd/src/intelligence_product.rs",
+    "codex-rs/hepta-agentd/src/intelligence_product_tests.rs",
+    "codex-rs/hepta-agentd/src/state.rs",
+    "codex-rs/hepta-context-compiler",
+    "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
+    "codex-rs/hepta-intelligence",
+    "codex-rs/hepta-intelligence-eval",
+    "codex-rs/hepta-intelligence/src/canonical.rs",
+    "codex-rs/hepta-intelligence/src/canonical_tests.rs",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow.rs",
+    "codex-rs/hepta-intelligence/src/evaluated_shadow_tests.rs",
+    "codex-rs/hepta-intelligence/src/intuition_qualification.rs",
+    "codex-rs/hepta-intelligence/src/lib.rs",
+    "codex-rs/hepta-intelligence/src/lib_tests.rs",
+    "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
+    "codex-rs/hepta-intelligence/src/neuron_runtime.rs",
+    "codex-rs/hepta-intelligence/src/objective_run.rs",
+    "codex-rs/hepta-intelligence/src/outcome_credit_v2.rs",
+    "codex-rs/hepta-intelligence/src/pipeline.rs",
+    "codex-rs/hepta-intelligence/src/pipeline_tests.rs",
+    "codex-rs/hepta-intelligence/src/pipeline_v2.rs",
+    "codex-rs/hepta-intelligence/src/pipeline_v2_tests.rs",
+    "codex-rs/hepta-intelligence/src/plasticity_product.rs",
+    "codex-rs/hepta-intelligence/src/prompt_delivery.rs",
+    "codex-rs/hepta-intelligence/src/prompt_pipeline.rs",
+    "codex-rs/hepta-intelligence/src/topology_canary_product.rs",
+    "codex-rs/hepta-intelligence/src/topology_product.rs",
+    "codex-rs/hepta-intelligence/src/vertical.rs",
+    "codex-rs/hepta-intelligence/src/vertical_tests.rs",
+    "codex-rs/hepta-intelligence/tests/lane_f_shadow_vertical.rs",
+    "codex-rs/hepta-intuition",
+    "codex-rs/hepta-ndu",
+    "codex-rs/hepta-neuron",
+    "codex-rs/hepta-objective",
+    "codex-rs/hepta-prompt-optimizer",
+    "docs/modules/intelligence.control/TECHNICAL.md"
   ],
   "closedWorldPublicFunctions": true,
   "laneId": "LANE-F-ADAPTIVE-POLICY",
@@ -568,6 +603,14 @@
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/Cargo.lock",
+      "object": "8a9eab30d8957daab7dd027e86e88ca792e04a1c"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "d2703b590935ab17316e6c258657c0ce5ab7412a"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
       "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
     },
@@ -581,7 +624,7 @@
     },
     {
       "path": "codex-rs/hepta-context-compiler",
-      "object": "517aa2bbba2f31ab5d4bf2ce96f5f4d8ec4fa662"
+      "object": "fcf6b1f74c0fc9d84f54d09e58d46f0a403a4a76"
     },
     {
       "path": "codex-rs/hepta-infer-worker-host/src/native_run_control.rs",
@@ -589,15 +632,15 @@
     },
     {
       "path": "codex-rs/hepta-intelligence",
-      "object": "c382c211dc34b0c3abaf87aec27e7e353bae418e"
+      "object": "61401409d583bc376cf3dbb7f41a95fe33615def"
     },
     {
       "path": "codex-rs/hepta-intelligence-eval",
-      "object": "0e61e82c7e344d7c2b1b07f70ab752fd2867e149"
+      "object": "e6fb17e502750521eafa4238d29d024f5fa44c72"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical.rs",
-      "object": "c610f073b47939acf15e7e76aad59883ac13fad4"
+      "object": "4486bc07ac2a334e01f2dfb511f3a385cb308fff"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/canonical_tests.rs",
@@ -625,7 +668,7 @@
     },
     {
       "path": "codex-rs/hepta-intelligence/src/ndu_stochastic_admission.rs",
-      "object": "64ce0c612f4212fa0465177a74036b1cf3667e22"
+      "object": "26a85df459bc29c57574c5c29e40a4b619099077"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/neuron_runtime.rs",
@@ -697,19 +740,39 @@
     },
     {
       "path": "codex-rs/hepta-neuron",
-      "object": "2e0cb699ff6d11dd63e996040d935153f4e63f57"
+      "object": "c8a74a3012db3798b0a0c938ec60f60e136ad493"
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "e89450f622d12e85f516df691291e349f42cd8fc"
+      "object": "4fe20d6ca8de0e7ea61a5b633f49268c4af9f80a"
     },
     {
       "path": "codex-rs/hepta-prompt-optimizer",
-      "object": "030b8b3f7a2f5ce89921926e4b038feedef65c66"
+      "object": "957c132402cfd8ef9c92451076a3735265999110"
     },
     {
       "path": "docs/modules/intelligence.control/TECHNICAL.md",
       "object": "255133762234bb470a3ee24e1c7c84554f2688c0"
     }
-  ]
+  ],
+  "historicalSourceDeclarations": {
+    "schema": "hepta.map-historical-source-declarations.v1",
+    "records": [
+      {
+        "recordedAt": {
+          "commit": "65c11d17d7519231a53096f19d72d130c5f0774e",
+          "tree": "1c3334b9181d36f15adc9bef6c4262f395d7b604"
+        },
+        "mapBlob": "a787ea0b2d6f09ad8b8615ccc19873ad371a1af8",
+        "declaredSourceBase": {
+          "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+          "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+        },
+        "declaredObservedAtHead": {
+          "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+          "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+        }
+      }
+    ]
+  }
 }
