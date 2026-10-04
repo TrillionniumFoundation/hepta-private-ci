@@ -61,12 +61,12 @@ fn tick_anchor_refuses_pending_index_without_reconciling_or_writing() {
         },
         /*expected_anchor*/ None,
     ));
-    let before = checked(fs::read(fixture.index()));
+    let before = runtime.index.held_fixture_bytes();
     assert!(matches!(
         runtime.current_tick_anchor(),
         Err(NeuronRuntimeV2Error::PendingOperation)
     ));
-    assert_eq!(checked(fs::read(fixture.index())), before);
+    assert_eq!(runtime.index.held_fixture_bytes(), before);
     assert_eq!(checked(runtime.store.current_anchor()), None);
 }
 

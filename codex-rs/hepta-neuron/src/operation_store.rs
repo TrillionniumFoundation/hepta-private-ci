@@ -204,6 +204,11 @@ pub struct FileNeuronOperationStore {
 }
 
 impl FileNeuronOperationStore {
+    #[cfg(test)]
+    pub(crate) fn held_fixture_bytes(&self) -> Vec<u8> {
+        crate::held_fixture_bytes(&self.file)
+    }
+
     pub fn open(
         file: File,
         config_digest: Digest32,

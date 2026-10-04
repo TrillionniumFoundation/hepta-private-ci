@@ -41,8 +41,8 @@ fn complete_current_checkpoint_is_acknowledged_readonly_and_survives_cold_reopen
         &mut Allow,
     ));
     let before = (
-        checked(fs::read(fixture.store())),
-        checked(fs::read(fixture.index())),
+        runtime.store.held_fixture_bytes(),
+        runtime.index.held_fixture_bytes(),
     );
     let actual = checked(runtime.current_acknowledged_sparse_checkpoint_v2(first.next_anchor))
         .expect("real current checkpoint");
@@ -61,8 +61,8 @@ fn complete_current_checkpoint_is_acknowledged_readonly_and_survives_cold_reopen
     assert_eq!(calls.load(Ordering::SeqCst), 2);
     assert_eq!(
         (
-            checked(fs::read(fixture.store())),
-            checked(fs::read(fixture.index()))
+            runtime.store.held_fixture_bytes(),
+            runtime.index.held_fixture_bytes()
         ),
         before
     );
@@ -103,17 +103,17 @@ fn current_checkpoint_read_rejects_pending_and_foreign_witness_without_reconcile
         },
         Some(first.next_anchor),
     ));
-    let before = checked(fs::read(fixture.index()));
+    let before = runtime.index.held_fixture_bytes();
     assert!(matches!(
         runtime.current_acknowledged_sparse_checkpoint_v2(first.next_anchor),
         Err(NeuronRuntimeV2Error::PendingOperation)
     ));
-    assert_eq!(checked(fs::read(fixture.index())), before);
+    assert_eq!(runtime.index.held_fixture_bytes(), before);
     *checked(witness.current.lock()) = None;
     assert!(
         runtime
             .current_acknowledged_sparse_checkpoint_v2(first.next_anchor)
             .is_err()
     );
-    assert_eq!(checked(fs::read(fixture.index())), before);
+    assert_eq!(runtime.index.held_fixture_bytes(), before);
 }

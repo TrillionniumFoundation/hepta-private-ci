@@ -188,6 +188,11 @@ pub struct FileNeuronRuntimeIndexV2 {
 }
 
 impl FileNeuronRuntimeIndexV2 {
+    #[cfg(test)]
+    pub(crate) fn held_fixture_bytes(&self) -> Vec<u8> {
+        crate::held_fixture_bytes(&self.file)
+    }
+
     pub fn create(
         path: &Path,
         context: NeuronRuntimeIndexContextV2,

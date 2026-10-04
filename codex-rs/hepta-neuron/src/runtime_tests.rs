@@ -617,7 +617,7 @@ fn foreign_subject_or_objective_is_rejected_before_model_execution() {
         config,
         MemoryWitness::default(),
     ));
-    let before = checked(fs::read(fixture.0.join("journal")));
+    let before = runtime.journal.held_fixture_bytes();
     let mut model = FakeModel::new();
     let mut foreign_subject = input(1, Digest32::ZERO);
     foreign_subject.subject_id = checked(StableId::new("subject.foreign"));
@@ -630,7 +630,7 @@ fn foreign_subject_or_objective_is_rejected_before_model_execution() {
         );
     }
     assert_eq!(model.calls, 0);
-    assert_eq!(checked(fs::read(fixture.0.join("journal"))), before);
+    assert_eq!(runtime.journal.held_fixture_bytes(), before);
     assert_eq!(checked(runtime.current_anchor()), None);
 }
 
