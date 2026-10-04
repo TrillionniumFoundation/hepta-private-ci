@@ -11,7 +11,9 @@ use codex_hepta_memory_retrieval::RetrievalLifecyclePhaseV1;
 use codex_hepta_memory_retrieval::append_durable_decision_checked_v1;
 use codex_hepta_memory_retrieval::validate_durable_decision_append_v1;
 
-fn identity(request: &str) -> RetrievalExecutionIdentityV1 {
+fn identity(
+    request: &str,
+) -> Result<RetrievalExecutionIdentityV1, codex_hepta_memory_retrieval::LifecycleErrorV1> {
     RetrievalExecutionIdentityV1::new(RetrievalExecutionIdentityPartsV1 {
         tenant: "tenant-a".to_string(),
         principal: "principal-a".to_string(),
@@ -22,7 +24,6 @@ fn identity(request: &str) -> RetrievalExecutionIdentityV1 {
         snapshot_identity: "snapshot-11".to_string(),
         decision_identity: "decision-19".to_string(),
     })
-    .expect("valid lifecycle identity")
 }
 
 fn record(
@@ -69,7 +70,8 @@ impl DurableDecisionPortV1 for MemoryDecisionPort {
             .checked_add(1)
             .ok_or_else(|| io::Error::other("frontier exhausted"))?;
         self.append_count = self.append_count.saturating_add(1);
-        self.latest.retain(|value| value.identity != record.identity);
+        self.latest
+            .retain(|value| value.identity != record.identity);
         self.latest.push(record.clone());
         if self.wrong_commit_frontier {
             Ok(self.frontier.saturating_add(1))
@@ -130,7 +132,7 @@ impl DurableDecisionPortV1 for MemoryDecisionPort {
 #[test]
 fn initial_identity_can_append_after_unrelated_global_history() {
     let next = record(
-        identity("request-a"),
+        identity("request-a").expect("valid lifecycle identity"),
         RetrievalLifecyclePhaseV1::QualifiedDecision,
         7,
         42,
@@ -142,7 +144,7 @@ fn initial_identity_can_append_after_unrelated_global_history() {
 
 #[test]
 fn quarantine_cannot_regress_to_prepared_or_be_blindly_replayed() {
-    let execution = identity("request-a");
+    let execution = identity("request-a").expect("valid lifecycle identity");
     let quarantined = record(
         execution.clone(),
         RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome,
@@ -179,7 +181,7 @@ fn quarantine_cannot_regress_to_prepared_or_be_blindly_replayed() {
 
 #[test]
 fn exact_committed_replay_is_idempotent_without_second_append() {
-    let execution = identity("request-a");
+    let execution = identity("request-a").expect("valid lifecycle identity");
     let next = record(
         execution,
         RetrievalLifecyclePhaseV1::QualifiedDecision,
@@ -189,8 +191,7 @@ fn exact_committed_replay_is_idempotent_without_second_append() {
     );
     let mut port = MemoryDecisionPort::default();
     assert_eq!(
-        append_durable_decision_checked_v1(&mut port, 0, &next, None)
-            .expect("initial append"),
+        append_durable_decision_checked_v1(&mut port, 0, &next, None).expect("initial append"),
         1
     );
     assert_eq!(port.append_count, 1);
@@ -205,7 +206,7 @@ fn exact_committed_replay_is_idempotent_without_second_append() {
 
 #[test]
 fn exact_replay_still_requires_matching_quarantine_evidence() {
-    let execution = identity("request-a");
+    let execution = identity("request-a").expect("valid lifecycle identity");
     let quarantined = record(
         execution.clone(),
         RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome,
@@ -213,11 +214,9 @@ fn exact_replay_still_requires_matching_quarantine_evidence() {
         1,
         "dispatch-unknown",
     );
-    let quarantine = QuarantinedUnknownOutcomeV1::new(
-        execution,
-        "native dispatch outcome unknown".to_string(),
-    )
-    .expect("bounded quarantine");
+    let quarantine =
+        QuarantinedUnknownOutcomeV1::new(execution, "native dispatch outcome unknown".to_string())
+            .expect("bounded quarantine");
     let mut port = MemoryDecisionPort::default();
     append_durable_decision_checked_v1(&mut port, 0, &quarantined, Some(&quarantine))
         .expect("quarantine append");
@@ -233,7 +232,7 @@ fn exact_replay_still_requires_matching_quarantine_evidence() {
 
 #[test]
 fn exact_reconciliation_may_advance_quarantine_to_consumed() {
-    let execution = identity("request-a");
+    let execution = identity("request-a").expect("valid lifecycle identity");
     let quarantined = record(
         execution.clone(),
         RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome,
@@ -266,7 +265,7 @@ fn exact_reconciliation_may_advance_quarantine_to_consumed() {
 
 #[test]
 fn stale_writer_and_terminal_successors_are_rejected() {
-    let execution = identity("request-a");
+    let execution = identity("request-a").expect("valid lifecycle identity");
     let latest = record(
         execution.clone(),
         RetrievalLifecyclePhaseV1::ConsumedRetrieval,
@@ -283,10 +282,7 @@ fn stale_writer_and_terminal_successors_are_rejected() {
     );
     assert_eq!(
         validate_durable_decision_append_v1(Some(&latest), 8, &stale, None),
-        Err(DurableDecisionTransitionErrorV1::StaleWriterFence {
-            latest: 9,
-            next: 8,
-        })
+        Err(DurableDecisionTransitionErrorV1::StaleWriterFence { latest: 9, next: 8 })
     );
 
     let terminal = record(
@@ -309,12 +305,7 @@ fn stale_writer_and_terminal_successors_are_rejected() {
     )
     .expect("bounded quarantine");
     assert!(matches!(
-        validate_durable_decision_append_v1(
-            Some(&terminal),
-            8,
-            &after_terminal,
-            Some(&quarantine),
-        ),
+        validate_durable_decision_append_v1(Some(&terminal), 8, &after_terminal, Some(&quarantine),),
         Err(DurableDecisionTransitionErrorV1::InvalidPhaseTransition { .. })
     ));
 }
@@ -326,7 +317,7 @@ fn port_must_return_the_exact_committed_frontier() {
         ..MemoryDecisionPort::default()
     };
     let next = record(
-        identity("request-a"),
+        identity("request-a").expect("valid lifecycle identity"),
         RetrievalLifecyclePhaseV1::QualifiedDecision,
         7,
         1,
@@ -344,14 +335,14 @@ fn port_must_return_the_exact_committed_frontier() {
 #[test]
 fn identity_and_frontier_mismatch_fail_before_storage() {
     let latest = record(
-        identity("request-a"),
+        identity("request-a").expect("valid lifecycle identity"),
         RetrievalLifecyclePhaseV1::QualifiedDecision,
         7,
         4,
         "prepared",
     );
     let wrong_identity = record(
-        identity("request-b"),
+        identity("request-b").expect("valid lifecycle identity"),
         RetrievalLifecyclePhaseV1::ConsumedRetrieval,
         7,
         6,
@@ -380,9 +371,9 @@ fn identity_and_frontier_mismatch_fail_before_storage() {
 
 #[test]
 fn quarantine_phase_requires_matching_typed_evidence() {
-    let execution = identity("request-a");
+    let execution = identity("request-a").expect("valid lifecycle identity");
     let next = record(
-        execution.clone(),
+        execution,
         RetrievalLifecyclePhaseV1::QuarantinedUnknownOutcome,
         7,
         1,
@@ -394,7 +385,7 @@ fn quarantine_phase_requires_matching_typed_evidence() {
     );
 
     let mismatched = QuarantinedUnknownOutcomeV1::new(
-        identity("request-b"),
+        identity("request-b").expect("valid lifecycle identity"),
         "another request".to_string(),
     )
     .expect("bounded quarantine");

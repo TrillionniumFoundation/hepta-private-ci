@@ -11,7 +11,8 @@ use codex_hepta_memory_retrieval::RetrievalExecutionIdentityV1;
 use codex_hepta_memory_retrieval::RetrievalLifecyclePhaseV1;
 use codex_hepta_memory_retrieval::append_durable_decision_checked_v1;
 
-fn identity() -> RetrievalExecutionIdentityV1 {
+fn identity() -> Result<RetrievalExecutionIdentityV1, codex_hepta_memory_retrieval::LifecycleErrorV1>
+{
     RetrievalExecutionIdentityV1::new(RetrievalExecutionIdentityPartsV1 {
         tenant: "tenant-a".to_string(),
         principal: "principal-a".to_string(),
@@ -22,22 +23,24 @@ fn identity() -> RetrievalExecutionIdentityV1 {
         snapshot_identity: "snapshot-11".to_string(),
         decision_identity: "decision-19".to_string(),
     })
-    .expect("valid lifecycle identity")
 }
 
-fn candidate(payload: &str) -> DurableDecisionRecordV1 {
-    DurableDecisionRecordV1 {
-        identity: identity(),
+fn candidate(
+    payload: &str,
+) -> Result<DurableDecisionRecordV1, codex_hepta_memory_retrieval::LifecycleErrorV1> {
+    Ok(DurableDecisionRecordV1 {
+        identity: identity()?,
         phase: RetrievalLifecyclePhaseV1::QualifiedDecision,
         writer_fence: 7,
         frontier: 1,
         payload_digest: payload.to_string(),
-    }
+    })
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum PortError {
     CompareAndAppend,
+    Capacity,
     LostAcknowledgement,
     Load,
 }
@@ -78,11 +81,8 @@ impl DurableDecisionPortV1 for Port {
             self.fail_before_commit_once = false;
             return Err(PortError::CompareAndAppend);
         }
-        self.frontier = self
-            .frontier
-            .checked_add(1)
-            .expect("test frontier capacity");
-        self.writes = self.writes.checked_add(1).expect("test write capacity");
+        self.frontier = self.frontier.checked_add(1).ok_or(PortError::Capacity)?;
+        self.writes = self.writes.checked_add(1).ok_or(PortError::Capacity)?;
         self.latest = Some(self.replacement.take().unwrap_or_else(|| record.clone()));
         if self.fail_after_commit_once {
             self.fail_after_commit_once = false;
@@ -120,7 +120,7 @@ impl DurableDecisionPortV1 for Port {
                 writer_fence,
                 frontier: expected_frontier
                     .checked_add(1)
-                    .expect("test frontier capacity"),
+                    .ok_or(PortError::Capacity)?,
                 payload_digest: payload_digest.to_string(),
             },
         )
@@ -144,7 +144,7 @@ impl DurableDecisionPortV1 for Port {
 
 #[test]
 fn lost_acknowledgement_is_reconciled_without_a_second_write() {
-    let next = candidate("prepared");
+    let next = candidate("prepared").expect("valid candidate fixture");
     let mut port = Port {
         fail_after_commit_once: true,
         ..Port::default()
@@ -164,7 +164,7 @@ fn lost_acknowledgement_is_reconciled_without_a_second_write() {
 
 #[test]
 fn failed_append_without_exact_readback_is_typed_unknown() {
-    let next = candidate("prepared");
+    let next = candidate("prepared").expect("valid candidate fixture");
     let mut port = Port {
         fail_before_commit_once: true,
         ..Port::default()
@@ -186,7 +186,7 @@ fn failed_append_without_exact_readback_is_typed_unknown() {
 
 #[test]
 fn successful_append_with_failed_confirmation_is_typed_unknown() {
-    let next = candidate("prepared");
+    let next = candidate("prepared").expect("valid candidate fixture");
     let mut port = Port {
         fail_confirmation_once: Cell::new(true),
         ..Port::default()
@@ -212,7 +212,7 @@ fn successful_append_with_failed_confirmation_is_typed_unknown() {
 
 #[test]
 fn successful_port_return_requires_the_exact_committed_record() {
-    let next = candidate("prepared");
+    let next = candidate("prepared").expect("valid candidate fixture");
     let replacement = DurableDecisionRecordV1 {
         phase: RetrievalLifecyclePhaseV1::PublishedRetrieval,
         payload_digest: "different-publication".to_string(),
@@ -238,7 +238,7 @@ fn successful_port_return_requires_the_exact_committed_record() {
 
 #[test]
 fn wrong_returned_frontier_is_rejected_after_exact_confirmation() {
-    let next = candidate("prepared");
+    let next = candidate("prepared").expect("valid candidate fixture");
     let mut port = Port {
         reported_frontier: Some(9),
         ..Port::default()
@@ -262,7 +262,7 @@ fn wrong_returned_frontier_is_rejected_after_exact_confirmation() {
 
 #[test]
 fn failed_confirmation_precedes_returned_frontier_validation() {
-    let next = candidate("prepared");
+    let next = candidate("prepared").expect("valid candidate fixture");
     let mut port = Port {
         fail_confirmation_once: Cell::new(true),
         reported_frontier: Some(9),

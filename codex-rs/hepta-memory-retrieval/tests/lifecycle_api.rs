@@ -9,7 +9,8 @@ use codex_hepta_memory_retrieval::RetrievalExecutionIdentityV1;
 use codex_hepta_memory_retrieval::RetrievalLifecyclePhaseV1;
 use codex_hepta_memory_retrieval::ValidatedRequestV1;
 
-fn identity() -> RetrievalExecutionIdentityV1 {
+fn identity() -> Result<RetrievalExecutionIdentityV1, codex_hepta_memory_retrieval::LifecycleErrorV1>
+{
     RetrievalExecutionIdentityV1::new(RetrievalExecutionIdentityPartsV1 {
         tenant: "tenant-a".to_string(),
         principal: "principal-a".to_string(),
@@ -20,7 +21,6 @@ fn identity() -> RetrievalExecutionIdentityV1 {
         snapshot_identity: "snapshot-11".to_string(),
         decision_identity: "decision-19".to_string(),
     })
-    .expect("valid lifecycle identity")
 }
 
 #[derive(Default)]
@@ -108,7 +108,7 @@ impl DurableDecisionPortV1 for MemoryDecisionPort {
 
 #[test]
 fn external_api_preserves_identity_through_acknowledgement() {
-    let expected = identity();
+    let expected = identity().expect("valid lifecycle identity");
     let acknowledged = ValidatedRequestV1::new(expected.clone())
         .bind_tenant()
         .seal_snapshot("snapshot-11")
@@ -130,7 +130,7 @@ fn external_api_preserves_identity_through_acknowledgement() {
 
 #[test]
 fn external_api_rejects_cross_identity_transition() {
-    let error = ValidatedRequestV1::new(identity())
+    let error = ValidatedRequestV1::new(identity().expect("valid lifecycle identity"))
         .bind_tenant()
         .seal_snapshot("snapshot-from-another-request")
         .expect_err("cross-request snapshot must fail");
@@ -142,7 +142,7 @@ fn external_api_rejects_cross_identity_transition() {
 
 #[test]
 fn durable_port_contract_compiles_and_fences_replay() {
-    let identity = identity();
+    let identity = identity().expect("valid lifecycle identity");
     let mut port = MemoryDecisionPort::default();
     let writer_fence = port.acquire_writer_fence("writer-a").expect("writer fence");
     let record = DurableDecisionRecordV1 {

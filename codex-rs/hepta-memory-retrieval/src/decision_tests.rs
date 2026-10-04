@@ -282,3 +282,182 @@ fn assignment_digest_detects_selected_set_tampering() {
         Err(AssignmentErrorV1::DigestMismatch)
     );
 }
+
+#[test]
+fn rehashed_packet_cannot_select_outside_declared_engram_support() {
+    let (cue, policy, input, mut recall) = recalled(RetrievalSourceCompletenessV1::Exhausted);
+    let engram = recall.packet.engram.as_mut().expect("engram");
+    engram.selected_support.clear();
+    engram.coverage = ProbabilityQ32::ZERO;
+    engram.receipt_digest = engram.compute_receipt_digest();
+    recall.packet.packet_digest = recall.packet.compute_packet_digest();
+    recall.receipt_digest = recall.compute_receipt_digest();
+    assert!(recall.validate().is_err());
+    assert!(observe_retrieval_assignment(&cue, &policy, &input, &recall).is_err());
+}
+
+#[test]
+fn rehashed_assignment_rejects_zero_candidate_identity() {
+    let (cue, policy, input, recall) = recalled(RetrievalSourceCompletenessV1::Exhausted);
+    let mut observed =
+        observe_retrieval_assignment(&cue, &policy, &input, &recall).expect("assignment");
+    for identities in [
+        &mut observed.enumerated_candidates,
+        &mut observed.legal_candidates,
+        &mut observed.selected_candidates,
+    ] {
+        identities[0].record_digest = Digest32::ZERO;
+    }
+    observed.observation_digest = observed.compute_observation_digest();
+    assert_eq!(
+        observed.validate(),
+        Err(AssignmentErrorV1::EmptyDigest("assignment_candidate"))
+    );
+}
+
+#[test]
+fn rehashed_assignment_rejects_impossible_omission_count() {
+    let (cue, policy, input, recall) = recalled(RetrievalSourceCompletenessV1::Exhausted);
+    let mut observed =
+        observe_retrieval_assignment(&cue, &policy, &input, &recall).expect("assignment");
+    observed.omitted_by_policy_limits =
+        u32::try_from(crate::MAX_GENERATION_BOUND_CANDIDATES + 1).expect("bounded fixture");
+    observed.observation_digest = observed.compute_observation_digest();
+    assert!(observed.validate().is_err());
+}
+
+fn maximum_assignment() -> RetrievalAssignmentObservationV1 {
+    let cue = cue();
+    let mut policy = policy();
+    policy.channel_weights = vec![RetrievalChannelWeightV1 {
+        channel: RetrievalChannelV1::Lexical,
+        weight: FixedQ32::ONE,
+        maximum_candidates: u32::try_from(crate::MAX_GENERATION_BOUND_CANDIDATES)
+            .expect("bounded candidate limit"),
+    }];
+    policy.minimum_distinct_channels = 1;
+    policy.maximum_results =
+        u32::try_from(crate::MAX_GENERATION_BOUND_RESULTS).expect("bounded result limit");
+    let candidates = (0..crate::MAX_GENERATION_BOUND_CANDIDATES)
+        .map(|index| {
+            candidate(
+                u64::try_from(index).expect("bounded identity"),
+                RetrievalChannelV1::Lexical,
+                u32::try_from(index + 1).expect("bounded rank"),
+            )
+        })
+        .collect();
+    let input = GeneratedCandidateInputV1::new(vec![batch(
+        RetrievalGeneratorOwnerV1::CognitiveLexical,
+        candidates,
+        RetrievalSourceCompletenessV1::Exhausted,
+    )])
+    .expect("bounded owner input");
+    let recall = crate::recall_generated(&cue, &policy, &input).expect("bounded recall");
+    observe_retrieval_assignment(&cue, &policy, &input, &recall).expect("bounded assignment")
+}
+
+#[test]
+fn assignment_validation_accepts_exact_candidate_and_result_limits() {
+    let observation = maximum_assignment();
+    assert_eq!(observation.validate(), Ok(()));
+    assert_eq!(
+        (
+            observation.enumerated_candidates.len(),
+            observation.legal_candidates.len(),
+            observation.selected_candidates.len(),
+            observation.omitted_by_policy_limits,
+            observation.authority,
+        ),
+        (
+            crate::MAX_GENERATION_BOUND_CANDIDATES,
+            crate::MAX_GENERATION_BOUND_CANDIDATES,
+            crate::MAX_GENERATION_BOUND_RESULTS,
+            0,
+            AuthorityPosture::DENY_ALL,
+        ),
+    );
+}
+
+#[test]
+fn assignment_validation_rejects_rehashed_enumeration_above_limit() {
+    let mut observation = maximum_assignment();
+    observation
+        .enumerated_candidates
+        .push(RetrievalCandidateIdentityV1 {
+            record_id: id("memory:outside-limit"),
+            record_revision: revision(1),
+            record_digest: digest("outside-limit"),
+        });
+    observation.enumerated_candidates.sort();
+    observation.observation_digest = observation.compute_observation_digest();
+    assert_eq!(
+        observation.validate(),
+        Err(AssignmentErrorV1::InvalidRecall(
+            "assignment candidate limits exceeded".to_string()
+        )),
+    );
+}
+
+#[test]
+fn assignment_validation_rejects_rehashed_selection_above_limit() {
+    let mut observation = maximum_assignment();
+    observation.selected_candidates =
+        observation.legal_candidates[..crate::MAX_GENERATION_BOUND_RESULTS + 1].to_vec();
+    observation.observation_digest = observation.compute_observation_digest();
+    assert_eq!(
+        observation.validate(),
+        Err(AssignmentErrorV1::InvalidRecall(
+            "assignment candidate limits exceeded".to_string()
+        )),
+    );
+}
+
+#[test]
+fn assignment_validation_preserves_real_empty_support_abstention() {
+    let cue = cue();
+    let policy = policy();
+    let input = GeneratedCandidateInputV1::new(vec![
+        batch(
+            RetrievalGeneratorOwnerV1::CognitiveLexical,
+            Vec::new(),
+            RetrievalSourceCompletenessV1::Exhausted,
+        ),
+        batch(
+            RetrievalGeneratorOwnerV1::CognitiveEntity,
+            Vec::new(),
+            RetrievalSourceCompletenessV1::Exhausted,
+        ),
+    ])
+    .expect("exhausted empty owner input");
+    let recall = recall_generated_with_engram(
+        &cue,
+        &policy,
+        &input,
+        &engram(),
+        &EngramDynamicsPolicyV1::product_default().expect("dynamics"),
+    )
+    .expect("actual empty-support recall");
+    assert_eq!(recall.validate(), Ok(()));
+    assert_eq!(
+        recall.packet.disposition,
+        crate::RecallDispositionV1::Abstained(crate::RecallAbstentionReasonV1::NoCandidate),
+    );
+    assert!(recall.packet.selections.is_empty());
+    assert!(
+        recall
+            .packet
+            .engram
+            .as_ref()
+            .expect("engram")
+            .selected_support
+            .is_empty()
+    );
+    let observed = observe_retrieval_assignment(&cue, &policy, &input, &recall)
+        .expect("real abstention remains observable");
+    assert_eq!(observed.validate(), Ok(()));
+    assert!(observed.enumerated_candidates.is_empty());
+    assert!(observed.legal_candidates.is_empty());
+    assert!(observed.selected_candidates.is_empty());
+    assert_eq!(observed.authority, AuthorityPosture::DENY_ALL);
+}

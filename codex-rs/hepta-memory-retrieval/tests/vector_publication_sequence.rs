@@ -18,7 +18,10 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn encoder() -> EncoderReleaseIdentityV1 {
+fn encoder() -> Result<
+    EncoderReleaseIdentityV1,
+    codex_hepta_memory_retrieval::vector_publication::VectorPublicationErrorV1,
+> {
     EncoderReleaseIdentityV1::new(
         digest("model"),
         digest("weights"),
@@ -26,13 +29,12 @@ fn encoder() -> EncoderReleaseIdentityV1 {
         digest("preprocessor"),
         2,
     )
-    .expect("encoder")
 }
 
-fn snapshot(owner_generation: &str) -> VectorIndexSnapshotV1 {
+fn snapshot(owner_generation: &str) -> Result<VectorIndexSnapshotV1, Box<dyn std::error::Error>> {
     let record = MemoryRecord {
-        record_id: StableId::new("memory:sequence-boundary").expect("record id"),
-        revision: Revision::new(1).expect("revision"),
+        record_id: StableId::new("memory:sequence-boundary")?,
+        revision: Revision::new(1)?,
         kind: MemoryKind::Fact,
         content_digest: digest("content"),
         predecessor_digest: None,
@@ -45,9 +47,8 @@ fn snapshot(owner_generation: &str) -> VectorIndexSnapshotV1 {
         digest("model"),
         digest("preprocessor"),
         vec![FixedQ32::ZERO, FixedQ32::ZERO],
-    )
-    .expect("embedding");
-    VectorIndexSnapshotV1::new(
+    )?;
+    Ok(VectorIndexSnapshotV1::new(
         digest("generation"),
         digest(owner_generation),
         digest("model"),
@@ -58,8 +59,7 @@ fn snapshot(owner_generation: &str) -> VectorIndexSnapshotV1 {
             embedding,
             ood: ProbabilityQ32::ZERO,
         }],
-    )
-    .expect("snapshot")
+    )?)
 }
 
 #[test]
@@ -70,8 +70,8 @@ fn exhausted_sequence_has_no_valid_successor() {
         u64::MAX,
         9,
         Some(digest("previous")),
-        encoder(),
-        snapshot("owner-generation-9"),
+        encoder().expect("valid encoder fixture"),
+        snapshot("owner-generation-9").expect("valid snapshot fixture"),
         4,
         7,
         Vec::new(),
@@ -84,7 +84,7 @@ fn exhausted_sequence_has_no_valid_successor() {
         2,
         9,
         Some(current.publication_digest()),
-        encoder(),
+        encoder().expect("valid encoder fixture"),
         current.snapshot().clone(),
         4,
         7,

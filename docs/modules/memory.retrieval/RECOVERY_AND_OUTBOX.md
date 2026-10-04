@@ -41,9 +41,11 @@ forward. A stronger durable observation may skip an unmaterialized intermediate
 phase, for example `QualifiedDecision -> ConsumedRetrieval` when an exact native
 turn already exists. `AcknowledgedRetrieval` is terminal. A quarantined unknown
 outcome cannot regress to `QualifiedDecision` or another pre-effect state and
-cannot be appended repeatedly as a substitute for reconciliation. Exact
-operation reconciliation may advance quarantine only to `PublishedRetrieval`,
-`ConsumedRetrieval`, or `AcknowledgedRetrieval`.
+cannot be appended repeatedly as a substitute for reconciliation. Recovery requires
+exact-operation reconciliation: evidence must bind the already named native
+request, principal, worker generation, and any observed exact turn. Context equality
+alone cannot correlate two operations. Only that reconciliation may advance
+quarantine to `PublishedRetrieval`, `ConsumedRetrieval`, or `AcknowledgedRetrieval`.
 
 ## Transactional append rule
 
@@ -138,8 +140,8 @@ qualification, source integrity, and the generated qualification manifest. The
 canonical source-object inventory explicitly binds lifecycle module wiring,
 transition validation, external API tests, deadline forwarding, worker capacity,
 product admission, vector publication, and qualification-policy source.
-After integration, the merge SHA must run independently; branch-head artifacts
-cannot be relabelled as merge evidence.
+After integration, the merge SHA must run independently;
+branch-head artifacts cannot be relabelled as merge evidence.
 
 External gates remain false until separately observed evidence exists for a
 production encoder and vector publisher, selected deployment host, hard resource

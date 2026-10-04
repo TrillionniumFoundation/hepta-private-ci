@@ -33,7 +33,9 @@ use codex_hepta_types::StableId;
 
 use crate::engram::EngramRecallReceiptV1;
 use crate::semantics::ContradictionEvidenceV2;
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 use crate::semantics::contradiction_population_count;
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 use crate::semantics::policy_admitted_union;
 
 pub const MAX_GENERATION_BOUND_CANDIDATES: usize = 512;
@@ -480,6 +482,16 @@ impl RecallPacketV1 {
             for claim in &selection.contradiction_group_digests {
                 claim.validate(self.generation_vector_digest)?;
             }
+            if let Some(engram) = &self.engram
+                && !engram.selected_support.iter().any(|support| {
+                    support.record_id == selection.record_id
+                        && support.record_revision == selection.record_revision
+                })
+            {
+                return Err(RecallErrorV1::InvalidEngram(
+                    "selected record is outside declared engram support".to_string(),
+                ));
+            }
             if !identities.insert((selection.record_id.clone(), selection.record_revision)) {
                 return Err(RecallErrorV1::DuplicateRecallSelection(
                     selection.record_id.to_string(),
@@ -857,6 +869,7 @@ pub fn build_candidate_union(
     Ok(result)
 }
 
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub fn recall(
     cue: &MemoryCueV1,
     policy: &RetrievalPolicyV1,
