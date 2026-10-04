@@ -500,6 +500,80 @@ def specs(legacy, output_dir: Path | None = None):
             ],
         }
     )
+    retirement_names = [
+        f"session::tests::compaction_admission_tests::{name}"
+        for name in [
+            "compact_after_turn_complete_rejects_while_terminalization_pending",
+            "retirement_observation_waits_for_flush_and_idle_fence",
+            "retirement_observation_rejects_newer_active_and_retired_turns",
+            "retirement_observation_rejects_registry_contention_at_capture_and_recheck",
+            "cancelled_retirement_observation_preserves_terminalizer",
+            "retirement_observation_deadline_does_not_cancel_terminalizer",
+            "retirement_observation_deadline_bounds_capture_lock",
+            "retirement_observation_deadline_bounds_recheck_lock",
+            "retirement_observation_rechecks_shutdown",
+            "retirement_observation_does_not_imply_successful_terminal_flush",
+        ]
+    ]
+    compaction_names = [
+        "suite::model_provider_policy_compaction::provider_policy_block_prevents_remote_v1_compaction_send",
+        "suite::model_provider_policy_compaction::provider_policy_claims_each_remote_v1_compaction_retry",
+    ]
+    journal_names = [
+        f"restart_journal::tests::{name}"
+        for name in [
+            "restart_journal_writer_migrates_legacy_main_window",
+            "main_and_companion_writes_preserve_both_domains_and_wire_bytes",
+            "legacy_companion_read_preserves_attempts_without_rewriting_input",
+            "stale_projection_and_corrupt_record_cannot_replace_current_budget",
+            "active_main_budget_rejects_clock_rollback_without_replenishing_attempts",
+        ]
+    ]
+    # Append owner regressions without weakening or reordering the prior 34.
+    for name, package, selection, required in [
+        (
+            "core-retirement-observer-regressions",
+            "codex-core",
+            ["--lib", "session::tests::compaction_admission_tests"],
+            retirement_names,
+        ),
+        (
+            "core-compaction-retirement-fixtures",
+            "codex-core",
+            [
+                "--test",
+                "all",
+                "-E",
+                " | ".join(f"test({name})" for name in compaction_names),
+            ],
+            compaction_names,
+        ),
+        (
+            "supervisor-owner-regressions",
+            "codex-hepta-supervisor",
+            ["--lib"],
+            journal_names,
+        ),
+    ]:
+        commands.append(
+            {
+                "name": name,
+                "cwd": legacy.CODEX_RS,
+                "argv": [
+                    "just",
+                    "test",
+                    "--locked",
+                    "-p",
+                    package,
+                    *selection,
+                    "--status-level",
+                    "pass",
+                ],
+                "minimumTests": len(required),
+                "testRunner": "nextest",
+                "requiredNativeTests": required,
+            }
+        )
     return commands
 
 

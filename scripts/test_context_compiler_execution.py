@@ -48,6 +48,31 @@ class ExecutionSummaryTests(unittest.TestCase):
                     result["succeeded"] and named["namedNativeTestsPassed"]
                 )
 
+    def test_prior_34_commands_are_unchanged_and_owner_tests_are_required(self):
+        commands = specs(legacy, Path("/qualification-evidence"))
+        prefix = json.dumps(commands[:34], default=str, sort_keys=True)
+        prefix = prefix.replace(str(legacy.ROOT), "$ROOT").replace(
+            sys.executable, "$PYTHON"
+        )
+        self.assertEqual(
+            hashlib.sha256(prefix.encode()).hexdigest(),
+            "4040929818637c8e22d163d5066d2afa7ac5bdd80edd72e275b4086e7e1d3072",
+        )
+        self.assertEqual(len(commands), 37)
+        self.assertEqual(
+            [c["name"] for c in commands[34:]],
+            [
+                "core-retirement-observer-regressions",
+                "core-compaction-retirement-fixtures",
+                "supervisor-owner-regressions",
+            ],
+        )
+        for command in commands[34:]:
+            self.assertEqual(command["testRunner"], "nextest")
+            result = {"succeeded": True}
+            bind_test_count("Summary [1s] 0 tests run: 0 passed", command, result)
+            self.assertFalse(result["succeeded"])
+
     def test_nextest_immediate_output_cannot_satisfy_larger_minimum(self):
         log = "\n".join(
             [
@@ -234,7 +259,7 @@ class ExecutionSummaryTests(unittest.TestCase):
             "cc7ec3fc1e2bf12aa599a89c73ed6ceda2317c9c003345c505c23b8f72e2267e",
         )
         self.assertEqual(
-            [x["minimumTests"] for x in commands[27:]], [10, 4, 1, 1, 1, 1, 1]
+            [x["minimumTests"] for x in commands[27:]], [10, 4, 1, 1, 1, 1, 1, 10, 2, 5]
         )
         for command in commands[27:]:
             self.assertEqual(
