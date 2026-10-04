@@ -145,3 +145,30 @@ compiler source and target-independent rust-src.
 These accepted generated files are prerequisites for the subsequent exact-head
 compiler matrix. They do not prove Rust compilation, native runtime tests,
 whole-repository compatibility or release readiness.
+
+### Release source-integrity correction
+
+The first full Cargo run `37194453076` exposed a pre-existing flaw in the
+release-profile job: `cargo chef cook` ran directly in the checked-out workspace
+before Clippy. [cargo-chef 0.1.71's implementation](https://github.com/LukeMathWalker/cargo-chef/blob/v0.1.71/src/recipe.rs)
+creates its minimum dummy project in the current directory. The workflow did
+not restore the product sources afterward. Actual x86_64 and aarch64 musl
+release jobs `111413298399` and `111413298593` reported success while compiling
+first-party dummy crates at version 0.0.1. These green jobs are explicitly
+excluded from product-source qualification.
+
+The correction removes that in-place cache optimization, retains the existing
+release Clippy command, targets, features, lint rules and deadlines, and runs
+a real locked release build on those existing release matrix entries. The
+ordinary Cargo/sccache caches remain, but musl Cargo home and fallback sccache
+now live under RUNNER_TEMP instead of polluting the product checkout. Matching
+cache restore/save paths move with them; no source-guard exclusion is added.
+The job now records its input commit/tree,
+checks the expected commit and the complete worktree before Cargo, compares
+the final commit/tree, and rejects tracked or untracked worktree changes after
+Cargo. No product path is excluded from these worktree checks. Identity files
+are retained with the existing timing artifact. Six disposable-Git regression
+tests execute the actual guards against clean source, dummy replacement,
+untracked product input, a clean replacement commit, a wrong starting SHA and
+the real musl cache setup without changing the product source.
+Only a fresh run on the corrected source can establish release qualification.
