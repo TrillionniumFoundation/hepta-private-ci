@@ -397,6 +397,16 @@ impl RendererHost {
                 || (rect.size.x - clipped.size.x).abs() > 0.01
                 || (rect.size.y - clipped.size.y).abs() > 0.01
             {
+                if self.last_readiness_block.get() != Some("glyph_clipped_or_invalid") {
+                    self.host.as_ref().unwrap().observe_renderer(
+                        NativeRendererObservation::GlyphRejected {
+                            index,
+                            rect: [rect.pos.x, rect.pos.y, rect.size.x, rect.size.y],
+                            clipped: [clipped.pos.x, clipped.pos.y, clipped.size.x, clipped.size.y],
+                            inner_size: [size.x, size.y],
+                        },
+                    );
+                }
                 reject!("glyph_clipped_or_invalid");
             }
         }

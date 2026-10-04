@@ -120,6 +120,15 @@ impl NativeHost for RobrixHost {
             NativeRendererObservation::ReadinessBlocked { reason } => serde_json::json!({
                 "event": "readiness_blocked", "reasonCode": reason,
             }),
+            NativeRendererObservation::GlyphRejected {
+                index,
+                rect,
+                clipped,
+                inner_size,
+            } => serde_json::json!({
+                "event": "glyph_rejected", "index": index, "rect": rect,
+                "clipped": clipped, "innerSize": inner_size,
+            }),
             NativeRendererObservation::StatusDrawList {
                 identity,
                 callback,

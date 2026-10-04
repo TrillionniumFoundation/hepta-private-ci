@@ -37,6 +37,12 @@ pub enum NativeRendererObservation {
     ReadinessBlocked {
         reason: &'static str,
     },
+    GlyphRejected {
+        index: usize,
+        rect: [f64; 4],
+        clipped: [f64; 4],
+        inner_size: [f64; 2],
+    },
     StatusDrawList {
         identity: NativeViewIdentity,
         callback: u64,

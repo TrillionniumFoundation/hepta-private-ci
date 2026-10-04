@@ -28,7 +28,8 @@ python3 apps/hepta-native/tools/build-robrix-native.py build-preview \
 The wrapper resolves the locked native dependency graph, verifies Makepad
 revision `337566c8b25d47f7e4fff6a202157b65bf183330`, and creates an independent
 source archive checkout. Its platform overlay admits only loaded embedded
-resource bytes. It never patches the canonical checkout or Cargo cache. Its
+resource bytes and publishes the X11 process ID before mapping the window for
+process-scoped diagnostics. It never patches the canonical checkout or Cargo cache. Its
 generated lock differs only in the platform package's Git-to-local source.
 The fixed 28 assets and original notices are checked by size and SHA-256 before
 compilation. Asset identities are regenerated from the generated checkout's
@@ -59,7 +60,8 @@ still reads a bounded local font; the preview's default font set is embedded.
 
 `HEPTA_NATIVE_PREVIEW_OBSERVE=1` enables bounded diagnostic JSON on stderr,
 prefixed `HEPTA_NATIVE_PREVIEW `. The events report bounded readiness rejection
-codes (only when the reason changes), the visible status draw list, a later
+codes (only when the reason changes), rejected glyph geometry without text,
+the visible status draw list, a later
 callback, close requests, confirmed owner drain and GUI-loop
 return. They grant no authority. They are not a GPU presentation ACK. External
 runtime validation must also retain the real window image, visible status,

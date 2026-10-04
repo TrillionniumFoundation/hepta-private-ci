@@ -84,3 +84,28 @@ index fef110a..28fcaef 100644
          let mut abs_path = script_mod.cargo_manifest_path.clone();
          abs_path.push('/');
          abs_path.push_str(file_path);
+diff --git a/src/os/linux/x11/xlib_window.rs b/src/os/linux/x11/xlib_window.rs
+--- a/src/os/linux/x11/xlib_window.rs
++++ b/src/os/linux/x11/xlib_window.rs
+@@ -197,6 +197,21 @@
+             }
+ 
+             get_xlib_app_global().dnd.enable_for_window(window);
++
++            // Publish the local owner before mapping so window-scoped tooling
++            // can identify this process without relying on a shared title.
++            // Xlib format 32 consumes an array of native longs, also on LP64.
++            let pid = std::process::id() as c_ulong;
++            x11_sys::XChangeProperty(
++                display,
++                window,
++                x11_sys::XInternAtom(display, c"_NET_WM_PID".as_ptr(), 0),
++                x11_sys::XInternAtom(display, c"CARDINAL".as_ptr(), 0),
++                32,
++                x11_sys::PropModeReplace as i32,
++                &pid as *const c_ulong as *const u8,
++                1,
++            );
+ 
+             // The title should be set prior to mapping the window.
+             let title_bytes = format!("{}\0", title);
