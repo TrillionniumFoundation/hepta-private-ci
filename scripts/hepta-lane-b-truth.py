@@ -99,7 +99,10 @@ def verify_source_base(value: Any, label: str) -> tuple[str, str]:
 
 def verify_module_source_base(row: dict[str, Any], label: str) -> tuple[str, str]:
     policy = row.get("sourceIdentityPolicy", "legacy_shared_literal")
-    if policy == "candidate_or_exact_observation_v1":
+    if policy in {
+        "candidate_or_exact_observation_v1",
+        "current_observation_with_declared_history_v2",
+    }:
         # Do not duplicate or weaken the shared verifier's mapped-source,
         # workspace-input, clean-checkout and historical-anchor requirements.
         spec = importlib.util.spec_from_file_location(
