@@ -40,6 +40,9 @@ class MacroRecorder:
             "WINDOWS_GNULLVM_INCOMPATIBLE": [],
             "WINDOWS_GNULLVM_ONLY": [],
             "fail": self.fail,
+            "type": lambda value: (
+                "string" if isinstance(value, str) else type(value).__name__
+            ),
         }
         for kind in (
             "rust_library",
@@ -102,6 +105,111 @@ class MacroRecorder:
 
 
 class BinaryFeatureGraphTests(unittest.TestCase):
+    def assert_binary_absent(self, targets, binary):
+        self.assertNotIn(binary, targets)
+        self.assertNotIn(binary + "-bin-unit-tests", targets)
+        self.assertNotIn(binary + "-bin-unit-tests-bin", targets)
+        for attributes in targets.values():
+            self.assertNotIn(":" + binary, attributes.get("data", []))
+            for field in ("env", "rustc_env"):
+                self.assertNotIn("CARGO_BIN_EXE_" + binary, attributes.get(field, {}))
+            self.assertNotIn(":" + binary, attributes.get("runfile_env", {}))
+
+    def test_unmet_required_features_omit_all_binary_references(self):
+        recorder = MacroRecorder(
+            {"ordinary": "src/main.rs", "tool": "src/bin/tool.rs"}
+        )
+        targets = recorder.generate(
+            binary_required_features={"ordinary": [], "tool": ["optional"]}
+        )
+        self.assert_binary_absent(targets, "tool")
+        self.assertIn("ordinary", targets)
+        self.assertIn("ordinary-bin-unit-tests", targets)
+        self.assertIn(":ordinary", targets["probe-lifecycle-test"]["data"])
+        self.assertEqual(targets["probe"]["crate_features"], [])
+
+    def test_satisfied_requirements_preserve_the_entire_existing_graph(self):
+        binaries = {"ordinary": "src/main.rs", "tool": "src/bin/tool.rs"}
+        options = {
+            "binary_feature_groups": {
+                "optional": {"binaries": ["tool"], "features": ["optional"]}
+            }
+        }
+        before = MacroRecorder(binaries).generate(**options)
+        after = MacroRecorder(binaries).generate(
+            **options,
+            binary_required_features={"ordinary": [], "tool": ["optional"]},
+        )
+        self.assertEqual(after, before)
+        self.assertEqual(after["probe"]["crate_features"], [])
+
+    def test_workspace_resolved_features_do_not_enable_binary_rust_cfg(self):
+        recorder = MacroRecorder({"tool": "src/main.rs"})
+        recorder.scope["DEP_DATA"]["codex-rs/probe"]["crate_features"] = ["optional"]
+        targets = recorder.generate(binary_required_features={"tool": ["optional"]})
+        self.assert_binary_absent(targets, "tool")
+        self.assertEqual(targets["probe"]["crate_features"], [])
+
+    def test_all_required_features_must_be_in_the_emitted_configuration(self):
+        binaries = {"tool": "src/main.rs"}
+        requirements = {"tool": ["first", "second"]}
+        partial = MacroRecorder(binaries).generate(
+            crate_features=["first"], binary_required_features=requirements
+        )
+        self.assert_binary_absent(partial, "tool")
+        complete = MacroRecorder(binaries).generate(
+            crate_features=["first", "second"], binary_required_features=requirements
+        )
+        self.assertEqual(complete["tool"]["crate_features"], ["first", "second"])
+
+    def test_required_feature_metadata_rejects_missing_unknown_or_invalid_entries(self):
+        for requirements in (
+            {},
+            {"tool": [], "unknown": []},
+            {"other": []},
+            [],
+            {"tool": "optional"},
+            {"tool": [""]},
+            {"tool": [1]},
+        ):
+            with self.subTest(requirements=requirements), self.assertRaisesRegex(
+                ValueError, "binary_required_features"
+            ):
+                MacroRecorder({"tool": "src/main.rs"}).generate(
+                    binary_required_features=requirements
+                )
+
+    @unittest.skipIf(tomllib is None, "Cargo feature closure requires Python 3.11+")
+    def test_actual_supervisor_never_emits_an_unavailable_manifest_binary(self):
+        package = ROOT / "codex-rs/hepta-supervisor"
+        manifest = tomllib.loads((package / "Cargo.toml").read_text(encoding="utf-8"))
+        binaries = {entry["name"]: entry["path"] for entry in manifest["bin"]}
+        recorder = MacroRecorder(binaries)
+        scope = recorder.scope | {
+            "load": lambda *args: None,
+            "exports_files": lambda *args, **kwargs: None,
+        }
+        exec(
+            compile(
+                (package / "BUILD.bazel").read_text(encoding="utf-8"),
+                str(package / "BUILD.bazel"),
+                "exec",
+            ),
+            scope,
+        )
+        targets = {name: attrs for name, (_, attrs) in recorder.targets.items()}
+        for entry in manifest["bin"]:
+            name = entry["name"]
+            if name not in targets:
+                continue
+            with self.subTest(binary=name):
+                self.assertLessEqual(
+                    set(entry.get("required-features", [])),
+                    set(targets[name]["crate_features"]),
+                )
+        self.assertIn("hepta-fleetctl", targets)
+        self.assertIn("hepta-supervisor-authority-bundle", targets)
+
     def test_group_replaces_only_its_own_library_and_keeps_shared_inputs(self):
         recorder = MacroRecorder(
             {"ordinary": "src/main.rs", "tool": "src/bin/tool.rs"}, build_script=True
@@ -511,9 +619,16 @@ class BinaryFeatureGraphTests(unittest.TestCase):
         manifest = tomllib.loads((package / "Cargo.toml").read_text(encoding="utf-8"))
         binaries = {entry["name"]: entry["path"] for entry in manifest["bin"]}
         recorder = MacroRecorder(binaries)
+        declarations = []
+
+        def record_crate(**kwargs):
+            declarations.append(kwargs)
+            return recorder.scope["codex_rust_crate"](**kwargs)
+
         scope = recorder.scope | {
             "load": lambda *args: None,
             "exports_files": lambda *args, **kwargs: None,
+            "codex_rust_crate": record_crate,
         }
         exec(
             compile(
@@ -524,6 +639,12 @@ class BinaryFeatureGraphTests(unittest.TestCase):
             scope,
         )
         targets = {name: attrs for name, (_, attrs) in recorder.targets.items()}
+        requirements = {
+            entry["name"]: entry.get("required-features", [])
+            for entry in manifest["bin"]
+        }
+        self.assertEqual(len(declarations), 1)
+        self.assertEqual(declarations[0]["binary_required_features"], requirements)
         offline = {
             entry["name"]
             for entry in manifest["bin"]
@@ -539,9 +660,13 @@ class BinaryFeatureGraphTests(unittest.TestCase):
             closure = expanded
         for binary in binaries:
             with self.subTest(binary=binary):
+                features = closure if binary in offline else set()
+                if not set(requirements[binary]) <= features:
+                    self.assert_binary_absent(targets, binary)
+                    continue
                 self.assertEqual(
                     set(targets[binary]["crate_features"]),
-                    closure if binary in offline else set(),
+                    features,
                 )
                 self.assertEqual(
                     targets[binary]["deps"],

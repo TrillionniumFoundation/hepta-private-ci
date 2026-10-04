@@ -217,7 +217,8 @@ def codex_rust_crate(
         unit_test_timeout = None,
         extra_binaries = [],
         extra_binaries_non_windows = [],
-        run_tests_with_wine_exec = False):
+        run_tests_with_wine_exec = False,
+        binary_required_features = None):
     """Defines a Rust crate with library, binaries, and tests wired for Bazel + Cargo parity.
 
     The macro mirrors Cargo conventions: it builds a library when `src/` exists,
@@ -239,6 +240,10 @@ def codex_rust_crate(
             Each group shares a private library variant, used only by its binaries
             and their unit tests. List the complete local Cargo feature closure;
             dependency features and build-script configuration are not changed.
+        binary_required_features: Optional complete binary-name mapping of Cargo
+            required-features lists. Binaries whose emitted Rust configuration
+            lacks a requirement are omitted, including test and integration data
+            references. This never enables features or qualifies omitted profiles.
         unit_test_dependency_replacements: Test-only workspace dependency variants for unit and integration harnesses.
             Replace the complete transitive closure when public types cross crates.
         owner_test_dependency_replacements: Additional replacements only for this crate's library-unit
@@ -326,6 +331,20 @@ def codex_rust_crate(
     manifest_path = manifest_relpath + "/Cargo.toml"
 
     binaries = DEP_DATA.get(native.package_name())["binaries"]
+
+    if binary_required_features != None:
+        if (
+            type(binary_required_features) != "dict" or
+            len(binary_required_features) != len(binaries) or
+            any([binary not in binaries for binary in binary_required_features])
+        ):
+            fail("binary_required_features must match all binary names")
+        for required in binary_required_features.values():
+            if (
+                type(required) != "list" or
+                any([type(feature) != "string" or not feature for feature in required])
+            ):
+                fail("binary_required_features requires lists of nonempty feature names")
 
     lib_srcs = crate_srcs or native.glob(["src/**/*.rs"], exclude = binaries.values(), allow_empty = True)
 
@@ -495,6 +514,11 @@ def codex_rust_crate(
     cargo_env = {}
     cargo_env_runfiles = {}
     for binary, main in binaries.items():
+        features = binary_features.get(binary, crate_features)
+        # Use the emitted crate cfg, not the wider workspace dependency graph.
+        if binary_required_features != None:
+            if not all([feature in features for feature in binary_required_features[binary]]):
+                continue
         # Cargo can give a library and a binary the same name; Bazel labels
         # share one namespace. Preserve the library label and Cargo identity.
         binary_target = binary + "-bin" if lib_srcs and binary == name else binary
@@ -507,7 +531,7 @@ def codex_rust_crate(
             crate_name = binary.replace("-", "_"),
             aliases = crate_aliases,
             crate_root = main,
-            crate_features = binary_features.get(binary, crate_features),
+            crate_features = features,
             deps = all_crate_deps() + binary_library_deps.get(binary, maybe_deps) + deps_extra,
             edition = crate_edition,
             # Keep per-binary Cargo link behavior scoped to the matching
@@ -535,7 +559,7 @@ def codex_rust_crate(
             name = binary_unit_test_binary,
             crate = ":" + binary_target,
             aliases = crate_aliases,
-            crate_features = binary_features.get(binary, crate_features),
+            crate_features = features,
             deps = all_crate_deps(normal_dev = True),
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
                 "--remap-path-prefix=../codex-rs=",
