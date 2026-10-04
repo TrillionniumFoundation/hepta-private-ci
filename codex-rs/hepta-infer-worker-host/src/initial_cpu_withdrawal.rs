@@ -336,7 +336,11 @@ pub(super) fn run(path: &Path, pin: Digest32) -> HostResult<Value> {
             if status.status.phase != ArtifactPublicationPhaseV1::Acknowledged {
                 let mut original = publication_request.clone();
                 original.now = now_ms()?;
-                owner.publish_with_state_changes(original, &changes)?;
+                owner.publish_with_state_changes_and_clock(original, &changes, &mut || {
+                    now_ms().map_err(|_| {
+                        codex_hepta_agent_components::learning_artifacts::LearningArtifactOwnerServiceError::ClockUnavailable
+                    })
+                })?;
             }
             let status = owner
                 .publication_status(&publication_request)?

@@ -10,6 +10,11 @@ use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
+use codex_hepta_control_plane::RuntimeModuleAbiV1;
+use codex_hepta_control_plane::RuntimeModulePromotionWitnessV1;
+use codex_hepta_control_plane::RuntimeModuleRegistryError;
+use codex_hepta_control_plane::RuntimeModuleRegistryV1;
+use codex_hepta_control_plane::RuntimeModuleStateClassV1;
 use codex_hepta_memory::CognitiveStore;
 use codex_hepta_memory::ProductionAuthorityLease;
 use codex_hepta_memory::ProductionAuthorityToken;
@@ -126,14 +131,14 @@ async fn recovered_handoff_physically_fences_old_writer_before_successor_admissi
     let plan = WriterHandoffPlanV1 {
         operation_id: id("handoff.memory.production.v1"),
         domain_id: id("memory.cognitive"),
-        source_writer: id("memory.writer.old"),
-        target_writer: id("memory.writer.new"),
+        source_writer: id("memory.writer"),
+        target_writer: id("memory.writer"),
         old_generation: Generation::new(1).expect("old generation"),
         new_generation: Generation::new(2).expect("new generation"),
         authority_epoch: 9,
         migration_plan_digest: digest("migration-plan"),
         schema_digest: digest("schema"),
-        rollback_predecessor_digest: digest("rollback-predecessor"),
+        rollback_predecessor_digest: digest("predecessor-code"),
     };
     let mut journal =
         DurableWriterHandoffJournalV1::create(handoff_file(&temp), plan).expect("create journal");
@@ -218,6 +223,79 @@ async fn recovered_handoff_physically_fences_old_writer_before_successor_admissi
         .admit("occurrence:after-handoff", "memory.write", "payload-v2")
         .await
         .expect("successor admission after route publication");
+    let acknowledged_successor = successor
+        .status("occurrence:after-handoff")
+        .await
+        .expect("acknowledged successor state");
+    // The registry owns routing, not this database. Even authentic regression
+    // evidence cannot prove that predecessor code can read successor state or
+    // that the current writer has stopped. Keep its ordinary rollback shortcut
+    // closed while actual successor acknowledgements remain under this fence.
+    // The registry fixture is a direct trusted-host boundary check, not an
+    // end-to-end independently authenticated module-selection execution.
+    let mut registry = RuntimeModuleRegistryV1::new();
+    let mut abi = RuntimeModuleAbiV1 {
+        module_id: id("memory.writer"),
+        owner_id: id("memory.owner"),
+        generation: Generation::new(1).expect("generation"),
+        implementation_digest: digest("predecessor-code"),
+        candidate_artifact_digest: digest("predecessor-code"),
+        predecessor_generation: None,
+        rollback_predecessor_digest: Digest32::ZERO,
+        state_class: RuntimeModuleStateClassV1::Stateful,
+        dependencies: Vec::new(),
+        input_ports: Vec::new(),
+        output_ports: Vec::new(),
+        authoritative_domains: [id("memory.cognitive")].into_iter().collect(),
+        effect_scope: Default::default(),
+    };
+    registry.register_candidate(abi.clone()).expect("old ABI");
+    registry
+        .activate_bootstrap(&abi.module_id, abi.generation)
+        .expect("old route");
+    abi.predecessor_generation = Some(abi.generation);
+    abi.rollback_predecessor_digest = abi.implementation_digest;
+    abi.generation = Generation::new(2).expect("generation");
+    abi.implementation_digest = digest("successor-code");
+    abi.candidate_artifact_digest = digest("successor-code");
+    registry
+        .register_candidate(abi.clone())
+        .expect("successor ABI");
+    registry
+        .enter_shadow(&abi.module_id, abi.generation)
+        .expect("shadow");
+    registry
+        .enter_canary(&abi.module_id, abi.generation)
+        .expect("canary");
+    registry
+        .promote_after_handoff(
+            &abi.module_id,
+            abi.generation,
+            RuntimeModulePromotionWitnessV1 {
+                selection_digest: digest("fixture-selected-successor"),
+                canary_digest: digest("fixture-canary"),
+                handoff_digest: recovered.checkpoint().receipt_digest,
+            },
+        )
+        .expect("successor route");
+    let before = registry.checkpoint();
+    assert_eq!(
+        registry.rollback_active_to_predecessor_content(
+            &abi.module_id,
+            abi.generation,
+            Generation::new(3).expect("generation"),
+            digest("regression-without-domain-compatibility"),
+        ),
+        Err(RuntimeModuleRegistryError::MissingWriterHandoff)
+    );
+    assert_eq!(registry.checkpoint(), before);
+    assert_eq!(
+        successor
+            .status("occurrence:after-handoff")
+            .await
+            .expect("retained acknowledgement"),
+        acknowledged_successor
+    );
     recovered
         .advance(step(WriterHandoffPhaseV1::Retired, "retired", None))
         .expect("retire old writer");

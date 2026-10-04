@@ -14,6 +14,7 @@ use codex_hepta_agent_components::intelligence_eval::VerifiedSelfEvolutionSelect
 use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
 use codex_hepta_agent_components::learning_artifacts::ArtifactPublicationReceiptV1;
 use codex_hepta_agent_components::learning_artifacts::LearningArtifactOwnerService;
+use codex_hepta_agent_components::learning_artifacts::LearningArtifactOwnerServiceError;
 use codex_hepta_agent_components::learning_artifacts::LearningArtifactPublicationStatusV1;
 use codex_hepta_agent_components::learning_artifacts::LearningArtifactPublishRequestV1;
 use codex_hepta_agent_components::learning_artifacts::ProvenanceModeV1;
@@ -165,12 +166,19 @@ impl LearningOperatorArtifactOwnerV2 {
         self.validate_dispatch_time(training_ledger, evaluation_ledger, &inputs, write_now)?;
         inputs.publication.now = authority_millis(write_now)?;
         request.now = authority_millis(write_now)?;
-        let publication = self.service.publish(request).map_err(|error| {
-            LearningOperatorPublicationErrorV1::OutcomeUnknown {
+        let publication = self
+            .service
+            .publish_with_clock(request, &mut || {
+                let observed = clock()
+                    .and_then(|sample| use_clock.observe(sample))
+                    .and_then(authority_millis)
+                    .map_err(|_| LearningArtifactOwnerServiceError::ClockUnavailable)?;
+                Ok(observed)
+            })
+            .map_err(|error| LearningOperatorPublicationErrorV1::OutcomeUnknown {
                 request: Box::new(inputs.publication.clone()),
                 message: error.to_string(),
-            }
-        })?;
+            })?;
         let view = inputs.candidate.publication_view();
         let receipt = LearningOperatorStorageReceiptV2 {
             candidate: PersistedOperatorCandidateV1 {

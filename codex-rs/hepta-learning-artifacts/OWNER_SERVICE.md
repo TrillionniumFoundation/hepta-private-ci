@@ -65,6 +65,32 @@ registry result; the service cannot issue that signature itself. Operation IDs
 are retry identities, so retain the complete original request until reconciliation
 and apply byte/admission/head identity checks before accepting a terminal retry.
 
+### Publication clock boundary
+
+`publish_with_clock` and `publish_with_state_changes_and_clock` borrow the
+embedding host's existing fallible clock. Agentd's selected learning-operator
+storage adapter and withdrawal, initial-CPU publication, and initial-CPU
+withdrawal recovery use these entrypoints. The operator preserves its existing
+monotonic microsecond clock and explicit authority-millisecond conversion. Samples
+must not precede `request.now` or the prior sample in that invocation. Clock
+failure or regression rejects further admission.
+
+The service samples before starting/resuming publication, staging the original
+registry suffix, and entering each payload, registry, witness and acknowledgement
+phase. A phase already admitted can leave durable records; the next phase must
+recheck time after that I/O. Expiry does not erase payloads, signed CURRENT or
+checkpoints already committed. It preserves the original recovery fence and
+operation identity and never manufactures a terminal acknowledgement. This is
+phase-boundary freshness, not interruptible fsync or an atomic wall-clock/storage
+transaction. Host clock trust and target-host qualification remain external.
+
+An exactly acknowledged historical retry validates its original immutable
+request and durable records without sampling the current clock or re-admitting
+the old operation. Its original receipt remains historical evidence. The
+`publish` and `publish_with_state_changes` signatures remain available with
+explicit fixed logical-time behavior for existing fixtures/embedding contracts;
+they do not refresh time during I/O and are not the four product routes above.
+
 Writer/head keys authenticate storage authority. Selector trust is a separate
 domain: `ArtifactSelectionVerifierV1` binds it to the owner trust snapshot and
 rejects selector keys colliding with writer/head keys, and selector identity
