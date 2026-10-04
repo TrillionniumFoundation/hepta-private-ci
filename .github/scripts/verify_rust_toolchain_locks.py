@@ -31,7 +31,9 @@ def verify(root: Path, output: Path) -> dict:
                 register(url, target["xz_hash"])
     # The compiler source archive is an artifact, not a rustup package. Bazel
     # binds it alongside rustc/rust-std, so the package table alone is incomplete.
-    for artifacts in manifest.get("artifacts", {}).get("source-code", {}).get("target", {}).values():
+    for artifacts in (
+        manifest.get("artifacts", {}).get("source-code", {}).get("target", {}).values()
+    ):
         for artifact in artifacts:
             register(artifact["url"], artifact["hash-sha256"])
 
@@ -41,14 +43,15 @@ def verify(root: Path, output: Path) -> dict:
     old_facts = before["facts"][extension]
     facts = after["facts"][extension]
     required = {
-        re.sub(r"-1\.96\.0(?=-|\.tar\.xz$)", "-1.99.0", name)
-        for name in old_facts
+        re.sub(r"-1\.96\.0(?=-|\.tar\.xz$)", "-1.99.0", name) for name in old_facts
     }
     if set(facts) != required:
         raise ValueError("Bazel Rust archive coverage changed or stale facts remain")
     for name, digest in facts.items():
         if official.get(name) != digest:
-            raise ValueError(f"Bazel archive differs from official Rust manifest: {name}")
+            raise ValueError(
+                f"Bazel archive differs from official Rust manifest: {name}"
+            )
 
     old_nix = json.loads((output / "flake.lock.before").read_text())
     new_nix = json.loads((root / "flake.lock").read_text())

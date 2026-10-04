@@ -83,16 +83,36 @@ Qualification requires the exact final commit, not results from the old compiler
 5. Validate native app compilation and V8 archive/allocator ABI consumer smoke
    on supported targets. Keep the separate nightly linter and ancillary build
    baselines operational. Record blockers separately from upgrade regressions.
+   V8 uses its existing independently PR-triggered workflow and original
+   permissions; it is not nested under the read-only upgrade workflow. Verify
+   that its exact-final-head matrix actually runs rather than assuming that
+   a successful metadata-only result provides consumer ABI coverage.
 
 ## Current qualification status
 
 The first draft is a source proposal. Its original generated Bazel and Nix
-locks deliberately remain unchanged until the hosted `locks` phase produces
-real, source-bound artifacts. It must not be treated as a completed upgrade,
-release, or merge-ready change at that point.
+locks deliberately remain unchanged until the existing manual
+`hepta-diagnostic-source-export.yml` workflow is explicitly dispatched on the
+upgrade branch with `rust_toolchain_locks=true`. The added job produces real,
+source-bound lock artifacts; the default false value preserves all existing
+diagnostic jobs. This extends the workflow's original Bazel-lock diagnostic
+owner, which already checks, updates and exports `MODULE.bazel.lock` and is
+listed in `scripts/ENTRYPOINTS.md`. It adds no automatic trigger or permissions.
+The new job independently satisfies the existing bounded, credential-free
+manual diagnostic envelope. Existing reviewed jobs containing local actions
+remain on their original integration-review path; no admission rule changes.
 
-The `compatibility` phase reuses the repository's existing full Cargo and Bazel
-workflows only after reviewed lock artifacts have been committed. Lock receipts
-explicitly say compilation/testing did not occur during generation. Results
-must distinguish passed, failed, skipped and unrun work. No merge or deployment
-is part of this change.
+Initial automatic bootstrap run 37192766977 never started a job: the nested
+V8 caller lacked the child workflow's original actions-read permission. The
+repository-surface guard also rejected that new automatic workflow. The
+automatic wrapper was removed entirely; neither restriction is weakened.
+Original V8 qualification remains its own independently triggered workflow.
+
+After reviewing and committing generated locks, explicitly run the existing
+full Cargo and Bazel workflows on the exact final head; select Bazel's
+`qualify_native_windows=true` to include its original native Windows suite.
+Also verify existing native-desktop blocking CI and the complete V8 matrix.
+No lock-generation receipt is a compilation/test pass. Results must distinguish
+passed, failed, skipped and unrun work. This is not a completed upgrade,
+release, or merge-ready change until applicable qualification succeeds.
+No merge or deployment is part of this change.

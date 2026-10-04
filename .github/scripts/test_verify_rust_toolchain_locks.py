@@ -8,7 +8,8 @@ import unittest
 
 
 SPEC = importlib.util.spec_from_file_location(
-    "verify_rust_toolchain_locks", Path(__file__).with_name("verify_rust_toolchain_locks.py")
+    "verify_rust_toolchain_locks",
+    Path(__file__).with_name("verify_rust_toolchain_locks.py"),
 )
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
@@ -27,10 +28,15 @@ class GeneratedLockTests(unittest.TestCase):
         self.name = "rustc-1.99.0-x86_64-unknown-linux-gnu.tar.xz"
         self.digest = "a" * 64
         old = {"facts": {EXTENSION: {self.name.replace("1.99.0", "1.96.0"): "b" * 64}}}
-        nix = {"nodes": {
-            "nixpkgs": {"locked": {"rev": "preserved"}},
-            "rust-overlay": {"locked": {"rev": "old"}, "inputs": {"nixpkgs": ["nixpkgs"]}},
-        }}
+        nix = {
+            "nodes": {
+                "nixpkgs": {"locked": {"rev": "preserved"}},
+                "rust-overlay": {
+                    "locked": {"rev": "old"},
+                    "inputs": {"nixpkgs": ["nixpkgs"]},
+                },
+            }
+        }
         for name, value in (("MODULE.bazel.lock", old), ("flake.lock", nix)):
             encoded = json.dumps(value)
             (self.root / name).write_text(encoded)
@@ -38,15 +44,25 @@ class GeneratedLockTests(unittest.TestCase):
         (self.root / "source.txt").write_text("original source")
         self.git("init", "-q")
         self.git("add", ".")
-        self.git("-c", "user.name=Test", "-c", "user.email=test@example.invalid", "commit", "-qm", "input")
-        (self.output / "source.txt").write_text(self.git("rev-parse", "HEAD", "HEAD^{tree}"))
+        self.git(
+            "-c",
+            "user.name=Test",
+            "-c",
+            "user.email=test@example.invalid",
+            "commit",
+            "-qm",
+            "input",
+        )
+        (self.output / "source.txt").write_text(
+            self.git("rev-parse", "HEAD", "HEAD^{tree}")
+        )
         self.lock = {"facts": {EXTENSION: {self.name: self.digest}}}
         self.nix = copy.deepcopy(nix)
         self.nix["nodes"]["rust-overlay"]["locked"]["rev"] = "new"
         self.write_locks()
         (self.output / "channel-rust-1.99.0.toml").write_text(
             '[pkg.rust]\nversion = "1.99.0 (official)"\n'
-            '[pkg.rustc.target.x86_64-unknown-linux-gnu]\navailable = true\n'
+            "[pkg.rustc.target.x86_64-unknown-linux-gnu]\navailable = true\n"
             f'xz_url = "https://static.rust-lang.org/dist/{self.name}"\n'
             f'xz_hash = "{self.digest}"\n'
         )
@@ -80,11 +96,14 @@ class GeneratedLockTests(unittest.TestCase):
         self.lock["facts"][EXTENSION][name] = digest
         self.write_locks()
         manifest = self.output / "channel-rust-1.99.0.toml"
-        manifest.write_text(manifest.read_text() + (
-            '\n[[artifacts.source-code.target."*"]]\n'
-            f'url = "https://static.rust-lang.org/dist/2026-10-01/{name}"\n'
-            f'hash-sha256 = "{digest}"\n'
-        ))
+        manifest.write_text(
+            manifest.read_text()
+            + (
+                '\n[[artifacts.source-code.target."*"]]\n'
+                f'url = "https://static.rust-lang.org/dist/2026-10-01/{name}"\n'
+                f'hash-sha256 = "{digest}"\n'
+            )
+        )
         self.assertEqual(MODULE.verify(self.root, self.output)["verifiedArchives"], 2)
 
     def test_rejects_lost_target_coverage(self):
@@ -103,11 +122,14 @@ class GeneratedLockTests(unittest.TestCase):
         self.lock["facts"][EXTENSION][name] = digest
         self.write_locks()
         manifest = self.output / "channel-rust-1.99.0.toml"
-        manifest.write_text(manifest.read_text() + (
-            '\n[pkg.rust-src.target."*"]\navailable = true\n'
-            f'xz_url = "https://static.rust-lang.org/dist/2026-10-01/{name}"\n'
-            f'xz_hash = "{digest}"\n'
-        ))
+        manifest.write_text(
+            manifest.read_text()
+            + (
+                '\n[pkg.rust-src.target."*"]\navailable = true\n'
+                f'xz_url = "https://static.rust-lang.org/dist/2026-10-01/{name}"\n'
+                f'xz_hash = "{digest}"\n'
+            )
+        )
         self.assertEqual(MODULE.verify(self.root, self.output)["verifiedArchives"], 2)
 
     def test_rejects_unrelated_nix_update(self):
@@ -128,7 +150,9 @@ class GeneratedLockTests(unittest.TestCase):
 
     def test_rejects_unofficial_archive_origin(self):
         path = self.output / "channel-rust-1.99.0.toml"
-        path.write_text(path.read_text().replace("static.rust-lang.org", "example.invalid"))
+        path.write_text(
+            path.read_text().replace("static.rust-lang.org", "example.invalid")
+        )
         with self.assertRaisesRegex(ValueError, "distribution origin"):
             MODULE.verify(self.root, self.output)
 

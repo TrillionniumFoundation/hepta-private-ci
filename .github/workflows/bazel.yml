@@ -11,6 +11,11 @@ on:
         type: boolean
         default: false
   workflow_dispatch:
+    inputs:
+      qualify_native_windows:
+        description: Run the existing native Windows suite for explicit toolchain qualification
+        type: boolean
+        default: false
 
 permissions:
   contents: read
