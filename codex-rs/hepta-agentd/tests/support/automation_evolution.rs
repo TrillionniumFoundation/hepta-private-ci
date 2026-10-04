@@ -30,6 +30,10 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::migrate::Migrate;
 
 static LEGACY_MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("../hepta-automation/migrations");
+const LEGACY_TASK_IDS: [&str; 2] = [
+    "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c30",
+    "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c31",
+];
 
 async fn seed_legacy_owner(agent: &AgentFixture) -> Result<Vec<Vec<u8>>> {
     let home = AbsolutePathBuf::from_absolute_path(agent.layout.automation_root())?;
@@ -53,12 +57,60 @@ async fn seed_legacy_owner(agent: &AgentFixture) -> Result<Vec<Vec<u8>>> {
     .bind(agent.agent_id.as_str())
     .execute(&mut *connection)
     .await?;
+    // Seed retained v3 business history, not only an empty schema. These are
+    // committed historical fixture rows; no old binary execution is claimed.
+    for task in LEGACY_TASK_IDS {
+        sqlx::query(
+            "INSERT INTO automation_tasks VALUES (?, ?, 'legacy-thread',
+             'retained before upgrade', 'once', NULL, 'cancelled', NULL, 2, 10, 20)",
+        )
+        .bind(task)
+        .bind(agent.agent_id.as_str())
+        .execute(&mut *connection)
+        .await?;
+        sqlx::query(
+            "INSERT INTO automation_runs VALUES (?, 1, 15, ?, 'cancelled',
+             NULL, NULL, NULL, NULL, NULL)",
+        )
+        .bind(task)
+        .bind(format!("legacy-client:{task}"))
+        .execute(&mut *connection)
+        .await?;
+    }
     let checksums = sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")
         .fetch_all(&mut *connection)
         .await?;
     drop(connection);
     pool.close().await;
     Ok(checksums)
+}
+
+async fn legacy_history(agent: &AgentFixture) -> Result<Vec<String>> {
+    let options = sqlx::sqlite::SqliteConnectOptions::new()
+        .filename(agent.layout.automation_root().join("automation_1.sqlite3"))
+        .read_only(true);
+    let pool = sqlx::sqlite::SqlitePoolOptions::new()
+        .max_connections(1)
+        .connect_with(options)
+        .await?;
+    // Compare all original task/occurrence fields, including cancellation and
+    // client identity. Added schema projections are not the authoritative facts.
+    let rows = sqlx::query_scalar(
+        "SELECT json_array(t.task_id, t.owner_agent_id, t.thread_id, t.prompt,
+            t.schedule_kind, t.interval_ms, t.state, t.next_run_at_ms,
+            t.next_occurrence, t.created_at_ms, t.updated_at_ms,
+            r.task_id, r.occurrence, r.scheduled_for_ms, r.client_user_message_id,
+            r.state, r.lease_generation, r.lease_token, r.lease_expires_at_ms,
+            r.queued_submission_id, r.submitted_at_ms)
+         FROM automation_tasks t JOIN automation_runs r ON r.task_id = t.task_id
+         WHERE t.task_id IN (?, ?) ORDER BY t.task_id, r.occurrence",
+    )
+    .bind(LEGACY_TASK_IDS[0])
+    .bind(LEGACY_TASK_IDS[1])
+    .fetch_all(&pool)
+    .await?;
+    pool.close().await;
+    Ok(rows)
 }
 
 async fn owner_observation(agent: &AgentFixture) -> Result<(i64, i64, Vec<Vec<u8>>)> {
@@ -183,6 +235,8 @@ async fn normal_product_migrates_restarts_hands_off_and_keeps_retired_automation
     let model = responses::start_mock_server().await;
     MockResponsesConfig::new(&model.uri()).write(agent.layout.home_root())?;
     let old_checksums = seed_legacy_owner(&agent).await?;
+    let retained_legacy = legacy_history(&agent).await?;
+    ensure!(retained_legacy.len() == LEGACY_TASK_IDS.len());
     ensure!(
         old_checksums.len() == 3,
         "fixture must be an actual v3 schema"
@@ -192,7 +246,8 @@ async fn normal_product_migrates_restarts_hands_off_and_keeps_retired_automation
     let (mut control, mut health) = fleet.wait_ready(&agent, 1).await?;
     let startup_us = started.elapsed().as_micros();
     let (schema, task_count, migrated_checksums) = owner_observation(&agent).await?;
-    ensure!(schema == i64::from(AUTOMATION_SCHEMA_VERSION) && task_count == 0);
+    ensure!(schema == i64::from(AUTOMATION_SCHEMA_VERSION) && task_count == 2);
+    ensure!(legacy_history(&agent).await? == retained_legacy);
     ensure!(
         old_checksums
             .iter()
@@ -252,7 +307,7 @@ async fn normal_product_migrates_restarts_hands_off_and_keeps_retired_automation
         }
         let tasks = control.automation_list(64).await?;
         ensure!(
-            tasks.len() == task_ids.len(),
+            tasks.len() == task_ids.len() + LEGACY_TASK_IDS.len(),
             "committed tasks lost or duplicated"
         );
         ensure!(
@@ -281,11 +336,36 @@ async fn normal_product_migrates_restarts_hands_off_and_keeps_retired_automation
     ensure!(predecessor.create_task(&probe).await == Err(AutomationError::TimerFenced));
     let resumed = successor.resume_timer().await?;
     ensure!(resumed.writer_epoch == before.writer_epoch + 1);
+    let successor_delta = successor.create_task(&probe).await?;
+    let cancelled_delta = successor
+        .cancel_task(successor_delta.task_id, /*now_ms*/ 2)
+        .await?;
+    ensure!(cancelled_delta.state == AutomationTaskState::Cancelled);
+    task_ids.push(successor_delta.task_id);
+    // Compatible rollback is another SAME-schema owner handoff over the current
+    // database, including all successor acknowledgements, never an old backup.
+    ensure!(successor.quiesce_timer().await?.can_handoff());
+    let compatible_rollback = successor.handoff_timer().await?;
+    let restored = compatible_rollback.resume_timer().await?;
+    ensure!(restored.writer_epoch == resumed.writer_epoch + 1);
+    ensure!(successor.create_task(&probe).await == Err(AutomationError::TimerFenced));
+    ensure!(predecessor.create_task(&probe).await == Err(AutomationError::TimerFenced));
+    ensure!(
+        compatible_rollback
+            .list_tasks(64)
+            .await?
+            .contains(&cancelled_delta)
+    );
+    ensure!(legacy_history(&agent).await? == retained_legacy);
     predecessor.close().await;
     successor.close().await;
+    compatible_rollback.close().await;
     fleet.start(&agent)?;
     let (current, current_health) = fleet.wait_new_spawn(&agent, previous_generation).await?;
-    ensure!(current.automation_list(64).await?.len() == task_ids.len());
+    let after_restart = current.automation_list(64).await?;
+    ensure!(after_restart.len() == task_ids.len() + LEGACY_TASK_IDS.len());
+    ensure!(after_restart.contains(&cancelled_delta));
+    ensure!(legacy_history(&agent).await? == retained_legacy);
     let generation = agent_generation(&fleet, &agent.agent_id)?;
     stop_process(&mut fleet, &agent).await?;
     let owner = AutomationStore::open(&agent.layout).await?;
@@ -306,7 +386,7 @@ async fn normal_product_migrates_restarts_hands_off_and_keeps_retired_automation
         retained.timer_status().await? == retired,
         "startup resurrected a retired owner"
     );
-    ensure!(retained.list_tasks(64).await?.len() == task_ids.len());
+    ensure!(retained.list_tasks(64).await?.len() == task_ids.len() + LEGACY_TASK_IDS.len());
     retained.close().await;
     let mut product = ProductClient::connect(&agent, &retired_control).await?;
     let normal_thread = product.start_thread(&agent.workspace).await?;
@@ -325,13 +405,15 @@ async fn normal_product_migrates_restarts_hands_off_and_keeps_retired_automation
     );
     product.shutdown().await?;
     let (schema, retained_count, checksums) = owner_observation(&agent).await?;
-    ensure!(schema == i64::from(AUTOMATION_SCHEMA_VERSION) && retained_count == 32);
+    ensure!(schema == i64::from(AUTOMATION_SCHEMA_VERSION) && retained_count == 35);
+    ensure!(legacy_history(&agent).await? == retained_legacy);
     ensure!(checksums == migrated_checksums);
     println!(
         "{}",
         json!({"fixture": "normal_agentd_control_and_app_server_local_provider",
         "schema_from": 3, "schema_to": schema, "startup_and_migration_us": startup_us,
-        "successful_create_cancel_cycles": task_ids.len(), "create": latency_summary(&create_samples),
+        "successful_create_cancel_cycles": create_samples.len(), "create": latency_summary(&create_samples),
+        "legacy_retained_tasks": LEGACY_TASK_IDS.len(), "post_handoff_acknowledged_tasks": 1,
         "cancel": latency_summary(&cancel_samples), "restart_samples_us": restart_samples,
         "baseline_resources": baseline, "loaded_resources": loaded,
         "retired_resources": resource_sample(&agent, retired_health.process_id)?,
