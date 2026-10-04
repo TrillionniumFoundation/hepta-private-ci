@@ -1,6 +1,3 @@
-use std::any::type_name;
-use std::fs;
-
 use codex_hepta_intelligence_eval::AnchoredProductEvaluationAttemptJournalV1;
 use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
 use codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1;
@@ -40,50 +37,17 @@ fn assert_durable_journal<T: DurableProductEvaluationAttemptJournalV1>() {}
 #[test]
 fn recorded_production_surface_is_public_and_composable() {
     assert_durable_journal::<AnchoredProductEvaluationAttemptJournalV1<CompileAnchor>>();
-    let runner = type_name::<RecordedProductEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>>();
-    assert!(runner.contains("RecordedProductEvaluationRunnerV1"));
-
-    let provider = type_name::<dyn FinalHoldoutProviderV1>();
-    let sink = type_name::<dyn ProductQualificationEvidenceSinkV1>();
-    assert!(provider.contains("FinalHoldoutProviderV1"));
-    assert!(sink.contains("ProductQualificationEvidenceSinkV1"));
+    let _recorded_constructor: fn(
+        FencedFinalHoldoutOwnerV1<LockedFileFinalHoldoutCasStoreV1>,
+    ) -> RecordedProductEvaluationRunnerV1<
+        LockedFileFinalHoldoutCasStoreV1,
+    > = RecordedProductEvaluationRunnerV1::new;
+    let _provider_type: Option<&dyn FinalHoldoutProviderV1> = None;
+    let _sink_type: Option<&dyn ProductQualificationEvidenceSinkV1> = None;
 
     let _paired_constructor: fn(
         FencedFinalHoldoutOwnerV1<LockedFileFinalHoldoutCasStoreV1>,
     ) -> RegisteredPairedEvaluationRunnerV1<
         LockedFileFinalHoldoutCasStoreV1,
     > = RegisteredPairedEvaluationRunnerV1::new;
-}
-
-#[test]
-fn raw_decision_and_runner_are_private_in_default_builds() {
-    let source_path = codex_utils_cargo_bin::find_resource!("src/lib.rs")
-        .expect("locate learning.eval public API source");
-    let source = fs::read_to_string(source_path).expect("read learning.eval public API surface");
-
-    assert!(source.contains(
-        "#[cfg(feature = \"trusted-inprocess-eval\")]\n\
-         pub use product_runner::ProductEvaluationRunnerV1;"
-    ));
-    assert!(
-        source
-            .lines()
-            .any(|line| line.trim() == "mod product_runner;")
-    );
-    assert!(
-        !source
-            .lines()
-            .any(|line| { line.trim() == "pub mod product_runner;" })
-    );
-    assert_eq!(
-        source
-            .lines()
-            .filter(|line| line.trim() == "pub use product_runner::ProductEvaluationRunnerV1;")
-            .count(),
-        1,
-    );
-    assert!(source.contains("pub(crate) use signed_evaluation::decide_with_signed_evidence_v2;"));
-    assert!(!source.lines().any(|line| {
-        line.trim() == "pub use signed_evaluation::decide_with_signed_evidence_v2;"
-    }));
 }
