@@ -354,7 +354,7 @@ pub(super) enum Event {
     },
     Dispatch {
         request_id: String,
-        dispatch: NativeDispatch,
+        dispatch: Box<NativeDispatch>,
         #[serde(default)]
         terminal_owner: Option<NativeTerminalOwnerBinding>,
     },
@@ -494,7 +494,7 @@ impl DurableInferenceControl {
             request_id,
             Event::Dispatch {
                 request_id: request_id.to_string(),
-                dispatch,
+                dispatch: Box::new(dispatch),
                 terminal_owner: None,
             },
         )
@@ -537,7 +537,7 @@ impl DurableInferenceControl {
             request_id,
             Event::Dispatch {
                 request_id: request_id.to_string(),
-                dispatch,
+                dispatch: Box::new(dispatch),
                 terminal_owner,
             },
         )?;
@@ -1082,7 +1082,7 @@ impl NativeJournal {
                 if let Some(owner) = terminal_owner.as_ref() {
                     validate_terminal_owner_binding(owner)?;
                 }
-                record.dispatch = Some(dispatch);
+                record.dispatch = Some(*dispatch);
                 record.terminal_owner = terminal_owner;
                 record.state = NativeReservationState::Dispatching;
             }

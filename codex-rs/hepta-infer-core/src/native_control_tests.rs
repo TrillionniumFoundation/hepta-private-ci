@@ -843,3 +843,6 @@ fn late_completed_under_non_success_boundaries_never_publishes_success() {
         std::fs::remove_file(path).unwrap();
     }
 }
+
+#[path = "native_control_wire_tests.rs"]
+mod wire_compatibility;
