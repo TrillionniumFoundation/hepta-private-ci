@@ -82,6 +82,7 @@ pub(crate) struct RendererHost {
     close_sent: bool,
     resource_failure: bool,
     poll_timer: Timer,
+    last_readiness_block: Cell<Option<&'static str>>,
 }
 
 impl RendererHost {
@@ -263,11 +264,23 @@ impl RendererHost {
     }
 
     pub(crate) fn after_draw(&mut self, cx: &mut Cx, ui: &WidgetRef) {
+        macro_rules! reject {
+            ($reason:literal) => {{
+                if self.last_readiness_block.replace(Some($reason)) != Some($reason)
+                    && let Some(host) = self.host.as_ref()
+                {
+                    host.observe_renderer(NativeRendererObservation::ReadinessBlocked {
+                        reason: $reason,
+                    });
+                }
+                return;
+            }};
+        }
         let Some(identity) = self.view.identity.clone() else {
-            return;
+            reject!("owner_identity_missing");
         };
         if self.view.phase != NativeHostPhase::Connected || !self.view.needs_rendered_callback {
-            return;
+            reject!("owner_callback_not_requested");
         }
         // A new draw can change attachment or clipping without changing owner
         // identity. It must obtain its own later callback, never complete the
@@ -275,41 +288,41 @@ impl RendererHost {
         self.pending_frame = None;
         self.host.as_mut().unwrap().invalidate_rendered();
         if self.backgrounded || self.paused || self.unfocused {
-            return;
+            reject!("window_inactive");
         }
         let window = ui.window(cx, ids!(main_window));
         let Some(window_id) = window.window_id() else {
-            return;
+            reject!("window_id_missing");
         };
         let Some(pass) = cx.windows[window_id].main_pass_id else {
-            return;
+            reject!("main_pass_missing");
         };
         let label_ref = ui.native_status(cx, ids!(native_host_status));
         let Some(label) = label_ref.borrow() else {
-            return;
+            reject!("status_widget_missing");
         };
         if label.text() != self.view.status {
-            return;
+            reject!("status_text_mismatch");
         }
         let area = label.draw_text.draw_vars.area;
         let Some(instance) = area.valid_instance(cx).copied() else {
-            return;
+            reject!("status_instances_missing");
         };
         if label.expected_ink != Some(instance.instance_count) {
-            return;
+            reject!("glyph_count_mismatch");
         }
         let Some(shader_id) = label.draw_text.draw_vars.draw_shader_id else {
-            return;
+            reject!("shader_id_missing");
         };
         let Some(shader) = cx.draw_shaders.shaders.get(shader_id.index) else {
-            return;
+            reject!("shader_missing");
         };
         let stride = shader.mapping.instances.total_slots;
         let Some(dpi) = cx.passes[pass]
             .display_dpi_factor
             .or(cx.passes[pass].dpi_factor)
         else {
-            return;
+            reject!("dpi_missing");
         };
         let font_size = label.draw_text.text_style.font_size;
         let font_scale = label.draw_text.font_scale;
@@ -320,21 +333,21 @@ impl RendererHost {
             || !dpi.is_finite()
             || dpi <= 0.0
         {
-            return;
+            reject!("invalid_font_metrics");
         }
         let dpx_per_em = font_size * (96.0 / 72.0) * dpi as f32;
         let Some(fonts) = cx.get_global_ref::<Rc<RefCell<makepad_draw::text::fonts::Fonts>>>()
         else {
-            return;
+            reject!("font_state_missing");
         };
         // A mixed SLUG/raster label may publish only its last raster batch.
         // This first native witness admits the complete ordinary raster path.
         if !dpx_per_em.is_finite() || fonts.borrow().should_use_slug_glyph(dpx_per_em) {
-            return;
+            reject!("unsupported_glyph_path");
         }
         let attached = cx.attached_draw_lists(pass);
         if stride == 0 || !area.is_attached(cx, &attached) {
-            return;
+            reject!("status_not_attached");
         }
         let size = window.get_inner_size(cx);
         let list = &cx.draw_lists[instance.draw_list_id];
@@ -349,7 +362,7 @@ impl RendererHost {
                 .checked_mul(stride)
                 .and_then(|n| instance.instance_offset.checked_add(n))
             else {
-                return;
+                reject!("instance_offset_overflow");
             };
             let glyph = Area::Instance(InstanceArea {
                 instance_offset: offset,
@@ -384,7 +397,7 @@ impl RendererHost {
                 || (rect.size.x - clipped.size.x).abs() > 0.01
                 || (rect.size.y - clipped.size.y).abs() > 0.01
             {
-                return;
+                reject!("glyph_clipped_or_invalid");
             }
         }
         drop(label);
@@ -392,7 +405,7 @@ impl RendererHost {
         // visible identity now; only our matching later NextFrame can witness
         // callback return. Neither event is a GPU-success acknowledgement.
         let Some(callback) = self.observe(&identity) else {
-            return;
+            reject!("callback_failed");
         };
         let caption = ui.desktop_button(cx, ids!(main_window.windows_buttons.close));
         let caption_area = caption.area();
@@ -420,6 +433,7 @@ impl RendererHost {
                 inner_size: [size.x, size.y],
                 dpi,
             });
+        self.last_readiness_block.set(None);
         self.pending_frame = Some((cx.new_next_frame(), identity));
     }
 }

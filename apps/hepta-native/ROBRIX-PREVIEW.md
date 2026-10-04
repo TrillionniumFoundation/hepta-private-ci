@@ -58,15 +58,19 @@ An absent embedded resource fails closed. The explicit `--font-file` override
 still reads a bounded local font; the preview's default font set is embedded.
 
 `HEPTA_NATIVE_PREVIEW_OBSERVE=1` enables bounded diagnostic JSON on stderr,
-prefixed `HEPTA_NATIVE_PREVIEW `. The events report the visible status draw
-list, a later callback, close requests, confirmed owner drain and GUI-loop
+prefixed `HEPTA_NATIVE_PREVIEW `. The events report bounded readiness rejection
+codes (only when the reason changes), the visible status draw list, a later
+callback, close requests, confirmed owner drain and GUI-loop
 return. They grant no authority. They are not a GPU presentation ACK. External
 runtime validation must also retain the real window image, visible status,
 startup record, both OS and caption close flows, and successful process exit.
 X11 uses the window manager's decorations, so it cannot observe the separate
 self-drawn caption action. That path requires a real Wayland client-side
-decoration session. A missing caption rectangle on X11 is not evidence that
-this separate path passed.
+decoration session. A failed startup retains a PID-scoped diagnostic window
+image when possible.
+Its separate receipt always marks it unqualified; capture failure never replaces
+the readiness failure or skips cleanup. It is not successful GUI evidence.
+A missing caption rectangle on X11 is not evidence that this separate path passed.
 The `gui_loop_returned` event occurs before the unchanged update-helper tail.
 The current UI has no update activation control, so an ordinary close can only
 qualify the tail's inactive branch. Positive update activation remains untested.

@@ -8,7 +8,7 @@ from pathlib import Path
 import unittest
 import tempfile
 import subprocess
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 ROOT = Path(__file__).resolve().parents[1]
 SPEC = importlib.util.spec_from_file_location(
@@ -59,6 +59,70 @@ class PreviewTests(unittest.TestCase):
             },
             {"event": "gui_loop_returned", "activationRequested": False},
         ]
+
+    def test_failed_startup_capture_is_unqualified_and_process_scoped(self):
+        process = Mock(pid=123)
+        process.poll.return_value = None
+        with tempfile.TemporaryDirectory() as directory:
+            out = Path(directory)
+            commands = []
+            def run(command, **kwargs):
+                commands.append(command)
+                if command[0] == "import":
+                    Path(command[-1]).write_bytes(b"diagnostic fixture pixels")
+                return subprocess.CompletedProcess(command, 0, "456\n", "")
+            m.capture_failed_startup(out, 0, process, {}, run)
+            record = json.loads((out / "session-0-failed-startup.json").read_text())
+            self.assertEqual(record, {
+                "qualified": False, "captured": True,
+                "pngSha256": m.digest(out / "session-0-failed-startup.png"),
+            })
+            self.assertEqual(commands[0], ["xdotool", "search", "--onlyvisible", "--pid", "123"])
+            self.assertEqual(commands[1][:3], ["import", "-window", "456"])
+            self.assertFalse((out / "preview-receipt.json").exists())
+
+    def test_failed_startup_capture_rejects_absent_ambiguous_or_invalid_window(self):
+        process = Mock(pid=123)
+        process.poll.return_value = None
+        for windows in ["", "456\n789\n", "-root"]:
+            with tempfile.TemporaryDirectory() as directory:
+                out = Path(directory)
+                run = Mock(return_value=subprocess.CompletedProcess([], 0, windows, ""))
+                m.capture_failed_startup(out, 0, process, {}, run)
+                self.assertEqual(run.call_count, 1)
+                self.assertEqual(json.loads((out / "session-0-failed-startup.json").read_text()), {
+                    "qualified": False, "captured": False, "errorType": "ValueError",
+                })
+                self.assertFalse(list(out.glob("*.png")))
+
+    def test_failed_startup_capture_does_not_replace_original_error(self):
+        process = Mock(pid=123)
+        process.poll.return_value = None
+        run = Mock(side_effect=RuntimeError("private tool output must not leak"))
+        with tempfile.TemporaryDirectory() as directory:
+            out = Path(directory)
+            m.capture_failed_startup(out, 0, process, {}, run)
+            text = (out / "session-0-failed-startup.json").read_text()
+            self.assertNotIn("private", text)
+            self.assertEqual(json.loads(text), {
+                "qualified": False, "captured": False, "errorType": "RuntimeError",
+            })
+
+    def test_failed_startup_capture_never_captures_an_exited_process(self):
+        process = Mock(pid=123)
+        process.poll.return_value = 0
+        run = Mock()
+        with tempfile.TemporaryDirectory() as directory:
+            m.capture_failed_startup(Path(directory), 0, process, {}, run)
+            run.assert_not_called()
+
+    def test_failed_startup_receipt_write_does_not_mask_readiness_error(self):
+        process = Mock(pid=123)
+        process.poll.return_value = 0
+        with patch.object(m, "write_json", side_effect=OSError("private path")):
+            with patch("sys.stderr") as stderr:
+                m.capture_failed_startup(Path("unused"), 0, process, {}, Mock())
+                self.assertNotIn("private", str(stderr.write.call_args_list))
 
     def test_actual_event_parser_rejects_malformed_observation(self):
         self.assertEqual(

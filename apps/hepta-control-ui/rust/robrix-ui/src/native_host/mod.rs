@@ -34,6 +34,9 @@ pub struct NativeHostView {
 /// Bounded observations for an external development harness. These carry no
 /// input or authorization and do not replace the owner's readiness witness.
 pub enum NativeRendererObservation {
+    ReadinessBlocked {
+        reason: &'static str,
+    },
     StatusDrawList {
         identity: NativeViewIdentity,
         callback: u64,

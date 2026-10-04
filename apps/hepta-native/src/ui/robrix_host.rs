@@ -117,6 +117,9 @@ impl NativeHost for RobrixHost {
 
     fn observe_renderer(&self, event: NativeRendererObservation) {
         observation(match event {
+            NativeRendererObservation::ReadinessBlocked { reason } => serde_json::json!({
+                "event": "readiness_blocked", "reasonCode": reason,
+            }),
             NativeRendererObservation::StatusDrawList {
                 identity,
                 callback,

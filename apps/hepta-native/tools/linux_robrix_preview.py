@@ -376,6 +376,30 @@ def wait_ready(startup_path, log_path, process, timeout=35):
     raise RuntimeError("Native preview readiness deadline: " + latest)
 
 
+def capture_failed_startup(out, sample, process, environment, run):
+    """Keep the owned fixture window for diagnosis, never as passing evidence."""
+    record = {"qualified": False, "captured": False}
+    try:
+        if process.poll() is not None:
+            raise ValueError("Preview process already exited")
+        windows = run(
+            ["xdotool", "search", "--onlyvisible", "--pid", str(process.pid)],
+            env=environment,
+        ).stdout.split()
+        if len(windows) != 1 or not windows[0].isdigit():
+            raise ValueError("Expected one owned preview window")
+        png = out / f"session-{sample}-failed-startup.png"
+        run(["import", "-window", windows[0], str(png)], env=environment)
+        record.update(captured=True, pngSha256=digest(png))
+    except Exception as error:
+        # Do not replace the readiness error or publish arbitrary tool streams.
+        record["errorType"] = type(error).__name__
+    try:
+        write_json(out / f"session-{sample}-failed-startup.json", record)
+    except OSError:
+        print("Failed-startup diagnostic receipt could not be saved", file=sys.stderr)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--source-root", type=Path, required=True)
@@ -593,7 +617,11 @@ def main():
                     stdout=log,
                     stderr=log,
                 )
-            startup, draw = wait_ready(startup_path, log_path, gui)
+            try:
+                startup, draw = wait_ready(startup_path, log_path, gui)
+            except Exception:
+                capture_failed_startup(out, sample, gui, environment, run)
+                raise
             write_json(
                 out / f"session-{sample}-startup.json",
                 {
