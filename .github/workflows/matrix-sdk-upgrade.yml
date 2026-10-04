@@ -2,12 +2,12 @@ name: Matrix SDK compatibility
 on:
   pull_request:
     paths:
-      - 'codex-rs/hepta-matrix*/**'
-      - 'codex-rs/third_party/**'
-      - 'codex-rs/Cargo.*'
-      - 'codex-rs/rust-toolchain.toml'
-      - 'qualification/matrix-sdk-019/**'
-      - '.github/workflows/matrix-sdk-upgrade.yml'
+      - "codex-rs/hepta-matrix*/**"
+      - "codex-rs/third_party/**"
+      - "codex-rs/Cargo.*"
+      - "codex-rs/rust-toolchain.toml"
+      - "qualification/matrix-sdk-019/**"
+      - ".github/workflows/matrix-sdk-upgrade.yml"
   workflow_dispatch:
 permissions:
   contents: read
@@ -21,10 +21,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 45
     env:
-      CARGO_BUILD_JOBS: '2'
-      CARGO_PROFILE_DEV_DEBUG: '0'
-      CARGO_PROFILE_TEST_DEBUG: '0'
-      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
       HEPTA_SDK_ARTIFACTS: ${{ github.workspace }}/sdk-qualification-artifacts
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
@@ -60,10 +60,10 @@ jobs:
     runs-on: ubuntu-24.04
     timeout-minutes: 60
     env:
-      CARGO_BUILD_JOBS: '2'
-      CARGO_PROFILE_DEV_DEBUG: '0'
-      CARGO_PROFILE_TEST_DEBUG: '0'
-      CARGO_INCREMENTAL: '0'
+      CARGO_BUILD_JOBS: "2"
+      CARGO_PROFILE_DEV_DEBUG: "0"
+      CARGO_PROFILE_TEST_DEBUG: "0"
+      CARGO_INCREMENTAL: "0"
       MAIN_SHA: c6f90d48c40f7b5267db587bb3c3f4934f1414a8
       CANDIDATE_SHA: a21a33c9718152ad58867bfc7a35903f359758c0
     steps:
