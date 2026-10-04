@@ -148,8 +148,8 @@ fn changed_context_and_unverified_observation_cannot_replace_original_truth() {
     control
         .observe_feature(&request, &original)
         .expect("original receipt");
-    let before = std::fs::read(&path).expect("journal");
     drop(control);
+    let before = std::fs::read(&path).expect("journal");
     let text = String::from_utf8(before)
         .expect("UTF8")
         .replace("\"latency_micros\":31", "\"latency_micros\":32");
