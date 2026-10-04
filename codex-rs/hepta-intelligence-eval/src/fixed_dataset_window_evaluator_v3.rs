@@ -74,6 +74,15 @@ pub fn encode_fixed_dataset_window_evaluator_inputs_v3(
     Ok(bytes)
 }
 
+// This ID is itself signed by the original evidence codec. Preserve the
+// issuer's exact existing bytes while checking the complete finite request.
+fn window_evidence_id(inputs_bytes: &[u8], payload: &[u8]) -> HostResult<StableId> {
+    Ok(StableId::new(format!(
+        "fixed.window.{}",
+        Digest32::of_bytes(&[inputs_bytes, payload].concat())
+    ))?)
+}
+
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 struct Output {
@@ -149,10 +158,10 @@ pub fn decode_fixed_dataset_window_evaluator_output_v3(
     {
         return Err("whole window frozen snapshot identity".into());
     }
+    let input_bytes = encode_fixed_dataset_window_evaluator_inputs_v3(inputs)?;
     let output: Output = serde_json::from_slice(bytes)?;
     if output.schema != "hepta.fixed-dataset-window-evaluation.v3"
-        || output.inputs_digest.parse::<Digest32>()?
-            != Digest32::of_bytes(&encode_fixed_dataset_window_evaluator_inputs_v3(inputs)?)
+        || output.inputs_digest.parse::<Digest32>()? != Digest32::of_bytes(&input_bytes)
         || output.plan.native()? != expected_plan
     {
         return Err("whole original window output/request binding".into());
@@ -164,10 +173,11 @@ pub fn decode_fixed_dataset_window_evaluator_output_v3(
     }
     trust.revalidate_at(now)?;
     let evidence = output.evaluator_evidence.native()?;
-    if evidence.issued_at < inputs.round.admitted_at_ms
+    if evidence.evidence_id != window_evidence_id(&input_bytes, &payload)?
+        || evidence.issued_at < inputs.round.admitted_at_ms
         || evidence.expires_at > inputs.round.deadline_ms
     {
-        return Err("original window evidence time bounds".into());
+        return Err("original window signed request identity/time bounds".into());
     }
     let principal =
         trust
@@ -295,10 +305,7 @@ pub fn run_fixed_dataset_window_evaluator_v3(path: &Path) -> HostResult<()> {
     }
     let issued_at = sample()?;
     let mut evidence = SignedLearningEvidenceV1 {
-        evidence_id: StableId::new(format!(
-            "fixed.window.{}",
-            Digest32::of_bytes(&[input_bytes.as_slice(), payload.as_slice()].concat())
-        ))?,
+        evidence_id: window_evidence_id(&input_bytes, &payload)?,
         principal_id: reviewer.principal.principal_id.clone(),
         role: LearningEvidenceRoleV1::Evaluator,
         trust_digest: trust.verifier().trust_digest(),

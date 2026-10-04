@@ -154,7 +154,20 @@ impl Fixture {
         let snapshot = self.writer.as_ref().unwrap().snapshot().unwrap();
         let plan = inputs.plan.native().unwrap();
         let payload = dataset_window_freeze_signing_payload_v3(&snapshot, &plan).unwrap();
-        let evidence = self.signing.sign(role, &payload, 30);
+        let mut evidence = self.signing.sign(role, &payload, 30);
+        evidence.evidence_id = window_evidence_id(
+            &encode_fixed_dataset_window_evaluator_inputs_v3(inputs).unwrap(),
+            &payload,
+        )
+        .unwrap();
+        let original_test_key = match role {
+            0 => 71,
+            1 => 72,
+            _ => 73,
+        };
+        evidence.signature = ed25519_dalek::SigningKey::from_bytes(&[original_test_key; 32])
+            .sign(&evidence.signing_bytes())
+            .to_bytes();
         let window = freeze_dataset_window_from_ledger_v3(
             &snapshot,
             plan.clone(),
@@ -339,5 +352,43 @@ impl Drop for Fixture {
     fn drop(&mut self) {
         drop(self.writer.take());
         let _ = std::fs::remove_dir_all(&self.directory);
+    }
+}
+
+#[test]
+fn dataset_window_e_rejects_unsigned_round_and_source_substitution_with_original_signature() {
+    let fixture = Fixture::new();
+    let original_inputs = fixture.inputs();
+    let snapshot = fixture.writer.as_ref().unwrap().snapshot().unwrap();
+    let original_output = fixture.output(&original_inputs, 2);
+    let substitutions: [fn(&mut FixedDatasetWindowEvaluatorInputsV3); 9] = [
+        |i| i.round.round_digest = digest("other-original-round").to_string(),
+        |i| i.round.round_payload_digest = digest("other-full-original-round").to_string(),
+        |i| i.round.canonical_policy_digest = digest("other-window-policy").to_string(),
+        |i| i.round.execution_digest = digest("other-execution").to_string(),
+        |i| i.ledger.digest = digest("other-protected-ledger-source").to_string(),
+        |i| i.witness.digest = digest("other-independent-witness-source").to_string(),
+        |i| i.ledger_binding = digest("other-original-ledger-binding").to_string(),
+        |i| i.maximum_records -= 1,
+        |i| i.maximum_witness_frames -= 1,
+    ];
+    for (index, substitute) in substitutions.iter().enumerate() {
+        let mut inputs = fixture.inputs();
+        substitute(&mut inputs);
+        let mut output: Output = serde_json::from_slice(&original_output).unwrap();
+        output.inputs_digest =
+            Digest32::of_bytes(&encode_fixed_dataset_window_evaluator_inputs_v3(&inputs).unwrap())
+                .to_string();
+        assert!(
+            decode_fixed_dataset_window_evaluator_output_v3(
+                &serde_json::to_vec(&output).unwrap(),
+                &inputs,
+                &snapshot,
+                &fixture.signing.trust,
+                30,
+            )
+            .is_err(),
+            "accepted unsigned original request substitution {index}"
+        );
     }
 }
