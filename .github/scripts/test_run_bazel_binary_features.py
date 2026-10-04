@@ -250,7 +250,7 @@ class BinaryFeatureGraphTests(unittest.TestCase):
 
     @unittest.skipIf(tomllib is None, "Cargo dependency closure requires Python 3.11+")
     def test_supervisor_owner_closure_keeps_agentd_fleet_identity(self):
-        def record_package(package):
+        def record_package(package, *, resolved_features=()):
             directory = ROOT / "codex-rs" / package
             manifest = tomllib.loads(
                 (directory / "Cargo.toml").read_text(encoding="utf-8")
@@ -297,7 +297,9 @@ class BinaryFeatureGraphTests(unittest.TestCase):
             macro = recorder.scope["codex_rust_crate"]
 
             def configured_macro(**kwargs):
-                pending = list(kwargs.get("crate_features", []))
+                pending = list(kwargs.get("crate_features", [])) + list(
+                    resolved_features
+                )
                 enabled = set()
                 while pending:
                     feature = pending.pop()
@@ -352,7 +354,16 @@ class BinaryFeatureGraphTests(unittest.TestCase):
             )
             return {name: attrs for name, (_, attrs) in recorder.targets.items()}
 
-        fleet = record_package("hepta-fleet")
+        # The generated dependency list includes Cargo features selected by
+        # workspace consumers, separately from this target's Rust cfg features.
+        supervisor_manifest = tomllib.loads(
+            (ROOT / "codex-rs/hepta-supervisor/Cargo.toml").read_text(encoding="utf-8")
+        )
+        owner_features = supervisor_manifest["dev-dependencies"]["codex-hepta-fleet"][
+            "features"
+        ]
+        self.assertEqual(owner_features, ["durable-store"])
+        fleet = record_package("hepta-fleet", resolved_features=owner_features)
         protocol = record_package("hepta-agent-protocol")
         supervisor = record_package("hepta-supervisor")
         agentd = record_package("hepta-agentd")
@@ -365,6 +376,16 @@ class BinaryFeatureGraphTests(unittest.TestCase):
         )
         durable = fleet["hepta-fleet-supervisor-owner-test-lib"]
         self.assertTrue(durable["testonly"])
+        self.assertEqual(fleet["hepta-fleet"]["crate_features"], [])
+        self.assertEqual(fleet["hepta-fleet"]["deps"].count("//codex-rs/state"), 1)
+        self.assertEqual(durable["deps"].count("//codex-rs/state"), 1)
+        fleet_manifest = tomllib.loads(
+            (ROOT / "codex-rs/hepta-fleet/Cargo.toml").read_text(encoding="utf-8")
+        )
+        self.assertTrue(fleet_manifest["dependencies"]["codex-state"]["optional"])
+        self.assertEqual(fleet_manifest["features"]["default"], [])
+        self.assertIn("dep:codex-state", fleet_manifest["features"]["durable-store"])
+
         self.assertEqual(durable["crate_features"], ["durable-store"])
         self.assertEqual(durable["compile_data"], fleet["hepta-fleet"]["compile_data"])
         self.assertEqual(

@@ -30,8 +30,5 @@ rust_library(
         "//codex-rs/hepta-agent-protocol:__pkg__",
         "//codex-rs/hepta-supervisor:__pkg__",
     ],
-    deps = all_crate_deps() + [
-        "//codex-rs/state",
-        "@crates//:sqlx",
-    ],
+    deps = all_crate_deps() + ["@crates//:sqlx"],
 )
