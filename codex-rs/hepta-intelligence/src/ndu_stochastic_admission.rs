@@ -180,6 +180,23 @@ pub fn admit_ndu_stochastic_candidate_v1(
 
     let v2 = &request.artifact_admission.validated_manifest;
     let manifest = &v2.manifest;
+    if current_registry_view
+        .verified_at()
+        .is_some_and(|verified_at| verified_at != now)
+    {
+        return Err(NduStochasticAdmissionError::ArtifactMismatch(
+            "current verification time",
+        ));
+    }
+    if let Some(current_admission) = current_registry_view.full_admission(&manifest.artifact_id)
+        && (current_admission.validated_manifest != *v2
+            || current_admission.withdrawal_scope_digest
+                != request.artifact_admission.withdrawal_scope_digest)
+    {
+        return Err(NduStochasticAdmissionError::ArtifactMismatch(
+            "current admission",
+        ));
+    }
     if manifest.kind != ArtifactKind::Parameters {
         return Err(NduStochasticAdmissionError::ArtifactMismatch(
             "artifact kind",
