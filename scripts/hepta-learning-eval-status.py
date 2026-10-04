@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import subprocess
 import sys
 from pathlib import Path
@@ -149,8 +150,43 @@ def canonical(value: object) -> str:
 
 
 def git(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
+    # Source observations use this checkout and existing objects, never ambient
+    # repository selection, replacement objects, user config or helper programs.
+    env = {key: value for key, value in os.environ.items() if not key.startswith("GIT_")}
+    env.update(
+        GIT_CONFIG_NOSYSTEM="1",
+        GIT_CONFIG_GLOBAL=os.devnull,
+        GIT_NO_REPLACE_OBJECTS="1",
+        GIT_GRAFT_FILE=os.devnull,
+        GIT_NO_LAZY_FETCH="1",
+        GIT_ALLOW_PROTOCOL="",
+        GIT_TERMINAL_PROMPT="0",
+        GIT_OPTIONAL_LOCKS="0",
+    )
+    command = [
+        "git", "--literal-pathspecs", "-c", "core.fsmonitor=false",
+        "-c", "core.hooksPath=" + os.devnull,
+        "--work-tree=" + str(ROOT), "-C", str(ROOT),
+    ]
+    if args and args[0] == "diff":
+        filters = subprocess.run(
+            [*command, "config", "--null", "--name-only", "--get-regexp",
+             r"^filter\..*\.(clean|process|required)$"],
+            env=env, text=True, capture_output=True, check=False,
+        )
+        if filters.returncode not in (0, 1):
+            if check:
+                filters.check_returncode()
+            return filters
+        for driver in sorted({key.rsplit(".", 1)[0] for key in filters.stdout.split("\0") if key}):
+            command.extend([
+                "-c", driver + ".clean=", "-c", driver + ".process=",
+                "-c", driver + ".required=false",
+            ])
+        args = ("diff", "--no-ext-diff", "--no-textconv", *args[1:])
     return subprocess.run(
-        ["git", "-C", str(ROOT), *args],
+        [*command, *args],
+        env=env,
         text=True,
         check=check,
         stdout=subprocess.PIPE,
@@ -220,7 +256,10 @@ def validate_map(model: dict) -> None:
         checked_paths.add(caller["sourcePath"])
     changed: list[str] = []
     for path in sorted(checked_paths):
-        result = git("diff", "--quiet", commit, "--", path, check=False)
+        # --quiet can report changed object IDs without reading an unavailable
+        # historical blob once external diffs are disabled. Read the comparison
+        # so missing objects remain hard errors; captured patch text is not emitted.
+        result = git("diff", "--exit-code", commit, "--", path, check=False)
         if result.returncode == 1:
             changed.append(path)
         elif result.returncode != 0:
