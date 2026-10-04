@@ -1,6 +1,16 @@
 use super::*;
 use pretty_assertions::assert_eq;
 
+fn writer_bytes(writer: &LedgerWriter) -> (Vec<u8>, Vec<u8>) {
+    let LedgerBackend::Durable(ledger) = &writer.backend else {
+        panic!("original durable fixture backend");
+    };
+    (
+        ledger.held_fixture_bytes(),
+        writer.witness.held_fixture_bytes(),
+    )
+}
+
 #[test]
 fn signed_decision_requires_current_distribution_without_writes_after_expiry()
 -> Result<(), Box<dyn std::error::Error>> {
@@ -22,10 +32,7 @@ fn signed_decision_requires_current_distribution_without_writes_after_expiry()
         writer
             .verifier()
             .verify(LearningEvidenceRoleV1::Generator, &evidence, &payload, now)?;
-        let before = (
-            fs::read(fixture.root.join("ledger"))?,
-            fs::read(fixture.root.join("witness"))?,
-        );
+        let before = writer_bytes(&writer);
         let frontier = writer.witness_frontier()?;
         let result = writer.append_decision(Digest32::ZERO, request, &evidence, now);
         if now == 49 {
@@ -41,13 +48,7 @@ fn signed_decision_requires_current_distribution_without_writes_after_expiry()
             ));
             assert!(writer.records()?.is_empty());
             assert_eq!(writer.witness_frontier()?, frontier);
-            assert_eq!(
-                (
-                    fs::read(fixture.root.join("ledger"))?,
-                    fs::read(fixture.root.join("witness"))?,
-                ),
-                before
-            );
+            assert_eq!(writer_bytes(&writer), before);
         }
     }
     Ok(())

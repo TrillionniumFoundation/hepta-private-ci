@@ -131,6 +131,7 @@ fn readonly_witness_preserves_partial_bytes_and_native_recovery_still_repairs() 
     assert_eq!(fs::read(&path).unwrap(), partial);
     let recovered = LedgerWitnessStore::recover(fixture.file(), binding()).unwrap();
     assert_eq!(recovered.frontier().unwrap(), one);
+    drop(recovered);
     assert_eq!(fs::read(&path).unwrap(), complete);
 }
 
