@@ -87,10 +87,10 @@ impl RootFrozenGeneratorServiceV1 {
             if !path.try_exists()?
                 && let Some(blueprint_source) = &scope.round_blueprint
             {
-                let prepared = fresh::Preparation {
+                let prepared = super::issuance::run_native(fresh::Preparation {
                     service: self, blueprint_source, client: &client,
                     before: &before, scope, round: &round, canonical: &canonical,
-                }.prepare().await?;
+                }.prepare())?;
                 self.revalidate(stream, peer, scope, &before).await?;
                 if let Some(result) = prepared {
                     return Ok(result);

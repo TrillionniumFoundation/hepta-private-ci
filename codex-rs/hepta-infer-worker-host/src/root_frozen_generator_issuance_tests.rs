@@ -45,3 +45,26 @@ async fn original_global_capacity_still_bounds_distinct_agents() -> Result<()> {
     drop(resumed);
     Ok(())
 }
+
+#[tokio::test(flavor = "multi_thread", worker_threads = 1)]
+async fn blocked_native_owner_keeps_independent_control_tasks_responsive() -> Result<()> {
+    let (started, observed_start) = tokio::sync::oneshot::channel();
+    let (release, wait) = std::sync::mpsc::channel();
+    let native = tokio::spawn(async move {
+        run_native(async move {
+            started.send(()).expect("observe original admitted owner");
+            wait.recv_timeout(Duration::from_secs(/*secs*/ 5))
+        })
+    });
+    observed_start.await?;
+    let observation = timeout(
+        Duration::from_secs(/*secs*/ 1),
+        tokio::spawn(async { "current peer observed" }),
+    ).await;
+    let settled_before_release = native.is_finished();
+    let _ = release.send(());
+    native.await??;
+    assert!(!settled_before_release, "native wait cannot delay the independent control task until settlement");
+    assert_eq!(observation??, "current peer observed");
+    Ok(())
+}

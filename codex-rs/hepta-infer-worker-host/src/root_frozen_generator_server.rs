@@ -24,6 +24,10 @@ use crate::root_frozen_generator::RootFrozenGeneratorServiceV1;
 mod socket;
 
 pub(crate) async fn serve(host: Arc<RootFrozenGeneratorServiceV1>) -> Result<()> {
+    ensure!(
+        matches!(tokio::runtime::Handle::current().runtime_flavor(), tokio::runtime::RuntimeFlavor::MultiThread),
+        "native Generator owner requires a multithreaded runtime"
+    );
     let (listener, _guard) = socket::bind_socket(host.socket(), host.socket_group()).await?;
     let mut terminate = tokio::signal::unix::signal(tokio::signal::unix::SignalKind::terminate())?;
     let shutdown = async move {

@@ -209,7 +209,7 @@ impl RootFrozenGeneratorServiceV1 {
                     // memory budget while read-only observations remain available.
                     let _issuance = self.issuance.acquire(&scope.agent_id).await?;
                     self.revalidate(stream, peer, scope, &before).await?;
-                    self.issue(stream, peer, scope, &before, &client, &status, &payload).await
+                    issuance::run_native(self.issue(stream, peer, scope, &before, &client, &status, &payload))
                 }
                 GeneratorPublication::Observe(_) => {
                     self.observe(stream, peer, scope, &before, &status, &payload).await

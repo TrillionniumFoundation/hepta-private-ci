@@ -8,6 +8,12 @@ use std::collections::BTreeMap;
 use tokio::sync::Semaphore;
 use tokio::sync::SemaphorePermit;
 
+/// Preserve the admitted owner task while its original native purposes perform
+/// synchronous work. The multithreaded host can continue polling other peers.
+pub(super) fn run_native<F: std::future::Future>(future: F) -> F::Output {
+    tokio::task::block_in_place(|| tokio::runtime::Handle::current().block_on(future))
+}
+
 pub(super) struct IssuanceGates {
     global: Semaphore,
     agents: BTreeMap<AgentId, Semaphore>,
