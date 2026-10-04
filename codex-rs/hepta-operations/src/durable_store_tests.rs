@@ -13,6 +13,9 @@ use codex_hepta_types::StableId;
 #[path = "durable_clock_tests.rs"]
 mod clock_tests;
 
+#[path = "durable_renewal_guard_tests.rs"]
+mod renewal_guard_tests;
+
 fn stable_id(value: &str) -> StableId {
     StableId::new(value).expect("test identifier")
 }
