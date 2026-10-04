@@ -481,6 +481,7 @@ async fn ten_thousand_deltas_are_bounded_and_final_is_exact() -> TestResult {
         "delta-stream",
         "text_delta",
     );
+    let enqueue_started = std::time::Instant::now();
     for index in 0..10_000_u64 {
         let revision = index + 1;
         let draft = OutboxDraft {
@@ -495,6 +496,12 @@ async fn ten_thousand_deltas_are_bounded_and_final_is_exact() -> TestResult {
             created_at_ms: 20,
         };
         store.enqueue_outbox(&draft).await?;
+        if revision % 1_000 == 0 {
+            eprintln!(
+                "durable 10k diagnostic: {revision} original commits in {:?}",
+                enqueue_started.elapsed()
+            );
+        }
     }
     let final_draft = outbox_draft(
         &agent_id,
