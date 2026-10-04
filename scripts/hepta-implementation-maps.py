@@ -313,10 +313,54 @@ class SourceDrift(ValueError):
 def require_tracked_paths(commit: str, paths: list[str], *, historical=False) -> None:
     """Batch ordinary object queries; retain exact handling of newline paths.
 
-    No tree inventory is scanned and no persistent cache can survive a checkout
-    change. The batch format returns only types, never path names to parse.
-    Missing historical evidence is drift; missing candidate evidence is invalid.
+    The batch format returns only types, never path names to parse. Failed
+    historical queries alone need targeted tree lookups: an absent path is
+    drift, but an unavailable object cannot authorize a source rebind.
     """
+
+    def historical_failure(path: str) -> ValueError:
+        tree = commit
+        parts = path.split("/")
+        for index, part in enumerate(parts):
+            try:
+                entry = git("ls-tree", "-z", tree, "--", part)
+            except subprocess.CalledProcessError:
+                return ValueError(
+                    f"historical source/evidence tree unavailable: {path!r} ({tree})"
+                )
+            if not entry:
+                return SourceDrift(
+                    f"source/evidence absent at historical anchor: {path!r}"
+                )
+            records = entry.split("\0")
+            # Only metadata is parsed; the literal one-component pathspec
+            # selects the entry even when its name contains tabs or newlines.
+            metadata, separator, _ = records[0].partition("\t")
+            fields = metadata.split()
+            if (
+                len(records) != 2
+                or records[1]
+                or not separator
+                or len(fields) != 3
+                or not re.fullmatch(r"[0-9a-f]{40}", fields[2])
+            ):
+                return ValueError("ambiguous historical Git tree response")
+            _, kind, oid = fields
+            if kind not in {"blob", "tree"}:
+                return ValueError(f"invalid historical source/evidence: {path!r}")
+            if index == len(parts) - 1:
+                return ValueError(
+                    f"historical source/evidence object unavailable: {path!r} "
+                    f"({kind} {oid})"
+                )
+            if kind != "tree":
+                return SourceDrift(
+                    f"source/evidence absent at historical anchor: {path!r}"
+                )
+            tree = oid
+        raise ValueError("empty historical source/evidence path")
+
+    drift = None
     ordinary = [path for path in paths if "\n" not in path and "\r" not in path]
     unusual = [path for path in paths if "\n" in path or "\r" in path]
     if ordinary:
@@ -332,21 +376,27 @@ def require_tracked_paths(commit: str, paths: list[str], *, historical=False) ->
             if kind in {"blob", "tree"}:
                 continue
             if historical and kind == query + " missing":
-                raise SourceDrift(
-                    f"source/evidence absent at historical anchor: {path}"
-                )
+                failure = historical_failure(path)
+                if isinstance(failure, SourceDrift):
+                    drift = drift or failure
+                    continue
+                raise failure
             raise ValueError(f"untracked or invalid source/evidence: {path}")
     for path in unusual:
         try:
             kind = git("cat-file", "-t", f"{commit}:{path}")
         except subprocess.CalledProcessError as exc:
             if historical:
-                raise SourceDrift(
-                    f"source/evidence absent at historical anchor: {path!r}"
-                ) from exc
+                failure = historical_failure(path)
+                if isinstance(failure, SourceDrift):
+                    drift = drift or failure
+                    continue
+                raise failure from exc
             raise ValueError(f"untracked source/evidence: {path!r}") from exc
         if kind not in {"blob", "tree"}:
             raise ValueError(f"invalid source/evidence: {path!r}")
+    if drift is not None:
+        raise drift
 
 
 def verify_source_identity(
@@ -428,10 +478,15 @@ def verify_source_identity(
         require_clean_candidate(candidate, checked_paths)
     # Validate the candidate first: a missing path at both ends is not a rebind.
     require_tracked_paths(candidate["commit"], checked_paths)
+    drift = None
     for identity, observed_paths in observations:
         if identity == candidate:
             continue
-        require_tracked_paths(identity["commit"], observed_paths, historical=True)
+        try:
+            require_tracked_paths(identity["commit"], observed_paths, historical=True)
+        except SourceDrift as exc:
+            drift = drift or exc
+            continue
         if observed_paths:
             changed = git(
                 "diff",
@@ -444,10 +499,14 @@ def verify_source_identity(
                 *observed_paths,
             )
             if changed:
-                raise SourceDrift(
+                drift = drift or SourceDrift(
                     "mapped source/evidence changed after source observation: "
                     + changed
                 )
+    # Missing historical objects must win over refreshable drift, including
+    # drift in an earlier observation. Migration catches only SourceDrift.
+    if drift is not None:
+        raise drift
     if check_checkout:
         require_clean_candidate(candidate, checked_paths)
     return checked_paths
