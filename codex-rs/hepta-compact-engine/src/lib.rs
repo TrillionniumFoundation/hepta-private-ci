@@ -3,6 +3,7 @@
 #![forbid(unsafe_code)]
 
 mod authenticated;
+mod policy_body;
 mod publication;
 mod publication_body;
 mod qualified;
@@ -25,6 +26,11 @@ pub use authenticated::CompactionSourceAuthorityBindingV1;
 pub use authenticated::SignedCompactionEvidenceV1;
 pub use authenticated::compaction_qualification_payload_v1;
 pub use authenticated::prove_compaction_with_signed_evidence_v1;
+pub use policy_body::MAX_COMPACTION_POLICY_BODY_BYTES_V2;
+pub use policy_body::PolicyBodyErrorV2;
+pub use policy_body::compaction_policy_body_schema_digest_v2;
+pub use policy_body::decode_compaction_policy_body_v2;
+pub use policy_body::encode_compaction_policy_body_v2;
 pub use publication::COMPACTION_PUBLICATION_DESTINATION_V1;
 pub use publication::CompactionPublicationContextV1;
 pub use publication::CompactionPublicationError;
