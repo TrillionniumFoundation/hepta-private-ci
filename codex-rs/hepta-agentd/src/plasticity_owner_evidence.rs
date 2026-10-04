@@ -46,6 +46,7 @@ pub struct PlasticityArtifactOwnerBindingV1 {
 /// policy artifacts, while requiring another real owner for dynamic signals.
 pub struct ConcretePlasticityOwnerEvidenceResolverV1 {
     dataset: DatasetSnapshotReceiptV3,
+    dataset_window: Option<dataset_window::PlasticityDatasetWindowEvidenceV3>,
     artifacts: ArtifactRegistry,
     artifact_observed_at: u64,
     artifact_expires_at: u64,
@@ -91,6 +92,7 @@ impl ConcretePlasticityOwnerEvidenceResolverV1 {
         }
         Ok(Self {
             dataset,
+            dataset_window: None,
             artifacts,
             artifact_observed_at,
             artifact_expires_at,
@@ -165,12 +167,35 @@ impl PlasticityOwnerEvidenceResolverV1 for ConcretePlasticityOwnerEvidenceResolv
     ) -> Result<crate::AgentdPlasticityAdmissionInputV1, PlasticityOwnerEvidenceErrorV1> {
         self.prepare_parameter_input_current(input, now)
     }
+    fn qualification_head(
+        &self,
+        current: &codex_hepta_agent_components::learning_ledger::LedgerSnapshot,
+        expected: Option<Digest32>,
+        now: u64,
+    ) -> Result<Digest32, PlasticityOwnerEvidenceErrorV1> {
+        self.window_qualification_head(current, expected, now)
+    }
+    fn resolve_with_ledger(
+        &self,
+        query: &PlasticityOwnerEvidenceQueryV1,
+        current: &codex_hepta_agent_components::learning_ledger::LedgerSnapshot,
+    ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
+        if self.dataset_window.is_some() && query.kind == PlasticityOwnerEvidenceKindV1::Dataset {
+            return self.resolve_dataset_window(query, current);
+        }
+        self.resolve(query)
+    }
     fn resolve(
         &self,
         query: &PlasticityOwnerEvidenceQueryV1,
     ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
         match query.kind {
-            PlasticityOwnerEvidenceKindV1::Dataset => self.resolve_dataset(query),
+            PlasticityOwnerEvidenceKindV1::Dataset => {
+                if self.dataset_window.is_some() {
+                    return Err(PlasticityOwnerEvidenceErrorV1::Unavailable);
+                }
+                self.resolve_dataset(query)
+            }
             PlasticityOwnerEvidenceKindV1::UpdateRule
             | PlasticityOwnerEvidenceKindV1::MutationPolicy => self.resolve_artifact(query),
             PlasticityOwnerEvidenceKindV1::Modulator
@@ -1483,3 +1508,7 @@ mod tests {
 
 #[path = "plasticity_owner_parameter_preparation.rs"]
 mod parameter_preparation;
+
+#[path = "plasticity_dataset_window_evidence_v3.rs"]
+mod dataset_window;
+pub use dataset_window::PlasticityDatasetWindowEvidenceV3;

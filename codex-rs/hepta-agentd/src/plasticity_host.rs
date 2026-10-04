@@ -278,6 +278,30 @@ pub trait PlasticityOwnerEvidenceResolverV1 {
         Err(PlasticityOwnerEvidenceErrorV1::Unavailable)
     }
 
+    /// Resolve using the exact snapshot read by the original admission owner.
+    /// Existing purposes retain their strict current-head behavior.
+    fn resolve_with_ledger(
+        &self,
+        query: &PlasticityOwnerEvidenceQueryV1,
+        _current: &codex_hepta_agent_components::learning_ledger::LedgerSnapshot,
+    ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
+        self.resolve(query)
+    }
+
+    /// Select an authenticated observation frontier. An expected historical
+    /// head is accepted only by an explicit purpose that validates its prefix.
+    fn qualification_head(
+        &self,
+        current: &codex_hepta_agent_components::learning_ledger::LedgerSnapshot,
+        expected: Option<Digest32>,
+        _now: u64,
+    ) -> Result<Digest32, PlasticityOwnerEvidenceErrorV1> {
+        if expected.is_some_and(|head| head != current.head_digest) {
+            return Err(PlasticityOwnerEvidenceErrorV1::ContextMismatch);
+        }
+        Ok(current.head_digest)
+    }
+
     fn resolve(
         &self,
         query: &PlasticityOwnerEvidenceQueryV1,
@@ -648,15 +672,36 @@ fn owner_evidence_query(
 
 /// Resolve the exact owner-store frontiers that an Observer must attest.
 ///
-/// Artifact identity/current eligibility comes directly from the authoritative
-/// ArtifactRegistry. The qualification/evidence frontier is the current durable
-/// learning-ledger head, never a caller-selected opaque value.
+/// Artifact identity/current eligibility comes from the authoritative registry.
+/// The public observation uses the current held Ledger head. Final use may
+/// retain an earlier observation only through an explicit purpose that verifies
+/// its original prefix and unchanged selected closure against that same Ledger.
 pub fn resolve_agentd_plasticity_admission_v1(
     input: &AgentdPlasticityAdmissionInputV1,
     artifacts: &ArtifactRegistry,
     ledger: &DurableLedger,
     owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
     owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
+    now: u64,
+) -> Result<PlasticityAdmissionEvidenceV1, AgentdPlasticityHostErrorV1> {
+    resolve_admission_at_observed_head(
+        input,
+        artifacts,
+        ledger,
+        owner_evidence_resolver,
+        owner_evidence_policy,
+        None,
+        now,
+    )
+}
+
+fn resolve_admission_at_observed_head(
+    input: &AgentdPlasticityAdmissionInputV1,
+    artifacts: &ArtifactRegistry,
+    ledger: &DurableLedger,
+    owner_evidence_resolver: &dyn PlasticityOwnerEvidenceResolverV1,
+    owner_evidence_policy: &PlasticityOwnerEvidencePolicyV1,
+    expected_head: Option<Digest32>,
     now: u64,
 ) -> Result<PlasticityAdmissionEvidenceV1, AgentdPlasticityHostErrorV1> {
     let manifest = artifacts
@@ -680,12 +725,18 @@ pub fn resolve_agentd_plasticity_admission_v1(
     if artifact_registry_head_digest.is_zero() || ledger_snapshot.head_digest.is_zero() {
         return Err(AgentdPlasticityHostErrorV1::ArtifactBinding);
     }
+    let qualification_head =
+        owner_evidence_resolver.qualification_head(&ledger_snapshot, expected_head, now)?;
+    let snapshot_resolver = admission_snapshot::SnapshotResolver {
+        inner: owner_evidence_resolver,
+        current: &ledger_snapshot,
+    };
     let owner_evidence_set_digest = resolve_agentd_plasticity_owner_evidence_set_v1(
         input,
-        owner_evidence_resolver,
+        &snapshot_resolver,
         owner_evidence_policy,
         artifact_registry_head_digest,
-        ledger_snapshot.head_digest,
+        qualification_head,
         now,
     )?;
     Ok(PlasticityAdmissionEvidenceV1 {
@@ -694,7 +745,7 @@ pub fn resolve_agentd_plasticity_admission_v1(
         selected_artifact_digest: input.generated.selected_artifact_digest,
         artifact_registry_binding: manifest.compatibility_digest,
         artifact_registry_head_digest,
-        qualification_evidence_head_digest: ledger_snapshot.head_digest,
+        qualification_evidence_head_digest: qualification_head,
         owner_evidence_set_digest,
         window: input.generated.window.clone(),
         baseline_generation: input.baseline_generation,
@@ -1257,3 +1308,6 @@ mod final_time;
 pub(crate) use final_time::propose_agentd_plasticity_with_clock_v1;
 
 pub(crate) use final_time::observe_completed_agentd_plasticity_with_clock_v1;
+
+#[path = "plasticity_admission_snapshot_v3.rs"]
+mod admission_snapshot;

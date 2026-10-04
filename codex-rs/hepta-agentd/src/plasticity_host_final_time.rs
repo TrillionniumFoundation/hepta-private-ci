@@ -20,7 +20,7 @@ pub(crate) fn propose_agentd_plasticity_with_clock_v1(
         observed_at: Cell::new(0),
         expires_at: Cell::new(u64::MAX),
     };
-    let resolved = resolve_agentd_plasticity_admission_v1(
+    let resolved = resolve_admission_at_observed_head(
         &AgentdPlasticityAdmissionInputV1 {
             baseline_id: request.admission.baseline_id.clone(),
             objective_digest: request.admission.objective_digest,
@@ -38,6 +38,7 @@ pub(crate) fn propose_agentd_plasticity_with_clock_v1(
         ledger,
         &receipt_windows,
         owner_evidence_policy,
+        Some(request.admission.qualification_evidence_head_digest),
         now,
     )?;
     if resolved != request.admission {
@@ -87,6 +88,26 @@ impl PlasticityOwnerEvidenceResolverV1 for ReceiptWindowResolverV1<'_> {
             .set(self.expires_at.get().min(receipt.expires_at));
         Ok(receipt)
     }
+    fn resolve_with_ledger(
+        &self,
+        query: &PlasticityOwnerEvidenceQueryV1,
+        current: &codex_hepta_agent_components::learning_ledger::LedgerSnapshot,
+    ) -> Result<VerifiedPlasticityOwnerEvidenceV1, PlasticityOwnerEvidenceErrorV1> {
+        let receipt = self.inner.resolve_with_ledger(query, current)?;
+        self.observed_at
+            .set(self.observed_at.get().max(receipt.observed_at));
+        self.expires_at
+            .set(self.expires_at.get().min(receipt.expires_at));
+        Ok(receipt)
+    }
+    fn qualification_head(
+        &self,
+        current: &codex_hepta_agent_components::learning_ledger::LedgerSnapshot,
+        expected: Option<Digest32>,
+        now: u64,
+    ) -> Result<Digest32, PlasticityOwnerEvidenceErrorV1> {
+        self.inner.qualification_head(current, expected, now)
+    }
 }
 
 /// Read-only recovery reuses the original frontier/owner-evidence validation.
@@ -109,7 +130,7 @@ pub(crate) fn observe_completed_agentd_plasticity_with_clock_v1(
         observed_at: Cell::new(0),
         expires_at: Cell::new(u64::MAX),
     };
-    let resolved = resolve_agentd_plasticity_admission_v1(
+    let resolved = resolve_admission_at_observed_head(
         &AgentdPlasticityAdmissionInputV1 {
             baseline_id: request.admission.baseline_id.clone(),
             objective_digest: request.admission.objective_digest,
@@ -127,6 +148,7 @@ pub(crate) fn observe_completed_agentd_plasticity_with_clock_v1(
         ledger,
         &receipt_windows,
         owner_evidence_policy,
+        Some(request.admission.qualification_evidence_head_digest),
         now,
     )?;
     if resolved != request.admission {

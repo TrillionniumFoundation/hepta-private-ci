@@ -524,6 +524,8 @@ pub use plasticity_owner_evidence::ConcretePlasticityOwnerEvidenceResolverV1;
 #[cfg(feature = "server")]
 pub use plasticity_owner_evidence::PlasticityArtifactOwnerBindingV1;
 #[cfg(feature = "server")]
+pub use plasticity_owner_evidence::PlasticityDatasetWindowEvidenceV3;
+#[cfg(feature = "server")]
 pub use plasticity_owner_evidence::PlasticityDynamicOwnerEvidenceResolverV1;
 #[cfg(feature = "server")]
 pub use plasticity_owner_evidence::PlasticityDynamicSignalBindingV1;
