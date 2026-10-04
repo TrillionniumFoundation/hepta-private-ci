@@ -385,12 +385,14 @@ def codex_rust_crate(
     cargo_env = {}
     cargo_env_runfiles = {}
     for binary, main in binaries.items():
-        #binary = binary.replace("-", "_")
-        sanitized_binaries.append(binary)
-        cargo_env_runfiles[":" + binary] = "CARGO_BIN_EXE_" + binary
-        cargo_env["CARGO_BIN_EXE_" + binary] = "$(rlocationpath :%s)" % binary
+        # Cargo can give a library and a binary the same name; Bazel labels
+        # share one namespace. Preserve the library label and Cargo identity.
+        binary_target = binary + "-bin" if lib_srcs and binary == name else binary
+        sanitized_binaries.append(binary_target)
+        cargo_env_runfiles[":" + binary_target] = "CARGO_BIN_EXE_" + binary
+        cargo_env["CARGO_BIN_EXE_" + binary] = "$(rlocationpath :%s)" % binary_target
         rust_binary(
-            name = binary,
+            name = binary_target,
             crate_name = binary.replace("-", "_"),
             crate_root = main,
             deps = all_crate_deps() + maybe_deps + deps_extra,
@@ -418,7 +420,7 @@ def codex_rust_crate(
         # sharding while Clippy can still discover the underlying test crate.
         rust_test(
             name = binary_unit_test_binary,
-            crate = ":" + binary,
+            crate = ":" + binary_target,
             crate_features = crate_features,
             deps = all_crate_deps(normal_dev = True),
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
