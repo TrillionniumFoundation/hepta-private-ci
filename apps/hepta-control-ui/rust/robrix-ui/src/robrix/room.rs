@@ -509,22 +509,13 @@ impl Widget for RoomScreen {
                     Role::Assistant => ("Assistant", "H"),
                     Role::System => ("System", "S"),
                 };
-                // Presentation order remains the owner's order. Only the row's
-                // alignment and surface vary with the observed author role.
+                // Every actual role shares the same avatar/text column. Keep
+                // the owner's order and role/status labels; add no identity data.
                 let own = message.role == Role::User;
                 let available = cx.turtle().rect().size.x.max(160.0);
-                let content_width = if own {
-                    ((available - 40.0) * 0.82).clamp(100.0, 680.0)
-                } else {
-                    (available - 90.0).clamp(70.0, 780.0)
-                };
+                // 40 px outer padding + 36 px avatar + 14 px profile gap.
+                let content_width = (available - 90.0).clamp(70.0, 780.0);
                 let theme = cx.global::<crate::visual_theme::ThemeState>().selected;
-                let tokens = theme.tokens();
-                let bubble = own || theme != crate::visual_theme::VisualTheme::AuroraGraphite;
-                let padding = if bubble { 12.0 } else { 0.0 };
-                let align = if own { 1.0 } else { 0.0 };
-                let color = if own { tokens.selected } else { tokens.surface };
-                let border = tokens.border;
                 let style = (theme, own, content_width.to_bits());
                 if cx
                     .global::<RoomViewMemory>()
@@ -535,13 +526,13 @@ impl Widget for RoomScreen {
                     // Eval intentionally does not recurse into child widgets in
                     // this SDK. Address each actual child; keep geometry typed.
                     if let Some(mut body) = item.view(cx, ids!(body)).borrow_mut() {
-                        body.layout.align.x = align;
+                        body.layout.align.x = 0.0;
                     }
-                    item.widget(cx, ids!(profile)).set_visible(cx, !own);
+                    item.widget(cx, ids!(profile))
+                        .set_visible(cx, /*visible*/ true);
                     let mut content = item.widget(cx, ids!(content));
                     script_apply_eval!(cx,content,{
-                        width: #(content_width) show_bg: #(bubble) padding: #(padding)
-                        draw_bg +: {color: #(color) border_color: #(border)}
+                        width: #(content_width) show_bg: false padding: 0
                     });
                     cx.global::<RoomViewMemory>()
                         .message_styles

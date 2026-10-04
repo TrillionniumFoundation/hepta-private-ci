@@ -238,8 +238,8 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
                 );
             }
         } else if widget.borrow::<View>().is_some() {
-            // RoomScreen owns role-aware message surfaces. A generic pass must
-            // not erase the user's bubble after its direct child style applies.
+            // RoomScreen owns the shared message column. Preserve its transparent
+            // content surface instead of recolouring it as a generic panel.
             if name == id!(content) {
                 continue;
             }

@@ -21,7 +21,7 @@ cross-reload preference persistence is not implemented.
 | Selection | `#284665` | `#c3d5d5` | `#282f38` |
 | Secondary accent | `#8ed9ff` | `#ecc9ab` | `#9f95d5` |
 | Conversation column | 300 px | 280 px | 248 px |
-| Message treatment | Dark blue cards | Pale ceramic cards | Open assistant rows; user cards |
+| Message treatment | Continuous timeline | Continuous timeline | Continuous timeline |
 
 The existing theme names and order remain stable for local interaction and
 capture identity. Aurora Graphite now targets the original B's neutral graphite
@@ -47,6 +47,14 @@ explicit IBM Plex, LXGW CJK and emoji fallback chains. Identity marks are code
 drawn initials in 36 px framed avatars. Search is 40 px high; the composer has a
 52 px editor, a compact truthful status line and outside margins. Fine SDF outlines and a
 bounded shader gradient supply material depth without rendering fake telemetry.
+
+All actual message roles use the same existing profile/text column, including
+the User/Y avatar. Role, body and status remain the original projected values.
+The content width reserves the row's 40 px side padding, 36 px avatar and 14 px
+profile gap, with the existing 70–780 px bounds. Message backgrounds stay
+transparent over the theme surface; user messages do not move to a separate
+right-aligned bubble. This presentation change adds no author name, wall-clock
+time or attachment data. Undefined metadata remains absent from real messages.
 
 Theme changes recolour existing widget instances and adjust the existing Dock
 splitter. They do not reconstruct the conversation model or set editor text,
@@ -75,9 +83,14 @@ Compilation, generated design images and the older blue/gray screenshots do not
 establish these outcomes. Source and CI reports must identify the exact theme,
 host, fixture status and commit under observation.
 
-The B/C material revision is pending fresh shader compilation and rendered
-browser/native evidence. Existing 9995 browser results describe its prior
-palette and landscape, not this revision. The full original composition still
-requires workspace/group navigation, channel controls, same-column author/time
-rows, a real shared file-card presentation and the attachment tool area. This
-material revision does not claim those missing regions or live capabilities.
+The preceding B/C material and navigation-observation stage was rendered at
+`c92e4ffc16dae97f07b4fc3fef78b73e0c12ceaa`: hosted run `37196005650` passed
+default 6/6 browser cases, 60/60 captures and 138/138 semantic checks, and
+populated 6/6 cases, 78/78 captures and 438/438 checks. Those results qualify
+that exact Web stage, not native/platform readiness or this new message-column
+revision. The new row layout still requires its own build and actual frames.
+
+The full original composition still requires workspace/group navigation,
+channel controls, appropriately sourced author/time presentation, a shared
+file-card view and the attachment tool area. No missing data or live capability
+is invented to make a product screenshot match illustrative design content.
