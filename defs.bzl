@@ -206,6 +206,7 @@ def codex_rust_crate(
         integration_test_args = [],
         unit_test_args = [],
         unit_test_dependency_replacements = {},
+        owner_test_dependency_replacements = {},
         unit_test_features = [],
         binary_test_target_compatible_with = [],
         integration_test_timeout = None,
@@ -240,6 +241,10 @@ def codex_rust_crate(
             dependency features and build-script configuration are not changed.
         unit_test_dependency_replacements: Test-only workspace dependency variants for unit and integration harnesses.
             Replace the complete transitive closure when public types cross crates.
+        owner_test_dependency_replacements: Additional replacements only for this crate's library-unit
+            and integration harnesses. Keep the public test library unchanged for
+            downstream consumers; replace the complete owner-only type closure.
+            Ordinary libraries, binaries, and binary-unit harnesses are unaffected.
         unit_test_features: Additional features for the test-only library and its unit/integration harnesses.
         crate_srcs: Optional explicit srcs; defaults to `src/**/*.rs`.
         crate_root: Optional library root for a Cargo lib.path override.
@@ -340,6 +345,7 @@ def codex_rust_crate(
 
     # Ordinary binaries use the normal library; test harnesses share the
     # same qualification variant and transitive crate identities as Cargo dev.
+    owner_test_dependencies = unit_test_dependency_replacements | owner_test_dependency_replacements
     integration_library_deps = maybe_deps
     binary_build_deps = list(maybe_deps)
     if lib_srcs:
@@ -386,6 +392,26 @@ def codex_rust_crate(
                 visibility = ["//visibility:public"],
             )
 
+        if owner_test_dependency_replacements:
+            unit_test_library = name + "-owner-test-lib"
+            lib_rule(
+                name = unit_test_library,
+                testonly = True,
+                crate_name = crate_name,
+                crate_root = crate_root,
+                aliases = crate_aliases,
+                crate_features = crate_features + unit_test_features,
+                deps = rust_test_dependencies(owner_test_dependencies) + maybe_deps + deps_extra,
+                compile_data = compile_data,
+                data = lib_data_extra,
+                srcs = lib_srcs,
+                edition = crate_edition,
+                rustc_flags = rustc_flags_extra,
+                rustc_env = rustc_env,
+                rustc_env_files = rustc_env_files,
+                visibility = ["//visibility:private"],
+            )
+
         # Shard at the workspace_root_test layer. rules_rust's sharding wrapper
         # expects to run from its own runfiles cwd, while workspace_root_test
         # deliberately changes cwd so Insta sees Cargo-like snapshot paths.
@@ -394,7 +420,7 @@ def codex_rust_crate(
             crate = unit_test_library,
             aliases = crate_aliases,
             crate_features = crate_features + unit_test_features,
-            deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + maybe_deps + deps_extra,
+            deps = rust_test_dependencies(owner_test_dependencies, normal_dev = True) + maybe_deps + deps_extra,
             # Unit tests also compile to standalone Windows executables, so
             # keep their stack reserve aligned with binaries and integration
             # tests under gnullvm.
@@ -640,7 +666,7 @@ def codex_rust_crate(
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + integration_library_deps + deps_extra,
+                deps = rust_test_dependencies(owner_test_dependencies, normal_dev = True) + integration_library_deps + deps_extra,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -694,7 +720,7 @@ def codex_rust_crate(
                 srcs = [test],
                 data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
                 compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-                deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + integration_library_deps + deps_extra,
+                deps = rust_test_dependencies(owner_test_dependencies, normal_dev = True) + integration_library_deps + deps_extra,
                 # Bazel has emitted both `codex-rs/<crate>/...` and
                 # `../codex-rs/<crate>/...` paths for `file!()`. Strip either
                 # prefix so Insta records Cargo-like metadata such as `core/tests/...`.
@@ -771,7 +797,7 @@ def codex_rust_crate(
             srcs = [test],
             data = native.glob(["tests/**"], allow_empty = True) + integration_test_binaries + integration_test_data_extra,
             compile_data = native.glob(["tests/**"], allow_empty = True) + integration_compile_data_extra,
-            deps = rust_test_dependencies(unit_test_dependency_replacements, normal_dev = True) + integration_library_deps + deps_extra,
+            deps = rust_test_dependencies(owner_test_dependencies, normal_dev = True) + integration_library_deps + deps_extra,
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
                 "--remap-path-prefix=../codex-rs=",
                 "--remap-path-prefix=codex-rs=",

@@ -48,6 +48,7 @@ class MacroRecorder:
             "rust_proc_macro",
             "workspace_root_test",
             "cargo_build_script",
+            "hepta_product_test_binary",
         ):
             self.scope[kind] = self.rule(kind)
         exec(compile(module, str(ROOT / "defs.bzl"), "exec"), self.scope)
@@ -153,6 +154,258 @@ class BinaryFeatureGraphTests(unittest.TestCase):
         self.assertEqual(
             targets["probe-lifecycle-test"]["crate_features"], ["base", "qualification"]
         )
+
+    def test_owner_dependencies_preserve_shared_and_binary_graphs(self):
+        options = dict(
+            crate_features=["base"],
+            unit_test_features=["qualification"],
+            unit_test_dependency_replacements={"//deps:normal": "//deps:shared"},
+            binary_feature_groups={
+                "offline": {"binaries": ["tool"], "features": ["offline"]}
+            },
+            crate_aliases={"//deps:extra": "extra"},
+            compile_data=["schema.json"],
+            lib_data_extra=["runtime.json"],
+            deps_extra=["//deps:extra"],
+            rustc_flags_extra=["--cfg=probe"],
+            rustc_env={"PROBE": "yes"},
+            rustc_env_files=["env.txt"],
+        )
+        for shape in (
+            {},
+            {"test_shard_counts": {"probe-lifecycle-test": 2}},
+            {"product_integration_tests": ["lifecycle"]},
+        ):
+            with self.subTest(shape=shape):
+
+                def generate(**extra):
+                    recorder = MacroRecorder(
+                        {"ordinary": "src/main.rs", "tool": "src/bin/tool.rs"},
+                        build_script=True,
+                    )
+                    recorder.scope["rust_test_dependencies"] = (
+                        lambda replacements, **kwargs: [
+                            replacements.get(dep, dep)
+                            for dep in ("//deps:normal", "//deps:owner")
+                        ]
+                    )
+                    return recorder.generate(**options, **shape, **extra)
+
+                baseline = generate()
+                self.assertEqual(
+                    baseline, generate(owner_test_dependency_replacements={})
+                )
+                targets = generate(
+                    owner_test_dependency_replacements={
+                        "//deps:owner": "//deps:owner-test",
+                    }
+                )
+                expected_deps = [
+                    "//deps:shared",
+                    "//deps:owner-test",
+                    "probe-build-script",
+                    "//deps:extra",
+                ]
+                self.assertEqual(
+                    targets["probe-owner-test-lib"],
+                    baseline["probe-test-lib"]
+                    | {
+                        "name": "probe-owner-test-lib",
+                        "deps": expected_deps,
+                        "visibility": ["//visibility:private"],
+                    },
+                )
+                self.assertTrue(targets["probe-owner-test-lib"]["testonly"])
+                self.assertEqual(
+                    targets["probe-unit-tests-bin"]["crate"], "probe-owner-test-lib"
+                )
+                self.assertEqual(targets["probe-unit-tests-bin"]["deps"], expected_deps)
+                integration = "probe-lifecycle-test" + ("-bin" if shape else "")
+                for name in (integration, "probe-lifecycle-test-windows-cross-bin"):
+                    self.assertEqual(
+                        targets[name]["deps"],
+                        expected_deps[:-1] + ["probe-owner-test-lib", "//deps:extra"],
+                    )
+                # Only owner harnesses and the private library may change.
+                changed = {name for name in baseline if baseline[name] != targets[name]}
+                self.assertEqual(
+                    changed,
+                    {
+                        "probe-unit-tests-bin",
+                        integration,
+                        "probe-lifecycle-test-windows-cross-bin",
+                    },
+                )
+                self.assertEqual(set(targets) - set(baseline), {"probe-owner-test-lib"})
+
+    def test_owner_only_map_generates_no_public_test_library(self):
+        targets = MacroRecorder({}).generate(
+            owner_test_dependency_replacements={"//deps:normal": "//deps:owner"}
+        )
+        self.assertNotIn("probe-test-lib", targets)
+        self.assertEqual(
+            targets["probe-unit-tests-bin"]["crate"], "probe-owner-test-lib"
+        )
+        self.assertEqual(targets["probe-owner-test-lib"]["deps"], ["//deps:owner"])
+
+    @unittest.skipIf(tomllib is None, "Cargo dependency closure requires Python 3.11+")
+    def test_supervisor_owner_closure_keeps_agentd_fleet_identity(self):
+        def record_package(package):
+            directory = ROOT / "codex-rs" / package
+            manifest = tomllib.loads(
+                (directory / "Cargo.toml").read_text(encoding="utf-8")
+            )
+            workspace = tomllib.loads(
+                (ROOT / "codex-rs/Cargo.toml").read_text(encoding="utf-8")
+            )["workspace"]["dependencies"]
+
+            def dependency_label(spec, resolved):
+                base = ROOT / "codex-rs" if spec.get("workspace") else directory
+                return (
+                    "//"
+                    + (base / resolved["path"]).resolve().relative_to(ROOT).as_posix()
+                )
+
+            def linux_select(branches):
+                unknown = set(branches) - {
+                    "@platforms//os:linux",
+                    "//conditions:default",
+                }
+                self.assertFalse(
+                    unknown, f"unsupported fixture select conditions: {unknown}"
+                )
+                return branches.get(
+                    "@platforms//os:linux", branches["//conditions:default"]
+                )
+
+            dependencies = []
+            optional = {}
+            for name, spec in manifest["dependencies"].items():
+                if not isinstance(spec, dict):
+                    continue
+                resolved = workspace[name] if spec.get("workspace") else spec
+                if isinstance(resolved, dict) and "path" in resolved:
+                    label = dependency_label(spec, resolved)
+                    if spec.get("optional"):
+                        optional[name] = label
+                    else:
+                        dependencies.append(label)
+            binaries = {
+                entry["name"]: entry["path"] for entry in manifest.get("bin", [])
+            }
+            recorder = MacroRecorder(binaries)
+            macro = recorder.scope["codex_rust_crate"]
+
+            def configured_macro(**kwargs):
+                pending = list(kwargs.get("crate_features", []))
+                enabled = set()
+                while pending:
+                    feature = pending.pop()
+                    if feature in enabled:
+                        continue
+                    enabled.add(feature)
+                    pending.extend(manifest.get("features", {}).get(feature, []))
+                dependencies.extend(
+                    label
+                    for name, label in optional.items()
+                    if name in enabled or "dep:" + name in enabled
+                )
+                macro(**kwargs)
+
+            recorder.scope["codex_rust_crate"] = configured_macro
+            recorder.scope["all_crate_deps"] = lambda **kwargs: list(dependencies)
+            dev_dependencies = []
+            for name, spec in manifest.get("dev-dependencies", {}).items():
+                if isinstance(spec, dict):
+                    resolved = workspace[name] if spec.get("workspace") else spec
+                    if isinstance(resolved, dict) and "path" in resolved:
+                        dev_dependencies.append(dependency_label(spec, resolved))
+            recorder.scope["rust_test_dependencies"] = lambda replacements, **kwargs: [
+                replacements.get(dep, dep)
+                for dep in dict.fromkeys(
+                    dependencies
+                    + (dev_dependencies if kwargs.get("normal_dev") else [])
+                )
+            ]
+            recorder.scope.update(
+                load=lambda *args: None, glob=recorder.glob, select=linux_select
+            )
+            module = ast.parse((directory / "BUILD.bazel").read_text(encoding="utf-8"))
+            # Evaluate the crate and explicit library declarations, excluding
+            # unrelated product wrappers and standalone qualification harnesses.
+            module.body = [
+                node
+                for node in module.body
+                if isinstance(node, ast.Assign)
+                and any(
+                    isinstance(target, ast.Name)
+                    and target.id == "_UNIT_TEST_DEPENDENCIES"
+                    for target in node.targets
+                )
+                or isinstance(node, ast.Expr)
+                and isinstance(node.value, ast.Call)
+                and isinstance(node.value.func, ast.Name)
+                and node.value.func.id in {"load", "codex_rust_crate", "rust_library"}
+            ]
+            exec(
+                compile(module, str(directory / "BUILD.bazel"), "exec"), recorder.scope
+            )
+            return {name: attrs for name, (_, attrs) in recorder.targets.items()}
+
+        fleet = record_package("hepta-fleet")
+        protocol = record_package("hepta-agent-protocol")
+        supervisor = record_package("hepta-supervisor")
+        agentd = record_package("hepta-agentd")
+        components = record_package("hepta-agent-components")
+        fleet_label = "//codex-rs/hepta-fleet"
+        protocol_label = "//codex-rs/hepta-agent-protocol"
+        fleet_variant = fleet_label + ":hepta-fleet-supervisor-owner-test-lib"
+        protocol_variant = (
+            protocol_label + ":hepta-agent-protocol-supervisor-owner-test-lib"
+        )
+        durable = fleet["hepta-fleet-supervisor-owner-test-lib"]
+        self.assertTrue(durable["testonly"])
+        self.assertEqual(durable["crate_features"], ["durable-store"])
+        self.assertEqual(durable["compile_data"], fleet["hepta-fleet"]["compile_data"])
+        self.assertEqual(
+            durable["deps"], fleet["hepta-fleet"]["deps"] + ["@crates//:sqlx"]
+        )
+        self.assertEqual(
+            durable["visibility"],
+            [protocol_label + ":__pkg__", "//codex-rs/hepta-supervisor:__pkg__"],
+        )
+        protocol_owner = protocol["hepta-agent-protocol-supervisor-owner-test-lib"]
+        self.assertTrue(protocol_owner["testonly"])
+        self.assertEqual(
+            protocol_owner["visibility"], ["//codex-rs/hepta-supervisor:__pkg__"]
+        )
+        self.assertIn(fleet_variant, protocol_owner["deps"])
+        self.assertNotIn(fleet_label, protocol_owner["deps"])
+        owner = supervisor["hepta-supervisor-owner-test-lib"]
+        for variant in (fleet_variant, protocol_variant):
+            self.assertIn(variant, owner["deps"])
+        self.assertIn(
+            "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
+            owner["deps"],
+        )
+        for name in (
+            "hepta-supervisor",
+            "hepta-supervisor-test-lib",
+            "hepta-supervisor-offline-authority-tools-lib",
+        ):
+            self.assertIn(fleet_label, supervisor[name]["deps"])
+            self.assertIn(protocol_label, supervisor[name]["deps"])
+        self.assertIn(fleet_label, protocol["hepta-agent-protocol"]["deps"])
+        agentd_test = agentd["hepta-agentd-unit-tests-bin"]["deps"]
+        self.assertIn(
+            "//codex-rs/hepta-supervisor:hepta-supervisor-test-lib", agentd_test
+        )
+        self.assertIn(
+            fleet_label, components["hepta-agent-components-test-lib"]["deps"]
+        )
+        self.assertIn(protocol_label, agentd_test)
+        self.assertNotIn(fleet_variant, agentd_test)
+        self.assertNotIn(protocol_variant, agentd_test)
 
     def test_one_library_is_shared_by_grouped_binaries_including_name_collision(self):
         targets = MacroRecorder(

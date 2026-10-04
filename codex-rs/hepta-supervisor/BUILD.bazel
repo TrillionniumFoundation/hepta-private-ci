@@ -21,6 +21,10 @@ codex_rust_crate(
         },
     },
     crate_name = "codex_hepta_supervisor",
+    owner_test_dependency_replacements = {
+        "//codex-rs/hepta-fleet": "//codex-rs/hepta-fleet:hepta-fleet-supervisor-owner-test-lib",
+        "//codex-rs/hepta-agent-protocol": "//codex-rs/hepta-agent-protocol:hepta-agent-protocol-supervisor-owner-test-lib",
+    },
     unit_test_dependency_replacements = {
         "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
     },
