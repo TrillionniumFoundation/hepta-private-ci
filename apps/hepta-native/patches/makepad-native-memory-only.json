@@ -1,0 +1,22 @@
+{
+  "upstream": "337566c8b25d47f7e4fff6a202157b65bf183330",
+  "scope": "owned native-only platform overlay; memory-only resources and process-scoped X11 window identity",
+  "patchSha256": "fc876f667efebc9f61b9cef070d80d6c1d17382156f296313eca519f75aa1f1c",
+  "files": [
+    {
+      "path": "src/cx_api.rs",
+      "beforeSha256": "b13547415ee0f9ad855a668ef6c749566d3caa7285d90ee275bf4cfc70004d99",
+      "afterSha256": "77dcb2fa2261d3c1310167fb9f06e10460c021993cfae026235b89f883645642"
+    },
+    {
+      "path": "src/script/res.rs",
+      "beforeSha256": "30f5ea8653a393db7eb6547613c60f901ff0a2b01bb4d229b5fd3f09db797879",
+      "afterSha256": "8bf89642e9e019e0142d96474bf20639b9228930e0029cb55f2b9b2bf25b3468"
+    },
+    {
+      "path": "src/os/linux/x11/xlib_window.rs",
+      "beforeSha256": "9f4ec496a5f2d7b92ad4ea3fd9541a2f93feec3c764d647d3cc3085e2886d0d4",
+      "afterSha256": "2a68883e874e7e574fc0ec38762b98bc1db83bafc3159342a71875d1489bf061"
+    }
+  ]
+}

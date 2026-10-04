@@ -106,16 +106,34 @@ class NativeMapAdapterTests(unittest.TestCase):
             self.write(relative, "Fixture source navigation\n")
         self.write(
             ".github/workflows/ui-native-qualification.yml",
-            """on:
+            """permissions:
+  contents: read
+on:
   push:
     paths:
       - '**'
   workflow_dispatch:
 # exact head; ordered-parent merge
-persist-credentials: false
-cancel-in-progress: false
+concurrency:
+  cancel-in-progress: false
+jobs:
+  fixture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@1111111111111111111111111111111111111111
+        with:
+          persist-credentials: false
 """,
         )
+        for name in adapter.native.READ_ONLY_WORKFLOWS - {
+            adapter.native.ALLOWED_WORKFLOW
+        }:
+            self.write(
+                f".github/workflows/{name}",
+                (
+                    self.root / ".github/workflows/ui-native-qualification.yml"
+                ).read_text(),
+            )
         self.row = json.loads(
             (REPOSITORY / "docs/modules/ui.native/IMPLEMENTATION_MAP.json").read_text()
         )
@@ -427,7 +445,17 @@ cancel-in-progress: false
         ):
             self.write(relative, workflow)
             self.commit("unsafe qualification workflow")
-            self.reject("(contains|does not trigger)")
+            self.reject("(permissions|contains|does not trigger)")
+
+    def test_unknown_native_workflow_in_either_yaml_extension_rejects(self):
+        for extension in ("yml", "yaml"):
+            self.write(
+                f".github/workflows/ui-native-unreviewed.{extension}",
+                "permissions:\n  contents: read\n",
+            )
+            self.commit("unknown native workflow")
+            self.reject("unexpected ui.native workflow set")
+            self.git("reset", "--hard", "--quiet", self.candidate["commit"])
 
     def test_other_module_cannot_use_v6_bridge(self):
         row = copy.deepcopy(self.row)

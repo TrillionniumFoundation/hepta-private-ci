@@ -104,6 +104,13 @@ Historical cleanup remains bound to the exact head/tree and 143-path deletion in
 - Current-run objectives and learning artifacts are immutable. Learning generates only next-snapshot candidates.
 - Central optimizers, NDU runtimes, prompt optimizers and learning modules select or propose; they do not execute effects or issue capabilities.
 
+The canonical UI direction is an actual Robrix-derived Rust/Makepad conversation
+application shared by native and Web. Conversation navigation, timeline and
+composer are primary; Console is an internal tab. The normative interaction
+source is `apps/hepta-control-ui/CHAT_DESIGN.md`. Superseded egui/semantic-DOM hosts
+and their historical receipts do not qualify the new host. UI presentation never
+creates a chat grant, signing identity, execution spine or durable fact owner.
+
 ## 5. Forty-module architecture and team model
 
 `MODULES.json` is authoritative for 40 modules. The V6 foundation remains and the Intelligence responsibilities are decomposed into bounded teams:

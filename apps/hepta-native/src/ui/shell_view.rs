@@ -29,8 +29,8 @@ impl HeptaNativeApp {
             );
             ui.separator();
             let (status, color) = if self
-                .pending_runtime
-                .as_ref()
+                .tasks
+                .pending(TaskLane::Runtime)
                 .is_some_and(|task| task.kind == UiTaskKind::Refresh)
             {
                 (
@@ -73,9 +73,9 @@ impl HeptaNativeApp {
                 self.reconcile();
             }
             for task in [
-                self.pending_runtime.as_ref(),
-                self.pending_read.as_ref(),
-                self.pending_picker.as_ref(),
+                self.tasks.pending(TaskLane::Runtime),
+                self.tasks.pending(TaskLane::History),
+                self.tasks.pending(TaskLane::Picker),
             ]
             .into_iter()
             .flatten()

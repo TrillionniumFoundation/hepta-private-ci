@@ -115,6 +115,139 @@ jobs:
             MODULE.check_job_environment_contexts(changed)
 
 
+class ReadOnlyWorkflowRegistrationTests(unittest.TestCase):
+    def setUp(self):
+        self.workflows = {
+            name: (ROOT / ".github/workflows" / name).read_text()
+            for name in MODULE.READ_ONLY_WORKFLOWS
+        }
+
+    def test_exact_reviewed_set_passes_but_unknown_or_missing_workflows_do_not(self):
+        MODULE.check_read_only_workflow_registration(self.workflows)
+        for name in ("ui-native-unreviewed.yml", "ui-native-unreviewed.yaml"):
+            with self.assertRaisesRegex(
+                RuntimeError, "unexpected ui.native workflow set"
+            ):
+                MODULE.check_read_only_workflow_registration(
+                    {**self.workflows, name: ""}
+                )
+        for name in self.workflows:
+            with self.assertRaisesRegex(
+                RuntimeError, "unexpected ui.native workflow set"
+            ):
+                MODULE.check_read_only_workflow_registration(
+                    {k: v for k, v in self.workflows.items() if k != name}
+                )
+
+    def test_registered_name_does_not_authorize_writer_or_overridden_permissions(self):
+        for name, text in self.workflows.items():
+            mutations = [
+                text.replace("contents: read", "contents: write", 1),
+                text.replace(
+                    "permissions:\n  contents: read", "permissions: write-all", 1
+                ),
+                text + '\n  injected:\n    "permissions": write-all\n',
+                text + "\n  injected: {permissions: write-all}\n",
+                text.replace(
+                    "persist-credentials: false", "persist-credentials: true", 1
+                ),
+                text + '\n        with: {"persist-credentials": true}\n',
+                text + "\n        'persist-credentials': true\n",
+                text.replace(
+                    "cancel-in-progress: false", "cancel-in-progress: true", 1
+                ),
+                text + "\n        run: git push origin HEAD\n",
+                text + "\n        run: git -c user.name=writer push origin HEAD\n",
+                text + "\n        env:\n          TOKEN: ${{ secrets ['WRITER'] }}\n",
+            ]
+            for changed in mutations:
+                with self.subTest(workflow=name, changed=changed[-100:]):
+                    with self.assertRaises(RuntimeError):
+                        MODULE.check_read_only_workflow_registration(
+                            {**self.workflows, name: changed}
+                        )
+
+    def test_escaped_workflow_keys_are_rejected(self):
+        name = "ui-native-lifecycle-source.yml"
+        for key in (
+            r'"\u0070ermissions"',
+            r'"\x70ermissions"',
+            r'"\U00000070ermissions"',
+        ):
+            changed = self.workflows[name].replace(
+                "jobs:\n", "jobs:\n  injected:\n    " + key + ": write-all\n", 1
+            )
+            with self.assertRaisesRegex(RuntimeError, "escaped workflow keys"):
+                MODULE.check_read_only_workflow_registration(
+                    {**self.workflows, name: changed}
+                )
+
+    def test_checkout_unsupported_syntax_and_misplaced_input_reject(self):
+        name = "ui-native-lifecycle-source.yml"
+        original = self.workflows[name]
+        variants = [
+            original.replace(
+                "    steps:\n",
+                "    steps:\n      - {uses: actions/checkout@" + "1" * 40 + "}\n",
+                1,
+            ),
+            original.replace("        with:\n", "        env:\n", 1),
+            original.replace(
+                "actions/checkout@", r'"actions/check\u006fut@', 1
+            ).replace(" # v6.0.2", '" # v6.0.2', 1),
+        ]
+        variants.append(
+            original.replace(
+                "    steps:\n",
+                "    steps:\n      - uses : actions/checkout@" + "1" * 40 + "\n",
+                1,
+            )
+        )
+        variants.extend(
+            [
+                original.replace(
+                    "          persist-credentials: false",
+                    '          persist-credentials: false\n        "with": {}',
+                    1,
+                ),
+                original.replace(
+                    "    steps:\n",
+                    "    steps:\n      - uses: >-\n          actions/checkout@"
+                    + "1" * 40
+                    + "\n",
+                    1,
+                ),
+                original.replace("    steps:\n", "    steps:\n      - *checkout\n", 1),
+            ]
+        )
+        for changed in variants:
+            with self.assertRaises(RuntimeError):
+                MODULE.check_read_only_workflow_registration(
+                    {**self.workflows, name: changed}
+                )
+
+    def test_new_checkout_cannot_borrow_another_steps_safe_default(self):
+        name = "ui-native-lifecycle-source.yml"
+        original = self.workflows[name]
+        checkout = "      - uses: actions/checkout@" + "1" * 40 + "\n"
+        for setting in ("", "        with: {persist-credentials: true}\n"):
+            changed = original.replace(
+                "    steps:\n", "    steps:\n" + checkout + setting, 1
+            )
+            with self.assertRaisesRegex(RuntimeError, "checkout"):
+                MODULE.check_read_only_workflow_registration(
+                    {**self.workflows, name: changed}
+                )
+        changed = original.replace(
+            "    steps:\n",
+            "    steps:\n"
+            + checkout
+            + "        with:\n          persist-credentials: false\n",
+            1,
+        )
+        MODULE.check_read_only_workflow_registration({**self.workflows, name: changed})
+
+
 class FrozenImplementationTests(unittest.TestCase):
     def setUp(self) -> None:
         self.temp = tempfile.TemporaryDirectory()

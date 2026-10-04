@@ -24,6 +24,10 @@ path = "src/bin/hepta-native-updater.rs"
 name = "hepta-native-credential"
 path = "src/bin/hepta-native-credential.rs"
 
+[features]
+default = []
+robrix-preview = ["dep:hepta-robrix-ui"]
+
 [dependencies]
 atomic-write-file = "0.3.1"
 arboard = "3"
@@ -43,6 +47,7 @@ zeroize = "1.8.2"
 rustix = { version = "1.1.5", features = ["fs", "process"] }
 
 [target.'cfg(target_os = "linux")'.dependencies]
+hepta-robrix-ui = { path = "../hepta-control-ui/rust/robrix-ui", optional = true, features = ["native-host"] }
 async-io = "2"
 futures-lite = "2"
 zbus = "=5.19.0"

@@ -394,5 +394,74 @@ checksum = "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
             self.verify(modified)
 
 
+class CargoIdentityTests(unittest.TestCase):
+    def setUp(self):
+        self.git = "git+https://example.invalid/sdk?rev=pinned"
+        self.registry = "registry+https://github.com/rust-lang/crates.io-index"
+        self.git_identity = ("shared", "1.0.0", self.git + "#" + "a" * 40)
+        self.registry_identity = ("shared", "1.0.0", self.registry)
+        self.packages = {self.git_identity: {}, self.registry_identity: {}}
+
+    def edges(self, *edges):
+        return negative.dependency_edges({"dependencies": list(edges)}, self.packages)
+
+    def test_git_qualifier_resolves_to_full_locked_identity(self):
+        self.assertEqual(self.edges(f"shared 1.0.0 ({self.git})"), {self.git_identity})
+        self.assertEqual(
+            self.edges(f"shared 1.0.0 ({self.git_identity[2]})"), {self.git_identity}
+        )
+        self.assertEqual(
+            self.edges(f"shared 1.0.0 ({self.registry})"), {self.registry_identity}
+        )
+
+    def test_unqualified_same_name_and_version_remains_ambiguous(self):
+        for edge in ("shared", "shared 1.0.0"):
+            with self.assertRaisesRegex(RuntimeError, "ambiguous or missing"):
+                self.edges(edge)
+
+    def test_wrong_git_source_or_explicit_revision_never_falls_back(self):
+        for source in (
+            self.git + "#" + "b" * 40,
+            self.git + "-other",
+            self.git + "#invalid",
+        ):
+            with self.assertRaisesRegex(RuntimeError, "ambiguous or missing"):
+                self.edges(f"shared 1.0.0 ({source})")
+
+    def test_git_qualifier_cannot_choose_between_resolved_revisions(self):
+        self.packages[("shared", "1.0.0", self.git + "#" + "b" * 40)] = {}
+        with self.assertRaisesRegex(RuntimeError, "ambiguous or missing"):
+            self.edges(f"shared 1.0.0 ({self.git})")
+        self.assertEqual(
+            self.edges(f"shared 1.0.0 ({self.git_identity[2]})"), {self.git_identity}
+        )
+
+    def test_normalization_cannot_substitute_same_name_version_source(self):
+        seed = f'''version = 4
+[[package]]
+name = "hepta-native"
+version = "0.0.0"
+dependencies = ["shared 1.0.0 ({self.registry})"]
+[[package]]
+name = "shared"
+version = "1.0.0"
+source = "{self.registry}"
+[[package]]
+name = "shared"
+version = "1.0.0"
+source = "{self.git_identity[2]}"
+'''.encode()
+        fixture = with_fixture(seed, "journal_storage")
+        negative.verify_fixture_lock(seed, fixture, "journal_storage")
+        changed = fixture.replace(
+            f"({self.registry})".encode(), f"({self.git})".encode()
+        )
+        with self.assertRaisesRegex(RuntimeError, "changed locked dependency edges"):
+            negative.verify_fixture_lock(seed, changed, "journal_storage")
+        changed = fixture.replace(("#" + "a" * 40).encode(), ("#" + "b" * 40).encode())
+        with self.assertRaisesRegex(RuntimeError, "floated beyond application"):
+            negative.verify_fixture_lock(seed, changed, "journal_storage")
+
+
 if __name__ == "__main__":
     unittest.main()

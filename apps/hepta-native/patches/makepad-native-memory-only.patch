@@ -1,0 +1,111 @@
+diff --git a/src/cx_api.rs b/src/cx_api.rs
+index 75c246e..7d0b5be 100644
+--- a/src/cx_api.rs
++++ b/src/cx_api.rs
+@@ -1023,8 +1023,8 @@ impl Cx {
+ 
+     /// Get resource data intended for font parsing.
+     ///
+-    /// This reads local file-backed resources directly, then falls back to
+-    /// already-loaded resource bytes (required for wasm/network-backed assets).
++    /// The owned native build uses already-loaded embedded resource bytes only.
++    /// Missing resources fail closed without a filesystem/dependency fallback.
+     pub fn get_resource_font_bytes(&mut self, heap_key: usize, handle: ScriptHandle) -> Option<SharedBytes> {
+         let path = self.get_resource_abs_path(heap_key, handle)?;
+         self.get_resource_font_bytes_by_path(&path)
+@@ -1033,18 +1033,16 @@ impl Cx {
+     /// Font identity captured in its owning script heap. A local handle alone
+     /// cannot identify a resource once a draw object leaves that heap.
+     pub fn get_resource_font_bytes_by_path(&self, path: &str) -> Option<SharedBytes> {
+-        if let Ok(bytes) = SharedBytes::from_file_mmap_or_read(path) {
+-            return Some(bytes);
+-        }
++        // This owned native build admits only bytes preloaded from its fixed,
++        // verified embedded inventory. Never inspect a same-named filesystem
++        // path, a stale checkout or a packaged sidecar for a font.
+         let resources = self.script_data.resources.resources.borrow();
+         let res = resources.iter().find(|res| res.abs_path == path)?;
+         if let crate::script::res::CxScriptResourceData::Loaded(data) = &res.data {
+-            return Some(SharedBytes::from_owned(data.clone()));
++            Some(SharedBytes::from_owned(data.clone()))
++        } else {
++            None
+         }
+-        res.dependency_path
+-            .as_deref()
+-            .and_then(|path| self.get_dependency(path).ok())
+-            .map(SharedBytes::from_owned)
+     }
+ 
+     pub fn null_texture(&self) -> Texture {
+diff --git a/src/script/res.rs b/src/script/res.rs
+index fef110a..28fcaef 100644
+--- a/src/script/res.rs
++++ b/src/script/res.rs
+@@ -366,6 +366,20 @@ impl Cx {
+         path: &str,
+         #[cfg(target_arch = "wasm32")] crate_manifests: &HashMap<String, String>,
+     ) {
++        #[cfg(not(target_arch = "wasm32"))]
++        if !self.script_data.resources.resources.borrow().iter().any(|resource| {
++            resource.abs_path == path && matches!(resource.data, CxScriptResourceData::Loaded(_))
++        }) {
++            // Do not use a local file, package root, bundle or network request
++            // to repair an incomplete embedded-resource inventory.
++            if let Some(resource) = self.script_data.resources.resources.borrow_mut()
++                .iter_mut().find(|resource| resource.abs_path == path)
++            {
++                resource.data = CxScriptResourceData::Error("native resource is not embedded".to_owned());
++            }
++            return;
++        }
++
+         // On wasm, skip loading if we haven't received ToWasmInit yet (os_type is Unknown).
+         #[cfg(target_arch = "wasm32")]
+         if matches!(self.os_type(), crate::cx::OsType::Unknown) {
+@@ -907,6 +921,20 @@ fn resolve_crate_resource_paths(
+             ScriptSource::Mod(script_mod) => script_mod,
+             _ => return None,
+         };
++        // The pinned DrawText default still uses this historical backreference.
++        // Map only that exact module/literal to the already embedded logical
++        // asset; unknown modules/paths retain the normal fail-closed behavior.
++        if script_mod.module_path == "makepad_draw::shader::draw_text"
++            && file_path == "../../widgets/resources/IBMPlexSans-Text.ttf"
++        {
++            let manifests = vm.bx.code.crate_manifests.borrow();
++            let widgets = manifests.get("makepad_widgets")?;
++            return Some((
++                format!("{widgets}/resources/IBMPlexSans-Text.ttf"),
++                Some("makepad_widgets/resources/IBMPlexSans-Text.ttf".to_owned()),
++                None,
++            ));
++        }
+         let mut abs_path = script_mod.cargo_manifest_path.clone();
+         abs_path.push('/');
+         abs_path.push_str(file_path);
+diff --git a/src/os/linux/x11/xlib_window.rs b/src/os/linux/x11/xlib_window.rs
+--- a/src/os/linux/x11/xlib_window.rs
++++ b/src/os/linux/x11/xlib_window.rs
+@@ -197,6 +197,21 @@
+             }
+ 
+             get_xlib_app_global().dnd.enable_for_window(window);
++
++            // Publish the local owner before mapping so window-scoped tooling
++            // can identify this process without relying on a shared title.
++            // Xlib format 32 consumes an array of native longs, also on LP64.
++            let pid = std::process::id() as c_ulong;
++            x11_sys::XChangeProperty(
++                display,
++                window,
++                x11_sys::XInternAtom(display, c"_NET_WM_PID".as_ptr(), 0),
++                x11_sys::XInternAtom(display, c"CARDINAL".as_ptr(), 0),
++                32,
++                x11_sys::PropModeReplace as i32,
++                &pid as *const c_ulong as *const u8,
++                1,
++            );
+ 
+             // The title should be set prior to mapping the window.
+             let title_bytes = format!("{}\0", title);

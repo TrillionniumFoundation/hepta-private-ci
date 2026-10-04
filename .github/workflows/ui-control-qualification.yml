@@ -1,0 +1,338 @@
+# Historical Node oracle and Rust semantic-DOM compatibility only.
+# Actual Robrix/Makepad qualification is the separate robrix-host job.
+name: ui.control legacy Console compatibility
+on:
+  push:
+    branches:
+      - main
+      - "work/ui-control-*"
+    paths:
+      - "apps/hepta-control-ui/**"
+      - "docs/modules/ui.control/**"
+      - "qualification/ui-control/**"
+      - "qualification/module-execution-dossiers/detail/ui.control.md"
+      - "scripts/ui-control-*.mjs"
+      - "scripts/ui-control-*.py"
+      - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta_module_source_roots.py"
+      - "scripts/hepta-lane-b-path-guard.py"
+      - "scripts/test_hepta_lane_b_path_guard.py"
+      - "scripts/hepta-lane-b-truth.py"
+      - "scripts/test_hepta_lane_b_truth.py"
+      - ".github/workflows/ui-control-*.yml"
+  pull_request:
+    paths:
+      - "apps/hepta-control-ui/**"
+      - "docs/modules/ui.control/**"
+      - "qualification/ui-control/**"
+      - "qualification/module-execution-dossiers/detail/ui.control.md"
+      - "scripts/ui-control-*.mjs"
+      - "scripts/ui-control-*.py"
+      - "scripts/hepta-implementation-maps.py"
+      - "scripts/hepta_module_source_roots.py"
+      - "scripts/hepta-lane-b-path-guard.py"
+      - "scripts/test_hepta_lane_b_path_guard.py"
+      - "scripts/hepta-lane-b-truth.py"
+      - "scripts/test_hepta_lane_b_truth.py"
+      - ".github/workflows/ui-control-*.yml"
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ui-control-legacy-compatibility-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+env:
+  UI_CONTROL_APP: apps/hepta-control-ui
+jobs:
+  exact-head:
+    name: legacy Console / exact head / contracts / three browsers / axe
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out exact candidate
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - id: bind
+        name: Bind exact source identity
+        env:
+          EXPECTED_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p ui-control-legacy-evidence
+          {
+            printf 'sha=%s\n' "$(git rev-parse HEAD)"
+            printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+          } > ui-control-legacy-evidence/source.txt
+      - name: Install pinned Rust browser compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --target wasm32-unknown-unknown
+          rustup default 1.95.0
+          cargo install wasm-bindgen-cli --locked --version 0.2.128
+      - name: Setup Node.js 22
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+      - id: dependency
+        name: Install exact locked browser-test dependencies
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f package-lock.json
+          sha256sum package-lock.json > ../../ui-control-legacy-evidence/dependency-lock.sha256
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm ls --all --json > ../../ui-control-legacy-evidence/npm-resolution.json
+      - id: lint
+        name: Lint and unsafe-sink checks
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        run: npm run legacy:lint
+      - id: unit
+        name: Historical oracle unit and concurrency compatibility
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        run: npm run legacy:test-oracle
+      - id: contract
+        name: Historical contracts and current package boundary
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run legacy:test-contract
+      - id: build
+        name: Build isolated legacy Rust semantic-DOM artifact
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        run: node tools/build-rust.mjs
+      - name: Install Playwright browser engines
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        run: npx playwright install --with-deps chromium firefox webkit
+      - id: browser
+        name: Legacy DOM browser E2E, keyboard, focus, and axe
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        env:
+          CI: "1"
+          UI_CONTROL_CANDIDATE: rust
+        run: npm run legacy:test-e2e
+      - id: generated
+        name: Verify generated ui.control truth with exact diff
+        run: node scripts/ui-control-artifacts.mjs --check
+      - id: lane_b_guard
+        name: Verify ui.control Lane B source and module truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-b-path-guard.py self-test
+          python3 scripts/hepta-lane-b-path-guard.py verify
+          python3 scripts/ui-control-source-map.py
+      - id: repository_lane_b_diagnostic
+        name: Observe repository-wide Lane B truth without cross-module qualification coupling
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p ui-control-legacy-evidence
+          {
+            set -e
+            python3 scripts/hepta-lane-b-truth.py self-test
+            python3 scripts/hepta-lane-b-truth.py verify
+          } 2>&1 | tee ui-control-legacy-evidence/repository-lane-b-diagnostic.log
+      - name: Copy legacy browser build manifest
+        run: cp apps/hepta-control-ui/dist-rust/build-manifest.json ui-control-legacy-evidence/build-manifest.json
+      - id: clean
+        name: Verify tracked tree remains clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Publish legacy compatibility summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## Legacy Console exact-head compatibility'
+            echo
+            echo "- SHA: \`$(git rev-parse HEAD)\`"
+            echo "- Tree: \`$(git rev-parse HEAD^{tree})\`"
+            if [ "$GITHUB_REF" = "refs/heads/main" ]; then
+              echo '- Candidate merged to main: yes'
+            else
+              echo '- Candidate merged to main: no'
+            fi
+            echo '- Legacy DOM browser matrix: ${{ steps.browser.outcome }}'
+            echo '- Generated/module truth: ${{ steps.generated.outcome }} / ${{ steps.lane_b_guard.outcome }}'
+            echo '- Repository-wide Lane B diagnostic: ${{ steps.repository_lane_b_diagnostic.outcome }} (diagnostic only; verifier remains strict)'
+            echo '- Dependency / lint / oracle / contract / build: ${{ steps.dependency.outcome }} / ${{ steps.lint.outcome }} / ${{ steps.unit.outcome }} / ${{ steps.contract.outcome }} / ${{ steps.build.outcome }}'
+            echo '- Source identity / tracked-tree cleanliness: ${{ steps.bind.outcome }} / ${{ steps.clean.outcome }}'
+            echo '- Scope: historical Node oracle and isolated Rust semantic-DOM compatibility only'
+            echo '- Robrix/Makepad rendering, IME, accessibility, live chat, and operational Console qualification: not established by this workflow'
+            echo '- Current-module acceptance receipts and release authorization: not emitted'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload immutable legacy compatibility evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-control-legacy-exact-head-${{ github.event.pull_request.head.sha || github.sha }}
+          path: |
+            ui-control-legacy-evidence/
+            apps/hepta-control-ui/dist-rust/
+            apps/hepta-control-ui/playwright-report/
+            apps/hepta-control-ui/test-results/
+          if-no-files-found: warn
+          retention-days: 30
+  synthetic-merge:
+    name: legacy Console / synthetic merge / three browsers / axe
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - name: Check out pull-request head
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          persist-credentials: false
+          fetch-depth: 0
+      - id: base
+        name: Resolve current base
+        env:
+          BASE_REF: ${{ github.base_ref }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          value="$(git rev-parse "refs/remotes/origin/${BASE_REF}^{commit}")"
+          printf 'sha=%s\n' "$value" >> "$GITHUB_OUTPUT"
+      - id: merge
+        name: Construct deterministic synthetic merge
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ steps.base.outputs.sha }}
+          source-sha: ${{ github.event.pull_request.head.sha }}
+          pr-number: ${{ github.event.pull_request.number }}
+          author-name: ui.control qualification
+          author-email: ui-control-qualification@users.noreply.github.com
+          message: Synthetic ui.control merge
+      - id: bind
+        name: Bind synthetic-merge identity
+        env:
+          EXPECTED_SHA: ${{ steps.merge.outputs.sha }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"
+          mkdir -p ui-control-legacy-evidence
+          {
+            printf 'sha=%s\n' "$(git rev-parse HEAD)"
+            printf 'tree=%s\n' "$(git rev-parse HEAD^{tree})"
+            printf 'source_sha=%s\n' "${{ github.event.pull_request.head.sha }}"
+            printf 'base_sha=%s\n' "${{ steps.base.outputs.sha }}"
+          } > ui-control-legacy-evidence/source.txt
+      - name: Install pinned Rust browser compiler
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustup toolchain install 1.95.0 --profile minimal --target wasm32-unknown-unknown
+          rustup default 1.95.0
+          cargo install wasm-bindgen-cli --locked --version 0.2.128
+      - name: Setup Node.js 22
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+      - id: dependency
+        name: Install exact locked merge-test dependencies
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f package-lock.json
+          sha256sum package-lock.json > ../../ui-control-legacy-evidence/dependency-lock.sha256
+          npm ci --ignore-scripts --no-audit --no-fund
+          npm ls --all --json > ../../ui-control-legacy-evidence/npm-resolution.json
+      - id: source
+        name: Verify merged legacy source, contracts, and isolated build
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run legacy:lint
+          npm run legacy:test-oracle
+          npm run legacy:test-contract
+          node tools/build-rust.mjs
+      - name: Install Playwright browser engines for merge candidate
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        run: npx playwright install --with-deps chromium firefox webkit
+      - id: browser
+        name: Verify merged legacy Chromium, Firefox, WebKit, keyboard, focus, and axe
+        working-directory: ${{ env.UI_CONTROL_APP }}
+        env:
+          CI: "1"
+          UI_CONTROL_CANDIDATE: rust
+        run: npm run legacy:test-e2e
+      - id: generated
+        name: Verify merged generated ui.control truth with exact diff
+        run: node scripts/ui-control-artifacts.mjs --check
+      - id: lane_b_guard
+        name: Verify merged ui.control Lane B source and module truth
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-lane-b-path-guard.py self-test
+          python3 scripts/hepta-lane-b-path-guard.py verify
+          python3 scripts/ui-control-source-map.py
+      - id: repository_lane_b_diagnostic
+        name: Observe merged repository-wide Lane B truth without cross-module qualification coupling
+        continue-on-error: true
+        shell: bash
+        run: |
+          set -o pipefail
+          mkdir -p ui-control-legacy-evidence
+          {
+            set -e
+            python3 scripts/hepta-lane-b-truth.py self-test
+            python3 scripts/hepta-lane-b-truth.py verify
+          } 2>&1 | tee ui-control-legacy-evidence/repository-lane-b-diagnostic.log
+      - name: Copy merged legacy browser build manifest
+        run: cp apps/hepta-control-ui/dist-rust/build-manifest.json ui-control-legacy-evidence/build-manifest.json
+      - id: clean
+        name: Verify merged tracked tree remains clean
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          test -z "$(git status --porcelain --untracked-files=no)"
+      - name: Publish synthetic-merge legacy compatibility summary
+        if: always()
+        shell: bash
+        run: |
+          {
+            echo '## Legacy Console synthetic-merge compatibility'
+            echo
+            echo "- Merge SHA: \`$(git rev-parse HEAD)\`"
+            echo "- Merge tree: \`$(git rev-parse HEAD^{tree})\`"
+            echo "- Source head: \`${{ github.event.pull_request.head.sha }}\`"
+            echo "- Base: \`${{ steps.base.outputs.sha }}\`"
+            echo '- Candidate merged to main: no'
+            echo '- Legacy DOM browser matrix: ${{ steps.browser.outcome }}'
+            echo '- Generated/module truth: ${{ steps.generated.outcome }} / ${{ steps.lane_b_guard.outcome }}'
+            echo '- Repository-wide Lane B diagnostic: ${{ steps.repository_lane_b_diagnostic.outcome }} (diagnostic only; verifier remains strict)'
+            echo '- Dependency / merged source checks: ${{ steps.dependency.outcome }} / ${{ steps.source.outcome }}'
+            echo '- Source identity / tracked-tree cleanliness: ${{ steps.bind.outcome }} / ${{ steps.clean.outcome }}'
+            echo '- Scope: historical Node oracle and isolated Rust semantic-DOM compatibility only'
+            echo '- Robrix/Makepad rendering, IME, accessibility, live chat, and operational Console qualification: not established by this workflow'
+            echo '- Current-module acceptance receipts and release authorization: not emitted'
+          } >> "$GITHUB_STEP_SUMMARY"
+      - name: Upload immutable synthetic-merge legacy evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ui-control-legacy-synthetic-merge-${{ steps.merge.outputs.sha || github.event.pull_request.head.sha }}
+          path: |
+            ui-control-legacy-evidence/
+            apps/hepta-control-ui/playwright-report/
+            apps/hepta-control-ui/test-results/
+          if-no-files-found: warn
+          retention-days: 30

@@ -32,6 +32,16 @@ fn main() {
 fn run() -> Result<(), Box<dyn std::error::Error>> {
     let started = std::time::Instant::now();
     let raw_args: Vec<String> = std::env::args().skip(1).collect();
+    #[cfg(all(feature = "robrix-preview", target_os = "linux"))]
+    if raw_args == ["--font-notices"] {
+        hepta_native::native_assets::write_notices(&mut std::io::stdout().lock())?;
+        return Ok(());
+    }
+    #[cfg(all(feature = "robrix-preview", target_os = "linux"))]
+    if raw_args == ["--font-source", "liberation"] {
+        hepta_native::native_assets::write_liberation_source(&mut std::io::stdout().lock())?;
+        return Ok(());
+    }
     #[cfg(any(target_os = "macos", target_os = "windows"))]
     if raw_args == ["--native-picker-helper"] {
         hepta_native::ui::run_picker_helper()?;
@@ -79,6 +89,20 @@ fn run() -> Result<(), Box<dyn std::error::Error>> {
         return Ok(());
     }
     if raw_args.len() == 1 && raw_args[0] == "--self-test" {
+        #[cfg(all(feature = "robrix-preview", target_os = "linux"))]
+        {
+            println!(
+                "{}",
+                serde_json::to_string(&serde_json::json!({
+                    "schema": "hepta.native-self-test.v1",
+                    "platform": std::env::consts::OS,
+                    "architecture": std::env::consts::ARCH,
+                    "gui": "makepad-337566c-linux-development",
+                    "accessibility": "unqualified"
+                }))?
+            );
+        }
+        #[cfg(not(all(feature = "robrix-preview", target_os = "linux")))]
         println!(
             "{{\"schema\":\"hepta.native-self-test.v1\",\"platform\":\"{}\",\"architecture\":\"{}\",\"gui\":\"eframe-0.36.2\",\"accessibility\":\"accesskit\"}}",
             std::env::consts::OS,
@@ -172,7 +196,14 @@ fn run_configured(
         );
         return Ok(());
     }
+    #[cfg(not(all(feature = "robrix-preview", target_os = "linux")))]
     let fonts = hepta_native::fonts::load_fallback(config.font_file.as_deref())?;
+    #[cfg(all(feature = "robrix-preview", target_os = "linux"))]
+    let font_override = config
+        .font_file
+        .as_deref()
+        .map(hepta_native::fonts::read_font_file)
+        .transpose()?;
     let updater = UpdateManager::new(trusted_keys.clone(), config.state_dir.join("updates"))?;
     if let Some(handoff) = &handoff {
         updater.validate_running_handoff(handoff)?;
@@ -201,26 +232,40 @@ fn run_configured(
         endpoint_digest,
     )?);
 
-    let native_options = eframe::NativeOptions {
-        renderer: eframe::Renderer::Glow,
-        persistence_path: Some(config.state_dir.join("ui-state")),
-        viewport: eframe::egui::ViewportBuilder::default()
-            .with_title("Hepta Native")
-            .with_inner_size([1180.0, 760.0])
-            .with_min_inner_size([800.0, 560.0]),
-        ..Default::default()
-    };
-    eframe::run_native(
-        "hepta-native",
-        native_options,
-        Box::new(move |cc| {
-            if let Some(fonts) = fonts {
-                cc.egui_ctx.set_fonts(fonts);
-            }
-            Ok(Box::new(app))
-        }),
-    )?;
+    #[cfg(all(feature = "robrix-preview", target_os = "linux"))]
+    hepta_native::ui::run_robrix(app, font_override)?;
+    #[cfg(not(all(feature = "robrix-preview", target_os = "linux")))]
+    {
+        let native_options = eframe::NativeOptions {
+            renderer: eframe::Renderer::Glow,
+            persistence_path: Some(config.state_dir.join("ui-state")),
+            viewport: eframe::egui::ViewportBuilder::default()
+                .with_title("Hepta Native")
+                .with_inner_size([1180.0, 760.0])
+                .with_min_inner_size([800.0, 560.0]),
+            ..Default::default()
+        };
+        eframe::run_native(
+            "hepta-native",
+            native_options,
+            Box::new(move |cc| {
+                if let Some(fonts) = fonts {
+                    cc.egui_ctx.set_fonts(fonts);
+                }
+                Ok(Box::new(app))
+            }),
+        )?;
+    }
 
+    #[cfg(all(feature = "robrix-preview", target_os = "linux"))]
+    if std::env::var("HEPTA_NATIVE_PREVIEW_OBSERVE").as_deref() == Ok("1") {
+        eprintln!(
+            "HEPTA_NATIVE_PREVIEW {}",
+            serde_json::json!({
+                "event": "gui_loop_returned", "activationRequested": activate_update_on_exit.load(Ordering::SeqCst),
+            })
+        );
+    }
     if activate_update_on_exit.load(Ordering::SeqCst) {
         let target = std::env::current_exe()?;
         let helper = match config.updater_helper {

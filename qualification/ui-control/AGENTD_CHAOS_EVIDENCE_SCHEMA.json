@@ -1,0 +1,123 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "hepta.ui-control.agentd-chaos-evidence.v2",
+  "title": "ui.control Agentd crash/recovery evidence",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema",
+    "candidateCommit",
+    "candidateTree",
+    "backendDeploymentDigest",
+    "executedAt",
+    "executor",
+    "cases",
+    "rawEvidenceDigest"
+  ],
+  "properties": {
+    "schema": { "const": "hepta.ui-control.agentd-chaos-evidence.v2" },
+    "candidateCommit": { "$ref": "#/$defs/sha1" },
+    "candidateTree": { "$ref": "#/$defs/sha1" },
+    "backendDeploymentDigest": { "$ref": "#/$defs/sha256" },
+    "executedAt": { "type": "string", "format": "date-time" },
+    "executor": { "type": "string", "minLength": 1, "maxLength": 256 },
+    "cases": {
+      "type": "array",
+      "minItems": 4,
+      "maxItems": 4,
+      "items": { "$ref": "#/$defs/case" }
+    },
+    "rawEvidenceDigest": { "$ref": "#/$defs/sha256" }
+  },
+  "$defs": {
+    "sha1": { "type": "string", "pattern": "^[0-9a-f]{40}$" },
+    "sha256": { "type": "string", "pattern": "^[0-9a-f]{64}$" },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "status",
+        "operationId",
+        "semanticDigest",
+        "durableRecordDigest",
+        "agentdInstanceDigest",
+        "observedRecordCount",
+        "observedSideEffectCount",
+        "terminalStatus",
+        "rawEvidenceDigest"
+      ],
+      "properties": {
+        "id": {
+          "enum": [
+            "crash-before-admission-commit",
+            "crash-after-admission-before-dispatch",
+            "crash-after-dispatch-before-terminal-observation",
+            "restart-reconciles-terminal-state"
+          ]
+        },
+        "status": { "enum": ["passed", "failed"] },
+        "operationId": { "type": "string", "minLength": 1, "maxLength": 192 },
+        "semanticDigest": { "$ref": "#/$defs/sha256" },
+        "durableRecordDigest": {
+          "oneOf": [
+            { "$ref": "#/$defs/sha256" },
+            { "type": "null" }
+          ]
+        },
+        "agentdInstanceDigest": { "$ref": "#/$defs/sha256" },
+        "observedRecordCount": { "type": "integer", "minimum": 0, "maximum": 1 },
+        "observedSideEffectCount": { "type": "integer", "minimum": 0, "maximum": 1 },
+        "terminalStatus": {
+          "type": ["string", "null"],
+          "enum": ["succeeded", "failed", "rejected", "cancelled", null]
+        },
+        "rawEvidenceDigest": { "$ref": "#/$defs/sha256" }
+      },
+      "allOf": [
+        {
+          "if": { "properties": { "id": { "const": "crash-before-admission-commit" } } },
+          "then": {
+            "properties": {
+              "durableRecordDigest": { "type": "null" },
+              "observedRecordCount": { "const": 0 },
+              "observedSideEffectCount": { "const": 0 },
+              "terminalStatus": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "id": { "const": "crash-after-admission-before-dispatch" } } },
+          "then": {
+            "properties": {
+              "durableRecordDigest": { "$ref": "#/$defs/sha256" },
+              "observedRecordCount": { "const": 1 },
+              "observedSideEffectCount": { "const": 0 },
+              "terminalStatus": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "id": { "const": "crash-after-dispatch-before-terminal-observation" } } },
+          "then": {
+            "properties": {
+              "durableRecordDigest": { "$ref": "#/$defs/sha256" },
+              "observedRecordCount": { "const": 1 },
+              "terminalStatus": { "type": "null" }
+            }
+          }
+        },
+        {
+          "if": { "properties": { "id": { "const": "restart-reconciles-terminal-state" } } },
+          "then": {
+            "properties": {
+              "durableRecordDigest": { "$ref": "#/$defs/sha256" },
+              "observedRecordCount": { "const": 1 },
+              "terminalStatus": { "enum": ["succeeded", "failed", "rejected", "cancelled"] }
+            }
+          }
+        }
+      ]
+    }
+  }
+}

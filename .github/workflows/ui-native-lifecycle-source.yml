@@ -1,0 +1,176 @@
+name: Native lifecycle source verification
+
+on:
+  pull_request:
+    branches: [work/ui-rust-scifi-audit-20261002]
+    paths:
+      - apps/hepta-native/**
+      - apps/hepta-control-ui/rust/robrix-ui/**
+      - apps/hepta-control-ui/rust/core/**
+      - apps/hepta-control-ui/rust/Cargo.toml
+      - codex-rs/hepta-contracts/**
+      - codex-rs/keyring-store/**
+      - codex-rs/hepta-private-state/**
+      - codex-rs/utils/private-state/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - codex-rs/.cargo/**
+      - .cargo/**
+      - justfile
+      - scripts/just-shell.py
+      - scripts/hepta_ci_exec.py
+      - scripts/hepta_native_lifecycle_ci.py
+      - scripts/hepta_ui_native_compile_negative.py
+      - scripts/test_hepta_native_lifecycle_ci.py
+      - scripts/test_hepta_native_robrix_build.py
+      - scripts/hepta_ui_native_format.py
+      - .github/config/native-lifecycle-nextest.toml
+      - .github/actions/hepta-synthetic-merge/**
+      - .github/workflows/ui-native-lifecycle-source.yml
+
+permissions:
+  contents: read
+
+concurrency:
+  group: native-lifecycle-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+  cancel-in-progress: false
+
+jobs:
+  verify:
+    name: Native lifecycle / Linux / ${{ matrix.lane }}
+    if: github.event.pull_request.number == 1338
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      WORKFLOW_SHA: ${{ github.workflow_sha }}
+      HEPTA_CI_LANE: ${{ matrix.lane }}
+      CARGO_INCREMENTAL: "0"
+      CARGO_TERM_COLOR: never
+      RUST_BACKTRACE: "1"
+      PYTHONDONTWRITEBYTECODE: "1"
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ env.WORKFLOW_SHA }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Select immutable PR head after retaining workflow commit
+        run: |
+          set -euo pipefail
+          git checkout --detach "$SOURCE_SHA"
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+      - name: Construct separately identified deterministic merge
+        if: matrix.lane == 'base-merge'
+        uses: ./.github/actions/hepta-synthetic-merge
+        with:
+          base-sha: ${{ env.BASE_SHA }}
+          source-sha: ${{ env.SOURCE_SHA }}
+          pr-number: "1338"
+          author-name: Native lifecycle CI
+          author-email: native-lifecycle@invalid
+          message: Synthetic native lifecycle merge
+      - name: Bind the new source subject
+        id: bind
+        run: |
+          set -euo pipefail
+          export TESTED_SHA="$(git rev-parse HEAD)"
+          export CARGO_TARGET_DIR="$RUNNER_TEMP/native-lifecycle-target"
+          export NATIVE_EVIDENCE="$RUNNER_TEMP/native-lifecycle-evidence"
+          printf 'TESTED_SHA=%s\n' "$TESTED_SHA" >> "$GITHUB_ENV"
+          printf 'CARGO_TARGET_DIR=%s\nNATIVE_EVIDENCE=%s\n' "$CARGO_TARGET_DIR" "$NATIVE_EVIDENCE" >> "$GITHUB_ENV"
+          python3 scripts/hepta_native_lifecycle_ci.py bind --out "$NATIVE_EVIDENCE"
+          python3 -m unittest discover -s scripts -p test_hepta_native_lifecycle_ci.py -v
+      - name: Install Linux build prerequisites
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y \
+            libxcb-render0-dev libxcb-shape0-dev libxcb-xfixes0-dev \
+            libxkbcommon-dev libxkbcommon-x11-dev libwayland-dev \
+            libgl1-mesa-dev libssl-dev pkg-config
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt, clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+      - name: Retain toolchain versions
+        id: tools
+        run: |
+          set -euo pipefail
+          { rustc +1.95.0 -vV; cargo +1.95.0 -V; just --version; cargo nextest --version; } \
+            > "$NATIVE_EVIDENCE/tools.txt"
+      - name: Prepare pinned preview assets for all-feature source checks
+        run: |
+          set -euo pipefail
+          python3 -m unittest discover -s scripts -p test_hepta_native_robrix_build.py -v
+          python3 apps/hepta-native/tools/build-robrix-native.py prepare-assets \
+            --source-root "$GITHUB_WORKSPACE" \
+            --out "$RUNNER_TEMP/native-source-assets" --download-font-source
+          printf 'HEPTA_NATIVE_ASSET_INPUT=%s\n' \
+            "$RUNNER_TEMP/native-source-assets/native-assets.rs" >> "$GITHUB_ENV"
+          cp "$RUNNER_TEMP/native-source-assets/native-assets-input.json" \
+            "$NATIVE_EVIDENCE/native-assets-input.json"
+      - name: Compile every native application and test target
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$NATIVE_EVIDENCE/compile.json" -- \
+            cargo +1.95.0 build --manifest-path apps/hepta-native/Cargo.toml --locked --workspace --all-targets
+      - name: Inventory every compiled native test
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$NATIVE_EVIDENCE/inventory-command.json" -- \
+            bash -euo pipefail -c 'cargo +1.95.0 nextest list --manifest-path apps/hepta-native/Cargo.toml --locked --workspace --all-targets --config-file .github/config/native-lifecycle-nextest.toml --profile native-lifecycle --message-format json > "$NATIVE_EVIDENCE/inventory.json"'
+      - name: Run complete ordinary native tests without retries
+        run: |
+          set -euo pipefail
+          test ! -e apps/hepta-native/target/nextest/native-lifecycle/junit.xml
+          test ! -L apps/hepta-native/target/nextest/native-lifecycle/junit.xml
+          python3 scripts/hepta_ci_exec.py --output "$NATIVE_EVIDENCE/tests.json" --minimum-tests 1 -- \
+            just test --manifest-path ../apps/hepta-native/Cargo.toml --locked --workspace --all-targets \
+            --config-file ../.github/config/native-lifecycle-nextest.toml --profile native-lifecycle --retries 0
+      - name: Prove current native internals remain private
+        env:
+          NATIVE_EXPECTED_HEAD: ${{ env.TESTED_SHA }}
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$NATIVE_EVIDENCE/privacy.json" -- \
+            python3 scripts/hepta_ui_native_compile_negative.py
+      - name: Strict native Clippy independently of test outcome
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$NATIVE_EVIDENCE/clippy.json" -- \
+            cargo +1.95.0 clippy --manifest-path apps/hepta-native/Cargo.toml --locked --workspace --all-targets --all-features -- -D warnings
+      - name: Check formatting independently of test outcome
+        if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$NATIVE_EVIDENCE/format.json" -- \
+            python3 scripts/hepta_ui_native_format.py --manifest-path apps/hepta-native/Cargo.toml
+      - name: Retain JUnit and verify exact test coverage
+        if: ${{ !cancelled() && steps.bind.outcome == 'success' }}
+        run: |
+          set -euo pipefail
+          cp apps/hepta-native/target/nextest/native-lifecycle/junit.xml "$NATIVE_EVIDENCE/junit.xml"
+          python3 apps/hepta-native/tools/build-robrix-native.py verify-assets \
+            --source-root "$GITHUB_WORKSPACE" --out "$RUNNER_TEMP/native-source-assets" \
+            --liberation-source "$RUNNER_TEMP/native-source-assets/liberation-fonts-1.04.93.devel.src.tar.gz" \
+            --receipt "$NATIVE_EVIDENCE/native-assets-verification.json"
+          cp "$RUNNER_TEMP/native-source-assets/native-assets.rs" "$NATIVE_EVIDENCE/native-assets.rs"
+          cp "$RUNNER_TEMP/native-source-assets/native-assets-input.json" "$NATIVE_EVIDENCE/native-assets-input.json"
+          python3 scripts/hepta_native_lifecycle_ci.py seal --out "$NATIVE_EVIDENCE"
+      - name: Retain complete or partial source validation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        with:
+          name: native-lifecycle-${{ matrix.lane }}-${{ env.SOURCE_SHA }}-attempt-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/native-lifecycle-evidence
+          if-no-files-found: warn
+          retention-days: 30

@@ -1,1 +1,5 @@
 * text=auto eol=lf
+# Original notices are catalog-hashed bytes, including CRLF and trailing spaces.
+resources/notices/* -text -whitespace
+# Empty unified-diff context lines contain a required single space.
+patches/makepad-native-memory-only.patch -whitespace

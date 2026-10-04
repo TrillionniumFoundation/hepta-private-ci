@@ -21,15 +21,7 @@ pub fn load_fallback(explicit: Option<&Path>) -> Result<Option<egui::FontDefinit
     let Some(path) = selected else {
         return Ok(None);
     };
-    let bytes = crate::file_input::read_bytes(&path, 32 * 1024 * 1024)?;
-    if !matches!(
-        bytes.get(..4),
-        Some(b"\x00\x01\x00\x00" | b"OTTO" | b"ttcf")
-    ) {
-        return Err(ShellError::InvalidInput(
-            "font-file must be a bounded TrueType/OpenType font".into(),
-        ));
-    }
+    let bytes = read_font_file(&path)?;
     let mut fonts = egui::FontDefinitions::default();
     fonts.font_data.insert(
         "hepta-local-cjk".into(),
@@ -43,4 +35,18 @@ pub fn load_fallback(explicit: Option<&Path>) -> Result<Option<egui::FontDefinit
             .push("hepta-local-cjk".into());
     }
     Ok(Some(fonts))
+}
+
+/// Read an explicit local override without changing or redistributing its bytes.
+pub fn read_font_file(path: &Path) -> Result<Vec<u8>, ShellError> {
+    let bytes = crate::file_input::read_bytes(path, 32 * 1024 * 1024)?;
+    if !matches!(
+        bytes.get(..4),
+        Some(b"\x00\x01\x00\x00" | b"OTTO" | b"ttcf")
+    ) {
+        return Err(ShellError::InvalidInput(
+            "font-file must be a bounded TrueType/OpenType font".into(),
+        ));
+    }
+    Ok(bytes)
 }

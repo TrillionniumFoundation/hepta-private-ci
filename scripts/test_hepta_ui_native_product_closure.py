@@ -7,19 +7,16 @@ import subprocess
 import unittest
 
 import check_hepta_ui_native_convergence as native
+import hepta_native_lifecycle_ci as lifecycle
+import test_hepta_native_lifecycle_ci as coverage
+import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parents[1]
 SHA = re.compile(r"[0-9a-f]{40}\Z")
-FROZEN_PATHS = (
-    "apps/hepta-native/tools",
-    "apps/hepta-native/packaging",
-    "apps/hepta-native/portal",
-    "apps/hepta-native/platform-adapters",
-)
 
 
 class UiNativeProductClosureTests(unittest.TestCase):
-    def test_portal_packaging_and_identity_are_frozen_with_candidate(self) -> None:
+    def test_candidate_identity_and_runtime_input_inventory_remain_exact(self) -> None:
         state = json.loads(
             (ROOT / "apps/hepta-native/CANDIDATE.json").read_text(encoding="utf-8")
         )
@@ -33,12 +30,47 @@ class UiNativeProductClosureTests(unittest.TestCase):
             text=True,
         ).strip()
         self.assertEqual(observed_tree, tree)
-        result = subprocess.run(
-            ["git", "diff", "--quiet", implementation, "HEAD", "--", *FROZEN_PATHS],
-            cwd=ROOT,
-            check=False,
+        # Keep the production input/checkout proof, without freezing every
+        # development helper added under the broad tools directory.
+        native.check_frozen_implementation(implementation)
+        paths = native.implementation_paths()
+        self.assertIn("apps/hepta-native/tools/package_unsigned.py", paths)
+        self.assertIn("apps/hepta-native/tools/archive_safety.py", paths)
+
+    def test_worker_ownership_gate_requires_executed_current_behavior(self):
+        required = {
+            ("hepta-native", "host_lifecycle::controller::tests::" + name)
+            for name in (
+                "mutation_and_history_are_serialized_while_picker_is_independent",
+                "completion_wake_does_not_release_the_lane_before_join",
+                "shutdown_drains_admitted_owner_and_cancelled_picker_before_close",
+                "failed_spawn_preserves_empty_slots_and_close_retry",
+                "panic_completion_is_joined_once_and_retains_failure",
+            )
+        }
+        self.assertTrue(required <= lifecycle.REQUIRED)
+        fixture = coverage.CoverageTests(
+            "test_complete_executed_inventory_keeps_exclusions_explicit"
         )
-        self.assertEqual(result.returncode, 0, "product adapters changed after freeze")
+        fixture.setUp()
+        self.addCleanup(fixture.doCleanups)
+        fixture.verify()
+        # Source member names are not execution. Failed or missing controller
+        # cases must make the actual inventory/JUnit verifier refuse its seal.
+        for binary, name in required:
+            case = next(
+                case
+                for case in fixture.junit
+                if case.attrib["classname"] == binary and case.attrib["name"] == name
+            )
+            failure = ET.SubElement(case, "failure")
+            with self.assertRaises(ValueError):
+                fixture.verify()
+            case.remove(failure)
+            fixture.junit.remove(case)
+            with self.assertRaises(ValueError):
+                fixture.verify()
+            fixture.junit.append(case)
 
     def test_product_closure_contracts_remain_fail_closed(self) -> None:
         platform = (ROOT / "apps/hepta-native/src/platform.rs").read_text(
@@ -68,9 +100,6 @@ class UiNativeProductClosureTests(unittest.TestCase):
             "portal FD handoff": "Fd::from(file.as_fd())",
             "Windows AUMID": "Trillionnium.Hepta.Native",
             "durable history page": "operation_history_page",
-            "mutation lane": "pending_runtime",
-            "read lane": "pending_read",
-            "picker lane": "pending_picker",
             "Rust registrar package declaration": "WINDOWS_IDENTITY_COMMAND",
             "Linux portal package declaration": "linuxPortalFirstPicker",
         }

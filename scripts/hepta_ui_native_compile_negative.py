@@ -16,7 +16,7 @@ ROOT = Path(__file__).resolve().parents[1]
 CASES = {
     "journal_storage": "use hepta_native::journal_storage::append_wal_frame;\nfn main() {}\n",
     "retirement": "use hepta_native::retirement::RetirementStore;\nfn main() {}\n",
-    "task_supervisor": "use hepta_native::ui::task_supervisor::TaskAdmission;\nfn main() {}\n",
+    "host_lifecycle": "use hepta_native::host_lifecycle::task::TaskAdmission;\nfn main() {}\n",
 }
 APP_LOCK = "apps/hepta-native/Cargo.lock"
 
@@ -89,7 +89,18 @@ def dependency_edges(package: dict, packages: dict) -> set[tuple[str, str, str |
             for identity in packages
             if identity[0] == name
             and (version is None or identity[1] == version)
-            and (source is None or identity[2] == source)
+            and (
+                source is None
+                or identity[2] == source
+                or (
+                    source.startswith("git+")
+                    and "#" not in source
+                    and re.fullmatch(
+                        re.escape(source) + r"#[0-9a-f]{40}", identity[2] or ""
+                    )
+                    is not None
+                )
+            )
         ]
         require(
             len(matches) == 1,

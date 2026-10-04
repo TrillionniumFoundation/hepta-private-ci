@@ -226,43 +226,60 @@ External evidence gates:
 
 ## 11. `ui.control`
 
-Owns presentation/session state and pending request identities only; backend modules retain authority and durable facts.
+Owns presentation/session state and bounded pending/recovery identities only; backend modules retain authority, durable operation uniqueness, and terminal facts.
 
-The authenticated backend observation establishes terminal state; local acknowledgement or disconnect never does.
+A durable authenticated backend observation establishes terminal state; local acknowledgement, timeout, disconnect, or browser persistence never does.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `read_view` | `owner_boundary` | `apps/hepta-control-ui/src/runtime-client.js` — `readView()` |
-| `submit_request` | `owner_boundary` | `apps/hepta-control-ui/src/runtime-client.js` — `async submitRequest(` |
-| `request_stop` | `owner_boundary` | `apps/hepta-control-ui/src/runtime-client.js` — `async requestStop(` |
+| `read_view` | `owner_boundary` | `apps/hepta-control-ui/rust/web/src/app.rs` — `pub fn read_view(` |
+| `submit_request` | `owner_boundary` | `apps/hepta-control-ui/rust/web/src/app/effects.rs` — `async fn submit(` |
+| `request_stop` | `owner_boundary` | `apps/hepta-control-ui/rust/web/src/app.rs` — `Action::RequestStop` |
 
 External evidence gates:
 
-- selected Web framework/build artifact and browser support matrix
-- deployed authentication/CSP/CSRF/WebSocket topology
-- end-to-end accessibility and backend deployment qualification
+- production identity-provider and permission-revision integration
+- deployed backend operation-id uniqueness and durable lookup evidence
+- deployed CSP/CSRF/TLS/reverse-proxy observation
+- production monitoring, alert routing, and rollback exercise
+- independent assistive-technology and operator acceptance signature
+- five-principal review/approval separation and evidence-before-approval chronology
 
 ## 12. `ui.native`
 
-Owns shell/window/session state and opaque platform references; domain facts and secrets remain with their owners.
+read and picker coordination never become another execution or journal authority
 
-The backend, platform permission adapter, and updater each supply their own observations; the shell cannot self-issue success.
+Native v6 module test surfaces are checked through `.github/workflows/ui-native-qualification.yml`. Per-operation test bindings and executed qualification are not established by this map.
 
 | Operation | Class | Owner entrypoint |
 |---|---|---|
-| `connect_runtime` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `async connectRuntime(` |
-| `render_runtime_view` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `renderRuntimeView(` |
-| `request_platform_capability` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `async requestPlatformCapability(` |
-| `apply_shell_update` | `owner_boundary` | `apps/hepta-native/src/shell-runtime.js` — `async applyShellUpdate(` |
+| `connect_runtime` | `v6 entrypoint` | `apps/hepta-native/src/runtime.rs::connect_runtime` |
+| `refresh_runtime_view` | `v6 entrypoint` | `apps/hepta-native/src/runtime.rs::refresh_runtime_view` |
+| `request_platform_capability` | `v6 entrypoint` | `apps/hepta-native/src/runtime.rs::request_platform_capability` |
+| `operation_history_page` | `v6 entrypoint` | `apps/hepta-native/src/runtime.rs::operation_history_page` |
+| `reconcile_pending` | `v6 entrypoint` | `apps/hepta-native/src/runtime.rs::reconcile_pending` |
+| `verify_and_stage_update` | `v6 entrypoint` | `apps/hepta-native/src/updater.rs::verify_and_stage` |
+
+Remaining repository implementation gaps:
+
+- non-Linux verified Open/Reveal resource-capability implementation
+- successful execution of the final seven-subject workflow
+- measured source coverage
+- sustained soak
+- physical execution of packaged Windows identity/WinRT notification
+- separate ui.control Rust migration and registered domain-owner integration
+- current-main integration if selected
+- measured UI frame/input responsiveness
 
 External evidence gates:
 
-- selected native framework and supported platform matrix
-- real code signing/notarization/keychain and updater trust roots
-- packaged crash/restart/accessibility/update rollback qualification
+- physical platform, accessibility and IME acceptance
+- production signing, notarization and Authenticode
+- independent SBOM/provenance acceptance
+- independent promotion review and branch-protection administration
 
 ## 13. Cross-module acceptance boundary
 
-All 52 operations require an owner entrypoint, build target and test path. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
+All 54 operations retain their schema's source contract. V3 maps bind each operation to its owner entrypoint, build target and test paths; native v6 retains exact entrypoints and module-level test surfaces under its strict native verifier. Owner entrypoints remain inside owner roots; delegated callees name their real owner. Exact-head and deterministic synthetic-merge validation must agree with all eleven maps and generated projections.
 
 Repository source closure does not self-issue real model/provider execution, Servo or Matrix effects, deployed Web/native artifacts, target-host measurements, hardware evidence, external-owner consent, independent acceptance, selection, promotion or release.

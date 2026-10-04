@@ -163,7 +163,7 @@ fn minimum_operations_can_scroll_to_authorization_and_receipts() {
         );
     }
     assert!(!app.connected);
-    assert!(app.pending_runtime.is_none());
+    assert!(app.tasks.pending(TaskLane::Runtime).is_none());
 }
 
 #[test]
