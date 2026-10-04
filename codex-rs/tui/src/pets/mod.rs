@@ -276,6 +276,7 @@ fn clear_sixel_area(writer: &mut impl Write, area: SixelClearArea) -> std::io::R
 
 #[cfg(test)]
 mod tests {
+    use base64::Engine as _;
     use std::error::Error as _;
     use std::io;
     use std::path::PathBuf;
@@ -348,6 +349,7 @@ mod tests {
     fn kitty_local_file_pet_image_uses_file_reference_without_inline_payload() {
         let dir = tempfile::tempdir().unwrap();
         let frame = dir.path().join("frame.png");
+        let expected_file = frame.clone();
         std::fs::write(&frame, b"png").unwrap();
         let request = AmbientPetDraw {
             frame,
@@ -369,7 +371,18 @@ mod tests {
         assert!(output.contains("a=d,d=I,i=49374,q=2;"));
         assert!(output.contains("\x1b[4;3H"));
         assert!(output.contains("a=T,t=f,f=100,c=4,r=2,q=2,i=49374;"));
-        assert!(!output.contains("cG5n"));
+        let file_payload = output
+            .split_once("a=T,t=f,f=100,c=4,r=2,q=2,i=49374;")
+            .unwrap()
+            .1
+            .split_once("\x1b\\")
+            .unwrap()
+            .0;
+        let file_bytes = base64::engine::general_purpose::STANDARD
+            .decode(file_payload)
+            .unwrap();
+        assert_eq!(file_bytes, expected_file.to_str().unwrap().as_bytes());
+        assert_ne!(file_bytes, b"png");
         assert!(output.contains("\x1b8"));
     }
 
