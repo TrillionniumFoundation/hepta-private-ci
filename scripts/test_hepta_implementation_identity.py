@@ -11,6 +11,7 @@ import contextlib
 import copy
 import io
 import json
+import subprocess
 import unittest
 from unittest.mock import patch
 
@@ -172,6 +173,200 @@ class MigrationIntegrityTests(unittest.TestCase):
         for strict in (True, False):
             with self.subTest(strict=strict), self.assertRaises(SystemExit):
                 self.subject.verify(require_current_source=strict)
+
+
+class HistoricalObjectAvailabilityTests(unittest.TestCase):
+    """Missing objects are not proof that a historical path was absent."""
+
+    def setUp(self):
+        self.fixture = fixtures.SourceIdentityTests()
+        self.addCleanup(self.fixture.doCleanups)
+        self.fixture.setUp()
+        self.root = self.fixture.root
+        self.subject = fixtures.maps
+
+    def prepare_history(self, extra_path=None):
+        self.fixture.write("src/beta/lib.rs", "pub fn old_beta() {}\n")
+        if extra_path is not None:
+            self.fixture.write(extra_path, "old witness\n")
+        anchor = self.fixture.commit("distinct historical evidence")
+        for row in self.fixture.rows.values():
+            row["sourceBase"] = dict(anchor)
+        if extra_path is not None:
+            row = self.fixture.rows["beta"]
+            row["observedAtHead"] = dict(anchor)
+            row["observedSourcePaths"] = ["src/beta", extra_path]
+        self.fixture.write("src/alpha/lib.rs", "pub fn current_alpha() {}\n")
+        self.fixture.write("src/beta/lib.rs", "pub fn current_beta() {}\n")
+        if extra_path is not None:
+            self.fixture.write(extra_path, "current witness\n")
+        self.fixture.commit("available current source")
+        self.fixture.change_maps()
+        return anchor
+
+    def remove_object(self, anchor, suffix):
+        oid = self.fixture.git("rev-parse", anchor["commit"] + suffix)
+        # Objects belong only to this disposable fixture, never a shared clone.
+        path = self.root / ".git" / "objects" / oid[:2] / oid[2:]
+        self.assertTrue(path.is_file())
+        path.unlink()
+        return oid
+
+    def assert_hard_unavailable(self, anchor, paths):
+        with self.assertRaisesRegex(ValueError, "historical.*unavailable") as error:
+            self.subject.require_tracked_paths(anchor["commit"], paths, historical=True)
+        self.assertNotIsInstance(error.exception, self.subject.SourceDrift)
+
+    def assert_migration_writes_nothing(self):
+        before = {
+            path: path.read_bytes()
+            for path in self.root.glob("docs/modules/*/IMPLEMENTATION_MAP.json")
+        }
+        with self.assertRaisesRegex(ValueError, "historical.*unavailable") as error:
+            with contextlib.redirect_stdout(io.StringIO()):
+                self.subject.migrate(["alpha", "beta"])
+        self.assertNotIsInstance(error.exception, self.subject.SourceDrift)
+        self.assertEqual(before, {path: path.read_bytes() for path in before})
+
+    def test_missing_historical_blob_is_hard_error_and_strict_failure(self):
+        anchor = self.prepare_history()
+        self.remove_object(anchor, ":src/beta/lib.rs")
+        self.assert_hard_unavailable(anchor, ["src/beta/lib.rs"])
+        with self.assertRaisesRegex(SystemExit, "historical.*unavailable"):
+            self.subject.verify(require_current_source=True)
+
+    def test_missing_historical_blob_stops_multi_module_migration_before_writes(self):
+        anchor = self.prepare_history()
+        self.remove_object(anchor, ":src/beta/lib.rs")
+        self.assert_migration_writes_nothing()
+
+    def test_missing_historical_subtree_is_hard_error_and_never_rebound(self):
+        anchor = self.prepare_history()
+        self.remove_object(anchor, ":src/beta")
+        self.assert_hard_unavailable(anchor, ["src/beta"])
+        self.assert_hard_unavailable(anchor, ["src/beta/lib.rs"])
+        with self.assertRaisesRegex(SystemExit, "historical.*unavailable"):
+            self.subject.verify(require_current_source=True)
+        self.assert_migration_writes_nothing()
+
+    def test_missing_historical_root_is_hard_error_and_never_rebound(self):
+        anchor = self.prepare_history()
+        self.remove_object(anchor, "^{tree}")
+        self.assert_hard_unavailable(anchor, ["src/beta/lib.rs"])
+        # The source identity guard rejects a missing root even before the
+        # path queries; retain that earlier hard failure instead of rebinding.
+        with self.assertRaisesRegex(SystemExit, "rev-parse"):
+            self.subject.verify(require_current_source=True)
+        before = {
+            path: path.read_bytes()
+            for path in self.root.glob("docs/modules/*/IMPLEMENTATION_MAP.json")
+        }
+        with self.assertRaises(subprocess.CalledProcessError):
+            self.subject.migrate(["alpha", "beta"])
+        self.assertEqual(before, {path: path.read_bytes() for path in before})
+
+    def test_proven_historical_absence_remains_explicit_source_refresh(self):
+        path = "src/beta/added.rs"
+        anchor = self.prepare_history()
+        self.fixture.write(path, "pub fn added() {}\n")
+        self.fixture.rows["beta"]["operations"][0]["sourcePath"] = path
+        self.fixture.change_maps()
+        with self.assertRaisesRegex(self.subject.SourceDrift, "absent at historical"):
+            self.subject.require_tracked_paths(
+                anchor["commit"], [path], historical=True
+            )
+        with self.assertRaisesRegex(SystemExit, "absent at historical"):
+            self.subject.verify(require_current_source=True)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.subject.migrate(["alpha", "beta"])
+        self.fixture.commit("explicit refreshed source observation")
+        self.fixture.verify()
+
+    def test_available_changed_blob_remains_drift_and_can_be_explicitly_refreshed(self):
+        anchor = self.prepare_history()
+        self.subject.require_tracked_paths(
+            anchor["commit"], ["src/beta/lib.rs"], historical=True
+        )
+        with self.assertRaisesRegex(SystemExit, "changed after source observation"):
+            self.subject.verify(require_current_source=True)
+        with contextlib.redirect_stdout(io.StringIO()):
+            self.subject.migrate(["alpha", "beta"])
+        self.fixture.commit("explicit refreshed available observation")
+        self.fixture.verify()
+
+    def test_missing_historical_blob_with_literal_tab_and_newline_paths(self):
+        path = "witness[1]\tline\nending.txt"
+        anchor = self.prepare_history(extra_path=path)
+        self.remove_object(anchor, ":" + path)
+        self.assert_hard_unavailable(anchor, [path])
+        with self.assertRaisesRegex(SystemExit, "historical.*unavailable"):
+            self.subject.verify(require_current_source=True)
+        self.assert_migration_writes_nothing()
+
+    def test_missing_historical_blob_with_literal_tab_path(self):
+        path = "witness[1]\tending.txt"
+        anchor = self.prepare_history(extra_path=path)
+        self.remove_object(anchor, ":" + path)
+        self.assert_hard_unavailable(anchor, [path])
+        self.assert_migration_writes_nothing()
+
+    def test_literal_carriage_return_parent_preserves_absence_and_unavailability(self):
+        path = "witness\rdir/old.txt"
+        anchor = self.prepare_history(extra_path=path)
+        with self.assertRaisesRegex(self.subject.SourceDrift, "absent at historical"):
+            self.subject.require_tracked_paths(
+                anchor["commit"], ["witness\rdir/absent.txt"], historical=True
+            )
+        self.remove_object(anchor, ":" + path)
+        self.assert_hard_unavailable(anchor, [path])
+        self.assert_migration_writes_nothing()
+
+    def test_proven_absence_does_not_hide_later_unavailable_object(self):
+        anchor = self.prepare_history()
+        self.remove_object(anchor, ":src/beta/lib.rs")
+        self.assert_hard_unavailable(anchor, ["src/beta/absent.rs", "src/beta/lib.rs"])
+
+    def test_absent_parent_is_distinct_from_unavailable_parent_tree(self):
+        anchor = self.prepare_history()
+        with self.assertRaisesRegex(self.subject.SourceDrift, "absent at historical"):
+            self.subject.require_tracked_paths(
+                anchor["commit"], ["never-present/subtree/file.rs"], historical=True
+            )
+        self.remove_object(anchor, ":src")
+        self.assert_hard_unavailable(anchor, ["src/never-present/file.rs"])
+
+    def assert_observation_order_fails_closed(self, *, unavailable_first):
+        anchor = self.prepare_history()
+        row = self.fixture.rows["beta"]
+        first, second = anchor, self.fixture.anchor
+        if not unavailable_first:
+            first, second = second, first
+        row["sourceBase"] = dict(first)
+        row["observedAtHead"] = dict(second)
+        row["observedSourcePaths"] = ["src/beta"]
+        self.fixture.change_maps()
+        self.remove_object(anchor, ":src/beta/lib.rs")
+        with self.assertRaisesRegex(SystemExit, "historical.*unavailable"):
+            self.subject.verify(require_current_source=True)
+        self.assert_migration_writes_nothing()
+
+    def test_changed_first_observation_cannot_hide_unavailable_second_observation(self):
+        self.assert_observation_order_fails_closed(unavailable_first=False)
+
+    def test_unavailable_first_observation_is_not_refreshable_second_drift(self):
+        self.assert_observation_order_fails_closed(unavailable_first=True)
+
+    def test_absent_first_observation_cannot_hide_unavailable_second_observation(self):
+        path = "witness.txt"
+        anchor = self.prepare_history(extra_path=path)
+        row = self.fixture.rows["beta"]
+        row["sourceBase"] = dict(self.fixture.anchor)
+        row["operations"][0]["sourcePath"] = path
+        self.fixture.change_maps()
+        self.remove_object(anchor, ":" + path)
+        with self.assertRaisesRegex(SystemExit, "historical.*unavailable"):
+            self.subject.verify(require_current_source=True)
+        self.assert_migration_writes_nothing()
 
 
 if __name__ == "__main__":
