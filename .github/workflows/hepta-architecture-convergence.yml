@@ -38,8 +38,6 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
-      - name: Test retained prospective merge identity diagnostics
-        run: python3 -m unittest -v scripts.test_hepta_prospective_merge_identity
       - name: Verify GitHub prospective merge ref matches this exact candidate
         if: matrix.lane == 'base-merge'
         env:
@@ -115,6 +113,8 @@ jobs:
           git diff --check
           printf 'TESTED_SHA=%s\n' "$CANDIDATE" >> "$GITHUB_ENV"
           printf 'HEPTA_CI_LANE=%s\n' "$LANE" >> "$GITHUB_ENV"
+      - name: Test retained prospective merge identity diagnostics
+        run: python3 -m unittest -v scripts.test_hepta_prospective_merge_identity
       - name: Select exact-tree native execution
         id: execution
         env:
