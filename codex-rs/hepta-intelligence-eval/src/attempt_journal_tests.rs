@@ -126,7 +126,15 @@ fn complete_old_prefix_is_rejected_by_independent_anchor() {
     )
     .expect("create");
     journal.append(consumed("rollback")).expect("consume");
+    let prefix_anchor = journal.anchor().expect("independent prefix anchor");
+    drop(journal);
     let old_prefix = fs::read(temp.path()).expect("backup complete frame");
+    let mut journal = LockedFileProductEvaluationAttemptJournalV1::recover_with_anchor(
+        temp.reopen().expect("reopen exact prefix"),
+        binding,
+        prefix_anchor,
+    )
+    .expect("resume independently anchored prefix");
     journal.append(sealed("rollback")).expect("seal");
     let anchor = journal.anchor().expect("independent retained anchor");
     drop(journal);
