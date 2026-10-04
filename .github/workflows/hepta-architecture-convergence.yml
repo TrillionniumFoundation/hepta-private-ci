@@ -211,6 +211,7 @@ jobs:
             scripts.test_hepta_architecture_graph \
             scripts.test_hepta_module_product_acceptance \
             scripts.test_hepta_composition_boundary \
+            scripts.test_hepta_bazel_tool_profiles \
             scripts.test_hepta_ci_consolidation
           python3 scripts/hepta_module_manifest.py --check
           python3 scripts/hepta_architecture_graph.py --check

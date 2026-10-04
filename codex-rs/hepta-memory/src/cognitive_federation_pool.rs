@@ -12,7 +12,8 @@ use std::time::Instant;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_paths::HeptaAgentLayout;
 use sqlx::Row;
-use tokio::sync::Mutex as AsyncMutex;
+use tokio::sync::Semaphore;
+use tokio::sync::SemaphorePermit;
 
 use crate::CognitiveStore;
 use crate::CognitiveStoreError;
@@ -146,16 +147,66 @@ struct PeerSlot {
     retired: bool,
 }
 
+/// Serializes async admission work without keeping a lock on shared state
+/// across database I/O. The lease owns the state until the operation completes
+/// or is cancelled, and restores it before admitting the next operation.
+struct PeerAdmission {
+    available: Semaphore,
+    state: Mutex<PeerSlot>,
+}
+
+impl Default for PeerAdmission {
+    fn default() -> Self {
+        Self {
+            available: Semaphore::new(1),
+            state: Mutex::new(PeerSlot::default()),
+        }
+    }
+}
+
+impl PeerAdmission {
+    async fn enter(&self) -> Result<PeerLease<'_>, CognitiveStoreError> {
+        let permit = self.available.acquire().await.map_err(unavailable)?;
+        let state = std::mem::take(&mut *self.state.lock().map_err(unavailable)?);
+        Ok(PeerLease {
+            admission: self,
+            state,
+            _permit: permit,
+        })
+    }
+}
+
+struct PeerLease<'a> {
+    admission: &'a PeerAdmission,
+    state: PeerSlot,
+    _permit: SemaphorePermit<'a>,
+}
+
+impl Drop for PeerLease<'_> {
+    fn drop(&mut self) {
+        // No suspension is possible between taking the state and creating this
+        // lease, or between restoring it and releasing the admission permit.
+        // Preserve partial rejection/retirement on cancellation; never put an
+        // earlier, potentially admitted snapshot back into circulation.
+        let mut state = self
+            .admission
+            .state
+            .lock()
+            .unwrap_or_else(std::sync::PoisonError::into_inner);
+        *state = std::mem::take(&mut self.state);
+    }
+}
+
 /// Bounded connection residency only. Capabilities, source validity and
 /// retrieval results are never cached; their owner tables remain authoritative.
 #[derive(Default)]
 pub(crate) struct FederationPeerPools {
-    slots: Mutex<BTreeMap<AgentId, Arc<AsyncMutex<PeerSlot>>>>,
+    slots: Mutex<BTreeMap<AgentId, Arc<PeerAdmission>>>,
     maintenance_cursor: AtomicUsize,
 }
 
 impl FederationPeerPools {
-    fn slot(&self, owner: &AgentId) -> Result<Arc<AsyncMutex<PeerSlot>>, CognitiveStoreError> {
+    fn slot(&self, owner: &AgentId) -> Result<Arc<PeerAdmission>, CognitiveStoreError> {
         let mut slots = self.slots.lock().map_err(unavailable)?;
         if let Some(slot) = slots.get(owner) {
             return Ok(Arc::clone(slot));
@@ -165,7 +216,7 @@ impl FederationPeerPools {
                 "federation connection residency is at capacity",
             ));
         }
-        let slot = Arc::new(AsyncMutex::new(PeerSlot::default()));
+        let slot = Arc::new(PeerAdmission::default());
         slots.insert(owner.clone(), Arc::clone(&slot));
         Ok(slot)
     }
@@ -175,14 +226,15 @@ impl FederationPeerPools {
         layout: &HeptaAgentLayout,
     ) -> Result<Arc<FederationPeer>, CognitiveStoreError> {
         let slot = self.slot(layout.agent_id())?;
-        let mut slot = slot.lock().await;
+        let mut lease = slot.enter().await?;
+        let slot = &mut lease.state;
         if slot.retired {
             return Err(unavailable("federation enrollment was retired"));
         }
         let identity = match DatabaseIdentity::observe(layout) {
             Ok(identity) => identity,
             Err(error) => {
-                Self::reject(&mut slot).await;
+                Self::reject(slot).await;
                 return Err(error);
             }
         };
@@ -193,7 +245,7 @@ impl FederationPeerPools {
                 match peer.validate().await {
                     Ok(()) => return Ok(Arc::clone(peer)),
                     Err(error) => {
-                        Self::reject(&mut slot).await;
+                        Self::reject(slot).await;
                         return Err(error);
                     }
                 }
@@ -202,7 +254,7 @@ impl FederationPeerPools {
                 "federation peer requires integrity maintenance",
             ));
         }
-        Self::reject(&mut slot).await;
+        Self::reject(slot).await;
         slot.identity = Some(identity.clone());
         let peer = Self::open(layout, identity).await?;
         slot.peer = Some(Arc::clone(&peer));
@@ -275,11 +327,11 @@ impl FederationPeerPools {
                 .collect::<Vec<_>>()
         };
         for (owner, slot) in obsolete {
-            let mut guard = tokio::time::timeout_at(deadline, slot.lock())
+            let mut lease = tokio::time::timeout_at(deadline, slot.enter())
                 .await
-                .map_err(|_| unavailable("federation enrollment retirement timed out"))?;
-            guard.retired = true;
-            Self::reject(&mut guard).await;
+                .map_err(|_| unavailable("federation enrollment retirement timed out"))??;
+            lease.state.retired = true;
+            Self::reject(&mut lease.state).await;
             let mut slots = self.slots.lock().map_err(unavailable)?;
             if slots
                 .get(&owner)
@@ -300,14 +352,15 @@ impl FederationPeerPools {
                 .store(index.wrapping_add(1), Ordering::Relaxed);
             let layout = &layouts[index];
             let slot = self.slot(layout.agent_id())?;
-            let mut slot = tokio::time::timeout_at(deadline, slot.lock())
+            let mut lease = tokio::time::timeout_at(deadline, slot.enter())
                 .await
-                .map_err(|_| unavailable("federation maintenance admission timed out"))?;
+                .map_err(|_| unavailable("federation maintenance admission timed out"))??;
+            let slot = &mut lease.state;
             let check = async {
                 let identity = DatabaseIdentity::observe(layout)?;
                 if slot.identity.as_ref() != Some(&identity) || slot.rejected || slot.peer.is_none()
                 {
-                    Self::reject(&mut slot).await;
+                    Self::reject(slot).await;
                     slot.identity = Some(identity.clone());
                     let peer = Self::open(layout, identity).await?;
                     slot.peer = Some(peer);
@@ -325,7 +378,7 @@ impl FederationPeerPools {
             match tokio::time::timeout_at(deadline, check).await {
                 Ok(Ok(())) => verified += 1,
                 result => {
-                    Self::reject(&mut slot).await;
+                    Self::reject(slot).await;
                     let error = match result {
                         Ok(Err(error)) => error,
                         Err(_) => unavailable("federation integrity maintenance timed out"),

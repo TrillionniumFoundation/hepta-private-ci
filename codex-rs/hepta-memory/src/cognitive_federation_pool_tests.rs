@@ -334,7 +334,7 @@ async fn maintenance_deadline_includes_waiting_for_a_busy_admission() {
     let temp = TempDir::new().expect("temp dir");
     let owner_layout = layout(&temp, &agent_id(79));
     let slot = pools.slot(owner_layout.agent_id()).expect("slot");
-    let _busy = slot.lock().await;
+    let _busy = slot.enter().await.expect("busy admission");
     let result = tokio::time::timeout(
         Duration::from_secs(1),
         pools.maintain(
@@ -360,4 +360,104 @@ fn residency_rejects_more_owners_without_allocating_more_slots() {
         pools.slots.lock().expect("slots").len(),
         super::MAX_RESIDENT_PEERS
     );
+}
+
+#[tokio::test]
+async fn cancelled_open_preserves_quarantine_until_maintenance() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner_layout = layout(&temp, &agent_id(80));
+    let _owner = CognitiveStore::open(&owner_layout).await.expect("owner");
+    let pools = FederationPeerPools::default();
+    let mut opening = Box::pin(pools.get(&owner_layout));
+    assert!(futures::poll!(&mut opening).is_pending());
+    drop(opening);
+
+    // The physical identity was observed, but its asynchronous integrity
+    // admission never completed. Cancellation must not roll back quarantine.
+    assert!(pools.get(&owner_layout).await.is_err());
+    assert_eq!(
+        pools
+            .maintain(std::slice::from_ref(&owner_layout), Duration::from_secs(10))
+            .await
+            .expect("readmit cancelled generation"),
+        1
+    );
+    pools.get(&owner_layout).await.expect("admitted peer");
+}
+
+#[tokio::test]
+async fn cancelled_retirement_preserves_tombstone_and_invalidates_old_reader() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner_layout = layout(&temp, &agent_id(81));
+    let _owner = CognitiveStore::open(&owner_layout).await.expect("owner");
+    let pools = FederationPeerPools::default();
+    let peer = pools.get(&owner_layout).await.expect("peer");
+    let connection = peer.owner.pool.acquire().await.expect("hold connection");
+    let mut retiring = Box::pin(pools.maintain(&[], Duration::from_secs(10)));
+    assert!(futures::poll!(&mut retiring).is_pending());
+    assert!(peer.owner.pool.is_closed());
+    drop(retiring);
+    drop(connection);
+
+    assert!(peer.validate().await.is_err());
+    assert!(pools.get(&owner_layout).await.is_err());
+    assert_eq!(
+        pools
+            .maintain(&[], Duration::from_secs(10))
+            .await
+            .expect("finish retirement"),
+        0
+    );
+    assert!(pools.slots.lock().expect("slots").is_empty());
+    let replacement = pools.get(&owner_layout).await.expect("new enrollment");
+    assert!(!Arc::ptr_eq(&peer, &replacement));
+}
+
+#[tokio::test]
+async fn timed_out_maintenance_quarantines_before_releasing_admission() {
+    let temp = TempDir::new().expect("temp dir");
+    let owner_layout = layout(&temp, &agent_id(82));
+    let _owner = CognitiveStore::open(&owner_layout).await.expect("owner");
+    let pools = FederationPeerPools::default();
+    let peer = pools.get(&owner_layout).await.expect("peer");
+    let connection = peer.owner.pool.acquire().await.expect("hold connection");
+    let layouts = [owner_layout.clone()];
+    let mut maintaining = Box::pin(pools.maintain(&layouts, Duration::from_millis(5)));
+    assert!(futures::poll!(&mut maintaining).is_pending());
+    tokio::time::sleep(Duration::from_millis(10)).await;
+    // The timeout cancels verification and starts closing the checked-out
+    // connection. Even cancellation of that close must retain quarantine.
+    assert!(futures::poll!(&mut maintaining).is_pending());
+    assert!(peer.owner.pool.is_closed());
+    drop(maintaining);
+    drop(connection);
+    assert!(peer.validate().await.is_err());
+    assert!(pools.get(&owner_layout).await.is_err());
+    pools
+        .maintain(&layouts, Duration::from_secs(10))
+        .await
+        .expect("explicit readmission");
+    assert!(!Arc::ptr_eq(
+        &peer,
+        &pools.get(&owner_layout).await.expect("replacement")
+    ));
+}
+
+#[tokio::test]
+async fn cancelled_waiter_does_not_consume_admission_or_restore_stale_state() {
+    let pools = FederationPeerPools::default();
+    let temp = TempDir::new().expect("temp dir");
+    let owner_layout = layout(&temp, &agent_id(83));
+    let slot = pools.slot(owner_layout.agent_id()).expect("slot");
+    let mut lease = slot.enter().await.expect("admission");
+    lease.state.retired = true;
+    let mut waiting = Box::pin(pools.get(&owner_layout));
+    assert!(futures::poll!(&mut waiting).is_pending());
+    drop(waiting);
+    drop(lease);
+    let next = tokio::time::timeout(Duration::from_secs(1), slot.enter())
+        .await
+        .expect("permit released")
+        .expect("next admission");
+    assert!(next.state.retired);
 }
