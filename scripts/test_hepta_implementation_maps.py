@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -1028,6 +1029,515 @@ const TEXT: &str = r##"} pub fn raw_decoy() {}"##;
         with self.assertRaises(ValueError):
             self.migrate()
         self.assertEqual(before, self.map_bytes())
+
+    def history_plan(self, *, exact=False, execution=None):
+        witness = "scripts/hepta-implementation-maps.py"
+        if not (self.root / witness).exists():
+            self.write(witness, Path(maps.__file__).read_text())
+            self.commit("retain the actual map verifier as an explicit witness")
+        donor = {
+            "commit": self.git(
+                "commit-tree",
+                self.anchor["tree"],
+                "-p",
+                self.anchor["commit"],
+                "-m",
+                "side branch donor",
+            ),
+            "tree": self.anchor["tree"],
+        }
+        row = self.rows["alpha"]
+        row["sourceBase"] = donor
+        row["sourceIdentityPolicy"] = "candidate_or_exact_observation_v1"
+        row["observedAtHead"] = copy.deepcopy(donor)
+        row["observedSourcePaths"] = ["src/alpha"]
+        row["sourceObjects"] = [
+            {"path": witness, "object": self.git("rev-parse", f"HEAD:{witness}")}
+        ]
+        if exact:
+            row["mappingSourceIdentityMode"] = "exact_blob"
+            row["operations"][0]["sourceBlob"] = self.git(
+                "rev-parse", "HEAD:src/alpha/lib.rs"
+            )
+        if execution is not None:
+            row["claimBoundary"]["requestLocalReadOnlyProductExecutionProved"] = (
+                execution
+            )
+        self.save_maps()
+        carrier = self.commit("carry historical declarations without merging donor")
+        with self.assertRaises(subprocess.CalledProcessError):
+            self.git("merge-base", "--is-ancestor", donor["commit"], "HEAD")
+        return {
+            "schema": "hepta.map-source-rebind-plan.v1",
+            "source": carrier,
+            "modules": [
+                {
+                    "module": "alpha",
+                    "carrier": carrier,
+                    "mapBlob": self.git(
+                        "rev-parse", "HEAD:docs/modules/alpha/IMPLEMENTATION_MAP.json"
+                    ),
+                    "pendingExecutionClaims": [],
+                }
+            ],
+        }
+
+    def rebind(self, plan, selected=None):
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "reviewed-plan.json"
+            path.write_text(json.dumps(plan))
+            with contextlib.redirect_stdout(io.StringIO()):
+                maps.rebind_current(
+                    str(path), ["alpha"] if selected is None else selected
+                )
+
+    def test_history_rebind_preserves_nonancestor_declaration_and_current_bytes(self):
+        plan = self.history_plan()
+        original = copy.deepcopy(self.rows["alpha"])
+        self.reject()
+        self.rebind(plan)
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        self.assertEqual(row["sourceBase"], plan["source"])
+        self.assertEqual(row["observedAtHead"], plan["source"])
+        self.assertEqual(
+            row["historicalSourceDeclarations"]["records"][0]["declaredSourceBase"],
+            original["sourceBase"],
+        )
+        self.assertIn(
+            "scripts/hepta-implementation-maps.py", row["observedSourcePaths"]
+        )
+        self.commit("explicitly separate historical declarations")
+        self.verify()
+        before = self.map_bytes()
+        self.assertEqual(self.migrate(["alpha"])["migrated"], 0)
+        self.assertEqual(before, self.map_bytes())
+
+    def test_history_policy_observation_includes_verifier_witness(self):
+        plan = self.history_plan()
+        self.rebind(plan)
+        self.commit("new policy map")
+        path = self.root / "scripts/hepta-implementation-maps.py"
+        path.write_text(path.read_text() + "\n# next real tool revision\n")
+        tool = self.commit("T changes the mapped verifier")
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        row["sourceObjects"] = maps.current_source_objects(row)
+        with self.assertRaises(maps.SourceDrift):
+            maps.verify_source_identity(row, row["resolvedRoots"], tool)
+        row["sourceBase"] = tool
+        row["observedAtHead"] = tool
+        maps.verify_source_identity(row, row["resolvedRoots"], tool)
+        row["observedSourcePaths"].remove("scripts/hepta-implementation-maps.py")
+        with self.assertRaisesRegex(ValueError, "complete current observation"):
+            maps.verify_source_identity(row, row["resolvedRoots"], tool)
+
+    def test_history_exact_blob_refresh_advances_both_current_anchors(self):
+        plan = self.history_plan(exact=True)
+        self.rebind(plan)
+        self.commit("upgrade exact blob policy")
+        before = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        self.write("src/alpha/lib.rs", "pub fn calculate() { let value = 3; }\n")
+        current = self.commit("later real implementation")
+        self.migrate(["alpha"])
+        after = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        self.assertEqual(after["sourceBase"], current)
+        self.assertEqual(after["observedAtHead"], current)
+        self.assertEqual(
+            after["historicalSourceDeclarations"],
+            before["historicalSourceDeclarations"],
+        )
+        self.commit("refresh current evidence only")
+        self.verify()
+
+    def test_original_execution_true_requires_reviewed_pending_transition(self):
+        plan = self.history_plan(execution=True)
+        before = self.map_bytes()
+        with self.assertRaisesRegex(ValueError, "original active execution"):
+            self.rebind(plan)
+        self.assertEqual(before, self.map_bytes())
+        field = "claimBoundary.requestLocalReadOnlyProductExecutionProved"
+        plan["modules"][0]["pendingExecutionClaims"] = [
+            {"field": field, "reason": "No current same-subject product receipt"}
+        ]
+        self.rebind(plan)
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        self.assertIs(
+            row["claimBoundary"]["requestLocalReadOnlyProductExecutionProved"], False
+        )
+        self.assertEqual(
+            row["pendingExecutionEvidence"][0]["state"], "pending_same_subject_receipt"
+        )
+        original = json.loads(
+            self.git(
+                "show",
+                f"{plan['modules'][0]['carrier']['commit']}:docs/modules/alpha/IMPLEMENTATION_MAP.json",
+            )
+        )
+        self.assertIs(
+            original["claimBoundary"]["requestLocalReadOnlyProductExecutionProved"],
+            True,
+        )
+        self.commit("explicit pending disposition preserves old execution declaration")
+        self.verify()
+
+    def test_preflipped_execution_input_cannot_bypass_original_blob_guard(self):
+        plan = self.history_plan(execution=True)
+        self.rows["alpha"]["claimBoundary"][
+            "requestLocalReadOnlyProductExecutionProved"
+        ] = False
+        self.change_maps()
+        plan["source"] = maps.current_source_base()
+        before = self.map_bytes()
+        with self.assertRaisesRegex(ValueError, "original carrier map blob"):
+            self.rebind(plan)
+        self.assertEqual(before, self.map_bytes())
+
+    def test_rebind_rejects_nonboolean_original_execution_claims(self):
+        for value in ("false", 1):
+            with self.subTest(value=value):
+                plan = self.history_plan(execution=value)
+                before = self.map_bytes()
+                with self.assertRaisesRegex(ValueError, "must be boolean"):
+                    self.rebind(plan)
+                self.assertEqual(before, self.map_bytes())
+
+    def test_history_rejects_substituted_carrier_blob_fields_and_versions(self):
+        plan = self.history_plan()
+        self.rebind(plan)
+        self.commit("retain valid upgraded map")
+        original = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        changes = [
+            lambda r: r["historicalSourceDeclarations"].update(schema="unknown"),
+            lambda r: r["historicalSourceDeclarations"].update(records=[]),
+            lambda r: r["historicalSourceDeclarations"]["records"].append(
+                copy.deepcopy(r["historicalSourceDeclarations"]["records"][0])
+            ),
+            lambda r: r["historicalSourceDeclarations"]["records"][0].update(
+                mapBlob="0" * 40
+            ),
+            lambda r: r["historicalSourceDeclarations"]["records"][0].update(
+                recordedAt=self.rows["alpha"]["sourceBase"]
+            ),
+            lambda r: r["historicalSourceDeclarations"]["records"][0].update(
+                declaredSourceBase=plan["source"]
+            ),
+            lambda r: r["historicalSourceDeclarations"]["records"][0].update(
+                declaredObservedAtHead=None
+            ),
+            lambda r: r["historicalSourceDeclarations"]["records"][0].pop(
+                "declaredObservedAtHead"
+            ),
+        ]
+        for index, change in enumerate(changes):
+            with self.subTest(change=index):
+                row = copy.deepcopy(original)
+                change(row)
+                self.write("docs/modules/alpha/IMPLEMENTATION_MAP.json", row)
+                self.commit("invalid historical evidence")
+                self.reject()
+
+    def test_legacy_verifier_policy_still_rejects_unknown_policy(self):
+        self.rows["alpha"]["sourceIdentityPolicy"] = (
+            "current_observation_with_declared_history_v999"
+        )
+        self.change_maps()
+        self.reject()
+
+    def test_rebind_does_not_read_historical_donor_objects(self):
+        plan = self.history_plan()
+        donor = self.rows["alpha"]["sourceBase"]["commit"]
+        with patch.object(maps, "git", wraps=maps.git) as git_calls:
+            self.rebind(plan)
+        self.assertTrue(git_calls.call_args_list)
+        self.assertFalse(
+            any(donor in str(call.args) for call in git_calls.call_args_list)
+        )
+
+    def test_rebind_validates_every_module_before_writing_any_map(self):
+        plan = self.history_plan()
+        plan["modules"].append(
+            {
+                "module": "beta",
+                "carrier": plan["source"],
+                "mapBlob": "0" * 40,
+                "pendingExecutionClaims": [],
+            }
+        )
+        before = self.map_bytes()
+        with self.assertRaisesRegex(ValueError, "original carrier map blob"):
+            self.rebind(plan, ["alpha", "beta"])
+        self.assertEqual(before, self.map_bytes())
+
+    def test_rebind_rejects_unknown_original_policy_without_repair(self):
+        plan = self.history_plan()
+        self.rows["alpha"]["sourceIdentityPolicy"] = "unknown"
+        self.change_maps()
+        plan["source"] = maps.current_source_base()
+        plan["modules"][0]["carrier"] = plan["source"]
+        plan["modules"][0]["mapBlob"] = self.git(
+            "rev-parse", "HEAD:docs/modules/alpha/IMPLEMENTATION_MAP.json"
+        )
+        before = self.map_bytes()
+        with self.assertRaisesRegex(ValueError, "unknown original source policy"):
+            self.rebind(plan)
+        self.assertEqual(before, self.map_bytes())
+
+    def test_rebind_rejects_duplicate_keys_in_committed_original_map(self):
+        plan = self.history_plan()
+        relative = "docs/modules/alpha/IMPLEMENTATION_MAP.json"
+        text = (self.root / relative).read_text()
+        self.write(
+            relative,
+            text.replace('"module": "alpha",', '"module": "alpha", "module": "alpha",'),
+        )
+        plan["source"] = self.commit("invalid duplicate-key carrier")
+        plan["modules"][0]["carrier"] = plan["source"]
+        plan["modules"][0]["mapBlob"] = self.git("rev-parse", f"HEAD:{relative}")
+        before = self.map_bytes()
+        with self.assertRaisesRegex(ValueError, "duplicate JSON key"):
+            self.rebind(plan)
+        self.assertEqual(before, self.map_bytes())
+
+    def test_new_policy_refresh_cannot_transfer_request_local_execution(self):
+        plan = self.history_plan()
+        self.rebind(plan)
+        self.commit("upgraded source declaration")
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        row["claimBoundary"]["requestLocalReadOnlyProductExecutionProved"] = True
+        self.write("docs/modules/alpha/IMPLEMENTATION_MAP.json", row)
+        self.commit("separate existing product execution declaration")
+        self.write("src/alpha/lib.rs", "pub fn calculate() { let changed = 4; }\n")
+        self.commit("later source must not inherit product execution")
+        before = self.map_bytes()
+        with self.assertRaises(ValueError):
+            self.migrate(["alpha"])
+        self.assertEqual(before, self.map_bytes())
+
+    def test_history_policy_cannot_drop_witness_from_both_current_inventories(self):
+        plan = self.history_plan()
+        self.rebind(plan)
+        self.commit("upgraded source declaration")
+        witness = "scripts/hepta-implementation-maps.py"
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        row["sourceObjects"] = [
+            entry for entry in row["sourceObjects"] if entry["path"] != witness
+        ]
+        row["observedSourcePaths"].remove(witness)
+        self.write("docs/modules/alpha/IMPLEMENTATION_MAP.json", row)
+        self.commit("remove witness from both self-reported inventories")
+        path = self.root / witness
+        path.write_text(
+            path.read_text() + "\n# changed verifier hidden from current row\n"
+        )
+        self.commit("change the erased witness")
+        self.reject()
+        before = self.map_bytes()
+        with self.assertRaises(ValueError):
+            self.migrate(["alpha"])
+        self.assertEqual(before, self.map_bytes())
+
+    def test_rebind_rejects_untracked_source_without_map_writes(self):
+        plan = self.history_plan()
+        self.write("src/alpha/untracked.rs", "pub fn hidden_source() {}\n")
+        before = self.map_bytes()
+        with self.assertRaisesRegex(ValueError, "uncommitted evidence"):
+            self.rebind(plan)
+        self.assertEqual(before, self.map_bytes())
+
+    def test_rebind_rejects_ignored_source_without_map_writes(self):
+        plan = self.history_plan()
+        self.write(".gitignore", "src/alpha/ignored.rs\n")
+        plan["source"] = self.commit("ignored-source negative fixture")
+        self.write("src/alpha/ignored.rs", "pub fn hidden_source() {}\n")
+        before = self.map_bytes()
+        with self.assertRaisesRegex(ValueError, "uncommitted evidence"):
+            self.rebind(plan)
+        self.assertEqual(before, self.map_bytes())
+
+    def profile_cli(self, *args):
+        output = io.StringIO()
+        with (
+            patch.object(sys, "argv", ["hepta-implementation-maps.py", *args]),
+            contextlib.redirect_stdout(output),
+            contextlib.redirect_stderr(io.StringIO()),
+        ):
+            maps.main()
+        return json.loads(output.getvalue())
+
+    def assert_navigation_only(self):
+        result = self.profile_cli("verify", "--profile", "development")
+        self.assertEqual(result["verificationProfile"], "development")
+        self.assertIs(result["historicalEvidenceRevalidated"], False)
+        self.assertIs(result["currentSourceIdentityRequired"], False)
+        self.assertIs(result["productionImplementationProved"], False)
+
+    def test_profile_cli_preserves_legacy_dirty_and_stale_navigation(self):
+        self.migrate(["alpha"])
+        self.commit("canonical legacy navigation")
+        self.write("src/alpha/lib.rs", "pub fn calculate() { let changed = 5; }\n")
+        self.assert_navigation_only()
+        with self.assertRaisesRegex(SystemExit, "dirty"):
+            self.profile_cli("verify")
+        self.commit("committed implementation remains stale evidence")
+        self.assert_navigation_only()
+        with self.assertRaisesRegex(SystemExit, "changed after source observation"):
+            self.profile_cli("verify", "--profile", "qualification")
+        with self.assertRaises(SystemExit) as error:
+            self.profile_cli(
+                "verify", "--profile", "development", "--require-current-source"
+            )
+        self.assertEqual(error.exception.code, 2)
+
+    def test_history_profile_subprocess_navigation_and_strict_default(self):
+        self.rebind(self.history_plan())
+        self.commit("upgraded subprocess profile fixture")
+        self.write("src/alpha/lib.rs", "pub fn calculate() { let changed = 7; }\n")
+        for state in ("dirty", "committed"):
+            if state == "committed":
+                self.commit("stale subprocess profile fixture")
+            for profile in ("development", "qualification"):
+                command = [
+                    sys.executable,
+                    str(self.root / "scripts/hepta-implementation-maps.py"),
+                    "verify",
+                ]
+                if profile == "development":
+                    command += ["--profile", profile]
+                result = subprocess.run(
+                    command,
+                    cwd=self.root,
+                    text=True,
+                    capture_output=True,
+                    env={**os.environ, "PYTHONPATH": str(SCRIPTS)},
+                )
+                with self.subTest(state=state, profile=profile):
+                    if profile == "qualification":
+                        self.assertNotEqual(result.returncode, 0)
+                        self.assertIn("FAIL_HEPTA_IMPLEMENTATION_MAPS", result.stderr)
+                    else:
+                        self.assertEqual(result.returncode, 0, result.stderr)
+                        report = json.loads(result.stdout)
+                        self.assertEqual(report["verificationProfile"], profile)
+                        self.assertIs(report["historicalEvidenceRevalidated"], False)
+                        self.assertIs(report["currentSourceIdentityRequired"], False)
+
+    def test_history_profile_cli_qualification_is_authoritative(self):
+        plan = self.history_plan()
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "plan.json"
+            path.write_text(json.dumps(plan))
+            result = self.profile_cli(
+                "rebind-current",
+                "--module",
+                "alpha",
+                "--plan",
+                str(path),
+                "--profile",
+                "qualification",
+            )
+        self.assertEqual(result["rebound"], 1)
+        self.commit("explicit profile CLI rebind")
+        result = self.profile_cli("verify")
+        self.assertEqual(result["verificationProfile"], "qualification")
+        self.assertIs(result["historicalEvidenceRevalidated"], True)
+        self.assertIs(result["currentSourceIdentityRequired"], True)
+        self.assertIs(result["productionImplementationProved"], False)
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        row["historicalSourceDeclarations"]["records"][0]["mapBlob"] = "0" * 40
+        self.write("docs/modules/alpha/IMPLEMENTATION_MAP.json", row)
+        self.commit("forged history never becomes authoritative navigation")
+        self.assert_navigation_only()
+        with self.assertRaisesRegex(SystemExit, "carrier map blob"):
+            self.profile_cli("verify")
+
+    def test_history_profile_qualification_rejects_same_tree_current_sibling(self):
+        self.rebind(self.history_plan())
+        current = self.commit("upgraded map")
+        sibling = {
+            "commit": self.git(
+                "commit-tree",
+                current["tree"],
+                "-p",
+                self.git("rev-parse", "HEAD^"),
+                "-m",
+                "same-tree sibling is not a current ancestor",
+            ),
+            "tree": current["tree"],
+        }
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        row["sourceBase"] = sibling
+        row["observedAtHead"] = sibling
+        self.write("docs/modules/alpha/IMPLEMENTATION_MAP.json", row)
+        self.commit("nonancestor current observation")
+        self.assert_navigation_only()
+        with self.assertRaisesRegex(SystemExit, "ancestor"):
+            self.profile_cli("verify", "--profile", "qualification")
+
+    def test_history_profile_qualification_preserves_carrier_witness_floor(self):
+        self.rebind(self.history_plan())
+        self.commit("upgraded map")
+        witness = "scripts/hepta-implementation-maps.py"
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        row["sourceObjects"] = [
+            entry for entry in row["sourceObjects"] if entry["path"] != witness
+        ]
+        row["observedSourcePaths"].remove(witness)
+        self.write("docs/modules/alpha/IMPLEMENTATION_MAP.json", row)
+        self.commit("double-delete the immutable witness")
+        self.assert_navigation_only()
+        with self.assertRaisesRegex(SystemExit, "historical carrier witnesses"):
+            self.profile_cli("verify", "--profile", "qualification")
+
+    def test_history_both_profiles_reject_malformed_objects_and_missing_coverage(self):
+        self.rebind(self.history_plan())
+        self.commit("upgraded map")
+        original = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        objects = original["sourceObjects"]
+        cases = [
+            [],
+            [{"path": "src/alpha", "object": 1}],
+            [{"path": "src/alpha", "object": "invalid"}],
+            [{"path": "src/alpha", "object": "0" * 40, "extra": True}],
+            objects + [objects[0]],
+            [entry for entry in objects if entry["path"] != "src/alpha/lib.rs"],
+        ]
+        for entries in cases:
+            row = copy.deepcopy(original)
+            row["sourceObjects"] = entries
+            self.write("docs/modules/alpha/IMPLEMENTATION_MAP.json", row)
+            self.commit("malformed or incomplete current object inventory")
+            for profile in ("development", "qualification"):
+                with self.subTest(entries=entries, profile=profile):
+                    with self.assertRaises(SystemExit):
+                        self.profile_cli("verify", "--profile", profile)
+
+    def test_rebind_cli_development_cannot_bypass_original_execution_guard(self):
+        plan = self.history_plan(execution=True)
+        before = self.map_bytes()
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / "plan.json"
+            path.write_text(json.dumps(plan))
+            args = ("rebind-current", "--module", "alpha", "--plan", str(path))
+            with self.assertRaisesRegex(ValueError, "original active execution"):
+                self.profile_cli(*args)
+            with self.assertRaises(SystemExit) as error:
+                self.profile_cli(*args, "--profile", "development")
+            self.assertEqual(error.exception.code, 2)
+        self.assertEqual(before, self.map_bytes())
+
+    def test_migrate_cli_development_cannot_bypass_execution_refresh_guard(self):
+        self.rebind(self.history_plan())
+        self.commit("upgraded map")
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        row["claimBoundary"]["requestLocalReadOnlyProductExecutionProved"] = True
+        self.write("docs/modules/alpha/IMPLEMENTATION_MAP.json", row)
+        self.commit("separate active execution declaration")
+        self.write("src/alpha/lib.rs", "pub fn calculate() { let changed = 6; }\n")
+        self.commit("source changes after execution declaration")
+        before = self.map_bytes()
+        for profile in ("development", "qualification"):
+            with self.subTest(profile=profile), self.assertRaises(ValueError):
+                self.profile_cli("migrate", "--module", "alpha", "--profile", profile)
+            self.assertEqual(before, self.map_bytes())
 
 
 if __name__ == "__main__":

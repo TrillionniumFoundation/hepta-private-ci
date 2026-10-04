@@ -16,6 +16,37 @@ SPEC.loader.exec_module(MODULE)
 
 
 class LaneBTruthTests(unittest.TestCase):
+    def test_new_history_policy_delegates_current_and_history_checks(self) -> None:
+        from test_hepta_implementation_maps import SourceIdentityTests
+        from test_hepta_implementation_maps import maps
+
+        fixture = SourceIdentityTests()
+        fixture.setUp()
+        self.addCleanup(fixture.doCleanups)
+        plan = fixture.history_plan()
+        fixture.rebind(plan)
+        fixture.commit("explicit history policy")
+        row = maps.load("docs/modules/alpha/IMPLEMENTATION_MAP.json")
+        with mock.patch.object(MODULE, "ROOT", fixture.root):
+            self.assertEqual(
+                MODULE.verify_module_source_base(row, "alpha"),
+                (plan["source"]["commit"], plan["source"]["tree"]),
+            )
+            row["historicalSourceDeclarations"]["records"][0]["mapBlob"] = "0" * 40
+            with self.assertRaisesRegex(
+                MODULE.Invalid, "canonical source identity.*map blob mismatch"
+            ):
+                MODULE.verify_module_source_base(row, "alpha")
+
+    def test_unknown_source_policy_keeps_existing_rejection(self) -> None:
+        with self.assertRaisesRegex(MODULE.Invalid, "source identity policy"):
+            MODULE.verify_module_source_base(
+                {
+                    "sourceIdentityPolicy": "current_observation_with_declared_history_v999"
+                },
+                "alpha",
+            )
+
     def test_duplicate_json_keys_fail(self) -> None:
         with self.assertRaises(MODULE.Invalid):
             json.loads('{"a":1,"a":2}', object_pairs_hook=MODULE.pairs)
