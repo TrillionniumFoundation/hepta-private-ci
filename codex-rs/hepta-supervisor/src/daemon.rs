@@ -3,7 +3,6 @@ use std::collections::BTreeSet;
 use std::io::ErrorKind;
 #[cfg(unix)]
 use std::path::Path;
-#[cfg(unix)]
 use std::path::PathBuf;
 #[cfg(unix)]
 use std::sync::Arc;
