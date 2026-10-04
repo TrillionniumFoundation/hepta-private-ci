@@ -4,10 +4,9 @@ use std::fs;
 use std::path::Path;
 use std::time::Duration;
 
+use codex_state::SqliteConfig;
 use sqlx::Row;
 use sqlx::SqlitePool;
-use sqlx::sqlite::SqliteConnectOptions;
-use sqlx::sqlite::SqlitePoolOptions;
 use sqlx::sqlite::SqliteRow;
 
 use crate::DurableFleetError;
@@ -51,16 +50,13 @@ pub struct FleetExecutionVerifier {
 impl FleetExecutionVerifier {
     pub async fn open(database: &Path) -> Result<Self, DurableFleetError> {
         validate_database(database)?;
-        let options = SqliteConnectOptions::new()
-            .filename(database)
-            .create_if_missing(false)
-            .read_only(true)
-            .busy_timeout(Duration::from_secs(1));
-        let pool = SqlitePoolOptions::new()
-            .max_connections(2)
-            .connect_with(options)
-            .await
-            .map_err(sqlx_error)?;
+        let pool = SqliteConfig::open_owner_read_only_pool(
+            database,
+            /*max_connections*/ 2,
+            Duration::from_secs(1),
+        )
+        .await
+        .map_err(sqlx_error)?;
         Ok(Self { pool })
     }
 
