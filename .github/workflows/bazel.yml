@@ -5,6 +5,11 @@ name: Bazel
 
 on:
   workflow_call:
+    inputs:
+      qualify_native_windows:
+        description: Run the existing native Windows suite for explicit toolchain qualification
+        type: boolean
+        default: false
   workflow_dispatch:
 
 permissions:
@@ -265,9 +270,9 @@ jobs:
 
   test-windows-native-main:
     # Native Windows Bazel tests are slower and frequently approach the
-    # 30-minute PR budget. Run this only for post-merge commits to main and give
-    # it a larger timeout.
-    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    # 30-minute PR budget. Keep the post-merge default, while allowing an
+    # explicit toolchain qualification to reuse the same complete suite.
+    if: (github.event_name == 'push' && github.ref == 'refs/heads/main') || inputs.qualify_native_windows
     timeout-minutes: 40
     runs-on: windows-latest
     name: Bazel test on windows-latest for x86_64-pc-windows-msvc (native main)

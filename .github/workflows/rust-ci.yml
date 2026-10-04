@@ -88,7 +88,9 @@ jobs:
       - name: Check local manifest graph before installing native prerequisites
         id: manifest-preflight
         run: python3 scripts/hepta_workspace.py
-      - uses: dtolnay/rust-toolchain@ebb3d1676050bfd0971c36c1e215b5751473994d # 1.96.0
+      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # Explicit toolchain input
+        with:
+          toolchain: "1.99.0"
       - name: Validate Cargo metadata for the actual checkout
         id: metadata
         working-directory: codex-rs
@@ -117,8 +119,9 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@ebb3d1676050bfd0971c36c1e215b5751473994d # 1.96.0
+      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # Explicit toolchain input
         with:
+          toolchain: "1.99.0"
           components: rustfmt
       - name: cargo fmt
         id: formatting
@@ -142,7 +145,9 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@ebb3d1676050bfd0971c36c1e215b5751473994d # 1.96.0
+      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # Explicit toolchain input
+        with:
+          toolchain: "1.99.0"
       - name: Rust benchmark smoke test
         id: benchmark-smoke
         run: just bench-smoke
@@ -164,7 +169,9 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@ebb3d1676050bfd0971c36c1e215b5751473994d # 1.96.0
+      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # Explicit toolchain input
+        with:
+          toolchain: "1.99.0"
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
           tool: cargo-shear@1.11.2
@@ -191,7 +198,9 @@ jobs:
         with:
           persist-credentials: false
       - uses: ./.github/actions/setup-ci
-      - uses: dtolnay/rust-toolchain@ebb3d1676050bfd0971c36c1e215b5751473994d # 1.96.0
+      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # Explicit toolchain input
+        with:
+          toolchain: "1.99.0"
       - name: Install nightly argument-comment-lint toolchain
         shell: bash
         run: |

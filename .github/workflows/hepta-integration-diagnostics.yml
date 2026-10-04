@@ -58,7 +58,9 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_workspace.py 2>&1 | tee "$RUNNER_TEMP/hepta-source-preflight/workspace-preflight.log"
-      - uses: dtolnay/rust-toolchain@ebb3d1676050bfd0971c36c1e215b5751473994d
+      - uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # Explicit toolchain input
+        with:
+          toolchain: "1.99.0"
         if: ${{ !cancelled() && steps.manifest.outcome == 'success' }}
       - name: Resolve the exact checkout without updating the lockfile
         id: metadata

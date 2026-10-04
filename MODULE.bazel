@@ -296,7 +296,7 @@ toolchains.toolchain(
         "aarch64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
         "x86_64-pc-windows-msvc": ["-Ctarget-feature=+crt-static"],
     },
-    version = "1.96.0",
+    version = "1.99.0",
 )
 use_repo(toolchains, "default_rust_toolchains")
 
