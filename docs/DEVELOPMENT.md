@@ -29,7 +29,7 @@ immutable authority, truth, privacy and durability kernel
 
 Completion requires one integrated source tree, current exact-candidate evidence for every applicable package, independent decisions in their designated lanes, and separate promotion/release. Normal merge commits preserve reviewed branch history; linear ancestry is not a capability requirement. Until the corresponding executable and empirical conditions hold, `all_gaps_closed=false`, `closedLoopLearning=false`, `longitudinalEfficacy=false`, `functionalBiomimicry=false`, and `selfIteration=false`.
 
-Ordinary development follows the repository owner's authorized scope. A reviewed
+Ordinary development follows the repository owner's authorized scope. A tested
 PR may integrate multiple lanes through small ordered commits, with one owner for
 each changed durable domain. Git records source/tree/parents, CI derives the
 candidate identity from the actual event, and the PR records changes, tests and
@@ -47,7 +47,7 @@ The document verifier reports changed shared-path lease requests without
 self-attesting them. Protected-branch status checks remain required for
 integration; the repository owner selects whether reviewer approval is required.
 Administrator enforcement and comment resolution are also owner-selected.
-The supplied main ruleset permits administrators to merge reviewed PR contents
+The supplied main ruleset permits administrators to merge tested PR contents
 without creating a direct-push bypass; ordinary required checks remain pinned
 to their real publisher. These repository settings do not authorize a workload
 effect or replace independent runtime evaluation.
@@ -68,7 +68,7 @@ it does not use a global checklist as a proxy for evidence.
 Ordinary authorized development has no hard changed-path quota. Work packages
 are bounded by semantic scope, ownership, authority change, durable-domain
 impact and required tests. A coherent cross-owner change may be reviewed in one
-PR with explicit co-owners; it must not be split into source and documentation
+PR with explicit owners; it must not be split into source and documentation
 PRs merely to satisfy a file-count budget. Resource-budget metadata may guide
 planning, but it is not a merge gate unless an autonomous candidate-execution
 profile explicitly declares and enforces that bound.
@@ -614,7 +614,7 @@ Every package declares exact paths, predecessors, exit criteria, stop conditions
 - Materialize this complete V8 set as one commit on the observed default baseline.
 - Remove at least the 139 known historical development paths and every additional forbidden legacy path.
 - Run exact-head and merge-candidate document gates.
-- Obtain independent review and select only V8 into the default branch.
+- Select the checked V8 source into the default branch under the repository owner's merge policy.
 - Restack active implementation candidates without reintroducing deleted development documents.
 
 ### P1 — authority and modular foundation
@@ -724,9 +724,13 @@ promotion != release
 
 ## 23. Immediate queue
 
-1. Qualify `DOC-3E-PRECODING-READINESS-CLOSED-WORLD` through the dedicated and global exact-source and synthetic-merge jobs, then obtain independent semantic review.
-2. Resolve the current canonical source and target branch only from fresh receipts; do not reuse a cached pull-request number or historical branch relationship.
-3. Begin `LANE-A-FOUNDATION`, `LANE-C-MEMORY` and `LANE-G-ENGINEERING` contract-first packages against frozen readiness and contract digests.
+The original V8 convergence and lane sequence above is retained design history,
+not a prerequisite to each implementation change. Use the current module guide,
+owned source and executable behavior to choose the next work:
+
+1. Implement or fix the applicable module contract and its real callers; run the affected owner and consumer checks. New source work does not require another document-convergence dossier or independent human review unless the repository owner enables that review policy.
+2. Resolve the current source and target from Git and the current PR/CI event. Retain actual command results for the changed behavior rather than copying historical receipt identities.
+3. Exercise normal module installation, addition, replacement, retirement and recovery through the existing runtime owners. Preserve durable state, predecessor identity and one-writer handoff while checking the resources actually affected.
 4. Close AuthBus semantic review, Browser identity reconciliation, dependency inversion, runtime bootstrap, B4 call-site proof and common fault/resource gates.
 5. Materialize Objective, deterministic NDU, episode ledger, artifact registry, PromptFactor registry and the first read-only vertical slice.
 6. Add Bellman, Neuron, Intuition and prompt optimization only in shadow mode after immutable stores and independent evaluation exist.
