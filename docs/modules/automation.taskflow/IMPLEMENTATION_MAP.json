@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "e84d50089ae036cbe5c8541809c624db1577fc40",
+    "tree": "28f894d3fbf4eed6b6446f946c81fdf451180d87"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -231,10 +231,10 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
-    "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+    "commit": "e84d50089ae036cbe5c8541809c624db1577fc40",
+    "tree": "28f894d3fbf4eed6b6446f946c81fdf451180d87"
   },
-  "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
+  "sourceIdentityPolicy": "current_observation_with_declared_history_v2",
   "exactSourceEvidence": {
     "kind": "path_blob_manifest_v1",
     "entries": [
@@ -265,6 +265,7 @@
     "codex-rs/hepta-agent-protocol",
     "codex-rs/hepta-agentd/src/automation.rs",
     "codex-rs/hepta-agentd/src/automation_recovery.rs",
+    "codex-rs/hepta-agentd/src/automation_service.rs",
     "codex-rs/hepta-agentd/src/client.rs",
     "codex-rs/hepta-agentd/src/lib.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
@@ -272,15 +273,26 @@
     "codex-rs/hepta-agentd/src/state_control.rs",
     "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
     "codex-rs/hepta-automation",
+    "codex-rs/hepta-automation/src/authorized_effect.rs",
+    "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+    "codex-rs/hepta-automation/src/lifecycle.rs",
+    "codex-rs/hepta-automation/src/schedule_v2.rs",
+    "codex-rs/hepta-automation/src/scheduler.rs",
+    "codex-rs/hepta-automation/src/store.rs",
+    "codex-rs/hepta-automation/src/taskflow_step.rs",
+    "codex-rs/hepta-automation/tests/authorized_effect.rs",
+    "codex-rs/hepta-automation/tests/automation.rs",
+    "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
     "codex-rs/hepta-contracts",
     "codex-rs/hepta-operations",
-    "codex-rs/hepta-types"
+    "codex-rs/hepta-types",
+    "docs/modules/automation.taskflow/TECHNICAL.md"
   ],
   "repositoryControlledProductCompositionGaps": [
     "Async final-use/provider-effect bridge is source-composed, including exact wire-payload binding and durable provider-key recovery identity. Independently provisioned authority/provider configuration, deployed product selection and acceptance remain separately qualified."
   ],
   "sourceObservationRequirements": {
-    "policy": "candidate_or_exact_observation_v1",
+    "policy": "current_observation_with_declared_history_v2",
     "rustWorkspaceBuildInputs": [
       "codex-rs/Cargo.toml",
       "codex-rs/Cargo.lock"
@@ -303,12 +315,60 @@
   ],
   "sourceObjects": [
     {
+      "path": "CALLERS.toml",
+      "object": "d8765708985a90aa4162e5e8f529230311b537c0"
+    },
+    {
+      "path": "codex-rs/Cargo.lock",
+      "object": "dce22215a61f8b61fab329e151a87e20b11fecfe"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"
+    },
+    {
+      "path": "codex-rs/app-server-protocol/src/protocol/v2/thread.rs",
+      "object": "61ea73a23c2f3ccbdde2dabb31e088eadea9eb76"
+    },
+    {
+      "path": "codex-rs/app-server/src/request_processors/thread_processor.rs",
+      "object": "6126faf53271e6108c96394b0217bc763213cf86"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol",
+      "object": "52e52dd45d1b8aa18029a2e9b35181829c9f090f"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/automation.rs",
       "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
     },
     {
+      "path": "codex-rs/hepta-agentd/src/automation_recovery.rs",
+      "object": "53f701a10a2395590784627a60e86922e2ff4567"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/automation_service.rs",
       "object": "2232cca24396190e924e73e032b713bcbfd49ddd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/client.rs",
+      "object": "cbafcfb553ee8d7a2699878e12c7eda5f91a4a95"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lib.rs",
+      "object": "c075e561eaa96820706ad98d20972eb5fd924b06"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "b3d9131f5b07c7f3d1f61c82657512985e7033ad"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
+      "object": "463a1b756b43acc92dbbbe0ce05252ae19d3383b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
@@ -359,8 +419,40 @@
       "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
     },
     {
+      "path": "codex-rs/hepta-contracts",
+      "object": "ed5cc643157e33a323693954aab0cdc784be19ec"
+    },
+    {
+      "path": "codex-rs/hepta-operations",
+      "object": "f2f597706563995f4573888f40ee351235664caf"
+    },
+    {
+      "path": "codex-rs/hepta-types",
+      "object": "ee71d3c1aa9bceae6bab9f304fc75e115dc49297"
+    },
+    {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
       "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
     }
-  ]
+  ],
+  "historicalSourceDeclarations": {
+    "schema": "hepta.map-historical-source-declarations.v1",
+    "records": [
+      {
+        "recordedAt": {
+          "commit": "0fd98756b8b9748d8347d9bd8c096bbecda42007",
+          "tree": "61b7dfd74cf225cdc5b66fba9c42beeea539e398"
+        },
+        "mapBlob": "61ef1337b8d195196b6f4f59893826e707959e45",
+        "declaredSourceBase": {
+          "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+          "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+        },
+        "declaredObservedAtHead": {
+          "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+          "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+        }
+      }
+    ]
+  }
 }

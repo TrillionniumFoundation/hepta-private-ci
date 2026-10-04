@@ -528,7 +528,7 @@
     "independentAcceptance": false,
     "activation": false,
     "release": false,
-    "requestLocalReadOnlyProductExecutionProved": true,
+    "requestLocalReadOnlyProductExecutionProved": false,
     "authenticatedOwnerSourceImplemented": true,
     "authenticatedProductionProductExecutionProved": false,
     "productionWriterSourceImplemented": true,
@@ -540,8 +540,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
-    "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+    "commit": "e84d50089ae036cbe5c8541809c624db1577fc40",
+    "tree": "28f894d3fbf4eed6b6446f946c81fdf451180d87"
   },
   "repositoryControlledGaps": [
     "Run the exact-current-head and deterministic synthetic-merge NDU workflow after the final documentation/source commit; workflow definitions and earlier heads are not receipts.",
@@ -589,7 +589,12 @@
     "branch": "fix/ndu-current-main-convergence-20260920",
     "scope": "current-main NDU correctness, bounded preference invariants, real persistence fault cuts, authenticated owner/frozen policy, stochastic provenance/current-artifact chain, signed independent learning.eval decisions and named-host qualification runner",
     "exactHeadQualification": "pending_current_candidate_workflows",
-    "namedHostQualification": "pending_current_candidate_receipts"
+    "namedHostQualification": "pending_current_candidate_receipts",
+    "provenanceRole": "Retained historical implementation context: baselineMainCommit, implementationCommit, branch and scope describe the earlier implementation and are not current-source or execution identities. Current source identity is sourceBase/observedAtHead; current execution and target-host qualifications remain pending.",
+    "currentObservation": {
+      "commit": "e84d50089ae036cbe5c8541809c624db1577fc40",
+      "tree": "28f894d3fbf4eed6b6446f946c81fdf451180d87"
+    }
   },
   "productCallers": [
     {
@@ -600,6 +605,14 @@
   ],
   "sourceObjects": [
     {
+      "path": "codex-rs/Cargo.lock",
+      "object": "dce22215a61f8b61fab329e151a87e20b11fecfe"
+    },
+    {
+      "path": "codex-rs/Cargo.toml",
+      "object": "3bad9efdcb5ed9a5e4590a280bd1aba8058c021a"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/intelligence_product.rs",
       "object": "1781996175ec7f16f44b9f58ac3e2c2bd41358af"
     },
@@ -609,7 +622,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu",
-      "object": "377667b8c58a9c6eb43967e6ed2627a7698ffdaa"
+      "object": "2ca017c64354b0a439ad82dbbf2f3da130ee68ee"
     },
     {
       "path": "codex-rs/hepta-ndu/src/coefficient_profile.rs",
@@ -633,7 +646,7 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/evaluator_tests.rs",
-      "object": "645d13e169f5ad849aa8dc7d83213bb888ebd0cb"
+      "object": "b86cdeefff22e19675cfd8357cff7f218b9b814c"
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner.rs",
@@ -641,15 +654,15 @@
     },
     {
       "path": "codex-rs/hepta-ndu/src/owner_tests.rs",
-      "object": "776d6aa24763b35de925be2670586798156803f2"
+      "object": "99f12bc6381f87296fa1f96e57f68ffe512e0ca9"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference.rs",
-      "object": "e26a97ba4b9063bc85e5daa491a917b7fcc608b2"
+      "object": "50da9fe3413f6e43430c7754a196d4f0ef16d17b"
     },
     {
       "path": "codex-rs/hepta-ndu/src/preference_tests.rs",
-      "object": "b8ea26756281b80957cbfd2ede9d41b098493a22"
+      "object": "652be12b1064c00cebd96b719f4a7de5e6502325"
     },
     {
       "path": "codex-rs/hepta-ndu/src/projection_journal.rs",
@@ -687,5 +700,59 @@
       "path": "docs/modules/utility.ndu/TECHNICAL.md",
       "object": "ad0623f414e9ef4e53a5f431b9fe4a0625c09001"
     }
+  ],
+  "historicalSourceDeclarations": {
+    "schema": "hepta.map-historical-source-declarations.v1",
+    "records": [
+      {
+        "recordedAt": {
+          "commit": "0fd98756b8b9748d8347d9bd8c096bbecda42007",
+          "tree": "61b7dfd74cf225cdc5b66fba9c42beeea539e398"
+        },
+        "mapBlob": "80caa5e298a10bef2a16e2ae42b52a69dd7133c4",
+        "declaredSourceBase": {
+          "commit": "22cd31ebf4f36e4e6e1582b768fc8c847040acdb",
+          "tree": "7d41af3e5925fdd213e27ce8f8cefb03a8ffcc08"
+        }
+      }
+    ]
+  },
+  "sourceIdentityPolicy": "current_observation_with_declared_history_v2",
+  "observedAtHead": {
+    "commit": "e84d50089ae036cbe5c8541809c624db1577fc40",
+    "tree": "28f894d3fbf4eed6b6446f946c81fdf451180d87"
+  },
+  "pendingExecutionEvidence": [
+    {
+      "field": "claimBoundary.requestLocalReadOnlyProductExecutionProved",
+      "state": "pending_same_subject_receipt",
+      "reason": "Current applicability is pending an exact-subject request-local read-only product execution receipt for source e84d50089ae036cbe5c8541809c624db1577fc40, tree 28f894d3fbf4eed6b6446f946c81fdf451180d87. The historical map 80caa5e298a10bef2a16e2ae42b52a69dd7133c4 retains the original true claim; the current source rebind and component tests do not establish that product execution. Existing caller and source-capability states are unchanged."
+    }
+  ],
+  "observedSourcePaths": [
+    "codex-rs/Cargo.lock",
+    "codex-rs/Cargo.toml",
+    "codex-rs/hepta-agentd/src/intelligence_product.rs",
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "codex-rs/hepta-ndu",
+    "codex-rs/hepta-ndu/src/coefficient_profile.rs",
+    "codex-rs/hepta-ndu/src/coefficient_profile_tests.rs",
+    "codex-rs/hepta-ndu/src/covariance.rs",
+    "codex-rs/hepta-ndu/src/covariance_tests.rs",
+    "codex-rs/hepta-ndu/src/evaluator.rs",
+    "codex-rs/hepta-ndu/src/evaluator_tests.rs",
+    "codex-rs/hepta-ndu/src/owner.rs",
+    "codex-rs/hepta-ndu/src/owner_tests.rs",
+    "codex-rs/hepta-ndu/src/preference.rs",
+    "codex-rs/hepta-ndu/src/preference_tests.rs",
+    "codex-rs/hepta-ndu/src/projection_journal.rs",
+    "codex-rs/hepta-ndu/src/projection_journal_tests.rs",
+    "codex-rs/hepta-ndu/src/projection_store.rs",
+    "codex-rs/hepta-ndu/src/projection_store_tests.rs",
+    "codex-rs/hepta-ndu/src/protocol.rs",
+    "codex-rs/hepta-ndu/src/protocol_tests.rs",
+    "codex-rs/hepta-ndu/src/z_conversion.rs",
+    "codex-rs/hepta-ndu/src/z_conversion_tests.rs",
+    "docs/modules/utility.ndu/TECHNICAL.md"
   ]
 }
