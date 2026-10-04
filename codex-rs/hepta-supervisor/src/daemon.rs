@@ -150,7 +150,7 @@ pub(crate) mod observer;
 #[cfg(unix)]
 #[path = "daemon_owner.rs"]
 pub(crate) mod owner;
-#[cfg(unix)]
+#[cfg(any(unix, test))]
 #[path = "daemon_read_view.rs"]
 mod read_view;
 #[cfg(unix)]
@@ -1842,6 +1842,34 @@ mod tests {
         .expect("derive status")
         .control_fence
         .state_digest
+    }
+
+    #[test]
+    fn observation_unavailable_preserves_pre_admission_and_indeterminate_rejections() {
+        assert_eq!(
+            safe_rejection(
+                SupervisorError::ObservationUnavailable,
+                /*actual*/ None,
+                /*mutation_started*/ false,
+            ),
+            error_payload(
+                "control_state_unavailable",
+                crate::daemon_protocol::OBSERVATION_UNAVAILABLE_MESSAGE,
+                /*actual*/ None,
+            )
+        );
+        assert_eq!(
+            safe_rejection(
+                SupervisorError::ObservationUnavailable,
+                /*actual*/ None,
+                /*mutation_started*/ true,
+            ),
+            error_payload(
+                "operation_indeterminate",
+                "operation outcome is indeterminate; refresh before retry",
+                /*actual*/ None,
+            )
+        );
     }
 
     #[test]

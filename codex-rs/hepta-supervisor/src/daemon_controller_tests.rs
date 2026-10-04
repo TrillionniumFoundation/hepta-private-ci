@@ -2,6 +2,15 @@ use anyhow::Result;
 
 use super::*;
 
+#[tokio::test]
+async fn parentless_controller_path_is_rejected_before_socket_preparation() {
+    assert!(matches!(
+        prepare_socket(Path::new("/")).await,
+        Err(SupervisorError::Invalid(message))
+            if message == "supervisord socket has no parent directory"
+    ));
+}
+
 #[test]
 fn controller_wire_excludes_administrator_mutations() -> Result<()> {
     for kind in [

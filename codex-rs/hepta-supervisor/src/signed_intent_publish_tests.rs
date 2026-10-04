@@ -60,11 +60,17 @@ fn windows_locked_destination_rejects_then_write_through_replacement_succeeds() 
 
 #[cfg(windows)]
 #[test]
-fn windows_rejects_interior_nul_before_calling_the_os() {
+fn windows_rejects_interior_nul_without_replacing_the_destination() -> io::Result<()> {
+    let temporary = tempfile::tempdir()?;
+    let staging = temporary.path().join("intent\0suffix");
+    let destination = temporary.path().join("intent");
+    std::fs::write(&destination, b"old intent")?;
     assert_eq!(
-        wide_path(Path::new("intent\0suffix"))
+        publish(&staging, &destination)
             .err()
             .map(|error| error.kind()),
         Some(io::ErrorKind::InvalidInput)
     );
+    assert_eq!(std::fs::read(&destination)?, b"old intent");
+    Ok(())
 }

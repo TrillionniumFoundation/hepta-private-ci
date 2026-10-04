@@ -26,7 +26,9 @@ impl ControllerServer {
     ) -> Result<Self, SupervisorError> {
         prepare_socket(&socket_path).await?;
         let listener = PeerListener::bind(&socket_path)?;
-        let parent = socket_path.parent().expect("prepared controller parent");
+        let parent = socket_path.parent().ok_or_else(|| {
+            SupervisorError::Invalid("supervisord socket has no parent directory".to_string())
+        })?;
         let principal = gate.principal();
         for path in [parent, socket_path.as_path()] {
             let path = std::ffi::CString::new(path.as_os_str().as_encoded_bytes())
