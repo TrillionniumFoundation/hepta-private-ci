@@ -23,12 +23,75 @@ pub struct ParameterInputContextProjectionV2<'a> {
     pub expires_at_unix_ms: u64,
 }
 
-/// Emit bounded whole context bytes using the original descriptor types. The
-/// caller must publish an immutable protected Source; these bytes grant no
-/// authority and cannot replace the loader's held Ledger/Neuron/CURRENT checks.
+/// Explicit dataset purpose; the signed Window is the independent E output,
+/// while facts retain the first original held-owner observation unchanged.
+pub enum ParameterInputContextDatasetV3<'a> {
+    OriginalV2(&'a crate::PreparedParameterDatasetV1),
+    WindowV3 {
+        facts: &'a crate::PreparedParameterDatasetWindowV3,
+        plan: &'a codex_hepta_agent_components::learning_ledger::DatasetWindowFreezePlanV3,
+        window: &'a codex_hepta_agent_components::learning_ledger::DatasetWindowSnapshotReceiptV3,
+        evaluator: &'a codex_hepta_agent_components::learning_ledger::SignedLearningEvidenceV1,
+    },
+}
+/// Complete original Source pairs for an explicit frozen numerical-read purpose.
+pub struct ParameterInputContextFrozenNeuronV3<'a> {
+    pub checkpoint_response: (&'a Path, Digest32),
+    pub goal_material: (&'a Path, Digest32),
+}
+/// Complete independently observed inputs; training and Serving domains stay
+/// separate and all Sources are authenticated again by the original loader.
+pub struct ParameterInputContextProjectionV3<'a> {
+    pub subject: &'a StableId,
+    pub spawn_generation: u64,
+    pub round: &'a crate::AgentdSelfIterationRoundV1,
+    pub baseline_artifact: &'a StableId,
+    pub baseline_material: &'a NeuronGenerationMaterialV2,
+    pub baseline_material_source: (&'a Path, Digest32),
+    pub artifact_snapshot_source: &'a Path,
+    pub artifact_snapshot_receipt: RegistrySnapshotReceipt,
+    pub dataset: ParameterInputContextDatasetV3<'a>,
+    pub frozen_neuron: Option<ParameterInputContextFrozenNeuronV3<'a>>,
+    pub ndu_journal_source: (&'a Path, Digest32),
+    pub neuron_material: &'a NeuronGenerationMaterialV2,
+    pub neuron_anchor: JournalAnchor,
+    pub observed_at_unix_ms: u64,
+    pub expires_at_unix_ms: u64,
+}
+
+/// Preserve the original V2 inputs and bytes through the same projection body.
 pub fn project_parameter_input_context_v2(
     template_bytes: &[u8],
     inputs: &ParameterInputContextProjectionV2<'_>,
+) -> Result<Vec<u8>, AgentdError> {
+    project_parameter_input_context_v3(
+        template_bytes,
+        &ParameterInputContextProjectionV3 {
+            subject: inputs.subject,
+            spawn_generation: inputs.spawn_generation,
+            round: inputs.round,
+            baseline_artifact: inputs.baseline_artifact,
+            baseline_material: inputs.baseline_material,
+            baseline_material_source: inputs.baseline_material_source,
+            artifact_snapshot_source: inputs.artifact_snapshot_source,
+            artifact_snapshot_receipt: inputs.artifact_snapshot_receipt,
+            dataset: ParameterInputContextDatasetV3::OriginalV2(inputs.dataset),
+            frozen_neuron: None,
+            ndu_journal_source: inputs.ndu_journal_source,
+            neuron_material: inputs.neuron_material,
+            neuron_anchor: inputs.neuron_anchor,
+            observed_at_unix_ms: inputs.observed_at_unix_ms,
+            expires_at_unix_ms: inputs.expires_at_unix_ms,
+        },
+    )
+}
+
+/// Emit bounded whole context bytes using the original descriptor types. The
+/// caller must publish an immutable protected Source; these bytes grant no
+/// authority and cannot replace the loader's held Ledger/Neuron/CURRENT checks.
+pub fn project_parameter_input_context_v3(
+    template_bytes: &[u8],
+    inputs: &ParameterInputContextProjectionV3<'_>,
 ) -> Result<Vec<u8>, AgentdError> {
     if template_bytes.is_empty() || template_bytes.len() as u64 > MAX_DESCRIPTOR_BYTES {
         return invalid("whole plasticity context template byte bound");
@@ -37,30 +100,8 @@ pub fn project_parameter_input_context_v2(
     let material = inputs.baseline_material;
     let material_bytes = encode_neuron_generation_material_v2(material)
         .map_err(|e| AgentdError::Invalid(format!("full context baseline: {e}")))?;
-    // Canonical whole comparison permits only the original Goal projection's
-    // scope and three store paths. Runtime/native/body and every context limit
-    // remain identical, rather than comparing a handful of digest handles.
     let goal = inputs.neuron_material;
-    let mut neutral_goal = goal.clone();
-    neutral_goal.scope = material.scope;
-    neutral_goal.store_context.scope = material.scope;
-    neutral_goal.index_context.scope = material.scope;
-    neutral_goal.witness_context.scope = material.scope;
-    neutral_goal
-        .generation_store
-        .clone_from(&material.generation_store);
-    neutral_goal
-        .runtime_index
-        .clone_from(&material.runtime_index);
-    neutral_goal.witness.clone_from(&material.witness);
-    encode_neuron_generation_material_v2(goal)
-        .map_err(|e| AgentdError::Invalid(format!("whole actual Goal material: {e}")))?;
-    if encode_neuron_generation_material_v2(&neutral_goal)
-        .map_err(|e| AgentdError::Invalid(e.to_string()))?
-        != material_bytes
-    {
-        return invalid("actual Goal projection changed whole training runtime/native/body");
-    }
+    crate::validate_parameter_goal_material_projection_v3(material, goal)?;
     let now = inputs.observed_at_unix_ms;
     let expires = inputs.expires_at_unix_ms;
     if d.schema != "hepta.agentd.plasticity-input-context.v2"
@@ -92,26 +133,13 @@ pub fn project_parameter_input_context_v2(
     {
         return invalid("context projection cannot rewrite the learning trust domain");
     }
-    let dataset = inputs
-        .dataset
-        .dataset
-        .native()
-        .map_err(|e| AgentdError::Invalid(format!("whole context dataset: {e}")))?;
+    let (dataset, installed_head, dataset_window) =
+        dataset_projection::project(&inputs.dataset, &verifier, inputs.round, now)?;
     verify_dataset_snapshot_receipt_v3(&dataset, now)
         .map_err(|e| AgentdError::Invalid(format!("context dataset receipt: {e}")))?;
     verify_dataset_snapshot_receipt_v3(&dataset, expires - 1)
         .map_err(|e| AgentdError::Invalid(format!("context dataset window: {e}")))?;
-    let installed_head = digest(
-        &inputs.dataset.installed_artifact_head,
-        "held installed artifact head",
-    )?;
-    // Zero is a valid FIRST proposal predecessor, unlike an installed head.
-    let _proposal_predecessor =
-        Digest32::from_str(&inputs.dataset.proposal_registry_predecessor)
-            .map_err(|_| AgentdError::Invalid("held proposal predecessor".into()))?;
     if dataset.snapshot.objective_digest != objective
-        || dataset.snapshot.ledger_head_digest.to_string() != inputs.dataset.ledger_head_digest
-        || dataset.snapshot.eligible_frontier > inputs.dataset.ledger_record_count
         || dataset.producer.scope_digest != material.scope.scope_digest
         || dataset.producer.principal_id.as_str() != d.owner_policy.dataset_owner_id
         || d.ndu.owner_id != d.owner_policy.modulator_owner_id
@@ -124,19 +152,6 @@ pub fn project_parameter_input_context_v2(
         || inputs.artifact_snapshot_receipt.encoded_bytes > 64 * 1024 * 1024
     {
         return invalid("context projection whole dataset/policy/snapshot differs");
-    }
-    // The raw freeze preimage is a complete unsigned owner fact, not a signer
-    // grant. Preserve its original strict byte/hex bound, without truncation.
-    if inputs.dataset.freeze_payload_hex.is_empty()
-        || inputs.dataset.freeze_payload_hex.len() > crate::MAX_CONTROL_FRAME_BYTES as usize
-        || !inputs.dataset.freeze_payload_hex.len().is_multiple_of(2)
-        || inputs
-            .dataset
-            .freeze_payload_hex
-            .bytes()
-            .any(|c| !c.is_ascii_digit() && !(b'a'..=b'f').contains(&c))
-    {
-        return invalid("complete original dataset freeze bytes");
     }
     let _policy = build_owner_policy(&d.owner_policy)?;
     for binding in &d.signal_bindings {
@@ -163,6 +178,28 @@ pub fn project_parameter_input_context_v2(
     d.artifacts.observed_at = now;
     d.artifacts.expires_at = expires;
     d.dataset = dataset_descriptor(&dataset);
+    d.dataset_window = dataset_window;
+    d.frozen_neuron = inputs
+        .frozen_neuron
+        .as_ref()
+        .map(|frozen| {
+            for (path, pin) in [frozen.checkpoint_response, frozen.goal_material] {
+                if !path.is_absolute() || pin.is_zero() {
+                    return invalid("frozen numerical-read Source/pin");
+                }
+            }
+            Ok(dataset_window::FrozenNeuronDescriptorV3 {
+                checkpoint_response: ContextSource {
+                    path: frozen.checkpoint_response.0.to_path_buf(),
+                    digest: frozen.checkpoint_response.1.to_string(),
+                },
+                goal_material: ContextSource {
+                    path: frozen.goal_material.0.to_path_buf(),
+                    digest: frozen.goal_material.1.to_string(),
+                },
+            })
+        })
+        .transpose()?;
     d.ndu.journal_path = inputs.ndu_journal_source.0.to_path_buf();
     d.ndu_journal_digest = inputs.ndu_journal_source.1.to_string();
     // Scope and ACK belong to the actual held Serving owner. The independent
@@ -241,3 +278,6 @@ fn native_descriptor(n: &SparseConfig) -> SparseConfigDescriptorV1 {
         eligibility_decay_q24: n.eligibility_decay_q24,
     }
 }
+
+#[path = "plasticity_input_context_dataset_projection_v3.rs"]
+mod dataset_projection;

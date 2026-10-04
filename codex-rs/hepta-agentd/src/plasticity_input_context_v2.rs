@@ -19,6 +19,10 @@ struct ContextDescriptor {
     baseline_material: ContextSource,
     artifacts: ArtifactSnapshotDescriptorV1,
     dataset: DatasetReceiptDescriptorV1,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    dataset_window: Option<dataset_window::DatasetWindowDescriptorV3>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    frozen_neuron: Option<dataset_window::FrozenNeuronDescriptorV3>,
     ndu: NduDescriptorV1,
     ndu_journal_digest: String,
     neuron: NeuronDescriptorV1,
@@ -89,12 +93,23 @@ pub(crate) fn load_input_context_v2(
         material.scope.objective_digest,
     )?;
     let dataset = build_dataset_receipt(&d.dataset)?;
+    let ledger_snapshot = ledger
+        .snapshot()
+        .map_err(|e| AgentdError::Invalid(e.to_string()))?;
+    let verifier = build_verifier(&d.trust, objective)?;
+    if verifier.scope_digest() != material.scope.scope_digest
+        || verifier.objective_digest() != material.scope.objective_digest
+    {
+        return invalid("whole learning trust differs from actual training material scope");
+    }
+    let dataset_window = d
+        .dataset_window
+        .as_ref()
+        .map(|window| window.evidence(&dataset, &ledger_snapshot, verifier.clone(), now))
+        .transpose()?;
     if dataset.snapshot.objective_digest != objective
-        || dataset.snapshot.ledger_head_digest
-            != ledger
-                .snapshot()
-                .map_err(|e| AgentdError::Invalid(e.to_string()))?
-                .head_digest
+        || (dataset_window.is_none()
+            && dataset.snapshot.ledger_head_digest != ledger_snapshot.head_digest)
     {
         return invalid("context dataset differs from the same held learning ledger");
     }
@@ -136,22 +151,68 @@ pub(crate) fn load_input_context_v2(
         scope_digest: digest(&d.neuron.scope_digest, "actual V2 scope")?,
         objective_digest: digest(&d.neuron.objective_digest, "actual V2 objective")?,
     };
-    let reader = PlasticityNeuronEligibilityReaderV2::new(
-        neuron,
-        crate::neuron_runtime_v2::AgentdNeuronGenerationIdV2::from_generation(
-            material.runtime.generation,
-        ),
-        material
-            .runtime
-            .semantic_digest()
-            .map_err(|e| AgentdError::Invalid(e.to_string()))?,
-        material
-            .body
-            .semantic_digest()
-            .map_err(|e| AgentdError::Invalid(e.to_string()))?,
-        scope,
-    )
-    .map_err(|e| AgentdError::Invalid(e.to_string()))?;
+    let required_anchor = JournalAnchor {
+        sequence: d.neuron.anchor_sequence,
+        checkpoint_digest: digest(&d.neuron.anchor_checkpoint_digest, "actual V2 ACK")?,
+    };
+    let reader: Arc<dyn crate::PlasticityNeuronEligibilityReaderV1> = match &d.frozen_neuron {
+        Some(frozen) => {
+            let goal = decode_neuron_generation_material_v2(&protected_context_bytes(
+                &frozen.goal_material.path,
+                digest(&frozen.goal_material.digest, "frozen Goal material")?,
+                MAX_NEURON_GENERATION_MATERIAL_BYTES_V2 as u64,
+            )?)
+            .map_err(|e| AgentdError::Invalid(e.to_string()))?;
+            if goal.scope != scope
+                || goal.generation_store != d.neuron.journal_path
+                || goal.store_context.max_records != d.neuron.max_records
+            {
+                return invalid("frozen whole Goal Source differs from actual context scope/store");
+            }
+            let reader = crate::PlasticityFrozenNeuronEligibilityReaderV3::from_protected_sources(
+                neuron,
+                &crate::FrozenParameterCheckpointSourcesV3 {
+                    identity,
+                    round: &round,
+                    baseline_material: &material,
+                    checkpoint_response_path: &frozen.checkpoint_response.path,
+                    checkpoint_response_digest: digest(
+                        &frozen.checkpoint_response.digest,
+                        "frozen checkpoint response",
+                    )?,
+                    goal_material_path: &frozen.goal_material.path,
+                    goal_material_digest: digest(
+                        &frozen.goal_material.digest,
+                        "frozen Goal material",
+                    )?,
+                },
+            )?;
+            let reader: Arc<dyn crate::PlasticityNeuronEligibilityReaderV1> = Arc::new(reader);
+            reader
+                .read(required_anchor)
+                .map_err(|e| AgentdError::Invalid(e.to_string()))?;
+            reader
+        }
+        None => {
+            let reader = PlasticityNeuronEligibilityReaderV2::new(
+                neuron,
+                crate::neuron_runtime_v2::AgentdNeuronGenerationIdV2::from_generation(
+                    material.runtime.generation,
+                ),
+                material
+                    .runtime
+                    .semantic_digest()
+                    .map_err(|e| AgentdError::Invalid(e.to_string()))?,
+                material
+                    .body
+                    .semantic_digest()
+                    .map_err(|e| AgentdError::Invalid(e.to_string()))?,
+                scope,
+            )
+            .map_err(|e| AgentdError::Invalid(e.to_string()))?;
+            Arc::new(reader)
+        }
+    };
     let dynamic = PlasticityDynamicOwnerEvidenceResolverV1::with_neuron_reader(
         objective,
         digest(&d.ndu.subject_digest, "NDU subject")?,
@@ -164,11 +225,8 @@ pub(crate) fn load_input_context_v2(
             .copied()
             .map(FixedQ32::from_raw)
             .collect(),
-        Arc::new(reader),
-        JournalAnchor {
-            sequence: d.neuron.anchor_sequence,
-            checkpoint_digest: digest(&d.neuron.anchor_checkpoint_digest, "actual V2 ACK")?,
-        },
+        reader,
+        required_anchor,
         artifacts.clone(),
         policy_ids[2].clone(),
         d.signal_bindings
@@ -205,12 +263,12 @@ pub(crate) fn load_input_context_v2(
         Box::new(dynamic),
     )
     .map_err(|e| AgentdError::Invalid(e.to_string()))?;
-    let verifier = build_verifier(&d.trust, objective)?;
-    if verifier.scope_digest() != material.scope.scope_digest
-        || verifier.objective_digest() != material.scope.objective_digest
-    {
-        return invalid("whole learning trust differs from actual training material scope");
-    }
+    let resolver = match dataset_window {
+        Some(window) => resolver
+            .with_dataset_window_v3(window, &ledger_snapshot, now)
+            .map_err(|e| AgentdError::Invalid(e.to_string()))?,
+        None => resolver,
+    };
     if protected_context_bytes(path, pin, MAX_DESCRIPTOR_BYTES)? != bytes {
         return invalid("protected plasticity context changed");
     }
@@ -336,3 +394,10 @@ pub(crate) fn validate_context_baseline_artifact(
 mod projection;
 pub use projection::ParameterInputContextProjectionV2;
 pub use projection::project_parameter_input_context_v2;
+
+#[path = "plasticity_input_context_window_v3.rs"]
+mod dataset_window;
+pub use projection::ParameterInputContextDatasetV3;
+pub use projection::ParameterInputContextFrozenNeuronV3;
+pub use projection::ParameterInputContextProjectionV3;
+pub use projection::project_parameter_input_context_v3;

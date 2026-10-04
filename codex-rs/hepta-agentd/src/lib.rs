@@ -752,3 +752,12 @@ pub use plasticity_runtime::parameter_dataset::PreparedParameterDatasetV1;
 pub use plasticity_runtime::parameter_dataset::parameter_dataset_window::MAX_PREPARED_DATASET_WINDOW_BYTES_V3;
 #[cfg(feature = "server")]
 pub use plasticity_runtime::parameter_dataset::parameter_dataset_window::PreparedParameterDatasetWindowV3;
+
+#[cfg(all(unix, feature = "server"))]
+pub use plasticity_process_bootstrap::ParameterInputContextDatasetV3;
+#[cfg(all(unix, feature = "server"))]
+pub use plasticity_process_bootstrap::ParameterInputContextFrozenNeuronV3;
+#[cfg(all(unix, feature = "server"))]
+pub use plasticity_process_bootstrap::ParameterInputContextProjectionV3;
+#[cfg(all(unix, feature = "server"))]
+pub use plasticity_process_bootstrap::project_parameter_input_context_v3;

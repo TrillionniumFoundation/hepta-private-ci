@@ -988,3 +988,8 @@ pub use v2::load_plasticity_process_bootstrap_v2;
 #[cfg(test)]
 #[path = "plasticity_process_bootstrap_trust_tests.rs"]
 mod whole_trust_tests;
+
+pub use input_context::ParameterInputContextDatasetV3;
+pub use input_context::ParameterInputContextFrozenNeuronV3;
+pub use input_context::ParameterInputContextProjectionV3;
+pub use input_context::project_parameter_input_context_v3;
