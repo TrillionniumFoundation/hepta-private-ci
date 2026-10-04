@@ -5,8 +5,10 @@ import {mkdtemp,rm,readFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {execFile} from 'node:child_process';
+import {promisify} from 'node:util';
 import {readScreenshotText,requireChatText,screenshotWordCenter,prepareScreenshotForOcr,prepareObservedControlForOcr,conversationTabsFromOcr,screenshotConversationTabs,sourcePixelRegion,prepareVerifiedRegionForOcr,rebaseNavigationOcr} from '../tools/verify-robrix-pixels.mjs';
-import {validateFixtureTextRegion,fixtureMessageObservation} from '../tools/verify-robrix-evidence.mjs';
+import {validateFixtureTextRegion,fixtureMessageObservation,validateTailStatusGeometry} from '../tools/verify-robrix-evidence.mjs';
 test('real Chromium glyph-block failure cannot pass chat readability',async()=>{
  const path=fileURLToPath(new URL('./fixtures/robrix-render/unreadable-e51a1d0f.png',import.meta.url));
  for(const layout of ['sparse','block']){
@@ -162,3 +164,119 @@ for(const source of regionSources){
   }finally{await rm(directory,{recursive:true,force:true});}
  });
 }
+
+const webkitSources=JSON.parse(await readFile(new URL('webkit-010-source.json',fixtureRoot),'utf8'));
+for(const source of webkitSources){
+ test(`real WebKit 010 pixels retain exact requirements: ${source.role}`,async()=>{
+  const path=fileURLToPath(new URL(source.fixture,fixtureRoot));
+  const bytes=await readFile(path);assert.equal(createHash('sha256').update(bytes).digest('hex'),source.sha256);
+  if(source.role==='navigation'){
+   const result=await screenshotConversationTabs(path,source.entry.viewport);
+   assert.equal(result.normalization,'navigation-binary');
+   assert.equal(result.sourcePngSha256,source.sha256);
+   assert.ok(result.Chat.x<result.Console.x);
+   assert.ok(result.Console.y>92&&result.Console.y<144);
+  }else{
+   const g=source.entry.geometryBefore;
+   assert.ok(g.viewport[0]+g.viewport[2]>source.entry.viewport.width);
+   const before=structuredClone(source.entry);
+   const area=validateFixtureTextRegion(source.entry,'viewport');
+   assert.equal(area.left+area.width,source.entry.viewport.width);
+   assert.deepEqual(source.entry,before,'Raw allocation evidence must not be rewritten');
+   validateTailStatusGeometry(source.entry);
+   const directory=await mkdtemp(join(tmpdir(),'robrix-webkit-regression-'));
+   try{
+    const output=join(directory,'visible-timeline.png');
+    const input=await prepareVerifiedRegionForOcr(path,output,area,source.entry.viewport);
+    assert.equal(input.sourcePngSha256,source.sha256);
+    const observed=fixtureMessageObservation(await readScreenshotText(output,{layout:'block'}),g.total);
+    assert.equal(observed.countPassed,true);assert.equal(observed.orderPassed,true);
+   }finally{await rm(directory,{recursive:true,force:true});}
+  }
+  assert.deepEqual(await readFile(path),bytes);
+ });
+}
+test('visible timeline intersection cannot rescue invisible panes, clipped composer or tail glyphs',()=>{
+ const entry=webkitSources.find(source=>source.role==='messages').entry;
+ for(const mutate of [
+  g=>{g.viewport[0]=1280;},g=>{g.viewport[0]=-1;},g=>{g.viewport[2]=0;},
+  g=>{g.viewport[1]=790;},g=>{g.composer[2]=1000;},
+  g=>{g.composer[1]=g.viewport[1]+20;},
+ ]){
+  const bad=structuredClone(entry);mutate(bad.geometryBefore);bad.geometryAfter=structuredClone(bad.geometryBefore);
+  assert.throws(()=>validateFixtureTextRegion(bad,'viewport'));
+ }
+ for(const key of ['lastContent','lastStatusVisibleGlyphs']){
+  const bad=structuredClone(entry);bad.geometryBefore[key][0]=1279;bad.geometryAfter=structuredClone(bad.geometryBefore);
+  assert.throws(()=>validateTailStatusGeometry(bad),/fit/);
+ }
+});
+test('normalization is fixed and binary OCR retains band clipping and ambiguity rejection',async()=>{
+ const path=fileURLToPath(new URL(webkitSources[0].fixture,fixtureRoot));
+ await assert.rejects(()=>prepareVerifiedRegionForOcr(path,'unused.png',{left:0,top:0,width:10,height:10},{width:640,height:800},{normalization:'adaptive'}),/fixed region/);
+ const size={width:2560,height:1600},processed={width:5832,height:312};
+ for(const words of [
+  [{text:'Chat',left:12,top:100,width:174,height:66},{text:'Console',left:684,top:100,width:312,height:66}],
+  [{text:'Chat',left:210,top:120,width:174,height:66},{text:'Console',left:684,top:120,width:312,height:66},{text:'Console',left:1300,top:120,width:312,height:66}],
+ ])assert.throws(()=>conversationTabsFromOcr(rebaseNavigationOcr(tsv(words),size,viewport,processed),size,viewport),/completely inside|Ambiguous/);
+ assert.equal(conversationTabsFromOcr(rebaseNavigationOcr(tsv([]),size,viewport,processed),size,viewport),null);
+});
+
+test('actual pixel mutations fail after binary OCR, including a correctly sized unreadable viewport',async()=>{
+ const directory=await mkdtemp(join(tmpdir(),'robrix-binary-pixel-negatives-'));
+ const run=promisify(execFile);
+ const unreadable=fileURLToPath(new URL('unreadable-e51a1d0f.png',fixtureRoot));
+ const source=fileURLToPath(new URL(webkitSources[0].fixture,fixtureRoot));
+ const sourceBytes=await readFile(source),unreadableBytes=await readFile(unreadable);
+ assert.equal(createHash('sha256').update(sourceBytes).digest('hex'),webkitSources[0].sha256);
+ try{
+  // These are explicitly synthetic negative mutations of retained real pixels,
+  // not new CI captures. Originals remain immutable and retain their provenance.
+  await run('python3',['-c',String.raw`
+from PIL import Image
+from pathlib import Path
+import sys,json,hashlib
+source,unreadable,destination=map(Path,sys.argv[1:])
+out=destination
+with Image.open(unreadable) as image:
+    assert image.size==(1280,804)
+    image.crop((0,0,1280,800)).save(out/'unreadable-sized.png')
+with Image.open(source) as image:
+    assert image.size==(1280,1600)
+    button=image.crop((400,196,560,276))
+    clipped=image.copy()
+    clipped.paste(image.getpixel((600,300)),(400,196,560,276))
+    clipped.paste(button,(400,146))
+    clipped.save(out/'clipped-console.png')
+    ambiguous=image.copy()
+    ambiguous.paste(button,(900,196))
+    ambiguous.save(out/'ambiguous-console.png')
+(out/'synthetic-provenance.json').write_text(json.dumps({
+    'kind':'synthetic-negative-mutations-not-CI-evidence',
+    'sourcePngSha256':hashlib.sha256(source.read_bytes()).hexdigest(),
+    'unreadableSourcePngSha256':hashlib.sha256(unreadable.read_bytes()).hexdigest(),
+    'mutations':{'unreadable-sized':'remove bottom four rows only',
+                 'clipped-console':'move original button upward 50 source pixels across navigation crop',
+                 'ambiguous-console':'duplicate original button within navigation row'}
+}))
+`,source,unreadable,directory]);
+  const sized=join(directory,'unreadable-sized.png');
+  await assert.rejects(()=>screenshotConversationTabs(sized,{width:1280,height:800},{recordOcr:true}),/must be readable/);
+  // Existence proves that the dimension-valid negative reached both binary
+  // OCR modes instead of failing at the earlier full-viewport assertion.
+  for(const mode of ['11','6'])await readFile(sized.replace(/\.png$/,`-navigation-binary-psm${mode}-ocr.txt`));
+  for(const [name,error] of [['clipped-console',/completely inside|crop edge|must be readable/],['ambiguous-console',/Ambiguous/]]){
+   const path=join(directory,name+'.png'),output=join(directory,name+'-binary.png');
+   const input=await prepareVerifiedRegionForOcr(path,output,{left:0,top:88,width:640,height:60},{width:640,height:800},{normalization:'navigation-binary'});
+   for(const mode of ['11','6']){
+    const {stdout}=await run('tesseract',[output,'stdout','-l','eng','--psm',mode,'tsv'],{env:{...process.env,OMP_THREAD_LIMIT:'1'}});
+    assert.throws(()=>{
+     const rebased=rebaseNavigationOcr(stdout,input.imageSize,input.viewport,input.processedSize);
+     assert.ok(conversationTabsFromOcr(rebased,input.imageSize,input.viewport),'Actual pair must be readable');
+    },error);
+   }
+  }
+  assert.deepEqual(await readFile(source),sourceBytes);
+  assert.deepEqual(await readFile(unreadable),unreadableBytes);
+ }finally{await rm(directory,{recursive:true,force:true});}
+});
