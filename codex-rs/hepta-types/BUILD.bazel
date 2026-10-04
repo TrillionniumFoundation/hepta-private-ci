@@ -1,7 +1,10 @@
 load("//:defs.bzl", "codex_rust_crate")
 
 exports_files(
-    ["MANIFEST_V1_CONFORMANCE.json"],
+    [
+        "MANIFEST_V1_CONFORMANCE.json",
+        "PLATFORM_TYPES_WIRE_CONFORMANCE_V1.json",
+    ],
     visibility = ["//codex-rs/hepta-wire:__pkg__"],
 )
 

@@ -15,6 +15,7 @@
     "wire.python",
     "wire.javascript",
     "wire.rust-product-codec",
+    "wire.rust-topology-v2",
     "wire.rust-manifest-codec",
     "utility.ndu.registered-numeric",
     "utility.ndu.pinned-numeric-v2",
@@ -136,19 +137,19 @@
       "id": "RuntimeTopologyCandidateV1",
       "wireVersion": 1,
       "semanticVersion": 1,
-      "semanticTypeId": "platform.types:runtime-topology-candidate-v1",
+      "semanticTypeId": "legacy:hepta.plasticity.topology-candidate.v3",
       "codecOwner": "platform.wire",
-      "compatibility": "v1_frozen_semantics_validated_wrapper_required_at_product_boundary",
-      "migration": "No in-place migration; product transport returns a validated V1 wrapper and any successor requires a new version.",
-      "rollbackStrategy": "Retain the rollback predecessor digest and reject candidates whose generation or canonical delta order is stale.",
+      "compatibility": "frozen_legacy_v3_read_audit_only_no_current_product_admission",
+      "migration": "Preserve exact historical V3 framing for V1 read/audit. Current owner admission rejects every V1; trusted source fields and fresh independent selection are required for a new V2 candidate.",
+      "rollbackStrategy": "V1 remains readable without effects. No V2 digest or selection is converted into V1 authority; do not downgrade active state by replaying old candidate records.",
       "consumers": [
         "wire.python",
         "wire.javascript",
-        "wire.rust-product-codec",
-        "runtime.supervisor.topology"
+        "wire.rust-product-codec"
       ],
       "goldenVectors": [
-        "codex-rs/hepta-types/PLATFORM_TYPES_WIRE_CONFORMANCE_V1.json"
+        "codex-rs/hepta-types/PLATFORM_TYPES_WIRE_CONFORMANCE_V1.json",
+        "codex-rs/hepta-types/tests/topology_versions.rs"
       ],
       "assurances": {
         "decoder": {
@@ -162,7 +163,55 @@
         "validatedBoundary": {
           "status": "evidenced",
           "consumers": [
-            "wire.rust-product-codec",
+            "wire.rust-product-codec"
+          ]
+        },
+        "ownerRevalidation": {
+          "status": "not_applicable",
+          "reason": "Historical V1 is read/audit-only; current Supervisor unconditionally refuses V1 effect admission."
+        },
+        "staleStateRejection": {
+          "status": "not_applicable",
+          "reason": "Historical validity does not establish current generation or authority; V1 never enters current product admission."
+        },
+        "mixedVersionRollback": {
+          "status": "not_applicable",
+          "reason": "There is no cross-version authority rollback. Historical V1 verification is retained, while V2 digests and superseded HPTC-under-V1 digests are rejected by the V1 decoder."
+        }
+      }
+    },
+    {
+      "id": "RuntimeTopologyCandidateV2",
+      "wireVersion": 2,
+      "semanticVersion": 2,
+      "semanticTypeId": "platform.types:runtime-topology-candidate-v2",
+      "codecOwner": "platform.wire",
+      "compatibility": "additive_v2_requires_fresh_selection_no_legacy_authority_transfer",
+      "migration": "Construct a new canonical V2 candidate from trusted labeled inputs, verify all newly committed fields, and obtain fresh independent evaluation/selection bound to its V2 digest. No receipt rehash or automatic V1 authority conversion exists.",
+      "rollbackStrategy": "Current runtime rollback keeps its separately verified selection and advances generation; historical read compatibility does not authorize a downgrade to V1. Full signed upgrade/restart/rollback qualification remains pending.",
+      "consumers": [
+        "wire.python",
+        "wire.javascript",
+        "wire.rust-topology-v2",
+        "runtime.supervisor.topology"
+      ],
+      "goldenVectors": [
+        "codex-rs/hepta-types/PLATFORM_TYPES_WIRE_CONFORMANCE_V1.json",
+        "codex-rs/hepta-types/tests/topology_versions.rs"
+      ],
+      "assurances": {
+        "decoder": {
+          "status": "evidenced",
+          "consumers": [
+            "wire.python",
+            "wire.javascript",
+            "wire.rust-topology-v2"
+          ]
+        },
+        "validatedBoundary": {
+          "status": "evidenced",
+          "consumers": [
+            "wire.rust-topology-v2",
             "runtime.supervisor.topology"
           ]
         },
@@ -179,10 +228,8 @@
           ]
         },
         "mixedVersionRollback": {
-          "status": "evidenced",
-          "consumers": [
-            "runtime.supervisor.topology"
-          ]
+          "status": "not_applicable",
+          "reason": "Cross-version selection replay is unsupported and rejected. V2-only signed owner upgrade/restart/rollback execution has not been established by the source-level compatibility vectors."
         }
       }
     },

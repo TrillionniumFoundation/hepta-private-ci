@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Independent Prompt V2 / Topology V1 strict-JSON -> HPTC oracle."""
+"""Independent Prompt V2 / Topology V1 historical and V2 strict-JSON -> HPTC oracle."""
 
 from __future__ import annotations
 
@@ -170,7 +170,7 @@ def prompt_digest(value: Any) -> str:
     )
 
 
-def delta_projection(value: Any) -> tuple[str, dict[str, Any]]:
+def delta_projection(value: Any, version: int) -> tuple[str, dict[str, Any]]:
     value = strict_keys(value, DELTA_KEYS, "topology delta")
     module_id = stable_id(value["module_id"], "module_id")
     operation = value["operation"]
@@ -180,7 +180,7 @@ def delta_projection(value: Any) -> tuple[str, dict[str, Any]]:
     if not isinstance(related, list) or len(related) > 256:
         raise ValueError("related_module_ids")
     related = [stable_id(item, "related_module_ids") for item in related]
-    if related != sorted(set(related)) or module_id in related:
+    if len(related) != len(set(related)) or module_id in related or (version == 2 and related != sorted(related)):
         raise ValueError("related_module_ids: order")
     predecessor = digest(value["predecessor_digest"], "predecessor_digest")
     candidate = digest(value["candidate_digest"], "candidate_digest")
@@ -197,8 +197,8 @@ def delta_projection(value: Any) -> tuple[str, dict[str, Any]]:
     if not shape:
         raise ValueError("delta shape")
     return hptc(
-        "platform.types:runtime-topology-delta-v1",
-        1,
+        "platform.types:runtime-topology-delta-v2",
+        2,
         {
             "candidate_digest": ("digest", candidate),
             "evidence_digest": ("digest", evidence),
@@ -210,9 +210,9 @@ def delta_projection(value: Any) -> tuple[str, dict[str, Any]]:
     ), {"module_id": module_id, "operation": operation, "related": related}
 
 
-def topology_digest(value: Any) -> str:
+def topology_digest(value: Any, version: int) -> str:
     value = strict_keys(value, TOPOLOGY_KEYS, "topology")
-    if value["kind"] != "runtime_topology_candidate_v1":
+    if version not in (1, 2) or value["kind"] != f"runtime_topology_candidate_v{version}":
         raise ValueError("topology: kind")
     proposal = digest(value["proposal_digest"], "proposal_digest", nonzero=True)
     candidate_id = stable_id(value["candidate_id"], "candidate_id")
@@ -236,10 +236,10 @@ def topology_digest(value: Any) -> str:
         raise ValueError("candidate shape")
     if changed == (len(deltas) == 0):
         raise ValueError("candidate shape")
-    projected = [delta_projection(item) for item in deltas]
+    projected = [delta_projection(item, version) for item in deltas]
     metadata = [item[1] for item in projected]
     module_ids = [item["module_id"] for item in metadata]
-    if module_ids != sorted(set(module_ids)):
+    if len(module_ids) != len(set(module_ids)) or (version == 2 and module_ids != sorted(module_ids)):
         raise ValueError("delta order")
     by_module = {item["module_id"]: item for item in metadata}
     for item in metadata:
@@ -250,8 +250,8 @@ def topology_digest(value: Any) -> str:
             if any(by_module.get(related, {}).get("operation") != "retire" for related in item["related"]):
                 raise ValueError("merge participant")
     computed = hptc(
-        "platform.types:runtime-topology-candidate-v1",
-        1,
+        "platform.types:runtime-topology-candidate-v2",
+        2,
         {
             "baseline_generation": ("u64", baseline),
             "candidate_generation": ("u64", candidate_generation),
@@ -264,9 +264,25 @@ def topology_digest(value: Any) -> str:
             "selected_topology_digest": ("digest", selected),
         },
     )
+    if version == 1:
+        computed = legacy_topology_digest(value)
     if computed != stored_candidate:
         raise ValueError("candidate digest")
     return computed
+
+
+def legacy_topology_digest(value: dict[str, Any]) -> str:
+    """Exact frozen legacy V3 framing; historical integrity only, not authority."""
+    def text(raw: str) -> bytes:
+        data = raw.encode()
+        return u32(len(data)) + data
+    operations = {"add": 0, "replace": 1, "retire": 2, "rewire": 3, "split": 4, "merge": 5}
+    chunks = [b"hepta.plasticity.topology-candidate.v3", text(value["candidate_id"]), bytes([value["changed"]]), u32(len(value["deltas"]))]
+    for delta in value["deltas"]:
+        chunks.extend([text(delta["module_id"]), bytes([operations[delta["operation"]]]), u32(len(delta["related_module_ids"]))])
+        chunks.extend(text(item) for item in delta["related_module_ids"])
+        chunks.extend(bytes.fromhex(delta[field]) for field in ("predecessor_digest", "candidate_digest", "evidence_digest"))
+    return hashlib.sha256(b"".join(chunks)).hexdigest()
 
 
 def raw_protocol_digest(raw: str, protocol: str) -> Any:
@@ -275,7 +291,9 @@ def raw_protocol_digest(raw: str, protocol: str) -> Any:
         assert_unsigned_integer_tokens(raw)
         return prompt_digest(value)
     if protocol == "RuntimeTopologyCandidateV1":
-        return topology_digest(value)
+        return topology_digest(value, 1)
+    if protocol == "RuntimeTopologyCandidateV2":
+        return topology_digest(value, 2)
     if protocol == "parser":
         return value
     raise ValueError(f"unknown raw protocol: {protocol}")
@@ -366,12 +384,14 @@ def main() -> int:
         if vector["protocol"] == "PromptDeliveryObservationV2":
             actual = prompt_digest(value)
         elif vector["protocol"] == "RuntimeTopologyCandidateV1":
-            actual = topology_digest(value)
+            actual = topology_digest(value, 1)
+        elif vector["protocol"] == "RuntimeTopologyCandidateV2":
+            actual = topology_digest(value, 2)
         else:
             raise AssertionError(f"unknown protocol: {vector['protocol']}")
-        if actual != vector["expectedHptcSha256"]:
+        if actual != vector["expectedSemanticSha256"]:
             raise AssertionError(
-                f"{vector['id']}: {actual} != {vector['expectedHptcSha256']}"
+                f"{vector['id']}: {actual} != {vector['expectedSemanticSha256']}"
             )
     for vector in document["rawInvalidVectors"]:
         verify_raw_invalid(vector)

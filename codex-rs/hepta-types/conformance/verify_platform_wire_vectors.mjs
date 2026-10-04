@@ -129,13 +129,13 @@ function promptDigest(input) {
     truncation_observed: ["bool", value.truncation_observed],
   });
 }
-function deltaProjection(input) {
+function deltaProjection(input, version) {
   const value = strictKeys(input, DELTA_KEYS, "topology delta");
   const moduleId = stableId(value.module_id, "module_id");
   assert(OPERATIONS.has(value.operation), "operation");
   assert(Array.isArray(value.related_module_ids) && value.related_module_ids.length <= 256, "related_module_ids");
   const related = value.related_module_ids.map((item) => stableId(item, "related_module_ids"));
-  assert(JSON.stringify(related) === JSON.stringify([...new Set(related)].sort()), "related_module_ids: order");
+  assert(new Set(related).size === related.length && (version === 1 || JSON.stringify(related) === JSON.stringify([...related].sort())), "related_module_ids: order");
   assert(!related.includes(moduleId), "related_module_ids: self");
   const predecessor = digest(value.predecessor_digest, "predecessor_digest");
   const candidate = digest(value.candidate_digest, "candidate_digest");
@@ -147,16 +147,16 @@ function deltaProjection(input) {
   else if (["replace", "rewire"].includes(value.operation)) shape = related.length === 0 && predecessor !== zero && candidate !== zero && predecessor !== candidate;
   else shape = related.length > 0 && predecessor !== zero && candidate !== zero && predecessor !== candidate;
   assert(shape, "delta shape");
-  return [hptc("platform.types:runtime-topology-delta-v1", 1, {
+  return [hptc("platform.types:runtime-topology-delta-v2", 2, {
     candidate_digest: ["digest", candidate], evidence_digest: ["digest", evidence],
     module_id: ["stable_id", moduleId], operation: ["text", value.operation],
     predecessor_digest: ["digest", predecessor],
     related_module_ids: ["array", related.map((item) => ["stable_id", item])],
   }), { moduleId, operation: value.operation, related }];
 }
-function topologyDigest(input) {
+function topologyDigest(input, version) {
   const value = strictKeys(input, TOPOLOGY_KEYS, "topology");
-  assert(value.kind === "runtime_topology_candidate_v1", "topology: kind");
+  assert([1, 2].includes(version) && value.kind === `runtime_topology_candidate_v${version}`, "topology: kind");
   const proposal = digest(value.proposal_digest, "proposal_digest", true);
   const candidateId = stableId(value.candidate_id, "candidate_id");
   const stored = digest(value.candidate_digest, "candidate_digest", true);
@@ -169,23 +169,35 @@ function topologyDigest(input) {
   assert(rollback === selected, "rollback predecessor");
   assert(typeof value.changed === "boolean" && Array.isArray(value.deltas) && value.deltas.length <= 256, "candidate shape");
   assert(value.changed !== (value.deltas.length === 0), "candidate shape");
-  const projected = value.deltas.map(deltaProjection);
+  const projected = value.deltas.map((item) => deltaProjection(item, version));
   const moduleIds = projected.map((item) => item[1].moduleId);
-  assert(JSON.stringify(moduleIds) === JSON.stringify([...new Set(moduleIds)].sort()), "delta order");
+  assert(new Set(moduleIds).size === moduleIds.length && (version === 1 || JSON.stringify(moduleIds) === JSON.stringify([...moduleIds].sort())), "delta order");
   const byModule = new Map(projected.map((item) => [item[1].moduleId, item[1]]));
   for (const [, item] of projected) {
     if (item.operation === "split") for (const related of item.related) assert(byModule.get(related)?.operation === "add", "split participant");
     if (item.operation === "merge") for (const related of item.related) assert(byModule.get(related)?.operation === "retire", "merge participant");
   }
-  const computed = hptc("platform.types:runtime-topology-candidate-v1", 1, {
+  let computed = hptc("platform.types:runtime-topology-candidate-v2", 2, {
     baseline_generation: ["u64", baseline], candidate_generation: ["u64", generation],
     candidate_id: ["stable_id", candidateId], changed: ["bool", value.changed],
     deltas: ["array", projected.map((item) => ["digest", item[0]])],
     evaluation_digest: ["digest", evaluation], proposal_digest: ["digest", proposal],
     rollback_predecessor_digest: ["digest", rollback], selected_topology_digest: ["digest", selected],
   });
+  if (version === 1) computed = legacyTopologyDigest(value);
   assert(computed === stored, "candidate digest");
   return computed;
+}
+function legacyTopologyDigest(value) {
+  const text = (value) => { const raw = Buffer.from(value); return Buffer.concat([u32(raw.length), raw]); };
+  const operations = new Map([["add", 0], ["replace", 1], ["retire", 2], ["rewire", 3], ["split", 4], ["merge", 5]]);
+  const chunks = [Buffer.from("hepta.plasticity.topology-candidate.v3"), text(value.candidate_id), Buffer.from([value.changed ? 1 : 0]), u32(value.deltas.length)];
+  for (const delta of value.deltas) {
+    chunks.push(text(delta.module_id), Buffer.from([operations.get(delta.operation)]), u32(delta.related_module_ids.length));
+    chunks.push(...delta.related_module_ids.map(text));
+    chunks.push(...["predecessor_digest", "candidate_digest", "evidence_digest"].map((field) => Buffer.from(delta[field], "hex")));
+  }
+  return crypto.createHash("sha256").update(Buffer.concat(chunks)).digest("hex");
 }
 function rawProtocolDigest(raw, protocol) {
   const value = parseStrictJson(raw);
@@ -193,7 +205,8 @@ function rawProtocolDigest(raw, protocol) {
     assertUnsignedIntegerTokens(raw);
     return promptDigest(value);
   }
-  if (protocol === "RuntimeTopologyCandidateV1") return topologyDigest(value);
+  if (protocol === "RuntimeTopologyCandidateV1") return topologyDigest(value, 1);
+  if (protocol === "RuntimeTopologyCandidateV2") return topologyDigest(value, 2);
   if (protocol === "parser") return value;
   throw new Error(`unknown raw protocol: ${protocol}`);
 }
@@ -255,8 +268,8 @@ function verifyPromptCapacity() {
 for (const vector of VECTORS.validVectors) {
   const actual = vector.protocol === "PromptDeliveryObservationV2"
     ? promptDigest(vector.json)
-    : topologyDigest(vector.json);
-  assert(actual === vector.expectedHptcSha256, `${vector.id}: digest mismatch ${actual}`);
+    : topologyDigest(vector.json, vector.protocol === "RuntimeTopologyCandidateV1" ? 1 : 2);
+  assert(actual === vector.expectedSemanticSha256, `${vector.id}: digest mismatch ${actual}`);
 }
 for (const vector of VECTORS.rawInvalidVectors) verifyRawInvalid(vector);
 verifyStrictJsonBoundaries();

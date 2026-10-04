@@ -1,7 +1,7 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://hepta.invalid/schemas/platform.types/runtime-topology-candidate-v1.schema.json",
-  "title": "RuntimeTopologyCandidateV1 historical read/audit JSON transport",
+  "$id": "https://hepta.invalid/schemas/platform.types/runtime-topology-candidate-v2.schema.json",
+  "title": "RuntimeTopologyCandidateV2 strict JSON transport",
   "type": "object",
   "additionalProperties": false,
   "required": [
@@ -18,7 +18,7 @@
     "deltas"
   ],
   "properties": {
-    "kind": { "const": "runtime_topology_candidate_v1" },
+    "kind": { "const": "runtime_topology_candidate_v2" },
     "proposal_digest": { "$ref": "#/$defs/nonzeroDigest" },
     "candidate_id": { "$ref": "#/$defs/stableId" },
     "candidate_digest": { "$ref": "#/$defs/nonzeroDigest" },
@@ -32,7 +32,7 @@
       "type": "array",
       "maxItems": 256,
       "items": { "$ref": "#/$defs/delta" },
-      "x-hepta-invariant": "unique_module_id_and_frozen_legacy_v3_candidate_digest_recomputed"
+      "x-hepta-invariant": "strictly_increasing_module_id_and_candidate_digest_recomputed"
     }
   },
   "$defs": {
@@ -58,7 +58,7 @@
           "type": "array",
           "maxItems": 256,
           "items": { "$ref": "#/$defs/stableId" },
-          "x-hepta-invariant": "unique_no_self_reference"
+          "x-hepta-invariant": "strictly_increasing_no_self_reference"
         },
         "predecessor_digest": { "$ref": "#/$defs/digest" },
         "candidate_digest": { "$ref": "#/$defs/digest" },

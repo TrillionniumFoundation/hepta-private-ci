@@ -20,6 +20,7 @@ pub mod prompt_delivery_v2;
 pub mod protocol_catalog_v2;
 mod registry;
 mod topology;
+mod topology_v2;
 
 pub use bounded::BoundedBytes;
 pub use bounded::BoundedText;
@@ -100,3 +101,8 @@ pub use topology::RuntimeTopologyCandidateV1;
 pub use topology::RuntimeTopologyContractErrorV1;
 pub use topology::RuntimeTopologyDeltaV1;
 pub use topology::RuntimeTopologyOperationV1;
+
+pub use topology_v2::RuntimeTopologyCandidateV2;
+pub use topology_v2::RuntimeTopologyContractErrorV2;
+pub use topology_v2::RuntimeTopologyDeltaV2;
+pub use topology_v2::RuntimeTopologyOperationV2;

@@ -1,5 +1,7 @@
 # platform.types technical development guide
 
+Current topology boundary: historical V1 retains exact legacy V3 verification; current V2 has a distinct HPTC schema-2 commitment and requires fresh selection. V1 effect admission is refused. Authenticated upgrade/restart/rollback qualification remains open. See `docs/modules/platform.types/TOPOLOGY_VERSION_MIGRATION_V2.md`.
+
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
 **Module:** `platform.types`
@@ -15,6 +17,38 @@
 **Bootstrap work package:** `PLATFORM-0-TYPE-BOUNDARY`
 
 This supporting guide retains implementation architecture and work-package history. Start with [`SPEC_V2.md`](./SPEC_V2.md) for the normative contract, [`IMPLEMENTATION_STATUS.md`](./IMPLEMENTATION_STATUS.md) for current source and qualification posture, and [`MIGRATION_V1_TO_V2.md`](./MIGRATION_V1_TO_V2.md) for consumer migration. Native Rust contracts and the compiled typed catalog implement protocol semantics; central JSON registries govern architectural inventory and ownership. Historical records are provenance only. A conflict between the current specification, source and generated evidence remains unresolved and fails closed. Documentation readiness is not source qualification, activation, operator acceptance, promotion or release.
+
+<!-- BEGIN GENERATED PLATFORM.TYPES V2 TRUTH -->
+
+## Current versioned protocol truth
+
+The normative field/version/identity source is
+`codex-rs/hepta-types/src/protocol_catalog_v2.rs`. Exact-candidate JSON and Markdown projections are compiled
+from that Rust catalog; this guide is explanatory and cannot override it.
+
+Registered catalog surface: `PromptDeliveryObservationV1` V1, `PromptDeliveryObservationV2` V2, `RuntimeTopologyCandidateV1` V1, `RuntimeTopologyCandidateV2` V2, `RandomStreamManifestV1` V1, `ExternalSystemManifestV1` V1, `SensorCalibrationManifestV1` V1, `RegisteredNumericConversionReceiptV2` V2.
+
+`PromptDeliveryObservationV1` remains frozen under its historical custom
+length-framed SHA-256 commitment and is never relabeled as HPTC.
+`PromptDeliveryObservationV2` is a distinct HPTC schema-2 identity with an
+explicit exact-V1-digest migration witness. Generation-sensitive numeric
+admission uses private-field V2 receipts that bind registry generation/digest,
+profile-definition digests, normalization-definition digest and the base
+conversion receipt, and are fully recomputed by the verifier.
+
+Strict Prompt V2 and separate historical Topology V1/current V2 JSON transport belongs to `platform.wire`,
+which preserves V1 historical verification without effect admission, and rejects
+raw oversize/depth, duplicate or unknown fields and non-canonical
+integers before native revalidation. NDU owns random-stream manifest admission;
+Runtime Supervisor owns external-system and sensor-calibration admission. All
+owner receipts remain deny-only and grant no activation authority.
+
+The exact top-level `pub use` inventory is a narrow ownership projection. Full
+candidate API and semver evidence comes from normalized rustdoc JSON, while Git
+provenance binds exact source, schema, owner, consumer, document, verifier and
+workflow blobs to the candidate tree.
+
+<!-- END GENERATED PLATFORM.TYPES V2 TRUTH -->
 
 ## 1. Identity, mission and ownership
 
@@ -109,9 +143,9 @@ Consumed contracts:
 
 None.
 
-Critical native protocols include `PromptDeliveryObservationV1`, `PromptDeliveryObservationV2`, `RuntimeTopologyCandidateV1`, `RandomStreamManifestV1`, `ExternalSystemManifestV1`, `SensorCalibrationManifestV1` and `RegisteredNumericConversionReceiptV2`. The compiled Rust catalog specifies their exact versioned identity and transport availability.
+Critical native protocols include `PromptDeliveryObservationV1`, `PromptDeliveryObservationV2`, `RuntimeTopologyCandidateV1`, `RuntimeTopologyCandidateV2`, `RandomStreamManifestV1`, `ExternalSystemManifestV1`, `SensorCalibrationManifestV1` and `RegisteredNumericConversionReceiptV2`. The compiled Rust catalog specifies their exact versioned identity and transport availability.
 
-Prompt V1 retains its historical custom domain-separated, length-framed SHA-256 commitment; it is not HPTC. Prompt V2 uses HPTC V1 with semantic schema 2. Topology and the three manifests use their own HPTC V1 type identities. `PLATFORM_TYPES_BINDINGS_V1.json` owns the intentionally smaller generated Python/JavaScript/TypeScript foundational binding surface. Arbitrary Rust structs and arbitrary JSON are not identical external schemas, and the manifests do not implement collection or device drivers.
+Prompt V1 retains its historical custom domain-separated, length-framed SHA-256 commitment; it is not HPTC. Prompt V2 uses HPTC V1 with semantic schema 2. Historical Topology V1 retains legacy V3 framing for read/audit only. Topology V2 uses its distinct HPTC schema-2 identity; the three manifests retain their HPTC V1 type identities. `PLATFORM_TYPES_BINDINGS_V1.json` owns the intentionally smaller generated Python/JavaScript/TypeScript foundational binding surface. Arbitrary Rust structs and arbitrary JSON are not identical external schemas, and the manifests do not implement collection or device drivers.
 
 HPTC V1 field/map order, type tags, integer widths, lengths, bounds and no-Unicode-normalization rule are frozen. Unknown/invalid tags, invalid bool bytes, noncanonical ordering, duplicate keys/fields, truncation and trailing bytes reject in `canonical_validate_v1`. Contract/profile meanings cannot change in place.
 
@@ -594,7 +628,7 @@ composition, deployment or external effect authority.
 | explicit registered receipt | `rescale_signal_registered_receipt_v1` / `RegisteredNumericConversionReceiptV2` | `codex-rs/hepta-types/src/numeric_registry_v2.rs` | registry evidence, optimized-path parity and snapshot tests |
 | frozen prompt delivery | `PromptDeliveryObservationV1` | `codex-rs/hepta-types/src/prompt_delivery.rs` | disposition/token/digest tests plus Codex/Ledger callsites |
 | HPTC prompt delivery | `PromptDeliveryObservationV2` | `codex-rs/hepta-types/src/prompt_delivery_v2.rs` | migration/hashability/wire capacity regressions |
-| runtime topology | `RuntimeTopologyCandidateV1` | `codex-rs/hepta-types/src/topology.rs` | delta/candidate substitution tests plus Supervisor callsite |
+| current runtime topology | `RuntimeTopologyCandidateV2` | `codex-rs/hepta-types/src/topology_v2.rs` | delta/candidate substitution tests plus Supervisor callsite |
 | owned manifests | `RandomStreamManifestV1` / `ExternalSystemManifestV1` / `SensorCalibrationManifestV1` | `codex-rs/hepta-types/src/manifests.rs` | constructor/validation/digest negative matrix |
 | registered NDU consumer | `NduNumericRegistryV1` / `NduAuthenticatedOwnerV1::open_with_numeric_registry_snapshot` / `evaluate` | `codex-rs/hepta-ndu/src/numeric_admission.rs`, `owner.rs`, `owner_numeric_snapshot.rs` | V1 compatibility, V2 snapshot binding and downgrade-rejection tests |
 | generated bindings | `generate_bindings.py` | `codex-rs/hepta-types/bindings/` | generator drift + Python/JavaScript own-property consumer gates |

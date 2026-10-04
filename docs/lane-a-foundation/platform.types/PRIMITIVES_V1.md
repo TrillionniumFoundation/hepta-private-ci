@@ -112,9 +112,10 @@ It is source-consumed by the Codex adapter/Agentd path and learning ledger.
 
 `RuntimeTopologyCandidateV1` validates generation succession, rollback
 predecessor, per-operation delta shape, split/merge participants and a candidate
-digest recomputed from every implementation/evidence delta. Runtime Supervisor
-checks it again against the current serving topology and independent selection
-receipt before admission.
+digest recomputed from every implementation/evidence delta. The historical framing is preserved for read/audit only and current Supervisor
+admission refuses every V1. `RuntimeTopologyCandidateV2` instead commits every
+semantic field with a new HPTC schema-2 identity and requires fresh independent
+selection against the current serving graph. No legacy authority is rehashed.
 
 ## Owned manifest contracts
 

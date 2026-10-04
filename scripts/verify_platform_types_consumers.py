@@ -18,6 +18,7 @@ EXPECTED = [
     "wire.python",
     "wire.javascript",
     "wire.rust-product-codec",
+    "wire.rust-topology-v2",
     "wire.rust-manifest-codec",
     "utility.ndu.registered-numeric",
     "utility.ndu.pinned-numeric-v2",

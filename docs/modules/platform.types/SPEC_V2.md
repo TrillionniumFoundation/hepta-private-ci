@@ -166,3 +166,7 @@ authoritative qualification receipt or substitute for exact-head independent rev
 Stderr excerpts read only the bounded suffix, avoiding a full-file allocation for
 large failed-build logs. Regression coverage is in
 `scripts/test_platform_types_ci_gate.py`.
+
+## Topology version boundary
+
+RuntimeTopologyCandidateV1 preserves historical legacy V3 digest semantics for read/audit. RuntimeTopologyCandidateV2 uses a distinct HPTC schema-2 type identity. Versioned codecs reject wrong discriminators and crossed or superseded commitments. Current Supervisor refuses all V1 admissions and accepts V2 only with fresh matching independent selection. No type conversion transfers authority. See [the migration specification](./TOPOLOGY_VERSION_MIGRATION_V2.md); authenticated product upgrade/restart/rollback qualification remains separate.

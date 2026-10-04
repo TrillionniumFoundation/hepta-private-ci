@@ -3,8 +3,8 @@
   "schemaVersion": 1,
   "module": "platform.types",
   "publicApiInventory": "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json",
-  "publicApiExportCount": 81,
-  "publicApiOperationCount": 20,
+  "publicApiExportCount": 85,
+  "publicApiOperationCount": 21,
   "formalTechnicalSupplement": "docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md",
   "currentTechnicalAmendment": "docs/modules/platform.types/TECHNICAL_CURRENT_AMENDMENT_V2.md",
   "normativeProtocolSource": "codex-rs/hepta-types/src/protocol_catalog_v2.rs",
@@ -29,19 +29,23 @@
   "digestContracts": {
     "promptDeliveryV1": "frozen historical custom commitment; not HPTC and never reinterpreted",
     "promptDeliveryV2": "HPTC schema 2 with optional exact V1 migration witness",
-    "runtimeTopologyCandidateV1": "HPTC V1 binds every semantic candidate and delta field; candidate_digest is derived",
+    "runtimeTopologyCandidateV1": "Frozen hepta.plasticity.topology-candidate.v3 length framing; historical read/audit only, never current product admission",
     "manifestProtocols": "strict JSON is transport only; validated native values project to HPTC V1 semantic commitments",
-    "registeredNumericConversionV2": "receipt binds registry generation/digest, profile definitions, normalizer and base conversion receipt; owner-current admission additionally requires verify_for_snapshot against an independently pinned snapshot"
+    "registeredNumericConversionV2": "receipt binds registry generation/digest, profile definitions, normalizer and base conversion receipt; owner-current admission additionally requires verify_for_snapshot against an independently pinned snapshot",
+    "runtimeTopologyCandidateV2": "HPTC schema 2 binds all candidate and delta fields; requires fresh independent V2-digest selection"
   },
   "orderingContracts": {
-    "RuntimeTopologyCandidateV1.deltas": "set semantics represented as a strictly increasing StableId sequence; non-canonical order rejects",
-    "RuntimeTopologyDeltaV1.related_module_ids": "set semantics represented as a strictly increasing StableId sequence; duplicate, self or non-canonical order rejects"
+    "RuntimeTopologyCandidateV1.deltas": "Historical input order retained; duplicate modules reject",
+    "RuntimeTopologyDeltaV1.related_module_ids": "Historical input order retained; duplicate and self references reject",
+    "RuntimeTopologyCandidateV2.deltas": "set semantics represented as a strictly increasing StableId sequence; non-canonical order rejects",
+    "RuntimeTopologyDeltaV2.related_module_ids": "set semantics represented as a strictly increasing StableId sequence; duplicate, self or non-canonical order rejects"
   },
   "transportBoundary": {
     "owner": "platform.wire",
     "contracts": [
       "PromptDeliveryObservationV2",
       "RuntimeTopologyCandidateV1",
+      "RuntimeTopologyCandidateV2",
       "RandomStreamManifestV1",
       "ExternalSystemManifestV1",
       "SensorCalibrationManifestV1"
@@ -112,7 +116,10 @@
     "scripts/run_platform_types_deep_qualification.sh",
     ".github/workflows/platform-types-deep-qualification.yml",
     ".github/workflows/platform-types-independent-review.yml",
-    ".github/workflows/blocking-ci.yml"
+    ".github/workflows/blocking-ci.yml",
+    "codex-rs/hepta-types/src/topology_v2.rs",
+    "codex-rs/hepta-types/tests/topology_versions.rs",
+    "codex-rs/hepta-wire/src/platform_topology_v2_json.rs"
   ],
   "nonClaims": [
     "No V1 prompt digest is relabeled as HPTC.",

@@ -12,6 +12,7 @@ mod envelope;
 mod envelope_v2;
 mod frame;
 mod platform_manifest_json;
+mod platform_topology_v2_json;
 mod platform_types_json;
 mod schema;
 mod stream;
@@ -69,3 +70,8 @@ pub use version::negotiate;
 #[cfg(test)]
 #[path = "property_tests.rs"]
 mod property_tests;
+
+pub use platform_topology_v2_json::PlatformTopologyV2WireError;
+pub use platform_topology_v2_json::ValidatedRuntimeTopologyCandidateV2;
+pub use platform_topology_v2_json::decode_runtime_topology_candidate_v2_json;
+pub use platform_topology_v2_json::encode_runtime_topology_candidate_v2_json;

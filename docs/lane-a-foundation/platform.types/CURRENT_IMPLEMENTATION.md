@@ -1,5 +1,7 @@
 # `platform.types` current implementation
 
+Current topology boundary: historical V1 retains exact legacy V3 verification; current V2 has a distinct HPTC schema-2 commitment and requires fresh selection. V1 effect admission is refused. Authenticated upgrade/restart/rollback qualification remains open. See `docs/modules/platform.types/TOPOLOGY_VERSION_MIGRATION_V2.md`.
+
 ## Current executable contract
 
 `codex-rs/hepta-types` is the authority-free Rust contract library for shared
@@ -23,7 +25,7 @@ Compatibility is versioned rather than silently reinterpreted:
   `RegistrySnapshotIdentityV1`, so a valid older-generation or wrong-registry
   receipt cannot satisfy the current owner policy.
 
-`platform.wire` now owns strict JSON transport for Prompt V2, Topology V1 and
+`platform.wire` now owns strict JSON transport for Prompt V2, historical Topology V1 and current V2 and
 all three manifest protocols. Each codec applies raw resource limits and
 duplicate/unknown/missing-field rejection before reconstructing the native
 private-field contract through its validated constructor. JSON bytes are
@@ -60,7 +62,7 @@ Core semantic source bindings are:
   receipt: `src/numeric_registry_v2.rs`;
 - frozen Prompt V1: `src/prompt_delivery.rs`;
 - HPTC Prompt V2 and V1 migration witness: `src/prompt_delivery_v2.rs`;
-- topology candidates: `src/topology.rs`;
+- historical topology V1: `src/topology.rs`; current topology V2: `src/topology_v2.rs`;
 - the three manifest families: `src/manifests.rs`;
 - typed normative field/version catalog: `src/protocol_catalog_v2.rs`.
 
@@ -75,7 +77,7 @@ Product transport source bindings are:
 The transport layer bounds raw input at 64 KiB and nesting depth 16, rejects
 duplicate and unknown fields, requires precision-safe canonical decimal strings
 for i64/u64 fields and revalidates native semantics. Topology decoding returns
-`ValidatedRuntimeTopologyCandidateV1` only after candidate-digest
+a version-specific V1 (historical) or V2 (current) wrapper only after candidate-digest
 recomputation.
 
 Named source consumers include:
@@ -139,7 +141,7 @@ objects into an ambient serialization platform.
   ordinary-definition data.
 - Numeric signals admit at most 4096 values and reject overflow.
 - Manifest text, timestamps, ranges and confidence are explicitly bounded.
-- Topology delta and related-module sets use strictly increasing `StableId` order
+- Topology V2 delta and related-module sets use strictly increasing `StableId` order
   and reject producer non-conformance rather than silently sorting.
 - Prompt V1 bytes are not HPTC and are never relabeled as HPTC.
 - `verify_for_snapshot` proves equality with an owner-pinned snapshot; it does
@@ -158,9 +160,9 @@ the two candidate kinds are never interchangeable.
 ## Verification
 
 The consumer qualification executes 24 independent checks and retains every
-log. It covers canonical HPTC vectors, manifest vectors, Prompt V2/Topology V1
+log. It covers canonical HPTC vectors, manifest vectors, Prompt V2/Topology V1/V2
 Python and Node oracles, generated-binding drift, strict Rust product codecs for
-all five contracts, complete types/NDU tests, prompt producer and ledger paths,
+all six contracts, complete types/NDU tests, prompt producer and ledger paths,
 topology admission, all three manifest product owners, and strict Clippy for
 types, wire and NDU.
 
@@ -211,7 +213,7 @@ V2, independently pin the current `RegistrySnapshotIdentityV1`, and invoke
 registry. A V1 receipt, or a V2 receipt verified only against its embedded
 snapshot, must not be treated as owner-current anti-rollback evidence.
 
-Topology producers must provide all set-valued IDs in strictly increasing
+Current Topology V2 producers must provide all set-valued IDs in strictly increasing
 `StableId` order. Product consumers accept the validated wrapper rather than a
 raw DTO.
 

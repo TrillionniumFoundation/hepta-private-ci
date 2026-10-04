@@ -194,6 +194,7 @@ def build_summary(
         "wireDecoders": [
             "PromptDeliveryObservationV2",
             "RuntimeTopologyCandidateV1",
+            "RuntimeTopologyCandidateV2",
             "RandomStreamManifestV1",
             "ExternalSystemManifestV1",
             "SensorCalibrationManifestV1",

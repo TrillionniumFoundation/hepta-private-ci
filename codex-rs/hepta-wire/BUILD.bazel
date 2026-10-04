@@ -2,6 +2,9 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "hepta-wire",
-    compile_data = ["//codex-rs/hepta-types:MANIFEST_V1_CONFORMANCE.json"],
+    compile_data = [
+        "//codex-rs/hepta-types:MANIFEST_V1_CONFORMANCE.json",
+        "//codex-rs/hepta-types:PLATFORM_TYPES_WIRE_CONFORMANCE_V1.json",
+    ],
     crate_name = "codex_hepta_wire",
 )

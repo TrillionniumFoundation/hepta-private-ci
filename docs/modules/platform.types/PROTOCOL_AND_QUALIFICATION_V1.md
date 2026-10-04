@@ -1,5 +1,7 @@
 # `platform.types` protocol and qualification contract
 
+Current topology boundary: historical V1 retains exact legacy V3 verification; current V2 has a distinct HPTC schema-2 commitment and requires fresh selection. V1 effect admission is refused. Authenticated upgrade/restart/rollback qualification remains open. See `docs/modules/platform.types/TOPOLOGY_VERSION_MIGRATION_V2.md`.
+
 The typed normative catalog is `codex-rs/hepta-types/src/protocol_catalog_v2.rs`.
 Qualification generates exact-candidate JSON/Markdown projections. This document
 specifies current protocol boundaries, not a successful qualification receipt.
@@ -55,14 +57,14 @@ V1 retains its 8192-position bound. A V1 observation larger than V2 capacity
 remains readable V1 and V2 migration rejects without truncation or mutation.
 A larger HPTC representation requires its own versioned protocol.
 
-## 3. Runtime topology commitment
+## 3. Current runtime topology V2 commitment
 
 The V1 candidate commitment is:
 
 ```text
 HPTC(
-  type = platform.types:runtime-topology-candidate-v1,
-  schema = 1,
+  type = platform.types:runtime-topology-candidate-v2,
+  schema = 2,
   baseline_generation,
   candidate_generation,
   candidate_id,
@@ -127,7 +129,7 @@ or that product execution has passed target-host qualification.
 
 ## 6. Strict transport and resource limits
 
-All five product codecs enforce 64 KiB raw input and depth 16. Struct decoders
+All six product codecs enforce 64 KiB raw input and depth 16. Struct decoders
 reject unknown/duplicate/missing fields. i64/u64 decimal strings have 20-byte
 ceilings and native range checks; nullable Prompt fields are still required.
 Digest strings are bounded to 64 hexadecimal bytes.
@@ -152,7 +154,7 @@ and workflows to exact HEAD blobs and root trees.
 Existing golden vectors remain frozen. Capacity regressions cover 4096, 4097,
 8192 and 8193 positions, native V1 migration and product-wire roundtrip. Schema
 qualification checks compiled Prompt capacity and integer width in addition to
-structural catalog parity. All five product fuzz decoders assert successful
+structural catalog parity. All six product fuzz decoders assert successful
 admission implies hashability and exact semantic-preserving encode/decode.
 Coverage-guided fuzz remains bounded testing, not exhaustive protocol proof.
 

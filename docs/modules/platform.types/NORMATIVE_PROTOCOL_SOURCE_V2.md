@@ -1,5 +1,7 @@
 # platform.types normative protocol source V2
 
+Current topology boundary: historical V1 retains exact legacy V3 verification; current V2 has a distinct HPTC schema-2 commitment and requires fresh selection. V1 effect admission is refused. Authenticated upgrade/restart/rollback qualification remains open. See `docs/modules/platform.types/TOPOLOGY_VERSION_MIGRATION_V2.md`.
+
 The normative field/version/identity catalog for the current `platform.types`
 protocol surface is the typed Rust value
 `PLATFORM_TYPES_PROTOCOL_CATALOG_V2` in
@@ -36,7 +38,7 @@ receipt digest. V2 fields are private and the verifier reconstructs the entire
 receipt from the source signal, target schema and immutable registry.
 
 Existing V1 topology DTO fields remain public for source compatibility. Product
-transport returns `ValidatedRuntimeTopologyCandidateV1`; consumers do not
+transport returns separate validated V1 historical and V2 current wrappers; consumers do not
 receive an unvalidated topology from the product-owned codec.
 
 ## Ownership
@@ -51,6 +53,6 @@ receipt in addition to namespace, generator/version, episode, decision and
 counter window. This prevents a syntactically valid manifest from substituting
 a different deterministic stream root under the same owner context.
 
-Coverage-guided product-wire qualification invokes all five strict decoders;
+Coverage-guided product-wire qualification invokes all six strict decoders;
 its summary names the decoder set so Prompt/Topology-only fuzz execution cannot
 be mistaken for complete manifest transport coverage.

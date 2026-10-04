@@ -144,7 +144,11 @@ def sync_protocol_registry(catalog: dict[str, Any]) -> None:
             rows.append(row)
             by_id[identifier] = row
         row["canonicalEncoding"] = protocol["semanticEncoding"]
-        row["digestScope"] = "all_versioned_semantic_fields"
+        row["digestScope"] = (
+            "legacy_candidate_id_changed_and_ordered_deltas_only"
+            if identifier == "RuntimeTopologyCandidateV1"
+            else "all_versioned_semantic_fields"
+        )
         row["platformTypesNormativeProjection"] = protocol_projection(protocol)
         if identifier == "PromptDeliveryObservationV1":
             row["transportStatus"] = "legacy_shape_only_no_product_json_codec"
@@ -212,8 +216,9 @@ admission uses private-field V2 receipts that bind registry generation/digest,
 profile-definition digests, normalization-definition digest and the base
 conversion receipt, and are fully recomputed by the verifier.
 
-Strict Prompt V2 and Topology V1 JSON transport belongs to `platform.wire`,
-which rejects raw oversize/depth, duplicate or unknown fields and non-canonical
+Strict Prompt V2 and separate historical Topology V1/current V2 JSON transport belongs to `platform.wire`,
+which preserves V1 historical verification without effect admission, and rejects
+raw oversize/depth, duplicate or unknown fields and non-canonical
 integers before native revalidation. NDU owns random-stream manifest admission;
 Runtime Supervisor owns external-system and sensor-calibration admission. All
 owner receipts remain deny-only and grant no activation authority.
@@ -234,11 +239,14 @@ def sync_technical(catalog: dict[str, Any]) -> None:
         end = text.index(MARKER_END, start) + len(MARKER_END)
         text = text[:start] + block + text[end:]
     else:
-        anchor = (
+        anchors = (
+            "Documentation readiness is not source qualification, activation, "
+            "operator acceptance, promotion or release.",
             "Documentation readiness is not source implementation, activation, "
-            "operator acceptance, promotion or release."
+            "operator acceptance, promotion or release.",
         )
-        if anchor not in text:
+        anchor = next((value for value in anchors if value in text), None)
+        if anchor is None:
             raise SyncError("TECHNICAL.md insertion anchor missing")
         text = text.replace(anchor, anchor + "\n\n" + block, 1)
     old = (
@@ -249,7 +257,8 @@ def sync_technical(catalog: dict[str, Any]) -> None:
     )
     replacement = (
         "Rust owns the semantic primitives and versioned native contracts. Prompt V1 "
-        "retains its frozen historical custom commitment; Prompt V2, topology and the "
+        "retains its frozen historical custom commitment; historical Topology V1 retains "
+        "legacy V3 framing and is read/audit-only. Prompt V2, Topology V2 and the "
         "three manifest families use their registered HPTC commitments. "
         "`PLATFORM_TYPES_BINDINGS_V1.json` owns the intentionally smaller generated "
         "Python/JavaScript/TypeScript foundational binding surface."
@@ -257,6 +266,89 @@ def sync_technical(catalog: dict[str, Any]) -> None:
     if old in text:
         text = text.replace(old, replacement, 1)
     TECHNICAL.write_text(text, encoding="utf-8")
+
+
+def sync_topology_lane_projection(catalog: dict[str, Any]) -> None:
+    protocols = {row["id"]: row for row in catalog["protocols"]}
+    legacy = protocols["RuntimeTopologyCandidateV1"]
+    current = protocols["RuntimeTopologyCandidateV2"]
+    registry_path = ROOT / "docs/lane-a-foundation/PROTOCOL_REGISTRY_V1.json"
+    registry = read_object(registry_path)
+    row = next(
+        item
+        for item in registry["protocols"]
+        if item["protocolId"] == "hepta.platform.types.primitives.v1"
+    )
+    source = "codex-rs/hepta-types/src/topology_v2.rs"
+    if source not in row["source"]:
+        row["source"].append(source)
+    row["invariants"] = [
+        item
+        for item in row["invariants"]
+        if not item.startswith(
+            "PromptDeliveryObservationV1 and RuntimeTopologyCandidateV1"
+        )
+        and not item.startswith("Topology version boundary:")
+    ]
+    row["invariants"].append(
+        f"Topology version boundary: {legacy['id']} retains {legacy['semanticTypeId']} historical read/audit only; "
+        f"{current['id']} uses {current['semanticTypeId']} schema {current['version']} and requires fresh independent selection"
+    )
+    write_object(registry_path, registry)
+    capability_path = ROOT / "docs/lane-a-foundation/CAPABILITY_EVIDENCE_MAP.json"
+    capabilities = read_object(capability_path)
+    rows = capabilities["entries"]
+    old = next(
+        item
+        for item in rows
+        if item["capabilityId"] == "platform.types.runtime-topology-candidate.v1"
+    )
+    old["summary"] = (
+        "frozen legacy V3 RuntimeTopologyCandidateV1 historical verification; current effect admission always refused"
+    )
+    old["sourceEvidence"] = [
+        item
+        for item in old["sourceEvidence"]
+        if item["path"] != "codex-rs/hepta-supervisor/src/module_runtime.rs"
+    ]
+    if not any(
+        item["capabilityId"] == "platform.types.runtime-topology-candidate.v2"
+        for item in rows
+    ):
+        new = copy.deepcopy(old)
+        new["capabilityId"] = "platform.types.runtime-topology-candidate.v2"
+        new["summary"] = (
+            "distinct HPTC schema-2 RuntimeTopologyCandidateV2 with fresh-selection Supervisor admission; authenticated execution unqualified"
+        )
+        new["publicSymbols"] = [
+            "RuntimeTopologyCandidateV2",
+            "RuntimeTopologyDeltaV2",
+            "RuntimeTopologyOperationV2",
+        ]
+        for group in ("sourceEvidence", "positiveTests", "negativeTests"):
+            for entry in new[group]:
+                entry["path"] = entry["path"].replace("/topology.rs", "/topology_v2.rs")
+                entry["mustContain"] = [
+                    needle.replace("CandidateV1", "CandidateV2").replace(
+                        "selected_digest_cannot_hide_substituted_delta_content",
+                        "selected_digest_cannot_hide_substituted_candidate_content",
+                    )
+                    for needle in entry["mustContain"]
+                ]
+        new["sourceEvidence"].append(
+            {
+                "path": "codex-rs/hepta-supervisor/src/module_runtime.rs",
+                "mustContain": [
+                    "register_selected_topology_candidate_v2",
+                    "candidate.validate()?",
+                    "TopologyBaselineMismatch",
+                    "reject_legacy_topology_candidate",
+                ],
+            }
+        )
+        rows.insert(rows.index(old) + 1, new)
+    capabilities["entryCount"] = len(rows)
+    write_object(capability_path, capabilities)
 
 
 def sync_global_truth() -> None:
@@ -274,6 +366,13 @@ def sync_global_truth() -> None:
     )
     if module is None:
         raise SyncError("platform.types missing from global truth matrix")
+    module_json = json.dumps(module)
+    module_json = module_json.replace(
+        "digest-bound RuntimeTopologyCandidateV1 with current supervisor admission callsite",
+        "distinct RuntimeTopologyCandidateV2 with fresh-selection Supervisor admission; V1 historical read only",
+    )
+    module.clear()
+    module.update(json.loads(module_json))
     states = module.get("states")
     if not isinstance(states, dict):
         raise SyncError("platform.types global states missing")
@@ -283,6 +382,7 @@ def sync_global_truth() -> None:
     module["targetOnlyCapabilities"] = [
         "authenticated_registry_snapshot_publication_and_anti_rollback",
         "complete_historical_prompt_v1_to_v2_product_migration",
+        "authenticated_topology_v2_upgrade_and_rollback_native_qualification",
         "deployed_random_stream_host_inventory_and_sensor_drivers",
         "target_host_performance_canary_operator_acceptance_and_release",
     ]
@@ -290,14 +390,55 @@ def sync_global_truth() -> None:
     write_object(GLOBAL_TRUTH, value)
 
 
+def sync_topology_only(catalog: dict[str, Any]) -> None:
+    """Refresh only this version boundary, without importing unrelated projection drift."""
+    subset = dict(catalog)
+    subset["protocols"] = [
+        row
+        for row in catalog["protocols"]
+        if row["id"] in {"RuntimeTopologyCandidateV1", "RuntimeTopologyCandidateV2"}
+    ]
+    subset["protocolCount"] = len(subset["protocols"])
+    if subset["protocolCount"] != 2:
+        raise SyncError("topology projection requires both exact Rust descriptors")
+    sync_protocol_registry(subset)
+    sync_topology_lane_projection(catalog)
+    sync_technical(catalog)
+    value = read_object(GLOBAL_TRUTH)
+    module = next(
+        row for row in value["modules"] if row.get("module") == "platform.types"
+    )
+    for key, entry in module.items():
+        if isinstance(entry, list):
+            module[key] = [
+                item.replace(
+                    "digest-bound RuntimeTopologyCandidateV1 with current supervisor admission callsite",
+                    "distinct RuntimeTopologyCandidateV2 with fresh-selection Supervisor admission; V1 historical read only",
+                )
+                if isinstance(item, str)
+                else item
+                for item in entry
+            ]
+    gap = "authenticated_topology_v2_upgrade_and_rollback_native_qualification"
+    if gap not in module["targetOnlyCapabilities"]:
+        module["targetOnlyCapabilities"].append(gap)
+    write_object(GLOBAL_TRUTH, value)
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--catalog", type=Path, required=True)
+    parser.add_argument("--topology-only", action="store_true")
     args = parser.parse_args()
     catalog = require_catalog(args.catalog)
+    if args.topology_only:
+        sync_topology_only(catalog)
+        print("platform.types topology-only generated truth synchronized")
+        return 0
     sync_protocol_registry(catalog)
     sync_contract_registry(catalog)
     sync_technical(catalog)
+    sync_topology_lane_projection(catalog)
     sync_global_truth()
     print(
         "platform.types generated truth synchronized: "

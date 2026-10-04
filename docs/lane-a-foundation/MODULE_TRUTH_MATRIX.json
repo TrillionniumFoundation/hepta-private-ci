@@ -47,14 +47,15 @@
         "checked numeric conversion with distinct registry-admission receipt and explicit Q32 arithmetic split",
         "deterministically generated Python/JavaScript runtime bindings and TypeScript declarations with own-property lookup",
         "bounded PromptDeliveryObservationV1 with exact semantic digest and current runtime/ledger callsites",
-        "digest-bound RuntimeTopologyCandidateV1 with current supervisor admission callsite",
+        "distinct RuntimeTopologyCandidateV2 with fresh-selection Supervisor admission; V1 historical read only",
         "bounded RandomStream, ExternalSystem and SensorCalibration manifest contracts with stable semantic digests"
       ],
       "targetOnlyCapabilities": [
         "authenticated product registry-generation provisioning and rotation",
         "external canonical JSON or wire codecs beyond the frozen foundational generated bindings",
         "random stream execution host inventory collection and physical sensor calibration drivers",
-        "full consumer target-host qualification independent acceptance and release"
+        "full consumer target-host qualification independent acceptance and release",
+        "authenticated_topology_v2_upgrade_and_rollback_native_qualification"
       ],
       "sourceAnchors": [
         {

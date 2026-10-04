@@ -2,7 +2,7 @@
   "schemaVersion": 1,
   "lane": "LANE-A-FOUNDATION",
   "closureScope": "current executable capabilities only",
-  "entryCount": 45,
+  "entryCount": 46,
   "entries": [
     {
       "capabilityId": "platform.types.bounded-identity.v1",
@@ -463,7 +463,7 @@
     {
       "capabilityId": "platform.types.runtime-topology-candidate.v1",
       "module": "platform.types",
-      "summary": "digest-bound RuntimeTopologyCandidateV1 with current supervisor admission callsite",
+      "summary": "frozen legacy V3 RuntimeTopologyCandidateV1 historical verification; current effect admission always refused",
       "publicSymbols": [
         "RuntimeTopologyCandidateV1",
         "RuntimeTopologyDeltaV1",
@@ -476,14 +476,6 @@
             "pub struct RuntimeTopologyCandidateV1",
             "pub fn validate(&self)",
             "pub fn content_digest(&self)"
-          ]
-        },
-        {
-          "path": "codex-rs/hepta-supervisor/src/module_runtime.rs",
-          "mustContain": [
-            "register_selected_topology_candidate",
-            "candidate.validate()?",
-            "TopologyBaselineMismatch"
           ]
         }
       ],
@@ -500,6 +492,56 @@
           "path": "codex-rs/hepta-types/src/topology.rs",
           "mustContain": [
             "selected_digest_cannot_hide_substituted_delta_content",
+            "related_module_bounds_are_checked_before_digest_allocation"
+          ]
+        }
+      ],
+      "durability": "none",
+      "activation": "library_only",
+      "productionCaller": null,
+      "receiptStatus": "native_workflow_required"
+    },
+    {
+      "capabilityId": "platform.types.runtime-topology-candidate.v2",
+      "module": "platform.types",
+      "summary": "distinct HPTC schema-2 RuntimeTopologyCandidateV2 with fresh-selection Supervisor admission; authenticated execution unqualified",
+      "publicSymbols": [
+        "RuntimeTopologyCandidateV2",
+        "RuntimeTopologyDeltaV2",
+        "RuntimeTopologyOperationV2"
+      ],
+      "sourceEvidence": [
+        {
+          "path": "codex-rs/hepta-types/src/topology_v2.rs",
+          "mustContain": [
+            "pub struct RuntimeTopologyCandidateV2",
+            "pub fn validate(&self)",
+            "pub fn content_digest(&self)"
+          ]
+        },
+        {
+          "path": "codex-rs/hepta-supervisor/src/module_runtime.rs",
+          "mustContain": [
+            "register_selected_topology_candidate_v2",
+            "candidate.validate()?",
+            "TopologyBaselineMismatch",
+            "reject_legacy_topology_candidate"
+          ]
+        }
+      ],
+      "positiveTests": [
+        {
+          "path": "codex-rs/hepta-types/src/topology_v2.rs",
+          "mustContain": [
+            "split_requires_individually_bound_add_participants"
+          ]
+        }
+      ],
+      "negativeTests": [
+        {
+          "path": "codex-rs/hepta-types/src/topology_v2.rs",
+          "mustContain": [
+            "selected_digest_cannot_hide_substituted_candidate_content",
             "related_module_bounds_are_checked_before_digest_allocation"
           ]
         }

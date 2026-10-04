@@ -29,6 +29,7 @@ pub const MAX_PLATFORM_TYPES_JSON_DEPTH_V1: usize = 16;
 pub const MAX_CANONICAL_U64_DECIMAL_BYTES_V1: usize = 20;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
+/// Historical validity only. Current Supervisor admission requires V2 and fresh selection.
 pub struct ValidatedRuntimeTopologyCandidateV1(RuntimeTopologyCandidateV1);
 
 impl ValidatedRuntimeTopologyCandidateV1 {
@@ -69,7 +70,7 @@ where
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
-struct CanonicalU64String(u64);
+pub(super) struct CanonicalU64String(pub(super) u64);
 
 impl Serialize for CanonicalU64String {
     fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
@@ -318,7 +319,7 @@ fn encode_delta(value: &RuntimeTopologyDeltaV1) -> RuntimeTopologyDeltaV1Json {
     }
 }
 
-fn decode_json<T>(bytes: &[u8]) -> Result<T, PlatformTypesWireError>
+pub(super) fn decode_json<T>(bytes: &[u8]) -> Result<T, PlatformTypesWireError>
 where
     T: for<'de> Deserialize<'de>,
 {
@@ -335,7 +336,7 @@ where
     serde_json::from_slice(bytes).map_err(|_| PlatformTypesWireError::InvalidJson)
 }
 
-fn encode_json<T>(value: &T) -> Result<Vec<u8>, PlatformTypesWireError>
+pub(super) fn encode_json<T>(value: &T) -> Result<Vec<u8>, PlatformTypesWireError>
 where
     T: Serialize,
 {
@@ -382,7 +383,7 @@ fn enforce_raw_limits(bytes: &[u8]) -> Result<(), PlatformTypesWireError> {
     Ok(())
 }
 
-fn stable_id(
+pub(super) fn stable_id(
     protocol_id: &'static str,
     field_path: &'static str,
     value: &str,
@@ -393,11 +394,14 @@ fn stable_id(
     StableId::with_profile(value, profile).map_err(|_| PlatformTypesWireError::StableId(field))
 }
 
-fn digest(value: &str, field: &'static str) -> Result<Digest32, PlatformTypesWireError> {
+pub(super) fn digest(value: &str, field: &'static str) -> Result<Digest32, PlatformTypesWireError> {
     Digest32::from_str(value).map_err(|_| PlatformTypesWireError::Digest(field))
 }
 
-fn nonzero_digest(value: &str, field: &'static str) -> Result<Digest32, PlatformTypesWireError> {
+pub(super) fn nonzero_digest(
+    value: &str,
+    field: &'static str,
+) -> Result<Digest32, PlatformTypesWireError> {
     let value = digest(value, field)?;
     if value.is_zero() {
         return Err(PlatformTypesWireError::Digest(field));
@@ -405,7 +409,7 @@ fn nonzero_digest(value: &str, field: &'static str) -> Result<Digest32, Platform
     Ok(value)
 }
 
-fn generation(
+pub(super) fn generation(
     value: CanonicalU64String,
     field: &'static str,
 ) -> Result<Generation, PlatformTypesWireError> {
@@ -455,7 +459,7 @@ mod tests {
         "{\"kind\":\"runtime_topology_candidate_v1\",",
         "\"proposal_digest\":\"ecd1378bc9dc130008f00d58db5d26f60db55934a49b949af7e6f6a8da2a2beb\",",
         "\"candidate_id\":\"candidate-8\",",
-        "\"candidate_digest\":\"8a2396058d95d3c0efde025d3e34ec1524d0ffa3a10f2fb8f6457cdb35a195d8\",",
+        "\"candidate_digest\":\"f7a3653e4cbcf55dd5afea1672b08f0707bfbd31197a26e5b450b30f14b786f6\",",
         "\"baseline_generation\":\"7\",\"candidate_generation\":\"8\",",
         "\"selected_topology_digest\":\"fa232b9dc6dac7e96f45b416ccb6a69c9943b1834979ebf3bdd6fadc2dac649f\",",
         "\"evaluation_digest\":\"efe77b201dc216c0edf435a227df2b2898d3f6ea1ff16e5d4d0d4ec0cf593271\",",
@@ -490,7 +494,7 @@ mod tests {
                 .content_digest()
                 .expect("digest")
                 .to_string(),
-            "8a2396058d95d3c0efde025d3e34ec1524d0ffa3a10f2fb8f6457cdb35a195d8"
+            "f7a3653e4cbcf55dd5afea1672b08f0707bfbd31197a26e5b450b30f14b786f6"
         );
         let encoded = encode_runtime_topology_candidate_v1_json(&value).expect("encode");
         assert_eq!(

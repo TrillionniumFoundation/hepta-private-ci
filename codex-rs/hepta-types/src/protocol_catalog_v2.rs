@@ -212,11 +212,21 @@ pub const PLATFORM_TYPES_PROTOCOL_CATALOG_V2: &[ProtocolDescriptorV2] = &[
     ProtocolDescriptorV2 {
         id: "RuntimeTopologyCandidateV1",
         version: 1,
-        semantic_type_id: "platform.types:runtime-topology-candidate-v1",
-        semantic_encoding: "HPTC_V1_schema_1",
+        semantic_type_id: "legacy:hepta.plasticity.topology-candidate.v3",
+        semantic_encoding: "frozen_custom_length_framed_sha256",
         transport_schema: Some("schemas/runtime-topology-candidate-v1.schema.json"),
         codec_owner: "platform.wire",
-        compatibility: "v1_frozen_semantics_validated_wrapper_required_at_product_boundary",
+        compatibility: "frozen_legacy_v3_read_audit_only_no_current_product_admission",
+        fields: TOPOLOGY_V1_FIELDS,
+    },
+    ProtocolDescriptorV2 {
+        id: "RuntimeTopologyCandidateV2",
+        version: 2,
+        semantic_type_id: "platform.types:runtime-topology-candidate-v2",
+        semantic_encoding: "HPTC_V1_schema_2",
+        transport_schema: Some("schemas/runtime-topology-candidate-v2.schema.json"),
+        codec_owner: "platform.wire",
+        compatibility: "additive_v2_requires_fresh_selection_no_legacy_authority_transfer",
         fields: TOPOLOGY_V1_FIELDS,
     },
     ProtocolDescriptorV2 {
@@ -268,7 +278,9 @@ pub fn identity_fields_for_protocol_v2(
     match protocol_id {
         "PromptDeliveryObservationV1" => Some(PROMPT_V1_IDENTITY_FIELDS),
         "PromptDeliveryObservationV2" => Some(PROMPT_V2_IDENTITY_FIELDS),
-        "RuntimeTopologyCandidateV1" => Some(TOPOLOGY_V1_IDENTITY_FIELDS),
+        "RuntimeTopologyCandidateV1" | "RuntimeTopologyCandidateV2" => {
+            Some(TOPOLOGY_V1_IDENTITY_FIELDS)
+        }
         "RandomStreamManifestV1" => Some(RANDOM_STREAM_IDENTITY_FIELDS),
         "ExternalSystemManifestV1" => Some(EXTERNAL_SYSTEM_IDENTITY_FIELDS),
         "SensorCalibrationManifestV1" => Some(SENSOR_IDENTITY_FIELDS),

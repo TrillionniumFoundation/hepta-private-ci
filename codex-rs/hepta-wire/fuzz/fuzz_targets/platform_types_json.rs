@@ -4,11 +4,13 @@ use codex_hepta_wire::decode_external_system_manifest_v1_json;
 use codex_hepta_wire::decode_prompt_delivery_v2_json;
 use codex_hepta_wire::decode_random_stream_manifest_v1_json;
 use codex_hepta_wire::decode_runtime_topology_candidate_v1_json;
+use codex_hepta_wire::decode_runtime_topology_candidate_v2_json;
 use codex_hepta_wire::decode_sensor_calibration_manifest_v1_json;
 use codex_hepta_wire::encode_external_system_manifest_v1_json;
 use codex_hepta_wire::encode_prompt_delivery_v2_json;
 use codex_hepta_wire::encode_random_stream_manifest_v1_json;
 use codex_hepta_wire::encode_runtime_topology_candidate_v1_json;
+use codex_hepta_wire::encode_runtime_topology_candidate_v2_json;
 use codex_hepta_wire::encode_sensor_calibration_manifest_v1_json;
 use libfuzzer_sys::fuzz_target;
 
@@ -55,6 +57,17 @@ fuzz_target!(|bytes: &[u8]| {
         assert_eq!(digest, value.as_inner().candidate_digest);
         let encoded = encode_runtime_topology_candidate_v1_json(&value).expect("encode topology");
         let decoded = decode_runtime_topology_candidate_v1_json(&encoded).expect("decode topology");
+        assert_eq!(decoded, value);
+        assert_eq!(decoded.as_inner().content_digest(), Ok(digest));
+    }
+    if let Ok(value) = decode_runtime_topology_candidate_v2_json(bytes) {
+        let digest = value
+            .as_inner()
+            .content_digest()
+            .expect("admitted topology must hash");
+        assert_eq!(digest, value.as_inner().candidate_digest);
+        let encoded = encode_runtime_topology_candidate_v2_json(&value).expect("encode topology");
+        let decoded = decode_runtime_topology_candidate_v2_json(&encoded).expect("decode topology");
         assert_eq!(decoded, value);
         assert_eq!(decoded.as_inner().content_digest(), Ok(digest));
     }

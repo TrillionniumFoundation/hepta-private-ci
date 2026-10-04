@@ -5,10 +5,14 @@
   "generatedFrom": "codex-rs/hepta-types/src/lib.rs",
   "generationCommand": "python3 scripts/platform_types_public_api.py --write",
   "coveragePolicy": "closed_world_exact_pub_use_and_pub_mod_exports",
+  "topLevelExportForms": [
+    "pub use",
+    "pub mod"
+  ],
   "provenancePolicy": "committed inventory is content-derived; exact candidate SHA and tree are injected into Lane A qualification artifacts",
-  "exportCount": 81,
-  "sourceModuleCount": 14,
-  "operationCount": 20,
+  "exportCount": 85,
+  "sourceModuleCount": 15,
+  "operationCount": 21,
   "sourceModules": [
     {
       "sourceModule": "bounded",
@@ -166,6 +170,17 @@
       }
     },
     {
+      "sourceModule": "topology_v2",
+      "sourcePath": "codex-rs/hepta-types/src/topology_v2.rs",
+      "exportCount": 4,
+      "exports": {
+        "RuntimeTopologyCandidateV2": "runtime_topology_candidate_v2",
+        "RuntimeTopologyContractErrorV2": "runtime_topology_candidate_v2",
+        "RuntimeTopologyDeltaV2": "runtime_topology_candidate_v2",
+        "RuntimeTopologyOperationV2": "runtime_topology_candidate_v2"
+      }
+    },
+    {
       "sourceModule": "numeric_registry_v2",
       "sourcePath": "codex-rs/hepta-types/src/numeric_registry_v2.rs",
       "exportCount": 1,
@@ -189,9 +204,5 @@
         "protocol_catalog_v2": "protocol_catalog_v2"
       }
     }
-  ],
-  "topLevelExportForms": [
-    "pub use",
-    "pub mod"
   ]
 }

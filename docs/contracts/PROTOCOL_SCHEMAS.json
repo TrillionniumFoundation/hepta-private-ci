@@ -4155,6 +4155,328 @@
         "unknown_critical_fields_rejected",
         "authority_delta_none"
       ]
+    },
+    {
+      "id": "RuntimeTopologyCandidateV1",
+      "contractId": "RuntimeTopologyCandidateV1",
+      "canonicalEncoding": "frozen_custom_length_framed_sha256",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "legacy_candidate_id_changed_and_ordered_deltas_only",
+      "fields": [
+        {
+          "name": "proposal_digest",
+          "type": "sha256",
+          "required": true,
+          "nativeWireType": "digest32",
+          "maxBytes": 32
+        },
+        {
+          "name": "candidate_id",
+          "type": "id128",
+          "required": true,
+          "nativeWireType": "stable_id",
+          "maxBytes": 128
+        },
+        {
+          "name": "candidate_digest",
+          "type": "sha256",
+          "required": true,
+          "nativeWireType": "derived_digest32",
+          "maxBytes": 32
+        },
+        {
+          "name": "baseline_generation",
+          "type": "u64",
+          "required": true,
+          "nativeWireType": "positive_u64"
+        },
+        {
+          "name": "candidate_generation",
+          "type": "u64",
+          "required": true,
+          "nativeWireType": "positive_u64"
+        },
+        {
+          "name": "selected_topology_digest",
+          "type": "sha256",
+          "required": true,
+          "nativeWireType": "digest32",
+          "maxBytes": 32
+        },
+        {
+          "name": "evaluation_digest",
+          "type": "sha256",
+          "required": true,
+          "nativeWireType": "digest32",
+          "maxBytes": 32
+        },
+        {
+          "name": "rollback_predecessor_digest",
+          "type": "sha256",
+          "required": true,
+          "nativeWireType": "digest32",
+          "maxBytes": 32
+        },
+        {
+          "name": "changed",
+          "type": "bool",
+          "required": true,
+          "nativeWireType": "bool"
+        },
+        {
+          "name": "deltas",
+          "type": "bounded_array",
+          "required": true,
+          "nativeWireType": "ordered_topology_delta_array",
+          "maxBytes": 65536
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "versioned_semantic_identity",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected"
+      ],
+      "platformTypesNormativeProjection": {
+        "normativeSource": "codex-rs/hepta-types/src/protocol_catalog_v2.rs",
+        "semanticTypeId": "legacy:hepta.plasticity.topology-candidate.v3",
+        "semanticEncoding": "frozen_custom_length_framed_sha256",
+        "transportSchema": "schemas/runtime-topology-candidate-v1.schema.json",
+        "codecOwner": "platform.wire",
+        "compatibility": "frozen_legacy_v3_read_audit_only_no_current_product_admission",
+        "fields": [
+          {
+            "name": "proposal_digest",
+            "wireType": "digest32",
+            "required": true,
+            "maximumEncodedBytes": 32,
+            "identityProfile": null
+          },
+          {
+            "name": "candidate_id",
+            "wireType": "stable_id",
+            "required": true,
+            "maximumEncodedBytes": 128,
+            "identityProfile": "stable-v1"
+          },
+          {
+            "name": "candidate_digest",
+            "wireType": "derived_digest32",
+            "required": true,
+            "maximumEncodedBytes": 32,
+            "identityProfile": null
+          },
+          {
+            "name": "baseline_generation",
+            "wireType": "positive_u64",
+            "required": true,
+            "identityProfile": null
+          },
+          {
+            "name": "candidate_generation",
+            "wireType": "positive_u64",
+            "required": true,
+            "identityProfile": null
+          },
+          {
+            "name": "selected_topology_digest",
+            "wireType": "digest32",
+            "required": true,
+            "maximumEncodedBytes": 32,
+            "identityProfile": null
+          },
+          {
+            "name": "evaluation_digest",
+            "wireType": "digest32",
+            "required": true,
+            "maximumEncodedBytes": 32,
+            "identityProfile": null
+          },
+          {
+            "name": "rollback_predecessor_digest",
+            "wireType": "digest32",
+            "required": true,
+            "maximumEncodedBytes": 32,
+            "identityProfile": null
+          },
+          {
+            "name": "changed",
+            "wireType": "bool",
+            "required": true,
+            "identityProfile": null
+          },
+          {
+            "name": "deltas",
+            "wireType": "ordered_topology_delta_array",
+            "required": true,
+            "maximumEncodedBytes": 65536,
+            "identityProfile": null
+          }
+        ]
+      },
+      "transportStatus": "strict_product_codec_owned_by_platform.wire"
+    },
+    {
+      "id": "RuntimeTopologyCandidateV2",
+      "contractId": "RuntimeTopologyCandidateV2",
+      "canonicalEncoding": "HPTC_V1_schema_2",
+      "denyUnknownCriticalFields": true,
+      "maximumEncodedBytes": 262144,
+      "digestScope": "all_versioned_semantic_fields",
+      "fields": [
+        {
+          "name": "proposal_digest",
+          "type": "sha256",
+          "required": true,
+          "nativeWireType": "digest32",
+          "maxBytes": 32
+        },
+        {
+          "name": "candidate_id",
+          "type": "id128",
+          "required": true,
+          "nativeWireType": "stable_id",
+          "maxBytes": 128
+        },
+        {
+          "name": "candidate_digest",
+          "type": "sha256",
+          "required": true,
+          "nativeWireType": "derived_digest32",
+          "maxBytes": 32
+        },
+        {
+          "name": "baseline_generation",
+          "type": "u64",
+          "required": true,
+          "nativeWireType": "positive_u64"
+        },
+        {
+          "name": "candidate_generation",
+          "type": "u64",
+          "required": true,
+          "nativeWireType": "positive_u64"
+        },
+        {
+          "name": "selected_topology_digest",
+          "type": "sha256",
+          "required": true,
+          "nativeWireType": "digest32",
+          "maxBytes": 32
+        },
+        {
+          "name": "evaluation_digest",
+          "type": "sha256",
+          "required": true,
+          "nativeWireType": "digest32",
+          "maxBytes": 32
+        },
+        {
+          "name": "rollback_predecessor_digest",
+          "type": "sha256",
+          "required": true,
+          "nativeWireType": "digest32",
+          "maxBytes": 32
+        },
+        {
+          "name": "changed",
+          "type": "bool",
+          "required": true,
+          "nativeWireType": "bool"
+        },
+        {
+          "name": "deltas",
+          "type": "bounded_array",
+          "required": true,
+          "nativeWireType": "ordered_topology_delta_array",
+          "maxBytes": 65536
+        }
+      ],
+      "invariants": [
+        "bounded_lengths",
+        "versioned_semantic_identity",
+        "digest_before_authority_use",
+        "unknown_critical_fields_rejected"
+      ],
+      "platformTypesNormativeProjection": {
+        "normativeSource": "codex-rs/hepta-types/src/protocol_catalog_v2.rs",
+        "semanticTypeId": "platform.types:runtime-topology-candidate-v2",
+        "semanticEncoding": "HPTC_V1_schema_2",
+        "transportSchema": "schemas/runtime-topology-candidate-v2.schema.json",
+        "codecOwner": "platform.wire",
+        "compatibility": "additive_v2_requires_fresh_selection_no_legacy_authority_transfer",
+        "fields": [
+          {
+            "name": "proposal_digest",
+            "wireType": "digest32",
+            "required": true,
+            "maximumEncodedBytes": 32,
+            "identityProfile": null
+          },
+          {
+            "name": "candidate_id",
+            "wireType": "stable_id",
+            "required": true,
+            "maximumEncodedBytes": 128,
+            "identityProfile": "stable-v1"
+          },
+          {
+            "name": "candidate_digest",
+            "wireType": "derived_digest32",
+            "required": true,
+            "maximumEncodedBytes": 32,
+            "identityProfile": null
+          },
+          {
+            "name": "baseline_generation",
+            "wireType": "positive_u64",
+            "required": true,
+            "identityProfile": null
+          },
+          {
+            "name": "candidate_generation",
+            "wireType": "positive_u64",
+            "required": true,
+            "identityProfile": null
+          },
+          {
+            "name": "selected_topology_digest",
+            "wireType": "digest32",
+            "required": true,
+            "maximumEncodedBytes": 32,
+            "identityProfile": null
+          },
+          {
+            "name": "evaluation_digest",
+            "wireType": "digest32",
+            "required": true,
+            "maximumEncodedBytes": 32,
+            "identityProfile": null
+          },
+          {
+            "name": "rollback_predecessor_digest",
+            "wireType": "digest32",
+            "required": true,
+            "maximumEncodedBytes": 32,
+            "identityProfile": null
+          },
+          {
+            "name": "changed",
+            "wireType": "bool",
+            "required": true,
+            "identityProfile": null
+          },
+          {
+            "name": "deltas",
+            "wireType": "ordered_topology_delta_array",
+            "required": true,
+            "maximumEncodedBytes": 65536,
+            "identityProfile": null
+          }
+        ]
+      },
+      "transportStatus": "strict_product_codec_owned_by_platform.wire"
     }
   ],
   "subordinateProtocolRegistries": [
@@ -4185,5 +4507,7 @@
     "operatorAcceptance": false,
     "promotion": false,
     "release": false
-  }
+  },
+  "platformTypesNormativeSource": "codex-rs/hepta-types/src/protocol_catalog_v2.rs",
+  "platformTypesProjectionPolicy": "central rows are generated compatibility projections; the typed Rust catalog and frozen native implementations define semantic identity"
 }

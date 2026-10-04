@@ -22,7 +22,8 @@
         "codex-rs/hepta-types/src/prompt_delivery.rs",
         "codex-rs/hepta-types/src/topology.rs",
         "codex-rs/hepta-types/src/manifests.rs",
-        "codex-rs/hepta-ndu/src/numeric_admission.rs"
+        "codex-rs/hepta-ndu/src/numeric_admission.rs",
+        "codex-rs/hepta-types/src/topology_v2.rs"
       ],
       "invariants": [
         "bounded values and identifiers enforce encoded-byte and profile bounds before owned construction",
@@ -33,9 +34,9 @@
         "schema normalization and numeric profiles bind one immutable caller-owned registry generation",
         "registered numeric admission uses a distinct receipt binding registry normalization profiles and exact conversion evidence",
         "FixedQ32 toward-zero arithmetic is distinct from signed-q32-nearest-ties-even conversion",
-        "PromptDeliveryObservationV1 and RuntimeTopologyCandidateV1 bind every semantic field and reject invalid structure",
         "RandomStream ExternalSystem and SensorCalibration manifests are bounded authority-free validated values with stable semantic digests",
-        "generated JavaScript profile lookups accept own registered properties only and reject inherited names"
+        "generated JavaScript profile lookups accept own registered properties only and reject inherited names",
+        "Topology version boundary: RuntimeTopologyCandidateV1 retains legacy:hepta.plasticity.topology-candidate.v3 historical read/audit only; RuntimeTopologyCandidateV2 uses platform.types:runtime-topology-candidate-v2 schema 2 and requires fresh independent selection"
       ]
     },
     {

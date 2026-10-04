@@ -15,6 +15,7 @@ EXPECTED_WIRE_KINDS = frozenset(
     {
         "prompt_delivery_observation_v2",
         "runtime_topology_candidate_v1",
+        "runtime_topology_candidate_v2",
         "random_stream_manifest_v1",
         "external_system_manifest_v1",
         "sensor_calibration_manifest_v1",

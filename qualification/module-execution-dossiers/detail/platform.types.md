@@ -1,5 +1,7 @@
 # platform.types: implementation and qualification dossier
 
+Current topology boundary: historical V1 retains exact legacy V3 verification; current V2 has a distinct HPTC schema-2 commitment and requires fresh selection. V1 effect admission is refused. Authenticated upgrade/restart/rollback qualification remains open. See `docs/modules/platform.types/TOPOLOGY_VERSION_MIGRATION_V2.md`.
+
 Parent guides:
 
 - `docs/modules/platform.types/TECHNICAL.md`
@@ -10,7 +12,7 @@ Parent guides:
 Lane: `LANE-A-FOUNDATION`.
 
 Status: core source, compatibility-preserving V2 protocols, strict product
-codecs for all five transport contracts, named manifest owners and owner-pinned
+codecs for all six transport contracts, named manifest owners and owner-pinned
 registry verification are implemented. Exact-candidate source-head and
 synthetic-merge qualification remain separate until retained receipts pass for
 the final candidate. Independent current-head approval remains a separate merge
@@ -36,7 +38,7 @@ Prompt V1 remains frozen under its historical custom digest. Prompt V2 uses an
 HPTC semantic commitment and can bind the exact V1 digest as an explicit
 migration witness. There is no silent V1 reinterpretation.
 
-Runtime topology HPTC binds every candidate and delta semantic field. The stored
+Runtime topology V2 HPTC binds every candidate and delta semantic field. The stored
 candidate digest is derived. Delta and related-module sets have one canonical
 representation: strictly increasing `StableId` order; duplicate, self and
 non-canonical producers fail. The product codec returns a validated wrapper.
@@ -59,7 +61,7 @@ snapshot.
 `platform.wire` owns strict codecs for:
 
 - `PromptDeliveryObservationV2`;
-- `RuntimeTopologyCandidateV1`;
+- `RuntimeTopologyCandidateV1` (historical) and `RuntimeTopologyCandidateV2` (current);
 - `RandomStreamManifestV1`;
 - `ExternalSystemManifestV1`;
 - `SensorCalibrationManifestV1`.
@@ -68,12 +70,12 @@ Every decoder enforces raw byte/depth limits before Serde, rejects duplicate,
 unknown and missing fields, uses canonical decimal strings for precision-
 sensitive integers, and reconstructs the validated native value. The manifest
 codecs live in `codex-rs/hepta-wire/src/platform_manifest_json.rs`; Prompt and
-Topology live in `platform_types_json.rs`.
+historical Topology V1 live in `platform_types_json.rs`; current Topology V2 lives in `platform_topology_v2_json.rs`.
 
 Current named product boundaries are:
 
 - Codex/Agentd producer and Learning Ledger consumer for Prompt V1 compatibility;
-- `platform.wire` strict codecs for all five product transports;
+- `platform.wire` strict codecs for all six product transports;
 - Runtime Supervisor validated topology admission;
 - authenticated NDU registered numeric evaluation plus owner-pinned V2 snapshot
   verification;
@@ -113,7 +115,7 @@ verifier/tests and both platform.types workflows.
 ## 6. Verification matrix
 
 The 24-check consumer matrix includes Rust, Python and Node semantic oracles,
-strict product codecs for all five contracts, complete type and NDU tests,
+strict product codecs for all six contracts, complete type and NDU tests,
 prompt producer/ledger, topology admission, all three manifest product owners
 and strict lint.
 
@@ -160,7 +162,7 @@ bash scripts/run_platform_types_consumer_qualification.sh
 python3 scripts/test_platform_types_independent_review.py
 ```
 
-Manifest and topology producers must preserve the HPTC semantic commitment at
+Manifest and Topology V2 producers must preserve the HPTC semantic commitment at
 cross-owner boundaries. Prompt migration must preserve the frozen V1 digest and
 use V2 as a distinct identity. Generation-sensitive numeric owners must verify
 against their independently pinned exact snapshot.

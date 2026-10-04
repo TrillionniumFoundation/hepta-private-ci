@@ -77,6 +77,16 @@ old raw vector, or sorting dimensions without moving their associated values,
 is invalid. If the original value-to-axis association is unavailable, obtain a
 new labeled source rather than guessing the mapping.
 
+### Runtime topology V1 to V2
+
+The old native V1 digest retains exact legacy V3 framing for historical read/audit.
+The strengthened commitment belongs to a distinct RuntimeTopologyCandidateV2,
+HPTC schema 2, with separate transport and current Supervisor admission. Every
+old V1 admission is refused before mutation; fresh independently selected V2
+commitments are required. There is no dual-digest fallback or authority rehash.
+See [the topology upgrade and rollback boundary](./TOPOLOGY_VERSION_MIGRATION_V2.md)
+for precise compatibility, intermediate-source inventory and qualification limits.
+
 ### General procedure
 
 For each public API or wire change:
