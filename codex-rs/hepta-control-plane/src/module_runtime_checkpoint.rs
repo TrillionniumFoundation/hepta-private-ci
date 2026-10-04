@@ -73,13 +73,16 @@ impl RuntimeModuleRegistryV1 {
         {
             return Err(RuntimeModuleRegistryError::Bounds);
         }
+        // Validate nested bounds before digest canonicalization clones their collections.
+        for record in &checkpoint.records {
+            record.abi.validate()?;
+        }
         if checkpoint.checkpoint_digest != checkpoint_digest(&checkpoint) {
             return Err(RuntimeModuleRegistryError::CheckpointDigestMismatch);
         }
 
         let mut records = BTreeMap::new();
         for record in checkpoint.records {
-            record.abi.validate()?;
             let key = (record.abi.module_id.clone(), record.abi.generation);
             if records.insert(key, record).is_some() {
                 return Err(RuntimeModuleRegistryError::CheckpointDuplicate);
@@ -115,6 +118,16 @@ impl RuntimeModuleRegistryV1 {
                 || generation > greatest
                 || record.abi.module_id != *module_id
                 || record.abi.generation != *generation
+            {
+                return Err(RuntimeModuleRegistryError::CheckpointInvalid);
+            }
+            // Active and draining generations always retain their selected
+            // writer reservation. Quarantined candidates may never have been
+            // selected, so their presence alone cannot imply a reservation.
+            if matches!(
+                record.lifecycle,
+                RuntimeModuleLifecycleV1::Active | RuntimeModuleLifecycleV1::Quiescing
+            ) && active.get(module_id) != Some(generation)
             {
                 return Err(RuntimeModuleRegistryError::CheckpointInvalid);
             }
@@ -466,4 +479,61 @@ mod tests {
             Err(RuntimeModuleRegistryError::CheckpointDigestMismatch)
         ));
     }
+
+    #[test]
+    fn checkpoint_nested_port_bounds_precede_digest_materialization()
+    -> Result<(), RuntimeModuleRegistryError> {
+        let mut registry = RuntimeModuleRegistryV1::new();
+        registry.register_candidate(abi(/*value*/ 1, /*predecessor*/ None))?;
+        let mut checkpoint = registry.checkpoint();
+        checkpoint.records[0].abi.input_ports = (0..=super::super::MAX_MODULE_PORTS)
+            .map(|index| id(&format!("input:{index}")))
+            .collect();
+        assert!(
+            matches!(
+                RuntimeModuleRegistryV1::restore_checkpoint(checkpoint),
+                Err(RuntimeModuleRegistryError::Bounds)
+            ),
+            "oversized nested ports reached digest rebuilding first"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn checkpoint_nested_domain_bounds_precede_digest_materialization()
+    -> Result<(), RuntimeModuleRegistryError> {
+        let mut registry = RuntimeModuleRegistryV1::new();
+        registry.register_candidate(abi(/*value*/ 1, /*predecessor*/ None))?;
+        let mut checkpoint = registry.checkpoint();
+        checkpoint.records[0].abi.authoritative_domains = (0..=super::super::MAX_MODULE_DOMAINS)
+            .map(|index| id(&format!("domain:{index}")))
+            .collect();
+        assert!(
+            matches!(
+                RuntimeModuleRegistryV1::restore_checkpoint(checkpoint),
+                Err(RuntimeModuleRegistryError::Bounds)
+            ),
+            "oversized nested domains reached digest rebuilding first"
+        );
+        Ok(())
+    }
+
+    #[test]
+    fn checkpoint_exact_nested_port_bound_keeps_canonical_roundtrip()
+    -> Result<(), RuntimeModuleRegistryError> {
+        let mut candidate = abi(/*value*/ 1, /*predecessor*/ None);
+        candidate.input_ports = (0..super::super::MAX_MODULE_PORTS)
+            .map(|index| id(&format!("input:{index}")))
+            .collect();
+        let mut registry = RuntimeModuleRegistryV1::new();
+        registry.register_candidate(candidate)?;
+        let checkpoint = registry.checkpoint();
+        let restored = RuntimeModuleRegistryV1::restore_checkpoint(checkpoint.clone())?;
+        assert_eq!(restored.checkpoint(), checkpoint);
+        Ok(())
+    }
 }
+
+#[cfg(test)]
+#[path = "module_runtime_checkpoint_reservation_tests.rs"]
+mod reservation_tests;
