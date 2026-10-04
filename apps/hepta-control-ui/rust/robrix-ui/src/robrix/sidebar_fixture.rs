@@ -127,9 +127,12 @@ pub(crate) fn after_event(cx: &mut Cx, workspace: &ChatWorkspace, ui: &WidgetRef
         .global::<crate::visual_theme::ThemeState>()
         .selected
         .label();
-    // The shared brand bar is drawn on both active adaptive variants. Read its
-    // actual delegated pass/window scale; never infer it from screenshot DPR.
-    let dpi_probe = ui.widget(cx, ids!(brand_bar)).area();
+    // Use the existing interior mark, drawn in the shared header on both
+    // adaptive variants. The full-width bar can legitimately cover the SDK's
+    // ceil-aligned pass overscan; retain it separately without using it as a
+    // supposedly wholly visible probe or inferring scale from screenshot DPR.
+    let dpi_bar = ui.widget(cx, ids!(brand_bar)).area();
+    let dpi_probe = ui.widget(cx, ids!(brand_mark)).area();
     let draw_dpi_factor = if dpi_probe.is_valid(cx) {
         let dpi = cx.get_dpi_factor_of(&dpi_probe);
         if dpi.is_finite() && dpi > 0.0 {
@@ -143,7 +146,7 @@ pub(crate) fn after_event(cx: &mut Cx, workspace: &ChatWorkspace, ui: &WidgetRef
     let geometry_frame = cx.global::<SidebarFixture>().geometry_frame;
     let geometry = cx.global::<SidebarFixture>().geometry.clone();
     let serialized = format!(
-        "{{\"active\":{},\"draftIds\":{:?},\"count\":{},\"draftBytes\":{},\"navigationOpen\":{},\"consoleOpen\":{},\"theme\":{:?},\"newDraftAreaValid\":{},\"newDraftFocused\":{},\"keyFocusValid\":{},\"controls\":{{{}}},\"targets\":{},\"geometryFrame\":{},\"geometry\":{},\"drawDpiFactor\":{},\"dpiProbe\":{}}}",
+        "{{\"active\":{},\"draftIds\":{:?},\"count\":{},\"draftBytes\":{},\"navigationOpen\":{},\"consoleOpen\":{},\"theme\":{:?},\"newDraftAreaValid\":{},\"newDraftFocused\":{},\"keyFocusValid\":{},\"controls\":{{{}}},\"targets\":{},\"geometryFrame\":{},\"geometry\":{},\"drawDpiFactor\":{},\"dpiProbe\":{},\"dpiProbeRaw\":{},\"dpiBarRaw\":{},\"dpiBarClipped\":{}}}",
         workspace.active_id(),
         ids,
         ids.len(),
@@ -159,7 +162,10 @@ pub(crate) fn after_event(cx: &mut Cx, workspace: &ChatWorkspace, ui: &WidgetRef
         geometry_frame,
         geometry.unwrap_or_else(|| "null".into()),
         draw_dpi_factor,
-        rectangle(cx, dpi_probe)
+        clipped_rectangle(cx, dpi_probe),
+        rectangle(cx, dpi_probe),
+        rectangle(cx, dpi_bar),
+        clipped_rectangle(cx, dpi_bar)
     );
     let receipt = match event {
         Event::KeyUp(_) => "key-up",

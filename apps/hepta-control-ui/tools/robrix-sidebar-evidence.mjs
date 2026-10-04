@@ -26,3 +26,11 @@ export function requireCompletedSidebarEvidence(evidence,finalTest){
  assert.equal(finalTest.results.length,1,'A retry cannot silently qualify the scenario');
  assert.equal(finalTest.results[0].status,'passed','The final test execution must have passed');
 }
+
+export function observedAreaCenter(area,viewport){
+ assert.ok(Array.isArray(area)&&area.length===4,'A current real draw Area is required');
+ const [x,y,width,height]=area;
+ assert.ok(area.every(Number.isFinite)&&width>0&&height>0,'Draw Area must be finite and positive');
+ assert.ok(x>=0&&y>=0&&x+width<=viewport.width&&y+height<=viewport.height,'Complete draw Area must remain strictly inside the viewport');
+ return{x:x+width/2,y:y+height/2};
+}

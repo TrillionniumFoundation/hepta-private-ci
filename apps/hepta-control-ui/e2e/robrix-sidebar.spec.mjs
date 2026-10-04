@@ -5,12 +5,12 @@ import {readFile,writeFile} from 'node:fs/promises';
 import {createHash} from 'node:crypto';
 import {execFileSync} from 'node:child_process';
 import {prepareVerifiedRegionForOcr,readScreenshotText} from '../tools/verify-robrix-pixels.mjs';
-import {validateSidebarSurface,requireSidebarLabel} from '../tools/robrix-sidebar-evidence.mjs';
+import {validateSidebarSurface,requireSidebarLabel,observedAreaCenter} from '../tools/robrix-sidebar-evidence.mjs';
 
 test('Compact sidebar creates once and preserves both conversations',async({page,browserName},testInfo)=>{
  expect(process.env.HEPTA_ROBRIX_FIXTURES).toBe('1');
  const sourceSha=execFileSync('git',['rev-parse','HEAD'],{encoding:'utf8'}).trim();
- const states=[],geometry=[],captures=[],inputs=[],errors=[],logs=[],fonts=[],uploads=[];
+ const states=[],geometry=[],captures=[],captureTimings=[],inputs=[],errors=[],logs=[],fonts=[],uploads=[];
  const pendingFonts=new Set();let phase='application';let scenarioComplete=false;
  const font=request=>/\.(?:ttf|otf|woff2?)(?:[?#]|$)/i.test(request.url());
  const current=()=>states.at(-1)??null;
@@ -40,28 +40,24 @@ test('Compact sidebar creates once and preserves both conversations',async({page
   document.addEventListener('securitypolicyviolation',event=>window.__sidebarCsp.push({phase:window.__sidebarPhase,directive:event.violatedDirective,blockedURI:event.blockedURI}));
   new MutationObserver(records=>{for(const record of records)for(const node of record.addedNodes)if(node.nodeName==='STYLE')window.__sidebarStyles.push({phase:window.__sidebarPhase,text:node.textContent});}).observe(document,{childList:true,subtree:true});
  });
- function center(area){
-  expect(area,'A current real draw Area is required').toHaveLength(4);
-  const [x,y,width,height]=area,viewport=page.viewportSize();
-  expect(area.every(Number.isFinite)).toBe(true);expect(width).toBeGreaterThan(0);expect(height).toBeGreaterThan(0);
-  expect(x).toBeGreaterThanOrEqual(0);expect(y).toBeGreaterThanOrEqual(0);
-  expect(x+width).toBeLessThanOrEqual(viewport.width);expect(y+height).toBeLessThanOrEqual(viewport.height);
-  return{x:x+width/2,y:y+height/2};
- }
+ function center(area){return observedAreaCenter(area,page.viewportSize());}
  async function health(){
   expect(errors.filter(value=>value.phase==='application')).toEqual([]);
   expect(await page.evaluate(()=>window.__sidebarCsp.filter(value=>value.phase==='application'))).toEqual([]);
   expect(uploads).toEqual([]);expect(fonts.filter(value=>value.event==='failed')).toEqual([]);
  }
  async function capture(name){
+  const started=performance.now(),timing={name,startMs:started,stage:'fonts'};captureTimings.push(timing);
   await expect.poll(()=>pendingFonts.size,{timeout:60000}).toBe(0);
+  timing.fontsWaitMs=performance.now()-started;timing.stage='frame-and-health';
   await settle();await health();
   const before=current(),geometryBefore=currentGeometry();expect(before).not.toBeNull();
   const viewport=page.viewportSize();
-  const metrics=await page.locator('canvas').evaluate(canvas=>{const gl=canvas.getContext('webgl2');return{dpr:devicePixelRatio,css:{x:canvas.getBoundingClientRect().x,y:canvas.getBoundingClientRect().y,width:canvas.getBoundingClientRect().width,height:canvas.getBoundingClientRect().height},buffer:{width:canvas.width,height:canvas.height},drawingBuffer:{width:gl?.drawingBufferWidth,height:gl?.drawingBufferHeight},contextLost:gl?.isContextLost(),retained:gl?.getContextAttributes()?.preserveDrawingBuffer};});
+  const metrics=await page.locator('canvas').evaluate(canvas=>{const gl=canvas.getContext('webgl2');return{dpr:devicePixelRatio,visibilityState:document.visibilityState,documentFocused:document.hasFocus(),css:{x:canvas.getBoundingClientRect().x,y:canvas.getBoundingClientRect().y,width:canvas.getBoundingClientRect().width,height:canvas.getBoundingClientRect().height},buffer:{width:canvas.width,height:canvas.height},drawingBuffer:{width:gl?.drawingBufferWidth,height:gl?.drawingBufferHeight},contextLost:gl?.isContextLost(),retained:gl?.getContextAttributes()?.preserveDrawingBuffer};});
   center(before.dpiProbe);validateSidebarSurface({viewport,metrics,drawDpiFactor:before.drawDpiFactor});
   if(!before.navigationOpen&&!before.consoleOpen){expect(geometryBefore).not.toBeNull();expect(geometryBefore.room).toBe(before.active);}
-  const path=testInfo.outputPath(name+'.png');
+  const path=testInfo.outputPath(name+'.png'),beforeScreenshot=performance.now();
+  timing.readyMs=beforeScreenshot-started;timing.stage='capturing-png';
   phase='snapshot';await page.evaluate(()=>window.__sidebarPhase='snapshot');
   try{await page.screenshot({path,fullPage:true,caret:'initial'});}
   finally{phase='application';await page.evaluate(()=>window.__sidebarPhase='application');}
@@ -81,7 +77,9 @@ test('Compact sidebar creates once and preserves both conversations',async({page
   expect(stateValue(after),'State and draw areas must remain stable across this exact PNG').toEqual(stateValue(before));
   expect(geometryAfter).toEqual(geometryBefore);
   const value={name,path,viewport,metrics,pngSize:{width,height},pngSha256:createHash('sha256').update(png).digest('hex'),before,after,geometryBefore,geometryAfter};
-  captures.push(value);await health();return value;
+  captures.push(value);await health();
+  timing.screenshotAndReadbackMs=performance.now()-beforeScreenshot;timing.totalMs=performance.now()-started;timing.stage='complete';
+  return value;
  }
  async function waitRoomDraw(afterFrame){
   await expect.poll(()=>current()?.geometryFrame).toBeGreaterThan(afterFrame);
@@ -93,7 +91,7 @@ test('Compact sidebar creates once and preserves both conversations',async({page
  async function clickControl(name){
   const observed=await capture('before-'+name+'-'+inputs.length),area=observed.after.controls[name],point=center(area);
   expect(current().controls[name]).toEqual(area);
-  inputs.push({kind:'click',control:name,area,point,sourceCapture:observed.name,sourcePngSha256:observed.pngSha256});
+  inputs.push({atMs:performance.now(),kind:'click',control:name,area,point,sourceCapture:observed.name,sourcePngSha256:observed.pngSha256});
   await page.mouse.click(point.x,point.y);await settle();
   if(['backToChat','chat'].includes(name))await waitRoomDraw(observed.after.geometryFrame);
  }
@@ -102,7 +100,7 @@ test('Compact sidebar creates once and preserves both conversations',async({page
   await expect.poll(()=>current()?.targets?.rooms.some(value=>value.room===room&&value.area!==null)).toBe(true);
   const observed=await capture('select-room-'+room+'-'+inputs.length);
   const area=observed.after.targets.rooms.find(value=>value.room===room).area,point=center(area);
-  inputs.push({kind:'click',control:'room',room,area,point,sourceCapture:observed.name,sourcePngSha256:observed.pngSha256});
+  inputs.push({atMs:performance.now(),kind:'click',control:'room',room,area,point,sourceCapture:observed.name,sourcePngSha256:observed.pngSha256});
   await page.mouse.click(point.x,point.y);await expect.poll(()=>current()?.active).toBe(room);
   await expect.poll(()=>current()?.navigationOpen).toBe(false);await waitRoomDraw(observed.after.geometryFrame);await settle();
  }
@@ -123,7 +121,7 @@ test('Compact sidebar creates once and preserves both conversations',async({page
   const newText='New local draft 中文 retained';
   await editorText(originalText,{write:true});
   const beforeScroll=await capture('original-before-scroll'),point=center(beforeScroll.geometryAfter.viewport);
-  inputs.push({kind:'wheel',point,deltaY:-480,sourceCapture:beforeScroll.name,sourcePngSha256:beforeScroll.pngSha256});
+  inputs.push({atMs:performance.now(),kind:'wheel',point,deltaY:-480,sourceCapture:beforeScroll.name,sourcePngSha256:beforeScroll.pngSha256});
   await page.mouse.move(point.x,point.y);await page.mouse.wheel(0,-480);
   await expect.poll(()=>currentGeometry()?.followLatest).toBe(false);
   anchor=(await capture('original-scrollback')).geometryAfter;
@@ -139,7 +137,7 @@ test('Compact sidebar creates once and preserves both conversations',async({page
    requireSidebarLabel(text,key);open[key+'Ocr']={region,text};
   }
   const oldHitbox=targets.newDraft,newPoint=center(oldHitbox);
-  inputs.push({kind:'click',control:'newDraft',area:oldHitbox,point:newPoint,sourceCapture:open.name,sourcePngSha256:open.pngSha256});
+  inputs.push({atMs:performance.now(),kind:'click',control:'newDraft',area:oldHitbox,point:newPoint,sourceCapture:open.name,sourcePngSha256:open.pngSha256});
   await page.mouse.click(newPoint.x,newPoint.y);
   await expect.poll(()=>current()?.count).toBe(2);await expect.poll(()=>current()?.navigationOpen).toBe(false);
   await waitRoomDraw(open.after.geometryFrame);
@@ -148,13 +146,13 @@ test('Compact sidebar creates once and preserves both conversations',async({page
   const expectedIds=[...current().draftIds];await capture('after-one-new-draft');
   // Crucially test retained keyboard focus BEFORE any click can move it away.
   for(const key of ['Enter','Space']){
-   const previous=current().sample;inputs.push({kind:'key',key,before:current()});
+   const previous=current().sample;inputs.push({atMs:performance.now(),kind:'key',key,before:current()});
    await page.keyboard.press(key);
    await expect.poll(()=>states.some(value=>value.sample>previous&&value.receipt==='key-up')).toBe(true);
    await capture('closed-sidebar-'+key);expect(current().draftIds).toEqual(expectedIds);expect(current().count).toBe(2);
    expect(current().active).toBe(newRoom);expect(current().navigationOpen).toBe(false);
   }
-  inputs.push({kind:'old-hitbox-click',point:newPoint,area:oldHitbox,sourceCapture:open.name,sourcePngSha256:open.pngSha256});
+  inputs.push({atMs:performance.now(),kind:'old-hitbox-click',point:newPoint,area:oldHitbox,sourceCapture:open.name,sourcePngSha256:open.pngSha256});
   const beforeOldClick=current().sample;await page.mouse.click(newPoint.x,newPoint.y);
   await expect.poll(()=>states.some(value=>value.sample>beforeOldClick&&value.receipt==='mouse-up')).toBe(true);
   await capture('closed-sidebar-old-hitbox');expect(current().draftIds).toEqual(expectedIds);expect(current().active).toBe(newRoom);
@@ -187,7 +185,7 @@ test('Compact sidebar creates once and preserves both conversations',async({page
  }finally{
   const observed=await page.evaluate(()=>({violations:window.__sidebarCsp??[],snapshotStyles:window.__sidebarStyles??[]})).catch(()=>({}));
   const path=testInfo.outputPath('sidebar-evidence.json');
-  await writeFile(path,JSON.stringify({sourceSha,browser:browserName,fixtures:true,scenarioComplete,qualification:'Requires scenarioComplete plus the final Playwright reporter outcome; collection-time testInfo.status is not authoritative',original,newRoom,anchor,captures,inputs,states,geometry,errors,logs,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),uploads,...observed},null,2));
+  await writeFile(path,JSON.stringify({sourceSha,browser:browserName,fixtures:true,scenarioComplete,qualification:'Requires scenarioComplete plus the final Playwright reporter outcome; collection-time testInfo.status is not authoritative',original,newRoom,anchor,captures,captureTimings,inputs,states,geometry,errors,logs,fonts,pendingFonts:[...pendingFonts].map(request=>request.url()),uploads,...observed},null,2));
   await testInfo.attach('sidebar-evidence',{path,contentType:'application/json'});
  }
 });

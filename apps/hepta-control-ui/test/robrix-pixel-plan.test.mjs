@@ -120,3 +120,16 @@ test('provisional passed status cannot qualify an interrupted sidebar scenario',
 test('completed input evidence still requires the authoritative final passed execution',()=>{
  for(const finalTest of [{status:'unexpected',expectedStatus:'passed',results:[{status:'failed'}]},{status:'expected',expectedStatus:'failed',results:[{status:'failed'}]},{status:'expected',expectedStatus:'passed',results:[{status:'failed'},{status:'passed'}]},{status:'expected',expectedStatus:'passed',results:[{status:'failed'}]}])assert.throws(()=>requireCompletedSidebarEvidence({scenarioComplete:true},finalTest));
 });
+
+
+test('pixel-aligned full-pass overscan cannot masquerade as a wholly visible action or DPI probe',async()=>{
+ const {observedAreaCenter}=await import('../tools/robrix-sidebar-evidence.mjs');
+ const viewport={width:1280,height:800};
+ // Exact recorded ac58 overscan remains rejected, without epsilon or clipping
+ // guessed from the expected label. A real interior Area uses the same rule.
+ assert.throws(()=>observedAreaCenter([0,0,1280.14892578125,68],viewport),/strictly inside/);
+ assert.throws(()=>observedAreaCenter([1270,10,20,20],viewport),/strictly inside/);
+ assert.throws(()=>observedAreaCenter([10,790,20,20],viewport),/strictly inside/);
+ assert.deepEqual(observedAreaCenter([33,12,44,44],viewport),{x:55,y:34});
+ assert.deepEqual(observedAreaCenter([1176,10,104,44],viewport),{x:1228,y:32});
+});
