@@ -28,9 +28,7 @@ REMOTE_EXECUTION_CONFIGS = {
 # otherwise insists that a test's execution and target platforms are equal.
 LOCAL_WINDOWS_MSVC_EXEC_PLATFORM = "//:windows_x86_64_msvc"
 LOCAL_WINDOWS_MSVC_CC_TOOLCHAIN = "//:local_windows_msvc_cc_toolchain"
-LOCAL_WINDOWS_GNULLVM_TEST_TOOLCHAIN = (
-    "//:windows_gnullvm_tests_on_msvc_host_toolchain"
-)
+LOCAL_WINDOWS_GNULLVM_TEST_TOOLCHAIN = "//:windows_gnullvm_tests_on_msvc_host_toolchain"
 # Honor either explicit setting so the wrapper never overrides the caller's
 # choice when it supplies the CI default below.
 REMOTE_REPO_CONTENTS_CACHE_STARTUP_OPTIONS = {

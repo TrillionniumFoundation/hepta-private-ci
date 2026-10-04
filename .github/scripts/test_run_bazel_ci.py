@@ -50,7 +50,9 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         probe.write_text(PROBE, encoding="utf-8")
         if os.name == "nt":
             executable = self.root / "bazel.cmd"
-            executable.write_text(f'@"{sys.executable}" "{probe}" %*\n', encoding="utf-8")
+            executable.write_text(
+                f'@"{sys.executable}" "{probe}" %*\n', encoding="utf-8"
+            )
             git_bash = (
                 Path(os.environ.get("ProgramFiles", "C:/Program Files"))
                 / "Git/bin/bash.exe"
@@ -59,7 +61,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         else:
             executable = self.root / "bazel"
             executable.write_text(
-                f"#!/bin/sh\nexec {shlex.quote(sys.executable)} {shlex.quote(str(probe))} \"$@\"\n",
+                f'#!/bin/sh\nexec {shlex.quote(sys.executable)} {shlex.quote(str(probe))} "$@"\n',
                 encoding="utf-8",
             )
             executable.chmod(0o755)
@@ -151,9 +153,7 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         ):
             self.assertIn(f"--action_env={name}", args)
             self.assertIn(f"--host_action_env={name}", args)
-        self.assertIn(
-            f"--action_env=PATH={self.env['CODEX_BAZEL_WINDOWS_PATH']}", args
-        )
+        self.assertIn(f"--action_env=PATH={self.env['CODEX_BAZEL_WINDOWS_PATH']}", args)
         self.assertIn(
             f"--host_action_env=PATH={self.env['CODEX_BAZEL_WINDOWS_PATH']}", args
         )
@@ -220,7 +220,9 @@ class RunBazelCiIntegrationTest(unittest.TestCase):
         self.assertIn("--skip_incompatible_explicit_targets", build)
         self.assertEqual(build[build.index("--") + 1 :], ["//codex-rs/fake:library"])
 
-    def test_authenticated_cross_keeps_linux_build_actions_and_windows_tests(self) -> None:
+    def test_authenticated_cross_keeps_linux_build_actions_and_windows_tests(
+        self,
+    ) -> None:
         self.env["BUILDBUDDY_API_KEY"] = "test-only-token"
         result, calls = self.run_wrapper(
             "--windows-cross-compile", "--", "build", "--", "//fake:target"
