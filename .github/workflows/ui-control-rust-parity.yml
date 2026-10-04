@@ -152,6 +152,7 @@ jobs:
         run: |
           set -euo pipefail
           npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
+          node --test apps/hepta-control-ui/test/readiness-helper.test.mjs
           node apps/hepta-control-ui/tools/build-rust.mjs
           node apps/hepta-control-ui/tools/build-rust.mjs --active
           node apps/hepta-control-ui/tools/verify-rust-artifacts.mjs

@@ -113,3 +113,15 @@ The source archive is 2,255,959 bytes with SHA-256
 `resources/NATIVE-ASSETS.json` binds every asset and original notice. The
 included licenses differ by resource; this is not an all-MIT resource bundle.
 Build inputs and CI runtime evidence are not permission to publish a package.
+
+## First observed Linux preview
+
+Source `111062161e49733c9e97ef8b54396ba55c1947d9` and its separately
+identified merge with audit base `711859f23b73ad89af4d23e75fe0ed4a461e7979`
+passed [run 37173746042](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/37173746042).
+Each lane passed 296 native tests, including all 36 required cases, with four
+exact ignored cases. Each also completed two distinct real X11 GUI startups,
+full 1280x800 status images, later-callback readiness, OS close, worker drain,
+and exit zero. ZIP, test inventory/JUnit, session log and image digests were
+read back. These are hosted fixture observations; the installed-default,
+physical-input/IME, Wayland caption and other acceptance limits above remain.

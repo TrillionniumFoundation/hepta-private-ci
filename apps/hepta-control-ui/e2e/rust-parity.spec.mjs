@@ -1,5 +1,5 @@
 import { expect, test } from "@playwright/test";
-import { loadControlConsole } from "./readiness.mjs";
+import { loadControlConsole, loadFailedControlConsole } from "./readiness.mjs";
 
 // These scenarios apply to both implementations. Rust runs are selected by the
 // independent candidate profile, never by replacing the live JavaScript path.
@@ -107,7 +107,7 @@ test("narrow console keeps controls, confirmation and error diagnostics readable
 
 test("failed WASM loading exposes fixed diagnostics without starting a session", async ({ page, request }) => {
   await page.route("**/pkg/hepta_control_web_bg.wasm", route => route.abort());
-  await page.goto("/");
+  await loadFailedControlConsole(page);
   await expect(page.locator("#error-status")).toContainText("UI_CONTROL_STARTUP");
   await expect(page.getByRole("button", { name: "Request start", exact: true })).toBeDisabled();
   await expect(page.getByRole("button", { name: "Refresh runtime view", exact: true })).toBeDisabled();

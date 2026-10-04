@@ -14,7 +14,7 @@ function isExpectedNavigationInterruption(error) {
   ].some(fragment => message.includes(fragment));
 }
 
-export async function loadControlConsole(page) {
+async function navigateControlConsole(page) {
   const navigationId = `navigation:${randomUUID()}`;
   const relativeUrl = `/?${NAVIGATION_PARAMETER}=${encodeURIComponent(navigationId)}`;
   const response = await page.context().request.get(relativeUrl);
@@ -64,6 +64,20 @@ export async function loadControlConsole(page) {
     JSON.parse(JSON.stringify(globalThis.__heptaUiControlReadiness ?? null)),
   );
   expect(receipt, "the browser application must publish a readiness receipt").not.toBeNull();
+
+  return Object.freeze({
+    ...receipt,
+    navigationAck: Object.freeze({
+      id: navigationId,
+      httpStatus,
+      finalUrl: page.url(),
+      applicationReady: receipt.phase === "ready",
+    }),
+  });
+}
+
+export async function loadControlConsole(page) {
+  const receipt = await navigateControlConsole(page);
   expect(receipt.schema).toBe(READINESS_SCHEMA);
   expect(receipt.phase, `startup failed with ${receipt.errorCode ?? "unknown error"}`).toBe("ready");
   expect(receipt.tabId).toMatch(/^tab:/);
@@ -75,13 +89,15 @@ export async function loadControlConsole(page) {
     credentials: "memory-only-never-broadcast-or-persisted",
   });
 
-  return Object.freeze({
-    ...receipt,
-    navigationAck: Object.freeze({
-      id: navigationId,
-      httpStatus,
-      finalUrl: page.url(),
-      applicationReady: true,
-    }),
-  });
+  return receipt;
+}
+
+export async function loadFailedControlConsole(page) {
+  const receipt = await navigateControlConsole(page);
+  // A loader failure occurs before Rust can publish its full ready schema.
+  // Observe the current document's fixed fail-closed receipt, never "load".
+  expect(receipt.phase).toBe("failed");
+  expect(receipt.errorCode).toBe("UI_CONTROL_STARTUP");
+  expect(receipt.navigationAck.applicationReady).toBe(false);
+  return receipt;
 }
