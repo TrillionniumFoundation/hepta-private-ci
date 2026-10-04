@@ -134,6 +134,49 @@ pub fn validate_cpu_neuron_parameter_materials_v2(
     Ok(())
 }
 
+/// Validate the complete candidate-specific rollback frontier using the same
+/// original material rules. Pure facts cannot construct an artifact admission.
+pub fn validate_cpu_neuron_parameter_rollback_pairs_v2(
+    plan: &CpuNeuronParameterMaterialPlanV2<'_>,
+    rollbacks: &[(StableId, &crate::CpuNeuronGenerationPlanV1)],
+) -> Result<(), AgentdError> {
+    use validation::error;
+    if rollbacks.len() != plan.candidates.len() {
+        return Err(error("rollback frontier is incomplete"));
+    }
+    let mut paths = std::collections::BTreeSet::new();
+    for material in plan
+        .candidates
+        .iter()
+        .map(|value| value.generation)
+        .chain(rollbacks.iter().map(|(_, material)| *material))
+    {
+        for path in [
+            &material.generation_store,
+            &material.runtime_index,
+            &material.witness,
+        ] {
+            if !paths.insert(path) {
+                return Err(error("physical candidate/rollback paths repeated"));
+            }
+        }
+    }
+    for candidate in plan.candidates {
+        let matching: Vec<_> = rollbacks
+            .iter()
+            .filter(|(id, _)| id == candidate.candidate_id)
+            .collect();
+        if matching.len() != 1 {
+            return Err(error("duplicate or absent exact rollback"));
+        }
+        validate_cpu_neuron_parameter_materials_v2(&CpuNeuronParameterMaterialPlanV2 {
+            rollback: matching[0].1,
+            ..*plan
+        })?;
+    }
+    Ok(())
+}
+
 /// Original anchored receipt validation; signature/current trust remain at
 /// their existing final-use owners.
 pub fn validate_cpu_neuron_parameter_receipt_v2(

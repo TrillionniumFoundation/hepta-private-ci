@@ -29,7 +29,19 @@ impl CpuNeuronRoundMaterialsV3 {
     ) -> Result<Self, AgentdError> {
         // E1 must first be checked against its original pre-publication head.
         // Updating that head before this check would erase the actual lineage.
-        let mut materials = self.install_evaluated_materials(candidates, rollback)?;
+        self.install_registered_material_pairs_v2(
+            candidates,
+            std::slice::from_ref(rollback),
+            final_admission,
+        )
+    }
+    pub(crate) fn install_registered_material_pairs_v2(
+        self,
+        candidates: &[codex_hepta_agent_components::intelligence_eval::VerifiedParameterPreRegistrationEvaluationV1],
+        rollbacks: &[codex_hepta_agent_components::intelligence_eval::VerifiedParameterPreRegistrationEvaluationV1],
+        final_admission: FinalRoundParameterAdmissionV3<'_>,
+    ) -> Result<Self, AgentdError> {
+        let mut materials = self.install_evaluated_materials(candidates, rollbacks)?;
         final_admission
             .current
             .revalidate_current(final_admission.now)

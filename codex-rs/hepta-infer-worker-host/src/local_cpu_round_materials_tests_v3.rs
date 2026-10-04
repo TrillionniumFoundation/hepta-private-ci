@@ -273,3 +273,152 @@ fn generated_update_cannot_be_hidden_behind_an_empty_preparation_frontier() -> T
 #[cfg(feature = "fixed-initial-cpu-host")]
 #[path = "local_cpu_round_final_admission_tests_v3.rs"]
 mod final_admission_tests;
+
+#[test]
+fn each_generated_update_has_its_own_exact_rollback_paths_and_original_baseline_restore()
+-> TestResult {
+    use codex_hepta_agent_components::plasticity::generate_parameter_candidates_v3;
+    use codex_hepta_types::FixedQ32;
+    let directory = tempfile::tempdir()?;
+    let mut fixture = fixture::Fixture::new(directory.path().join("enrolled-rounds"))?;
+    fixture
+        .request
+        .generator_profile
+        .update_scales
+        .push(FixedQ32::from_raw(1 << 31));
+    fixture.request.generated =
+        generate_parameter_candidates_v3(fixture.request.generator_profile.clone())?;
+    fixture.request.admission.generator_digest = fixture.request.generated.generator_digest;
+    fixture.execution.maximum_candidates =
+        u16::try_from(fixture.request.generated.candidates.len())?;
+    let materials = fixture.derive(&fixture.round("actual.multiple.updates", 1)?)?;
+    assert_eq!(materials.candidates().len(), 2);
+    let first = &materials.candidates()[0];
+    let second = &materials.candidates()[1];
+    let a = materials.rollback_for_candidate(&first.candidate_id)?;
+    let b = materials.rollback_for_candidate(&second.candidate_id)?;
+    assert_ne!(a.generation_store, b.generation_store);
+    assert_ne!(a.runtime_index, b.runtime_index);
+    assert_ne!(a.witness, b.witness);
+    assert_eq!(a.runtime.generation.get(), 3);
+    assert_eq!(b.runtime.generation.get(), 3);
+    let mut restored = fixture.baseline.native.clone();
+    restored.generation = a.native.generation;
+    assert_eq!(a.native, restored);
+    assert_eq!(b.native, restored);
+    assert_ne!(first.generation.native, second.generation.native);
+    for candidate in materials.candidates() {
+        materials.with_candidate_rollback_plan(
+            &candidate.candidate_id,
+            validate_cpu_neuron_parameter_materials_v2,
+        )??;
+    }
+    assert!(
+        materials
+            .rollback_for_candidate(&StableId::new("foreign.update")?)
+            .is_err()
+    );
+    assert_eq!(std::fs::read_dir(directory.path())?.count(), 0);
+    Ok(())
+}
+
+#[test]
+fn exact_rollback_frontier_rejects_missing_foreign_shared_paths_and_changed_baseline_parameters()
+-> TestResult {
+    use codex_hepta_agent_components::plasticity::generate_parameter_candidates_v3;
+    use codex_hepta_types::FixedQ32;
+    let mut fixture = fixture::Fixture::new("/protected/original-rounds".into())?;
+    fixture
+        .request
+        .generator_profile
+        .update_scales
+        .push(FixedQ32::from_raw(1 << 31));
+    fixture.request.generated =
+        generate_parameter_candidates_v3(fixture.request.generator_profile.clone())?;
+    fixture.request.admission.generator_digest = fixture.request.generated.generator_digest;
+    fixture.execution.maximum_candidates =
+        u16::try_from(fixture.request.generated.candidates.len())?;
+    let materials = fixture.derive(&fixture.round("actual.multiple.updates", 1)?)?;
+    let a = materials.candidates()[0].candidate_id.clone();
+    let b = materials.candidates()[1].candidate_id.clone();
+    let ra = materials.rollback_for_candidate(&a)?;
+    let rb = materials.rollback_for_candidate(&b)?;
+    materials.with_plan(|plan| {
+        validate_cpu_neuron_parameter_rollback_pairs_v2(plan, &[(a.clone(), ra), (b.clone(), rb)])
+    })?;
+    assert!(
+        materials
+            .with_plan(|plan| validate_cpu_neuron_parameter_rollback_pairs_v2(
+                plan,
+                &[(a.clone(), ra)]
+            ))
+            .is_err()
+    );
+    assert!(
+        materials
+            .with_plan(|plan| validate_cpu_neuron_parameter_rollback_pairs_v2(
+                plan,
+                &[(a.clone(), ra), (a.clone(), rb)]
+            ))
+            .is_err()
+    );
+    assert!(
+        materials
+            .with_plan(|plan| validate_cpu_neuron_parameter_rollback_pairs_v2(
+                plan,
+                &[
+                    (a.clone(), ra),
+                    (StableId::new("foreign.update").unwrap(), rb)
+                ]
+            ))
+            .is_err()
+    );
+    assert!(
+        materials
+            .with_plan(|plan| validate_cpu_neuron_parameter_rollback_pairs_v2(
+                plan,
+                &[(a.clone(), ra), (b.clone(), ra)]
+            ))
+            .is_err()
+    );
+    let mut altered = rb.clone();
+    altered.native.threshold_rate_q24 += 1;
+    assert!(
+        materials
+            .with_plan(|plan| validate_cpu_neuron_parameter_rollback_pairs_v2(
+                plan,
+                &[(a.clone(), ra), (b.clone(), &altered)]
+            ))
+            .is_err()
+    );
+    Ok(())
+}
+
+#[test]
+fn original_first_rollback_lease_requires_exact_candidate_and_complete_material() -> TestResult {
+    use super::super::rollback_pairs::validate_first_rollback_binding;
+    let fixture = fixture::Fixture::new("/protected/original-rounds".into())?;
+    let materials = fixture.derive(&fixture.round("actual.first.rollback", 1)?)?;
+    let first = &materials.candidates()[0].candidate_id;
+    let original = materials.rollback();
+    validate_first_rollback_binding(first, original, first, original)?;
+    assert!(
+        validate_first_rollback_binding(
+            first,
+            original,
+            &StableId::new("foreign.update")?,
+            original,
+        )
+        .is_err()
+    );
+    let mut other_path = original.clone();
+    other_path.witness = "/protected/another-round/witness".into();
+    assert!(validate_first_rollback_binding(first, original, first, &other_path).is_err());
+    let mut other_input = original.clone();
+    other_input.model_manifest = "/protected/another-round/model.json".into();
+    assert!(validate_first_rollback_binding(first, original, first, &other_input).is_err());
+    let mut other_limits = original.clone();
+    other_limits.index_context.max_records += 1;
+    assert!(validate_first_rollback_binding(first, original, first, &other_limits).is_err());
+    Ok(())
+}

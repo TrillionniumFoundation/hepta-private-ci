@@ -39,6 +39,7 @@ pub struct CpuNeuronRoundMaterialsV3 {
     request: ParameterPlasticityProductRequestV1,
     candidates: Vec<CpuNeuronRoundMaterialCandidateV3>,
     rollback: CpuNeuronGenerationPlanV1,
+    candidate_rollbacks: Vec<(StableId, CpuNeuronGenerationPlanV1)>,
     test_plan_digest: Digest32,
 }
 impl CpuNeuronRoundMaterialsV3 {
@@ -63,13 +64,36 @@ impl CpuNeuronRoundMaterialsV3 {
     pub fn rollback(&self) -> &CpuNeuronGenerationPlanV1 {
         &self.rollback
     }
+    /// Exact measured rollback for the actually selected candidate. Each original prospective pair has
+    /// its own physical paths; E1 replaces only its measured calibration and
+    /// lineage under the same complete candidate identity.
+    pub fn rollback_for_candidate(
+        &self,
+        candidate: &StableId,
+    ) -> Result<&CpuNeuronGenerationPlanV1, AgentdError> {
+        if !self
+            .candidates
+            .iter()
+            .any(|value| &value.candidate_id == candidate)
+        {
+            return Err(error("rollback belongs to an absent Update candidate"));
+        }
+        if self.candidate_rollbacks.is_empty() {
+            return Ok(&self.rollback);
+        }
+        self.candidate_rollbacks
+            .iter()
+            .find(|(id, _)| id == candidate)
+            .map(|(_, plan)| plan)
+            .ok_or_else(|| error("exact measured rollback absent"))
+    }
     /// Replace prospective calibration only with the exact complete materials
     /// already checked by the original E1 reader. This grants no registration.
     #[cfg(feature = "fixed-initial-cpu-host")]
     pub(crate) fn install_evaluated_materials(
         mut self,
         candidates: &[codex_hepta_agent_components::intelligence_eval::VerifiedParameterPreRegistrationEvaluationV1],
-        rollback: &codex_hepta_agent_components::intelligence_eval::VerifiedParameterPreRegistrationEvaluationV1,
+        rollbacks: &[codex_hepta_agent_components::intelligence_eval::VerifiedParameterPreRegistrationEvaluationV1],
     ) -> Result<Self, AgentdError> {
         use codex_hepta_agent_components::intelligence_eval::ParameterPreRegistrationPurposeV1;
         use codex_hepta_agent_components::intelligence_eval::finalize_parameter_pre_registration_material_v1;
@@ -85,14 +109,7 @@ impl CpuNeuronRoundMaterialsV3 {
                 && evaluation.baseline_head_artifact_id() == &self.request.admission.baseline_id
                 && evaluation.baseline_registry_head() == self.request.admission.artifact_registry_head_digest
         };
-        if candidates.len() != self.candidates.len()
-            || rollback.purpose() != ParameterPreRegistrationPurposeV1::ExactRollback
-            || !same_round(rollback)
-            || !self
-                .candidates
-                .iter()
-                .any(|candidate| &candidate.candidate_id == rollback.candidate_id())
-        {
+        if candidates.len() != self.candidates.len() || rollbacks.len() != self.candidates.len() {
             return Err(error(
                 "complete measured candidate/rollback frontier changed",
             ));
@@ -127,12 +144,63 @@ impl CpuNeuronRoundMaterialsV3 {
             }
             candidate.generation = replace(&candidate.generation, evaluation)?;
         }
-        self.rollback = replace(&self.rollback, rollback)?;
-        self.with_plan(validate_cpu_neuron_parameter_materials_v2)?;
+        let prospective_rollbacks = self.candidate_rollbacks.clone();
+        self.candidate_rollbacks.clear();
+        for candidate in &self.candidates {
+            let mut matching = rollbacks
+                .iter()
+                .filter(|value| value.candidate_id() == &candidate.candidate_id);
+            let rollback = matching
+                .next()
+                .ok_or_else(|| error("whole original measured rollback absent"))?;
+            if matching.next().is_some()
+                || rollback.purpose() != ParameterPreRegistrationPurposeV1::ExactRollback
+                || !same_round(rollback)
+            {
+                return Err(error("duplicate, foreign or wrong-purpose E1 rollback"));
+            }
+            let prospective = prospective_rollbacks
+                .iter()
+                .find(|(id, _)| id == &candidate.candidate_id)
+                .map(|(_, plan)| plan)
+                .ok_or_else(|| error("original prospective rollback absent"))?;
+            self.candidate_rollbacks.push((
+                candidate.candidate_id.clone(),
+                replace(prospective, rollback)?,
+            ));
+        }
+        if let Some((_, first)) = self.candidate_rollbacks.first() {
+            self.rollback = first.clone();
+        }
+        self.validate_rollback_pairs()?;
         Ok(self)
+    }
+    pub fn validate_rollback_pairs(&self) -> Result<(), AgentdError> {
+        let rollbacks: Vec<_> = self
+            .candidate_rollbacks
+            .iter()
+            .map(|(id, plan)| (id.clone(), plan))
+            .collect();
+        self.with_plan(|plan| validate_cpu_neuron_parameter_rollback_pairs_v2(plan, &rollbacks))
     }
     pub fn with_plan<T>(
         &self,
+        inspect: impl FnOnce(&CpuNeuronParameterMaterialPlanV2<'_>) -> T,
+    ) -> T {
+        self.with_rollback_plan(&self.rollback, inspect)
+    }
+    /// Borrow the original complete plan with this candidate's exact rollback.
+    /// This pure material view grants no artifact or runtime admission.
+    pub fn with_candidate_rollback_plan<T>(
+        &self,
+        candidate: &StableId,
+        inspect: impl FnOnce(&CpuNeuronParameterMaterialPlanV2<'_>) -> T,
+    ) -> Result<T, AgentdError> {
+        Ok(self.with_rollback_plan(self.rollback_for_candidate(candidate)?, inspect))
+    }
+    fn with_rollback_plan<T>(
+        &self,
+        rollback: &CpuNeuronGenerationPlanV1,
         inspect: impl FnOnce(&CpuNeuronParameterMaterialPlanV2<'_>) -> T,
     ) -> T {
         let candidates: Vec<_> = self
@@ -152,7 +220,7 @@ impl CpuNeuronRoundMaterialsV3 {
             request: &self.request,
             test_plan_digest: self.test_plan_digest,
             candidates: &candidates,
-            rollback: &self.rollback,
+            rollback,
         })
     }
 }
@@ -256,7 +324,29 @@ pub fn derive_cpu_neuron_round_materials_v3(
     }
     let mut original = baseline.native.clone();
     original.generation = update_generation.next().map_err(material_error)?;
-    let rollback = generation_plan(baseline, original, &directory.join("rollback"))?;
+    let mut rollback = generation_plan(baseline, original.clone(), &directory.join("rollback"))?;
+    let mut candidate_rollbacks = Vec::new();
+    for candidate in &candidates {
+        let path = if candidates.len() == 1 {
+            directory.join("rollback")
+        } else {
+            directory.join(format!(
+                "rollback-{}",
+                Digest32::of_parts(&[
+                    b"hepta.cpu-neuron.round-rollback.v3\0",
+                    round.identity_digest().as_array(),
+                    candidate.candidate_id.as_str().as_bytes(),
+                ])
+            ))
+        };
+        candidate_rollbacks.push((
+            candidate.candidate_id.clone(),
+            generation_plan(baseline, original.clone(), &path)?,
+        ));
+    }
+    if let Some((_, first)) = candidate_rollbacks.first() {
+        rollback = first.clone();
+    }
     let result = CpuNeuronRoundMaterialsV3 {
         round: round.clone(),
         canonical: canonical.clone(),
@@ -265,9 +355,11 @@ pub fn derive_cpu_neuron_round_materials_v3(
         request: request.clone(),
         candidates,
         rollback,
+        candidate_rollbacks,
         test_plan_digest: blueprint.test_plan_digest,
     };
     result.with_plan(validate_cpu_neuron_parameter_materials_v2)?;
+    result.validate_rollback_pairs()?;
     Ok(result)
 }
 

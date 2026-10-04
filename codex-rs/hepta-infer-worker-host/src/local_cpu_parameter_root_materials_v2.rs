@@ -26,6 +26,8 @@ struct Descriptor {
     test_plan_digest: String,
     candidates: Vec<CandidateSources>,
     rollback: InstalledCpuSourceV1,
+    #[serde(default)]
+    rollbacks: Vec<RollbackSources>,
     worker_program: InstalledCpuSourceV1,
 }
 #[derive(Deserialize)]
@@ -35,6 +37,12 @@ struct CandidateSources {
     generation: InstalledCpuSourceV1,
     canary_tick: InstalledCpuSourceV1,
     canary_port: InstalledCpuSourceV1,
+}
+#[derive(Deserialize)]
+#[serde(deny_unknown_fields)]
+struct RollbackSources {
+    candidate_id: String,
+    generation: InstalledCpuSourceV1,
 }
 struct Candidate {
     id: StableId,
@@ -56,6 +64,7 @@ pub struct CpuNeuronParameterRootMaterialsV2 {
     test_plan_digest: Digest32,
     candidates: Vec<Candidate>,
     rollback: CpuNeuronGenerationPlanV1,
+    rollbacks: Vec<(StableId, CpuNeuronGenerationPlanV1)>,
 }
 impl CpuNeuronParameterRootMaterialsV2 {
     pub fn from_protected_source(
@@ -67,6 +76,7 @@ impl CpuNeuronParameterRootMaterialsV2 {
         if descriptor.schema != "hepta.cpu-neuron.parameter-root-materials.v2"
             || descriptor.candidates.is_empty()
             || descriptor.candidates.len() > 32
+            || descriptor.rollbacks.len() > 32
         {
             return Err(invalid("bounded protected CPU material descriptor"));
         }
@@ -84,10 +94,12 @@ impl CpuNeuronParameterRootMaterialsV2 {
             &mut sources,
         )?)
         .map_err(|error| invalid(error.to_string()))?;
-        let envelope = canonical.execution_envelope(
-            u16::try_from(request.generated.candidates.len())
-                .map_err(|error| invalid(error.to_string()))?,
-        ).map_err(invalid)?;
+        let envelope = canonical
+            .execution_envelope(
+                u16::try_from(request.generated.candidates.len())
+                    .map_err(|error| invalid(error.to_string()))?,
+            )
+            .map_err(invalid)?;
         let baseline = plan(&descriptor.baseline, &mut sources)?;
         let rollback = plan(&descriptor.rollback, &mut sources)?;
         let mut candidates = Vec::new();
@@ -134,6 +146,34 @@ impl CpuNeuronParameterRootMaterialsV2 {
                 port,
             });
         }
+        let mut rollbacks = Vec::new();
+        if descriptor.rollbacks.is_empty() {
+            if candidates.len() != 1 {
+                return Err(invalid(
+                    "multi-Update protected material requires every exact rollback",
+                ));
+            }
+            rollbacks.push((candidates[0].id.clone(), rollback.clone()));
+        } else {
+            for source in descriptor.rollbacks {
+                let id = StableId::new(source.candidate_id)
+                    .map_err(|error| invalid(error.to_string()))?;
+                rollbacks.push((id, plan(&source.generation, &mut sources)?));
+            }
+            let first = rollbacks
+                .iter()
+                .find(|(id, _)| id == &candidates[0].id)
+                .ok_or_else(|| invalid("first original exact rollback absent"))?;
+            if codex_hepta_neuron::encode_neuron_generation_material_v2(&first.1)
+                .map_err(|error| invalid(error.to_string()))?
+                != codex_hepta_neuron::encode_neuron_generation_material_v2(&rollback)
+                    .map_err(|error| invalid(error.to_string()))?
+            {
+                return Err(invalid(
+                    "compatibility rollback differs from first exact pair",
+                ));
+            }
+        }
         let materials = Self {
             sources,
             worker,
@@ -146,8 +186,9 @@ impl CpuNeuronParameterRootMaterialsV2 {
             test_plan_digest: digest(&descriptor.test_plan_digest)?,
             candidates,
             rollback,
+            rollbacks,
         };
-        materials.with_plan(crate::validate_cpu_neuron_parameter_materials_v2)?;
+        materials.validate_rollback_pairs()?;
         materials.revalidate_sources()?;
         Ok(materials)
     }
@@ -170,6 +211,24 @@ impl CpuNeuronParameterRootMaterialsV2 {
     pub fn rollback(&self) -> &CpuNeuronGenerationPlanV1 {
         &self.rollback
     }
+    pub fn rollback_for_candidate(
+        &self,
+        id: &StableId,
+    ) -> Result<&CpuNeuronGenerationPlanV1, AgentdError> {
+        self.rollbacks
+            .iter()
+            .find(|(candidate, _)| candidate == id)
+            .map(|(_, plan)| plan)
+            .ok_or_else(|| invalid("exact protected rollback absent"))
+    }
+    pub fn validate_rollback_pairs(&self) -> Result<(), AgentdError> {
+        let pairs: Vec<_> = self
+            .rollbacks
+            .iter()
+            .map(|(id, plan)| (id.clone(), plan))
+            .collect();
+        self.with_plan(|plan| crate::validate_cpu_neuron_parameter_rollback_pairs_v2(plan, &pairs))
+    }
     pub fn candidate_canary(
         &self,
         id: &StableId,
@@ -182,6 +241,20 @@ impl CpuNeuronParameterRootMaterialsV2 {
     /// Borrow the same pure material facade. Temporary references never escape.
     pub fn with_plan<T>(
         &self,
+        inspect: impl FnOnce(&CpuNeuronParameterMaterialPlanV2<'_>) -> T,
+    ) -> T {
+        self.with_rollback_plan(&self.rollback, inspect)
+    }
+    pub fn with_candidate_rollback_plan<T>(
+        &self,
+        id: &StableId,
+        inspect: impl FnOnce(&CpuNeuronParameterMaterialPlanV2<'_>) -> T,
+    ) -> Result<T, AgentdError> {
+        Ok(self.with_rollback_plan(self.rollback_for_candidate(id)?, inspect))
+    }
+    fn with_rollback_plan<T>(
+        &self,
+        rollback: &CpuNeuronGenerationPlanV1,
         inspect: impl FnOnce(&CpuNeuronParameterMaterialPlanV2<'_>) -> T,
     ) -> T {
         let candidates: Vec<_> = self
@@ -201,7 +274,7 @@ impl CpuNeuronParameterRootMaterialsV2 {
             request: &self.request,
             test_plan_digest: self.test_plan_digest,
             candidates: &candidates,
-            rollback: &self.rollback,
+            rollback,
         })
     }
     pub fn revalidate_sources(&self) -> Result<(), AgentdError> {
