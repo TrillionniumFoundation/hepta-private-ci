@@ -96,11 +96,11 @@ use crate::daemon_protocol::SupervisorEpoch;
 use crate::daemon_protocol::SupervisordAgentStatus;
 #[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordControlFence;
-#[cfg(unix)]
+#[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordHealth;
 #[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordMatrixStatus;
-#[cfg(unix)]
+#[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordMethod;
 #[cfg(unix)]
 use crate::daemon_protocol::SupervisordMutation;
