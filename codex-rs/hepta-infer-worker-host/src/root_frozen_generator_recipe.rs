@@ -75,22 +75,27 @@ pub(crate) fn publish(
     // Bind the full round and context first. A crash before later publication
     // cannot turn recovery into a new search window or new context admission.
     let mut binding = serde_json::json!({
-            "schema": "hepta.cpu-neuron.round-material-binding.v3",
-            "round": round,
-            "canonical": Digest32::of_bytes(materials.canonical_envelope().canonical_bytes()).to_string(),
-            "execution": codex_hepta_agentd::self_iteration_envelope_digest_v1(materials.execution_envelope()).to_string(),
-            "baseline": Digest32::of_bytes(&baseline_bytes).to_string(),
-            "request": Digest32::of_bytes(&request_bytes).to_string(),
-            "rollback": Digest32::of_bytes(&encode_neuron_generation_material_v2(materials.rollback())?).to_string(),
-            "test_plan": materials.with_plan(|plan| plan.test_plan_digest).to_string(),
-            "candidates": candidate_bindings,
-            "worker": worker,
-            "plasticity_context": context,
-        });
+        "schema": "hepta.cpu-neuron.round-material-binding.v3",
+        "round": round,
+        "canonical": Digest32::of_bytes(materials.canonical_envelope().canonical_bytes()).to_string(),
+        "execution": codex_hepta_agentd::self_iteration_envelope_digest_v1(materials.execution_envelope()).to_string(),
+        "baseline": Digest32::of_bytes(&baseline_bytes).to_string(),
+        "request": Digest32::of_bytes(&request_bytes).to_string(),
+        "rollback": Digest32::of_bytes(&encode_neuron_generation_material_v2(materials.rollback())?).to_string(),
+        "test_plan": materials.with_plan(|plan| plan.test_plan_digest).to_string(),
+        "candidates": candidate_bindings,
+        "worker": worker,
+        "plasticity_context": context,
+    });
     if materials.candidates().len() > 1 {
         binding["rollbacks"] = serde_json::Value::Array(rollback_bindings);
     }
-    source(&directory, "binding.json", &serde_json::to_vec(&binding)?, 64 * 1024)?;
+    source(
+        &directory,
+        "binding.json",
+        &serde_json::to_vec(&binding)?,
+        64 * 1024,
+    )?;
     let canonical = source(
         &directory,
         "canonical.json",
@@ -145,7 +150,9 @@ pub(crate) fn publish(
             let generation = source(
                 &directory,
                 &format!("rollback-{key}.json"),
-                &encode_neuron_generation_material_v2(materials.rollback_for_candidate(&candidate.candidate_id)?)?,
+                &encode_neuron_generation_material_v2(
+                    materials.rollback_for_candidate(&candidate.candidate_id)?,
+                )?,
                 MAX_NEURON_GENERATION_MATERIAL_BYTES_V2,
             )?;
             rollbacks.push(serde_json::json!({"candidate_id": candidate.candidate_id.as_str(), "generation": generation}));

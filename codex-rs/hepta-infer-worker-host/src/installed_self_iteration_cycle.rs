@@ -34,10 +34,10 @@ use std::sync::Arc;
 use std::time::Duration;
 use tokio_util::sync::CancellationToken;
 
-#[path = "installed_self_iteration_goal.rs"]
-mod goal_identity;
 #[path = "installed_self_iteration_bundle.rs"]
 mod bundle_frontier;
+#[path = "installed_self_iteration_goal.rs"]
+mod goal_identity;
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -345,7 +345,8 @@ pub(crate) async fn run(
                     .collect::<Result<Vec<_>, AgentdError>>()
             })?;
             let first_id = materials.with_plan(|plan| plan.candidates[0].candidate_id.clone());
-            let first_source = rollback_sources.iter()
+            let first_source = rollback_sources
+                .iter()
                 .find(|entry| entry.candidate_id == first_id.as_str())
                 .ok_or_else(|| invalid("first original rollback admission absent"))?;
             let (rollback, rollback_admission) = admission(
@@ -357,13 +358,23 @@ pub(crate) async fn run(
             )?;
             let first_rollback = rollback.clone();
             let mut remaining_rollbacks = Vec::new();
-            for source in rollback_sources.iter().filter(|entry| entry.candidate_id != first_id.as_str()) {
+            for source in rollback_sources
+                .iter()
+                .filter(|entry| entry.candidate_id != first_id.as_str())
+            {
                 let candidate_id = StableId::new(&source.candidate_id).map_err(invalid)?;
-                let (generation, admission) = admission(source, &round,
+                let (generation, admission) = admission(
+                    source,
+                    &round,
                     materials.rollback_for_candidate(&candidate_id)?,
-                    ParameterPreRegistrationPurposeV1::ExactRollback, clock.clone())?;
+                    ParameterPreRegistrationPurposeV1::ExactRollback,
+                    clock.clone(),
+                )?;
                 remaining_rollbacks.push(crate::CpuNeuronParameterRollbackPlanV2 {
-                    candidate_id, worker: worker(generation.runtime.generation), generation, admission,
+                    candidate_id,
+                    worker: worker(generation.runtime.generation),
+                    generation,
+                    admission,
                 });
             }
             let owners = InstalledSelfIterationIndependentOwnersV1::from_protected_source(
@@ -399,7 +410,11 @@ pub(crate) async fn run(
                 },
                 CpuNeuronParameterPolicyV2::new(canonical.clone(), canonical.digest())?,
             )?;
-            compiler.bind_candidate_rollbacks_v2(&first_id, &first_rollback, remaining_rollbacks)?;
+            compiler.bind_candidate_rollbacks_v2(
+                &first_id,
+                &first_rollback,
+                remaining_rollbacks,
+            )?;
             composition
                 .reader
                 .publish_round_reader(compiler.physical_generation_reader())?;

@@ -82,7 +82,10 @@ pub(super) fn publish(
         &protected,
     )?;
     protected.revalidate_sources()?;
-    let rollback = rollbacks.first().context("complete exact rollback frontier absent")?.clone();
+    let rollback = rollbacks
+        .first()
+        .context("complete exact rollback frontier absent")?
+        .clone();
     let mut bundle = InstalledRoundBundleV1 {
         schema: "hepta.installed-round-bundle.v1".into(),
         round: materials.round().clone(),

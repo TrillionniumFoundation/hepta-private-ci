@@ -5,7 +5,8 @@ fn source(id: &str, purpose: &str) -> PreparedCandidateAdmissionV1 {
         candidate_id: id.into(),
         configuration: InstalledCpuSourceV1 {
             path: format!("/original/{id}/{purpose}-configuration.json").into(),
-            digest: Digest32::of_bytes(format!("{id}:{purpose}:configuration").as_bytes()).to_string(),
+            digest: Digest32::of_bytes(format!("{id}:{purpose}:configuration").as_bytes())
+                .to_string(),
         },
         selection: InstalledCpuSourceV1 {
             path: format!("/original/{id}/{purpose}-selection.json").into(),
@@ -19,12 +20,18 @@ fn complete_distinct_pairs_preserve_every_whole_original_source() -> Result<(), 
     let candidates = [source("first", "candidate"), source("second", "candidate")];
     let legacy = source("first", "rollback");
     let pairs = [source("second", "rollback"), source("first", "rollback")];
-    assert_eq!(sources(&candidates, &legacy, &pairs)?, vec![&pairs[0], &pairs[1]]);
+    assert_eq!(
+        sources(&candidates, &legacy, &pairs)?,
+        vec![&pairs[0], &pairs[1]]
+    );
     for bad in [
         vec![source("first", "rollback")],
         vec![source("first", "rollback"), source("first", "rollback")],
         vec![source("first", "rollback"), source("foreign", "rollback")],
-        vec![source("first", "other-purpose"), source("second", "rollback")],
+        vec![
+            source("first", "other-purpose"),
+            source("second", "rollback"),
+        ],
     ] {
         assert!(sources(&candidates, &legacy, &bad).is_err());
     }

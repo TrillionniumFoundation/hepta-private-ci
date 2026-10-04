@@ -116,9 +116,11 @@ impl Preparation<'_> {
             }
             OriginalParameterEvaluationPreparationResultV1::Completed(complete) => complete,
         };
-        ensure!(complete.candidates.len() == complete.candidate_publication_configurations.len()
-            && complete.candidates.len() == complete.rollbacks.len(),
-            "complete original publication and exact rollback frontier differs");
+        ensure!(
+            complete.candidates.len() == complete.candidate_publication_configurations.len()
+                && complete.candidates.len() == complete.rollbacks.len(),
+            "complete original publication and exact rollback frontier differs"
+        );
         // H' is independent of the rollback material. Refresh the original
         // installed training baseline against the latest real full ACK.
         let (registration, current) = original_facts::current_registration(
@@ -183,7 +185,9 @@ impl Preparation<'_> {
             let evaluation = history(&publication.evaluation_sources)?;
             candidates.push(evaluation);
         }
-        let rollback_evaluations = complete.rollbacks.iter()
+        let rollback_evaluations = complete
+            .rollbacks
+            .iter()
             .map(|entry| history(&entry.publication.evaluation_sources))
             .collect::<Result<Vec<_>>>()?;
         let materials = complete.materials.install_registered_material_pairs_v2(
@@ -236,9 +240,13 @@ impl Preparation<'_> {
         }
         let mut rollbacks = Vec::new();
         for entry in &complete.rollbacks {
-            ensure!(entry.publication.candidate_id == entry.candidate_id.as_str(),
-                "original rollback publication changed its candidate");
-            let predecessor_index = complete.candidates.iter()
+            ensure!(
+                entry.publication.candidate_id == entry.candidate_id.as_str(),
+                "original rollback publication changed its candidate"
+            );
+            let predecessor_index = complete
+                .candidates
+                .iter()
                 .position(|publication| publication.candidate_id == entry.candidate_id.as_str())
                 .context("original rollback candidate absent")?;
             let predecessor_publication = &complete.candidates[predecessor_index];
@@ -250,21 +258,35 @@ impl Preparation<'_> {
                     digest: registrations[predecessor_index].digest.clone(),
                 },
                 head_manifest: ParameterRoleSourceV3 {
-                    path: head.manifest.path.clone(), digest: head.manifest.digest.clone(),
+                    path: head.manifest.path.clone(),
+                    digest: head.manifest.digest.clone(),
                 },
                 head_admission_digest: head.admission_digest.clone(),
                 head_artifact_id: head.artifact_id.clone(),
             };
             let material = materials.rollback_for_candidate(&entry.candidate_id)?;
             let rollback_registration = publication_configuration::project(
-                &facts.registration, &entry.publication, material,
-                &entry.publication_configuration, &subject, &facts.public,
+                &facts.registration,
+                &entry.publication,
+                material,
+                &entry.publication_configuration,
+                &subject,
+                &facts.public,
             )?;
             let Some(rollback) = selection_projection::Preparation {
-                blueprint: &blueprint, publication: &entry.publication, material,
-                registration: &rollback_registration, predecessor: Some(predecessor),
-                public: &facts.public, effects: &facts.effects, round: self.round,
-            }.select()? else { return Ok(Some(pending())); };
+                blueprint: &blueprint,
+                publication: &entry.publication,
+                material,
+                registration: &rollback_registration,
+                predecessor: Some(predecessor),
+                public: &facts.public,
+                effects: &facts.effects,
+                round: self.round,
+            }
+            .select()?
+            else {
+                return Ok(Some(pending()));
+            };
             rollbacks.push(rollback);
         }
         trust.revalidate_at(now_ms()?)?;
