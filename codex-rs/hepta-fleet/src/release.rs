@@ -258,10 +258,16 @@ impl FleetRegistry {
             std::process::id(),
             RELEASE_SEQUENCE.fetch_add(1, Ordering::Relaxed)
         ));
-        std::fs::create_dir(&staging)?;
+        std::fs::create_dir(&staging).inspect_err(|_error| {
+            #[cfg(test)]
+            copy_tests::trace_io_failure("create release staging directory", &staging, _error);
+        })?;
         let result = (|| {
             let bin_root = staging.join("bin");
-            std::fs::create_dir(&bin_root)?;
+            std::fs::create_dir(&bin_root).inspect_err(|_error| {
+                #[cfg(test)]
+                copy_tests::trace_io_failure("create release bin directory", &bin_root, _error);
+            })?;
             let agentd_program = staging.join(AGENTD_RELEASE_PROGRAM);
             copy_immutable_program(&source_agentd, &agentd_program)?;
             let matrixd = source_matrixd
@@ -273,7 +279,16 @@ impl FleetRegistry {
                         Ok(ReleaseProgramMetadata {
                             program_relative_path: PathBuf::from(MATRIXD_RELEASE_PROGRAM),
                             program_sha256: sha256_file(&matrixd_program)?,
-                            program_size_bytes: std::fs::metadata(&matrixd_program)?.len(),
+                            program_size_bytes: std::fs::metadata(&matrixd_program)
+                                .inspect_err(|_error| {
+                                    #[cfg(test)]
+                                    copy_tests::trace_io_failure(
+                                        "read matrixd program metadata",
+                                        &matrixd_program,
+                                        _error,
+                                    );
+                                })?
+                                .len(),
                             args: matrixd_args,
                         })
                     },
@@ -285,7 +300,16 @@ impl FleetRegistry {
                 agentd: ReleaseProgramMetadata {
                     program_relative_path: PathBuf::from(AGENTD_RELEASE_PROGRAM),
                     program_sha256: sha256_file(&agentd_program)?,
-                    program_size_bytes: std::fs::metadata(&agentd_program)?.len(),
+                    program_size_bytes: std::fs::metadata(&agentd_program)
+                        .inspect_err(|_error| {
+                            #[cfg(test)]
+                            copy_tests::trace_io_failure(
+                                "read agentd program metadata",
+                                &agentd_program,
+                                _error,
+                            );
+                        })?
+                        .len(),
                     args: agentd_args,
                 },
                 matrixd,
@@ -297,7 +321,14 @@ impl FleetRegistry {
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
             set_mode(&staging, /*mode*/ 0o555)?;
-            std::fs::rename(&staging, &final_root)?;
+            std::fs::rename(&staging, &final_root).inspect_err(|_error| {
+                #[cfg(test)]
+                copy_tests::trace_io_failure(
+                    "rename staging to immutable release",
+                    &staging,
+                    _error,
+                );
+            })?;
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();
@@ -1005,7 +1036,13 @@ fn write_new_json<T: Serialize>(path: &Path, value: &T) -> Result<(), FleetRegis
         #[cfg(test)]
         copy_tests::trace_io_failure("write release metadata", path, _error);
     })?;
-    crate::registry_metadata::inherit_protected_read_group(&file, path)?;
+    crate::registry_metadata::inherit_protected_read_group(&file, path).inspect_err(|_error| {
+        #[cfg(test)]
+        eprintln!(
+            "release I/O failed: operation=inherit metadata read group, path={}, error={_error:?}",
+            path.display()
+        );
+    })?;
     file.sync_all().inspect_err(|_error| {
         #[cfg(test)]
         copy_tests::trace_io_failure("sync release metadata writer", path, _error);
@@ -1059,11 +1096,17 @@ fn copy_immutable_program(source: &Path, destination: &Path) -> Result<(), Fleet
 }
 
 fn sha256_file(path: &Path) -> Result<String, FleetRegistryError> {
-    let mut file = File::open(path)?;
+    let mut file = File::open(path).inspect_err(|_error| {
+        #[cfg(test)]
+        copy_tests::trace_io_failure("open release digest program", path, _error);
+    })?;
     let mut hasher = Sha256::new();
     let mut buffer = [0_u8; 64 * 1024];
     loop {
-        let count = file.read(&mut buffer)?;
+        let count = file.read(&mut buffer).inspect_err(|_error| {
+            #[cfg(test)]
+            copy_tests::trace_io_failure("read release digest program", path, _error);
+        })?;
         if count == 0 {
             break;
         }
