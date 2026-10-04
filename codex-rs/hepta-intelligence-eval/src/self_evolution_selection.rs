@@ -134,6 +134,8 @@ impl VerifiedSelfEvolutionSelectionV1 {
 
 /// Opaque rollback admission. Restoring predecessor bytes advances the runtime
 /// generation rather than resurrecting the predecessor generation.
+/// This authenticates a regression and artifact selection, not compatibility
+/// with current durable state, writer fencing, or preservation of successor writes.
 #[derive(Clone, Debug)]
 pub struct VerifiedSelfEvolutionRollbackV1 {
     selection: VerifiedSelfEvolutionSelectionV1,

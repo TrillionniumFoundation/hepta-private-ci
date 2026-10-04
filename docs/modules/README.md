@@ -151,7 +151,11 @@ Readiness means required dependencies, schema and integrity are verified; livene
 
 ### Shared verification and qualification
 
-For implementation changes, minimum checks are exact source identity, source inventory, static verification, focused tests, affected-package tests, applicable all-target compilation, strict lint, clean worktree, exact-head execution and synthetic-merge execution. Ordinary prose-only changes require navigation and affected static checks, not unrelated native builds; the global development plan defines the boundary. Stateful modules add migration, crash/reopen, corruption, idempotency, conflict and reconciliation. Adapters add revoked/stale grant, payload drift, timeout and indeterminate-outcome tests.
+For ordinary implementation changes, run focused tests, affected-package tests, applicable all-target compilation, strict lint and affected static verification. Git and required CI bind the exact source and merge candidates; this guidance does not waive required repository CI. Ordinary prose-only changes require navigation and affected static checks, not unrelated native builds; the global development plan defines the boundary.
+
+Qualification for a runtime boundary, external effect, independent evaluation, candidate execution, promotion or release additionally requires exact source identity, source inventory, a clean worktree, exact-head execution, synthetic-merge execution and evidence checks.
+
+Stateful modules add migration, crash/reopen, corruption, idempotency, conflict and reconciliation. Adapters add revoked/stale grant, payload drift, timeout and indeterminate-outcome tests.
 
 The implementing team cannot issue independent acceptance. Fixture success proves only the tested boundary at the exact candidate; it does not prove a production caller, physical effect, operator acceptance, promotion or release.
 

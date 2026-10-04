@@ -109,13 +109,16 @@ ownership, schemas, source paths and references against the current working tree
 including uncommitted local edits. Historical source observations and qualification
 inventories do not block ordinary development.
 
-The global, module-document and implementation-map verifiers default to
-`--profile qualification` for existing qualification callers. Explicit qualification
-runs retain exact source identities, API inventories and evidence checks. Execution
-receipts require committed inputs and never treat a development-profile pass as
-release evidence. Native CI selects affected owners and reverse consumers from both
-the base and candidate dependency graphs; full qualification remains available for
-release and changes to shared execution boundaries.
+The global and module-document command-line verifiers default to
+`--profile development` and pass that profile to the implementation-map verifier.
+Direct implementation-map invocations still default to `--profile qualification`.
+Pass `--profile qualification` explicitly when revalidating qualification evidence.
+Qualification runs retain exact source identities, API inventories and evidence
+checks. Execution receipts require committed inputs and never treat a
+development-profile pass as release evidence. Native CI selects affected owners
+and reverse consumers from both the base and candidate dependency graphs; full
+qualification remains available for release and changes to shared execution
+boundaries.
 
 ## 3. Current truthful baseline
 

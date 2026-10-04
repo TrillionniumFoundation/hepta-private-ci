@@ -1,6 +1,22 @@
+load("@rules_rust//rust:defs.bzl", "rust_library")
 load("//:defs.bzl", "codex_rust_crate")
+load("//bazel/rules/testing:rust_test_dependencies.bzl", "rust_test_dependencies")
 
 codex_rust_crate(
     name = "hepta-agent-protocol",
     crate_name = "codex_hepta_agent_protocol",
+)
+
+# Keep Protocol's public Fleet types identical to Supervisor's owner test graph.
+rust_library(
+    name = "hepta-agent-protocol-supervisor-owner-test-lib",
+    testonly = True,
+    srcs = glob(["src/**/*.rs"]),
+    crate_name = "codex_hepta_agent_protocol",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    visibility = ["//codex-rs/hepta-supervisor:__pkg__"],
+    deps = rust_test_dependencies({
+        "//codex-rs/hepta-fleet": "//codex-rs/hepta-fleet:hepta-fleet-supervisor-owner-test-lib",
+    }),
 )

@@ -285,7 +285,14 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/operations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-operations
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/automation-owner.json" --minimum-tests 43 -- just test --locked -p codex-hepta-automation --lib --status-level pass
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/retirement.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --test retirement_recovery
+      - name: Core terminal ordering and provider-policy regressions
+        if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.effects == 'true'
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/core-terminal-ordering.json" --minimum-tests 5 -- just test --locked -p codex-core --lib -E 'test(session::tests::turn_complete_flushes_terminal_event_before_delivery) | test(session::tests::turn_aborted_flushes_terminal_event_before_delivery) | test(session::tests::cancelled_finish_owner_keeps_terminalizer_alive) | test(session::tests::terminal_shutdown::nonquiescent_abort_shutdown_waits_for_terminal_delivery) | test(session::tests::terminal_shutdown::unstarted_abort_shutdown_waits_for_terminal_delivery_and_idle_callback)' --status-level pass
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/core-provider-policy.json" --minimum-tests 57 -- just test --locked -p codex-core model_provider_policy --status-level pass
       - name: Module lifecycle generations and migration rollback
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
         run: |
@@ -297,7 +304,8 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-catalog.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-fleet module_catalog
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-abi.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-control-plane module_runtime
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-supervisor.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor module_runtime
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-durable-restart.json" --minimum-tests 1 -- just test --locked -p codex-hepta-supervisor stateful_generation_replacement_survives_process_loss_and_rolls_back_fresh --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/runtime-module-durable-restart.json" --minimum-tests 1 -- just test --locked -p codex-hepta-supervisor stateful_generation_survives_process_loss_without_digest_only_rollback --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/owner-schema-migration-recovery.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-automation --lib every_committed_migration_prefix_recovers_retained_history_after_process_loss
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/app-bridge-host.json" --minimum-tests 1 -- just test --locked -p codex-hepta-app-bridge -p codex-hepta-app-host
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/writer-handoff-generations.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-supervisor writer_handoff
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/topology-contract.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-types topology
@@ -321,7 +329,7 @@ jobs:
         run: |
           set -euo pipefail
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/final-use.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-contracts --test final_use_linearization
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/browser.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd browser_servo
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/browser.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib browser_servo
       - name: Canonical HNMF contract and adversarial behavior
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
         run: |
@@ -335,12 +343,12 @@ jobs:
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.learning == 'true'
         run: |
           set -euo pipefail
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selected-ranker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selected-ranker.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-agentd --lib new_generation_candidate_changes_behavior_and_explicit_predecessor_reload_restores_it
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/eval.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval closure
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/self-evolution-selection.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-intelligence-eval self_evolution_selection
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/selector-role.json" --minimum-tests 1 -- just test --locked -p codex-hepta-intelligence-eval -E 'test(selector_and_rollback_are_opaque_independent_admissions)'
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/ledger.json" --minimum-tests 1 -- cargo test --locked --manifest-path codex-rs/Cargo.toml -p codex-hepta-learning-ledger
-          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/product-self-evolution.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --features qualification-legacy-learning-write ordinary_product_request_drives_signed_future_window_candidate_promotion_and_rollback --test-threads=1
+          python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/hepta-command-records/product-self-evolution.json" --minimum-tests 1 -- just test --locked -p codex-hepta-agentd --lib --features qualification-legacy-learning-write ordinary_product_request_drives_signed_future_window_candidate_promotion_and_rollback --test-threads=1
       - name: Compiled service lifecycle and actual process restart
         if: steps.execution.outputs.run_native == 'true' && steps.scope.outputs.lifecycle == 'true'
         run: |

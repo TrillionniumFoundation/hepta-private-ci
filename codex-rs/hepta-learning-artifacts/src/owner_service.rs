@@ -60,6 +60,8 @@ pub struct ArtifactPublicationHeadPreviewV1 {
     pub original_signed_head: Option<SignedCurrentArtifactHeadV1>,
 }
 
+#[path = "owner_service_clock.rs"]
+mod clock;
 #[path = "owner_service_operational_renewal.rs"]
 mod operational_renewal;
 #[path = "owner_service_suffix.rs"]
@@ -305,6 +307,26 @@ impl LearningArtifactOwnerService {
         self.publish_with_state_changes(request, &[])
     }
 
+    /// Publish with the caller's existing fallible clock. Terminal historical
+    /// replay retains the original durable receipt and is not new admission.
+    pub fn publish_with_clock(
+        &mut self,
+        request: LearningArtifactPublishRequestV1,
+        clock: &mut impl FnMut() -> Result<u64, LearningArtifactOwnerServiceError>,
+    ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        self.publish_with_state_changes_and_clock(request, &[], clock)
+    }
+
+    /// Clock-aware publication of the same original bounded state suffix.
+    pub fn publish_with_state_changes_and_clock(
+        &mut self,
+        request: LearningArtifactPublishRequestV1,
+        state_changes: &[ArtifactEvent],
+        clock: &mut impl FnMut() -> Result<u64, LearningArtifactOwnerServiceError>,
+    ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        self.publish_with_state_changes_inner(request, state_changes, clock)
+    }
+
     /// Publish the admitted candidate and a bounded irreversible suffix using
     /// this same writer, journal and signed CURRENT. Exact recovery verifies the
     /// original complete durable suffix before returning a terminal receipt.
@@ -312,6 +334,16 @@ impl LearningArtifactOwnerService {
         &mut self,
         request: LearningArtifactPublishRequestV1,
         state_changes: &[ArtifactEvent],
+    ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
+        let now = request.now;
+        self.publish_with_state_changes_inner(request, state_changes, &mut || Ok(now))
+    }
+
+    fn publish_with_state_changes_inner(
+        &mut self,
+        request: LearningArtifactPublishRequestV1,
+        state_changes: &[ArtifactEvent],
+        clock: &mut impl FnMut() -> Result<u64, LearningArtifactOwnerServiceError>,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
         if let Some(blocked) = &self.recovery_required
             && blocked != &request.operation_id
@@ -321,7 +353,8 @@ impl LearningArtifactOwnerService {
             ));
         }
         let operation_id = request.operation_id.clone();
-        let result = self.publish_inner(&request, state_changes);
+        let mut clock = clock::PublicationClock::new(request.now, clock);
+        let result = self.publish_inner(&request, state_changes, &mut clock);
         match result {
             Ok(receipt) => {
                 self.recovery_required = None;
@@ -341,6 +374,9 @@ impl LearningArtifactOwnerService {
                         // Acknowledgement may be durable even when its parent
                         // sync failed before publish_inner updated the cache.
                         // Reconcile the authoritative CURRENT before reopening.
+                        // The original timestamp is retained only for this
+                        // historical cache reconciliation after a proven ACK;
+                        // it admits no new phase or publication authority.
                         self.registry = self.host.recover_current_registry(request.now)?;
                         self.recovery_required = None;
                     }
@@ -355,6 +391,7 @@ impl LearningArtifactOwnerService {
         &mut self,
         request: &LearningArtifactPublishRequestV1,
         state_changes: &[ArtifactEvent],
+        clock: &mut clock::PublicationClock<'_>,
     ) -> Result<ArtifactPublicationReceiptV1, LearningArtifactOwnerServiceError> {
         if request.signed_current_head.binding != self.storage_binding
             || request.signed_current_head.witness.predecessor_head_digest
@@ -406,7 +443,7 @@ impl LearningArtifactOwnerService {
             &self.withdrawal_registry,
             &predecessor,
             request.expected_registry_predecessor_head,
-            request.now,
+            clock.sample()?,
         )?;
         let written = checkpoint
             .as_ref()
@@ -426,17 +463,17 @@ impl LearningArtifactOwnerService {
             )?;
             transaction = self
                 .host
-                .resume_publication(transaction.snapshot(), request.now)?;
+                .resume_publication(transaction.snapshot(), clock.sample()?)?;
         }
         // State changes require this owner's exact durable phase, including on
         // recovery. Authenticate that phase before reconstructing the suffix.
         self.host
-            .stage_compatibility_registration(&transaction, &mut staged, request.now)?;
+            .stage_compatibility_registration(&transaction, &mut staged, clock.sample()?)?;
         self.host.stage_publication_state_changes(
             &transaction,
             &mut staged,
             state_changes,
-            request.now,
+            clock.sample()?,
         )?;
         if let Some(written) = written {
             if written.records() != staged.records() {
@@ -450,7 +487,7 @@ impl LearningArtifactOwnerService {
                 &mut transaction,
                 &staged,
                 &request.payload,
-                request.now,
+                clock.sample()?,
             )?;
         }
         if transaction.phase() == ArtifactPublicationPhaseV1::PayloadDurable {
@@ -459,7 +496,7 @@ impl LearningArtifactOwnerService {
                 &staged,
                 &self.withdrawal_registry,
                 self.storage_binding,
-                request.now,
+                clock.sample()?,
             )?;
         }
         if transaction.phase() == ArtifactPublicationPhaseV1::RegistryDurable {
@@ -467,12 +504,12 @@ impl LearningArtifactOwnerService {
                 &mut transaction,
                 &request.signed_current_head,
                 &self.withdrawal_registry,
-                request.now,
+                clock.sample()?,
             )?;
         }
         let receipt = if transaction.phase() == ArtifactPublicationPhaseV1::WitnessDurable {
             self.host
-                .acknowledge(&mut transaction, &self.withdrawal_registry, request.now)?
+                .acknowledge(&mut transaction, &self.withdrawal_registry, clock.sample()?)?
         } else {
             return Err(LearningArtifactOwnerServiceError::UnexpectedPhase);
         };
@@ -599,6 +636,8 @@ pub enum LearningArtifactOwnerServiceError {
     Publication(ArtifactPublicationError),
     DatasetRevocation(crate::DatasetRevocationError),
     InvalidConfiguration,
+    ClockUnavailable,
+    ClockRegression,
     WithdrawalFrontierConflict,
     RecoveryConflict,
     RecoveryRequired(StableId),
@@ -656,3 +695,7 @@ mod status_tests;
 #[cfg(test)]
 #[path = "owner_service_withdrawal_tests.rs"]
 mod withdrawal_tests;
+
+#[cfg(test)]
+#[path = "owner_service_clock_tests.rs"]
+mod clock_tests;

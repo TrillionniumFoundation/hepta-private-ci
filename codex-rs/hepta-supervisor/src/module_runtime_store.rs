@@ -1246,33 +1246,34 @@ mod tests {
                         .is_err(),
                     "restart must retain the generation fence"
                 );
-                let topology = owner
-                    .rollback_to_predecessor_for_test(
+                let before = owner.checkpoint().expect("acknowledged generation 2");
+                assert!(matches!(
+                    owner.rollback_to_predecessor_for_test(
                         &module_id,
                         generation(2),
                         generation(3),
                         digest("independent-regression-evidence"),
-                    )
-                    .expect("rollback as generation 3");
-                assert_eq!(topology.active.len(), 1);
-                assert_eq!(topology.active[0].generation, generation(3));
-                assert_eq!(
-                    topology.active[0].implementation_digest,
-                    digest("implementation-v1")
-                );
+                    ),
+                    Err(DurableRuntimeModuleSupervisorErrorV1::Supervisor(
+                        crate::RuntimeModuleSupervisorErrorV1::Registry(
+                            codex_hepta_control_plane::RuntimeModuleRegistryError::MissingWriterHandoff
+                        )
+                    ))
+                ));
+                assert_eq!(owner.checkpoint().expect("unchanged current owner"), before);
                 std::fs::write(root.join("rollback.done"), b"ok").expect("rollback marker");
             }
             "verify" => {
                 let mut owner =
-                    DurableRuntimeModuleSupervisorV1::open(&path).expect("restore generation 3");
+                    DurableRuntimeModuleSupervisorV1::open(&path).expect("restore generation 2");
                 let topology = owner.topology().expect("healthy durable owner");
                 assert_eq!(topology.active.len(), 1);
-                assert_eq!(topology.active[0].generation, generation(3));
+                assert_eq!(topology.active[0].generation, generation(2));
                 assert_eq!(
                     topology.active[0].implementation_digest,
-                    digest("implementation-v1")
+                    digest("implementation-v2")
                 );
-                assert_eq!(greatest_generation(&owner, &module_id), Some(generation(3)));
+                assert_eq!(greatest_generation(&owner, &module_id), Some(generation(2)));
                 for stale_generation in [1, 2] {
                     assert!(
                         owner
@@ -1307,13 +1308,60 @@ mod tests {
     }
 
     #[test]
-    fn stateful_generation_replacement_survives_process_loss_and_rolls_back_fresh() {
+    fn stateful_generation_survives_process_loss_without_digest_only_rollback() {
         let root = tempfile::tempdir().expect("temporary root");
         run_worker(root.path(), "promote-crash", 37);
         run_worker(root.path(), "rollback", 0);
         assert!(root.path().join("rollback.done").is_file());
         run_worker(root.path(), "verify", 0);
         assert!(root.path().join("verify.done").is_file());
+    }
+
+    #[test]
+    fn stateless_rollback_uses_fresh_generation_and_survives_reopen() {
+        let root = tempfile::tempdir().expect("temporary root");
+        let path = root.path().join("runtime.json");
+        let module = id("module.persisted-writer");
+        let mut first = stateful_abi(1, "implementation-v1", None);
+        first.state_class = RuntimeModuleStateClassV1::Stateless;
+        first.authoritative_domains.clear();
+        first.effect_scope.clear();
+        let mut second = first.clone();
+        second.generation = generation(2);
+        second.implementation_digest = digest("implementation-v2");
+        second.candidate_artifact_digest = digest("implementation-v2");
+        second.predecessor_generation = Some(generation(1));
+        second.rollback_predecessor_digest = first.implementation_digest;
+        let mut owner = DurableRuntimeModuleSupervisorV1::open(&path).expect("open");
+        owner.register_bootstrap(first.clone()).expect("bootstrap");
+        owner
+            .register_shadow_for_test(second, digest("selection"))
+            .expect("shadow");
+        owner.enter_canary(&module, generation(2)).expect("canary");
+        owner
+            .promote_stateless(&module, generation(2), digest("canary"))
+            .expect("promote");
+        let rolled_back = owner
+            .rollback_to_predecessor_for_test(
+                &module,
+                generation(2),
+                generation(3),
+                digest("regression"),
+            )
+            .expect("stateless rollback");
+        assert_eq!(rolled_back.active[0].generation, generation(3));
+        assert_eq!(
+            rolled_back.active[0].implementation_digest,
+            first.implementation_digest
+        );
+        let acknowledged = owner.checkpoint().expect("acknowledged rollback");
+        drop(owner);
+        let reopened = DurableRuntimeModuleSupervisorV1::open(&path).expect("reopen");
+        assert_eq!(
+            reopened.checkpoint().expect("retained rollback"),
+            acknowledged
+        );
+        assert_eq!(reopened.topology().expect("serving topology"), rolled_back);
     }
 
     #[test]

@@ -105,14 +105,16 @@ pub(super) fn publish(inputs: Inputs) -> HostResult<Value> {
             return Err("original fixed head changed".into());
         }
         inputs.revalidate()?;
-        let receipt = service.publish(LearningArtifactPublishRequestV1 {
+        let receipt = service.publish_with_clock(LearningArtifactPublishRequestV1 {
             operation_id: operation,
             admission,
             payload: inputs.payloads[index].clone(),
             signed_current_head: signed.clone(),
             expected_registry_predecessor_head: preview.predecessor,
             now: now_ms()?,
-        })?;
+        }, &mut || now_ms().map_err(|_| {
+            codex_hepta_agent_components::learning_artifacts::LearningArtifactOwnerServiceError::ClockUnavailable
+        }))?;
         state::retain(
             &inputs,
             &format!("done-{index}"),

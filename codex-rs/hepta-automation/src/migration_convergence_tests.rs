@@ -1,14 +1,23 @@
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::migrate::Migrate;
-use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
 async fn historical_pool(displaced: bool) -> SqlitePool {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
-        .await
-        .expect("SQLite owner");
+    // The shim can open multiple connections. An explicit unique named-memory
+    // URI gives them one database while keeping distinct fixtures isolated;
+    // filename(":memory:") would instead create a private DB per connection.
+    let memory = format!(
+        "file:hepta-migration-{}?mode=memory&cache=shared",
+        uuid::Uuid::now_v7()
+    );
+    let pool = SqliteConfig::from_sqlite_home(
+        AbsolutePathBuf::try_from(std::env::temp_dir()).expect("absolute temporary directory"),
+    )
+    .open_durable_evidence_pool(Path::new(&memory))
+    .await
+    .expect("SQLite owner");
     let mut connection = pool.acquire().await.expect("owner connection");
     connection
         .ensure_migrations_table("_sqlx_migrations")
@@ -47,6 +56,49 @@ async fn historical_pool(displaced: bool) -> SqlitePool {
     }
     drop(connection);
     pool
+}
+
+#[tokio::test]
+async fn historical_memory_pool_shares_connections_but_isolates_fixtures() {
+    let canonical = historical_pool(/*displaced*/ false).await;
+    let displaced = historical_pool(/*displaced*/ true).await;
+    let mut first = canonical
+        .acquire()
+        .await
+        .expect("first physical connection");
+    let mut peer = tokio::time::timeout(std::time::Duration::from_secs(5), canonical.acquire())
+        .await
+        .expect("second connection deadline")
+        .expect("second physical connection");
+    let first_checksum: Vec<u8> =
+        sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations WHERE version = 4")
+            .fetch_one(&mut *first)
+            .await
+            .expect("first retained history");
+    let peer_checksum: Vec<u8> =
+        sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations WHERE version = 4")
+            .fetch_one(&mut *peer)
+            .await
+            .expect("peer retained history");
+    let displaced_checksum: Vec<u8> =
+        sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations WHERE version = 4")
+            .fetch_one(&displaced)
+            .await
+            .expect("isolated retained history");
+    assert_eq!(first_checksum, peer_checksum);
+    assert_ne!(first_checksum, displaced_checksum);
+    for connection in [&mut first, &mut peer] {
+        let filename: String =
+            sqlx::query_scalar("SELECT file FROM pragma_database_list WHERE name = 'main'")
+                .fetch_one(&mut **connection)
+                .await
+                .expect("physical database location");
+        assert_eq!(filename, "", "historical fixture must remain in memory");
+    }
+    drop(first);
+    drop(peer);
+    canonical.close().await;
+    displaced.close().await;
 }
 
 #[tokio::test]
@@ -208,4 +260,154 @@ async fn occupied_relocation_rolls_back_all_history_rebinding() {
             .expect("after rollback");
     assert_eq!(before, after);
     pool.close().await;
+}
+
+const MIGRATION_CRASH_ROOT: &str = "HEPTA_AUTOMATION_MIGRATION_CRASH_ROOT";
+const MIGRATION_CRASH_CUT: &str = "HEPTA_AUTOMATION_MIGRATION_CRASH_CUT";
+const RETAINED_TASK: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c30";
+
+#[tokio::test]
+async fn migration_crash_worker() {
+    let Some(root) = std::env::var_os(MIGRATION_CRASH_ROOT) else {
+        return;
+    };
+    let root = std::path::PathBuf::from(root);
+    let cut: i64 = std::env::var(MIGRATION_CRASH_CUT)
+        .expect("cut")
+        .parse()
+        .expect("version");
+    let path = root.join(AUTOMATION_DB_FILENAME);
+    let pool = SqliteConfig::from_sqlite_home(
+        AbsolutePathBuf::try_from(root.clone()).expect("absolute crash-fixture root"),
+    )
+    .open_durable_evidence_pool(&path)
+    .await
+    .expect("historical on-disk owner");
+    let mut connection = pool.acquire().await.expect("historical connection");
+    connection
+        .ensure_migrations_table("_sqlx_migrations")
+        .await
+        .expect("migration table");
+    for migration in MIGRATOR.iter().filter(|migration| migration.version <= 3) {
+        connection
+            .apply("_sqlx_migrations", migration)
+            .await
+            .expect("historical schema");
+    }
+    drop(connection);
+    sqlx::query(
+        "INSERT INTO automation_meta VALUES (1, 3, '018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12')",
+    )
+    .execute(&pool)
+    .await
+    .expect("historical owner identity");
+    sqlx::query("INSERT INTO automation_tasks(task_id, owner_agent_id, thread_id, prompt, schedule_kind, state, next_occurrence, created_at_ms, updated_at_ms) VALUES (?, '018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12', 'retained-thread', 'retained-cancelled-task', 'once', 'cancelled', 2, 10, 20)")
+        .bind(RETAINED_TASK).execute(&pool).await.expect("committed historical task");
+    sqlx::query("INSERT INTO automation_runs(task_id, occurrence, scheduled_for_ms, client_user_message_id, state) VALUES (?, 1, 15, 'retained-client-id', 'cancelled')")
+        .bind(RETAINED_TASK).execute(&pool).await.expect("committed historical occurrence");
+    let mut connection = pool.acquire().await.expect("migration connection");
+    // Use the actual SQLx migration transaction/checksum implementation used by
+    // the product opener. Crash after each possible committed migration prefix.
+    for migration in MIGRATOR
+        .iter()
+        .filter(|migration| migration.version > 3 && migration.version <= cut)
+    {
+        connection
+            .apply("_sqlx_migrations", migration)
+            .await
+            .expect("committed migration");
+    }
+    std::process::exit(37);
+}
+
+#[tokio::test]
+async fn every_committed_migration_prefix_recovers_retained_history_after_process_loss() {
+    for cut in MIGRATOR
+        .iter()
+        .filter(|migration| migration.version >= 3)
+        .map(|migration| migration.version)
+    {
+        let temp = tempfile::tempdir().expect("private migration root");
+        let root = temp
+            .path()
+            .canonicalize()
+            .expect("canonical migration root");
+        let stdout = root.join("migration.stdout");
+        let stderr = root.join("migration.stderr");
+        let mut child =
+            std::process::Command::new(std::env::current_exe().expect("test executable"))
+                .args([
+                    "--exact",
+                    "store::migration_convergence_tests::migration_crash_worker",
+                    "--nocapture",
+                ])
+                .env(MIGRATION_CRASH_ROOT, &root)
+                .env(MIGRATION_CRASH_CUT, cut.to_string())
+                .stdout(std::fs::File::create(&stdout).expect("child stdout"))
+                .stderr(std::fs::File::create(&stderr).expect("child stderr"))
+                .spawn()
+                .expect("migration process");
+        let deadline = std::time::Instant::now() + std::time::Duration::from_secs(10);
+        let status = loop {
+            if let Some(status) = child.try_wait().expect("observe owned migration process") {
+                break status;
+            }
+            if std::time::Instant::now() >= deadline {
+                // The child can exit between try_wait and kill. Reap it even
+                // if kill reports that race instead of panicking beforehand.
+                let killed = child.kill();
+                let reaped = child.wait();
+                panic!(
+                    "migration process exceeded its 10-second budget at cut {cut}: \
+                     kill={killed:?}, reap={reaped:?}"
+                );
+            }
+            std::thread::sleep(std::time::Duration::from_millis(10));
+        };
+        assert_eq!(
+            status.code(),
+            Some(37),
+            "cut {cut}: {} {}",
+            std::fs::read_to_string(stdout).expect("child stdout"),
+            std::fs::read_to_string(stderr).expect("child stderr")
+        );
+        let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner");
+        let store = AutomationStore::open_root(root, owner)
+            .await
+            .expect("ordinary owner recovery");
+        let task: (String, String, i64, i64, i64) = sqlx::query_as("SELECT prompt,state,next_occurrence,created_at_ms,updated_at_ms FROM automation_tasks WHERE task_id=?")
+            .bind(RETAINED_TASK).fetch_one(&store.pool).await.expect("retained task");
+        assert_eq!(
+            task,
+            (
+                "retained-cancelled-task".to_owned(),
+                "cancelled".to_owned(),
+                2,
+                10,
+                20
+            ),
+            "cut {cut}"
+        );
+        let occurrence: (String, String, i64) = sqlx::query_as("SELECT client_user_message_id,state,scheduled_for_ms FROM automation_runs WHERE task_id=? AND occurrence=1")
+            .bind(RETAINED_TASK).fetch_one(&store.pool).await.expect("retained occurrence");
+        assert_eq!(
+            occurrence,
+            ("retained-client-id".to_owned(), "cancelled".to_owned(), 15),
+            "cut {cut}"
+        );
+        let versions: Vec<i64> = sqlx::query_scalar(
+            "SELECT version FROM _sqlx_migrations WHERE success=1 ORDER BY version",
+        )
+        .fetch_all(&store.pool)
+        .await
+        .expect("complete migration history");
+        assert_eq!(
+            versions,
+            MIGRATOR
+                .iter()
+                .map(|migration| migration.version)
+                .collect::<Vec<_>>()
+        );
+        store.close().await;
+    }
 }

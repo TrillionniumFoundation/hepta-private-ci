@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import ast
+import runpy
 import tomllib
 import unittest
 from pathlib import Path
@@ -102,27 +103,26 @@ class HeptaCompositionBoundaryTests(unittest.TestCase):
 
 class HeptaBuildProfileParityTests(unittest.TestCase):
     def test_generated_binaries_receive_the_library_feature_profile(self):
-        tree = ast.parse((ROOT / "defs.bzl").read_text())
-        factory = next(
-            node
-            for node in tree.body
-            if isinstance(node, ast.FunctionDef) and node.name == "codex_rust_crate"
-        )
-        calls = [
-            node
-            for node in ast.walk(factory)
-            if isinstance(node, ast.Call)
-            and isinstance(node.func, ast.Name)
-            and node.func.id == "rust_binary"
-        ]
-        self.assertTrue(calls)
-        for call in calls:
-            fields = {value.arg: value.value for value in call.keywords}
-            self.assertIn("crate_features", fields)
-            self.assertEqual(
-                ast.dump(fields["crate_features"]),
-                ast.dump(ast.Name(id="crate_features", ctx=ast.Load())),
-            )
+        # Exercise generated attributes rather than prescribing the expression
+        # spelling. Explicit tool profiles may differ; ordinary binaries must
+        # still inherit their library's complete feature list.
+        recorder = runpy.run_path(
+            ROOT / ".github/scripts/test_run_bazel_binary_features.py"
+        )["MacroRecorder"]
+        targets = recorder(
+            {"app": "src/main.rs", "worker": "src/bin/worker.rs"}
+        ).generate(crate_features=["server", "transport"])
+        self.assertEqual(targets["probe"]["crate_features"], ["server", "transport"])
+        for binary in ("app", "worker"):
+            with self.subTest(binary=binary):
+                self.assertEqual(
+                    targets[binary]["crate_features"],
+                    targets["probe"]["crate_features"],
+                )
+                self.assertEqual(
+                    targets[binary + "-bin-unit-tests-bin"]["crate_features"],
+                    targets["probe"]["crate_features"],
+                )
 
     def test_agentd_bazel_profiles_expand_their_actual_cargo_features(self):
         manifest = tomllib.loads(

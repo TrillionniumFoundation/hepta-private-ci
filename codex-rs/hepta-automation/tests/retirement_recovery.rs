@@ -87,8 +87,24 @@ async fn unknown_dispatch_cannot_be_released_as_a_pre_dispatch_retry() -> TestRe
         store.release_for_retry(&lease).await,
         Err(AutomationError::Conflict)
     );
+    let draining = store.quiesce_timer().await?;
+    assert!(!draining.can_handoff());
+    assert!(matches!(
+        store.handoff_timer().await,
+        Err(AutomationError::Conflict)
+    ));
+    assert_eq!(store.timer_status().await?, draining);
     store.close().await;
     let reopened = AutomationStore::open(&layout).await?;
+    assert_eq!(reopened.timer_status().await?, draining);
+    assert!(matches!(
+        reopened.handoff_timer().await,
+        Err(AutomationError::Conflict)
+    ));
+    assert_eq!(reopened.timer_status().await?, draining);
+    // Preserve the original active-owner no-replay assertion below; quiescence
+    // alone must not be what prevents the unknown dispatch from being claimed.
+    reopened.resume_timer().await?;
     assert_eq!(reopened.uncertain_dispatches(/*limit*/ 10).await?.len(), 1);
     assert_eq!(
         reopened

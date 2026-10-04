@@ -766,6 +766,8 @@ impl RuntimeModuleSupervisorV1 {
         Ok(snapshot)
     }
 
+    /// Restore only stateless, effect-free content. The verified regression
+    /// token does not replace a current domain-owner migration/handoff witness.
     pub fn rollback_verified(
         &mut self,
         module_id: &StableId,
