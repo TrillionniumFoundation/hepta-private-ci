@@ -311,6 +311,83 @@ class SubjectTests(unittest.TestCase):
                 ci.verify_record({**record, key: value}, bound, directory, "compile")
 
 
+class PrivacyReceiptTests(unittest.TestCase):
+    def receipt(self):
+        from hepta_ui_native_compile_negative import CASES
+
+        return {
+            "schema": "hepta.ui-native-compile-negative.v1",
+            "sourceSha": "a" * 40,
+            "applicationCargoLockSha256": "b" * 64,
+            "compilerNegativePassed": True,
+            "effectAuthorityGranted": False,
+            "releaseAuthorized": False,
+            "cases": [
+                {
+                    "module": name,
+                    "exitCode": 101,
+                    "privacyDiagnosticObserved": True,
+                    "dependencyResolutionPinned": True,
+                    "lockedCompilerCheck": True,
+                    "seedCargoLockSha256": "b" * 64,
+                    "diagnosticSha256": "c" * 64,
+                    "fixtureCargoLockSha256": "d" * 64,
+                }
+                for name in CASES
+            ],
+        }
+
+    def verify(self, receipt):
+        return ci.verify_privacy_receipt(receipt, "a" * 40, "b" * 64)
+
+    def test_only_complete_locked_private_compiler_cases_pass(self):
+        result = self.verify(self.receipt())
+        self.assertTrue(result["lockedCompilerPrivacyPassed"])
+        self.assertEqual(
+            result["cases"], ["host_lifecycle", "journal_storage", "retirement"]
+        )
+
+    def test_preflight_failure_successful_compilation_or_unpinned_source_cannot_pass(
+        self,
+    ):
+        for key, value in [
+            ("exitCode", 0),
+            ("exitCode", -1),
+            ("exitCode", True),
+            ("privacyDiagnosticObserved", False),
+            ("dependencyResolutionPinned", False),
+            ("lockedCompilerCheck", False),
+            ("seedCargoLockSha256", "e" * 64),
+            ("diagnosticSha256", "missing"),
+        ]:
+            receipt = self.receipt()
+            receipt["cases"][0][key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                self.verify(receipt)
+
+    def test_wrong_subject_missing_duplicate_or_unknown_cases_reject(self):
+        for key, value in [
+            ("sourceSha", "e" * 40),
+            ("applicationCargoLockSha256", "e" * 64),
+            ("compilerNegativePassed", False),
+            ("releaseAuthorized", True),
+        ]:
+            receipt = self.receipt()
+            receipt[key] = value
+            with self.assertRaises(ValueError):
+                self.verify(receipt)
+        for mutation in (
+            lambda c: c.pop(),
+            lambda c: c.append(c[0]),
+            lambda c: c[0].update(module="task_supervisor"),
+            lambda c: c.__setitem__(0, c[1]),
+        ):
+            receipt = self.receipt()
+            mutation(receipt["cases"])
+            with self.assertRaises(ValueError):
+                self.verify(receipt)
+
+
 class AssetInputTests(unittest.TestCase):
     """Receipt boundary fixtures; these do not execute or qualify a renderer."""
 

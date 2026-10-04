@@ -125,3 +125,11 @@ full 1280x800 status images, later-callback readiness, OS close, worker drain,
 and exit zero. ZIP, test inventory/JUnit, session log and image digests were
 read back. These are hosted fixture observations; the installed-default,
 physical-input/IME, Wayland caption and other acceptance limits above remain.
+
+The current source-verification workflow also runs external-crate compiler
+fixtures for the private journal storage, retirement and host-lifecycle modules.
+A matching Rust privacy diagnostic is required after exact-lock normalization;
+resolver, preflight or unrelated compiler failures cannot qualify the check.
+The source seal requires all three compiler observations on the same source and
+lock. Registering read-only workflows or passing structural navigation checks
+never establishes these executed observations by itself.

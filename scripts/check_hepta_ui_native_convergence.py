@@ -34,6 +34,13 @@ FORBIDDEN_WORKFLOWS = {
     "ui-native-wal-index-export-pr.yml",
 }
 ALLOWED_WORKFLOW = "ui-native-qualification.yml"
+READ_ONLY_WORKFLOWS = frozenset(
+    {
+        ALLOWED_WORKFLOW,
+        "ui-native-lifecycle-source.yml",
+        "ui-native-robrix-preview.yml",
+    }
+)
 
 STATE_FILES = (
     "apps/hepta-native/CURRENT_SOURCE.json",
@@ -527,6 +534,147 @@ def check_native_platform_contracts() -> None:
     )
 
 
+def check_read_only_workflow_registration(workflows: dict[str, str]) -> None:
+    """Register reviewed subjects without granting writer or release authority."""
+    _require(
+        set(workflows) == READ_ONLY_WORKFLOWS,
+        f"unexpected ui.native workflow set: {sorted(workflows)}",
+    )
+    for name, workflow in workflows.items():
+        # Reject job overrides, inline mappings, aliases and write-all. These
+        # reviewed workflows deliberately use one explicit read-only root grant.
+        active = "\n".join(
+            line for line in workflow.splitlines() if not line.lstrip().startswith("#")
+        )
+        # Escaped quoted keys can spell permissions/uses differently while
+        # YAML decodes them to the same key. This deliberately literal format
+        # rejects that syntax rather than guessing at YAML escape semantics.
+        quoted_keys = re.findall(r'"(?:[^"\\\n]|\\.)*"[ \t]*:', active)
+        quoted_actions = re.findall(
+            r'(?:uses|["\']uses["\']):\s*"(?:[^"\\\n]|\\.)*"', active
+        )
+        _require(
+            not any("\\" in value for value in quoted_keys + quoted_actions),
+            f"{name}: escaped workflow keys or action values are unsupported",
+        )
+        _require(
+            re.search(r"(?m)^\s*-\s*\{", active) is None,
+            f"{name}: inline workflow steps are unsupported",
+        )
+        # Keep action/input declarations in the reviewed plain block subset.
+        # Block scalars, aliases and duplicate quoted keys are not interpreted.
+        _require(
+            re.search(
+                r"(?m)^\s*(?:-\s*)?(?:[\"'](?:uses|with)[\"']\s*:|<<\s*:|(?:[\w-]+:\s*)?[&*][\w-]+)",
+                active,
+            )
+            is None,
+            f"{name}: unsupported workflow action or input syntax",
+        )
+        _require(
+            re.search(r"(?m)^\s*(?:-\s*)?(?:uses|with)[ \t]+:", active) is None,
+            f"{name}: action/input keys require canonical colon spacing",
+        )
+        action_lines = re.findall(r"(?m)^\s*(?:-\s*)?uses:[^\n]*", active)
+        _require(
+            all(
+                re.fullmatch(
+                    r"\s*(?:-\s*)?uses: [A-Za-z0-9_./@-]+(?:[ \t]+#[^\n]*)?", line
+                )
+                for line in action_lines
+            ),
+            f"{name}: action values must use plain single-line syntax",
+        )
+        keys = re.findall(r"(?:\bpermissions|[\"']permissions[\"'])[ \t]*:", active)
+        _require(len(keys) == 1, f"{name}: nested or ambiguous workflow permissions")
+        declarations = re.findall(
+            r"(?m)^([ \t]*)permissions[ \t]*:[ \t]*([^\n]*)$", active
+        )
+        _require(declarations == [("", "")], f"{name}: ambiguous workflow permissions")
+        grant = re.search(r"(?m)^permissions:\n((?:[ \t]+[^\n]*\n|\n)+)", workflow)
+        lines = (
+            [
+                line.strip()
+                for line in grant.group(1).splitlines()
+                if line.strip() and not line.lstrip().startswith("#")
+            ]
+            if grant
+            else []
+        )
+        _require(lines == ["contents: read"], f"{name}: workflow is not read-only")
+        _require(
+            re.search(r"\bgit[ \t]+(?:-[^\n;]*?[ \t]+)?(?:push|commit|apply)\b", active)
+            is None,
+            f"{name}: unsafe workflow Git operation",
+        )
+        _require(
+            re.search(r"\bsecrets\s*(?:\.|\[)", active) is None,
+            f"{name}: read-only workflow must not request external credentials",
+        )
+        checkout = re.findall(
+            r"(?:\bpersist-credentials|[\"']persist-credentials[\"'])[ \t]*:[ \t]*([^,}\n]+)",
+            active,
+        )
+        _require(
+            bool(checkout)
+            and all(value.strip().strip("\"'") == "false" for value in checkout),
+            f"{name}: checkout credentials must not persist",
+        )
+        # Each checkout has its own default. A safe declaration on one step
+        # cannot cover an added checkout which silently persists credentials.
+        lines = active.splitlines()
+        checkouts = 0
+        for index, line in enumerate(lines):
+            use = re.match(
+                r"^([ \t]*)(-\s+)?(?:uses|[\"']uses[\"']):\s*[\"']?actions/checkout@",
+                line,
+            )
+            if use is None:
+                continue
+            checkouts += 1
+            step_indent = len(use[1]) - (0 if use[2] else 2)
+            end = index + 1
+            while end < len(lines):
+                child = lines[end]
+                if child.strip() and len(child) - len(child.lstrip()) <= step_indent:
+                    break
+                end += 1
+            block = lines[index:end]
+            input_indent = step_indent + 2
+            with_headers = [
+                offset
+                for offset, child in enumerate(block)
+                if re.fullmatch(r" " * input_indent + r"with:\s*", child)
+            ]
+            _require(
+                len(with_headers) == 1,
+                f"{name}: checkout requires one explicit with mapping",
+            )
+            start = with_headers[0] + 1
+            stop = start
+            while stop < len(block):
+                child = block[stop]
+                if child.strip() and len(child) - len(child.lstrip()) <= input_indent:
+                    break
+                stop += 1
+            settings = [
+                child.strip()
+                for child in block[start:stop]
+                if re.match(r" " * (input_indent + 2) + r"persist-credentials:", child)
+            ]
+            _require(
+                settings == ["persist-credentials: false"],
+                f"{name}: every checkout requires explicit non-persistent credentials in with",
+            )
+        _require(checkouts > 0, f"{name}: source checkout is missing")
+        _require(
+            "cancel-in-progress: false" in workflow
+            and "cancel-in-progress: true" not in workflow,
+            f"{name}: exact-source run may be cancelled",
+        )
+        check_job_environment_contexts(workflow)
+
+
 def check_repository() -> dict[str, Any]:
     workflows = ROOT / ".github" / "workflows"
     for name in FORBIDDEN_WORKFLOWS:
@@ -535,11 +683,12 @@ def check_repository() -> dict[str, Any]:
         )
 
     ui_native_workflows = sorted(
-        path.name for path in workflows.glob("*ui-native*.yml")
+        path.name
+        for suffix in ("yml", "yaml")
+        for path in workflows.glob(f"*ui-native*.{suffix}")
     )
-    _require(
-        ui_native_workflows == [ALLOWED_WORKFLOW],
-        f"unexpected ui.native workflow set: {ui_native_workflows}",
+    check_read_only_workflow_registration(
+        {name: _read(f".github/workflows/{name}") for name in ui_native_workflows}
     )
     workflow = _read(f".github/workflows/{ALLOWED_WORKFLOW}")
     check_job_environment_contexts(workflow)
@@ -662,6 +811,7 @@ def check_repository() -> dict[str, Any]:
         "repositoryTree": tree,
         "orderedParents": parents,
         "workflow": ALLOWED_WORKFLOW,
+        "readOnlyWorkflows": sorted(READ_ONLY_WORKFLOWS),
         "retiredWorkflowCount": len(FORBIDDEN_WORKFLOWS),
         "sourceContracts": sorted(source_contracts),
         "localCargoDependencyPaths": list(local_cargo_dependency_paths()),

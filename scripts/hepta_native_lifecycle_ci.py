@@ -16,8 +16,9 @@ from hepta_ci_exec import git, identity
 BASE = "711859f23b73ad89af4d23e75fe0ed4a461e7979"
 BASE_REF = "work/ui-rust-scifi-audit-20261002"
 WORKFLOW = ".github/workflows/ui-native-lifecycle-source.yml"
-CHECKS = ("compile", "inventory-command", "tests", "clippy", "format")
+CHECKS = ("compile", "inventory-command", "tests", "privacy", "clippy", "format")
 COMMANDS = {
+    "privacy": ["python3", "scripts/hepta_ui_native_compile_negative.py"],
     "compile": [
         "cargo",
         "+1.95.0",
@@ -334,6 +335,45 @@ def verify_record(record: dict, bound: dict, directory: Path, label: str) -> Non
         raise ValueError("execution log missing or changed")
 
 
+def verify_privacy_receipt(receipt: dict, source: str, lock_sha256: str) -> dict:
+    from hepta_ui_native_compile_negative import CASES
+
+    if (
+        receipt.get("schema") != "hepta.ui-native-compile-negative.v1"
+        or receipt.get("sourceSha") != source
+        or receipt.get("applicationCargoLockSha256") != lock_sha256
+        or receipt.get("compilerNegativePassed") is not True
+        or receipt.get("effectAuthorityGranted") is not False
+        or receipt.get("releaseAuthorized") is not False
+    ):
+        raise ValueError("privacy compiler receipt has wrong source or claims")
+    cases = receipt.get("cases")
+    if not isinstance(cases, list) or len(cases) != len(CASES):
+        raise ValueError("privacy compiler cases are missing or repeated")
+    modules = []
+    for case in cases:
+        if not isinstance(case, dict):
+            raise ValueError("privacy compiler case is not an observation")
+        modules.append(case.get("module"))
+        if (
+            type(case.get("exitCode")) is not int
+            or case["exitCode"] <= 0
+            or case.get("privacyDiagnosticObserved") is not True
+            or case.get("dependencyResolutionPinned") is not True
+            or case.get("lockedCompilerCheck") is not True
+            or case.get("seedCargoLockSha256") != lock_sha256
+            or any(
+                not isinstance(case.get(key), str)
+                or re.fullmatch(r"[0-9a-f]{64}", case[key]) is None
+                for key in ("diagnosticSha256", "fixtureCargoLockSha256")
+            )
+        ):
+            raise ValueError("privacy case lacks an actual locked compiler rejection")
+    if set(modules) != set(CASES):
+        raise ValueError("privacy compiler case identities differ")
+    return {"cases": sorted(modules), "lockedCompilerPrivacyPassed": True}
+
+
 def verify_asset_inputs(directory: Path, root: Path) -> dict:
     """Bind additional all-feature compiler input to deterministic regeneration."""
     receipt = json.loads((directory / "native-assets-verification.json").read_text())
@@ -416,6 +456,12 @@ def main() -> None:
         verify_record(
             json.loads((args.out / f"{label}.json").read_text()), bound, args.out, label
         )
+    privacy_record = json.loads((args.out / "privacy.json").read_text())
+    privacy = verify_privacy_receipt(
+        json.loads((args.out / privacy_record["log_file"]).read_text()),
+        bound["testedSha"],
+        sha((root / "apps/hepta-native/Cargo.lock").read_bytes()),
+    )
     coverage = verify_tests(
         json.loads((args.out / "inventory.json").read_text()), args.out / "junit.xml"
     )
@@ -443,6 +489,7 @@ def main() -> None:
             **bound,
             "ordinaryNativeSourceValidationPassed": True,
             "tests": coverage,
+            "privacy": privacy,
             "assetInputs": asset_inputs,
             "files": {name: sha((args.out / name).read_bytes()) for name in files},
             "nativeGuiObserved": False,

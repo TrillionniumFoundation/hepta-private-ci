@@ -21,6 +21,7 @@ on:
       - scripts/just-shell.py
       - scripts/hepta_ci_exec.py
       - scripts/hepta_native_lifecycle_ci.py
+      - scripts/hepta_ui_native_compile_negative.py
       - scripts/test_hepta_native_lifecycle_ci.py
       - scripts/test_hepta_native_robrix_build.py
       - scripts/hepta_ui_native_format.py
@@ -137,6 +138,12 @@ jobs:
           python3 scripts/hepta_ci_exec.py --output "$NATIVE_EVIDENCE/tests.json" --minimum-tests 1 -- \
             just test --manifest-path ../apps/hepta-native/Cargo.toml --locked --workspace --all-targets \
             --config-file ../.github/config/native-lifecycle-nextest.toml --profile native-lifecycle --retries 0
+      - name: Prove current native internals remain private
+        env:
+          NATIVE_EXPECTED_HEAD: ${{ env.TESTED_SHA }}
+        run: |
+          python3 scripts/hepta_ci_exec.py --output "$NATIVE_EVIDENCE/privacy.json" -- \
+            python3 scripts/hepta_ui_native_compile_negative.py
       - name: Strict native Clippy independently of test outcome
         if: ${{ !cancelled() && steps.tools.outcome == 'success' }}
         run: |
