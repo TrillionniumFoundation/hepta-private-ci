@@ -6,6 +6,24 @@
 
 #![forbid(unsafe_code)]
 
+#[cfg(test)]
+fn held_fixture_bytes(mut file: &std::fs::File) -> Vec<u8> {
+    use std::io::Read;
+    use std::io::Seek;
+    use std::io::SeekFrom;
+
+    // A separately opened reader is denied by Windows' mandatory writer lock.
+    // Read the exact owning handle and restore its append cursor.
+    let position = file.stream_position().expect("original file cursor");
+    file.seek(SeekFrom::Start(0)).expect("fixture read start");
+    let mut bytes = Vec::new();
+    file.read_to_end(&mut bytes)
+        .expect("complete owned fixture bytes");
+    file.seek(SeekFrom::Start(position))
+        .expect("restore original cursor");
+    bytes
+}
+
 use std::error::Error as StdError;
 use std::fmt;
 

@@ -69,8 +69,14 @@ fn reverse_ordered_cold_recovery_retains_interleaved_prefix_and_exact_retry() {
         .consume(&plan("z-plan"))
         .unwrap_or_else(|error| panic!("first reverse plan: {error:?}"));
     let prefix = writer.anchor();
+    let fence = writer.fence().clone();
+    drop(writer.into_store());
     let backup =
         fs::read(&temp.path).unwrap_or_else(|error| panic!("retained prefix bytes: {error:?}"));
+    let store = LockedFileFinalHoldoutCasStoreV1::recover(temp.open(), binding, Some(prefix))
+        .unwrap_or_else(|error| panic!("reopen exact retained prefix: {error:?}"));
+    let mut writer = FencedFinalHoldoutOwnerV1::recover(store, binding, fence)
+        .unwrap_or_else(|error| panic!("resume exact original fence: {error:?}"));
     for name in ["m-plan", "a-plan"] {
         let minimum = writer.anchor();
         writer = owner(writer.into_store(), Some(minimum));
@@ -101,8 +107,8 @@ fn reverse_ordered_cold_recovery_retains_interleaved_prefix_and_exact_retry() {
         crate::HoldoutUseDispositionV1::IdempotentReplay
     );
     assert_eq!(retry.anchor(), final_anchor);
-    assert_eq!(fs::read(&temp.path).ok(), Some(original.clone()));
     drop(retry);
+    assert_eq!(fs::read(&temp.path).ok(), Some(original.clone()));
 
     fs::write(&temp.path, &backup)
         .unwrap_or_else(|error| panic!("restore valid older prefix: {error:?}"));

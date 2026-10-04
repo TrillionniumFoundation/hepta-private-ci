@@ -9,6 +9,21 @@ use std::path::PathBuf;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
+fn registry_bytes(store: &mut DurableProposalRegistry) -> Vec<u8> {
+    let position = store.file.stream_position().expect("registry cursor");
+    store.file.seek(SeekFrom::Start(0)).expect("registry start");
+    let mut bytes = Vec::new();
+    store
+        .file
+        .read_to_end(&mut bytes)
+        .expect("complete registry bytes");
+    store
+        .file
+        .seek(SeekFrom::Start(position))
+        .expect("restore registry cursor");
+    bytes
+}
+
 struct TestFile {
     path: PathBuf,
 }
@@ -482,5 +497,6 @@ fn completed_observation_after_cold_reopen_preserves_original_row_under_later_he
             .expect("absent observed")
             .is_none()
     );
+    drop(cold);
     assert_eq!(std::fs::read(&fixture.path).expect("after"), before);
 }

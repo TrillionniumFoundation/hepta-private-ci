@@ -164,11 +164,12 @@ impl Fixture {
         .expect("recover")
     }
 
-    fn bytes(&self) -> Vec<Vec<u8>> {
-        ["journal", "operations", "witness"]
-            .iter()
-            .map(|name| fs::read(self.path.join(name)).expect("durable bytes"))
-            .collect()
+    fn bytes(&self, runtime: &NeuronRuntime<crate::FileAnchorWitnessStore>) -> Vec<Vec<u8>> {
+        vec![
+            runtime.journal.held_fixture_bytes(),
+            runtime.operations.held_fixture_bytes(),
+            runtime.witness.held_fixture_bytes(),
+        ]
     }
 }
 
@@ -250,13 +251,13 @@ fn guarded_expiry_is_no_update_and_historical_result_survives_reopen() {
     let first = runtime
         .tick_guarded(&mut model, first_input.clone(), &mut MechanismOnly)
         .expect("first product tick");
-    let before = fixture.bytes();
+    let before = fixture.bytes(&runtime);
     let expired = input(2, first.tick.checkpoint_after);
     assert_eq!(
         runtime.tick_guarded(&mut model, expired.clone(), &mut MechanismOnly),
         Err(NeuronRuntimeError::CalibrationExpired)
     );
-    assert_eq!(fixture.bytes(), before);
+    assert_eq!(fixture.bytes(&runtime), before);
     assert_eq!(model.calls, 1);
     drop(runtime);
     let mut reopened = fixture.recover();
@@ -269,7 +270,7 @@ fn guarded_expiry_is_no_update_and_historical_result_survives_reopen() {
         Err(NeuronRuntimeError::CalibrationExpired)
     );
     assert_eq!(model.calls, 1);
-    assert_eq!(fixture.bytes(), before);
+    assert_eq!(fixture.bytes(&reopened), before);
 }
 
 #[test]
@@ -282,7 +283,7 @@ fn clock_regression_rejects_before_model_and_leaves_all_stores_unchanged() {
         .expect("first tick");
     let mut second = input(2, first.tick.checkpoint_after);
     second.monotonic_time_micros = 1000;
-    let before = fixture.bytes();
+    let before = fixture.bytes(&runtime);
     assert_eq!(
         runtime.tick_guarded(&mut model, second, &mut MechanismOnly),
         Err(NeuronRuntimeError::Journal(JournalError::Mechanism(
@@ -290,7 +291,7 @@ fn clock_regression_rejects_before_model_and_leaves_all_stores_unchanged() {
         )))
     );
     assert_eq!(model.calls, 1);
-    assert_eq!(fixture.bytes(), before);
+    assert_eq!(fixture.bytes(&runtime), before);
 }
 
 #[test]
@@ -299,14 +300,14 @@ fn impossible_checkpoint_envelope_rejects_without_model_or_state_update() {
     fixture.config.resource_envelope.checkpoint_bytes = 1;
     let mut runtime = fixture.bootstrap();
     let mut model = Model::default();
-    let before = fixture.bytes();
+    let before = fixture.bytes(&runtime);
     assert_eq!(
         runtime.tick_guarded(&mut model, input(1, Digest32::ZERO), &mut MechanismOnly),
         Err(NeuronRuntimeError::InvalidConfig)
     );
     assert_eq!(model.calls, 0);
     assert_eq!(runtime.current_anchor().expect("anchor"), None);
-    assert_eq!(fixture.bytes(), before);
+    assert_eq!(fixture.bytes(&runtime), before);
 }
 
 #[test]

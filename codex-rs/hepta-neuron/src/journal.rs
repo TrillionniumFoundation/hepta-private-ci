@@ -98,6 +98,11 @@ pub struct SparseJournal {
 }
 
 impl SparseJournal {
+    #[cfg(test)]
+    pub(crate) fn held_fixture_bytes(&self) -> Vec<u8> {
+        crate::held_fixture_bytes(&self.file)
+    }
+
     /// Bootstrap or recover the first segment without an external acknowledgement
     /// witness. This cannot detect loss of a valid suffix or empty replacement.
     pub fn open(

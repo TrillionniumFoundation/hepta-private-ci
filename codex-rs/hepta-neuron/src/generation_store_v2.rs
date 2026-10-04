@@ -219,6 +219,11 @@ pub struct FileNeuronGenerationStoreV2 {
 }
 
 impl FileNeuronGenerationStoreV2 {
+    #[cfg(test)]
+    pub(crate) fn held_fixture_bytes(&self) -> Vec<u8> {
+        crate::held_fixture_bytes(&self.file)
+    }
+
     /// Bootstrap a new generation store. Existing paths are rejected.
     pub fn create(
         path: &Path,

@@ -78,6 +78,11 @@ pub struct FileAnchorWitnessStore {
 }
 
 impl FileAnchorWitnessStore {
+    #[cfg(test)]
+    pub(crate) fn held_fixture_bytes(&self) -> Vec<u8> {
+        crate::held_fixture_bytes(&self.file)
+    }
+
     /// Open or initialize the first witness segment. Existing HPTNWA01 bytes
     /// remain byte-compatible with the original single-file implementation.
     pub fn open(

@@ -42,6 +42,37 @@ mod failure;
 #[path = "outcome_runner.rs"]
 mod outcomes;
 
+/// Durable production evaluation always enters through recorded, signed admission.
+/// The raw runner is only available with the explicit trusted fixture feature.
+#[cfg_attr(
+    not(feature = "trusted-inprocess-eval"),
+    doc = r#"
+```compile_fail
+use codex_hepta_intelligence_eval::ProductEvaluationRunnerV1;
+```
+"#
+)]
+/// Internal modules and raw signed-decision assembly remain private to the owner.
+///
+/// ```compile_fail
+/// use codex_hepta_intelligence_eval::product_runner::ProductEvaluationRunnerV1;
+/// ```
+///
+/// ```compile_fail
+/// use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
+/// ```
+///
+/// The public recorded runner still composes with the original fenced owner.
+///
+/// ```no_run
+/// use codex_hepta_intelligence_eval::{
+///     FencedFinalHoldoutOwnerV1, LockedFileFinalHoldoutCasStoreV1,
+///     RecordedProductEvaluationRunnerV1,
+/// };
+/// let _constructor: fn(FencedFinalHoldoutOwnerV1<LockedFileFinalHoldoutCasStoreV1>)
+///     -> RecordedProductEvaluationRunnerV1<LockedFileFinalHoldoutCasStoreV1>
+///     = RecordedProductEvaluationRunnerV1::new;
+/// ```
 pub struct RecordedProductEvaluationRunnerV1<S> {
     pub(crate) inner: ProductEvaluationRunnerV1<S>,
     pub(crate) namespace: Digest32,

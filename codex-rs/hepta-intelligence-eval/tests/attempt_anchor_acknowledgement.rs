@@ -238,7 +238,13 @@ fn complete_old_backup_is_rejected_without_lowering_the_independent_anchor() {
         AnchoredProductEvaluationAttemptJournalV1::create(file.open(), binding, authority.clone())
             .expect("create");
     journal.append(intent()).expect("intent");
+    let prefix_anchor = journal.anchor().expect("independent prefix anchor");
+    drop(journal);
     let old = std::fs::read(&file.0).expect("complete backup");
+    let mut journal =
+        AnchoredProductEvaluationAttemptJournalV1::recover(file.open(), binding, authority.clone())
+            .expect("resume exact independently anchored prefix");
+    assert_eq!(journal.anchor(), Ok(prefix_anchor));
     journal.append(consumed()).expect("consumed");
     let retained = authority.0.borrow().anchor;
     drop(journal);

@@ -31,8 +31,8 @@ fn whole_export_reads_the_same_acknowledged_operation_without_model_effects() {
     );
     assert_eq!(calls.load(Ordering::SeqCst), 0);
     let commit = checked(runtime.tick_guarded(&mut model, request.clone(), &mut Allow));
-    let before_store = checked(fs::read(fixture.store()));
-    let before_index = checked(fs::read(fixture.index()));
+    let before_store = runtime.store.held_fixture_bytes();
+    let before_index = runtime.index.held_fixture_bytes();
     let observed =
         checked(runtime.export_acknowledged_operation_v2(&request.tick_id, input_digest));
     assert_eq!(observed.commit(), &commit);
@@ -40,8 +40,8 @@ fn whole_export_reads_the_same_acknowledged_operation_without_model_effects() {
     assert_eq!(observed.generation(), 1);
     assert!(observed.record().witness_acknowledged);
     assert_eq!(observed.current_witness(), commit.next_anchor);
-    assert_eq!(checked(fs::read(fixture.store())), before_store);
-    assert_eq!(checked(fs::read(fixture.index())), before_index);
+    assert_eq!(runtime.store.held_fixture_bytes(), before_store);
+    assert_eq!(runtime.index.held_fixture_bytes(), before_index);
     assert_eq!(calls.load(Ordering::SeqCst), 1);
     let bytes = observed.bytes().to_vec();
     let pin = Digest32::of_bytes(&bytes);

@@ -96,6 +96,11 @@ pub struct DurableLedger {
 }
 
 impl DurableLedger {
+    #[cfg(test)]
+    pub(crate) fn held_fixture_bytes(&self) -> Vec<u8> {
+        crate::held_fixture_bytes(&self.file)
+    }
+
     /// Create an empty store explicitly. Never use this to replace lost history.
     /// File creation and containing-directory durability are owned by the host.
     pub fn create(

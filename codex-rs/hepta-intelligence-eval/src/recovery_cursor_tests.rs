@@ -42,6 +42,21 @@ impl Drop for Fixture {
     }
 }
 
+fn cursor_bytes(cursor: &mut RecoveryCursor) -> Vec<u8> {
+    let position = cursor.file.stream_position().expect("cursor position");
+    cursor.file.seek(SeekFrom::Start(0)).expect("cursor start");
+    let mut bytes = Vec::new();
+    cursor
+        .file
+        .read_to_end(&mut bytes)
+        .expect("complete cursor bytes");
+    cursor
+        .file
+        .seek(SeekFrom::Start(position))
+        .expect("restore cursor position");
+    bytes
+}
+
 fn binding() -> Digest32 {
     Digest32::of_bytes(b"cursor-scope")
 }
@@ -56,9 +71,9 @@ fn progress_survives_reopen_and_exact_retries_do_not_write() {
     {
         let mut cursor = RecoveryCursor::open(fixture.create(), binding()).expect("open");
         cursor.save(Some(&next)).expect("persist progress");
-        let bytes = fs::read(&fixture.0).expect("bytes");
+        let bytes = cursor_bytes(&mut cursor);
         cursor.save(Some(&next)).expect("exact retry");
-        assert_eq!(fs::read(&fixture.0).expect("same bytes"), bytes);
+        assert_eq!(cursor_bytes(&mut cursor), bytes);
     }
     let mut cursor = RecoveryCursor::open(fixture.reopen(), binding()).expect("recover");
     assert_eq!(cursor.after(), Some(&next));
