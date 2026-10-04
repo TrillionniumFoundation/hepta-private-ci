@@ -84,5 +84,73 @@ class ArtifactRenewalCallerClosureTests(unittest.TestCase):
                 proof._verify_boundary(root, row, index, ("_tests.rs",))
 
 
+class ArtifactPublicationClockRoutingTests(unittest.TestCase):
+    """Source routing guards complement real owner phase/recovery tests."""
+
+    routes = (
+        (
+            "codex-rs/hepta-agentd/src/learning_operator_artifact_owner.rs",
+            "service",
+            "publish_with_clock",
+            "clock()",
+        ),
+        (
+            "codex-rs/hepta-agentd/src/learning_withdrawal.rs",
+            "owner",
+            "publish_with_state_changes_and_clock",
+            "now()",
+        ),
+        (
+            "codex-rs/hepta-infer-worker-host/src/initial_cpu_publication.rs",
+            "service",
+            "publish_with_clock",
+            "now_ms()",
+        ),
+        (
+            "codex-rs/hepta-infer-worker-host/src/initial_cpu_withdrawal.rs",
+            "owner",
+            "publish_with_state_changes_and_clock",
+            "now_ms()",
+        ),
+    )
+
+    def assert_clock_route(self, source, receiver, method, clock):
+        import re
+
+        code = proof._strip_cfg_test_items(proof._strip_rust_non_code(source))
+        self.assertEqual(
+            len(re.findall(rf"\b{receiver}\s*\.\s*{method}\s*\(", code)), 1
+        )
+        self.assertNotRegex(
+            code, rf"\b{receiver}\s*\.\s*(?:publish|publish_with_state_changes)\s*\("
+        )
+        call = code.index(method)
+        callback = code[call:]
+        self.assertIn("&mut ||", callback)
+        self.assertIn(clock, callback)
+        self.assertIn("ClockUnavailable", callback)
+
+    def test_all_real_publication_routes_use_existing_fallible_clocks(self):
+        for path, receiver, method, clock in self.routes:
+            with self.subTest(path=path):
+                self.assert_clock_route(
+                    (proof.ROOT / path).read_text(), receiver, method, clock
+                )
+
+    def test_each_route_rejects_a_return_to_logical_time_compatibility(self):
+        for path, receiver, method, clock in self.routes:
+            with self.subTest(path=path):
+                source = (proof.ROOT / path).read_text()
+                old = (
+                    "publish"
+                    if method == "publish_with_clock"
+                    else "publish_with_state_changes"
+                )
+                with self.assertRaises(AssertionError):
+                    self.assert_clock_route(
+                        source.replace(method, old), receiver, method, clock
+                    )
+
+
 if __name__ == "__main__":
     unittest.main()

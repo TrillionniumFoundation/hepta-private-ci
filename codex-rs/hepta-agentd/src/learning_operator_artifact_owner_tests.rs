@@ -230,3 +230,57 @@ fn independent_runtime_pin_mismatch_closes_stored_shadow_without_activation() {
         .is_err()
     );
 }
+
+#[test]
+fn real_product_clock_expiry_after_payload_preserves_unacknowledged_operation() -> anyhow::Result<()>
+{
+    use codex_hepta_agent_components::learning_artifacts::ArtifactPublicationPhaseV1;
+
+    let mut fixture = Fixture::new();
+    let manifest = &fixture.publication.admission.validated_manifest.manifest;
+    let payload = fixture.config.root.join("payloads").join(format!(
+        "{}-{}.bin",
+        manifest.artifact_id, manifest.bytes_digest
+    ));
+    let expired = (manifest.expires_at + 1) * 1_000;
+    let result = fixture.artifacts.persist_with_clock(
+        &fixture.training.owner,
+        &fixture.evaluation.owner,
+        LearningOperatorPublicationInputsV2 {
+            run: &fixture.run,
+            candidate: &fixture.candidate,
+            training: &fixture.training.receipt,
+            evaluation: &fixture.evaluation.receipt,
+            selection: &fixture.selection,
+            control: &fixture.control,
+            publication: fixture.publication.clone(),
+        },
+        || {
+            if payload.is_file() {
+                Ok(expired)
+            } else {
+                wall_clock_micros()
+            }
+        },
+    );
+    assert!(
+        matches!(
+            result,
+            Err(LearningOperatorPublicationErrorV1::OutcomeUnknown { .. })
+        ),
+        "PRODUCT_PHASE_CLOCK_DID_NOT_STOP_ACK: {result:?}"
+    );
+    let status = fixture
+        .artifacts
+        .reconcile_status(&fixture.publication)?
+        .ok_or_else(|| anyhow::anyhow!("missing original checkpoint"))?;
+    assert_eq!(
+        status.status.phase,
+        ArtifactPublicationPhaseV1::PayloadDurable
+    );
+    assert_eq!(
+        fixture.artifacts.service().recovery_required(),
+        Some(&fixture.publication.operation_id)
+    );
+    Ok(())
+}
