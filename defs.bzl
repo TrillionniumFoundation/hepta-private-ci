@@ -508,10 +508,12 @@ def codex_rust_crate(
     cargo_env_runfiles = {}
     for binary, main in binaries.items():
         features = binary_features.get(binary, crate_features)
+
         # Use the emitted crate cfg, not the wider workspace dependency graph.
         if binary_required_features != None:
             if not all([feature in features for feature in binary_required_features[binary]]):
                 continue
+
         # Cargo can give a library and a binary the same name; Bazel labels
         # share one namespace. Preserve the library label and Cargo identity.
         binary_target = binary + "-bin" if lib_srcs and binary == name else binary
