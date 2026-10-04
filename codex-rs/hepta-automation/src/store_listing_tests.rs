@@ -182,13 +182,17 @@ async fn substituted_index_cannot_advertise_the_listing_contract() -> TestResult
     ] {
         let (temp, store) = fixture().await?;
         let owner = store.owner_agent_id.clone();
+        // Keep corruption setup on one connection: SQLite can reject CREATE
+        // during prepare using another connection's stale pre-DROP schema.
+        let mut connection = store.pool.acquire().await?;
         sqlx::query("DROP INDEX automation_tasks_listing_idx")
-            .execute(&store.pool)
+            .execute(&mut *connection)
             .await?;
         sqlx::query("CREATE TABLE unrelated_tasks(created_at_ms INTEGER, task_id TEXT)")
-            .execute(&store.pool)
+            .execute(&mut *connection)
             .await?;
-        sqlx::query(replacement).execute(&store.pool).await?;
+        sqlx::query(replacement).execute(&mut *connection).await?;
+        drop(connection);
         store.close().await;
         assert!(
             matches!(
