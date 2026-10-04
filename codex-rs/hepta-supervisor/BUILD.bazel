@@ -1,7 +1,29 @@
+load("@crates//:defs.bzl", "all_crate_deps")
+load("@rules_rust//rust:defs.bzl", "rust_library")
 load("//:defs.bzl", "codex_rust_crate")
+
+# Cargo required-features closures. These belong to explicit tools, never the
+# ordinary supervisor library or hepta-supervisord dependency graph.
+_OFFLINE_TOOL_FEATURES = [
+    "offline-authority-tools",
+    "production-verifier",
+    "production-authority",
+]
+
+_OFFLINE_TOOL_PROFILE = {
+    "features": _OFFLINE_TOOL_FEATURES,
+    "library": ":hepta-supervisor-offline-tools-lib",
+}
 
 codex_rust_crate(
     name = "hepta-supervisor",
+    binary_feature_profiles = {
+        "hepta-supervisor-authority-bundle": _OFFLINE_TOOL_PROFILE,
+        "hepta-authority-signer": _OFFLINE_TOOL_PROFILE,
+        "hepta-final-use-signer": _OFFLINE_TOOL_PROFILE,
+        "hepta-final-use-approver": _OFFLINE_TOOL_PROFILE,
+        "hepta-final-use-revocation-signer": _OFFLINE_TOOL_PROFILE,
+    },
     crate_name = "codex_hepta_supervisor",
     unit_test_dependency_replacements = {
         "//codex-rs/hepta-intelligence-eval": "//codex-rs/hepta-intelligence-eval:hepta-intelligence-eval-test-lib",
@@ -18,4 +40,17 @@ exports_files(
         "tests/robrix_control_projection.rs",
     ],
     visibility = ["//codex-rs/hepta-contracts:__pkg__"],
+)
+
+# Deliberately private, separately compiled tool libraries. No product target
+# gains private-key loaders. The model issuer profile remains a separate gap.
+rust_library(
+    name = "hepta-supervisor-offline-tools-lib",
+    srcs = glob(["src/**/*.rs"]),
+    crate_features = _OFFLINE_TOOL_FEATURES,
+    crate_name = "codex_hepta_supervisor",
+    crate_root = "src/lib.rs",
+    edition = "2024",
+    visibility = ["//visibility:private"],
+    deps = all_crate_deps(),
 )

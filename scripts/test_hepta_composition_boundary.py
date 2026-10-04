@@ -101,7 +101,7 @@ class HeptaCompositionBoundaryTests(unittest.TestCase):
 
 
 class HeptaBuildProfileParityTests(unittest.TestCase):
-    def test_generated_binaries_receive_the_library_feature_profile(self):
+    def test_generated_binaries_receive_the_selected_library_feature_profile(self):
         tree = ast.parse((ROOT / "defs.bzl").read_text())
         factory = next(
             node
@@ -121,7 +121,7 @@ class HeptaBuildProfileParityTests(unittest.TestCase):
             self.assertIn("crate_features", fields)
             self.assertEqual(
                 ast.dump(fields["crate_features"]),
-                ast.dump(ast.Name(id="crate_features", ctx=ast.Load())),
+                ast.dump(ast.Name(id="binary_features", ctx=ast.Load())),
             )
 
     def test_agentd_bazel_profiles_expand_their_actual_cargo_features(self):

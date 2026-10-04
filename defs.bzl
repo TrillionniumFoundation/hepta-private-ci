@@ -196,6 +196,7 @@ def codex_rust_crate(
         lib_data_extra = [],
         rustc_flags_extra = [],
         binary_rustc_flags_extra = {},
+        binary_feature_profiles = {},
         rustc_env = {},
         rustc_env_files = [],
         deps_extra = [],
@@ -233,6 +234,9 @@ def codex_rust_crate(
             Crates are only compiled in a single configuration across the workspace, i.e.
             with all features in this list enabled. So use sparingly, and prefer to refactor
             optional functionality to a separate crate.
+        binary_feature_profiles: Explicit Cargo required-feature tool profiles, each with
+            a feature-matched private library label and expanded local features.
+            Ordinary binaries keep the package library and feature profile.
         unit_test_dependency_replacements: Test-only workspace dependency variants for unit and integration harnesses.
             Replace the complete transitive closure when public types cross crates.
         unit_test_features: Additional features for the test-only library and its unit/integration harnesses.
@@ -316,6 +320,13 @@ def codex_rust_crate(
     manifest_path = manifest_relpath + "/Cargo.toml"
 
     binaries = DEP_DATA.get(native.package_name())["binaries"]
+
+    for binary in binary_feature_profiles:
+        if binary not in binaries:
+            fail("binary feature profile has no Cargo binary: " + binary)
+        profile = binary_feature_profiles[binary]
+        if not profile["features"] or not profile["library"]:
+            fail("binary feature profile needs features and an isolated library: " + binary)
 
     lib_srcs = crate_srcs or native.glob(["src/**/*.rs"], exclude = binaries.values(), allow_empty = True)
 
@@ -430,6 +441,13 @@ def codex_rust_crate(
     cargo_env = {}
     cargo_env_runfiles = {}
     for binary, main in binaries.items():
+        profile = binary_feature_profiles.get(binary)
+        binary_features = profile["features"] if profile else crate_features
+        binary_library_deps = [
+            profile["library"] if profile and dependency == name else dependency
+            for dependency in maybe_deps
+        ]
+
         # Cargo can give a library and a binary the same name; Bazel labels
         # share one namespace. Preserve the library label and Cargo identity.
         binary_target = binary + "-bin" if lib_srcs and binary == name else binary
@@ -442,8 +460,8 @@ def codex_rust_crate(
             crate_name = binary.replace("-", "_"),
             aliases = crate_aliases,
             crate_root = main,
-            crate_features = crate_features,
-            deps = all_crate_deps() + maybe_deps + deps_extra,
+            crate_features = binary_features,
+            deps = all_crate_deps() + binary_library_deps + deps_extra,
             edition = crate_edition,
             # Keep per-binary Cargo link behavior scoped to the matching
             # generated rust_binary instead of leaking it to sibling binaries.
@@ -470,7 +488,7 @@ def codex_rust_crate(
             name = binary_unit_test_binary,
             crate = ":" + binary_target,
             aliases = crate_aliases,
-            crate_features = crate_features,
+            crate_features = binary_features,
             deps = all_crate_deps(normal_dev = True),
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
                 "--remap-path-prefix=../codex-rs=",
