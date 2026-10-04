@@ -185,6 +185,7 @@ def codex_rust_crate(
         crate_name,
         crate_aliases = {},
         crate_features = [],
+        binary_feature_groups = {},
         crate_srcs = None,
         crate_root = None,
         crate_edition = None,
@@ -230,9 +231,13 @@ def codex_rust_crate(
             Example: `codex_app_server`.
         crate_aliases: Cargo dependency renames, as recorded in @crates DEP_DATA aliases.
         crate_features: Cargo features to enable for this crate.
-            Crates are only compiled in a single configuration across the workspace, i.e.
+            Ordinary dependency libraries use a single configuration across the workspace, i.e.
             with all features in this list enabled. So use sparingly, and prefer to refactor
             optional functionality to a separate crate.
+        binary_feature_groups: Named groups with `binaries` and `features` lists.
+            Each group shares a private library variant, used only by its binaries
+            and their unit tests. List the complete local Cargo feature closure;
+            dependency features and build-script configuration are not changed.
         unit_test_dependency_replacements: Test-only workspace dependency variants for unit and integration harnesses.
             Replace the complete transitive closure when public types cross crates.
         unit_test_features: Additional features for the test-only library and its unit/integration harnesses.
@@ -333,9 +338,10 @@ def codex_rust_crate(
 
         maybe_deps += [name + "-build-script"]
 
-    # Production binaries use the normal library; test harnesses share the
+    # Ordinary binaries use the normal library; test harnesses share the
     # same qualification variant and transitive crate identities as Cargo dev.
     integration_library_deps = maybe_deps
+    binary_build_deps = list(maybe_deps)
     if lib_srcs:
         lib_rule = rust_proc_macro if proc_macro else rust_library
         lib_rule(
@@ -426,6 +432,39 @@ def codex_rust_crate(
         integration_library_deps = maybe_deps + [unit_test_library]
         maybe_deps += [name]
 
+    binary_features = {}
+    binary_library_deps = {}
+    for group_name, group in binary_feature_groups.items():
+        if not lib_srcs or proc_macro:
+            fail("binary_feature_groups requires an ordinary library")
+        if not group["binaries"] or not group["features"]:
+            fail("binary feature groups require binaries and features")
+        features = crate_features + group["features"]
+        library = name + "-" + group_name + "-lib"
+        for binary in group["binaries"]:
+            if binary not in binaries:
+                fail("unknown binary in feature group: " + binary)
+            if binary in binary_features:
+                fail("binary appears in multiple feature groups: " + binary)
+            binary_features[binary] = features
+            binary_library_deps[binary] = binary_build_deps + [library]
+        rust_library(
+            name = library,
+            crate_name = crate_name,
+            crate_root = crate_root,
+            aliases = crate_aliases,
+            crate_features = features,
+            deps = all_crate_deps() + binary_build_deps + deps_extra,
+            compile_data = compile_data,
+            data = lib_data_extra,
+            srcs = lib_srcs,
+            edition = crate_edition,
+            rustc_flags = rustc_flags_extra,
+            rustc_env = rustc_env,
+            rustc_env_files = rustc_env_files,
+            visibility = ["//visibility:private"],
+        )
+
     sanitized_binaries = []
     cargo_env = {}
     cargo_env_runfiles = {}
@@ -442,8 +481,8 @@ def codex_rust_crate(
             crate_name = binary.replace("-", "_"),
             aliases = crate_aliases,
             crate_root = main,
-            crate_features = crate_features,
-            deps = all_crate_deps() + maybe_deps + deps_extra,
+            crate_features = binary_features.get(binary, crate_features),
+            deps = all_crate_deps() + binary_library_deps.get(binary, maybe_deps) + deps_extra,
             edition = crate_edition,
             # Keep per-binary Cargo link behavior scoped to the matching
             # generated rust_binary instead of leaking it to sibling binaries.
@@ -470,7 +509,7 @@ def codex_rust_crate(
             name = binary_unit_test_binary,
             crate = ":" + binary_target,
             aliases = crate_aliases,
-            crate_features = crate_features,
+            crate_features = binary_features.get(binary, crate_features),
             deps = all_crate_deps(normal_dev = True),
             rustc_flags = rustc_flags_extra + WINDOWS_RUSTC_LINK_FLAGS + [
                 "--remap-path-prefix=../codex-rs=",
