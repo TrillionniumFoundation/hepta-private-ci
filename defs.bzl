@@ -325,7 +325,7 @@ def codex_rust_crate(
         if binary not in binaries:
             fail("binary feature profile has no Cargo binary: " + binary)
         profile = binary_feature_profiles[binary]
-        if not profile.features or not profile.library:
+        if not profile["features"] or not profile["library"]:
             fail("binary feature profile needs features and an isolated library: " + binary)
 
     lib_srcs = crate_srcs or native.glob(["src/**/*.rs"], exclude = binaries.values(), allow_empty = True)
@@ -442,9 +442,9 @@ def codex_rust_crate(
     cargo_env_runfiles = {}
     for binary, main in binaries.items():
         profile = binary_feature_profiles.get(binary)
-        binary_features = profile.features if profile else crate_features
+        binary_features = profile["features"] if profile else crate_features
         binary_library_deps = [
-            profile.library if profile and dependency == name else dependency
+            profile["library"] if profile and dependency == name else dependency
             for dependency in maybe_deps
         ]
 

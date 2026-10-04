@@ -10,10 +10,10 @@ _OFFLINE_TOOL_FEATURES = [
     "production-authority",
 ]
 
-_OFFLINE_TOOL_PROFILE = struct(
-    features = _OFFLINE_TOOL_FEATURES,
-    library = ":hepta-supervisor-offline-tools-lib",
-)
+_OFFLINE_TOOL_PROFILE = {
+    "features": _OFFLINE_TOOL_FEATURES,
+    "library": ":hepta-supervisor-offline-tools-lib",
+}
 
 codex_rust_crate(
     name = "hepta-supervisor",

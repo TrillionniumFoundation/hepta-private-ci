@@ -45,7 +45,6 @@ def capture_build(package, *, definitions=None):
 
     env = {
         "load": lambda *_args: None,
-        "struct": SimpleNamespace,
         "glob": glob,
         "all_crate_deps": lambda **_kwargs: ["@crates//:ordinary-dependency"],
         "rust_test_dependencies": lambda replacements, **_kwargs: list(
