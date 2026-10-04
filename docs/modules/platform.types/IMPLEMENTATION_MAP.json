@@ -266,7 +266,7 @@
       "mappingClass": "owner_native",
       "delegatedCalleees": [],
       "delegatedCallees": [],
-      "sourceBlob": "c6a877d8a798ac169c18497f2038f34107d6b599"
+      "sourceBlob": "0b46085d9d4111b57a527ad7be78e43f11035ab2"
     },
     {
       "operation": "manifest_contract_primitives_v1",
@@ -352,7 +352,7 @@
       "designOperation": "protocol_catalog_v2",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "4ae802d55b1525eecda6f99108cf166aa1095395"
+      "sourceBlob": "79bd4da66343f9df1ecd0c1340e5b66ad134de8f"
     },
     {
       "operation": "generated_bindings_v1",
@@ -386,7 +386,7 @@
       "mappingClass": "owner_native",
       "delegatedCalleees": [],
       "delegatedCallees": [],
-      "sourceBlob": "c5a8218829019e304904e58ed05644fc2d84de98"
+      "sourceBlob": "a901a3ddb1e8be2cfb64095abecd414b2a8846fe"
     },
     {
       "operation": "consumer_qualification_v1",
@@ -420,7 +420,7 @@
       "designOperation": "protocol_qualification_documentation_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourceBlob": "4fbb32e96c631a8aec7c82488178b254c658264e"
+      "sourceBlob": "99b38f42d1b6ef88398ed8579bb212829bd0d377"
     },
     {
       "operation": "runtime_topology_candidate_v2",
@@ -437,7 +437,8 @@
       "designOperation": "runtime_topology_candidate_v2",
       "mappingClass": "owner_native",
       "delegatedCalleees": [],
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourceBlob": "8bbd7ddc50c6b228ed15677a51b27588fd7b2ed1"
     }
   ],
   "ownedTargetProtocols": [
@@ -482,8 +483,8 @@
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "observedAtHead": {
-    "commit": "90a831adb220fb6c2e0eb83ebea183a0b4c88efb",
-    "tree": "4e293815394891fae3792f1ad699cfd2da698365"
+    "commit": "b30389b8d1cc7892490028afce19777718bbe4c5",
+    "tree": "1651948d85ed02119b13053234a98e3e32c9c29e"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -581,11 +582,11 @@
     },
     {
       "path": "codex-rs/hepta-supervisor/src/module_runtime.rs",
-      "object": "e7174771aaaea76c795ebb844f09b1f2eb3f4c78"
+      "object": "6f734be06974ec841ceafc868f1f218abf33c9d8"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/module_runtime_safety_tests.rs",
-      "object": "bd6215f416af2115696e945a8bf48f1b0767fefd"
+      "object": "2d261f1a8a3e158ea0a346689f59ed597815dbd2"
     },
     {
       "path": "codex-rs/hepta-supervisor/src/platform_manifest_admission.rs",
@@ -593,11 +594,11 @@
     },
     {
       "path": "codex-rs/hepta-types",
-      "object": "d97504906801f87ebae9a26fb55687c099014df7"
+      "object": "afdb90db981fe10cc25012a1d849de6cdeaf2c77"
     },
     {
       "path": "codex-rs/hepta-types/CONSUMER_QUALIFICATION_V1.json",
-      "object": "de0328464b51d646936445ba8272af811cf13660"
+      "object": "0b3c910aa03d52bb6d4dca2bf0b208eb4153fed2"
     },
     {
       "path": "codex-rs/hepta-types/MANIFEST_V1_CONFORMANCE.json",
@@ -625,11 +626,11 @@
     },
     {
       "path": "codex-rs/hepta-types/conformance/verify_platform_wire_vectors.mjs",
-      "object": "51d568dba622f80d7d65357cbe7e9629a17e5f8c"
+      "object": "0c59dfa2226a5d9dfde6d64fad98ba6a83e601a0"
     },
     {
       "path": "codex-rs/hepta-types/conformance/verify_platform_wire_vectors.py",
-      "object": "deb6e79638ea273414f61bd374432136b4455f7e"
+      "object": "fb3e7994f56bb1780ecd708dc001ddb93f39e31d"
     },
     {
       "path": "codex-rs/hepta-types/conformance/verify_rejections.mjs",
@@ -745,7 +746,7 @@
     },
     {
       "path": "codex-rs/hepta-types/src/protocol_catalog_v2.rs",
-      "object": "4ae802d55b1525eecda6f99108cf166aa1095395"
+      "object": "79bd4da66343f9df1ecd0c1340e5b66ad134de8f"
     },
     {
       "path": "codex-rs/hepta-types/src/registry.rs",
@@ -757,7 +758,11 @@
     },
     {
       "path": "codex-rs/hepta-types/src/topology.rs",
-      "object": "c6a877d8a798ac169c18497f2038f34107d6b599"
+      "object": "0b46085d9d4111b57a527ad7be78e43f11035ab2"
+    },
+    {
+      "path": "codex-rs/hepta-types/src/topology_v2.rs",
+      "object": "8bbd7ddc50c6b228ed15677a51b27588fd7b2ed1"
     },
     {
       "path": "codex-rs/hepta-types/tests/manifest_protocol_consumer.rs",
@@ -768,36 +773,40 @@
       "object": "1f6d1985b68d0119e4ded59de46b3acb7391f294"
     },
     {
+      "path": "codex-rs/hepta-types/tests/topology_versions.rs",
+      "object": "00bc60281e357f3503a05c8c3835bd3fdd9a6842"
+    },
+    {
       "path": "codex-rs/hepta-wire/src/platform_types_json.rs",
-      "object": "05b0095ed4a8e4eea73216861f8147a98036611b"
+      "object": "bcbf5e75b3d748cc42a03a5cc74e789ef3a009f7"
     },
     {
       "path": "docs/lane-a-foundation/platform.types/CURRENT_IMPLEMENTATION.md",
-      "object": "a34e61ed50e5911f144a9fef9e0d8bb5154c175a"
+      "object": "b58ab6ae436d1453ce6728796408685db6ecc373"
     },
     {
       "path": "docs/lane-a-foundation/platform.types/TRUTH_MATRIX_V1.json",
-      "object": "f98dd8a920a52b97db9581442ec1756f048787bf"
+      "object": "2f0744a554bb48cf8be25bfa5a577312df3f486d"
     },
     {
       "path": "docs/modules/platform.types/PROTOCOL_AND_QUALIFICATION_V1.md",
-      "object": "4fbb32e96c631a8aec7c82488178b254c658264e"
+      "object": "99b38f42d1b6ef88398ed8579bb212829bd0d377"
     },
     {
       "path": "docs/modules/platform.types/PUBLIC_API_INVENTORY_V1.json",
-      "object": "a41c99da31d5615e0a59fefcda3c1b8a6c4f0ea3"
+      "object": "50f725c57c0dcb651f4e7a769074a57c7c74bad1"
     },
     {
       "path": "docs/modules/platform.types/TECHNICAL.md",
-      "object": "d6dd7c14ad6c476c1a6aef477f38076888bcad8c"
+      "object": "36dfbe69e908afe87463b395d377d664e8764e96"
     },
     {
       "path": "qualification/module-execution-dossiers/detail/platform.types.md",
-      "object": "c3b6c486334c125ecc510bd94da0179c28fb282b"
+      "object": "a3931ecd589c7316f436793625b777aa51242885"
     },
     {
       "path": "scripts/platform_types_public_api.py",
-      "object": "c5a8218829019e304904e58ed05644fc2d84de98"
+      "object": "a901a3ddb1e8be2cfb64095abecd414b2a8846fe"
     },
     {
       "path": "scripts/run_platform_types_consumer_qualification.sh",
@@ -817,7 +826,7 @@
     },
     {
       "path": "scripts/verify_platform_types_consumers.py",
-      "object": "0508df9782a0b7ef2d833f1ed386bd5aa0d74c9c"
+      "object": "0ba1e5545501b70cf4880c6146e5811d3671b67b"
     },
     {
       "path": "scripts/verify_platform_types_schema_catalog.py",
