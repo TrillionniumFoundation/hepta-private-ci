@@ -816,3 +816,9 @@ fn signed_evaluation_binds_metrics_roles_and_host_identities() {
 
 #[path = "longitudinal_time_tests.rs"]
 mod longitudinal_time_tests;
+
+#[path = "signing_bounds_tests.rs"]
+mod signing_bounds_tests;
+
+#[path = "signed_admission_tests.rs"]
+mod signed_admission_tests;

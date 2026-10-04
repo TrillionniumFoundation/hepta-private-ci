@@ -659,3 +659,16 @@ Exact-head, ordered-parent merge, coverage and strict lint require immutable
 execution artifacts. Real target-host, future-window and independent acceptance
 evidence remain external. Production, activation and release claims remain false.
 <!-- END GENERATED LEARNING.EVAL SOURCE STATUS -->
+
+
+## 18. Signing-helper count preflight
+
+The bounded implementation is [commit f61a8da8](https://github.com/TrillionniumFoundation/hepta-private-ci/commit/f61a8da8674b51c49426f386e261d7044eccd2a5), tree `77bf0464e444d78dd822aaa4225ac24b3aa870f7`, stacked on owner `59b1d6d715ab37f96ef3cf371adf473b3d62c01b`. This source reference does not establish execution, target-host or release qualification.
+
+[closure.rs](../../../codex-rs/hepta-intelligence-eval/src/closure.rs) and [metric_roles.rs](../../../codex-rs/hepta-intelligence-eval/src/metric_roles.rs) apply existing count ceilings earlier in the affected helpers. Metric contracts, metric gates, role contracts and failed-metric identifiers are limited to 128 entries where consumed by those helpers. Snapshot and future-window identifier vectors are limited to 1,000,000 entries before the independent-decision digest preimage is constructed. No ceiling is raised and no signed digest domain changes.
+
+Oversized metric or role inputs return `EvaluationClosureError::MetricLimit`; oversized snapshot or future-window lineage returns `FoldLineageLimit`. This intentionally gives count rejection precedence over helper cloning, serialization and later semantic errors for those invalid inputs. The existing in-range byte composition, ordering and digest domains remain unchanged. Callers already own their input vectors: these checks do not prevent caller-side allocation.
+
+The [six regression cases](../../../codex-rs/hepta-intelligence-eval/src/signing_bounds_tests.rs) contain five oversized-input controls and one maximum-128-metric positive. The positive establishes successful plan freezing and signing-payload creation, not complete holdout/admission validity; the tests do not directly measure allocations or compare exact digest bytes. Native execution and resource observations must be read with their exact source identity, separately from hosted and merge-candidate qualification.
+
+This is a local preflight improvement, not a global bound on every signing input. The existing `retention_receipt_digests` path still lacks a practical count ceiling, and V2 payload construction still forms the V1 payload before the role-digest preflight. Existing current-trust, publication, provider, anchor, future-calendar, independent acceptance, activation and release requirements remain unchanged. No AuthBus, State, Agentd or runtime composition is added by this slice.
