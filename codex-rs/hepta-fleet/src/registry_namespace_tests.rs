@@ -191,7 +191,7 @@ fn sticky_ancestor_and_retained_hardlinks_preserve_native_catalog_recovery() -> 
 fn root_reader_preserves_nonroot_fleet_owner_and_rejects_foreign_control_owner() -> TestResult<()> {
     let (temp, registry, first, _peer) = fixture()?;
     let Some(nonroot_uid) =
-        root_reader_fixture_uid(fs::metadata(temp.path()).expect("fixture owner").uid())
+        root_reader_fixture_uid(fs::metadata(temp.path()).expect("fixture owner").uid())?
     else {
         return Ok(());
     };
@@ -238,43 +238,46 @@ fn root_reader_preserves_nonroot_fleet_owner_and_rejects_foreign_control_owner()
 
 // Returning here reports success to the test harness; the explicit diagnostic
 // distinguishes unavailable prerequisites from executed cross-UID assertions.
-fn root_reader_fixture_uid(fixture_uid: u32) -> Option<u32> {
+fn root_reader_fixture_uid(fixture_uid: u32) -> TestResult<Option<u32>> {
     if fixture_uid != 0 {
         eprintln!(
             "CAPABILITY SKIP: root_reader_preserves_nonroot_fleet_owner_and_rejects_foreign_control_owner requires UID 0; cross-UID assertions were not executed"
         );
-        return None;
+        return Ok(None);
     }
     #[cfg(target_os = "linux")]
     {
-        let mapping = fs::read_to_string("/proc/self/uid_map").expect("read Linux UID mappings");
-        let nonroot_uid = mapping.lines().find_map(|line| {
+        let mapping = fs::read_to_string("/proc/self/uid_map")?;
+        let mut nonroot_uid = None;
+        for line in mapping.lines() {
             let fields = line
                 .split_whitespace()
-                .map(|field| field.parse::<u64>().expect("valid Linux UID mapping"))
-                .collect::<Vec<_>>();
+                .map(str::parse::<u64>)
+                .collect::<Result<Vec<_>, _>>()?;
             assert_eq!(fields.len(), 3, "Linux UID mapping has three fields");
             let inside = fields[0];
-            let end = inside.checked_add(fields[2]).expect("UID mapping range");
+            let end = inside
+                .checked_add(fields[2])
+                .ok_or_else(|| std::io::Error::other("UID mapping range"))?;
             assert!(end <= u64::from(u32::MAX) + 1, "UID mapping fits uid_t");
             let candidate = inside.max(1);
-            (candidate < end && candidate < u64::from(u32::MAX))
-                .then(|| u32::try_from(candidate).expect("mapped nonroot UID"))
-        });
+            if candidate < end && candidate < u64::from(u32::MAX) {
+                nonroot_uid = Some(u32::try_from(candidate)?);
+                break;
+            }
+        }
         let Some(nonroot_uid) = nonroot_uid else {
             eprintln!(
                 "CAPABILITY SKIP: root_reader_preserves_nonroot_fleet_owner_and_rejects_foreign_control_owner has no mapped nonroot Linux UID; cross-UID assertions were not executed"
             );
-            return None;
+            return Ok(None);
         };
-        let status =
-            fs::read_to_string("/proc/self/status").expect("read Linux effective capabilities");
+        let status = fs::read_to_string("/proc/self/status")?;
         let capabilities = status
             .lines()
             .find_map(|line| line.strip_prefix("CapEff:"))
-            .expect("Linux status contains effective capabilities");
-        let capabilities = u64::from_str_radix(capabilities.trim(), 16)
-            .expect("valid Linux effective capabilities");
+            .ok_or_else(|| std::io::Error::other("Linux status contains effective capabilities"))?;
+        let capabilities = u64::from_str_radix(capabilities.trim(), 16)?;
         let can_chown = capabilities & (1 << 0) != 0;
         let can_read_private_nonroot_files = capabilities & ((1 << 1) | (1 << 2)) != 0;
         let can_set_nonroot_directory_permissions = capabilities & (1 << 3) != 0;
@@ -282,12 +285,12 @@ fn root_reader_fixture_uid(fixture_uid: u32) -> Option<u32> {
             eprintln!(
                 "CAPABILITY SKIP: root_reader_preserves_nonroot_fleet_owner_and_rejects_foreign_control_owner requires CAP_CHOWN, CAP_FOWNER, and CAP_DAC_OVERRIDE or CAP_DAC_READ_SEARCH; cross-UID assertions were not executed"
             );
-            return None;
+            return Ok(None);
         }
-        Some(nonroot_uid)
+        Ok(Some(nonroot_uid))
     }
     #[cfg(not(target_os = "linux"))]
     {
-        Some(65534)
+        Ok(Some(65534))
     }
 }
