@@ -109,8 +109,9 @@ ownership, schemas, source paths and references against the current working tree
 including uncommitted local edits. Historical source observations and qualification
 inventories do not block ordinary development.
 
-The global, module-document and implementation-map verifiers default to
-`--profile qualification` for existing qualification callers. Explicit qualification
+The global and module-document verifiers default to `--profile development`.
+The implementation-map verifier retains its explicit qualification contract.
+Explicit qualification
 runs retain exact source identities, API inventories and evidence checks. Execution
 receipts require committed inputs and never treat a development-profile pass as
 release evidence. Native CI selects affected owners and reverse consumers from both
