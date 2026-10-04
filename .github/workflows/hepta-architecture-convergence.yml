@@ -38,6 +38,8 @@ jobs:
           ref: ${{ env.SOURCE_SHA }}
           fetch-depth: 0
           persist-credentials: false
+      - name: Test retained prospective merge identity diagnostics
+        run: python3 -m unittest -v scripts.test_hepta_prospective_merge_identity
       - name: Verify GitHub prospective merge ref matches this exact candidate
         if: matrix.lane == 'base-merge'
         env:
@@ -47,19 +49,51 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          records="$RUNNER_TEMP/hepta-command-records"
+          mkdir -p "$records"
+          actual_sha=''
+          actual_tree=''
+          expected_tree=''
+          parents=()
+          stage=inputs
+          retain_identity() {
+            status=$?
+            trap - EXIT
+            jq -n --arg source "$SOURCE_SHA" --arg base "$BASE_SHA" \
+              --arg observed_sha "$actual_sha" --arg observed_tree "$actual_tree" \
+              --arg expected_tree "$expected_tree" --arg stage "$stage" \
+              --argjson status "$status" \
+              --argjson parents "$(printf '%s\n' "${parents[@]}" | jq -Rsc 'split("\n") | map(select(length > 0))')" \
+              '{source_sha: $source, base_sha: $base, observed_merge_sha: $observed_sha,
+                observed_parents: $parents, observed_tree: $observed_tree,
+                expected_tree: $expected_tree, stage: $stage, exit_code: $status,
+                qualified: ($status == 0 and $stage == "verified")}' \
+              > "$records/prospective-merge-identity.json"
+            exit "$status"
+          }
+          trap retain_identity EXIT
           test -n "$PR_NUMBER"
-          ref_json="$(gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge")"
-          actual_sha="$(jq -er '.object.sha' <<<"$ref_json")"
-          commit_json="$(gh api "repos/$REPO/git/commits/$actual_sha")"
-          mapfile -t parents < <(jq -r '.parents[].sha' <<<"$commit_json")
+          [[ "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          stage=merge-ref
+          timeout --kill-after=5s 30s gh api "repos/$REPO/git/ref/pull/$PR_NUMBER/merge" > "$records/prospective-merge-ref.json"
+          actual_sha="$(jq -er '.object.sha' "$records/prospective-merge-ref.json")"
+          [[ "$actual_sha" =~ ^[0-9a-f]{40}$ ]]
+          stage=merge-commit
+          timeout --kill-after=5s 30s gh api "repos/$REPO/git/commits/$actual_sha" > "$records/prospective-merge-commit.json"
+          mapfile -t parents < <(jq -r '.parents[].sha' "$records/prospective-merge-commit.json")
+          actual_tree="$(jq -er '.tree.sha' "$records/prospective-merge-commit.json")"
+          stage=ordered-parents
           test "${#parents[@]}" -eq 2
           test "${parents[0]}" = "$BASE_SHA"
           test "${parents[1]}" = "$SOURCE_SHA"
-          actual_tree="$(jq -er '.tree.sha' <<<"$commit_json")"
-          expected_tree="$(git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          stage=expected-tree
+          expected_tree="$(timeout --kill-after=5s 120s git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA")"
+          [[ "$expected_tree" =~ ^[0-9a-f]{40}$ ]]
           test "$actual_tree" = "$expected_tree"
           printf 'GITHUB_PROSPECTIVE_MERGE_SHA=%s\n' "$actual_sha" >> "$GITHUB_ENV"
           printf 'GITHUB_PROSPECTIVE_MERGE_TREE=%s\n' "$actual_tree" >> "$GITHUB_ENV"
+          stage=verified
       - name: Construct the canonical prospective merge
         id: synthetic
         if: matrix.lane == 'base-merge'
