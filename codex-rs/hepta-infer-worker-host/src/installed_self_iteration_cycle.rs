@@ -36,6 +36,8 @@ use tokio_util::sync::CancellationToken;
 
 #[path = "installed_self_iteration_goal.rs"]
 mod goal_identity;
+#[path = "installed_self_iteration_bundle.rs"]
+mod bundle_frontier;
 
 #[derive(Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -48,7 +50,7 @@ pub struct InstalledSelfIterationCycleConfigV1 {
     pub generator_principal: String,
     pub maximum_request_duration_ms: u64,
 }
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub(crate) struct PreparedCandidateAdmissionV1 {
     pub candidate_id: String,
@@ -65,6 +67,8 @@ pub(crate) struct InstalledRoundBundleV1 {
     pub independent_owners: InstalledCpuSourceV1,
     pub candidates: Vec<PreparedCandidateAdmissionV1>,
     pub rollback: PreparedCandidateAdmissionV1,
+    #[serde(default, skip_serializing_if = "Vec::is_empty")]
+    pub rollbacks: Vec<PreparedCandidateAdmissionV1>,
 }
 pub(crate) struct Composition {
     pub resolver: Arc<dyn RegisteredCpuModelResolverV3>,
@@ -247,12 +251,12 @@ pub(crate) async fn run(
             if bundle.schema != "hepta.installed-round-bundle.v1"
                 || bundle.round != round
                 || unique_candidates.len() != bundle.candidates.len()
-                || !unique_candidates.contains(bundle.rollback.candidate_id.as_str())
             {
                 return Err(invalid(
                     "Root bundle changed whole original round or candidate frontier",
                 ));
             }
+            let rollback_sources = bundle.rollback_sources()?;
             let materials = CpuNeuronParameterRootMaterialsV2::from_protected_source(
                 &bundle.materials,
                 config.worker_executable_digest.parse().map_err(invalid)?,
@@ -340,13 +344,28 @@ pub(crate) async fn run(
                     })
                     .collect::<Result<Vec<_>, AgentdError>>()
             })?;
+            let first_id = materials.with_plan(|plan| plan.candidates[0].candidate_id.clone());
+            let first_source = rollback_sources.iter()
+                .find(|entry| entry.candidate_id == first_id.as_str())
+                .ok_or_else(|| invalid("first original rollback admission absent"))?;
             let (rollback, rollback_admission) = admission(
-                &bundle.rollback,
+                first_source,
                 &round,
-                materials.rollback(),
+                materials.rollback_for_candidate(&first_id)?,
                 ParameterPreRegistrationPurposeV1::ExactRollback,
                 clock.clone(),
             )?;
+            let first_rollback = rollback.clone();
+            let mut remaining_rollbacks = Vec::new();
+            for source in rollback_sources.iter().filter(|entry| entry.candidate_id != first_id.as_str()) {
+                let candidate_id = StableId::new(&source.candidate_id).map_err(invalid)?;
+                let (generation, admission) = admission(source, &round,
+                    materials.rollback_for_candidate(&candidate_id)?,
+                    ParameterPreRegistrationPurposeV1::ExactRollback, clock.clone())?;
+                remaining_rollbacks.push(crate::CpuNeuronParameterRollbackPlanV2 {
+                    candidate_id, worker: worker(generation.runtime.generation), generation, admission,
+                });
+            }
             let owners = InstalledSelfIterationIndependentOwnersV1::from_protected_source(
                 &bundle.independent_owners,
                 round.clone(),
@@ -366,7 +385,7 @@ pub(crate) async fn run(
                 rollback,
                 rollback_admission: Some(rollback_admission),
             });
-            let compiler = CpuNeuronGovernedParameterCompilerV1::new_v2(
+            let mut compiler = CpuNeuronGovernedParameterCompilerV1::new_v2(
                 plan,
                 CpuNeuronParameterCompilerOwnersV2 {
                     resources: composition.resources.clone(),
@@ -380,6 +399,7 @@ pub(crate) async fn run(
                 },
                 CpuNeuronParameterPolicyV2::new(canonical.clone(), canonical.digest())?,
             )?;
+            compiler.bind_candidate_rollbacks_v2(&first_id, &first_rollback, remaining_rollbacks)?;
             composition
                 .reader
                 .publish_round_reader(compiler.physical_generation_reader())?;

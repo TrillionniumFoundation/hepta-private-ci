@@ -116,9 +116,9 @@ impl RootFrozenGeneratorServiceV1 {
             let frontier: std::collections::BTreeSet<_> = bundle.candidates.iter()
                 .map(|entry| entry.candidate_id.as_str()).collect();
             ensure!(frontier.len() == bundle.candidates.len()
-                && frontier.contains(bundle.rollback.candidate_id.as_str())
                 && materials.with_plan(|plan| plan.candidates.len()) == frontier.len(),
                 "prepared candidate and exact-rollback frontier changed");
+            let rollbacks = bundle.rollback_sources()?;
             let validate = |source: &crate::evolving_agentd::installed_cycle::PreparedCandidateAdmissionV1,
                 material: &crate::CpuNeuronGenerationPlanV1, purpose| -> Result<()> {
                 let actual = crate::initial_cpu_anchor::inspect_parameter_pre_registered_admission_v1(
@@ -144,7 +144,12 @@ impl RootFrozenGeneratorServiceV1 {
                         .context("complete prepared candidate missing")?;
                     validate(source, candidate.generation, ParameterPreRegistrationPurposeV1::Candidate)?;
                 }
-                validate(&bundle.rollback, materials.rollback(), ParameterPreRegistrationPurposeV1::ExactRollback)
+                for rollback in &rollbacks {
+                    validate(rollback,
+                        materials.rollback_for_candidate(&StableId::new(&rollback.candidate_id)?)?,
+                        ParameterPreRegistrationPurposeV1::ExactRollback)?;
+                }
+                Ok(())
             })?;
             InstalledSelfIterationIndependentOwnersV1::from_protected_source(
                 &bundle.independent_owners, round.clone(), &materials)?;

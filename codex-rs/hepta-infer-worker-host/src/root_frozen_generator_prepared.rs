@@ -22,7 +22,7 @@ pub(super) async fn pair(
                 .map(|entry| entry.generation.clone())
         })
         .context("original selected generation absent")?;
-    for expected in [candidate, materials.rollback().clone()] {
+    for expected in [candidate, materials.rollback_for_candidate(selected)?.clone()] {
         let (generation, packet) = client
             .prepared_generation_v2(
                 expected.runtime.generation.get(),

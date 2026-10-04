@@ -11,7 +11,7 @@ pub(super) fn publish(
     materials: &CpuNeuronRoundMaterialsV3,
     context: &InstalledCpuSourceV1,
     candidates: Vec<PreparedCandidateAdmissionV1>,
-    rollback: PreparedCandidateAdmissionV1,
+    rollbacks: Vec<PreparedCandidateAdmissionV1>,
 ) -> Result<()> {
     let source = recipe::publish(
         execution_directory,
@@ -82,7 +82,8 @@ pub(super) fn publish(
         &protected,
     )?;
     protected.revalidate_sources()?;
-    let bundle = InstalledRoundBundleV1 {
+    let rollback = rollbacks.first().context("complete exact rollback frontier absent")?.clone();
+    let mut bundle = InstalledRoundBundleV1 {
         schema: "hepta.installed-round-bundle.v1".into(),
         round: materials.round().clone(),
         materials: original.materials,
@@ -90,7 +91,12 @@ pub(super) fn publish(
         independent_owners: client_source,
         candidates,
         rollback,
+        rollbacks,
     };
+    bundle.rollback_sources()?;
+    if bundle.candidates.len() == 1 {
+        bundle.rollbacks.clear();
+    }
     ensure!(
         configuration::source(&blueprint.independent_client_template, 64 * 1024)? == client_bytes
             && configuration::source(&blueprint.independent_owners_template, 64 * 1024)?

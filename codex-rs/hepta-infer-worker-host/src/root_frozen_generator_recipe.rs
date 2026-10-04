@@ -58,6 +58,7 @@ pub(crate) fn publish(
     let baseline_bytes = encode_neuron_generation_material_v2(materials.baseline())?;
     let request_bytes = encode_parameter_plasticity_request_v1(materials.request())?;
     let mut candidate_bindings = Vec::new();
+    let mut rollback_bindings = Vec::new();
     for candidate in materials.candidates() {
         candidate_bindings.push(serde_json::json!({
             "candidate_id": candidate.candidate_id.as_str(),
@@ -65,13 +66,15 @@ pub(crate) fn publish(
             "canary_tick": Digest32::of_bytes(&encode_neuron_tick_input_v1(&candidate.canary_tick)?).to_string(),
             "canary_port": Digest32::of_bytes(&encode_canonical_port_input_material_v1(&candidate.canary_port)?).to_string(),
         }));
+        rollback_bindings.push(serde_json::json!({
+            "candidate_id": candidate.candidate_id.as_str(),
+            "generation": Digest32::of_bytes(&encode_neuron_generation_material_v2(
+                materials.rollback_for_candidate(&candidate.candidate_id)?)?).to_string(),
+        }));
     }
     // Bind the full round and context first. A crash before later publication
     // cannot turn recovery into a new search window or new context admission.
-    source(
-        &directory,
-        "binding.json",
-        &serde_json::to_vec(&serde_json::json!({
+    let mut binding = serde_json::json!({
             "schema": "hepta.cpu-neuron.round-material-binding.v3",
             "round": round,
             "canonical": Digest32::of_bytes(materials.canonical_envelope().canonical_bytes()).to_string(),
@@ -83,9 +86,11 @@ pub(crate) fn publish(
             "candidates": candidate_bindings,
             "worker": worker,
             "plasticity_context": context,
-        }))?,
-        64 * 1024,
-    )?;
+        });
+    if materials.candidates().len() > 1 {
+        binding["rollbacks"] = serde_json::Value::Array(rollback_bindings);
+    }
+    source(&directory, "binding.json", &serde_json::to_vec(&binding)?, 64 * 1024)?;
     let canonical = source(
         &directory,
         "canonical.json",
@@ -111,6 +116,7 @@ pub(crate) fn publish(
         MAX_NEURON_GENERATION_MATERIAL_BYTES_V2,
     )?;
     let mut candidates = Vec::new();
+    let mut rollbacks = Vec::new();
     for candidate in materials.candidates() {
         let key = Digest32::of_bytes(candidate.candidate_id.as_str().as_bytes());
         let generation = source(
@@ -135,18 +141,31 @@ pub(crate) fn publish(
             "candidate_id": candidate.candidate_id.as_str(),
             "generation": generation, "canary_tick": tick, "canary_port": port,
         }));
+        if materials.candidates().len() > 1 {
+            let generation = source(
+                &directory,
+                &format!("rollback-{key}.json"),
+                &encode_neuron_generation_material_v2(materials.rollback_for_candidate(&candidate.candidate_id)?)?,
+                MAX_NEURON_GENERATION_MATERIAL_BYTES_V2,
+            )?;
+            rollbacks.push(serde_json::json!({"candidate_id": candidate.candidate_id.as_str(), "generation": generation}));
+        }
     }
     let test_plan = materials.with_plan(|plan| plan.test_plan_digest);
+    let mut descriptor = serde_json::json!({
+        "schema": "hepta.cpu-neuron.parameter-root-materials.v2",
+        "canonical_envelope": canonical, "parameter_request": request,
+        "baseline": baseline, "baseline_candidate_id": materials.request().admission.baseline_id.as_str(),
+        "test_plan_digest": test_plan.to_string(), "candidates": candidates,
+        "rollback": rollback, "worker_program": worker,
+    });
+    if materials.candidates().len() > 1 {
+        descriptor["rollbacks"] = serde_json::Value::Array(rollbacks);
+    }
     let descriptor = source(
         &directory,
         "materials.json",
-        &serde_json::to_vec(&serde_json::json!({
-            "schema": "hepta.cpu-neuron.parameter-root-materials.v2",
-            "canonical_envelope": canonical, "parameter_request": request,
-            "baseline": baseline, "baseline_candidate_id": materials.request().admission.baseline_id.as_str(),
-            "test_plan_digest": test_plan.to_string(), "candidates": candidates,
-            "rollback": rollback, "worker_program": worker,
-        }))?,
+        &serde_json::to_vec(&descriptor)?,
         64 * 1024,
     )?;
     let recipe = PublishedRoundRecipeV3 {
