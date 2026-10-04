@@ -24,7 +24,10 @@ fn digest(value: &str) -> Digest32 {
     Digest32::of_bytes(value.as_bytes())
 }
 
-fn encoder() -> EncoderReleaseIdentityV1 {
+fn encoder() -> Result<
+    EncoderReleaseIdentityV1,
+    codex_hepta_memory_retrieval::vector_publication::VectorPublicationErrorV1,
+> {
     EncoderReleaseIdentityV1::new(
         digest("model"),
         digest("weights"),
@@ -32,13 +35,12 @@ fn encoder() -> EncoderReleaseIdentityV1 {
         digest("preprocessor"),
         2,
     )
-    .expect("encoder")
 }
 
-fn snapshot(owner_generation: &str) -> VectorIndexSnapshotV1 {
+fn snapshot(owner_generation: &str) -> Result<VectorIndexSnapshotV1, Box<dyn std::error::Error>> {
     let record = MemoryRecord {
-        record_id: StableId::new("memory:checked-publication").expect("record id"),
-        revision: Revision::new(1).expect("revision"),
+        record_id: StableId::new("memory:checked-publication")?,
+        revision: Revision::new(1)?,
         kind: MemoryKind::Fact,
         content_digest: digest("content"),
         predecessor_digest: None,
@@ -51,9 +53,8 @@ fn snapshot(owner_generation: &str) -> VectorIndexSnapshotV1 {
         digest("model"),
         digest("preprocessor"),
         vec![FixedQ32::ZERO, FixedQ32::ZERO],
-    )
-    .expect("embedding");
-    VectorIndexSnapshotV1::new(
+    )?;
+    Ok(VectorIndexSnapshotV1::new(
         digest("generation-vector"),
         digest(owner_generation),
         digest("model"),
@@ -64,50 +65,53 @@ fn snapshot(owner_generation: &str) -> VectorIndexSnapshotV1 {
             embedding,
             ood: ProbabilityQ32::ZERO,
         }],
-    )
-    .expect("snapshot")
+    )?)
 }
 
-fn genesis(owner_generation: &str) -> VectorIndexPublicationV1 {
-    VectorIndexPublicationV1::new(
+fn genesis(owner_generation: &str) -> Result<VectorIndexPublicationV1, Box<dyn std::error::Error>> {
+    Ok(VectorIndexPublicationV1::new(
         digest("tenant"),
         7,
         1,
         1,
         None,
-        encoder(),
-        snapshot(owner_generation),
+        encoder()?,
+        snapshot(owner_generation)?,
         3,
         5,
         Vec::new(),
         VectorPublicationStateV1::Active,
-    )
-    .expect("genesis")
+    )?)
 }
 
-fn successor(current: &VectorIndexPublicationV1) -> VectorIndexPublicationV1 {
-    VectorIndexPublicationV1::new(
+fn successor(
+    current: &VectorIndexPublicationV1,
+) -> Result<VectorIndexPublicationV1, Box<dyn std::error::Error>> {
+    Ok(VectorIndexPublicationV1::new(
         current.tenant_digest(),
         current.writer_fence(),
-        current.sequence().checked_add(1).expect("sequence capacity"),
+        current
+            .sequence()
+            .checked_add(1)
+            .ok_or_else(|| std::io::Error::other("sequence capacity"))?,
         current
             .generation()
             .checked_add(1)
-            .expect("generation capacity"),
+            .ok_or_else(|| std::io::Error::other("generation capacity"))?,
         Some(current.publication_digest()),
-        encoder(),
-        snapshot("owner-generation-2"),
+        encoder()?,
+        snapshot("owner-generation-2")?,
         current.withdrawal_frontier(),
         current.revocation_frontier(),
         Vec::new(),
         VectorPublicationStateV1::Active,
-    )
-    .expect("successor")
+    )?)
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 enum PortError {
     CompareAndPublish,
+    Capacity,
     LostAcknowledgement,
     Load,
 }
@@ -170,7 +174,7 @@ impl DurableVectorPublicationPortV1 for Port {
             self.fail_before_commit_once = false;
             return Err(PortError::CompareAndPublish);
         }
-        self.writes = self.writes.checked_add(1).expect("write count capacity");
+        self.writes = self.writes.checked_add(1).ok_or(PortError::Capacity)?;
         self.current = Some(self.replacement.take().unwrap_or_else(|| next.clone()));
         if self.fail_after_commit_once {
             self.fail_after_commit_once = false;
@@ -182,20 +186,15 @@ impl DurableVectorPublicationPortV1 for Port {
 
 #[test]
 fn checked_api_publishes_genesis_and_exact_successor() {
-    let first = genesis("owner-generation-1");
+    let first = genesis("owner-generation-1").expect("valid genesis fixture");
     let mut port = Port::default();
     assert_eq!(
-        append_vector_publication_checked_v1(
-            &mut port,
-            first.tenant_digest(),
-            None,
-            &first,
-        )
-        .expect("publish genesis"),
+        append_vector_publication_checked_v1(&mut port, first.tenant_digest(), None, &first,)
+            .expect("publish genesis"),
         first.publication_digest()
     );
 
-    let second = successor(&first);
+    let second = successor(&first).expect("valid successor fixture");
     assert_eq!(
         append_vector_publication_checked_v1(
             &mut port,
@@ -211,7 +210,7 @@ fn checked_api_publishes_genesis_and_exact_successor() {
 
 #[test]
 fn lost_acknowledgement_is_reconciled_without_a_second_write() {
-    let publication = genesis("owner-generation-1");
+    let publication = genesis("owner-generation-1").expect("valid genesis fixture");
     let mut port = Port {
         fail_after_commit_once: true,
         ..Port::default()
@@ -241,7 +240,7 @@ fn lost_acknowledgement_is_reconciled_without_a_second_write() {
 
 #[test]
 fn compare_failure_without_exact_current_is_outcome_unknown() {
-    let publication = genesis("owner-generation-1");
+    let publication = genesis("owner-generation-1").expect("valid genesis fixture");
     let mut port = Port {
         fail_before_commit_once: true,
         ..Port::default()
@@ -267,7 +266,7 @@ fn compare_failure_without_exact_current_is_outcome_unknown() {
 
 #[test]
 fn successful_publish_with_failed_confirmation_is_outcome_unknown() {
-    let publication = genesis("owner-generation-1");
+    let publication = genesis("owner-generation-1").expect("valid genesis fixture");
     let mut port = Port {
         fail_confirmation_once: Cell::new(true),
         ..Port::default()
@@ -302,20 +301,15 @@ fn successful_publish_with_failed_confirmation_is_outcome_unknown() {
 
 #[test]
 fn stale_expected_parent_is_rejected_before_mutation() {
-    let current = genesis("owner-generation-1");
-    let next = successor(&current);
+    let current = genesis("owner-generation-1").expect("valid genesis fixture");
+    let next = successor(&current).expect("valid successor fixture");
     let mut port = Port {
         current: Some(current.clone()),
         ..Port::default()
     };
 
-    let error = append_vector_publication_checked_v1(
-        &mut port,
-        next.tenant_digest(),
-        None,
-        &next,
-    )
-    .expect_err("stale parent must fail");
+    let error = append_vector_publication_checked_v1(&mut port, next.tenant_digest(), None, &next)
+        .expect_err("stale parent must fail");
     assert!(matches!(
         error,
         DurableVectorPublicationAppendErrorV1::CurrentPublicationMismatch {
@@ -334,8 +328,8 @@ fn non_genesis_sequence_without_current_object_is_rejected() {
         2,
         2,
         Some(digest("missing-parent")),
-        encoder(),
-        snapshot("owner-generation-2"),
+        encoder().expect("valid encoder fixture"),
+        snapshot("owner-generation-2").expect("valid snapshot fixture"),
         3,
         5,
         Vec::new(),
@@ -360,20 +354,16 @@ fn non_genesis_sequence_without_current_object_is_rejected() {
 
 #[test]
 fn successful_port_return_still_requires_exact_committed_object() {
-    let expected = genesis("owner-generation-1");
-    let replacement = genesis("owner-generation-other");
+    let expected = genesis("owner-generation-1").expect("valid genesis fixture");
+    let replacement = genesis("owner-generation-other").expect("valid genesis fixture");
     let mut port = Port {
         replacement: Some(replacement.clone()),
         ..Port::default()
     };
 
-    let error = append_vector_publication_checked_v1(
-        &mut port,
-        expected.tenant_digest(),
-        None,
-        &expected,
-    )
-    .expect_err("wrong committed object must fail");
+    let error =
+        append_vector_publication_checked_v1(&mut port, expected.tenant_digest(), None, &expected)
+            .expect_err("wrong committed object must fail");
     assert!(matches!(
         error,
         DurableVectorPublicationAppendErrorV1::CommittedPublicationMismatch {

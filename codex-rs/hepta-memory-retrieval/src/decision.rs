@@ -90,6 +90,23 @@ impl RetrievalAssignmentObservationV1 {
         if self.assignment_propensity != ProbabilityQ32::ONE {
             return Err(AssignmentErrorV1::InvalidDeterministicPropensity);
         }
+        if self.enumerated_candidates.len() > crate::MAX_GENERATION_BOUND_CANDIDATES
+            || self.legal_candidates.len() > crate::MAX_GENERATION_BOUND_CANDIDATES
+            || self.selected_candidates.len() > crate::MAX_GENERATION_BOUND_RESULTS
+            || usize::try_from(self.omitted_by_policy_limits).unwrap_or(usize::MAX)
+                > crate::MAX_GENERATION_BOUND_CANDIDATES
+        {
+            return Err(AssignmentErrorV1::InvalidRecall(
+                "assignment candidate limits exceeded".to_string(),
+            ));
+        }
+        if self
+            .enumerated_candidates
+            .iter()
+            .any(|candidate| candidate.record_digest.is_zero())
+        {
+            return Err(AssignmentErrorV1::EmptyDigest("assignment_candidate"));
+        }
         if !strictly_sorted_unique(&self.enumerated_candidates)
             || !strictly_sorted_unique(&self.legal_candidates)
             || !strictly_sorted_unique(&self.selected_candidates)

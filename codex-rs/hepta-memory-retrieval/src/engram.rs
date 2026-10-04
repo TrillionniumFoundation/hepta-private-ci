@@ -655,6 +655,7 @@ impl EngramRecallReceiptV1 {
     }
 }
 
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub fn settle_engram(
     cue: &MemoryCueV1,
     union: &CandidateUnionV1,
@@ -977,6 +978,7 @@ pub fn settle_engram_controlled(
     Ok(receipt)
 }
 
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub fn recall_with_engram(
     cue: &MemoryCueV1,
     retrieval_policy: &RetrievalPolicyV1,

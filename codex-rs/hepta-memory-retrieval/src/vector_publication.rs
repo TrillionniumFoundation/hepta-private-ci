@@ -175,7 +175,7 @@ impl VectorIndexPublicationV1 {
         if (self.sequence == 1) != self.previous_publication_digest.is_none()
             || self
                 .previous_publication_digest
-                .is_some_and(|digest| digest.is_zero())
+                .is_some_and(Digest32::is_zero)
         {
             return Err(VectorPublicationErrorV1::InvalidPreviousPublication);
         }
