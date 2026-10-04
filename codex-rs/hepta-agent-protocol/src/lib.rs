@@ -920,6 +920,7 @@ pub struct AutomationEffectReconcileSnapshot {
 
 pub type AgentdResponse = codex_hepta_contracts::OriginalAgentdResponseV1<AgentdPayload>;
 
+
 /// Read-only source facts from the original admitted plasticity context.
 /// The receiver must independently authenticate CURRENT and the protected source.
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]

@@ -403,6 +403,8 @@ async fn mitm_policy_blocks_hook_miss_for_hooked_host_and_records_telemetry_in_f
         mitm: true,
         mitm_hooks: vec![hook],
         mode: NetworkMode::Full,
+        // Exercise hook-miss admission independently of public DNS availability.
+        allow_local_binding: true,
         ..NetworkProxyConfig::default()
     };
     network.set_allowed_domains(vec!["api.github.com".to_string()]);

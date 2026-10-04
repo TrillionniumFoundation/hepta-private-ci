@@ -90,12 +90,10 @@ common:remote --jobs=800
 #common:remote --@rules_rust//rust/settings:pipelined_compilation
 
 # GitHub Actions CI configs.
-# Bazel 9.0 can race discovered inputs with local-result uploads, even when
-# asynchronous cache writes are disabled. Keep cache reads and execute every
-# action; resume local-result uploads when the pinned release contains #30991.
+# The pinned 9.3.0 release candidate includes the upstream fix for action
+# input-map mutation racing cache and BES uploads. Keep local-result caching
+# enabled so independent CI shards reuse completed actions.
 # https://github.com/bazelbuild/bazel/pull/30991
-common:ci --noremote_cache_async
-common:ci --noremote_upload_local_results
 common:ci --remote_download_minimal
 common:ci --keep_going
 common:ci --verbose_failures

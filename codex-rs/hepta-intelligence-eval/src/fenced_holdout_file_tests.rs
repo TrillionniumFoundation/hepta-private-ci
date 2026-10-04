@@ -150,6 +150,26 @@ fn owner(
 
 #[test]
 fn locked_file_store_replays_takeover_and_rejects_backup_rollback() {
+    const ISOLATED: &str = "HEPTA_FENCED_CAS_TAKEOVER_CHILD";
+    if std::env::var_os(ISOLATED).is_none() {
+        // Parallel tests may fork with this store's flock descriptor retained
+        // until exec. Keep the close/reopen boundary in its own test process.
+        let output = Command::new(std::env::current_exe().expect("test executable"))
+            .args([
+                "--exact",
+                "fenced_holdout_file::tests::locked_file_store_replays_takeover_and_rejects_backup_rollback",
+                "--nocapture",
+            ])
+            .env(ISOLATED, "1")
+            .output()
+            .expect("spawn isolated takeover test");
+        assert!(
+            output.status.success(),
+            "isolated takeover test failed: {}",
+            String::from_utf8_lossy(&output.stderr)
+        );
+        return;
+    }
     let temp = TempFile::new();
     let store = match LockedFileFinalHoldoutCasStoreV1::create(temp.create(), digest("binding")) {
         Ok(value) => value,

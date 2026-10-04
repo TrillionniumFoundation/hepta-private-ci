@@ -13,7 +13,7 @@ fn predecessor_owner_evidence_moves_without_touching_workload_data()
     let agent = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").unwrap();
     let record = registry.register(AgentManifest::new(
         agent.clone(),
-        WorkspaceBinding::new(workspace, &root)?,
+        WorkspaceBinding::new(workspace.canonicalize()?, &root)?,
         crate::ResourceBudget::local_default(),
     )?)?;
     let layout = record.layout;

@@ -1426,6 +1426,8 @@ mod tests {
     async fn http_connect_accept_blocks_hooked_host_in_full_mode_without_mitm_state() {
         let mut policy = NetworkProxyConfig {
             mitm: true,
+            // Exercise missing MITM state independently of public DNS availability.
+            allow_local_binding: true,
             mitm_hooks: vec![crate::mitm_hook::MitmHookConfig {
                 host: "api.github.com".to_string(),
                 matcher: crate::mitm_hook::MitmHookMatchConfig {

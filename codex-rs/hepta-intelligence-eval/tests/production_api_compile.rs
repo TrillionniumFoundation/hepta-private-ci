@@ -1,6 +1,5 @@
 use std::any::type_name;
 use std::fs;
-use std::path::PathBuf;
 
 use codex_hepta_intelligence_eval::AnchoredProductEvaluationAttemptJournalV1;
 use codex_hepta_intelligence_eval::DurableProductEvaluationAttemptJournalV1;
@@ -58,9 +57,9 @@ fn recorded_production_surface_is_public_and_composable() {
 
 #[test]
 fn raw_decision_and_runner_are_private_in_default_builds() {
-    let manifest = PathBuf::from(env!("CARGO_MANIFEST_DIR"));
-    let source = fs::read_to_string(manifest.join("src/lib.rs"))
-        .expect("read learning.eval public API surface");
+    let source_path = codex_utils_cargo_bin::find_resource!("src/lib.rs")
+        .expect("locate learning.eval public API source");
+    let source = fs::read_to_string(source_path).expect("read learning.eval public API surface");
 
     assert!(source.contains(
         "#[cfg(feature = \"trusted-inprocess-eval\")]\n\

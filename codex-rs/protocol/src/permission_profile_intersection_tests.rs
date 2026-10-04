@@ -119,7 +119,6 @@ fn effective_workspace_intersection_preserves_network_metadata_and_temp() {
     // workspace beneath that shared grant rather than a read-only ancestor.
     let root_access = if std::env::var_os("TMPDIR")
         .and_then(|path| AbsolutePathBuf::from_absolute_path(path).ok())
-        .and_then(|path| path.canonicalize().ok())
         .is_some_and(|path| root.as_path().starts_with(path.as_path()))
     {
         Write

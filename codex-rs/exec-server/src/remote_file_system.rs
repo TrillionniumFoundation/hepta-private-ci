@@ -513,6 +513,21 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
         ExecServerError::Server { code, .. } if code == METHOD_NOT_FOUND_ERROR_CODE => {
             unsupported_authorized_read()
         }
+        ExecServerError::Server { code, message }
+            if code == -32603
+                && matches!(
+                    message.as_str(),
+                    "authorized file read exceeds bound" | "authorized file read size overflow"
+                ) =>
+        {
+            io::Error::new(io::ErrorKind::InvalidData, message)
+        }
+        ExecServerError::Server {
+            code: INVALID_REQUEST_ERROR_CODE,
+            message,
+        } if message == "Permission denied" => {
+            io::Error::new(io::ErrorKind::PermissionDenied, "Permission denied")
+        }
         ExecServerError::Server {
             code: INVALID_REQUEST_ERROR_CODE | -32602,
             ..
@@ -520,10 +535,9 @@ fn map_authorized_read_remote_error(error: ExecServerError) -> io::Error {
             io::ErrorKind::InvalidInput,
             "remote authorized file read was rejected",
         ),
-        ExecServerError::Server { code, .. } if code == NOT_FOUND_ERROR_CODE => io::Error::new(
-            io::ErrorKind::NotFound,
-            "remote authorized file is unavailable",
-        ),
+        ExecServerError::Server { code, .. } if code == NOT_FOUND_ERROR_CODE => {
+            io::Error::new(io::ErrorKind::NotFound, "No such file or directory")
+        }
         ExecServerError::Closed | ExecServerError::Disconnected(_) => {
             io::Error::new(io::ErrorKind::BrokenPipe, "exec-server transport closed")
         }

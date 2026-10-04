@@ -9,8 +9,9 @@ use std::path::Path;
 use std::path::PathBuf;
 
 const MAX_CUR_PROJECT_PATH_PROBES: usize = 128;
-const CUR_PROJECT_SEPARATORS: [&str; 11] =
-    ["-", "_", ".", " ", "--", "..", "__", "  ", "+", "@", "&"];
+// Directory enumeration is bounded separately from existing-path probes.
+// Exhausting either budget cannot establish a unique project directory.
+const MAX_CUR_PROJECT_DIRECTORY_ENTRIES: usize = 4096;
 
 pub fn detect_recent_cur_sessions(
     external_agent_home: &Path,
@@ -99,111 +100,106 @@ fn cur_project_cwd(project_storage: &Path, external_agent_home: &Path) -> Option
 
 fn decode_cur_project_path(encoded: &str) -> Option<PathBuf> {
     #[cfg(not(windows))]
-    let mut path = PathBuf::from("/");
+    let path = PathBuf::from("/");
 
     #[cfg(windows)]
-    let (encoded, mut path) = {
+    let (encoded, path) = {
         let (drive, encoded) = decode_cur_windows_project_drive(encoded)?;
         (encoded, PathBuf::from(format!("{drive}:\\")))
     };
 
     let encoded = encoded.strip_prefix('-').unwrap_or(encoded);
-    for component in encoded.split('-') {
-        if component.is_empty()
+    if encoded.split('-').any(|component| {
+        component.is_empty()
             || matches!(component, "." | "..")
             || component.contains(['/', '\\', ':'])
-        {
-            return None;
-        }
-        path.push(component);
+    }) {
+        return None;
     }
+
+    #[cfg(windows)]
+    let encoded_lowercase = encoded.to_lowercase();
+    #[cfg(windows)]
+    let encoded = encoded_lowercase.as_str();
 
     let mut matched_path = None;
     let mut probes = 0;
-    let mut inspect = |candidate: PathBuf| {
-        if probes >= MAX_CUR_PROJECT_PATH_PROBES {
-            return None;
-        }
-        probes += 1;
-        if candidate.is_dir() {
-            if matched_path
-                .as_ref()
-                .is_some_and(|matched_path| matched_path != &candidate)
-            {
-                return None;
+    let mut inspected_entries = 0;
+    let mut pending = vec![(path, encoded)];
+    while let Some((parent, remaining)) = pending.pop() {
+        // Folded names cannot contain punctuation in their first token. In
+        // that case all possible exact component boundaries are already known;
+        // direct lookups avoid enumerating a large temporary/project directory.
+        let first = remaining.split('-').next()?;
+        let candidates = if first.contains(['_', '.', ' ', '+', '@', '&']) {
+            remaining
+                .match_indices('-')
+                .map(|(end, _)| end)
+                .chain(std::iter::once(remaining.len()))
+                .map(|end| parent.join(&remaining[..end]))
+                .collect::<Vec<_>>()
+        } else {
+            let Ok(entries) = fs::read_dir(&parent) else {
+                continue;
+            };
+            let mut candidates = Vec::new();
+            for entry in entries {
+                if inspected_entries >= MAX_CUR_PROJECT_DIRECTORY_ENTRIES {
+                    return None;
+                }
+                inspected_entries += 1;
+                if let Ok(entry) = entry {
+                    candidates.push(entry.path());
+                }
             }
-            matched_path = Some(candidate);
-        }
-        Some(())
-    };
-    inspect(path.clone())?;
-
-    for suffix_length in 2..=4 {
-        let mut parent = path.as_path();
-        let mut suffix = Vec::with_capacity(suffix_length);
-        for _ in 0..suffix_length {
-            let Some(component) = parent.file_name().and_then(|name| name.to_str()) else {
-                break;
+            candidates
+        };
+        for candidate in candidates {
+            let Some(name) = candidate.file_name().and_then(|name| name.to_str()) else {
+                continue;
             };
-            suffix.push(component);
-            let Some(ancestor) = parent.parent() else {
-                break;
-            };
-            parent = ancestor;
-        }
-        if suffix.len() != suffix_length {
-            break;
-        }
-        suffix.reverse();
-
-        for separator in CUR_PROJECT_SEPARATORS {
-            inspect(parent.join(suffix.join(separator)))?;
-        }
-    }
-
-    let mut ancestor = path.parent();
-    while let Some(right) = ancestor {
-        let Some(right_name) = right.file_name().and_then(|name| name.to_str()) else {
-            break;
-        };
-        let Some(left) = right.parent() else {
-            break;
-        };
-        let Some(left_name) = left.file_name().and_then(|name| name.to_str()) else {
-            break;
-        };
-        let Some(prefix) = left.parent() else {
-            break;
-        };
-        let Ok(trailing) = path.strip_prefix(right) else {
-            return None;
-        };
-
-        for separator in CUR_PROJECT_SEPARATORS {
-            let merged_prefix = prefix.join(format!("{left_name}{separator}{right_name}"));
+            #[cfg(windows)]
+            let name_lowercase = name.to_lowercase();
+            #[cfg(windows)]
+            let name = name_lowercase.as_str();
+            // Keep the exact stored spelling, including punctuation. Older
+            // Cursor project names also fold runs of common separators to '-'.
+            let folded = name
+                .split(['-', '_', '.', ' ', '+', '@', '&'])
+                .filter(|component| !component.is_empty())
+                .collect::<Vec<_>>()
+                .join("-");
+            let suffix = [name, folded.as_str()].into_iter().find_map(|form| {
+                if form.is_empty() {
+                    return None;
+                }
+                remaining.strip_prefix(form).and_then(|rest| {
+                    if rest.is_empty() {
+                        Some(rest)
+                    } else {
+                        rest.strip_prefix('-')
+                    }
+                })
+            });
+            let Some(suffix) = suffix else { continue };
             if probes >= MAX_CUR_PROJECT_PATH_PROBES {
                 return None;
             }
             probes += 1;
-            if !merged_prefix.is_dir() {
+            if !candidate.is_dir() {
                 continue;
             }
-
-            if probes >= MAX_CUR_PROJECT_PATH_PROBES {
-                return None;
-            }
-            probes += 1;
-            let candidate = merged_prefix.join(trailing);
-            if !candidate.is_dir()
-                || matched_path
-                    .as_ref()
-                    .is_some_and(|matched_path| matched_path != &candidate)
+            if !suffix.is_empty() {
+                pending.push((candidate, suffix));
+            } else if matched_path
+                .as_ref()
+                .is_some_and(|matched| matched != &candidate)
             {
                 return None;
+            } else {
+                matched_path = Some(candidate);
             }
-            matched_path = Some(candidate);
         }
-        ancestor = Some(left);
     }
 
     matched_path
