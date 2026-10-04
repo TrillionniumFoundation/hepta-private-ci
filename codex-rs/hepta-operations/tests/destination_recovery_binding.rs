@@ -4,6 +4,7 @@
 //! This is local store qualification, not a signed topology, remote-effect or
 //! full Agentd deployment/longitudinal-efficacy receipt.
 
+use std::fmt::Debug;
 use std::path::Path;
 use std::process::Command;
 use std::process::Stdio;
@@ -25,8 +26,15 @@ use sqlx::sqlite::SqlitePoolOptions;
 const ROOT_ENV: &str = "HEPTA_DESTINATION_RECOVERY_TEST_ROOT";
 const MODE_ENV: &str = "HEPTA_DESTINATION_RECOVERY_TEST_MODE";
 
+fn must<T, E: Debug>(result: Result<T, E>, context: &str) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => panic!("{context}: {error:?}"),
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("test identity")
+    must(StableId::new(value), "test identity")
 }
 
 fn operation(payload: &[u8]) -> DestinationOperationIdentity {
@@ -38,19 +46,59 @@ fn operation(payload: &[u8]) -> DestinationOperationIdentity {
     }
 }
 
+#[allow(
+    clippy::disallowed_methods,
+    reason = "fault injection and WAL inspection require one existing-database writer; the production shim creates missing databases"
+)]
 async fn pool(path: &Path) -> SqlitePool {
-    SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(SqliteConnectOptions::new().filename(path))
+    must(
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_with(SqliteConnectOptions::new().filename(path))
+            .await,
+        "open existing owner database",
+    )
+}
+
+#[tokio::test]
+async fn fault_probe_refuses_to_create_a_missing_database() {
+    let dir = tempfile::tempdir().expect("directory");
+    let path = dir.path().join("missing.sqlite3");
+    let probe_path = path.clone();
+    let opened = tokio::spawn(async move { pool(&probe_path).await }).await;
+    assert!(matches!(opened, Err(error) if error.is_panic()));
+    assert!(
+        !path.exists(),
+        "fault probe must not create a missing owner database"
+    );
+}
+
+#[tokio::test]
+async fn fault_probe_keeps_exactly_one_connection() {
+    let dir = tempfile::tempdir().expect("directory");
+    let path = dir.path().join("owner.sqlite3");
+    let store = DestinationDedupeStore::open_standalone(&path)
         .await
-        .expect("open existing owner database")
+        .expect("create actual owner database");
+    store.close().await;
+    let raw = pool(&path).await;
+    assert_eq!(raw.options().get_max_connections(), 1);
+    let connection = raw.acquire().await.expect("first probe connection");
+    assert!(
+        raw.try_acquire().is_none(),
+        "second connection must not escape the fault probe bound"
+    );
+    drop(connection);
+    let connection = raw.acquire().await.expect("released probe connection");
+    drop(connection);
+    raw.close().await;
 }
 
 async fn stage_effect(
     store: &DestinationDedupeStore,
     identity: &DestinationOperationIdentity,
 ) -> DestinationApplyTransaction {
-    let start = store.begin_apply(identity).await.expect("admit");
+    let start = must(store.begin_apply(identity).await, "admit");
     let DestinationApplyStart::Apply(mut apply) = start else {
         panic!("new request must obtain the domain transaction");
     };
@@ -59,10 +107,12 @@ async fn stage_effect(
         "INSERT INTO domain_counter SELECT 0 WHERE NOT EXISTS (SELECT 1 FROM domain_counter)",
         "UPDATE domain_counter SET value = value + 1",
     ] {
-        sqlx::query(query)
-            .execute(&mut **apply.transaction().expect("owner transaction"))
-            .await
-            .expect("stage actual owner mutation");
+        must(
+            sqlx::query(query)
+                .execute(&mut **must(apply.transaction(), "owner transaction"))
+                .await,
+            "stage actual owner mutation",
+        );
     }
     apply
 }
@@ -269,21 +319,23 @@ async fn growing_history_keeps_early_identity_and_domain_count_after_restart() {
 }
 
 fn run_crash_worker(path: &Path, mode: &str, expected: i32) {
-    let mut child = Command::new(std::env::current_exe().expect("test executable"))
-        .args([
-            "--ignored",
-            "--exact",
-            "destination_crash_worker",
-            "--nocapture",
-        ])
-        .env(ROOT_ENV, path)
-        .env(MODE_ENV, mode)
-        .stdin(Stdio::null())
-        .spawn()
-        .expect("spawn real owner process");
+    let mut child = must(
+        Command::new(must(std::env::current_exe(), "test executable"))
+            .args([
+                "--ignored",
+                "--exact",
+                "destination_crash_worker",
+                "--nocapture",
+            ])
+            .env(ROOT_ENV, path)
+            .env(MODE_ENV, mode)
+            .stdin(Stdio::null())
+            .spawn(),
+        "spawn real owner process",
+    );
     let deadline = Instant::now() + Duration::from_secs(30);
     loop {
-        if let Some(status) = child.try_wait().expect("observe child") {
+        if let Some(status) = must(child.try_wait(), "observe child") {
             assert_eq!(
                 status.code(),
                 Some(expected),

@@ -297,6 +297,20 @@ impl SqliteConfig {
     /// not route authoritative corruption through the rebuildable state-DB
     /// recovery path.
     pub async fn open_durable_evidence_pool(&self, path: &Path) -> Result<SqlitePool, Error> {
+        Self::open_owner_durable_evidence_pool(path, /*max_connections*/ 5).await
+    }
+
+    /// Open an owner's evidence pool without changing its concurrency budget.
+    /// Schema initialization and recovery remain the original owner's responsibility.
+    pub async fn open_owner_durable_evidence_pool(
+        path: &Path,
+        max_connections: u32,
+    ) -> Result<SqlitePool, Error> {
+        if max_connections == 0 {
+            return Err(Error::Protocol(
+                "SQLite pool requires a connection".to_string(),
+            ));
+        }
         let options = SqliteConnectOptions::new()
             .filename(path)
             .create_if_missing(true)
@@ -306,7 +320,7 @@ impl SqliteConfig {
             .busy_timeout(Duration::from_secs(5))
             .log_statements(LevelFilter::Off);
         SqlitePoolOptions::new()
-            .max_connections(5)
+            .max_connections(max_connections)
             .connect_with(options)
             .await
     }

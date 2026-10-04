@@ -13,6 +13,7 @@ product callers; migration refreshes these objects without granting execution.
 from __future__ import annotations
 
 import argparse
+import copy
 import json
 import os
 import re
@@ -23,6 +24,9 @@ from hepta_module_source_roots import _path as checked_source_path
 from hepta_module_source_roots import resolve_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
+HISTORY_POLICY = "current_observation_with_declared_history_v2"
+HISTORY_SCHEMA = "hepta.map-historical-source-declarations.v1"
+STRONG_POLICIES = {"candidate_or_exact_observation_v1", HISTORY_POLICY}
 
 
 def current_source_base() -> dict[str, str]:
@@ -94,6 +98,133 @@ def checked_identity(value, candidate: dict[str, str]) -> dict[str, str]:
         raise ValueError("source tree mismatch")
     git("merge-base", "--is-ancestor", commit, candidate["commit"])
     return {"commit": commit, "tree": tree}
+
+
+def execution_claim_paths(row: dict) -> set[str]:
+    """Read the original claims before an explicit pending transition."""
+    names = EXECUTION_CLAIMS | {"requestLocalReadOnlyProductExecutionProved"}
+    result = set()
+    for prefix, claims in (
+        ("", row),
+        ("claimBoundary.", row.get("claimBoundary", {})),
+        ("completion.", row.get("completion", {})),
+    ):
+        if not isinstance(claims, dict):
+            raise ValueError("execution claims must be objects")
+        for name in names.intersection(claims):
+            if type(claims[name]) is not bool:
+                raise ValueError(f"{prefix}{name} must be boolean")
+            if claims[name]:
+                result.add(prefix + name)
+    return result
+
+
+def validate_historical_declarations(row: dict, candidate: dict[str, str]) -> set[str]:
+    history = row.get("historicalSourceDeclarations")
+    if not isinstance(history, dict) or set(history) != {"schema", "records"}:
+        raise ValueError("historical declarations require a typed versioned record")
+    if history["schema"] != HISTORY_SCHEMA:
+        raise ValueError("unsupported historical declaration version")
+    records = history["records"]
+    if not isinstance(records, list) or not records:
+        raise ValueError("historical declarations must be nonempty")
+    path = f"docs/modules/{row['module']}/IMPLEMENTATION_MAP.json"
+    seen = set()
+    inherited_paths = set()
+    for record in records:
+        required = {"recordedAt", "mapBlob", "declaredSourceBase"}
+        if (
+            not isinstance(record, dict)
+            or not required.issubset(record)
+            or set(record) - required - {"declaredObservedAtHead"}
+        ):
+            raise ValueError("invalid historical declaration fields")
+        carrier = checked_identity(record["recordedAt"], candidate)
+        blob = record["mapBlob"]
+        if not isinstance(blob, str) or not re.fullmatch(r"[0-9a-f]{40}", blob):
+            raise ValueError("invalid historical map blob")
+        if git("rev-parse", f"{carrier['commit']}:{path}") != blob:
+            raise ValueError("historical carrier map blob mismatch")
+        key = (carrier["commit"], blob)
+        if key in seen:
+            raise ValueError("duplicate historical declaration")
+        seen.add(key)
+        original = json.loads(
+            git("show", f"{carrier['commit']}:{path}"), object_pairs_hook=unique_keys
+        )
+        if not isinstance(original, dict) or original.get("module") != row["module"]:
+            raise ValueError("historical carrier module mismatch")
+        inherited_paths.update(tracked_source_paths(original))
+        observed = original.get("observedSourcePaths", [])
+        if not isinstance(observed, list) or any(
+            not isinstance(path, str) for path in observed
+        ):
+            raise ValueError("invalid historical observed paths")
+        inherited_paths.update(observed)
+        manifest = original.get("exactSourceEvidence")
+        if (
+            isinstance(manifest, dict)
+            and manifest.get("kind") == "path_blob_manifest_v1"
+        ):
+            entries = manifest.get("entries")
+            if not isinstance(entries, list) or any(
+                not isinstance(entry, dict) or not isinstance(entry.get("path"), str)
+                for entry in entries
+            ):
+                raise ValueError("invalid historical exact source paths")
+            inherited_paths.update(entry["path"] for entry in entries)
+        for old_key, new_key in (
+            ("sourceBase", "declaredSourceBase"),
+            ("observedAtHead", "declaredObservedAtHead"),
+        ):
+            if (old_key in original) != (new_key in record):
+                raise ValueError("historical observation presence mismatch")
+            if old_key not in original:
+                continue
+            value = record[new_key]
+            if (
+                not isinstance(value, dict)
+                or any(
+                    not isinstance(value.get(k), str)
+                    or not re.fullmatch(r"[0-9a-f]{40}", value[k])
+                    for k in ("commit", "tree")
+                )
+                or value != original[old_key]
+            ):
+                raise ValueError("historical declaration differs from carrier")
+    pending = row.get("pendingExecutionEvidence", [])
+    if not isinstance(pending, list):
+        raise ValueError("invalid pending execution evidence")
+    active = execution_claim_paths(row)
+    pending_fields = set()
+    for item in pending:
+        if (
+            not isinstance(item, dict)
+            or set(item) != {"field", "state", "reason"}
+            or item["state"] != "pending_same_subject_receipt"
+            or not isinstance(item["field"], str)
+            or not isinstance(item["reason"], str)
+            or not item["reason"].strip()
+            or item["field"] in active
+        ):
+            raise ValueError("invalid or still-active pending execution claim")
+        field = item["field"]
+        parts = field.split(".")
+        claims = row if len(parts) == 1 else row.get(parts[0], {})
+        if (
+            len(parts) not in (1, 2)
+            or (len(parts) == 2 and parts[0] not in {"claimBoundary", "completion"})
+            or parts[-1]
+            not in EXECUTION_CLAIMS | {"requestLocalReadOnlyProductExecutionProved"}
+            or not isinstance(claims, dict)
+            or claims.get(parts[-1]) is not False
+            or field in pending_fields
+        ):
+            raise ValueError(
+                "pending execution field must name one explicit false claim"
+            )
+        pending_fields.add(field)
+    return inherited_paths
 
 
 def evidence_paths(row: dict, resolved_roots: list[str]) -> list[str]:
@@ -182,10 +313,54 @@ class SourceDrift(ValueError):
 def require_tracked_paths(commit: str, paths: list[str], *, historical=False) -> None:
     """Batch ordinary object queries; retain exact handling of newline paths.
 
-    No tree inventory is scanned and no persistent cache can survive a checkout
-    change. The batch format returns only types, never path names to parse.
-    Missing historical evidence is drift; missing candidate evidence is invalid.
+    The batch format returns only types, never path names to parse. Failed
+    historical queries alone need targeted tree lookups: an absent path is
+    drift, but an unavailable object cannot authorize a source rebind.
     """
+
+    def historical_failure(path: str) -> ValueError:
+        tree = commit
+        parts = path.split("/")
+        for index, part in enumerate(parts):
+            try:
+                entry = git("ls-tree", "-z", tree, "--", part)
+            except subprocess.CalledProcessError:
+                return ValueError(
+                    f"historical source/evidence tree unavailable: {path!r} ({tree})"
+                )
+            if not entry:
+                return SourceDrift(
+                    f"source/evidence absent at historical anchor: {path!r}"
+                )
+            records = entry.split("\0")
+            # Only metadata is parsed; the literal one-component pathspec
+            # selects the entry even when its name contains tabs or newlines.
+            metadata, separator, _ = records[0].partition("\t")
+            fields = metadata.split()
+            if (
+                len(records) != 2
+                or records[1]
+                or not separator
+                or len(fields) != 3
+                or not re.fullmatch(r"[0-9a-f]{40}", fields[2])
+            ):
+                return ValueError("ambiguous historical Git tree response")
+            _, kind, oid = fields
+            if kind not in {"blob", "tree"}:
+                return ValueError(f"invalid historical source/evidence: {path!r}")
+            if index == len(parts) - 1:
+                return ValueError(
+                    f"historical source/evidence object unavailable: {path!r} "
+                    f"({kind} {oid})"
+                )
+            if kind != "tree":
+                return SourceDrift(
+                    f"source/evidence absent at historical anchor: {path!r}"
+                )
+            tree = oid
+        raise ValueError("empty historical source/evidence path")
+
+    drift = None
     ordinary = [path for path in paths if "\n" not in path and "\r" not in path]
     unusual = [path for path in paths if "\n" in path or "\r" in path]
     if ordinary:
@@ -201,34 +376,52 @@ def require_tracked_paths(commit: str, paths: list[str], *, historical=False) ->
             if kind in {"blob", "tree"}:
                 continue
             if historical and kind == query + " missing":
-                raise SourceDrift(
-                    f"source/evidence absent at historical anchor: {path}"
-                )
+                failure = historical_failure(path)
+                if isinstance(failure, SourceDrift):
+                    drift = drift or failure
+                    continue
+                raise failure
             raise ValueError(f"untracked or invalid source/evidence: {path}")
     for path in unusual:
         try:
             kind = git("cat-file", "-t", f"{commit}:{path}")
         except subprocess.CalledProcessError as exc:
             if historical:
-                raise SourceDrift(
-                    f"source/evidence absent at historical anchor: {path!r}"
-                ) from exc
+                failure = historical_failure(path)
+                if isinstance(failure, SourceDrift):
+                    drift = drift or failure
+                    continue
+                raise failure from exc
             raise ValueError(f"untracked source/evidence: {path!r}") from exc
         if kind not in {"blob", "tree"}:
             raise ValueError(f"invalid source/evidence: {path!r}")
+    if drift is not None:
+        raise drift
 
 
 def verify_source_identity(
     row: dict, roots: list[str], candidate: dict[str, str], *, check_checkout=True
 ) -> list[str]:
     policy = row.get("sourceIdentityPolicy", "legacy_shared_batch")
-    if policy not in {"legacy_shared_batch", "candidate_or_exact_observation_v1"}:
+    if policy not in {"legacy_shared_batch", *STRONG_POLICIES}:
         raise ValueError(f"unknown source identity policy: {policy}")
     source = checked_identity(row.get("sourceBase"), candidate)
+    if "historicalSourceDeclarations" in row and policy != HISTORY_POLICY:
+        raise ValueError("historical declarations require the explicit upgraded policy")
+    if policy == HISTORY_POLICY:
+        inherited = validate_historical_declarations(row, candidate)
+        if not inherited.issubset(tracked_source_paths(row)):
+            raise ValueError("current inventory omits historical carrier witnesses")
+        if not isinstance(row.get("sourceObjects"), list) or not row["sourceObjects"]:
+            raise ValueError("current/history policy requires exact source objects")
+        if row["sourceObjects"] != current_source_objects(row):
+            raise ValueError("current/history source objects differ from candidate")
     mapping_mode = row.get("mappingSourceIdentityMode", "path_only")
     if mapping_mode not in {"path_only", "exact_blob"}:
         raise ValueError(f"unknown mapping source identity mode: {mapping_mode}")
     paths = evidence_paths(row, roots)
+    if policy == HISTORY_POLICY:
+        paths = tracked_source_paths(row)
     # In exact-blob mode ``sourceBase`` is immutable integration provenance,
     # not the current-source observation. Currentness is proved independently
     # by every mapped HEAD blob plus ``observedAtHead`` over the complete
@@ -245,7 +438,7 @@ def verify_source_identity(
             raise ValueError("invalid observed source paths")
         if not set(roots).issubset(observed_paths):
             raise ValueError("observed source paths omit resolved roots")
-        if policy == "candidate_or_exact_observation_v1" and any(
+        if policy in STRONG_POLICIES and any(
             source_root == "codex-rs" or source_root.startswith("codex-rs/")
             for source_root in roots
         ):
@@ -259,14 +452,20 @@ def verify_source_identity(
                     + ", ".join(missing_workspace_inputs)
                 )
         observations.append((observed, sorted(set(paths + observed_paths))))
+        if policy == HISTORY_POLICY and (
+            source != observed or not set(paths).issubset(observed_paths)
+        ):
+            raise ValueError(
+                "current/history policy requires one complete current observation"
+            )
     else:
         observed = None
-        if mapping_mode == "exact_blob":
+        if mapping_mode == "exact_blob" or policy == HISTORY_POLICY:
             raise ValueError(
                 "exact blob provenance requires an explicit current source observation"
             )
     if (
-        policy == "candidate_or_exact_observation_v1"
+        policy in STRONG_POLICIES
         and mapping_mode != "exact_blob"
         and source not in (candidate, observed)
     ):
@@ -279,10 +478,15 @@ def verify_source_identity(
         require_clean_candidate(candidate, checked_paths)
     # Validate the candidate first: a missing path at both ends is not a rebind.
     require_tracked_paths(candidate["commit"], checked_paths)
+    drift = None
     for identity, observed_paths in observations:
         if identity == candidate:
             continue
-        require_tracked_paths(identity["commit"], observed_paths, historical=True)
+        try:
+            require_tracked_paths(identity["commit"], observed_paths, historical=True)
+        except SourceDrift as exc:
+            drift = drift or exc
+            continue
         if observed_paths:
             changed = git(
                 "diff",
@@ -295,10 +499,14 @@ def verify_source_identity(
                 *observed_paths,
             )
             if changed:
-                raise SourceDrift(
+                drift = drift or SourceDrift(
                     "mapped source/evidence changed after source observation: "
                     + changed
                 )
+    # Missing historical objects must win over refreshable drift, including
+    # drift in an earlier observation. Migration catches only SourceDrift.
+    if drift is not None:
+        raise drift
     if check_checkout:
         require_clean_candidate(candidate, checked_paths)
     return checked_paths
@@ -317,6 +525,13 @@ def tracked_source_paths(row: dict) -> list[str]:
     if isinstance(roots, str):
         roots = [roots]
     paths = set(evidence_paths(row, roots))
+    if row.get("sourceIdentityPolicy") == HISTORY_POLICY:
+        observed = row.get("observedSourcePaths", [])
+        if not isinstance(observed, list) or any(
+            not isinstance(path, str) for path in observed
+        ):
+            raise ValueError("invalid current observed source paths")
+        paths.update(observed)
     for entry in row.get("sourceObjects", []):
         if not isinstance(entry, dict) or not isinstance(entry.get("path"), str):
             raise ValueError("invalid explicit source object path")
@@ -607,7 +822,11 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     v3 keeps every legacy field for compatibility while adding one stable
     operation vocabulary and top-level status/claim fields.
     """
-    if validate_claim_types(row):
+    if row.get("sourceIdentityPolicy") == HISTORY_POLICY:
+        validate_historical_declarations(row, current_source_base())
+    if validate_claim_types(row) or (
+        row.get("sourceIdentityPolicy") == HISTORY_POLICY and execution_claim_paths(row)
+    ):
         # Rebinding navigation cannot transfer old executable evidence to new code.
         verify_source_identity(
             row, resolve_source_roots(ROOT, module), current_source_base()
@@ -725,7 +944,7 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
     )
     if (
         "observedAtHead" in migrated
-        or migrated.get("sourceIdentityPolicy") == "candidate_or_exact_observation_v1"
+        or migrated.get("sourceIdentityPolicy") in STRONG_POLICIES
         or migrated.get("mappingSourceIdentityMode") == "exact_blob"
     ):
         # A navigation-only migration must survive committing the map itself.
@@ -739,9 +958,9 @@ def migrate_map(row: dict, module: dict, lanes: dict, source_base: dict) -> dict
         }
         observed_paths = set(migrated.get("observedSourcePaths", []))
         observed_paths.update(migrated["resolvedRoots"])
-        if migrated.get(
-            "sourceIdentityPolicy"
-        ) == "candidate_or_exact_observation_v1" and any(
+        if migrated.get("sourceIdentityPolicy") == HISTORY_POLICY:
+            observed_paths.update(tracked_source_paths(migrated))
+        if migrated.get("sourceIdentityPolicy") in STRONG_POLICIES and any(
             root == "codex-rs" or root.startswith("codex-rs/")
             for root in migrated["resolvedRoots"]
         ):
@@ -801,7 +1020,10 @@ def migrate(selected_modules: list[str] | None = None):
                 migrated, resolved, source_base, check_checkout=False
             )
         except SourceDrift:
-            if mapping_mode == "exact_blob":
+            if (
+                mapping_mode == "exact_blob"
+                and row.get("sourceIdentityPolicy") != HISTORY_POLICY
+            ):
                 # Preserve immutable integration provenance. Rebind only the
                 # explicit current-source observation and HEAD blob manifest.
                 migrated["sourceBase"] = anchor
@@ -828,6 +1050,160 @@ def migrate(selected_modules: list[str] | None = None):
                 "maps": [str(p.relative_to(ROOT)) for p, _ in pending],
             },
             ensure_ascii=False,
+        )
+    )
+
+
+def rebind_current(plan_path: str, selected_modules: list[str]) -> None:
+    """Explicitly separate committed historical declarations from current bytes.
+
+    All validation and rendering precedes writes. This is not a multi-file I/O
+    transaction; callers should prepare the output in an isolated worktree.
+    """
+    candidate = current_source_base()
+    require_clean_candidate(candidate)
+    plan = json.loads(
+        Path(plan_path).read_text(encoding="utf-8"), object_pairs_hook=unique_keys
+    )
+    if (
+        not isinstance(plan, dict)
+        or set(plan) != {"schema", "source", "modules"}
+        or plan["schema"] != "hepta.map-source-rebind-plan.v1"
+        or plan["source"] != candidate
+        or not isinstance(plan["modules"], list)
+    ):
+        raise ValueError("rebind plan must identify the exact clean source")
+    registered = load("docs/modules/MODULES.json")["modules"]
+    if not isinstance(registered, list) or not registered:
+        raise ValueError("module registry must be nonempty")
+    modules = {m["id"]: m for m in registered}
+    if len(modules) != len(registered):
+        raise ValueError("duplicate module identity")
+    selected = set(selected_modules)
+    if (
+        not selected
+        or len(selected) != len(selected_modules)
+        or selected - set(modules)
+    ):
+        raise ValueError(
+            "rebind requires an explicit unique registered module selection"
+        )
+    entries = {}
+    for entry in plan["modules"]:
+        if (
+            not isinstance(entry, dict)
+            or set(entry) != {"module", "carrier", "mapBlob", "pendingExecutionClaims"}
+            or not isinstance(entry["module"], str)
+            or entry["module"] in entries
+        ):
+            raise ValueError("invalid or duplicate rebind plan module")
+        entries[entry["module"]] = entry
+    if set(entries) != selected:
+        raise ValueError("rebind plan differs from explicit module selection")
+    lanes = lane_by_module()
+    pending = []
+    checked_paths = set()
+    for mid in sorted(selected):
+        entry = entries[mid]
+        carrier = checked_identity(entry["carrier"], candidate)
+        relative = f"docs/modules/{mid}/IMPLEMENTATION_MAP.json"
+        original_blob = git("rev-parse", f"{candidate['commit']}:{relative}")
+        if (
+            original_blob != entry["mapBlob"]
+            or git("rev-parse", f"{carrier['commit']}:{relative}") != original_blob
+        ):
+            raise ValueError(
+                "rebind input must equal the selected original carrier map blob"
+            )
+        original = json.loads(
+            git("show", f"{candidate['commit']}:{relative}"),
+            object_pairs_hook=unique_keys,
+        )
+        if (
+            not isinstance(original, dict)
+            or original.get("module") != mid
+            or "historicalSourceDeclarations" in original
+        ):
+            raise ValueError(
+                "invalid module or already-upgraded map; use ordinary migrate"
+            )
+        if original.get("sourceIdentityPolicy", "legacy_shared_batch") not in {
+            "legacy_shared_batch",
+            "candidate_or_exact_observation_v1",
+        }:
+            raise ValueError("cannot rebind an unknown original source policy")
+        validate_claim_types(original)
+        active = execution_claim_paths(original)
+        transitions = entry["pendingExecutionClaims"]
+        if not isinstance(transitions, list):
+            raise ValueError("pending claim transitions must be an explicit list")
+        reviewed = {}
+        for transition in transitions:
+            if (
+                not isinstance(transition, dict)
+                or set(transition) != {"field", "reason"}
+                or not isinstance(transition["field"], str)
+                or transition["field"] in reviewed
+                or not isinstance(transition["reason"], str)
+                or not transition["reason"].strip()
+            ):
+                raise ValueError("invalid reviewed pending transition")
+            reviewed[transition["field"]] = transition["reason"]
+        if set(reviewed) != active:
+            raise ValueError(
+                "original active execution claims require exact reviewed pending transitions"
+            )
+        row = copy.deepcopy(original)
+        record = {
+            "recordedAt": carrier,
+            "mapBlob": original_blob,
+            "declaredSourceBase": copy.deepcopy(original.get("sourceBase")),
+        }
+        if "observedAtHead" in original:
+            record["declaredObservedAtHead"] = copy.deepcopy(original["observedAtHead"])
+        row["historicalSourceDeclarations"] = {
+            "schema": HISTORY_SCHEMA,
+            "records": [record],
+        }
+        row["sourceIdentityPolicy"] = HISTORY_POLICY
+        row["sourceBase"] = candidate
+        row["observedAtHead"] = candidate
+        if reviewed:
+            row["pendingExecutionEvidence"] = []
+        for field, reason in sorted(reviewed.items()):
+            parts = field.split(".")
+            claims = row if len(parts) == 1 else row[parts[0]]
+            claims[parts[-1]] = False
+            row["pendingExecutionEvidence"].append(
+                {
+                    "field": field,
+                    "state": "pending_same_subject_receipt",
+                    "reason": reason,
+                }
+            )
+        migrated = migrate_map(row, modules[mid], lanes, candidate)
+        validate_historical_declarations(migrated, candidate)
+        checked_paths.update(
+            verify_source_identity(
+                migrated, migrated["resolvedRoots"], candidate, check_checkout=False
+            )
+        )
+        pending.append(
+            (
+                checked_source_path(ROOT, relative),
+                json.dumps(migrated, indent=2, ensure_ascii=False) + "\n",
+            )
+        )
+    require_clean_candidate(candidate, sorted(checked_paths))
+    for path, rendered in pending:
+        path.write_text(rendered, encoding="utf-8")
+    print(
+        json.dumps(
+            {
+                "rebound": len(pending),
+                "source": candidate,
+                "maps": [str(path.relative_to(ROOT)) for path, _ in pending],
+            }
         )
     )
 
@@ -1207,7 +1583,9 @@ def verify(
             (expected_tree, "expected-tree"),
         ):
             if value is not None and re.fullmatch(r"[0-9a-f]{40}", value) is None:
-                raise ValueError(f"--{label} must be an exact 40-character Git object id")
+                raise ValueError(
+                    f"--{label} must be an exact 40-character Git object id"
+                )
         if expected_sha is not None and candidate["commit"] != expected_sha:
             raise ValueError(
                 f"expected candidate SHA {expected_sha}, observed {candidate['commit']}"
@@ -1449,13 +1827,23 @@ def verify(
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument(
-        "command", choices=["generate", "migrate", "verify", "sync-plasticity-status"]
+        "command",
+        choices=[
+            "generate",
+            "migrate",
+            "rebind-current",
+            "verify",
+            "sync-plasticity-status",
+        ],
     )
     parser.add_argument(
         "--module",
         action="append",
         dest="modules",
-        help="rebind only this module (repeatable; migrate only)",
+        help="select this module (repeatable; migrate or rebind-current only)",
+    )
+    parser.add_argument(
+        "--plan", help="reviewed exact-source rebind plan (rebind-current only)"
     )
     parser.add_argument(
         "--require-current-source",
@@ -1473,11 +1861,19 @@ def main():
     args = parser.parse_args()
     if args.require_current_source and args.command != "verify":
         parser.error("--require-current-source applies only to verify")
-    if args.modules is not None and args.command != "migrate":
-        parser.error("--module applies only to migrate")
-    if (args.expected_sha is not None or args.expected_tree is not None) and args.command != "verify":
+    if args.modules is not None and args.command not in {"migrate", "rebind-current"}:
+        parser.error("--module applies only to migrate or rebind-current")
+    if args.plan is not None and args.command != "rebind-current":
+        parser.error("--plan applies only to rebind-current")
+    if args.command == "rebind-current" and (not args.plan or not args.modules):
+        parser.error("rebind-current requires --plan and explicit --module selection")
+    if (
+        args.expected_sha is not None or args.expected_tree is not None
+    ) and args.command != "verify":
         parser.error("--expected-sha/--expected-tree apply only to verify")
-    if args.command == "migrate":
+    if args.command == "rebind-current":
+        rebind_current(args.plan, args.modules)
+    elif args.command == "migrate":
         migrate(args.modules)
     else:
         {
