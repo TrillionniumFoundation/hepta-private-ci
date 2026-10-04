@@ -408,6 +408,23 @@ jobs:
               printf '%s\n' '::warning::Could not retain the empty Clippy target label inventory' >&2
           fi
 
+          if [[ "${RUNNER_OS}" == "Windows" ]]; then
+            # The query is unconfigured: these manual helpers are explicitly
+            # GNU-only in defs.bzl or Unix-only in the Agentd BUILD file.
+            # Native counterparts remain covered by the wildcard and manual
+            # roster. Keep unexpected incompatibilities fatal in Bazel.
+            native_bazel_targets=()
+            for target in "${bazel_targets[@]}"; do
+              case "$target" in
+                *-windows-cross-bin|//codex-rs/hepta-agentd:hepta-agentd-cognitive-product-qualification-test-bin)
+                  printf 'Native MSVC excludes incompatible helper: %s\n' "$target"
+                  ;;
+                *) native_bazel_targets+=("$target") ;;
+              esac
+            done
+            bazel_targets=("${native_bazel_targets[@]}")
+          fi
+
           ./.github/scripts/run-bazel-ci.sh \
             --print-failed-action-summary \
             "${bazel_wrapper_args[@]}" \
