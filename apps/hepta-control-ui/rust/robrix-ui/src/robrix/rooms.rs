@@ -134,7 +134,22 @@ script_mod! {
  mod.widgets.RoomsSideBar = #(RoomsSideBar::register_widget(vm)) {
   width: Fill height: Fill flow: Down spacing: 12 padding: 12
   show_bg: true
-  draw_bg +: {color: uniform(COLOR_SECONDARY) accent: uniform(COLOR_ROBRIX_PURPLE) pixel: fn() {
+  draw_bg +: {color: uniform(COLOR_SECONDARY) material: uniform(1.0) accent: uniform(COLOR_ROBRIX_PURPLE) secondary: uniform(COLOR_AURORA_CORAL) pixel: fn() {
+   if self.material > 1.5 {
+    let top_light = max(0.0, 1.0 - self.pos.y * 2.5)
+    let top_edge = max(0.0, 1.0 - self.pos.y * self.rect_size.y)
+    let right_edge = max(0.0, 1.0 - (1.0 - self.pos.x) * self.rect_size.x)
+    let lower_shade = max(0.0, self.pos.y - 0.45)
+    let face = mix(mix(self.color, #xf9f8f6, top_light * top_light * 0.14), #xb6afa5, lower_shade * 0.035)
+    return mix(mix(face, #xffffff, top_edge * 0.65), #xbcb7af, right_edge * 0.4)
+   }
+   if self.material > 0.5 {
+    let top_glow = max(0.0, 1.0 - self.pos.y * 4.0)
+    let top_edge = max(0.0, 1.0 - self.pos.y * self.rect_size.y)
+    let edge = mix(self.accent, self.secondary, self.pos.x)
+    let face = mix(self.color, edge, top_glow * top_glow * 0.025)
+    return mix(face, edge, top_edge * 0.22)
+   }
    let curve = 0.96 - 0.20 * self.pos.x * self.pos.x
    let light = max(0.0, 1.0 - abs(self.pos.y - curve) * 65.0)
    let second_curve = 1.04 - 0.29 * self.pos.x * self.pos.x

@@ -46,12 +46,12 @@ impl VisualTheme {
                 0x284665ff, 0x8ed9ffff,
             ],
             Self::LunarTitanium => [
-                0xf3f5f7ff, 0xe9eef1ff, 0xfffffff0, 0x18232cff, 0x52616dff, 0x267d8cff, 0xc5d1d8ff,
-                0xd4e7ebff, 0x267d8cff,
+                0xf7f6f2ff, 0xdddcd9ff, 0xf9f8f6ff, 0x18232cff, 0x595953ff, 0x18707dff, 0xdad8d4ff,
+                0xc3d5d5ff, 0xecc9abff,
             ],
             Self::AuroraGraphite => [
-                0x10111dff, 0x1a1a2eff, 0x222238ff, 0xeeebffff, 0xb4b0c9ff, 0x9585ffff, 0x37354fff,
-                0x34305eff, 0xffb3bcff,
+                0x15191fff, 0x151a21ff, 0x181d26ff, 0xeef1f4ff, 0xaab0bbff, 0xa5f0ccff, 0x383e49ff,
+                0x282f38ff, 0x9f95d5ff,
             ],
         };
         let [
@@ -107,6 +107,13 @@ pub fn cycle(cx: &mut Cx) {
 pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
     let theme = cx.global::<ThemeState>().selected;
     let tokens = theme.tokens();
+    // Shader appearance only. Geometry, control state and theme order stay local
+    // to their existing widgets; the zero branch retains the Obsidian shader.
+    let material = match theme {
+        VisualTheme::ObsidianIce => 0.0,
+        VisualTheme::AuroraGraphite => 1.0,
+        VisualTheme::LunarTitanium => 2.0,
+    };
     let mut stack = vec![(LiveId(0), root.clone())];
     let mut count = 0;
     while let Some((name, mut widget)) = stack.pop() {
@@ -162,6 +169,38 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
             if name == id!(rail_chat) || name == id!(rail_console) {
                 script_apply_eval!(cx,widget,{draw_bg +: {ink: #(text)}});
             }
+            // Only the known AuroraButton family shares this pressed default.
+            // Restore it when cycling back; other Button templates keep theirs.
+            if [
+                id!(rail_chat),
+                id!(rail_console),
+                id!(conversations),
+                id!(chat_tab),
+                id!(console_tab_button),
+                id!(mobile_theme_switch),
+                id!(back_to_chat),
+                id!(new_draft),
+                id!(theme_switch),
+                id!(jump_to_latest),
+                id!(send_message_button),
+            ]
+            .contains(&name)
+            {
+                let pressed = if theme == VisualTheme::ObsidianIce {
+                    Vec4f::from_u32(0x45406fff)
+                } else {
+                    selected
+                };
+                script_apply_eval!(cx,widget,{draw_bg +: {color_down: #(pressed)}});
+            }
+            if name == id!(new_draft) {
+                let border_end = if theme == VisualTheme::ObsidianIce {
+                    Vec4f::from_u32(0x9585ffff)
+                } else {
+                    secondary
+                };
+                script_apply_eval!(cx,widget,{draw_bg +: {border_color_2: #(border_end)}});
+            }
             if name == id!(send_message_button) {
                 script_apply_eval!(cx,widget,{draw_bg +: {accent: #(accent) ink: #(text)}});
             }
@@ -182,7 +221,7 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
             .borrow::<crate::robrix::rooms::RoomsSideBar>()
             .is_some()
         {
-            script_apply_eval!(cx,widget,{draw_bg +: {color: #(panel) accent: #(accent)}});
+            script_apply_eval!(cx,widget,{draw_bg +: {color: #(panel) accent: #(accent) secondary: #(secondary) material: #(material)}});
         } else if widget
             .borrow::<crate::robrix::rooms::RoomsListEntry>()
             .is_some()
@@ -198,24 +237,23 @@ pub fn apply_tree(cx: &mut Cx, root: &WidgetRef) {
                     /*mark_dirty*/ false,
                 );
             }
-        } else if widget.borrow::<Image>().is_some() && name == id!(lunar_background) {
-            widget
-                .as_image()
-                .set_visible(cx, theme == VisualTheme::LunarTitanium);
         } else if widget.borrow::<View>().is_some() {
             // RoomScreen owns role-aware message surfaces. A generic pass must
             // not erase the user's bubble after its direct child style applies.
             if name == id!(content) {
                 continue;
             }
-            let color = if name == id!(room_screen_wrapper) {
+            let color = if name == id!(room_screen_wrapper)
+                || (theme != VisualTheme::ObsidianIce
+                    && (name == id!(heading_surface) || name == id!(brand_bar)))
+            {
                 canvas
             } else {
                 panel
             };
             script_apply_eval!(cx,widget,{draw_bg +: {color: #(color)}});
-            if name == id!(room_screen_wrapper) {
-                script_apply_eval!(cx,widget,{draw_bg +: {accent: #(accent) secondary: #(secondary)}});
+            if name == id!(room_screen_wrapper) || name == id!(heading_surface) {
+                script_apply_eval!(cx,widget,{draw_bg +: {accent: #(accent) secondary: #(secondary) material: #(material)}});
             }
             if name == id!(brand_mark) {
                 script_apply_eval!(cx,widget,{draw_bg +: {accent: #(accent)}});

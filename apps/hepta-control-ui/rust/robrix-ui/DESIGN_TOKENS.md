@@ -1,6 +1,6 @@
 # Shared Robrix visual themes
 
-The three image-generated references requested on 2026-10-03 are design targets,
+The user's three image-generated references are design targets,
 not screenshots or acceptance evidence. The implementation uses real Rust
 Robrix-derived widgets; none of the images is installed as a full-window bitmap.
 
@@ -11,24 +11,31 @@ cross-reload preference persistence is not implemented.
 
 | Token | Obsidian Ice | Lunar Titanium | Aurora Graphite |
 |---|---|---|---|
-| Canvas | `#0c131d` | `#f3f5f7` | `#10111d` |
-| Panel | `#151f2b` | `#e9eef1` | `#1a1a2e` |
-| Raised surface | `#202e40` | `#ffffff` | `#222238` |
-| Text | `#e8f2ff` | `#18232c` | `#eeebff` |
-| Secondary text | `#a7b8ce` | `#52616d` | `#b4b0c9` |
-| Accent | `#63bdff` | `#267d8c` | `#9585ff` |
-| Edge | `#31506b` | `#c5d1d8` | `#37354f` |
-| Selection | `#284665` | `#d4e7eb` | `#34305e` |
-| Secondary accent | `#8ed9ff` | `#267d8c` | `#ffb3bc` |
+| Canvas | `#0c131d` | `#f7f6f2` | `#15191f` |
+| Panel | `#151f2b` | `#dddcd9` | `#151a21` |
+| Raised surface | `#202e40` | `#f9f8f6` | `#181d26` |
+| Text | `#e8f2ff` | `#18232c` | `#eef1f4` |
+| Secondary text | `#a7b8ce` | `#595953` | `#aab0bb` |
+| Accent | `#63bdff` | `#18707d` | `#a5f0cc` |
+| Edge | `#31506b` | `#dad8d4` | `#383e49` |
+| Selection | `#284665` | `#c3d5d5` | `#282f38` |
+| Secondary accent | `#8ed9ff` | `#ecc9ab` | `#9f95d5` |
 | Conversation column | 300 px | 280 px | 248 px |
-| Message treatment | Dark blue cards | Pale titanium cards | Open graphite timeline |
+| Message treatment | Dark blue cards | Pale ceramic cards | Open assistant rows; user cards |
 
-Lunar Titanium also uses the separately generated, UI-free landscape in
-`resources/lunar-titanium.png`, bound by `resources/ASSETS.json`. A Rust Image
-layer renders it behind the conversation with the pinned `ImageFit.CropToFill` mode and a small
-rightward focal offset. It is hidden in the other themes. Message surfaces
-protect foreground contrast. The original complete design mockups are never
-used as application backgrounds.
+The existing theme names and order remain stable for local interaction and
+capture identity. Aurora Graphite now targets the original B's neutral graphite
+body with small mint/violet edge reflections. Lunar Titanium targets the original
+C's warm ceramic body, platinum-gray sidebar, petrol accent and subtle warm
+highlights. Both materials are drawn by the existing shared Rust widgets.
+The prior diagonal sidebar decoration is retained only in Obsidian; the other
+two themes use their local edge and surface shading.
+
+The previously generated landscape `resources/lunar-titanium.png` is retained
+with its original bytes and provenance in `resources/ASSETS.json`. It is still
+packaged by the unchanged asset copier, but has no rendered Image layer in this
+candidate. The original C reference has no landscape backdrop. Original design
+mockups are never used as application backgrounds.
 
 The common desktop structure uses a 64 px navigation rail, the conversation
 column, and the existing Dock. Below the existing 760 px breakpoint, the same
@@ -67,3 +74,10 @@ remain separate incomplete work.
 Compilation, generated design images and the older blue/gray screenshots do not
 establish these outcomes. Source and CI reports must identify the exact theme,
 host, fixture status and commit under observation.
+
+The B/C material revision is pending fresh shader compilation and rendered
+browser/native evidence. Existing 9995 browser results describe its prior
+palette and landscape, not this revision. The full original composition still
+requires workspace/group navigation, channel controls, same-column author/time
+rows, a real shared file-card presentation and the attachment tool area. This
+material revision does not claim those missing regions or live capabilities.

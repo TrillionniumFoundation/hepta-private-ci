@@ -21,7 +21,26 @@ script_mod! {
   heading_surface := View {
    width: Fill height: Fill flow: Right align: Align{y: 0.5}
    padding: Inset{left: 30, right: 24}
-   show_bg: true draw_bg.color: COLOR_PRIMARY
+   show_bg: true
+   draw_bg +: {
+    color: COLOR_PRIMARY material: uniform(1.0)
+    accent: uniform(COLOR_ROBRIX_PURPLE) secondary: uniform(COLOR_AURORA_CORAL)
+    pixel: fn() {
+     if self.material < 0.5 { return self.color }
+     let top_edge = max(0.0, 1.0 - self.pos.y * self.rect_size.y)
+     let bottom_edge = max(0.0, 1.0 - (1.0 - self.pos.y) * self.rect_size.y)
+     if self.material < 1.5 {
+      let mint = max(0.0, 1.0 - length((self.pos - vec2(0.15, 0.0)) * vec2(1.7, 1.5)))
+      let violet = max(0.0, 1.0 - length((self.pos - vec2(0.85, 0.0)) * vec2(1.7, 1.5)))
+      let face = mix(mix(self.color, self.accent, mint * mint * 0.04), self.secondary, violet * violet * 0.07)
+      let edge = mix(self.accent, self.secondary, self.pos.x)
+      return mix(mix(face, edge, top_edge * 0.28), #x383e49, bottom_edge * 0.6)
+     }
+     let warm = max(0.0, 1.0 - self.pos.y)
+     let face = mix(self.color, #xfffaf3, warm * 0.32)
+     return mix(mix(face, #xffffff, top_edge * 0.72), #xdad8d4, bottom_edge * 0.65)
+    }
+   }
    room_actions := Label {
     width: Fill height: Fit padding: 0 max_lines: 1 text_overflow: Ellipsis
     text: "New conversation"
@@ -70,14 +89,27 @@ script_mod! {
   presentation_note := Label {visible: false width: Fill height: Fit padding: Inset{left: 20, right: 20, top: 5, bottom: 8} flow: Flow.Right{wrap:true} draw_text.color: TIMESTAMP_TEXT_COLOR}
   room_screen_wrapper := SolidView {
    width: Fill height: Fill flow: Overlay
-   draw_bg +: {color: COLOR_PRIMARY_DARKER accent: uniform(COLOR_ROBRIX_PURPLE) secondary: uniform(COLOR_AURORA_CORAL)
+   draw_bg +: {color: COLOR_PRIMARY_DARKER material: uniform(1.0) accent: uniform(COLOR_ROBRIX_PURPLE) secondary: uniform(COLOR_AURORA_CORAL)
     pixel: fn() {
+     if self.material > 1.5 {
+      let upper_light = max(0.0, 1.0 - self.pos.y * 3.0)
+      let bottom_shade = max(0.0, 1.0 - (1.0 - self.pos.y) * self.rect_size.y / 10.0)
+      let face = mix(self.color, #xffffff, upper_light * upper_light * 0.18)
+      return mix(face, #xb6afa5, bottom_shade * bottom_shade * 0.045)
+     }
+     if self.material > 0.5 {
+      let mint = max(0.0, 1.0 - length((self.pos - vec2(0.1, 0.0)) * vec2(1.8, 5.0)))
+      let violet = max(0.0, 1.0 - length((self.pos - vec2(0.9, 0.0)) * vec2(1.8, 5.0)))
+      let lower_mint = max(0.0, 1.0 - length((self.pos - vec2(0.15, 1.0)) * vec2(1.8, 4.0)))
+      let lower_violet = max(0.0, 1.0 - length((self.pos - vec2(0.85, 1.0)) * vec2(1.8, 4.0)))
+      let face = mix(self.color, self.accent, mint * mint * 0.035 + lower_mint * lower_mint * 0.025)
+      return mix(face, self.secondary, violet * violet * 0.055 + lower_violet * lower_violet * 0.035)
+     }
      let left_glow = max(0.0, 1.0 - length((self.pos - vec2(0.0, 0.9)) * vec2(2.0, 1.0)))
      let upper_glow = max(0.0, 1.0 - length((self.pos - vec2(0.9, 0.0)) * vec2(1.0, 2.0)))
      let base = mix(self.color, self.accent, left_glow * left_glow * 0.045)
      return mix(base, self.secondary, upper_glow * upper_glow * 0.018)
     }}
-   lunar_background := Image {width: Fill height: Fill visible: false fit: ImageFit.CropToFill src: crate_resource("self:resources/lunar-titanium.png") draw_bg.image_pan: vec2(0.06, 0.0)}
    timeline_and_input_bar := View {
     width: Fill height: Fill flow: Down
     empty_state := Label {width: Fill height: Fit padding: 24 flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Your conversation starts here. Write a local draft below."}

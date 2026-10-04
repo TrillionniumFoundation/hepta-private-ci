@@ -27,6 +27,8 @@ export async function verifyImageFitApi(sourceDirectory,apiPath){
   }
  }
  await walk(sourceDirectory);
- if(!references)throw new Error('Expected live ImageFit reference was not checked');
+ // A source tree without Image widgets has no ImageFit references to resolve.
+ // Still require a real scan: a wrong/empty source directory must not pass.
+ if(!files)throw new Error('UI DSL source inventory contains no Rust files');
  return{files,references};
 }
