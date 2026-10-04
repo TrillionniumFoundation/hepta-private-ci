@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "215b292b32f9ad94df94bb1be57e70a9a3925f93",
-    "tree": "0b786be7e309660aeb025b259ca8f84232e15352"
+    "commit": "713c6f88c4a9a5803415b839c54903c1698af3ac",
+    "tree": "b0052807803ce3d38f57d4e8dbafc844c7e0a8cb"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "compact.engine",
@@ -160,6 +160,48 @@
         "codex-rs/hepta-compact-engine/src/publication_body_restore.rs",
         "codex-rs/hepta-compact-engine/src/authenticated.rs"
       ]
+    },
+    {
+      "operation": "encode_compaction_policy_body_v2",
+      "nativeSymbol": "encode_compaction_policy_body_v2",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/policy_body.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/policy_body_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "encode_compaction_policy_body_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "decode_compaction_policy_body_v2",
+      "nativeSymbol": "decode_compaction_policy_body_v2",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/policy_body.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/policy_body_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "decode_compaction_policy_body_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
+    },
+    {
+      "operation": "compaction_policy_body_schema_digest_v2",
+      "nativeSymbol": "compaction_policy_body_schema_digest_v2",
+      "sourcePath": "codex-rs/hepta-compact-engine/src/policy_body.rs",
+      "state": "source_implemented_not_product_composed",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-compact-engine/src/policy_body_tests.rs"
+      ],
+      "sourcePathExists": true,
+      "designOperation": "compaction_policy_body_schema_digest_v2",
+      "mappingClass": "owner_native",
+      "delegatedCallees": []
     }
   ],
   "repositoryControlledGaps": [
@@ -198,7 +240,7 @@
     },
     {
       "path": "codex-rs/hepta-compact-engine",
-      "object": "bacd1470af05c171f7362ba774837d7acaa0d9ae"
+      "object": "0cca6afc4a6ed9a0346e49669a6c3c402ceab31d"
     },
     {
       "path": "codex-rs/hepta-compact-engine/src/authenticated.rs",
@@ -214,11 +256,19 @@
     },
     {
       "path": "codex-rs/hepta-compact-engine/src/lib.rs",
-      "object": "2996b44c4dbd9a71cf5bf1fcc621804d5e2c0d1c"
+      "object": "8f97dc72ffec17dbdeb6d15559c372eaea5dd0c2"
     },
     {
       "path": "codex-rs/hepta-compact-engine/src/lib_tests.rs",
       "object": "d1068cee79702e754c8b7bfdb31b3c1177f83a34"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/policy_body.rs",
+      "object": "da62578b16c82a97b676280b58d4a0aad90ed695"
+    },
+    {
+      "path": "codex-rs/hepta-compact-engine/src/policy_body_tests.rs",
+      "object": "74c051c06edcd3c71dc7279289638f0afb44412f"
     },
     {
       "path": "codex-rs/hepta-compact-engine/src/publication.rs",
@@ -294,7 +344,7 @@
     },
     {
       "path": "docs/modules/compact.engine/TECHNICAL.md",
-      "object": "c400cddcaba3f808058652b624a4fbb05129df26"
+      "object": "02b35bbcf01f740b30cdf10fec170138b449fa8d"
     }
   ],
   "legacyLocalCheckpointIntegrity": {
@@ -306,5 +356,16 @@
     "historicalEventRewrite": false,
     "legacyTypedReplay": "rejected; no automatic backfill",
     "executionQualification": false
+  },
+  "immutablePolicyBodyCodecV2": {
+    "sourcePath": "codex-rs/hepta-compact-engine/src/policy_body.rs",
+    "testPath": "codex-rs/hepta-compact-engine/src/policy_body_tests.rs",
+    "registeredTests": 8,
+    "maximumEncodedBytes": 1048576,
+    "semanticDigestDomain": "hepta.compaction-policy.v2",
+    "historicalDigestRedefined": false,
+    "artifactLedgerJoinComposed": false,
+    "exactCandidateNativeQualified": false,
+    "authority": "DENY_ALL"
   }
 }
