@@ -245,10 +245,16 @@ impl AgentdFixture {
     }
 
     fn state(&self) -> Arc<AgentdState> {
+        self.state_with_readiness(true)
+    }
+
+    fn state_with_readiness(&self, app_server_ready: bool) -> Arc<AgentdState> {
         let state =
             AgentdState::new(self.identity.clone(), self.registry.clone(), 16).expect("state");
         state.refresh_generation().expect("refresh running");
-        state.mark_app_server_ready().expect("app ready");
+        if app_server_ready {
+            state.mark_app_server_ready().expect("app ready");
+        }
         Arc::new(state)
     }
 }

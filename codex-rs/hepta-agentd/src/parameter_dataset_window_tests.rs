@@ -133,7 +133,7 @@ pub(super) async fn verify_actual_window_socket(
     root: &Path,
     snapshot: &LedgerSnapshot,
     expected_source: &[u8],
-) {
+) -> crate::PreparedParameterDatasetWindowV3 {
     assert!(expected_source.len() > crate::MAX_CONTROL_FRAME_BYTES as usize);
     let context: Value = serde_json::from_slice(&fs::read(&context.0).expect("protected context"))
         .expect("whole context");
@@ -208,4 +208,5 @@ pub(super) async fn verify_actual_window_socket(
         crate::canary_operation_receipt::response_limit(&crate::AgentdMethod::Health),
         crate::MAX_CONTROL_FRAME_BYTES
     );
+    facts
 }

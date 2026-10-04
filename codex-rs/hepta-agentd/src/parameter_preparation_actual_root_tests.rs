@@ -51,22 +51,60 @@ impl crate::AgentdNeuronGoalScopeFactoryV3 for UnusedGoalFactory {
 #[ignore = "requires actual UID0 and independently protected complete fixture sources"]
 async fn actual_root_peer_prepares_from_whole_context_and_same_acknowledged_v2_owner_without_writes()
  {
-    run_actual_root_preparation(false).await;
+    run_actual_root_preparation(PreparationPurpose::OriginalV2).await;
 }
 #[tokio::test(flavor = "multi_thread", worker_threads = 2)]
 #[ignore = "requires actual UID0 and independently protected complete fixture sources"]
 async fn actual_root_peer_reads_complete_window_source_over_original_whole_transport_without_writes()
  {
-    run_actual_root_preparation(true).await;
+    run_actual_root_preparation(PreparationPurpose::WindowTransport).await;
 }
-async fn run_actual_root_preparation(window: bool) {
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "requires actual UID0 and independently protected complete fixture sources"]
+async fn actual_root_peer_consumes_signed_window_and_full_frozen_numerics_through_original_context()
+{
+    run_actual_root_preparation(PreparationPurpose::WindowContext).await;
+}
+enum PreparationPurpose {
+    OriginalV2,
+    WindowTransport,
+    WindowContext,
+}
+async fn run_actual_root_preparation(purpose: PreparationPurpose) {
+    let window = !matches!(purpose, PreparationPurpose::OriginalV2);
+    let signed_window = matches!(purpose, PreparationPurpose::WindowContext);
     assert_eq!(unsafe { libc::geteuid() }, 0, "actual kernel Root peer");
     let root = tempfile::Builder::new()
         .prefix("hepta-prepare-root-")
         .permissions(fs::Permissions::from_mode(0o700))
         .tempdir_in("/root")
         .expect("private independent Root fixture");
-    let mut fixture = clock_fixture(crate::authbus_ingress::now_ms);
+    let mut fixture = clock_fixture_with_readiness(crate::authbus_ingress::now_ms, !signed_window);
+    if signed_window {
+        let cognitive = codex_hepta_agent_components::cognitive_store::DurableCognitiveStore::open(
+            &fixture.state.identity().layout,
+        )
+        .await
+        .expect("original actual canonical Cognitive owner");
+        fixture
+            .state
+            .attach_cognitive_store(Arc::new(cognitive))
+            .expect("same Agent owner");
+        fixture
+            .state
+            .mark_runtime_prerequisites_ready()
+            .expect("actual complete prerequisites");
+        fixture
+            .state
+            .mark_app_server_ready()
+            .expect("original final readiness transition");
+        assert!(
+            fixture
+                .state
+                .automation_admission_ready()
+                .expect("whole healthy Running state")
+        );
+    }
     fixture.owner.guard_elapsed_ms = crate::plasticity_runtime::monotonic_elapsed_ms;
     let now = crate::authbus_ingress::now_ms().expect("actual clock");
     let expires = (now / 1000 + 120) * 1000;
@@ -130,9 +168,11 @@ async fn run_actual_root_preparation(window: bool) {
         .snapshot()
         .expect("same production ledger");
     let expected_ledger_bytes = fs::read(&fixture.files.ledger).expect("same held source");
-    let (runtime, iteration) =
-        crate::AgentdSelfIterationRuntimeConfigV1::new(root.path().join("iteration.json"), trust)
-            .expect("original sole iteration journal");
+    let (runtime, iteration) = crate::AgentdSelfIterationRuntimeConfigV1::new(
+        root.path().join("iteration.json"),
+        trust.clone(),
+    )
+    .expect("original sole iteration journal");
     fixture
         .state
         .self_iteration_handle
@@ -244,31 +284,53 @@ async fn run_actual_root_preparation(window: bool) {
         initial_installed_artifact_head,
     )
     .await;
-    if window {
-        window_support::verify_actual_window_socket(
+    let window_facts = if window {
+        Some(
+            window_support::verify_actual_window_socket(
+                &client,
+                &round,
+                &context,
+                root.path(),
+                &expected_dataset_snapshot,
+                &expected_ledger_bytes,
+            )
+            .await,
+        )
+    } else {
+        None
+    };
+
+    let initial_context = context.clone();
+    let context = if signed_window {
+        window_context_support::project_signed_window_context(
             &client,
-            &round,
             &context,
             root.path(),
-            &expected_dataset_snapshot,
-            &expected_ledger_bytes,
-        )
-        .await;
-    }
-
-    let context = projection_support::project_and_check_context(
-        &context,
-        root.path(),
-        projection_support::ProjectionInputs {
-            identity: fixture.state.identity(),
-            round: &round,
-            training: &material,
-            goal: &neuron_material,
+            fixture.state.identity(),
+            &round,
+            &material,
+            &neuron_material,
             anchor,
-            artifacts: &artifacts,
-            dataset: &dataset,
-        },
-    );
+            &artifacts,
+            window_facts.as_ref().expect("original whole Window facts"),
+            &trust,
+        )
+        .await
+    } else {
+        projection_support::project_and_check_context(
+            &context,
+            root.path(),
+            projection_support::ProjectionInputs {
+                identity: fixture.state.identity(),
+                round: &round,
+                training: &material,
+                goal: &neuron_material,
+                anchor,
+                artifacts: &artifacts,
+                dataset: &dataset,
+            },
+        )
+    };
     let stage = std::time::Instant::now();
     let temporary = client
         .prepare_parameter_input_from_context_v2(
@@ -310,10 +372,42 @@ async fn run_actual_root_preparation(window: bool) {
         initial_installed_artifact_head,
         artifacts.registry.head_digest()
     );
+    if signed_window {
+        let projected: Value =
+            serde_json::from_slice(&fs::read(&context.0).expect("whole new signed Window context"))
+                .expect("original complete context codec");
+        let initial: Value =
+            serde_json::from_slice(&fs::read(&initial_context.0).expect("whole initial context"))
+                .expect("original complete context codec");
+        assert_ne!(
+            projected["owner_policy"]["dataset_owner_id"],
+            initial["owner_policy"]["dataset_owner_id"]
+        );
+        let producer = write_source(
+            root.path().join("new-window-producer-before-refresh.json"),
+            serde_json::to_vec(&projected["dataset"]["producer"])
+                .expect("whole actual E principal"),
+        );
+        let plan_path = root.path().join("dataset-plan.json");
+        let plan_pin = Digest32::of_bytes(&fs::read(&plan_path).expect("same original plan"));
+        assert!(
+            client
+                .prepare_parameter_dataset_v1(
+                    round.clone(),
+                    producer.0,
+                    producer.1,
+                    plan_path,
+                    plan_pin,
+                )
+                .await
+                .is_err(),
+            "temporary context preparation must not install the new E producer policy"
+        );
+    }
     verify_actual_dataset_socket(
         &client,
         &round,
-        &context,
+        &initial_context,
         root.path(),
         &expected_dataset_snapshot,
         initial_installed_artifact_head,
@@ -633,3 +727,9 @@ fn learning_trust(
 
 #[path = "parameter_dataset_window_tests.rs"]
 mod window_support;
+
+#[path = "parameter_window_context_actual_root_tests.rs"]
+mod window_context_support;
+
+#[path = "parameter_window_context_live_prefix_tests.rs"]
+mod window_prefix_tests;

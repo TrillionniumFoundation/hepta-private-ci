@@ -35,6 +35,13 @@ struct ClockFixture {
 mod whole_observation_tests;
 
 fn clock_fixture(clock: fn() -> Result<u64, AgentdError>) -> ClockFixture {
+    clock_fixture_with_readiness(clock, true)
+}
+
+fn clock_fixture_with_readiness(
+    clock: fn() -> Result<u64, AgentdError>,
+    app_server_ready: bool,
+) -> ClockFixture {
     let daemon = AgentdFixture::new();
     let runtime_root = tempfile::tempdir().expect("runtime root");
     let files = runtime_files(runtime_root.path());
@@ -84,7 +91,7 @@ fn clock_fixture(clock: fn() -> Result<u64, AgentdError>) -> ClockFixture {
         topology_anchor_store,
     )
     .expect("runtime bootstrap");
-    let state = daemon.state();
+    let state = daemon.state_with_readiness(app_server_ready);
     let (handle, mut owner) = bootstrap.into_channel().expect("compose owner");
     owner.current_artifacts = Some(
         crate::plasticity_runtime::current_artifacts::fixture_current_artifacts(&sources.artifacts),
