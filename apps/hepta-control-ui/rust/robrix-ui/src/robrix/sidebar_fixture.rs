@@ -59,6 +59,21 @@ fn clipped_rectangle(cx: &Cx, area: Area) -> String {
     }
 }
 
+// Text Areas contain one instance per glyph. Area::rect reports the first
+// instance; the clipped union is the real complete visible text extent.
+fn visible_glyphs(cx: &Cx, area: Area) -> String {
+    if !area.is_valid(cx) {
+        return "null".into();
+    }
+    let rect = area.clipped_rect_union(cx);
+    let values = [rect.pos.x, rect.pos.y, rect.size.x, rect.size.y];
+    if values.iter().all(|value| value.is_finite()) {
+        format!("{values:?}")
+    } else {
+        "null".into()
+    }
+}
+
 /// Publish bounded numeric state, never draft text, account or owner data.
 /// Repeated stable draws are quiet; key-up/mouse-up receipts allow the test to
 /// distinguish an observed unchanged result from a stale pre-input sample.
@@ -79,8 +94,8 @@ pub(crate) fn after_event(cx: &mut Cx, workspace: &ChatWorkspace, ui: &WidgetRef
             format!(
                 "{{\"sidebar\":{},\"brand\":{},\"group\":{},\"search\":{},\"newDraft\":{},\"newDraftClipped\":{},\"rooms\":[{}]}}",
                 rectangle(cx, drawn.areas[0]),
-                rectangle(cx, drawn.areas[1]),
-                rectangle(cx, drawn.areas[2]),
+                visible_glyphs(cx, drawn.areas[1]),
+                visible_glyphs(cx, drawn.areas[2]),
                 rectangle(cx, drawn.areas[3]),
                 rectangle(cx, drawn.areas[4]),
                 clipped_rectangle(cx, drawn.areas[4]),
@@ -112,10 +127,23 @@ pub(crate) fn after_event(cx: &mut Cx, workspace: &ChatWorkspace, ui: &WidgetRef
         .global::<crate::visual_theme::ThemeState>()
         .selected
         .label();
+    // The shared brand bar is drawn on both active adaptive variants. Read its
+    // actual delegated pass/window scale; never infer it from screenshot DPR.
+    let dpi_probe = ui.widget(cx, ids!(brand_bar)).area();
+    let draw_dpi_factor = if dpi_probe.is_valid(cx) {
+        let dpi = cx.get_dpi_factor_of(&dpi_probe);
+        if dpi.is_finite() && dpi > 0.0 {
+            dpi.to_string()
+        } else {
+            "null".into()
+        }
+    } else {
+        "null".into()
+    };
     let geometry_frame = cx.global::<SidebarFixture>().geometry_frame;
     let geometry = cx.global::<SidebarFixture>().geometry.clone();
     let serialized = format!(
-        "{{\"active\":{},\"draftIds\":{:?},\"count\":{},\"draftBytes\":{},\"navigationOpen\":{},\"consoleOpen\":{},\"theme\":{:?},\"newDraftAreaValid\":{},\"newDraftFocused\":{},\"keyFocusValid\":{},\"controls\":{{{}}},\"targets\":{},\"geometryFrame\":{},\"geometry\":{}}}",
+        "{{\"active\":{},\"draftIds\":{:?},\"count\":{},\"draftBytes\":{},\"navigationOpen\":{},\"consoleOpen\":{},\"theme\":{:?},\"newDraftAreaValid\":{},\"newDraftFocused\":{},\"keyFocusValid\":{},\"controls\":{{{}}},\"targets\":{},\"geometryFrame\":{},\"geometry\":{},\"drawDpiFactor\":{},\"dpiProbe\":{}}}",
         workspace.active_id(),
         ids,
         ids.len(),
@@ -129,7 +157,9 @@ pub(crate) fn after_event(cx: &mut Cx, workspace: &ChatWorkspace, ui: &WidgetRef
         controls,
         targets.unwrap_or_else(|| "null".into()),
         geometry_frame,
-        geometry.unwrap_or_else(|| "null".into())
+        geometry.unwrap_or_else(|| "null".into()),
+        draw_dpi_factor,
+        rectangle(cx, dpi_probe)
     );
     let receipt = match event {
         Event::KeyUp(_) => "key-up",
