@@ -1,14 +1,23 @@
+use codex_state::SqliteConfig;
+use codex_utils_absolute_path::AbsolutePathBuf;
 use sqlx::migrate::Migrate;
-use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
 async fn historical_pool(displaced: bool) -> SqlitePool {
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect("sqlite::memory:")
-        .await
-        .expect("SQLite owner");
+    // The shim can open multiple connections. An explicit unique named-memory
+    // URI gives them one database while keeping distinct fixtures isolated;
+    // filename(":memory:") would instead create a private DB per connection.
+    let memory = format!(
+        "file:hepta-migration-{}?mode=memory&cache=shared",
+        uuid::Uuid::now_v7()
+    );
+    let pool = SqliteConfig::from_sqlite_home(
+        AbsolutePathBuf::try_from(std::env::temp_dir()).expect("absolute temporary directory"),
+    )
+    .open_durable_evidence_pool(Path::new(&memory))
+    .await
+    .expect("SQLite owner");
     let mut connection = pool.acquire().await.expect("owner connection");
     connection
         .ensure_migrations_table("_sqlx_migrations")
@@ -47,6 +56,49 @@ async fn historical_pool(displaced: bool) -> SqlitePool {
     }
     drop(connection);
     pool
+}
+
+#[tokio::test]
+async fn historical_memory_pool_shares_connections_but_isolates_fixtures() {
+    let canonical = historical_pool(/*displaced*/ false).await;
+    let displaced = historical_pool(/*displaced*/ true).await;
+    let mut first = canonical
+        .acquire()
+        .await
+        .expect("first physical connection");
+    let mut peer = tokio::time::timeout(std::time::Duration::from_secs(5), canonical.acquire())
+        .await
+        .expect("second connection deadline")
+        .expect("second physical connection");
+    let first_checksum: Vec<u8> =
+        sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations WHERE version = 4")
+            .fetch_one(&mut *first)
+            .await
+            .expect("first retained history");
+    let peer_checksum: Vec<u8> =
+        sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations WHERE version = 4")
+            .fetch_one(&mut *peer)
+            .await
+            .expect("peer retained history");
+    let displaced_checksum: Vec<u8> =
+        sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations WHERE version = 4")
+            .fetch_one(&displaced)
+            .await
+            .expect("isolated retained history");
+    assert_eq!(first_checksum, peer_checksum);
+    assert_ne!(first_checksum, displaced_checksum);
+    for connection in [&mut first, &mut peer] {
+        let filename: String =
+            sqlx::query_scalar("SELECT file FROM pragma_database_list WHERE name = 'main'")
+                .fetch_one(&mut **connection)
+                .await
+                .expect("physical database location");
+        assert_eq!(filename, "", "historical fixture must remain in memory");
+    }
+    drop(first);
+    drop(peer);
+    canonical.close().await;
+    displaced.close().await;
 }
 
 #[tokio::test]
@@ -225,14 +277,12 @@ async fn migration_crash_worker() {
         .parse()
         .expect("version");
     let path = root.join(AUTOMATION_DB_FILENAME);
-    let options = sqlx::sqlite::SqliteConnectOptions::new()
-        .filename(&path)
-        .create_if_missing(true);
-    let pool = SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(options)
-        .await
-        .expect("historical on-disk owner");
+    let pool = SqliteConfig::from_sqlite_home(
+        AbsolutePathBuf::try_from(root.clone()).expect("absolute crash-fixture root"),
+    )
+    .open_durable_evidence_pool(&path)
+    .await
+    .expect("historical on-disk owner");
     let mut connection = pool.acquire().await.expect("historical connection");
     connection
         .ensure_migrations_table("_sqlx_migrations")
@@ -278,8 +328,12 @@ async fn every_committed_migration_prefix_recovers_retained_history_after_proces
         .map(|migration| migration.version)
     {
         let temp = tempfile::tempdir().expect("private migration root");
-        let stdout = temp.path().join("migration.stdout");
-        let stderr = temp.path().join("migration.stderr");
+        let root = temp
+            .path()
+            .canonicalize()
+            .expect("canonical migration root");
+        let stdout = root.join("migration.stdout");
+        let stderr = root.join("migration.stderr");
         let mut child =
             std::process::Command::new(std::env::current_exe().expect("test executable"))
                 .args([
@@ -287,7 +341,7 @@ async fn every_committed_migration_prefix_recovers_retained_history_after_proces
                     "store::migration_convergence_tests::migration_crash_worker",
                     "--nocapture",
                 ])
-                .env(MIGRATION_CRASH_ROOT, temp.path())
+                .env(MIGRATION_CRASH_ROOT, &root)
                 .env(MIGRATION_CRASH_CUT, cut.to_string())
                 .stdout(std::fs::File::create(&stdout).expect("child stdout"))
                 .stderr(std::fs::File::create(&stderr).expect("child stderr"))
@@ -318,7 +372,7 @@ async fn every_committed_migration_prefix_recovers_retained_history_after_proces
             std::fs::read_to_string(stderr).expect("child stderr")
         );
         let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner");
-        let store = AutomationStore::open_root(temp.path().to_path_buf(), owner)
+        let store = AutomationStore::open_root(root, owner)
             .await
             .expect("ordinary owner recovery");
         let task: (String, String, i64, i64, i64) = sqlx::query_as("SELECT prompt,state,next_occurrence,created_at_ms,updated_at_ms FROM automation_tasks WHERE task_id=?")

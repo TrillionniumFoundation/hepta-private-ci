@@ -24,10 +24,6 @@ enum RecoveryLease {
 }
 
 impl AutomationStore {
-    #[expect(
-        clippy::too_many_arguments,
-        reason = "the historical recovery boundary keeps its exact occurrence, receipt, clock and fence explicit"
-    )]
     pub async fn reconcile_occurrence_taskflow_terminal_with_recovery(
         &self,
         work: &AutomationOccurrenceWork,
@@ -74,10 +70,6 @@ impl AutomationStore {
         .await
     }
 
-    #[expect(
-        clippy::too_many_arguments,
-        reason = "lease selection is explicit alongside the original terminal receipt and observation clock"
-    )]
     async fn reconcile_automation_terminal_with_lease(
         &self,
         work: &AutomationOccurrenceWork,

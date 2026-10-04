@@ -86,12 +86,10 @@ async fn seed_legacy_owner(agent: &AgentFixture) -> Result<Vec<Vec<u8>>> {
 }
 
 async fn legacy_history(agent: &AgentFixture) -> Result<Vec<String>> {
-    let options = sqlx::sqlite::SqliteConnectOptions::new()
-        .filename(agent.layout.automation_root().join("automation_1.sqlite3"))
-        .read_only(true);
-    let pool = sqlx::sqlite::SqlitePoolOptions::new()
-        .max_connections(1)
-        .connect_with(options)
+    let home = AbsolutePathBuf::from_absolute_path(agent.layout.automation_root())?;
+    let database = agent.layout.automation_root().join("automation_1.sqlite3");
+    let pool = SqliteConfig::from_sqlite_home(home)
+        .open_read_only_pool(&database)
         .await?;
     // Compare all original task/occurrence fields, including cancellation and
     // client identity. Added schema projections are not the authoritative facts.
