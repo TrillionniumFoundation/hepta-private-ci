@@ -235,4 +235,5 @@ pub use parameter_evaluation_pipeline::OriginalParameterEvaluationPreparationRes
 pub use parameter_evaluation_pipeline::OriginalParameterEvaluationPublicationsV1;
 pub use parameter_evaluation_pipeline::OriginalParameterEvaluationTemplateV1;
 pub use parameter_evaluation_pipeline::OriginalParameterRoleProgramV1;
+pub use parameter_evaluation_pipeline::OriginalParameterRollbackPublicationV2;
 pub use parameter_evaluation_pipeline::prepare_original_parameter_evaluation_publications_v1;

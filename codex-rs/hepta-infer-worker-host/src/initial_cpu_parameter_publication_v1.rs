@@ -32,7 +32,7 @@ pub struct ParameterPublishedArtifactV1 {
     pub operation_id: String,
     pub current_head: String,
 }
-#[derive(Deserialize, Serialize)]
+#[derive(Clone, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
 pub struct ParameterPreRegisteredPublicationV1 {
     pub schema: String,

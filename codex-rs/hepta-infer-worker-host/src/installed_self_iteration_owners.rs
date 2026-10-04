@@ -59,7 +59,7 @@ impl InstalledSelfIterationIndependentOwnersV1 {
             configuration.route.digest.parse().map_err(protocol)?,
         )
         .map_err(protocol)?;
-        let candidates = materials.with_plan(configuration::candidate_bindings)?;
+        let candidates = configuration::candidate_bindings(materials)?;
         Ok(Self {
             configuration,
             source: source.clone(),

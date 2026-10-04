@@ -1,6 +1,5 @@
 //! Public protected routing and original whole-material identities.
 use super::*;
-use crate::CpuNeuronParameterMaterialPlanV2;
 
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -110,33 +109,32 @@ pub(super) struct CandidateBinding {
     pub rollback_body: Digest32,
 }
 pub(super) fn candidate_bindings(
-    plan: &CpuNeuronParameterMaterialPlanV2<'_>,
+    materials: &CpuNeuronParameterRootMaterialsV2,
 ) -> Result<Vec<CandidateBinding>, AgentdError> {
-    plan.candidates
-        .iter()
-        .map(|candidate| {
-            Ok(CandidateBinding {
-                id: candidate.candidate_id.to_string(),
-                base_generation: plan.baseline_runtime.generation.get(),
-                successor_configuration: candidate
-                    .generation
-                    .runtime
-                    .semantic_digest()
-                    .map_err(protocol)?,
-                successor_body: candidate
-                    .generation
-                    .body
-                    .semantic_digest()
-                    .map_err(protocol)?,
-                rollback_configuration: plan
-                    .rollback
-                    .runtime
-                    .semantic_digest()
-                    .map_err(protocol)?,
-                rollback_body: plan.rollback.body.semantic_digest().map_err(protocol)?,
+    materials.with_plan(|plan| {
+        plan.candidates
+            .iter()
+            .map(|candidate| {
+                let rollback = materials.rollback_for_candidate(candidate.candidate_id)?;
+                Ok(CandidateBinding {
+                    id: candidate.candidate_id.to_string(),
+                    base_generation: plan.baseline_runtime.generation.get(),
+                    successor_configuration: candidate
+                        .generation
+                        .runtime
+                        .semantic_digest()
+                        .map_err(protocol)?,
+                    successor_body: candidate
+                        .generation
+                        .body
+                        .semantic_digest()
+                        .map_err(protocol)?,
+                    rollback_configuration: rollback.runtime.semantic_digest().map_err(protocol)?,
+                    rollback_body: rollback.body.semantic_digest().map_err(protocol)?,
+                })
             })
-        })
-        .collect()
+            .collect()
+    })
 }
 /// Hash every original encoded request/generation/canary under one fixed
 /// purpose. This is a factual pin, never an Artifact or physical admission.
@@ -144,7 +142,7 @@ pub fn self_iteration_independent_owner_materials_digest_v1(
     materials: &CpuNeuronParameterRootMaterialsV2,
 ) -> Result<Digest32, AgentdError> {
     use codex_hepta_agent_components::intelligence::*;
-    materials.with_plan(crate::validate_cpu_neuron_parameter_materials_v2)?;
+    materials.validate_rollback_pairs()?;
     let mut bytes = b"hepta.installed-independent-owner-materials.v1\0".to_vec();
     bytes.extend_from_slice(materials.canonical_envelope().digest().as_array());
     bytes.extend_from_slice(
@@ -194,6 +192,22 @@ pub fn self_iteration_independent_owner_materials_digest_v1(
                 )
                 .as_array(),
             );
+        }
+        if plan.candidates.len() > 1 {
+            bytes.extend_from_slice(b"hepta.installed-independent-owner-rollback-pairs.v2\0");
+            for candidate in plan.candidates {
+                let rollback = materials.rollback_for_candidate(candidate.candidate_id)?;
+                bytes.extend_from_slice(
+                    Digest32::of_bytes(candidate.candidate_id.as_str().as_bytes()).as_array(),
+                );
+                bytes.extend_from_slice(
+                    Digest32::of_bytes(
+                        &codex_hepta_neuron::encode_neuron_generation_material_v2(rollback)
+                            .map_err(protocol)?,
+                    )
+                    .as_array(),
+                );
+            }
         }
         Ok(())
     })?;

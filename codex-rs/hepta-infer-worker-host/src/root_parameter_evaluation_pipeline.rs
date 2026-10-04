@@ -54,12 +54,20 @@ pub enum OriginalParameterEvaluationPreparationResultV1 {
     Terminal { source: InstalledCpuSourceV1 },
     Completed(OriginalParameterEvaluationPublicationsV1),
 }
+pub struct OriginalParameterRollbackPublicationV2 {
+    pub candidate_id: StableId,
+    pub publication: ParameterPreRegisteredPublicationV1,
+    pub publication_configuration: InstalledCpuSourceV1,
+}
 pub struct OriginalParameterEvaluationPublicationsV1 {
     pub materials: crate::CpuNeuronRoundMaterialsV3,
     pub evaluations: Vec<CandidateEvaluationAdmissionV1>,
     /// Original completion Hc/op/ACK is preserved for each whole four-set.
     pub candidates: Vec<ParameterPreRegisteredPublicationV1>,
     pub candidate_publication_configurations: Vec<InstalledCpuSourceV1>,
+    pub rollbacks: Vec<OriginalParameterRollbackPublicationV2>,
+    /// Compatibility projection of the first exact pair; multi-Update callers
+    /// must consume the complete rollbacks frontier.
     pub rollback: ParameterPreRegisteredPublicationV1,
     pub rollback_publication_configuration: InstalledCpuSourceV1,
     /// Separate latest H', including its exact original publication ACK.
@@ -188,19 +196,22 @@ pub fn prepare_original_parameter_evaluation_publications_v1(
         }
         candidates.push(evaluation);
     }
-    let candidate_id = &materials.candidates()[0].candidate_id;
-    let Some(rollback) = pipeline.e1(
-        &materials,
-        candidate_id,
-        materials.rollback(),
-        ParameterPreRegistrationPurposeV1::ExactRollback,
-        subject,
-    )?
-    else {
-        return Ok(OriginalParameterEvaluationPreparationResultV1::Pending);
-    };
-    if let Some(bytes) = rollback.0.preparation_terminal_bytes() {
-        return pipeline.terminal_bytes(bytes, trust);
+    let mut rollback_evaluations = Vec::new();
+    for candidate in materials.candidates() {
+        let Some(rollback) = pipeline.e1(
+            &materials,
+            &candidate.candidate_id,
+            materials.rollback_for_candidate(&candidate.candidate_id)?,
+            ParameterPreRegistrationPurposeV1::ExactRollback,
+            subject,
+        )?
+        else {
+            return Ok(OriginalParameterEvaluationPreparationResultV1::Pending);
+        };
+        if let Some(bytes) = rollback.0.preparation_terminal_bytes() {
+            return pipeline.terminal_bytes(bytes, trust);
+        }
+        rollback_evaluations.push(rollback);
     }
     let mut publications = Vec::new();
     let mut publication_configurations = Vec::new();
@@ -224,54 +235,74 @@ pub fn prepare_original_parameter_evaluation_publications_v1(
         publications.push(publication);
         publication_configurations.push(publication_configuration);
     }
-    let chosen = publications
-        .iter()
-        .position(|publication| publication.candidate_id == rollback.0.candidate_id().as_str())
-        .context("exact rollback original predecessor absent")?;
-    let chosen_material = candidates[chosen]
-        .0
-        .material()
-        .context("actual predecessor material absent")?;
-    let configuration = current_registration(
-        &publications[chosen],
-        chosen_material,
-        &publication_configurations[chosen],
-    )?;
-    let actual_predecessor = projection::current(&configuration, chosen_material, subject)?;
-    actual_predecessor
-        .revalidate_current(now_ms()?)
-        .map_err(|e| anyhow::anyhow!("{e}"))?;
-    let head = &publications[chosen].publications[3];
-    let predecessor = ParameterPreRegisteredPredecessorV1 {
-        evaluation: candidates[chosen].1.clone(),
-        registration: CpuProtectedSourceV1 {
-            path: configuration.path.clone(),
-            digest: configuration.digest,
-        },
-        head_manifest: ParameterRoleSourceV3 {
-            path: head.manifest.path.clone(),
-            digest: head.manifest.digest.clone(),
-        },
-        head_admission_digest: head.admission_digest.clone(),
-        head_artifact_id: head.artifact_id.clone(),
-    };
-    let Some((rollback_publication, rollback_publication_configuration)) =
-        pipeline.publish_e1(&rollback, Some(predecessor))?
-    else {
-        return Ok(OriginalParameterEvaluationPreparationResultV1::Pending);
-    };
-    let material = rollback
-        .0
-        .material()
-        .context("actual exact rollback E1 material absent")?;
-    let latest_registration = current_registration(
-        &rollback_publication,
-        material,
-        &rollback_publication_configuration,
-    )?;
-    let latest_current = projection::current(&latest_registration, material, subject)?;
+    let mut rollbacks = Vec::new();
+    let mut latest = None;
+    for rollback in &rollback_evaluations {
+        let chosen = publications
+            .iter()
+            .position(|publication| publication.candidate_id == rollback.0.candidate_id().as_str())
+            .context("exact rollback original predecessor absent")?;
+        let chosen_material = candidates[chosen]
+            .0
+            .material()
+            .context("actual predecessor material absent")?;
+        let configuration = current_registration(
+            &publications[chosen],
+            chosen_material,
+            &publication_configurations[chosen],
+        )?;
+        projection::current(&configuration, chosen_material, subject)?
+            .revalidate_current(now_ms()?)
+            .map_err(|e| anyhow::anyhow!("{e}"))?;
+        let head = &publications[chosen].publications[3];
+        let predecessor = ParameterPreRegisteredPredecessorV1 {
+            evaluation: candidates[chosen].1.clone(),
+            registration: CpuProtectedSourceV1 {
+                path: configuration.path.clone(),
+                digest: configuration.digest,
+            },
+            head_manifest: ParameterRoleSourceV3 {
+                path: head.manifest.path.clone(),
+                digest: head.manifest.digest.clone(),
+            },
+            head_admission_digest: head.admission_digest.clone(),
+            head_artifact_id: head.artifact_id.clone(),
+        };
+        let Some((publication, publication_configuration)) =
+            pipeline.publish_e1(rollback, Some(predecessor))?
+        else {
+            return Ok(OriginalParameterEvaluationPreparationResultV1::Pending);
+        };
+        let material = rollback
+            .0
+            .material()
+            .context("actual exact rollback E1 material absent")?;
+        let registration =
+            current_registration(&publication, material, &publication_configuration)?;
+        latest = Some((
+            projection::current(&registration, material, subject)?,
+            registration,
+        ));
+        rollbacks.push(OriginalParameterRollbackPublicationV2 {
+            candidate_id: rollback.0.candidate_id().clone(),
+            publication,
+            publication_configuration,
+        });
+    }
+    let (latest_current, latest_registration) =
+        latest.context("complete rollback frontier absent")?;
     let verified_candidates: Vec<_> = candidates.into_iter().map(|value| value.0).collect();
-    let materials = materials.install_evaluated_materials(&verified_candidates, &rollback.0)?;
+    let verified_rollbacks: Vec<_> = rollback_evaluations
+        .into_iter()
+        .map(|value| value.0)
+        .collect();
+    let materials =
+        materials.install_evaluated_materials(&verified_candidates, &verified_rollbacks)?;
+    let first = rollbacks
+        .first()
+        .context("complete original rollback frontier absent")?;
+    let rollback_publication = first.publication.clone();
+    let rollback_publication_configuration = first.publication_configuration.clone();
     pipeline.validate_time(trust)?;
     ensure!(
         read_root_review_input(&template_source.path, 64 * 1024)
@@ -307,6 +338,7 @@ pub fn prepare_original_parameter_evaluation_publications_v1(
             evaluations,
             candidates: publications,
             candidate_publication_configurations: publication_configurations,
+            rollbacks,
             rollback: rollback_publication,
             rollback_publication_configuration,
             latest_registration,
