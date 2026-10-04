@@ -168,6 +168,26 @@ def capture_geometry(draw, width, height):
     return point
 
 
+def status_ocr_crop(draw):
+    dpi = draw.get("dpi")
+    if type(dpi) not in (int, float) or not math.isfinite(dpi) or dpi <= 0:
+        raise ValueError("Invalid status OCR scale")
+    x, y, w, h = rectangle(draw["statusRect"], draw["innerSize"])
+    left, top = math.floor(x * dpi), math.floor(y * dpi)
+    right, bottom = math.ceil((x + w) * dpi), math.ceil((y + h) * dpi)
+    return f"{right - left}x{bottom - top}+{left}+{top}"
+
+
+def verify_ocr_labels(status, window):
+    for text, label in (
+        (status, r"\bVerified\s+runtime\b"),
+        (window, r"\bConversation\b"),
+        (window, r"\bAurora\b"),
+    ):
+        if not re.search(label, text, re.I):
+            raise ValueError("Actual native screenshot label is unreadable: " + label)
+
+
 def check_health(text):
     if re.search(
         r"panicked at|ScriptError|shader (?:compil(?:e|ing|ation)|link(?:ing)?) (?:error|failed)|Unknown os op",
@@ -309,6 +329,13 @@ PREVIEW_REQUIRED.add(
     (
         "hepta-native",
         "native_assets::tests::actual_shared_app_resources_are_complete_and_foreign_aliases_fail_closed",
+    )
+)
+
+PREVIEW_REQUIRED.add(
+    (
+        "hepta-native",
+        "native_assets::tests::status_layout_reserves_measured_raster_overhang",
     )
 )
 
@@ -676,12 +703,28 @@ def main():
                 timeout=30,
             ).stdout
             (out / f"session-{sample}.ocr.txt").write_text(ocr)
-            for label in (r"Verified\s+runtime", r"Conversations", r"Aurora"):
-                if not re.search(label, ocr, re.I):
-                    raise ValueError(
-                        "Actual native shared-chat/status screenshot is unreadable: "
-                        + label
-                    )
+            # Preserve the original PNG above. OCR only its actual status
+            # rectangle at a readable scale; no text is redrawn or substituted.
+            status_png = out / f"session-{sample}-status-ocr.png"
+            run(
+                [
+                    "convert",
+                    str(png),
+                    "-crop",
+                    status_ocr_crop(draw),
+                    "+repage",
+                    "-resize",
+                    "300%",
+                    str(status_png),
+                ],
+                env=environment,
+            )
+            status_ocr = run(
+                ["tesseract", str(status_png), "stdout", "-l", "eng", "--psm", "6"],
+                timeout=30,
+            ).stdout
+            (out / f"session-{sample}-status.ocr.txt").write_text(status_ocr)
+            verify_ocr_labels(status_ocr, ocr)
             stage = f"session_{sample}_close"
             cause = "os"
             legacy.close_native_window(window)
@@ -710,6 +753,8 @@ def main():
                     "closePhases": phases,
                     "exitCode": exit_code,
                     "pngSha256": digest(png),
+                    "statusOcrCrop": status_ocr_crop(draw),
+                    "statusOcrPngSha256": digest(status_png),
                     "logSha256": digest(log_path),
                 }
             )

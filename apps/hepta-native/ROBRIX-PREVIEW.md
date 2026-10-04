@@ -87,7 +87,10 @@ are idle. Retry does not reset a deadline or enable an update.
 Geometry, focus and lifecycle changes discard the previous draw witness.
 Clipped or unsupported text retries at the retained 250 ms owner poll cadence;
 it never produces a continuous NextFrame redraw loop. SLUG and separate SSAA
-text passes do not qualify this development witness.
+text passes do not qualify this development witness. The status widget reserves
+an internal four-pixel inset for raster atlas overhang. Its CPU layout snapshot
+replays measured first-glyph bounds at narrow and wide sizes; this is layout
+coverage, not a substitute for the actual native raster and screenshot gate.
 
 The Windows SDK process exit prevents preservation of the post-loop helper
 contract. Windows and macOS Robrix entry points are not enabled by this feature.

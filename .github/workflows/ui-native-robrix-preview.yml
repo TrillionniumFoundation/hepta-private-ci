@@ -148,7 +148,9 @@ jobs:
       - name: Exercise real shared widgets and safe close outside checkout
         run: |
           set -euo pipefail
-          xvfb-run -a -s '-screen 0 1280x900x24' dbus-run-session -- \
+          # The pinned X11 backend starts at (150,60); keep its full 1280x800
+          # window on screen so ImageMagick cannot silently crop the right edge.
+          xvfb-run -a -s '-screen 0 1600x1000x24' dbus-run-session -- \
             python3 apps/hepta-native/tools/linux_robrix_preview.py \
             --source-root "$GITHUB_WORKSPACE" --build-root "$PREVIEW_BUILD" \
             --gateway "$PREVIEW_BUILD/gateway-target/debug/hepta-native-gateway" --out "$PREVIEW_OUT" \

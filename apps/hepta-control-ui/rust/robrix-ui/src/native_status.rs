@@ -2,6 +2,9 @@
 //! A successful subset of glyphs is not a complete readiness observation.
 use makepad_widgets::*;
 
+#[path = "native_status_layout.rs"]
+mod layout;
+
 script_mod! {
     use mod.prelude.widgets.*
     use mod.widgets.*
@@ -45,13 +48,7 @@ impl Widget for NativeStatus {
 
     fn draw_walk(&mut self, cx: &mut Cx2d, _scope: &mut Scope, walk: Walk) -> DrawStep {
         let walk = cx.resolve_walk(walk, ResolveAt::BeforeBegin);
-        cx.begin_turtle(
-            walk,
-            Layout {
-                flow: Flow::right_wrap(),
-                ..Default::default()
-            },
-        );
+        layout::begin(cx, walk);
         let width = cx
             .turtle()
             .max_width(walk)

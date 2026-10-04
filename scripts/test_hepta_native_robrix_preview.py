@@ -66,18 +66,26 @@ class PreviewTests(unittest.TestCase):
         with tempfile.TemporaryDirectory() as directory:
             out = Path(directory)
             commands = []
+
             def run(command, **kwargs):
                 commands.append(command)
                 if command[0] == "import":
                     Path(command[-1]).write_bytes(b"diagnostic fixture pixels")
                 return subprocess.CompletedProcess(command, 0, "456\n", "")
+
             m.capture_failed_startup(out, 0, process, {}, run)
             record = json.loads((out / "session-0-failed-startup.json").read_text())
-            self.assertEqual(record, {
-                "qualified": False, "captured": True,
-                "pngSha256": m.digest(out / "session-0-failed-startup.png"),
-            })
-            self.assertEqual(commands[0], ["xdotool", "search", "--onlyvisible", "--pid", "123"])
+            self.assertEqual(
+                record,
+                {
+                    "qualified": False,
+                    "captured": True,
+                    "pngSha256": m.digest(out / "session-0-failed-startup.png"),
+                },
+            )
+            self.assertEqual(
+                commands[0], ["xdotool", "search", "--onlyvisible", "--pid", "123"]
+            )
             self.assertEqual(commands[1][:3], ["import", "-window", "456"])
             self.assertFalse((out / "preview-receipt.json").exists())
 
@@ -90,9 +98,14 @@ class PreviewTests(unittest.TestCase):
                 run = Mock(return_value=subprocess.CompletedProcess([], 0, windows, ""))
                 m.capture_failed_startup(out, 0, process, {}, run)
                 self.assertEqual(run.call_count, 1)
-                self.assertEqual(json.loads((out / "session-0-failed-startup.json").read_text()), {
-                    "qualified": False, "captured": False, "errorType": "ValueError",
-                })
+                self.assertEqual(
+                    json.loads((out / "session-0-failed-startup.json").read_text()),
+                    {
+                        "qualified": False,
+                        "captured": False,
+                        "errorType": "ValueError",
+                    },
+                )
                 self.assertFalse(list(out.glob("*.png")))
 
     def test_failed_startup_capture_does_not_replace_original_error(self):
@@ -104,9 +117,14 @@ class PreviewTests(unittest.TestCase):
             m.capture_failed_startup(out, 0, process, {}, run)
             text = (out / "session-0-failed-startup.json").read_text()
             self.assertNotIn("private", text)
-            self.assertEqual(json.loads(text), {
-                "qualified": False, "captured": False, "errorType": "RuntimeError",
-            })
+            self.assertEqual(
+                json.loads(text),
+                {
+                    "qualified": False,
+                    "captured": False,
+                    "errorType": "RuntimeError",
+                },
+            )
 
     def test_failed_startup_capture_never_captures_an_exited_process(self):
         process = Mock(pid=123)
@@ -123,6 +141,48 @@ class PreviewTests(unittest.TestCase):
             with patch("sys.stderr") as stderr:
                 m.capture_failed_startup(Path("unused"), 0, process, {}, Mock())
                 self.assertNotIn("private", str(stderr.write.call_args_list))
+
+    def test_rejected_glyph_diagnostics_cannot_replace_complete_draw_witness(self):
+        # Actual first-glyph bounds from the failing Linux renderer: the quad
+        # extends 1.4133 pixels beyond the status turtle's left clip boundary.
+        diagnostic = {
+            "event": "glyph_rejected",
+            "index": 0,
+            "rect": [6.586666584014893, 9.083332061767578, 11.25, 12.916666030883789],
+            "clipped": [8.0, 9.083332061767578, 9.836666584014893, 12.916666030883789],
+            "innerSize": [1280.0, 800.0],
+        }
+        records = [diagnostic, self.records[1]]
+        with self.assertRaises(ValueError):
+            m.ready_observation(records, self.startup)
+
+    def test_status_ocr_crop_uses_only_bound_pixels_and_actual_dpi(self):
+        self.assertEqual(m.status_ocr_crop(self.draw), "600x20+10+750")
+        self.draw["dpi"] = 2
+        self.assertEqual(m.status_ocr_crop(self.draw), "1200x40+20+1500")
+        self.draw["statusRect"] = [10.25, 15.25, 20.5, 10.5]
+        self.assertEqual(m.status_ocr_crop(self.draw), "42x22+20+30")
+        for dpi in [0, -1, True, float("nan"), float("inf")]:
+            self.draw["dpi"] = dpi
+            with self.assertRaises(ValueError):
+                m.status_ocr_crop(self.draw)
+        self.draw["dpi"] = 1
+        self.draw["statusRect"] = [-1, 0, 20, 10]
+        with self.assertRaises(ValueError):
+            m.status_ocr_crop(self.draw)
+
+    def test_status_and_desktop_labels_are_independently_required(self):
+        m.verify_ocr_labels(
+            "Verified runtime - session s1", "Conversation Console Aurora Graphite"
+        )
+        for status, window in [
+            ("", "Verified runtime Conversation Aurora"),
+            ("Verified runtime", "Console Aurora"),
+            ("Verified runtime", "Conversation Console"),
+            ("Unverified runtime", "Conversation Aurora"),
+        ]:
+            with self.assertRaises(ValueError):
+                m.verify_ocr_labels(status, window)
 
     def test_actual_event_parser_rejects_malformed_observation(self):
         self.assertEqual(
