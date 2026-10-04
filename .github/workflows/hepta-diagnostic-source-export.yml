@@ -4,7 +4,17 @@ on:
   # Automatic pull-request and main-branch fan-out is owned by the two
   # aggregate checks. Deep qualifications remain reusable and manually runnable.
   workflow_call:
+    inputs:
+      rust_toolchain_locks:
+        description: Generate source-bound Rust compiler lock candidates only
+        type: boolean
+        default: false
   workflow_dispatch:
+    inputs:
+      rust_toolchain_locks:
+        description: Generate source-bound Rust compiler lock candidates only
+        type: boolean
+        default: false
 
 permissions:
   contents: read
@@ -15,6 +25,7 @@ concurrency:
 
 jobs:
   export-exact-source:
+    if: ${{ !inputs.rust_toolchain_locks }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -48,6 +59,7 @@ jobs:
           retention-days: 1
 
   rust-policy-diagnostics:
+    if: ${{ !inputs.rust_toolchain_locks }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -61,7 +73,9 @@ jobs:
       - uses: ./.github/actions/setup-ci-build
 
       - name: Install Rust toolchain
-        uses: dtolnay/rust-toolchain@ebb3d1676050bfd0971c36c1e215b5751473994d
+        uses: dtolnay/rust-toolchain@7e38f4b43b4db5c8dd498af069a4f6196df1d067 # Explicit toolchain input
+        with:
+          toolchain: "1.99.0"
 
       - name: Install cargo-shear
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
@@ -100,6 +114,7 @@ jobs:
           retention-days: 1
 
   bazel-lock-diagnostics:
+    if: ${{ !inputs.rust_toolchain_locks }}
     runs-on: ubuntu-24.04
     timeout-minutes: 30
     steps:
@@ -143,6 +158,7 @@ jobs:
           retention-days: 1
 
   python-sdk-diagnostics:
+    if: ${{ !inputs.rust_toolchain_locks }}
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -187,6 +203,7 @@ jobs:
           retention-days: 1
 
   python-format-candidate:
+    if: ${{ !inputs.rust_toolchain_locks }}
     runs-on: ubuntu-24.04
     timeout-minutes: 15
     steps:
@@ -231,3 +248,71 @@ jobs:
           include-hidden-files: true
           if-no-files-found: error
           retention-days: 1
+
+  rust-toolchain-locks:
+    if: inputs.rust_toolchain_locks
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    env:
+      NIX_CONFIG: experimental-features = nix-command flakes
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: facebook/install-dotslash@1e4e7b3e07eaca387acb98f1d4720e0bee8dbb6a
+      - uses: bazel-contrib/setup-bazel@c5acdfb288317d0b5c0bbd7a396a3dc868bb0f86
+        with:
+          bazelisk-version: 1.28.1
+      - name: Record exact input source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          mkdir -p "$RUNNER_TEMP/rust-toolchain-locks"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/rust-toolchain-locks/source.txt"
+          cp MODULE.bazel.lock "$RUNNER_TEMP/rust-toolchain-locks/MODULE.bazel.lock.before"
+          cp flake.lock "$RUNNER_TEMP/rust-toolchain-locks/flake.lock.before"
+      - name: Generate Bazel lock with the repository's pinned Bazel
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 .github/scripts/run_bazel_with_buildbuddy.py mod deps --lockfile_mode=update
+          python3 .github/scripts/run_bazel_with_buildbuddy.py mod deps --lockfile_mode=error
+      - name: Install official Nix without a daemon or credential configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          curl --proto '=https' --tlsv1.2 --fail --location --retry 3 \
+            https://releases.nixos.org/nix/nix-2.35.2/install \
+            --output "$RUNNER_TEMP/nix-install"
+          sh "$RUNNER_TEMP/nix-install" --no-daemon --yes --no-channel-add
+          echo "$HOME/.nix-profile/bin" >> "$GITHUB_PATH"
+      - name: Refresh only the Rust overlay input and evaluate all Nix systems
+        shell: bash
+        run: |
+          set -euo pipefail
+          nix flake update rust-overlay
+          for system in x86_64-linux aarch64-linux x86_64-darwin aarch64-darwin; do
+            nix eval --no-write-lock-file --raw ".#packages.${system}.codex-rs.drvPath"
+            nix eval --no-write-lock-file --raw ".#devShells.${system}.default.drvPath"
+          done
+      - name: Verify official Rust archive hashes and bind generated artifacts
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/rust-toolchain-locks"
+          curl --proto '=https' --tlsv1.2 --fail --location --retry 3 \
+            https://static.rust-lang.org/dist/channel-rust-1.99.0.toml \
+            --output "$output/channel-rust-1.99.0.toml"
+          python3 .github/scripts/verify_rust_toolchain_locks.py "$output"
+          cp MODULE.bazel.lock flake.lock "$output/"
+          git diff --binary -- MODULE.bazel.lock flake.lock > "$output/generated-locks.patch"
+          (cd "$output" && sha256sum MODULE.bazel.lock flake.lock MODULE.bazel.lock.before flake.lock.before generated-locks.patch source.txt receipt.json channel-rust-1.99.0.toml > SHA256SUMS)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: rust-toolchain-locks-${{ github.sha }}-${{ github.run_id }}
+          path: ${{ runner.temp }}/rust-toolchain-locks/
+          if-no-files-found: error
+          retention-days: 7

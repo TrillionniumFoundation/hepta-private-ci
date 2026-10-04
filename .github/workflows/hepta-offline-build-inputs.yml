@@ -94,10 +94,10 @@ jobs:
       - name: Resolve the exact locked dependency sources
         working-directory: codex-rs
         env:
-          RUSTUP_TOOLCHAIN: 1.96.0
+          RUSTUP_TOOLCHAIN: 1.99.0
         run: |
           set -euo pipefail
-          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
+          rustup toolchain install 1.99.0 --profile minimal --component rustfmt --component clippy
           mkdir -p "$RUNNER_TEMP/hepta-offline-inputs"
           cargo vendor --locked --versioned-dirs "$RUNNER_TEMP/hepta-offline-inputs/vendor" > "$RUNNER_TEMP/hepta-offline-inputs/offline-config.toml"
           sha256sum Cargo.lock > "$RUNNER_TEMP/hepta-offline-inputs/lock.sha256"
@@ -106,7 +106,7 @@ jobs:
       - name: Diagnose failed resolution in a separate non-qualifying worktree
         if: failure()
         env:
-          RUSTUP_TOOLCHAIN: 1.96.0
+          RUSTUP_TOOLCHAIN: 1.99.0
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
@@ -153,8 +153,8 @@ jobs:
       - name: Package the pinned host compiler and repository test entry points
         run: |
           set -euo pipefail
-          rustup toolchain install 1.96.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy
-          tar -C "$HOME/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu" -czf "$RUNNER_TEMP/hepta-offline-inputs/compiler.tar.gz" .
+          rustup toolchain install 1.99.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy
+          tar -C "$HOME/.rustup/toolchains/1.99.0-x86_64-unknown-linux-gnu" -czf "$RUNNER_TEMP/hepta-offline-inputs/compiler.tar.gz" .
           mkdir -p "$RUNNER_TEMP/hepta-offline-inputs/bin"
           cd "$RUNNER_TEMP/hepta-offline-inputs"
           curl --fail --location --retry 3 --max-time 120 --output just.tar.gz \
