@@ -333,17 +333,10 @@ def codex_rust_crate(
     binaries = DEP_DATA.get(native.package_name())["binaries"]
 
     if binary_required_features != None:
-        if (
-            type(binary_required_features) != "dict" or
-            len(binary_required_features) != len(binaries) or
-            any([binary not in binaries for binary in binary_required_features])
-        ):
+        if type(binary_required_features) != "dict" or len(binary_required_features) != len(binaries) or any([binary not in binaries for binary in binary_required_features]):
             fail("binary_required_features must match all binary names")
         for required in binary_required_features.values():
-            if (
-                type(required) != "list" or
-                any([type(feature) != "string" or not feature for feature in required])
-            ):
+            if type(required) != "list" or any([type(feature) != "string" or not feature for feature in required]):
                 fail("binary_required_features requires lists of nonempty feature names")
 
     lib_srcs = crate_srcs or native.glob(["src/**/*.rs"], exclude = binaries.values(), allow_empty = True)

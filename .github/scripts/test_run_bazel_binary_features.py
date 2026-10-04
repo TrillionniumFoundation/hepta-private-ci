@@ -116,9 +116,7 @@ class BinaryFeatureGraphTests(unittest.TestCase):
             self.assertNotIn(":" + binary, attributes.get("runfile_env", {}))
 
     def test_unmet_required_features_omit_all_binary_references(self):
-        recorder = MacroRecorder(
-            {"ordinary": "src/main.rs", "tool": "src/bin/tool.rs"}
-        )
+        recorder = MacroRecorder({"ordinary": "src/main.rs", "tool": "src/bin/tool.rs"})
         targets = recorder.generate(
             binary_required_features={"ordinary": [], "tool": ["optional"]}
         )
@@ -172,8 +170,9 @@ class BinaryFeatureGraphTests(unittest.TestCase):
             {"tool": [""]},
             {"tool": [1]},
         ):
-            with self.subTest(requirements=requirements), self.assertRaisesRegex(
-                ValueError, "binary_required_features"
+            with (
+                self.subTest(requirements=requirements),
+                self.assertRaisesRegex(ValueError, "binary_required_features"),
             ):
                 MacroRecorder({"tool": "src/main.rs"}).generate(
                     binary_required_features=requirements
