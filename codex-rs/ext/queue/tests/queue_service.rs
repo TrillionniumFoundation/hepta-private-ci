@@ -154,8 +154,23 @@ fn install_registered_queue(
 }
 
 fn python_hook_command(script_path: &Path) -> String {
-    let python = if cfg!(windows) { "python" } else { "python3" };
-    format!("{python} \"{}\"", script_path.display())
+    #[cfg(windows)]
+    {
+        let launcher_path = script_path.with_extension("cmd");
+        let script_name = script_path
+            .file_name()
+            .unwrap_or_else(|| panic!("hook script has no file name: {}", script_path.display()));
+        let launcher = format!(
+            "@echo off\r\npython \"%~dp0{}\"\r\nexit /b %ERRORLEVEL%\r\n",
+            script_name.to_string_lossy()
+        );
+        std::fs::write(&launcher_path, launcher)
+            .unwrap_or_else(|error| panic!("write queue hook launcher: {error}"));
+        return format!("\"{}\"", launcher_path.display());
+    }
+
+    #[cfg(not(windows))]
+    format!("python3 \"{}\"", script_path.display())
 }
 
 fn write_rejecting_prompt_hook(home: &Path) {
