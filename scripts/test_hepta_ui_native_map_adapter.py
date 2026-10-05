@@ -281,6 +281,45 @@ jobs:
             previous,
         )
 
+    def test_development_source_changes_do_not_reuse_frozen_qualification(self):
+        relative = "apps/hepta-native/src/runtime.rs"
+        path = self.root / relative
+        path.write_text(path.read_text() + "\n// ordinary source development\n")
+        self.commit("ordinary source change")
+        with patch.object(adapter.native, "ROOT", self.root):
+            evidence = adapter.native.check_repository(profile="development")
+            self.assertEqual(evidence["schema"], "hepta.ui-native-development-check.v1")
+            self.assertEqual(evidence["status"], "development-structural-pass")
+            self.assertEqual(evidence["historicalQualificationSource"], self.source)
+            self.assertEqual(evidence["repositoryHead"], self.git("rev-parse", "HEAD"))
+            self.assertNotIn("implementationSourceSha", evidence)
+            for options in ({}, {"profile": "qualification"}):
+                with (
+                    self.subTest(options=options),
+                    self.assertRaisesRegex(RuntimeError, "after the frozen source"),
+                ):
+                    adapter.native.check_repository(**options)
+        # The real map adapter continues to enforce the strict default too.
+        self.reject("after the frozen source")
+
+    def test_development_retains_authority_and_structural_checks(self):
+        relative = "apps/hepta-native/CANDIDATE.json"
+        state = copy.deepcopy(self.states[relative])
+        state["nested"] = {"releaseAuthorized": True}
+        self.write(relative, state)
+        with patch.object(adapter.native, "ROOT", self.root):
+            with self.assertRaisesRegex(RuntimeError, "falsely sets releaseAuthorized"):
+                adapter.native.check_repository(profile="development")
+            self.write(relative, self.states[relative])
+            platform = self.root / "apps/hepta-native/src/platform.rs"
+            platform.write_text(
+                platform.read_text().replace("command.env_clear();", "")
+            )
+            with self.assertRaisesRegex(RuntimeError, "cleared helper environment"):
+                adapter.native.check_repository(profile="development")
+            with self.assertRaisesRegex(RuntimeError, "unknown native check profile"):
+                adapter.native.check_repository(profile="developmnt")
+
     def test_every_state_anchor_and_tree_must_match(self):
         for relative in adapter.native.STATE_FILES:
             for key in ("implementationSourceSha", "implementationSourceTree"):

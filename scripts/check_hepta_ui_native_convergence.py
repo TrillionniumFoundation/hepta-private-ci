@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Fail-closed structural qualification for the immutable ui.native candidate."""
+"""Structural development checks and strict immutable ui.native qualification."""
 
 from __future__ import annotations
 
@@ -675,7 +675,15 @@ def check_read_only_workflow_registration(workflows: dict[str, str]) -> None:
         check_job_environment_contexts(workflow)
 
 
-def check_repository() -> dict[str, Any]:
+def check_repository(*, profile: str = "qualification") -> dict[str, Any]:
+    """Keep historical qualification binding out of ordinary source development.
+
+    Both profiles enforce the structural and authority contracts. Only the
+    qualification profile proves that this checkout matches the frozen source.
+    """
+    _require(
+        profile in {"development", "qualification"}, "unknown native check profile"
+    )
     workflows = ROOT / ".github" / "workflows"
     for name in FORBIDDEN_WORKFLOWS:
         _require(
@@ -797,12 +805,13 @@ def check_repository() -> dict[str, Any]:
         _git_value("rev-parse", f"{implementation}^{{tree}}") == implementation_tree,
         "implementation source tree does not match its commit",
     )
-    check_frozen_implementation(implementation)
+    if profile == "qualification":
+        check_frozen_implementation(implementation)
 
     head = _git_value("rev-parse", "HEAD")
     tree = _git_value("rev-parse", "HEAD^{tree}")
     parents = (_git_value("show", "-s", "--format=%P", "HEAD") or "").split()
-    return {
+    evidence = {
         "schema": "hepta.ui-native-source-evidence.v1",
         "status": "structural-pass",
         "implementationSourceSha": implementation,
@@ -822,12 +831,28 @@ def check_repository() -> dict[str, Any]:
         ],
     }
 
+    if profile == "development":
+        # Never let a development report stand in for frozen-source evidence.
+        evidence["schema"] = "hepta.ui-native-development-check.v1"
+        evidence["status"] = "development-structural-pass"
+        evidence["historicalQualificationSource"] = {
+            "commit": evidence.pop("implementationSourceSha"),
+            "tree": evidence.pop("implementationSourceTree"),
+        }
+        evidence["limitations"].append(
+            "development checks do not bind this checkout to the historical qualification source"
+        )
+    return evidence
+
 
 def main() -> int:
     parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--profile", choices=("development", "qualification"), default="qualification"
+    )
     parser.add_argument("--emit", type=Path)
     args = parser.parse_args()
-    evidence = check_repository()
+    evidence = check_repository(profile=args.profile)
     encoded = json.dumps(evidence, indent=2, sort_keys=True) + "\n"
     if args.emit is not None:
         args.emit.write_text(encoded, encoding="utf-8")
