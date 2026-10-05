@@ -58,6 +58,8 @@ pub use durable::ProductionDispatchReceipt;
 pub use durable::ProductionDispatchRequest;
 pub use durable::ProductionDurableWriter;
 pub use durable::ProductionFinalUseOutboxDispatcher;
+pub use durable::ProductionLeaseDisposition;
+pub use durable::ProductionLeaseHeadObservation;
 pub use durable::ProductionOutboxTarget;
 pub use durable::ProductionQueuedReceipt;
 pub use durable::ProductionWriterError;

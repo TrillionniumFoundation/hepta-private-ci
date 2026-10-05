@@ -168,3 +168,57 @@ async fn actual_host_bounds_unavailable_observers_and_rotates_clones() -> Result
     }
     Ok(())
 }
+
+#[tokio::test]
+async fn existing_host_exposes_token_free_lease_observation_without_retention()
+-> Result<(), Box<dyn Error>> {
+    use codex_hepta_cognitive_store::ProductionLeaseDisposition;
+
+    let temp = tempfile::tempdir()?;
+    let root = temp.path().canonicalize()?;
+    let fleet = HeptaFleetRoot::parse(root.join("fleet"))?;
+    let owner = AgentId::parse("00000000-0000-4000-8000-00000000c05a")?;
+    let store = DurableCognitiveStore::open(&fleet.layout().agent(&owner)).await?;
+    let authority = ProductionAuthorityLease::from_verified_parts(
+        owner,
+        Sha256Digest::for_bytes(b"host-observation-grant"),
+        /*authority_epoch*/ 7,
+        /*owner_epoch*/ 11,
+        u64::try_from(i64::MAX)?,
+        ProductionAuthorityToken::from_verified_bytes(b"host-observation-private-fence".to_vec())?,
+    )?;
+    let forbidden_fence = authority.fencing_token_digest()?.as_str().to_string();
+    let verifier = |lease: &ProductionAuthorityLease, expected: &AgentId| {
+        if lease.agent_id == *expected {
+            Ok(())
+        } else {
+            Err("wrong owner".to_string())
+        }
+    };
+    // The existing qualification seam supplies a real SQLite owner for this
+    // read-only test; it does not mint production mutation authority.
+    let host = Arc::new(
+        AgentdProductionWriterHost::open_with_store(
+            store,
+            authority,
+            &verifier,
+            "host-observation",
+            /*lease_generation*/ 1,
+        )
+        .await?,
+    );
+    let before = host.writer().recovery_anchor().await?;
+    let observation = host.inspect_lease_head().await?;
+    assert_eq!(observation.generation, Some(1));
+    assert_eq!(observation.disposition, ProductionLeaseDisposition::Active);
+    assert!(!format!("{observation:?}").contains(&forbidden_fence));
+    assert_eq!(host.writer().recovery_anchor().await?, before);
+    host.writer().release().await?;
+    let terminal = host.inspect_lease_head().await?;
+    assert_eq!(terminal.disposition, ProductionLeaseDisposition::Released);
+    let weak = Arc::downgrade(&host);
+    drop(host);
+    assert!(weak.upgrade().is_none());
+    assert_eq!(terminal.generation, Some(1));
+    Ok(())
+}

@@ -57,6 +57,11 @@ use crate::local_lease_outbox::legacy_dispatch_operation_digest;
 use crate::operation_claims;
 use crate::operation_claims::DurableDispatchClaim;
 
+#[path = "production_owner_status.rs"]
+mod owner_status;
+pub use owner_status::ProductionLeaseDisposition;
+pub use owner_status::ProductionLeaseHeadObservation;
+
 /// Schema version of the externally-authorized H4 writer boundary.
 pub const PRODUCTION_DURABLE_WRITER_SCHEMA_VERSION: u32 = 1;
 /// Stable provenance namespace for production writer receipts.
