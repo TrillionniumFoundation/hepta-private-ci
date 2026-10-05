@@ -196,7 +196,7 @@ jobs:
         with:
           toolchain: "1.96.0"
 
-      - name: Pin installed Cargo binary
+      - name: Pin installed Cargo and rustc binaries
         shell: bash
         run: |
           set -euo pipefail
@@ -206,7 +206,13 @@ jobs:
             echo "Rust 1.96.0 Cargo binary is not installed under ${rustup_home}." >&2
             exit 1
           fi
+          rustc_bin="${cargo_bin%/cargo}/rustc"
+          if [[ ! -x "${rustc_bin}" ]]; then
+            echo "Matching Rust 1.96.0 compiler is missing beside ${cargo_bin}." >&2
+            exit 1
+          fi
           echo "CARGO_1_96=${cargo_bin}" >> "${GITHUB_ENV}"
+          echo "RUSTC_1_96=${rustc_bin}" >> "${GITHUB_ENV}"
 
       - name: Build Bazel V8 release pair
         env:
@@ -321,6 +327,10 @@ jobs:
 
           (
             cd codex-rs
+            # Cargo's absolute path alone does not pin rustup's rustc proxy
+            # inside dependencies with their own rust-toolchain.toml.
+            RUSTUP_TOOLCHAIN=1.96.0 \
+            RUSTC="${RUSTC_1_96}" \
             CARGO_TARGET_DIR="${RUNNER_TEMP}/rusty-v8-cargo-smoke-${TARGET}-${SANDBOX}" \
             RUSTY_V8_ARCHIVE="${GITHUB_WORKSPACE}/${archive}" \
             RUSTY_V8_SRC_BINDING_PATH="${GITHUB_WORKSPACE}/${binding}" \

@@ -2,9 +2,11 @@
 
 import glob
 import importlib.util
+import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 
@@ -218,6 +220,97 @@ class RustSourceIntegrityTests(unittest.TestCase):
             if files:
                 artifacts.append(files)
         self.assertCountEqual(artifacts, [{timing}, {before, after}])
+
+
+class V8SmokeToolchainTests(unittest.TestCase):
+    """Run the workflow shell with recording executables, not a V8 build."""
+
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.root = Path(temporary.name)
+        self.toolchain = self.root / "rustup with spaces/toolchains/1.96.0-fixture/bin"
+        self.toolchain.mkdir(parents=True)
+        self.env = {
+            **os.environ,
+            "RUSTUP_HOME": str(self.root / "rustup with spaces"),
+            "GITHUB_WORKSPACE": str(self.root),
+            "GITHUB_ENV": str(self.root / "environment"),
+            "RUNNER_TEMP": str(self.root / "temporary"),
+            "RUSTUP_TOOLCHAIN": "1.91.0",
+            "RUSTC": "/not/the/selected/compiler",
+        }
+        workflow = WORKFLOW_COMMANDS.load_workflow(
+            (ROOT / ".github/workflows/v8-canary.yml").read_text()
+        )
+        self.steps = workflow["jobs"]["build"]["steps"]
+
+    def executable(self, name, source):
+        path = self.toolchain / name
+        path.write_text(f"#!{sys.executable}\n{source}")
+        path.chmod(0o755)
+        return path
+
+    def execute(self, name):
+        script = next(step["run"] for step in self.steps if step.get("name") == name)
+        return subprocess.run(
+            ["bash", "-c", script],
+            cwd=self.root,
+            env=self.env,
+            capture_output=True,
+            text=True,
+        )
+
+    def test_installed_pair_selection_rejects_missing_compiler(self):
+        self.executable("cargo", "raise SystemExit(0)\n")
+        result = self.execute("Pin installed Cargo and rustc binaries")
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn("compiler is missing", result.stderr)
+
+    def test_smoke_pins_nested_compiler_and_keeps_profile_arguments(self):
+        compiler = self.executable("rustc", "print('fixture-rustc-1.96.0')\n")
+        receipt = self.root / "receipt.json"
+        self.executable(
+            "cargo",
+            "import json, os, pathlib, subprocess, sys\n"
+            "os.chdir('nested-dependency')\n"
+            "assert os.environ['RUSTUP_TOOLCHAIN'] == '1.96.0'\n"
+            f"assert os.environ['RUSTC'] == {str(compiler)!r}\n"
+            "version = subprocess.check_output([os.environ['RUSTC']], text=True).strip()\n"
+            f"pathlib.Path({str(receipt)!r}).write_text(json.dumps([sys.argv[1:], version]))\n",
+        )
+        selected = self.execute("Pin installed Cargo and rustc binaries")
+        self.assertEqual(selected.returncode, 0, selected.stdout + selected.stderr)
+        for line in (self.root / "environment").read_text().splitlines():
+            key, value = line.split("=", 1)
+            self.env[key] = value
+        nested = self.root / "codex-rs/nested-dependency"
+        nested.mkdir(parents=True)
+        (nested / "rust-toolchain.toml").write_text('[toolchain]\nchannel = "1.91.0"\n')
+        machine = subprocess.check_output(["uname", "-m"], text=True).strip()
+        target = {
+            ("darwin", "arm64"): "aarch64-apple-darwin",
+            ("darwin", "x86_64"): "x86_64-apple-darwin",
+            ("linux", "aarch64"): "aarch64-unknown-linux-gnu",
+            ("linux", "x86_64"): "x86_64-unknown-linux-gnu",
+        }[(sys.platform, machine)]
+        staged = self.root / "dist" / target
+        staged.mkdir(parents=True)
+        (staged / "librusty_v8_fixture.a.gz").write_bytes(b"recording fixture")
+        (staged / "src_binding_fixture.rs").write_text("// recording fixture\n")
+        self.env["TARGET"] = target
+        for sandbox in ("false", "true"):
+            with self.subTest(sandbox=sandbox):
+                self.env["SANDBOX"] = sandbox
+                result = self.execute("Smoke test staged artifact with Cargo")
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                arguments = ["test", "-p", "codex-v8-poc"]
+                if sandbox == "true":
+                    arguments += ["--features", "sandbox"]
+                self.assertEqual(
+                    json.loads(receipt.read_text()), [arguments, "fixture-rustc-1.96.0"]
+                )
+                self.assertEqual(self.env["RUSTUP_TOOLCHAIN"], "1.91.0")
 
 
 if __name__ == "__main__":
