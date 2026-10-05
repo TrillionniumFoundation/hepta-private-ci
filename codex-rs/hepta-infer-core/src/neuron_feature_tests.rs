@@ -105,3 +105,65 @@ fn non_success_status_cannot_smuggle_numerical_output() {
     ));
     assert_eq!(receipt.status, NeuronFeatureTerminalStatusV1::Indeterminate);
 }
+
+#[test]
+fn receipt_verifier_rejects_oversized_success_outputs() {
+    let mut request = request();
+    request.expected_output_width = MAX_FEATURES;
+    let mut observed = observation();
+    observed.drive_q24 = vec![0; MAX_FEATURES];
+    observed.prediction_q24 = vec![0; MAX_FEATURES];
+    let receipt = checked(build_neuron_feature_receipt_v1(
+        &request,
+        runtime(),
+        observed,
+    ));
+    checked(verify_neuron_feature_receipt_v1(&request, &receipt));
+
+    let mut oversized_drive = receipt.clone();
+    oversized_drive.drive_q24.push(0);
+    assert_eq!(
+        verify_neuron_feature_receipt_v1(&request, &oversized_drive),
+        Err(NeuronFeatureContractError::OutputLimit)
+    );
+    let mut oversized_prediction = receipt;
+    oversized_prediction.prediction_q24.push(0);
+    assert_eq!(
+        verify_neuron_feature_receipt_v1(&request, &oversized_prediction),
+        Err(NeuronFeatureContractError::OutputLimit)
+    );
+}
+
+#[test]
+fn receipt_verifier_rejects_non_success_outputs_before_digest_checks() {
+    let request = request();
+    for status in [
+        NeuronFeatureTerminalStatusV1::Failed,
+        NeuronFeatureTerminalStatusV1::Cancelled,
+        NeuronFeatureTerminalStatusV1::Indeterminate,
+    ] {
+        let mut observed = observation();
+        observed.status = status;
+        observed.drive_q24.clear();
+        observed.prediction_q24.clear();
+        let receipt = checked(build_neuron_feature_receipt_v1(
+            &request,
+            runtime(),
+            observed,
+        ));
+        checked(verify_neuron_feature_receipt_v1(&request, &receipt));
+
+        let mut oversized_drive = receipt.clone();
+        oversized_drive.drive_q24 = vec![0; MAX_FEATURES + 1];
+        assert_eq!(
+            verify_neuron_feature_receipt_v1(&request, &oversized_drive),
+            Err(NeuronFeatureContractError::NonTerminalOutputPresent)
+        );
+        let mut oversized_prediction = receipt;
+        oversized_prediction.prediction_q24 = vec![0; MAX_FEATURES + 1];
+        assert_eq!(
+            verify_neuron_feature_receipt_v1(&request, &oversized_prediction),
+            Err(NeuronFeatureContractError::NonTerminalOutputPresent)
+        );
+    }
+}
