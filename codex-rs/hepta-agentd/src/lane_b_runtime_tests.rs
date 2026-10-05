@@ -513,3 +513,87 @@ fn revalidated_durable_explicit_abstain_never_enters_runtime_admission() {
     );
     assert_eq!(coordinator.run("run.abstain"), None);
 }
+
+#[test]
+fn bound_pre_effect_abort_is_nonce_verified_and_nonterminal() {
+    let mut coordinator = AgentRunCoordinator::compose_runtime(composition()).expect("compose");
+    coordinator.start_run(100, snapshot()).expect("admit");
+    coordinator
+        .attach_context(200, 1, attachment())
+        .expect("attach");
+
+    let binding = digest('a');
+    let nonce = [42_u8; 32];
+    let nonce_hex = nonce
+        .iter()
+        .map(|byte| format!("{byte:02x}"))
+        .collect::<String>();
+    let commitment = pre_effect_abort_commitment("run.1", &binding, &nonce);
+    let reason = "final-use fence changed";
+    let proof = pre_effect_abort_proof("run.1", &binding, &nonce, reason);
+
+    let dispatched = coordinator
+        .mark_dispatched_bound(300, "run.1", 2, binding.clone(), commitment.clone())
+        .expect("bound dispatch");
+    assert_eq!(dispatched.phase, RunPhase::Dispatched);
+    assert_eq!(
+        dispatched.dispatch_binding_digest.as_deref(),
+        Some(binding.as_str())
+    );
+    assert_eq!(
+        dispatched.pre_effect_abort_commitment_digest.as_deref(),
+        Some(commitment.as_str())
+    );
+
+    assert_eq!(
+        coordinator.abort_before_effect(
+            "run.1",
+            dispatched.revision,
+            &binding,
+            &"00".repeat(32),
+            &proof,
+            reason,
+        ),
+        Err(AgentRunError::Conflict)
+    );
+
+    let aborted = coordinator
+        .abort_before_effect(
+            "run.1",
+            dispatched.revision,
+            &binding,
+            &nonce_hex,
+            &proof,
+            reason,
+        )
+        .expect("abort");
+    assert_eq!(aborted.phase, RunPhase::AbortedBeforeEffect);
+    assert!(!aborted.terminal_observed);
+    assert_eq!(
+        aborted.pre_effect_abort_proof_digest.as_deref(),
+        Some(proof.as_str())
+    );
+    assert_eq!(coordinator.active_run_count(), 0);
+    assert_eq!(coordinator.unresolved_run_count(), 0);
+
+    let repeated = coordinator
+        .abort_before_effect(
+            "run.1",
+            dispatched.revision,
+            &binding,
+            &nonce_hex,
+            &proof,
+            reason,
+        )
+        .expect("idempotent abort");
+    assert!(repeated.idempotent);
+    assert_eq!(
+        coordinator.observe_terminal(
+            "run.1",
+            aborted.revision,
+            RunPhase::Succeeded,
+            /*terminal_observed*/ true,
+        ),
+        Err(AgentRunError::InvalidTransition)
+    );
+}
