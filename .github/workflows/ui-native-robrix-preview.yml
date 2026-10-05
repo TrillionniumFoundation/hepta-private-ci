@@ -1,12 +1,16 @@
 name: Native Robrix Linux developer preview
 on:
   pull_request:
-    branches: [work/ui-rust-scifi-audit-20261002]
+    branches: [work/ui-rust-scifi-audit-20261002, dot/ui-ime-routing-20261005]
     paths:
       - apps/hepta-native/**
       - apps/hepta-control-ui/rust/robrix-ui/**
       - apps/hepta-control-ui/rust/core/**
       - apps/hepta-control-ui/rust/Cargo.toml
+      - apps/hepta-control-ui/rust/Cargo.lock
+      - apps/hepta-control-ui/tools/prepare-fonts.py
+      - apps/hepta-control-ui/tools/run-desktop.py
+      - scripts/test_hepta_native_robrix_build.py
       - codex-rs/**
       - scripts/test_hepta_native_robrix_preview.py
       - scripts/hepta_ci_exec.py
@@ -24,7 +28,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   preview:
-    if: github.event.pull_request.number == 1338
+    if: github.event.pull_request.head.repo.full_name == github.repository
     name: Native Robrix preview / Linux / ${{ matrix.lane }}
     runs-on: ubuntu-24.04
     timeout-minutes: 90
@@ -63,7 +67,7 @@ jobs:
         with:
           base-sha: ${{ env.BASE_SHA }}
           source-sha: ${{ env.SOURCE_SHA }}
-          pr-number: '1338'
+          pr-number: ${{ github.event.pull_request.number }}
           author-name: Native Robrix preview CI
           author-email: native-robrix-preview@invalid
           message: Synthetic native Robrix preview merge

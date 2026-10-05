@@ -129,6 +129,37 @@ class BuildInputsTests(unittest.TestCase):
         self.assertIn("branches: [work/ui-rust-scifi-audit-20261002]", workflow)
         self.assertIn("permissions:\n  contents: read", workflow)
 
+    def test_current_preview_caller_binds_same_repository_head_and_merge(self):
+        workflow = (ROOT / ".github/workflows/ui-native-robrix-preview.yml").read_text()
+        self.assertIn("branches: [work/ui-rust-scifi-audit-20261002, dot/ui-ime-routing-20261005]", workflow)
+        self.assertEqual(
+            [line.strip() for line in workflow.splitlines() if line.startswith("    if: ")],
+            ["if: github.event.pull_request.head.repo.full_name == github.repository"],
+        )
+        self.assertIn("pr-number: ${{ github.event.pull_request.number }}", workflow)
+        self.assertNotIn("1338", workflow)
+        self.assertIn("lane: [source-head, base-merge]", workflow)
+        self.assertIn("SOURCE_SHA: ${{ github.event.pull_request.head.sha }}", workflow)
+        self.assertIn("BASE_SHA: ${{ github.event.pull_request.base.sha }}", workflow)
+        self.assertIn('git checkout --detach "$SOURCE_SHA"', workflow)
+        self.assertIn("base-sha: ${{ env.BASE_SHA }}", workflow)
+        self.assertIn("source-sha: ${{ env.SOURCE_SHA }}", workflow)
+        self.assertIn("runs-on: ubuntu-24.04", workflow)
+        self.assertIn("permissions:\n  contents: read", workflow)
+        self.assertIn("persist-credentials: false", workflow)
+        for forbidden in ("self-hosted", "secrets.", "contents: write", "write-all", "id-token: write"):
+            self.assertNotIn(forbidden, workflow)
+        paths = [line.strip()[2:] for line in workflow.splitlines() if line.startswith("      - ")]
+        for changed in (
+            "apps/hepta-control-ui/rust/Cargo.lock",
+            "apps/hepta-control-ui/rust/robrix-ui/build.rs",
+            "apps/hepta-control-ui/rust/robrix-ui/resources/fonts/MANIFEST.json",
+            "apps/hepta-control-ui/tools/prepare-fonts.py",
+            "apps/hepta-control-ui/tools/run-desktop.py",
+            "scripts/test_hepta_native_robrix_build.py",
+        ):
+            self.assertTrue(any(fnmatch.fnmatchcase(changed, pattern) for pattern in paths), changed)
+
     def test_toml_platform_path_roundtrips_unicode_and_controls(self):
         for value in [
             "/tmp/中文 😀/platform",
