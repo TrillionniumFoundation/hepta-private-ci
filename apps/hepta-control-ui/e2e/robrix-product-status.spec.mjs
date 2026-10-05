@@ -3,6 +3,7 @@ import {test,expect} from '@playwright/test';
 import {readFile,writeFile} from 'node:fs/promises';
 import {robrixSourceIdentity} from '../tools/robrix-source-identity.mjs';
 import {createHash} from 'node:crypto';
+import {readProductStatusPixels} from '../tools/product-status-pixels.mjs';
 import {execFileSync} from 'node:child_process';
 import {readScreenshotText,screenshotConversationTabs,screenshotWordCenter} from '../tools/verify-robrix-pixels.mjs';
 for(const width of [1280,640])test(`actual missing-owner status ${width}`,async({page},testInfo)=>{
@@ -17,6 +18,8 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
  expect(gateway.sourceTree).toBe(execFileSync('git',['rev-parse','HEAD^{tree}'],{encoding:'utf8'}).trim());
  expect(hash(await readFile(binary))).toBe(gateway.binarySha256);
  const binding={sourceSha,sourceTree:gateway.sourceTree,uiSourceIdentity:manifest.sourceIdentity.sha256,uiManifestSha256:hash(manifestBytes),gateway};
+ await writeFile(testInfo.outputPath('binding.json'),JSON.stringify(binding,null,2)+'\n');
+ await writeFile(testInfo.outputPath('ui-build-manifest.json'),manifestBytes);
  const faults=[],responses=[],requests=[],errors=[],faultCases=[],networkFailures=[];const pendingFonts=new Set();
  const font=request=>/\.(?:ttf|otf)(?:[?#]|$)/i.test(request.url());
  page.on('request',request=>{if(font(request))pendingFonts.add(request);});
@@ -44,15 +47,19 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
  expect(legacyReply.status()).toBe(503);
  await settle();
  const screenshot=testInfo.outputPath('owner-not-attached.png');await page.screenshot({path:screenshot,caret:'initial'});
- const text=await readScreenshotText(screenshot,{language:'eng'});
- expect(text).toMatch(/not attached/i);expect(text).toMatch(/not current write authority/i);expect(text).toMatch(/runtime unavailable\s*\(Transport\)/i);
+ const observation=await readProductStatusPixels(screenshot,'notAttached');
+ await writeFile(testInfo.outputPath('owner-not-attached-ocr.json'),JSON.stringify(observation,null,2)+'\n');
+ expect(observation.passed).toBe(true);const text=observation.text;
  expect(requests.map(item=>({method:item.method,path:new URL(item.url).pathname}))).toEqual([
   {method:'GET',path:'/api/hepta/owner-status'},{method:'GET',path:'/api/hepta/runtime'},
  ]);
  const ownerCount=()=>requests.filter(item=>new URL(item.url).pathname==='/api/hepta/owner-status').length;
- async function observedText(name){
+ async function observedText(name,state){
   await settle();const path=testInfo.outputPath(name+'.png');await page.screenshot({path,caret:'initial'});
-  return {path,text:await readScreenshotText(path,{language:'eng'})};
+  if(!state)return {path,text:await readScreenshotText(path,{language:'eng'})};
+  const observation=await readProductStatusPixels(path,state);
+  await writeFile(testInfo.outputPath(name+'-ocr.json'),JSON.stringify(observation,null,2)+'\n');
+  return {path,...observation};
  }
  const pendingReleases=new Set();
  async function holdOwner(name){
@@ -79,9 +86,9 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
  await page.mouse.click(refresh.x,refresh.y);await timeoutHold.ready;
  for(let index=0;index<3;index++)await page.mouse.click(refresh.x,refresh.y);
  await settle();expect(ownerCount()).toBe(beforeTimeout+1);
- await expect.poll(async()=> (await observedText('timed-out')).text,{timeout:15000,intervals:[250]}).toMatch(/TimedOut/i);
+ await expect.poll(async()=> (await observedText('timed-out','timedOut')).passed,{timeout:15000,intervals:[250]}).toBe(true);
  await timeoutHold.finish();
- expect((await observedText('late-after-timeout')).text).toMatch(/TimedOut/i);
+ expect((await observedText('late-after-timeout','timedOut')).passed).toBe(true);
  // Navigating away cancels the pending read; reopening does not start another
  // scan and an old reply cannot populate the new view.
  const navigationHold=await holdOwner('navigation-cancel');const beforeNavigation=ownerCount();
@@ -91,7 +98,7 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
  const chatTabs=await screenshotConversationTabs((await observedText('chat-after-cancel')).path,page.viewportSize(),{recordOcr:true});
  await page.mouse.click(chatTabs.Console.x,chatTabs.Console.y);await settle();
  await navigationHold.finish();expect(ownerCount()).toBe(beforeNavigation+1);
- expect((await observedText('late-after-navigation')).text).toMatch(/No owner observation has been requested/i);
+ expect((await observedText('late-after-navigation','noObservation')).passed).toBe(true);
  // Deterministic browser-lifecycle injection through the pinned SDK listener.
  // This covers routing/cancellation, not a physical OS backgrounding claim.
  const backgroundHold=await holdOwner('synthetic-persisted-pagehide');const beforeBackground=ownerCount();
@@ -99,7 +106,7 @@ for(const width of [1280,640])test(`actual missing-owner status ${width}`,async(
  await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pagehide',{persisted:true})));
  await page.evaluate(()=>window.dispatchEvent(new PageTransitionEvent('pageshow',{persisted:true})));
  await backgroundHold.finish();expect(ownerCount()).toBe(beforeBackground+1);
- expect((await observedText('late-after-background')).text).toMatch(/No owner observation has been requested/i);
+ expect((await observedText('late-after-background','noObservation')).passed).toBe(true);
  }finally{for(const release of pendingReleases)release();await page.unrouteAll({behavior:'ignoreErrors'});}
  // An expected 503 is preserved as a transport observation; unrelated console
  // exceptions, missing assets, Rust panics and cross-origin faults still fail.
