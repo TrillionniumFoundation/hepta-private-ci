@@ -1,3 +1,4 @@
+#[cfg(unix)]
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
@@ -24,6 +25,10 @@ use crate::model::client_message_id;
 use crate::taskflow::TaskFlowError;
 use crate::taskflow::verify_taskflow_store;
 
+#[path = "store_path.rs"]
+mod store_path;
+use store_path::create_private_directory;
+
 const AUTOMATION_DB_FILENAME: &str = "automation_1.sqlite3";
 const MAX_TASK_PAGE: usize = 1_024;
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
@@ -49,7 +54,7 @@ impl AutomationStore {
         root: PathBuf,
         owner_agent_id: AgentId,
     ) -> Result<Self, AutomationError> {
-        create_private_directory(&root)?;
+        let root = create_private_directory(&root)?;
         let path = root.join(AUTOMATION_DB_FILENAME);
         let sqlite_home = AbsolutePathBuf::try_from(root).map_err(|_| AutomationError::Invalid)?;
         let pool = SqliteConfig::from_sqlite_home(sqlite_home)
@@ -1269,19 +1274,6 @@ fn parse_task_id(
 
 fn unavailable(_error: impl std::fmt::Display) -> AutomationError {
     AutomationError::Unavailable
-}
-
-fn create_private_directory(path: &Path) -> Result<(), AutomationError> {
-    fs::create_dir_all(path).map_err(unavailable)?;
-    if path.canonicalize().map_err(unavailable)? != path {
-        return Err(AutomationError::Invalid);
-    }
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        fs::set_permissions(path, fs::Permissions::from_mode(0o700)).map_err(unavailable)?;
-    }
-    Ok(())
 }
 
 fn protect_database_file(_path: &Path) -> Result<(), AutomationError> {

@@ -9,11 +9,30 @@ use crate::AcceptanceError;
 // Windows SDK file flags. Keep the final path component as a reparse point so
 // its own handle attributes can reject it instead of inspecting its target.
 const FILE_FLAG_OPEN_REPARSE_POINT: u32 = 0x0020_0000;
+const FILE_FLAG_BACKUP_SEMANTICS: u32 = 0x0200_0000;
 const FILE_ATTRIBUTE_DIRECTORY: u64 = 0x0010;
 const FILE_ATTRIBUTE_REPARSE_POINT: u64 = 0x0400;
 
 pub(super) fn configure_open(options: &mut OpenOptions) {
     options.custom_flags(FILE_FLAG_OPEN_REPARSE_POINT);
+}
+
+pub(super) fn sync_directory(path: &Path) -> Result<(), AcceptanceError> {
+    // CreateFile requires BACKUP_SEMANTICS for directories; FlushFileBuffers
+    // requires write access on the same handle that we validate here.
+    let directory = OpenOptions::new()
+        .read(true)
+        .write(true)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
+        .open(path)?;
+    let information = winapi_util::file::information(&directory)?;
+    let attributes = information.file_attributes();
+    if attributes & FILE_ATTRIBUTE_DIRECTORY == 0 || attributes & FILE_ATTRIBUTE_REPARSE_POINT != 0
+    {
+        return Err(invalid("durability barrier must be a real directory"));
+    }
+    directory.sync_all()?;
+    Ok(())
 }
 
 #[derive(Debug, Eq, PartialEq)]

@@ -65,6 +65,8 @@ verification, an externally verified production-authority fence, and atomic acti
 generation publication. Ordinary `open` still has no independent current-cut
 proof and must not be reported as equivalent recovery admission.
 
+Root validation accepts ordinary and OS-verbatim Windows namespace prefixes through the same component and reparse-point checks used by ordinary store opening. Candidate-file synchronization and directory barriers use the Windows write-capable handles required by `FlushFileBuffers`; directory barriers reject reparse handles. A barrier failure after a visible pointer rename remains indeterminate and retains the possibly active candidate. These filesystem repairs do not implement Windows descriptor-bound recovery: `codex-state` currently rejects non-Unix recovery binding and retained-descriptor copying, so Windows writable-recovery qualification remains incomplete.
+
 Direct dependencies:
 
 - `cognitive.types`

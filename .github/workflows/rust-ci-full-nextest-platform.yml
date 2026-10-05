@@ -173,6 +173,16 @@ jobs:
         with:
           target: ${{ inputs.target }}
 
+      - name: Limit macOS test archive debug data
+        shell: bash
+        run: |
+          set -euo pipefail
+          # The full test build and compressed archive share the hosted macOS disk.
+          # Debug information is independent of debug assertions and overflow checks.
+          if [[ "${RUNNER_OS}" == "macOS" && "${CODEX_CI_PROFILE}" == "ci-test" ]]; then
+            echo "CARGO_PROFILE_CI_TEST_DEBUG=0" >> "$GITHUB_ENV"
+          fi
+
       - name: Build nextest archive
         shell: bash
         run: |

@@ -68,9 +68,9 @@ impl Session {
         .await;
     }
 
-    /// Emits idle lifecycle while retaining the caller's own terminalization
-    /// completion fence.  External admissions remain fenced; only the exact
-    /// owner may progress to the idle callback and subsequent mailbox wake.
+    /// Emits idle lifecycle while retaining completion tracking for shutdown.
+    /// Durable terminal publication releases admission before these callbacks
+    /// run, so their ordinary start-if-idle requests can make progress.
     pub(crate) async fn emit_thread_idle_lifecycle_if_idle_for_terminalization(
         &self,
         cause: ThreadIdleCause,
@@ -93,7 +93,7 @@ impl Session {
         allow_shutdown: bool,
     ) {
         if (!allow_shutdown && self.shutdown_started())
-            || self.has_pending_task_terminalization_except(terminalization_owner)
+            || self.has_task_terminalization_admission_fence_except(terminalization_owner)
             || self.has_pending_start_transition_except(start_transition_owner)
         {
             return;
@@ -101,7 +101,7 @@ impl Session {
         let cause = {
             let active_turn = self.active_turn.lock().await;
             if (!allow_shutdown && self.shutdown_started())
-                || self.has_pending_task_terminalization_except(terminalization_owner)
+                || self.has_task_terminalization_admission_fence_except(terminalization_owner)
                 || self.has_pending_start_transition_except(start_transition_owner)
                 || active_turn.is_some()
             {
@@ -118,7 +118,7 @@ impl Session {
         }
 
         if (!allow_shutdown && self.shutdown_started())
-            || self.has_pending_task_terminalization_except(terminalization_owner)
+            || self.has_task_terminalization_admission_fence_except(terminalization_owner)
             || self.has_pending_start_transition_except(start_transition_owner)
         {
             return;
