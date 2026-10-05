@@ -31,7 +31,7 @@ The Rust callback, public-key configuration and state location are trusted host
 inputs. Production construction additionally binds an `AuthorityClock` and an
 externally durable `AuthorityFrontierStore<FinalUseFrontier>`. The local store
 is not allowed to manufacture either trust fact. This library is not a sandbox
-for untrusted code in the same process or Unix account. The registered Bao host
+for untrusted code in the same process or operating-system account. The registered Bao host
 binds signed `consumer_id` values to a closed process-local callback registry;
 a signed consumer-name string cannot authenticate a closure supplied by a
 plugin. Protect the configuration, directory ancestors, clock, external
@@ -88,12 +88,18 @@ are rejected before dispatch.
 
 ## Durable schema and storage protocol
 
-The supported store is an owner-controlled local Unix filesystem providing
-process locks, atomic same-directory rename and file/directory fsync. Other
-platforms reject configuration until an equivalent ACL and durability backend
-exists. Distributed/NFS lock behavior is not qualified by the local tests.
+The Unix store uses an owner-controlled local filesystem providing process
+locks, atomic same-directory rename and file/directory fsync. The Windows
+adapter uses the shared private-state primitives for current-user ownership,
+private DACLs, reparse-point and hard-link rejection, retained directory handles
+without delete sharing, and write-through replacement followed by directory
+synchronization. Directory ancestors remain protected trusted host inputs.
+Platforms without either backend reject configuration. Windows source support
+requires native execution of the owner and path-primitive tests before platform
+qualification; cross-compilation alone is insufficient. Distributed/NFS lock
+behavior is not qualified by local tests.
 
-The root directory must belong to the effective user and have no group/world
+On Unix, the root directory must belong to the effective user and have no group/world
 permission bits. Creation requests mode 0700. The directory is opened with
 `DIRECTORY | NOFOLLOW | CLOEXEC`; subsequent operations use that directory
 file descriptor, `openat`, `statat` and `renameat`. Replacing an ancestor path

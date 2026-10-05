@@ -62,6 +62,8 @@ use windows_sys::Win32::Storage::FileSystem::FILE_FLAG_OPEN_REPARSE_POINT;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_EXECUTE;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_READ;
 use windows_sys::Win32::Storage::FileSystem::FILE_GENERIC_WRITE;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_READ;
+use windows_sys::Win32::Storage::FileSystem::FILE_SHARE_WRITE;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_ATTRIBUTES;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_DATA;
 use windows_sys::Win32::Storage::FileSystem::FILE_WRITE_EA;
@@ -83,6 +85,8 @@ const INHERIT_ONLY_ACE: u8 = 0x08;
 pub enum PrivateFileAccess {
     /// Open an existing child for reads.
     Read,
+    /// Open an existing child for reads and writes without recreating missing state.
+    Write,
     /// Open or create a child for retained-owner reads and writes.
     Create,
 }
@@ -101,6 +105,10 @@ pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
         options.access_mode(FILE_GENERIC_READ | FILE_GENERIC_WRITE | WRITE_DAC);
     }
     let directory = options
+        // Child operations resolve from this retained handle. Refuse delete
+        // sharing so its own path cannot be renamed between resolution and use;
+        // Windows also refuses renaming an ancestor with an open descendant.
+        .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
         .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
         .open(root)?;
     if created {
@@ -164,6 +172,9 @@ pub fn open_private_state_child(
     match access {
         PrivateFileAccess::Read => {
             options.read(true);
+        }
+        PrivateFileAccess::Write => {
+            options.read(true).write(true);
         }
         PrivateFileAccess::Create => {
             options.read(true).write(true).create(true);
@@ -545,5 +556,35 @@ mod tests {
         );
         std::fs::hard_link(root.join("state"), root.join("other")).expect("create hard link");
         assert!(open_private_state_child(&directory, "state", PrivateFileAccess::Read).is_err());
+    }
+
+    #[test]
+    fn retained_directory_pins_root_and_ancestor_until_drop() {
+        let temporary = tempfile::tempdir().expect("tempdir");
+        let ancestor = temporary.path().join("ancestor");
+        std::fs::create_dir(&ancestor).expect("ancestor");
+        let root = ancestor.join("registry");
+        let directory = open_private_state_directory(&root).expect("private directory");
+        assert!(std::fs::rename(&root, ancestor.join("moved-registry")).is_err());
+        assert!(std::fs::rename(&ancestor, temporary.path().join("moved-ancestor")).is_err());
+
+        // Pinning the owner directory must not prevent durable child replacement.
+        let mut next =
+            open_private_state_child(&directory, "state.next", PrivateFileAccess::Create)
+                .expect("private child");
+        std::io::Write::write_all(&mut next, b"committed").expect("write state");
+        next.sync_all().expect("sync state");
+        replace_private_state_child(&directory, "state.next", "state").expect("replace state");
+        directory.sync_all().expect("sync directory");
+        assert_eq!(
+            std::fs::read(root.join("state")).expect("read state"),
+            b"committed"
+        );
+        drop(next);
+        drop(directory);
+        let moved_root = ancestor.join("moved-registry");
+        std::fs::rename(&root, &moved_root).expect("root released after drop");
+        std::fs::rename(&ancestor, temporary.path().join("moved-ancestor"))
+            .expect("ancestor released after drop");
     }
 }

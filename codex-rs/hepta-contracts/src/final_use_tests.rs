@@ -1,10 +1,12 @@
 use super::*;
 use crate::VERIFIED_USE_TOKEN_WITNESS_SCHEMA_VERSION;
 use crate::VerifiedUseAuthorityRefV1;
+use crate::private_state_tests::private_tempdir;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use pretty_assertions::assert_eq;
 use std::future::Future;
+#[cfg(unix)]
 use std::os::unix::fs::PermissionsExt;
 use std::sync::Arc;
 use std::sync::Mutex;
@@ -73,8 +75,7 @@ fn fixture()
         expires_at_unix_ms: now + 30_000,
     };
     let signature = issuer.sign(&grant.signing_bytes()?).to_bytes().to_vec();
-    let directory = tempfile::tempdir()?;
-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+    let directory = private_tempdir()?;
     let authority = FinalUseAuthority::open_state_dir(
         directory.path(),
         "security-owner".into(),
@@ -350,8 +351,7 @@ fn injected_clock_is_the_only_final_use_time_source() {
             .to_vec(),
         grant,
     };
-    let directory = tempfile::tempdir().unwrap();
-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let directory = private_tempdir().unwrap();
     let authority = FinalUseAuthority::open_state_dir_with_clock(
         directory.path(),
         "clock-owner".into(),
@@ -398,8 +398,7 @@ fn external_final_use_frontier_detects_restored_claim_snapshot() {
             .to_vec(),
         grant,
     };
-    let directory = tempfile::tempdir().unwrap();
-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let directory = private_tempdir().unwrap();
     let frontier_store = Arc::new(MemoryFinalUseFrontier(Mutex::new(
         FinalUseFrontier::for_initial_head(&head).unwrap(),
     )));
@@ -444,8 +443,7 @@ fn issuer_key_ring_supports_overlap_and_epoch_retirement() {
         revision: 1,
         revoked_grant_ids: BTreeSet::new(),
     };
-    let directory = tempfile::tempdir().unwrap();
-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let directory = private_tempdir().unwrap();
     let frontier_store = Arc::new(MemoryFinalUseFrontier(Mutex::new(
         FinalUseFrontier::for_initial_head(&head).unwrap(),
     )));
@@ -516,8 +514,7 @@ fn issuer_key_ring_supports_overlap_and_epoch_retirement() {
         revision: 1,
         revoked_grant_ids: BTreeSet::new(),
     };
-    let retired_dir = tempfile::tempdir().unwrap();
-    std::fs::set_permissions(retired_dir.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let retired_dir = private_tempdir().unwrap();
     let retired_frontier = Arc::new(MemoryFinalUseFrontier(Mutex::new(
         FinalUseFrontier::for_initial_head(&retired_head).unwrap(),
     )));
@@ -590,8 +587,7 @@ fn external_final_use_frontier_ahead_after_local_failure_fences_reopen() {
             .to_vec(),
         grant,
     };
-    let directory = tempfile::tempdir().unwrap();
-    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+    let directory = private_tempdir().unwrap();
     let frontier_store = Arc::new(MemoryFinalUseFrontier(Mutex::new(
         FinalUseFrontier::for_initial_head(&head).unwrap(),
     )));
@@ -689,12 +685,13 @@ fn revocation_survives_restart_and_missing_state_is_not_reset() {
 #[cfg(unix)]
 #[test]
 fn authority_rejects_shared_state_directory_and_symlinked_files() {
-    let directory = tempfile::tempdir().unwrap();
+    let directory = private_tempdir().unwrap();
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o755)).unwrap();
     assert_eq!(
         reopen(directory.path()).unwrap_err(),
         FinalUseError::UnsafeStateDirectory
     );
+
     std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
     let target = tempfile::NamedTempFile::new().unwrap();
     std::os::unix::fs::symlink(target.path(), directory.path().join("authority.lock")).unwrap();

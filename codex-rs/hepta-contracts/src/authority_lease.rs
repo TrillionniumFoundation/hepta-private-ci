@@ -26,6 +26,18 @@ use std::path::Path;
 use std::sync::Arc;
 use std::sync::Mutex;
 
+#[cfg(windows)]
+#[path = "authority_lease_windows.rs"]
+mod windows;
+#[cfg(windows)]
+use windows::entry_exists;
+#[cfg(windows)]
+use windows::open_private;
+#[cfg(windows)]
+use windows::prepare_directory;
+#[cfg(windows)]
+use windows::replace_state;
+
 const LEASE_SCHEMA_VERSION: u32 = 1;
 const STORE_SCHEMA_VERSION: u32 = 2;
 pub const MAX_AUTHORITY_LEASES: usize = 16_384;
@@ -1150,11 +1162,11 @@ fn replace_state(directory: &File) -> Result<(), AuthorityLeaseError> {
     .map_err(|_| AuthorityLeaseError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn prepare_directory(_root: &Path) -> Result<File, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn open_private(
     _directory: &File,
     _name: &str,
@@ -1162,11 +1174,11 @@ fn open_private(
 ) -> Result<File, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+#[cfg(not(any(unix, windows)))]
 fn replace_state(_directory: &File) -> Result<(), AuthorityLeaseError> {
     Err(AuthorityLeaseError::UnsafeStateDirectory)
 }
@@ -1199,10 +1211,10 @@ impl fmt::Display for AuthorityLeaseError {
 }
 impl std::error::Error for AuthorityLeaseError {}
 
-#[cfg(all(test, unix))]
+#[cfg(all(test, any(unix, windows)))]
 mod tests {
     use super::*;
-    use std::os::unix::fs::PermissionsExt;
+    use crate::private_state_tests::private_tempdir;
     use std::sync::Arc;
     use std::sync::Mutex;
     use std::sync::mpsc;
@@ -1248,8 +1260,7 @@ mod tests {
 
     #[allow(clippy::unwrap_used)]
     fn fixture() -> (AuthorityLeaseRegistry, tempfile::TempDir) {
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let directory = private_tempdir().unwrap();
         let registry = AuthorityLeaseRegistry::open_state_dir_with_clock(
             directory.path(),
             "security-authority".into(),
@@ -1590,8 +1601,7 @@ mod tests {
 
     #[test]
     fn production_frontier_cas_detects_restored_local_snapshot() {
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let directory = private_tempdir().unwrap();
         let frontier_store = Arc::new(MemoryFrontierStore(Mutex::new(
             AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
         )));
@@ -1624,8 +1634,7 @@ mod tests {
 
     #[test]
     fn external_frontier_ahead_after_local_commit_failure_fences_reopen() {
-        let directory = tempfile::tempdir().unwrap();
-        std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700)).unwrap();
+        let directory = private_tempdir().unwrap();
         let frontier_store = Arc::new(MemoryFrontierStore(Mutex::new(
             AuthorityLeaseFrontier::for_empty_epoch(7).unwrap(),
         )));
