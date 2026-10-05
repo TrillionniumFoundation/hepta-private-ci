@@ -62,9 +62,8 @@ fn main() -> Result<(), Box<dyn Error>> {
         let profile = hot.profile.clone();
         let policy = hot.policy.clone();
         let started = Instant::now();
-        let receipt = evaluate_candidates_with_policy(
-            set, profile, /*scalarization*/ None, policy,
-        )?;
+        let receipt =
+            evaluate_candidates_with_policy(set, profile, /*scalarization*/ None, policy)?;
         let elapsed = started.elapsed().as_micros();
         if receipt.base.evaluated_candidates.len() != HOT_CANDIDATES {
             return Err("hot-path candidate coverage drift".into());
