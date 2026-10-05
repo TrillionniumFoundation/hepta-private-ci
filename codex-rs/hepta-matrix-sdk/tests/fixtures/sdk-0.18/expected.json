@@ -1,0 +1,85 @@
+{
+  "device": {
+    "deleted": false,
+    "device_keys": {
+      "algorithms": [
+        "m.olm.v1.curve25519-aes-sha2",
+        "m.megolm.v1.aes-sha2"
+      ],
+      "device_id": "HEPTA018FIXTURE",
+      "keys": {
+        "curve25519:HEPTA018FIXTURE": "H87MVVxUGCKtNNXHnqn+8cQ672tI+nKXks7jLWIAq2I",
+        "ed25519:HEPTA018FIXTURE": "YpbbutM89omwWB8ygsYCNG0k5j4J5gNoZaIYKHc4/LQ"
+      },
+      "signatures": {
+        "@fixture-matrix-018:example.invalid": {
+          "ed25519:HEPTA018FIXTURE": "IoRR0yHEpOE4UePWIQpsoXD1OFqaZKV/6qjeYe0n3+eqf50xF3hnKhJI6pyVNI1jwlhU3zqr8KrKoQ0IgnTGBA"
+        }
+      },
+      "user_id": "@fixture-matrix-018:example.invalid"
+    },
+    "first_time_seen_ts": 1791156810604,
+    "olm_wedging_index": 0,
+    "trust_state": "Verified",
+    "withheld_code_sent": false
+  },
+  "device_id": "HEPTA018FIXTURE",
+  "encrypted_event": {
+    "content": {
+      "algorithm": "m.megolm.v1.aes-sha2",
+      "ciphertext": "AwgAEqAB/FP/WwvHNT5ZrZ5TvZPpNfYLvmD0OrYSvMlpYpxLyrRG+um1VNBU1570HTnIWnX+bDINUA3mgcLyPFjAlaoIzEVGlEajdMTm8xenXv4I5FbgDOXMXOgfA5B95uDNMKqXjxzJW7vHyrYYoRi/0XYMpl5614LpsvWlngEvSep6F3qQn+DSAx+4cVbFqt2amTBQ+8LTOhIl+YdHu4iL6Eq3gAezNkj2QWMshdx4xnviKt0isyq7CbBDD4dYXWjLXfyaK5Nb7qv6toL6N8Pu8e7gdxYpzYPfjcvvtbJft+qx1xiDR1aoTWnzCA",
+      "device_id": "HEPTA018FIXTURE",
+      "sender_key": "H87MVVxUGCKtNNXHnqn+8cQ672tI+nKXks7jLWIAq2I",
+      "session_id": "ibAVmffn4CMiM/hFTGlJms9l0zJqjpu3ERvQjusfvMo"
+    },
+    "event_id": "$fixture-megolm-018:example.invalid",
+    "origin_server_ts": 1700000000000,
+    "sender": "@fixture-matrix-018:example.invalid",
+    "type": "m.room.encrypted"
+  },
+  "exported_room_keys": [
+    {
+      "algorithm": "m.megolm.v1.aes-sha2",
+      "forwarding_curve25519_key_chain": [],
+      "m.shared_history": false,
+      "room_id": "!fixture-room-018:example.invalid",
+      "sender_claimed_keys": {
+        "ed25519": "YpbbutM89omwWB8ygsYCNG0k5j4J5gNoZaIYKHc4/LQ"
+      },
+      "sender_key": "H87MVVxUGCKtNNXHnqn+8cQ672tI+nKXks7jLWIAq2I",
+      "session_id": "ibAVmffn4CMiM/hFTGlJms9l0zJqjpu3ERvQjusfvMo",
+      "session_key": "AQAAAAAcbxB4YwgjEfc4ncXsrO1KgRadSwolmkLRYg/wKcY/TxCHRHSajwfS8UGXSPZrE1qA/ngiRkXY8nxxYRJW3tSb2+qjjdpmBSwRYbmNbfEN8q+nVZ2R6nhJ5Dt6deKa59u81IWHXLmdfcn2u/iac8z7N5FkXKVUSuVIwn1zoWFuHomwFZn35+AjIjP4RUxpSZrPZdMyao6btxEb0I7rH7zK"
+    }
+  ],
+  "generator_rust_toolchain": "1.95.0",
+  "homeserver": "https://matrix-fixture.example.invalid",
+  "identity_keys": {
+    "curve25519": "H87MVVxUGCKtNNXHnqn+8cQ672tI+nKXks7jLWIAq2I",
+    "ed25519": "YpbbutM89omwWB8ygsYCNG0k5j4J5gNoZaIYKHc4/LQ"
+  },
+  "local_trust": "Verified",
+  "old_repo_commit": "0c142a8dbc7066c0b0609c462a7218b5d31834e1",
+  "passphrase": "matrix-sdk-018-fixture-passphrase",
+  "plaintext_event": {
+    "content": {
+      "body": "Old Matrix SDK 0.18 Megolm fixture",
+      "msgtype": "m.text"
+    },
+    "room_id": "!fixture-room-018:example.invalid",
+    "type": "m.room.message"
+  },
+  "room_id": "!fixture-room-018:example.invalid",
+  "room_state": "Joined",
+  "scope": {
+    "cache": "Real old SDK schemas initialized without cache rows",
+    "cross_signing_or_backup_keys": "Not populated",
+    "network": "No HTTP requests or real credentials",
+    "olm_peer_sessions": "Not populated",
+    "owner_database": "Not created or modified by this generator"
+  },
+  "sdk_version": "0.18.0",
+  "sqlite_dependency_note": "Actual old Hepta matrix-sdk-sqlite 0.18.0 vendor with its preexisting rusqlite 0.39 manifest patch",
+  "sync_token": "hepta-matrix-018-fixture-sync-token",
+  "synthetic_test_data": true,
+  "user_id": "@fixture-matrix-018:example.invalid"
+}

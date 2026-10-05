@@ -105,6 +105,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         release: AgentRelease,
         now: Instant,
     ) -> Result<(), SupervisorError> {
+        if slot
+            .signed_intent
+            .as_ref()
+            .is_some_and(|intent| intent.status == crate::SignedIntentStatus::RecoveryRequired)
+        {
+            return Err(SupervisorError::SignedIntentRecoveryRequired(
+                agent_id.clone(),
+            ));
+        }
         let health_deadline = deadline(now, self.config.health_timeout)?;
         if slot.runtime.is_some() {
             return Err(SupervisorError::AlreadyActive(agent_id.clone()));
@@ -343,7 +352,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                 slot.event(generation, SupervisorEventKind::OrphanMissing);
             }
             Adoption::Rejected => {
-                remove_lease(record.layout.run_root(), &lease)?;
+                if slot
+                    .signed_intent
+                    .as_ref()
+                    .is_none_or(|intent| intent.status.terminal())
+                {
+                    remove_lease(record.layout.run_root(), &lease)?;
+                }
                 let generation = if is_live_lifecycle(record.lifecycle.lifecycle) {
                     self.transition_without_runtime(
                         agent_id,

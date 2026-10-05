@@ -1,4 +1,4 @@
-"""Run handoff workflow inputs and inventory commands against real Git history."""
+"""Run handoff and learning workflow candidate inputs against real Git history."""
 
 import json
 import os
@@ -14,6 +14,11 @@ WORKFLOW = ROOT / ".github/workflows/hepta-deployment-handoff.yml"
 
 
 class DeploymentHandoffTests(unittest.TestCase):
+    workflow_path = WORKFLOW
+    candidate_step = "Bind exact source and actual-base synthetic merge"
+    lane_environment = "HANDOFF_LANE"
+    generates_inventory = True
+
     def setUp(self):
         temporary = tempfile.TemporaryDirectory(prefix="hepta-handoff-")
         self.addCleanup(temporary.cleanup)
@@ -21,7 +26,7 @@ class DeploymentHandoffTests(unittest.TestCase):
         self.runner = Path(temporary.name) / "runner"
         self.root.mkdir()
         self.runner.mkdir()
-        self.workflow = WORKFLOW.read_text()
+        self.workflow = self.workflow_path.read_text()
         self.git("init", "-q")
         self.git("config", "user.name", "handoff-test")
         self.git("config", "user.email", "handoff-test@example.invalid")
@@ -96,7 +101,7 @@ class DeploymentHandoffTests(unittest.TestCase):
         environment = {
             **os.environ,
             **environment,
-            "HANDOFF_LANE": lane,
+            self.lane_environment: lane,
             "GITHUB_ENV": str(env_file),
             "RUNNER_TEMP": str(self.runner),
         }
@@ -104,7 +109,7 @@ class DeploymentHandoffTests(unittest.TestCase):
             [
                 "bash",
                 "-c",
-                self.script("Bind exact source and actual-base synthetic merge"),
+                self.script(self.candidate_step),
             ],
             cwd=self.root,
             env=environment,
@@ -113,6 +118,8 @@ class DeploymentHandoffTests(unittest.TestCase):
             timeout=10,
         )
         self.assertEqual(result.returncode, 0, result.stderr)
+        if not self.generates_inventory:
+            return None
         environment.update(
             line.split("=", 1) for line in env_file.read_text().splitlines()
         )
@@ -131,8 +138,10 @@ class DeploymentHandoffTests(unittest.TestCase):
         environment, lanes = self.inputs({"github.sha": self.target})
         self.assertEqual(lanes, ["source-head"])
         record = self.run_lane(environment, lanes[0])
-        self.assertEqual(record["sourceCommit"], self.target)
-        self.assertEqual(record["baseCommit"], self.target)
+        self.assertEqual(self.git("rev-parse", "HEAD"), self.target)
+        if record is not None:
+            self.assertEqual(record["sourceCommit"], self.target)
+            self.assertEqual(record["baseCommit"], self.target)
 
     def test_dispatch_and_reusable_explicit_inputs_override_event(self):
         for event in ("workflow_call", "workflow_dispatch"):
@@ -159,10 +168,13 @@ class DeploymentHandoffTests(unittest.TestCase):
                 for lane in lanes:
                     record = self.run_lane(environment, lane)
                     if lane == "source-head":
-                        self.assertEqual(record["sourceCommit"], self.source)
-                        self.assertEqual(record["baseCommit"], self.initial)
+                        self.assertEqual(self.git("rev-parse", "HEAD"), self.source)
+                        if record is not None:
+                            self.assertEqual(record["sourceCommit"], self.source)
+                            self.assertEqual(record["baseCommit"], self.initial)
                     else:
-                        self.assertEqual(record["baseCommit"], self.target)
+                        if record is not None:
+                            self.assertEqual(record["baseCommit"], self.target)
                         self.assertEqual(
                             self.git("show", "-s", "--format=%P", "HEAD"),
                             f"{self.target} {self.source}",
@@ -184,9 +196,17 @@ class DeploymentHandoffTests(unittest.TestCase):
         self.assertEqual(lanes, ["source-head", "synthetic-merge"])
         for lane in lanes:
             record = self.run_lane(environment, lane)
-            self.assertFalse(record["runtimeAuthority"])
+            if lane == "source-head":
+                self.assertEqual(self.git("rev-parse", "HEAD"), self.source)
+            else:
+                self.assertEqual(
+                    self.git("show", "-s", "--format=%P", "HEAD"),
+                    f"{self.target} {self.source}",
+                )
+            if record is not None:
+                self.assertFalse(record["runtimeAuthority"])
 
-    def test_invalid_or_missing_base_cannot_generate_an_inventory(self):
+    def test_invalid_or_missing_base_cannot_bind_a_candidate(self):
         self.git("checkout", "--detach", self.source)
         for base in ("", "main", "f" * 40):
             with self.subTest(base=base):
@@ -194,16 +214,14 @@ class DeploymentHandoffTests(unittest.TestCase):
                     [
                         "bash",
                         "-c",
-                        self.script(
-                            "Bind exact source and actual-base synthetic merge"
-                        ),
+                        self.script(self.candidate_step),
                     ],
                     cwd=self.root,
                     env={
                         **os.environ,
                         "SOURCE_SHA": self.source,
                         "BASE_SHA": base,
-                        "HANDOFF_LANE": "source-head",
+                        self.lane_environment: "source-head",
                         "GITHUB_ENV": str(self.runner / "env"),
                     },
                     capture_output=True,
@@ -212,6 +230,14 @@ class DeploymentHandoffTests(unittest.TestCase):
                 )
                 self.assertNotEqual(result.returncode, 0)
                 self.assertFalse((self.runner / "env").exists())
+                self.assertEqual(self.git("rev-parse", "HEAD"), self.source)
+
+
+class DurableLearningRoundtripTests(DeploymentHandoffTests):
+    workflow_path = ROOT / ".github/workflows/hepta-durable-learning-roundtrip.yml"
+    candidate_step = "Bind exact Git candidate"
+    lane_environment = "CANDIDATE_LANE"
+    generates_inventory = False
 
 
 if __name__ == "__main__":

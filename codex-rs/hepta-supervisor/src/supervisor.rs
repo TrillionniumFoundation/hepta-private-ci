@@ -16,7 +16,6 @@ use crate::AgentSupervisorSnapshot;
 use crate::ControlReleaseChange;
 use crate::ControlReleaseChangePhase;
 use crate::ControlRuntimePhase;
-use crate::ManagedProcess;
 use crate::MatrixSupervisorSnapshot;
 use crate::ProcessDriver;
 use crate::SupervisorConfig;
@@ -29,7 +28,6 @@ use crate::release_transaction::ReleaseTransactionPhase;
 use crate::release_transaction::read_release_transaction;
 use crate::release_transaction::write_release_transaction;
 use crate::runtime::AgentSlot;
-use crate::runtime::RuntimePhase;
 use crate::runtime::bounded_message;
 use crate::signed_authority::H7H89ProductionGrant;
 use crate::signed_authority::H7H89ProductionGrantVerifier;
@@ -84,6 +82,7 @@ impl<D: ProcessDriver> Supervisor<D> {
                 // reports a per-Agent fault. Otherwise an adoption error could
                 // hide a recovery-required signed intent or restart/release
                 // fence and incorrectly make the daemon appear ready.
+                supervisor.restore_signed_intent(&agent_id, slot, &record)?;
                 supervisor.restore_release_state(&agent_id, slot, &record)?;
                 supervisor.restore_matrix_restart_budget(&agent_id, slot, &record, now)?;
                 let process_fault = supervisor.recover_slot(&agent_id, slot, &record, now).err();
@@ -578,12 +577,11 @@ impl<D: ProcessDriver> Supervisor<D> {
                 )
                 .map_err(|error| SupervisorError::ProductionAuthority(error.to_string()))?;
             supervisor.preflight_upgrade(agent_id, &target)?;
-            if slot.signed_intent.as_ref().is_some_and(|intent| {
-                !matches!(
-                    intent.status,
-                    SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
-                )
-            }) {
+            if slot
+                .signed_intent
+                .as_ref()
+                .is_some_and(|intent| !intent.status.terminal())
+            {
                 return Err(SupervisorError::SignedIntentRecoveryRequired(
                     agent_id.clone(),
                 ));
@@ -682,140 +680,6 @@ impl<D: ProcessDriver> Supervisor<D> {
         Ok(())
     }
 
-    fn recover_signed_intent(
-        &mut self,
-        agent_id: &AgentId,
-        slot: &mut AgentSlot<D::Process>,
-        record: &AgentRecord,
-    ) -> Result<(), SupervisorError> {
-        let intent = read_intent(record.layout.run_root())
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        let Some(intent) = intent else {
-            return Ok(());
-        };
-        if intent.agent_id != agent_id.to_string() {
-            return Err(SupervisorError::Invalid(
-                "signed supervisor intent agent binding mismatch".to_string(),
-            ));
-        }
-        slot.signed_intent = Some(intent.clone());
-        if matches!(
-            intent.status,
-            SignedIntentStatus::Committed | SignedIntentStatus::RolledBack
-        ) {
-            return Ok(());
-        }
-
-        // A terminal release transaction is the durable owner witness that the
-        // exact signed transition crossed its lifecycle boundary. This closes
-        // the crash cut between terminal transaction publication and the
-        // matching signed-intent update. Matching release state is required so
-        // a detached or unrelated terminal journal cannot close the intent.
-        if let Some(transaction) = read_release_transaction(record.layout.run_root())
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?
-        {
-            let kind_matches = matches!(
-                (intent.transition, transaction.kind),
-                (
-                    H7H89ProductionTransition::Upgrade,
-                    ReleaseTransactionKind::Upgrade
-                ) | (
-                    H7H89ProductionTransition::Rollback,
-                    ReleaseTransactionKind::ExplicitRollback
-                )
-            );
-            let terminal_status = if kind_matches
-                && transaction.grant_sha256.as_ref() == Some(&intent.grant_sha256)
-                && transaction.source_release == intent.source_release
-                && transaction.target_release == intent.target_release
-            {
-                let current = record
-                    .release_state
-                    .current
-                    .as_ref()
-                    .map(codex_hepta_fleet::ReleaseId::as_str);
-                let previous = record
-                    .release_state
-                    .previous
-                    .as_ref()
-                    .map(codex_hepta_fleet::ReleaseId::as_str);
-                match (intent.transition, transaction.phase) {
-                    (H7H89ProductionTransition::Upgrade, ReleaseTransactionPhase::Committed)
-                        if current == Some(intent.target_release.as_str())
-                            && previous == Some(intent.source_release.as_str()) =>
-                    {
-                        Some(SignedIntentStatus::Committed)
-                    }
-                    (H7H89ProductionTransition::Upgrade, ReleaseTransactionPhase::RolledBack)
-                        if current == Some(intent.source_release.as_str()) =>
-                    {
-                        Some(SignedIntentStatus::RolledBack)
-                    }
-                    (H7H89ProductionTransition::Rollback, ReleaseTransactionPhase::RolledBack)
-                        if current == Some(intent.target_release.as_str())
-                            && previous == Some(intent.source_release.as_str()) =>
-                    {
-                        Some(SignedIntentStatus::RolledBack)
-                    }
-                    _ => None,
-                }
-            } else {
-                None
-            };
-            if let Some(status) = terminal_status {
-                let terminal = intent
-                    .with_status(status)
-                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                write_intent(record.layout.run_root(), &terminal)
-                    .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-                slot.signed_intent = Some(terminal);
-                return Ok(());
-            }
-        }
-
-        // Keep the daemon reachable for the status/recovery ceremony while
-        // quarantining this Agent generation. Ordinary mutation admission is
-        // blocked until the signed intent reaches a terminal state.
-        let recovery = if intent.status == SignedIntentStatus::RecoveryRequired {
-            intent
-        } else {
-            intent
-                .with_status(SignedIntentStatus::RecoveryRequired)
-                .map_err(|error| SupervisorError::Invalid(error.to_string()))?
-        };
-        write_intent(record.layout.run_root(), &recovery)
-            .map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-        slot.signed_intent = Some(recovery);
-
-        let lifecycle = self.record(agent_id)?.lifecycle;
-        if matches!(
-            lifecycle.lifecycle,
-            AgentLifecycle::Starting | AgentLifecycle::Running | AgentLifecycle::Draining
-        ) {
-            self.transition_without_runtime(
-                agent_id,
-                slot,
-                lifecycle.generation,
-                AgentLifecycle::Failed,
-            )?;
-        }
-        if let Some(runtime) = slot.runtime.as_mut() {
-            // Process adoption may already have fenced and successfully requested
-            // termination. Hydrating the signed-intent fence is not a second kill.
-            let already_requested =
-                runtime.fenced && matches!(runtime.phase, RuntimePhase::Killing);
-            runtime.fenced = true;
-            if !already_requested {
-                runtime
-                    .process
-                    .kill()
-                    .map_err(|error| crate::runtime::driver_error(agent_id, error))?;
-                runtime.phase = RuntimePhase::Killing;
-            }
-        }
-        Ok(())
-    }
-
     pub fn production_recovery_required(
         &self,
         agent_id: &AgentId,
@@ -857,7 +721,15 @@ impl<D: ProcessDriver> Supervisor<D> {
         else {
             return Ok(None);
         };
-        let status = match intent.status {
+        // An exact abort may be waiting for fenced children to exit. Preserve
+        // its durable digest while reporting the live quarantine accurately.
+        let live_status = self
+            .slots
+            .get(agent_id)
+            .and_then(|slot| slot.signed_intent.as_ref())
+            .filter(|live| live.grant_sha256 == intent.grant_sha256)
+            .map_or(intent.status, |live| live.status);
+        let status = match live_status {
             SignedIntentStatus::Prepared | SignedIntentStatus::Queued => {
                 crate::ProductionMutationStatus::Queued
             }

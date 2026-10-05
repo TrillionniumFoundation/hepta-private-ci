@@ -46,6 +46,9 @@ use crate::driver::SpawnedProcess;
 #[path = "matrix_restart_recovery_tests.rs"]
 mod matrix_restart_recovery;
 
+#[path = "signed_abort_recovery_tests.rs"]
+mod signed_abort_recovery;
+
 const FIRST_AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 const SECOND_AGENT_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75dd3";
 
@@ -168,6 +171,7 @@ struct FakeWorld {
     next_id: u64,
     processes: BTreeMap<u64, FakeState>,
     reject_adoption: BTreeSet<AgentId>,
+    reject_matrix_adoption: BTreeSet<AgentId>,
     reject_spawn_programs: BTreeSet<PathBuf>,
 }
 
@@ -422,6 +426,9 @@ impl ProcessDriver for FakeDriver {
         spec: &MatrixAdoptSpec,
     ) -> Result<Adoption<Self::Process>, ProcessDriverError> {
         let world = self.world.lock().expect("fake world lock");
+        if world.reject_matrix_adoption.contains(&spec.agent_id) {
+            return Ok(Adoption::Rejected);
+        }
         let Some((&id, _)) = world.processes.iter().find(|(_, state)| {
             state.agent_id == spec.agent_id
                 && state.role == FakeRole::Matrixd
