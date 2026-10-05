@@ -657,11 +657,13 @@ unsafe fn add_deny_ace(path: &Path, psid: *mut c_void, kind: DenyAceKind) -> Res
         let result = if let Err(err) = acl_api_result(path, "SetEntriesInAclW", code2) {
             Err(err)
         } else {
-            // ReOpenFile retains the object's identity. Request WRITE_DAC only
-            // for repairs; checking an already-complete deny needs no write access.
+            // ReOpenFile retains the object's identity. Keep READ_CONTROL with
+            // WRITE_DAC because SetSecurityInfo can reject a WRITE_DAC-only
+            // file or directory handle. Checking an already-complete deny
+            // still needs no write access.
             let write_handle = ReOpenFile(
                 file.as_raw_handle() as HANDLE,
-                WRITE_DAC,
+                READ_CONTROL | WRITE_DAC,
                 FILE_SHARE_READ | FILE_SHARE_WRITE | FILE_SHARE_DELETE,
                 FILE_FLAG_BACKUP_SEMANTICS,
             );
