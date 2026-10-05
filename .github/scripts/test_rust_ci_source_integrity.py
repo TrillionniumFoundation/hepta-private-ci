@@ -113,6 +113,12 @@ class RustSourceIntegrityTests(unittest.TestCase):
         )
 
     def test_musl_zig_cache_never_mutates_the_qualified_checkout(self):
+        zig_setup = next(
+            step
+            for step in self.workflow["jobs"]["lint_build"]["steps"]
+            if step.get("name") == "Install Zig"
+        )
+        self.assertEqual(zig_setup["with"]["use-cache"], "false")
         for target in ("x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"):
             with self.subTest(target=target):
                 tools = self.root / "fixture-tools"
