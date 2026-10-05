@@ -4,3 +4,12 @@ codex_rust_crate(
     name = "hepta-cognitive-read",
     crate_name = "codex_hepta_cognitive_read",
 )
+
+# Exact source evidence read by cognitive.types traceability qualification.
+exports_files(
+    [
+        "src/authoritative.rs",
+        "src/authoritative_tests.rs",
+    ],
+    visibility = ["//codex-rs/hepta-cognitive-types:__pkg__"],
+)

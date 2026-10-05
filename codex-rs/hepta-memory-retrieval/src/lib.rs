@@ -2,6 +2,7 @@
 
 #![forbid(unsafe_code)]
 
+mod canonical_owner;
 mod decision;
 mod engram;
 mod generation_bound;
@@ -19,6 +20,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::FixedQ32;
 use codex_hepta_types::StableId;
 
+pub use canonical_owner::RetrievalOwnedCanonicalRecallV1;
+pub use canonical_owner::adapt_generation_bound_recall_to_owned_canonical_v1;
 pub use decision::AssignmentErrorV1;
 pub use decision::RetrievalAssignmentCompletenessV1;
 pub use decision::RetrievalAssignmentObservationV1;
@@ -48,6 +51,7 @@ pub use engram::recall_with_engram;
 pub use engram::settle_engram;
 pub use generation_bound::CandidateUnionEntryV1;
 pub use generation_bound::CandidateUnionV1;
+pub use generation_bound::CanonicalGenerationBoundRecallV1;
 pub use generation_bound::CanonicalRecallSelectionBindingV1;
 pub use generation_bound::CanonicalRecallShadowContextV1;
 pub use generation_bound::MAX_GENERATION_BOUND_CANDIDATES;
@@ -63,6 +67,7 @@ pub use generation_bound::RetrievalChannelV1;
 pub use generation_bound::RetrievalChannelWeightV1;
 pub use generation_bound::RetrievalPolicyV1;
 pub use generation_bound::adapt_generation_bound_recall_to_canonical_shadow_v1;
+pub use generation_bound::adapt_generation_bound_recall_to_canonical_v1;
 pub use generation_bound::build_candidate_union;
 pub use generation_bound::recall;
 pub use generator::GeneratedCandidateInputV1;

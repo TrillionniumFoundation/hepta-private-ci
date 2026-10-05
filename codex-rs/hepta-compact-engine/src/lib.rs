@@ -14,6 +14,8 @@ use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+pub use qualified::CanonicalCompactionInputV1;
+pub use qualified::CanonicalQualifiedCompactionCandidateV1;
 pub use qualified::CompactionInputRecordV2;
 pub use qualified::CompactionLossReportV2;
 pub use qualified::CompactionPolicyV2;
@@ -22,7 +24,9 @@ pub use qualified::MAX_PROTECTED_COMPACTION_REFS;
 pub use qualified::MAX_QUALIFIED_COMPACTION_INPUTS;
 pub use qualified::QualifiedCompactionCandidateV2;
 pub use qualified::QualifiedCompactionError;
+pub use qualified::bind_canonical_compaction_input_v1;
 pub use qualified::build_qualified_candidate;
+pub use qualified::build_qualified_candidate_with_canonical_events;
 pub use qualified::prove_compaction;
 
 const MAX_INPUT_RECORDS: usize = 65_536;

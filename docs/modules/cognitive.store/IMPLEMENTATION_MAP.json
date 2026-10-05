@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "1af1ffc253a6c4940d9aac0f7e8518d4bd2484cb",
+    "tree": "4eacde46f53900c1be073d451d22a36b5598ced1"
   },
   "laneId": "LANE-C-MEMORY",
   "module": "cognitive.store",
@@ -301,11 +301,11 @@
     },
     {
       "path": "codex-rs/hepta-agentd/tests/cognitive_store_product_writer.rs",
-      "object": "4ca370fcc2760aa21f9abd3582cbf34532083fe8"
+      "object": "8ae358954f83cfe58f34f53c30a0ca5dbf059228"
     },
     {
       "path": "codex-rs/hepta-cognitive-store",
-      "object": "b321d1157ea310845ed7642e2692ef829ee3e0f8"
+      "object": "eee5e927ccd63d9a7b2492ded596ced0f5de1cef"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/durable.rs",
@@ -313,11 +313,11 @@
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/v2.rs",
-      "object": "e9ec79e983aa4a125536f688e480293c8b7d3131"
+      "object": "7bd65502e5154022387e0852b2fa34ec2b66ec6d"
     },
     {
       "path": "codex-rs/hepta-cognitive-store/src/v2_tests.rs",
-      "object": "d5c8aa47d3c9dfb86b9022ba786ae7b09cdea5c8"
+      "object": "f737b2e43ce87a79446d4646913be590c2b1782f"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store.rs",
@@ -325,7 +325,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_recovery.rs",
-      "object": "b04217a0de797501c61262b20b8c52d2bd1b1822"
+      "object": "cb82d876521e28b02ab7bc5c6768bfc1a50be5fe"
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_recovery_tests.rs",
@@ -333,7 +333,7 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/cognitive_store_tests.rs",
-      "object": "b5462745d335c2115144ddc161d242b3205fdc06"
+      "object": "4373abad74b9ee121d01b4cc606c1d390997fcc1"
     },
     {
       "path": "codex-rs/hepta-memory/src/lane_c_snapshot.rs",
@@ -345,23 +345,61 @@
     },
     {
       "path": "codex-rs/hepta-memory/src/production_writer.rs",
-      "object": "90fe5b7dd422e02587a5a812ea7a8ac5736dda02"
+      "object": "eb8c9aa9fda6228f1a1a33aae8bb22d5904b361e"
     },
     {
       "path": "codex-rs/hepta-memory/src/shared_experience.rs",
-      "object": "e1dc7dda1084a83a3c7110984568c0be224c297f"
+      "object": "66ca59dbb1b03de9f16088babc0c00e89f5a5990"
     },
     {
       "path": "codex-rs/hepta-memory/src/shared_experience_tests.rs",
-      "object": "44519863c30d7ad5067b50a371c932441f302e7a"
+      "object": "8a67b561fc59a45a230603dead908b53b11ae51d"
     },
     {
       "path": "codex-rs/state/src/sqlite_recovery_tests.rs",
-      "object": "1d7a466d80bb7056ccccd60340bcf33d9eac39ef"
+      "object": "c039a1b56cfbb53ff4d90d0fe1fbd6018f4be370"
     },
     {
       "path": "docs/modules/cognitive.store/TECHNICAL.md",
       "object": "df2b85789980b950511d8d7ac3ff56403095fe79"
+    }
+  ],
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "a218f469530f9afc53fbd6758109f79a29912548",
+        "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+      },
+      "observedAtHead": null,
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "1a5587fe7ed8dd1078ba35bc846492369abffd6d",
+        "tree": "46f353b60d6a29df1b9090070c23aa237f962883"
+      },
+      "observedAtHead": null,
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "332b6a1c33167046c12d1ec41eba5b4b9b6abd4b",
+        "tree": "6893f0cf76e42444c7414b6fba740386bcafaebe"
+      },
+      "observedAtHead": null,
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "f1d9fda55967a3c88ce856586ee91463f7333994",
+        "tree": "188800e6bd58cbebb9a086b6e7205e65763364cb"
+      },
+      "observedAtHead": null,
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
     }
   ]
 }

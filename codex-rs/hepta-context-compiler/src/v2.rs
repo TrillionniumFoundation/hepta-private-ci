@@ -97,12 +97,17 @@ pub trait ContextProviderDeliveryVerifierV2 {
     /// Authenticate provider-owned attempt evidence against this exact
     /// pre-dispatch preparation. The provider witness remains provider-owned;
     /// context.compiler does not reinterpret it as a raw preparation digest.
-
     fn verify_delivery(
         &self,
         receipt: &ProviderInvocationReceipt,
         preparation: &ContextDeliveryPreparationV2,
     ) -> Result<ContextProviderDeliveryDecisionV2, String>;
+}
+
+#[derive(Clone, Debug, Eq, PartialEq)]
+pub struct ContextDeliveryObservationInputV2 {
+    pub delivery_id: StableId,
+    pub observed_unix_ms: u64,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -1997,10 +2002,9 @@ pub fn observe_delivery(
     attachment: &ContextAttachmentV2,
     serialization: &SerializedContextV2,
     profile: &ContextModelProfileV2,
-    delivery_id: StableId,
+    observation: ContextDeliveryObservationInputV2,
     provider_receipt: &ProviderInvocationReceipt,
     delivery_verifier: &impl ContextProviderDeliveryVerifierV2,
-    observed_unix_ms: u64,
 ) -> Result<ContextDeliveryReceiptV2, ContextCompilerV2Error> {
     preparation.validate_for(attachment, serialization, profile)?;
     provider_receipt
@@ -2049,7 +2053,7 @@ pub fn observe_delivery(
     ensure_digest("provider_evidence", delivery_evidence.evidence_digest)?;
 
     if delivery_evidence.recorded_at_unix_ms < preparation.admission_snapshot_observed_unix_ms
-        || observed_unix_ms < delivery_evidence.recorded_at_unix_ms
+        || observation.observed_unix_ms < delivery_evidence.recorded_at_unix_ms
     {
         return Err(ContextCompilerV2Error::InvalidObservationTime);
     }
@@ -2083,7 +2087,7 @@ pub fn observe_delivery(
     };
 
     let mut receipt = ContextDeliveryReceiptV2 {
-        delivery_id,
+        delivery_id: observation.delivery_id,
         preparation_digest: preparation.preparation_digest,
         attachment_digest: attachment.attachment_digest,
         serialization_receipt_digest: serialization.receipt.receipt_digest,
@@ -2104,7 +2108,7 @@ pub fn observe_delivery(
         revocation_epoch: preparation.revocation_epoch,
         terminal_observed,
         disposition,
-        observed_unix_ms,
+        observed_unix_ms: observation.observed_unix_ms,
         receipt_digest: Digest32::ZERO,
         authority: AuthorityPosture::DENY_ALL,
     };
