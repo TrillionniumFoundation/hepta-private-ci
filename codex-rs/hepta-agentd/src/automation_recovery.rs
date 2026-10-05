@@ -24,6 +24,7 @@ use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_automation::AutomationOccurrenceTerminalState;
 use codex_hepta_automation::AutomationOccurrenceWork;
+use codex_hepta_automation::AutomationPendingOccurrenceScan;
 use codex_hepta_automation::AutomationQueueReceipt;
 use codex_hepta_automation::AutomationStore;
 use codex_hepta_automation::AutomationUncertainDispatchScan;
@@ -99,26 +100,57 @@ enum TurnLookup {
     Exhausted,
 }
 
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+enum RecoveryClass {
+    UnknownAdmission,
+    PendingOccurrence,
+}
+
+impl RecoveryClass {
+    fn other(self) -> Self {
+        match self {
+            Self::UnknownAdmission => Self::PendingOccurrence,
+            Self::PendingOccurrence => Self::UnknownAdmission,
+        }
+    }
+}
+
+/// Scheduling progress only. Each class retains its own finite physical scan;
+/// no cursor value authorizes admission or alters historical effect evidence.
+pub(crate) struct RecoveryScan {
+    uncertainty: AutomationUncertainDispatchScan,
+    pending: AutomationPendingOccurrenceScan,
+    next: RecoveryClass,
+}
+
+impl RecoveryScan {
+    pub(crate) fn new(store: &AutomationStore) -> Self {
+        Self {
+            uncertainty: store.uncertain_dispatch_scan(),
+            pending: store.pending_occurrence_scan(),
+            next: RecoveryClass::UnknownAdmission,
+        }
+    }
+
+    fn take_order(&mut self) -> [RecoveryClass; 2] {
+        let first = self.next;
+        self.next = first.other();
+        [first, self.next]
+    }
+}
+
 pub(crate) async fn reconcile_one(
     store: &AutomationStore,
     state: &AgentdState,
     identity: &AgentdIdentity,
     now_ms: u64,
-    uncertainty_scan: &mut AutomationUncertainDispatchScan,
+    scan: &mut RecoveryScan,
     cancellation: &CancellationToken,
     clock: &RecoveryClock,
 ) -> Result<RecoveryPass, AgentdError> {
     state.refresh_generation()?;
-    let result = reconcile_one_inner(
-        store,
-        state,
-        identity,
-        now_ms,
-        uncertainty_scan,
-        cancellation,
-        clock,
-    )
-    .await;
+    let result =
+        reconcile_one_inner(store, state, identity, now_ms, scan, cancellation, clock).await;
     // A timeout/cancellation must not hide a changed owning generation.
     state.refresh_generation()?;
     match result {
@@ -135,27 +167,39 @@ async fn reconcile_one_inner(
     state: &AgentdState,
     identity: &AgentdIdentity,
     now_ms: u64,
-    uncertainty_scan: &mut AutomationUncertainDispatchScan,
+    scan: &mut RecoveryScan,
     cancellation: &CancellationToken,
     clock: &RecoveryClock,
 ) -> Result<bool, RecoveryError> {
-    if reconcile_one_unknown_dispatch(
-        store,
-        state,
-        identity,
-        uncertainty_scan,
-        cancellation,
-        clock,
-    )
-    .await?
-    {
-        return Ok(true);
+    // Alternate priority before any await, so timeout/cancellation never pins
+    // the next pass to the same class. At most two bounded metadata pages and
+    // one historical observation are attempted per pass.
+    for class in scan.take_order() {
+        match class {
+            RecoveryClass::UnknownAdmission => {
+                if reconcile_one_unknown_dispatch(
+                    store,
+                    state,
+                    identity,
+                    &mut scan.uncertainty,
+                    cancellation,
+                    clock,
+                )
+                .await?
+                {
+                    return Ok(true);
+                }
+            }
+            RecoveryClass::PendingOccurrence => {
+                if let Some(work) = store.next_pending_occurrence(&mut scan.pending).await? {
+                    reconcile_work(store, state, identity, work, now_ms, cancellation, clock)
+                        .await?;
+                    return Ok(true);
+                }
+            }
+        }
     }
-    let Some(work) = store.pending_occurrence_work(1).await?.into_iter().next() else {
-        return Ok(false);
-    };
-    reconcile_work(store, state, identity, work, now_ms, cancellation, clock).await?;
-    Ok(true)
+    Ok(false)
 }
 
 async fn reconcile_one_unknown_dispatch(
@@ -510,10 +554,8 @@ async fn pending_exact(
     occurrence: u64,
 ) -> Result<AutomationOccurrenceWork, AgentdError> {
     store
-        .pending_occurrence_work(1024)
+        .pending_occurrence_work_for(task_id, occurrence)
         .await?
-        .into_iter()
-        .find(|work| work.occurrence.task_id == task_id && work.occurrence.occurrence == occurrence)
         .ok_or_else(|| {
             AgentdError::Protocol(
                 "automation occurrence is not in the recovery frontier".to_string(),

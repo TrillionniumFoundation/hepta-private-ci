@@ -265,7 +265,7 @@ where
     C: Fn() -> Result<u64, AutomationError> + Send + Sync + 'static,
 {
     let mut retry_budget = DispatchRetryBudget::default();
-    let mut uncertainty_scan = scheduler.store().uncertain_dispatch_scan();
+    let mut recovery_scan = automation_recovery::RecoveryScan::new(scheduler.store());
     loop {
         tokio::select! {
             biased;
@@ -299,7 +299,7 @@ where
             &state,
             state.identity(),
             now_ms,
-            &mut uncertainty_scan,
+            &mut recovery_scan,
             &cancellation,
             &clock,
         )

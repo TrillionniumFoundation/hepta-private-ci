@@ -1,68 +1,84 @@
 //! Real history pagination and expired recovery-lease transport regressions.
 use super::*;
 
-async fn historical_turn_fixture() -> Fixture {
+struct HistoricalTurnSeed {
+    thread_id: &'static str,
+    turn_id: &'static str,
+}
+
+async fn historical_turn_fixture(seeds: &[HistoricalTurnSeed]) -> Fixture {
     let fixture = fixture().await;
     ready(&fixture).await;
-    let draft = AutomationTaskDraft::new(
-        "019153a4-3088-7e03-a56a-9b1964f75ddd",
-        "historical terminal observation",
-        AutomationSchedule::Once,
-        1_000,
-        1,
-    );
-    fixture.store.create_task(&draft).await.expect("task");
-    let lease = fixture
-        .store
-        .claim_due(1_000, 1, 1_000)
-        .await
-        .expect("claim")
-        .expect("due");
-    let occurrence = fixture
-        .store
-        .materialize_occurrence(&lease, 1_000)
-        .await
-        .expect("occurrence");
-    fixture
-        .store
-        .prepare_occurrence_taskflow(&occurrence, &lease, 1_000, 1_000)
-        .await
-        .expect("outbox");
-    fixture
-        .store
-        .record_dispatch_uncertain(&lease, 1_000)
-        .await
-        .expect("unknown before admission");
-    fixture
-        .store
-        .record_occurrence_admitted(
-            &lease,
-            &AutomationQueueReceipt {
-                queued_submission_id: "historical-queue".to_string(),
-                client_user_message_id: lease.client_user_message_id.clone(),
+    for (index, seed) in seeds.iter().enumerate() {
+        let now_ms = 1_000 + u64::try_from(index).expect("bounded fixture index");
+        let draft = AutomationTaskDraft::new(
+            seed.thread_id,
+            "historical terminal observation",
+            AutomationSchedule::Once,
+            now_ms,
+            1,
+        );
+        fixture.store.create_task(&draft).await.expect("task");
+        let lease = fixture
+            .store
+            .claim_due(
+                now_ms, /*generation*/ 1, /*lease_duration_ms*/ 1_000,
+            )
+            .await
+            .expect("claim")
+            .expect("due");
+        let occurrence = fixture
+            .store
+            .materialize_occurrence(&lease, now_ms)
+            .await
+            .expect("occurrence");
+        fixture
+            .store
+            .prepare_occurrence_taskflow(
+                &occurrence,
+                &lease,
+                now_ms,
+                /*lease_duration_ms*/ 1_000,
+            )
+            .await
+            .expect("outbox");
+        fixture
+            .store
+            .record_dispatch_uncertain(&lease, now_ms)
+            .await
+            .expect("unknown before admission");
+        fixture
+            .store
+            .record_occurrence_admitted(
+                &lease,
+                &AutomationQueueReceipt {
+                    queued_submission_id: format!("historical-queue:{index}"),
+                    client_user_message_id: lease.client_user_message_id.clone(),
+                },
+                now_ms + 1,
+            )
+            .await
+            .expect("admitted");
+        let digest = crate::automation_recovery::input_digest(&[
+            codex_app_server_protocol::UserInput::Text {
+                text: draft.prompt.clone(),
+                text_elements: Vec::new(),
             },
-            1_001,
-        )
-        .await
-        .expect("admitted");
-    let digest =
-        crate::automation_recovery::input_digest(&[codex_app_server_protocol::UserInput::Text {
-            text: draft.prompt.clone(),
-            text_elements: Vec::new(),
-        }])
+        ])
         .expect("wire digest");
-    fixture
-        .store
-        .record_occurrence_turn(
-            draft.task_id,
-            lease.occurrence,
-            &lease.client_user_message_id,
-            "historical-turn",
-            &digest,
-            1_002,
-        )
-        .await
-        .expect("known turn");
+        fixture
+            .store
+            .record_occurrence_turn(
+                draft.task_id,
+                lease.occurrence,
+                &lease.client_user_message_id,
+                seed.turn_id,
+                &digest,
+                now_ms + 2,
+            )
+            .await
+            .expect("known turn");
+    }
     for (generation, state) in [
         (2, AgentLifecycle::Draining),
         (3, AgentLifecycle::Stopped),
@@ -128,7 +144,11 @@ async fn exercise_turn_history_transport(scenario: HistoryScenario) {
     use sqlx::Connection;
     use sqlx::Row;
     use std::sync::atomic::AtomicU64;
-    let fixture = historical_turn_fixture().await;
+    let fixture = historical_turn_fixture(&[HistoricalTurnSeed {
+        thread_id: "019153a4-3088-7e03-a56a-9b1964f75ddd",
+        turn_id: "historical-turn",
+    }])
+    .await;
     let work = fixture
         .store
         .pending_occurrence_work(1)
@@ -219,7 +239,7 @@ async fn exercise_turn_history_transport(scenario: HistoryScenario) {
     let state = Arc::clone(&fixture.state);
     let identity = fixture.identity.clone();
     let task = tokio::spawn(async move {
-        let mut scan = store.uncertain_dispatch_scan();
+        let mut scan = crate::automation_recovery::RecoveryScan::new(&store);
         crate::automation_recovery::reconcile_one(
             &store,
             &state,
@@ -359,7 +379,7 @@ async fn exercise_turn_history_transport(scenario: HistoryScenario) {
             }
             history_requests
         });
-        let mut scan = fixture.store.uncertain_dispatch_scan();
+        let mut scan = crate::automation_recovery::RecoveryScan::new(&fixture.store);
         let resumed = timeout(
             Duration::from_secs(18),
             crate::automation_recovery::reconcile_one(
@@ -426,3 +446,6 @@ async fn actual_later_history_page_deadline_persists_only_observed_continuation(
 async fn actual_delayed_terminal_history_uses_refreshed_recovery_claim_time() {
     exercise_turn_history_transport(HistoryScenario::DelayedTerminal).await;
 }
+
+#[path = "automation_frontier_fairness_tests.rs"]
+mod frontier_fairness_tests;

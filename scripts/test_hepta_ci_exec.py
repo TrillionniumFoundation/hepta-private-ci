@@ -42,8 +42,14 @@ class TaskflowObservationWorkflowTests(unittest.TestCase):
                 "test(remote::shutdown_lifetime_tests)",
             ),
             (
+                "taskflow-frontiers",
+                "11",
+                "codex-hepta-automation",
+                "test(pending_occurrence_scan) | test(uncertain_dispatch_scan)",
+            ),
+            (
                 "taskflow-observation",
-                "12",
+                "14",
                 "codex-hepta-agentd",
                 "test(automation_recovery::observation_policy_tests) | test(automation::service_tests::observation_stall_tests)",
             ),

@@ -30,6 +30,12 @@ use crate::taskflow::verify_taskflow_store;
 mod store_path;
 use store_path::create_private_directory;
 
+#[path = "pending_occurrence_scan.rs"]
+mod pending_occurrence_scan;
+#[path = "recovery_scan.rs"]
+mod recovery_scan;
+pub use pending_occurrence_scan::AutomationPendingOccurrenceScan;
+
 #[path = "uncertain_dispatch_scan.rs"]
 mod uncertain_dispatch_scan;
 pub use uncertain_dispatch_scan::AutomationUncertainDispatchScan;

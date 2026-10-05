@@ -77,7 +77,7 @@ class CommandOutputTests(unittest.TestCase):
 
     def test_taskflow_nextest_minimum_rejects_zero_and_partial_selections(self):
         # Parser/command-contract fixtures, not claimed native test execution.
-        for minimum in (3, 12):
+        for minimum in (3, 11, 14):
             for passed in (0, minimum - 1, minimum):
                 with self.subTest(minimum=minimum, passed=passed):
                     self.receipt.unlink(missing_ok=True)
