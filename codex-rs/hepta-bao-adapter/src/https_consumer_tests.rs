@@ -736,3 +736,6 @@ async fn authbus_timeout_keeps_quota_held_as_indeterminate() {
     task.abort();
     let _ = task.await;
 }
+
+#[path = "durable_authbus_tests.rs"]
+mod durable_authbus_tests;
