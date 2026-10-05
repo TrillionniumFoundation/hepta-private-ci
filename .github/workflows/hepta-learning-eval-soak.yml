@@ -1,0 +1,76 @@
+name: Hepta learning.eval sustained selected-host profile
+
+on:
+  push:
+    branches:
+      - fix/learning-eval-full-convergence-20260926
+  pull_request:
+    paths:
+      - codex-rs/hepta-intelligence-eval/**
+      - .github/workflows/hepta-learning-eval-soak.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-learning-eval-soak-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+env:
+  SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+
+jobs:
+  sustained-profile:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+          ref: ${{ env.SOURCE_SHA }}
+
+      - name: Install pinned Rust toolchain
+        uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+
+      - name: Bind exact source
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
+          mkdir -p .hepta-evidence/learning-eval-soak
+          {
+            echo "source_commit=$(git rev-parse HEAD)"
+            echo "source_tree=$(git rev-parse HEAD^{tree})"
+            rustc --version
+            cargo --version
+          } | tee .hepta-evidence/learning-eval-soak/environment.txt
+
+      - name: Sustained restart and lifecycle profile
+        shell: bash
+        env:
+          HEPTA_LEARNING_EVAL_SOAK_ATTEMPTS: "4096"
+        run: |
+          set -o pipefail
+          cargo test --manifest-path codex-rs/Cargo.toml --locked \
+            -p codex-hepta-intelligence-eval \
+            --test long_running_profile \
+            -- --nocapture \
+            2>&1 | tee .hepta-evidence/learning-eval-soak/soak.log
+          status=${PIPESTATUS[0]}
+          printf '%s\n' "${status}" > .hepta-evidence/learning-eval-soak/exit-code.txt
+          sha256sum .hepta-evidence/learning-eval-soak/* \
+            > .hepta-evidence/learning-eval-soak/SHA256SUMS
+          exit "${status}"
+
+      - name: Retain exact-source profile
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: learning-eval-soak-${{ env.SOURCE_SHA }}
+          path: .hepta-evidence/learning-eval-soak
+          if-no-files-found: error
+          retention-days: 30
