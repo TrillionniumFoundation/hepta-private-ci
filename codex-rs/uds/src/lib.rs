@@ -347,13 +347,8 @@ mod platform {
 
     pub(super) fn ensure_current_user_peer(stream: &Stream) -> IoResult<()> {
         let peer_process_id = peer_process_id(stream)?;
-        let peer_process = unsafe {
-            OpenProcess(
-                PROCESS_QUERY_LIMITED_INFORMATION,
-                0,
-                peer_process_id,
-            )
-        };
+        let peer_process =
+            unsafe { OpenProcess(PROCESS_QUERY_LIMITED_INFORMATION, 0, peer_process_id) };
         if peer_process == 0 {
             return Err(io::Error::last_os_error());
         }
@@ -392,8 +387,7 @@ mod platform {
         if result == SOCKET_ERROR {
             return Err(io::Error::from_raw_os_error(unsafe { WSAGetLastError() }));
         }
-        if bytes_returned != std::mem::size_of_val(&peer_process_id) as u32
-            || peer_process_id == 0
+        if bytes_returned != std::mem::size_of_val(&peer_process_id) as u32 || peer_process_id == 0
         {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidData,
