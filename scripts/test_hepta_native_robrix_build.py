@@ -193,6 +193,9 @@ class BuildInputsTests(unittest.TestCase):
             module.NATIVE / "Cargo.lock",
             module.NATIVE / "resources/NATIVE-ASSETS.json",
             module.NATIVE / "tools/generate-native-assets.py",
+            Path("apps/hepta-control-ui/tools/prepare-fonts.py"),
+            module.ROBRIX / "resources/fonts/MANIFEST.json",
+            module.ROBRIX / "resources/fonts/OFL.txt",
         ):
             file = source / path
             file.parent.mkdir(parents=True, exist_ok=True)
