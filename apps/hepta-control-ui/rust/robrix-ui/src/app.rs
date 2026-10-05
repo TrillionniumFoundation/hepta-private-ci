@@ -2,6 +2,7 @@
 // Copyright 2023–2026 Project Robius Developers. MIT; see ../licenses/ROBRIX-MIT.txt.
 // Source: src/app.rs Root/Window composition and AppMain registration lifecycle.
 // Hepta owns the nonvisual state; this UI does not create a runtime or credentials.
+use crate::ime_router::ImeRouter;
 #[cfg(feature = "native-host")]
 use crate::native_host::render::RendererHost as NativeRenderer;
 use hepta_control_core::chat::ChatWorkspace;
@@ -43,6 +44,8 @@ pub struct App {
     ui: WidgetRef,
     #[rust]
     workspace: ChatWorkspace,
+    #[rust]
+    ime_router: ImeRouter,
     #[cfg(feature = "native-host")]
     #[rust]
     native_host: NativeRenderer,
@@ -112,8 +115,8 @@ impl AppMain for App {
             return;
         }
         crate::visual_theme::apply_tree(cx, &self.ui);
-        self.ui
-            .handle_event(cx, event, &mut Scope::with_data(&mut self.workspace));
+        self.ime_router
+            .dispatch(cx, &self.ui, event, &mut self.workspace);
         #[cfg(feature = "native-host")]
         if matches!(event, Event::Draw(_)) {
             self.native_host.after_draw(cx, &self.ui);

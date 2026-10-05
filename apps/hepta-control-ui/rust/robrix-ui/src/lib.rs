@@ -7,6 +7,10 @@ mod native_status;
 #[cfg(feature = "ui")]
 pub mod robrix;
 
+#[cfg(any(feature = "ui", test))]
+mod ime_pointer_gate;
+#[cfg(feature = "ui")]
+mod ime_router;
 pub mod presentation;
 
 #[cfg(feature = "ui")]
