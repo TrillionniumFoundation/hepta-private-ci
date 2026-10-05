@@ -435,7 +435,7 @@ fn is_constraint(error: &sqlx::Error) -> bool {
 }
 
 #[cfg(test)]
-mod tests {
+pub(crate) mod tests {
     use codex_hepta_contracts::AgentId;
     use codex_hepta_contracts::Sha256Digest;
     use codex_hepta_fleet::AgentManifest;
@@ -471,7 +471,7 @@ mod tests {
         (temp, layout)
     }
 
-    async fn prepared_store() -> (
+    pub(crate) async fn prepared_store() -> (
         tempfile::TempDir,
         codex_hepta_paths::HeptaAgentLayout,
         AutomationStore,
