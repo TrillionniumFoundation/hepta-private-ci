@@ -176,6 +176,19 @@ Rollback and automatic rollback are fresh admissions. Immediately before process
 
 Ambiguous signed transitions become `recovery_required`. Supervisord remains reachable for read-only transaction/status queries and the signed recovery ceremony, but reports not-ready and rejects ordinary mutation of that Agent except emergency kill. Recovery may become `committed` or `rolled_back` only when an independently signed decision binds the grant, intent digest, transaction digest, observed immutable release bytes, current lifecycle generation and current daemon authority epoch; the current Fleet admission frontier is revalidated once more before terminalization.
 
+Native Agentd health, Matrixd health and Agentd drain exchanges use one
+monotonic 200 ms transport deadline across connection, authenticated request
+transmission and bounded response framing. Nonblocking Unix socket creation
+prevents a saturated accept queue from blocking lifecycle observation. A full
+Linux accept queue returns unavailable; neither that result nor a partial frame
+acknowledges readiness or drain. Kernel peer PID/effective-UID verification still
+runs before request bytes, and the existing envelope, generation and frame-size
+checks remain mandatory. Interrupted or partial I/O does not renew the deadline.
+The owning real-socket regressions cover queue saturation, trickled input, blocked
+writes, zero-budget non-dispatch and successful fragmented framing. These checks
+do not qualify installed-product recovery, large-release performance, or later
+numeric-PID signal authority.
+
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
 ## 9. Security, privacy and threat controls
