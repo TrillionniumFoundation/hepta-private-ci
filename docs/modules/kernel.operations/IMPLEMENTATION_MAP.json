@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "d845831f2c753b4a3bf3ada5bbd0a09eb8fbe054",
+    "tree": "966e18278aff2193bf18210b20971d6ea5738153"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "laneId": "LANE-A-FOUNDATION",
@@ -307,7 +307,7 @@
       },
       {
         "path": "codex-rs/hepta-agentd/src/state.rs",
-        "blobSha": "0a17007f64bbbded6b8acfe9c1a79e7023b0054f"
+        "blobSha": "8c3038d7cb0780eba3f703164e92deefe63cdeb4"
       },
       {
         "path": "codex-rs/hepta-agentd/src/runtime_tests.rs",
@@ -320,8 +320,8 @@
     ]
   },
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "d845831f2c753b4a3bf3ada5bbd0a09eb8fbe054",
+    "tree": "966e18278aff2193bf18210b20971d6ea5738153"
   },
   "observedSourcePaths": [
     "codex-rs/Cargo.lock",
@@ -338,7 +338,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "2b8596e4410642981a52fc857c5eafa9ae692108"
+      "object": "a99333108ec29efb928e0e86c6ac22b721d44b05"
     },
     {
       "path": "codex-rs/hepta-agentd/examples/h4_persistent_writer.rs",
@@ -424,5 +424,18 @@
       "path": "docs/modules/kernel.operations/TECHNICAL.md",
       "object": "744afc7479736a81e075a6bce83cb0323f1e8f45"
     }
-  ]
+  ],
+  "navigationRebindProvenance": {
+    "previousSourceBase": {
+      "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+      "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    },
+    "previousObservedAtHead": {
+      "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+      "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    },
+    "reason": "Reviewed current-source navigation after learning.operator audit; previous anchors may be outside current main ancestry. Original provenance is retained without renewing historical execution evidence.",
+    "historicalExecutionRevalidated": false,
+    "authorityGranted": false
+  }
 }

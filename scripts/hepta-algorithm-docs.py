@@ -14,11 +14,19 @@ from pathlib import Path
 from typing import Any
 
 try:
-    from scripts.hepta_metadata import AUTHORITY_KEYS, has_schema_version
+    from scripts.hepta_metadata import (
+        AUTHORITY_KEYS,
+        has_schema_version,
+        validate_protocol_field_requirements,
+    )
 except ModuleNotFoundError as error:
     if error.name != "scripts":
         raise
-    from hepta_metadata import AUTHORITY_KEYS, has_schema_version
+    from hepta_metadata import (
+        AUTHORITY_KEYS,
+        has_schema_version,
+        validate_protocol_field_requirements,
+    )
 
 try:
     from scripts.hepta_module_catalog import has_unique_module_ids
@@ -879,6 +887,7 @@ def verify() -> int:
     for key in (
         "allCriticalModulesCovered",
         "allRequiredProtocolsRegistered",
+        "declaredProtocolFieldSemanticsRequired",
         "allRequiredDataDomainsOwned",
         "globalCanonicalPathClosureRequired",
         "globalVerifierMustInvokeAlgorithmVerifier",
@@ -938,6 +947,12 @@ def verify() -> int:
         need(row["maximumEncodedBytes"] > 0 and row["fields"], protocol_id + " bounds")
         names = [item["name"] for item in row["fields"]]
         need(len(names) == len(set(names)), protocol_id + " duplicate field")
+    try:
+        validate_protocol_field_requirements(
+            registry.get("protocolFieldRequirements"), required_protocols, protocol_rows
+        )
+    except ValueError as error:
+        die(str(error))
 
     canonical = set(document_system["canonicalPaths"])
     required_paths = {

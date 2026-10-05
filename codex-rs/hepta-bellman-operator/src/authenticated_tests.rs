@@ -141,18 +141,26 @@ fn regularity() -> OperatorRegularityAssessmentV1 {
         holder_residual_q32: FixedQ32::from_raw(10),
         action_lipschitz_residual_q32: FixedQ32::from_raw(10),
         ood_false_acceptance_q32: FixedQ32::from_raw(10),
-        error_components: vec![
-            OperatorErrorComponentV1 {
-                component_id: id("model"),
-                normalized_error: FixedQ32::from_raw(10),
-                evidence_digest: digest("model-error"),
+        error_components: [
+            "model",
+            "sensor",
+            "reconstruction",
+            "network",
+            "optimization",
+            "statistical",
+            "rollout",
+        ]
+        .into_iter()
+        .map(|name| OperatorErrorComponentV1 {
+            component_id: id(name),
+            normalized_error: if matches!(name, "model" | "sensor") {
+                FixedQ32::from_raw(10)
+            } else {
+                FixedQ32::ZERO
             },
-            OperatorErrorComponentV1 {
-                component_id: id("sensor"),
-                normalized_error: FixedQ32::from_raw(10),
-                evidence_digest: digest("sensor-error"),
-            },
-        ],
+            evidence_digest: digest(&format!("{name}-error")),
+        })
+        .collect(),
         dominant_component_approved: false,
         evaluator_id: id("evaluator"),
         evaluator_credential_digest: digest("evaluator"),
@@ -218,4 +226,87 @@ fn op_02_signed_regularity_binds_evaluator_identity_and_exact_assessment() {
         ),
         Err(AuthenticatedOperatorError::IdentityBinding)
     );
+}
+
+#[test]
+fn op_02_signed_admission_rejects_payload_scope_signature_and_expiry_drift() {
+    let verifier = verifier("evaluator-controller");
+    let mut certificate = applicability();
+    let payload = validate_applicability_certificate(&certificate, 50).expect("structural");
+    let signed = evidence(&verifier, payload.as_array());
+
+    certificate.domain_digest = digest("different-domain");
+    assert_eq!(
+        validate_applicability_with_signed_evidence_v2(&certificate, &signed, &verifier, 50),
+        Err(AuthenticatedOperatorError::Evidence(
+            SignedEvidenceError::PayloadMismatch
+        ))
+    );
+
+    let certificate = applicability();
+    let mut wrong_scope = signed.clone();
+    wrong_scope.evaluator.scope_digest = digest("foreign-scope");
+    assert_eq!(
+        validate_applicability_with_signed_evidence_v2(&certificate, &wrong_scope, &verifier, 50),
+        Err(AuthenticatedOperatorError::Evidence(
+            SignedEvidenceError::ContextMismatch
+        ))
+    );
+
+    let mut invalid_signature = signed;
+    invalid_signature.evaluator.signature[0] ^= 1;
+    assert_eq!(
+        validate_applicability_with_signed_evidence_v2(
+            &certificate,
+            &invalid_signature,
+            &verifier,
+            50,
+        ),
+        Err(AuthenticatedOperatorError::Evidence(
+            SignedEvidenceError::InvalidSignature
+        ))
+    );
+
+    let assessment = regularity();
+    let admission = admit_operator_regularity(assessment.clone()).expect("structural");
+    let signed = evidence(&verifier, admission.assessment_digest.as_array());
+    assert_eq!(
+        admit_operator_regularity_with_signed_evidence_v2(assessment, &signed, &verifier, 91),
+        Err(AuthenticatedOperatorError::Evidence(
+            SignedEvidenceError::ValidityWindow
+        ))
+    );
+}
+
+#[test]
+fn op_02_signed_regularity_requires_all_seven_evidenced_budget_components() {
+    let verifier = verifier("evaluator-controller");
+    let mut missing = regularity();
+    missing
+        .error_components
+        .retain(|component| component.component_id.as_str() != "rollout");
+    let partial = admit_operator_regularity(missing.clone()).expect("structural compatibility");
+    let signed = evidence(&verifier, partial.assessment_digest.as_array());
+    assert_eq!(
+        admit_operator_regularity_with_signed_evidence_v2(missing, &signed, &verifier, 50),
+        Err(AuthenticatedOperatorError::IncompleteErrorBudget)
+    );
+
+    let mut unknown = regularity();
+    unknown.error_components[6].component_id = id("unregistered-term");
+    let renamed = admit_operator_regularity(unknown.clone()).expect("structural compatibility");
+    let signed = evidence(&verifier, renamed.assessment_digest.as_array());
+    assert_eq!(
+        admit_operator_regularity_with_signed_evidence_v2(unknown, &signed, &verifier, 50),
+        Err(AuthenticatedOperatorError::IncompleteErrorBudget)
+    );
+
+    let mut unevidenced = regularity();
+    unevidenced.error_components[6].evidence_digest = Digest32::ZERO;
+    assert!(matches!(
+        admit_operator_regularity_with_signed_evidence_v2(unevidenced, &signed, &verifier, 50),
+        Err(AuthenticatedOperatorError::Operator(
+            OperatorClosureError::EmptyDigest("error component evidence")
+        ))
+    ));
 }

@@ -60,6 +60,14 @@ struct Fixture {
 }
 
 fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
+    fixture_with_manifest_producer(items, scores, id("fixture-trainer")).unwrap()
+}
+
+fn fixture_with_manifest_producer(
+    items: &[CognitiveContextItem],
+    scores: &[i64],
+    manifest_producer: StableId,
+) -> Result<Fixture, String> {
     let directory = tempfile::tempdir().unwrap();
     let sensor = cognitive_sensor_id("lemon").unwrap();
     let actions: Vec<_> = items
@@ -114,7 +122,7 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
         content_digest: model_pin.payload_digest,
         objective_digest: model_pin.objective_digest,
         support_digest: model_pin.dataset_digest,
-        producer_id: id("fixture-trainer"),
+        producer_id: manifest_producer,
         compatibility_digest: hash("ranker-consumer-v1"),
         encoded_size_bytes: bytes.len() as u64,
     };
@@ -145,27 +153,67 @@ fn fixture(items: &[CognitiveContextItem], scores: &[i64]) -> Fixture {
         registry_receipt,
         Digest32::ZERO,
     )))));
-    let ranker = Arc::new(
-        PinnedCognitiveRanker::load(
-            owner(),
-            1,
-            File::open(snapshot).unwrap(),
-            File::open(payload).unwrap(),
-            PinnedCandidateSpec {
-                registry_receipt,
-                manifest,
-            },
-            model_pin,
-            view.clone(),
-        )
-        .unwrap(),
-    );
-    Fixture {
+    let ranker = Arc::new(PinnedCognitiveRanker::load(
+        owner(),
+        1,
+        File::open(snapshot).unwrap(),
+        File::open(payload).unwrap(),
+        PinnedCandidateSpec {
+            registry_receipt,
+            manifest,
+        },
+        model_pin,
+        view.clone(),
+    )?);
+    Ok(Fixture {
         directory,
         registry,
         view,
         ranker,
+    })
+}
+
+#[test]
+fn cognitive_action_identity_preserves_persisted_byte_encoding() {
+    assert_eq!(
+        cognitive_action_id(&item("alpha")).unwrap(),
+        id("memory-73a8cf6a8656096ba80dde02abb9187d095901c12850443a9fab22986687224b")
+    );
+}
+
+#[test]
+fn empty_ranking_abstains_without_skipping_current_registry_validation() {
+    let fixture = fixture(&[item("one"), item("two")], &[0, 10]);
+    let mut empty = Vec::new();
+    for query in ["lemon", "unseen"] {
+        assert_eq!(
+            fixture.ranker.rank(&owner(), 1, query, &mut empty).unwrap(),
+            CognitiveRankObservation {
+                policy_digest: fixture.ranker.policy_digest,
+                propensity: ProbabilityQ32::ONE,
+                applied: false,
+            }
+        );
     }
+    *fixture.view.0.lock().unwrap() = None;
+    assert!(
+        fixture
+            .ranker
+            .rank(&owner(), 1, "lemon", &mut empty)
+            .is_err()
+    );
+}
+
+#[test]
+fn pinned_payload_requires_exact_registry_producer_identity() {
+    let items = vec![item("one"), item("two")];
+    let error = fixture_with_manifest_producer(&items, &[0, 10], id("different-trainer"))
+        .err()
+        .expect("mismatched producer must reject");
+    assert_eq!(
+        error,
+        "model producer differs from selected registry artifact"
+    );
 }
 
 #[test]
@@ -372,6 +420,73 @@ async fn sqlite_read_consumer_uses_fitted_order_before_limit_and_rechecks_deleti
             .unwrap();
     assert_eq!(ranked.items, vec![baseline.items[1].clone()]);
     assert!(ranked.plan.as_ref().unwrap().read_allowed);
+    let issuer = crate::cognitive_context_issuer::ContextPlanIssuer::default();
+    let planned = crate::cognitive_context::read_with_retrieval_context_and_learning(
+        &store,
+        &owner(),
+        /*body_generation*/ 1,
+        "lemon",
+        /*limit*/ 2,
+        Some(&fixture.ranker),
+        /*current_retrieval*/ None,
+        /*learning_sink*/ None,
+        /*request_id*/ None,
+    )
+    .await
+    .unwrap();
+    let ranked_all = planned
+        .publish(
+            &store,
+            &owner(),
+            /*body_generation*/ 1,
+            &issuer,
+            Some(&fixture.ranker),
+            /*current_retrieval*/ None,
+        )
+        .await
+        .unwrap();
+    assert_eq!(ranked_all.items[0], baseline.items[1]);
+    crate::cognitive_context::revalidate_issued_context(
+        &store,
+        &owner(),
+        /*body_generation*/ 1,
+        &ranked_all,
+        Some(&fixture.ranker),
+        /*current_retrieval*/ None,
+        &issuer,
+    )
+    .await
+    .unwrap();
+    let receipt = ranked_all
+        .plan
+        .as_ref()
+        .unwrap()
+        .plan_receipt_digest
+        .clone();
+    let mut substituted = ranked_all.clone();
+    substituted.items.swap(0, 1);
+    substituted.plan = None;
+    let changed_digest = Digest32::of_bytes(&serde_json::to_vec(&substituted).unwrap()).to_string();
+    substituted.plan = ranked_all.plan.clone();
+    substituted.plan.as_mut().unwrap().evaluated_context_digest = changed_digest;
+    assert_eq!(
+        substituted.plan.as_ref().unwrap().plan_receipt_digest,
+        receipt
+    );
+    assert!(
+        crate::cognitive_context::revalidate_issued_context(
+            &store,
+            &owner(),
+            /*body_generation*/ 1,
+            &substituted,
+            Some(&fixture.ranker),
+            /*current_retrieval*/ None,
+            &issuer,
+        )
+        .await
+        .is_err(),
+        "a self-rehashed order substitution cannot reuse the actual issued receipt"
+    );
     // The read owner, not the learned ranker, remains authoritative on deletion.
     let selected_id = memory_ids
         .into_iter()
