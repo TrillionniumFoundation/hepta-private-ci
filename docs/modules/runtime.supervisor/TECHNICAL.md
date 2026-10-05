@@ -168,6 +168,24 @@ Agent drain uses an exact Agentd `Drain` RPC acknowledgement. Agentd closes new 
 
 ## 8. Failure semantics, recovery and rollback
 
+On Linux, each externally adopted Agentd/Matrixd process receives a private
+`pidfd` before its kernel-authenticated control handshake. The pinned task is
+checked again after that handshake. Stop/kill and subsequent exit observation
+use this same descriptor, not a fresh lookup of the numeric PID. An exited
+non-child is terminal even while its foreign parent retains a zombie; its exit
+code remains unknown rather than being invented. Child exit codes that are
+actually available through `waitid` remain stable across repeated observations.
+The descriptor is process-local and is never serialized into a durable lease;
+a new Supervisor must reopen and reauthenticate it during recovery. Missing
+pidfd support or permission/resource errors reject Linux adoption instead of
+falling back to PID-based signaling. Linux requires the pidfd open/signal and
+`waitid(P_PIDFD)` interfaces (Linux 5.4 or newer). Non-Linux process custody and
+newly spawned `std::process::Child` handles retain their existing behavior;
+this does not assert a cross-platform lifetime-identity qualification. Tests
+use actual authenticated child processes with a deliberately non-reaping
+foreign parent and retain the ordinary restart, peer and writer-fence checks.
+
+
 Use the error/recovery path linked by the [current native implementation](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md#8-current-native-implementation) and the module-specific fault cases in the [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md). A source library or fixture cannot stand in for an unimplemented durable recovery or external reconciler.
 
 Unexpected Agent exits use a durable bounded restart window with exponential backoff and a fixed attempt ceiling. A process whose lease publication fails remains tracked and hard-kill quarantined until exit is observed; a failed first cleanup signal cannot discard the only process handle.
