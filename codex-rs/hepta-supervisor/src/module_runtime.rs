@@ -778,6 +778,15 @@ impl RuntimeModuleSupervisorV1 {
             return Err(RuntimeModuleRegistryError::InvalidLifecycleTransition.into());
         }
         witness.validate_for(&record.abi)?;
+        // Staging is not publication, but must not record a ready witness that
+        // omits the incumbent's state, writer or external-effect obligations.
+        if let Some(predecessor) = record.abi.predecessor_generation {
+            let previous = self
+                .registry
+                .record(module_id, predecessor)
+                .ok_or(RuntimeModuleRegistryError::UnknownPredecessor)?;
+            witness.validate_for(&previous.abi)?;
+        }
         let candidate_digest = record.abi.candidate_artifact_digest;
         let pending_topology = self
             .pending_topologies
@@ -1058,3 +1067,7 @@ mod tests {
 #[cfg(test)]
 #[path = "module_runtime_safety_tests.rs"]
 mod safety_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_predecessor_tests.rs"]
+mod predecessor_tests;

@@ -338,6 +338,10 @@ impl RuntimeModuleRegistryV1 {
         Ok(())
     }
 
+    /// Validate handoff obligations on both sides of a replacement. Declaring
+    /// a stateless successor does not discharge the predecessor's durable state,
+    /// writer domains or external effects. The host still owns the real handoff;
+    /// this registry validates its witness before changing either generation.
     pub fn promote_after_handoff(
         &mut self,
         module_id: &StableId,
@@ -370,6 +374,7 @@ impl RuntimeModuleRegistryV1 {
             if predecessor.lifecycle != RuntimeModuleLifecycleV1::Active {
                 return Err(RuntimeModuleRegistryError::InvalidLifecycleTransition);
             }
+            witness.validate_for(&predecessor.abi)?;
             predecessor.lifecycle = RuntimeModuleLifecycleV1::Retired;
         } else if self.active.contains_key(module_id) {
             return Err(RuntimeModuleRegistryError::ActiveGenerationConflict);
@@ -840,3 +845,7 @@ mod safety_tests;
 #[cfg(test)]
 #[path = "module_runtime_retention_tests.rs"]
 mod retention_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_predecessor_tests.rs"]
+mod predecessor_tests;
