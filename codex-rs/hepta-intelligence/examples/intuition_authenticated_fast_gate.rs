@@ -43,8 +43,18 @@ const SAMPLES: usize = 200;
 const P99_BUDGET: Duration = Duration::from_millis(50);
 const MIN_THROUGHPUT_PER_SEC: f64 = 20.0;
 
+fn required<T, E: std::fmt::Debug>(result: Result<T, E>, context: &str) -> T {
+    match result {
+        Ok(value) => value,
+        Err(error) => {
+            eprintln!("{context}: {error:?}");
+            std::process::exit(2);
+        }
+    }
+}
+
 fn id(value: &str) -> StableId {
-    StableId::new(value).expect("id")
+    required(StableId::new(value), "invalid stable id")
 }
 
 fn digest(value: &str) -> Digest32 {
@@ -105,8 +115,14 @@ fn fixture(candidate_count: usize) -> Fixture {
             support_digest: digest(&format!("support:{index:03}")),
         })
         .collect::<Vec<_>>();
-    let candidate_set_digest = canonical_candidate_set_digest_v1(&candidates).expect("set");
-    let canonical_order_digest = canonical_candidate_order_digest_v1(&candidates).expect("order");
+    let candidate_set_digest = required(
+        canonical_candidate_set_digest_v1(&candidates),
+        "candidate set digest",
+    );
+    let canonical_order_digest = required(
+        canonical_candidate_order_digest_v1(&candidates),
+        "candidate order digest",
+    );
     let calibration_artifact_digest = digest("calibration:fast-gate");
     let ood_artifact_digest = digest("ood:fast-gate");
     let request = CalibratedDecisionRequestV1 {
@@ -129,7 +145,7 @@ fn fixture(candidate_count: usize) -> Fixture {
             truncation_digest: digest("truncation:fast-gate"),
             candidate_set_digest,
             canonical_order_digest,
-            candidate_count: u32::try_from(candidate_count).expect("bounded"),
+            candidate_count: required(u32::try_from(candidate_count), "candidate count conversion"),
             omitted_count_bound: 0,
         },
         calibration: CalibrationArtifactV1 {
@@ -186,7 +202,10 @@ fn fixture(candidate_count: usize) -> Fixture {
         feature_schema_digest: profile.scorer.feature_schema_digest,
         scorer_contract_digest: profile.scorer.scorer_contract_digest,
         candidate_set_digest,
-        scored_outputs_digest: canonical_scored_outputs_digest_v1(&request).expect("scores"),
+        scored_outputs_digest: required(
+            canonical_scored_outputs_digest_v1(&request),
+            "scored outputs digest",
+        ),
         policy_digest,
         policy_generation: 1,
     };
@@ -227,42 +246,50 @@ fn fixture(candidate_count: usize) -> Fixture {
             expires_at: 1_000,
         },
     ];
-    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
-        scope_digest,
-        objective_digest,
-        authority_epoch: 1,
-        signers: vec![
-            TrustedLearningSignerV1 {
-                principal: principals[0].clone(),
-                controller_id: id("controller:generator"),
-                verifying_key: keys[0].verifying_key().to_bytes(),
-                roles: vec![LearningEvidenceRoleV1::Generator],
-                revoked_at: None,
-            },
-            TrustedLearningSignerV1 {
-                principal: principals[1].clone(),
-                controller_id: id("controller:evaluator"),
-                verifying_key: keys[1].verifying_key().to_bytes(),
-                roles: vec![LearningEvidenceRoleV1::Evaluator],
-                revoked_at: None,
-            },
-            TrustedLearningSignerV1 {
-                principal: principals[2].clone(),
-                controller_id: id("controller:observer"),
-                verifying_key: keys[2].verifying_key().to_bytes(),
-                roles: vec![LearningEvidenceRoleV1::Observer],
-                revoked_at: None,
-            },
-        ],
-    })
-    .expect("verifier");
+    let verifier = required(
+        LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+            scope_digest,
+            objective_digest,
+            authority_epoch: 1,
+            signers: vec![
+                TrustedLearningSignerV1 {
+                    principal: principals[0].clone(),
+                    controller_id: id("controller:generator"),
+                    verifying_key: keys[0].verifying_key().to_bytes(),
+                    roles: vec![LearningEvidenceRoleV1::Generator],
+                    revoked_at: None,
+                },
+                TrustedLearningSignerV1 {
+                    principal: principals[1].clone(),
+                    controller_id: id("controller:evaluator"),
+                    verifying_key: keys[1].verifying_key().to_bytes(),
+                    roles: vec![LearningEvidenceRoleV1::Evaluator],
+                    revoked_at: None,
+                },
+                TrustedLearningSignerV1 {
+                    principal: principals[2].clone(),
+                    controller_id: id("controller:observer"),
+                    verifying_key: keys[2].verifying_key().to_bytes(),
+                    roles: vec![LearningEvidenceRoleV1::Observer],
+                    revoked_at: None,
+                },
+            ],
+        }),
+        "learning evidence verifier",
+    );
 
-    let completeness_payload =
-        canonical_completeness_evidence_payload_v1(&request).expect("complete");
-    let profile_payload = canonical_profile_qualification_payload_v1(&profile).expect("profile");
-    let runtime_payload =
-        canonical_runtime_commitment_payload_v1(&request, &profile, &scoring, &assignment)
-            .expect("runtime");
+    let completeness_payload = required(
+        canonical_completeness_evidence_payload_v1(&request),
+        "completeness evidence payload",
+    );
+    let profile_payload = required(
+        canonical_profile_qualification_payload_v1(&profile),
+        "profile qualification payload",
+    );
+    let runtime_payload = required(
+        canonical_runtime_commitment_payload_v1(&request, &profile, &scoring, &assignment),
+        "runtime commitment payload",
+    );
     let completeness = sign(
         &verifier,
         &principals[0],
@@ -313,40 +340,44 @@ fn main() {
     for count in [1usize, 16, 64, 128] {
         let fixture = fixture(count);
         for _ in 0..16 {
-            let _ = decide_authenticated_intuition_v2(
-                fixture.request.clone(),
-                fixture.profile.clone(),
-                fixture.scoring.clone(),
-                fixture.assignment.clone(),
-                IntuitionQualificationEvidenceV2 {
-                    completeness: &fixture.completeness,
-                    profile_qualification: &fixture.profile_qualification,
-                    runtime: &fixture.runtime,
-                },
-                &fixture.verifier,
-                150,
-            )
-            .expect("warmup");
+            let _ = required(
+                decide_authenticated_intuition_v2(
+                    fixture.request.clone(),
+                    fixture.profile.clone(),
+                    fixture.scoring.clone(),
+                    fixture.assignment.clone(),
+                    IntuitionQualificationEvidenceV2 {
+                        completeness: &fixture.completeness,
+                        profile_qualification: &fixture.profile_qualification,
+                        runtime: &fixture.runtime,
+                    },
+                    &fixture.verifier,
+                    150,
+                ),
+                "authenticated warmup decision",
+            );
         }
 
         let wall_start = Instant::now();
         let mut samples = Vec::with_capacity(SAMPLES);
         for _ in 0..SAMPLES {
             let start = Instant::now();
-            let receipt = decide_authenticated_intuition_v2(
-                fixture.request.clone(),
-                fixture.profile.clone(),
-                fixture.scoring.clone(),
-                fixture.assignment.clone(),
-                IntuitionQualificationEvidenceV2 {
-                    completeness: &fixture.completeness,
-                    profile_qualification: &fixture.profile_qualification,
-                    runtime: &fixture.runtime,
-                },
-                &fixture.verifier,
-                150,
-            )
-            .expect("authenticated decision");
+            let receipt = required(
+                decide_authenticated_intuition_v2(
+                    fixture.request.clone(),
+                    fixture.profile.clone(),
+                    fixture.scoring.clone(),
+                    fixture.assignment.clone(),
+                    IntuitionQualificationEvidenceV2 {
+                        completeness: &fixture.completeness,
+                        profile_qualification: &fixture.profile_qualification,
+                        runtime: &fixture.runtime,
+                    },
+                    &fixture.verifier,
+                    150,
+                ),
+                "authenticated measured decision",
+            );
             std::hint::black_box(receipt);
             samples.push(start.elapsed());
         }

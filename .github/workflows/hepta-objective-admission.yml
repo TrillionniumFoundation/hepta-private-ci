@@ -34,15 +34,22 @@ jobs:
           test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
           git rev-parse HEAD HEAD^{tree}
 
-      - name: Validate exact-source and target-host recorders
+      - name: Validate exact-source, static-state and evidence recorders
         shell: bash
         run: |
           set -euo pipefail
+          test "$(git rev-parse HEAD)" = "${SOURCE_SHA}"
           SOURCE_TREE="$(git rev-parse HEAD^{tree})"
           python3 scripts/hepta-implementation-maps.py verify --profile development \
+            --module objective.compiler \
             --expected-sha "${SOURCE_SHA}" \
             --expected-tree "${SOURCE_TREE}"
+          python3 scripts/hepta-objective-current-state.py verify
           python3 scripts/hepta-objective-target-measure.py --self-test
+          python3 -m unittest -v \
+            scripts.test_hepta_objective_target_measure \
+            scripts.test_hepta_objective_evidence_project \
+            scripts.test_hepta_objective_qualify_exact
 
       - name: Objective and product-composition tests
         working-directory: codex-rs
@@ -53,6 +60,19 @@ jobs:
           cargo test --locked -p codex-hepta-learning-ledger run_start -- --nocapture
           cargo test --locked -p codex-hepta-intelligence objective_run -- --nocapture
           cargo test --locked -p codex-hepta-agentd objective_runtime -- --nocapture
+          cargo test --locked -p codex-hepta-agentd objective_run_start_checkpoint -- --nocapture
+          cargo test --locked -p codex-hepta-agentd --test objective_product_e2e -- --nocapture
+
+      - name: Compile all objective product test targets
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          cargo test --locked --no-run \
+            -p codex-hepta-objective \
+            -p codex-hepta-learning-ledger \
+            -p codex-hepta-intelligence \
+            -p codex-hepta-agentd
 
       - name: Strict objective and product-composition lint
         working-directory: codex-rs
@@ -64,7 +84,7 @@ jobs:
             -p codex-hepta-learning-ledger \
             -p codex-hepta-intelligence \
             -p codex-hepta-agentd \
-            --all-targets -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
+            --all-targets --no-deps -- -D warnings
 
       - name: Formatting and clean source
         if: always()

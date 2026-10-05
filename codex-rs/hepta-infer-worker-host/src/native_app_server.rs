@@ -38,6 +38,7 @@ use codex_app_server_protocol::TurnStartResponse;
 use codex_app_server_protocol::TurnStatus;
 use codex_app_server_protocol::UserInput;
 use codex_hepta_agentd::AgentRunPhase;
+use codex_hepta_agentd::AgentRunReceipt;
 use codex_hepta_agentd::AgentdClient;
 use codex_hepta_agentd::AgentdError;
 use codex_hepta_agentd::COGNITIVE_CONTEXT_REVALIDATION_CAPABILITY;
@@ -73,6 +74,8 @@ use codex_utils_absolute_path::AbsolutePathBuf;
 
 #[path = "native_run_control.rs"]
 mod control;
+#[path = "native_intelligence_receipts.rs"]
+mod intelligence_receipts;
 pub use control::NativeAdmission;
 pub use control::NativeIntelligenceRunBinding;
 use tokio::time::Instant;
@@ -449,10 +452,11 @@ impl AppServerModelDriver {
                 );
             }
         }
-        let mut intelligence_revision = match intelligence {
+        let intelligence_handoff = match intelligence {
             Some(binding) => Some(require_intelligence_handoff(&owner, binding).await?),
             None => None,
         };
+        let mut intelligence_revision = intelligence_handoff.as_ref().map(|run| run.revision);
         let ingress = owner.session_ingress().await?;
         let ingress_socket_path = ingress.socket_path;
         let socket_path = AbsolutePathBuf::from_absolute_path(ingress_socket_path.clone())?;
@@ -542,8 +546,8 @@ impl AppServerModelDriver {
             return Err("cancelled before model dispatch".into());
         }
         if let Some(binding) = intelligence {
-            let current_revision = require_intelligence_handoff(&owner, binding).await?;
-            if Some(current_revision) != intelligence_revision {
+            let current_handoff = require_intelligence_handoff(&owner, binding).await?;
+            if Some(&current_handoff) != intelligence_handoff.as_ref() {
                 let _ = timeout(RPC_TIMEOUT, client.shutdown()).await;
                 return Err("intelligence handoff revision changed before dispatch".into());
             }
@@ -677,14 +681,9 @@ impl AppServerModelDriver {
             };
             // Idempotent acknowledgement is reconciliation, not a second
             // physical-send permit. A competing worker must not redispatch.
-            if dispatched.phase != AgentRunPhase::Dispatched
-                || dispatched.idempotent
-                || dispatched.generation != self.config.generation
-                || dispatched.terminal_observed
-                || dispatched.context_digest.as_deref() != Some(binding.context_digest.as_str())
-                || dispatched.compilation_receipt_digest.as_deref()
-                    != Some(binding.envelope_digest.as_str())
-            {
+            if !intelligence_handoff.as_ref().is_some_and(|handoff| {
+                intelligence_receipts::matches_new_dispatch(&dispatched, handoff, binding)
+            }) {
                 let reason =
                     "Agentd did not newly commit this exact intelligence dispatch".to_string();
                 control.abort_native_before_effect(pre_effect_abort, reason.clone())?;
@@ -1303,7 +1302,7 @@ async fn reconcile_intelligence_start_unknown(
 async fn require_intelligence_handoff(
     owner: &AgentdClient,
     binding: &NativeIntelligenceRunBinding,
-) -> Result<u64> {
+) -> Result<AgentRunReceipt> {
     if binding.run_id.is_empty()
         || binding.expected_revision == 0
         || binding.context_digest.is_empty()
@@ -1321,7 +1320,8 @@ async fn require_intelligence_handoff(
         .run_status(binding.run_id.clone())
         .await?
         .ok_or("intelligence run is not admitted in Agentd")?;
-    if run.phase != AgentRunPhase::ContextAttached
+    if run.run_id != binding.run_id
+        || run.phase != AgentRunPhase::ContextAttached
         || run.revision != binding.expected_revision
         || run.context_digest.as_deref() != Some(binding.context_digest.as_str())
         || run.compilation_receipt_digest.as_deref() != Some(binding.envelope_digest.as_str())
@@ -1329,7 +1329,7 @@ async fn require_intelligence_handoff(
     {
         return Err("Agentd intelligence handoff is stale or mixed".into());
     }
-    Ok(run.revision)
+    Ok(run)
 }
 
 async fn commit_intelligence_terminal(

@@ -1,6 +1,7 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::collections::VecDeque;
+use std::time::Duration;
 use std::time::Instant;
 
 use codex_hepta_types::StableId;
@@ -8,6 +9,7 @@ use codex_hepta_types::StableId;
 use crate::AtomPrecedenceV1;
 use crate::AtomPredicateV1;
 use crate::ConstraintAtomV1;
+use crate::DeterministicOracleBudgetV1;
 use crate::FeasibilityOutcomeV1;
 use crate::FeasibilityReceiptV1;
 use crate::FeasibleAssignmentV1;
@@ -20,15 +22,60 @@ const MAX_ATOMS: usize = 256;
 const MAX_ACTIONS: usize = 128;
 const MAX_ENUM_VALUES: usize = 128;
 const MAX_PAYLOAD_BYTES: usize = 256 * 1024;
+const LEGACY_MAX_ORACLE_CALLS: u16 = 257;
 
-/// Solves registered conjunctions and extracts an inclusion-minimal core with
-/// at most n + 1 oracle calls. Unsupported or expired work publishes no core.
+/// Compatibility wrapper that applies a caller-owned wall-clock availability
+/// budget around the deterministic feasibility engine.
+///
+/// The deterministic engine never reads a clock. A wall-clock expiration is a
+/// runtime exhaustion result, never semantic infeasibility. New owner code
+/// should call [`check_feasibility_deterministic_v1`] inside its trusted
+/// deadline/cancellation boundary and record that runtime disposition there.
 pub fn check_feasibility_v1(
     registry: &RegisteredGrammarV1,
     atoms: Vec<ConstraintAtomV1>,
     budget: OracleBudgetV1,
 ) -> FeasibilityReceiptV1 {
-    let start = Instant::now();
+    let started = Instant::now();
+    if budget.wall_time.is_zero() || budget.max_calls == 0 {
+        return exhausted_receipt(registry, atoms, 0, started.elapsed());
+    }
+
+    // The compatibility API promises at most n + 1 calls even when its caller
+    // supplies the global 257-call ceiling for a smaller input. Additional
+    // batching work is opt-in through the explicit deterministic API.
+    let linear_calls = u16::try_from(atoms.len().saturating_add(1)).unwrap_or(u16::MAX);
+    let max_calls = budget
+        .max_calls
+        .min(LEGACY_MAX_ORACLE_CALLS)
+        .min(linear_calls);
+    let deterministic_budget = DeterministicOracleBudgetV1 {
+        max_calls,
+        max_work_units: u64::from(max_calls).saturating_mul(MAX_ATOMS as u64),
+        max_cache_entries: 64,
+    };
+    let mut receipt = check_feasibility_deterministic_v1(registry, atoms, deterministic_budget);
+    let elapsed = started.elapsed();
+    receipt.elapsed = elapsed;
+    if elapsed >= budget.wall_time
+        && !matches!(receipt.outcome, FeasibilityOutcomeV1::Unsupported { .. })
+    {
+        receipt.outcome = FeasibilityOutcomeV1::Exhausted;
+    }
+    receipt
+}
+
+/// Deterministic feasibility entrypoint.
+///
+/// This function is independent of host scheduling and wall clocks. It is
+/// bounded only by explicit solver-call, candidate-visit and memoization
+/// budgets. Budget exhaustion is reported as `Exhausted`; it is never converted
+/// into an infeasibility proof.
+pub fn check_feasibility_deterministic_v1(
+    registry: &RegisteredGrammarV1,
+    atoms: Vec<ConstraintAtomV1>,
+    budget: DeterministicOracleBudgetV1,
+) -> FeasibilityReceiptV1 {
     let mut oracle_calls = 0;
     let outcome = match validate(registry, &atoms) {
         Some(outcome) => outcome,
@@ -38,59 +85,237 @@ pub fn check_feasibility_v1(
                 .filter(|atom| atom.precedence != AtomPrecedenceV1::Soft)
                 .collect();
             canonical.sort_by_key(|atom| (atom.precedence, &atom.axis, &atom.id));
-            let mut oracle = |candidate: &[&ConstraintAtomV1]| {
-                if oracle_calls >= budget.max_calls.min(257) || start.elapsed() >= budget.wall_time
-                {
-                    return Err(());
-                }
-                oracle_calls += 1;
-                let result = solve(registry, candidate);
-                if start.elapsed() >= budget.wall_time {
-                    Err(())
-                } else {
-                    Ok(result)
-                }
-            };
-            match oracle(&canonical) {
+            let mut oracle = OracleSessionV1::new(registry, budget);
+            let outcome = match oracle.solve(&canonical) {
                 Err(()) => FeasibilityOutcomeV1::Exhausted,
                 Ok(Some(assignment)) => FeasibilityOutcomeV1::Feasible(assignment),
-                Ok(None) => minimize(canonical, &mut oracle),
-            }
+                Ok(None) => {
+                    let seed = native_conflict_seed(registry, &canonical);
+                    minimize(seed, &mut oracle)
+                }
+            };
+            oracle_calls = oracle.calls;
+            outcome
         }
-    };
-    let elapsed = start.elapsed();
-    let outcome = if elapsed >= budget.wall_time
-        && !matches!(outcome, FeasibilityOutcomeV1::Unsupported { .. })
-    {
-        FeasibilityOutcomeV1::Exhausted
-    } else {
-        outcome
     };
     FeasibilityReceiptV1 {
         schema_digest: registry.schema_digest,
         original_constraints: atoms,
         outcome,
         oracle_calls,
+        // Runtime owners may project their own elapsed duration. Keeping the
+        // semantic engine at zero makes equal inputs and budgets byte-stable.
+        elapsed: Duration::ZERO,
+    }
+}
+
+fn exhausted_receipt(
+    registry: &RegisteredGrammarV1,
+    atoms: Vec<ConstraintAtomV1>,
+    oracle_calls: u16,
+    elapsed: Duration,
+) -> FeasibilityReceiptV1 {
+    FeasibilityReceiptV1 {
+        schema_digest: registry.schema_digest,
+        original_constraints: atoms,
+        outcome: FeasibilityOutcomeV1::Exhausted,
+        oracle_calls,
         elapsed,
+    }
+}
+
+struct OracleSessionV1<'a> {
+    registry: &'a RegisteredGrammarV1,
+    budget: DeterministicOracleBudgetV1,
+    calls: u16,
+    work_units: u64,
+    // Conflict extraction needs only satisfiability, not one full copy of the
+    // registered domains per cached candidate.
+    cache: BTreeMap<Vec<StableId>, bool>,
+}
+
+impl<'a> OracleSessionV1<'a> {
+    fn new(registry: &'a RegisteredGrammarV1, budget: DeterministicOracleBudgetV1) -> Self {
+        Self {
+            registry,
+            budget,
+            calls: 0,
+            work_units: 0,
+            cache: BTreeMap::new(),
+        }
+    }
+
+    fn solve(
+        &mut self,
+        candidate: &[&ConstraintAtomV1],
+    ) -> Result<Option<FeasibleAssignmentV1>, ()> {
+        let key: Vec<_> = candidate.iter().map(|atom| atom.id.clone()).collect();
+        let next_work = self
+            .work_units
+            .checked_add(candidate.len() as u64)
+            .ok_or(())?;
+        if self.calls >= self.budget.max_calls || next_work > self.budget.max_work_units {
+            return Err(());
+        }
+        self.calls += 1;
+        self.work_units = next_work;
+        let result = solve(self.registry, candidate);
+        if self.cache.len() < usize::from(self.budget.max_cache_entries) {
+            self.cache.insert(key, result.is_some());
+        }
+        Ok(result)
+    }
+
+    fn is_feasible(&mut self, candidate: &[&ConstraintAtomV1]) -> Result<bool, ()> {
+        let key: Vec<_> = candidate.iter().map(|atom| atom.id.clone()).collect();
+        if let Some(cached) = self.cache.get(&key) {
+            return Ok(*cached);
+        }
+        self.solve(candidate).map(|assignment| assignment.is_some())
+    }
+
+    fn spare_calls_after_linear_pass(&self, core_len: usize) -> u16 {
+        self.budget
+            .max_calls
+            .saturating_sub(self.calls)
+            .saturating_sub(u16::try_from(core_len).unwrap_or(u16::MAX))
     }
 }
 
 fn minimize(
     mut core: Vec<&ConstraintAtomV1>,
-    oracle: &mut impl FnMut(&[&ConstraintAtomV1]) -> Result<Option<FeasibleAssignmentV1>, ()>,
+    oracle: &mut OracleSessionV1<'_>,
 ) -> FeasibilityOutcomeV1 {
+    // Deterministic contiguous batching is used only when the caller supplied
+    // calls beyond the complete linear minimality pass. This keeps the legacy
+    // n+1 budget compatible while allowing large future profiles to shed broad
+    // irrelevant regions quickly.
+    let mut chunk = core.len().checked_next_power_of_two().unwrap_or(core.len()) / 2;
+    while chunk > 1 && oracle.spare_calls_after_linear_pass(core.len()) > 0 {
+        let mut start = 0;
+        let mut reduced = false;
+        while start < core.len() && oracle.spare_calls_after_linear_pass(core.len()) > 0 {
+            let end = (start + chunk).min(core.len());
+            if end - start == core.len() {
+                break;
+            }
+            let trial: Vec<_> = core[..start]
+                .iter()
+                .chain(core[end..].iter())
+                .copied()
+                .collect();
+            match oracle.is_feasible(&trial) {
+                Err(()) => return FeasibilityOutcomeV1::Exhausted,
+                Ok(false) => {
+                    core = trial;
+                    reduced = true;
+                }
+                Ok(true) => start = end,
+            }
+        }
+        if !reduced {
+            chunk /= 2;
+        } else {
+            chunk = chunk.min(core.len().saturating_sub(1));
+        }
+    }
+
     let mut index = 0;
     while index < core.len() {
         let mut trial = core.clone();
         trial.remove(index);
-        match oracle(&trial) {
+        match oracle.is_feasible(&trial) {
             Err(()) => return FeasibilityOutcomeV1::Exhausted,
-            Ok(None) => core = trial,
-            Ok(Some(_)) => index += 1,
+            Ok(false) => core = trial,
+            Ok(true) => index += 1,
         }
     }
+    core.sort_by_key(|atom| (atom.precedence, &atom.axis, &atom.id));
     FeasibilityOutcomeV1::Infeasible {
         inclusion_minimal_conflicting_ids: core.iter().map(|atom| atom.id.clone()).collect(),
+    }
+}
+
+/// Produce a deterministic native conflict seed before the generic deletion
+/// pass. Non-action domains are independent, so the first conflicting axis in
+/// canonical order is sufficient. Any remaining conflict belongs to the action
+/// implication graph, for which all action assumptions form a sound seed.
+fn native_conflict_seed<'a>(
+    registry: &RegisteredGrammarV1,
+    canonical: &[&'a ConstraintAtomV1],
+) -> Vec<&'a ConstraintAtomV1> {
+    let mut by_axis: BTreeMap<&StableId, Vec<&ConstraintAtomV1>> = BTreeMap::new();
+    for atom in canonical {
+        by_axis.entry(&atom.axis).or_default().push(*atom);
+    }
+    for (axis_id, atoms) in &by_axis {
+        let Some(axis) = registry.axes.get(*axis_id) else {
+            continue;
+        };
+        if axis.domain != RegisteredDomainV1::Action && axis_conflicts(&axis.domain, atoms) {
+            return atoms.clone();
+        }
+    }
+    let action_seed: Vec<_> = canonical
+        .iter()
+        .copied()
+        .filter(|atom| {
+            registry
+                .axes
+                .get(&atom.axis)
+                .is_some_and(|axis| axis.domain == RegisteredDomainV1::Action)
+        })
+        .collect();
+    if action_seed.is_empty() {
+        canonical.to_vec()
+    } else {
+        action_seed
+    }
+}
+
+fn axis_conflicts(domain: &RegisteredDomainV1, atoms: &[&ConstraintAtomV1]) -> bool {
+    match domain {
+        RegisteredDomainV1::Scalar { lower, upper } => {
+            let mut lower = *lower;
+            let mut upper = *upper;
+            for atom in atoms {
+                let AtomPredicateV1::ScalarInterval {
+                    lower: next_lower,
+                    upper: next_upper,
+                } = &atom.predicate
+                else {
+                    return true;
+                };
+                lower = lower.max(*next_lower);
+                upper = upper.min(*next_upper);
+                if lower > upper {
+                    return true;
+                }
+            }
+            false
+        }
+        RegisteredDomainV1::Enumeration(values) => {
+            let mut values = values.clone();
+            for atom in atoms {
+                match &atom.predicate {
+                    AtomPredicateV1::Include(included) => {
+                        values.retain(|value| included.contains(value));
+                    }
+                    AtomPredicateV1::Exclude(excluded) => {
+                        values.retain(|value| !excluded.contains(value));
+                    }
+                    _ => return true,
+                }
+                if values.is_empty() {
+                    return true;
+                }
+            }
+            false
+        }
+        RegisteredDomainV1::ImmutableIdentity(value) => atoms.iter().any(|atom| {
+            !matches!(&atom.predicate, AtomPredicateV1::IdentityEqual(expected) if expected == value)
+        }),
+        RegisteredDomainV1::Action => false,
     }
 }
 
@@ -106,7 +331,6 @@ fn validate(
         return reject("pilot count bound", Vec::new());
     }
     let mut actions = 0;
-    // Conservative payload allowance for the bounded in-process grammar, not a wire encoding.
     let mut bytes = registry
         .evidence_sources
         .iter()
@@ -266,7 +490,7 @@ fn solve(
                 edges.entry(&atom.axis).or_default().push(target);
                 reverse_edges.entry(target).or_default().push(&atom.axis);
             }
-            _ => return None, // Validation runs once before any oracle call.
+            _ => return None,
         }
     }
     let mut pending: VecDeque<_> = required.iter().cloned().collect();
@@ -282,8 +506,6 @@ fn solve(
             }
         }
     }
-    // In a Horn implication `source -> target`, forbidding the target also
-    // rules out the source. Walk the reverse graph to its fixed point.
     let mut effectively_forbidden = forbidden.clone();
     let mut pending: VecDeque<_> = forbidden.iter().cloned().collect();
     while let Some(action) = pending.pop_front() {

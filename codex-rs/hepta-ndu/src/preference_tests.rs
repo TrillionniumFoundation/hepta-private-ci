@@ -71,12 +71,18 @@ fn damped_preference_update_emits_local_solver_receipts() {
     );
     assert_eq!(
         termination.maximum_residual_raw,
-        receipts
-            .iter()
-            .map(|receipt| receipt.residual_raw)
+        std::iter::once(initial_residual_raw)
+            .chain(receipts.iter().map(|receipt| receipt.residual_raw))
             .max()
-            .expect("maximum residual")
-            .max(initial_residual_raw)
+            .expect("initial and step residuals")
+    );
+    // Initial residual is 1. An eta of 1/4 leaves exactly 3/4 after one step.
+    assert_eq!(receipts[0].residual_raw, 3_i64 << 30);
+    assert_eq!(termination.maximum_residual_raw, FixedQ32::ONE.raw());
+    assert!(
+        receipts
+            .windows(2)
+            .all(|pair| pair[1].residual_raw <= pair[0].residual_raw)
     );
     assert!(receipts.iter().all(|receipt| receipt.validate().is_ok()));
 }

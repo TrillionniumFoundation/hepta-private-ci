@@ -11,7 +11,7 @@
     "codex-rs/hepta-objective"
   ],
   "authorityDelta": "none",
-  "productCallerState": "source_composed_authenticated_agentd_not_activated",
+  "productCallerState": "source_composed_durable_proof_bound_not_activated",
   "productionWriterState": "not_applicable_stateless",
   "operations": [
     {
@@ -35,8 +35,7 @@
       "designOperation": "decode_source_envelope_json_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "d63aa3e9cd18756c13029ae2fe2ca00367a0dddf"
+      "sourcePathExists": true
     },
     {
       "operation": "validate_structure",
@@ -59,8 +58,7 @@
       "designOperation": "validate_structure",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "5dc5676e23de3b4a661e1520a0c5ae4a1dc2020d"
+      "sourcePathExists": true
     },
     {
       "operation": "canonical_objective_intent_digest_v1",
@@ -83,8 +81,7 @@
       "designOperation": "canonical_objective_intent_digest_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "87f72baa003556720db120827442a838b391cd3f"
+      "sourcePathExists": true
     },
     {
       "operation": "admit_and_compile_objective_v1",
@@ -124,8 +121,7 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true,
-      "productRole": "compatibility_not_canonical_product_path",
-      "sourceBlob": "87f72baa003556720db120827442a838b391cd3f"
+      "productRole": "compatibility_not_canonical_product_path"
     },
     {
       "operation": "check_feasibility_v1",
@@ -154,8 +150,7 @@
       "designOperation": "check_feasibility_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
-      "sourcePathExists": true,
-      "sourceBlob": "c540d050dfdc59688d3ef5406537b1a3c32471db"
+      "sourcePathExists": true
     },
     {
       "operation": "compile",
@@ -189,17 +184,17 @@
       "delegatedCallees": [],
       "sourcePathExists": true,
       "publicCompatibilityEntrypoint": "compile_prevalidated_legacy_objective_v1",
-      "publicCompatibilityFeature": "qualification-legacy-compile",
-      "sourceBlob": "74d3da0017f74320ac47839e46988f8cd051c587"
+      "publicCompatibilityFeature": "qualification-legacy-compile"
     },
     {
-      "operation": "encode_objective_function_v1",
-      "nativeSymbol": "codex_hepta_objective::encode_objective_function_v1",
+      "operation": "encode_authenticated_objective_function_v1",
+      "nativeSymbol": "codex_hepta_objective::encode_authenticated_objective_function_v1",
       "sourcePath": "codex-rs/hepta-objective/src/objective_function_v1.rs",
       "inputs": [
         "ObjectiveCompileReceipt",
         "ObjectiveSourceEnvelopeV1",
         "ObjectiveAdmissionProfileV1",
+        "ObjectiveAdmissionContextV1",
         "ObjectiveAdmissionReceiptV1"
       ],
       "outputs": [
@@ -207,21 +202,54 @@
         "ObjectiveFunctionV1 protocol digest",
         "native semantic digest binding"
       ],
-      "state": "source_implemented_product_publication_bound",
+      "state": "source_implemented_compatibility_revalidation_projection",
       "authority": "none",
       "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "projection_rejects_source_resource_drift"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "projection_rejects_native_lowering_drift"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "projection_rejects_source_deadline_drift"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "microsecond_deadline_has_conservative_millisecond_projection"
+        },
         {
           "path": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
           "symbol": "authenticated_objective_is_durable_before_product_receipt_returns"
         },
         {
-          "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
-          "symbol": "objective_protocol_digest_mismatch_rejects_before_io"
+          "path": "codex-rs/hepta-agentd/tests/objective_product_e2e.rs",
+          "symbol": "signed_compiled_objective_executes_once_reaches_terminal_and_does_not_resurrect"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "authenticated_projection_rejects_each_source_field_mutation"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "authenticated_projection_preserves_equivalent_source_ordering"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "decoder_accepts_exact_action_and_soft_weight_boundaries"
         }
       ],
-      "designOperation": "encode_objective_function_v1",
+      "designOperation": "encode_authenticated_objective_function_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+          "symbol": "encode_objective_function_v1",
+          "role": "crate_internal_validated_projection"
+        },
         {
           "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
           "symbol": "decode_objective_function_v1",
@@ -229,7 +257,7 @@
         }
       ],
       "sourcePathExists": true,
-      "sourceBlob": "9a04b17f4b18ed352bdb285f0334b00755e6866e"
+      "productRole": "compatibility_revalidation_not_agentd_product_path"
     },
     {
       "operation": "admit_objective_v1",
@@ -243,7 +271,7 @@
       "outputs": [
         "opaque AdmittedObjectiveV1"
       ],
-      "state": "source_implemented_canonical_product_admission",
+      "state": "source_implemented_lower_level_raw_profile_admission_not_agentd_product_path",
       "authority": "deny_all",
       "tests": [
         {
@@ -255,7 +283,7 @@
       "mappingClass": "owner_native",
       "delegatedCallees": [],
       "sourcePathExists": true,
-      "sourceBlob": "87f72baa003556720db120827442a838b391cd3f"
+      "productRole": "lower_level_and_compatibility_entrypoint"
     },
     {
       "operation": "compile_admitted_objective_v1",
@@ -267,7 +295,7 @@
       "outputs": [
         "ObjectiveAdmissionOutcomeV1"
       ],
-      "state": "source_implemented_canonical_product_compile",
+      "state": "source_implemented_lower_level_compile_not_agentd_product_path",
       "authority": "deny_all",
       "tests": [
         {
@@ -285,7 +313,7 @@
         }
       ],
       "sourcePathExists": true,
-      "sourceBlob": "87f72baa003556720db120827442a838b391cd3f"
+      "productRole": "lower_level_and_compatibility_entrypoint"
     },
     {
       "operation": "decode_objective_function_v1",
@@ -302,15 +330,165 @@
       "authority": "none",
       "tests": [
         {
-          "path": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
-          "symbol": "authenticated_objective_is_durable_before_product_receipt_returns"
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "valid_wire_round_trips_exactly"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "decoder_rejects_duplicate_action_identity"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "decoder_rejects_confirmation_gated_abstain"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "decoder_rejects_negative_and_oversized_soft_weights"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "decoder_rejects_noncanonical_collection_order"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "decoder_rejects_cross_collection_semantic_identity_reuse"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "decoder_rejects_forbidden_abstain_and_allowed_overlap"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "decoder_rejects_unknown_constraint_class_and_capacity_boundary"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+          "symbol": "decoder_rejects_noncanonical_json_framing"
         }
       ],
       "designOperation": "decode_objective_function_v1",
       "mappingClass": "owner_native",
       "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "validate_admission_profile_v1",
+      "nativeSymbol": "ValidatedAdmissionProfileV1::new",
+      "sourcePath": "codex-rs/hepta-objective/src/validated_admission.rs",
+      "inputs": [
+        "ObjectiveAdmissionProfileV1"
+      ],
+      "outputs": [
+        "opaque generation-local ValidatedAdmissionProfileV1",
+        "profile digest/revision/compiler-contract reuse key",
+        "static source indexes and collision proofs"
+      ],
+      "state": "source_implemented_generation_local_static_validation",
+      "authority": "none_static_validation_only",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/validated_admission_tests.rs",
+          "symbol": "validated_profile_builds_indexes_and_rejects_duplicate_targets"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/validated_admission_tests.rs",
+          "symbol": "frozen_profile_reuse_never_caches_authentication_time_or_profile_selection"
+        }
+      ],
+      "designOperation": "validate_admission_profile_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
       "sourcePathExists": true,
-      "sourceBlob": "9a04b17f4b18ed352bdb285f0334b00755e6866e"
+      "reuseBoundary": "static profile validation and indexes only; no authentication, time, revocation, generation, fence or final-use authority"
+    },
+    {
+      "operation": "compile_authoritative_objective_v1",
+      "nativeSymbol": "codex_hepta_objective::compile_authoritative_objective_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/validated_admission.rs",
+      "inputs": [
+        "ObjectiveSourceEnvelopeV1",
+        "ValidatedAdmissionProfileV1",
+        "fresh ObjectiveAdmissionContextV1"
+      ],
+      "outputs": [
+        "opaque ProofBearingObjectiveCompileV1"
+      ],
+      "state": "source_implemented_canonical_agentd_product_compile",
+      "authority": "deny_all",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/validated_admission_tests.rs",
+          "symbol": "proof_binds_source_profile_context_and_compiler_contract"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/validated_admission_tests.rs",
+          "symbol": "frozen_profile_reuse_never_caches_authentication_time_or_profile_selection"
+        }
+      ],
+      "designOperation": "compile_authoritative_objective_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_admission.rs",
+          "symbol": "admit_frozen_objective_v1",
+          "role": "request_local_authenticated_admission"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/compiler.rs",
+          "symbol": "crate::compiler::compile",
+          "role": "deterministic_native_compile"
+        }
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "encode_proof_bearing_objective_function_v1",
+      "nativeSymbol": "codex_hepta_objective::encode_proof_bearing_objective_function_v1",
+      "sourcePath": "codex-rs/hepta-objective/src/proof_projection.rs",
+      "inputs": [
+        "opaque ProofBearingObjectiveCompileV1",
+        "ObjectiveSourceEnvelopeV1",
+        "ValidatedAdmissionProfileV1"
+      ],
+      "outputs": [
+        "canonical ObjectiveFunctionV1 bytes",
+        "protocol digest and native semantic digest binding"
+      ],
+      "state": "source_implemented_canonical_agentd_product_projection",
+      "authority": "none",
+      "tests": [
+        {
+          "path": "codex-rs/hepta-objective/src/proof_projection_tests.rs",
+          "symbol": "proof_projection_matches_independent_authenticated_recompilation"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/proof_projection_tests.rs",
+          "symbol": "proof_projection_rejects_metadata_intent_and_profile_substitution"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/proof_projection_tests.rs",
+          "symbol": "frozen_profile_does_not_cache_authentication_or_freshness"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/proof_projection_tests.rs",
+          "symbol": "proof_projection_rejects_conflict_but_preserves_explicit_abstain"
+        }
+      ],
+      "designOperation": "encode_proof_bearing_objective_function_v1",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+          "symbol": "encode_validated_profile_objective_function_v1",
+          "role": "strict_native_source_receipt_and_protocol_projection"
+        },
+        {
+          "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
+          "symbol": "decode_objective_function_v1",
+          "role": "strict_canonical_wire_revalidation"
+        }
+      ],
+      "sourcePathExists": true
     }
   ],
   "canonicalReadinessProtocols": [
@@ -323,7 +501,7 @@
     "specification": "complete",
     "source": "candidate_implemented",
     "exactHeadQualification": "required",
-    "productComposition": "source_composed_not_activated",
+    "productComposition": "source_composed_qualification_pending_not_activated",
     "independentAcceptanceState": "not_established",
     "activationState": "not_established",
     "releaseState": "not_established"
@@ -349,114 +527,291 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "3c516ec10e753a2709000da45e581cd66a30ef55",
+    "tree": "725ab65211bfda92dc55f349afd7a3315e2d6f1a"
   },
   "repositoryControlledGaps": [
-    "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
-    "Run the named target-host objective measurement harness and qualify Agentd crash/restart/backpressure behavior on the selected deployment host."
+    "Obtain successful read-only source-head and deterministic synthetic-merge receipts for one final canonical candidate checkout.",
+    "Record staged latency and isolated fixture-process resources on the selected deployment host and qualify its storage, crash/restart and backpressure policy.",
+    "Add a separately versioned durable admission-proof persistence/recovery contract before claiming proof recovery beyond the currently persisted admission/native/protocol identities."
   ],
   "externalEvidenceGates": [
-    "independent semantic review",
-    "product execution and target-host qualification",
-    "operator acceptance, canary, promotion and release"
+    "selected deployment-host measurement, storage and resource-policy acceptance",
+    "independent semantic and security review",
+    "operator acceptance, canary observation, promotion, rollback authority and release approval"
   ],
   "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
   "exactHeadQualificationPolicy": {
-    "state": "external_exact_candidate_receipt_required",
-    "verifier": "scripts/hepta-implementation-maps.py verify --expected-sha <checkout> --expected-tree <checkout-tree>",
+    "state": "read_only_exact_candidate_receipt_required",
+    "verifier": "python3 scripts/hepta-objective-current-state.py verify; python3 scripts/hepta-objective-qualify-exact.py; python3 scripts/hepta-objective-evidence-project.py; python3 scripts/hepta-implementation-maps.py verify --module objective.compiler",
     "moduleSourceRule": "exactSourceCandidate equals the newest Git commit/tree touching every declared source root",
     "workflows": [
+      ".github/workflows/hepta-lane-d-semantic-conformance.yml",
       ".github/workflows/hepta-objective-admission.yml",
-      ".github/workflows/hepta-lane-d-semantic-conformance.yml"
+      ".github/workflows/hepta-objective-exact-execution.yml",
+      ".github/workflows/hepta-objective-target-measurement.yml"
     ],
     "productCompositionRule": "productCompositionSourceCandidate must equal the newest Git commit/tree touching the registered product-composition paths"
   },
   "productCallerEvidence": [
     {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
-      "symbol": "ObjectiveRuntimeHost::submit",
-      "semantics": "signed AuthBus -> current trust authentication -> admission -> durable publication -> current-trust revalidation -> generation/fence-bound runtime admission"
+      "symbol": "ObjectiveRuntimeHost::open / ObjectiveRuntimeHost::submit",
+      "semantics": "open freezes one owner-local validated profile for the process generation; submit authenticates every signed request against current trust, builds a fresh admission context and calls the validated intelligence façade before current deadline/trust/generation/fence runtime admission"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
-      "symbol": "compile_and_publish_objective_run_v1",
-      "semantics": "opaque admission -> compile -> canonical ObjectiveFunctionV1 projection -> destination-owned run-start append before runtime consumption"
+      "symbol": "compile_and_publish_validated_objective_run_v1",
+      "semantics": "fresh authenticated admission through a generation-local frozen profile -> proof-bearing deterministic compile -> strict proof-bound ObjectiveFunctionV1 projection -> destination-owned run-start append before runtime consumption"
     },
     {
-      "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
-      "symbol": "DurableRunStartJournal",
-      "semantics": "v2 record binds native semantic bytes/digest plus canonical ObjectiveFunctionV1 bytes/digest; legacy v1 is read-compatible but rejected at Agentd final use"
+      "path": "codex-rs/hepta-learning-ledger/src/run_start_store.rs",
+      "symbol": "DurableRunStartStore",
+      "semantics": "segmented global chain with checkpoint-CAS append, crash reconciliation and two-phase expired-prefix compaction"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_run_start_checkpoint.rs",
+      "symbol": "ObjectiveRunStartCheckpointFile",
+      "semantics": "independent owner-private checkpoint outside Agent home fences rollback and compaction frontier"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/objective_product_e2e.rs",
+      "symbol": "signed_objective_abstain_is_durable_idempotent_and_restart_safe",
+      "semantics": "real daemon ingress, durable replay, generation fencing and restart verification"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/objective_product_e2e.rs",
+      "symbol": "signed_compiled_objective_executes_once_reaches_terminal_and_does_not_resurrect",
+      "semantics": "configured compiled compatibility host -> trusted context fixture -> signed Unix final-use grant -> physical App Server request to controlled HTTP/SSE model -> terminal -> reopened inference journal exact replay without resend; not autonomous seven-owner or live-provider qualification"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_replay.rs",
+      "symbol": "resolve_authenticated_replay",
+      "semantics": "current authenticated full body identity -> checkpoint-backed original publication; no fresh-source readmission, new append or effect permit"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/objective_product_e2e/replay.rs",
+      "symbol": "delayed_exact_ack_replay_survives_source_age_but_not_revocation",
+      "semantics": "real daemon rejects a new stale source but preserves the original exact acknowledgement; revocation still rejects replay"
     }
   ],
   "exactSourceCandidate": {
-    "commit": "e946a7ed08814881f9986d813c5b8cd821241f99",
-    "tree": "5c62cf98768ee7f99c55e80c3b4430bcfddd41e7",
+    "commit": "954a7bded74a1b8ce27703fdf73fdea29e1d437b",
+    "tree": "edaf7993fdf21bb1630b13f04bffdeb43dfb740b",
     "roots": [
       "codex-rs/hepta-objective"
     ],
-    "role": "module_source_identity"
+    "role": "module_source_identity_not_execution_receipt"
   },
   "canonicalProtocolContracts": [
     "ObjectiveFunctionV1",
-    "RunStartSnapshotV1"
+    "RunStartSnapshotV1",
+    "ObjectiveRunStartCheckpointV1",
+    "RunStartCompactionManifestV1"
   ],
   "productCompositionSourceCandidate": {
-    "commit": "e603e7ac675843e69f6cfd741e42180b2d5437ed",
-    "tree": "6de843d2ddf162869e4aff0ebb84642d4b2c26c3",
+    "commit": "598daddf70750713e2d1be9bd2cf5e951c2ac0a9",
+    "tree": "806fb470e2fb929f9bec1d9553ac0b093e877fef",
     "paths": [
+      ".github/workflows/hepta-objective-admission.yml",
+      ".github/workflows/hepta-objective-exact-execution.yml",
+      ".github/workflows/hepta-objective-product-composition.yml",
+      ".github/workflows/hepta-objective-target-measurement.yml",
+      "codex-rs/hepta-agent-protocol/src/authbus.rs",
+      "codex-rs/hepta-agent-protocol/src/objective_tests.rs",
+      "codex-rs/hepta-agentd/src/config.rs",
+      "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "codex-rs/hepta-agentd/src/main.rs",
+      "codex-rs/hepta-agentd/src/objective_run_start_checkpoint.rs",
+      "codex-rs/hepta-agentd/src/objective_run_start_checkpoint_tests.rs",
       "codex-rs/hepta-agentd/src/objective_runtime.rs",
+      "codex-rs/hepta-agentd/src/objective_runtime_replay.rs",
       "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "codex-rs/hepta-agentd/src/runtime.rs",
+      "codex-rs/hepta-agentd/tests/objective_product_e2e.rs",
+      "codex-rs/hepta-agentd/tests/objective_product_e2e/replay.rs",
+      "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts.rs",
+      "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts_tests.rs",
       "codex-rs/hepta-intelligence/src/objective_run.rs",
       "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
       "codex-rs/hepta-learning-ledger/src/run_start.rs",
-      "codex-rs/hepta-learning-ledger/src/run_start_tests.rs"
+      "codex-rs/hepta-learning-ledger/src/run_start_compaction.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start_store.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs",
+      "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
+      "codex-rs/hepta-objective/src/objective_admission.rs",
+      "codex-rs/hepta-objective/src/objective_admission_tests.rs",
+      "codex-rs/hepta-objective/src/objective_function_v1.rs",
+      "codex-rs/hepta-objective/src/proof_projection.rs",
+      "codex-rs/hepta-objective/src/proof_projection_tests.rs",
+      "codex-rs/hepta-objective/src/validated_admission.rs",
+      "codex-rs/hepta-objective/src/validated_admission_tests.rs",
+      "docs/modules/objective.compiler/CURRENT_STATE.json",
+      "docs/modules/objective.compiler/DELIVERY_EVIDENCE.md",
+      "docs/modules/objective.compiler/SEMANTIC_SUPPORT.md",
+      "docs/modules/objective.compiler/TECHNICAL.md",
+      "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+      "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+      "qualification/module-execution-dossiers/detail/objective.compiler.md",
+      "scripts/hepta-objective-current-state.py",
+      "scripts/hepta-objective-evidence-project.py",
+      "scripts/hepta-objective-qualify-exact.py",
+      "scripts/hepta-objective-target-measure.py",
+      "scripts/test_hepta_objective_evidence_project.py",
+      "scripts/test_hepta_objective_target_measure.py"
     ],
-    "role": "product_composition_source_identity"
+    "role": "product_composition_source_identity_not_execution_receipt"
   },
   "canonicalProductOperations": [
     "decode_source_envelope_json_v1",
     "validate_structure",
-    "admit_objective_v1",
-    "compile_admitted_objective_v1",
-    "encode_objective_function_v1",
+    "validate_admission_profile_v1",
+    "compile_authoritative_objective_v1",
+    "encode_proof_bearing_objective_function_v1",
     "decode_objective_function_v1"
   ],
   "productCallers": [
     {
       "sourcePath": "codex-rs/hepta-agentd/src/objective_runtime.rs",
-      "nativeSymbol": "submit",
-      "state": "authenticated_configured_objective_host"
+      "nativeSymbol": "ObjectiveRuntimeHost::submit",
+      "state": "authenticated_durable_configured_objective_host"
     }
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/hepta-objective-admission.yml",
+      "object": "7aa0a6992f7eda6d5b2f08672fe46e4326a8cd65"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-exact-execution.yml",
+      "object": "a669a677569ed0aa8574cfdd0fdc29d929df8fb3"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-product-composition.yml",
+      "object": "9facc994c20cf6332551e358ce32d8d46841167a"
+    },
+    {
+      "path": ".github/workflows/hepta-objective-target-measurement.yml",
+      "object": "78794cda5648847e813d068855b13eacdf5a0fc0"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/authbus.rs",
+      "object": "4def8e85f0060f7fee6abf5481df20316e125935"
+    },
+    {
+      "path": "codex-rs/hepta-agent-protocol/src/objective_tests.rs",
+      "object": "f0be97361aa78b37a73dd112e8c5ab4c0388b92e"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/config.rs",
+      "object": "9b7a7eeb5f0344c525241bba3a55e177a74d8f9c"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
+      "object": "e262ef5e6e46ab725c7d6c34587f728103e8b97f"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/lane_b_runtime_tests.rs",
+      "object": "8f2b28e906f07797868d3fd1a3ebdf125bf7e64b"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/main.rs",
+      "object": "f843895fb7d115e7cfe6826b4811f3b3ea1aa6be"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_run_start_checkpoint.rs",
+      "object": "3b16ab96913a14b3be6870329a28a3df5c2c6871"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_run_start_checkpoint_tests.rs",
+      "object": "f304df3c5d55772be612245fd7cbc73b01f36c2f"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/objective_runtime.rs",
-      "object": "84a4b156fa04f27665319300e241732697a0ea01"
+      "object": "547305d0f2921650f964696074681197783a350d"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_replay.rs",
+      "object": "2031eb71d219be070259ed7feeb0831334b4ce90"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/objective_runtime_tests.rs",
+      "object": "4e052324915fb1e478d540041fac832a7ae2aae2"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/runtime.rs",
+      "object": "41b36e86e63d6cc6c0de09166ac6dba90ace09d8"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/objective_product_e2e.rs",
+      "object": "71f2369a00fee6938e9648c064eeb6c540686c36"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/objective_product_e2e/replay.rs",
+      "object": "54a802aeec23d5bf730a1513d5ddd8daaf20ee96"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/tests/support/fleet.rs",
+      "object": "5f363167a0a115a593a4866bd69e229689f9f18f"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_app_server.rs",
+      "object": "ad6ab69a7b72e16d6309fc6b8164cc5bde297eb4"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts.rs",
+      "object": "c7a5ac4f53e8074ced44312c5a06f24338b62759"
+    },
+    {
+      "path": "codex-rs/hepta-infer-worker-host/src/native_intelligence_receipts_tests.rs",
+      "object": "fd153a4fe44b70a5e58048133043028233061796"
+    },
+    {
+      "path": "codex-rs/hepta-intelligence/src/objective_run.rs",
+      "object": "ed1d31c7843696643a7abc2a41473f4515246495"
     },
     {
       "path": "codex-rs/hepta-intelligence/src/objective_run_tests.rs",
-      "object": "125f654d9d3cf27577e2ae9b387a885accdf115f"
+      "object": "f984e7f468b04cb81fc07695826c2769b21561c8"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
+      "object": "fd9f69cc08ecd3ab10494873ee5be27fc1f3f299"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start_compaction.rs",
+      "object": "c959db0d623543bdcf9f8274320b29d12990f29e"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start_store.rs",
+      "object": "fbb7f9962daa80207b2305da9e517186d4573303"
+    },
+    {
+      "path": "codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs",
+      "object": "4e0f7609683446b0b304f05eca436bbbffb0224d"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
-      "object": "cfbb34705a6dee9a2b0c5afda76592109c83f86b"
+      "object": "f8cbb9db97d0ea66658af24e35ef4a2de9ee8041"
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "e89450f622d12e85f516df691291e349f42cd8fc"
+      "object": "2033543686824b8d3a0e961e01182b1c8c8f3355"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler.rs",
-      "object": "74d3da0017f74320ac47839e46988f8cd051c587"
+      "object": "f4c01982ba06fd7e52e5aee832ee4a11459973a4"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler_tests.rs",
-      "object": "3debd314419d0c3143e9b8287288709ef53fa54d"
+      "object": "7dc29fa41d0846adc337580197e93602b25bf1f0"
     },
     {
       "path": "codex-rs/hepta-objective/src/feasibility.rs",
-      "object": "c540d050dfdc59688d3ef5406537b1a3c32471db"
+      "object": "3b70d4772933b7e2658174a64de87edf605efe6a"
     },
     {
       "path": "codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs",
@@ -464,19 +819,35 @@
     },
     {
       "path": "codex-rs/hepta-objective/src/feasibility_tests.rs",
-      "object": "c77c620fe88a59619bb71aa041836957e86c6387"
+      "object": "4d4a88f0d285515cf513783096c4c7678dfb42bc"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/lib.rs",
+      "object": "8f99d18c3764e57b0a4c36604951f5e3017cdfb7"
     },
     {
       "path": "codex-rs/hepta-objective/src/objective_admission.rs",
-      "object": "87f72baa003556720db120827442a838b391cd3f"
+      "object": "497c620b2e674e273f5202a0214024b0ad57c662"
     },
     {
       "path": "codex-rs/hepta-objective/src/objective_admission_tests.rs",
-      "object": "5a52048e6542dababa20825243de2b96e011b1e2"
+      "object": "9d2aa9d2b977a7a32d3582452786e48f65aa23ac"
     },
     {
       "path": "codex-rs/hepta-objective/src/objective_function_v1.rs",
-      "object": "9a04b17f4b18ed352bdb285f0334b00755e6866e"
+      "object": "09122960addfc5ffc776c41c9f78401e4d972247"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs",
+      "object": "c08cfc2d4ed6eedd4ad7b7905d119077d7ee1138"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/proof_projection.rs",
+      "object": "97c22987092f0285c2ebecc3a55033d252f52bf3"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/proof_projection_tests.rs",
+      "object": "5b123b2986ef256ccfba8b52c371e4a6ec80b22d"
     },
     {
       "path": "codex-rs/hepta-objective/src/source_envelope_json.rs",
@@ -484,7 +855,7 @@
     },
     {
       "path": "codex-rs/hepta-objective/src/source_envelope_json_tests.rs",
-      "object": "0f100d4b0ab82b202cbe8eb69dedd0b6f0b1f577"
+      "object": "157915170cf46287ee2549422254d0d21342b2c5"
     },
     {
       "path": "codex-rs/hepta-objective/src/source_envelope_v1_tests.rs",
@@ -492,11 +863,132 @@
     },
     {
       "path": "codex-rs/hepta-objective/src/source_envelope_validation.rs",
-      "object": "5dc5676e23de3b4a661e1520a0c5ae4a1dc2020d"
+      "object": "0eb2d59b0e3d2a9e350fac4aa290f1df57e64af7"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/validated_admission.rs",
+      "object": "3ebc6cf8882c899a8ff7e7a2ce9ae4514730c331"
+    },
+    {
+      "path": "codex-rs/hepta-objective/src/validated_admission_tests.rs",
+      "object": "034cab7d3f2c75d249448bde0e4b606e64222cef"
+    },
+    {
+      "path": "docs/modules/objective.compiler/CURRENT_STATE.json",
+      "object": "a1f74a7d1cac9144659fdbaba6f36c68678455c4"
+    },
+    {
+      "path": "docs/modules/objective.compiler/DELIVERY_EVIDENCE.md",
+      "object": "5e60609c97197be9c3753652c706f3ab85ec7ed7"
+    },
+    {
+      "path": "docs/modules/objective.compiler/SEMANTIC_SUPPORT.md",
+      "object": "d19a28c170945031241e9ffa478850f8d72c5def"
     },
     {
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
-      "object": "6c627878c86207f41091eb56fedf701b1e49ddd4"
+      "object": "8776132abbd8b046c5af1497cf5e1485957d29ae"
+    },
+    {
+      "path": "docs/readiness/OBJECTIVE_COMPILER_EXECUTION.md",
+      "object": "3f6862902d07461cd5f4f51b7128ccaa90a78430"
+    },
+    {
+      "path": "docs/readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md",
+      "object": "e3ad0a040c9212af76660311e5a21dc722198a67"
+    },
+    {
+      "path": "qualification/module-execution-dossiers/detail/objective.compiler.md",
+      "object": "9b870b039f7ecdcf1e2ad8c3a1327b822ce7fe90"
+    },
+    {
+      "path": "scripts/hepta-objective-current-state.py",
+      "object": "b41970a36c989962134651c1c6447cc5363f2da5"
+    },
+    {
+      "path": "scripts/hepta-objective-evidence-project.py",
+      "object": "67b9259ecd0f64159bf9447ba697e6919cba2284"
+    },
+    {
+      "path": "scripts/hepta-objective-qualify-exact.py",
+      "object": "30bf7938e5b0c898fea655f541105d5c80b67e28"
+    },
+    {
+      "path": "scripts/hepta-objective-target-measure.py",
+      "object": "cd74aff6480c0003a72530ac693a19982cef2d2b"
+    },
+    {
+      "path": "scripts/test_hepta_objective_evidence_project.py",
+      "object": "f8586d22cd4223d42d7112c5ca29a11225f1980a"
+    },
+    {
+      "path": "scripts/test_hepta_objective_target_measure.py",
+      "object": "144424da031a957cea8672d815ce9a58c64a01eb"
     }
-  ]
+  ],
+  "status": {
+    "implemented": true,
+    "composed": true,
+    "qualified": false
+  },
+  "generatedCurrentState": {
+    "schema": "hepta.objective-compiler-current-state.v2",
+    "schemaVersion": 2,
+    "manifestPath": "docs/modules/objective.compiler/CURRENT_STATE.json",
+    "manifestSha256": "14bc95a145f63da905593f3022ecb309dbd1d6094f0bd9912871a52fe35e47a2",
+    "implementationState": {
+      "core": "source_complete",
+      "productComposition": "source_composed_durable_proof_bound_not_activated",
+      "semanticHardening": "source_complete_pending_exact_candidate_receipts",
+      "qualificationEvidence": "dynamic_receipt_projection_required",
+      "independentAcceptance": "external_receipt_required",
+      "canaryPromotionRollback": "source_policy_not_activated"
+    },
+    "truth": {
+      "productionImplementation": false,
+      "accepted": false,
+      "activated": false,
+      "released": false
+    },
+    "evidenceProjection": {
+      "schema": "hepta.objective-evidence-projection.v2",
+      "producer": "scripts/hepta-objective-evidence-project.py",
+      "dynamicClaims": [
+        "sourceHeadQualification",
+        "syntheticMergeQualification",
+        "targetHostMeasurement"
+      ],
+      "manualPassFieldsForbidden": true
+    },
+    "requiredChecks": [
+      "Hepta objective admission qualification",
+      "Hepta objective product composition / source-head",
+      "Hepta objective product composition / synthetic-merge",
+      "Hepta Lane D semantic conformance",
+      "objective.compiler current-state projection",
+      "Agentd objective product E2E",
+      "strict objective clippy",
+      "objective release guard"
+    ],
+    "externalGates": [
+      "selected deployment target-host measurement and resource-policy acceptance",
+      "independent semantic and security review",
+      "operator acceptance",
+      "canary observation",
+      "promotion approval",
+      "rollback authority validation",
+      "release authority approval"
+    ]
+  },
+  "dynamicQualificationEvidence": {
+    "schema": "hepta.objective-evidence-projection.v2",
+    "staticManifest": "docs/modules/objective.compiler/CURRENT_STATE.json",
+    "producer": "scripts/hepta-objective-evidence-project.py",
+    "manualPassFieldsForbidden": true,
+    "dynamicClaims": [
+      "sourceHeadQualification",
+      "syntheticMergeQualification",
+      "targetHostMeasurement"
+    ]
+  }
 }

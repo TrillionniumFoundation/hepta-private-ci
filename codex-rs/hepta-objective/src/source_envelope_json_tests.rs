@@ -332,6 +332,11 @@ fn retains_structural_count_text_and_semantic_key_checks_after_decoding() {
             Err(ObjectiveSourceJsonError::Structure(_))
         ));
     }
+
+    let mut empty_actions = original.clone();
+    empty_actions["structuredIntent"]["legalActionClasses"] = json!([]);
+    assert!(decode_source_envelope_json_v1(&serde_json::to_vec(&empty_actions).unwrap()).is_ok());
+
     let mut source = original;
     let predicates = source["structuredIntent"]["successPredicates"]
         .as_array_mut()

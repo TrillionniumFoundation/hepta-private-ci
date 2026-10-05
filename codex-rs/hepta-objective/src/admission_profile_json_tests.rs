@@ -1,3 +1,4 @@
+use pretty_assertions::assert_eq;
 use serde_json::json;
 
 use super::*;
@@ -134,4 +135,32 @@ fn profile_json_rejects_unregistered_risk_ordering() {
             ObjectiveAdmissionError::InvalidProfile("risk ordering")
         ))
     ));
+}
+
+#[test]
+fn profile_json_rejects_reserved_alias_and_semantic_collision() {
+    let original: serde_json::Value = serde_json::from_slice(&profile_json()).expect("json");
+    let mut reserved = original.clone();
+    reserved["actions"][0]["actionId"] = json!("abstain");
+    let mut alias = original.clone();
+    let mut action = alias["actions"][0].clone();
+    action["sourceActionClass"] = json!("read.other");
+    alias["actions"]
+        .as_array_mut()
+        .expect("actions")
+        .push(action);
+    let mut collision = original;
+    collision["evidenceRequirements"][0]["sourceRequirementId"] = json!("latency.ceiling");
+    for (value, reason) in [
+        (reserved, "reserved abstain action target"),
+        (alias, "duplicate action target"),
+        (collision, "global semantic identity collision"),
+    ] {
+        assert_eq!(
+            decode_admission_profile_json_v1(&serde_json::to_vec(&value).expect("encoded")),
+            Err(ObjectiveAdmissionProfileJsonError::Admission(
+                ObjectiveAdmissionError::InvalidProfile(reason),
+            )),
+        );
+    }
 }

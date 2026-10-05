@@ -1,5 +1,57 @@
 # objective.compiler technical development guide
 
+<!-- BEGIN GENERATED OBJECTIVE.COMPILER STATUS -->
+## Generated source-state status
+
+This block is generated from `docs/modules/objective.compiler/CURRENT_STATE.json`. The manifest contains static source and policy facts only. Exact source-head, synthetic-merge and target-host observations are never hand-maintained here; they are emitted by the receipt-bound evidence projection named below.
+
+- Manifest SHA-256: `14bc95a145f63da905593f3022ecb309dbd1d6094f0bd9912871a52fe35e47a2`
+- Core: `source_complete`
+- Product composition: `source_composed_durable_proof_bound_not_activated`
+- Semantic hardening: `source_complete_pending_exact_candidate_receipts`
+- Qualification evidence policy: `dynamic_receipt_projection_required`
+- Independent acceptance: `external_receipt_required`
+- Canary/promotion/rollback: `source_policy_not_activated`
+- Dynamic projection schema: `hepta.objective-evidence-projection.v2`
+- Dynamic projection producer: `scripts/hepta-objective-evidence-project.py`
+- Manual dynamic pass fields: `forbidden`
+
+| Source claim | Value |
+| --- | --- |
+| `productionImplementation` | `false` |
+| `accepted` | `false` |
+| `activated` | `false` |
+| `released` | `false` |
+
+### Dynamic claims projected only from artifacts
+
+- `sourceHeadQualification`
+- `syntheticMergeQualification`
+- `targetHostMeasurement`
+
+### Required repository checks
+
+- `Hepta objective admission qualification`
+- `Hepta objective product composition / source-head`
+- `Hepta objective product composition / synthetic-merge`
+- `Hepta Lane D semantic conformance`
+- `objective.compiler current-state projection`
+- `Agentd objective product E2E`
+- `strict objective clippy`
+- `objective release guard`
+
+### External evidence gates
+
+- selected deployment target-host measurement and resource-policy acceptance
+- independent semantic and security review
+- operator acceptance
+- canary observation
+- promotion approval
+- rollback authority validation
+- release authority approval
+
+<!-- END GENERATED OBJECTIVE.COMPILER STATUS -->
+
 **Plan:** `HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN` v8.0.0
 
 **Module:** `objective.compiler`
@@ -42,7 +94,25 @@ Declared roots not yet present:
 
 None.
 
-`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate and are covered by the dedicated closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification. This status does not activate `objective.compiler`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+`existing_bound` is a source-location fact. The declared roots above are materialized in the bounded V8 source candidate. Closed-world inventory, focused tests, all-target compilation, strict lint and exact-head qualification remain required checks; their existence is not a current pass receipt. A pass claim must identify the exact source/tree, workflow/run, observed result and artifact evidence described in [DELIVERY_EVIDENCE.md](DELIVERY_EVIDENCE.md). Missing, queued, interrupted or failed execution is not passed. This status does not activate `objective.compiler`, create a production caller, grant runtime or effect authority, issue independent acceptance, select or promote a candidate, or authorize release. Any later source move updates `MODULES.json`, `SOURCE_BINDINGS.json` and this guide in one candidate.
+
+### Current source change and evidence boundary
+
+The ordinary source path identified in [DELIVERY_EVIDENCE.md](DELIVERY_EVIDENCE.md) keeps the existing Agentd/intelligence/destination-journal ownership chain. Agentd now freezes one `ValidatedAdmissionProfileV1` at host open and reuses only its static validation, indexes, exact digest, revision and compiler-contract identity. Every request still rechecks authenticated source identity, principal scope, intent/schema/normalization digests, freshness and deadline; final use still rechecks trust, generation and fence. The Rust regression tests and measurement harnesses are source artifacts, not execution receipts. Versioned durable admission-proof recovery is implemented on the existing RunStart owner path (see the lifecycle contract below). Exact-candidate execution, selected deployment-host acceptance and independent acceptance remain receipt-bound gates. Canonical accepted/activated/released state is not changed by this guide.
+
+### Shipped daemon versus optional canonical composition
+
+The CLI constructs the canonical preparation runner when its explicit authority
+arguments are present, but this repository does not yet implement or install
+`AgentdIntelligenceInvocationProviderV1`. Both components are required for the
+seven-owner handoff and its capability advertisement. Consequently ordinary CLI
+ObjectiveStart currently reaches the compatibility run coordinator after the
+same authenticated compiler and durable RunStart publication; runner-only
+configuration does not demonstrate canonical preparation. External embedding
+can install both components through `AgentdConfig`. Supplying the missing
+provider from authenticated owner inputs, and retaining recoverable seven-owner
+handoff evidence, remain integration work. See the [normative product-path
+boundary](../../readiness/OBJECTIVE_COMPILER_EXECUTION.md#2-canonical-product-path).
 
 ## 3. Boundary, responsibilities and non-goals
 
@@ -98,6 +168,7 @@ Produced contracts:
 - `ModulePort::objective.compiler::intelligence.control`
 - `ObjectiveFunctionV1`
 - `RunStartSnapshotV1`
+- `ObjectiveRunExecutionBinding`
 
 Consumed contracts:
 
@@ -111,7 +182,7 @@ Critical protocol schemas:
 
 Every producer validates output before publication and binds semantic fields into the declared digest scope. Every consumer validates version, bounds, producer identity, scope and digest before use. Compatibility is additive only where registered; unknown critical fields are rejected. Contract identifiers, meaning and authority interpretation cannot change in place.
 
-`ObjectiveFunction` has two deliberately separate identities. `ObjectiveFunction::semantic_digest` is the compact owner-native compiler identity used by `RunStartSnapshotV1.objectiveDigest`; `encode_objective_function_v1` materializes the registered canonical JSON `ObjectiveFunctionV1` and computes a separate protocol-wire digest. The durable run-start v2 record binds both byte strings and both digests, and Agentd refuses legacy records without canonical protocol identity at final use. Tests cover exact canonical round trips, unknown/non-canonical JSON, native/protocol digest separation, maximum bounds and durable revalidation. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
+`ObjectiveFunction` has two deliberately separate identities. `ObjectiveFunction::semantic_digest` is the compact owner-native compiler identity used by `RunStartSnapshotV1.objectiveDigest`; the product facade now uses `encode_proof_bearing_objective_function_v1` on the opaque result of `compile_authoritative_objective_v1`. The encoder rebinds the complete source-envelope and frozen-profile identity, retains native/source/receipt validation and materializes the registered canonical JSON `ObjectiveFunctionV1` with its separate protocol-wire digest without a second native compilation. `encode_authenticated_objective_function_v1` remains the compatibility entrypoint for separate receipts and independently repeats authenticated admission and compilation. The crate-private encoder is not a caller-controlled bypass. `decode_objective_function_v1` validates exact canonical bytes plus semantic uniqueness, ordering, intrinsic-abstain, allowed/forbidden disjointness and soft-weight bounds. New durable run-start V3 records bind both byte strings and both digests plus the complete canonical admission proof. V1/V2 records remain readable without proof synthesis, but Agentd refuses them at final use; current profile/revision/compiler-contract and live authorization are separately checked. For a compiled compatibility-path run, `ObjectiveStart` also returns an optional `ObjectiveRunExecutionBinding` copied from the daemon-owned durable record. The binding contains only the exact request/objective/body/artifact/authority/generation/fence/deadline identity needed by a trusted execution owner to attach independently produced context; it grants no effect authority. Test sources cover source/profile/context drift, duplicate or reordered wire identities, unknown/non-canonical JSON, native/protocol digest separation, maximum bounds and durable revalidation. Their execution remains exact-candidate evidence. Error mapping preserves rejected, unavailable, timed out, indeterminate, quarantined and terminally failed outcomes.
 
 ## 6. Data authority, persistence and migrations
 
@@ -156,11 +227,13 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/objective.compiler.md) specifies this module's algorithm, admission-safe aggregate ceilings and capacity fixtures. The exact Source-V1-to-native support boundary is recorded in [`SEMANTIC_SUPPORT.md`](SEMANTIC_SUPPORT.md); syntactically accepted source operators that lack a lossless native representation are deterministic rejections, not implemented compiler semantics. Target ceilings are not measured latency. Current native limits belong to [codex-rs/hepta-objective/src/objective_admission.rs](../../../codex-rs/hepta-objective/src/objective_admission.rs), [source_envelope_validation.rs](../../../codex-rs/hepta-objective/src/source_envelope_validation.rs) and the linked implementation components. The executable named-host procedure is [OBJECTIVE_TARGET_HOST_MEASUREMENT.md](../../readiness/OBJECTIVE_TARGET_HOST_MEASUREMENT.md) with recorder `scripts/hepta-objective-target-measure.py`; ordinary admission/compile and maximum-conflict extraction are measured separately.
 
+Removing a repeated native solve and constructing the validated profile once per `ObjectiveRuntimeHost` generation are source-level optimizations, not measured speedups. The reuse key binds the exact profile digest, profile revision and compiler-contract digest. It deliberately excludes source authentication, clock state, deadline, revocation, generation, fence and effect grants. The named-host recorder separately reports cold profile validation, warm authenticated admission, native compile, protocol encode/decode, maximum-conflict extraction and observable product boundaries. The atomic destination-owner append/checkpoint/Agentd-handoff boundary is reported as one boundary rather than split into invented timings. Stage-level and selected-host observations remain required as specified in [DELIVERY_EVIDENCE.md](DELIVERY_EVIDENCE.md).
+
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
 
-Stateless compiler/admission library with a named product-source composition in Agentd. `ObjectiveRuntimeHost::submit` authenticates the signed structured request against current AuthBus trust, derives the owner-local admission context/profile/generation/fence, and calls `compile_and_publish_objective_run_v1`; the destination-owned `DurableRunStartJournal` synchronously persists the admission binding, objective semantic bytes and `RunStartSnapshotV1` before a non-abstain run reaches `AgentRunCoordinator`; initial journal creation also synchronizes the containing directory on Unix, while non-Unix directory-entry durability remains a selected-host qualification obligation. Restart recovery replays the journal and revalidates retained signatures against current trust. The compiler still owns no daemon or private objective database. This is source composition, not deployment activation. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
+Stateless compiler/admission library with a named product-source composition in Agentd. `ObjectiveRuntimeHost::open` validates and freezes the immutable owner-local profile once for that process generation. `ObjectiveRuntimeHost::submit` authenticates each signed structured request against current AuthBus trust, derives the request-local admission context/generation/fence, and calls `compile_and_publish_validated_objective_run_v1`; the destination-owned `DurableRunStartStore` synchronously persists the admission binding, native semantic bytes, canonical protocol bytes and `RunStartSnapshotV1` before a non-abstain run reaches `AgentRunCoordinator`. The store rotates bounded segments, compacts only complete expired sealed prefixes, and binds every append and compaction transition by CAS to an independent monotonic checkpoint file outside the Agent-home rollback domain. Agentd requires `--objective-profile-file` and `--objective-checkpoint-file` together; the checkpoint owner uses a private sidecar writer lock and atomic replace on Unix. Restart recovery rejects missing, stale, wrong-binding or ahead-of-local checkpoints, reconciles acknowledgement loss, and revalidates retained signatures against current trust. A compiled fallback admission exposes the exact daemon snapshot through `ObjectiveRunExecutionBinding`; the trusted worker must attach its context/envelope, obtain current final-use authority, durably commit dispatch, perform exactly one physical App Server turn, and publish the observed terminal state back to that same Agentd run. Exact durable retry returns the stored observation without a second provider send. The compiler still owns no daemon or private objective database. This is source composition, not deployment activation. Unsupported language, resource exhaustion and infeasibility remain different outcomes; changing goal semantics requires a new authorized revision.
 
 Current operating and state-format references:
 
@@ -174,10 +247,16 @@ Current focused test sources (source references, not pass receipts):
 
 - [codex-rs/hepta-objective/src/compiler_tests.rs](../../../codex-rs/hepta-objective/src/compiler_tests.rs); named case: `compilation_is_permutation_invariant`.
 - [codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs](../../../codex-rs/hepta-objective/src/feasibility_exhaustive_tests.rs); named case: `all_three_action_graphs_match_truth_table_and_have_minimal_conflicts`.
-- [codex-rs/hepta-agentd/src/objective_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/objective_runtime_tests.rs); signed ingress, replay frontier, explicit revoked/stale owner-trust recovery rejection, generation/fence rejection and runtime handoff.
-- [codex-rs/hepta-learning-ledger/src/run_start_tests.rs](../../../codex-rs/hepta-learning-ledger/src/run_start_tests.rs); durable append, exact replay, canonical protocol-digest validation, partial-tail recovery, acknowledgement-loss replay and semantic/protocol drift conflict.
+- [codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs](../../../codex-rs/hepta-objective/src/objective_function_v1_strict_tests.rs); authenticated projection rebinding, wire uniqueness/order, intrinsic abstain, disjoint actions, capacity and microsecond-deadline projection.
+- [codex-rs/hepta-objective/src/proof_projection_tests.rs](../../../codex-rs/hepta-objective/src/proof_projection_tests.rs); opaque-projection parity against independent recompilation, metadata/intent/profile substitution, per-request authentication/freshness rejection, hard-conflict rejection and explicit-abstain preservation.
+- [codex-rs/hepta-agentd/src/objective_runtime_tests.rs](../../../codex-rs/hepta-agentd/src/objective_runtime_tests.rs); signed ingress, replay frontier, product capacity identity, conservative deadline final use, explicit revoked/stale owner-trust recovery rejection, generation/fence rejection and runtime handoff.
+- [codex-rs/hepta-agentd/src/objective_run_start_checkpoint_tests.rs](../../../codex-rs/hepta-agentd/src/objective_run_start_checkpoint_tests.rs); private checkpoint creation/reopen, writer exclusion, binding checks, missing-witness rollback detection and Agent-home separation.
+- [codex-rs/hepta-agentd/tests/objective_product_e2e.rs](../../../codex-rs/hepta-agentd/tests/objective_product_e2e.rs); real daemon signed ObjectiveStart, durable explicit-abstain terminal, compiled-run execution binding, context attachment, current final-use grant, one physical mock-provider App Server turn, terminal observation, exact retry without resend, process restart, checkpoint-frontier recovery, missing-witness startup rejection and structured target-host round-trip/restart measurement.
+- [codex-rs/hepta-learning-ledger/src/run_start_tests.rs](../../../codex-rs/hepta-learning-ledger/src/run_start_tests.rs) and [run_start_store_tests.rs](../../../codex-rs/hepta-learning-ledger/src/run_start_store_tests.rs); durable append, exact replay, segment rotation, compacted-prefix recovery, checkpoint acknowledgement loss, rollback detection and semantic/protocol drift conflict.
 
-In `codex-rs`, run `just test -p codex-hepta-objective`, plus the focused `codex-hepta-learning-ledger` run-start, `codex-hepta-intelligence` objective-run and `codex-hepta-agentd` objective-runtime tests. `.github/workflows/hepta-objective-admission.yml` executes those owner/caller checks, the exact-source verifier and measurement-recorder self-test. `.github/workflows/hepta-lane-d-semantic-conformance.yml` supplies cross-platform Lane-D package checks; the consolidated source workflow also carries `codex-hepta-objective` in this candidate. These commands/workflows are invocations and exact-candidate evidence surfaces, not permanent pass receipts.
+In `codex-rs`, run `just test -p codex-hepta-objective`, plus the focused `codex-hepta-learning-ledger` run-start, `codex-hepta-intelligence` objective-run, `codex-hepta-agentd` objective-runtime and objective-checkpoint tests. `.github/workflows/hepta-objective-admission.yml` executes those owner/caller checks, the exact-source verifier and measurement-recorder self-test. `.github/workflows/hepta-lane-d-semantic-conformance.yml` supplies cross-platform Lane-D package checks; the consolidated source workflow also carries `codex-hepta-objective` in this candidate. These commands/workflows are invocations and exact-candidate evidence surfaces, not permanent pass receipts.
+
+`.github/workflows/hepta-objective-exact-execution.yml` adds read-only execution on a fixed source and deterministic synthetic merge with actual per-command logs and incremental receipts. Each run also derives `evidence-projection.json` from the observed receipt; it never hand-edits canonical pass flags. `.github/workflows/hepta-objective-target-measurement.yml` records the named macOS qualification host separately and explicitly leaves selected deployment-host acceptance false. These workflows do not replace registry, Lane-D, independent acceptance, deployment-host or release gates. The old source-writing closure materializer is retired; the admission workflow no longer embeds a source-mutating artifact job. Normal source repairs are ordinary commits before qualification. Recorder unit tests exercise recorder behavior, not the Rust compiler or product runtime. Exact-source evidence interpretation is defined in [DELIVERY_EVIDENCE.md](DELIVERY_EVIDENCE.md).
 
 [Shared verification and qualification requirements](../README.md#shared-verification-and-qualification) retain the source/merge, failure, compilation and independent-evidence obligations.
 
@@ -287,10 +366,103 @@ Consumed readiness protocols:
 
 Ordinary authorized coding identifies the Git baseline, relevant contracts, owned paths, mandatory fixtures, deterministic fallback and rollback. A runtime coordinator admitting an envelope still verifies its current `CanonicalSourceReceiptV1`, frozen contract/readiness digest, expiry and zero authority delta; manually issuing an envelope is not a separate permission gate for ordinary repository work. This overlay does not change activation, acceptance, selection, promotion or release.
 
-## 17. Source implementation receipt
+## 17. Source implementation evidence requirements
 
 The bootstrap source-location obligation for `objective.compiler` is implemented by work package `OBJ-0-OBJECTIVE-CONTRACTS` in:
 
 - `codex-rs/hepta-objective`
 
-The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+`.github/workflows/hepta-consolidated-source.yml` declares closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked-state checks for this source candidate. This paragraph records the implementation location and required evidence surfaces; it is not an execution receipt. An actual current-source pass must be obtained from the exact candidate's recorded run and artifacts. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+
+### RunStart rotation writer fence (2026-09-25)
+
+The destination-owned segmented store now retains a directory writer lease
+across active-file close/rename/create and compaction. Same-process and
+cross-process regression probes must reject a competing writer at those cuts;
+reopening after the original owner exits preserves the exact run and chain.
+Compacted summary count/length validation precedes allocation. The authoritative
+protocol and retained-index capacity boundary are specified in
+`../../readiness/OBJECTIVE_COMPILER_EXECUTION.md`; neither a passing local test
+nor filesystem metadata grants target-host acceptance or activation.
+
+## Admission-proof persistence and recovery contract (2026-09-29)
+
+Current confidence lowering uses conservative integer ceil conversion from ppm
+to Q32. Its compiler-contract digest carries `conservative-q32-confidence`.
+Predecessor-contract RunStart records preserve their historical identity but are
+rejected at current Agentd final use. Migration requires a newly authorized
+objective revision/request; recovery, compaction and retry do not upgrade or
+overwrite an existing proof. The normative compatibility/migration rule is in
+[OBJECTIVE_COMPILER_EXECUTION.md](../../readiness/OBJECTIVE_COMPILER_EXECUTION.md#6-proof-and-protocol-projection).
+
+`ObjectiveAdmissionProofV1` remains privately constructed by authoritative
+admission. Its read-only `canonical_bytes()` export uses the same encoding
+helper as proof issuance: domain `hepta.objective.admission-proof.v1`, followed
+by five 32-byte digests in source-envelope, profile, authenticated context,
+compiler-contract and admitted-source order. The canonical proof has 192 bytes;
+its digest is SHA-256 of exactly those bytes. Export does not re-admit, re-solve,
+cache authorization or create a constructor for the opaque compiler proof.
+
+The intelligence facade places that evidence in the existing RunStart
+transaction as `RunStartAdmissionProofV1`. This historical integrity wrapper
+has private bytes and rejects unknown versions, zero component identities,
+wrong length, trailing bytes and digest drift. It is deliberately not the
+opaque compiler capability and cannot be converted into one. New run-record
+V3 and conflict-record V2 payloads contain the proof digest and canonical bytes
+immediately after `admitted_source_digest`; their normal frame digest, predecessor
+chain, external checkpoint and publication acknowledgement bind the added
+224 bytes. Profile and admitted-source identities must also match the enclosing
+admission. There is no additional proof database or independent proof authority.
+
+Old run V1/V2 and conflict V1 payloads decode with an absent proof. Re-encoding
+preserves their version and byte identity. New append validation rejects an
+absent proof; it does not retrofit old evidence. Inspection/replay-frontier
+recovery remains possible, but runtime admission requires a proof, the current
+profile and compiler contract, and all existing live trust/deadline/generation/
+fence checks. An authorized new revision or request is required for migration;
+recovery never manufactures one. Exact retries use the original durable proof,
+not a proof recomputed with a later clock. Expired compacted payloads are not
+reconstructed from summary indexes; surviving payloads retain their exact
+proof and record identities.
+
+Compiler-contract changes with an unchanged profile digest can reopen the same
+destination owner: startup retains incompatible predecessor proofs inert and
+recovers current-contract records after the normal live checks. The mixed-proof
+recovery fixture tests record filtering, not a configured-profile migration.
+The production RunStart owner and its external checkpoint also bind the exact
+profile digest. A different configured profile therefore fails host open with
+`BindingMismatch`; the owner must not reset the checkpoint, discard consumed
+messages or rewrite historical proof bytes. A separately authorized,
+anti-rollback-preserving destination-owner migration is required for that
+profile change and remains outside the implemented recovery path.
+
+Source V1 permits at most 127 mapped caller legal actions. Its frozen profile
+rejects mapping the reserved `abstain` action, and native compilation adds that
+intrinsic action within the 128-action aggregate limit. A 128-entry source or
+protocol array is a structural bound and does not expand the admitted caller
+action set.
+
+Canonical ObjectiveStart retains the live Fleet lifecycle generation and exact
+durable fence through invocation validation and prepared runtime/context
+projection. The ordinary `Starting N -> Running N+1` transition advances that
+lifecycle generation without changing the process spawn identity. The fence
+binds `(agent, spawn N, lifecycle N+1)`; the frozen composition's spawn generation
+must not replace the publication's current generation. The prepared run uses
+the exact durable deadline, independently of its worker computation budget;
+live trust/generation/fence checks still run after asynchronous preparation.
+
+The canonical objective owner port receives a private validation binding only
+from the already-durable compiled RunStart. That binding checks native semantic
+bytes and their digest, strict canonical protocol bytes/digest/revision, compiled
+disposition, proof presence and deny-all
+authority. The port repeats current frozen-profile admission and matches the
+source-envelope, profile, compiler-contract and admitted-source identities
+against the stored proof, then consumes the existing compiled semantic identity
+without another native solve or publication. The request-local admission clock
+may change; its context proof is not substituted for historical evidence. The
+fresh context revision must still equal the persisted protocol revision.
+Standalone public preparation has no durable binding and remains diagnostic.
+
+Regression coverage is indexed in `CLOSEOUT_20260929.md`. Test source is not a
+passing execution receipt; all acceptance and activation claims remain external.

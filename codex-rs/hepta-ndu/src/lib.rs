@@ -47,9 +47,11 @@ pub use error::NduError;
 pub use evaluator::canonical_evaluation_policy_digest;
 pub use evaluator::canonical_scalarization_digest;
 pub use evaluator::canonical_utility_profile_digest;
-#[allow(
+// Keep the deprecated compatibility export without treating this re-export as
+// a new integration. Downstream uses still emit the deprecation diagnostic.
+#[expect(
     deprecated,
-    reason = "retained as an explicit source-compatibility export; product callers use the policy-bound V2 entry"
+    reason = "retain the explicitly deprecated compatibility API"
 )]
 pub use evaluator::evaluate_candidates;
 pub use evaluator::evaluate_candidates_with_policy;
