@@ -167,8 +167,7 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
     );
     let chatgpt_wire = serde_json::to_value(&chatgpt_item).expect("item should serialize");
     assert_eq!(
-        chatgpt_wire
-            .pointer("/internal_chat_message_metadata_passthrough/content_item_kinds"),
+        chatgpt_wire.pointer("/internal_chat_message_metadata_passthrough/content_item_kinds"),
         None
     );
     assert_eq!(
@@ -236,8 +235,7 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
     );
     let nonstandard_wire = serde_json::to_value(&nonstandard_item).expect("item should serialize");
     assert_eq!(
-        nonstandard_wire
-            .pointer("/internal_chat_message_metadata_passthrough/content_item_kinds"),
+        nonstandard_wire.pointer("/internal_chat_message_metadata_passthrough/content_item_kinds"),
         None
     );
     assert_eq!(
