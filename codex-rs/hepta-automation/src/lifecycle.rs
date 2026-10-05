@@ -384,9 +384,9 @@ impl AutomationStore {
                     AutomationOccurrenceState::Claimed,
                     lease.lease_generation,
                     &lease.lease_token,
-                    None,
-                    None,
-                    None,
+                    /*queued_submission_id*/ None,
+                    /*turn_id*/ None,
+                    /*receipt_digest*/ None,
                     &format!(
                         "occurrence:reclaim:{}:{}",
                         lease.occurrence, lease.lease_token
@@ -447,9 +447,9 @@ impl AutomationStore {
             AutomationOccurrenceState::Claimed,
             lease.lease_generation,
             &lease.lease_token,
-            None,
-            None,
-            None,
+            /*queued_submission_id*/ None,
+            /*turn_id*/ None,
+            /*receipt_digest*/ None,
             &format!(
                 "occurrence:claim:{}:{}",
                 lease.occurrence, lease.lease_generation
@@ -561,8 +561,8 @@ impl AutomationStore {
             lease.lease_generation,
             &lease.lease_token,
             Some(&receipt.queued_submission_id),
-            None,
-            None,
+            /*turn_id*/ None,
+            /*receipt_digest*/ None,
             &format!("occurrence:admitted:{}", lease.occurrence),
             admitted_at_ms,
         )
@@ -661,7 +661,7 @@ impl AutomationStore {
             &current.claim_token,
             current.queued_submission_id.as_deref(),
             Some(turn_id),
-            None,
+            /*receipt_digest*/ None,
             &format!("occurrence:turn:{occurrence}:{turn_id}"),
             observed_at_ms,
         )
@@ -1462,7 +1462,7 @@ async fn advance_schedule(
                         reset_catch_up(tx, store, task_id, observed_at_ms).await?;
                         first_after(baseline, interval, observed_at_ms)?
                     } else {
-                        set_catch_up_state(tx, store, task_id, true, remaining - 1, observed_at_ms)
+                        set_catch_up_state(tx, store, task_id, /*active*/ true, remaining - 1, observed_at_ms)
                             .await?;
                         baseline
                     }
@@ -1477,7 +1477,7 @@ async fn advance_schedule(
                     let allowed = overdue_count.min(u64::from(max_occurrences));
                     let remaining = u16::try_from(allowed.saturating_sub(1))
                         .map_err(|_| AutomationError::Invalid)?;
-                    set_catch_up_state(tx, store, task_id, true, remaining, observed_at_ms).await?;
+                    set_catch_up_state(tx, store, task_id, /*active*/ true, remaining, observed_at_ms).await?;
                     baseline
                 }
             }
@@ -1594,7 +1594,7 @@ async fn reset_catch_up(
     task_id: AutomationTaskId,
     now_ms: u64,
 ) -> Result<(), AutomationError> {
-    set_catch_up_state(tx, store, task_id, false, 0, now_ms).await
+    set_catch_up_state(tx, store, task_id, /*active*/ false, /*remaining*/ 0, now_ms).await
 }
 
 fn digest_suffix(value: &str) -> String {

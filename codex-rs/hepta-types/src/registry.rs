@@ -83,7 +83,7 @@ impl RegistryDefinitionV1 {
                 value: CanonicalValueV1::U64(u64::from(version)),
             },
         ];
-        let digest = canonical_digest_v1(&type_id, 1, &fields).map_err(RegistryError::Canonical)?;
+        let digest = canonical_digest_v1(&type_id, /*schema_version*/ 1, &fields).map_err(RegistryError::Canonical)?;
         Ok(Self {
             kind,
             id,
@@ -244,7 +244,7 @@ impl ContractRegistryV1 {
                 value: CanonicalValueV1::Array(&profile_values),
             },
         ];
-        canonical_digest_v1(&type_id, 1, &fields).map_err(RegistryError::Canonical)
+        canonical_digest_v1(&type_id, /*schema_version*/ 1, &fields).map_err(RegistryError::Canonical)
     }
 }
 

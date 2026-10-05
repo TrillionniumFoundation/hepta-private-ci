@@ -209,18 +209,18 @@ impl AutomationCalendarScheduleV2 {
     }
 
     pub fn first_at_or_after(&self, reference_utc_ms: u64) -> Result<Option<u64>, AutomationError> {
-        self.candidate_near(reference_utc_ms, true, true)
+        self.candidate_near(reference_utc_ms, /*inclusive*/ true, /*forward*/ true)
     }
 
     pub fn next_after(&self, current_utc_ms: u64) -> Result<Option<u64>, AutomationError> {
-        self.candidate_near(current_utc_ms, false, true)
+        self.candidate_near(current_utc_ms, /*inclusive*/ false, /*forward*/ true)
     }
 
     pub fn latest_at_or_before(
         &self,
         reference_utc_ms: u64,
     ) -> Result<Option<u64>, AutomationError> {
-        self.candidate_near(reference_utc_ms, true, false)
+        self.candidate_near(reference_utc_ms, /*inclusive*/ true, /*forward*/ false)
     }
 
     fn candidate_near(
@@ -636,7 +636,7 @@ pub(crate) async fn advance_calendar_schedule_v2(
                         reset_catch_up(tx, store, task_id, observed_at_ms).await?;
                         schedule.first_at_or_after(observed_at_ms.saturating_add(1))?
                     } else {
-                        set_catch_up_state(tx, store, task_id, true, remaining - 1, observed_at_ms)
+                        set_catch_up_state(tx, store, task_id, /*active*/ true, remaining - 1, observed_at_ms)
                             .await?;
                         Some(baseline)
                     }
@@ -653,7 +653,7 @@ pub(crate) async fn advance_calendar_schedule_v2(
                     if count == 0 {
                         schedule.first_at_or_after(observed_at_ms.saturating_add(1))?
                     } else {
-                        set_catch_up_state(tx, store, task_id, true, count - 1, observed_at_ms)
+                        set_catch_up_state(tx, store, task_id, /*active*/ true, count - 1, observed_at_ms)
                             .await?;
                         Some(baseline)
                     }
@@ -758,7 +758,7 @@ async fn reset_catch_up(
     task_id: AutomationTaskId,
     now_ms: u64,
 ) -> Result<(), AutomationError> {
-    set_catch_up_state(tx, store, task_id, false, 0, now_ms).await
+    set_catch_up_state(tx, store, task_id, /*active*/ false, /*remaining*/ 0, now_ms).await
 }
 
 fn missed_parts(policy: AutomationMissedRunPolicy) -> (&'static str, u16) {

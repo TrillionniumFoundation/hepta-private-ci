@@ -212,7 +212,7 @@ fn signal_digest(signal: &NumericSignalV1) -> Result<Digest32, NumericConversion
             value: CanonicalValueV1::Array(&values),
         },
     ];
-    canonical_digest_v1(&type_id, 1, &fields).map_err(|_| NumericConversionError::CanonicalEncoding)
+    canonical_digest_v1(&type_id, /*schema_version*/ 1, &fields).map_err(|_| NumericConversionError::CanonicalEncoding)
 }
 
 fn conversion_digest(
@@ -250,7 +250,7 @@ fn conversion_digest(
             value: CanonicalValueV1::Text(target_profile.id()),
         },
     ];
-    canonical_digest_v1(&type_id, 1, &fields).map_err(|_| NumericConversionError::CanonicalEncoding)
+    canonical_digest_v1(&type_id, /*schema_version*/ 1, &fields).map_err(|_| NumericConversionError::CanonicalEncoding)
 }
 
 #[cfg(test)]

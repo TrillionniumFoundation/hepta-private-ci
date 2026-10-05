@@ -63,7 +63,7 @@ fn main() -> Result<(), Box<dyn Error>> {
         let policy = hot.policy.clone();
         let started = Instant::now();
         let receipt =
-            evaluate_candidates_with_policy(set, profile, /* scalarization */ None, policy)?;
+            evaluate_candidates_with_policy(set, profile, /* scalarization */ /*scalarization*/ None, policy)?;
         let elapsed = started.elapsed().as_micros();
         if receipt.base.evaluated_candidates.len() != HOT_CANDIDATES {
             return Err("hot-path candidate coverage drift".into());
@@ -82,7 +82,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let max_receipt = evaluate_candidates_with_policy(
         maximum.set,
         maximum.profile,
-        /* scalarization */ None,
+        /* scalarization */ /*scalarization*/ None,
         maximum.policy,
     )?;
     let max_capacity_micros = max_started.elapsed().as_micros();
@@ -178,9 +178,9 @@ fn main() -> Result<(), Box<dyn Error>> {
     let cpu_micros = u128::from(cpu_ticks) * 1_000_000 / u128::from(clk_tck);
     let max_rss_kib = process_hwm_kib()?;
 
-    let p50 = percentile(&latencies, /* percentile */ 50);
-    let p95 = percentile(&latencies, /* percentile */ 95);
-    let p99 = percentile(&latencies, /* percentile */ 99);
+    let p50 = percentile(&latencies, /* percentile */ /*percentile*/ 50);
+    let p95 = percentile(&latencies, /* percentile */ /*percentile*/ 95);
+    let p99 = percentile(&latencies, /* percentile */ /*percentile*/ 99);
     let hot_target_pass = p95 <= 2_000 && p99 <= 5_000;
 
     let source_sha = std::env::var("HEPTA_NDU_SOURCE_SHA").unwrap_or_default();
@@ -250,7 +250,7 @@ fn fixture(
     risk_resource_axes: usize,
 ) -> Result<EvaluationFixture, Box<dyn Error>> {
     let objective = digest("benchmark-objective");
-    let generation = Generation::new(/* value */ 1)?;
+    let generation = Generation::new(/* value */ /*value*/ 1)?;
     let organs = (0..organ_count)
         .map(|index| stable(&format!("organ-{index:02}")))
         .collect::<Result<Vec<_>, _>>()?;

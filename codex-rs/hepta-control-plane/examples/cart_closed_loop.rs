@@ -35,7 +35,7 @@ fn main() -> io::Result<()> {
         return Err(io::Error::other("steps must be in 1..10000"));
     }
     let profile = CartSensorProfileV1 {
-        generation: native(Generation::new(1))?,
+        generation: native(Generation::new(/*value*/ 1))?,
         clock: Digest32::of_bytes(b"cart-cli-simulation-10ms-v1"),
         synthetic_calibration: Digest32::of_bytes(b"direct-synthetic-state-v1"),
         valid_until_tick: steps,

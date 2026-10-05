@@ -1285,7 +1285,7 @@ async fn reconcile_intelligence_start_unknown(
                 binding.run_id.clone(),
                 revision,
                 AgentRunPhase::Indeterminate,
-                /* terminal_observed */ false,
+                /* terminal_observed */ /*terminal_observed*/ false,
             )
             .await
     {

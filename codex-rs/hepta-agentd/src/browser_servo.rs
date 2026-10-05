@@ -459,7 +459,7 @@ fn receive_frame<T: BrowserServoTransport>(
 
 fn canonical_json(value: &Value) -> Result<String, BrowserServoError> {
     let mut output = String::new();
-    write_canonical(value, 0, &mut output)?;
+    write_canonical(value, /*depth*/ 0, &mut output)?;
     if output.len() > MAX_FRAME_BYTES {
         return Err(BrowserServoError::Protocol(
             "canonical Browser JSON exceeds byte limit".into(),

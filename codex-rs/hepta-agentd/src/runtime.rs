@@ -411,7 +411,7 @@ async fn run_production_operation_reconciler(
     loop {
         // Reconcile immediately after startup/restart, then at a bounded
         // cadence. Agentd never dispatches from this recovery loop.
-        host.reconcile(256).await?;
+        host.reconcile(/*limit*/ 256).await?;
         tokio::select! {
             _ = cancellation.cancelled() => return Ok(()),
             _ = tokio::time::sleep(interval) => {}

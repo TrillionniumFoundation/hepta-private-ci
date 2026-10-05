@@ -642,7 +642,7 @@ pub struct TopologyNodeSpecV1 {
 
 impl TopologyNodeSpecV1 {
     fn validate(&self) -> Result<(), HnmfContractError> {
-        validate_text(&self.label, 128, "topology node label")
+        validate_text(&self.label, /*maximum_bytes*/ 128, "topology node label")
     }
 }
 

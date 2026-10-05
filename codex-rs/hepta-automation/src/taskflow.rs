@@ -1112,7 +1112,7 @@ impl AutomationStore {
                 "provider-absence transitions are restricted to automation recovery",
             ));
         }
-        self.apply_taskflow_command_inner(command, false, false)
+        self.apply_taskflow_command_inner(command, /*allow_proven_absence_requeue*/ false, /*allow_effect_observation_quarantine*/ false)
             .await
     }
 
@@ -1128,7 +1128,7 @@ impl AutomationStore {
                 "internal requeue requires provider-absence transition",
             ));
         }
-        self.apply_taskflow_command_inner(command, true, false)
+        self.apply_taskflow_command_inner(command, /*allow_proven_absence_requeue*/ true, /*allow_effect_observation_quarantine*/ false)
             .await
     }
 
@@ -1144,7 +1144,7 @@ impl AutomationStore {
                 "internal cancellation requires provider-absence transition",
             ));
         }
-        self.apply_taskflow_command_inner(command, true, false)
+        self.apply_taskflow_command_inner(command, /*allow_proven_absence_requeue*/ true, /*allow_effect_observation_quarantine*/ false)
             .await
     }
 
@@ -1160,7 +1160,7 @@ impl AutomationStore {
                 "effect observation quarantine requires indeterminate transition",
             ));
         }
-        self.apply_taskflow_command_inner(command, false, true)
+        self.apply_taskflow_command_inner(command, /*allow_proven_absence_requeue*/ false, /*allow_effect_observation_quarantine*/ true)
             .await
     }
 

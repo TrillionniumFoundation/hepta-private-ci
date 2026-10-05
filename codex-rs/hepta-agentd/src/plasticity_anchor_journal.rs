@@ -167,7 +167,7 @@ impl AdaptiveAnchorJournalV1 {
             .checked_add(1)
             .filter(|value| *value != 0)
             .ok_or(AdaptiveAnchorJournalErrorV1::FenceOverflow)?;
-        let frame = encode_frame(TAG_FENCE, next, None);
+        let frame = encode_frame(TAG_FENCE, next, /*anchor*/ None);
         append_frame(&mut self.file.0, &frame)?;
         self.state.previous_anchor = self.state.anchor.or(self.state.previous_anchor);
         self.state.writer_fence = next;
