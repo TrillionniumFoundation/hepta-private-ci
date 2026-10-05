@@ -123,6 +123,8 @@ impl RuntimeModuleSupervisorV1 {
         }
     }
 
+    /// Publish initial modules in dependency order. Rejected publication leaves
+    /// the registry, generation fences and selected writer reservations unchanged.
     pub fn register_bootstrap(
         &mut self,
         abi: RuntimeModuleAbiV1,
@@ -132,6 +134,7 @@ impl RuntimeModuleSupervisorV1 {
         let mut staged = self.registry.clone();
         staged.register_candidate(abi)?;
         let snapshot = staged.activate_bootstrap(&module_id, generation)?;
+        validate_runtime_dependency_graph(&snapshot)?;
         self.registry = staged;
         self.prune_lifecycle_metadata();
         Ok(snapshot)
@@ -1073,3 +1076,7 @@ mod safety_tests;
 #[cfg(test)]
 #[path = "module_runtime_predecessor_tests.rs"]
 mod predecessor_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_bootstrap_tests.rs"]
+mod bootstrap_tests;
