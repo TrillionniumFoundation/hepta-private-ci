@@ -20,6 +20,12 @@ use super::query_matrix_health_once;
 
 type TestResult = Result<(), Box<dyn std::error::Error>>;
 
+fn fixture_io<T>(stage: &str, result: std::io::Result<T>) -> std::io::Result<T> {
+    result.map_err(|error| {
+        std::io::Error::new(error.kind(), format!("peer fixture {stage}: {error}"))
+    })
+}
+
 fn identity(
     socket: std::path::PathBuf,
     process_id: u32,
@@ -93,20 +99,29 @@ fn matrix_health_rejects_same_owner_wrong_process_before_sending_request() -> Te
     // This live process's PID is deliberately different from the socket owner.
     // Echoing its PID in JSON must never suffice to adopt or later signal it.
     let socket = temp.path().join("matrix.sock");
-    let listener = UnixListener::bind(&socket)?;
-    let mut unrelated = std::process::Command::new("/bin/sleep").arg("30").spawn()?;
+    let listener = fixture_io("bind listener", UnixListener::bind(&socket))?;
+    let mut unrelated = fixture_io(
+        "spawn unrelated process",
+        std::process::Command::new("/bin/sleep").arg("30").spawn(),
+    )?;
     let identity = identity(socket, unrelated.id())?;
     let worker = std::thread::spawn(move || -> std::io::Result<Vec<u8>> {
-        let (mut stream, _) = listener.accept()?;
-        stream.set_read_timeout(Some(super::HEALTH_PROBE_IO_TIMEOUT))?;
+        let (mut stream, _) = fixture_io("accept rejected peer", listener.accept())?;
+        fixture_io(
+            "set rejected peer read timeout",
+            stream.set_read_timeout(Some(super::HEALTH_PROBE_IO_TIMEOUT)),
+        )?;
         let mut request = Vec::new();
-        stream.read_to_end(&mut request)?;
+        fixture_io(
+            "read rejected peer to EOF",
+            stream.read_to_end(&mut request),
+        )?;
         Ok(request)
     });
     let result = query_matrix_health_once(&identity, /*request_id*/ 19);
-    let still_running = unrelated.try_wait()?.is_none();
-    unrelated.kill()?;
-    unrelated.wait()?;
+    let still_running = fixture_io("observe unrelated process", unrelated.try_wait())?.is_none();
+    fixture_io("stop unrelated fixture process", unrelated.kill())?;
+    fixture_io("reap unrelated fixture process", unrelated.wait())?;
     let request = worker.join().expect("peer fixture thread")?;
     assert!(
         result.is_err(),
@@ -124,10 +139,13 @@ fn matrix_health_rejects_same_owner_wrong_process_before_sending_request() -> Te
 fn matrix_peer_credentials_bind_real_socket_pair_to_owner_and_process() -> TestResult {
     let (stream, _other) = std::os::unix::net::UnixStream::pair()?;
     super::peer::ensure_process_owner(&stream, std::process::id())?;
-    let mut unrelated = std::process::Command::new("/bin/sleep").arg("30").spawn()?;
+    let mut unrelated = fixture_io(
+        "spawn unrelated process",
+        std::process::Command::new("/bin/sleep").arg("30").spawn(),
+    )?;
     let result = super::peer::ensure_process_owner(&stream, unrelated.id());
-    unrelated.kill()?;
-    unrelated.wait()?;
+    fixture_io("stop unrelated fixture process", unrelated.kill())?;
+    fixture_io("reap unrelated fixture process", unrelated.wait())?;
     assert_eq!(
         result.expect_err("different live process").kind(),
         std::io::ErrorKind::PermissionDenied

@@ -122,6 +122,16 @@ steps:
         )
         verify_owner_self_tests(registry["subordinateRegistries"], ROOT)
 
+    def test_contract_gate_checks_out_the_pr_source_identity(self):
+        text = (ROOT / ".github/workflows/hepta-contract-gate.yml").read_text()
+        source = "${{ github.event.pull_request.head.sha || github.sha }}"
+        self.assertIn(f"ref: {source}", text)
+        self.assertIn(f"EXPECTED_SHA: {source}", text)
+        self.assertEqual(
+            text.count('test "$(git rev-parse HEAD)" = "$EXPECTED_SHA"'), 2
+        )
+        self.assertNotIn('test "$(git rev-parse HEAD)" = "$GITHUB_SHA"', text)
+
     def test_real_workflow_resolves_composite_action(self):
         text = (ROOT / ".github/workflows/hepta-development-docs.yml").read_text()
         verify_synthetic_merge(text, ROOT)

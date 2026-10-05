@@ -242,7 +242,6 @@ The bootstrap source-location obligation for `ui.control` is implemented by work
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
 
-
 ## Selective Rust product foundation (2026-10-05)
 
 The owning standalone workspace is now `apps/hepta-control-ui/rust`, with
@@ -252,11 +251,26 @@ provenance and actual-host regressions are selectively imported; see the module
 README and `PORT_SOURCE.json` for source blob identities. The internal Rust DOM
 compatibility member remains only to preserve the locked workspace graph.
 
-This stage has not yet replaced the gateway `GET /` handwritten status shell.
-The next slice must serve the verified Rust bundle and expose the existing
-read-only runtime observations in Rust without changing API/write semantics.
-Chat owner admission/signing/Agentd dispatch, Operations owner projections and
-native-host closure remain separate missing contracts. Send and Console mutation
-controls stay disabled. Source-branch fixture evidence does not qualify this
-product tree; current source and synthetic merge require new build/pixel/input
-evidence. No historical qualification record is rewritten.
+The additive product-entry candidate replaces gateway `GET /` with the verified
+Rust bundle. See the module README's completion ledger and developer commands.
+The old schema-v5 read adapter is preserved; no verified production initializer
+for that legacy layout is present. A bundle-enabled degraded entry can report
+actual NotAttached and legacy 503 without manufacturing databases or credentials.
+
+The modern owner-status endpoint is a separate versioned, token-free observation:
+generation/disposition only, with fixed sanitized failures. It does not reuse
+legacy schema5 labels for CognitiveStore model schema1. Its weak async adapter
+must be composed by an already-owning higher layer; no new Agentd dependency,
+store reopen or authority acquisition is added to the gateway. A response deadline
+does not cancel a still-running owner scan, and an active read may temporarily
+retain the owner until completion. Single-flight admission bounds that work.
+
+The Rust Console performs bounded reads only on explicit refresh and clears them
+on navigation/background/epoch changes. Numeric generations stay lossless through
+raw HTTP bytes and Rust serde. Host/Origin validation is a loopback browser boundary,
+not user authentication. The user sees a point-in-time observation, never writable
+or current-authority status. Chat principal/signing/Agentd dispatch, actual attached
+owner composition, native-host closure and installed-package qualification remain
+separate work. Send and Console mutation controls stay disabled. New gateway/status
+source needs its own execution and pixels; no foundation or historical receipt is
+rewritten or transferred as its proof.

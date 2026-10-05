@@ -8,11 +8,16 @@ the static WASM loader are platform boot/render/input glue.
 
 ## Product status
 
-This foundation is a selective source port from UI draft #1415 into the current
-product. It does not yet replace the product gateway's existing `GET /` status
-shell. That route must serve this verified Rust bundle and retain its existing
-read-only runtime view in a separate integration slice. A new preview alone is
-not product completion.
+This candidate replaces the product gateway's handwritten `GET /` interface
+with the verified Rust bundle. The gateway snapshots and hashes its selected
+assets before serving them; the manifest digest selects bytes and is not signing
+authority. The old read-only runtime API remains a separate legacy adapter.
+
+With an explicit bundle, the gateway can serve the UI even when legacy runtime
+state is missing. `/healthz` and `/api/hepta/runtime` then return 503, while the
+additive `/api/hepta/owner-status` returns actual `not_attached` until an existing
+production host is explicitly wired. The no-bundle startup path still requires
+compatible existing runtime state. It does not fall back to a handwritten JS UI.
 
 The principal/signer/Agentd bridge is absent. Drafts and owner-fixture messages
 are not live chat. Send and Console mutations remain disabled. No native host,
@@ -85,8 +90,8 @@ No native-window/package or real owner integration success is claimed here.
 
 Existing `src/*.js` files are authority-free legacy protocol/test oracles with
 no package exports. They are not used by the Rust builder or default preview.
-Their removal/deprecation and the old gateway UI entry must be handled with the
-production entry slice, preserving read-only API compatibility tests.
+The gateway entry no longer uses the handwritten JS shell. These unexported
+oracles are compatibility test material, not a parallel product interface.
 
 ## Build and preview lifetime
 
@@ -110,3 +115,45 @@ publication states; unknown paths, symlinks or changed pins fail closed.
 Interrupted cleanup may leave an inert owned backup, without blocking later
 builds. Journal initialization failure leaves the previous artifact usable.
 The unused Lunar archive retains immutable provenance but is not packaged.
+
+## Read-only product entry and completion ledger
+
+Build the owning Rust UI, then use a source-built product executable:
+
+```sh
+python3 tools/run-product.py --hepta /absolute/path/to/hepta --state-root /absolute/state/directory
+```
+
+The wrapper prepares the current bundle and derives its digest automatically;
+`--no-build` reuses only a source-current bundle. This does not initialize state,
+create keys, attach a writer, or qualify the old release/install handshake.
+The task-only `ui_product_preview` Rust example invokes the same gateway entry;
+`tools/run-product-preview.py` supplies an empty temporary state directory for
+honest missing-owner browser tests. It creates no SQL/HMAC fixture or owner.
+
+- Implemented Rust views: responsive conversations, local drafts, theme/input
+  controls, and a read-only Console. Refresh observations is an explicit GET-only
+  action; opening/resizing Console does not initiate owner scans or polling.
+- Legacy observation: the existing schema-v5 runtime DTO is still supported, with
+  a 256 KiB client cap. Oversize/malformed data is unavailable, never truncated.
+- Modern owner observation: `hepta.owner-lease-observation.v1` carries only
+  `not_attached`, a generation/disposition observation, or a fixed failure enum.
+  Its client cap is 4 KiB. JSON integer generations stay unsigned64 through raw
+  bytes and Rust serde; JavaScript Number conversion is unsupported. This wire
+  range is not a claim that SQLite accepts every u64 generation.
+- Actual owner composition: a higher-level adapter must supply a weak link to an
+  already-open host. The gateway adds no Agentd dependency and does not bootstrap
+  one. Idle providers retain no strong host reference. An active async inspection
+  temporarily retains its upgrade; its two-second response deadline is not SQL
+  cancellation or owner-shutdown proof. A timed-out scan retains its single-flight
+  permit until completion, returning Busy to further requests instead of spawning
+  additional scans. Dispositions are point-in-time metadata, not current authority.
+- HTTP boundary: loopback Host/optional Origin checks cover assets and APIs. They
+  prevent browser-origin confusion and are not user authentication. Commands,
+  signing, principal admission and production chat remain unavailable.
+- Fixture demonstrations: rendered fixture transcripts are not live owner wiring.
+  A real NotAttached response is not a fixture success-state or production readiness.
+- Platform/evidence limits: bundle loading is currently Unix-only; Windows needs
+  its own anchored reader. The new status view requires current source/merge
+  browser captures. Physical IME/accessibility, native product closure, installed
+  packaging and room caret/selection retention remain open.

@@ -3,6 +3,30 @@ on:
   pull_request:
     paths:
       - apps/hepta-control-ui/**
+      # Conservative gateway Cargo closure; drift-checked against the shared graph.
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-control-plane/**
+      - codex-rs/hepta-native-gateway/**
+      - codex-rs/hepta-ndu/**
+      - codex-rs/hepta-paths/**
+      - codex-rs/hepta-plasticity/**
+      - codex-rs/hepta-runtime/**
+      - codex-rs/hepta-types/**
+      - codex-rs/hepta-wire/**
+      - codex-rs/utils/absolute-path/**
+      - codex-rs/utils/path-utils/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
+      - codex-rs/.cargo/**
+      - codex-rs/.config/nextest.toml
+      - justfile
+      - scripts/run-nextest.py
+      - scripts/just-shell.py
+      - scripts/hepta_ci_dependencies.py
+      - scripts/hepta_ci_exec.py
+      - scripts/hepta_ci_git_objects.py
+      - scripts/hepta_ci_module_paths.py
       - apps/hepta-native/resources/NATIVE-ASSETS.json
       - apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt
       - .github/workflows/ui-product-foundation.yml
@@ -53,7 +77,9 @@ jobs:
           echo "PR_SOURCE_SHA=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_ENV"
           grep -F 'channel = "1.96.0"' codex-rs/rust-toolchain.toml
       - name: Verify immutable merge checkout regression
-        run: python3 -m unittest discover -s scripts -p test_ui_product_foundation_ci.py -v
+        run: |
+          python3 -m unittest discover -s scripts -p test_ui_product_foundation_ci.py -v
+          python3 -m unittest discover -s apps/hepta-control-ui/test -p test_build_product_preview.py -v
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
         with:
           node-version: 22
@@ -72,12 +98,12 @@ jobs:
       - id: official-tools-cache
         uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7
         with:
-          path: .tmp/ui-official-tools-robrix
-          key: ui-official-tools-v2-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
+          path: ${{ runner.temp }}/ui-official-tools-robrix
+          key: ui-official-tools-v3-runner-temp-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
       - name: Install missing pinned official tools
         if: steps.official-tools-cache.outputs.cache-hit != 'true'
         env:
-          TOOL_ROOT: ${{ github.workspace }}/.tmp/ui-official-tools-robrix
+          TOOL_ROOT: ${{ runner.temp }}/ui-official-tools-robrix
           CARGO_BUILD_JOBS: 2
         run: |
           set -euo pipefail
@@ -85,7 +111,7 @@ jobs:
           python3 apps/hepta-control-ui/tools/install-official-nextest.py "$TOOL_ROOT"
       - name: Verify installed tool versions on every cache hit or miss
         env:
-          TOOL_ROOT: ${{ github.workspace }}/.tmp/ui-official-tools-robrix
+          TOOL_ROOT: ${{ runner.temp }}/ui-official-tools-robrix
         run: |
           set -euo pipefail
           test -x "$TOOL_ROOT/bin/just"
@@ -100,8 +126,8 @@ jobs:
       - uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7
         if: steps.official-tools-cache.outputs.cache-hit != 'true'
         with:
-          path: .tmp/ui-official-tools-robrix
-          key: ui-official-tools-v2-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
+          path: ${{ runner.temp }}/ui-official-tools-robrix
+          key: ui-official-tools-v3-runner-temp-ubuntu24.04-${{ runner.os }}-${{ runner.arch }}-rustc59807616e-just1.58.0-nextest0.9.146-prebuilt-aac21fea
       - name: Verify shared Rust presentation and renderer
         shell: bash
         run: |
@@ -111,6 +137,7 @@ jobs:
           just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
           cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
           node --test apps/hepta-control-ui/test/artifact-lifetime.test.mjs
+          node --test apps/hepta-control-ui/test/product-status-pixels.test.mjs apps/hepta-control-ui/test/product-console-audit.test.mjs
           node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
       - id: default_build
         name: Build canonical strict-CSP no-threads artifact
@@ -134,6 +161,39 @@ jobs:
         env:
           SOURCE_SHA: ${{ env.SOURCE_SHA }}
         run: node apps/hepta-control-ui/tools/verify-robrix-evidence.mjs apps/hepta-control-ui/test-results/robrix-default default
+      - id: product_gateway_build
+        name: Build source-bound actual gateway preview
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal
+          RUSTUP_TOOLCHAIN=1.96.0 python3 apps/hepta-control-ui/tools/build-product-preview.py --target-dir "$RUNNER_TEMP/product-gateway-target"
+      - id: product_gateway_transport_tests
+        name: Execute bounded gateway transport regressions
+        env:
+          RUSTUP_TOOLCHAIN: 1.96.0
+          CARGO_TARGET_DIR: ${{ runner.temp }}/product-gateway-target
+          CARGO_PROFILE_TEST_DEBUG: 0
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+        run: |
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-transport-${{ matrix.lane }}.json" --minimum-tests 9 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(http_transport::tests::)'
+      - id: product_gateway_browser
+        name: Exercise real gateway unavailable status and cancellation
+        working-directory: apps/hepta-control-ui
+        env:
+          HEPTA_GATEWAY_EXAMPLE: ${{ runner.temp }}/product-gateway-target/debug/examples/ui_product_preview
+        run: xvfb-run -a npx playwright test --config=playwright.product.config.mjs
+      - name: Preserve actual gateway evidence separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-gateway-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: |
+            apps/hepta-control-ui/test-results/product-status/
+            apps/hepta-control-ui/test-results/product-status-results.json
+            ${{ runner.temp }}/product-gateway-target/debug/examples/ui_product_preview.hepta-build.json
+            ${{ runner.temp }}/gateway-transport-${{ matrix.lane }}.json*
+          if-no-files-found: warn
       - id: fixture_build
         if: always() && steps.default_build.outcome == 'success'
         name: Build explicitly labeled owner-fixture through the same renderer

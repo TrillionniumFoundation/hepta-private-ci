@@ -105,5 +105,114 @@ class ProductUiMergeCheckoutTests(unittest.TestCase):
         )
 
 
+class ProductGatewayWorkflowTests(unittest.TestCase):
+    def setUp(self):
+        self.workflow = (
+            ROOT / ".github/workflows/ui-product-foundation.yml"
+        ).read_text()
+
+    def test_actual_entry_runs_between_default_and_fixture_renderers(self):
+        steps = [
+            "- id: default_browser",
+            "- id: product_gateway_build",
+            "- id: product_gateway_transport_tests",
+            "- id: product_gateway_browser",
+            "- id: fixture_build",
+        ]
+        positions = [self.workflow.index(step) for step in steps]
+        self.assertEqual(positions, sorted(positions))
+        self.assertIn("--config=playwright.product.config.mjs", self.workflow)
+        self.assertIn("product-status-results.json", self.workflow)
+        self.assertIn("ui_product_preview.hepta-build.json", self.workflow)
+
+    def test_backend_pin_is_command_scoped_and_event_pair_unchanged(self):
+        self.assertIn("RUSTUP_TOOLCHAIN: 1.95.0", self.workflow)
+        self.assertIn(
+            "RUSTUP_TOOLCHAIN=1.96.0 python3 apps/hepta-control-ui/tools/build-product-preview.py",
+            self.workflow,
+        )
+        self.assertNotIn('RUSTUP_TOOLCHAIN=1.96.0" >>', self.workflow)
+        self.assertIn(
+            "base-sha: ${{ github.event.pull_request.base.sha }}", self.workflow
+        )
+        self.assertIn(
+            "source-sha: ${{ github.event.pull_request.head.sha }}", self.workflow
+        )
+        self.assertIn("contents: read", self.workflow)
+        self.assertNotIn("contents: write", self.workflow)
+
+    def test_gateway_dependency_closure_and_embedded_inputs_have_triggers(self):
+        from hepta_ci_dependencies import graph, matches
+
+        revision = subprocess.check_output(
+            ["git", "--no-replace-objects", "rev-parse", "HEAD"], cwd=ROOT, text=True
+        ).strip()
+        dependency_graph = graph(ROOT, revision)
+        self.assertFalse(dependency_graph.conservative)
+        gateway = "codex-hepta-native-gateway"
+        closure = {gateway}
+        while True:
+            expanded = closure | {
+                dependency
+                for dependency, consumer, dev_only in dependency_graph.edges
+                if consumer in closure and (not dev_only or consumer == gateway)
+            }
+            if expanded == closure:
+                break
+            closure = expanded
+        self.assertFalse(closure & dependency_graph.opaque_input_consumers)
+        patterns = re.findall(r"^      - ([^\n]+)$", self.workflow, re.MULTILINE)
+        for directory, owner in dependency_graph.owners.items():
+            if owner in closure:
+                self.assertIn(directory + "/**", patterns, owner)
+        for path, owner in dependency_graph.external_inputs:
+            if owner in closure:
+                self.assertTrue(
+                    any(matches(path, pattern) for pattern in patterns), path
+                )
+
+    def test_transport_command_executes_the_authored_module_with_bound_identity(self):
+        block = self.workflow.split("- id: product_gateway_transport_tests", 1)[
+            1
+        ].split("- id: product_gateway_browser", 1)[0]
+        for expected in (
+            "RUSTUP_TOOLCHAIN: 1.96.0",
+            "SOURCE_SHA: ${{ github.event.pull_request.head.sha }}",
+            "BASE_SHA: ${{ github.event.pull_request.base.sha }}",
+            'TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py',
+            "HEPTA_CI_LANE: ${{ matrix.lane }}",
+            "scripts/hepta_ci_exec.py",
+            "--minimum-tests 9",
+            "just test --locked -p codex-hepta-native-gateway --lib",
+            "test(http_transport::tests::)",
+        ):
+            self.assertIn(expected, block)
+        transport = (
+            ROOT / "codex-rs/hepta-native-gateway/src/http_transport.rs"
+        ).read_text()
+        self.assertEqual(
+            len(re.findall(r"#\[tokio::test(?:\([^\n]*\))?\]", transport)), 9
+        )
+        self.assertIn(
+            "mid_transfer_writer_error_reports_exact_accepted_bytes", transport
+        )
+        self.assertIn("gateway-transport-${{ matrix.lane }}.json*", self.workflow)
+
+    def test_official_tools_do_not_dirty_the_source_checkout(self):
+        self.assertNotIn(".tmp/ui-official-tools-robrix", self.workflow)
+        self.assertIn("${{ runner.temp }}/ui-official-tools-robrix", self.workflow)
+        self.assertIn("ui-official-tools-v3-runner-temp-", self.workflow)
+
+    def test_gateway_changes_trigger_source_and_merge_evidence(self):
+        for path in (
+            "codex-rs/hepta-native-gateway/**",
+            "codex-rs/Cargo.toml",
+            "codex-rs/Cargo.lock",
+            "codex-rs/rust-toolchain.toml",
+        ):
+            self.assertIn("      - " + path, self.workflow)
+        self.assertIn("lane: [source-head, base-merge]", self.workflow)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -18,6 +18,68 @@ sys.modules[spec.name] = ci
 spec.loader.exec_module(ci)
 
 
+class TestFailurePolicyTests(unittest.TestCase):
+    def test_fast_failure_preserves_the_entire_selected_package_set(self):
+        selected = {"packages": ["owner", "reverse-consumer"], "full_workspace": False}
+        ordinary = ci.execution_command(selected, "test")
+        fast = ci.execution_command(selected, "test", fail_fast=True)
+        self.assertEqual(
+            fast,
+            [
+                "just",
+                "test",
+                "--locked",
+                "--fail-fast",
+                "-p",
+                "owner",
+                "-p",
+                "reverse-consumer",
+            ],
+        )
+        self.assertEqual([arg for arg in fast if arg != "--fail-fast"], ordinary)
+        self.assertEqual(
+            selected,
+            {"packages": ["owner", "reverse-consumer"], "full_workspace": False},
+        )
+
+    def test_full_diagnostics_and_empty_selection_keep_existing_semantics(self):
+        selected = {"packages": ["owner"], "full_workspace": True}
+        self.assertEqual(
+            ci.execution_command(selected, "test"),
+            ["just", "test", "--locked", "--workspace"],
+        )
+        self.assertEqual(
+            ci.execution_command(selected, "test", fail_fast=True),
+            ["just", "test", "--locked", "--fail-fast", "--workspace"],
+        )
+        self.assertIsNone(
+            ci.execution_command(
+                {"packages": [], "full_workspace": False}, "test", fail_fast=True
+            )
+        )
+
+    def test_cli_rejects_test_failure_policy_for_non_test_actions(self):
+        for action in ("plan", "fmt", "clippy"):
+            with self.subTest(action=action):
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(SCRIPT),
+                        "--tested",
+                        "a" * 40,
+                        "--action",
+                        action,
+                        "--fail-fast",
+                    ],
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(result.returncode, 2)
+                self.assertIn(
+                    "--fail-fast requires --run or --action test", result.stderr
+                )
+
+
 class SelectionTests(unittest.TestCase):
     def setUp(self):
         self.graph = ci.Graph(
@@ -248,6 +310,62 @@ class DocumentInputTests(unittest.TestCase):
         self.git("add", ".")
         self.git("commit", "-qm", "fixture")
         return self.git("rev-parse", "HEAD")
+
+    def test_known_navigation_prose_preserves_exact_tree_input_consumers(self):
+        for path in (".github/workflows/README.md", "scripts/ENTRYPOINTS.md"):
+            with self.subTest(path=path):
+                self.write(path, "# Navigation\n")
+                self.write("codex-rs/leaf/src/lib.rs", "pub fn value() {}\n")
+                base = self.commit()
+                self.write(path, "# Navigation revised\n")
+                head = self.commit()
+                result = ci.plan(self.root, base, head)
+                self.assertFalse(result["full_workspace"])
+                self.assertEqual(result["packages"], [])
+                command = [
+                    sys.executable,
+                    str(SCRIPT.with_name("hepta_ci_scope.py")),
+                    "--base",
+                    base,
+                    "--head",
+                    head,
+                ]
+                outer = subprocess.run(
+                    command,
+                    cwd=self.root,
+                    capture_output=True,
+                    text=True,
+                    check=True,
+                )
+                self.assertFalse(json.loads(outer.stdout)["scope"]["native"])
+
+                # New and removed include edges must both preserve consumers.
+                self.write(
+                    "codex-rs/leaf/src/lib.rs",
+                    'const DOC: &str = include_str!("../../../' + path + '");\n',
+                )
+                included = self.commit()
+                self.write(path, "# Compiled navigation input\n")
+                changed = self.commit()
+                self.write("codex-rs/leaf/src/lib.rs", "pub fn value() {}\n")
+                removed = self.commit()
+                for old, new in (
+                    (head, included),
+                    (included, changed),
+                    (changed, removed),
+                ):
+                    with self.subTest(base=old, head=new):
+                        result = ci.plan(self.root, old, new)
+                        self.assertFalse(result["full_workspace"])
+                        self.assertEqual(result["packages"], ["host", "leaf"])
+                        outer = subprocess.run(
+                            command[:-4] + ["--base", old, "--head", new],
+                            cwd=self.root,
+                            capture_output=True,
+                            text=True,
+                            check=True,
+                        )
+                        self.assertTrue(json.loads(outer.stdout)["scope"]["native"])
 
     def test_code_and_module_guide_stay_scoped(self):
         self.write("codex-rs/leaf/src/lib.rs", "pub fn value() -> u32 { 2 }\n")

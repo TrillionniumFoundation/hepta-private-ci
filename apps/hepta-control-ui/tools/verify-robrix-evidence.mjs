@@ -5,8 +5,19 @@ import {createHash} from 'node:crypto';
 import {join,resolve} from 'node:path';
 import {fileURLToPath} from 'node:url';
 import {captureSchedule,expectedPixelChecks} from './robrix-pixel-plan.mjs';
-import {readScreenshotText,requireChatText,prepareScreenshotForOcr,prepareObservedControlForOcr,prepareObservedFixtureRows,prepareObservedAreaForOcr,prepareVerifiedRegionForOcr} from './verify-robrix-pixels.mjs';
+import {readScreenshotText,requireChatText,prepareScreenshotForOcr,prepareObservedControlForOcr,prepareObservedFixtureRows,prepareObservedAreaForOcr,prepareVerifiedRegionForOcr,screenshotConversationTabs} from './verify-robrix-pixels.mjs';
 const sha=bytes=>createHash('sha256').update(bytes).digest('hex');
+// The default/fixture Console has not requested metadata. Require the complete
+// current read-only state instead of the retired composition-placeholder copy.
+export function hasUnrequestedReadOnlyObservation(text){
+ const value=text.replace(/\s+/g,' ');
+ return /Refresh observations/i.test(value)
+  && /No owner observation has been requested/i.test(value)
+  && /not current write authority/i.test(value)
+  && /commands remain unavailable/i.test(value)
+  && /Read-only runtime unavailable/i.test(value);
+}
+
 export function validateFixtureTextRegion(entry,kind){
  assert.ok(['viewport','composer'].includes(kind),'Unknown fixture text region');
  assert.ok(entry.viewport&&[entry.viewport.width,entry.viewport.height].every(value=>Number.isInteger(value)&&value>0),'Actual capture viewport is required');
@@ -113,8 +124,16 @@ export async function verifyCapture(directory,entry,expected){
   return regionTexts.get(kind);
  };
  if(expected.consoleView){
-  const text=/Console/i.test(original)&&/composed|composition/i.test(original)?original:await withBlock();
-  outcomes.push({check:'console-label',passed:/Console/i.test(text)},{check:'console-unavailable-reason',passed:/composed|composition/i.test(text)});
+  const text=/Console/i.test(original)&&hasUnrequestedReadOnlyObservation(original)?original:await withBlock();
+  let label=/Console/i.test(text);
+  if(!label){
+   // Reuse the fixed, source-bound navigation observation. Clipped/ambiguous
+   // controls still fail; never infer a label from application state.
+   const observed=await screenshotConversationTabs(path,expected.viewport,{recordOcr:true});
+   assert.equal(observed.sourcePngSha256,entry.pngSha256);
+   label=Boolean(observed.Console);
+  }
+  outcomes.push({check:'console-label',passed:label},{check:'console-unavailable-reason',passed:hasUnrequestedReadOnlyObservation(text)});
  }else{
   let readable=true;try{requireChatText(original,{fixtures:expected.fixtures});}catch{try{requireChatText(await withBlock(),{fixtures:expected.fixtures});}catch{readable=false;}}
   outcomes.push({check:'chat-readability',passed:readable});

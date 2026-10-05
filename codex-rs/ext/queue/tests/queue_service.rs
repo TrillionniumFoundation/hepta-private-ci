@@ -156,22 +156,53 @@ fn install_registered_queue(
 fn python_hook_command(script_path: &Path) -> String {
     #[cfg(windows)]
     {
-        let _python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+        let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
             .into_iter()
             .chain(std::env::var_os("PATH"))
             .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
             .map(|directory| directory.join("python.exe"))
             .find(|candidate| candidate.is_file())
             .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
-        // Command hooks run through cmd.exe on Windows. Resolve Python above so
-        // the fixture fails clearly when it is unavailable, but invoke it by
-        // name: cmd.exe misparses some absolute Bazel tool paths when the
-        // complete command line is wrapped for `/C`.
-        return format!("python.exe \"{}\"", script_path.display());
+        // The hook inherits a session environment whose PATH need not include
+        // CODEX_BAZEL_WINDOWS_PATH. Keep the interpreter we actually resolved;
+        // the command runner supplies cmd.exe's outer /C quoting.
+        return format!("\"{}\" \"{}\"", python.display(), script_path.display());
     }
 
     #[cfg(not(windows))]
     format!("python3 \"{}\"", script_path.display())
+}
+
+#[cfg(windows)]
+#[test]
+fn python_hook_uses_resolved_interpreter_without_child_path() {
+    use std::os::windows::process::CommandExt;
+
+    let fixture = tempfile::tempdir().expect("create hook fixture");
+    let script_path = fixture.path().join("queue hook with spaces.py");
+    std::fs::write(&script_path, "print('queue-python-exact-path')\n")
+        .expect("write Python hook fixture");
+    let command = python_hook_command(&script_path);
+    let shell = std::env::var_os("COMSPEC").unwrap_or_else(|| "cmd.exe".into());
+    // Match CommandHookRuntime's /C envelope. Only the child environment is
+    // changed: interpreter discovery still uses the test runner's search paths.
+    let output = std::process::Command::new(shell)
+        .args(["/D", "/C"])
+        .raw_arg(format!(r#""{command}""#))
+        .env("PATH", "")
+        .current_dir(fixture.path())
+        .output()
+        .expect("run Python hook without a child search path");
+    assert!(
+        output.status.success(),
+        "hook failed: stdout={} stderr={}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr),
+    );
+    assert_eq!(
+        String::from_utf8_lossy(&output.stdout).trim(),
+        "queue-python-exact-path",
+    );
 }
 
 fn write_rejecting_prompt_hook(home: &Path) {

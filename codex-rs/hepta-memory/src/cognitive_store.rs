@@ -313,17 +313,26 @@ impl CognitiveStore {
     /// This entry point has no independent current-cut witness and cannot detect
     /// rollback to an internally valid old backup. Hosts requiring that guarantee
     /// must use `open_with_recovery` and never fall back here on recovery failure.
+    /// Existing Unix main files must already be owner-held, single-link and mode 0600;
+    /// bootstrap creates new private files but does not repair existing modes.
     pub async fn open(layout: &HeptaAgentLayout) -> Result<Self, CognitiveStoreError> {
         let root = create_private_directory(layout.cognitive_root())?;
         let open_guard = CognitiveStoreOpenGuard::acquire_shared(&root)?;
         let path = resolve_active_database_path(&root)?;
         let sqlite_home = AbsolutePathBuf::try_from(root.to_path_buf())
             .map_err(|error| CognitiveStoreError::Invalid(error.to_string()))?;
-        let pool = SqliteConfig::from_sqlite_home(sqlite_home)
+        let sqlite_config = SqliteConfig::from_sqlite_home(sqlite_home);
+        // SQLite derives new sidecar permissions from the main database file.
+        #[cfg(unix)]
+        let _database_file = sqlite_config
+            .prepare_private_bootstrap_database(&path)
+            .map_err(unavailable)?;
+        let pool = sqlite_config
             .open_durable_evidence_pool(&path)
             .await
             .map_err(unavailable)?;
         MIGRATOR.run(&pool).await.map_err(classify_migrate_error)?;
+        #[cfg(not(unix))]
         protect_database_file(&path)?;
         sqlx::query(
             "INSERT INTO cognitive_meta (singleton, schema_version, owner_agent_id)
@@ -1659,3 +1668,7 @@ fn protect_database_file(_path: &Path) -> Result<(), CognitiveStoreError> {
 #[cfg(test)]
 #[path = "cognitive_schema_tests.rs"]
 mod schema_tests;
+
+#[cfg(all(test, unix))]
+#[path = "cognitive_database_init_tests.rs"]
+mod database_init_tests;
