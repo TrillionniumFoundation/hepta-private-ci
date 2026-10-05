@@ -418,9 +418,9 @@ jobs:
           path: ${{ env.CARGO_TARGET_DIR }}/**/cargo-timings/cargo-timing.html
           if-no-files-found: warn
 
-      # On Windows CARGO_TARGET_DIR is on the Dev Drive while runner.temp is
-      # on the checkout drive. Upload them separately so artifact collection
-      # never has to construct an invalid cross-volume common root.
+      # On Windows CARGO_TARGET_DIR and runner.temp can be disjoint roots.
+      # Upload them separately so artifact collection never requires one
+      # path to be a parent of the other.
       - name: Upload qualified source identities
         if: always()
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0

@@ -103,7 +103,7 @@ class RustSourceIntegrityTests(unittest.TestCase):
         self.assertTrue((self.root / "rust-ci-zig-cache/local").is_dir())
         self.assertEqual(self.execute(self.clean).returncode, 0)
 
-    def test_windows_artifacts_do_not_cross_volume_roots(self):
+    def test_windows_artifacts_use_separate_roots(self):
         timings = self.step("Upload Cargo timings (clippy)")["with"]["path"]
         identities = self.step("Upload qualified source identities")["with"]["path"]
         self.assertIn("CARGO_TARGET_DIR", timings)
