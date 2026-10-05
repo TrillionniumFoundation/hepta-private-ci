@@ -16,6 +16,8 @@ use codex_hepta_types::StableId;
 
 /// Concurrent selected modules, including draining/quarantined writer reservations.
 pub const MAX_RUNTIME_MODULES: usize = 128;
+/// Distinct identities retained permanently by anti-resurrection generation fences.
+pub const MAX_RUNTIME_MODULE_IDENTITIES: usize = 4096;
 /// Concurrent unselected candidates. Historical generations consume neither quota.
 const MAX_PENDING_RUNTIME_MODULES: usize = 128;
 pub const MAX_MODULE_PORTS: usize = 64;
@@ -179,6 +181,10 @@ pub enum RuntimeModuleRegistryError {
     AuthoritativeWriterConflict(StableId),
     ActiveGenerationConflict,
     RollbackGenerationNotAdvanced,
+    CheckpointDigestMismatch,
+    CheckpointNotCurrent,
+    CheckpointDuplicate,
+    CheckpointInvalid,
 }
 
 impl fmt::Display for RuntimeModuleRegistryError {
@@ -199,6 +205,12 @@ pub struct RuntimeModuleRegistryV1 {
     // dispatch-only RuntimeTopologySnapshotV1 is NOT a recovery checkpoint.
     generation_fences: BTreeMap<StableId, (Generation, Generation)>,
 }
+
+#[path = "module_runtime_checkpoint.rs"]
+mod checkpoint;
+pub use checkpoint::RuntimeModuleActiveReservationV1;
+pub use checkpoint::RuntimeModuleGenerationFenceV1;
+pub use checkpoint::RuntimeModuleRegistryCheckpointV1;
 
 impl RuntimeModuleRegistryV1 {
     pub fn new() -> Self {
@@ -240,7 +252,10 @@ impl RuntimeModuleRegistryV1 {
                 return Err(RuntimeModuleRegistryError::PredecessorDigestMismatch);
             }
         }
-        if self.pending_candidate_count() >= pending_limit {
+        if self.pending_candidate_count() >= pending_limit
+            || (!self.generation_fences.contains_key(&abi.module_id)
+                && self.generation_fences.len() >= MAX_RUNTIME_MODULE_IDENTITIES)
+        {
             return Err(RuntimeModuleRegistryError::Bounds);
         }
         self.generation_fences

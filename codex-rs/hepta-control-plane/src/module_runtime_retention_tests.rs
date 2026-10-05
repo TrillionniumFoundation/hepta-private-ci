@@ -135,6 +135,13 @@ fn full_pending_queue_does_not_starve_rollback_or_expand_selected_capacity() {
             Digest32::of_bytes(b"rollback"),
         )
         .expect("reserved transactional rollback slot");
+    let checkpoint = registry.checkpoint();
+    let restored = RuntimeModuleRegistryV1::restore_checkpoint(
+        checkpoint.clone(),
+        checkpoint.checkpoint_digest,
+    )
+    .expect("full-capacity rollback checkpoint");
+    assert_eq!(restored.checkpoint(), checkpoint);
     assert_eq!(registry.active.len(), MAX_RUNTIME_MODULES);
     assert_eq!(
         registry.pending_candidate_count(),
