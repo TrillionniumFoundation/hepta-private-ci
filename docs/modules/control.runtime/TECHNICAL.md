@@ -169,6 +169,18 @@ Use the error/recovery path linked by the [current native implementation](../../
 
 [Shared failure, recovery and rollback requirements](../README.md#shared-failure-and-recovery) remain mandatory.
 
+The native `RuntimeModuleRegistryV1::rollback_active_to_predecessor_content`
+shortcut restores content only when **both** the active and predecessor ABIs
+are stateless, declare no authoritative domains and have no effect scope.
+A regression digest, including one admitted by `rollback_verified`, is not a
+current domain-owner migration or handoff witness. Any stateful, externally
+stateful, domain-owning or effectful side returns `MissingWriterHandoff` before
+changing records, topology or generation fences; rejection does not consume a
+future generation. Stateless rollback still uses a fresh generation. Stateful
+upgrade/rollback must preserve acknowledged successor writes and current owner
+fences through the domain's independently admitted path. This admission guard
+does not implement durable registry recovery or qualify cross-schema rollback.
+
 ## 9. Security, privacy and threat controls
 
 Owned threat entries:

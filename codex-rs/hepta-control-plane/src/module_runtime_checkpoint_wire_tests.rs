@@ -29,16 +29,55 @@ fn historical_digest_preimages_restore_and_reencode_exactly() {
         restored.active_generation(&id("feature.persisted")),
         Some(generation(2))
     );
-    restored
-        .rollback_active_to_predecessor_content(
+    // Historical byte compatibility does not authorize digest-only rollback
+    // of a stateful writer. Keep both frozen fixtures and their roots intact.
+    let before = restored.checkpoint();
+    assert_eq!(
+        restored.rollback_active_to_predecessor_content(
             &id("feature.persisted"),
             generation(2),
             generation(3),
             digest("rollback"),
+        ),
+        Err(Error::MissingWriterHandoff)
+    );
+    assert_eq!(restored.checkpoint(), before);
+    assert_eq!(
+        restored.active_generation(&id("feature.persisted")),
+        Some(generation(2))
+    );
+    assert_eq!(
+        restored.greatest_admitted_generation(&id("feature.persisted")),
+        Some(generation(2))
+    );
+    // The rejected shortcut did not consume generation 3. Advance through
+    // the ordinary handoff path before exercising predecessor compaction.
+    let previous = restored
+        .record(&id("feature.persisted"), generation(2))
+        .unwrap()
+        .abi
+        .clone();
+    let successor = abi("feature.persisted", /*value*/ 3, Some(&previous));
+    restored.register_candidate(successor.clone()).unwrap();
+    restored
+        .enter_shadow(&successor.module_id, successor.generation)
+        .unwrap();
+    restored
+        .enter_canary(&successor.module_id, successor.generation)
+        .unwrap();
+    restored
+        .promote_after_handoff(
+            &successor.module_id,
+            successor.generation,
+            RuntimeModulePromotionWitnessV1 {
+                selection_digest: digest("forward-selection"),
+                canary_digest: digest("forward-canary"),
+                handoff_digest: digest("owner-handoff"),
+            },
         )
         .unwrap();
     assert_eq!(
-        restored.active_generation(&id("feature.persisted")),
+        restored.active_generation(&successor.module_id),
         Some(generation(3))
     );
     restored

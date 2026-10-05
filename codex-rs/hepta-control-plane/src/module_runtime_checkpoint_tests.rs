@@ -295,3 +295,6 @@ fn collection_abi_and_pending_bounds_are_checked_before_restore() {
 
 #[path = "module_runtime_checkpoint_wire_tests.rs"]
 mod wire_tests;
+
+#[path = "module_runtime_checkpoint_handoff_tests.rs"]
+mod handoff_tests;

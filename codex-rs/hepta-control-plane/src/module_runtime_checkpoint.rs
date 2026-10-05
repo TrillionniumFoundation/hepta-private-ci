@@ -211,12 +211,25 @@ impl RuntimeModuleRegistryV1 {
                 return Err(Error::CheckpointInvalid);
             }
             match (record.selection_digest, record.canary_digest) {
-                (Some(selection_digest), Some(canary_digest)) => RuntimeModulePromotionWitnessV1 {
-                    selection_digest,
-                    canary_digest,
-                    handoff_digest: record.handoff_digest.unwrap_or(Digest32::ZERO),
+                (Some(selection_digest), Some(canary_digest)) => {
+                    let witness = RuntimeModulePromotionWitnessV1 {
+                        selection_digest,
+                        canary_digest,
+                        handoff_digest: record.handoff_digest.unwrap_or(Digest32::ZERO),
+                    };
+                    witness.validate_for(&record.abi)?;
+                    // A stateless successor cannot erase the retained owner's
+                    // state, writer-domain or external-effect obligations.
+                    // Selected successors already require this predecessor to
+                    // exist; compacted terminal-only history stays historical.
+                    if let Some(previous) =
+                        record.abi.predecessor_generation.and_then(|predecessor| {
+                            restored.records.get(&(module_id.clone(), predecessor))
+                        })
+                    {
+                        witness.validate_for(&previous.abi)?;
+                    }
                 }
-                .validate_for(&record.abi)?,
                 (None, None) if record.handoff_digest.is_none() => {
                     if (selected || matches!(record.lifecycle, RuntimeModuleLifecycleV1::Retired))
                         && (record.abi.predecessor_generation.is_some() || generation != first)

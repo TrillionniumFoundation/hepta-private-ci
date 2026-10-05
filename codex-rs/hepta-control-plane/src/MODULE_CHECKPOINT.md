@@ -12,6 +12,12 @@ ABI and predecessor consistency, duplicate identities, evidence shape, fences,
 selected lifecycle membership and exclusive authoritative domains before returning
 a new registry. A failure never mutates a caller's live registry.
 
+Restore checks each published handoff witness against both the successor
+and its retained predecessor. A successor that declares itself stateless does
+not erase the predecessor's state, authoritative domains or external effects.
+Registered, shadow and canary candidates do not need a handoff before publication;
+genuinely stateless replacement and bootstrap retain their existing fast paths.
+
 ## Trust and current history
 
 Both restore entry points require `expected_current_checkpoint_digest`. The host
@@ -37,6 +43,10 @@ That source had no byte decoder or deployed storage format. The two frozen
 `fixtures/pr1303_*_v1.bin` fixtures reconstruct its active-successor and compacted
 retirement examples; they test historical digest interpretation, not a claimed
 production backup migration. Changing this schema requires a distinct version.
+Decoding historical state does not reauthorize unsafe digest-only rollback:
+stateful restoration retains its original bytes and generations, while rollback
+still requires the current owner's real state-preserving handoff. The stateless
+emergency rollback and its full-capacity checkpoint remain supported.
 
 The preimage starts with ASCII `hepta.runtime-module-registry-checkpoint.v1` and
 NUL. Counts, UTF-8 ID byte lengths and generations are big-endian u64. Digests
