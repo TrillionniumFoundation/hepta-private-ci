@@ -90,6 +90,56 @@ fn sign(
     evidence
 }
 
+fn verifier_and_evidence(
+    bundle: &IndependentEvaluationBundleV1,
+    roles: &[MetricRoleContractV2],
+    generator_key: &SigningKey,
+    evaluator_key: &SigningKey,
+) -> (LearningEvidenceVerifierV1, SignedEvaluationEvidenceV1) {
+    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
+        scope_digest: bundle.generator.scope_digest,
+        objective_digest: bundle.objective_digest,
+        authority_epoch: 9,
+        signers: vec![
+            TrustedLearningSignerV1 {
+                principal: bundle.generator.clone(),
+                controller_id: bundle.generator.principal_id.clone(),
+                verifying_key: generator_key.verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Generator],
+                revoked_at: None,
+            },
+            TrustedLearningSignerV1 {
+                principal: bundle.evaluator.clone(),
+                controller_id: bundle.evaluator.principal_id.clone(),
+                verifying_key: evaluator_key.verifying_key().to_bytes(),
+                roles: vec![LearningEvidenceRoleV1::Evaluator],
+                revoked_at: None,
+            },
+        ],
+    })
+    .unwrap();
+    let payload = evaluation_signing_payload_v2(bundle, roles).unwrap();
+    let evidence = SignedEvaluationEvidenceV1 {
+        generator_plan: sign(
+            &verifier,
+            &bundle.generator,
+            generator_key,
+            LearningEvidenceRoleV1::Generator,
+            bundle.objective_digest,
+            bundle.frozen_plan.plan_digest.as_array(),
+        ),
+        evaluator_bundle: sign(
+            &verifier,
+            &bundle.evaluator,
+            evaluator_key,
+            LearningEvidenceRoleV1::Evaluator,
+            bundle.objective_digest,
+            &payload,
+        ),
+    };
+    (verifier, evidence)
+}
+
 #[test]
 fn signed_qualification_e2e_binds_plan_holdout_roles_and_trust() {
     let objective_digest = digest("objective");
@@ -147,8 +197,8 @@ fn signed_qualification_e2e_binds_plan_holdout_roles_and_trust() {
         candidate_id: id("candidate"),
         baseline_id: id("baseline"),
         claim_scope: EvaluationClaimScopeV1::Qualification,
-        generator: generator.clone(),
-        evaluator: evaluator.clone(),
+        generator,
+        evaluator,
         frozen_plan,
         holdout_use,
         objective_digest,
@@ -179,49 +229,8 @@ fn signed_qualification_e2e_binds_plan_holdout_roles_and_trust() {
         }],
     };
 
-    let verifier = LearningEvidenceVerifierV1::new(LearningEvidenceTrustV1 {
-        scope_digest,
-        objective_digest,
-        authority_epoch: 9,
-        signers: vec![
-            TrustedLearningSignerV1 {
-                principal: generator.clone(),
-                controller_id: generator.principal_id.clone(),
-                verifying_key: generator_key.verifying_key().to_bytes(),
-                roles: vec![LearningEvidenceRoleV1::Generator],
-                revoked_at: None,
-            },
-            TrustedLearningSignerV1 {
-                principal: evaluator.clone(),
-                controller_id: evaluator.principal_id.clone(),
-                verifying_key: evaluator_key.verifying_key().to_bytes(),
-                roles: vec![LearningEvidenceRoleV1::Evaluator],
-                revoked_at: None,
-            },
-        ],
-    })
-    .unwrap();
-
-    let payload = evaluation_signing_payload_v2(&bundle, &roles).unwrap();
-    let evidence = SignedEvaluationEvidenceV1 {
-        generator_plan: sign(
-            &verifier,
-            &generator,
-            &generator_key,
-            LearningEvidenceRoleV1::Generator,
-            objective_digest,
-            bundle.frozen_plan.plan_digest.as_array(),
-        ),
-        evaluator_bundle: sign(
-            &verifier,
-            &evaluator,
-            &evaluator_key,
-            LearningEvidenceRoleV1::Evaluator,
-            objective_digest,
-            &payload,
-        ),
-    };
-
+    let (verifier, evidence) =
+        verifier_and_evidence(&bundle, &roles, &generator_key, &evaluator_key);
     let decision =
         decide_with_signed_evidence_v2(bundle.clone(), roles.clone(), &evidence, &verifier, 50)
             .unwrap();
@@ -234,4 +243,147 @@ fn signed_qualification_e2e_binds_plan_holdout_roles_and_trust() {
     let mut tampered = bundle;
     tampered.metrics[0].candidate.lower = FixedQ32::from_raw(99);
     assert!(decide_with_signed_evidence_v2(tampered, roles, &evidence, &verifier, 50).is_err());
+}
+
+#[test]
+fn signed_qualification_e2e_binds_multi_outcome_privacy_retention_and_unlearning() {
+    let objective_digest = digest("multi-outcome-objective");
+    let dataset_digest = digest("multi-outcome-dataset");
+    let estimand_digest = digest("multi-outcome-estimand");
+    let scope_digest = digest("multi-outcome-scope");
+    let generator_key = SigningKey::from_bytes(&[19; 32]);
+    let evaluator_key = SigningKey::from_bytes(&[23; 32]);
+    let generator = principal(
+        "multi-generator",
+        "multi-generator-credential",
+        &generator_key,
+        scope_digest,
+    );
+    let evaluator = principal(
+        "multi-evaluator",
+        "multi-evaluator-credential",
+        &evaluator_key,
+        scope_digest,
+    );
+    let roles = vec![
+        MetricRoleContractV2 {
+            metric_id: id("task-utility"),
+            role: MetricRoleV2::PrimarySuperiority {
+                minimum_improvement: FixedQ32::from_raw(5),
+            },
+        },
+        MetricRoleContractV2 {
+            metric_id: id("privacy-loss"),
+            role: MetricRoleV2::AbsoluteConstraint,
+        },
+    ];
+    let frozen_plan = freeze_cross_fold_plan_v2(
+        CrossFoldPlanV1 {
+            plan_id: id("multi-outcome-plan"),
+            claim_scope: EvaluationClaimScopeV1::Qualification,
+            candidate_id: id("candidate"),
+            baseline_id: id("baseline"),
+            objective_digest,
+            dataset_digest,
+            estimand_digest,
+            metric_contracts: vec![
+                MetricContractV1 {
+                    metric_id: id("task-utility"),
+                    direction: EvaluationDirectionV1::Maximize,
+                    safety_floor: Some(FixedQ32::from_raw(80)),
+                },
+                MetricContractV1 {
+                    metric_id: id("privacy-loss"),
+                    direction: EvaluationDirectionV1::Minimize,
+                    safety_floor: Some(FixedQ32::from_raw(20)),
+                },
+            ],
+            family_alpha_ppm: 50_000,
+            simultaneous_comparisons: 2,
+            folds: vec![fold(1), fold(2)],
+            final_holdout_window_id: id("holdout-window-2"),
+            final_holdout_digest: digest("multi-outcome-final-holdout"),
+        },
+        roles.clone(),
+    )
+    .unwrap();
+    let holdout_use = FinalHoldoutRegistry::new().consume(&frozen_plan).unwrap();
+    let bundle = IndependentEvaluationBundleV1 {
+        evaluation_id: id("multi-outcome-evaluation"),
+        candidate_id: id("candidate"),
+        baseline_id: id("baseline"),
+        claim_scope: EvaluationClaimScopeV1::Qualification,
+        generator,
+        evaluator,
+        frozen_plan,
+        holdout_use,
+        objective_digest,
+        dataset_digest,
+        estimand_digest,
+        estimate_receipt_digest: digest("multi-outcome-estimate"),
+        support_audit_digest: digest("multi-outcome-support-audit"),
+        confidence_receipt_digest: digest("multi-outcome-confidence"),
+        retention_receipt_digests: vec![digest("retention-receipt")],
+        unlearning_receipt_digest: digest("unlearning-receipt"),
+        snapshot_ids: vec![id("snapshot-1")],
+        future_window_ids: vec![id("future-window-1")],
+        family_alpha_ppm: 50_000,
+        simultaneous_comparisons: 2,
+        metrics: vec![
+            MetricGateV1 {
+                metric_id: id("task-utility"),
+                direction: EvaluationDirectionV1::Maximize,
+                candidate: EvaluationIntervalV1 {
+                    lower: FixedQ32::from_raw(100),
+                    upper: FixedQ32::from_raw(110),
+                },
+                baseline: EvaluationIntervalV1 {
+                    lower: FixedQ32::from_raw(80),
+                    upper: FixedQ32::from_raw(90),
+                },
+                safety_floor: Some(FixedQ32::from_raw(80)),
+                support_digest: digest("utility-support"),
+            },
+            MetricGateV1 {
+                metric_id: id("privacy-loss"),
+                direction: EvaluationDirectionV1::Minimize,
+                candidate: EvaluationIntervalV1 {
+                    lower: FixedQ32::from_raw(10),
+                    upper: FixedQ32::from_raw(20),
+                },
+                baseline: EvaluationIntervalV1 {
+                    lower: FixedQ32::from_raw(30),
+                    upper: FixedQ32::from_raw(40),
+                },
+                safety_floor: Some(FixedQ32::from_raw(20)),
+                support_digest: digest("privacy-support"),
+            },
+        ],
+    };
+    let (verifier, evidence) =
+        verifier_and_evidence(&bundle, &roles, &generator_key, &evaluator_key);
+    let decision =
+        decide_with_signed_evidence_v2(bundle.clone(), roles.clone(), &evidence, &verifier, 50)
+            .unwrap();
+    assert_eq!(
+        decision.decision.disposition,
+        IndependentEvaluationDispositionV1::EligibleForIndependentSelection
+    );
+    assert!(!decision.decision.authority.grants_any());
+
+    for field in 0..4 {
+        let mut tampered = bundle.clone();
+        match field {
+            0 => tampered.metrics[1].support_digest = digest("different-privacy-support"),
+            1 => tampered.metrics[1].candidate.upper = FixedQ32::from_raw(19),
+            2 => tampered.retention_receipt_digests[0] = digest("different-retention"),
+            3 => tampered.unlearning_receipt_digest = digest("different-unlearning"),
+            _ => unreachable!(),
+        }
+        assert!(
+            decide_with_signed_evidence_v2(tampered, roles.clone(), &evidence, &verifier, 50,)
+                .is_err(),
+            "field {field} must be signed"
+        );
+    }
 }

@@ -19,6 +19,7 @@ use codex_hepta_types::Revision;
 use codex_hepta_types::StableId;
 
 use crate::CandidateUnionV1;
+use crate::ContradictionEvidenceV2;
 use crate::EngramDynamicsPolicyV1;
 use crate::EngramSnapshotV1;
 use crate::MAX_GENERATION_BOUND_CANDIDATES;
@@ -29,6 +30,7 @@ use crate::RetrievalChannelCandidateV1;
 use crate::RetrievalChannelV1;
 use crate::RetrievalPolicyV1;
 use crate::build_candidate_union;
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 use crate::recall;
 
 pub const MAX_RETRIEVAL_GENERATORS: usize = 8;
@@ -203,8 +205,10 @@ impl RetrievalGeneratorBatchV1 {
                 return Err(GeneratorErrorV1::ScoreOutOfRange);
             }
             ensure_digest("generator_candidate_support", candidate.support_digest)?;
-            if let Some(group) = candidate.contradiction_group_digest {
-                ensure_digest("generator_contradiction_group", group)?;
+            if let Some(claim) = candidate.contradiction_group_digest {
+                claim
+                    .validate(self.receipt.generation_vector_digest)
+                    .map_err(GeneratorErrorV1::Recall)?;
             }
             let identity = (
                 candidate.record.record_id.clone(),
@@ -228,6 +232,9 @@ pub struct GeneratedCandidateInputV1 {
 
 impl GeneratedCandidateInputV1 {
     pub fn new(mut batches: Vec<RetrievalGeneratorBatchV1>) -> Result<Self, GeneratorErrorV1> {
+        if batches.is_empty() || batches.len() > MAX_RETRIEVAL_GENERATORS {
+            return Err(GeneratorErrorV1::InvalidGeneratorCount);
+        }
         batches.sort_by_key(|batch| batch.receipt.generator);
         let source_completeness_digest = completeness_digest(&batches)?;
         let value = Self {
@@ -339,7 +346,25 @@ pub struct GeneratedCandidateUnionV1 {
 impl GeneratedCandidateUnionV1 {
     pub fn validate(&self) -> Result<(), GeneratorErrorV1> {
         self.union.validate().map_err(GeneratorErrorV1::Recall)?;
-        validate_receipts(&self.generator_receipts, self.source_completeness_digest)?;
+        let total = validate_receipts(&self.generator_receipts, self.source_completeness_digest)?;
+        let channels = self
+            .generator_receipts
+            .iter()
+            .filter(|receipt| receipt.candidate_count > 0)
+            .map(|receipt| receipt.generator.channel())
+            .collect::<BTreeSet<_>>();
+        if self.union.entries.len().saturating_add(
+            usize::try_from(self.union.omitted_by_channel_limits).unwrap_or(usize::MAX),
+        ) > usize::try_from(total).unwrap_or(0)
+            || self.union.entries.iter().any(|entry| {
+                entry
+                    .channels
+                    .iter()
+                    .any(|channel| !channels.contains(channel))
+            })
+        {
+            return Err(GeneratorErrorV1::CandidateCountMismatch);
+        }
         if self
             .generator_receipts
             .iter()
@@ -382,7 +407,29 @@ pub struct GeneratedRecallV1 {
 impl GeneratedRecallV1 {
     pub fn validate(&self) -> Result<(), GeneratorErrorV1> {
         self.packet.validate().map_err(GeneratorErrorV1::Recall)?;
-        validate_receipts(&self.generator_receipts, self.source_completeness_digest)?;
+        let total = validate_receipts(&self.generator_receipts, self.source_completeness_digest)?;
+        let channels = self
+            .generator_receipts
+            .iter()
+            .filter(|receipt| receipt.candidate_count > 0)
+            .map(|receipt| receipt.generator.channel())
+            .collect::<BTreeSet<_>>();
+        if self
+            .packet
+            .selections
+            .len()
+            .saturating_add(usize::try_from(self.packet.omitted_count).unwrap_or(usize::MAX))
+            > usize::try_from(total).unwrap_or(0)
+            || usize::try_from(self.packet.distinct_channels).unwrap_or(usize::MAX) > channels.len()
+            || self.packet.selections.iter().any(|selection| {
+                selection
+                    .channels
+                    .iter()
+                    .any(|channel| !channels.contains(channel))
+            })
+        {
+            return Err(GeneratorErrorV1::CandidateCountMismatch);
+        }
         if self
             .generator_receipts
             .iter()
@@ -460,6 +507,7 @@ pub fn build_candidate_union_from_generated(
     Ok(value)
 }
 
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub fn recall_generated_with_engram(
     cue: &MemoryCueV1,
     policy: &RetrievalPolicyV1,
@@ -467,14 +515,40 @@ pub fn recall_generated_with_engram(
     engram_snapshot: &EngramSnapshotV1,
     dynamics_policy: &EngramDynamicsPolicyV1,
 ) -> Result<GeneratedRecallV1, GeneratorErrorV1> {
+    recall_generated_with_engram_controlled(
+        cue,
+        policy,
+        input,
+        engram_snapshot,
+        dynamics_policy,
+        &crate::RecallWorkControlV1::compatibility(),
+    )
+}
+
+/// Host-bounded counterpart; interruption never publishes partial recall.
+pub fn recall_generated_with_engram_controlled(
+    cue: &MemoryCueV1,
+    policy: &RetrievalPolicyV1,
+    input: &GeneratedCandidateInputV1,
+    engram_snapshot: &EngramSnapshotV1,
+    dynamics_policy: &EngramDynamicsPolicyV1,
+    work: &crate::RecallWorkControlV1,
+) -> Result<GeneratedRecallV1, GeneratorErrorV1> {
+    work.checkpoint().map_err(GeneratorErrorV1::Recall)?;
     cue.validate().map_err(GeneratorErrorV1::Recall)?;
     input.validate()?;
     ensure_input_generation(cue, input)?;
     ensure_policy_generators(policy, input)?;
     let candidates = input.flattened_candidates()?;
-    let packet =
-        crate::recall_with_engram(cue, policy, candidates, engram_snapshot, dynamics_policy)
-            .map_err(|error| GeneratorErrorV1::Engram(error.to_string()))?;
+    let packet = crate::recall_with_engram_controlled(
+        cue,
+        policy,
+        candidates,
+        engram_snapshot,
+        dynamics_policy,
+        work,
+    )
+    .map_err(|error| GeneratorErrorV1::Engram(error.to_string()))?;
     let mut value = GeneratedRecallV1 {
         packet,
         generator_receipts: input
@@ -491,6 +565,7 @@ pub fn recall_generated_with_engram(
     Ok(value)
 }
 
+#[cfg(any(test, feature = "legacy-uncontrolled-retrieval"))]
 pub fn recall_generated(
     cue: &MemoryCueV1,
     policy: &RetrievalPolicyV1,
@@ -570,14 +645,27 @@ fn ensure_input_generation(
 fn validate_receipts(
     receipts: &[RetrievalGeneratorReceiptV1],
     expected_completeness_digest: Digest32,
-) -> Result<(), GeneratorErrorV1> {
+) -> Result<u32, GeneratorErrorV1> {
     if receipts.is_empty() || receipts.len() > MAX_RETRIEVAL_GENERATORS {
         return Err(GeneratorErrorV1::InvalidGeneratorCount);
     }
     let mut seen = BTreeSet::new();
     let mut previous = None;
+    let mut total_candidates = 0_u32;
     for receipt in receipts {
         receipt.validate()?;
+        if receipt.completeness == RetrievalSourceCompletenessV1::Unavailable {
+            return Err(GeneratorErrorV1::RequiredGeneratorUnavailable(
+                receipt.generator.channel(),
+            ));
+        }
+        total_candidates = total_candidates
+            .checked_add(receipt.candidate_count)
+            .ok_or(GeneratorErrorV1::CandidateLimitExceeded)?;
+        if usize::try_from(total_candidates).unwrap_or(usize::MAX) > MAX_GENERATION_BOUND_CANDIDATES
+        {
+            return Err(GeneratorErrorV1::CandidateLimitExceeded);
+        }
         if !seen.insert(receipt.generator) {
             return Err(GeneratorErrorV1::DuplicateGenerator(receipt.generator));
         }
@@ -595,7 +683,7 @@ fn validate_receipts(
     if Digest32::of_bytes(&bytes) != expected_completeness_digest {
         return Err(GeneratorErrorV1::DigestMismatch("source_completeness"));
     }
-    Ok(())
+    Ok(total_candidates)
 }
 
 fn completeness_digest(
@@ -628,7 +716,7 @@ struct MergedCandidate {
     ood: ProbabilityQ32,
     support_digests: BTreeSet<Digest32>,
     receipt_digests: BTreeSet<Digest32>,
-    contradiction_group_digest: Option<Digest32>,
+    contradiction_group_digest: Option<ContradictionEvidenceV2>,
     generation_vector_digest: Digest32,
 }
 

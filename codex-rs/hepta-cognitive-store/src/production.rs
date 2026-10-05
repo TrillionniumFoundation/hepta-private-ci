@@ -104,11 +104,18 @@ impl ProductionCognitiveStore {
     /// provide its descriptor-bound recovery VFS. Surfacing that result here is
     /// deliberate: product code must not silently fall back to an unanchored
     /// writer after requesting recovery semantics.
-    pub async fn open_with_recovery(
+    pub async fn open_with_recovery<V>(
         layout: &HeptaAgentLayout,
         requirement: CognitiveRecoveryRequirement<'_>,
-    ) -> Result<Self, ProductionCognitiveStoreError> {
-        let backend = DurableCognitiveBackend::open_with_recovery(layout, requirement).await?;
+        authority: &ProductionAuthorityLease,
+        verifier: &V,
+    ) -> Result<Self, ProductionCognitiveStoreError>
+    where
+        V: ProductionAuthorityVerifier + ?Sized,
+    {
+        let backend =
+            DurableCognitiveBackend::open_with_recovery(layout, requirement, authority, verifier)
+                .await?;
         Ok(Self { backend })
     }
 

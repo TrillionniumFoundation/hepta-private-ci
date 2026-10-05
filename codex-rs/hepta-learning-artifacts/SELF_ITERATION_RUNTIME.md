@@ -15,4 +15,6 @@ candidate cannot bypass a state, reuse an evidence identity, or exceed the fixed
 selection, merge, promotion or release authority. Callers must authenticate
 receipts and enforce the external authority boundary before appending them.
 Snapshots are reconstructed by replaying the event sequence; a supplied current
-state without matching events is rejected.
+state without matching events is rejected. Replay checks the envelope candidate
+budget and the fixed event ceiling before cloning candidate states or rebuilding
+the ledger, so oversized input is rejected before additional replay allocation.

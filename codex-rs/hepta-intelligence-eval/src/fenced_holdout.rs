@@ -108,6 +108,15 @@ pub trait FinalHoldoutCasStoreV1 {
         expected: Option<Digest32>,
         next: &FinalHoldoutCasRecordV1,
     ) -> Result<(), FinalHoldoutCasStoreError>;
+
+    /// Optional native journal already validated by this backend's canonical
+    /// replay. The private journal state cannot be reconstructed from unchecked
+    /// receipt fields. Recovery must compare its complete snapshot with `load`
+    /// and restore the owner's admission limit before using it. The default
+    /// preserves strict snapshot replay for stores without such a cache.
+    fn canonical_journal_cache(&self, _binding: Digest32) -> Option<FinalHoldoutJournalV1> {
+        None
+    }
 }
 
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
@@ -176,6 +185,31 @@ pub struct FencedFinalHoldoutOwnerV1<S> {
     poisoned: bool,
 }
 
+#[cfg(all(target_os = "linux", feature = "fixed-eval-host"))]
+impl FencedFinalHoldoutOwnerV1<crate::LockedFileFinalHoldoutCasStoreV1> {
+    pub(crate) fn protected_observer_provider(
+        &self,
+        original_cas_path: &std::path::Path,
+        original_witness_path: &std::path::Path,
+        original_cut_path: &std::path::Path,
+        registration: &crate::AuthenticatedPairedRegistrationV1,
+    ) -> Result<
+        crate::protected_paired_provider::ProtectedPairedObservationProviderV1,
+        crate::ProductProviderErrorV1,
+    > {
+        if self.poisoned {
+            return Err(crate::ProductProviderErrorV1::Indeterminate);
+        }
+        crate::protected_paired_provider::ProtectedPairedObservationProviderV1::open(
+            &self.store,
+            original_cas_path,
+            original_witness_path,
+            original_cut_path,
+            registration,
+        )
+    }
+}
+
 impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
     /// Initialize a previously absent authoritative record.
     pub fn initialize(
@@ -217,11 +251,22 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
         fence.validate()?;
         let current = store.load(binding)?.ok_or(FencedHoldoutError::Missing)?;
         current.validate(binding)?;
-        let journal = FinalHoldoutJournalV1::from_snapshot_with_record_limit(
-            current.journal.clone(),
-            MAX_RECORDS,
-        )
-        .map_err(|_| FencedHoldoutError::Corrupt)?;
+        let journal = match store.canonical_journal_cache(binding) {
+            Some(mut cached) => {
+                if cached.snapshot() != current.journal {
+                    return Err(FencedHoldoutError::Corrupt);
+                }
+                cached
+                    .adopt_record_limit(MAX_RECORDS)
+                    .map_err(|_| FencedHoldoutError::Corrupt)?;
+                cached
+            }
+            None => FinalHoldoutJournalV1::from_snapshot_with_record_limit(
+                current.journal.clone(),
+                MAX_RECORDS,
+            )
+            .map_err(|_| FencedHoldoutError::Corrupt)?,
+        };
 
         let record = if fence == current.fence {
             current
@@ -279,6 +324,10 @@ impl<S: FinalHoldoutCasStoreV1> FencedFinalHoldoutOwnerV1<S> {
                 Err(FencedHoldoutError::Indeterminate)
             }
         }
+    }
+
+    pub(crate) const fn binding(&self) -> Digest32 {
+        self.binding
     }
 
     #[must_use]
@@ -383,3 +432,7 @@ impl From<FinalHoldoutCasStoreError> for FencedHoldoutError {
 #[cfg(test)]
 #[path = "fenced_holdout_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "fenced_holdout_cache_tests.rs"]
+mod cache_tests;

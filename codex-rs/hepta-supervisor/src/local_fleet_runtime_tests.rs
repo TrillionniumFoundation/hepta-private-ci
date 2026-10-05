@@ -1,0 +1,379 @@
+use std::os::unix::fs::PermissionsExt;
+use std::path::Path;
+use std::process::Command;
+use std::sync::Arc;
+
+use codex_hepta_contracts::AgentId;
+use codex_hepta_fleet::AgentManifest;
+use codex_hepta_fleet::FleetRegistry;
+use codex_hepta_fleet::ResourceBudget;
+use codex_hepta_fleet::WorkspaceBinding;
+use codex_hepta_paths::HeptaFleetRoot;
+use pretty_assertions::assert_eq;
+use sha2::Digest;
+use sha2::Sha256;
+use tokio::runtime::Handle;
+
+use super::super::LocalFleetHost;
+use crate::AgentCommand;
+use crate::SpawnSpec;
+
+// This exercises the exact production nesting: a serialized blocking owner
+// polls the request future, which calls the synchronous process resource port.
+// Run explicitly under root on a writable native cgroup v2 host; no mock or
+// skipped assertion can stand in for kernel placement and exit reclamation.
+#[tokio::test(flavor = "multi_thread", worker_threads = 2)]
+#[ignore = "requires root and writable native cgroup v2"]
+async fn nested_lifecycle_resource_calls_prepare_bind_and_reclaim_real_child()
+-> Result<(), Box<dyn std::error::Error + Send + Sync>> {
+    assert_eq!(unsafe { libc::geteuid() }, 0);
+    // The generated fixture needs a root-protected traversable ancestor;
+    // the installed service parent deliberately admits only its workload GID.
+    let fixture = tempfile::tempdir_in("/var/lib")?;
+    // The real non-Root workload executes the installed release below this
+    // protected ancestor; traversal must match the installed Fleet namespace.
+    std::fs::set_permissions(fixture.path(), std::fs::Permissions::from_mode(0o755))?;
+    let cgroup = format!("hepta-runtime-native-{}", uuid::Uuid::new_v4().simple());
+    let agent = AgentId::parse(uuid::Uuid::new_v4().to_string())?;
+    let workspace = fixture.path().join("workspace");
+    std::fs::create_dir(&workspace)?;
+    let registry = FleetRegistry::initialize(HeptaFleetRoot::parse(fixture.path().join("fleet"))?)?;
+    let manifest = AgentManifest::new(
+        agent.clone(),
+        WorkspaceBinding::new(&workspace, registry.layout().fleet_root())?,
+        ResourceBudget {
+            max_concurrent_turns: 1,
+            memory_limit_mib: 128,
+            max_tool_processes: 1,
+            turn_queue_capacity: 64,
+        },
+    )?;
+    let record = registry.register(manifest)?;
+    let release = registry.install_release(
+        "native-sleep".parse()?,
+        Path::new("/usr/bin/sleep"),
+        vec!["30".into()],
+    )?;
+    let policy = fixture.path().join("policy.json");
+    std::fs::write(
+        &policy,
+        serde_json::to_vec(&serde_json::json!({
+            "version": 1,
+            "workload_uid": 1000,
+            "workload_gid": 1000,
+            "cgroup_root": cgroup,
+            "resource_authority_frontier": fixture.path().join("frontier.json"),
+            "process_thread_reserve": 64,
+            "matrix_resources": {
+                "cpu_millis": 1000, "memory_bytes": 134_217_728,
+                "accelerator_millis": 0, "concurrent_turns": 1,
+                "tool_processes": 1, "turn_queue_slots": 64
+            }
+        }))?,
+    )?;
+    std::fs::set_permissions(&policy, std::fs::Permissions::from_mode(0o600))?;
+    let host = LocalFleetHost::open(&policy, registry.clone()).await?;
+    // This is the exact production phase boundary: normalization/owner open
+    // precedes the read worker, and its fact pin precedes lifecycle admission.
+    let release_read_pin = registry.prevalidate_release_for_launch(&release.release_id)?;
+    let spec = SpawnSpec {
+        agent_id: agent.clone(),
+        generation: 1,
+        fleet_root: registry.layout().fleet_root().as_path().to_path_buf(),
+        workspace,
+        home_root: record.layout.home_root().to_path_buf(),
+        run_root: record.layout.run_root().to_path_buf(),
+        control_socket: record.layout.agentd_control_socket().to_path_buf(),
+        logs_root: record.layout.logs_root().to_path_buf(),
+        command: AgentCommand::new(release.program, vec!["30".into()])?,
+    };
+    let owner_run_root = record.layout.owner_run_root().to_path_buf();
+    let manifest_bytes = serde_json::to_vec(&record.manifest)?;
+    let runtime = Handle::current();
+    let owner = Arc::clone(&host);
+    tokio::task::spawn_blocking(move || {
+        runtime.block_on(async move {
+            let _release_read_pin = release_read_pin;
+            let proof = owner
+                .prove_never_spawned(&spec.agent_id)?
+                .ok_or("missing native pre-spawn proof")?;
+            let epoch = uuid::Uuid::new_v4().to_string();
+            let digest = "a".repeat(64);
+            let prior = crate::prepare_mutation(
+                &owner_run_root,
+                /*request_id*/ 91,
+                &spec.agent_id,
+                &epoch,
+                crate::SupervisordMutation::Start,
+                &digest,
+                /*intent_sequence*/ 1,
+            )?;
+            crate::mutation_journal::resolve_before_spawn(
+                &owner_run_root,
+                &prior.idempotency_key,
+                &digest,
+                &proof,
+            )?;
+            crate::prepare_mutation(
+                &owner_run_root,
+                /*request_id*/ 92,
+                &spec.agent_id,
+                &epoch,
+                crate::SupervisordMutation::Start,
+                &digest,
+                /*intent_sequence*/ 2,
+            )?;
+            // Live registration initially creates private owner metadata; the
+            // launch must expose only the shared metadata, never cold history.
+            std::fs::set_permissions(&owner_run_root, std::fs::Permissions::from_mode(0o700))?;
+            let execution = owner.prepare_agent(&spec)?;
+            assert_eq!(
+                std::fs::metadata(&owner_run_root)?.permissions().mode() & 0o7777,
+                0o750
+            );
+            // The real launch ownership preparation must not expose private
+            // history or make the earlier NoEffect receipt unqueryable.
+            let archived =
+                crate::mutation_journal_slots::lookup(&owner_run_root, /*request_id*/ 91)?
+                    .ok_or("archived request lost across real launch preparation")?;
+            assert_eq!(
+                archived.status.phase,
+                crate::DurableMutationPhaseV1::NoEffect
+            );
+            let held = owner.store.execution_hold(&execution.id).await?;
+            let held = held.ok_or("prepared execution was not durable before spawn")?;
+            assert_eq!((held.state.as_str(), held.process_id), ("prepared", None));
+            // The factual prefix must preserve every byte of the original
+            // installed-launch commitment used by recovery and native holds.
+            let mut original = Sha256::new();
+            original.update(std::fs::read(&spec.command.program)?);
+            original.update(&manifest_bytes);
+            original.update(spec.generation.to_be_bytes());
+            for (name, value) in &execution.environment {
+                for bytes in [name.as_encoded_bytes(), value.as_encoded_bytes()] {
+                    original.update((bytes.len() as u64).to_be_bytes());
+                    original.update(bytes);
+                }
+            }
+            for arg in &spec.command.args {
+                let bytes = arg.as_encoded_bytes();
+                original.update((bytes.len() as u64).to_be_bytes());
+                original.update(bytes);
+            }
+            assert_eq!(
+                held.context.manifest_digest,
+                super::super::hex_digest(original.finalize())
+            );
+            let program = execution.verified_program.as_ref().ok_or("held verified program")?;
+            let program_sha256 = program.program_sha256().to_owned();
+            let mut wrong_context = held.context.clone();
+            wrong_context.manifest_digest = "e".repeat(64);
+            assert!(owner.store.prepare_local_verified_execution(&wrong_context, program).await.is_err());
+            assert!(owner.validate_retirement(&spec.agent_id).is_err());
+
+            let mut command = Command::new(&spec.command.program);
+            command.args(&spec.command.args);
+            command.env(
+                "HEPTA_FLEET_LAUNCH_DIGEST",
+                "caller-cannot-select-this-fact",
+            );
+            owner.constrain(&mut command, &execution)?;
+            assert_eq!(
+                command
+                    .get_envs()
+                    .find(|(name, _)| *name == "HEPTA_FLEET_LAUNCH_DIGEST")
+                    .and_then(|(_, value)| value)
+                    .and_then(std::ffi::OsStr::to_str),
+                Some(held.context.manifest_digest.as_str())
+            );
+            let mut child = command.spawn()?;
+            let reader = codex_hepta_fleet::FleetExecutionVerifier::open(
+                &owner
+                    .registry
+                    .layout()
+                    .state_root()
+                    .join("fleet-resources.sqlite3"),
+            )
+            .await?;
+            assert!(
+                reader
+                    .observe_bound_root_local_resources(
+                        &spec.agent_id.to_string(),
+                        child.id(),
+                        1000,
+                    )
+                    .await
+                    .is_err(),
+                "Root observer cannot admit a prepared, unbound task"
+            );
+            owner.bind(&execution, child.id())?;
+            let launch_facts: Vec<_> = std::fs::read(format!("/proc/{}/environ", child.id()))?
+                .split(|byte| *byte == 0)
+                .filter(|entry| entry.starts_with(b"HEPTA_FLEET_"))
+                .map(|entry| String::from_utf8(entry.to_vec()))
+                .collect::<Result<_, _>>()?;
+            assert_eq!(
+                launch_facts,
+                vec![
+                    format!("HEPTA_FLEET_EXECUTION_ID={}", execution.id),
+                    format!("HEPTA_FLEET_LAUNCH_DIGEST={}", held.context.manifest_digest),
+                ]
+            );
+            assert_eq!(
+                owner.recover_execution(&spec.agent_id.to_string(), child.id())?,
+                execution.id
+            );
+            let status = std::fs::read_to_string(format!("/proc/{}/status", child.id()))?;
+            assert!(
+                status
+                    .lines()
+                    .any(|line| line == "Uid:\t1000\t1000\t1000\t1000")
+            );
+            assert!(
+                status
+                    .lines()
+                    .any(|line| line == "Gid:\t1000\t1000\t1000\t1000")
+            );
+            let membership = std::fs::read_to_string(format!("/proc/{}/cgroup", child.id()))?;
+            assert_eq!(membership, format!("0::/{}\n", execution.relative));
+            let bound = owner.store.execution_hold(&execution.id).await?;
+            let bound = bound.ok_or("bound execution disappeared")?;
+            assert_eq!(
+                (bound.state.as_str(), bound.process_id),
+                ("running", Some(u64::from(child.id())))
+            );
+            let observed = reader
+                .observe_bound_local_resources(&spec.agent_id.to_string(), child.id())
+                .await?;
+            let original_grant = owner.store.allocation_grant(&execution.id).await?;
+            assert_eq!(observed.allocation, original_grant);
+            assert_eq!(observed.context, bound.context);
+            assert_eq!(observed.process_id, child.id());
+            assert!(observed.process_start_ticks > 0);
+            let root_observed = reader
+                .observe_bound_root_local_resources(&spec.agent_id.to_string(), child.id(), 1000)
+                .await?;
+            assert_eq!(root_observed, observed);
+            assert_eq!(reader.observe_bound_root_local_resources_for_program(
+                spec.agent_id.as_str(), child.id(), 1000, &program_sha256
+            ).await?, observed);
+            assert!(reader.observe_bound_root_local_resources_for_program(
+                spec.agent_id.as_str(), child.id(), 1000, &"e".repeat(64)
+            ).await.is_err());
+            assert!(super::super::observe_local_fleet_resources_for_program(
+                owner.registry.layout().fleet_root(), &policy, &spec.agent_id, child.id(), &program_sha256
+            ).await.is_ok());
+            // Fault injection is confined to this isolated fixture database.
+            // A legacy or lost program fact cannot be recreated by a reader;
+            // the original V1 process/resource observation remains compatible.
+            let path = owner.registry.layout().state_root().join("fleet-resources.sqlite3");
+            let removed = Command::new("/usr/bin/python3")
+                .args(["-I", "-B", "-S", "-c", "import sqlite3,sys; db=sqlite3.connect(sys.argv[1]); db.execute('DELETE FROM fleet_execution_program_facts WHERE execution_id = ?', (sys.argv[2],)); db.commit(); db.close()"])
+                .arg(&path)
+                .arg(&execution.id)
+                .status()?;
+            assert!(removed.success());
+            let reopened = codex_hepta_fleet::FleetExecutionVerifier::open(&path).await?;
+            assert!(reopened.observe_bound_root_local_resources_for_program(
+                spec.agent_id.as_str(), child.id(), 1000, &program_sha256
+            ).await.is_err());
+            assert_eq!(reopened.observe_bound_root_local_resources(spec.agent_id.as_str(), child.id(), 1000).await?, observed);
+            for denied_uid in [0, 1001] {
+                assert!(
+                    reader
+                        .observe_bound_root_local_resources(
+                            &spec.agent_id.to_string(),
+                            child.id(),
+                            denied_uid,
+                        )
+                        .await
+                        .is_err()
+                );
+            }
+            assert!(
+                reader
+                    .observe_bound_root_local_resources("different-principal", child.id(), 1000,)
+                    .await
+                    .is_err()
+            );
+            assert!(
+                reader
+                    .observe_bound_local_resources("different-principal", child.id())
+                    .await
+                    .is_err()
+            );
+            assert!(
+                reader
+                    .observe_bound_local_resources(&spec.agent_id.to_string(), std::process::id())
+                    .await
+                    .is_err()
+            );
+            drop(execution.launch);
+            // Real upkeep changes the original grant, not the immutable spawn
+            // context. The read-only observer must see that exact new grant.
+            owner.maintain().await?;
+            let renewed = reader
+                .observe_bound_local_resources(&spec.agent_id.to_string(), child.id())
+                .await?;
+            assert_eq!(renewed.context, observed.context);
+            assert_eq!(
+                renewed.allocation,
+                owner.store.allocation_grant(&execution.id).await?
+            );
+            assert!(
+                renewed
+                    .allocation
+                    .as_ref()
+                    .ok_or("missing renewed allocation")?
+                    .lease_generation
+                    > observed
+                        .allocation
+                        .as_ref()
+                        .ok_or("missing original allocation")?
+                        .lease_generation
+            );
+            owner.request_stop(&execution.id)?;
+            assert!(
+                reader
+                    .observe_bound_root_local_resources(
+                        &spec.agent_id.to_string(),
+                        child.id(),
+                        1000,
+                    )
+                    .await
+                    .is_err()
+            );
+            assert!(
+                reader
+                    .observe_bound_local_resources(&spec.agent_id.to_string(), child.id())
+                    .await
+                    .is_err()
+            );
+            owner.kill(&execution.id)?;
+            assert!(!child.wait()?.success());
+            assert!(owner.finish_exit(&execution.id)?);
+            assert!(
+                reader
+                    .observe_bound_local_resources(&spec.agent_id.to_string(), child.id())
+                    .await
+                    .is_err()
+            );
+            owner.validate_retirement(&spec.agent_id)?;
+            assert!(owner.prove_never_spawned(&spec.agent_id)?.is_none());
+            assert_eq!(
+                owner
+                    .store
+                    .active_execution_for_principal(&spec.agent_id.to_string())
+                    .await?,
+                None
+            );
+            Ok::<(), Box<dyn std::error::Error + Send + Sync>>(())
+        })
+    })
+    .await??;
+    host.store.close().await;
+    let base = Path::new("/sys/fs/cgroup").join(&cgroup);
+    std::fs::remove_dir(base.join(format!("agent-{agent}")))?;
+    std::fs::remove_dir(base)?;
+    Ok(())
+}

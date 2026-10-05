@@ -203,6 +203,24 @@ pub fn propose_authenticated_topology_plasticity_v1(
     registry: &mut DurableTopologyProposalRegistryV1,
     now: u64,
 ) -> Result<TopologyPlasticityProductReceiptV1, TopologyPlasticityProductErrorV1> {
+    propose_authenticated_topology_plasticity_with_final_time_v1(
+        request,
+        verifier,
+        registry,
+        now,
+        &mut || Ok(now),
+    )
+}
+
+/// Revalidate the original authenticated G/O/E under the exact trust context
+/// immediately before a synchronous durable append or identical observation.
+pub fn propose_authenticated_topology_plasticity_with_final_time_v1(
+    request: TopologyPlasticityProductRequestV1,
+    verifier: &LearningEvidenceVerifierV1,
+    registry: &mut DurableTopologyProposalRegistryV1,
+    now: u64,
+    final_time: &mut impl FnMut() -> Result<u64, TopologyPlasticityProductErrorV1>,
+) -> Result<TopologyPlasticityProductReceiptV1, TopologyPlasticityProductErrorV1> {
     use TopologyPlasticityProductErrorV1 as E;
 
     let generation_payload = topology_generation_signing_payload_v1(&request)?;
@@ -289,7 +307,22 @@ pub fn propose_authenticated_topology_plasticity_v1(
         observer_authentication_digest,
         evaluator_authentication_digest,
     )?;
-    let durable = registry.append(request.expected_registry_predecessor, governed.clone())?;
+    let durable = registry.append_after_admission(
+        request.expected_registry_predecessor,
+        governed.clone(),
+        || {
+            let final_now = final_time()?;
+            if final_now < now {
+                return Err(E::Binding("host clock regressed before append"));
+            }
+            for participant in [&generator, &observer, &evaluator] {
+                verifier
+                    .revalidate(participant, final_now)
+                    .map_err(E::EvaluatorEvidence)?;
+            }
+            Ok::<(), E>(())
+        },
+    )?;
     let next_registry_anchor = registry.current_anchor()?.ok_or(E::MissingAnchor)?;
 
     let mut composition = b"hepta.intelligence.topology-composition.v1\0".to_vec();

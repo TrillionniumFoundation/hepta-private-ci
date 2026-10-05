@@ -12,27 +12,27 @@ use std::path::Path;
 use std::str::FromStr;
 use std::sync::Mutex;
 
-use codex_hepta_authbus::Error as AuthBusError;
-use codex_hepta_authbus::SignedMessage;
-use codex_hepta_authbus::SignedMessageClaims;
-use codex_hepta_intelligence::ObjectiveRunBindingsV1;
-use codex_hepta_intelligence::ObjectiveRunError;
-use codex_hepta_intelligence::compile_and_publish_objective_run_v1;
-use codex_hepta_learning_ledger::DurableRunStartJournal;
-use codex_hepta_learning_ledger::RunStartAppendDisposition;
-use codex_hepta_learning_ledger::RunStartAuthenticationV1;
-use codex_hepta_learning_ledger::RunStartObjectiveDispositionV1;
-use codex_hepta_learning_ledger::RunStartRecordV1;
-use codex_hepta_learning_ledger::RunStartRecovery;
-use codex_hepta_objective::ObjectiveAdmissionContextV1;
-use codex_hepta_objective::ObjectiveAdmissionProfileV1;
-use codex_hepta_objective::ObjectiveSourceAuthenticationV1;
-use codex_hepta_objective::decode_admission_profile_json_v1;
-use codex_hepta_objective::decode_source_envelope_json_v1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::Revision;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::authbus::Error as AuthBusError;
+use codex_hepta_agent_components::authbus::SignedMessage;
+use codex_hepta_agent_components::authbus::SignedMessageClaims;
+use codex_hepta_agent_components::intelligence::ObjectiveRunBindingsV1;
+use codex_hepta_agent_components::intelligence::ObjectiveRunError;
+use codex_hepta_agent_components::intelligence::compile_and_publish_objective_run_v1;
+use codex_hepta_agent_components::learning_ledger::DurableRunStartJournal;
+use codex_hepta_agent_components::learning_ledger::RunStartAppendDisposition;
+use codex_hepta_agent_components::learning_ledger::RunStartAuthenticationV1;
+use codex_hepta_agent_components::learning_ledger::RunStartObjectiveDispositionV1;
+use codex_hepta_agent_components::learning_ledger::RunStartRecordV1;
+use codex_hepta_agent_components::learning_ledger::RunStartRecovery;
+use codex_hepta_agent_components::objective::ObjectiveAdmissionContextV1;
+use codex_hepta_agent_components::objective::ObjectiveAdmissionProfileV1;
+use codex_hepta_agent_components::objective::ObjectiveSourceAuthenticationV1;
+use codex_hepta_agent_components::objective::decode_admission_profile_json_v1;
+use codex_hepta_agent_components::objective::decode_source_envelope_json_v1;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::Revision;
+use codex_hepta_agent_components::types::StableId;
 
 use crate::AgentdError;
 use crate::AgentdIdentity;
@@ -366,6 +366,31 @@ fn objective_claims(
     request: &AuthBusObjectiveIngress,
     payload: &[u8],
 ) -> Result<SignedMessageClaims, AgentdError> {
+    objective_claims_for_subject(&identity.agent_id, request, payload)
+}
+
+/// Canonical V1 signing material for an ordinary structured objective sender.
+/// These bytes confer no authority without the original issuer signature and
+/// Agentd's current admission, replay, lifecycle and execution checks.
+pub fn objective_ingress_signing_claims_v1(
+    agent_id: &codex_hepta_agent_components::contracts::AgentId,
+    request: &AuthBusObjectiveIngress,
+) -> Result<SignedMessageClaims, AgentdError> {
+    if request.body.source_envelope_json.len() > PRODUCT_SOURCE_JSON_BYTES {
+        return Err(invalid("objective source exceeds 32 KiB"));
+    }
+    let payload = serde_json::to_vec(&request.body)?;
+    if payload.len() > PRODUCT_BODY_JSON_BYTES {
+        return Err(invalid("encoded objective body exceeds 48 KiB"));
+    }
+    objective_claims_for_subject(agent_id, request, &payload)
+}
+
+fn objective_claims_for_subject(
+    agent_id: &codex_hepta_agent_components::contracts::AgentId,
+    request: &AuthBusObjectiveIngress,
+    payload: &[u8],
+) -> Result<SignedMessageClaims, AgentdError> {
     Ok(SignedMessageClaims {
         issuer_id: StableId::new(&request.issuer_id)
             .map_err(|error| invalid(&format!("objective issuer: {error}")))?,
@@ -373,9 +398,9 @@ fn objective_claims(
             .map_err(|error| invalid(&format!("objective key epoch: {error}")))?,
         message_id: StableId::new(&request.message_id)
             .map_err(|error| invalid(&format!("objective message id: {error}")))?,
-        subject_id: StableId::new(identity.agent_id.as_str())
+        subject_id: StableId::new(agent_id.as_str())
             .map_err(|error| invalid(&format!("objective subject: {error}")))?,
-        scope_digest: objective_scope(identity),
+        scope_digest: objective_scope_for_subject(agent_id),
         payload_digest: Digest32::of_bytes(payload),
         sequence: request.sequence,
         expires_at_ms: request.expires_at_ms,
@@ -383,17 +408,23 @@ fn objective_claims(
 }
 
 fn objective_scope(identity: &AgentdIdentity) -> Digest32 {
+    objective_scope_for_subject(&identity.agent_id)
+}
+
+fn objective_scope_for_subject(
+    agent_id: &codex_hepta_agent_components::contracts::AgentId,
+) -> Digest32 {
     let mut bytes = b"hepta:agentd:signed-objective:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
+    bytes.extend_from_slice(agent_id.as_str().as_bytes());
     Digest32::of_bytes(&bytes)
 }
 
 fn objective_fence(identity: &AgentdIdentity, current_generation: u64) -> Digest32 {
-    let mut bytes = b"hepta:agentd:objective-fence:v1\0".to_vec();
-    bytes.extend_from_slice(identity.agent_id.as_str().as_bytes());
-    bytes.extend_from_slice(&identity.spawn_generation.to_be_bytes());
-    bytes.extend_from_slice(&current_generation.to_be_bytes());
-    Digest32::of_bytes(&bytes)
+    crate::objective_run_fence_digest_v1(
+        identity.agent_id.as_str(),
+        identity.spawn_generation,
+        current_generation,
+    )
 }
 
 fn parse_digest(value: &str, field: &'static str) -> Result<Digest32, AgentdError> {
@@ -569,7 +600,9 @@ fn authentication_is_current(
     }
 }
 
-fn store_error(error: codex_hepta_learning_ledger::RunStartStoreError) -> AgentdError {
+fn store_error(
+    error: codex_hepta_agent_components::learning_ledger::RunStartStoreError,
+) -> AgentdError {
     invalid(&format!("objective run-start journal: {error}"))
 }
 

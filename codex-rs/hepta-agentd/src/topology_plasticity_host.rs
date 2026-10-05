@@ -8,22 +8,21 @@ use std::error::Error as StdError;
 use std::fmt;
 use std::fs::File;
 
-use codex_hepta_intelligence::TopologyAdmissionEvidenceV1;
-use codex_hepta_intelligence::TopologyPlasticityProductErrorV1;
-use codex_hepta_intelligence::TopologyPlasticityProductReceiptV1;
-use codex_hepta_intelligence::TopologyPlasticityProductRequestV1;
-use codex_hepta_intelligence::propose_authenticated_topology_plasticity_v1;
-use codex_hepta_learning_artifacts::ArtifactKind;
-use codex_hepta_learning_artifacts::ArtifactRegistry;
-use codex_hepta_learning_ledger::DurableLedger;
-use codex_hepta_learning_ledger::DurableLedgerError;
-use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
-use codex_hepta_plasticity::DurableTopologyProposalRegistryV1;
-use codex_hepta_plasticity::DurableTopologyRegistryAnchorV1;
-use codex_hepta_plasticity::DurableTopologyRegistryErrorV1;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::intelligence::TopologyAdmissionEvidenceV1;
+use codex_hepta_agent_components::intelligence::TopologyPlasticityProductErrorV1;
+use codex_hepta_agent_components::intelligence::TopologyPlasticityProductReceiptV1;
+use codex_hepta_agent_components::intelligence::TopologyPlasticityProductRequestV1;
+use codex_hepta_agent_components::learning_artifacts::ArtifactKind;
+use codex_hepta_agent_components::learning_artifacts::ArtifactRegistry;
+use codex_hepta_agent_components::learning_ledger::DurableLedger;
+use codex_hepta_agent_components::learning_ledger::DurableLedgerError;
+use codex_hepta_agent_components::learning_ledger::LearningEvidenceVerifierV1;
+use codex_hepta_agent_components::plasticity::DurableTopologyProposalRegistryV1;
+use codex_hepta_agent_components::plasticity::DurableTopologyRegistryAnchorV1;
+use codex_hepta_agent_components::plasticity::DurableTopologyRegistryErrorV1;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::StableId;
 
 use crate::plasticity_anchor_journal::AdaptiveAnchorJournalErrorV1;
 use crate::plasticity_anchor_journal::AdaptiveAnchorJournalV1;
@@ -92,6 +91,7 @@ impl From<AdaptiveAnchorJournalErrorV1> for AgentdTopologyHostErrorV1 {
             AdaptiveAnchorJournalErrorV1::ScopeMismatch => Self::AnchorScopeMismatch,
             AdaptiveAnchorJournalErrorV1::FenceOverflow => Self::AnchorFenceOverflow,
             AdaptiveAnchorJournalErrorV1::Io(kind) => Self::AnchorIo(kind),
+            AdaptiveAnchorJournalErrorV1::Poisoned => Self::Poisoned,
             AdaptiveAnchorJournalErrorV1::InvalidScope
             | AdaptiveAnchorJournalErrorV1::Corrupt
             | AdaptiveAnchorJournalErrorV1::GenerationPending
@@ -180,7 +180,7 @@ pub struct AgentdTopologyAdmissionInputV1 {
     pub baseline_id: StableId,
     pub objective_digest: Digest32,
     pub selected_artifact_digest: Digest32,
-    pub window: codex_hepta_plasticity::ProposalWindowV2,
+    pub window: codex_hepta_agent_components::plasticity::ProposalWindowV2,
     pub baseline_generation: Generation,
     pub candidate_generation: Generation,
     pub generation_digest: Digest32,
@@ -206,8 +206,8 @@ pub fn resolve_agentd_topology_admission_v1(
     {
         return Err(AgentdTopologyHostErrorV1::ArtifactBinding);
     }
-    let artifact_registry_head_digest = artifacts.snapshot().head_digest;
-    let ledger_head_digest = ledger.snapshot()?.head_digest;
+    let artifact_registry_head_digest = artifacts.head_digest();
+    let ledger_head_digest = ledger.head_digest()?;
     if artifact_registry_head_digest.is_zero()
         || ledger_head_digest.is_zero()
         || input.generation_digest.is_zero()
@@ -230,7 +230,7 @@ pub fn resolve_agentd_topology_admission_v1(
 }
 
 pub fn propose_agentd_topology_plasticity_v1(
-    mut request: TopologyPlasticityProductRequestV1,
+    request: TopologyPlasticityProductRequestV1,
     artifacts: &ArtifactRegistry,
     ledger: &DurableLedger,
     verifier: &LearningEvidenceVerifierV1,
@@ -238,62 +238,16 @@ pub fn propose_agentd_topology_plasticity_v1(
     anchor_store: &mut AgentdTopologyAnchorStoreV1,
     now: u64,
 ) -> Result<TopologyPlasticityProductReceiptV1, AgentdTopologyHostErrorV1> {
-    if writer.state != AgentdTopologyWriterStateV1::Healthy {
-        return Err(AgentdTopologyHostErrorV1::Poisoned);
-    }
-    let resolved = resolve_agentd_topology_admission_v1(
-        &AgentdTopologyAdmissionInputV1 {
-            baseline_id: request.admission.baseline_id.clone(),
-            objective_digest: request.admission.objective_digest,
-            selected_artifact_digest: request.selected_artifact_digest,
-            window: request.window.clone(),
-            baseline_generation: request.baseline_generation,
-            candidate_generation: request.candidate_generation,
-            generation_digest: request.admission.generation_digest,
-            evaluation_receipt_digest: request.admission.evaluation_receipt_digest,
-        },
+    propose_agentd_topology_plasticity_with_clock_v1(
+        request,
         artifacts,
         ledger,
-    )?;
-    if resolved != request.admission {
-        return Err(AgentdTopologyHostErrorV1::AdmissionDrift);
-    }
-    request.admission = resolved;
-
-    writer.state = AgentdTopologyWriterStateV1::AppendPendingAnchor;
-    let receipt = match propose_authenticated_topology_plasticity_v1(
-        request,
         verifier,
-        &mut writer.registry,
+        writer,
+        anchor_store,
         now,
-    ) {
-        Ok(receipt) => receipt,
-        Err(error) => {
-            writer.state = if matches!(
-                error,
-                TopologyPlasticityProductErrorV1::Registry(
-                    DurableTopologyRegistryErrorV1::Corrupt
-                        | DurableTopologyRegistryErrorV1::Indeterminate
-                        | DurableTopologyRegistryErrorV1::Poisoned
-                        | DurableTopologyRegistryErrorV1::Io(_)
-                ) | TopologyPlasticityProductErrorV1::MissingAnchor
-            ) {
-                AgentdTopologyWriterStateV1::Poisoned
-            } else {
-                AgentdTopologyWriterStateV1::Healthy
-            };
-            return Err(AgentdTopologyHostErrorV1::Product(error));
-        }
-    };
-    if anchor_store
-        .persist_anchor(writer.scope, writer.fence, receipt.next_registry_anchor)
-        .is_err()
-    {
-        writer.state = AgentdTopologyWriterStateV1::Poisoned;
-        return Err(AgentdTopologyHostErrorV1::AnchorPersistenceFailed);
-    }
-    writer.state = AgentdTopologyWriterStateV1::Healthy;
-    Ok(receipt)
+        &mut || Ok(now),
+    )
 }
 
 pub fn bootstrap_agentd_topology_writer_v1(
@@ -427,11 +381,12 @@ mod tests {
         Digest32::of_bytes(value)
     }
 
-    fn governed_topology_for_rollback() -> codex_hepta_plasticity::GovernedTopologyProposalV1 {
+    fn governed_topology_for_rollback()
+    -> codex_hepta_agent_components::plasticity::GovernedTopologyProposalV1 {
         let module_id = StableId::new("module:topology-rollback").expect("id");
         let migration = digest(b"topology-rollback-migration");
         let rollback = digest(b"topology-rollback-plan");
-        let handoff = codex_hepta_plasticity::build_writer_handoff_plan_v1(
+        let handoff = codex_hepta_agent_components::plasticity::build_writer_handoff_plan_v1(
             module_id.clone(),
             StableId::new("owner:topology-old").expect("id"),
             StableId::new("owner:topology-new").expect("id"),
@@ -444,13 +399,13 @@ mod tests {
         )
         .expect("handoff");
         let artifact = digest(b"topology-rollback-artifact");
-        let proposal = codex_hepta_plasticity::propose_topology_v2(
-            codex_hepta_plasticity::TopologyProposalRequestV2 {
+        let proposal = codex_hepta_agent_components::plasticity::propose_topology_v2(
+            codex_hepta_agent_components::plasticity::TopologyProposalRequestV2 {
                 proposal_id: StableId::new("proposal:topology-rollback").expect("id"),
                 proposer_id: StableId::new("generator:topology").expect("id"),
                 evaluator_id: StableId::new("evaluator:topology").expect("id"),
                 selected_artifact_digest: artifact,
-                window: codex_hepta_plasticity::ProposalWindowV2 {
+                window: codex_hepta_agent_components::plasticity::ProposalWindowV2 {
                     window_id: StableId::new("window:topology-rollback").expect("id"),
                     window_digest: digest(b"topology-rollback-window"),
                 },
@@ -458,9 +413,10 @@ mod tests {
                 candidate_generation: Generation::new(11).expect("generation"),
                 evaluation_digest: digest(b"topology-rollback-evaluation"),
                 rollback_predecessor_digest: artifact,
-                changes: vec![codex_hepta_plasticity::TopologyChangeV2 {
+                changes: vec![codex_hepta_agent_components::plasticity::TopologyChangeV2 {
                     module_id,
-                    operation: codex_hepta_plasticity::TopologyOperationV2::Replace,
+                    operation:
+                        codex_hepta_agent_components::plasticity::TopologyOperationV2::Replace,
                     predecessor_digest: Some(digest(b"topology-rollback-old")),
                     candidate_digest: Some(digest(b"topology-rollback-new")),
                     capability_typing_digest: digest(b"topology-rollback-capability"),
@@ -476,7 +432,7 @@ mod tests {
             },
         )
         .expect("proposal");
-        codex_hepta_plasticity::admit_governed_topology_v1(
+        codex_hepta_agent_components::plasticity::admit_governed_topology_v1(
             proposal,
             vec![handoff],
             digest(b"topology-rollback-source-auth"),
@@ -572,3 +528,7 @@ mod tests {
         assert_eq!(reopened.anchor(), Some(anchor));
     }
 }
+
+#[path = "topology_plasticity_host_final_time.rs"]
+mod final_time;
+pub(crate) use final_time::propose_agentd_topology_plasticity_with_clock_v1;

@@ -1628,8 +1628,10 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
         .await?;
     wait_for_turn_complete(&codex).await;
 
+    let before_compact_durable = super::durable_metadata::read_items(&codex).await?;
     codex.submit(Op::Compact).await?;
     wait_for_turn_complete(&codex).await;
+    let replacement_items = super::durable_metadata::read_replacement_items(&codex).await?;
 
     codex
         .start_or_steer_turn(TurnInputRequest::user_input(vec![UserInput::Text {
@@ -1641,10 +1643,9 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
 
     let response_requests = responses_mock.requests();
     let compact_request = &response_requests[3];
-    let item_create_time = |request: &responses::ResponsesRequest, text: &str| {
-        request
-            .input()
-            .into_iter()
+    let item_create_time = |items: &[Value], text: &str| {
+        items
+            .iter()
             .find(|item| {
                 item["content"].as_array().is_some_and(|content| {
                     content.iter().any(|part| {
@@ -1659,9 +1660,10 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
             })
             .expect("matching message should include a creation timestamp")
     };
-    let original_user_create_time = item_create_time(&response_requests[0], "hello remote compact");
+    let original_user_create_time =
+        item_create_time(&before_compact_durable, "hello remote compact");
     let delegated_task_create_time =
-        item_create_time(&response_requests[1], &delegated_task_ciphertext);
+        item_create_time(&before_compact_durable, &delegated_task_ciphertext);
     assert!(
         compact_request
             .inputs_of_type("agent_message")
@@ -1741,16 +1743,20 @@ async fn remote_compact_v2_reuses_compaction_trigger_for_followups() -> Result<(
     );
 
     let follow_up_request = response_requests.last().expect("follow-up request missing");
+    for request in &response_requests {
+        super::durable_metadata::assert_wire_has_no_local_metadata(&request.input());
+    }
+    let after_compact_durable = super::durable_metadata::read_items(&codex).await?;
     assert_eq!(
-        item_create_time(follow_up_request, "hello remote compact"),
+        item_create_time(&replacement_items, "hello remote compact"),
         original_user_create_time
     );
     assert_eq!(
-        item_create_time(follow_up_request, &delegated_task_ciphertext),
+        item_create_time(&replacement_items, &delegated_task_ciphertext),
         delegated_task_create_time
     );
     assert!(
-        item_create_time(follow_up_request, "after compact")
+        item_create_time(&after_compact_durable, "after compact")
             .as_f64()
             .is_some_and(|create_time| create_time > 0.0)
     );
@@ -4502,20 +4508,22 @@ async fn remote_mid_turn_compact_v2_sends_turn_state_over_http() -> Result<()> {
 async fn remote_mid_turn_compact_v2_sends_turn_state_over_websocket() -> Result<()> {
     skip_if_no_network!(Ok(()));
 
-    let server = start_websocket_server(vec![vec![
+    let server = start_websocket_server(vec![
         vec![
-            responses::ev_response_created("warm-1"),
-            responses::ev_completed("warm-1"),
+            vec![
+                responses::ev_response_created("warm-1"),
+                responses::ev_completed("warm-1"),
+            ],
+            vec![
+                json!({
+                    "type": "response.metadata",
+                    "headers": {(TURN_STATE_HEADER): "sampling-state"},
+                }),
+                responses::ev_function_call("call-before-compact", DUMMY_FUNCTION_NAME, "{}"),
+                responses::ev_completed_with_tokens("r1", /*total_tokens*/ 500),
+            ],
         ],
-        vec![
-            json!({
-                "type": "response.metadata",
-                "headers": {(TURN_STATE_HEADER): "sampling-state"},
-            }),
-            responses::ev_function_call("call-before-compact", DUMMY_FUNCTION_NAME, "{}"),
-            responses::ev_completed_with_tokens("r1", /*total_tokens*/ 500),
-        ],
-        vec![
+        vec![vec![
             json!({
                 "type": "response.metadata",
                 "headers": {(TURN_STATE_HEADER): "compact-state"},
@@ -4528,20 +4536,22 @@ async fn remote_mid_turn_compact_v2_sends_turn_state_over_websocket() -> Result<
                 }
             }),
             responses::ev_completed("r-compact"),
-        ],
+        ]],
         vec![
-            json!({
-                "type": "response.metadata",
-                "headers": {(TURN_STATE_HEADER): "continuation-state"},
-            }),
-            responses::ev_function_call("call-after-compact", DUMMY_FUNCTION_NAME, "{}"),
-            responses::ev_completed_with_tokens("r2", /*total_tokens*/ 80),
+            vec![
+                json!({
+                    "type": "response.metadata",
+                    "headers": {(TURN_STATE_HEADER): "continuation-state"},
+                }),
+                responses::ev_function_call("call-after-compact", DUMMY_FUNCTION_NAME, "{}"),
+                responses::ev_completed_with_tokens("r2", /*total_tokens*/ 80),
+            ],
+            vec![
+                responses::ev_assistant_message("m1", "FINAL_REPLY"),
+                responses::ev_completed_with_tokens("r3", /*total_tokens*/ 80),
+            ],
         ],
-        vec![
-            responses::ev_assistant_message("m1", "FINAL_REPLY"),
-            responses::ev_completed_with_tokens("r3", /*total_tokens*/ 80),
-        ],
-    ]])
+    ])
     .await;
     let mut builder = test_codex()
         .with_auth(CodexAuth::create_dummy_chatgpt_auth_for_testing())
@@ -4561,7 +4571,14 @@ async fn remote_mid_turn_compact_v2_sends_turn_state_over_websocket() -> Result<
         .await?;
     wait_for_turn_complete(&test.codex).await;
 
-    let requests = server.single_connection();
+    let connections = server.connections();
+    assert_eq!(server.handshakes().len(), 3);
+    assert_eq!(connections.len(), 3);
+    assert_eq!(
+        connections.iter().map(Vec::len).collect::<Vec<_>>(),
+        vec![2, 1, 2]
+    );
+    let requests = connections.into_iter().flatten().collect::<Vec<_>>();
     assert_eq!(requests.len(), 5);
     assert_eq!(requests[0].body_json()["generate"].as_bool(), Some(false));
     // Phase 2: the v2 compact request replays the state already established by sampling.

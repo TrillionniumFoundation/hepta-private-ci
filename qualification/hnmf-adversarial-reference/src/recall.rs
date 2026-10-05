@@ -1,7 +1,7 @@
 use super::*;
 
 impl HardenedFabric {
-    pub fn recall(&self, cue: &MemoryCue) -> Result<BoundRecallPacket, HardeningError> {
+    pub fn recall(&self, cue: &ReferenceCueFeatures) -> Result<BoundRecallPacket, HardeningError> {
         self.validate()?;
         cue.validate()?;
         if cue
@@ -51,7 +51,7 @@ impl HardenedFabric {
                 source_cue: cue.clone(),
                 candidate_event_ids: Vec::new(),
                 expanded_node_ids: Vec::new(),
-                packet: RecallPacket {
+                packet: ReferenceRecallState {
                     snapshot_generation: self.generation,
                     candidate_event_count: 0,
                     selected_events: Vec::new(),
@@ -62,7 +62,7 @@ impl HardenedFabric {
                     confidence_ppm: 0,
                     ood_ppm: PPM as u32,
                     settling_steps: 0,
-                    abstain: Some(RecallAbstainReason::NoCandidate),
+                    abstain: Some(ReferenceRecallAbstainReason::NoCandidate),
                     contains_raw_source_payload: false,
                 },
             });
@@ -158,14 +158,15 @@ impl HardenedFabric {
                     let magnitude = mul_ppm(source, i64::from(synapse.weight_ppm).abs())?;
                     let negative = matches!(
                         synapse.relation,
-                        SynapseRelation::Inhibitory | SynapseRelation::Contradicts
+                        ReferenceSynapseRelation::Inhibitory
+                            | ReferenceSynapseRelation::Contradicts
                     ) || synapse.weight_ppm < 0;
                     let contribution = if negative { -magnitude } else { magnitude };
                     value = value
                         .checked_add(contribution)
                         .ok_or(HardeningError::ArithmeticOverflow)?;
                     if contribution != 0 {
-                        paths.push(ActivationPath {
+                        paths.push(ReferenceActivationPath {
                             source: synapse.source,
                             target: synapse.target,
                             relation: synapse.relation,
@@ -184,7 +185,7 @@ impl HardenedFabric {
             .filter(|(_, value)| **value > 0)
             .map(|(node_id, value)| {
                 let node = self.nodes.get(node_id).expect("candidate node exists");
-                ActiveNode {
+                ReferenceActiveNode {
                     node_id: *node_id,
                     population: node.population,
                     activation_ppm: *value as i32,
@@ -211,7 +212,7 @@ impl HardenedFabric {
             let key = (path.source, path.target, path.relation);
             path_map
                 .entry(key)
-                .and_modify(|current: &mut ActivationPath| {
+                .and_modify(|current: &mut ReferenceActivationPath| {
                     if path.contribution_ppm.unsigned_abs()
                         > current.contribution_ppm.unsigned_abs()
                     {
@@ -237,11 +238,11 @@ impl HardenedFabric {
             .values()
             .filter(|synapse| {
                 !synapse.retired
-                    && synapse.relation == SynapseRelation::Contradicts
+                    && synapse.relation == ReferenceSynapseRelation::Contradicts
                     && active_ids.contains(&synapse.source)
                     && active_ids.contains(&synapse.target)
             })
-            .map(|synapse| Contradiction {
+            .map(|synapse| ReferenceContradiction {
                 left: synapse.source.min(synapse.target),
                 right: synapse.source.max(synapse.target),
             })
@@ -306,13 +307,13 @@ impl HardenedFabric {
             u32::try_from(total / active_nodes.len() as u64).unwrap_or(PPM as u32)
         };
         let abstain = if selected_events.is_empty() {
-            Some(RecallAbstainReason::NoCandidate)
+            Some(ReferenceRecallAbstainReason::NoCandidate)
         } else if self.runtime.contradiction_forces_abstention && !contradictions.is_empty() {
-            Some(RecallAbstainReason::UnresolvedContradiction)
+            Some(ReferenceRecallAbstainReason::UnresolvedContradiction)
         } else if ood_ppm >= self.runtime.ood_abstain_ppm {
-            Some(RecallAbstainReason::OutOfDistribution)
+            Some(ReferenceRecallAbstainReason::OutOfDistribution)
         } else if confidence_ppm < self.runtime.minimum_confidence_ppm {
-            Some(RecallAbstainReason::LowConfidence)
+            Some(ReferenceRecallAbstainReason::LowConfidence)
         } else {
             None
         };
@@ -322,7 +323,7 @@ impl HardenedFabric {
             source_cue: cue.clone(),
             candidate_event_ids: candidate_event_ids.clone(),
             expanded_node_ids,
-            packet: RecallPacket {
+            packet: ReferenceRecallState {
                 snapshot_generation: self.generation,
                 candidate_event_count: candidate_event_ids.len(),
                 selected_events,
@@ -385,7 +386,7 @@ impl HardenedFabric {
                 }
                 if matches!(
                     synapse.relation,
-                    SynapseRelation::Associative | SynapseRelation::Contradicts
+                    ReferenceSynapseRelation::Associative | ReferenceSynapseRelation::Contradicts
                 ) && frontier.contains(&synapse.target)
                 {
                     add(synapse.source)?;
@@ -401,7 +402,7 @@ impl HardenedFabric {
         raw: &BTreeMap<NodeId, i64>,
     ) -> Result<BTreeMap<NodeId, i64>, HardeningError> {
         let mut selected = BTreeMap::new();
-        for population in EngramPopulation::ALL {
+        for population in ReferenceEngramPopulation::ALL {
             let mut group = raw
                 .iter()
                 .filter_map(|(node_id, value)| {

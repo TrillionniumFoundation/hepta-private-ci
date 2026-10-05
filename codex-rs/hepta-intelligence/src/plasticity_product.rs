@@ -15,9 +15,10 @@ use std::fs::File;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
+use codex_hepta_intelligence_eval::SignedEligibilityAdmissionError;
 use codex_hepta_intelligence_eval::SignedEvaluationError;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
-use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
+use codex_hepta_intelligence_eval::admit_signed_eligibility_v2;
 use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
@@ -35,34 +36,15 @@ use codex_hepta_plasticity::ParameterGeneratorErrorV3;
 use codex_hepta_plasticity::ParameterGeneratorProfileV3;
 use codex_hepta_plasticity::ParameterProposalRequestV2;
 use codex_hepta_plasticity::ParameterProposalV2;
-use codex_hepta_plasticity::ProposalWindowV2;
 use codex_hepta_plasticity::parameter_generator_signing_payload_v3;
 use codex_hepta_plasticity::propose_v2;
 use codex_hepta_plasticity::verify_generated_parameter_candidates_v3;
 use codex_hepta_types::Digest32;
+#[cfg(test)]
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct PlasticityAdmissionEvidenceV1 {
-    pub baseline_id: StableId,
-    pub objective_digest: Digest32,
-    pub selected_artifact_digest: Digest32,
-    pub artifact_registry_binding: Digest32,
-    pub artifact_registry_head_digest: Digest32,
-    pub qualification_evidence_head_digest: Digest32,
-    /// Canonical digest of host-resolved, context-bound owner evidence receipts.
-    pub owner_evidence_set_digest: Digest32,
-    pub window: ProposalWindowV2,
-    pub baseline_generation: Generation,
-    pub candidate_generation: Generation,
-    pub dataset_digest: Digest32,
-    pub update_rule_digest: Digest32,
-    pub modulator_digest: Digest32,
-    pub modulator_broadcast_digest: Digest32,
-    pub eligibility_digest: Digest32,
-    pub generator_digest: Digest32,
-}
+pub use codex_hepta_plasticity::PlasticityAdmissionEvidenceV1;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct CandidateEvaluationAdmissionV1 {
@@ -112,6 +94,7 @@ pub enum ParameterPlasticityProductErrorV1 {
     GeneratorEvidence(SignedEvidenceError),
     AdmissionEvidence(SignedEvidenceError),
     Evaluation(SignedEvaluationError),
+    Admission(SignedEligibilityAdmissionError),
     Ineligible(IndependentEvaluationDispositionV1),
     MissingEvaluation(String),
     DuplicateEvaluation(String),
@@ -282,64 +265,15 @@ impl AnchoredPlasticityWriterV1 {
     }
 }
 
-/// Canonical bytes attested by the trusted Observer evidence role. The verifier's
-/// own validity/revocation window provides freshness; the payload binds the exact
-/// artifact/evidence frontiers and all proposal lineage digests.
-pub fn plasticity_admission_signing_payload_v1(
-    evidence: &PlasticityAdmissionEvidenceV1,
-) -> Vec<u8> {
-    let mut bytes = b"hepta.intelligence.plasticity-admission.v1\0".to_vec();
-    push_id(&mut bytes, &evidence.baseline_id);
-    for digest in [
-        evidence.objective_digest,
-        evidence.selected_artifact_digest,
-        evidence.artifact_registry_binding,
-        evidence.artifact_registry_head_digest,
-        evidence.qualification_evidence_head_digest,
-        evidence.owner_evidence_set_digest,
-    ] {
-        bytes.extend_from_slice(digest.as_array());
-    }
-    push_id(&mut bytes, &evidence.window.window_id);
-    bytes.extend_from_slice(evidence.window.window_digest.as_array());
-    bytes.extend_from_slice(&evidence.baseline_generation.get().to_be_bytes());
-    bytes.extend_from_slice(&evidence.candidate_generation.get().to_be_bytes());
-    for digest in [
-        evidence.dataset_digest,
-        evidence.update_rule_digest,
-        evidence.modulator_digest,
-        evidence.modulator_broadcast_digest,
-        evidence.eligibility_digest,
-        evidence.generator_digest,
-    ] {
-        bytes.extend_from_slice(digest.as_array());
-    }
-    bytes
-}
+pub use codex_hepta_plasticity::plasticity_admission_signing_payload_v1;
 
-/// Canonical terminal payload used only when the deterministic V3 generator
-/// produces the explicit no-change candidate and no admissible update candidate.
-/// Signing this payload is an independent evaluation of the terminal disposition;
-/// it is not selection, activation or authority to mutate the current artifact.
+/// Preserve the original product error while delegating identical signing bytes.
 pub fn no_change_disposition_signing_payload_v1(
     generated: &GeneratedParameterCandidateSetV3,
     admission: &PlasticityAdmissionEvidenceV1,
 ) -> Result<Vec<u8>, ParameterPlasticityProductErrorV1> {
-    let no_change = generated
-        .candidates
-        .iter()
-        .find(|candidate| candidate.kind == ParameterCandidateKindV2::NoChange)
-        .ok_or(ParameterPlasticityProductErrorV1::NoUpdateCandidate)?;
-    let mut bytes = b"hepta.intelligence.plasticity-no-admissible-update.v1\0".to_vec();
-    bytes.extend_from_slice(generated.generator_digest.as_array());
-    bytes.extend_from_slice(admission.owner_evidence_set_digest.as_array());
-    bytes.extend_from_slice(admission.selected_artifact_digest.as_array());
-    push_id(&mut bytes, &admission.window.window_id);
-    bytes.extend_from_slice(admission.window.window_digest.as_array());
-    bytes.extend_from_slice(&admission.baseline_generation.get().to_be_bytes());
-    bytes.extend_from_slice(&admission.candidate_generation.get().to_be_bytes());
-    push_id(&mut bytes, &no_change.candidate_id);
-    Ok(bytes)
+    codex_hepta_plasticity::no_change_disposition_signing_payload_v1(generated, admission)
+        .map_err(|_| ParameterPlasticityProductErrorV1::NoUpdateCandidate)
 }
 
 pub fn propose_authenticated_parameter_plasticity_v1(
@@ -349,311 +283,50 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     anchor_committer: &mut impl PlasticityAnchorCommitterV1,
     now: u64,
 ) -> Result<ParameterPlasticityProductReceiptV1, ParameterPlasticityProductErrorV1> {
-    use ParameterPlasticityProductErrorV1 as E;
-
-    if writer.state != PlasticityWriterStateV1::Healthy {
-        return Err(E::Registry(DurableProposalRegistryError::Poisoned));
-    }
-    verify_generated_parameter_candidates_v3(
-        request.generator_profile.clone(),
-        &request.generated,
-    )?;
-    validate_admission_binding(&request)?;
-
-    let generator_payload = parameter_generator_signing_payload_v3(&request.generated);
-    let generator = verifier
-        .verify(
-            LearningEvidenceRoleV1::Generator,
-            &request.generator_attestation,
-            &generator_payload,
-            now,
-        )
-        .map_err(E::GeneratorEvidence)?;
-    let admission_payload = plasticity_admission_signing_payload_v1(&request.admission);
-    let observer = verifier
-        .verify(
-            LearningEvidenceRoleV1::Observer,
-            &request.admission_attestation,
-            &admission_payload,
-            now,
-        )
-        .map_err(E::AdmissionEvidence)?;
-    verify_signed_role_separation(&generator, &observer, now).map_err(E::AdmissionEvidence)?;
-
-    if request.generator_attestation.objective_digest != request.admission.objective_digest
-        || request.admission_attestation.objective_digest != request.admission.objective_digest
-    {
-        return Err(E::Binding("objective trust context"));
-    }
-
-    let update_candidates = request
-        .generated
-        .candidates
-        .iter()
-        .filter(|candidate| candidate.kind == ParameterCandidateKindV2::Update)
-        .collect::<Vec<_>>();
-    let disposition = if update_candidates.is_empty() {
-        ParameterPlasticityDispositionV1::NoAdmissibleUpdate
-    } else {
-        ParameterPlasticityDispositionV1::UpdateCandidates
-    };
-
-    let mut evaluations = BTreeMap::new();
-    for evaluation in request.evaluations {
-        let key = evaluation.bundle.candidate_id.clone();
-        if evaluations.insert(key.clone(), evaluation).is_some() {
-            return Err(E::DuplicateEvaluation(key.to_string()));
-        }
-    }
-
-    let mut evaluator_id: Option<StableId> = None;
-    let mut evaluation_binding = b"hepta.intelligence.plasticity-evaluations.v1\0".to_vec();
-
-    if disposition == ParameterPlasticityDispositionV1::NoAdmissibleUpdate {
-        if let Some(unexpected) = evaluations.keys().next() {
-            return Err(E::UnexpectedEvaluation(unexpected.to_string()));
-        }
-        let attestation = request
-            .no_change_attestation
-            .as_ref()
-            .ok_or(E::MissingNoChangeAttestation)?;
-        let payload =
-            no_change_disposition_signing_payload_v1(&request.generated, &request.admission)?;
-        let evaluator = verifier
-            .verify(
-                LearningEvidenceRoleV1::Evaluator,
-                attestation,
-                &payload,
-                now,
-            )
-            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
-        verify_signed_independent_roles_v1(&observer, &evaluator, now)
-            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
-        verify_signed_independent_roles_v1(&generator, &evaluator, now)
-            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
-        if attestation.objective_digest != request.admission.objective_digest {
-            return Err(E::Binding("no-change evaluation trust context"));
-        }
-        evaluator_id = Some(evaluator.principal().principal_id.clone());
-        evaluation_binding.extend_from_slice(&payload);
-        evaluation_binding.extend_from_slice(attestation_digest(attestation).as_array());
-        evaluation_binding.extend_from_slice(verifier.trust_digest().as_array());
-    } else if request.no_change_attestation.is_some() {
-        return Err(E::UnexpectedNoChangeAttestation);
-    }
-
-    for candidate in update_candidates {
-        let candidate_id = candidate.candidate_id.clone();
-        let CandidateEvaluationAdmissionV1 {
-            bundle,
-            metric_roles,
-            evidence,
-        } = evaluations
-            .remove(&candidate_id)
-            .ok_or_else(|| E::MissingEvaluation(candidate_id.to_string()))?;
-        if bundle.candidate_id != candidate_id
-            || bundle.baseline_id != request.admission.baseline_id
-            || bundle.objective_digest != request.admission.objective_digest
-            || bundle.dataset_digest != request.admission.dataset_digest
-            || &bundle.generator != generator.principal()
-        {
-            return Err(E::Binding("candidate evaluation lineage"));
-        }
-        let this_evaluator = bundle.evaluator.principal_id.clone();
-        if evaluator_id
-            .as_ref()
-            .is_some_and(|existing| existing != &this_evaluator)
-        {
-            return Err(E::EvaluatorMismatch);
-        }
-        evaluator_id.get_or_insert(this_evaluator);
-
-        let evaluator_payload = evaluation_signing_payload_v2(&bundle, &metric_roles)
-            .map_err(|error| E::Evaluation(error.into()))?;
-        let evaluator = verifier
-            .verify(
-                LearningEvidenceRoleV1::Evaluator,
-                &evidence.evaluator_bundle,
-                &evaluator_payload,
-                now,
-            )
-            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
-        if evaluator.principal() != &bundle.evaluator {
-            return Err(E::Evaluation(SignedEvaluationError::IdentityBinding));
-        }
-        verify_signed_independent_roles_v1(&observer, &evaluator, now)
-            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
-
-        let decision =
-            decide_with_signed_evidence_v2(bundle, metric_roles, &evidence, verifier, now)
-                .map_err(E::Evaluation)?;
-        if decision.decision.disposition
-            != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
-        {
-            return Err(E::Ineligible(decision.decision.disposition));
-        }
-        push_id(&mut evaluation_binding, &candidate_id);
-        evaluation_binding.extend_from_slice(decision.decision.evidence_digest.as_array());
-        evaluation_binding.extend_from_slice(decision.authentication_digest.as_array());
-        evaluation_binding.extend_from_slice(decision.trust_digest.as_array());
-    }
-    if let Some(unexpected) = evaluations.keys().next() {
-        return Err(E::UnexpectedEvaluation(unexpected.to_string()));
-    }
-    let evaluator_id = evaluator_id.ok_or(E::NoUpdateCandidate)?;
-    let candidate_evaluation_digest = Digest32::of_bytes(&evaluation_binding);
-    let generator_authentication_digest = attestation_digest(&request.generator_attestation);
-    let admission_authentication_digest = attestation_digest(&request.admission_attestation);
-    let mut governed_evaluation = b"hepta.intelligence.plasticity-governed-admission.v1\0".to_vec();
-    governed_evaluation.push(match disposition {
-        ParameterPlasticityDispositionV1::UpdateCandidates => 0,
-        ParameterPlasticityDispositionV1::NoAdmissibleUpdate => 1,
-    });
-    for digest in [
-        candidate_evaluation_digest,
-        generator_authentication_digest,
-        admission_authentication_digest,
-        request.admission.owner_evidence_set_digest,
-        request.generated.generator_digest,
-        verifier.trust_digest(),
-    ] {
-        governed_evaluation.extend_from_slice(digest.as_array());
-    }
-    let evaluation_digest = Digest32::of_bytes(&governed_evaluation);
-
-    let proposal = propose_v2(ParameterProposalRequestV2 {
-        proposal_id: request.proposal_id,
-        proposer_id: generator.principal().principal_id.clone(),
-        evaluator_id,
-        selected_artifact_digest: request.generated.selected_artifact_digest,
-        window: request.generated.window.clone(),
-        baseline_generation: request.admission.baseline_generation,
-        candidate_generation: request.admission.candidate_generation,
-        dataset_digest: request.admission.dataset_digest,
-        update_rule_digest: request.admission.update_rule_digest,
-        modulator_digest: request.admission.modulator_digest,
-        modulator_broadcast_digest: request.admission.modulator_broadcast_digest,
-        eligibility_digest: request.admission.eligibility_digest,
-        evaluation_digest,
-        rollback_predecessor_digest: request.admission.selected_artifact_digest,
-        norm_layers: request.generated.norm_layers.clone(),
-        candidates: request.generated.candidates.clone(),
-    })?;
-
-    writer.state = PlasticityWriterStateV1::AppendPendingAnchor;
-    let registry = match writer
-        .registry
-        .append_v2(request.expected_registry_predecessor, proposal.clone())
-    {
-        Ok(receipt) => receipt,
-        Err(error) => {
-            writer.state = if matches!(
-                error,
-                DurableProposalRegistryError::Indeterminate
-                    | DurableProposalRegistryError::Poisoned
-                    | DurableProposalRegistryError::Io(_)
-            ) {
-                PlasticityWriterStateV1::Poisoned
-            } else {
-                PlasticityWriterStateV1::Healthy
-            };
-            return Err(E::Registry(error));
-        }
-    };
-    let committed_registry_anchor = match writer.registry.current_anchor() {
-        Ok(Some(anchor)) => anchor,
-        Ok(None) => {
-            writer.state = PlasticityWriterStateV1::Poisoned;
-            return Err(E::Registry(DurableProposalRegistryError::Corrupt));
-        }
-        Err(error) => {
-            writer.state = PlasticityWriterStateV1::Poisoned;
-            return Err(E::Registry(error));
-        }
-    };
-    if !anchor_committer.persist_anchor(
-        writer.registry_scope_digest,
-        writer.writer_fence,
-        committed_registry_anchor,
-    ) {
-        writer.state = PlasticityWriterStateV1::Poisoned;
-        return Err(E::AnchorPersistenceFailed);
-    }
-    writer.state = PlasticityWriterStateV1::Healthy;
-
-    let mut composition = b"hepta.intelligence.plasticity-composition.v1\0".to_vec();
-    composition.push(match disposition {
-        ParameterPlasticityDispositionV1::UpdateCandidates => 0,
-        ParameterPlasticityDispositionV1::NoAdmissibleUpdate => 1,
-    });
-    for digest in [
-        proposal.proposal_digest,
-        registry.frame_digest,
-        committed_registry_anchor.frame_digest,
-        request.generated.generator_digest,
-        generator_authentication_digest,
-        admission_authentication_digest,
-        evaluation_digest,
-    ] {
-        composition.extend_from_slice(digest.as_array());
-    }
-    Ok(ParameterPlasticityProductReceiptV1 {
-        proposal,
-        registry,
-        generator_authentication_digest,
-        admission_authentication_digest,
-        evaluation_digest,
-        disposition,
-        committed_registry_anchor,
-        composition_digest: Digest32::of_bytes(&composition),
-    })
+    propose_authenticated_parameter_plasticity_with_final_time_v1(
+        request,
+        verifier,
+        writer,
+        anchor_committer,
+        now,
+        &mut || Ok(now),
+    )
 }
 
 fn validate_admission_binding(
     request: &ParameterPlasticityProductRequestV1,
 ) -> Result<(), ParameterPlasticityProductErrorV1> {
-    use ParameterPlasticityProductErrorV1 as E;
-    let evidence = &request.admission;
-    for (label, digest) in [
-        ("objective", evidence.objective_digest),
-        ("selected artifact", evidence.selected_artifact_digest),
-        (
-            "artifact registry binding",
-            evidence.artifact_registry_binding,
-        ),
-        (
-            "artifact registry head",
-            evidence.artifact_registry_head_digest,
-        ),
-        (
-            "qualification evidence head",
-            evidence.qualification_evidence_head_digest,
-        ),
-        ("owner evidence set", evidence.owner_evidence_set_digest),
-        ("dataset", evidence.dataset_digest),
-        ("update rule", evidence.update_rule_digest),
-        ("modulator", evidence.modulator_digest),
-        ("modulator broadcast", evidence.modulator_broadcast_digest),
-        ("eligibility", evidence.eligibility_digest),
-        ("generator", evidence.generator_digest),
+    codex_hepta_plasticity::validate_parameter_admission_binding_v1(
+        &request.generator_profile,
+        &request.generated,
+        &request.admission,
+    )
+    .map_err(|e| ParameterPlasticityProductErrorV1::Binding(e.0))
+}
+
+fn plasticity_evaluation_consumer_binding_digest(
+    proposal_id: &StableId,
+    candidate_id: &StableId,
+    admission: &PlasticityAdmissionEvidenceV1,
+    generated: &GeneratedParameterCandidateSetV3,
+    evaluator_payload: &[u8],
+) -> Digest32 {
+    let mut bytes = b"hepta.intelligence.plasticity-evaluation-use.v1\0".to_vec();
+    push_id(&mut bytes, proposal_id);
+    push_id(&mut bytes, candidate_id);
+    for digest in [
+        admission.objective_digest,
+        admission.dataset_digest,
+        admission.selected_artifact_digest,
+        admission.qualification_evidence_head_digest,
+        admission.owner_evidence_set_digest,
+        admission.eligibility_digest,
+        generated.generator_digest,
+        Digest32::of_bytes(evaluator_payload),
     ] {
-        if digest.is_zero() {
-            return Err(E::Binding(label));
-        }
+        bytes.extend_from_slice(digest.as_array());
     }
-    if evidence.baseline_generation.next() != Ok(evidence.candidate_generation) {
-        return Err(E::Binding("generation successor"));
-    }
-    if evidence.selected_artifact_digest != request.generated.selected_artifact_digest
-        || evidence.window != request.generated.window
-        || evidence.generator_digest != request.generated.generator_digest
-        || request.generator_profile.selected_artifact_digest
-            != request.generated.selected_artifact_digest
-        || request.generator_profile.window != request.generated.window
-    {
-        return Err(E::Binding("generator/admission"));
-    }
-    Ok(())
+    Digest32::of_bytes(&bytes)
 }
 
 fn attestation_digest(evidence: &SignedLearningEvidenceV1) -> Digest32 {
@@ -670,6 +343,7 @@ fn push_id(bytes: &mut Vec<u8>, value: &StableId) {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use codex_hepta_plasticity::ProposalWindowV2;
     use std::io::Seek;
     use std::io::SeekFrom;
     use std::io::Write;
@@ -721,3 +395,27 @@ mod tests {
         assert_ne!(first, plasticity_admission_signing_payload_v1(&changed));
     }
 }
+
+#[path = "plasticity_product_prepared.rs"]
+mod prepared;
+
+#[path = "plasticity_product_final_time.rs"]
+mod final_time;
+pub use final_time::propose_authenticated_parameter_plasticity_with_final_time_v1;
+
+#[path = "plasticity_product_completed.rs"]
+mod completed;
+
+#[path = "plasticity_product_materials.rs"]
+mod materials;
+#[path = "plasticity_product_profile_wire.rs"]
+mod profile_wire;
+#[path = "plasticity_product_material_wire.rs"]
+mod wire;
+pub use materials::MAX_PARAMETER_PLASTICITY_MATERIAL_BYTES_V1;
+pub use materials::decode_parameter_plasticity_receipt_v1;
+pub use materials::decode_parameter_plasticity_request_v1;
+pub use materials::encode_parameter_plasticity_receipt_v1;
+pub use materials::encode_parameter_plasticity_request_v1;
+
+pub use completed::materialize_completed_parameter_receipt_v1;

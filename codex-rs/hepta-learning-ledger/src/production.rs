@@ -56,6 +56,12 @@ use crate::freeze_dataset_receipt_v3;
 use crate::validate_candidate_set_completeness;
 use crate::verify_dataset_snapshot_receipt_v3;
 
+#[path = "production_active_trust.rs"]
+mod active_trust;
+#[path = "production_unlearning.rs"]
+mod unlearning;
+pub use unlearning::UnlearningLineagePreviewV1;
+
 const MAX_PRODUCTION_CANDIDATES: usize = 128;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
@@ -235,6 +241,21 @@ impl LedgerWriter {
         self.trust.verifier()
     }
 
+    /// Borrow the original root-authenticated owner trust for opaque paired use.
+    /// This does not issue a verifier or extend its activation lifetime.
+    #[must_use]
+    pub fn activated_trust(&self) -> &ActivatedLearningTrustV1 {
+        &self.trust
+    }
+
+    /// Verify the retained root-signed distribution before owner work.
+    pub fn revalidate_trust_at(
+        &self,
+        now: u64,
+    ) -> Result<(), crate::LearningTrustDistributionError> {
+        self.trust.revalidate_at(now)
+    }
+
     #[must_use]
     pub fn trust_distribution_digest(&self) -> Digest32 {
         self.trust.distribution_digest()
@@ -324,7 +345,7 @@ impl LedgerWriter {
         now: u64,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
         let payload = decision_signing_payload_v2(&request)?;
-        let verified = self.trust.verifier().verify(
+        let verified = self.verify_current_evidence(
             LearningEvidenceRoleV1::Generator,
             evidence,
             &payload,
@@ -370,7 +391,7 @@ impl LedgerWriter {
         now: u64,
     ) -> Result<AppendReceipt, ProductionLedgerError> {
         let payload = outcome_signing_payload_v2(&outcome);
-        let verified = self.trust.verifier().verify(
+        let verified = self.verify_current_evidence(
             LearningEvidenceRoleV1::Observer,
             evidence,
             &payload,
@@ -429,7 +450,7 @@ impl LedgerWriter {
             .sort_by_key(|allocation| allocation.target_id.clone());
         let finalized = finalize_credit_batch(batch.clone(), now)?;
         let payload = credit_batch_signing_payload_v2(&batch, finalized.batch_digest);
-        let verified = self.trust.verifier().verify(
+        let verified = self.verify_current_evidence(
             LearningEvidenceRoleV1::CreditAllocator,
             evidence,
             &payload,
@@ -438,6 +459,10 @@ impl LedgerWriter {
         require_role(&verified, LearningEvidenceRoleV1::CreditAllocator)?;
         if verified.principal() != &batch.allocator {
             return Err(ProductionLedgerError::Binding("credit allocator"));
+        }
+        let decision = find_authenticated_decision(self.backend.core()?, &batch.episode_id)?;
+        if decision.objective_digest != self.trust.verifier().objective_digest() {
+            return Err(ProductionLedgerError::Binding("credit objective"));
         }
         let event = LedgerEvent::CreditBatchV2(CreditAllocationBatchRecordV2 {
             record_id: batch.batch_id.clone(),
@@ -464,80 +489,6 @@ impl LedgerWriter {
             authentication_digest: signed_evidence_digest(evidence),
         });
         self.commit(expected_predecessor, event)
-    }
-
-    pub fn append_unlearning(
-        &mut self,
-        expected_predecessor: Digest32,
-        request: UnlearningLineageRequestV1,
-        dataset: &DatasetSnapshotReceiptV3,
-        evidence: &SignedLearningEvidenceV1,
-        now: u64,
-    ) -> Result<UnlearningLineageReceiptV1, ProductionLedgerError> {
-        // Unlearning may target an old frozen dataset after its original
-        // producer credential has expired. Verify immutable receipt integrity at
-        // the producer's authenticated point; current authority comes from the
-        // separately verified UnlearningAuthority evidence below.
-        verify_dataset_snapshot_receipt_v3(dataset, dataset.producer.authenticated_at)?;
-        if request.dataset_snapshot_id != dataset.snapshot.snapshot_id
-            || request.dataset_digest != dataset.snapshot.dataset_digest
-            || dataset.snapshot.objective_digest != self.trust.verifier().objective_digest()
-        {
-            return Err(ProductionLedgerError::Binding(
-                "unlearning dataset identity or objective",
-            ));
-        }
-
-        let snapshot = self.backend.snapshot()?;
-        let source = snapshot
-            .records()
-            .iter()
-            .find(|record| record.event.record_id() == &request.source_record_id)
-            .ok_or_else(|| {
-                ProductionLedgerError::Ledger(LedgerError::TargetNotFound(
-                    request.source_record_id.to_string(),
-                ))
-            })?;
-        if !dataset
-            .snapshot
-            .source_record_digests
-            .contains(&source.event_digest)
-        {
-            return Err(ProductionLedgerError::Binding(
-                "unlearning source not in dataset",
-            ));
-        }
-
-        let payload = unlearning_signing_payload_v1(&request);
-        let verified = self.trust.verifier().verify(
-            LearningEvidenceRoleV1::UnlearningAuthority,
-            evidence,
-            &payload,
-            now,
-        )?;
-        require_role(&verified, LearningEvidenceRoleV1::UnlearningAuthority)?;
-        let event = LedgerEvent::UnlearningLineageV1(UnlearningLineageEventV1 {
-            record_id: request.record_id,
-            lineage_id: request.lineage_id.clone(),
-            source_record_id: request.source_record_id.clone(),
-            source_event_digest: source.event_digest,
-            dataset_snapshot_id: request.dataset_snapshot_id.clone(),
-            dataset_digest: request.dataset_digest,
-            artifact_id: request.artifact_id.clone(),
-            authority_id: verified.principal().principal_id.clone(),
-            reason_digest: request.reason_digest,
-            authentication_digest: signed_evidence_digest(evidence),
-        });
-        let append = self.commit(expected_predecessor, event)?;
-        Ok(UnlearningLineageReceiptV1 {
-            lineage_id: request.lineage_id,
-            source_record_id: request.source_record_id,
-            source_event_digest: source.event_digest,
-            dataset_snapshot_id: request.dataset_snapshot_id,
-            dataset_digest: request.dataset_digest,
-            artifact_id: request.artifact_id,
-            append,
-        })
     }
 
     /// Append the exact retrieval assignment emitted by the authoritative
@@ -577,21 +528,64 @@ impl LedgerWriter {
         self.append_retrieval_assignment(predecessor, assignment)
     }
 
+    /// Append an unexposed preparation using the existing writer/witness CAS.
+    pub fn append_retrieval_preparation_current(
+        &mut self,
+        assignment: crate::RetrievalPreparationFactV1,
+    ) -> Result<AppendReceipt, ProductionLedgerError> {
+        let core = self.backend.core()?;
+        let predecessor = core
+            .record_by_id(&assignment.assignment.record_id)?
+            .map_or_else(
+                || {
+                    core.records()
+                        .last()
+                        .map_or(Digest32::ZERO, |record| record.chain_digest)
+                },
+                |record| record.predecessor_chain_digest,
+            );
+        self.commit(predecessor, LedgerEvent::RetrievalPrepared(assignment))
+    }
+
     /// Revalidate a frozen dataset immediately before final artifact use.
     ///
-    /// The receipt first verifies its own immutable identity, then every frozen
-    /// source event must still be present in the current canonical active
+    /// Current authority and objective must match. The immutable prefix must be
+    /// independently witnessed, and every source must be within that prefix and
+    /// still present in the current canonical active
     /// projection. A later correction, revocation or unlearning event therefore
     /// invalidates stale datasets without rewriting their historical receipts.
+    /// This verifies current metadata, not signed receipt issuance; consumers
+    /// requiring issuance must retain and verify the original freeze evidence.
     pub fn revalidate_dataset_snapshot(
         &self,
         receipt: &DatasetSnapshotReceiptV3,
         now: u64,
     ) -> Result<(), ProductionLedgerError> {
+        self.ensure_current_trust(now)?;
+        if receipt.snapshot.objective_digest != self.trust.verifier().objective_digest() {
+            return Err(ProductionLedgerError::Binding("dataset objective"));
+        }
         verify_dataset_snapshot_receipt_v3(receipt, now)?;
         let ledger = self.backend.core()?;
+        let witness = self.witness.frontier()?;
+        let frontier = receipt.snapshot.eligible_frontier;
+        let prefix = usize::try_from(frontier)
+            .ok()
+            .and_then(|sequence| sequence.checked_sub(1))
+            .and_then(|index| ledger.records().get(index));
+        if frontier > witness.anchor.sequence
+            || prefix
+                .is_none_or(|record| record.chain_digest != receipt.snapshot.ledger_head_digest)
+        {
+            return Err(ProductionLedgerError::Binding(
+                "dataset unwitnessed or invalid prefix",
+            ));
+        }
         for digest in &receipt.snapshot.source_record_digests {
-            if ledger.active_record_by_digest(digest)?.is_none() {
+            if ledger
+                .active_record_by_digest(digest)?
+                .is_none_or(|record| record.sequence.get() > frontier)
+            {
                 return Err(ProductionLedgerError::Binding(
                     "dataset source revoked, corrected or unavailable",
                 ));
@@ -639,9 +633,15 @@ impl LedgerWriter {
         evidence: &SignedLearningEvidenceV1,
         now: u64,
     ) -> Result<DatasetSnapshotReceiptV3, ProductionLedgerError> {
+        if plan.objective_digest != self.trust.verifier().objective_digest() {
+            return Err(ProductionLedgerError::Binding("dataset objective"));
+        }
+        if self.backend.frontier()? != self.witness.frontier()? {
+            return Err(ProductionLedgerError::WitnessLag);
+        }
         let snapshot = self.backend.snapshot()?;
         let payload = dataset_freeze_signing_payload_v2(&snapshot, &plan)?;
-        let verified = self.trust.verifier().verify(
+        let verified = self.verify_current_evidence(
             LearningEvidenceRoleV1::Evaluator,
             evidence,
             &payload,

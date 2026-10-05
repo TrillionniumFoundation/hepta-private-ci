@@ -41,7 +41,10 @@ filter = 'test(approval_matrix_covers_all_modes)'
 slow-timeout = { period = "30s", terminate-after = 2 }
 
 [[profile.default.overrides]]
-filter = 'package(codex-app-server-protocol) & (test(typescript_schema_fixtures_match_generated) | test(json_schema_fixtures_match_generated) | test(generate_ts_with_experimental_api_retains_experimental_entries) | test(generated_ts_optional_nullable_fields_only_in_params) | test(generate_json_filters_experimental_fields_and_methods))'
+filter = 'package(codex-app-server-protocol) & (test(typescript_schema_fixtures_match_generated) | test(json_schema_fixtures_match_generated) | test(generate_ts_with_experimental_api_retains_experimental_entries) | test(generated_ts_optional_nullable_fields_only_in_params) | test(generate_json_filters_experimental_fields_and_methods) | test(experimental_precomputed_exports_match_generated))'
+# Complete schema exports enumerate and compare the actual generated API. Their
+# whole-case budget covers generation on contended disks, not a product RPC SLO.
+slow-timeout = { period = "30s", terminate-after = 20 }
 test-group = 'app_server_protocol_codegen'
 
 [[profile.default.overrides]]
@@ -92,6 +95,15 @@ slow-timeout = { period = "45s", terminate-after = 2 }
 [test-groups.hepta_durable_capacity]
 max-threads = 1
 
+# Cold evaluation matrices run both model families through every retained
+# process cut and real synced publication. Their whole-case watchdog is not a
+# product request/freshness deadline. Keep every cut and the 256-attempt soak.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-intelligence-eval) & (binary(cold_recovery_e2e) | binary(long_running_profile) | test(recorded_runner::tests::process_tests::process_kill_boundaries_recover_without_releasing_or_republishing))'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 20 }
+retries = 0
+
 [[profile.default.overrides]]
 filter = 'package(codex-hepta-learning-ledger) & test(history_exceeds_v1_record_capacity_without_resetting_chain_or_limits)'
 test-group = 'hepta_durable_capacity'
@@ -103,11 +115,125 @@ test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
 retries = 0
 
+# This regression commits 256 signed records with a separate synced witness for
+# every record, then cold-reopens both files and retries the original identity.
+# On the target host its 519 successful fsyncs took 144 seconds. Keep the full
+# workload and serialize it with the other durability experiments; this bounded
+# whole-case watchdog does not change any product operation or lease deadline.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-learning-ledger) & test(product_writer_history_growth_keeps_exact_retry_and_witness_after_reopen)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 10 }
+retries = 0
+
 # Measure all four growth/reopen points and 256 real atomic domain commits.
-# This full storage experiment preserves operation leases, child deadlines and
-# the product latency acceptance threshold.
+# This is a full storage experiment; its watchdog does not change an operation
+# lease, child-process deadline or product latency acceptance threshold.
 [[profile.default.overrides]]
 filter = 'package(codex-hepta-operations) & test(growing_history_keeps_early_identity_and_domain_count_after_restart)'
 test-group = 'hepta_durable_capacity'
 slow-timeout = { period = "30s", terminate-after = 20 }
+retries = 0
+
+# Agentd, worker-host and Supervisor tests open real durable owners and processes,
+# including library fixtures. Bound contention BETWEEN these independent product
+# fixtures on the shared runner disk, not just the named evolution experiments.
+# The tests retain their own concurrent requests, 256 writer rotations, per-use
+# deadlines, retries and watchdogs. Pure control-plane tests remain parallel.
+[test-groups.hepta_product_lifecycle]
+max-threads = 1
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) | package(codex-hepta-infer-worker-host) | package(codex-hepta-supervisor)'
+test-group = 'hepta_product_lifecycle'
+
+# This single experiment starts and restarts the real product repeatedly. Keep
+# each request/terminal/recovery deadline in the test; its total wall budget is
+# not the one-process default. The opt-in round count remains bounded to 32.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & test(normal_product_bounded_evolution_under_concurrent_load)'
+slow-timeout = { period = "60s", terminate-after = 4 }
+
+# The live roster qualification runs multiple real CLI processes and durable
+# publications in one scenario. This bounds its total harness time while each
+# request retains its existing 10-second admission and native exit deadlines.
+[[profile.local.overrides]]
+filter = 'package(codex-hepta-supervisor) & test(live_registration_and_retirement_preserve_history_under_the_same_daemon)'
+test-group = 'hepta_product_lifecycle'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0
+
+# These exhaustive disk experiments cover every byte boundary and independent
+# subprocess crash cuts. Their total harness budget is separate from the existing
+# per-operation and per-child deadlines. Preserve all cuts and serialize fsync
+# contention between the experiments on shared CI disks.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-neuron) & (test(every_partial_frame_boundary_recovers_only_the_predecessor) | test(durable_process_crash_matrix_v2) | test(complete_segment_recovery_never_repairs_a_missing_acknowledged_frame) | test(intermediate_successor_recovery_preserves_every_incomplete_boundary))'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 20 }
+retries = 0
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-infer-core) & test(small_capacity_survives_many_rounds_reload_and_never_replays_history)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 6 }
+
+# These experiments retain every real fsync, cold receipt and original replay.
+# Their total test duration is separate from the 100ms product maintenance slice.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-infer-core) & test(feature_cold)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "60s", terminate-after = 10 }
+retries = 0
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-infer-worker-host) & test(physical_cpu_traffic_retires_observed_features_and_replays_full_cold_receipts)'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0
+
+# Real native publication/refresh fixtures include multiple full fsync phases.
+# The corruption case repeats all phases for seven independent damaged records.
+# This whole-case budget leaves runtime freshness and request deadlines intact.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-agentd) & test(neuron_artifact_admission::refresh::tests)'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-learning-artifacts) & (test(owner_service::tests::suffix_tests) | test(terminal_checkpoint_corruption_rejects_recovery_and_service_startup))'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0
+
+# Ninety-six real authority publications and SQLite FULL commits prove bounded
+# acknowledged local upkeep while retaining generic receipts and stop holds.
+# This whole-experiment watchdog does not change any runtime lease deadline.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-fleet) & test(acknowledged_upkeep_is_bounded_and_generic_receipts_survive_retirement)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 6 }
+retries = 0
+
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-fleet) & test(durable_local_renewal::tests)'
+test-group = 'hepta_durable_capacity'
+retries = 0
+
+# Eight real process-death cuts each wait for fully synced physical storage.
+# Bound the entire matrix separately; every worker is killed and reaped even
+# when its marker is absent. Product leases and durability checks are unchanged.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-learning-artifacts) & test(owner_host_process_kill_reopen_matrix)'
+test-group = 'hepta_durable_capacity'
+slow-timeout = { period = "30s", terminate-after = 10 }
+retries = 0
+
+# Each release publication experiment opens three or four independent durable
+# fleets and drives a full upgrade at every physical writer cut. The observed
+# single cut takes 21-25 seconds on the native shared disk; this bounds the
+# aggregate harness only, preserving every original lifecycle deadline.
+[[profile.default.overrides]]
+filter = 'package(codex-hepta-supervisor) & (test(release_publication_retry_tests::terminal_release_journal_failure_retries_without_duplicate_commit_or_spawn) | test(release_publication_retry_tests::signed_receipt_failure_retries_after_terminal_release_journal))'
+test-group = 'hepta_product_lifecycle'
+slow-timeout = { period = "30s", terminate-after = 6 }
 retries = 0

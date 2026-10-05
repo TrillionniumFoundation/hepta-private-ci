@@ -1,3 +1,8 @@
+#![allow(
+    clippy::expect_used,
+    reason = "deterministic test fixtures require successful setup; a setup error must fail the test immediately"
+)]
+
 use std::borrow::Cow;
 
 use codex_hepta_contracts::PROVIDER_EVIDENCE_SCHEMA_VERSION;

@@ -10,6 +10,8 @@ import sys
 import tempfile
 import unittest
 
+from hepta_workflow_commands import load_workflow, workflow_run, workflow_step_by_id
+
 RUNNER = Path(__file__).with_name("hepta_ci_exec.py").resolve()
 
 
@@ -271,11 +273,13 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
         super().setUp()
         (self.repo / "scripts").mkdir()
         (self.repo / "codex-rs").mkdir()
-        shutil.copyfile(RUNNER, self.repo / "scripts" / RUNNER.name)
-        shutil.copyfile(
-            RUNNER.with_name("hepta_ci_dependencies.py"),
-            self.repo / "scripts/hepta_ci_dependencies.py",
-        )
+        for name in (
+            "hepta_ci_exec.py",
+            "hepta_ci_dependencies.py",
+            "hepta_ci_modules.py",
+            "hepta_ci_git_objects.py",
+        ):
+            shutil.copyfile(RUNNER.with_name(name), self.repo / "scripts" / name)
         (self.repo / "codex-rs/Cargo.toml").write_text(
             '[workspace]\nmembers=["one", "two", "unrelated"]\n'
         )
@@ -319,27 +323,17 @@ class WorkflowCommandBindingTests(GitExecutionFixture):
             "FULL_QUALIFICATION": "false",
             "CALLS": str(self.root / "calls"),
         }
-        workflow = (
-            RUNNER.parents[1] / ".github/workflows/hepta-consolidated-source.yml"
-        ).read_text()
-        block = workflow.split(
-            "      - name: Compile and test actual imported packages\n", 1
-        )[1].split("        run: |\n", 1)[1]
-        lines = []
-        for line in block.splitlines():
-            if line and not line.startswith("          "):
-                break
-            lines.append(line[10:])
-        self.script = "\n".join(lines)
-        block = workflow.split(
-            "      - name: Strict Clippy independently of test outcome\n", 1
-        )[1].split("        run: |\n", 1)[1]
-        lines = []
-        for line in block.splitlines():
-            if line and not line.startswith("          "):
-                break
-            lines.append(line[10:])
-        self.lint_script = "\n".join(lines)
+        workflow = load_workflow(
+            (
+                RUNNER.parents[1] / ".github/workflows/hepta-consolidated-source.yml"
+            ).read_text()
+        )
+        self.script = workflow_run(
+            workflow_step_by_id(workflow, "qualification", "owner-tests")
+        )
+        self.lint_script = workflow_run(
+            workflow_step_by_id(workflow, "qualification", "strict-clippy")
+        )
 
     def test_shell_preserves_test_targets_and_strict_lint_arguments(self):
         result = subprocess.run(

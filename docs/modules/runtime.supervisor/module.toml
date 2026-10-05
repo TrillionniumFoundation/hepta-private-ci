@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 5
+id = "runtime.supervisor"
+plane = "control"
+kind = "daemon"
+lifecycle = "existing"
+state = "stateful"
+architectureRole = "execution_plant"
+writes = ["fleet_registry", "agent_lifecycle", "runtime_instance_projection", "release_selection"]
+uses = ["kernel.authority", "kernel.operations"]
+owner = "runtime-control"
+deputy = "fleet-runtime"
+denies = ["model_call", "tool_execution", "secret_read"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-supervisor"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "P0.7A-RUNTIME-BOOTSTRAP"
+technicalDocument = "docs/modules/runtime.supervisor/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-supervisor"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-supervisor"
+compileLayer = 5
+ciGroups = ["effects", "lifecycle"]

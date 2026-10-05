@@ -1,7 +1,7 @@
 //! Compile-time linkage contract for every Lane E operation registered in the
 //! closed-world implementation matrix. The test intentionally performs no
-//! authority-bearing action; it proves that mapped symbols are public and
-//! available to a real cross-crate consumer.
+//! authority-bearing action; it checks compatibility symbols through the
+//! qualification profile. Production consumers retain their default API guard.
 
 use codex_hepta_intelligence_eval::FinalHoldoutCasRecordV1;
 use codex_hepta_intelligence_eval::FinalHoldoutCasStoreError;
@@ -114,7 +114,7 @@ fn lane_e_public_operation_surface_is_linkable() {
     let _ = codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
     let _ = codex_hepta_intelligence_eval::longitudinal_evaluation_signing_payload_v3;
     let _ = codex_hepta_intelligence_eval::FencedFinalHoldoutOwnerV1::<NoCasStore>::initialize;
-    let _ = codex_hepta_intelligence_eval::ProductEvaluationRunnerV1::<NoCasStore>::new;
+    let _ = codex_hepta_intelligence_eval::RecordedProductEvaluationRunnerV1::<NoCasStore>::new;
     let _ = codex_hepta_intelligence_eval::freeze_product_evaluation_plan_v1;
     let _ = codex_hepta_intelligence_eval::ProductQualificationReceiptV1::validate_integrity;
     let _ = codex_hepta_intelligence_eval::LockedFileFinalHoldoutCasStoreV1::create;

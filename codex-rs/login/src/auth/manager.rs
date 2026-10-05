@@ -2350,11 +2350,12 @@ impl AuthManager {
 
         let auth = self.auth_cached()?;
         if Self::should_refresh_proactively(&auth)
-            && let Err(err) = self.refresh_token().await
+            && let Err(err) = self.refresh_token_impl(true).await
         {
             tracing::error!("Failed to refresh token: {}", err);
-            return Some(auth);
         }
+        // A concurrent reload or logout may have replaced the snapshot while
+        // refresh awaited. Return the current cache on failure as well.
         self.auth_cached()
     }
 
@@ -2766,6 +2767,10 @@ impl AuthManager {
     /// we can assume that the source already refreshed it. Otherwise, ask the
     /// token authority to refresh.
     pub async fn refresh_token(&self) -> Result<(), RefreshTokenError> {
+        self.refresh_token_impl(false).await
+    }
+
+    async fn refresh_token_impl(&self, proactive: bool) -> Result<(), RefreshTokenError> {
         let _refresh_guard = self.refresh_lock.acquire().await.map_err(|_| {
             RefreshTokenError::Permanent(RefreshTokenFailedError::new(
                 RefreshTokenFailedReason::Other,
@@ -2773,6 +2778,15 @@ impl AuthManager {
             ))
         })?;
         let auth_before_reload = self.auth_cached();
+        // A proactive caller can wait behind a reload or another refresh. Make
+        // the decision against the current cache while holding the same lock.
+        if proactive
+            && !auth_before_reload
+                .as_ref()
+                .is_some_and(Self::should_refresh_proactively)
+        {
+            return Ok(());
+        }
         if auth_before_reload
             .as_ref()
             .is_some_and(|auth| auth.is_api_key_auth() || auth.is_personal_access_token_auth())

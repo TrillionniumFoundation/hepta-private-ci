@@ -27,10 +27,9 @@ use codex_hepta_operations::OperationIntentV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
-use serde::Deserialize;
-use serde::Serialize;
 use thiserror::Error;
 
+use crate::AuthorizedEffectIntent;
 use crate::AutomationStore;
 use crate::TaskFlowCommand;
 use crate::TaskFlowError;
@@ -49,30 +48,6 @@ const MAX_AUTHORIZED_EFFECT_DEPENDENCIES: usize = 128;
 const MAX_EFFECT_ID_BYTES: usize = 256;
 const MAX_FINAL_USE_ID_BYTES: usize = 128;
 const ZERO_DIGEST: &str = "0000000000000000000000000000000000000000000000000000000000000000";
-
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct AuthorizedEffectDependency {
-    pub step_id: String,
-    pub state_digest: Sha256Digest,
-}
-
-#[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
-#[serde(deny_unknown_fields)]
-pub struct AuthorizedEffectIntent {
-    pub run_id: String,
-    pub step_id: String,
-    pub attempt: u32,
-    pub operation_id: String,
-    pub subject_id: String,
-    pub destination_id: String,
-    pub payload_digest: Sha256Digest,
-    pub final_use_scope_digest: Sha256Digest,
-    pub policy_generation: u64,
-    pub expected_predecessor_digest: Option<Sha256Digest>,
-    pub dependencies: Vec<AuthorizedEffectDependency>,
-    pub compensation_for: Option<String>,
-}
 
 impl AuthorizedEffectIntent {
     pub fn digest(&self) -> Result<Sha256Digest, TaskFlowError> {
@@ -539,7 +514,7 @@ pub enum AuthorizedEffectRecovery {
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AuthorizedEffectRecoveryResult {
     ProvenAbsent,
-    Observed(TaskFlowStepReceipt),
+    Observed(Box<TaskFlowStepReceipt>),
 }
 
 #[derive(Debug, Error)]
@@ -641,6 +616,10 @@ impl AutomationStore {
     ///
     /// If a process dies after step 3, a subsequent call returns
     /// `RecoveryRequired` and cannot re-dispatch even with a fresh grant.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "the irreversible effect boundary binds independently owned authority, durable intent, exact bytes, fence, grant, binding, command, and trusted time"
+    )]
     pub async fn execute_authorized_taskflow_effect<D: AuthorizedEffectDriver>(
         &self,
         authority: &FinalUseAuthority,
@@ -705,7 +684,7 @@ impl AutomationStore {
                 .settle_effect_dispatch_attempt(&existing, fence)
                 .await?
             {
-                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                 }
@@ -744,7 +723,7 @@ impl AutomationStore {
                     command_id,
                 )?;
                 return match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => {
                         Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                     }
@@ -809,7 +788,7 @@ impl AutomationStore {
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
             AuthorizedEffectRecoveryResult::ProvenAbsent => {
                 Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
             }
@@ -863,6 +842,10 @@ impl AutomationStore {
     /// provider-stable logical key is then derived from destination + run +
     /// step, deliberately excluding the local attempt so a safely retried
     /// attempt reuses the same provider occurrence identity.
+    #[allow(
+        clippy::too_many_arguments,
+        reason = "the asynchronous irreversible effect boundary retains every independent authorization and recovery binding explicitly"
+    )]
     pub async fn execute_authorized_taskflow_effect_async<D: AsyncAuthorizedEffectDriver>(
         &self,
         authority: &FinalUseAuthority,
@@ -922,7 +905,7 @@ impl AutomationStore {
                 .settle_effect_dispatch_attempt(&existing, fence)
                 .await?
             {
-                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                 }
@@ -961,7 +944,7 @@ impl AutomationStore {
                     command_id,
                 )?;
                 return match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => {
                         Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                     }
@@ -1025,7 +1008,7 @@ impl AutomationStore {
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
             AuthorizedEffectRecoveryResult::ProvenAbsent => {
                 Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
             }
@@ -1196,7 +1179,7 @@ impl AutomationStore {
             self.reconcile_effect_run(durable, fence, observation, terminal)
                 .await?;
         }
-        Ok(AuthorizedEffectRecoveryResult::Observed(step))
+        Ok(AuthorizedEffectRecoveryResult::Observed(Box::new(step)))
     }
 
     async fn quarantine_effect_run(
@@ -1524,6 +1507,7 @@ fn validate_receipt_digest(digest: &Sha256Digest) -> Result<(), AuthorizedEffect
 #[cfg(test)]
 mod intent_tests {
     use super::*;
+    use crate::AuthorizedEffectDependency;
 
     fn dependency(id: &str, label: &[u8]) -> AuthorizedEffectDependency {
         AuthorizedEffectDependency {

@@ -147,6 +147,33 @@ async fn peer_identity_gate_accepts_same_user_on_supported_platforms() -> std::i
     Ok(())
 }
 
+#[cfg(target_os = "linux")]
+#[tokio::test]
+async fn trusted_peer_identity_checks_the_kernel_uid_and_pid() -> std::io::Result<()> {
+    let (_temp_dir, server_stream, _client_stream) = connected_streams().await?;
+    let uid = unsafe { libc::getuid() };
+    server_stream.ensure_peer_user(uid)?;
+    assert_eq!(
+        server_stream
+            .ensure_peer_user(uid.wrapping_add(1))
+            .unwrap_err()
+            .kind(),
+        ErrorKind::PermissionDenied
+    );
+    let (server, _client) = std::os::unix::net::UnixStream::pair()?;
+    let pid = std::process::id();
+    super::ensure_unix_peer_identity(&server, uid, pid)?;
+    for (expected_uid, expected_pid) in [(uid.wrapping_add(1), pid), (uid, pid.wrapping_add(1))] {
+        assert_eq!(
+            super::ensure_unix_peer_identity(&server, expected_uid, expected_pid)
+                .unwrap_err()
+                .kind(),
+            ErrorKind::PermissionDenied
+        );
+    }
+    Ok(())
+}
+
 #[cfg(not(any(
     target_os = "linux",
     target_os = "android",

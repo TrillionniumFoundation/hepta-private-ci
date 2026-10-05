@@ -29,7 +29,7 @@ immutable authority, truth, privacy and durability kernel
 
 Completion requires one integrated source tree, current exact-candidate evidence for every applicable package, independent decisions in their designated lanes, and separate promotion/release. Normal merge commits preserve reviewed branch history; linear ancestry is not a capability requirement. Until the corresponding executable and empirical conditions hold, `all_gaps_closed=false`, `closedLoopLearning=false`, `longitudinalEfficacy=false`, `functionalBiomimicry=false`, and `selfIteration=false`.
 
-Ordinary development follows the repository owner's authorized scope. A reviewed
+Ordinary development follows the repository owner's authorized scope. A tested
 PR may integrate multiple lanes through small ordered commits, with one owner for
 each changed durable domain. Git records source/tree/parents, CI derives the
 candidate identity from the actual event, and the PR records changes, tests and
@@ -38,34 +38,52 @@ envelope, production host binding or deployment approval merely to implement,
 test or merge authorized repository changes. Those records apply when their
 runtime, independent-evaluation or deployment boundary is actually exercised.
 Repository merge does not itself activate that boundary.
-
-Reviewer approval, administrator enforcement and comment resolution are selected
-by the repository owner. The supplied main ruleset permits administrators to
-merge PRs without granting a direct-push bypass; ordinary required checks remain
-bound to their real publisher. These repository settings do not authorize a
-workload effect or replace independent runtime evaluation.
+Source-change risk still selects stateful/effect tests and exact merge-candidate
+checks. It does not request historical implementation maps or independent
+acceptance dossiers. The existing contract qualification entry requests those
+explicitly (`require_exact_source=true`); `hepta_ci_risk.py --qualification`
+produces the corresponding deep execution plan without granting any authority.
+The document verifier reports changed shared-path lease requests without
+self-attesting them. Protected-branch status checks remain required for
+integration; the repository owner selects whether reviewer approval is required.
+Administrator enforcement and comment resolution are also owner-selected.
+The supplied main ruleset permits administrators to merge tested PR contents
+without creating a direct-push bypass; ordinary required checks remain pinned
+to their real publisher. These repository settings do not authorize a workload
+effect or replace independent runtime evaluation.
+An explicit `verify --require-path-lease-attestation` checks the separate
+activation boundary and rejects touched requests without external attestation;
+a static pass never activates a lease or grants authority.
 
 The repository has two development paths. The ordinary path is the fast path:
 edit the owned source, run the affected package tests, run the applicable
-review checks and merge through the normal protected branch. The qualification
+code checks and merge through the configured protected branch. The qualification
 path is opt-in and is required only for a runtime boundary, external effect,
 independent evaluation, candidate execution, promotion or release. Readiness
 dossiers, paper locks, synthetic merge receipts and capability evidence must not
 be added to an ordinary source-only change just to satisfy a document gate.
 Path-filtered CI selects the qualification checks from the changed boundary;
-it does not use a global checklist as a proxy for evidence.
+it does not use a global checklist as a proxy for evidence. The local document
+verifiers default to `development`; pass `--profile qualification` explicitly
+when revalidating historical execution evidence or an activation boundary.
 
 Ordinary authorized development has no hard changed-path quota. Work packages
 are bounded by semantic scope, ownership, authority change, durable-domain
 impact and required tests. A coherent cross-owner change may be reviewed in one
-PR with explicit co-owners; it must not be split into source and documentation
+PR with explicit owners; it must not be split into source and documentation
 PRs merely to satisfy a file-count budget. Resource-budget metadata may guide
 planning, but it is not a merge gate unless an autonomous candidate-execution
 profile explicitly declares and enforces that bound.
 
 ## 2. Canonical document system and historical cleanup
 
-Read in this order:
+For an ordinary change, start with the affected module's `module.toml`, its
+technical guide, and the applicable source instructions. Run its owning tests
+and checks. Follow another owner's contract when crossing that boundary. A
+developer does not need to read or reproduce the global qualification document
+set before editing source.
+
+For architecture work or an actual qualification boundary, the reference order is:
 
 1. `docs/CURRENT.json` — static source-selection policy and explicit prohibition on cached dynamic candidate facts;
 2. this document — global requirements and delivery policy;
@@ -122,9 +140,9 @@ Historical cleanup remains bound to the exact head/tree and 143-path deletion in
 - Current-run objectives and learning artifacts are immutable. Learning generates only next-snapshot candidates.
 - Central optimizers, NDU runtimes, prompt optimizers and learning modules select or propose; they do not execute effects or issue capabilities.
 
-## 5. Forty-module architecture and team model
+## 5. Modular architecture and team model
 
-`MODULES.json` is authoritative for 40 modules. The V6 foundation remains and the Intelligence responsibilities are decomposed into bounded teams:
+`docs/modules/*/module.toml` is the handwritten source for the current modules; `MODULES.json` is its generated identity projection. Adding or retiring a module updates its manifest and generated current views without changing historical readiness inventories. The V6 foundation remains and the Intelligence responsibilities are decomposed into bounded teams:
 
 ```text
 objective.compiler
@@ -144,29 +162,38 @@ intelligence.control  # composition façade only
 
 `trajectory.store` is replaced by the more complete append-only `learning.ledger`. `learning.shadow` becomes the narrower `learning.eval`. The former broad `intelligence.control` no longer owns learning facts, prompt facts, artifacts or model execution.
 
-Each module has a primary owner, deputy, exclusive roots, dependencies, data authority, forbidden authority and bounded work packages. One developer or agent receives a work envelope, not broad repository ownership. Cross-module changes require explicit co-ownership or a separate integration package.
+Each module declares its source roots, dependencies and durable-data owner.
+Owner and deputy names identify technical accountability. An authorized source
+change needs no separately issued lane envelope or integration package.
+Cross-module changes preserve those ownership boundaries and test the affected
+owners and consumers; they may be implemented and reviewed together.
 
 ## 5A. Closed-world module implementation guides
 
-Every one of the forty registered modules has one stable implementation guide at `docs/modules/<module-id>/TECHNICAL.md`. `docs/modules/MODULE_DOCS.json` indexes each guide and its contracts, protocols, data domains, threats and work packages. Prose digests, byte counts and word counts retained in that index are optional generated presentation caches, not acceptance or source-selection evidence. Normal prose edits do not require refreshing them; exact candidate identity remains bound by Git and CI. Registry ownership, source paths, authority constraints and usable local links remain mandatory. `docs/modules/SOURCE_BINDINGS.json` separates declared target roots from existing implementation evidence, missing roots and the bootstrap package that must materialize each target.
+Every registered module has one stable implementation guide at `docs/modules/<module-id>/TECHNICAL.md`. `docs/modules/MODULE_DOCS.json` indexes each guide and its contracts, protocols, data domains, threats and work packages. Prose digests, byte counts and word counts retained in that index are optional generated presentation caches, not acceptance or source-selection evidence. Normal prose edits do not require refreshing them; exact candidate identity remains bound by Git and CI. Registry ownership, source paths, authority constraints and usable local links remain mandatory. `docs/modules/SOURCE_BINDINGS.json` separates declared target roots from existing implementation evidence, missing roots and the bootstrap package that must materialize each target.
 
-Source states are deliberately truthful: a module may be `existing_bound`, `existing_legacy_aggregate`, `existing_declared_unbound`, `target_partially_materialized`, `target_unmaterialized` or `external_with_adapter_target`. Documentation readiness never changes a source, activation, acceptance, promotion or release claim. `python3 scripts/hepta-module-docs.py verify` fails unless all forty guides, bindings and registry references are closed.
+Source states are deliberately truthful: a module may be `existing_bound`, `existing_legacy_aggregate`, `existing_declared_unbound`, `target_partially_materialized`, `target_unmaterialized` or `external_with_adapter_target`. Documentation readiness never changes a source, activation, acceptance, promotion or release claim. `python3 scripts/hepta-module-docs.py verify` validates all current guides, bindings and registry references.
 
 The module registries expose two separate boolean facts for every module: `source_root_present` records only that a declared source root exists in the exact candidate tree, while `production_implementation` is true only after a named product caller and executable product tests are evidenced. A present source root therefore cannot be read as a production implementation. The two facts are projected identically through `MODULES.json`, `SOURCE_BINDINGS.json` and `MODULE_DOCS.json` and are validated against `docs/readiness/STATUS_MODEL.json`.
 
 ## 5B. Adaptive algorithm closed world
 
-The implementation-level adaptive document set is globally governed, not an independent prose island. `docs/learning/ALGORITHM_SPECS.json` binds the six specifications, exact Git blob identities, paper claim anchors, canonical contracts and protocol schemas, data-authority domains, quantitative experiments, artifact lifecycle, work package `DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`, and both read-only CI workflows.
+The algorithm registry's historical `paperTraceabilityBlobSha` field is an optional
+presentation cache. Paper content locks and exact claim anchors remain mandatory.
+Explicit qualification receipts hash the actual paper-registry bytes and lock
+values at execution, and their verifier rejects stale or substituted identities.
 
-`python3 scripts/hepta-algorithm-docs.py verify` is necessary but cannot self-certify closure. `python3 scripts/hepta-docs.py verify` must load the algorithm registry, invoke the dedicated verifier, confirm every adaptive path is in `DOCUMENT_SYSTEM.json`, and confirm the package and Development/Activation/Evidence DAG edges. Both exact source and deterministic synthetic merge candidates must pass. Temporary installers, split payloads, `contents: write`, branch pushes, and workflow-generated source mutations are forbidden in the final document tree.
+The implementation-level adaptive document set is globally governed, not an independent prose island. `docs/learning/ALGORITHM_SPECS.json` binds the six specification paths, paper claim anchors, canonical contracts and protocol schemas, data-authority domains, quantitative experiments, artifact lifecycle, work package `DOC-3D-ADAPTIVE-ALGORITHM-DOC-CLOSED-WORLD`, and both read-only CI workflows.
+
+`python3 scripts/hepta-algorithm-docs.py verify` is necessary but cannot self-certify closure. `python3 scripts/hepta-docs.py verify` must load the algorithm registry, invoke the dedicated verifier, confirm every adaptive path is in `DOCUMENT_SYSTEM.json`, and confirm the package and Development/Activation/Evidence DAG edges. Both exact source and deterministic synthetic merge candidates must pass. Git and execution records bind actual specification bytes; ordinary prose edits do not refresh hand-maintained blob caches. Headings, ordering, stock declarations and keyword coverage are editorial advice, not semantic or implementation evidence. Temporary installers, split payloads, `contents: write`, branch pushes, and workflow-generated source mutations are forbidden in the final document tree.
 
 ## 5C. Pre-coding implementation-readiness closed world
 
-`docs/readiness/READINESS.json` binds nine implementation-level execution specifications, 31 bounded typed protocols, 54 closed documentation gaps, all 40 modules, seven primary implementation lanes, three cross-lane integration tracks and nine explicitly authorized external-system assimilation components. `docs/readiness/GAPS.json` separately names nine capability or evidence gates that repository documentation may never self-certify.
+`docs/readiness/READINESS.json` binds nine implementation-level execution specifications, 31 bounded typed protocols, 54 closed documentation gaps, the 40 modules in its original readiness scope, seven primary implementation lanes, three cross-lane integration tracks and nine explicitly authorized external-system assimilation components. `docs/readiness/GAPS.json` separately names nine capability or evidence gates that repository documentation may never self-certify.
 
-Every module guide includes Section 16 and maps the module to exactly one primary lane, the applicable readiness specifications, its owned and consumed readiness protocols and a common coding-entry gate. For ordinary owner-authorized repository implementation, the coding entry is a named work package, its contracts, relevant fixtures and normal review; Git and CI supply the exact candidate identity automatically. No separately handwritten or expiring receipt is required to start coding or merge an otherwise reviewed change. Frozen runtime snapshots, independently issued authority and rollback admission apply when testing or activating their actual boundary, not to unrelated prose or pure-function edits. Autonomous candidate execution remains subject to its bounded envelope and protected evaluator; this simplification grants it no additional authority. The new embodiment and assimilation work packages define source paths and predecessors without claiming that those paths are materialized.
+Each module in the original readiness scope maps to its recorded primary lane, applicable readiness specifications and owned or consumed readiness protocols. A new module declares its current ownership, dependencies, source and guide in its manifest; a historical lane assignment is required only when the new work actually extends that lane. For ordinary owner-authorized repository implementation, the coding entry is a named work package, its contracts, relevant fixtures and normal review; Git and CI supply the exact candidate identity automatically. No separately handwritten or expiring receipt is required to start coding or merge an otherwise reviewed change. Frozen runtime snapshots, independently issued authority and rollback admission apply when testing or activating their actual boundary, not to unrelated prose or pure-function edits. Autonomous candidate execution remains subject to its bounded envelope and protected evaluator; this simplification grants it no additional authority. The new embodiment and assimilation work packages define source paths and predecessors without claiming that those paths are materialized.
 
-`python3 scripts/hepta-readiness.py verify` checks document depth, protocol bounds and ownership, gap traceability, module/lane closure, package references, assimilation target-root ownership, generated status and the read-only source-head/synthetic-merge workflow. The global verifier invokes the readiness, CNS and HNMF verifiers; no subordinate layer may certify itself as globally complete. Documentation closure permits contract-first coding to begin through the declared lanes, but it does not imply source implementation, real model use, future-time efficacy, biomimicry, physical safety, external-system owner consent, operator acceptance, selection, promotion or release.
+`python3 scripts/hepta-readiness.py verify` checks document presence and registered references, protocol bounds and ownership, gap traceability, module/lane closure, package references, assimilation target-root ownership, generated status and the read-only source-head/synthetic-merge workflow. Heading wording, ordering, stock phrases and document byte counts are editorial guidance rather than proof of implementation. The global verifier invokes the readiness, CNS and HNMF verifiers; no subordinate layer may certify itself as globally complete. Documentation closure permits contract-first coding to begin through the declared lanes, but it does not imply source implementation, real model use, future-time efficacy, biomimicry, physical safety, external-system owner consent, operator acceptance, selection, promotion or release.
 
 ## 6. Objective compilation
 
@@ -267,7 +294,7 @@ locally trainable implementation candidate, not a permanent framework dependency
 and not an already activated Hepta model. A cell owns a logical identity, bounded
 state, effective parameter identity, typed observation/action contract and learning
 history. It does not automatically own a process, database, model server, optimizer
-service or top-level module entry. The forty-module ownership model is unchanged.
+service or top-level module entry. The existing module ownership boundaries are unchanged.
 
 Default effective parameters compose a shared base, an organ adapter and a cell
 adapter/head. Independent effective parameters are real trainable parameters, not
@@ -589,7 +616,7 @@ Every package declares exact paths, predecessors, exit criteria, stop conditions
 - Materialize this complete V8 set as one commit on the observed default baseline.
 - Remove at least the 139 known historical development paths and every additional forbidden legacy path.
 - Run exact-head and merge-candidate document gates.
-- Obtain independent review and select only V8 into the default branch.
+- Select the checked V8 source into the default branch under the repository owner's merge policy.
 - Restack active implementation candidates without reintroducing deleted development documents.
 
 ### P1 — authority and modular foundation
@@ -655,7 +682,7 @@ Primary metrics are task success, retrieval utility, citation precision, stale r
 
 ## 21. Performance, fault and security contracts
 
-Every affected path records comparable baseline and candidate throughput, p50/p95/p99 latency, CPU, resident memory, allocations, queue depth/age, SQLite busy/WAL, file descriptors/sockets, model/provider usage, token/context cost and confidence bounds.
+Measure resources actually affected by the change: comparable baseline and candidate throughput and p50/p95/p99 latency for hot paths; CPU, resident memory and allocations for compute changes; queue depth/age, SQLite busy/WAL and file descriptors/sockets for stateful services; model/provider usage and token/context cost for model paths. Record workload size, sample count, host/build identity and uncertainty with the run. A pure value or prose change does not need an invented database, hardware target or release dossier. Stateful/effect/migration changes retain their applicable recovery and resource checks.
 
 Stateful modules cover before/after intent, commit, outbox, wakeup, claim, send, acknowledgement, source settlement, stale callback, permission loss, filesystem full, corruption, nonempty WAL, identity drift, backup/restore and process kill/reopen.
 
@@ -699,9 +726,13 @@ promotion != release
 
 ## 23. Immediate queue
 
-1. Qualify `DOC-3E-PRECODING-READINESS-CLOSED-WORLD` through the dedicated and global exact-source and synthetic-merge jobs, then obtain independent semantic review.
-2. Resolve the current canonical source and target branch only from fresh receipts; do not reuse a cached pull-request number or historical branch relationship.
-3. Begin `LANE-A-FOUNDATION`, `LANE-C-MEMORY` and `LANE-G-ENGINEERING` contract-first packages against frozen readiness and contract digests.
+The original V8 convergence and lane sequence above is retained design history,
+not a prerequisite to each implementation change. Use the current module guide,
+owned source and executable behavior to choose the next work:
+
+1. Implement or fix the applicable module contract and its real callers; run the affected owner and consumer checks. New source work does not require another document-convergence dossier or independent human review unless the repository owner enables that review policy.
+2. Resolve the current source and target from Git and the current PR/CI event. Retain actual command results for the changed behavior rather than copying historical receipt identities.
+3. Exercise normal module installation, addition, replacement, retirement and recovery through the existing runtime owners. Preserve durable state, predecessor identity and one-writer handoff while checking the resources actually affected.
 4. Close AuthBus semantic review, Browser identity reconciliation, dependency inversion, runtime bootstrap, B4 call-site proof and common fault/resource gates.
 5. Materialize Objective, deterministic NDU, episode ledger, artifact registry, PromptFactor registry and the first read-only vertical slice.
 6. Add Bellman, Neuron, Intuition and prompt optimization only in shadow mode after immutable stores and independent evaluation exist.
@@ -714,7 +745,7 @@ All authority flags remain false in this document set.
 
 ## 24. V8 audit closure and executable document integrity
 
-V8 closes the remaining V8.1 review gaps rather than merely adding prose:
+The following inventory records the V8/V8.1 historical audit boundary. Retain its original evidence, but do not refresh historical cleanup receipts or reproduce all of its paperwork for each ordinary feature change. Current ownership and executable invariants remain checked; current CI risk tiers and the module development guide determine applicable source-head and merge-candidate execution.
 
 - every logical module has at least one bounded work package;
 - cross-module contracts, critical protocol fields and durable data domains have explicit machine owners;

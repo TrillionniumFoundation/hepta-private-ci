@@ -17,6 +17,7 @@ use crate::GenerateAttestationFuture;
 use crate::config::Config;
 use crate::model_provider_policy::ModelProviderPolicyContext;
 use crate::responses_metadata::CodexResponsesMetadata;
+use crate::responses_metadata::CodexResponsesRequestKind;
 use crate::test_support::TestCodexResponsesRequestKind;
 use crate::test_support::responses_metadata as test_responses_metadata;
 use codex_api::AgentIdentityTelemetry;
@@ -153,37 +154,34 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
         }],
         phase: None,
         internal_chat_message_metadata_passthrough: Some(InternalChatMessageMetadataPassthrough {
+            turn_id: Some("original-durable-turn".to_string()),
+            create_time: Some(
+                serde_json::Number::from_f64(1_785_276_138.422709).expect("finite creation time"),
+            ),
             content_item_kinds: Some(vec![ContentItemKind("user.text".to_string())]),
-            ..Default::default()
+            executed_tool_calls: Some(vec![codex_protocol::models::ExecutedToolCall::new(
+                "original_tool".to_string(),
+                serde_json::json!({"argument": "whole value"}),
+            )]),
         }),
     };
+    let original = item_with_metadata();
+    let mut stripped = original.clone();
+    stripped.clear_internal_chat_message_metadata_passthrough();
 
     let mut chatgpt_item = item_with_metadata();
     client.prepare_response_items_for_request(
         std::slice::from_mut(&mut chatgpt_item),
         &chatgpt_provider,
     );
-    let chatgpt_wire = serde_json::to_value(&chatgpt_item).expect("item should serialize");
-    assert!(
-        chatgpt_wire
-            .get("internal_chat_message_metadata_passthrough")
-            .is_none()
-    );
+    assert_eq!(chatgpt_item, stripped);
 
     let mut openai_item = item_with_metadata();
     client.prepare_response_items_for_request(
         std::slice::from_mut(&mut openai_item),
         &openai_provider,
     );
-    let openai_wire = serde_json::to_value(&openai_item).expect("item should serialize");
-    assert_eq!(
-        openai_wire
-            .get("internal_chat_message_metadata_passthrough")
-            .and_then(|metadata| metadata.get("content_item_kinds"))
-            .and_then(|kinds| kinds.as_array())
-            .map(Vec::len),
-        Some(1)
-    );
+    assert_eq!(openai_item, original);
 
     // The wire policy follows the resolved endpoint, not the friendly name.
     // A custom provider name using the first-party OpenAI URL keeps metadata.
@@ -198,12 +196,7 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
         std::slice::from_mut(&mut custom_name_item),
         &custom_name_provider,
     );
-    assert!(
-        serde_json::to_value(&custom_name_item)
-            .expect("item should serialize")
-            .get("internal_chat_message_metadata_passthrough")
-            .is_some()
-    );
+    assert_eq!(custom_name_item, original);
 
     // Conversely, an `OpenAI`-named provider on a non-standard endpoint is
     // treated conservatively and does not receive local-only metadata.
@@ -218,12 +211,25 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
         std::slice::from_mut(&mut nonstandard_item),
         &nonstandard_provider,
     );
-    assert!(
-        serde_json::to_value(&nonstandard_item)
-            .expect("item should serialize")
-            .get("internal_chat_message_metadata_passthrough")
-            .is_none()
+    assert_eq!(nonstandard_item, stripped);
+
+    let mut disabled_client = test_model_client(SessionSource::Exec);
+    std::sync::Arc::get_mut(&mut disabled_client.state)
+        .expect("original client state is unique")
+        .content_item_kinds_enabled = false;
+    let mut disabled_item = original.clone();
+    disabled_client.prepare_response_items_for_request(
+        std::slice::from_mut(&mut disabled_item),
+        &openai_provider,
     );
+    let mut without_kinds = original;
+    without_kinds.clear_content_item_kinds();
+    assert_eq!(disabled_item, without_kinds);
+    disabled_client.prepare_response_items_for_request(
+        std::slice::from_mut(&mut disabled_item),
+        &nonstandard_provider,
+    );
+    assert_eq!(disabled_item, stripped);
 }
 
 struct TransportSelectionEphemeralContributor {
@@ -330,10 +336,79 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         "window-a".to_string(),
     );
     metadata_a.sandbox_mode = Some("workspace-write".to_string());
+    metadata_a.request_kind = Some(CodexResponsesRequestKind::Turn);
     metadata_a.turn_started_at_unix_ms = Some(1);
     let identity_a =
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
             .expect("identity a");
+
+    let mut prewarm_metadata = metadata_a.clone();
+    prewarm_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
+    assert_ne!(
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+            .expect("turn recovery projection"),
+        serde_json::to_value(prewarm_metadata.turn_recovery_compatibility_projection())
+            .expect("prewarm recovery projection"),
+        "request recovery must still bind the actual operation kind",
+    );
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &prewarm_metadata)
+            .expect("prewarm identity"),
+        "prewarm and the same ordinary turn must reuse the original transport",
+    );
+    let mut memory_metadata = metadata_a.clone();
+    memory_metadata.request_kind = Some(CodexResponsesRequestKind::Memory);
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &memory_metadata)
+            .expect("different operation identity"),
+        "other operation kinds must remain distinct",
+    );
+
+    let mut self_root_metadata = metadata_a.clone();
+    self_root_metadata.turn_id = Some("own-root-turn".to_string());
+    self_root_metadata.root_turn_id = self_root_metadata.turn_id.clone();
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &self_root_metadata
+        )
+        .expect("own root request identity"),
+    );
+    assert_ne!(
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+            .expect("original recovery projection"),
+        serde_json::to_value(self_root_metadata.turn_recovery_compatibility_projection())
+            .expect("own root recovery projection"),
+    );
+    let mut inherited_root_metadata = self_root_metadata;
+    inherited_root_metadata.root_turn_id = Some("inherited-root-turn".to_string());
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &inherited_root_metadata
+        )
+        .expect("inherited root authority identity"),
+    );
+
+    let mut parent_metadata = metadata_a.clone();
+    parent_metadata.parent_turn_id = Some("parent-turn-attribution".to_string());
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &parent_metadata)
+            .expect("per-frame parent attribution identity"),
+    );
+    assert_ne!(
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+            .expect("original recovery projection"),
+        serde_json::to_value(parent_metadata.turn_recovery_compatibility_projection())
+            .expect("parent recovery projection"),
+    );
 
     let mut volatile_metadata = metadata_a.clone();
     volatile_metadata.session_id = "session-after-restart".to_string();
@@ -871,14 +946,16 @@ async fn dropped_response_stream_traces_cancelled_partial_output() -> anyhow::Re
     let api_stream = futures::stream::iter([Ok(ResponseEvent::OutputItemDone(item))])
         .chain(futures::stream::pending());
     let (mut stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
         api_stream,
-        test_session_telemetry(),
-        attempt,
-        test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
-        /*encoded_request_observer*/ None,
+        super::ResponseEventContext {
+            upstream_request_id: None,
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: attempt,
+            provider: test_model_provider(),
+            provider_attempt: None,
+            redact_provider_errors: false,
+            encoded_request_observer: None,
+        },
     );
 
     let observed = stream
@@ -924,14 +1001,16 @@ async fn response_stream_records_last_model_feedback_ids() {
         }),
     ]);
     let (mut stream, _) = super::map_response_events(
-        Some("req-123".to_string()),
         api_stream,
-        test_session_telemetry(),
-        InferenceTraceAttempt::disabled(),
-        test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
-        /*encoded_request_observer*/ None,
+        super::ResponseEventContext {
+            upstream_request_id: Some("req-123".to_string()),
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: InferenceTraceAttempt::disabled(),
+            provider: test_model_provider(),
+            provider_attempt: None,
+            redact_provider_errors: false,
+            encoded_request_observer: None,
+        },
     );
 
     while stream.next().await.is_some() {}
@@ -1060,14 +1139,16 @@ async fn ephemeral_unauthorized_and_stream_errors_are_redacted() -> anyhow::Resu
         message: SENTINEL.to_string(),
     })]);
     let (mut stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
         api_stream,
-        test_session_telemetry(),
-        attempt,
-        provider,
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ true,
-        /*encoded_request_observer*/ None,
+        super::ResponseEventContext {
+            upstream_request_id: None,
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: attempt,
+            provider,
+            provider_attempt: None,
+            redact_provider_errors: true,
+            encoded_request_observer: None,
+        },
     );
     let error = stream
         .next()
@@ -1244,14 +1325,16 @@ async fn dropped_backpressured_response_stream_traces_cancelled_partial_output()
     };
 
     let (stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
         api_stream,
-        test_session_telemetry(),
-        attempt,
-        test_model_provider(),
-        /*provider_attempt*/ None,
-        /*redact_provider_errors*/ false,
-        /*encoded_request_observer*/ None,
+        super::ResponseEventContext {
+            upstream_request_id: None,
+            session_telemetry: test_session_telemetry(),
+            inference_trace_attempt: attempt,
+            provider: test_model_provider(),
+            provider_attempt: None,
+            redact_provider_errors: false,
+            encoded_request_observer: None,
+        },
     );
 
     // Fill the mapper channel with non-terminal events, then yield one output

@@ -477,3 +477,82 @@ The bootstrap source-location obligation for `neuron.runtime` is implemented by 
 - `codex-rs/hepta-neuron`
 
 The source candidate is checked by `.github/workflows/hepta-consolidated-source.yml`, including closed-world inventory, package tests, all-target compilation, strict Clippy and clean tracked state. This receipt is source implementation evidence only. It grants no runtime, production-writer, model-provider, external-effect, independent-acceptance, selection, promotion, merge or release authority.
+
+## 18. Installed CPU generations and independent selection refresh
+
+`bootstrap_installed_cpu_neuron_v1` admits generation 1 with empty native
+runtime stores only after genuine model, calibration and OOD selections have
+passed the current artifact gate. All three selections must have generation 1
+and no selected predecessor. An evaluation comparator does not create a runtime
+predecessor. Later generations use `open_installed_cpu_neuron_generation_v1` and
+the existing durable generation, index and witness owners.
+
+`NeuronSelectedArtifactsV1.model_artifact_manifest` carries the complete native
+V2 admission preimage. Its canonical digest must equal the model support in the
+signed selection and authenticated registry. Its bytes, execution profile,
+objective, producer, predecessor, device and normalization must match the
+installed tuple, and its authenticated lineage must include the actual CPU
+JSON descriptor digest. The CPU loader independently checks descriptor bytes,
+weights, encoder, heads, runtime, tokenizer, preprocessing, quantization, device
+and input/output dimensions before creating generation stores. A matching
+weight file alone does not authorize a different descriptor.
+
+Publishing any new CURRENT fences cached selections. The installer captures
+`admission.selection_refresh_ingress()` before transferring the admission guard
+into its physical owner. The independent Selector transport can submit a newly
+signed triple through `submit_current_selections`. The single pending slot
+accepts only the same immutable artifacts and full admitted model preimage.
+Submission identifies a pending input; it is not a durable ACK or activation.
+The guard rechecks actual CURRENT and original payloads when consuming it.
+Revocation, stale signatures, changed tuples and clock rollback remain failures;
+a registry extension alone never reopens a fenced consumer.
+
+`CpuNeuronGovernedParameterCompilerV1` implements the existing parameter factory
+for bounded exact Q32 deltas on `neuron.sparse.rates.q24.v1`. It consumes the
+original governed proposal and anchor, uses the same inference-control writer,
+and creates physical +1/+2 owners while preserving frozen tensors and body
+structure. It holds a Generator credential and no Selector credential. Tensor
+training and independent model qualification remain separate operations. A
+failed calibration candidate supplies rejection evidence and cannot bootstrap
+or refresh a selected model.
+
+## 19. Installed Goal scopes on one physical CPU owner
+
+The explicit `hepta.cpu-neuron.installed-owner-composition.v3` descriptor adds
+`model_use_pointer`; V2 retains its original fixed objective. The Root-protected
+pointer uses `hepta.cpu-neuron.current-installed-model-use-pointer.v2` and pins
+the model-use configuration and independent S selection. Each scope operation
+checks the original model/body, actual Agent principal, E/S windows, CURRENT,
+withdrawals and clock. A new pointer may refresh the same physical identity and
+extend its authenticated frontier; it cannot restore an older or forked head.
+Expiry or unavailable current inputs fences CPU use through the existing
+admission path. This descriptor does not grant a Goal or final-use authority.
+
+The ordinary installed WorkerHost supplies the existing sole Agentd host's
+Goal factory. The factory opens objective-bound journals while sharing one
+loaded CPU model and the model owner's original inference-control writer. Goal
+ordinals change independently of model generation. The late canonical neural
+stage supplies the actual objective, RunStart and predecessor; the original
+controller validates admission before its quiesce/seal/reload CAS.
+
+Scope one retains the declared first-installation paths. Later paths append
+`.goal-{ordinal}` inside the same private Agent home. Startup authenticates all
+persisted active and retained native headers. A durable Reloading target is
+recovered with its exact target identity and the original active owner retained;
+the original controller validates that complete topology. Missing or partial
+persisted stores require reconciliation and cannot become empty replacements.
+The controller retains its existing bounded hot owners and cold archive limits;
+this change introduces neither an archive owner nor an expiry exemption.
+
+V3 uses `hepta.cpu-neuron.fixed-pair-tick-provider.v3`; it preserves the pinned
+public pair, model, body and preprocessing while binding the actual stage's
+objective and predecessor in the original seven-field encoder request. Existing
+V2 requests remain bound to their initial objective. The encoder supplies
+features only; all seven canonical owners and final-use checks remain required.
+
+The V3 tick provider retains the CPU descriptor's original tokenizer digest in
+its runtime tuple. Separately, it obtains the actual GGUF encoder-manifest and
+tokenizer digests from the inspected opaque S2 model-use binding, and checks
+those physical domains in the encoder response. The shared normalization still
+matches the admitted runtime. A CPU alias cannot substitute for the actual
+tokenizer, and an actual tokenizer cannot rewrite the legacy CPU preimage.

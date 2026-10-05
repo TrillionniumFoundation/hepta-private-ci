@@ -40,11 +40,14 @@ async fn loopback_http_request_reaches_the_read_only_status_organ() -> Result<()
     let address = listener.local_addr()?;
     let server = tokio::spawn(async move {
         let (stream, _) = listener.accept().await?;
-        serve_connection(stream, runtime).await
+        serve_connection(stream, runtime, fixture_gateway_auth()).await
     });
     let mut client = TcpStream::connect(address).await?;
     client
-        .write_all(b"GET /api/hepta/runtime HTTP/1.1\r\nHost: localhost\r\n\r\n")
+        .write_all(&authorized_test_request(
+            "GET /api/hepta/runtime HTTP/1.1",
+            "",
+        ))
         .await?;
     let mut bytes = Vec::new();
     tokio::time::timeout(RESPONSE_TIMEOUT, client.read_to_end(&mut bytes)).await??;

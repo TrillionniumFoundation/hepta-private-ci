@@ -95,7 +95,10 @@ async fn assert_timed_out_git_wrapper_does_not_leave_child_process_running(
     let output =
         wait_for_git_command_with_timeout_output(wrapper, process_tree, Duration::from_millis(100))
             .await;
-    assert_eq!(output, None);
+    assert_eq!(
+        output.expect_err("deadline expires").kind(),
+        std::io::ErrorKind::TimedOut
+    );
 
     std::fs::write(&release_child_file, "release").expect("release Git wrapper child");
     tokio::time::sleep(Duration::from_secs(3)).await;

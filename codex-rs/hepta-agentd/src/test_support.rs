@@ -18,27 +18,27 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_arg0::Arg0DispatchPaths;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_fleet::AgentLifecycle;
-use codex_hepta_fleet::AgentManifest;
-use codex_hepta_fleet::FleetRegistry;
-use codex_hepta_fleet::ResourceBudget;
-use codex_hepta_fleet::WorkspaceBinding;
-use codex_hepta_memory::CognitiveAccess;
-use codex_hepta_memory::CognitiveRuntime;
-use codex_hepta_memory::CognitiveScope;
-use codex_hepta_memory::CognitiveStore;
-use codex_hepta_memory::ForgetMemoryDraft;
-use codex_hepta_memory::LedgerSourceKind;
-use codex_hepta_memory::MemoryDraft;
-use codex_hepta_memory::MemoryLifecycleState;
-use codex_hepta_memory::MemoryRevisionDraft;
-use codex_hepta_memory::MemoryVerification;
-use codex_hepta_memory::SourceDraft;
-use codex_hepta_memory::SourceRevisionId;
-use codex_hepta_memory::StableMemoryId;
-use codex_hepta_paths::HeptaAgentLayout;
-use codex_hepta_paths::HeptaFleetRoot;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::fleet::AgentLifecycle;
+use codex_hepta_agent_components::fleet::AgentManifest;
+use codex_hepta_agent_components::fleet::FleetRegistry;
+use codex_hepta_agent_components::fleet::ResourceBudget;
+use codex_hepta_agent_components::fleet::WorkspaceBinding;
+use codex_hepta_agent_components::memory::CognitiveAccess;
+use codex_hepta_agent_components::memory::CognitiveRuntime;
+use codex_hepta_agent_components::memory::CognitiveScope;
+use codex_hepta_agent_components::memory::CognitiveStore;
+use codex_hepta_agent_components::memory::ForgetMemoryDraft;
+use codex_hepta_agent_components::memory::LedgerSourceKind;
+use codex_hepta_agent_components::memory::MemoryDraft;
+use codex_hepta_agent_components::memory::MemoryLifecycleState;
+use codex_hepta_agent_components::memory::MemoryRevisionDraft;
+use codex_hepta_agent_components::memory::MemoryVerification;
+use codex_hepta_agent_components::memory::SourceDraft;
+use codex_hepta_agent_components::memory::SourceRevisionId;
+use codex_hepta_agent_components::memory::StableMemoryId;
+use codex_hepta_agent_components::paths::HeptaAgentLayout;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use tokio::task::JoinHandle;
 use tokio_util::sync::CancellationToken;
@@ -77,7 +77,11 @@ impl CognitiveTestHost {
         agent_id: AgentId,
         model: &str,
         provider_base_url: &str,
+        codex_self_exe: PathBuf,
     ) -> TestResult<Self> {
+        if !codex_self_exe.is_absolute() || !codex_self_exe.is_file() {
+            return Err("test host requires a real absolute Codex executable".into());
+        }
         validate_config_scalar(model, "model")?;
         validate_config_scalar(provider_base_url, "provider base URL")?;
         std::fs::create_dir_all(&root)?;
@@ -116,6 +120,7 @@ impl CognitiveTestHost {
         )?);
         let store = Arc::new(CognitiveStore::open(&identity.layout).await?);
         state.attach_cognitive_store(Arc::clone(&store))?;
+        state.mark_runtime_prerequisites_ready()?;
         registry.compare_and_transition(&agent_id, 1, AgentLifecycle::Running)?;
         state.refresh_generation()?;
 
@@ -133,7 +138,10 @@ impl CognitiveTestHost {
         let control_task = tokio::spawn(control.run());
         let app_server_task = tokio::spawn(run_app_server(
             identity.clone(),
-            Arg0DispatchPaths::default(),
+            Arg0DispatchPaths {
+                codex_self_exe: Some(codex_self_exe),
+                ..Default::default()
+            },
             CognitiveRuntime::Available(Arc::clone(&store)),
             Arc::clone(&state),
             /*production_writer_host*/ None,

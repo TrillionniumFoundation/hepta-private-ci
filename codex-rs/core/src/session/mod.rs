@@ -122,7 +122,6 @@ use codex_protocol::openai_models::ModelPreset;
 use codex_protocol::permissions::FileSystemSandboxPolicy;
 use codex_protocol::permissions::NetworkSandboxPolicy;
 use codex_protocol::protocol::FileChange;
-use codex_protocol::protocol::HasLegacyEvent;
 use codex_protocol::protocol::HistoryPosition;
 use codex_protocol::protocol::InterAgentCommunication;
 use codex_protocol::protocol::ItemCompletedEvent;
@@ -233,6 +232,8 @@ mod rollout_reconstruction;
 #[allow(clippy::module_inception)]
 pub(crate) mod session;
 pub(crate) mod step_context;
+mod terminal_publication;
+pub(crate) use terminal_publication::TerminalEventPublication;
 mod thread_settings;
 pub(crate) mod time_reminder;
 mod token_budget;
@@ -2185,35 +2186,14 @@ impl Session {
                 .await
                 .replace(error.clone());
         }
-        self.services
-            .rollout_thread_trace
-            .record_codex_turn_event(&turn_context.sub_id, &legacy_source);
-        self.services
-            .rollout_thread_trace
-            .record_tool_call_event(turn_context.sub_id.clone(), &legacy_source);
+        self.record_turn_event(turn_context, &legacy_source);
         let event = Event {
             id: turn_context.sub_id.clone(),
             msg,
         };
         self.send_event_raw(event).await;
-        self.maybe_notify_parent_of_terminal_turn(turn_context, &legacy_source)
+        self.finish_event_delivery(turn_context, &legacy_source)
             .await;
-        self.maybe_mirror_event_text_to_realtime(&legacy_source)
-            .await;
-        self.maybe_clear_realtime_handoff_for_event(&legacy_source)
-            .await;
-
-        let show_raw_agent_reasoning = self.show_raw_agent_reasoning();
-        for legacy in legacy_source.as_legacy_events(show_raw_agent_reasoning) {
-            self.services
-                .rollout_thread_trace
-                .record_tool_call_event(turn_context.sub_id.clone(), &legacy);
-            let legacy_event = Event {
-                id: turn_context.sub_id.clone(),
-                msg: legacy,
-            };
-            self.send_event_raw(legacy_event).await;
-        }
     }
 
     /// Forwards terminal turn events from spawned MultiAgentV2 children to their direct parent.
@@ -4045,10 +4025,10 @@ impl Session {
                         "notes",
                         "thread_hint",
                         /*environment_id*/ None,
+                        /*arguments*/ None,
                         Some(serde_json::json!({
                             "threadId": self.thread_id().to_string(),
                         })),
-                        /*meta*/ None,
                         /*requested_timeout*/ None,
                         /*wait_for_server*/ false,
                     )

@@ -2,11 +2,13 @@ use std::future::Future;
 use std::pin::Pin;
 use std::sync::Arc;
 use std::time::Duration;
+use std::time::Instant;
 
 use tokio::time::timeout;
 
 use crate::AutomationAdmission;
 use crate::AutomationError;
+use crate::AutomationLease;
 use crate::AutomationQueueReceipt;
 use crate::AutomationStore;
 use crate::AutomationTick;
@@ -75,6 +77,17 @@ where
     /// non-terminal: the owning runtime must later bind the persisted turn and
     /// terminal observation through the durable occurrence lifecycle.
     pub async fn tick(&self, now_ms: u64) -> Result<AutomationTick, AutomationError> {
+        self.tick_with_clock(|| Ok(now_ms)).await
+    }
+
+    /// Sample the host-selected clock after each preparation boundary and
+    /// before queue admission. The compatibility `tick` keeps its supplied
+    /// time; normal hosts must use this live-clock entry point.
+    pub async fn tick_with_clock(
+        &self,
+        mut clock: impl FnMut() -> Result<u64, AutomationError>,
+    ) -> Result<AutomationTick, AutomationError> {
+        let now_ms = clock()?;
         let Some(lease) = self
             .store
             .claim_due(now_ms, self.generation, self.lease_duration_ms)
@@ -82,24 +95,111 @@ where
         else {
             return Ok(AutomationTick::Idle);
         };
+        let mut last_sample = now_ms;
+        let mut clock = || {
+            let sampled = clock()?;
+            if sampled < last_sample {
+                return Err(AutomationError::Unavailable);
+            }
+            last_sample = sampled;
+            Ok(sampled)
+        };
 
         // Freeze schedule revision + canonical scheduled instant into a stable
         // occurrence identity before any external admission boundary.
-        let occurrence = self.store.materialize_occurrence(&lease, now_ms).await?;
-        // Bind the same occurrence to the existing durable TaskFlow run and
-        // append its step intent/claim before provider contact.
-        let taskflow = self
-            .store
-            .prepare_occurrence_taskflow(&occurrence, &lease, now_ms, self.lease_duration_ms)
-            .await
-            .map_err(|_| AutomationError::Unavailable)?;
+        let preparation_started = Instant::now();
+        let prepared = timeout(self.dispatch_timeout, async {
+            let occurrence = self.store.materialize_occurrence(&lease, clock()?).await?;
+            let prepared_at = clock()?;
+            if prepared_at < now_ms || prepared_at >= lease.lease_expires_at_ms {
+                return Ok(None);
+            }
+            // Local preparation can finish with an unknown commit result when
+            // cancelled. Keep its original lease and every committed row; no
+            // queue request has entered this future. The existing stale-owner
+            // recovery handles missing, queued and claimed original runs.
+            self.store
+                .prepare_occurrence_taskflow(
+                    &occurrence,
+                    &lease,
+                    prepared_at,
+                    self.lease_duration_ms,
+                )
+                .await
+                .map(Some)
+                .map_err(|_| AutomationError::Unavailable)
+        })
+        .await;
+        let taskflow = match prepared {
+            Ok(Ok(Some(prepared))) => prepared,
+            Ok(Ok(None)) | Ok(Err(_)) | Err(_) => {
+                return Ok(AutomationTick::DispatchUncertain {
+                    task_id: lease.task.task_id,
+                    occurrence: lease.occurrence,
+                });
+            }
+        };
+        let Ok(prepared_at) = clock() else {
+            return Ok(AutomationTick::DispatchUncertain {
+                task_id: lease.task.task_id,
+                occurrence: lease.occurrence,
+            });
+        };
 
         // Persist the dispatch intent before crossing the App Server seam. If
         // this process dies after possible admission, recovery retains the same
         // client id and must reconcile instead of blindly creating a duplicate.
-        self.store.record_dispatch_uncertain(&lease, now_ms).await?;
+        if !matches!(
+            timeout(
+                self.dispatch_timeout,
+                self.store.record_dispatch_uncertain(&lease, prepared_at),
+            )
+            .await,
+            Ok(Ok(()))
+        ) || preparation_started.elapsed() >= self.dispatch_timeout
+        {
+            return Ok(retained_preparation(&lease));
+        }
+        let gate = timeout(
+            self.dispatch_timeout,
+            self.store
+                .verify_prepared_admission(&lease, &taskflow, now_ms, &mut clock),
+        )
+        .await;
+        if preparation_started.elapsed() >= self.dispatch_timeout || !matches!(gate, Ok(Ok(true))) {
+            return Ok(AutomationTick::DispatchUncertain {
+                task_id: lease.task.task_id,
+                occurrence: lease.occurrence,
+            });
+        }
+        let Ok(dispatch_at) = clock() else {
+            return Ok(retained_preparation(&lease));
+        };
+        let dispatch_window_ms = u64::try_from(self.dispatch_timeout.as_millis())
+            .map_err(|_| AutomationError::Invalid)?;
+        if dispatch_at < prepared_at
+            || dispatch_at
+                .checked_add(dispatch_window_ms)
+                .is_none_or(|until| until >= lease.lease_expires_at_ms)
+        {
+            return Ok(AutomationTick::DispatchUncertain {
+                task_id: lease.task.task_id,
+                occurrence: lease.occurrence,
+            });
+        }
         let admission = lease.admission();
         let result = timeout(self.dispatch_timeout, self.queue.enqueue(admission)).await;
+        // A missing clock or local acknowledgement is an original-ID recovery
+        // obligation after possible dispatch, never grounds for redispatch.
+        let Ok(now_ms) = clock() else {
+            return Ok(retained_preparation(&lease));
+        };
+        if now_ms < dispatch_at {
+            return Ok(AutomationTick::DispatchUncertain {
+                task_id: lease.task.task_id,
+                occurrence: lease.occurrence,
+            });
+        }
         let receipt = match result {
             Ok(Ok(receipt)) => receipt,
             Ok(Err(AutomationError::AccessDenied)) => {
@@ -158,3 +258,14 @@ where
         })
     }
 }
+
+fn retained_preparation(lease: &AutomationLease) -> AutomationTick {
+    AutomationTick::DispatchUncertain {
+        task_id: lease.task.task_id,
+        occurrence: lease.occurrence,
+    }
+}
+
+#[cfg(test)]
+#[path = "scheduler_preparation_tests.rs"]
+mod tests;

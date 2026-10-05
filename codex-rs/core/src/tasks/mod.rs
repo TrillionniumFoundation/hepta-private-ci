@@ -34,6 +34,7 @@ use crate::codex_thread::BackgroundTerminalInfo;
 use crate::config::Config;
 use crate::context::ContextualUserFragment;
 use crate::context_manager::ContextManager;
+use crate::session::TerminalEventPublication;
 use crate::session::TurnInput;
 use crate::session::session::RecoveryCandidate;
 use crate::session::session::Session;
@@ -130,6 +131,8 @@ struct RecoverySeed {
 
 #[derive(Default)]
 struct TaskAbortOutcome {
+    terminal_publication: Option<TerminalEventPublication>,
+    deferred_idle_cause: Option<ThreadIdleCause>,
     task_quiesced: bool,
     terminal_persistence_generation: Option<u64>,
     recovery_seed: Option<RecoverySeed>,
@@ -148,6 +151,7 @@ pub(crate) enum TaskAbortHandoffPhase {
     InputClearing,
     MarkerReleasing,
     RecoveryPublishing,
+    TerminalNotifying,
     PendingWorkStarting,
     Complete,
 }
@@ -191,6 +195,7 @@ pub(crate) enum TaskFinishHandoffPhase {
     LifecyclePublishing,
     MarkerReleasing,
     RecoveryPublishing,
+    TerminalNotifying,
     PendingWorkStarting,
     Complete,
 }
@@ -962,6 +967,33 @@ impl Session {
         completion.complete();
     }
 
+    /// Release admission only for the exact durable terminal owner. Keep its
+    /// completion in the original registry until idle callbacks finish so
+    /// shutdown cannot close persistence underneath those callbacks.
+    fn release_task_terminalization_admission(
+        &self,
+        identity: &Arc<()>,
+        completion: &Arc<StartTransitionCompletion>,
+    ) -> bool {
+        let pending = self
+            .pending_task_terminalization_completions
+            .lock()
+            .unwrap_or_else(|error| {
+                panic!("task terminalization completion registry mutex poisoned: {error:?}")
+            });
+        if !pending
+            .iter()
+            .any(|(current_identity, current_completion, _, _, _, _)| {
+                Arc::ptr_eq(current_identity, identity)
+                    && Arc::ptr_eq(current_completion, completion)
+            })
+        {
+            return false;
+        }
+        completion.release_admission();
+        true
+    }
+
     fn pending_task_terminalization_completions_except(
         &self,
         excluded_identity: Option<&Arc<()>>,
@@ -1049,6 +1081,7 @@ impl Session {
         }
     }
 
+    #[cfg(test)]
     pub(crate) fn has_pending_start_transition(&self) -> bool {
         self.has_pending_start_transition_except(/*ignored_identity*/ None)
     }
@@ -1068,11 +1101,10 @@ impl Session {
             })
     }
 
-    /// Returns true while any task finish/abort/suspend owner still has
-    /// post-terminal work outstanding.  The marker is intentionally kept in
-    /// an independent registry after the active slot CAS so idle observers
-    /// cannot admit history mutation or a replacement in the clear→publish
-    /// window.
+    /// Returns true until each task finish/abort/suspend owner has published
+    /// its terminal persistence and recovery state. The independent registry
+    /// also retains completed publication owners through idle callbacks for
+    /// shutdown, without blocking the successor that an idle callback starts.
     pub(crate) fn has_pending_task_terminalization(&self) -> bool {
         self.has_pending_task_terminalization_except(/*ignored_identity*/ None)
     }
@@ -1087,8 +1119,9 @@ impl Session {
                 panic!("task terminalization completion registry mutex poisoned: {error:?}")
             })
             .iter()
-            .any(|(identity, _, _, _, _, _)| {
-                ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
+            .any(|(identity, completion, _, _, _, _)| {
+                !completion.admission_released()
+                    && ignored_identity.is_none_or(|ignored| !Arc::ptr_eq(identity, ignored))
             })
     }
 
@@ -1104,7 +1137,13 @@ impl Session {
         &self,
         ignored_terminalization: Option<&Arc<()>>,
     ) -> bool {
-        self.has_pending_start_transition()
+        self.pending_start_transition_completions
+            .lock()
+            .unwrap_or_else(|error| {
+                panic!("start transition completion registry mutex poisoned: {error:?}")
+            })
+            .iter()
+            .any(|(_, completion, _)| !completion.admission_released())
             || self.has_pending_task_terminalization_except(ignored_terminalization)
     }
 
@@ -1697,28 +1736,30 @@ impl Session {
         })
     }
 
-    /// Emits one terminal event exactly once and proves that both its append
+    /// Appends one terminal event and returns its single delivery witness.
+    /// Proves that both its append
     /// and the following durability barrier completed without any swallowed
     /// persistence failure. The returned generation is later matched against
     /// the exact generation bound into the task's durable Ready authority.
-    async fn send_terminal_event_and_flush(
+    async fn persist_terminal_event_and_flush(
         &self,
         turn_context: &TurnContext,
         event: EventMsg,
-    ) -> Option<u64> {
+    ) -> (TerminalEventPublication, Option<u64>) {
         let before = self.rollout_persistence_failure_generation();
-        self.send_event(turn_context, event).await;
+        let publication = self.persist_terminal_event(turn_context, event).await;
         let after_append = self.rollout_persistence_failure_generation();
         let flush_succeeded = match self.flush_rollout().await {
             Ok(()) => true,
             Err(err) => {
-                warn!("failed to flush rollout after emitting terminal turn event: {err}");
+                warn!("failed to flush rollout after appending terminal turn event: {err}");
                 false
             }
         };
         let after_flush = self.rollout_persistence_failure_generation();
-        (flush_succeeded && before == after_append && after_append == after_flush)
-            .then_some(after_flush)
+        let generation = (flush_succeeded && before == after_append && after_append == after_flush)
+            .then_some(after_flush);
+        (publication, generation)
     }
 
     /// Revokes any task-owned Ready marker before controlled detach. Only an
@@ -3456,8 +3497,8 @@ impl Session {
             })
         };
         handoff.phase = TaskFinishHandoffPhase::PersistencePublishing;
-        let terminal_persistence_generation = self
-            .send_terminal_event_and_flush(turn_context.as_ref(), event)
+        let (terminal_publication, terminal_persistence_generation) = self
+            .persist_terminal_event_and_flush(turn_context.as_ref(), event)
             .await;
         self.services
             .guardian_rejection_circuit_breaker
@@ -3491,18 +3532,32 @@ impl Session {
         .await;
         handoff.phase = TaskFinishHandoffPhase::PendingWorkStarting;
         if let Some(completion) = cleared_completion.as_ref() {
+            // The task is detached and its terminal/recovery state is now
+            // published. Release its execution guards before a lifecycle
+            // contributor admits a successor; retain the completion witness.
+            handoff.task.take();
+            if !self.release_task_terminalization_admission(
+                &handoff.terminalization_identity,
+                completion,
+            ) {
+                handoff.failed_closed = true;
+                return;
+            }
+            handoff.phase = TaskFinishHandoffPhase::TerminalNotifying;
+            self.deliver_terminal_event(turn_context.as_ref(), terminal_publication)
+                .await;
+            handoff.phase = TaskFinishHandoffPhase::PendingWorkStarting;
+            self.maybe_start_turn_for_pending_work_after_terminalization(Arc::clone(
+                &handoff.terminalization_identity,
+            ))
+            .await;
             self.emit_thread_idle_lifecycle_if_idle_for_terminalization(
                 idle_cause,
                 Some(&handoff.terminalization_identity),
             )
             .await;
-            self.maybe_start_turn_for_pending_work_after_terminalization(Arc::clone(
-                &handoff.terminalization_identity,
-            ))
-            .await;
             self.finish_task_terminalization(&handoff.terminalization_identity, completion);
             handoff.phase = TaskFinishHandoffPhase::Complete;
-            handoff.task.take();
         }
     }
 
@@ -3656,6 +3711,7 @@ impl Session {
                 handoff.recovery_authority.clone(),
             )
             .await;
+        let mut terminal_publication = outcome.terminal_publication;
         handoff.task_quiesced = outcome.task_quiesced;
         handoff.terminal_persistence_generation = outcome.terminal_persistence_generation;
         handoff.recovery_seed = outcome.recovery_seed;
@@ -3703,6 +3759,23 @@ impl Session {
         .await;
 
         handoff.phase = TaskAbortHandoffPhase::PendingWorkStarting;
+        if handoff.task_quiesced
+            && !self.release_task_terminalization_admission(
+                &handoff.terminalization_identity,
+                &completion,
+            )
+        {
+            handoff.failed_closed = true;
+            return AbortTurnOutcome::Terminalizing;
+        }
+        if handoff.task_quiesced
+            && let Some(publication) = terminal_publication.take()
+        {
+            handoff.phase = TaskAbortHandoffPhase::TerminalNotifying;
+            self.deliver_terminal_event(turn_context.as_ref(), publication)
+                .await;
+        }
+        handoff.phase = TaskAbortHandoffPhase::PendingWorkStarting;
         if handoff.reason == TurnAbortReason::Interrupted {
             self.maybe_start_turn_for_pending_work_after_terminalization(Arc::clone(
                 &handoff.terminalization_identity,
@@ -3718,6 +3791,20 @@ impl Session {
                 Some(&handoff.terminalization_identity),
             )
             .await;
+        }
+        // Preserve the original nonquiescent fence until its exact final
+        // admission retirement; keep shutdown waiting through notification.
+        if let Some(publication) = terminal_publication {
+            if !self.release_task_terminalization_admission(
+                &handoff.terminalization_identity,
+                &completion,
+            ) {
+                handoff.failed_closed = true;
+                return AbortTurnOutcome::Terminalizing;
+            }
+            handoff.phase = TaskAbortHandoffPhase::TerminalNotifying;
+            self.deliver_terminal_event(turn_context.as_ref(), publication)
+                .await;
         }
         self.finish_task_terminalization(&handoff.terminalization_identity, &completion);
         handoff.phase = TaskAbortHandoffPhase::Complete;
@@ -3886,7 +3973,7 @@ impl Session {
         transition_identity: Arc<()>,
         mut recovery_history_restore: Option<ContextManager>,
         reason: TurnAbortReason,
-    ) -> bool {
+    ) -> Option<TaskAbortOutcome> {
         if !self
             .restore_recovery_history_if_current(
                 Some(&turn_state),
@@ -3895,7 +3982,7 @@ impl Session {
             )
             .await
         {
-            return false;
+            return None;
         }
         let done = Arc::new(Notify::new());
         // `handle_task_abort` waits for the task's completion notification;
@@ -3915,7 +4002,7 @@ impl Session {
             _diagnostics_guard: ACTIVE_TURNS.track(),
             _timer: None,
         };
-        let abort_outcome = self
+        let mut abort_outcome = self
             .handle_task_abort(
                 &mut placeholder,
                 reason.clone(),
@@ -3939,22 +4026,16 @@ impl Session {
         else {
             // A stale start future must not publish recovery or wake another
             // turn after its reservation has been replaced or fenced.
-            return false;
+            return None;
         };
-        if let Some(cause) = deferred_idle_cause {
-            self.emit_thread_idle_lifecycle_if_idle_after_start_transition(
-                cause,
-                &transition_identity,
-            )
-            .await;
-        }
+        abort_outcome.deferred_idle_cause = deferred_idle_cause;
         self.publish_recovery_seed_after_terminal(
-            abort_outcome.recovery_seed,
+            abort_outcome.recovery_seed.take(),
             abort_outcome.task_quiesced,
             abort_outcome.terminal_persistence_generation,
         )
         .await;
-        true
+        Some(abort_outcome)
     }
 
     /// Claims an exact host-owned transition for detached cleanup after its
@@ -4022,21 +4103,46 @@ impl Session {
         let terminalized = self
             .abort_unstarted_turn(
                 task,
-                turn_context,
+                Arc::clone(&turn_context),
                 Arc::clone(&turn_state),
                 Arc::clone(&transition_identity),
                 recovery_history_restore,
                 reason.clone(),
             )
             .await;
-        if terminalized {
-            // Release the exact phase fence before allowing a pending mailbox
-            // wakeup to reserve a replacement turn.  Shutdown admission is
-            // already closed, so teardown will not self-wake here.
-            self.finish_start_transition(&transition_identity, &completion);
+        if let Some(outcome) = terminalized {
+            // The exact transition has published its durable terminal and
+            // recovery state. Release only admission; shutdown still owns
+            // this registry entry through notification and idle callbacks.
+            {
+                let pending = self
+                    .pending_start_transition_completions
+                    .lock()
+                    .unwrap_or_else(|error| {
+                        panic!("start transition completion registry mutex poisoned: {error:?}")
+                    });
+                if !pending.iter().any(|(identity, current, _)| {
+                    Arc::ptr_eq(identity, &transition_identity) && Arc::ptr_eq(current, &completion)
+                }) {
+                    return;
+                }
+                completion.release_admission();
+            }
+            if let Some(publication) = outcome.terminal_publication {
+                self.deliver_terminal_event(turn_context.as_ref(), publication)
+                    .await;
+            }
             if reason == TurnAbortReason::Interrupted && !self.shutdown_started() {
                 self.maybe_start_turn_for_pending_work().await;
             }
+            if let Some(cause) = outcome.deferred_idle_cause {
+                self.emit_thread_idle_lifecycle_if_idle_after_start_transition(
+                    cause,
+                    &transition_identity,
+                )
+                .await;
+            }
+            self.finish_start_transition(&transition_identity, &completion);
         } else {
             self.complete_start_transition_if_not_current(
                 &completion,
@@ -4321,8 +4427,8 @@ impl Session {
             completed_at,
             duration_ms,
         });
-        let terminal_persistence_generation = self
-            .send_terminal_event_and_flush(task.turn_context.as_ref(), event)
+        let (terminal_publication, terminal_persistence_generation) = self
+            .persist_terminal_event_and_flush(task.turn_context.as_ref(), event)
             .await;
         self.services
             .guardian_rejection_circuit_breaker
@@ -4330,6 +4436,8 @@ impl Session {
             .await
             .clear_turn(&task.turn_context.sub_id);
         TaskAbortOutcome {
+            terminal_publication: Some(terminal_publication),
+            deferred_idle_cause: None,
             task_quiesced,
             terminal_persistence_generation,
             recovery_seed,

@@ -2,6 +2,7 @@ use std::fmt;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
+use codex_hepta_fleet::AgentManifest;
 use codex_hepta_fleet::ReleaseId;
 use codex_hepta_memory::H7SignedArtifactEnvelope;
 use serde::Deserialize;
@@ -10,15 +11,18 @@ use serde::Serialize;
 use serde::Serializer;
 use serde::de::Error as _;
 
+use crate::DurableMutationStatusV1;
 use crate::DurableReleaseTransaction;
 use crate::H7H89ProductionGrant;
 use crate::ProductionMutationReceipt;
 use crate::ProductionMutationState;
 use crate::ProductionRecoveryDecision;
 
-pub const SUPERVISORD_CONTROL_SCHEMA_VERSION: u32 = 2;
-pub const MAX_SUPERVISORD_CONTROL_FRAME_BYTES: u64 = 65_536;
+pub use codex_hepta_agent_protocol::MAX_SUPERVISORD_CONTROL_FRAME_BYTES;
+pub use codex_hepta_agent_protocol::SUPERVISORD_CONTROL_SCHEMA_VERSION;
 pub const MAX_SUPERVISORD_ROSTER: u16 = 256;
+pub(crate) const OBSERVATION_UNAVAILABLE_MESSAGE: &str =
+    "supervisord observation is unavailable or expired; refresh before retry";
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(deny_unknown_fields)]
@@ -46,9 +50,26 @@ impl SupervisordRequest {
         }
         match &self.method {
             SupervisordMethod::Health
+            | SupervisordMethod::RegisterAgent { .. }
+            | SupervisordMethod::RetiredAgentStatus { .. }
             | SupervisordMethod::Snapshot { .. }
+            | SupervisordMethod::AgentDiagnostics { .. }
             | SupervisordMethod::ReleaseSelection { .. }
             | SupervisordMethod::ProductionMutationStatus { .. } => Ok(()),
+            SupervisordMethod::OrdinaryMutationStatus {
+                mutation_request_id,
+                ..
+            } => {
+                if *mutation_request_id == 0 {
+                    Err(SupervisordRequestValidationError::InvalidRequest)
+                } else {
+                    Ok(())
+                }
+            }
+            SupervisordMethod::RuntimeModuleSelection { module_id } => {
+                codex_hepta_agent_protocol::validate_runtime_module_id(module_id)
+                    .map_err(|_| SupervisordRequestValidationError::InvalidRequest)
+            }
             SupervisordMethod::Roster { limit } => {
                 if (1..=MAX_SUPERVISORD_ROSTER).contains(limit) {
                     Ok(())
@@ -57,6 +78,8 @@ impl SupervisordRequest {
                 }
             }
             SupervisordMethod::Start { fence, .. }
+            | SupervisordMethod::AllowInstalledRelease { fence, .. }
+            | SupervisordMethod::RetireAgent { fence }
             | SupervisordMethod::Drain { fence }
             | SupervisordMethod::Stop { fence }
             | SupervisordMethod::Kill { fence }
@@ -66,6 +89,16 @@ impl SupervisordRequest {
             | SupervisordMethod::SignedUpgrade { fence, .. }
             | SupervisordMethod::SignedRollback { fence, .. }
             | SupervisordMethod::ResolveProductionRecovery { fence, .. } => fence.validate(),
+            SupervisordMethod::ReconcileOrdinaryMutation {
+                fence,
+                mutation_request_id,
+            } => {
+                if *mutation_request_id == 0 {
+                    Err(SupervisordRequestValidationError::InvalidRequest)
+                } else {
+                    fence.validate()
+                }
+            }
         }
     }
 }
@@ -84,10 +117,34 @@ pub enum SupervisordRequestValidationError {
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SupervisordMethod {
     Health,
+    /// Owner-local registration; executable paths and credentials are absent.
+    RegisterAgent {
+        manifest: AgentManifest,
+    },
+    /// Admission only for an already installed, immutable catalog release.
+    AllowInstalledRelease {
+        fence: SupervisordControlFence,
+        release_id: ReleaseId,
+    },
+    /// Preserve complete private history after exact ownership is resolved.
+    RetireAgent {
+        fence: SupervisordControlFence,
+    },
+    RetiredAgentStatus {
+        agent_id: AgentId,
+    },
+    /// Read the current durable serving selection; this cannot activate modules.
+    RuntimeModuleSelection {
+        module_id: String,
+    },
     Roster {
         limit: u16,
     },
     Snapshot {
+        agent_id: AgentId,
+    },
+    /// Bounded owner-local process output and events, with no mutation authority.
+    AgentDiagnostics {
         agent_id: AgentId,
     },
     /// Authoritative durable projection of the current release transaction.
@@ -97,6 +154,16 @@ pub enum SupervisordMethod {
     /// Query the last signed production mutation and its durable witness digests.
     ProductionMutationStatus {
         agent_id: AgentId,
+    },
+    /// Inspect an ordinary mutation without replaying its process effect.
+    OrdinaryMutationStatus {
+        agent_id: AgentId,
+        mutation_request_id: u64,
+    },
+    /// Resolve the durable outcome under the current lifecycle fence.
+    ReconcileOrdinaryMutation {
+        fence: SupervisordControlFence,
+        mutation_request_id: u64,
     },
     Start {
         fence: SupervisordControlFence,
@@ -330,16 +397,40 @@ pub struct SupervisordResponse {
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
 #[serde(tag = "type", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SupervisordPayload {
+    AgentRegistered {
+        agent: SupervisordAgentStatus,
+    },
+    InstalledReleaseAllowed {
+        agent: SupervisordAgentStatus,
+    },
+    AgentRetired {
+        agent_id: AgentId,
+        archived_root: std::path::PathBuf,
+    },
+    RetiredAgentStatus {
+        agent_id: AgentId,
+        archived_root: Option<std::path::PathBuf>,
+    },
+    RuntimeModuleSelection {
+        selection: codex_hepta_agent_protocol::RuntimeModuleSelectionV1,
+    },
     Health(SupervisordHealth),
     Roster {
         agents: Vec<SupervisordAgentStatus>,
     },
     Agent(SupervisordAgentStatus),
+    AgentDiagnostics {
+        agent_id: AgentId,
+        entries: Vec<String>,
+    },
     ReleaseSelection {
         selection: Option<DurableReleaseTransaction>,
     },
     ProductionMutationStatus {
         state: Option<ProductionMutationState>,
+    },
+    OrdinaryMutationStatus {
+        status: Option<DurableMutationStatusV1>,
     },
     MutationAccepted {
         operation: SupervisordMutation,
@@ -664,6 +755,38 @@ mod tests {
         .expect("serialize upgrade");
         bad_release["method"]["release_id"] = json!("../../release");
         assert!(serde_json::from_value::<SupervisordRequest>(bad_release).is_err());
+    }
+
+    #[test]
+    fn ordinary_mutation_status_and_reconcile_requests_are_validated() {
+        let agent_id = AgentId::parse(AGENT_ID).expect("agent");
+        let status = SupervisordRequest::new(
+            51,
+            SupervisordMethod::OrdinaryMutationStatus {
+                agent_id: agent_id.clone(),
+                mutation_request_id: 41,
+            },
+        );
+        assert_eq!(status.validate(), Ok(()));
+        let reconcile = SupervisordRequest::new(
+            52,
+            SupervisordMethod::ReconcileOrdinaryMutation {
+                fence: fence(),
+                mutation_request_id: 41,
+            },
+        );
+        assert_eq!(reconcile.validate(), Ok(()));
+        let invalid = SupervisordRequest::new(
+            53,
+            SupervisordMethod::OrdinaryMutationStatus {
+                agent_id,
+                mutation_request_id: 0,
+            },
+        );
+        assert_eq!(
+            invalid.validate(),
+            Err(SupervisordRequestValidationError::InvalidRequest)
+        );
     }
 
     fn status() -> SupervisordAgentStatus {

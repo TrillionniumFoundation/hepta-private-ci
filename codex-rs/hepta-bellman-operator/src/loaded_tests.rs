@@ -1,7 +1,8 @@
+use super::super::fit_tabular_operator_strict_v2;
 use super::*;
 use crate::TabularOperatorPlanV1;
 use crate::TabularOperatorSampleV1;
-use crate::fit_tabular_operator_strict_v2;
+use std::collections::BTreeSet;
 use std::fs::OpenOptions;
 use std::fs::{self};
 use std::io::Write;
@@ -89,12 +90,23 @@ fn independent_pin_and_all_truncations_are_checked() {
         matching.payload_digest = Digest32::of_bytes(truncated);
         assert!(LoadedTabularOperatorV1::from_pinned_payload(truncated, &matching).is_err());
     }
-    let mut stale = original;
-    stale.dataset_digest = hash("other-dataset");
-    assert_eq!(
-        LoadedTabularOperatorV1::from_pinned_payload(&bytes, &stale),
-        Err(TabularPayloadError::Binding)
-    );
+    for operation in 0..7 {
+        let mut stale = original.clone();
+        match operation {
+            0 => stale.artifact_digest = hash("other-artifact"),
+            1 => stale.objective_digest = hash("other-objective"),
+            2 => stale.dataset_digest = hash("other-dataset"),
+            3 => stale.sensor_core_digest = hash("other-core"),
+            4 => stale.training_profile_digest = hash("other-profile"),
+            5 => stale.generation = Generation::new(3).expect("other generation"),
+            6 => stale.artifact_digest = Digest32::ZERO,
+            _ => unreachable!(),
+        }
+        assert_eq!(
+            LoadedTabularOperatorV1::from_pinned_payload(&bytes, &stale),
+            Err(TabularPayloadError::Binding)
+        );
+    }
     let mut trailing = bytes;
     trailing.push(0);
     assert!(
@@ -123,6 +135,23 @@ fn invalid_statistics_grid_and_authority_cannot_be_encoded() {
         encode_tabular_payload_v1(&empty),
         Err(TabularPayloadError::Bounds)
     );
+}
+
+#[test]
+fn host_pinning_cannot_admit_impossible_sample_statistics() {
+    let artifact = fitted(2, 7);
+    let bytes = encode_tabular_payload_v1(&artifact).expect("encode");
+    // This one-cell fixture ends with count, mean, min, max, evidence digest.
+    let statistics = bytes.len() - (4 + 3 * 8 + 32);
+    for (count, mean) in [(1_u32, 7_i64), (2, 5)] {
+        let mut malformed = bytes.clone();
+        malformed[statistics..statistics + 4].copy_from_slice(&count.to_be_bytes());
+        malformed[statistics + 4..statistics + 12].copy_from_slice(&mean.to_be_bytes());
+        assert_eq!(
+            LoadedTabularOperatorV1::from_pinned_payload(&malformed, &pin(&artifact, &malformed)),
+            Err(TabularPayloadError::Grid)
+        );
+    }
 }
 
 #[test]
@@ -197,7 +226,7 @@ fn distinct_process_load_changes_prediction_and_rolls_back_without_retraining() 
         let output = Command::new(std::env::current_exe().expect("executable"))
             .args([
                 "--exact",
-                "loaded::tests::loaded_process_predicts_only_the_host_pinned_candidate",
+                "legacy::loaded::tests::loaded_process_predicts_only_the_host_pinned_candidate",
                 "--nocapture",
             ])
             .env("HEPTA_TEST_TABULAR_PAYLOAD", path)

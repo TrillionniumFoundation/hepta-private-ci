@@ -8,13 +8,14 @@ publish = false
 [lib]
 name = "codex_hepta_intelligence_eval"
 path = "src/lib.rs"
-doctest = false
+doctest = true
 
 [features]
 default = []
 # Explicit compatibility escape hatch for trusted in-process fixtures only.
 # Production and qualification consumers must use signed admission APIs.
 trusted-inprocess-eval = []
+fixed-eval-host = ["dep:ed25519-dalek", "dep:serde", "dep:serde_json", "dep:rustix", "codex-hepta-learning-ledger/review-host", "dep:codex-hepta-neuron", "dep:codex-hepta-learning-artifacts", "dep:codex-hepta-plasticity"]
 
 [[test]]
 name = "operator_claim"
@@ -27,7 +28,34 @@ workspace = true
 [dependencies]
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
 codex-hepta-types = { path = "../hepta-types" }
+codex-hepta-plasticity = { path = "../hepta-plasticity", optional = true }
+codex-hepta-neuron = { path = "../hepta-neuron", optional = true }
+codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts", optional = true }
+
+ed25519-dalek = { workspace = true, optional = true }
+serde = { workspace = true, features = ["derive"], optional = true }
+serde_json = { workspace = true, optional = true }
+rustix = { workspace = true, features = ["net", "fs"], optional = true }
 
 [dev-dependencies]
+codex-utils-cargo-bin = { workspace = true }
 ed25519-dalek = { workspace = true }
 pretty_assertions = { workspace = true }
+
+[[bin]]
+name = "hepta-fixed-calibration-evaluator"
+path = "src/bin/hepta-fixed-calibration-evaluator.rs"
+required-features = ["fixed-eval-host"]
+test = false
+
+[[bin]]
+name = "hepta-fixed-holdout-custody"
+path = "src/bin/hepta-fixed-holdout-custody.rs"
+required-features = ["fixed-eval-host"]
+test = false
+
+[[bin]]
+name = "hepta-fixed-product-evaluation"
+path = "src/bin/hepta-fixed-product-evaluation.rs"
+required-features = ["fixed-eval-host"]
+test = false

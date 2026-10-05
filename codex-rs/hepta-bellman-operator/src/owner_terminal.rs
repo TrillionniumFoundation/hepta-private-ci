@@ -9,21 +9,24 @@ use std::collections::BTreeMap;
 use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
+use std::time::Instant;
 
 use codex_hepta_learning_ledger::AuthenticatedOutcomeTerminality;
 use codex_hepta_learning_ledger::DatasetSnapshotReceiptV3;
+use codex_hepta_learning_ledger::LearningTrustDistributionError;
 use codex_hepta_learning_ledger::LedgerEvent;
 use codex_hepta_learning_ledger::LedgerWriter;
 use codex_hepta_learning_ledger::ProductionLedgerError;
+use codex_hepta_learning_ledger::SignedEvidenceError;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 
+use super::fit_tabular_operator_strict_v2;
 use crate::StrictLearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
 use crate::TabularOperatorSampleV1;
-use crate::fit_tabular_operator_strict_v2;
 
 const MAX_SOURCE_RECORDS: usize = 4096;
 
@@ -44,6 +47,7 @@ pub struct TerminalCellProfileV1 {
 pub struct FrozenTerminalCellV1 {
     plan: TabularOperatorPlanV1,
     dataset: DatasetSnapshotReceiptV3,
+    frozen_at: u64,
 }
 
 impl FrozenTerminalCellV1 {
@@ -53,11 +57,19 @@ impl FrozenTerminalCellV1 {
     pub fn sample_count(&self) -> usize {
         self.plan.samples.len()
     }
+
+    pub(crate) fn plan(&self) -> &TabularOperatorPlanV1 {
+        &self.plan
+    }
 }
 
 #[derive(Debug)]
 pub enum TerminalCellError {
     Ledger(ProductionLedgerError),
+    TrustDistribution(LearningTrustDistributionError),
+    SignedEvidence(SignedEvidenceError),
+    ClockRegression,
+    TimeOverflow,
     Unsupported(&'static str),
     Fit(StrictLearnedOperatorError),
 }
@@ -66,10 +78,55 @@ impl fmt::Display for TerminalCellError {
         write!(f, "{self:?}")
     }
 }
-impl Error for TerminalCellError {}
+impl Error for TerminalCellError {
+    fn source(&self) -> Option<&(dyn Error + 'static)> {
+        match self {
+            Self::Ledger(error) => Some(error),
+            Self::TrustDistribution(error) => Some(error),
+            Self::SignedEvidence(error) => Some(error),
+            Self::Fit(error) => Some(error),
+            Self::Unsupported(_) | Self::ClockRegression | Self::TimeOverflow => None,
+        }
+    }
+}
+
+impl crate::ClassifyOperatorAdmissionFailure for TerminalCellError {
+    fn disposition(&self) -> crate::OperatorFailureDispositionV1 {
+        use crate::OperatorFailureScopeV1 as Scope;
+        use crate::OperatorRecoveryActionV1 as Action;
+        match self {
+            Self::Ledger(_)
+            | Self::TrustDistribution(_)
+            | Self::SignedEvidence(_)
+            | Self::ClockRegression
+            | Self::TimeOverflow => crate::OperatorFailureDispositionV1 {
+                scope: Scope::Consumer,
+                action: Action::StopConsumer,
+            },
+            Self::Unsupported(_) => crate::OperatorFailureDispositionV1 {
+                scope: Scope::Request,
+                action: Action::CorrectRequest,
+            },
+            Self::Fit(_) => crate::OperatorFailureDispositionV1 {
+                scope: Scope::Candidate,
+                action: Action::RejectCandidate,
+            },
+        }
+    }
+}
 impl From<ProductionLedgerError> for TerminalCellError {
     fn from(value: ProductionLedgerError) -> Self {
         Self::Ledger(value)
+    }
+}
+impl From<LearningTrustDistributionError> for TerminalCellError {
+    fn from(value: LearningTrustDistributionError) -> Self {
+        Self::TrustDistribution(value)
+    }
+}
+impl From<SignedEvidenceError> for TerminalCellError {
+    fn from(value: SignedEvidenceError) -> Self {
+        Self::SignedEvidence(value)
     }
 }
 
@@ -79,7 +136,9 @@ pub fn freeze_terminal_cell_from_owner_v1(
     mut profile: TerminalCellProfileV1,
     now: u64,
 ) -> Result<FrozenTerminalCellV1, TerminalCellError> {
-    owner.revalidate_dataset_snapshot(dataset, now)?;
+    owner.revalidate_trust_at(now)?;
+    // Each supported episode needs a decision and an outcome. Check this
+    // necessary support budget before owner materialization or sorting.
     if dataset.snapshot.objective_digest != profile.objective_digest
         || profile.objective_digest.is_zero()
         || profile.run_snapshot_digest.is_zero()
@@ -89,9 +148,16 @@ pub fn freeze_terminal_cell_from_owner_v1(
         || profile.action_ids.is_empty()
         || profile.action_ids.len() > 128
         || dataset.snapshot.source_record_digests.len() > MAX_SOURCE_RECORDS
+        || profile
+            .action_ids
+            .len()
+            .checked_mul(profile.minimum_samples_per_action)
+            .and_then(|samples| samples.checked_mul(2))
+            .is_none_or(|records| records > dataset.snapshot.source_record_digests.len())
     {
         return Err(TerminalCellError::Unsupported("profile/dataset bounds"));
     }
+    owner.revalidate_dataset_snapshot(dataset, now)?;
     profile.action_ids.sort();
     if profile.action_ids.windows(2).any(|pair| pair[0] == pair[1]) {
         return Err(TerminalCellError::Unsupported("duplicate action"));
@@ -133,10 +199,12 @@ pub fn freeze_terminal_cell_from_owner_v1(
                 if value.terminality != AuthenticatedOutcomeTerminality::Terminal
                     || value.value.is_none()
                     || value.unit_profile_digest != profile.unit_profile_digest
-                    || value.finalized_at.is_none()
+                    || value.finalized_at.is_none_or(|finalized| finalized > now)
+                    || value.observed_at.is_none_or(|observed| observed > now)
+                    || value.latest_observable_at > now
                 {
                     return Err(TerminalCellError::Unsupported(
-                        "nonterminal or different-unit target",
+                        "nonterminal, future or different-unit target",
                     ));
                 }
                 if outcomes
@@ -199,6 +267,7 @@ pub fn freeze_terminal_cell_from_owner_v1(
     Ok(FrozenTerminalCellV1 {
         plan,
         dataset: dataset.clone(),
+        frozen_at: now,
     })
 }
 
@@ -207,8 +276,51 @@ pub fn fit_terminal_cell_from_owner_v1(
     frozen: FrozenTerminalCellV1,
     now: u64,
 ) -> Result<TabularOperatorArtifactV1, TerminalCellError> {
-    // Correction, withdrawal or a changed witness between freeze and fitting
+    let started = Instant::now();
+    fit_terminal_cell_at(owner, &frozen, now, || {
+        terminal_effective_now(now, &started)
+    })
+    .map(|(artifact, _)| artifact)
+}
+
+pub(super) fn terminal_effective_now(
+    observed_at: u64,
+    started: &Instant,
+) -> Result<u64, TerminalCellError> {
+    let elapsed = u64::try_from(started.elapsed().as_micros())
+        .map_err(|_| TerminalCellError::TimeOverflow)?;
+    observed_at
+        .checked_add(elapsed)
+        .ok_or(TerminalCellError::TimeOverflow)
+}
+
+pub(super) fn fit_terminal_cell_at(
+    owner: &LedgerWriter,
+    frozen: &FrozenTerminalCellV1,
+    now: u64,
+    mut effective_now: impl FnMut() -> Result<u64, TerminalCellError>,
+) -> Result<(TabularOperatorArtifactV1, u64), TerminalCellError> {
+    owner.revalidate_trust_at(now)?;
+    if now < frozen.frozen_at {
+        return Err(TerminalCellError::Unsupported(
+            "fit predates dataset freeze",
+        ));
+    }
+    // Correction or withdrawal between freeze and fitting
     // rejects the candidate rather than quietly training on a stale dataset.
     owner.revalidate_dataset_snapshot(&frozen.dataset, now)?;
-    fit_tabular_operator_strict_v2(frozen.plan).map_err(TerminalCellError::Fit)
+    let artifact =
+        fit_tabular_operator_strict_v2(frozen.plan.clone()).map_err(TerminalCellError::Fit)?;
+    let finished_at = effective_now()?;
+    if finished_at < now {
+        return Err(TerminalCellError::ClockRegression);
+    }
+    owner.revalidate_trust_at(finished_at)?;
+    owner.revalidate_dataset_snapshot(&frozen.dataset, finished_at)?;
+    let final_at = effective_now()?;
+    if final_at < finished_at {
+        return Err(TerminalCellError::ClockRegression);
+    }
+    owner.revalidate_trust_at(final_at)?;
+    Ok((artifact, final_at))
 }

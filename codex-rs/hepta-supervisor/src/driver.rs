@@ -82,12 +82,22 @@ pub struct ProcessObservation {
 ///
 /// Every method must return promptly and must never wait for process exit or health.
 pub trait ManagedProcess: Send {
+    /// Immutable setup failure after process ownership was acquired. A driver
+    /// must return the owned handle rather than discard it on such a failure.
+    /// The lifecycle owner must quarantine it before publishing readiness and
+    /// retain it until exact exit and durable cleanup have been observed.
+    fn initialization_failure(&self) -> Option<&str> {
+        None
+    }
+
     fn poll(&mut self, max_logs: usize) -> Result<ProcessObservation, ProcessDriverError>;
     fn request_drain(&mut self) -> Result<(), ProcessDriverError>;
     fn request_stop(&mut self) -> Result<(), ProcessDriverError>;
     fn kill(&mut self) -> Result<(), ProcessDriverError>;
 }
 
+/// Acquisition result, not a readiness or successful-initialization receipt.
+/// Inspect `ManagedProcess::initialization_failure` after retaining ownership.
 pub struct SpawnedProcess<P> {
     pub identity: ProcessIdentity,
     pub process: P,
@@ -105,6 +115,30 @@ pub enum Adoption<P> {
 /// [`ManagedProcess`] handle so one child has no shared wait path with another child.
 pub trait ProcessDriver {
     type Process: ManagedProcess;
+
+    /// Prove that this Agent has never crossed this driver's physical spawn
+    /// admission. A missing PID or a stopped historical execution is not such
+    /// proof. Drivers without durable native evidence must return None.
+    fn prove_never_spawned(
+        &mut self,
+        _agent: &AgentId,
+    ) -> Result<Option<Sha256Digest>, ProcessDriverError> {
+        Ok(None)
+    }
+
+    /// Prepare a newly registered agent's installed workload boundary before
+    /// publishing it into the live owner. Existing drivers need no extra setup.
+    fn prepare_agent_registration(
+        &mut self,
+        _record: &codex_hepta_fleet::AgentRecord,
+    ) -> Result<(), ProcessDriverError> {
+        Ok(())
+    }
+
+    /// Refuse retirement while the concrete host still owns resource occupancy.
+    fn validate_agent_retirement(&mut self, _agent: &AgentId) -> Result<(), ProcessDriverError> {
+        Ok(())
+    }
 
     fn spawn(
         &mut self,

@@ -480,7 +480,7 @@ impl RemoteAppServerRequestHandle {
 
 impl RemoteAppServerClient {
     pub async fn connect(args: RemoteAppServerConnectArgs) -> IoResult<Self> {
-        Self::connect_with_event_mode(args, RemoteEventMode::Unbounded).await
+        Self::connect_with_event_mode(args, RemoteEventMode::Unbounded, None).await
     }
 
     /// Connects with a fail-fast bounded consumer event queue.
@@ -508,6 +508,36 @@ impl RemoteAppServerClient {
             RemoteEventMode::Bounded {
                 capacity: event_channel_capacity,
             },
+            None,
+        )
+        .await
+    }
+
+    /// Connect the bounded UDS transport to the actual installed owner process.
+    /// The kernel check precedes the WebSocket and initialize handshakes.
+    #[cfg(unix)]
+    pub async fn connect_with_bounded_events_for_peer(
+        args: RemoteAppServerConnectArgs,
+        event_channel_capacity: usize,
+        expected_uid: u32,
+        expected_pid: u32,
+    ) -> IoResult<Self> {
+        if !matches!(&args.endpoint, RemoteAppServerEndpoint::UnixSocket { .. })
+            || !(1..=MAX_REMOTE_EVENT_CHANNEL_CAPACITY).contains(&event_channel_capacity)
+            || expected_uid == 0
+            || expected_pid == 0
+        {
+            return Err(IoError::new(
+                ErrorKind::InvalidInput,
+                "pinned App Server requires bounded UDS and a non-root owner process",
+            ));
+        }
+        Self::connect_with_event_mode(
+            args,
+            RemoteEventMode::Bounded {
+                capacity: event_channel_capacity,
+            },
+            Some((expected_uid, expected_pid)),
         )
         .await
     }
@@ -515,6 +545,7 @@ impl RemoteAppServerClient {
     async fn connect_with_event_mode(
         args: RemoteAppServerConnectArgs,
         event_mode: RemoteEventMode,
+        expected_peer: Option<(u32, u32)>,
     ) -> IoResult<Self> {
         let channel_capacity = args.channel_capacity.max(1);
         let initialize_params = args.initialize_params();
@@ -535,7 +566,8 @@ impl RemoteAppServerClient {
                 .await
             }
             RemoteAppServerEndpoint::UnixSocket { socket_path } => {
-                let (endpoint, stream) = connect_unix_socket_endpoint(socket_path).await?;
+                let (endpoint, stream) =
+                    connect_unix_socket_endpoint(socket_path, expected_peer).await?;
                 Self::connect_with_stream(
                     channel_capacity,
                     event_mode,
@@ -1219,6 +1251,7 @@ async fn connect_websocket_endpoint(
 
 async fn connect_unix_socket_endpoint(
     socket_path: AbsolutePathBuf,
+    expected_peer: Option<(u32, u32)>,
 ) -> IoResult<(String, WebSocketStream<UnixStream>)> {
     let endpoint = format!("unix://{}", socket_path.display());
     let request = UDS_WEBSOCKET_HANDSHAKE_URL
@@ -1242,6 +1275,18 @@ async fn connect_unix_socket_endpoint(
                 "failed to connect to remote app server at `{endpoint}`: {err}"
             ))
         })?;
+    if let Some((uid, pid)) = expected_peer {
+        #[cfg(unix)]
+        stream.ensure_peer_process(uid, pid)?;
+        #[cfg(not(unix))]
+        {
+            let _ = (uid, pid);
+            return Err(IoError::new(
+                ErrorKind::Unsupported,
+                "kernel UDS process identity is unavailable",
+            ));
+        }
+    }
     let websocket_config = remote_websocket_config();
     let stream = timeout(
         CONNECT_TIMEOUT,
@@ -1530,3 +1575,7 @@ mod tests {
             .expect("shutdown should complete when worker exits first");
     }
 }
+
+#[cfg(all(test, target_os = "linux"))]
+#[path = "remote_peer_tests.rs"]
+mod peer_process_tests;

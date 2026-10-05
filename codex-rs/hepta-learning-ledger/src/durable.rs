@@ -96,6 +96,11 @@ pub struct DurableLedger {
 }
 
 impl DurableLedger {
+    #[cfg(test)]
+    pub(crate) fn held_fixture_bytes(&self) -> Vec<u8> {
+        crate::held_fixture_bytes(&self.file)
+    }
+
     /// Create an empty store explicitly. Never use this to replace lost history.
     /// File creation and containing-directory durability are owned by the host.
     pub fn create(
@@ -122,6 +127,40 @@ impl DurableLedger {
             binding,
             max_records,
             durable_length: HEADER as u64,
+            poisoned: false,
+        })
+    }
+
+    /// Reopen only a previously initialized, physically empty journal.
+    /// The caller must separately retain the canonical empty witness. This
+    /// entry point never repairs a tail, clears history, or creates a store.
+    pub fn recover_initialized_empty(
+        file: File,
+        binding: Digest32,
+        max_records: usize,
+    ) -> Result<Self, DurableLedgerError> {
+        validate_domain(binding, max_records)?;
+        let mut file = LockedFile::acquire(file)?;
+        if file.metadata()?.len() != HEADER as u64 {
+            return Err(DurableLedgerError::UnwitnessedTail);
+        }
+        let (core, cursor, length) = replay_frames(
+            &mut file,
+            binding,
+            max_records,
+            LedgerRecovery::Unacknowledged,
+        )?;
+        if !core.records().is_empty() || cursor != length {
+            return Err(DurableLedgerError::UnwitnessedTail);
+        }
+        file.sync_all()
+            .map_err(|_| DurableLedgerError::Indeterminate)?;
+        Ok(Self {
+            file,
+            core,
+            binding,
+            max_records,
+            durable_length: cursor,
             poisoned: false,
         })
     }
@@ -246,6 +285,15 @@ impl DurableLedger {
         } else {
             Ok(&self.core)
         }
+    }
+
+    /// Read the validated owner's current head without cloning its history.
+    /// Poison remains a hard failure; this is not an independent trust witness.
+    pub fn head_digest(&self) -> Result<Digest32, DurableLedgerError> {
+        Ok(self
+            .records()?
+            .last()
+            .map_or(Digest32::ZERO, |record| record.chain_digest))
     }
 
     pub fn snapshot(&self) -> Result<LedgerSnapshot, DurableLedgerError> {

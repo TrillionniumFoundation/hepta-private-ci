@@ -115,10 +115,21 @@ fn effective_workspace_intersection_preserves_network_metadata_and_temp() {
     let result = intersection(&authority, &requested, &project);
     let policy = result.file_system_sandbox_policy();
 
+    // Both profiles explicitly retain TMPDIR writes. TempDir::new may put the
+    // workspace beneath that shared grant rather than a read-only ancestor.
+    let root_access = if std::env::var_os("TMPDIR")
+        .and_then(|path| AbsolutePathBuf::from_absolute_path(path).ok())
+        .is_some_and(|path| root.as_path().starts_with(path.as_path()))
+    {
+        Write
+    } else {
+        Read
+    };
+
     assert_eq!(
         [&root, &project]
             .map(|path| policy.resolve_access_with_cwd(path.as_path(), root.as_path())),
-        [Read, Write]
+        [root_access, Write]
     );
     assert_eq!(result.network_sandbox_policy(), Restricted);
     assert!(policy.entries.contains(&special(Tmpdir, Write)));

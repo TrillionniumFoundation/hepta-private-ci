@@ -148,7 +148,12 @@ async fn user_turn_includes_skill_instructions() -> Result<()> {
         }),
         "expected skill instructions in user input, got {user_texts:?}"
     );
-    assert!(request.has_content_kinds(&["skills.selected_skill_instructions"]));
+    super::durable_metadata::assert_content_kinds(
+        &test.codex,
+        &request,
+        &["skills.selected_skill_instructions"],
+    )
+    .await?;
 
     Ok(())
 }

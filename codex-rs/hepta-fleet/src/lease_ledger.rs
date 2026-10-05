@@ -1,124 +1,55 @@
 #![forbid(unsafe_code)]
 
 use std::collections::BTreeMap;
-use std::error::Error as StdError;
+use std::collections::BTreeSet;
+use std::collections::VecDeque;
 use std::fmt;
+use std::sync::Arc;
 
-const MAX_HOSTS: usize = 256;
-const MAX_ACTIVE_GRANTS: usize = 16_384;
+use codex_hepta_contracts::AuthorityClock;
+use codex_hepta_contracts::SystemAuthorityClock;
 
-#[derive(Clone, Copy, Debug, Default, Eq, PartialEq)]
-pub struct Resources {
-    pub cpu_millis: u64,
-    pub memory_bytes: u64,
-    pub accelerator_millis: u64,
-}
+use crate::ResourceVectorV1;
+pub use crate::lease_model::AllocationGrant;
+pub use crate::lease_model::Error;
+pub use crate::lease_model::HostObservation;
+pub use crate::lease_model::LeaseDisposition;
+pub use crate::lease_model::LeaseHistoryRecord;
+pub use crate::lease_model::LeaseHistoryState;
+pub use crate::lease_model::LeaseLedgerMetrics;
+pub use crate::lease_model::LeaseOutcome;
+pub use crate::lease_model::LeaseReceipt;
+pub use crate::lease_model::MAX_ACTIVE_GRANTS;
+pub use crate::lease_model::MAX_EXPIRED_PER_SWEEP;
+pub use crate::lease_model::MAX_HOSTS;
+pub use crate::lease_model::MAX_LEASE_HISTORY;
+pub use crate::lease_model::Resources;
 
-impl Resources {
-    pub fn checked_add(self, other: Self) -> Result<Self, Error> {
-        Ok(Self {
-            cpu_millis: self
-                .cpu_millis
-                .checked_add(other.cpu_millis)
-                .ok_or(Error::ArithmeticOverflow)?,
-            memory_bytes: self
-                .memory_bytes
-                .checked_add(other.memory_bytes)
-                .ok_or(Error::ArithmeticOverflow)?,
-            accelerator_millis: self
-                .accelerator_millis
-                .checked_add(other.accelerator_millis)
-                .ok_or(Error::ArithmeticOverflow)?,
-        })
-    }
-
-    pub fn fits(self, capacity: Self) -> bool {
-        self.cpu_millis <= capacity.cpu_millis
-            && self.memory_bytes <= capacity.memory_bytes
-            && self.accelerator_millis <= capacity.accelerator_millis
-    }
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct HostObservation {
-    pub host_id: String,
-    pub failure_domain_id: String,
-    pub generation: u64,
-    pub observed_at_ms: u64,
-    pub valid_until_ms: u64,
-    pub capacity: Resources,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct AllocationGrant {
-    pub allocation_id: String,
-    pub request_id: String,
-    pub principal_id: String,
-    pub host_id: String,
-    pub failure_domain_id: String,
-    pub host_generation: u64,
-    pub authority_epoch: u64,
-    pub lease_generation: u64,
-    pub expires_at_ms: u64,
-    pub resources: Resources,
-    pub semantic_digest: String,
-    pub revoked: bool,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum LeaseDisposition {
-    Renew { expires_at_ms: u64 },
-    Revoke,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum LeaseOutcome {
-    Issued,
-    Renewed,
-    Revoked,
-    Unchanged,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub struct LeaseReceipt {
-    pub allocation_id: String,
-    pub lease_generation: u64,
-    pub expires_at_ms: u64,
-    pub revoked: bool,
-    pub outcome: LeaseOutcome,
-    pub semantic_digest: String,
-}
-
-#[derive(Clone, Debug, Eq, PartialEq)]
-pub enum Error {
-    InvalidIdentity(&'static str),
-    InvalidDigest,
-    InvalidTime,
-    InvalidGeneration,
-    HostCapacity,
-    CapacityExceeded,
-    GrantCapacityExceeded,
-    HostNotFound,
-    AllocationNotFound,
-    Conflict,
-    StaleHost,
-    StaleLease,
-    Revoked,
-    ArithmeticOverflow,
-}
-
-impl fmt::Display for Error {
-    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
-        write!(formatter, "{self:?}")
-    }
-}
-
-impl StdError for Error {}
-
-#[derive(Debug)]
 pub struct LeaseLedger {
+    clock: Arc<dyn AuthorityClock>,
+    last_now_ms: Option<u64>,
     hosts: BTreeMap<String, HostObservation>,
-    grants: BTreeMap<String, AllocationGrant>,
+    active_grants: BTreeMap<String, AllocationGrant>,
+    reserved: BTreeMap<String, ResourceVectorV1>,
+    expiry_index: BTreeMap<u64, BTreeSet<String>>,
+    history_order: VecDeque<String>,
+    history: BTreeMap<String, LeaseHistoryRecord>,
+    compacted_history: u64,
+}
+
+impl fmt::Debug for LeaseLedger {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        formatter
+            .debug_struct("LeaseLedger")
+            .field("last_now_ms", &self.last_now_ms)
+            .field("hosts", &self.hosts)
+            .field("active_grants", &self.active_grants)
+            .field("reserved", &self.reserved)
+            .field("expiry_index", &self.expiry_index)
+            .field("history", &self.history)
+            .field("compacted_history", &self.compacted_history)
+            .finish_non_exhaustive()
+    }
 }
 
 impl Default for LeaseLedger {
@@ -128,32 +59,54 @@ impl Default for LeaseLedger {
 }
 
 impl LeaseLedger {
+    /// Compatibility constructor backed by the system clock. Production owners
+    /// use `with_clock` with their protected time projection.
     pub fn new() -> Self {
+        Self::with_clock(Arc::new(SystemAuthorityClock))
+    }
+
+    pub fn with_clock(clock: Arc<dyn AuthorityClock>) -> Self {
         Self {
+            clock,
+            last_now_ms: None,
             hosts: BTreeMap::new(),
-            grants: BTreeMap::new(),
+            active_grants: BTreeMap::new(),
+            reserved: BTreeMap::new(),
+            expiry_index: BTreeMap::new(),
+            history_order: VecDeque::new(),
+            history: BTreeMap::new(),
+            compacted_history: 0,
         }
     }
 
     pub fn admit_host(&mut self, observation: HostObservation) -> Result<(), Error> {
         validate_identity(&observation.host_id, "host")?;
         validate_identity(&observation.failure_domain_id, "failure domain")?;
-        if observation.generation == 0
-            || observation.observed_at_ms >= observation.valid_until_ms
-            || observation.capacity == Resources::default()
-        {
+        observation.capacity.validate_nonzero()?;
+        if observation.generation == 0 || observation.observed_at_ms >= observation.valid_until_ms {
             return Err(Error::HostCapacity);
         }
-        if let Some(current) = self.hosts.get(&observation.host_id) {
+        let now_ms = self.owner_now_ms()?;
+        if observation.observed_at_ms > now_ms || now_ms >= observation.valid_until_ms {
+            return Err(Error::StaleHost);
+        }
+
+        let current = self.hosts.get(&observation.host_id).cloned();
+        if let Some(current) = current {
             if observation.generation < current.generation {
                 return Err(Error::InvalidGeneration);
             }
-            if observation.generation == current.generation && observation != *current {
+            if observation.generation == current.generation && observation != current {
                 return Err(Error::Conflict);
             }
-            if observation == *current {
+            if observation == current {
                 return Ok(());
             }
+            self.retire_prior_host_generation(
+                &observation.host_id,
+                observation.generation,
+                now_ms,
+            )?;
         } else if self.hosts.len() >= MAX_HOSTS {
             return Err(Error::CapacityExceeded);
         }
@@ -161,13 +114,15 @@ impl LeaseLedger {
         Ok(())
     }
 
-    pub fn issue(
-        &mut self,
-        now_ms: u64,
-        mut grant: AllocationGrant,
-    ) -> Result<LeaseReceipt, Error> {
+    pub fn issue(&mut self, mut grant: AllocationGrant) -> Result<LeaseReceipt, Error> {
         validate_grant(&grant)?;
-        let host = self.hosts.get(&grant.host_id).ok_or(Error::HostNotFound)?;
+        let now_ms = self.owner_now_ms()?;
+        self.collect_expired_at(now_ms, MAX_EXPIRED_PER_SWEEP)?;
+        let host = self
+            .hosts
+            .get(&grant.host_id)
+            .cloned()
+            .ok_or(Error::HostNotFound)?;
         if now_ms < host.observed_at_ms || now_ms >= host.valid_until_ms {
             return Err(Error::StaleHost);
         }
@@ -179,28 +134,43 @@ impl LeaseLedger {
         if grant.expires_at_ms <= now_ms || grant.expires_at_ms > host.valid_until_ms {
             return Err(Error::InvalidTime);
         }
-        if let Some(current) = self.grants.get(&grant.allocation_id) {
+        if let Some(current) = self.active_grants.get(&grant.allocation_id) {
             if equivalent(current, &grant) {
                 return Ok(receipt(current, LeaseOutcome::Unchanged));
             }
             return Err(Error::Conflict);
         }
-        if self.grants.len() >= MAX_ACTIVE_GRANTS {
+        if self.history.contains_key(&grant.allocation_id) {
+            return Err(Error::Conflict);
+        }
+        if self.active_grants.len() >= MAX_ACTIVE_GRANTS {
             return Err(Error::GrantCapacityExceeded);
         }
-        let committed = self.committed_resources(&grant.host_id, now_ms)?;
-        if !committed.checked_add(grant.resources)?.fits(host.capacity) {
+        let committed = self
+            .reserved
+            .get(&grant.host_id)
+            .copied()
+            .unwrap_or_default();
+        let next = committed.checked_add(grant.resources)?;
+        grant.resources.compatible_with(host.capacity)?;
+        if !next.fits(host.capacity) {
             return Err(Error::CapacityExceeded);
         }
+
         grant.revoked = false;
         let result = receipt(&grant, LeaseOutcome::Issued);
-        self.grants.insert(grant.allocation_id.clone(), grant);
+        self.reserved.insert(grant.host_id.clone(), next);
+        self.expiry_index
+            .entry(grant.expires_at_ms)
+            .or_default()
+            .insert(grant.allocation_id.clone());
+        self.active_grants
+            .insert(grant.allocation_id.clone(), grant);
         Ok(result)
     }
 
     pub fn renew_or_revoke(
         &mut self,
-        now_ms: u64,
         allocation_id: &str,
         expected_lease_generation: u64,
         authority_epoch: u64,
@@ -209,11 +179,17 @@ impl LeaseLedger {
     ) -> Result<LeaseReceipt, Error> {
         validate_identity(allocation_id, "allocation")?;
         validate_digest(semantic_digest)?;
-        let current = self
-            .grants
-            .get(allocation_id)
-            .cloned()
-            .ok_or(Error::AllocationNotFound)?;
+        let now_ms = self.owner_now_ms()?;
+        self.collect_expired_at(now_ms, MAX_EXPIRED_PER_SWEEP)?;
+        let Some(current) = self.active_grants.get(allocation_id).cloned() else {
+            return self.retired_disposition(
+                allocation_id,
+                expected_lease_generation,
+                authority_epoch,
+                semantic_digest,
+                disposition,
+            );
+        };
         if current.lease_generation != expected_lease_generation {
             return Err(Error::StaleLease);
         }
@@ -222,22 +198,17 @@ impl LeaseLedger {
             return Err(Error::Conflict);
         }
         match disposition {
-            LeaseDisposition::Revoke if current.revoked => {
-                Ok(receipt(&current, LeaseOutcome::Unchanged))
-            }
             LeaseDisposition::Revoke => {
-                let grant = self
-                    .grants
-                    .get_mut(allocation_id)
-                    .ok_or(Error::AllocationNotFound)?;
-                grant.revoked = true;
-                grant.lease_generation = grant
+                let mut retired = self.remove_active(allocation_id)?;
+                retired.revoked = true;
+                retired.lease_generation = retired
                     .lease_generation
                     .checked_add(1)
                     .ok_or(Error::ArithmeticOverflow)?;
-                Ok(receipt(grant, LeaseOutcome::Revoked))
+                let result = receipt(&retired, LeaseOutcome::Revoked);
+                self.append_history(retired, LeaseHistoryState::Revoked, now_ms);
+                Ok(result)
             }
-            LeaseDisposition::Renew { .. } if current.revoked => Err(Error::Revoked),
             LeaseDisposition::Renew { expires_at_ms } => {
                 let host = self
                     .hosts
@@ -252,33 +223,208 @@ impl LeaseLedger {
                 if expires_at_ms == current.expires_at_ms {
                     return Ok(receipt(&current, LeaseOutcome::Unchanged));
                 }
+                remove_expiry_entry(&mut self.expiry_index, current.expires_at_ms, allocation_id);
                 let grant = self
-                    .grants
+                    .active_grants
                     .get_mut(allocation_id)
                     .ok_or(Error::AllocationNotFound)?;
                 grant.expires_at_ms = expires_at_ms;
                 grant.lease_generation = grant
                     .lease_generation
                     .checked_add(1)
-                    .ok_or(Error::ArithmeticOverflow)?;
+                    .ok_or(Error::InvalidGeneration)?;
+                self.expiry_index
+                    .entry(expires_at_ms)
+                    .or_default()
+                    .insert(allocation_id.to_string());
                 Ok(receipt(grant, LeaseOutcome::Renewed))
             }
         }
     }
 
-    pub fn get(&self, allocation_id: &str) -> Option<&AllocationGrant> {
-        self.grants.get(allocation_id)
+    pub fn collect_expired(&mut self) -> Result<usize, Error> {
+        let now_ms = self.owner_now_ms()?;
+        self.collect_expired_at(now_ms, MAX_EXPIRED_PER_SWEEP)
     }
 
-    fn committed_resources(&self, host_id: &str, now_ms: u64) -> Result<Resources, Error> {
-        self.grants
+    pub fn get(&self, allocation_id: &str) -> Option<&AllocationGrant> {
+        self.active_grants.get(allocation_id)
+    }
+
+    pub fn history(&self, allocation_id: &str) -> Option<&LeaseHistoryRecord> {
+        self.history.get(allocation_id)
+    }
+
+    pub fn reserved_for_host(&self, host_id: &str) -> ResourceVectorV1 {
+        self.reserved.get(host_id).copied().unwrap_or_default()
+    }
+
+    pub fn metrics(&self) -> LeaseLedgerMetrics {
+        LeaseLedgerMetrics {
+            hosts: self.hosts.len(),
+            active_grants: self.active_grants.len(),
+            retained_history: self.history.len(),
+            compacted_history: self.compacted_history,
+        }
+    }
+
+    fn owner_now_ms(&mut self) -> Result<u64, Error> {
+        let now_ms = self
+            .clock
+            .now_unix_ms()
+            .map_err(|_| Error::ClockUnavailable)?;
+        if self.last_now_ms.is_some_and(|last| now_ms < last) {
+            return Err(Error::ClockRollback);
+        }
+        self.last_now_ms = Some(now_ms);
+        Ok(now_ms)
+    }
+
+    fn collect_expired_at(&mut self, now_ms: u64, limit: usize) -> Result<usize, Error> {
+        let mut retired = 0;
+        while retired < limit {
+            let Some((&expires_at_ms, _)) = self.expiry_index.first_key_value() else {
+                break;
+            };
+            if expires_at_ms > now_ms {
+                break;
+            }
+            let allocation_ids = self
+                .expiry_index
+                .remove(&expires_at_ms)
+                .ok_or(Error::Conflict)?;
+            let mut unprocessed = BTreeSet::new();
+            for allocation_id in allocation_ids {
+                if retired >= limit {
+                    unprocessed.insert(allocation_id);
+                    continue;
+                }
+                let Some(grant) = self.active_grants.get(&allocation_id) else {
+                    continue;
+                };
+                if grant.expires_at_ms > now_ms {
+                    unprocessed.insert(allocation_id);
+                    continue;
+                }
+                let expired = self.remove_active(&allocation_id)?;
+                self.append_history(expired, LeaseHistoryState::Expired, now_ms);
+                retired += 1;
+            }
+            if !unprocessed.is_empty() {
+                self.expiry_index.insert(expires_at_ms, unprocessed);
+            }
+        }
+        Ok(retired)
+    }
+
+    fn retire_prior_host_generation(
+        &mut self,
+        host_id: &str,
+        generation: u64,
+        now_ms: u64,
+    ) -> Result<(), Error> {
+        let allocation_ids = self
+            .active_grants
             .values()
-            .filter(|grant| {
-                grant.host_id == host_id && !grant.revoked && grant.expires_at_ms > now_ms
-            })
-            .try_fold(Resources::default(), |sum, grant| {
-                sum.checked_add(grant.resources)
-            })
+            .filter(|grant| grant.host_id == host_id && grant.host_generation < generation)
+            .map(|grant| grant.allocation_id.clone())
+            .collect::<Vec<_>>();
+        for allocation_id in allocation_ids {
+            let grant = self.remove_active(&allocation_id)?;
+            self.append_history(grant, LeaseHistoryState::HostGenerationFenced, now_ms);
+        }
+        Ok(())
+    }
+
+    fn remove_active(&mut self, allocation_id: &str) -> Result<AllocationGrant, Error> {
+        let grant = self
+            .active_grants
+            .remove(allocation_id)
+            .ok_or(Error::AllocationNotFound)?;
+        remove_expiry_entry(&mut self.expiry_index, grant.expires_at_ms, allocation_id);
+        let committed = self
+            .reserved
+            .get(&grant.host_id)
+            .copied()
+            .ok_or(Error::Conflict)?;
+        let next = committed.checked_sub(grant.resources)?;
+        if next.is_zero() {
+            self.reserved.remove(&grant.host_id);
+        } else {
+            self.reserved.insert(grant.host_id.clone(), next);
+        }
+        Ok(grant)
+    }
+
+    fn append_history(
+        &mut self,
+        grant: AllocationGrant,
+        state: LeaseHistoryState,
+        retired_at_ms: u64,
+    ) {
+        while self.history.len() >= MAX_LEASE_HISTORY {
+            let Some(oldest) = self.history_order.pop_front() else {
+                break;
+            };
+            if self.history.remove(&oldest).is_some() {
+                self.compacted_history = self.compacted_history.saturating_add(1);
+            }
+        }
+        self.history_order.push_back(grant.allocation_id.clone());
+        self.history.insert(
+            grant.allocation_id.clone(),
+            LeaseHistoryRecord {
+                grant,
+                state,
+                retired_at_ms,
+            },
+        );
+    }
+
+    fn retired_disposition(
+        &self,
+        allocation_id: &str,
+        expected_lease_generation: u64,
+        authority_epoch: u64,
+        semantic_digest: &str,
+        disposition: LeaseDisposition,
+    ) -> Result<LeaseReceipt, Error> {
+        let retired = self
+            .history
+            .get(allocation_id)
+            .ok_or(Error::AllocationNotFound)?;
+        if retired.grant.lease_generation != expected_lease_generation {
+            return Err(Error::StaleLease);
+        }
+        if retired.grant.authority_epoch != authority_epoch
+            || retired.grant.semantic_digest != semantic_digest
+        {
+            return Err(Error::Conflict);
+        }
+        match (retired.state, disposition) {
+            (LeaseHistoryState::Revoked, LeaseDisposition::Revoke) => {
+                Ok(receipt(&retired.grant, LeaseOutcome::Unchanged))
+            }
+            (LeaseHistoryState::Revoked, LeaseDisposition::Renew { .. }) => Err(Error::Revoked),
+            (
+                LeaseHistoryState::Expired | LeaseHistoryState::HostGenerationFenced,
+                LeaseDisposition::Renew { .. } | LeaseDisposition::Revoke,
+            ) => Err(Error::StaleLease),
+        }
+    }
+}
+
+fn remove_expiry_entry(
+    index: &mut BTreeMap<u64, BTreeSet<String>>,
+    expires_at_ms: u64,
+    allocation_id: &str,
+) {
+    let remove_key = index.get_mut(&expires_at_ms).is_some_and(|entries| {
+        entries.remove(allocation_id);
+        entries.is_empty()
+    });
+    if remove_key {
+        index.remove(&expires_at_ms);
     }
 }
 
@@ -317,11 +463,12 @@ fn validate_grant(grant: &AllocationGrant) -> Result<(), Error> {
         validate_identity(value, field)?;
     }
     validate_digest(&grant.semantic_digest)?;
+    grant.resources.validate_nonzero()?;
     if grant.host_generation == 0 || grant.authority_epoch == 0 || grant.lease_generation == 0 {
         return Err(Error::InvalidGeneration);
     }
-    if grant.resources == Resources::default() {
-        return Err(Error::HostCapacity);
+    if grant.revoked {
+        return Err(Error::Revoked);
     }
     Ok(())
 }

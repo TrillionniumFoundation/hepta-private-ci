@@ -14,6 +14,74 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
+  bazel-sources:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Export the original checksum-pinned Bazel V8 source
+        run: |
+          set -euo pipefail
+          python3 - <<'PYV8'
+          import ast
+          import base64
+          import gzip
+          import hashlib
+          import os
+          import re
+          import shutil
+          import urllib.parse
+          import urllib.request
+          from pathlib import Path
+
+          module = Path("MODULE.bazel").read_text()
+          matches = re.findall(
+              r'archive_override\(\s*module_name = "v8",(.*?)\n\)',
+              module,
+              re.DOTALL,
+          )
+          if len(matches) != 1:
+              raise RuntimeError("expected the sole original V8 archive override")
+          override = matches[0]
+          integrity = ast.literal_eval(re.search(r'integrity = ("[^"]+"),', override)[1])
+          algorithm, encoded = integrity.split("-", 1)
+          expected = base64.b64decode(encoded, validate=True).hex()
+          if algorithm != "sha256" or len(expected) != 64:
+              raise RuntimeError("expected the original SHA-256 integrity pin")
+          urls = ast.literal_eval(re.search(r'urls = (\[[^\]]+\]),', override)[1])
+          if len(urls) != 1 or urllib.parse.urlparse(urls[0]).scheme != "https":
+              raise RuntimeError("expected the original HTTPS archive URL")
+          destination = Path(os.environ["RUNNER_TEMP"]) / "hepta-offline-bazel-v8"
+          destination.mkdir()
+          archive = destination / Path(urllib.parse.urlparse(urls[0]).path).name
+          digest = hashlib.sha256()
+          size = 0
+          with urllib.request.urlopen(urls[0], timeout=120) as response, archive.open("xb") as output:
+              while chunk := response.read(1024 * 1024):
+                  size += len(chunk)
+                  if size > 256 * 1024 * 1024:
+                      raise RuntimeError("original archive exceeds the bounded export")
+                  digest.update(chunk)
+                  output.write(chunk)
+          if digest.hexdigest() != expected:
+              raise RuntimeError("original V8 archive checksum differs")
+          with gzip.open(archive, "rb") as contents, open(os.devnull, "wb") as sink:
+              shutil.copyfileobj(contents, sink)
+          (destination / "SHA256SUMS").write_text(f"{expected}  {archive.name}\n")
+          (destination / "source-sha.txt").write_text(os.environ["GITHUB_SHA"] + "\n")
+          shutil.copyfile("MODULE.bazel", destination / "MODULE.bazel")
+          print(f"Verified {archive.name}: {size} bytes, {expected}")
+          PYV8
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: hepta-offline-bazel-v8-${{ github.sha }}
+          path: ${{ runner.temp }}/hepta-offline-bazel-v8/*
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
   inputs:
     runs-on: ubuntu-24.04-arm
     timeout-minutes: 25
@@ -26,10 +94,10 @@ jobs:
       - name: Resolve the exact locked dependency sources
         working-directory: codex-rs
         env:
-          RUSTUP_TOOLCHAIN: 1.95.0
+          RUSTUP_TOOLCHAIN: 1.96.0
         run: |
           set -euo pipefail
-          rustup toolchain install 1.95.0 --profile minimal --component rustfmt --component clippy
+          rustup toolchain install 1.96.0 --profile minimal --component rustfmt --component clippy
           mkdir -p "$RUNNER_TEMP/hepta-offline-inputs"
           cargo vendor --locked --versioned-dirs "$RUNNER_TEMP/hepta-offline-inputs/vendor" > "$RUNNER_TEMP/hepta-offline-inputs/offline-config.toml"
           sha256sum Cargo.lock > "$RUNNER_TEMP/hepta-offline-inputs/lock.sha256"
@@ -38,7 +106,7 @@ jobs:
       - name: Diagnose failed resolution in a separate non-qualifying worktree
         if: failure()
         env:
-          RUSTUP_TOOLCHAIN: 1.95.0
+          RUSTUP_TOOLCHAIN: 1.96.0
         run: |
           set -euo pipefail
           test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
@@ -85,8 +153,8 @@ jobs:
       - name: Package the pinned host compiler and repository test entry points
         run: |
           set -euo pipefail
-          rustup toolchain install 1.95.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy
-          tar -C "$HOME/.rustup/toolchains/1.95.0-x86_64-unknown-linux-gnu" -czf "$RUNNER_TEMP/hepta-offline-inputs/compiler.tar.gz" .
+          rustup toolchain install 1.96.0-x86_64-unknown-linux-gnu --force-non-host --profile minimal --component rustfmt --component clippy
+          tar -C "$HOME/.rustup/toolchains/1.96.0-x86_64-unknown-linux-gnu" -czf "$RUNNER_TEMP/hepta-offline-inputs/compiler.tar.gz" .
           mkdir -p "$RUNNER_TEMP/hepta-offline-inputs/bin"
           cd "$RUNNER_TEMP/hepta-offline-inputs"
           curl --fail --location --retry 3 --max-time 120 --output just.tar.gz \

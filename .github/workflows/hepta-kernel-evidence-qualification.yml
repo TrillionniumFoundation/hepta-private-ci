@@ -28,7 +28,7 @@ jobs:
 
       - uses: ./.github/actions/setup-ci
 
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@ebb3d1676050bfd0971c36c1e215b5751473994d # 1.96.0
 
       - name: Run exact-source qualification commands
         env:
@@ -94,7 +94,7 @@ jobs:
 
       - uses: ./.github/actions/setup-ci
 
-      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - uses: dtolnay/rust-toolchain@ebb3d1676050bfd0971c36c1e215b5751473994d # 1.96.0
 
       - name: Run synthetic-merge qualification commands
         env:

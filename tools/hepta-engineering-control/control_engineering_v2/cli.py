@@ -3,6 +3,7 @@
 import argparse
 from dataclasses import asdict, fields
 import json
+import os
 from pathlib import Path
 import sys
 
@@ -15,6 +16,11 @@ from .candidate import (
 from .sandbox_control import SandboxCoordinator
 from .control_plane import EngineeringError, EngineeringStore, WorkEnvelope, WorkPackage
 from .production import ProductionReadinessFacts, evaluate_production_readiness
+from .pull_request import (
+    DraftPullRequestRequest,
+    github_api,
+    open_draft_pull_request,
+)
 
 MAX_INPUT_BYTES = 2 * 1024 * 1024
 
@@ -109,6 +115,15 @@ def parser():
         choices=("implementation", "deployment"),
         default="deployment",
     )
+    draft_pr = commands.add_parser(
+        "draft-pr",
+        help=(
+            "create one bounded draft review object for an already-published "
+            "self-iteration branch; never push, approve, merge, promote, or release"
+        ),
+    )
+    draft_pr.add_argument("--request", required=True)
+    draft_pr.add_argument("--token-env", default="GITHUB_TOKEN")
     for name, help_text in (
         ("candidates", "generate deterministic proposals including no-change"),
         ("sandbox", "execute one candidate in the admitted isolation profile"),
@@ -136,6 +151,19 @@ def run(args):
             "authenticated": False,
             "authorityGranted": False,
             "decision": asdict(evaluate_production_readiness(facts)),
+        }
+    if args.command == "draft-pr":
+        request = _record(DraftPullRequestRequest, _read(args.request))
+        token = os.environ.get(args.token_env, "")
+        if not token:
+            raise EngineeringError("missing_github_pr_token")
+        receipt = open_draft_pull_request(request, github_api(token))
+        return {
+            "receipt": asdict(receipt),
+            "authorityGranted": False,
+            "mergeAuthority": False,
+            "promotionAuthority": False,
+            "releaseAuthority": False,
         }
     if args.command == "schedule":
         envelope = _record(WorkEnvelope, _read(args.envelope))

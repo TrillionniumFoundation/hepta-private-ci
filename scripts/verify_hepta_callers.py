@@ -636,6 +636,15 @@ def main() -> int:
         )
         if "Hidden::new" in code or "call" not in code or "real" not in code:
             raise VerificationFailure("lexical scanner self-test failed")
+        raw_code = _strip_rust_non_code(
+            'before(); let raw = r##"Hidden::new() /* braces { } */"##; after();'
+        )
+        if (
+            "Hidden::new" in raw_code
+            or "before" not in raw_code
+            or "after" not in raw_code
+        ):
+            raise VerificationFailure("raw-string offset self-test failed")
         if re.search(r"authority\s*\.\s*claim\s*\(", "authority\n  .claim(x)") is None:
             raise VerificationFailure("method call-pattern self-test failed")
         cfg_code = _strip_cfg_test_items(

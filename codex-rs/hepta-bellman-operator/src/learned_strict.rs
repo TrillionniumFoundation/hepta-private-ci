@@ -2,50 +2,42 @@
 //!
 //! The original V1 functions remain available. This additive surface rejects
 //! duplicate underlying evidence even when callers relabel samples, and uses
-//! the artifact's canonical cell ordering for binary lookup after an O(n)
-//! validation on every call. Use LoadedTabularOperatorV1 for once-validated
+//! the artifact's canonical cell ordering for binary lookup after bounded
+//! structural validation on every call. Use LoadedTabularOperatorV1 for once-validated
 //! persisted candidates and O(log n) repeated lookups.
 
 use std::error::Error as StdError;
 use std::fmt;
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 use codex_hepta_types::StableId;
 
+use super::learned::fit_tabular_operator;
+#[cfg(any(test, feature = "qualification-unverified-input"))]
+use super::learned::validate_tabular_artifact;
 use crate::LearnedOperatorError;
 use crate::TabularOperatorArtifactV1;
 use crate::TabularOperatorPlanV1;
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 use crate::TabularOperatorPredictionV1;
-use crate::fit_tabular_operator;
 
 pub fn fit_tabular_operator_strict_v2(
     plan: TabularOperatorPlanV1,
 ) -> Result<TabularOperatorArtifactV1, StrictLearnedOperatorError> {
-    let mut evidence = plan
-        .samples
-        .iter()
-        .map(|sample| sample.evidence_digest)
-        .collect::<Vec<_>>();
-    evidence.sort_unstable();
-    if evidence
-        .windows(2)
-        .any(|adjacent| adjacent[0] == adjacent[1])
-    {
-        return Err(StrictLearnedOperatorError::DuplicateEvidence);
-    }
-    Ok(fit_tabular_operator(plan)?)
+    fit_tabular_operator(plan).map_err(|error| match error {
+        LearnedOperatorError::DuplicateEvidence => StrictLearnedOperatorError::DuplicateEvidence,
+        error => StrictLearnedOperatorError::Learned(error),
+    })
 }
 
+#[cfg(any(test, feature = "qualification-unverified-input"))]
 pub fn predict_tabular_operator_indexed_v2(
     artifact: &TabularOperatorArtifactV1,
     sensor_id: &StableId,
     action_id: &StableId,
 ) -> Result<TabularOperatorPredictionV1, StrictLearnedOperatorError> {
-    if artifact.cells.windows(2).any(|adjacent| {
-        (&adjacent[0].sensor_id, &adjacent[0].action_id)
-            >= (&adjacent[1].sensor_id, &adjacent[1].action_id)
-    }) {
-        return Err(StrictLearnedOperatorError::NonCanonicalArtifact);
-    }
+    validate_tabular_artifact(artifact)
+        .map_err(|_| StrictLearnedOperatorError::NonCanonicalArtifact)?;
     let index = artifact
         .cells
         .binary_search_by(|cell| (&cell.sensor_id, &cell.action_id).cmp(&(sensor_id, action_id)))

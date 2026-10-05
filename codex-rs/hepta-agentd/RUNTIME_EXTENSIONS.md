@@ -143,3 +143,52 @@ behavior, arbitrary cross-schema migration, multi-host handoff, target-host
 capacity, physical-effect completion, independent credential custody or
 future-window learning efficacy. No command definition or test source is a
 test-pass receipt.
+
+## Canonical composition startup
+
+The ordinary daemon rejects a partial canonical intelligence configuration before
+opening product owners or publishing control/App Server sockets. A configured
+runner requires its host-owned invocation provider, and a configured provider
+requires its runner. The pair also requires an Objective profile, AuthBus trust
+and replay-checkpoint configuration; later owner opening authenticates those
+inputs. Shape validation alone does not activate or qualify a canonical profile.
+
+Leaving both components absent retains the existing compatibility profile.
+Supplying only intelligence-authority CLI arguments is not a way to activate the
+canonical product: until the host installs the complete owner-backed provider,
+startup fails instead of silently falling back. This check reuses the existing
+configuration and lifecycle; it does not add another executor or manufacture
+missing owner inputs.
+
+## Product process acceptance
+
+Build ordinary installed programs with `just product-build --locked -p codex-hepta-agentd --bin codex-hepta-agentd`. This uses the `hepta-product` Cargo
+profile: optimized dependencies, runtime assertions and overflow checks, with no
+whole-program LTO. Library development continues to use the existing fast
+profile. These profiles enable the same ordinary product features.
+
+Run the actual startup, replacement and durable module-selection acceptance with
+`just test --locked --cargo-profile hepta-product -p codex-hepta-agentd --test module_selection_product --test-threads=1 --retries=0`. The process and its
+harness must both use that profile; the suite retains the normal two-second
+control deadline and reads the complete installed executable. An unoptimized
+full-process run is not the product performance acceptance entry point.
+
+`just test` automatically selects that product profile when its Cargo target
+selection includes this process suite, including a full workspace run. Scoped
+`--lib`, other packages and other integration-test targets keep the fast
+configuration. An explicitly supplied Cargo profile or artifact metadata remains
+under caller control.
+
+Start prepares catalog metadata and actual file descriptors without trusting
+program content. The sole lifecycle owner verifies the complete mutable program
+before any durable effect marker, then rechecks the same descriptors, manifest,
+allowance and namespace before spawn. Failure of this complete-read check leaves
+no ambiguous operation. Public verified reads and direct Start calls retain full
+validation.
+
+Bazel provides the same ordinary program as
+`//codex-rs/hepta-agentd:hepta-agentd-product` and the process acceptance as
+`//codex-rs/hepta-agentd:hepta-agentd-module_selection_product-test`. The product
+transition optimizes the real dependency closure while preserving assertions
+and overflow checks. It does not enable qualification-only product features or
+change ordinary library and unit-test configurations.

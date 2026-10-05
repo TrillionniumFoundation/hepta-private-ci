@@ -14,6 +14,7 @@ use codex_hepta_contracts::FinalUseError;
 use codex_hepta_contracts::SignedFinalUseGrant;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::IdProfileV1;
 use codex_hepta_types::StableId;
 use ed25519_dalek::Signature;
 use ed25519_dalek::VerifyingKey;
@@ -249,8 +250,9 @@ impl<'a> FinalUseAdmissionAuthority<'a> {
         expected_evidence_digest: Digest32,
         consumer: impl FnOnce(VerifiedAdmission) -> T,
     ) -> Result<T, AdmissionError> {
-        let reviewer_id = StableId::new(signed.grant.binding.subject_id.clone())
-            .map_err(|_| AdmissionError::InvalidGrant)?;
+        let reviewer_id =
+            StableId::with_profile(&signed.grant.binding.subject_id, IdProfileV1::Stable)
+                .map_err(|_| AdmissionError::InvalidGrant)?;
         let expected = final_use_admission_binding(
             factor,
             &reviewer_id,
@@ -297,6 +299,9 @@ pub fn final_use_admission_binding(
     if reviewed_scope_digest.is_zero() || evidence_digest.is_zero() {
         return Err(AdmissionError::ScopeMismatch);
     }
+    // Public binding helpers also accept caller-owned factors. Admit their
+    // borrowed fields before copying an otherwise unbounded signing request.
+    crate::protocol::validate_factor_semantics(factor).map_err(|_| AdmissionError::InvalidGrant)?;
     let mut request = FINAL_USE_REQUEST_DOMAIN.to_vec();
     push_id(&mut request, &factor.factor_id);
     push_id(&mut request, &factor.proposer_id);
@@ -337,6 +342,12 @@ pub fn final_use_realization_binding(
     binding
         .validate()
         .map_err(|_| AdmissionError::InvalidGrant)?;
+    if binding.model_id.as_str() == crate::protocol::LEGACY_UNRESOLVED_MODEL_ID
+        && binding.model_version == crate::protocol::LEGACY_UNRESOLVED_MODEL_VERSION
+    {
+        return Err(AdmissionError::InvalidGrant);
+    }
+    crate::protocol::validate_factor_semantics(factor).map_err(|_| AdmissionError::InvalidGrant)?;
     let mut request = FINAL_USE_REALIZATION_REQUEST_DOMAIN.to_vec();
     push_id(&mut request, &factor.factor_id);
     push_id(&mut request, &factor.proposer_id);
@@ -419,6 +430,7 @@ fn final_use_lifecycle_binding(
     if scope_digest.is_zero() || reason_digest.is_zero() {
         return Err(AdmissionError::ScopeMismatch);
     }
+    crate::protocol::validate_factor_semantics(factor).map_err(|_| AdmissionError::InvalidGrant)?;
     let mut request = domain.to_vec();
     push_id(&mut request, &factor.factor_id);
     push_id(&mut request, &factor.proposer_id);
@@ -500,10 +512,10 @@ pub(crate) const fn map_final_use_error(error: FinalUseError) -> AdmissionError 
 
 fn validate_grant_shape(grant: &AdmissionGrantV1) -> Result<(), AdmissionError> {
     if grant.schema_version != 1
-        || StableId::new(grant.signer_id.clone()).is_err()
-        || StableId::new(grant.grant_id.clone()).is_err()
-        || StableId::new(grant.binding.factor_id.clone()).is_err()
-        || StableId::new(grant.binding.reviewer_id.clone()).is_err()
+        || StableId::with_profile(&grant.signer_id, IdProfileV1::Stable).is_err()
+        || StableId::with_profile(&grant.grant_id, IdProfileV1::Stable).is_err()
+        || StableId::with_profile(&grant.binding.factor_id, IdProfileV1::Stable).is_err()
+        || StableId::with_profile(&grant.binding.reviewer_id, IdProfileV1::Stable).is_err()
         || grant.binding.factor_content_sha256 == [0; 32]
         || grant.binding.reviewed_scope_sha256 == [0; 32]
         || grant.binding.evidence_sha256 == [0; 32]
@@ -539,3 +551,7 @@ impl fmt::Display for AdmissionError {
 }
 
 impl std::error::Error for AdmissionError {}
+
+#[cfg(test)]
+#[path = "admission_binding_bounds_tests.rs"]
+mod binding_bounds_tests;

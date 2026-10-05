@@ -41,6 +41,14 @@ pub fn select_portfolio_audited(
     let interaction_digest = digest_interaction_graph(interactions);
     let constraint_digest = digest_constraints(&interactions.hard_constraints);
 
+    let evaluation_context = PortfolioEvaluationContext {
+        price_map: &price_map,
+        constraints: &constraint_index,
+        interactions: &interaction_index,
+        missing_policy: interactions.missing_interaction_policy,
+        budget,
+    };
+
     let mut selected = BTreeSet::new();
     let mut selected_order = Vec::new();
     let mut used_tokens = 0_u32;
@@ -54,16 +62,7 @@ pub fn select_portfolio_audited(
             if selected.contains(root) || !price_map.contains_key(root) {
                 continue;
             }
-            let evaluation = evaluate_package(
-                root,
-                &selected,
-                &price_map,
-                &constraint_index,
-                &interaction_index,
-                interactions.missing_interaction_policy,
-                budget,
-                used_tokens,
-            )?;
+            let evaluation = evaluate_package(root, &selected, &evaluation_context, used_tokens)?;
             let Some(evaluation) = evaluation else {
                 continue;
             };
@@ -108,18 +107,12 @@ pub fn select_portfolio_audited(
         valid_until_unix_ms: budget.valid_until_unix_ms,
     };
 
-    let candidate_decisions = portfolio_candidate_audit(
-        &selected,
-        &price_map,
-        &constraint_index,
-        &interaction_index,
-        interactions,
-        budget,
-        used_tokens,
-    )?;
-    let priced_count = u32::try_from(pricing.receipts.len()).map_err(|_| PolicyError::Arithmetic)?;
-    let unavailable_pricing_count = u32::try_from(pricing.unavailable.len())
-        .map_err(|_| PolicyError::Arithmetic)?;
+    let candidate_decisions =
+        portfolio_candidate_audit(&selected, &evaluation_context, interactions, used_tokens)?;
+    let priced_count =
+        u32::try_from(pricing.receipts.len()).map_err(|_| PolicyError::Arithmetic)?;
+    let unavailable_pricing_count =
+        u32::try_from(pricing.unavailable.len()).map_err(|_| PolicyError::Arithmetic)?;
     let audit_digest = digest_portfolio_audit(
         &receipt,
         pricing.complete_eligible_set_digest,

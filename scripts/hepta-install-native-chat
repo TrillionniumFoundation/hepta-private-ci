@@ -1,0 +1,442 @@
+#!/usr/bin/python3 -I
+"""Prepare or activate one closed Linux chat deployment; never restart Fleet."""
+
+import argparse
+import json
+import os
+from pathlib import Path
+import pwd
+import subprocess
+import sys
+import tempfile
+import time
+import uuid
+
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import native_chat_install_io as io
+import native_chat_install_plan as plan
+import native_chat_install_prepare as preparation
+import native_chat_install_process as process
+
+
+class UnknownCommand(RuntimeError):
+    def __init__(self, child_pid):
+        super().__init__(
+            f"installation outcome unknown; inspect original child PID {child_pid}"
+        )
+        self.child_pid = child_pid
+
+
+def command(argv, deadline, input_bytes=None):
+    remaining = deadline - time.monotonic()
+    if remaining <= 0:
+        raise TimeoutError("installation deadline exhausted")
+    child = subprocess.Popen(
+        argv,
+        stdin=subprocess.PIPE if input_bytes is not None else subprocess.DEVNULL,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+    )
+    try:
+        out, err = child.communicate(input_bytes, timeout=remaining)
+    except subprocess.TimeoutExpired as error:
+        # Never kill a native owner/helper or assume that a timed-out job did
+        # not execute. Keep the physical PID and external intent for inspection.
+        raise UnknownCommand(child.pid) from error
+    if len(out) + len(err) > 65536 or child.returncode:
+        # The helper's output is not copied to logs (even on failure).
+        raise UnknownCommand(child.pid)
+    return out
+
+
+def systemctl(*args, deadline):
+    return command(["/usr/bin/systemctl", *args], deadline)
+
+
+def observed_service(service, program, args, uid, gid, caps, deadline):
+    raw = systemctl(
+        "show",
+        service,
+        "--no-pager",
+        "-p",
+        "MainPID",
+        "-p",
+        "User",
+        "-p",
+        "Group",
+        "-p",
+        "ControlGroup",
+        "-p",
+        "ActiveState",
+        "-p",
+        "DropInPaths",
+        deadline=deadline,
+    )
+    return process.observe(raw, service, program, args, uid, gid, caps)
+
+
+def gateway(checked, deadline, account=None, original=False):
+    args = checked["original_args"] if original else plan.gateway_args(checked, account)
+    return observed_service(plan.GATEWAY_SERVICE, args[0], args, 984, 973, 0, deadline)
+
+
+def inputs(request_path, expected_digest, restoring=False):
+    data = io.read_public(request_path)
+    if io.digest(data) != expected_digest:
+        raise ValueError("Root request source digest differs")
+    request = json.loads(data, object_pairs_hook=io.unique_object)
+    namespace = plan.INSTALL_ROOT / str(uuid.UUID(request["installation_id"]))
+    if restoring:
+        desktop = io.read_public(namespace / "original-desktop.json")
+        policy_bytes = io.read_public(namespace / "original-host-policy.json")
+        if io.read_public(namespace / "request.json") != data:
+            raise ValueError("saved original request differs")
+    else:
+        desktop = io.read_public(request["desktop_config"]["path"], owner=1000)
+        policy_bytes = io.read_public(plan.POLICY)
+    checked = plan.checked(
+        request, policy_bytes, io.read_public(plan.GATEWAY_UNIT), desktop
+    )
+    for role in ("gateway", "bridge", "renderer", "credential_helper", "fleetctl"):
+        io.program(request[role])
+    checked["bundle_files"] = io.renderer_bundle(request)
+    template = io.read_public(request["bridge_template"]["path"])
+    if io.digest(template) != request["bridge_template"]["sha256"]:
+        raise ValueError("Root bridge template differs")
+    if (
+        b"CapabilityBoundingSet=CAP_SYS_PTRACE CAP_DAC_OVERRIDE\n" not in template
+        or b"AmbientCapabilities=CAP_SYS_PTRACE CAP_DAC_OVERRIDE\n" not in template
+        or b"NoNewPrivileges=yes\n" not in template
+    ):
+        raise ValueError("Root bridge does not have the reviewed two-cap confinement")
+    checked["template"] = template
+    checked["desktop_bytes"] = desktop
+    checked["request_bytes"] = data
+    return checked
+
+
+def owner_epoch(checked, expected, deadline):
+    str(uuid.UUID(expected))
+    result = json.loads(
+        command(
+            [
+                checked["request"]["fleetctl"]["path"],
+                "--fleet-root",
+                "/var/lib/hepta-private-ci/fleet",
+                "health",
+            ],
+            deadline,
+        ),
+        object_pairs_hook=io.unique_object,
+    )
+    if result.get("ready") is not True or result.get("supervisor_epoch") != expected:
+        raise ValueError("original Supervisor epoch/readiness changed")
+
+
+def replace_desktop(checked, data, expected):
+    path = Path(checked["request"]["desktop_config"]["path"])
+    if io.digest(io.read_public(path, owner=1000)) != expected:
+        raise ValueError("desktop config changed; retain original installation")
+    fd, temporary = tempfile.mkstemp(prefix=".native-chat-", dir=path.parent)
+    try:
+        with os.fdopen(fd, "wb") as out:
+            os.fchmod(out.fileno(), 0o600)
+            os.fchown(out.fileno(), 1000, pwd.getpwuid(1000).pw_gid)
+            out.write(data)
+            out.flush()
+            os.fsync(out.fileno())
+        if io.digest(io.read_public(path, owner=1000)) != expected:
+            raise ValueError("desktop config changed before replacement")
+        os.replace(temporary, path)
+        io.barrier(path.parent)
+    finally:
+        if os.path.exists(temporary):
+            os.unlink(temporary)
+
+
+def activate(checked, expected_epoch):
+    namespace = checked["namespace"]
+    account = json.loads(io.read_public(namespace / "account.json"))["account"]
+    phases = [
+        json.loads(io.read_public(path))["phase"]
+        for path in sorted(namespace.glob("phase-*.json"))
+    ]
+    if phases[-1:] != ["keyring-paired"]:
+        raise ValueError(
+            "installation is unresolved or already used; no automatic reactivation"
+        )
+    if (
+        io.digest(
+            io.read_public(checked["request"]["desktop_config"]["path"], owner=1000)
+        )
+        != checked["request"]["desktop_config"]["sha256"]
+    ):
+        raise ValueError("desktop changed since preparation")
+    if io.digest(io.read_public(plan.POLICY)) != checked["target_policy_sha256"]:
+        raise ValueError(
+            "Root has not installed the exact original-owner candidate policy"
+        )
+    for path in (
+        plan.GATEWAY_DROPIN,
+        plan.BRIDGE_UNIT,
+        plan.BRIDGE_CONFIG,
+        plan.CAPABILITY,
+    ):
+        if path.exists() or path.is_symlink():
+            raise ValueError("activation path appeared after preparation")
+    deadline = time.monotonic() + 30
+    owner_epoch(checked, expected_epoch, deadline)
+    current = gateway(checked, deadline, original=True)
+    prepared = json.loads(io.read_public(namespace / "phase-00.json"))[
+        "original_gateway"
+    ]
+    if current != prepared:
+        raise ValueError("original gateway changed since preparation")
+    # Finish all configuration validation before stopping the only gateway.
+    template = (
+        checked["template"]
+        .replace(b"@ENROLLED_GATEWAY_GROUP@", b"973")
+        .replace(b"@IMMUTABLE_PROGRAM@", checked["request"]["bridge"]["path"].encode())
+    )
+    if b"@" in template:
+        raise ValueError("unexpanded Root unit template")
+    dropin = plan.dropin(checked, account)
+    io.log(
+        namespace, "gateway-stop-intent", epoch=expected_epoch, original_gateway=current
+    )
+    try:
+        systemctl("stop", plan.GATEWAY_SERVICE, deadline=deadline)
+        owner_epoch(checked, expected_epoch, deadline)
+        io.durable_create(
+            plan.BRIDGE_CONFIG, checked["bridge_config"], mode=0o440, gid=973
+        )
+        io.durable_create(plan.BRIDGE_UNIT, template, mode=0o644)
+        io.durable_create(
+            plan.CAPABILITY,
+            io.read_public(namespace / "chat.capability"),
+            mode=0o440,
+            gid=973,
+        )
+        plan.GATEWAY_DROPIN.parent.mkdir(mode=0o755, exist_ok=True)
+        io.protected_parents(plan.GATEWAY_DROPIN)
+        io.durable_create(plan.GATEWAY_DROPIN, dropin, mode=0o644)
+        io.log(
+            namespace,
+            "files-staged",
+            dropin_sha256=io.digest(dropin),
+            epoch=expected_epoch,
+        )
+        systemctl("daemon-reload", deadline=deadline)
+        systemctl("start", plan.BRIDGE_SERVICE, deadline=deadline)
+        systemctl("start", plan.GATEWAY_SERVICE, deadline=deadline)
+        owner_epoch(checked, expected_epoch, deadline)
+        actual = gateway(checked, deadline, account)
+        bridge_args = [
+            checked["request"]["bridge"]["path"],
+            "--configuration",
+            str(plan.BRIDGE_CONFIG),
+        ]
+        observed_service(
+            plan.BRIDGE_SERVICE, bridge_args[0], bridge_args, 0, 973, 0x80002, deadline
+        )
+        desktop = {**checked["desktop"], "chat_keyring_account": account}
+        replace_desktop(
+            checked, io.encode(desktop), checked["request"]["desktop_config"]["sha256"]
+        )
+        io.log(
+            namespace,
+            "activated-awaiting-desktop-acceptance",
+            epoch=expected_epoch,
+            gateway=actual,
+            desktop_sha256=io.digest(io.encode(desktop)),
+        )
+    except Exception as error:
+        io.log(
+            namespace,
+            "activation-outcome-unresolved",
+            epoch=expected_epoch,
+            child_pid=getattr(error, "child_pid", None),
+        )
+        # Do not assume a failed/timed-out command had no effect. Restoration
+        # requires a separate current check and an explicit original intent.
+        raise
+    return {
+        "namespace": str(namespace),
+        "status": "services-active-desktop-acceptance-required",
+        "live_chat_proved": False,
+    }
+
+
+def restore(checked, expected_epoch):
+    namespace = checked["namespace"]
+    account = json.loads(io.read_public(namespace / "account.json"))["account"]
+    phases = [
+        json.loads(io.read_public(path))["phase"]
+        for path in sorted(namespace.glob("phase-*.json"))
+    ]
+    if phases[-1:] not in (
+        ["gateway-stop-intent"],
+        ["files-staged"],
+        ["activation-outcome-unresolved"],
+        ["activated-awaiting-desktop-acceptance"],
+    ):
+        raise ValueError("there is no original activation to restore")
+    if io.digest(io.read_public(plan.POLICY)) != checked["target_policy_sha256"]:
+        raise ValueError("owner policy changed; use the original owner handoff")
+    expected_dropin = plan.dropin(checked, account)
+    # A partial activation is still fenced to its own bytes. Missing resources
+    # are allowed; a different operator's resources can never be overwritten.
+    for path, expected in (
+        (plan.GATEWAY_DROPIN, expected_dropin),
+        (plan.BRIDGE_CONFIG, checked["bridge_config"]),
+        (
+            plan.BRIDGE_UNIT,
+            checked["template"]
+            .replace(b"@ENROLLED_GATEWAY_GROUP@", b"973")
+            .replace(
+                b"@IMMUTABLE_PROGRAM@", checked["request"]["bridge"]["path"].encode()
+            ),
+        ),
+    ):
+        if (path.exists() or path.is_symlink()) and io.read_public(path) != expected:
+            raise ValueError("installation resources changed; restore is fenced")
+    desktop_path = checked["request"]["desktop_config"]["path"]
+    desktop_data = io.read_public(desktop_path, owner=1000)
+    old_digest = checked["request"]["desktop_config"]["sha256"]
+    new_digest = io.digest(
+        io.encode({**checked["desktop"], "chat_keyring_account": account})
+    )
+    if io.digest(desktop_data) not in {old_digest, new_digest}:
+        raise ValueError("desktop changed; do not overwrite its configuration")
+    deadline = time.monotonic() + 30
+    owner_epoch(checked, expected_epoch, deadline)
+    current_dropins = (
+        systemctl(
+            "show",
+            plan.GATEWAY_SERVICE,
+            "--no-pager",
+            "--value",
+            "-p",
+            "DropInPaths",
+            deadline=deadline,
+        )
+        .decode()
+        .strip()
+    )
+    if current_dropins not in {"", str(plan.GATEWAY_DROPIN)}:
+        raise ValueError("another gateway deployment changed the unit")
+    active = (
+        systemctl(
+            "show",
+            plan.GATEWAY_SERVICE,
+            "--no-pager",
+            "--value",
+            "-p",
+            "ActiveState",
+            deadline=deadline,
+        )
+        .decode()
+        .strip()
+    )
+    if active == "active":
+        gateway(
+            checked,
+            deadline,
+            account if current_dropins else None,
+            original=not current_dropins,
+        )
+    elif active not in {"inactive", "failed"}:
+        raise ValueError("gateway transition is still unresolved")
+    io.log(namespace, "restore-intent", epoch=expected_epoch)
+    try:
+        if plan.BRIDGE_UNIT.exists():
+            systemctl("stop", plan.BRIDGE_SERVICE, deadline=deadline)
+        systemctl("stop", plan.GATEWAY_SERVICE, deadline=deadline)
+        owner_epoch(checked, expected_epoch, deadline)
+        baseline = plan.dropin(checked)
+        plan.GATEWAY_DROPIN.parent.mkdir(mode=0o755, exist_ok=True)
+        io.protected_parents(plan.GATEWAY_DROPIN)
+        staged = plan.GATEWAY_DROPIN.with_name(".40-native-chat.restore")
+        io.durable_create(staged, baseline, mode=0o644)
+        if (
+            plan.GATEWAY_DROPIN.exists()
+            and io.read_public(plan.GATEWAY_DROPIN) != expected_dropin
+        ):
+            raise ValueError("gateway drop-in changed before restoration")
+        os.replace(staged, plan.GATEWAY_DROPIN)
+        io.barrier(plan.GATEWAY_DROPIN.parent)
+        if io.digest(desktop_data) == new_digest:
+            replace_desktop(checked, checked["desktop_bytes"], new_digest)
+        systemctl("daemon-reload", deadline=deadline)
+        systemctl("start", plan.GATEWAY_SERVICE, deadline=deadline)
+        owner_epoch(checked, expected_epoch, deadline)
+        io.log(
+            namespace,
+            "gateway-baseline-restored-chat-retained",
+            gateway=gateway(checked, deadline),
+            epoch=expected_epoch,
+        )
+    except Exception as error:
+        io.log(
+            namespace,
+            "restore-outcome-unresolved",
+            epoch=expected_epoch,
+            child_pid=getattr(error, "child_pid", None),
+        )
+        raise
+    return {
+        "status": "original-read-lifecycle-behavior-restored",
+        "namespace": str(namespace),
+        "program_remains_current_enrolled_gateway": True,
+        "unknown_chat_intents_and_key_retained": True,
+        "owner_changed": False,
+    }
+
+
+def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("mode", choices=("plan", "prepare", "activate", "restore"))
+    parser.add_argument("--request", type=Path, required=True)
+    parser.add_argument("--sha256", required=True)
+    parser.add_argument("--expected-epoch")
+    args = parser.parse_args()
+    if sys.platform != "linux":
+        raise OSError("this closed installer requires the Linux systemd host")
+    if os.geteuid() != 0:
+        raise PermissionError(
+            "Root alone may inspect/prepare/activate this installation"
+        )
+    for source in (
+        Path(__file__),
+        Path(io.__file__),
+        Path(plan.__file__),
+        Path(process.__file__),
+        Path(preparation.__file__),
+    ):
+        with io.regular_file(source):
+            pass  # Root first publishes the reviewed source in a protected directory.
+    checked = inputs(args.request, args.sha256, args.mode in {"activate", "restore"})
+    if args.mode == "plan":
+        result = {
+            "namespace": str(checked["namespace"]),
+            "target_policy_sha256": checked["target_policy_sha256"],
+            "source_only": True,
+            "changes_live_state": False,
+        }
+    elif args.mode == "prepare":
+        if args.expected_epoch:
+            raise ValueError("preparation cannot select an owner epoch")
+        result = preparation.prepare(checked, gateway, command)
+    else:
+        if not args.expected_epoch:
+            raise ValueError("activation requires the current original owner epoch")
+        result = (
+            activate(checked, args.expected_epoch)
+            if args.mode == "activate"
+            else restore(checked, args.expected_epoch)
+        )
+    print(json.dumps(result, sort_keys=True))
+
+
+if __name__ == "__main__":
+    main()

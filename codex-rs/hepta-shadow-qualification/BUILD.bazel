@@ -81,7 +81,7 @@ rust_test(
     crate_root = "tests/lane_e_api_contract.rs",
     edition = "2024",
     deps = [
-        "//codex-rs/hepta-bellman-operator",
+        "//codex-rs/hepta-bellman-operator:hepta-bellman-operator-test-lib",
         "//codex-rs/hepta-intelligence-eval",
         "//codex-rs/hepta-learning-artifacts",
         "//codex-rs/hepta-learning-ledger",

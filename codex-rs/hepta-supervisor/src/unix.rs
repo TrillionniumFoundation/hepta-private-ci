@@ -40,13 +40,19 @@ use crate::MatrixSpawnSpec;
 use crate::ProcessDriver;
 use crate::ProcessDriverError;
 use crate::ProcessExit;
-use crate::ProcessIdentity;
 use crate::ProcessLog;
 use crate::ProcessObservation;
 use crate::ProcessState;
 use crate::ProcessStream;
 use crate::SpawnSpec;
 use crate::driver::SpawnedProcess;
+
+#[path = "unix_process_ref.rs"]
+mod process_ref;
+use process_ref::ProcessRef;
+
+#[path = "unix_initialization.rs"]
+mod initialization;
 
 const LOG_CHUNK_BYTES: usize = 4_096;
 const HEALTH_PROBE_INTERVAL: Duration = Duration::from_millis(50);
@@ -56,6 +62,9 @@ const ADOPTION_PROBE_ATTEMPTS: u64 = 3;
 /// Unix child wrapper with non-blocking polling and bounded per-child log channels.
 pub struct UnixProcessDriver {
     log_channel_capacity: usize,
+    peer_uid: u32,
+    #[cfg(all(target_os = "linux", feature = "local-host"))]
+    local_host: Option<Arc<crate::LocalFleetHost>>,
 }
 
 impl UnixProcessDriver {
@@ -67,7 +76,25 @@ impl UnixProcessDriver {
         }
         Ok(Self {
             log_channel_capacity,
+            peer_uid: unsafe { libc::geteuid() },
+            #[cfg(all(target_os = "linux", feature = "local-host"))]
+            local_host: None,
         })
+    }
+    #[cfg(all(target_os = "linux", feature = "local-host"))]
+    pub fn with_local_host(mut self, host: Arc<crate::LocalFleetHost>) -> Self {
+        self.peer_uid = host.policy.workload_uid;
+        self.local_host = Some(host);
+        self
+    }
+
+    fn peer_uid_for(&self, agent: &AgentId) -> Result<u32, ProcessDriverError> {
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        if let Some(host) = &self.local_host {
+            return host.policy.workload_uid_for(agent);
+        }
+        let _ = agent;
+        Ok(self.peer_uid)
     }
 }
 
@@ -78,23 +105,37 @@ pub struct UnixManagedProcess {
     agent_control: Option<AgentHealthProbeIdentity>,
     drain_requested: bool,
     next_drain_request_id: u64,
+    initialization_failure: Option<String>,
+    #[cfg(all(target_os = "linux", feature = "local-host"))]
+    resource_execution: Option<(Arc<crate::LocalFleetHost>, String)>,
 }
 
 enum UnixProcessHandle {
     Child(Child),
-    Adopted { process_id: u32 },
+    Adopted(ProcessRef),
 }
 
 impl UnixProcessHandle {
-    fn process_id(&self) -> u32 {
+    fn signal(&mut self, signal: i32) -> Result<(), ProcessDriverError> {
         match self {
-            Self::Child(child) => child.id(),
-            Self::Adopted { process_id } => *process_id,
+            Self::Child(child) => {
+                // Child is exclusively owned here. Do not signal after try_wait
+                // has reaped it; an unreaped child cannot have its PID reused.
+                if child.try_wait()?.is_some() {
+                    return Err(std::io::Error::from_raw_os_error(libc::ESRCH).into());
+                }
+                send_signal(child.id(), signal)
+            }
+            Self::Adopted(reference) => reference.signal(signal).map_err(Into::into),
         }
     }
 }
 
 impl ManagedProcess for UnixManagedProcess {
+    fn initialization_failure(&self) -> Option<&str> {
+        self.initialization_failure.as_deref()
+    }
+
     fn poll(&mut self, max_logs: usize) -> Result<ProcessObservation, ProcessDriverError> {
         let mut logs = Vec::with_capacity(max_logs);
         for _ in 0..max_logs {
@@ -107,6 +148,18 @@ impl ManagedProcess for UnixManagedProcess {
             UnixProcessHandle::Child(child) => match child.try_wait()? {
                 Some(status) => {
                     self.health_probe.shutdown();
+                    #[cfg(all(target_os = "linux", feature = "local-host"))]
+                    if let Some((host, id)) = &self.resource_execution
+                        && !host.finish_exit(id)?
+                    {
+                        return Ok(ProcessObservation {
+                            state: ProcessState::Running {
+                                healthy: false,
+                                drained: false,
+                            },
+                            logs,
+                        });
+                    }
                     return Ok(ProcessObservation {
                         state: ProcessState::Exited(ProcessExit {
                             success: status.success(),
@@ -117,9 +170,21 @@ impl ManagedProcess for UnixManagedProcess {
                 }
                 None => true,
             },
-            UnixProcessHandle::Adopted { process_id } => {
-                if let Some(exit) = poll_adopted_process(*process_id)? {
+            UnixProcessHandle::Adopted(reference) => {
+                if let Some(exit) = poll_adopted_process(reference)? {
                     self.health_probe.shutdown();
+                    #[cfg(all(target_os = "linux", feature = "local-host"))]
+                    if let Some((host, id)) = &self.resource_execution
+                        && !host.finish_exit(id)?
+                    {
+                        return Ok(ProcessObservation {
+                            state: ProcessState::Running {
+                                healthy: false,
+                                drained: false,
+                            },
+                            logs,
+                        });
+                    }
                     return Ok(ProcessObservation {
                         state: ProcessState::Exited(exit),
                         logs,
@@ -143,7 +208,7 @@ impl ManagedProcess for UnixManagedProcess {
         };
         Ok(ProcessObservation {
             state: ProcessState::Running {
-                healthy: self.health_probe.ready(),
+                healthy: self.initialization_failure.is_none() && self.health_probe.ready(),
                 drained,
             },
             logs,
@@ -151,6 +216,9 @@ impl ManagedProcess for UnixManagedProcess {
     }
 
     fn request_drain(&mut self) -> Result<(), ProcessDriverError> {
+        if let Some(error) = &self.initialization_failure {
+            return Err(ProcessDriverError::new(error.clone()));
+        }
         let Some(identity) = self.agent_control.as_ref() else {
             return Err(ProcessDriverError::new(
                 "managed process does not expose the Agentd drain protocol",
@@ -164,25 +232,59 @@ impl ManagedProcess for UnixManagedProcess {
     }
 
     fn request_stop(&mut self) -> Result<(), ProcessDriverError> {
-        send_signal(self.handle.process_id(), libc::SIGTERM)
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        if let Some((host, id)) = &self.resource_execution {
+            host.request_stop(id)?;
+        }
+        self.handle.signal(libc::SIGTERM)
     }
 
     fn kill(&mut self) -> Result<(), ProcessDriverError> {
-        send_signal(self.handle.process_id(), libc::SIGKILL)
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        if let Some((host, id)) = &self.resource_execution {
+            return host.kill(id);
+        }
+        self.handle.signal(libc::SIGKILL)
     }
 }
 
 impl ProcessDriver for UnixProcessDriver {
     type Process = UnixManagedProcess;
 
+    fn prove_never_spawned(
+        &mut self,
+        agent: &AgentId,
+    ) -> Result<Option<codex_hepta_contracts::Sha256Digest>, ProcessDriverError> {
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        if let Some(host) = &self.local_host {
+            return host.prove_never_spawned(agent);
+        }
+        let _ = agent;
+        Ok(None)
+    }
+
+    fn prepare_agent_registration(
+        &mut self,
+        record: &codex_hepta_fleet::AgentRecord,
+    ) -> Result<(), ProcessDriverError> {
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        if let Some(host) = &self.local_host {
+            return host.prepare_registration(record);
+        }
+        let _ = record;
+        Ok(())
+    }
+
     fn spawn(
         &mut self,
         spec: &SpawnSpec,
     ) -> Result<SpawnedProcess<Self::Process>, ProcessDriverError> {
+        let peer_uid = self.peer_uid_for(&spec.agent_id)?;
         let mut command = Command::new(&spec.command.program);
         command
             .args(&spec.command.args)
             .current_dir(&spec.workspace)
+            .env("HOME", &spec.home_root)
             .env("CODEX_HOME", &spec.home_root)
             .env("CODEX_SQLITE_HOME", &spec.home_root)
             .env("HEPTA_AGENT_ID", spec.agent_id.to_string())
@@ -193,43 +295,46 @@ impl ProcessDriver for UnixProcessDriver {
             .stdin(Stdio::null())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
-        let mut child = command.spawn()?;
-        let agent_control = AgentHealthProbeIdentity::from_spawn(spec, child.id());
-        let health_probe =
-            match HealthProbe::spawn(HealthProbeIdentity::Agentd(agent_control.clone())) {
-                Ok(probe) => probe,
-                Err(error) => {
-                    let _ = child.kill();
-                    return Err(error);
-                }
-            };
-        let Some(stdout) = child.stdout.take() else {
-            let _ = child.kill();
-            return Err(ProcessDriverError::new("child stdout pipe is missing"));
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        let execution = self
+            .local_host
+            .as_ref()
+            .map(|host| host.prepare_agent(spec))
+            .transpose()?;
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        if let (Some(host), Some(execution)) = (&self.local_host, &execution) {
+            host.constrain(&mut command, execution)?;
+        }
+        let child = command.spawn()?;
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        let binding = match (&self.local_host, &execution) {
+            (Some(host), Some(execution)) => host.bind(execution, child.id()),
+            _ => Ok(()),
         };
-        let Some(stderr) = child.stderr.take() else {
-            let _ = child.kill();
-            return Err(ProcessDriverError::new("child stderr pipe is missing"));
-        };
-        let (sender, logs) = std::sync::mpsc::sync_channel(self.log_channel_capacity);
-        spawn_log_reader(stdout, ProcessStream::Stdout, sender.clone());
-        spawn_log_reader(stderr, ProcessStream::Stderr, sender);
-        let identity = ProcessIdentity::new(
-            u64::from(child.id()),
-            format!("unix-pid-{}-generation-{}", child.id(), spec.generation),
-        )
-        .map_err(|error| ProcessDriverError::new(error.to_string()))?;
-        Ok(SpawnedProcess {
-            identity,
-            process: UnixManagedProcess {
-                handle: UnixProcessHandle::Child(child),
-                logs,
-                health_probe,
-                agent_control: Some(agent_control),
-                drain_requested: false,
-                next_drain_request_id: 1,
-            },
-        })
+        let mut agent_control = AgentHealthProbeIdentity::from_spawn(spec, child.id());
+        agent_control.peer_uid = peer_uid;
+        let probe = HealthProbe::spawn(HealthProbeIdentity::Agentd(agent_control.clone()));
+        // From successful spawn onward, all setup faults travel with ownership.
+        let mut spawned = initialization::finish_child(
+            child,
+            spec.generation,
+            false,
+            probe,
+            Some(agent_control),
+            self.log_channel_capacity,
+        );
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        if let (Some(host), Some(execution)) = (&self.local_host, execution) {
+            spawned.process.resource_execution = Some((Arc::clone(host), execution.id));
+            if let Err(error) = binding {
+                spawned
+                    .process
+                    .initialization_failure
+                    .get_or_insert_with(|| crate::runtime::bounded_message(error.to_string()));
+                spawned.process.health_probe.shutdown();
+            }
+        }
+        Ok(spawned)
     }
 
     fn adopt(&mut self, spec: &AdoptSpec) -> Result<Adoption<Self::Process>, ProcessDriverError> {
@@ -238,19 +343,30 @@ impl ProcessDriver for UnixProcessDriver {
         }
         let process_id = u32::try_from(spec.identity.system_id())
             .map_err(|_| ProcessDriverError::new("stored child PID does not fit u32"))?;
-        let agent_control = AgentHealthProbeIdentity::from_adopt(spec, process_id);
+        // Acquire the kernel lifetime before the wire proof. If that task
+        // exits during proof, the reference cannot be rebound to a reused PID.
+        let Some(reference) = ProcessRef::open(process_id)? else {
+            return Ok(Adoption::Missing);
+        };
+        let mut agent_control = AgentHealthProbeIdentity::from_adopt(spec, process_id);
+        agent_control.peer_uid = self.peer_uid_for(&spec.agent_id)?;
         let health_identity = HealthProbeIdentity::Agentd(agent_control.clone());
         if prove_adoption_identity(&health_identity) {
-            let health_probe = HealthProbe::spawn(health_identity)?;
-            let (_sender, logs) = std::sync::mpsc::sync_channel(1);
-            return Ok(Adoption::Adopted(UnixManagedProcess {
-                handle: UnixProcessHandle::Adopted { process_id },
-                logs,
-                health_probe,
-                agent_control: Some(agent_control),
-                drain_requested: false,
-                next_drain_request_id: 1,
-            }));
+            if reference.exited()? {
+                return Ok(Adoption::Missing);
+            }
+            let probe = HealthProbe::spawn(health_identity);
+            let mut process =
+                initialization::finish_adoption(reference, probe, Some(agent_control));
+            #[cfg(all(target_os = "linux", feature = "local-host"))]
+            if let Some(host) = &self.local_host {
+                let id = match host.recover_execution(&spec.agent_id.to_string(), process_id) {
+                    Ok(id) => id,
+                    Err(_) => return Ok(Adoption::Rejected),
+                };
+                process.resource_execution = Some((Arc::clone(host), id));
+            }
+            return Ok(Adoption::Adopted(process));
         }
 
         // A stale lease PID may already belong to an unrelated process. Failed
@@ -263,6 +379,7 @@ impl ProcessDriver for UnixProcessDriver {
         &mut self,
         spec: &MatrixSpawnSpec,
     ) -> Result<SpawnedProcess<Self::Process>, ProcessDriverError> {
+        let peer_uid = self.peer_uid_for(&spec.agent_id)?;
         let mut command = Command::new(&spec.command.program);
         command
             .args(&spec.command.args)
@@ -284,54 +401,49 @@ impl ProcessDriver for UnixProcessDriver {
             .env("HEPTA_MATRIXD_CONTROL_SOCKET", &spec.control_socket)
             .env("HEPTA_AGENTD_CONTROL_SOCKET", &spec.agentd_control_socket)
             .env("HEPTA_MATRIX_ROOT", &spec.matrix_root)
+            .env("HOME", &spec.matrix_root)
             .stdin(Stdio::null())
             .stdout(Stdio::piped())
             .stderr(Stdio::piped());
-        let mut child = command.spawn()?;
-        let health_probe = match HealthProbe::spawn(HealthProbeIdentity::Matrixd(
-            MatrixHealthProbeIdentity::from_spawn(spec, child.id()),
-        )) {
-            Ok(probe) => probe,
-            Err(error) => {
-                let _ = child.kill();
-                return Err(error);
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        let execution = self
+            .local_host
+            .as_ref()
+            .map(|host| host.prepare_matrix(spec))
+            .transpose()?;
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        if let (Some(host), Some(execution)) = (&self.local_host, &execution) {
+            host.constrain(&mut command, execution)?;
+        }
+        let child = command.spawn()?;
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        let binding = match (&self.local_host, &execution) {
+            (Some(host), Some(execution)) => host.bind(execution, child.id()),
+            _ => Ok(()),
+        };
+        let mut identity = MatrixHealthProbeIdentity::from_spawn(spec, child.id());
+        identity.peer_uid = peer_uid;
+        let probe = HealthProbe::spawn(HealthProbeIdentity::Matrixd(identity));
+        let mut spawned = initialization::finish_child(
+            child,
+            spec.agent_generation,
+            true,
+            probe,
+            None,
+            self.log_channel_capacity,
+        );
+        #[cfg(all(target_os = "linux", feature = "local-host"))]
+        if let (Some(host), Some(execution)) = (&self.local_host, execution) {
+            spawned.process.resource_execution = Some((Arc::clone(host), execution.id));
+            if let Err(error) = binding {
+                spawned
+                    .process
+                    .initialization_failure
+                    .get_or_insert_with(|| crate::runtime::bounded_message(error.to_string()));
+                spawned.process.health_probe.shutdown();
             }
-        };
-        let Some(stdout) = child.stdout.take() else {
-            let _ = child.kill();
-            return Err(ProcessDriverError::new(
-                "matrixd child stdout pipe is missing",
-            ));
-        };
-        let Some(stderr) = child.stderr.take() else {
-            let _ = child.kill();
-            return Err(ProcessDriverError::new(
-                "matrixd child stderr pipe is missing",
-            ));
-        };
-        let (sender, logs) = std::sync::mpsc::sync_channel(self.log_channel_capacity);
-        spawn_log_reader(stdout, ProcessStream::Stdout, sender.clone());
-        spawn_log_reader(stderr, ProcessStream::Stderr, sender);
-        let identity = ProcessIdentity::new(
-            u64::from(child.id()),
-            format!(
-                "unix-matrix-pid-{}-agent-generation-{}",
-                child.id(),
-                spec.agent_generation
-            ),
-        )
-        .map_err(|error| ProcessDriverError::new(error.to_string()))?;
-        Ok(SpawnedProcess {
-            identity,
-            process: UnixManagedProcess {
-                handle: UnixProcessHandle::Child(child),
-                logs,
-                health_probe,
-                agent_control: None,
-                drain_requested: false,
-                next_drain_request_id: 1,
-            },
-        })
+        }
+        Ok(spawned)
     }
 
     fn adopt_matrixd(
@@ -343,24 +455,41 @@ impl ProcessDriver for UnixProcessDriver {
         }
         let process_id = u32::try_from(spec.identity.system_id())
             .map_err(|_| ProcessDriverError::new("stored matrixd PID does not fit u32"))?;
-        let health_identity =
-            HealthProbeIdentity::Matrixd(MatrixHealthProbeIdentity::from_adopt(spec, process_id));
+        let Some(reference) = ProcessRef::open(process_id)? else {
+            return Ok(Adoption::Missing);
+        };
+        let mut identity = MatrixHealthProbeIdentity::from_adopt(spec, process_id);
+        identity.peer_uid = self.peer_uid_for(&spec.agent_id)?;
+        let health_identity = HealthProbeIdentity::Matrixd(identity);
         if prove_adoption_identity(&health_identity) {
-            let health_probe = HealthProbe::spawn(health_identity)?;
-            let (_sender, logs) = std::sync::mpsc::sync_channel(1);
-            return Ok(Adoption::Adopted(UnixManagedProcess {
-                handle: UnixProcessHandle::Adopted { process_id },
-                logs,
-                health_probe,
-                agent_control: None,
-                drain_requested: false,
-                next_drain_request_id: 1,
-            }));
+            if reference.exited()? {
+                return Ok(Adoption::Missing);
+            }
+            let probe = HealthProbe::spawn(health_identity);
+            let mut process = initialization::finish_adoption(reference, probe, None);
+            #[cfg(all(target_os = "linux", feature = "local-host"))]
+            if let Some(host) = &self.local_host {
+                let id = match host
+                    .recover_execution(&format!("matrix:{}", spec.agent_id), process_id)
+                {
+                    Ok(id) => id,
+                    Err(_) => return Ok(Adoption::Rejected),
+                };
+                process.resource_execution = Some((Arc::clone(host), id));
+            }
+            return Ok(Adoption::Adopted(process));
         }
 
         // See agentd adoption above: no exact handshake means no authority to
         // signal a possibly reused PID.
         Ok(Adoption::Rejected)
+    }
+    #[cfg(all(target_os = "linux", feature = "local-host"))]
+    fn validate_agent_retirement(&mut self, agent: &AgentId) -> Result<(), ProcessDriverError> {
+        match &self.local_host {
+            Some(host) => host.validate_retirement(agent),
+            None => Ok(()),
+        }
     }
 }
 
@@ -417,6 +546,7 @@ struct AgentHealthProbeIdentity {
     agent_id: AgentId,
     spawn_generation: u64,
     process_id: u32,
+    peer_uid: u32,
     workspace: PathBuf,
     home_root: PathBuf,
     run_root: PathBuf,
@@ -429,6 +559,7 @@ impl AgentHealthProbeIdentity {
             agent_id: spec.agent_id.clone(),
             spawn_generation: spec.generation,
             process_id,
+            peer_uid: unsafe { libc::geteuid() },
             workspace: spec.workspace.clone(),
             home_root: spec.home_root.clone(),
             run_root: spec.run_root.clone(),
@@ -441,6 +572,7 @@ impl AgentHealthProbeIdentity {
             agent_id: spec.agent_id.clone(),
             spawn_generation: spec.spawn_generation,
             process_id,
+            peer_uid: unsafe { libc::geteuid() },
             workspace: spec.workspace.clone(),
             home_root: spec.home_root.clone(),
             run_root: spec.run_root.clone(),
@@ -458,6 +590,7 @@ struct MatrixHealthProbeIdentity {
     process_incarnation: String,
     plane_epoch: u64,
     process_id: u32,
+    peer_uid: u32,
     control_socket: PathBuf,
 }
 
@@ -472,6 +605,7 @@ impl MatrixHealthProbeIdentity {
             process_incarnation: spec.process_incarnation.clone(),
             plane_epoch: spec.plane_epoch,
             process_id,
+            peer_uid: unsafe { libc::geteuid() },
             control_socket: spec.control_socket.clone(),
         }
     }
@@ -486,6 +620,7 @@ impl MatrixHealthProbeIdentity {
             process_incarnation: spec.process_incarnation.clone(),
             plane_epoch: spec.plane_epoch,
             process_id,
+            peer_uid: unsafe { libc::geteuid() },
             control_socket: spec.control_socket.clone(),
         }
     }
@@ -560,6 +695,8 @@ fn query_agent_health_once(
     }
 
     let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    #[cfg(target_os = "linux")]
+    codex_uds::ensure_unix_peer_identity(&stream, identity.peer_uid, identity.process_id)?;
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.write_all(&bytes)?;
@@ -620,6 +757,8 @@ fn read_agent_drain_frame(
     request: &[u8],
 ) -> std::io::Result<Vec<u8>> {
     let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    #[cfg(target_os = "linux")]
+    codex_uds::ensure_unix_peer_identity(&stream, identity.peer_uid, identity.process_id)?;
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.write_all(request)?;
@@ -720,6 +859,8 @@ fn query_matrix_health_once(
     }
 
     let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    #[cfg(target_os = "linux")]
+    codex_uds::ensure_unix_peer_identity(&stream, identity.peer_uid, identity.process_id)?;
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.write_all(&bytes)?;
@@ -781,8 +922,8 @@ fn spawn_log_reader(
     mut reader: impl Read + Send + 'static,
     stream: ProcessStream,
     sender: SyncSender<ProcessLog>,
-) {
-    std::thread::spawn(move || {
+) -> Result<(), ProcessDriverError> {
+    std::thread::Builder::new().spawn(move || {
         let mut buffer = [0_u8; LOG_CHUNK_BYTES];
         loop {
             let count = match reader.read(&mut buffer) {
@@ -794,7 +935,8 @@ fn spawn_log_reader(
                 bytes: buffer[..count].to_vec(),
             });
         }
-    });
+    })?;
+    Ok(())
 }
 
 fn send_signal(pid: u32, signal: i32) -> Result<(), ProcessDriverError> {
@@ -825,39 +967,14 @@ fn process_exists(system_id: u64) -> Result<bool, ProcessDriverError> {
     }
 }
 
-/// Poll an adopted process without confusing a terminated child zombie for a
-/// live process. After supervisor recovery the process normally is not our
-/// child, in which case `waitpid` returns `ECHILD` and the exact UDS adoption
-/// proof remains the sole source of signal authority; here we only observe its
-/// continued existence with signal 0.
-fn poll_adopted_process(process_id: u32) -> Result<Option<ProcessExit>, ProcessDriverError> {
-    let pid = i32::try_from(process_id)
-        .map_err(|_| ProcessDriverError::new("adopted child PID does not fit Unix pid_t"))?;
-    let mut status = 0_i32;
-    // SAFETY: `pid` is the exact process identity proven during adoption,
-    // `status` points to writable storage, and WNOHANG never blocks.
-    let waited = unsafe { libc::waitpid(pid, &mut status, libc::WNOHANG) };
-    if waited > 0 {
-        let exited = libc::WIFEXITED(status);
-        return Ok(Some(ProcessExit {
-            success: exited && libc::WEXITSTATUS(status) == 0,
-            code: exited.then(|| libc::WEXITSTATUS(status)),
-        }));
-    }
-    if waited == 0 {
-        return Ok(None);
-    }
-
-    let error = std::io::Error::last_os_error();
-    if error.raw_os_error() == Some(libc::ECHILD) {
-        return process_exists(u64::from(process_id)).map(|exists| {
-            (!exists).then_some(ProcessExit {
-                success: false,
-                code: None,
-            })
-        });
-    }
-    Err(error.into())
+/// Observe the acquired lifetime, never the current occupant of a numeric PID.
+/// An adopted non-child has no authoritative wait status. Preserve that unknown
+/// exit status rather than inventing successful completion or reaping by PID.
+fn poll_adopted_process(reference: &ProcessRef) -> Result<Option<ProcessExit>, ProcessDriverError> {
+    Ok(reference.exited()?.then_some(ProcessExit {
+        success: false,
+        code: None,
+    }))
 }
 
 #[cfg(test)]

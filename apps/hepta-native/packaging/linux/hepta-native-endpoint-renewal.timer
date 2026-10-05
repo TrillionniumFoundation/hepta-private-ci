@@ -1,0 +1,12 @@
+[Unit]
+Description=Keep the installed Hepta desktop endpoint current
+
+[Timer]
+OnBootSec=2min
+OnCalendar=*-*-* 00,06,12,18:00:00
+RandomizedDelaySec=5min
+Persistent=true
+Unit=hepta-native-endpoint-renewal.service
+
+[Install]
+WantedBy=timers.target

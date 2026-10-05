@@ -1,0 +1,60 @@
+schema = "hepta.module-manifest.v1"
+order = 34
+id = "channel.matrix"
+plane = "adapter"
+kind = "daemon"
+lifecycle = "existing"
+state = "stateful"
+architectureRole = "checked_adapter"
+writes = ["matrix_ingress_projection", "matrix_dispatch_ledger"]
+uses = ["runtime.agentd", "kernel.authority", "kernel.operations"]
+owner = "channels-platform"
+deputy = "security-authority"
+denies = ["agent_store_write", "self_issued_send_authority"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-matrix-sdk", "codex-rs/hepta-matrixd", "codex-rs/hepta-matrix-store", "codex-rs/hepta-matrix-protocol"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "MATRIX-1-CHANNEL-BOUNDARY"
+technicalDocument = "docs/modules/channel.matrix/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-matrix-sdk"
+mode = "exclusive"
+
+[[rootBindings]]
+path = "codex-rs/hepta-matrixd"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-matrix-protocol"
+compileLayer = 1
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-matrix-sdk"
+compileLayer = 3
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-matrix-store"
+compileLayer = 2
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]
+
+[[cargoPackages]]
+path = "codex-rs/hepta-matrixd"
+compileLayer = 8
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

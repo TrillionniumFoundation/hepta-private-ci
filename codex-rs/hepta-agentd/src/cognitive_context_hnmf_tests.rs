@@ -4,31 +4,31 @@ use std::sync::atomic::Ordering;
 use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
-use codex_hepta_cognitive_types::lane_c::LaneCGenerationVectorV1;
-use codex_hepta_contracts::AgentId;
-use codex_hepta_memory::CognitiveAccess;
-use codex_hepta_memory::CognitiveScope;
-use codex_hepta_memory::CognitiveStore;
-use codex_hepta_memory::LedgerSourceKind;
-use codex_hepta_memory::MemoryDraft;
-use codex_hepta_memory::MemoryLifecycleState;
-use codex_hepta_memory::MemoryRevisionDraft;
-use codex_hepta_memory::MemoryVerification;
-use codex_hepta_memory::RetrievalExecutionContextV1;
-use codex_hepta_memory::SourceDraft;
-use codex_hepta_memory::sqlite_owner_cue_profile_digest;
-use codex_hepta_memory::sqlite_owner_retrieval_policy_v1;
-use codex_hepta_memory_retrieval::EngramDynamicsPolicyV1;
-use codex_hepta_memory_retrieval::EngramNodeV1;
-use codex_hepta_memory_retrieval::EngramPopulationV1;
-use codex_hepta_memory_retrieval::EngramSnapshotV1;
-use codex_hepta_memory_retrieval::EngramSupportV1;
-use codex_hepta_paths::HeptaFleetRoot;
-use codex_hepta_types::Digest32;
-use codex_hepta_types::Generation;
-use codex_hepta_types::ProbabilityQ32;
-use codex_hepta_types::Revision;
-use codex_hepta_types::StableId;
+use codex_hepta_agent_components::cognitive_types::lane_c::LaneCGenerationVectorV1;
+use codex_hepta_agent_components::contracts::AgentId;
+use codex_hepta_agent_components::memory::CognitiveAccess;
+use codex_hepta_agent_components::memory::CognitiveScope;
+use codex_hepta_agent_components::memory::CognitiveStore;
+use codex_hepta_agent_components::memory::LedgerSourceKind;
+use codex_hepta_agent_components::memory::MemoryDraft;
+use codex_hepta_agent_components::memory::MemoryLifecycleState;
+use codex_hepta_agent_components::memory::MemoryRevisionDraft;
+use codex_hepta_agent_components::memory::MemoryVerification;
+use codex_hepta_agent_components::memory::RetrievalExecutionContextV1;
+use codex_hepta_agent_components::memory::SourceDraft;
+use codex_hepta_agent_components::memory::sqlite_owner_cue_profile_digest;
+use codex_hepta_agent_components::memory::sqlite_owner_retrieval_policy_v1;
+use codex_hepta_agent_components::memory_retrieval::EngramDynamicsPolicyV1;
+use codex_hepta_agent_components::memory_retrieval::EngramNodeV1;
+use codex_hepta_agent_components::memory_retrieval::EngramPopulationV1;
+use codex_hepta_agent_components::memory_retrieval::EngramSnapshotV1;
+use codex_hepta_agent_components::memory_retrieval::EngramSupportV1;
+use codex_hepta_agent_components::paths::HeptaFleetRoot;
+use codex_hepta_agent_components::types::Digest32;
+use codex_hepta_agent_components::types::Generation;
+use codex_hepta_agent_components::types::ProbabilityQ32;
+use codex_hepta_agent_components::types::Revision;
+use codex_hepta_agent_components::types::StableId;
 
 use crate::CurrentMemoryRetrievalContext;
 
@@ -60,6 +60,42 @@ impl CurrentMemoryRetrievalContext for SwitchingContext {
         } else {
             Ok(self.first.clone())
         }
+    }
+}
+
+struct MutatingOwnerContext {
+    owner: AgentId,
+    store: CognitiveStore,
+    context: RetrievalExecutionContextV1,
+    mutate_on_call: usize,
+    calls: AtomicUsize,
+}
+
+impl CurrentMemoryRetrievalContext for MutatingOwnerContext {
+    fn current(
+        &self,
+        owner: &AgentId,
+        body_generation: u64,
+    ) -> Result<RetrievalExecutionContextV1, String> {
+        if owner != &self.owner || body_generation != 1 {
+            return Err("wrong retrieval host identity".to_string());
+        }
+        if self.calls.fetch_add(1, Ordering::SeqCst) == self.mutate_on_call {
+            tokio::runtime::Handle::current()
+                .block_on(self.store.append_source(
+                    &CognitiveAccess::agent_private(owner.clone()),
+                    &SourceDraft {
+                        scope: CognitiveScope::AgentPrivate,
+                        kind: LedgerSourceKind::ExplicitMemoryDirective,
+                        event_key: "source-during-context-validation".to_string(),
+                        content:
+                            b"owner source changed during external context validation".to_vec(),
+                        observed_at_unix_seconds: 100,
+                    },
+                ))
+                .map_err(|error| error.to_string())?;
+        }
+        Ok(self.context.clone())
     }
 }
 
@@ -167,7 +203,7 @@ async fn fixture(
             record_id: StableId::new(second.id.memory_id.as_str()).unwrap(),
             record_revision: Revision::new(second.id.revision).unwrap(),
         }],
-        threshold: codex_hepta_types::FixedQ32::ZERO,
+        threshold: codex_hepta_agent_components::types::FixedQ32::ZERO,
         confidence: ProbabilityQ32::ONE,
         generation_vector_digest: vector_digest,
     };
@@ -295,7 +331,201 @@ async fn final_use_revalidation_rejects_changed_hnmf_context() {
     assert!(matches!(
         rejected,
         Err(CognitiveContextError::Store(
-            codex_hepta_memory::CognitiveStoreError::Conflict(_)
+            codex_hepta_agent_components::memory::CognitiveStoreError::Conflict(_)
         ))
     ));
+}
+
+#[tokio::test]
+async fn owner_drift_during_hnmf_publication_validation_fails_closed() {
+    let (_temp, store, owner, context, _) = fixture(134).await;
+    let provider: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(MutatingOwnerContext {
+        owner: owner.clone(),
+        store: store.clone(),
+        context,
+        mutate_on_call: 1,
+        calls: AtomicUsize::new(0),
+    });
+    let result =
+        read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&provider)).await;
+    assert!(
+        matches!(
+            &result,
+            Err(CognitiveContextError::Store(
+                codex_hepta_agent_components::memory::CognitiveStoreError::Conflict(_)
+            ))
+        ),
+        "owner drift must fail publication: {result:?}"
+    );
+}
+
+#[tokio::test]
+async fn owner_drift_during_hnmf_final_use_validation_fails_closed() {
+    let (_temp, store, owner, context, _) = fixture(135).await;
+    let stable: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(SwitchingContext {
+        owner: owner.clone(),
+        generation: 1,
+        first: context.clone(),
+        later: context.clone(),
+        switch_after_first: false,
+        calls: Arc::new(AtomicUsize::new(0)),
+    });
+    let response = read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&stable))
+        .await
+        .unwrap();
+    let mutating: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(MutatingOwnerContext {
+        owner: owner.clone(),
+        store: store.clone(),
+        context,
+        mutate_on_call: 0,
+        calls: AtomicUsize::new(0),
+    });
+    let result = crate::cognitive_context::revalidate_with_retrieval_context(
+        &store,
+        &owner,
+        &response.snapshot_digest,
+        &response.read_digest,
+        response.omitted_records,
+        &response.items,
+        response.plan.as_ref(),
+        None,
+        1,
+        Some(&mutating),
+    )
+    .await;
+    assert!(
+        matches!(
+            &result,
+            Err(CognitiveContextError::Store(
+                codex_hepta_agent_components::memory::CognitiveStoreError::Conflict(_)
+            ))
+        ),
+        "owner drift must fail final use: {result:?}"
+    );
+}
+
+#[tokio::test]
+async fn complete_owner_assertions_veto_actual_context_delivery() {
+    use codex_hepta_agent_components::memory::KgEntityFactDraft;
+    use codex_hepta_agent_components::memory::KgFactSetDraft;
+    use codex_hepta_agent_components::memory::KgRelationFactDraft;
+    let (_temp, store, owner, mut context, _) = fixture(139).await;
+    let before_provider: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(SwitchingContext {
+        owner: owner.clone(),
+        generation: 1,
+        first: context.clone(),
+        later: context.clone(),
+        switch_after_first: false,
+        calls: Arc::new(AtomicUsize::new(0)),
+    });
+    let before =
+        read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&before_provider))
+            .await
+            .unwrap();
+    assert_eq!(
+        before.items.len(),
+        1,
+        "the original legal HNMF consumer must deliver before contradictory assertions"
+    );
+    let access = CognitiveAccess::agent_private(owner.clone());
+    let facts = KgFactSetDraft {
+        entities: vec![
+            KgEntityFactDraft {
+                key: "lemon".into(),
+                entity_type: "concept".into(),
+                label: "lemon".into(),
+            },
+            KgEntityFactDraft {
+                key: "safe".into(),
+                entity_type: "property".into(),
+                label: "safe".into(),
+            },
+        ],
+        relations: vec![KgRelationFactDraft {
+            key: "semantic-assertion".into(),
+            from_entity_key: "lemon".into(),
+            to_entity_key: "safe".into(),
+            relation: "is".into(),
+        }],
+    };
+    for (name, denied) in [("positive", false), ("negative", true)] {
+        let content = format!("lemon {name} assertion");
+        let mut positive = facts.clone();
+        let negative = if denied {
+            std::mem::take(&mut positive.relations)
+        } else {
+            Vec::new()
+        };
+        store
+            .remember_with_assertions(
+                &access,
+                &SourceDraft {
+                    scope: CognitiveScope::AgentPrivate,
+                    kind: LedgerSourceKind::ExplicitMemoryDirective,
+                    event_key: format!("semantic-{name}"),
+                    content: content.as_bytes().to_vec(),
+                    observed_at_unix_seconds: 100,
+                },
+                &MemoryDraft {
+                    stable_key: format!("semantic-{name}"),
+                    revision: MemoryRevisionDraft {
+                        scope: CognitiveScope::AgentPrivate,
+                        content,
+                        verification: MemoryVerification::Verified,
+                        lifecycle: MemoryLifecycleState::Active,
+                        valid_from_unix_seconds: 100,
+                        valid_to_unix_seconds: None,
+                        citations: Vec::new(),
+                    },
+                },
+                &positive,
+                &negative,
+            )
+            .await
+            .expect("actual SQLite assertion");
+    }
+    let now = i64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_secs(),
+    )
+    .unwrap();
+    let cut = store
+        .lane_c_snapshot(&access, &CognitiveScope::AgentPrivate, now)
+        .await
+        .unwrap();
+    context.generation_vector.memory_ledger_frontier = cut.frontiers().memory;
+    context.generation_vector.source_ledger_frontier = cut.frontiers().source;
+    context.generation_vector.knowledge_fact_frontier = cut.frontiers().knowledge_facts;
+    context.generation_vector.knowledge_graph_generation = cut.frontiers().knowledge_graph;
+    context.approved_context_digest = cut.snapshot().snapshot_digest;
+    let generation = context.generation_vector.digest();
+    let mut nodes = context.engram_snapshot.nodes.clone();
+    for node in &mut nodes {
+        node.generation_vector_digest = generation;
+    }
+    context.engram_snapshot = EngramSnapshotV1::new(
+        generation,
+        context.engram_snapshot.engram_generation_digest,
+        nodes,
+        Vec::new(),
+    )
+    .unwrap();
+    context.validate().unwrap();
+    let provider: Arc<dyn CurrentMemoryRetrievalContext> = Arc::new(SwitchingContext {
+        owner: owner.clone(),
+        generation: 1,
+        first: context.clone(),
+        later: context,
+        switch_after_first: false,
+        calls: Arc::new(AtomicUsize::new(0)),
+    });
+    let result = read_with_retrieval_context(&store, &owner, 1, "lemon", 4, None, Some(&provider))
+        .await
+        .unwrap();
+    assert!(
+        result.items.is_empty(),
+        "no raw owner result may bypass semantic veto"
+    );
 }

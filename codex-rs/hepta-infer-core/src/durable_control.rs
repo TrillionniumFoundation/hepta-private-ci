@@ -13,8 +13,19 @@ use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
 
+#[path = "native_archive.rs"]
+mod archive;
+#[path = "native_archive_compaction.rs"]
+mod archive_compaction;
+#[path = "native_archive_store.rs"]
+mod archive_store;
+#[path = "feature_control.rs"]
+pub mod feature;
 #[path = "native_control.rs"]
 pub mod native;
+#[path = "durable_writer_lock.rs"]
+mod writer_lock;
+pub use archive::NativeHistoryMaintenanceReceipt;
 
 const MAX_RECORDS: usize = 16_384;
 const MAX_JOURNAL_BYTES: u64 = 64 * 1024 * 1024;
@@ -171,8 +182,10 @@ impl From<std::io::Error> for Error {
 pub struct DurableInferenceControl {
     path: PathBuf,
     file: File,
+    _lifecycle_writer_lock: writer_lock::LifecycleLock,
     records: BTreeMap<String, RequestRecord>,
     native: native::NativeJournal,
+    features: feature::FeatureJournal,
     capacity: usize,
     journal_bytes: u64,
     poisoned: bool,
@@ -187,6 +200,8 @@ impl DurableInferenceControl {
         if let Some(parent) = path.parent() {
             fs::create_dir_all(parent)?;
         }
+        // Hold the stable owner lock before opening or replaying a replaceable journal.
+        let (path, lifecycle_writer_lock) = writer_lock::acquire(&path)?;
         let mut options = OpenOptions::new();
         options.create(true).append(true).read(true);
         #[cfg(unix)]
@@ -199,6 +214,7 @@ impl DurableInferenceControl {
         file.try_lock().map_err(|_| Error::WriterUnavailable)?;
         let mut records = BTreeMap::new();
         let mut native = native::NativeJournal::default();
+        let mut features = feature::FeatureJournal::default();
         let mut reader = BufReader::new(file.try_clone()?);
         let mut journal_bytes = 0_u64;
         let mut line = Vec::new();
@@ -227,14 +243,33 @@ impl DurableInferenceControl {
                 continue;
             }
             if let Some(json) = line.strip_prefix(native::JOURNAL_PREFIX) {
+                archive::validate_replay_archive(&path, json)?;
                 native.replay(json)?;
+            } else if let Some(json) = line.strip_prefix(feature::JOURNAL_PREFIX) {
+                features.replay(json)?;
+            } else if let Some(json) = line.strip_prefix(feature::history::JOURNAL_PREFIX) {
+                feature::history::replay(&mut features, &path, json)?;
             } else {
                 apply_event(&mut records, &decode_event(line)?, /*replay*/ true)?;
             }
-            if records.len() + native.records.len() > capacity
-                || records.keys().any(|id| native.records.contains_key(id))
+            if records.len() + native.records.len() + features.records.len() > capacity
+                || records
+                    .keys()
+                    .any(|id| native.records.contains_key(id) || features.records.contains_key(id))
+                || native
+                    .records
+                    .keys()
+                    .any(|id| features.records.contains_key(id))
             {
                 return Err(Error::CapacityExceeded);
+            }
+        }
+        features.history.validate_pending(&features, &path)?;
+        for id in records.keys().chain(native.records.keys()) {
+            if feature::archive_store::lookup(&path, id)?.is_some() {
+                return Err(Error::CorruptJournal(
+                    "cold feature shared identity re-admitted",
+                ));
             }
         }
         #[cfg(unix)]
@@ -248,8 +283,10 @@ impl DurableInferenceControl {
         Ok(Self {
             path,
             file,
+            _lifecycle_writer_lock: lifecycle_writer_lock,
             records,
             native,
+            features,
             capacity,
             journal_bytes,
             poisoned: false,
@@ -268,10 +305,19 @@ impl DurableInferenceControl {
             }
             return Err(Error::Conflict);
         }
-        if self.native.records.contains_key(&request.request_id) {
+        if self.native.records.contains_key(&request.request_id)
+            || self.features.records.contains_key(&request.request_id)
+        {
             return Err(Error::Conflict);
         }
-        if self.records.len() + self.native.records.len() >= self.capacity {
+        if archive_store::lookup(&self.path, &request.request_id)?.is_some()
+            || feature::archive_store::lookup(&self.path, &request.request_id)?.is_some()
+        {
+            return Err(Error::Conflict);
+        }
+        if self.records.len() + self.native.records.len() + self.features.records.len()
+            >= self.capacity
+        {
             return Err(Error::CapacityExceeded);
         }
         let event = Event::Submit(request);

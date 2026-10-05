@@ -57,6 +57,13 @@ pub enum ThreadStartSource {
 #[serde(rename_all = "camelCase")]
 #[ts(export_to = "v2/")]
 pub struct ThreadStartParams {
+    /// Bind this creation before effects. Requires an explicit absolute cwd and
+    /// `ephemeral: false`; matching unknown requests are inspected, never replayed.
+    #[experimental("thread/start.idempotencyKey")]
+    // Preserve the established wire shape for ordinary unkeyed clients.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    #[ts(optional = nullable)]
+    pub idempotency_key: Option<String>,
     #[ts(optional = nullable)]
     pub model: Option<String>,
     #[ts(optional = nullable)]
@@ -686,6 +693,19 @@ pub struct ThreadDeleteResponse {}
 #[ts(export_to = "v2/")]
 pub struct ThreadUnsubscribeParams {
     pub thread_id: String,
+    /// Explicit disposal of an idle ephemeral runtime. Omitted/null keeps the
+    /// ordinary unsubscribe and idle-cache behavior.
+    #[ts(optional = nullable)]
+    pub ephemeral_disposal: Option<ThreadEphemeralDisposalParams>,
+}
+
+/// Disposal never archives or deletes persistent thread history. The expected
+/// session fences delayed cleanup against a replacement runtime.
+#[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export_to = "v2/")]
+pub struct ThreadEphemeralDisposalParams {
+    pub expected_session_id: String,
 }
 
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]
@@ -702,7 +722,14 @@ pub enum ThreadUnsubscribeStatus {
     NotLoaded,
     NotSubscribed,
     Unsubscribed,
+    /// The exact idle ephemeral session completed shutdown and was removed
+    /// from the live registry. This does not promise allocator RSS reclamation.
+    EphemeralDisposed,
 }
+
+#[cfg(test)]
+#[path = "thread_unsubscribe_tests.rs"]
+mod unsubscribe_tests;
 
 /// Parameters for `thread/increment_elicitation`.
 #[derive(Serialize, Deserialize, Debug, Clone, PartialEq, JsonSchema, TS)]

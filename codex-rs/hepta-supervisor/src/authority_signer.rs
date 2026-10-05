@@ -1,10 +1,12 @@
 //! Offline signing boundary for externally controlled H7 authority material.
 //!
 //! This module deliberately has no connection to the supervisor daemon and
-//! never generates keys.  Callers must provide a signing key through an
+//! never generates keys. Callers must provide a signing key through an
 //! explicit, owner-controlled file descriptor or an owner-only regular file.
 //! The request format is tagged JSON so an external ceremony can review the
-//! exact inputs before invoking the signer binary.
+//! exact inputs before invoking the signer binary. A recovery signature only
+//! authorizes terminalization of an independently observed durable outcome;
+//! it does not itself change a release, process, or journal.
 
 use std::fs;
 use std::fs::File;
@@ -14,6 +16,8 @@ use std::path::Path;
 use crate::signed_authority::H7H89ProductionGrant;
 use crate::signed_authority::H7H89ProductionGrantSigner;
 use crate::signed_authority::H7H89ProductionTransition;
+use crate::signed_authority::ProductionRecoveryDecision;
+use crate::signed_authority::ProductionRecoveryOutcome;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
 use codex_hepta_memory::H7Artifact;
@@ -27,9 +31,8 @@ use serde::Serialize;
 use thiserror::Error;
 use zeroize::Zeroize;
 
-/// Maximum bytes accepted from a key file/FD.  This prevents accidentally
-/// consuming an unbounded stream while still allowing a textual 64-byte hex
-/// seed and a trailing newline.
+/// Maximum bytes accepted from a key file/FD. This bounds memory use, not
+/// the time spent reading an explicitly supplied blocking descriptor.
 pub const MAX_SIGNING_KEY_INPUT_BYTES: usize = 4096;
 
 /// Maximum request JSON accepted by the offline signer.
@@ -66,15 +69,39 @@ pub enum SignRequest {
         issued_at_unix_seconds: u64,
         expires_at_unix_seconds: u64,
     },
+    ProductionRecovery {
+        signer_id: String,
+        signer_epoch: u64,
+        agent_id: String,
+        grant_sha256: Sha256Digest,
+        intent_sha256: Sha256Digest,
+        release_transaction_sha256: Sha256Digest,
+        observed_release: String,
+        observed_manifest_sha256: Sha256Digest,
+        observed_agentd_sha256: Sha256Digest,
+        observed_matrixd_sha256: Option<Sha256Digest>,
+        outcome: ProductionRecoveryOutcome,
+        expected_lifecycle_generation: u64,
+        authority_epoch: u64,
+        issued_at_unix_seconds: u64,
+        expires_at_unix_seconds: u64,
+    },
 }
 
-/// Typed output from [`sign_request`].  The caller may serialize the selected
+/// Typed output from [`sign_request`]. The caller may serialize the selected
 /// envelope directly; the enum keeps the operation boundary explicit.
 #[derive(Clone, Debug, Deserialize, Serialize)]
 #[serde(tag = "operation", rename_all = "snake_case", deny_unknown_fields)]
 pub enum SignResponse {
-    H7Envelope { envelope: H7SignedArtifactEnvelope },
-    ProductionGrant { grant: H7H89ProductionGrant },
+    H7Envelope {
+        envelope: H7SignedArtifactEnvelope,
+    },
+    ProductionGrant {
+        grant: H7H89ProductionGrant,
+    },
+    ProductionRecovery {
+        decision: ProductionRecoveryDecision,
+    },
 }
 
 #[derive(Debug, Error)]
@@ -95,11 +122,15 @@ pub enum ExternalSignerError {
     H7(String),
     #[error("production grant signing failed: {0}")]
     Grant(String),
+    #[error("production recovery signing failed: {0}")]
+    Recovery(String),
 }
 
-/// Read an external Ed25519 seed from an owner-only, non-symlink regular file.
-/// The file is never written by this module and its bytes are zeroized after
-/// conversion to the dalek key type.
+/// Read an external Ed25519 seed from a regular file. On Unix, the opened
+/// descriptor, rather than only a prior path lookup, must be owner-only and
+/// owned by the effective user. O_NOFOLLOW closes final-component symlink
+/// substitution; O_NONBLOCK prevents a substituted FIFO from blocking open.
+/// Ancestor directory integrity remains an operator-controlled prerequisite.
 pub fn load_signing_key_from_path(path: &Path) -> Result<SigningKey, ExternalSignerError> {
     if !path.is_absolute() {
         return Err(ExternalSignerError::KeySource(
@@ -112,22 +143,44 @@ pub fn load_signing_key_from_path(path: &Path) -> Result<SigningKey, ExternalSig
             "signing key path must be a regular, non-symlink file".to_string(),
         ));
     }
+    let mut options = fs::OpenOptions::new();
+    options.read(true);
     #[cfg(unix)]
     {
+        use std::os::unix::fs::OpenOptionsExt;
+        options.custom_flags(libc::O_NOFOLLOW | libc::O_CLOEXEC | libc::O_NONBLOCK);
+    }
+    let mut file = options.open(path).map_err(ExternalSignerError::KeyIo)?;
+    let opened = file.metadata().map_err(ExternalSignerError::KeyIo)?;
+    if !opened.file_type().is_file() {
+        return Err(ExternalSignerError::KeySource(
+            "opened signing key must be a regular file".to_string(),
+        ));
+    }
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
         use std::os::unix::fs::PermissionsExt;
-        if metadata.permissions().mode() & 0o077 != 0 {
+        // SAFETY: geteuid has no arguments or memory-safety preconditions.
+        let owner = unsafe { libc::geteuid() };
+        if opened.uid() != owner || opened.permissions().mode() & 0o077 != 0 {
             return Err(ExternalSignerError::KeySource(
-                "signing key file must not be group/world accessible".to_string(),
+                "opened signing key must be owned by the effective user and owner-only".to_string(),
+            ));
+        }
+        if opened.dev() != metadata.dev() || opened.ino() != metadata.ino() {
+            return Err(ExternalSignerError::KeySource(
+                "signing key identity changed while opening".to_string(),
             ));
         }
     }
-    let mut file = File::open(path).map_err(ExternalSignerError::KeyIo)?;
     read_signing_key(&mut file)
 }
 
-/// Read an external Ed25519 seed from an already-open file descriptor.  The
-/// descriptor is duplicated on Unix so this function never closes the
-/// caller's descriptor.  No key material is generated or persisted.
+/// Read a seed from an explicitly supplied descriptor. Duplication preserves
+/// descriptor ownership, not the shared file offset: reading consumes bytes
+/// from the caller's open file description. The caller must supply a bounded
+/// input and, for a pipe, close its writer. No key is generated or persisted.
 #[cfg(unix)]
 pub fn load_signing_key_from_fd(fd: i32) -> Result<SigningKey, ExternalSignerError> {
     use std::os::fd::FromRawFd;
@@ -137,13 +190,13 @@ pub fn load_signing_key_from_fd(fd: i32) -> Result<SigningKey, ExternalSignerErr
             "key fd must be non-negative".to_string(),
         ));
     }
-    // SAFETY: `dup` returns a new descriptor owned by this function; it is
-    // immediately wrapped in File and therefore closed exactly once.
-    let duplicate = unsafe { libc::dup(fd) };
+    // SAFETY: fcntl validates fd and returns a new owned descriptor. CLOEXEC
+    // prevents accidental inheritance if another thread starts a process.
+    let duplicate = unsafe { libc::fcntl(fd, libc::F_DUPFD_CLOEXEC, 0) };
     if duplicate < 0 {
         return Err(ExternalSignerError::KeyIo(std::io::Error::last_os_error()));
     }
-    // SAFETY: `duplicate` is a valid descriptor returned by dup above.
+    // SAFETY: duplicate is a valid, newly owned descriptor returned above.
     let mut file = unsafe { File::from_raw_fd(duplicate) };
     read_signing_key(&mut file)
 }
@@ -265,14 +318,62 @@ pub fn sign_request(
                 .map_err(|error| ExternalSignerError::Grant(error.to_string()))?;
             Ok(SignResponse::ProductionGrant { grant })
         }
+        SignRequest::ProductionRecovery {
+            signer_id,
+            signer_epoch,
+            agent_id,
+            grant_sha256,
+            intent_sha256,
+            release_transaction_sha256,
+            observed_release,
+            observed_manifest_sha256,
+            observed_agentd_sha256,
+            observed_matrixd_sha256,
+            outcome,
+            expected_lifecycle_generation,
+            authority_epoch,
+            issued_at_unix_seconds,
+            expires_at_unix_seconds,
+        } => {
+            let agent = AgentId::parse(agent_id.clone())
+                .map_err(|error| ExternalSignerError::Recovery(error.to_string()))?;
+            let signer = H7H89ProductionGrantSigner::new(
+                signer_id.clone(),
+                *signer_epoch,
+                signing_key.clone(),
+            )
+            .map_err(|error| ExternalSignerError::Recovery(error.to_string()))?;
+            let decision = signer
+                .sign_recovery(
+                    &agent,
+                    grant_sha256.clone(),
+                    intent_sha256.clone(),
+                    release_transaction_sha256.clone(),
+                    observed_release.clone(),
+                    observed_manifest_sha256.clone(),
+                    observed_agentd_sha256.clone(),
+                    observed_matrixd_sha256.clone(),
+                    *outcome,
+                    *expected_lifecycle_generation,
+                    *authority_epoch,
+                    *issued_at_unix_seconds,
+                    *expires_at_unix_seconds,
+                )
+                .map_err(|error| ExternalSignerError::Recovery(error.to_string()))?;
+            Ok(SignResponse::ProductionRecovery { decision })
+        }
     }
 }
 
 fn read_signing_key(file: &mut File) -> Result<SigningKey, ExternalSignerError> {
     let mut bytes = Vec::new();
-    file.take((MAX_SIGNING_KEY_INPUT_BYTES + 1) as u64)
+    if let Err(error) = file
+        .take((MAX_SIGNING_KEY_INPUT_BYTES + 1) as u64)
         .read_to_end(&mut bytes)
-        .map_err(ExternalSignerError::KeyIo)?;
+    {
+        bytes.zeroize();
+        return Err(ExternalSignerError::KeyIo(error));
+    }
     if bytes.len() > MAX_SIGNING_KEY_INPUT_BYTES {
         bytes.zeroize();
         return Err(ExternalSignerError::KeyEncoding);
@@ -300,7 +401,13 @@ fn decode_seed(bytes: &[u8]) -> Result<[u8; 32], ExternalSignerError> {
     }
     let mut seed = [0_u8; 32];
     for (index, pair) in text.as_bytes().chunks_exact(2).enumerate() {
-        seed[index] = (hex_value(pair[0])? << 4) | hex_value(pair[1])?;
+        match (hex_value(pair[0]), hex_value(pair[1])) {
+            (Ok(high), Ok(low)) => seed[index] = (high << 4) | low,
+            _ => {
+                seed.zeroize();
+                return Err(ExternalSignerError::KeyHex);
+            }
+        }
     }
     Ok(seed)
 }
@@ -499,7 +606,7 @@ mod tests {
     }
 
     #[test]
-    fn fd_loader_does_not_consume_or_close_caller_descriptor() {
+    fn fd_loader_preserves_descriptor_ownership_but_consumes_shared_offset() {
         #[cfg(unix)]
         {
             use std::os::fd::AsRawFd;
@@ -510,6 +617,7 @@ mod tests {
             let key = load_signing_key_from_fd(fd).expect("fd key");
             assert_eq!(key.to_bytes(), [8_u8; 32]);
             assert!(file.metadata().is_ok());
+            assert_eq!(file.stream_position().expect("shared offset"), 32);
         }
     }
 }

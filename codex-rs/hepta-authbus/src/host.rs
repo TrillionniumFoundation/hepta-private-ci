@@ -48,6 +48,20 @@ pub struct AuthBusAuthorityHost {
 }
 
 impl AuthBusAuthorityHost {
+    pub async fn close(&self) {
+        self.store.close().await;
+    }
+    pub async fn issuer_record(
+        &self,
+        purpose: IssuerPurpose,
+        issuer_id: &StableId,
+        key_epoch: Generation,
+    ) -> Result<IssuerRecord, AuthBusAuthorityError> {
+        self.store
+            .issuer_record(purpose, issuer_id, key_epoch)
+            .await
+    }
+
     pub async fn open(
         database_path: &Path,
         checkpoint_path: PathBuf,
@@ -168,6 +182,13 @@ impl AuthBusAuthorityHost {
         key_epoch: Generation,
     ) -> Result<SettlementIssuerRegistration, AuthBusAuthorityError> {
         self.store.settlement_issuer(issuer_id, key_epoch).await
+    }
+
+    pub async fn policy_snapshot(
+        &self,
+        policy_id: &StableId,
+    ) -> Result<AuthPolicy, AuthBusAuthorityError> {
+        self.store.policy_snapshot(policy_id).await
     }
 
     pub async fn create_policy(
@@ -352,6 +373,29 @@ impl AuthBusAuthorityHost {
         reservation_id: &StableId,
     ) -> Result<QuotaReservation, AuthBusAuthorityError> {
         self.store.reservation(reservation_id).await
+    }
+    /// Persist a no-reservation fence before the operation owner records a
+    /// pre-dispatch abort. Publication uses the existing checkpoint protocol.
+    pub async fn seal_unreserved_operation(
+        &self,
+        operation_id: &StableId,
+        effect_digest: Digest32,
+    ) -> Result<Option<QuotaReservation>, AuthBusAuthorityError> {
+        let result = self
+            .store
+            .seal_unreserved_operation(operation_id, effect_digest)
+            .await;
+        self.finish(result).await
+    }
+
+    /// Find the unique hot or archived reservation for an operation identity.
+    /// This is a read-only recovery projection; it does not reserve quota or
+    /// weaken the semantic checks performed by `reserve`.
+    pub async fn reservation_by_operation(
+        &self,
+        operation_id: &StableId,
+    ) -> Result<Option<QuotaReservation>, AuthBusAuthorityError> {
+        self.store.reservation_by_operation(operation_id).await
     }
 }
 

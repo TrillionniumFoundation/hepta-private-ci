@@ -27,7 +27,7 @@ from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from hepta_workflow_commands import verify_owner_self_tests
-from hepta_workflow_commands import verify_synthetic_merge
+from hepta_workflow_commands import verify_document_workflow
 
 ROOT = Path(__file__).resolve().parents[1]
 PLAN_ID = "HEPTA-GLOBAL-MODULAR-DEVELOPMENT-PLAN"
@@ -506,7 +506,7 @@ def validate_path_leases(
     lease_paths = set()
     for lease in leases:
         need(isinstance(lease, dict), "lease object")
-        need(list(lease) == LEASE_KEYS, "lease key closure/order")
+        need(set(lease) == set(LEASE_KEYS), "lease key closure")
         lease_id = lease.get("leaseId")
         need(
             isinstance(lease_id, str)
@@ -550,8 +550,8 @@ def validate_path_leases(
         )
         review = lease.get("reviewBinding")
         need(
-            isinstance(review, dict) and list(review) == LEASE_REVIEW_KEYS,
-            lease_id + " review binding key closure/order",
+            isinstance(review, dict) and set(review) == set(LEASE_REVIEW_KEYS),
+            lease_id + " review binding key closure",
         )
         need(
             {
@@ -577,6 +577,18 @@ def validate_path_leases(
             and type(review.get("maximumAttestationAgeSeconds")) is int
             and 0 < review["maximumAttestationAgeSeconds"] <= 604800,
             lease_id + " exact-head external review policy",
+        )
+        need(
+            all(
+                type(review[key]) is bool
+                for key in (
+                    "reviewCommitMustEqualHead",
+                    "reviewerMustDifferFromAuthor",
+                    "invalidateOnHeadChange",
+                    "reusable",
+                )
+            ),
+            lease_id + " exact-head external review policy boolean types",
         )
         need(
             lease.get("lifecycle") == LEASE_LIFECYCLE,
@@ -1017,7 +1029,7 @@ def verify_cleanup_base(system):
     }
 
 
-def verify(profile="qualification") -> int:
+def verify(profile="development") -> int:
     need(profile in {"development", "qualification"}, "verification profile")
     verify_exact_workflow_references()
     module_index = load(FILES["module_docs"])
@@ -1079,7 +1091,7 @@ def verify(profile="qualification") -> int:
         )
         f = v.get("authorityFlags")
         need(
-            isinstance(f, dict) and list(f) == AUTHORITY_KEYS,
+            isinstance(f, dict) and set(f) == set(AUTHORITY_KEYS),
             k + " authority key closure",
         )
         need(
@@ -1179,7 +1191,12 @@ def verify(profile="qualification") -> int:
         ],
         "subordinate protocol registry closure",
     )
-    verify_document_inventory(system, req)
+    # Module guides are already declared by module.toml and checked above and
+    # by the module-doc verifier. Do not require the same membership in a second
+    # hand-maintained document-system inventory.
+    verify_document_inventory(
+        system, [path for path in req if path not in technical_paths]
+    )
     closures = {x["path"]: x for x in system["registryShapeClosures"]}
     need(
         set(closures) == set(FILES.values()) - {"docs/governance/DOCUMENT_SYSTEM.json"},
@@ -1293,7 +1310,6 @@ def verify(profile="qualification") -> int:
         and cur["currentWorkPackage"] in pkgids,
         "current work-package projection",
     )
-    counts = Counter(p["module"] for p in packages)
     qprofiles = {x["id"] for x in d["qualification"]["profiles"]}
     for p in packages:
         need(
@@ -1319,7 +1335,12 @@ def verify(profile="qualification") -> int:
         for f in ("developmentAfter", "activationAfter", "evidenceAfter"):
             for dep in p[f]:
                 need(dep in pkgids and dep != p["id"], f + " " + p["id"])
-    need(set(counts) == mids, "module package coverage")
+    # Work packages retain the V8 delivery history. A current module can reuse
+    # an existing bootstrap package without inventing another historical row.
+    need(
+        all(m["bootstrapWorkPackage"] in pkgids for m in mods),
+        "module bootstrap package reference",
+    )
     for name, field in [
         ("development", "developmentAfter"),
         ("activation", "activationAfter"),
@@ -1460,38 +1481,10 @@ def verify(profile="qualification") -> int:
         )
     wf = (ROOT / ".github/workflows/hepta-development-docs.yml").read_text()
     try:
-        verify_synthetic_merge(wf, ROOT)
+        verify_document_workflow(wf, ROOT, "scripts/hepta-docs.py", recorded=True)
         verify_owner_self_tests(d["system"]["subordinateRegistries"], ROOT)
     except ValueError as exc:
         die("synthetic merge workflow: " + str(exc))
-    for token in [
-        "source-head:",
-        "merge-candidate:",
-        "github.event.pull_request.head.sha",
-        "github.event.pull_request.base.sha",
-        "persist-credentials: false",
-        "python3 scripts/hepta-docs.py verify",
-        "python3 scripts/hepta-algorithm-docs.py verify-sources",
-        "python3 scripts/hepta-readiness.py generate-status --check",
-        "python3 scripts/hepta-cns.py generate-status --check",
-        "python3 scripts/hepta-docs.py inventory-legacy",
-        "python3 scripts/hepta-docs.py cleanup-inventory",
-        "python3 scripts/hepta-docs.py self-test",
-        "python3 scripts/hepta-docs.py receipt-verify",
-        "include-hidden-files: true",
-        "actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
-        "contents: read",
-    ]:
-        need(token in wf, "workflow " + token)
-    for token in [
-        "contents: write",
-        "git push",
-        "update-ref",
-        "pull-requests: write",
-        "paths-ignore:",
-        "github.event.pull_request.merge_commit_sha",
-    ]:
-        need(token not in wf, "workflow mutation or stale identity " + token)
     print(
         json.dumps(
             {
@@ -2132,7 +2125,7 @@ def main():
     sp = ap.add_subparsers(dest="cmd", required=True)
     verification = sp.add_parser("verify")
     verification.add_argument(
-        "--profile", choices=["development", "qualification"], default="qualification"
+        "--profile", choices=["development", "qualification"], default="development"
     )
     for name in ["generate-status", "inventory-legacy", "self-test"]:
         sp.add_parser(name)

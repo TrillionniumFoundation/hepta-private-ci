@@ -391,7 +391,7 @@ impl WebsocketConnectionIdentity {
         responses_metadata: &CodexResponsesMetadata,
     ) -> std::result::Result<Self, ApiError> {
         let compatibility_projection_json =
-            serde_json::to_vec(&responses_metadata.turn_recovery_compatibility_projection())
+            serde_json::to_vec(&responses_metadata.websocket_connection_compatibility_projection())
                 .map_err(|error| {
                     ApiError::Stream(format!(
                         "failed to bind websocket compatibility identity: {error}"
@@ -1366,6 +1366,9 @@ impl ModelClient {
         endpoint: &str,
     ) -> Result<ReqwestTransport> {
         let request_url = api_provider.url_for_path(endpoint);
+        if let Some(client) = crate::hepta_model_transport::client(&request_url)? {
+            return Ok(ReqwestTransport::from_http_client(client));
+        }
         let client = create_client_for_route(
             &self.http_client_factory,
             &request_url,
@@ -1381,6 +1384,9 @@ impl ModelClient {
         endpoint: &str,
     ) -> Result<ReqwestTransport> {
         let request_url = api_provider.url_for_path(endpoint);
+        if let Some(client) = crate::hepta_model_transport::client(&request_url)? {
+            return Ok(ReqwestTransport::from_http_client(client));
+        }
         let client = create_client_for_sensitive_route(
             &self.http_client_factory,
             &request_url,
@@ -1798,6 +1804,9 @@ impl ModelClientSession {
         };
 
         if needs_new {
+            // Retire the previous authority before awaiting a replacement.
+            // A failed handshake must not retain a socket for the old scope.
+            self.websocket_session.connection = None;
             self.websocket_session.last_request = None;
             self.websocket_session.last_response_rx = None;
             self.websocket_session.last_response_from_untraced_warmup = false;
@@ -3086,26 +3095,34 @@ fn map_response_stream(
         upstream_request_id: None,
     };
     map_response_events(
-        upstream_request_id,
         api_stream,
-        session_telemetry,
-        inference_trace_attempt,
-        provider,
-        provider_attempt,
-        redact_provider_errors,
-        encoded_request_observer,
+        ResponseEventContext {
+            upstream_request_id,
+            session_telemetry,
+            inference_trace_attempt,
+            provider,
+            provider_attempt,
+            redact_provider_errors,
+            encoded_request_observer,
+        },
     )
 }
 
-fn map_response_events<S>(
+/// Per-attempt policy, tracing and observation inputs travel together while
+/// mapping response events. This does not change admission or terminal ACKs.
+struct ResponseEventContext {
     upstream_request_id: Option<String>,
-    api_stream: S,
     session_telemetry: SessionTelemetry,
     inference_trace_attempt: InferenceTraceAttempt,
     provider: SharedModelProvider,
     provider_attempt: Option<ProviderAttemptOwner>,
     redact_provider_errors: bool,
     encoded_request_observer: Option<Arc<dyn codex_api::EncodedRequestBodyObserver>>,
+}
+
+fn map_response_events<S>(
+    api_stream: S,
+    context: ResponseEventContext,
 ) -> (ResponseStream, oneshot::Receiver<LastResponse>)
 where
     S: futures::Stream<Item = std::result::Result<ResponseEvent, ApiError>>
@@ -3113,6 +3130,15 @@ where
         + Send
         + 'static,
 {
+    let ResponseEventContext {
+        upstream_request_id,
+        session_telemetry,
+        inference_trace_attempt,
+        provider,
+        provider_attempt,
+        redact_provider_errors,
+        encoded_request_observer,
+    } = context;
     let (tx_event, rx_event) =
         mpsc::channel::<Result<ResponseEvent>>(RESPONSE_STREAM_CHANNEL_CAPACITY);
     let (tx_last_response, rx_last_response) = oneshot::channel::<LastResponse>();

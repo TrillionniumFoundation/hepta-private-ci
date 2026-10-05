@@ -1,0 +1,41 @@
+schema = "hepta.module-manifest.v1"
+order = 19
+id = "context.compiler"
+plane = "domain"
+kind = "compiler"
+lifecycle = "target"
+state = "stateless_runtime"
+architectureRole = "intervention_policy"
+writes = []
+uses = ["platform.types", "platform.wire", "cognitive.read", "prompt.optimizer", "intuition.policy"]
+owner = "intelligence-platform"
+deputy = "security-authority"
+denies = ["raw_secret", "unverified_fact_as_instruction", "model_call"]
+localHotPathCentralRpc = "not_applicable_or_bounded"
+sourceStatus = "existing_bound"
+source_root_present = true
+production_implementation = false
+sourceEvidenceRoots = ["codex-rs/hepta-context-compiler"]
+missingDeclaredRoots = []
+bootstrapWorkPackage = "CTX-1-CONTEXT-COMPILER"
+technicalDocument = "docs/modules/context.compiler/TECHNICAL.md"
+documentationReady = true
+
+[hotPathPolicy]
+centralSynchronousRpcAllowed = false
+boundedCachedControlInputAllowed = true
+fallbackRequired = true
+
+[publicSurfacePolicy]
+typedContractsOnly = true
+denyUnknownCriticalFields = true
+rawModelOrSecretPayloadExportAllowed = false
+
+[[rootBindings]]
+path = "codex-rs/hepta-context-compiler"
+mode = "exclusive"
+
+[[cargoPackages]]
+path = "codex-rs/hepta-context-compiler"
+compileLayer = 2
+ciGroups = ["effects", "inference", "learning", "lifecycle", "objective"]

@@ -121,6 +121,13 @@ pub trait ThreadStore: Any + Send + Sync {
         false
     }
 
+    /// Whether creation binds its fixed thread ID and exact rollout identity to the original
+    /// durable creation reservation before any file, index, or other creation effect can occur.
+    /// Hard-delete fencing alone does not provide this binding-before-effect guarantee.
+    fn supports_identified_creation(&self) -> bool {
+        false
+    }
+
     /// Appends raw rollout items to a live thread.
     ///
     /// Implementations should apply the shared rollout persistence policy before writing durable
@@ -284,6 +291,18 @@ pub trait ThreadStore: Any + Send + Sync {
         Box::pin(async {
             Err(ThreadStoreError::Unsupported {
                 operation: "project/read",
+            })
+        })
+    }
+
+    /// Read an existing original idempotency binding; never create a project.
+    fn read_project_by_idempotency_key(
+        &self,
+        _key: String,
+    ) -> ThreadStoreFuture<'_, Option<StoredProject>> {
+        Box::pin(async {
+            Err(ThreadStoreError::Unsupported {
+                operation: "project/readByIdempotencyKey",
             })
         })
     }

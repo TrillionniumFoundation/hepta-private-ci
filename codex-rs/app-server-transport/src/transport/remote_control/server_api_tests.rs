@@ -54,6 +54,7 @@ async fn timed_out_request(partial_response: Option<&'static [u8]>) -> io::Error
     });
 
     let err = send_remote_control_server_request::<_, serde_json::Value>(
+        &create_client_without_request_logging(),
         &url,
         &auth(),
         "installation-id",

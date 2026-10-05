@@ -5,9 +5,14 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_contracts::FinalUseGrant;
+use codex_hepta_contracts::SignedFinalUseGrant;
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
 use tokio::net::UnixListener;
+
+fn random_signing_key() -> SigningKey {
+    SigningKey::from_bytes(&rand::random())
+}
 
 fn binding(label: u8) -> FinalUseBinding {
     FinalUseBinding {
@@ -38,6 +43,8 @@ fn config(root: &Path, socket: PathBuf, verifying_key: [u8; 32]) -> FinalUseAuth
         revocation_revision: 1,
         revoked_grant_ids: BTreeSet::new(),
         issuer_timeout_ms: 2_000,
+        issuer_process_identity: None,
+        issuer_process_attestation: None,
     }
 }
 
@@ -110,8 +117,8 @@ async fn serve_once(
 async fn exact_signed_grant_becomes_one_entry_verified_token() -> Result<()> {
     let directory = tempfile::tempdir()?;
     let (listener, socket) = listener(directory.path(), "authority.sock").await?;
-    let signer = SigningKey::from_bytes(&[41; 32]);
-    let authorizer = UnixFinalUseAuthorizer::from_config(config(
+    let signer = random_signing_key();
+    let authorizer = UnixFinalUseAuthorizer::from_test_config(config(
         directory.path(),
         socket,
         signer.verifying_key().to_bytes(),
@@ -145,9 +152,9 @@ async fn exact_signed_grant_becomes_one_entry_verified_token() -> Result<()> {
 async fn forged_grant_never_reaches_effect_entry() -> Result<()> {
     let directory = tempfile::tempdir()?;
     let (listener, socket) = listener(directory.path(), "forged.sock").await?;
-    let trusted = SigningKey::from_bytes(&[42; 32]);
-    let forged = SigningKey::from_bytes(&[43; 32]);
-    let authorizer = UnixFinalUseAuthorizer::from_config(config(
+    let trusted = random_signing_key();
+    let forged = random_signing_key();
+    let authorizer = UnixFinalUseAuthorizer::from_test_config(config(
         directory.path(),
         socket,
         trusted.verifying_key().to_bytes(),
@@ -167,8 +174,8 @@ async fn forged_grant_never_reaches_effect_entry() -> Result<()> {
 async fn endpoint_denial_updates_head_and_old_head_cannot_roll_back() -> Result<()> {
     let directory = tempfile::tempdir()?;
     let (listener, socket) = listener(directory.path(), "revocation.sock").await?;
-    let signer = SigningKey::from_bytes(&[44; 32]);
-    let authorizer = UnixFinalUseAuthorizer::from_config(config(
+    let signer = random_signing_key();
+    let authorizer = UnixFinalUseAuthorizer::from_test_config(config(
         directory.path(),
         socket,
         signer.verifying_key().to_bytes(),
@@ -213,6 +220,97 @@ fn connected_issuer_peer_uid_must_match_configured_owner() {
     assert!(validate_issuer_peer_uid(other, owner).is_err());
 }
 
+#[cfg(target_os = "linux")]
+fn current_process_identity() -> Result<IssuerProcessIdentityConfig> {
+    let snapshot = capture_issuer_process_identity(std::process::id())?;
+    Ok(IssuerProcessIdentityConfig {
+        executable_sha256: snapshot.executable_sha256,
+        cgroup_sha256: snapshot.cgroup_sha256,
+        boot_id_sha256: snapshot.boot_id_sha256,
+    })
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn linux_issuer_process_identity_rejects_same_uid_substitution() -> Result<()> {
+    let expected = current_process_identity()?;
+    let guard = validate_connected_issuer_process(Some(std::process::id()), Some(&expected))?
+        .ok_or("expected a process identity guard")?;
+    guard.revalidate()?;
+
+    let mut wrong_executable = expected.clone();
+    wrong_executable.executable_sha256 = "1".repeat(64);
+    assert!(
+        validate_connected_issuer_process(Some(std::process::id()), Some(&wrong_executable),)
+            .is_err()
+    );
+
+    let mut wrong_cgroup = expected.clone();
+    wrong_cgroup.cgroup_sha256 = "2".repeat(64);
+    assert!(
+        validate_connected_issuer_process(Some(std::process::id()), Some(&wrong_cgroup)).is_err()
+    );
+
+    let mut wrong_boot = expected;
+    wrong_boot.boot_id_sha256 = "3".repeat(64);
+    assert!(
+        validate_connected_issuer_process(Some(std::process::id()), Some(&wrong_boot)).is_err()
+    );
+    assert!(validate_connected_issuer_process(None, Some(&wrong_boot)).is_err());
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[tokio::test]
+async fn linux_connected_peer_is_bound_before_and_after_grant_exchange() -> Result<()> {
+    let directory = tempfile::tempdir()?;
+    let (listener, socket) = listener(directory.path(), "process-bound.sock").await?;
+    let signer = random_signing_key();
+    let mut authorizer_config = config(directory.path(), socket, signer.verifying_key().to_bytes());
+    authorizer_config.issuer_process_identity = Some(current_process_identity()?);
+    // This compatibility fixture hashes the complete test executable before
+    // and after exchange. Production uses the small root PID attestation.
+    authorizer_config.issuer_timeout_ms = 10_000;
+    let authorizer = UnixFinalUseAuthorizer::from_test_config(authorizer_config)?;
+    let server_signer = signer.clone();
+    let server = tokio::spawn(async move {
+        serve_once(
+            &listener,
+            Some(&server_signer),
+            revocations(1, &[]),
+            11,
+            None,
+        )
+        .await
+    });
+
+    let expected = binding(41);
+    let token = authorizer.claim(expected.clone()).await?;
+    if !token.enter(&expected)?.matches(&expected) {
+        return Err("process-bound token lost its exact binding".into());
+    }
+    server.await??;
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn linux_production_open_requires_process_identity() -> Result<()> {
+    let directory = tempfile::tempdir()?;
+    std::fs::set_permissions(directory.path(), std::fs::Permissions::from_mode(0o700))?;
+    let signer = random_signing_key();
+    let config_path = directory.path().join("authority.json");
+    let value = config(
+        directory.path(),
+        directory.path().join("unused.sock"),
+        signer.verifying_key().to_bytes(),
+    );
+    std::fs::write(&config_path, serde_json::to_vec(&value)?)?;
+    std::fs::set_permissions(&config_path, std::fs::Permissions::from_mode(0o600))?;
+    assert!(UnixFinalUseAuthorizer::open(&config_path).is_err());
+    Ok(())
+}
+
 /// Bounded test issuer over the production Unix protocol. Only this separate
 /// test task holds the signing key; the worker receives the verifier-only port.
 pub(crate) async fn independent_test_authorizer(
@@ -220,8 +318,8 @@ pub(crate) async fn independent_test_authorizer(
     expected_claims: u8,
 ) -> Result<(UnixFinalUseAuthorizer, tokio::task::JoinHandle<Result<()>>)> {
     let (listener, socket) = listener(root, "cognitive-authority.sock").await?;
-    let signer = SigningKey::from_bytes(&[79; 32]);
-    let authorizer = UnixFinalUseAuthorizer::from_config(config(
+    let signer = random_signing_key();
+    let authorizer = UnixFinalUseAuthorizer::from_test_config(config(
         root,
         socket,
         signer.verifying_key().to_bytes(),
@@ -238,4 +336,45 @@ pub(crate) async fn independent_test_authorizer(
         Ok(())
     });
     Ok((authorizer, issuer))
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn workload_owned_process_attestation_cannot_replace_root_issuer_identity() -> Result<()> {
+    let directory = tempfile::tempdir()?;
+    let path = directory.path().join("identity.json");
+    let snapshot = capture_issuer_process_identity(std::process::id())?;
+    let record = codex_hepta_contracts::ModelIssuerProcessIdentity {
+        schema_version: 1,
+        pid: snapshot.pid,
+        start_time_ticks: snapshot.start_time_ticks,
+        executable_sha256: snapshot.executable_sha256,
+        cgroup_sha256: snapshot.cgroup_sha256,
+        boot_id_sha256: snapshot.boot_id_sha256,
+    };
+    std::fs::write(&path, serde_json::to_vec(&record)?)?;
+    assert!(capture_attested_issuer(std::process::id(), &path).is_err());
+    assert!(
+        validate_connected_issuer_with_attestation(Some(std::process::id()), None, Some(&path))
+            .is_err()
+    );
+    Ok(())
+}
+
+#[cfg(target_os = "linux")]
+#[test]
+fn root_attestation_configuration_cannot_select_a_workload_issuer() -> Result<()> {
+    let directory = tempfile::tempdir()?;
+    let mut candidate = config(
+        directory.path(),
+        directory.path().join("issuer.sock"),
+        random_signing_key().verifying_key().to_bytes(),
+    );
+    candidate.issuer_process_attestation = Some(directory.path().join("identity.json"));
+    candidate.issuer_uid = 1000;
+    assert!(UnixFinalUseAuthorizer::from_config(candidate.clone()).is_err());
+    candidate.issuer_uid = 0;
+    candidate.issuer_process_attestation = Some(PathBuf::from("relative.json"));
+    assert!(UnixFinalUseAuthorizer::from_config(candidate).is_err());
+    Ok(())
 }

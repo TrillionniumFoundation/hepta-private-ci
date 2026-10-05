@@ -1,5 +1,7 @@
 use super::*;
 use crate::native_app_server::NativeWorkerConfig;
+use codex_hepta_agentd::AgentRunPhase;
+use codex_hepta_agentd::AgentRunReceipt;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_infer_core::durable_control::native::NativeDispatch;
 use std::path::PathBuf;
@@ -50,35 +52,34 @@ fn admission() -> NativeAdmission {
     }
 }
 
+fn dispatch() -> NativeDispatch {
+    NativeDispatch {
+        thread_id: "thread-1".to_string(),
+        model_provider: "provider".to_string(),
+        context_digest: "a".repeat(64),
+        owner_context_digest: None,
+        codex_payload_digest: None,
+        codex_request_digest: None,
+        app_server_version: None,
+        protocol_id: None,
+        codex_source_admission_digest: None,
+        codex_home_digest: None,
+        codex_connection_id: None,
+        codex_session_id: None,
+        codex_deadline_ms: None,
+        codex_authority_epoch: None,
+        codex_revocation_revision: None,
+        codex_revocation_head_sha256: None,
+        codex_authority_witness_sha256: None,
+    }
+}
+
 #[tokio::test]
 async fn reopened_dispatch_and_completed_duplicate_never_connect_to_provider() {
     let (driver, path) = fixture("reopen");
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     control.reserve_native(request(&driver), 1).unwrap();
-    control
-        .dispatch_native(
-            "r1",
-            NativeDispatch {
-                thread_id: "thread-1".to_string(),
-                model_provider: "provider".to_string(),
-                context_digest: "a".repeat(64),
-                owner_context_digest: None,
-                codex_payload_digest: None,
-                codex_request_digest: None,
-                app_server_version: None,
-                protocol_id: None,
-                codex_source_admission_digest: None,
-                codex_home_digest: None,
-                codex_connection_id: None,
-                codex_session_id: None,
-                codex_deadline_ms: None,
-                codex_authority_epoch: None,
-                codex_revocation_revision: None,
-                codex_revocation_head_sha256: None,
-                codex_authority_witness_sha256: None,
-            },
-        )
-        .unwrap();
+    control.dispatch_native("r1", dispatch()).unwrap();
     drop(control);
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
     let cancellation = CancellationToken::new();
@@ -195,7 +196,13 @@ async fn pre_dispatch_cancellation_and_connection_failure_release_without_usage_
                 .await
                 .is_err()
         );
-        assert_eq!(control.native_record("r1"), Some(&stopped));
+        assert!(control.native_record("r1").is_none());
+        assert_eq!(
+            control
+                .reserve_native(stopped.request.clone(), /*maximum_in_flight*/ 1)
+                .unwrap(),
+            stopped
+        );
         drop(control);
         std::fs::remove_file(path).unwrap();
     }
@@ -244,6 +251,7 @@ async fn reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown(
             },
         )
         .unwrap();
+    let rejected = control.native_record("r1").unwrap().clone();
     drop(control);
 
     let mut control = DurableInferenceControl::open(&path, 8).unwrap();
@@ -262,7 +270,11 @@ async fn reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown(
             .to_string()
             .contains("explicitly rejected before start")
     );
-    let record = control.native_record("r1").unwrap();
+    assert!(control.native_record("r1").is_none());
+    let record = control
+        .reserve_native(rejected.request.clone(), /*maximum_in_flight*/ 1)
+        .unwrap();
+    assert_eq!(record, rejected);
     assert_eq!(record.state, NativeReservationState::Released);
     assert!(record.dispatch_rejection.is_some());
     assert_eq!(record.observation, None);
@@ -274,27 +286,54 @@ async fn reopened_explicit_dispatch_rejection_never_connects_or_becomes_unknown(
 #[test]
 fn intelligence_handoff_is_committed_to_native_admission_identity() {
     let socket = std::path::Path::new("/tmp/native-owner.sock");
-    let none = native_source_payload_digest("prompt", &None, socket, 5000, None).unwrap();
+    let none = native_source_payload_digest(
+        "prompt",
+        &None,
+        socket,
+        5000,
+        None,
+        NativeDeadlinePolicy::Profile,
+    )
+    .unwrap();
     let original = NativeIntelligenceRunBinding {
         run_id: "intelligence-run".to_string(),
         expected_revision: 2,
+        agent_generation: 7,
+        absolute_deadline_ms: 10_000,
         context_digest: "a".repeat(64),
         envelope_digest: "b".repeat(64),
     };
-    let bound =
-        native_source_payload_digest("prompt", &None, socket, 5000, Some(&original)).unwrap();
+    let bound = native_source_payload_digest(
+        "prompt",
+        &None,
+        socket,
+        5000,
+        Some(&original),
+        NativeDeadlinePolicy::Profile,
+    )
+    .unwrap();
     assert_ne!(none, bound);
-    for field in 0..4 {
+    for field in 0..6 {
         let mut changed = original.clone();
         match field {
             0 => changed.run_id.push_str("-other"),
             1 => changed.expected_revision += 1,
             2 => changed.context_digest = "c".repeat(64),
-            _ => changed.envelope_digest = "d".repeat(64),
+            3 => changed.absolute_deadline_ms += 1,
+            4 => changed.envelope_digest = "d".repeat(64),
+            _ => changed.agent_generation += 1,
         }
         assert_ne!(
             bound,
-            native_source_payload_digest("prompt", &None, socket, 5000, Some(&changed)).unwrap()
+            native_source_payload_digest(
+                "prompt",
+                &None,
+                socket,
+                5000,
+                Some(&changed),
+                NativeDeadlinePolicy::Profile
+            )
+            .unwrap()
         );
     }
     assert_eq!(
@@ -310,4 +349,289 @@ fn intelligence_handoff_is_committed_to_native_admission_identity() {
             .unwrap()
         )
     );
+}
+
+#[tokio::test]
+async fn expired_absolute_deadline_cannot_be_refreshed_on_reopen() {
+    let (driver, path) = fixture("assessment-deadline");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let now = u64::try_from(
+        SystemTime::now()
+            .duration_since(UNIX_EPOCH)
+            .unwrap()
+            .as_millis(),
+    )
+    .unwrap();
+    let cancellation = CancellationToken::new();
+    assert!(
+        driver
+            .run_with_deadline(
+                &mut control,
+                admission(),
+                "prompt".to_string(),
+                now - 1,
+                &cancellation,
+            )
+            .await
+            .is_err()
+    );
+    let stopped = control.native_record("r1").unwrap().clone();
+    assert!(stopped.pre_dispatch_stop.is_some());
+    assert!(stopped.dispatch.is_none());
+    drop(control);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    assert!(
+        driver
+            .run_with_deadline(
+                &mut control,
+                admission(),
+                "prompt".to_string(),
+                now + 60_000,
+                &cancellation,
+            )
+            .await
+            .is_err()
+    );
+    assert!(control.native_record("r1").is_none());
+    assert_eq!(
+        control
+            .reserve_native(stopped.request.clone(), /*maximum_in_flight*/ 1)
+            .unwrap(),
+        stopped
+    );
+    drop(control);
+    std::fs::remove_file(path).unwrap();
+}
+
+fn admitted_receipt(phase: AgentRunPhase) -> AgentRunReceipt {
+    let dispatched = phase == AgentRunPhase::Dispatched;
+    AgentRunReceipt {
+        run_id: "intelligence-run".to_string(),
+        revision: if dispatched { 3 } else { 2 },
+        phase,
+        context_digest: Some("a".repeat(64)),
+        compilation_receipt_digest: Some("b".repeat(64)),
+        authority_epoch: 9,
+        generation: 7,
+        fence_digest: "c".repeat(64),
+        deadline_ms: 50_000,
+        dispatch_binding_digest: dispatched.then(|| "d".repeat(64)),
+        pre_effect_abort_commitment_digest: dispatched.then(|| "e".repeat(64)),
+        pre_effect_abort_proof_digest: None,
+        cancel_reason: None,
+        cancel_ack_deadline_ms: None,
+        terminal_observed: false,
+        idempotent: false,
+    }
+}
+
+#[test]
+fn agentd_admitted_binding_is_derived_from_durable_owner_state() {
+    let attached = NativeIntelligenceRunBinding::from_agentd_receipt(
+        "intelligence-run",
+        7,
+        admitted_receipt(AgentRunPhase::ContextAttached),
+    )
+    .unwrap();
+    assert_eq!(attached.expected_revision, 2);
+    assert_eq!(attached.context_digest, "a".repeat(64));
+    assert_eq!(attached.envelope_digest, "b".repeat(64));
+
+    let dispatched = NativeIntelligenceRunBinding::from_agentd_receipt(
+        "intelligence-run",
+        7,
+        admitted_receipt(AgentRunPhase::Dispatched),
+    )
+    .unwrap();
+    assert_eq!(dispatched, attached);
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn admitted_loader_binds_current_lifecycle_without_conflating_process_generation() {
+    use codex_hepta_agentd::AgentdPayload;
+    use codex_hepta_agentd::AgentdRequest;
+    use codex_hepta_agentd::AgentdResponse;
+    use tokio::io::AsyncBufReadExt;
+    use tokio::io::AsyncWriteExt;
+    use tokio::io::BufReader;
+    use tokio::net::UnixListener;
+
+    for (current_generation, receipt_generation, accepted) in
+        [(8, 8, true), (8, 7, false), (0, 8, false)]
+    {
+        let directory = tempfile::tempdir().unwrap();
+        let path = directory.path().join("agentd.sock");
+        let listener = UnixListener::bind(&path).unwrap();
+        let agent = AgentId::parse("00000000-0000-4000-8000-000000000001").unwrap();
+        let owner = agent.clone();
+        let mut receipt = admitted_receipt(AgentRunPhase::ContextAttached);
+        receipt.generation = receipt_generation;
+        let expected = NativeIntelligenceRunBinding::from_agentd_receipt(
+            "intelligence-run",
+            current_generation,
+            receipt.clone(),
+        );
+        let server = tokio::spawn(async move {
+            let (stream, _) = listener.accept().await.unwrap();
+            let (reader, mut writer) = tokio::io::split(stream);
+            let mut reader = BufReader::new(reader);
+            let mut bytes = Vec::new();
+            reader.read_until(b'\n', &mut bytes).await.unwrap();
+            let request: AgentdRequest = serde_json::from_slice(&bytes).unwrap();
+            assert_eq!(
+                request,
+                AgentdRequest::run_status(request.request_id, 7, "intelligence-run".into())
+            );
+            let response = AgentdResponse {
+                schema_version: codex_hepta_agentd::AGENTD_CONTROL_SCHEMA_VERSION,
+                request_id: request.request_id,
+                agent_id: owner,
+                spawn_generation: 7,
+                current_generation,
+                payload: AgentdPayload::RunStatus { run: Some(receipt) },
+            };
+            let mut bytes = serde_json::to_vec(&response).unwrap();
+            bytes.push(b'\n');
+            writer.write_all(&bytes).await.unwrap();
+        });
+        let observed = NativeIntelligenceRunBinding::load_from_agentd(
+            path,
+            agent,
+            7,
+            "intelligence-run".into(),
+        )
+        .await;
+        server.await.unwrap();
+        assert_eq!(observed.is_ok(), accepted);
+        if accepted {
+            assert_eq!(observed.unwrap(), expected.unwrap());
+        }
+    }
+}
+
+#[test]
+fn agentd_admitted_binding_rejects_caller_minted_or_terminal_state() {
+    let mut wrong_generation = admitted_receipt(AgentRunPhase::ContextAttached);
+    assert!(
+        NativeIntelligenceRunBinding::from_agentd_receipt(
+            "intelligence-run",
+            8,
+            wrong_generation.clone(),
+        )
+        .is_err()
+    );
+    wrong_generation.run_id = "other-run".to_string();
+    assert!(
+        NativeIntelligenceRunBinding::from_agentd_receipt("intelligence-run", 7, wrong_generation,)
+            .is_err()
+    );
+
+    let mut terminal = admitted_receipt(AgentRunPhase::Succeeded);
+    terminal.terminal_observed = true;
+    assert!(
+        NativeIntelligenceRunBinding::from_agentd_receipt("intelligence-run", 7, terminal,)
+            .is_err()
+    );
+
+    let mut malformed = admitted_receipt(AgentRunPhase::ContextAttached);
+    malformed.context_digest = Some("A".repeat(64));
+    assert!(
+        NativeIntelligenceRunBinding::from_agentd_receipt("intelligence-run", 7, malformed,)
+            .is_err()
+    );
+
+    let mut incomplete_dispatch = admitted_receipt(AgentRunPhase::Dispatched);
+    incomplete_dispatch.pre_effect_abort_commitment_digest = None;
+    assert!(
+        NativeIntelligenceRunBinding::from_agentd_receipt(
+            "intelligence-run",
+            7,
+            incomplete_dispatch,
+        )
+        .is_err()
+    );
+}
+
+#[tokio::test]
+async fn duplicate_pending_abort_never_falls_through_to_ordinary_observation() {
+    let (driver, path) = fixture("abort-reopen");
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    control.reserve_native(request(&driver), 1).unwrap();
+    let (_, token) = control
+        .dispatch_native_with_pre_effect_abort("r1", dispatch())
+        .unwrap();
+    let pending = control
+        .prepare_native_abort_before_effect(
+            token,
+            "owner-r1".to_string(),
+            4,
+            "7".repeat(64),
+            "not sent".to_string(),
+        )
+        .unwrap();
+    drop(control);
+    let mut control = DurableInferenceControl::open(&path, 8).unwrap();
+    let cancellation = CancellationToken::new();
+    assert!(
+        driver
+            .run(
+                &mut control,
+                admission(),
+                "prompt".to_string(),
+                None,
+                &cancellation
+            )
+            .await
+            .is_err()
+    );
+    assert_eq!(control.native_record("r1"), Some(&pending));
+    assert!(control.native_record("r1").unwrap().observation.is_none());
+    assert_eq!(
+        control.reserve_native(
+            NativeRequest {
+                request_id: "next".to_string(),
+                ..request(&driver)
+            },
+            1
+        ),
+        Err(codex_hepta_infer_core::durable_control::Error::CapacityExceeded)
+    );
+}
+
+#[tokio::test]
+async fn ordinary_admission_retires_closed_history_under_continuous_traffic() {
+    let (driver, path) = fixture("continuous-history");
+    let mut control = DurableInferenceControl::open(&path, 1).unwrap();
+    let cancellation = CancellationToken::new();
+    let mut previous: Option<String> = None;
+    for round in 0..6 {
+        let request_id = format!("round-{round}");
+        assert!(
+            driver
+                .run(
+                    &mut control,
+                    NativeAdmission {
+                        request_id: request_id.clone(),
+                        maximum_in_flight: 1
+                    },
+                    "prompt".to_string(),
+                    None,
+                    &cancellation
+                )
+                .await
+                .is_err()
+        );
+        let stopped = control.native_record(&request_id).unwrap().clone();
+        assert_eq!(stopped.state, NativeReservationState::Released);
+        assert!(stopped.pre_dispatch_stop.is_some());
+        assert!(stopped.observation.is_none());
+        if let Some(prior) = previous {
+            assert!(control.native_record(&prior).is_none());
+            assert!(control.native_record_resolved(&prior).unwrap().is_some());
+        }
+        previous = Some(request_id);
+        drop(control);
+        control = DurableInferenceControl::open(&path, 1).unwrap();
+    }
 }

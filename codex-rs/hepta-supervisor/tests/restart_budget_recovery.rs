@@ -36,6 +36,9 @@ use codex_hepta_supervisor::TickReport;
 
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 
+#[path = "restart_budget_recovery/loss_cases.rs"]
+mod loss_cases;
+
 #[derive(Clone, Default)]
 struct FakeControl {
     world: Arc<Mutex<FakeWorld>>,
@@ -138,13 +141,17 @@ impl ProcessDriver for FakeDriver {
 
     fn adopt(&mut self, spec: &AdoptSpec) -> Result<Adoption<Self::Process>, ProcessDriverError> {
         let world = self.world.lock().expect("fake world lock");
-        let Some((&id, _)) = world.processes.iter().find(|(_, state)| {
-            state.agent_id == spec.agent_id
-                && state.identity == spec.identity
-                && state.exit.is_none()
-        }) else {
+        let id = spec.identity.system_id();
+        let Some(state) = world
+            .processes
+            .get(&id)
+            .filter(|state| state.exit.is_none())
+        else {
             return Ok(Adoption::Missing);
         };
+        if state.agent_id != spec.agent_id || state.identity != spec.identity {
+            return Ok(Adoption::Rejected);
+        }
         Ok(Adoption::Adopted(FakeProcess {
             id,
             world: self.world.clone(),
@@ -299,7 +306,7 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
     // A fourth crash after yet another supervisord recovery is budget
     // exhaustion, not a fresh attempt 1.
     let (mut supervisor, recovered) =
-        Supervisor::recover(registry, control.driver(), config(), now)?;
+        Supervisor::recover(registry.clone(), control.driver(), config(), now)?;
     assert_eq!(recovered, TickReport::default());
     now += Duration::from_millis(1);
     control.crash(&agent_id);
@@ -310,6 +317,19 @@ fn restart_budget_survives_repeated_supervisord_recovery() -> Result<(), Supervi
         &event.kind,
         SupervisorEventKind::AutomaticRestartBudgetExhausted { attempts: 3 }
     )));
+    assert_eq!(control.spawn_count(&agent_id), 4);
+    drop(supervisor);
+
+    // Reopening after the terminal observation must not replenish the durable
+    // budget or turn a policy stop into an automatic retry.
+    let (mut supervisor, recovered) =
+        Supervisor::recover(registry, control.driver(), config(), now)?;
+    assert_eq!(recovered, TickReport::default());
+    assert_eq!(
+        supervisor.tick(now + Duration::from_secs(10)),
+        TickReport::default()
+    );
+    assert!(!supervisor.snapshot(&agent_id).expect("snapshot").active);
     assert_eq!(control.spawn_count(&agent_id), 4);
     Ok(())
 }
