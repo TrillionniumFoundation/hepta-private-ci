@@ -18,6 +18,7 @@ use std::path::PathBuf;
 use std::ptr;
 
 use windows_sys::Win32::Foundation::CloseHandle;
+use windows_sys::Win32::Foundation::ERROR_NO_TOKEN;
 use windows_sys::Win32::Foundation::ERROR_SUCCESS;
 use windows_sys::Win32::Foundation::HANDLE;
 use windows_sys::Win32::Foundation::HLOCAL;
@@ -38,8 +39,11 @@ use windows_sys::Win32::Security::GENERIC_MAPPING;
 use windows_sys::Win32::Security::GetAce;
 use windows_sys::Win32::Security::GetAclInformation;
 use windows_sys::Win32::Security::GetLengthSid;
+use windows_sys::Win32::Security::GetSecurityDescriptorControl;
 use windows_sys::Win32::Security::GetTokenInformation;
 use windows_sys::Win32::Security::InitializeAcl;
+use windows_sys::Win32::Security::IsValidAcl;
+use windows_sys::Win32::Security::IsValidSid;
 use windows_sys::Win32::Security::IsWellKnownSid;
 use windows_sys::Win32::Security::MapGenericMask;
 use windows_sys::Win32::Security::OBJECT_INHERIT_ACE;
@@ -72,7 +76,9 @@ use windows_sys::Win32::Storage::FileSystem::MoveFileExW;
 use windows_sys::Win32::Storage::FileSystem::WRITE_DAC;
 use windows_sys::Win32::Storage::FileSystem::WRITE_OWNER;
 use windows_sys::Win32::System::Threading::GetCurrentProcess;
+use windows_sys::Win32::System::Threading::GetCurrentThread;
 use windows_sys::Win32::System::Threading::OpenProcessToken;
+use windows_sys::Win32::System::Threading::OpenThreadToken;
 
 const ACCESS_ALLOWED_ACE_TYPE: u8 = 0;
 const ACCESS_DENIED_ACE_TYPE: u8 = 1;
@@ -114,6 +120,26 @@ pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
 
 fn install_private_dacl(directory: &File) -> io::Result<()> {
     let current_user = CurrentUser::read()?;
+    let mut storage = private_dacl(&current_user)?;
+    let dacl = storage.as_mut_ptr().cast::<ACL>();
+    let status = unsafe {
+        SetSecurityInfo(
+            directory.as_raw_handle() as HANDLE,
+            1, // SE_FILE_OBJECT
+            DACL_SECURITY_INFORMATION | PROTECTED_DACL_SECURITY_INFORMATION,
+            ptr::null_mut(),
+            ptr::null_mut(),
+            dacl,
+            ptr::null_mut(),
+        )
+    };
+    if status != ERROR_SUCCESS {
+        return Err(io::Error::from_raw_os_error(status as i32));
+    }
+    Ok(())
+}
+
+fn private_dacl(current_user: &CurrentUser) -> io::Result<Vec<u32>> {
     let sid_length = unsafe { GetLengthSid(current_user.sid()) } as usize;
     if sid_length == 0 {
         return Err(io::Error::last_os_error());
@@ -138,21 +164,7 @@ fn install_private_dacl(directory: &File) -> io::Result<()> {
     {
         return Err(io::Error::last_os_error());
     }
-    let status = unsafe {
-        SetSecurityInfo(
-            directory.as_raw_handle() as HANDLE,
-            1, // SE_FILE_OBJECT
-            DACL_SECURITY_INFORMATION | PROTECTED_DACL_SECURITY_INFORMATION,
-            ptr::null_mut(),
-            ptr::null_mut(),
-            dacl,
-            ptr::null_mut(),
-        )
-    };
-    if status != ERROR_SUCCESS {
-        return Err(io::Error::from_raw_os_error(status as i32));
-    }
-    Ok(())
+    Ok(storage)
 }
 
 /// Opens one normal-name child relative to the retained private directory.
@@ -261,6 +273,17 @@ fn validate_handle(file: &File, kind: HandleKind) -> io::Result<()> {
 }
 
 fn validate_private_owner_and_dacl(file: &File) -> io::Result<()> {
+    capture_private_security(file).map(|_| ())
+}
+
+#[derive(Debug, Eq, PartialEq)]
+struct PrivateSecuritySnapshot {
+    owner: Vec<u8>,
+    dacl: Vec<u8>,
+    control: u16,
+}
+
+fn capture_private_security(file: &File) -> io::Result<PrivateSecuritySnapshot> {
     let current_user = CurrentUser::read()?;
     let mut owner = ptr::null_mut();
     let mut dacl: *mut ACL = ptr::null_mut();
@@ -285,15 +308,41 @@ fn validate_private_owner_and_dacl(file: &File) -> io::Result<()> {
             "private state security descriptor is incomplete",
         ));
     }
-    let valid = unsafe {
-        EqualSid(owner, current_user.sid()) != 0
-            && !dacl_grants_untrusted_access(dacl, current_user.sid())
-    };
+    // Read and copy the same descriptor that was validated, before LocalFree.
+    let result = (|| {
+        let mut control = 0;
+        let mut revision = 0;
+        let mut information: ACL_SIZE_INFORMATION = unsafe { std::mem::zeroed() };
+        let valid = unsafe {
+            IsValidSid(owner) != 0
+                && IsValidAcl(dacl) != 0
+                && EqualSid(owner, current_user.sid()) != 0
+                && !dacl_grants_untrusted_access(dacl, current_user.sid())
+                && GetSecurityDescriptorControl(descriptor, &mut control, &mut revision) != 0
+                && GetAclInformation(
+                    dacl,
+                    (&mut information as *mut ACL_SIZE_INFORMATION).cast(),
+                    std::mem::size_of::<ACL_SIZE_INFORMATION>() as u32,
+                    AclSizeInformation,
+                ) != 0
+        };
+        if !valid {
+            return Err(unsafe_state("private state owner or DACL is unsafe"));
+        }
+        Ok(PrivateSecuritySnapshot {
+            owner: unsafe {
+                std::slice::from_raw_parts(owner.cast::<u8>(), GetLengthSid(owner) as usize)
+            }
+            .to_vec(),
+            dacl: unsafe {
+                std::slice::from_raw_parts(dacl.cast::<u8>(), information.AclBytesInUse as usize)
+            }
+            .to_vec(),
+            control,
+        })
+    })();
     unsafe { LocalFree(descriptor as HLOCAL) };
-    if !valid {
-        return Err(unsafe_state("private state owner or DACL is unsafe"));
-    }
-    Ok(())
+    result
 }
 
 unsafe fn dacl_grants_untrusted_access(dacl: *mut ACL, current_user: *mut c_void) -> bool {
@@ -414,6 +463,17 @@ struct CurrentUser {
 
 impl CurrentUser {
     fn read() -> io::Result<Self> {
+        // Filesystem access would use the thread token, while this policy is
+        // explicitly process-user-owned. Do not accidentally mix principals.
+        let mut thread_token = 0;
+        if unsafe { OpenThreadToken(GetCurrentThread(), TOKEN_QUERY, 1, &mut thread_token) } != 0 {
+            unsafe { CloseHandle(thread_token) };
+            return Err(unsafe_state("private state does not support impersonation"));
+        }
+        let error = io::Error::last_os_error();
+        if error.raw_os_error() != Some(ERROR_NO_TOKEN as i32) {
+            return Err(error);
+        }
         let mut token = 0;
         if unsafe { OpenProcessToken(GetCurrentProcess(), TOKEN_QUERY, &mut token) } == 0 {
             return Err(io::Error::last_os_error());
