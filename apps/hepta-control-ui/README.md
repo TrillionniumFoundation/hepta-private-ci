@@ -32,7 +32,55 @@ so local drafts are not live chat and Send remains disabled. Console identifies
 its unported operational controls; the tab is not functional parity with the
 retained native Console implementation.
 
-Latest observed checks on 2026-10-03:
+### Rust entrypoints and input boundary
+
+- `rust/robrix-ui/src/app.rs` composes the shared Makepad host.
+- `rust/robrix-ui/src/robrix/` owns the actual conversation widgets.
+- `rust/robrix-ui/src/presentation.rs` projects the existing bounded Rust state.
+- `rust/robrix-ui/src/ime_router.rs` and `ime_pointer_gate.rs` guard application
+  event dispatch during observed preedit; platform IME completion and pointer
+  capture cleanup remain owned by Makepad and the OS/browser.
+- `rust/core` retains owner/session/history semantics. No input-routing change
+  authenticates a principal, signs a message, dispatches a chat request or
+  manufactures a terminal receipt.
+
+The router includes both search and composer fields. Rejected pointer releases
+stay rejected after preedit completion or account changes; mixed touch packets
+preserve forwarded hit claims. Adaptive layout is retained during composition.
+Exact SDK event, actual-browser and native IME tests are required before this
+candidate is considered qualified. In-field selection/cut, detached editors,
+keyboard candidate control and resource exhaustion are explicit review cases,
+not inferred successes from a compile or screenshot. In-field pointer editing
+retains SDK selection behavior and can cancel preedit locally; this candidate
+is not a claim of universal IME correctness. Pointer-capacity exhaustion is
+fail-closed and restart-only, not automatic timeout/account-change recovery.
+
+For current source-only tests, use the repository root:
+
+```sh
+just test --manifest-path "$PWD/apps/hepta-control-ui/rust/Cargo.toml" --locked -p hepta-control-core -p hepta-robrix-ui --no-default-features --lib
+cargo +1.95.0 check --manifest-path apps/hepta-control-ui/rust/Cargo.toml --locked -p hepta-robrix-ui --target wasm32-unknown-unknown
+```
+
+The owned browser packager additionally requires exactly `nightly-2026-10-02`
+(`rustc 1.101.0-nightly (c36f14571 2026-10-01)`) and its `rust-src` for build-std.
+Use the recorded toolchain file under `rust/robrix-ui/patches/`; keep application
+source, generated platform glue, WASM and resource manifests from one build.
+The development server rejects stale source artifacts. Do not bypass that guard.
+
+### Exact baseline evidence
+
+[Run 37222487722](https://github.com/TrillionniumFoundation/hepta-private-ci/actions/runs/37222487722)
+completed successfully for `0490d0a1d5941f02280c567c195bf26a5cdec695`, including
+actual Makepad Web rendering: default 6/6 cases, 60/60 captures and 138/138
+semantic checks; populated 9/9 cases, 78/78 captures and 438/438 checks. That
+baseline does not qualify the later IME router or physical/native/live-owner
+behavior. Candidate claims require fresh source-bound execution and review.
+
+### Historical checkpoints from 2026-10-03
+
+The following earlier observations are retained as history, not current-head
+qualification:
 
 - Standard WASM checks, pinned no-threads release packaging, and the strict-CSP
   static bridge build have passed. Native display/OS qualification is still

@@ -12,6 +12,15 @@ neither compilation nor old screenshots establish new-host acceptance. Existing
 read-only gateway credentials do not authorize chat writes. External authenticated
 owner/signer and production browser bridge composition remain required.
 
+The shared input-routing candidate lives in Rust `robrix-ui/src/ime_router.rs`
+and `ime_pointer_gate.rs`, before widget dispatch. Native IME commit/cancel and
+pointer capture cleanup remain platform responsibilities. A WASM event probe,
+Web screenshot or source compile cannot establish native Chinese IME, clipboard,
+keyboard focus or assistive-technology acceptance. Use the [shared application
+build/status guide](../../../apps/hepta-control-ui/README.md) and preserve the
+existing native host lifecycle, shutdown and update-owner boundaries. No input
+fix enables the uncomposed Console controls or grants chat-write authority.
+
 **Module:** `ui.native`
 **Owner / deputy:** `ui-platform` / `accessibility`
 **Historical native qualification branch:** `work/ui-native-qualified-integration-20260928`

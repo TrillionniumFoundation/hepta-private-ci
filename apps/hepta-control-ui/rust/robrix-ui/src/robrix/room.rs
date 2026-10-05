@@ -2,14 +2,17 @@
 // Copyright 2023–2026 Project Robius Developers. MIT; see ../../licenses/ROBRIX-MIT.txt.
 // Source: src/home/room_screen.rs:235–383,654–740. Adapted message profile/content
 // hierarchy, virtual PortalList and room timeline/composer ownership. No Matrix behavior.
-use crate::presentation::{
-    PresentationAction, PresentationCommand, RoomKey, TimelineStatus, TimelineWindow,
-    UserScrollTracker, apply_action, project,
-};
-use hepta_control_core::{
-    chat::{ChatWorkspace, ComposeStatus},
-    chat_timeline::Role,
-};
+use crate::presentation::PresentationAction;
+use crate::presentation::PresentationCommand;
+use crate::presentation::RoomKey;
+use crate::presentation::TimelineStatus;
+use crate::presentation::TimelineWindow;
+use crate::presentation::UserScrollTracker;
+use crate::presentation::apply_action;
+use crate::presentation::project;
+use hepta_control_core::chat::ChatWorkspace;
+use hepta_control_core::chat::ComposeStatus;
+use hepta_control_core::chat_timeline::Role;
 #[cfg(feature = "ui-fixtures")]
 use makepad_widgets::makepad_platform::script::res::CxScriptResourceData;
 use makepad_widgets::*;
@@ -309,7 +312,6 @@ impl Widget for RoomScreen {
             }
         }
         let mut apply = |command| apply_action(workspace, PresentationAction { source, command });
-        apply(PresentationCommand::SetComposing(input.is_composing()));
         if let Event::Actions(actions) = event {
             let list = self.view.portal_list(cx, ids!(list));
             if list.scrolled(actions) {

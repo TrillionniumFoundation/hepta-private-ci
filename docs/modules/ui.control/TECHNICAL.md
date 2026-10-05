@@ -160,6 +160,29 @@ Makepad keyboard, IME and accessibility behavior still require host-specific
 verification. Legacy automated checks do not replace manual screen-reader/operator
 acceptance; that remains an external signed gate.
 
+### Shared Rust preedit routing candidate
+
+The canonical dispatcher is `apps/hepta-control-ui/rust/robrix-ui/src/app.rs`.
+`ime_router.rs` resolves the real composing search/composer field and current
+presentation epoch before application widget dispatch. `ime_pointer_gate.rs`
+retains bounded rejected gesture identities through release, independently of
+room/account changes. A cloned filtered touch packet returns each forwarded
+contact's real handled/sweep claims to the original event; platform processing
+still receives the original packet and owns capture cleanup.
+
+Raw focus-changing or editing key paths must not reinterpret active IME candidate
+controls as application commands. Real platform `TextInput` commit/cancel state
+continues through the existing typed input boundary. Responsive layout selection
+is held during preedit and re-evaluated on its completion. These are source
+mechanisms; their completeness must be tested against actual SDK event ordering,
+not a boolean-state model alone. In-field pointer edits, clipboard cut, detached
+owners and exhaustion/recovery remain mandatory adversarial cases.
+
+The standalone pointer-policy tests are distinct from a real Makepad TextInput
+probe and from actual OS/browser IME. Retained DOM/egui tests qualify neither the
+new router nor the canvas accessibility tree. Follow the source README for exact
+stable/nightly build commands and preserve all production owner/signing gates.
+
 ## 9. Typed failures
 
 Stable error codes include `UI_CONTROL_SESSION_EXPIRED`, `UI_CONTROL_PERMISSION_DENIED`, `UI_CONTROL_STALE_GENERATION`, `UI_CONTROL_STALE_REVISION`, `UI_CONTROL_SNAPSHOT_DRIFT`, `UI_CONTROL_PENDING_LIMIT`, `UI_CONTROL_OPERATION_CONFLICT`, `UI_CONTROL_BACKEND_REJECTED`, `UI_CONTROL_ACK_MISMATCH`, and `UI_CONTROL_AMBIGUOUS_SUBMISSION`.

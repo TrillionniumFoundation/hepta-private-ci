@@ -150,19 +150,15 @@ pub struct HomeScreen {
     visual_selection: Option<VisualSelection>,
     #[rust]
     pending_visual_redraw: Option<NextFrame>,
+    #[rust]
+    last_composing: Option<bool>,
 }
 impl ScriptHook for HomeScreen {
     fn on_after_new(&mut self, vm: &mut ScriptVm) {
         vm.with_cx_mut(|cx| {
             self.view
                 .adaptive_view(cx, ids!(main_adaptive_view))
-                .set_variant_selector(|_, size| {
-                    if size.x >= 760.0 {
-                        live_id!(Desktop)
-                    } else {
-                        live_id!(Mobile)
-                    }
-                })
+                .set_variant_selector(crate::ime_router::adaptive_variant)
         });
     }
 }
@@ -299,6 +295,12 @@ impl Widget for HomeScreen {
     }
     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
         if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
+            if self.last_composing != Some(workspace.composing) {
+                self.view
+                    .adaptive_view(cx, ids!(main_adaptive_view))
+                    .set_variant_selector(crate::ime_router::adaptive_variant);
+                self.last_composing = Some(workspace.composing);
+            }
             self.rendered = Some(RoomKey {
                 epoch: workspace.presentation_epoch(),
                 local_id: workspace.active_id(),

@@ -3,9 +3,13 @@
 //! The application retains one `ChatWorkspace` in its Scope. This module reads
 //! that same model and forwards local UI actions; it introduces no transport,
 //! grant, signing, runtime, history owner, or optimistic sent-message insertion.
-use hepta_control_core::chat::{Appearance, ChatWorkspace, ComposeStatus, WorkspaceTab};
+use hepta_control_core::chat::Appearance;
+use hepta_control_core::chat::ChatWorkspace;
+use hepta_control_core::chat::ComposeStatus;
+use hepta_control_core::chat::WorkspaceTab;
 use hepta_control_core::chat_owner::DeliveryView;
-use hepta_control_core::chat_timeline::{MessagePhase, Role};
+use hepta_control_core::chat_timeline::MessagePhase;
+use hepta_control_core::chat_timeline::Role;
 
 pub const MAX_VISIBLE_MESSAGES: usize = 128;
 pub const MAX_FILTER_BYTES: usize = 512;
@@ -367,6 +371,9 @@ pub fn apply_action(workspace: &mut ChatWorkspace, action: PresentationAction) -
             true
         }
         PresentationCommand::SetNavigationOpen(open) => {
+            if workspace.composing {
+                return ActionResult::Ignored;
+            }
             workspace.navigation_open = open;
             true
         }
