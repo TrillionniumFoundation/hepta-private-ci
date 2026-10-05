@@ -15,9 +15,10 @@ use std::fs::File;
 use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
+use codex_hepta_intelligence_eval::SignedEligibilityAdmissionError;
 use codex_hepta_intelligence_eval::SignedEvaluationError;
 use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
-use codex_hepta_intelligence_eval::decide_with_signed_evidence_v2;
+use codex_hepta_intelligence_eval::admit_signed_eligibility_v2;
 use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceVerifierV1;
@@ -112,6 +113,7 @@ pub enum ParameterPlasticityProductErrorV1 {
     GeneratorEvidence(SignedEvidenceError),
     AdmissionEvidence(SignedEvidenceError),
     Evaluation(SignedEvaluationError),
+    Admission(SignedEligibilityAdmissionError),
     Ineligible(IndependentEvaluationDispositionV1),
     MissingEvaluation(String),
     DuplicateEvaluation(String),
@@ -407,7 +409,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     }
 
     let mut evaluator_id: Option<StableId> = None;
-    let mut evaluation_binding = b"hepta.intelligence.plasticity-evaluations.v1\0".to_vec();
+    let mut evaluation_binding = b"hepta.intelligence.plasticity-evaluations.v2\0".to_vec();
 
     if disposition == ParameterPlasticityDispositionV1::NoAdmissibleUpdate {
         if let Some(unexpected) = evaluations.keys().next() {
@@ -483,19 +485,38 @@ pub fn propose_authenticated_parameter_plasticity_v1(
         }
         verify_signed_independent_roles_v1(&observer, &evaluator, now)
             .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
+        verify_signed_independent_roles_v1(&generator, &evaluator, now)
+            .map_err(|error| E::Evaluation(SignedEvaluationError::Evidence(error)))?;
 
-        let decision =
-            decide_with_signed_evidence_v2(bundle, metric_roles, &evidence, verifier, now)
-                .map_err(E::Evaluation)?;
-        if decision.decision.disposition
+        let consumer_binding_digest = plasticity_evaluation_consumer_binding_digest(
+            &request.proposal_id,
+            &candidate_id,
+            &request.admission,
+            &request.generated,
+            &evaluator_payload,
+        );
+        let admission = admit_signed_eligibility_v2(
+            bundle,
+            metric_roles,
+            &evidence,
+            verifier,
+            consumer_binding_digest,
+            now,
+        )
+        .map_err(E::Admission)?;
+        if admission.decision.decision.disposition
             != IndependentEvaluationDispositionV1::EligibleForIndependentSelection
         {
-            return Err(E::Ineligible(decision.decision.disposition));
+            return Err(E::Ineligible(admission.decision.decision.disposition));
         }
         push_id(&mut evaluation_binding, &candidate_id);
-        evaluation_binding.extend_from_slice(decision.decision.evidence_digest.as_array());
-        evaluation_binding.extend_from_slice(decision.authentication_digest.as_array());
-        evaluation_binding.extend_from_slice(decision.trust_digest.as_array());
+        evaluation_binding.extend_from_slice(consumer_binding_digest.as_array());
+        evaluation_binding.extend_from_slice(admission.evidence_digest.as_array());
+        evaluation_binding
+            .extend_from_slice(admission.decision.decision.evidence_digest.as_array());
+        evaluation_binding
+            .extend_from_slice(admission.decision.authentication_digest.as_array());
+        evaluation_binding.extend_from_slice(admission.decision.trust_digest.as_array());
     }
     if let Some(unexpected) = evaluations.keys().next() {
         return Err(E::UnexpectedEvaluation(unexpected.to_string()));
@@ -504,7 +525,7 @@ pub fn propose_authenticated_parameter_plasticity_v1(
     let candidate_evaluation_digest = Digest32::of_bytes(&evaluation_binding);
     let generator_authentication_digest = attestation_digest(&request.generator_attestation);
     let admission_authentication_digest = attestation_digest(&request.admission_attestation);
-    let mut governed_evaluation = b"hepta.intelligence.plasticity-governed-admission.v1\0".to_vec();
+    let mut governed_evaluation = b"hepta.intelligence.plasticity-governed-admission.v2\0".to_vec();
     governed_evaluation.push(match disposition {
         ParameterPlasticityDispositionV1::UpdateCandidates => 0,
         ParameterPlasticityDispositionV1::NoAdmissibleUpdate => 1,
@@ -654,6 +675,31 @@ fn validate_admission_binding(
         return Err(E::Binding("generator/admission"));
     }
     Ok(())
+}
+
+fn plasticity_evaluation_consumer_binding_digest(
+    proposal_id: &StableId,
+    candidate_id: &StableId,
+    admission: &PlasticityAdmissionEvidenceV1,
+    generated: &GeneratedParameterCandidateSetV3,
+    evaluator_payload: &[u8],
+) -> Digest32 {
+    let mut bytes = b"hepta.intelligence.plasticity-evaluation-use.v1\0".to_vec();
+    push_id(&mut bytes, proposal_id);
+    push_id(&mut bytes, candidate_id);
+    for digest in [
+        admission.objective_digest,
+        admission.dataset_digest,
+        admission.selected_artifact_digest,
+        admission.qualification_evidence_head_digest,
+        admission.owner_evidence_set_digest,
+        admission.eligibility_digest,
+        generated.generator_digest,
+        Digest32::of_bytes(evaluator_payload),
+    ] {
+        bytes.extend_from_slice(digest.as_array());
+    }
+    Digest32::of_bytes(&bytes)
 }
 
 fn attestation_digest(evidence: &SignedLearningEvidenceV1) -> Digest32 {

@@ -1,0 +1,233 @@
+# learning.eval developer guide
+
+This is the human-oriented entry point for `learning.eval`. Normative source contracts
+remain in `codex-rs/hepta-intelligence-eval`; generated inventories, status projections,
+and commit-addressed execution evidence are indexed in
+[`AUDIT_INDEX.md`](AUDIT_INDEX.md). Source presence, repository CI, and an eligibility
+receipt are not target-host qualification, independent acceptance, activation,
+promotion, or release authority.
+
+## 1. Mission and non-goals
+
+`learning.eval` performs deterministic, support-aware, longitudinal, and causal
+qualification independently from the production writer. It freezes evaluation plans,
+consumes a final holdout once, verifies signed evidence, persists exact qualification
+artifacts, and emits authority-free receipts for downstream review.
+
+It does **not** write production model state, self-issue acceptance, silently retry an
+unknown effect, convert eligibility into promotion authority, authenticate an arbitrary
+host adapter, or treat a digest commitment as proof that an observation was independently
+measured. Repository workflows also do not turn source checks into target-host or release
+claims.
+
+## 2. Authority model
+
+All evaluation and recovery receipts are `DENY_ALL`. Selection, activation, promotion,
+and release are separate authorities owned outside this module. Direct low-level decision
+functions are crate-private in default builds. The `trusted-inprocess-eval` feature exists
+only for the isolated compatibility fixture and must not appear in a product dependency
+manifest.
+
+```mermaid
+flowchart LR
+    P[Producer evidence] --> V[Signature and current-trust verification]
+    V --> E[Independent evaluation]
+    E --> C[Consumer-bound admission]
+    C --> R[Authority-free receipt]
+    R --> X[External selection / operator review]
+    R -. no implicit grant .-> D[Activation or release]
+```
+
+The repository CI authority model is similarly split. Candidate source executes only in
+read-only workflows. PR-body mutation is delegated to a trusted default-branch
+`workflow_run` reporter that never executes the candidate checkout and never treats an
+artifact as trusted merely because GitHub stored it.
+
+## 3. Product call path
+
+The canonical product path is `RecordedProductEvaluationRunnerV1` over a
+`FencedFinalHoldoutOwnerV1` and a `DurableProductEvaluationAttemptJournalV1`.
+`IntentPersisted` precedes provider lookup and holdout use. The provider releases
+observations only after `HoldoutConsumed` has been acknowledged. Qualification uses
+signed V2/V3 evidence and exact typed archives; publication is complete only after the
+external publication owner is read back and the exact nonzero result is observed.
+
+```mermaid
+sequenceDiagram
+    participant Caller
+    participant Runner
+    participant AttemptJournal
+    participant HoldoutOwner
+    participant Provider
+    participant PublicationOwner
+    Caller->>Runner: frozen plan + attempt identity
+    Runner->>AttemptJournal: IntentPersisted
+    Runner->>HoldoutOwner: fenced consume
+    HoldoutOwner-->>Runner: durable consumption receipt
+    Runner->>AttemptJournal: HoldoutConsumed
+    Runner->>Provider: release_after_consumption
+    Provider-->>Runner: bounded observations
+    Runner->>AttemptJournal: ComparisonSealed
+    Runner->>AttemptJournal: QualificationArtifactsPersisted
+    Runner->>AttemptJournal: QualificationDecided / PublicationPending
+    Runner->>PublicationOwner: create-or-read exact publication
+    PublicationOwner-->>Runner: read-verified durable result
+    Runner->>AttemptJournal: Published
+    Runner-->>Caller: authority-free qualification receipt
+```
+
+The supported public namespace is `codex_hepta_intelligence_eval::product`. The raw
+`ProductEvaluationRunnerV1`, direct decision primitives, and in-memory attempt journal are
+not part of that canonical product facade.
+
+## 4. State machine
+
+A new attempt owns one plan digest. Reusing that plan under another attempt conflicts.
+An existing attempt is never automatically re-executed; recovery reads the authoritative
+journal and external owners.
+
+```mermaid
+stateDiagram-v2
+    [*] --> IntentPersisted
+    IntentPersisted --> RejectedBeforeHoldout
+    IntentPersisted --> HoldoutConsumed
+    HoldoutConsumed --> Failed
+    HoldoutConsumed --> ComparisonSealed
+    ComparisonSealed --> Failed
+    ComparisonSealed --> QualificationArtifactsPersisted
+    ComparisonSealed --> QualificationDecided
+    QualificationArtifactsPersisted --> Failed
+    QualificationArtifactsPersisted --> QualificationDecided
+    QualificationDecided --> PublicationPending
+    PublicationPending --> Published
+    RejectedBeforeHoldout --> [*]
+    Failed --> [*]
+    Published --> [*]
+```
+
+Every transition is attempt-, plan-, phase-, predecessor-, and payload-bound. A repeated
+identical transition is idempotent; an identity reused with different semantics is a
+conflict.
+
+## 5. Persistence and recovery
+
+The file journal uses bounded framed append, checksums, a predecessor/state digest,
+exclusive locking, `sync_all`, streaming replay, and an independently retained anchor.
+Unknown writes poison the handle. Recovery rejects rollback behind the retained anchor,
+never truncates a damaged tail silently, and never erases final-holdout consumption.
+Checkpoint recovery is separately anchored and may reduce replay work without replacing
+the authoritative journal frontier.
+
+Crash handling is fail-closed:
+
+| Crash point | Durable fact | Required recovery action |
+|---|---|---|
+| before intent | no attempt | caller may start a new attempt |
+| after intent | intent only | inspect owner state; never blindly execute |
+| after holdout consumption | consumption may be final | reconcile journal and holdout owner |
+| after comparison | sealed execution | reload exact typed artifacts |
+| after qualification decision | decision durable | re-verify current trust before publication |
+| after publication pending | effect may be unknown | read publication owner; do not duplicate write |
+| response lost after commit | publication owner is authoritative | observe exact existing result, then append `Published` |
+| old backup restored | local frames may be valid but stale | reject anything behind the independently retained anchor |
+| anchor acknowledgement uncertain | wrapper poisoned | reopen from file plus independent anchor authority |
+| fence issuer restarts | prior fence is durable | resume monotonically above the retained anchor |
+
+A real deployment must additionally qualify directory durability, mount options,
+linearizable lock/CAS semantics, power-loss behavior, and failure-domain independence.
+
+## 6. Statistical contract
+
+Plans bind the objective, dataset, folds, estimand, metric roles, support rules, temporal
+windows, cluster assignments, and confidence procedure. Fixed-analysis qualification does
+not import adaptive thresholds after holdout use. Multi-outcome evaluation preserves each
+native measurement channel; renaming a metric cannot substitute for independent measured
+outcomes.
+
+Repository tests can establish deterministic estimators, digest binding, fold separation,
+capacity, and recovery behavior. Real future-window provenance, statistical power,
+subgroup behavior, retention, change points, privacy, poisoning, negative transfer, and
+unlearning evidence remain external qualification obligations.
+
+## 7. Failure taxonomy
+
+Operational outcomes preserve rejected, unavailable, timed out, indeterminate, poisoned,
+conflict, quarantined, and terminal failure. Durable product-evaluation failure identity
+uses the versioned `hepta.learning-eval.product-evaluation-failure.v2` class/detail
+encoding. It does not hash Rust `Debug` output. Existing V1 terminal digests remain opaque
+historical facts and are not rewritten during replay.
+
+Human diagnostics may carry additional bounded context, but the durable preimage contains
+only registered numeric semantics. Unknown diagnostic text maps to an unspecified detail
+rather than silently becoming a compatibility contract.
+
+## 8. Deployment topology
+
+The selected-host facade requires four independently identified capabilities:
+
+1. an authenticated target-host identity and topology declaration;
+2. an independently administered linearizable anchor authority;
+3. the real final-outcome provider or measurement custodian;
+4. the real durable publication owner.
+
+Repository source defines these contracts and recovery composition. It does not nominate
+an external instance as approved merely because it implements a Rust trait. Current
+adapter identities and host attestations are intentionally `UNBOUND_EXTERNAL` in
+[`QUALIFICATION_MATRIX.json`](QUALIFICATION_MATRIX.json), so `targetHostQualified` remains
+false.
+
+Target-host evidence must bind the exact binary/source candidate, adapter identities,
+namespace and authority epochs, mount and lock semantics, independent anchor failure
+domain, provider provenance, publication store, and the observed host session.
+
+## 9. Qualification checklist
+
+A reviewable immutable candidate requires all of the following on one SHA:
+
+- source identity and implementation-map validation;
+- default API compile plus compile-fail rejection of raw product ingress;
+- isolated compatibility fixture execution;
+- owner, consumer, process-fault, recovery, capacity, and checkpoint tests;
+- strict Clippy and rustfmt;
+- coverage at or above the registered threshold;
+- exact source-head execution;
+- ordered-parent synthetic-merge execution;
+- retained commit-addressed logs and canonical evidence digests.
+
+Every filtered qualification test is first discovered with
+`scripts/hepta-nextest-require.py`; fewer than the declared minimum matches is a hard
+failure. Candidate source and exact-tree workflows use read-only repository permissions,
+checkout a literal event-bound SHA, and never receive PR-write or OIDC authority while
+executing candidate code.
+
+PR status is a separate trust boundary. The trusted default-branch
+`workflow_run` reporter downloads `qualification-summary.json` or
+`exact-summary.json` as **untrusted data**, then verifies:
+
+- the exact artifact name and one regular, bounded summary file;
+- schema and canonical SHA-256;
+- producer repository, workflow run ID, and run attempt;
+- candidate commit and tree;
+- allowed job/matrix result vocabulary;
+- current open PR identity, same-repository head, and exact current head SHA.
+
+Only after those checks may it replace the corresponding machine-owned PR marker. A stale
+run cannot overwrite a newer PR head. The reporter checks out the default branch only and
+never executes the producer checkout. Provenance attestation is isolated to successful
+`push` runs on `main`; pull-request candidate jobs have neither `id-token: write` nor
+attestation authority.
+
+## 10. Known gaps
+
+The repository cannot self-create the remaining external facts. Before production
+acceptance, independently administered infrastructure must provide and sign:
+
+- selected-host, anchor, provider, and publication-store identities;
+- crash/power-loss and filesystem qualification on the declared topology;
+- sustained capacity, checkpoint rotation, cold-start, backlog, and recovery SLO evidence;
+- real future-calendar outcome provenance and statistical operating characteristics;
+- privacy, poisoning, negative-transfer, retention, and unlearning evidence;
+- independent semantic/operator acceptance and separate promotion/release authority.
+
+Until those facts exist and every required source/exact check is green on one immutable
+candidate, the PR remains Draft and the release posture remains `NO_GO`.
