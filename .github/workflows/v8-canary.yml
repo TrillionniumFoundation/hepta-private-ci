@@ -74,7 +74,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build:
-    timeout-minutes: 30
+    # Cold V8 compilation can exceed 30 minutes on hosted runners without a
+    # remote cache. This job budget includes staging and the unchanged smoke tests.
+    timeout-minutes: 90
     name: Build ${{ matrix.variant }} ${{ matrix.target }}
     needs: metadata
     # Metadata always runs; only relevant changes pay for the large matrix.
@@ -336,7 +338,9 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
   build-windows-source:
-    timeout-minutes: 30
+    # Allow the pinned upstream V8 source build to complete on a cold runner;
+    # keep the complete matrix, artifact checks and smoke-link command unchanged.
+    timeout-minutes: 90
     name: Build ptrcomp-sandbox ${{ matrix.target }} from source
     needs: metadata
     if: ${{ needs.metadata.outputs.windows_source_required == 'true' }}
