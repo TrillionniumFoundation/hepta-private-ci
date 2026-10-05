@@ -6,7 +6,6 @@ use std::io::Write;
 use std::os::unix::net::UnixListener;
 use std::path::Path;
 use std::path::PathBuf;
-use std::sync::Mutex;
 use std::time::Duration;
 use std::time::Instant;
 
@@ -49,13 +48,6 @@ const IDS: [&str; 5] = [
     "019153a4-3088-7e03-a56a-9b1964f75dd6",
 ];
 
-// Both product tests spawn real agentd+matrixd pairs. Running them in parallel
-// can make one test's bounded shutdown compete with the other's ten-child
-// adoption workload, which turns a lifecycle assertion into host-load timing.
-// Keep the product scenarios isolated while leaving their child processes and
-// all supervisor behavior unchanged.
-static PAIR_PRODUCT_TEST_LOCK: Mutex<()> = Mutex::new(());
-
 #[derive(Clone, Copy, Debug, Eq, PartialEq)]
 struct PairRuntimeFence {
     agent_pid: u64,
@@ -87,9 +79,6 @@ impl PairRuntimeFence {
 
 #[test]
 fn two_real_pairs_restart_one_without_peer_pid_churn() -> Result<()> {
-    let _pair_product_test_guard = PAIR_PRODUCT_TEST_LOCK
-        .lock()
-        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let mut fixture = PairFleet::new(2)?;
     fixture.start_all()?;
     fixture.wait_ready(Duration::from_secs(60))?;
@@ -131,9 +120,6 @@ fn two_real_pairs_restart_one_without_peer_pid_churn() -> Result<()> {
 
 #[test]
 fn five_real_pairs_adopt_all_ten_children_and_isolate_one_matrix_crash() -> Result<()> {
-    let _pair_product_test_guard = PAIR_PRODUCT_TEST_LOCK
-        .lock()
-        .unwrap_or_else(std::sync::PoisonError::into_inner);
     let mut fixture = PairFleet::new(5)?;
     let started = Instant::now();
     fixture.warm_first_pair()?;
