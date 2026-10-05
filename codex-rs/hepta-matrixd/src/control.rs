@@ -877,13 +877,9 @@ mod tests {
             .matrixd_control_socket()
             .to_path_buf();
         let cancel = CancellationToken::new();
-        let server = MatrixdControlServer::bind(
-            socket.clone(),
-            Arc::clone(&state),
-            cancel.clone(),
-        )
-        .await
-        .context("bind matrixd control server")?;
+        let server = MatrixdControlServer::bind(socket.clone(), Arc::clone(&state), cancel.clone())
+            .await
+            .context("bind matrixd control server")?;
         let task = tokio::spawn(server.run());
 
         let mut stream = UnixStream::connect(&socket)
