@@ -109,6 +109,17 @@ consumer. If the consumer reports failure after entry, the outcome is
 `ConsumerIndeterminate`; do not infer no effect or blindly repeat it.
 `lease_lifecycle.rs` now provides a durable metadata-only lifecycle owner for issue/renew/revoke intents and observations. It enforces operation-id idempotency, semantic-conflict rejection, explicit Unknown states, restart recovery and provider-observation reconciliation. It deliberately does not dispatch provider mutation APIs: the OpenBao compatibility registry still marks dynamic lease issuance/renew/revoke as a blocking partial surface, so provider-native mutation remains fail-closed until that endpoint contract is qualified.
 
+The schema-1 lease registry validates metadata independently of lifecycle state.
+New `IssueApplied` observations still require `Active`; persisted unknown and
+revoked states must match their operation records. Resolving one operation does
+not clear another unresolved renewal or revocation. `Revoked` and `Expired`
+metadata cannot be reactivated by a late renewal, and unresolved revocation takes
+precedence over renewal. A rejected late observation returns `InvalidTransition`
+without recording that observation or changing the operation: the trusted
+reconciler must retain/escalate it rather than report completion or resend.
+The format is unchanged and stores no separate signed expiry observation; local
+state consistency is not cryptographic provider or protected-clock evidence.
+
 ## Verification
 
 Targeted tests cover a real loopback TLS exchange, exact request headers and
