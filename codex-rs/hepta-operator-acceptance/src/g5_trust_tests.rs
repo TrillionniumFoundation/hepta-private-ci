@@ -1,6 +1,5 @@
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
 
 use pretty_assertions::assert_eq;
 use tempfile::TempDir;
@@ -25,6 +24,7 @@ use crate::durable::canonical_json;
 use crate::durable::sha256;
 use crate::durable::write_private_new;
 use crate::test_support::private_tempdir;
+use crate::test_support::ssh_keygen;
 use crate::trust::SSHSIG_NAMESPACE;
 
 #[test]
@@ -265,30 +265,12 @@ struct TrustFixture {
     policy_value: G5TrustPolicy,
 }
 
-fn ssh_keygen_command() -> Command {
-    #[cfg(windows)]
-    {
-        let ssh_keygen = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
-            .into_iter()
-            .chain(std::env::var_os("PATH"))
-            .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
-            .map(|directory| directory.join("ssh-keygen.exe"))
-            .find(|candidate| candidate.is_file())
-            .unwrap_or_else(|| panic!("G5 trust tests require a real ssh-keygen.exe on PATH"));
-        Command::new(ssh_keygen)
-    }
-    #[cfg(not(windows))]
-    {
-        Command::new("/usr/bin/ssh-keygen")
-    }
-}
-
 impl TrustFixture {
     fn new(revoked: bool) -> Self {
         let temporary = private_tempdir("G5 trust fixture");
         let root = temporary.path().canonicalize().expect("canonical root");
         let key = root.join("operator-key");
-        let status = ssh_keygen_command()
+        let status = ssh_keygen()
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
             .status()
@@ -303,7 +285,7 @@ impl TrustFixture {
             format!("operator@example {} {}\n", fields[0], fields[1]).as_bytes(),
         )
         .expect("write allowed signers");
-        let fingerprint_output = ssh_keygen_command()
+        let fingerprint_output = ssh_keygen()
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
@@ -387,7 +369,7 @@ impl TrustFixture {
     }
 
     fn sign(&self, challenge: &Path) -> PathBuf {
-        let status = ssh_keygen_command()
+        let status = ssh_keygen()
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", SSHSIG_NAMESPACE])
