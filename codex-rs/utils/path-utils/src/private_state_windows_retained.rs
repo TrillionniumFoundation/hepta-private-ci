@@ -112,6 +112,12 @@ pub enum PrivateFileMode {
 }
 
 /// A private directory whose children are opened relative to this exact handle.
+/// Existing directories are checked for unsafe effective and inheritable grants,
+/// but may have no inheritable ACEs at all. This is not proof that ordinary child
+/// creation is private: Windows may use the token default DACL in that case.
+/// SQLite/ordinary sidecars must be created only in a fresh CreateNew generation
+/// while its protected creation security remains unchanged. `open_file` creation
+/// supplies its own protected descriptor and does not rely on inheritance.
 #[derive(Debug)]
 pub struct RetainedPrivateDirectory(File);
 
@@ -138,7 +144,8 @@ pub struct PrivateObjectSnapshot {
 
 impl RetainedPrivateDirectory {
     /// Opens a fully qualified local-drive path without any reparse traversal.
-    /// A failed create may leave a new empty private object for diagnosis.
+    /// A failed create is indeterminate: it can leave a new empty object whose
+    /// privacy is unestablished if filesystem/security qualification failed.
     pub fn open(path: &Path, mode: PrivateDirectoryMode) -> io::Result<Self> {
         // Deliberately reject UNC/device namespaces and lossy path conversion.
         let path = path
@@ -455,7 +462,7 @@ fn snapshot(file: &File, kind: HandleKind) -> io::Result<PrivateObjectSnapshot> 
         allocation: standard.AllocationSize,
         size: standard.EndOfFile,
         links: standard.NumberOfLinks,
-        security: capture_private_security(file)?,
+        security: capture_private_security(file, kind)?,
     })
 }
 

@@ -5,17 +5,23 @@ use std::io::Read;
 use std::io::Write;
 use std::os::windows::fs::OpenOptionsExt;
 use windows_sys::Win32::Foundation::ERROR_SHARING_VIOLATION;
+use windows_sys::Win32::Foundation::HLOCAL;
+use windows_sys::Win32::Foundation::LocalFree;
 use windows_sys::Win32::Security::ACL;
 use windows_sys::Win32::Security::ACL_REVISION;
 use windows_sys::Win32::Security::AddAccessAllowedAceEx;
+use windows_sys::Win32::Security::Authorization::GetSecurityInfo;
 use windows_sys::Win32::Security::Authorization::SetSecurityInfo;
+use windows_sys::Win32::Security::CONTAINER_INHERIT_ACE;
 use windows_sys::Win32::Security::CreateWellKnownSid;
 use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::ImpersonateSelf;
 use windows_sys::Win32::Security::InitializeAcl;
+use windows_sys::Win32::Security::OBJECT_INHERIT_ACE;
 use windows_sys::Win32::Security::PROTECTED_DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::RevertToSelf;
 use windows_sys::Win32::Security::SecurityImpersonation;
+use windows_sys::Win32::Security::WinBuiltinAdministratorsSid;
 use windows_sys::Win32::Security::WinLocalSystemSid;
 use windows_sys::Win32::Security::WinWorldSid;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
@@ -208,7 +214,16 @@ fn rejects_junction_ancestors_and_children() {
     std::fs::remove_dir(alias).unwrap();
 }
 
-fn replace_acl(file: &File, sid_kind: i32) {
+enum ExtraGrant {
+    Effective(i32),
+    InheritOnly(i32),
+}
+
+fn replace_acl(file: &File, grant: ExtraGrant) {
+    let (sid_kind, flags) = match grant {
+        ExtraGrant::Effective(sid) => (sid, 0),
+        ExtraGrant::InheritOnly(sid) => (sid, OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE | 0x08),
+    };
     let user = CurrentUser::read().unwrap();
     let mut sid = [0_u32; 17];
     let mut length = std::mem::size_of_val(&sid) as u32;
@@ -234,7 +249,7 @@ fn replace_acl(file: &File, sid_kind: i32) {
             AddAccessAllowedAceEx(
                 dacl,
                 ACL_REVISION,
-                0,
+                OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,
                 super::super::FILE_ALL_ACCESS,
                 user.sid(),
             )
@@ -246,7 +261,7 @@ fn replace_acl(file: &File, sid_kind: i32) {
             AddAccessAllowedAceEx(
                 dacl,
                 ACL_REVISION,
-                0,
+                flags,
                 FILE_GENERIC_READ,
                 sid.as_mut_ptr().cast(),
             )
@@ -279,14 +294,14 @@ fn public_acl_is_rejected_without_permission_repair_and_trusted_acl_drift_is_see
         .unwrap();
     let source = root.open_file("db", PrivateFileMode::ReadSource).unwrap();
     let before = source.snapshot().unwrap();
-    replace_acl(&security, WinLocalSystemSid);
+    replace_acl(&security, ExtraGrant::Effective(WinLocalSystemSid));
     assert_ne!(before, source.snapshot().unwrap());
-    replace_acl(&security, WinWorldSid);
+    replace_acl(&security, ExtraGrant::Effective(WinWorldSid));
     assert!(source.snapshot().is_err());
     drop(source);
     assert!(root.open_file("db", PrivateFileMode::ReadSource).is_err());
     assert!(
-        capture_private_security(&security).is_err(),
+        capture_private_security(&security, HandleKind::File).is_err(),
         "open must not repair public ACL"
     );
 }
@@ -328,10 +343,105 @@ fn impersonating_execution_is_rejected_before_creation() {
             assert_ne!(unsafe { RevertToSelf() }, 0);
         }
     }
-    let temp = tempfile::tempdir().unwrap();
+    let (temp, root) = fixture();
+    let legacy_source = temp.path().join("private/source");
+    let legacy_destination = temp.path().join("private/destination");
+    std::fs::write(&legacy_source, b"source").unwrap();
+    std::fs::write(&legacy_destination, b"destination").unwrap();
     assert_ne!(unsafe { ImpersonateSelf(SecurityImpersonation) }, 0);
     let _revert = Revert;
     let path = temp.path().join("must-not-exist");
     assert!(RetainedPrivateDirectory::open(&path, PrivateDirectoryMode::CreateNew).is_err());
     assert!(!path.exists());
+    let legacy_root = temp.path().join("legacy-must-not-exist");
+    assert!(super::super::open_private_state_directory(&legacy_root).is_err());
+    assert!(!legacy_root.exists());
+    assert!(
+        super::super::open_private_state_child(
+            root.as_file(),
+            "legacy-child",
+            super::super::PrivateFileAccess::Create
+        )
+        .is_err()
+    );
+    assert!(!temp.path().join("private/legacy-child").exists());
+    assert!(
+        super::super::replace_private_state_child(root.as_file(), "source", "destination").is_err()
+    );
+    drop(_revert);
+    assert_eq!(std::fs::read(legacy_source).unwrap(), b"source");
+    assert_eq!(std::fs::read(legacy_destination).unwrap(), b"destination");
+}
+
+fn dacl_bytes(file: &File) -> Vec<u8> {
+    let mut dacl = ptr::null_mut();
+    let mut descriptor = ptr::null_mut();
+    assert_eq!(
+        unsafe {
+            GetSecurityInfo(
+                file.as_raw_handle() as HANDLE,
+                1,
+                DACL_SECURITY_INFORMATION,
+                ptr::null_mut(),
+                ptr::null_mut(),
+                &mut dacl,
+                ptr::null_mut(),
+                &mut descriptor,
+            )
+        },
+        0
+    );
+    assert!(!dacl.is_null() && !descriptor.is_null());
+    let bytes =
+        unsafe { std::slice::from_raw_parts(dacl.cast::<u8>(), (*dacl).AclSize as usize) }.to_vec();
+    unsafe { LocalFree(descriptor as HLOCAL) };
+    bytes
+}
+
+#[test]
+fn public_inherit_only_grants_fail_directory_open_and_revalidation_without_repair() {
+    let (temp, root) = fixture();
+    let path = temp.path().join("private");
+    let security = OpenOptions::new()
+        .access_mode(READ_CONTROL | WRITE_DAC)
+        .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+        .open(&path)
+        .unwrap();
+    replace_acl(&security, ExtraGrant::InheritOnly(WinWorldSid));
+    let before = dacl_bytes(&security);
+    assert!(root.snapshot().is_err());
+    assert!(RetainedPrivateDirectory::open(&path, PrivateDirectoryMode::OpenExisting).is_err());
+    // Demonstrate the actual exposure the directory check prevents, rather
+    // than only testing the ACE scanner against synthetic bytes.
+    let child_path = path.join("ordinary-sidecar");
+    std::fs::write(&child_path, b"sidecar").unwrap();
+    let child = File::open(child_path).unwrap();
+    assert!(capture_private_security(&child, HandleKind::File).is_err());
+    assert_eq!(
+        before,
+        dacl_bytes(&security),
+        "validation must not repair the ACL"
+    );
+}
+
+#[test]
+fn trusted_inherit_only_grants_preserve_private_ordinary_children() {
+    for sid in [WinLocalSystemSid, WinBuiltinAdministratorsSid] {
+        let (temp, root) = fixture();
+        let path = temp.path().join("private");
+        let security = OpenOptions::new()
+            .access_mode(READ_CONTROL | WRITE_DAC)
+            .custom_flags(FILE_FLAG_BACKUP_SEMANTICS)
+            .open(&path)
+            .unwrap();
+        // Current user has inheritable full access; the additional trusted
+        // principal receives an inherit-only read grant.
+        replace_acl(&security, ExtraGrant::InheritOnly(sid));
+        root.snapshot().unwrap();
+        RetainedPrivateDirectory::open(&path, PrivateDirectoryMode::OpenExisting).unwrap();
+        let child_path = path.join("ordinary-sidecar");
+        std::fs::write(&child_path, b"sidecar").unwrap();
+        let child = File::open(child_path).unwrap();
+        capture_private_security(&child, HandleKind::File).expect("private effective child ACL");
+    }
 }

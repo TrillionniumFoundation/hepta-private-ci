@@ -100,6 +100,7 @@ pub enum PrivateFileAccess {
 
 /// Creates or opens a retained private-state directory.
 pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
+    CurrentUser::read()?; // Preflight before create_dir, including impersonation.
     let created = match std::fs::create_dir(root) {
         Ok(()) => true,
         Err(error) if error.kind() == io::ErrorKind::AlreadyExists => false,
@@ -176,6 +177,7 @@ pub fn open_private_state_child(
     name: &str,
     access: PrivateFileAccess,
 ) -> io::Result<File> {
+    CurrentUser::read()?; // Preflight before a Create open can touch the filesystem.
     let path = child_path(directory, name)?;
     let mut options = OpenOptions::new();
     match access {
@@ -223,6 +225,7 @@ pub fn replace_private_state_child(
     source_name: &str,
     destination_name: &str,
 ) -> io::Result<()> {
+    CurrentUser::read()?;
     let source = child_path(directory, source_name)?;
     let destination = child_path(directory, destination_name)?;
     validate_handle(
@@ -272,11 +275,7 @@ fn validate_handle(file: &File, kind: HandleKind) -> io::Result<()> {
     {
         return Err(unsafe_state("private state handle type is unsafe"));
     }
-    validate_private_owner_and_dacl(file)
-}
-
-fn validate_private_owner_and_dacl(file: &File) -> io::Result<()> {
-    capture_private_security(file).map(|_| ())
+    capture_private_security(file, kind).map(|_| ())
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -286,7 +285,7 @@ struct PrivateSecuritySnapshot {
     control: u16,
 }
 
-fn capture_private_security(file: &File) -> io::Result<PrivateSecuritySnapshot> {
+fn capture_private_security(file: &File, kind: HandleKind) -> io::Result<PrivateSecuritySnapshot> {
     let current_user = CurrentUser::read()?;
     let mut owner = ptr::null_mut();
     let mut dacl: *mut ACL = ptr::null_mut();
@@ -320,7 +319,7 @@ fn capture_private_security(file: &File) -> io::Result<PrivateSecuritySnapshot> 
             IsValidSid(owner) != 0
                 && IsValidAcl(dacl) != 0
                 && EqualSid(owner, current_user.sid()) != 0
-                && !dacl_grants_untrusted_access(dacl, current_user.sid())
+                && !dacl_grants_untrusted_access(dacl, current_user.sid(), kind)
                 && GetSecurityDescriptorControl(descriptor, &mut control, &mut revision) != 0
                 && GetAclInformation(
                     dacl,
@@ -348,7 +347,11 @@ fn capture_private_security(file: &File) -> io::Result<PrivateSecuritySnapshot> 
     result
 }
 
-unsafe fn dacl_grants_untrusted_access(dacl: *mut ACL, current_user: *mut c_void) -> bool {
+unsafe fn dacl_grants_untrusted_access(
+    dacl: *mut ACL,
+    current_user: *mut c_void,
+    kind: HandleKind,
+) -> bool {
     let mut information: ACL_SIZE_INFORMATION = unsafe { std::mem::zeroed() };
     if unsafe {
         GetAclInformation(
@@ -384,7 +387,12 @@ unsafe fn dacl_grants_untrusted_access(dacl: *mut ACL, current_user: *mut c_void
             return true;
         }
         let header = unsafe { &*(ace as *const ACE_HEADER) };
-        if header.AceType == ACCESS_DENIED_ACE_TYPE || header.AceFlags & INHERIT_ONLY_ACE != 0 {
+        let effective = header.AceFlags & INHERIT_ONLY_ACE == 0;
+        let inherited_by_children = matches!(kind, HandleKind::Directory)
+            && u32::from(header.AceFlags) & (OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE) != 0;
+        // A directory can be private itself yet grant public access to future
+        // children through an inherit-only ACE. Inspect both using this same SD.
+        if header.AceType == ACCESS_DENIED_ACE_TYPE || (!effective && !inherited_by_children) {
             continue;
         }
         if header.AceType != ACCESS_ALLOWED_ACE_TYPE {
@@ -581,7 +589,9 @@ mod tests {
             },
             0
         );
-        assert!(unsafe { dacl_grants_untrusted_access(dacl, current_user.sid()) });
+        assert!(unsafe {
+            dacl_grants_untrusted_access(dacl, current_user.sid(), HandleKind::File)
+        });
     }
 
     #[test]
