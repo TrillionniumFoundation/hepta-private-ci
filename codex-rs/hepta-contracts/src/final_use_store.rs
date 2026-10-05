@@ -438,13 +438,20 @@ fn open_private(directory: &File, name: &str, access: Access) -> Result<File, Fi
     Ok(file)
 }
 
-#[cfg(not(unix))]
-fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
-    Err(FinalUseError::UnsafeStateDirectory)
+#[cfg(windows)]
+fn prepare_directory(root: &Path) -> Result<File, FinalUseError> {
+    codex_utils_path::open_private_state_directory(root).map_err(map_private_state_error)
 }
-#[cfg(not(unix))]
-fn open_private(_directory: &File, _name: &str, _access: Access) -> Result<File, FinalUseError> {
-    Err(FinalUseError::UnsafeStateDirectory)
+
+#[cfg(windows)]
+fn open_private(directory: &File, name: &str, access: Access) -> Result<File, FinalUseError> {
+    let access = match access {
+        Access::Read => codex_utils_path::PrivateFileAccess::Read,
+        Access::Write => codex_utils_path::PrivateFileAccess::Write,
+        Access::Create => codex_utils_path::PrivateFileAccess::Create,
+    };
+    codex_utils_path::open_private_state_child(directory, name, access)
+        .map_err(map_private_state_error)
 }
 
 #[cfg(unix)]
@@ -473,15 +480,58 @@ fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
     .map_err(|_| FinalUseError::Unavailable)
 }
 
-#[cfg(not(unix))]
+#[cfg(windows)]
+fn entry_exists(directory: &File, name: &str) -> Result<bool, FinalUseError> {
+    codex_utils_path::private_state_child_exists(directory, name).map_err(map_private_state_error)
+}
+
+#[cfg(windows)]
+fn replace_state(directory: &File) -> Result<(), FinalUseError> {
+    codex_utils_path::replace_private_state_child(directory, "authority.next", "authority.json")
+        .map_err(map_private_state_error)
+}
+
+#[cfg(windows)]
+fn replace_claims(directory: &File) -> Result<(), FinalUseError> {
+    codex_utils_path::replace_private_state_child(
+        directory,
+        "authority.claims.next",
+        "authority.claims",
+    )
+    .map_err(map_private_state_error)
+}
+
+#[cfg(windows)]
+fn map_private_state_error(error: std::io::Error) -> FinalUseError {
+    match error.kind() {
+        std::io::ErrorKind::InvalidData
+        | std::io::ErrorKind::InvalidInput
+        | std::io::ErrorKind::PermissionDenied => FinalUseError::UnsafeStateDirectory,
+        _ => FinalUseError::Unavailable,
+    }
+}
+
+#[cfg(all(not(unix), not(windows)))]
+fn prepare_directory(_root: &Path) -> Result<File, FinalUseError> {
+    Err(FinalUseError::UnsafeStateDirectory)
+}
+
+#[cfg(all(not(unix), not(windows)))]
+fn open_private(_directory: &File, _name: &str, _access: Access) -> Result<File, FinalUseError> {
+    Err(FinalUseError::UnsafeStateDirectory)
+}
+
+#[cfg(all(not(unix), not(windows)))]
 fn entry_exists(_directory: &File, _name: &str) -> Result<bool, FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+
+#[cfg(all(not(unix), not(windows)))]
 fn replace_state(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }
-#[cfg(not(unix))]
+
+#[cfg(all(not(unix), not(windows)))]
 fn replace_claims(_directory: &File) -> Result<(), FinalUseError> {
     Err(FinalUseError::UnsafeStateDirectory)
 }

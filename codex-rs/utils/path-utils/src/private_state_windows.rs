@@ -83,6 +83,8 @@ const INHERIT_ONLY_ACE: u8 = 0x08;
 pub enum PrivateFileAccess {
     /// Open an existing child for reads.
     Read,
+    /// Open an existing child for retained-owner reads and writes.
+    Write,
     /// Open or create a child for retained-owner reads and writes.
     Create,
 }
@@ -164,6 +166,9 @@ pub fn open_private_state_child(
     match access {
         PrivateFileAccess::Read => {
             options.read(true);
+        }
+        PrivateFileAccess::Write => {
+            options.read(true).write(true);
         }
         PrivateFileAccess::Create => {
             options.read(true).write(true).create(true);
