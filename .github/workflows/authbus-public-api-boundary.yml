@@ -4,12 +4,28 @@ on:
   pull_request:
     paths:
       - "codex-rs/hepta-authbus/**"
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-operations/**"
+      - "scripts/authbus_caller_api.py"
+      - "scripts/test_authbus_caller_api.py"
+      - "scripts/check-authbus-caller-api-rust.py"
+      - "scripts/authbus-evidence-projection.py"
+      - "scripts/verify_hepta_callers.py"
+      - "docs/modules/auth.authbus/PRODUCT_CALLER_CONTRACT.json"
       - "scripts/check-authbus-composition-root.py"
       - ".github/workflows/authbus-public-api-boundary.yml"
   push:
     branches: [main]
     paths:
       - "codex-rs/hepta-authbus/**"
+      - "codex-rs/hepta-bao-adapter/**"
+      - "codex-rs/hepta-operations/**"
+      - "scripts/authbus_caller_api.py"
+      - "scripts/test_authbus_caller_api.py"
+      - "scripts/check-authbus-caller-api-rust.py"
+      - "scripts/authbus-evidence-projection.py"
+      - "scripts/verify_hepta_callers.py"
+      - "docs/modules/auth.authbus/PRODUCT_CALLER_CONTRACT.json"
       - "scripts/check-authbus-composition-root.py"
       - ".github/workflows/authbus-public-api-boundary.yml"
 
@@ -42,7 +58,9 @@ jobs:
 
       - name: Check composition-root source contract
         shell: bash
-        run: python3 scripts/check-authbus-composition-root.py
+        run: |
+          python3 scripts/check-authbus-composition-root.py
+          python3 -m unittest discover -s scripts -p test_authbus_caller_api.py
 
       - name: Check default and explicit compatibility builds
         shell: bash
@@ -52,6 +70,10 @@ jobs:
             -p codex-hepta-authbus --all-targets --locked
           cargo check --manifest-path codex-rs/Cargo.toml \
             -p codex-hepta-authbus --all-targets --all-features --locked
+
+      - name: Prove sealed operation and passive receipt external API
+        shell: bash
+        run: python3 scripts/check-authbus-caller-api-rust.py
 
       - name: Prove legacy replay is absent from default external API
         shell: bash

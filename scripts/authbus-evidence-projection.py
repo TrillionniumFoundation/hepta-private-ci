@@ -16,6 +16,8 @@ import os
 import subprocess
 from copy import deepcopy
 from pathlib import Path
+
+from authbus_caller_api import validate_bao_api
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -179,6 +181,8 @@ def validate_product_contract(mapping: dict[str, Any]) -> dict[str, Any]:
             raise ValueError(f"caller {name} missing required tokens: {missing}")
         if forbidden:
             raise ValueError(f"caller {name} contains forbidden tokens: {forbidden}")
+        if name == "bao_kv_v2_read":
+            validate_bao_api(text)
         for test_path in caller.get("testPaths", []):
             existing(str(test_path), f"caller {name} test")
         contracts = caller.get("contracts")
