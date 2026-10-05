@@ -185,6 +185,7 @@ pub enum RuntimeModuleRegistryError {
     CheckpointNotCurrent,
     CheckpointDuplicate,
     CheckpointInvalid,
+    CheckpointEncoding,
 }
 
 impl fmt::Display for RuntimeModuleRegistryError {
@@ -208,6 +209,7 @@ pub struct RuntimeModuleRegistryV1 {
 
 #[path = "module_runtime_checkpoint.rs"]
 mod checkpoint;
+pub use checkpoint::MAX_RUNTIME_MODULE_CHECKPOINT_BYTES;
 pub use checkpoint::RuntimeModuleActiveReservationV1;
 pub use checkpoint::RuntimeModuleGenerationFenceV1;
 pub use checkpoint::RuntimeModuleRegistryCheckpointV1;

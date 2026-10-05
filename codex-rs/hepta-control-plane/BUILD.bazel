@@ -3,6 +3,7 @@ load("//:defs.bzl", "codex_rust_crate")
 
 codex_rust_crate(
     name = "hepta-control-plane",
+    compile_data = glob(["fixtures/*.bin"]),
     crate_name = "codex_hepta_control_plane",
 )
 

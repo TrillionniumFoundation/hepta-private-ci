@@ -44,6 +44,7 @@ pub use module_runtime::MAX_MODULE_DEPENDENCIES;
 pub use module_runtime::MAX_MODULE_DOMAINS;
 pub use module_runtime::MAX_MODULE_EFFECTS;
 pub use module_runtime::MAX_MODULE_PORTS;
+pub use module_runtime::MAX_RUNTIME_MODULE_CHECKPOINT_BYTES;
 pub use module_runtime::MAX_RUNTIME_MODULE_IDENTITIES;
 pub use module_runtime::MAX_RUNTIME_MODULES;
 pub use module_runtime::RuntimeModuleAbiV1;

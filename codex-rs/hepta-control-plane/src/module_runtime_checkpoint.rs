@@ -22,6 +22,8 @@ mod codec;
 // the next registration compacts it. Its pending quota is already released.
 const MAX_RETAINED_RUNTIME_RECORDS: usize =
     (MAX_RUNTIME_MODULES + MAX_PENDING_RUNTIME_MODULES) * 2 + 1;
+/// Covers every bounded ABI, retained record and fence; checked before decoding.
+pub const MAX_RUNTIME_MODULE_CHECKPOINT_BYTES: usize = 20 * 1024 * 1024;
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct RuntimeModuleActiveReservationV1 {
@@ -74,6 +76,25 @@ impl RuntimeModuleRegistryV1 {
         };
         checkpoint.checkpoint_digest = Digest32::of_bytes(&codec::encode(&checkpoint));
         checkpoint
+    }
+
+    /// Canonical V1 bytes for host-owned persistence. No I/O or commit occurs.
+    pub fn checkpoint_bytes(&self) -> Vec<u8> {
+        let checkpoint = self.checkpoint();
+        let mut bytes = codec::encode(&checkpoint);
+        bytes.extend_from_slice(checkpoint.checkpoint_digest.as_array());
+        bytes
+    }
+
+    /// The caller must obtain this exact digest from the current durable owner,
+    /// never from the supplied backup. Current revocations, selection and writer
+    /// leases must be reconciled independently before dispatch/effects resume.
+    /// This API does not authenticate that root or persist/observe its freshness.
+    pub fn restore_checkpoint_bytes(
+        bytes: &[u8],
+        expected_current_checkpoint_digest: Digest32,
+    ) -> Result<Self, RuntimeModuleRegistryError> {
+        Self::restore_checkpoint(codec::decode(bytes)?, expected_current_checkpoint_digest)
     }
 
     /// Restore only the host's exact current registry checkpoint, not a valid

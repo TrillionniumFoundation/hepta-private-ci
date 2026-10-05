@@ -136,8 +136,8 @@ fn full_pending_queue_does_not_starve_rollback_or_expand_selected_capacity() {
         )
         .expect("reserved transactional rollback slot");
     let checkpoint = registry.checkpoint();
-    let restored = RuntimeModuleRegistryV1::restore_checkpoint(
-        checkpoint.clone(),
+    let restored = RuntimeModuleRegistryV1::restore_checkpoint_bytes(
+        &registry.checkpoint_bytes(),
         checkpoint.checkpoint_digest,
     )
     .expect("full-capacity rollback checkpoint");
@@ -301,4 +301,43 @@ fn pending_candidate_pins_its_own_predecessor_payload() {
             .record(&first.module_id, first.generation)
             .is_none()
     );
+}
+
+#[test]
+fn maximal_retained_checkpoint_keeps_the_emergency_rollback_row() {
+    let mut registry = RuntimeModuleRegistryV1::new();
+    for index in 0..MAX_RUNTIME_MODULES {
+        let name = format!("selected-{index}");
+        let first = abi(&name, /*epoch*/ 1, /*predecessor*/ None);
+        promote(&mut registry, first.clone());
+        promote(&mut registry, abi(&name, /*epoch*/ 2, Some(&first)));
+    }
+    for index in 0..MAX_PENDING_RUNTIME_MODULES {
+        let name = format!("pending-{index}");
+        let first = abi(&name, /*epoch*/ 1, /*predecessor*/ None);
+        registry.register_candidate(first.clone()).unwrap();
+        registry
+            .quarantine(&first.module_id, first.generation)
+            .unwrap();
+        registry
+            .register_candidate(abi(&name, /*epoch*/ 2, Some(&first)))
+            .unwrap();
+    }
+    assert_eq!(registry.checkpoint().records.len(), 512);
+    registry
+        .rollback_active_to_predecessor_content(
+            &id("selected-0"),
+            generation(2),
+            generation(3),
+            Digest32::of_bytes(b"rollback"),
+        )
+        .unwrap();
+    let checkpoint = registry.checkpoint();
+    assert_eq!(checkpoint.records.len(), 513);
+    let restored = RuntimeModuleRegistryV1::restore_checkpoint_bytes(
+        &registry.checkpoint_bytes(),
+        checkpoint.checkpoint_digest,
+    )
+    .unwrap();
+    assert_eq!(restored.checkpoint(), checkpoint);
 }

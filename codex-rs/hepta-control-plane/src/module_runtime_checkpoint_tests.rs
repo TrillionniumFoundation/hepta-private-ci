@@ -79,9 +79,11 @@ fn disabled_writers_and_pending_candidates_survive_reopen() {
             .register_candidate(abi("pending", /*value*/ 1, /*previous*/ None))
             .unwrap();
         let before = registry.checkpoint();
-        let mut restored =
-            RuntimeModuleRegistryV1::restore_checkpoint(before.clone(), before.checkpoint_digest)
-                .unwrap();
+        let mut restored = RuntimeModuleRegistryV1::restore_checkpoint_bytes(
+            &registry.checkpoint_bytes(),
+            before.checkpoint_digest,
+        )
+        .unwrap();
         assert_eq!(restored.checkpoint(), before);
         assert!(restored.snapshot().active.is_empty());
         let mut conflict = abi("conflict", /*value*/ 1, /*previous*/ None);
@@ -134,6 +136,15 @@ fn stale_valid_backup_cannot_replace_current_retirement_or_quarantine() {
         Error::CheckpointNotCurrent
     );
     assert_eq!(live.checkpoint(), current);
+    live.begin_retire(&id("persisted"), generation(1)).unwrap();
+    live.finish_retire(&id("persisted"), generation(1)).unwrap();
+    let retired = live.checkpoint();
+    assert_eq!(
+        RuntimeModuleRegistryV1::restore_checkpoint(current, retired.checkpoint_digest)
+            .unwrap_err(),
+        Error::CheckpointNotCurrent,
+    );
+    assert_eq!(live.checkpoint(), retired);
 }
 
 #[test]
@@ -199,9 +210,12 @@ fn retired_identity_cap_survives_compaction_restore_and_allows_existing_identity
             /*value*/ 1,
             /*previous*/ None,
         );
-        registry.register_candidate(value.clone()).unwrap();
+        bootstrap(&mut registry, value.clone());
         registry
-            .quarantine(&value.module_id, value.generation)
+            .begin_retire(&value.module_id, value.generation)
+            .unwrap();
+        registry
+            .finish_retire(&value.module_id, value.generation)
             .unwrap();
     }
     let mut restored = restore(registry.checkpoint()).unwrap();
@@ -278,3 +292,6 @@ fn collection_abi_and_pending_bounds_are_checked_before_restore() {
     resign(&mut checkpoint);
     assert_eq!(restore(checkpoint).unwrap_err(), Error::Bounds);
 }
+
+#[path = "module_runtime_checkpoint_wire_tests.rs"]
+mod wire_tests;
