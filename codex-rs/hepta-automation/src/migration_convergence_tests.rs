@@ -1,14 +1,96 @@
+use sqlx::SqlStr;
 use sqlx::migrate::Migrate;
+use sqlx::migrate::Migration;
+use sqlx::migrate::MigrationType;
 use sqlx::sqlite::SqlitePoolOptions;
 
 use super::*;
 
+#[tokio::test]
+async fn preparation_schema24_preserves_exact_schema23_history_without_backfill() {
+    let temp = tempfile::tempdir().expect("historical owner");
+    let root = temp.path().join("owner");
+    std::fs::create_dir(&root).expect("owner directory");
+    let root = root.canonicalize().expect("canonical owner");
+    create_private_directory(&root).expect("private owner");
+    let sqlite = SqliteConfig::from_sqlite_home(
+        AbsolutePathBuf::try_from(root.clone()).expect("absolute owner"),
+    );
+    let pool = sqlite
+        .open_durable_evidence_pool(&root.join(AUTOMATION_DB_FILENAME))
+        .await
+        .expect("historical pool");
+    initialize_historical_pool(&pool, /*displaced*/ false).await;
+    let mut connection = pool.acquire().await.expect("history writer");
+    for migration in MIGRATOR
+        .iter()
+        .filter(|migration| (6..=23).contains(&migration.version))
+    {
+        connection
+            .apply("_sqlx_migrations", migration)
+            .await
+            .expect("schema23 history");
+    }
+    drop(connection);
+    let before: Vec<(i64, Vec<u8>)> =
+        sqlx::query_as("SELECT version, checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&pool)
+            .await
+            .expect("before journal");
+    let objects: Vec<(String, String, String)> = sqlx::query_as(
+        "SELECT type, name, sql FROM sqlite_master WHERE sql IS NOT NULL ORDER BY type, name",
+    )
+    .fetch_all(&pool)
+    .await
+    .expect("before schema");
+    assert_eq!(before.len(), 23);
+    pool.close().await;
+    let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner");
+    let store = AutomationStore::open_root(root, owner)
+        .await
+        .expect("schema24 append");
+    let after: Vec<(i64, Vec<u8>)> =
+        sqlx::query_as("SELECT version, checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&store.pool)
+            .await
+            .expect("after journal");
+    assert_eq!(after.len(), 24);
+    assert_eq!(&after[..23], before.as_slice());
+    let new_objects: Vec<(String, String, String)> = sqlx::query_as(
+        "SELECT type, name, sql FROM sqlite_master WHERE sql IS NOT NULL ORDER BY type, name",
+    )
+    .fetch_all(&store.pool)
+    .await
+    .expect("after schema");
+    for object in objects {
+        assert!(
+            new_objects.contains(&object),
+            "changed schema23 object: {object:?}"
+        );
+    }
+    let count: i64 =
+        sqlx::query_scalar("SELECT count(*) FROM taskflow_effect_preparation_evidence")
+            .fetch_one(&store.pool)
+            .await
+            .expect("no backfill");
+    assert_eq!(count, 0);
+    store.close().await;
+}
+
+// Legacy migration setup needs one in-memory connection without current owner
+// initialization; production and reopened owner pools still use the state shim.
+#[allow(clippy::disallowed_methods)]
 async fn historical_pool(displaced: bool) -> SqlitePool {
     let pool = SqlitePoolOptions::new()
         .max_connections(1)
         .connect("sqlite::memory:")
         .await
         .expect("SQLite owner");
+    initialize_historical_pool(&pool, displaced).await;
+    pool
+}
+
+async fn initialize_historical_pool(pool: &SqlitePool, displaced: bool) {
     let mut connection = pool.acquire().await.expect("owner connection");
     connection
         .ensure_migrations_table("_sqlx_migrations")
@@ -46,7 +128,6 @@ async fn historical_pool(displaced: bool) -> SqlitePool {
             .expect("historical branch migration");
     }
     drop(connection);
-    pool
 }
 
 #[tokio::test]
@@ -125,10 +206,100 @@ async fn unknown_or_dirty_history_is_not_relabelled() {
     }
 }
 
+#[tokio::test]
+async fn authority_schema20_is_rejected_without_relabelling_or_extending_history() {
+    let temp = tempfile::tempdir().expect("private historical owner root");
+    let root = temp.path().join("owner");
+    std::fs::create_dir(&root).expect("historical owner directory");
+    let root = root
+        .canonicalize()
+        .expect("canonical historical owner root");
+    create_private_directory(&root).expect("private owner directory");
+    let sqlite = SqliteConfig::from_sqlite_home(
+        AbsolutePathBuf::try_from(root.clone()).expect("absolute owner root"),
+    );
+    // Construct the predecessor in the real owner-backed file from the start.
+    // A memory-database export is not the reopen boundary under test here.
+    let pool = sqlite
+        .open_durable_evidence_pool(&root.join(AUTOMATION_DB_FILENAME))
+        .await
+        .expect("persisted historical pool");
+    initialize_historical_pool(&pool, /*displaced*/ false).await;
+    let mut connection = pool.acquire().await.expect("historical connection");
+    for migration in MIGRATOR
+        .iter()
+        .filter(|migration| (6..=19).contains(&migration.version))
+    {
+        connection
+            .apply("_sqlx_migrations", migration)
+            .await
+            .expect("shared history");
+    }
+    // Exact SQL from kernel-owner 2210f3d47c. Its version 20 is not this
+    // branch's retirement-drain migration and must not be renamed to 24.
+    let authority = Migration::new(
+        /*version*/ 20,
+        "effect dispatch authority witness".into(),
+        MigrationType::Simple,
+        SqlStr::from_static(include_str!(
+            "../tests/fixtures/kernel_authority_schema20.sql"
+        )),
+        /*no_tx*/ false,
+    );
+    connection
+        .apply("_sqlx_migrations", &authority)
+        .await
+        .expect("authority lineage");
+    drop(connection);
+    let before: Vec<(i64, Vec<u8>)> =
+        sqlx::query_as("SELECT version, checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&pool)
+            .await
+            .expect("original lineage");
+    assert!(matches!(
+        reconcile_legacy_migration_ids(&pool).await,
+        Err(AutomationError::Corrupt)
+    ));
+    let after: Vec<(i64, Vec<u8>)> =
+        sqlx::query_as("SELECT version, checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&pool)
+            .await
+            .expect("retained lineage");
+    assert_eq!(before, after);
+    pool.close().await;
+    let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner");
+    let image = sqlite
+        .open_read_only_pool(&root.join(AUTOMATION_DB_FILENAME))
+        .await
+        .expect("read persisted incompatible image");
+    let persisted: Vec<(i64, Vec<u8>)> =
+        sqlx::query_as("SELECT version, checksum FROM _sqlx_migrations ORDER BY version")
+            .fetch_all(&image)
+            .await
+            .expect("persisted migration ledger");
+    assert_eq!(
+        persisted, before,
+        "close/reopen must retain the exact historical image"
+    );
+    image.close().await;
+    match AutomationStore::open_root(root, owner).await {
+        Err(error) => assert_eq!(
+            error,
+            AutomationError::Corrupt,
+            "incompatible lineage rejection"
+        ),
+        Ok(store) => {
+            store.close().await;
+            panic!("incompatible authority schema20 unexpectedly opened");
+        }
+    }
+}
+
 async fn reopen_persisted_history(displaced: bool, after_rebind: bool) {
     let temp = tempfile::tempdir().expect("private owner root");
     let root = temp.path().join("owner");
     std::fs::create_dir(&root).expect("owner directory");
+    let root = root.canonicalize().expect("canonical owner directory");
     let pool = historical_pool(displaced).await;
     let before: Vec<Vec<u8>> =
         sqlx::query_scalar("SELECT checksum FROM _sqlx_migrations ORDER BY version")

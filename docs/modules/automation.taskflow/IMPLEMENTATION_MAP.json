@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "3381d87710325b95ee817f8361c3468f5edd6b34",
+    "tree": "7075250176e544cf3cfc14989c32e436c9bd2cdd"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "automation.taskflow",
@@ -31,17 +31,17 @@
         {
           "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
           "kind": "calendar_v2_dst_tzdb_revision",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         },
         {
           "path": "codex-rs/hepta-automation/tests/automation.rs",
           "kind": "legacy_schedule_compatibility",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         },
         {
           "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
           "kind": "real_agentd_calendar_v2_capability_negotiation_and_product_control",
-          "command": "cargo test -p codex-hepta-agentd --test five_agent_rolling_upgrade five_real_agentd_processes_roll_one_agent_without_stopping_peers"
+          "command": "just test -p codex-hepta-agentd --test five_agent_rolling_upgrade five_real_agentd_processes_roll_one_agent_without_stopping_peers"
         }
       ],
       "sourceSemantics": "Persists append-only Calendar V2 revisions with explicit timezone/tzdb identity, start/end, DST gap/overlap policy and bounded recurrence while preserving Once/FixedInterval compatibility records; Agentd advertises automation.calendar_v2@1.0 and generation-fences the typed creation call.",
@@ -63,7 +63,7 @@
           "ownerModule": "runtime.agentd"
         }
       ],
-      "sourceBlob": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+      "sourceBlob": "8537e76c427cbf11e0fc8b0107e0e15443a2ed11"
     },
     {
       "designOperation": "materialize_due",
@@ -79,12 +79,17 @@
         {
           "path": "codex-rs/hepta-automation/src/scheduler.rs",
           "kind": "scheduler_and_recovery",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         },
         {
           "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
           "kind": "calendar_due_materialization",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/automation_recovery_tests.rs",
+          "kind": "bounded_runtime_observation_deadline_source_regression",
+          "command": "just test -p codex-hepta-agentd --lib"
         }
       ],
       "sourceSemantics": "Claims bounded due work, freezes schedule revision, derives canonical UTC occurrence identity from the authoritative schedule profile, and commits TaskFlow step intent before App Server or external-provider contact.",
@@ -92,7 +97,7 @@
       "nativeSymbol": "pub async fn tick(",
       "sourcePath": "codex-rs/hepta-automation/src/scheduler.rs",
       "sourcePathExists": true,
-      "sourceBlob": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+      "sourceBlob": "5e59de43e540101019e504643aee34bd39c5c291"
     },
     {
       "designOperation": "claim_occurrence",
@@ -116,12 +121,12 @@
         {
           "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
           "kind": "deterministic_occurrence_and_generation_fence",
-          "command": "cargo test -p codex-hepta-automation --test durable_causal_chain"
+          "command": "just test -p codex-hepta-automation --test durable_causal_chain"
         },
         {
           "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
           "kind": "restart_reconciliation_identity",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         }
       ],
       "sourceSemantics": "Binds one due compatibility lease to a deterministic durable occurrence and generation/token fence; safe reclaim preserves occurrence/client identity, while unresolved provider contact remains quarantined.",
@@ -129,7 +134,7 @@
       "nativeSymbol": "pub async fn materialize_occurrence(",
       "sourcePath": "codex-rs/hepta-automation/src/lifecycle.rs",
       "sourcePathExists": true,
-      "sourceBlob": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+      "sourceBlob": "36f8c51a87d102c87d560110197b567a1febc2e7"
     },
     {
       "designOperation": "execute_step",
@@ -154,38 +159,108 @@
           "symbol": "pub async fn execute_authorized_taskflow_effect_async",
           "ownerModule": "automation.taskflow",
           "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-contracts/src/final_use_async_prepare.rs",
+          "symbol": "pub async fn with_prepared_verified_use_async",
+          "ownerModule": "kernel.authority",
+          "buildTarget": "codex-hepta-contracts"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/effect_preparation_evidence.rs",
+          "symbol": "pub(crate) async fn record_effect_preparation_witness",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
+        },
+        {
+          "role": "delegated_callee",
+          "path": "codex-rs/hepta-automation/src/taskflow_step_identity.rs",
+          "symbol": "pub(crate) async fn read_step_authoring_identity",
+          "ownerModule": "automation.taskflow",
+          "buildTarget": "codex-hepta-automation"
         }
       ],
       "tests": [
         {
           "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
           "kind": "canonical_final_use_intent_binding",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         },
         {
           "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
           "kind": "durable_indeterminate_terminal_reconciliation",
-          "command": "cargo test -p codex-hepta-automation"
+          "command": "just test -p codex-hepta-automation"
         },
         {
           "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
           "kind": "durable_step_and_terminal_propagation",
-          "command": "cargo test -p codex-hepta-automation --test durable_causal_chain"
+          "command": "just test -p codex-hepta-automation --test durable_causal_chain"
         },
         {
           "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
           "kind": "final_use_provider_at_most_once_and_recovery",
-          "command": "cargo test -p codex-hepta-automation --test authorized_effect"
+          "command": "just test -p codex-hepta-automation --test authorized_effect"
+        },
+        {
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "kind": "configured_http_exact_wire_restart_expiry_configuration_drift_local_terminal_source_regression",
+          "command": "just test -p codex-hepta-agentd --lib"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/taskflow_concurrent_reconcile.rs",
+          "kind": "same_store_timer_writer_recovery_snapshot",
+          "command": "just test -p codex-hepta-automation --test taskflow_concurrent_reconcile"
+        },
+        {
+          "path": "codex-rs/hepta-contracts/src/final_use_async_prepare_tests.rs",
+          "kind": "post_preparation_trusted_time_cancellation_nonce_fence",
+          "command": "just test --locked -p codex-hepta-contracts"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/effect_preparation_evidence_tests.rs",
+          "kind": "exact_attempt_preparation_readonly_corruption_reopen",
+          "command": "just test --locked -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-automation/tests/authorized_effect/effect_preparation_tests.rs",
+          "kind": "both_driver_preparation_expiry_cancellation_no_resend",
+          "command": "just test --locked -p codex-hepta-automation"
+        },
+        {
+          "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+          "kind": "preserved_schema23_history_incompatible_schema20_refusal",
+          "command": "just test --locked -p codex-hepta-automation"
         }
       ],
-      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding immediately around provider entry, appends an immutable provider-attempt row before contact, supports a synchronous driver and an async ProviderEffectAdapter bridge whose exact wire bytes are hashed before grant consumption, derives a provider-stable logical key from destination + TaskFlow run/step, and records initial plus terminal/proven-absent reconciliation evidence without blind redispatch.",
+      "sourceSemantics": "Computes the canonical typed effect-intent digest inside automation, verifies independently signed final-use subject/destination/scope/payload binding with a current dispatch lease before provider entry, appends an immutable provider-attempt row before contact, supports synchronous and async provider-effect drivers with exact wire-payload binding, and composes the optional configured Agentd HTTP execute/reconcile control for already claimed/prepared steps. Version 2 provider keys bind the owning Agent plus TaskFlow run/step under the registered provider scope/destination; stored version 1 attempts retain their historical lookup key. Initial and terminal/proven-absent reconciliation evidence is recorded without blind redispatch; historical exact-attempt observation does not grant new dispatch authority. Generic scheduled-effect/DAG execution and independent host/provider qualification remain separate. New configured HTTP attempts persist an immutable optional provider contract binding before physical dispatch; mismatched remote recovery rejects after local known terminal evidence is settled. Legacy/generic unbound attempts retain their continuity limitations. Both existing driver seams persist opaque-token PreparationEntry evidence bound to exact immutable attempt and authored-step identity; current claim/lease and trusted authority time are rechecked after the bounded preparation awaits. Schema24 preserves canonical history1–23 and refuses the incompatible authority20 lineage. Preparation observations never grant settlement or redispatch authority.",
       "operation": "execute_step",
       "nativeSymbol": "pub async fn execute_authorized_taskflow_effect",
       "sourcePath": "codex-rs/hepta-automation/src/authorized_effect.rs",
       "sourcePathExists": true,
-      "productCallers": [],
-      "productCompositionState": "async_bridge_source_composed_named_independent_authority_provider_host_pending",
-      "sourceBlob": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "productCallers": [
+        {
+          "role": "configured_product_effect_host",
+          "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+          "symbol": "pub(crate) async fn execute(",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "product_control_dispatch",
+          "path": "codex-rs/hepta-agentd/src/state_control.rs",
+          "symbol": "AgentdMethod::AutomationExecuteEffect",
+          "ownerModule": "runtime.agentd"
+        },
+        {
+          "role": "typed_product_client",
+          "path": "codex-rs/hepta-agentd/src/client.rs",
+          "symbol": "pub async fn automation_execute_effect(",
+          "ownerModule": "runtime.agentd"
+        }
+      ],
+      "productCompositionState": "configured_agentd_async_http_effect_control_prepared_steps_only_independent_qualification_pending",
+      "sourceBlob": "4dd687710d81de9d9dac0d69ab22b91060293488"
     }
   ],
   "repositoryControlledGaps": [],
@@ -218,11 +293,12 @@
     "externalEffectAsyncBridgeComplete": true,
     "externalEffectExactWireBindingComplete": true,
     "externalEffectDurableRecoveryIdentityComplete": true,
-    "implementedOperationMappingComplete": true
+    "implementedOperationMappingComplete": true,
+    "configuredHttpEffectControlComposed": true
   },
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "agentd_app_server_and_capability_negotiated_calendar_v2_control_composed_external_effect_product_caller_pending",
+  "productCallerState": "agentd_app_server_calendar_v2_and_configured_http_effect_control_composed",
   "productionWriterState": "automation_store_durable_schedule_occurrence_taskflow_owner_established",
   "owner": "automation-platform",
   "deputy": "agent-runtime",
@@ -231,8 +307,8 @@
     "codex-rs/hepta-automation"
   ],
   "observedAtHead": {
-    "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
-    "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    "commit": "4555f4e9f6797fce691b7bce9a9d372dbcd6488a",
+    "tree": "7815c751e7d701a9638787a5bfcbed1e154de414"
   },
   "sourceIdentityPolicy": "candidate_or_exact_observation_v1",
   "exactSourceEvidence": {
@@ -240,44 +316,136 @@
     "entries": [
       {
         "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
-        "blobSha": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+        "blobSha": "8537e76c427cbf11e0fc8b0107e0e15443a2ed11"
       },
       {
         "path": "codex-rs/hepta-automation/src/scheduler.rs",
-        "blobSha": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+        "blobSha": "5e59de43e540101019e504643aee34bd39c5c291"
       },
       {
         "path": "codex-rs/hepta-automation/src/lifecycle.rs",
-        "blobSha": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+        "blobSha": "36f8c51a87d102c87d560110197b567a1febc2e7"
       },
       {
         "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-        "blobSha": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+        "blobSha": "4dd687710d81de9d9dac0d69ab22b91060293488"
+      },
+      {
+        "path": "codex-rs/app-server-client/src/lib.rs",
+        "blobSha": "dbddca237f17234f05e4111f2e1143b8490d0ccb"
+      },
+      {
+        "path": "codex-rs/app-server-client/src/remote.rs",
+        "blobSha": "ebe1ae1965c18ea4de832d9eee254aef0eb5bc72"
+      },
+      {
+        "path": "codex-rs/app-server-client/src/remote_send_guard.rs",
+        "blobSha": "6f34584d6b06e6b5af9b0add0452508b1f47fb02"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/automation_recovery.rs",
+        "blobSha": "ce4ec6664c6976ea151fcb81a2900f4a55647dd4"
+      },
+      {
+        "path": "codex-rs/hepta-agentd/src/operations_host.rs",
+        "blobSha": "19e8c07cb625ed2de70d68aff6ecdb2a1f3bf315"
+      },
+      {
+        "path": "codex-rs/hepta-automation/src/queue_contact.rs",
+        "blobSha": "41e678c0b60acd7247a308bbb43a7a2a6ae07753"
+      },
+      {
+        "path": "codex-rs/hepta-operations/src/durable_store.rs",
+        "blobSha": "726073b63055ddb43624a3e684f208974775e794"
+      },
+      {
+        "path": "codex-rs/hepta-operations/src/exact_claim.rs",
+        "blobSha": "123679444436035fa79df1e9fbcda80f1b219068"
       }
     ]
   },
   "observedSourcePaths": [
+    ".github/workflows/automation-taskflow-focused.yml",
     "CALLERS.toml",
     "codex-rs/Cargo.lock",
     "codex-rs/Cargo.toml",
+    "codex-rs/app-server-client/BUILD.bazel",
+    "codex-rs/app-server-client/src/lib.rs",
+    "codex-rs/app-server-client/src/remote.rs",
+    "codex-rs/app-server-client/src/remote_send_guard.rs",
+    "codex-rs/app-server-client/src/remote_send_guard_tests.rs",
     "codex-rs/app-server-protocol/src/protocol/v2/thread.rs",
     "codex-rs/app-server/src/request_processors/thread_processor.rs",
     "codex-rs/hepta-agent-protocol",
+    "codex-rs/hepta-agentd/BUILD.bazel",
+    "codex-rs/hepta-agentd/Cargo.toml",
     "codex-rs/hepta-agentd/src/automation.rs",
+    "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+    "codex-rs/hepta-agentd/src/automation_protected_file.rs",
+    "codex-rs/hepta-agentd/src/automation_protected_file_tests.rs",
     "codex-rs/hepta-agentd/src/automation_recovery.rs",
+    "codex-rs/hepta-agentd/src/automation_recovery_tests.rs",
+    "codex-rs/hepta-agentd/src/automation_service.rs",
     "codex-rs/hepta-agentd/src/client.rs",
     "codex-rs/hepta-agentd/src/lib.rs",
+    "codex-rs/hepta-agentd/src/operations_host.rs",
     "codex-rs/hepta-agentd/src/runtime.rs",
     "codex-rs/hepta-agentd/src/runtime_tests.rs",
+    "codex-rs/hepta-agentd/src/state.rs",
     "codex-rs/hepta-agentd/src/state_control.rs",
     "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
     "codex-rs/hepta-automation",
+    "codex-rs/hepta-automation/migrations/0024_effect_preparation_evidence.sql",
+    "codex-rs/hepta-automation/src/authorized_effect.rs",
+    "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+    "codex-rs/hepta-automation/src/effect_execution_request.rs",
+    "codex-rs/hepta-automation/src/effect_preparation_evidence.rs",
+    "codex-rs/hepta-automation/src/effect_preparation_evidence_tests.rs",
+    "codex-rs/hepta-automation/src/effect_recovery_frontier_tests.rs",
+    "codex-rs/hepta-automation/src/effect_recovery_scan.rs",
+    "codex-rs/hepta-automation/src/effect_recovery_scan_tests.rs",
+    "codex-rs/hepta-automation/src/lib.rs",
+    "codex-rs/hepta-automation/src/lifecycle.rs",
+    "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+    "codex-rs/hepta-automation/src/queue_contact.rs",
+    "codex-rs/hepta-automation/src/queue_contact_tests.rs",
+    "codex-rs/hepta-automation/src/schedule_v2.rs",
+    "codex-rs/hepta-automation/src/scheduler.rs",
+    "codex-rs/hepta-automation/src/store.rs",
+    "codex-rs/hepta-automation/src/taskflow_step.rs",
+    "codex-rs/hepta-automation/src/taskflow_step_identity.rs",
+    "codex-rs/hepta-automation/tests/authorized_effect.rs",
+    "codex-rs/hepta-automation/tests/authorized_effect/effect_preparation_tests.rs",
+    "codex-rs/hepta-automation/tests/automation.rs",
+    "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
+    "codex-rs/hepta-automation/tests/durable_causal_chain/observer_recovery_tests.rs",
+    "codex-rs/hepta-automation/tests/fixtures/kernel_authority_schema20.sql",
+    "codex-rs/hepta-automation/tests/taskflow_concurrent_reconcile.rs",
     "codex-rs/hepta-contracts",
+    "codex-rs/hepta-contracts/FINAL_USE.md",
+    "codex-rs/hepta-contracts/src/final_use.rs",
+    "codex-rs/hepta-contracts/src/final_use_async_prepare.rs",
+    "codex-rs/hepta-contracts/src/final_use_async_prepare_tests.rs",
+    "codex-rs/hepta-contracts/src/final_use_control.rs",
+    "codex-rs/hepta-contracts/src/lib.rs",
+    "codex-rs/hepta-contracts/src/verified_use_witness.rs",
     "codex-rs/hepta-operations",
-    "codex-rs/hepta-types"
+    "codex-rs/hepta-operations/src/durable_clock_tests.rs",
+    "codex-rs/hepta-operations/src/durable_store.rs",
+    "codex-rs/hepta-operations/src/durable_store_tests.rs",
+    "codex-rs/hepta-operations/src/exact_claim.rs",
+    "codex-rs/hepta-types",
+    "codex-rs/model-provider/src/provider_effect.rs",
+    "docs/modules/automation.taskflow/AUDIT.md",
+    "docs/modules/automation.taskflow/TECHNICAL.md",
+    "docs/modules/kernel.authority/LINEARIZATION.md",
+    "docs/modules/kernel.authority/TECHNICAL.md",
+    "scripts/hepta_ci_exec.py",
+    "scripts/test_taskflow_owner_workflow.py"
   ],
   "repositoryControlledProductCompositionGaps": [
-    "Async final-use/provider-effect bridge is source-composed, including exact wire-payload binding and durable provider-key recovery identity. Independently provisioned authority/provider configuration, deployed product selection and acceptance remain separately qualified."
+    "Configured Agentd HTTP execute/reconcile control requires already registered, claimed and prepared TaskFlow steps. General scheduled external-effect/DAG/Neural Circuit execution remains an implementation target; selected-host provider/authority qualification is separate.",
+    "New configured HTTP attempts pin an immutable provider scope/contract digest before contact, and mismatched remote recovery rejects. Legacy/generic unbound attempts still need original lookup continuity; original configuration bytes and a safe automatic provider rotation protocol are not supplied."
   ],
   "sourceObservationRequirements": {
     "policy": "candidate_or_exact_observation_v1",
@@ -299,16 +467,70 @@
       "sourcePath": "codex-rs/hepta-agentd/src/automation.rs",
       "nativeSymbol": "run_automation_scheduler",
       "state": "existing_app_server_queue_owner_consumer"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "nativeSymbol": "execute",
+      "state": "configured_async_http_final_use_effect_control"
+    },
+    {
+      "sourcePath": "codex-rs/hepta-agentd/src/state_control.rs",
+      "nativeSymbol": "AutomationReconcileEffect",
+      "state": "generation_fenced_exact_attempt_recovery_control"
     }
   ],
   "sourceObjects": [
     {
+      "path": ".github/workflows/automation-taskflow-focused.yml",
+      "object": "08cb263473060e9b5db5584f8d90ddf03c4adc48"
+    },
+    {
+      "path": "codex-rs/app-server-client/BUILD.bazel",
+      "object": "e0e0419fbbc1df57a0ef18dea8eea0829625c471"
+    },
+    {
+      "path": "codex-rs/app-server-client/src/lib.rs",
+      "object": "dbddca237f17234f05e4111f2e1143b8490d0ccb"
+    },
+    {
+      "path": "codex-rs/app-server-client/src/remote.rs",
+      "object": "ebe1ae1965c18ea4de832d9eee254aef0eb5bc72"
+    },
+    {
+      "path": "codex-rs/app-server-client/src/remote_send_guard.rs",
+      "object": "6f34584d6b06e6b5af9b0add0452508b1f47fb02"
+    },
+    {
+      "path": "codex-rs/app-server-client/src/remote_send_guard_tests.rs",
+      "object": "b1d1dcc3e5a4b014c8eadf6e2b5996652a1268f1"
+    },
+    {
       "path": "codex-rs/hepta-agentd/src/automation.rs",
-      "object": "3ad02059094137917a6e32eafbd2598a242ef3d7"
+      "object": "36251dcc39ccec7b5161dea2eefe993e9cc021ee"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "b17c3562c19a09a898366a64494e2f68eae0ea84"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_recovery.rs",
+      "object": "ce4ec6664c6976ea151fcb81a2900f4a55647dd4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_recovery_tests.rs",
+      "object": "566329b7055c7a05a41d019a1301bc59e4545da1"
     },
     {
       "path": "codex-rs/hepta-agentd/src/automation_service.rs",
       "object": "2232cca24396190e924e73e032b713bcbfd49ddd"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/operations_host.rs",
+      "object": "19e8c07cb625ed2de70d68aff6ecdb2a1f3bf315"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/state_control.rs",
+      "object": "d73f65cb9594b1eabfb02be9f1729758b70c2ed3"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/five_agent_rolling_upgrade.rs",
@@ -316,51 +538,156 @@
     },
     {
       "path": "codex-rs/hepta-automation",
-      "object": "90409d9839266b2992986bb98343f41f40bed4ae"
+      "object": "9a838d2eeb4e1369137155944a5e1a61a718dfbb"
     },
     {
       "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
-      "object": "21db22ee30ffd50463b1721ef3fd8046ef5b3950"
+      "object": "4dd687710d81de9d9dac0d69ab22b91060293488"
     },
     {
       "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
-      "object": "2f0a8cea98cecc940a785dae606861ab2053a109"
+      "object": "166c8a93a1db589acfa4272f3776d1591f59bb88"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_execution_request.rs",
+      "object": "e811418a0e76af8075c12fc62d3e3d118552a47e"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_preparation_evidence.rs",
+      "object": "a67cb0ba2f3f3c22ef7765464b515943d4797437"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_preparation_evidence_tests.rs",
+      "object": "0523a6aeef5c4ac5b6721b52bef0310617c053b3"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_recovery_frontier_tests.rs",
+      "object": "49c04044a475209d1aacd50b14d34a92a268285d"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_recovery_scan.rs",
+      "object": "176c4241333ea59a6449ef81319d1299fe177f5f"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_recovery_scan_tests.rs",
+      "object": "3d3d55a748ea70029d6039570ca1f6cc59e34b2c"
     },
     {
       "path": "codex-rs/hepta-automation/src/lifecycle.rs",
-      "object": "4fd34632b554984ed193fa58ffa78a99efd937d2"
+      "object": "36f8c51a87d102c87d560110197b567a1febc2e7"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/migration_convergence_tests.rs",
+      "object": "423591f44e914155a53df2056fc9f8dd2125f62a"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/queue_contact.rs",
+      "object": "41e678c0b60acd7247a308bbb43a7a2a6ae07753"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/queue_contact_tests.rs",
+      "object": "1457204a430d32b93484fad511db723ac0313775"
     },
     {
       "path": "codex-rs/hepta-automation/src/schedule_v2.rs",
-      "object": "efd8ce9d853b5fc17f7f71b639aea3f778c0fc6e"
+      "object": "8537e76c427cbf11e0fc8b0107e0e15443a2ed11"
     },
     {
       "path": "codex-rs/hepta-automation/src/scheduler.rs",
-      "object": "4cd695be9113d4e8cd0d4100fa7451ef95be2351"
+      "object": "5e59de43e540101019e504643aee34bd39c5c291"
     },
     {
       "path": "codex-rs/hepta-automation/src/store.rs",
-      "object": "176b5c7200bea7d07d6642440d1f03c37209cef3"
+      "object": "1871e5449099c5aaf4c90f26b550c840a9481dcb"
     },
     {
       "path": "codex-rs/hepta-automation/src/taskflow_step.rs",
-      "object": "e018c0b900ae9a0c0b1f9e920969357b8e1628b0"
+      "object": "a3375c5a66709bc5d4f8e24b4f397ff11142fa30"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/taskflow_step_identity.rs",
+      "object": "eeea381f6bc7a0c34443fef870006e6f1a0d254d"
     },
     {
       "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
-      "object": "15b84f5f00d149efbab5ab6ac68c29e116ce1a9d"
+      "object": "df31101118636d299cb3bb34324c78ecb1fb758e"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/authorized_effect/effect_preparation_tests.rs",
+      "object": "faa684a51c9429fd13e1e76e150acf160acff6b8"
     },
     {
       "path": "codex-rs/hepta-automation/tests/automation.rs",
-      "object": "59e1f81d0efb3633a32edfbe37bdf599852919c2"
+      "object": "467d056ccf723d4e5f8a04006efe763bf8867cab"
     },
     {
       "path": "codex-rs/hepta-automation/tests/durable_causal_chain.rs",
-      "object": "7e590c4e400adbfd86cb630728bbde0b6f845a47"
+      "object": "2e4296556a411e293b1c5a29f01c01a32357ec89"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/durable_causal_chain/observer_recovery_tests.rs",
+      "object": "b9ccc4e9643bd1bee122030229ab8711e039d2a0"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/fixtures/kernel_authority_schema20.sql",
+      "object": "a0ef0bd9e5dc9c547587f4a8246de85249da8b98"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/taskflow_concurrent_reconcile.rs",
+      "object": "638f3797bfae275264f27a9125a5652e1a649f0f"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_async_prepare.rs",
+      "object": "cadcde7eb204476a9db46158641bcb2a67fd3270"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_async_prepare_tests.rs",
+      "object": "26de5cd48f0017effb3e9351e582ff36534e681c"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/durable_clock_tests.rs",
+      "object": "eeead550745eaee5aeb3aff929bc7346a7823eac"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/durable_store.rs",
+      "object": "726073b63055ddb43624a3e684f208974775e794"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/durable_store_tests.rs",
+      "object": "dde959bce606a4bedf4b4b80dce5aafbf2efaa5a"
+    },
+    {
+      "path": "codex-rs/hepta-operations/src/exact_claim.rs",
+      "object": "123679444436035fa79df1e9fbcda80f1b219068"
     },
     {
       "path": "docs/modules/automation.taskflow/TECHNICAL.md",
-      "object": "a18df0b8b1f375191e0918da82a3a979f7ae89dc"
+      "object": "0d6f0005a70ed4bc5df5c90dd84985e96e887895"
+    },
+    {
+      "path": "scripts/hepta_ci_exec.py",
+      "object": "c9434b3a4afb31f80e323d543936386a2fa738de"
+    },
+    {
+      "path": "scripts/test_taskflow_owner_workflow.py",
+      "object": "232b2344d228d9254b518ddef253256f56b2a8e6"
     }
-  ]
+  ],
+  "navigationProvenanceRepair": {
+    "supersededSourceBase": {
+      "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+      "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    },
+    "supersededObservedAtHead": {
+      "commit": "8914a46dfc5984532f03dd2d559bf547ca4f1e69",
+      "tree": "1bd6444d2d980a9fdf06358dbee973b34722f0e1"
+    },
+    "reason": "Inherited anchor is not an ancestor of the inspected candidate; scoped fresh source review replaces invalid navigation provenance.",
+    "reviewedAt": {
+      "commit": "3381d87710325b95ee817f8361c3468f5edd6b34",
+      "tree": "7075250176e544cf3cfc14989c32e436c9bd2cdd"
+    },
+    "semantics": "Source navigation only; no historical execution, independent acceptance or activation evidence is transferred."
+  },
+  "mappingSourceIdentityMode": "exact_blob"
 }

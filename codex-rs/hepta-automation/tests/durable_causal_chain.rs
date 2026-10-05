@@ -38,6 +38,12 @@ use codex_state::SqliteConfig;
 use codex_utils_absolute_path::AbsolutePathBuf;
 use pretty_assertions::assert_eq;
 
+#[path = "durable_causal_chain/claim_lifecycle_tests.rs"]
+mod claim_lifecycle_tests;
+
+#[path = "durable_causal_chain/observer_recovery_tests.rs"]
+mod observer_recovery_tests;
+
 const AGENT_ID: &str = "018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12";
 const THREAD_ID: &str = "019153a4-3088-7e03-a56a-9b1964f75ddd";
 
@@ -144,6 +150,535 @@ async fn claim_freezes_schedule_revision_before_occurrence_materialization() {
         .expect("materialize frozen revision");
     assert_eq!(occurrence.schedule_revision, lease.schedule_revision);
     assert_eq!(occurrence.scheduled_for_ms, lease.scheduled_for_ms);
+}
+
+#[tokio::test]
+async fn occurrence_materialization_rejects_stale_and_forged_claims() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75110",
+        AutomationSchedule::Once,
+        /*due*/ 100,
+    );
+    store.create_task(&task).await.expect("create task");
+    let old = store
+        .claim_due(
+            /*now_ms*/ 100, /*generation*/ 1, /*lease_duration_ms*/ 10,
+        )
+        .await
+        .expect("claim")
+        .unwrap();
+    let current = store
+        .claim_due(
+            /*now_ms*/ 110, /*generation*/ 2, /*lease_duration_ms*/ 100,
+        )
+        .await
+        .expect("reclaim")
+        .unwrap();
+    assert_eq!(
+        store.materialize_occurrence(&old, /*now_ms*/ 111).await,
+        Err(AutomationError::Conflict)
+    );
+    assert_eq!(
+        store
+            .automation_occurrence(task.task_id, /*occurrence*/ 1)
+            .await
+            .unwrap(),
+        None
+    );
+    let occurrence = store
+        .materialize_occurrence(&current, /*now_ms*/ 111)
+        .await
+        .unwrap();
+    let mut forged = current.clone();
+    forged.task.prompt = "replace the canonical dispatch payload".to_string();
+    for rejected in [&old, &forged] {
+        assert_eq!(
+            store.materialize_occurrence(rejected, /*now_ms*/ 112).await,
+            Err(AutomationError::Conflict)
+        );
+        assert_eq!(
+            store
+                .automation_occurrence(task.task_id, /*occurrence*/ 1)
+                .await
+                .unwrap(),
+            Some(occurrence.clone())
+        );
+    }
+    store
+        .prepare_occurrence_taskflow(
+            &occurrence,
+            &current,
+            /*now_ms*/ 112,
+            /*lease_duration_ms*/ 100,
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        store
+            .record_dispatch_uncertain(&forged, /*observed_at_ms*/ 113)
+            .await,
+        Err(AutomationError::Conflict)
+    );
+    assert_eq!(
+        store.uncertain_dispatches(/*limit*/ 1).await.unwrap(),
+        Vec::new()
+    );
+    store
+        .record_dispatch_uncertain(&current, /*observed_at_ms*/ 113)
+        .await
+        .unwrap();
+    store.close().await;
+}
+
+#[tokio::test]
+async fn retirement_waits_for_lifecycle_settlement_while_handoff_preserves_it() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75111",
+        AutomationSchedule::Once,
+        /*due*/ 100,
+    );
+    store.create_task(&task).await.unwrap();
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        /*generation*/ 1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    scheduler.tick(/*now_ms*/ 100).await.unwrap();
+    assert!(store.quiesce_timer().await.unwrap().can_handoff());
+    assert_eq!(store.retire_timer().await, Err(AutomationError::Conflict));
+    let occurrence = store
+        .automation_occurrence(task.task_id, /*occurrence*/ 1)
+        .await
+        .unwrap()
+        .unwrap();
+    store
+        .record_occurrence_turn(
+            task.task_id,
+            /*occurrence*/ 1,
+            &occurrence.client_user_message_id,
+            "turn:drain",
+            Sha256Digest::for_bytes(b"payload").as_str(),
+            /*observed_at_ms*/ 101,
+        )
+        .await
+        .unwrap();
+    assert_eq!(store.retire_timer().await, Err(AutomationError::Conflict));
+    store
+        .mark_occurrence_indeterminate(
+            task.task_id,
+            /*occurrence*/ 1,
+            &Sha256Digest::for_bytes(b"indeterminate"),
+            /*observed_at_ms*/ 102,
+        )
+        .await
+        .unwrap();
+    assert_eq!(store.retire_timer().await, Err(AutomationError::Conflict));
+    let successor = store.handoff_timer().await.unwrap();
+    assert_eq!(
+        successor.retire_timer().await,
+        Err(AutomationError::Conflict)
+    );
+    let work = successor
+        .pending_occurrence_work(/*limit*/ 1)
+        .await
+        .unwrap()
+        .pop()
+        .unwrap();
+    let terminal = Sha256Digest::for_bytes(b"settled before retirement");
+    successor
+        .reconcile_occurrence_taskflow_terminal(
+            &work,
+            AutomationOccurrenceTerminalState::Succeeded,
+            &terminal,
+            /*now_ms*/ 103,
+        )
+        .await
+        .unwrap();
+    successor
+        .complete_occurrence(
+            task.task_id,
+            /*occurrence*/ 1,
+            AutomationOccurrenceTerminalState::Succeeded,
+            &terminal,
+            /*completed_at_ms*/ 103,
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        successor.retire_timer().await.unwrap().phase,
+        codex_hepta_automation::TimerPhase::Retired
+    );
+    store.close().await;
+    successor.close().await;
+}
+
+#[tokio::test]
+async fn retirement_preserves_provider_absent_pending_backlog() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.unwrap();
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75115",
+        AutomationSchedule::Once,
+        /*due*/ 100,
+    );
+    store.create_task(&task).await.unwrap();
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(UnknownQueue),
+        /*generation*/ 1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    scheduler.tick(/*now_ms*/ 100).await.unwrap();
+    let occurrence = store
+        .automation_occurrence(task.task_id, /*occurrence*/ 1)
+        .await
+        .unwrap()
+        .unwrap();
+    store
+        .reconcile_uncertain_occurrence_absent(
+            task.task_id,
+            /*occurrence*/ 1,
+            &occurrence.client_user_message_id,
+            &Sha256Digest::for_bytes(b"provider absent"),
+            /*observed_at_ms*/ 101,
+        )
+        .await
+        .unwrap();
+    assert_eq!(store.quiesce_timer().await.unwrap().pending_occurrences, 1);
+    store.retire_timer().await.unwrap();
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout).await.unwrap();
+    assert_eq!(
+        reopened.timer_status().await.unwrap().phase,
+        codex_hepta_automation::TimerPhase::Retired
+    );
+    assert_eq!(
+        reopened
+            .automation_occurrence(task.task_id, /*occurrence*/ 1)
+            .await
+            .unwrap()
+            .unwrap()
+            .state,
+        AutomationOccurrenceState::Claimed
+    );
+    assert_eq!(
+        reopened
+            .claim_due(
+                /*now_ms*/ 200, /*generation*/ 2, /*lease_duration_ms*/ 1_000
+            )
+            .await,
+        Err(AutomationError::TimerFenced)
+    );
+    reopened.close().await;
+}
+
+#[tokio::test]
+async fn completed_observations_rotate_work_without_overwriting_newer_state() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.unwrap();
+    for (id, due) in [
+        ("019153a4-3088-7000-a56a-9b1964f75112", 100),
+        ("019153a4-3088-7000-a56a-9b1964f75113", 101),
+    ] {
+        store
+            .create_task(&draft(id, AutomationSchedule::Once, due))
+            .await
+            .unwrap();
+    }
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        /*generation*/ 1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    scheduler.tick(/*now_ms*/ 100).await.unwrap();
+    scheduler.tick(/*now_ms*/ 101).await.unwrap();
+    let first = store
+        .pending_occurrence_work(/*limit*/ 1)
+        .await
+        .unwrap()
+        .pop()
+        .unwrap()
+        .occurrence;
+    assert!(
+        store
+            .defer_occurrence_observation(&first, /*observed_at_ms*/ 102)
+            .await
+            .unwrap()
+    );
+    let second = store
+        .pending_occurrence_work(/*limit*/ 1)
+        .await
+        .unwrap()
+        .pop()
+        .unwrap()
+        .occurrence;
+    assert_ne!(second.task_id, first.task_id);
+    store
+        .record_occurrence_turn(
+            second.task_id,
+            second.occurrence,
+            &second.client_user_message_id,
+            "turn:progress",
+            Sha256Digest::for_bytes(b"payload").as_str(),
+            /*observed_at_ms*/ 103,
+        )
+        .await
+        .unwrap();
+    let running = store
+        .automation_occurrence(second.task_id, second.occurrence)
+        .await
+        .unwrap();
+    assert!(
+        !store
+            .defer_occurrence_observation(&second, /*observed_at_ms*/ 200)
+            .await
+            .unwrap()
+    );
+    assert_eq!(
+        store
+            .automation_occurrence(second.task_id, second.occurrence)
+            .await
+            .unwrap(),
+        running
+    );
+    assert!(
+        !store
+            .defer_occurrence_observation(&first, /*observed_at_ms*/ 200)
+            .await
+            .unwrap()
+    );
+    store.close().await;
+}
+
+#[tokio::test]
+async fn disabling_and_resuming_cannot_bypass_forbidden_overlap() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.unwrap();
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75114",
+        AutomationSchedule::FixedInterval { interval_ms: 1_000 },
+        /*due*/ 100,
+    );
+    store.create_task(&task).await.unwrap();
+    store
+        .set_schedule_policy(
+            task.task_id,
+            /*expected_revision*/ 1,
+            AutomationMissedRunPolicy::Skip,
+            AutomationOverlapPolicy::Forbid,
+            /*now_ms*/ 1,
+        )
+        .await
+        .unwrap();
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        /*generation*/ 1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    scheduler.tick(/*now_ms*/ 100).await.unwrap();
+    let disabled = store
+        .set_enabled(
+            task.task_id,
+            /*enabled*/ false,
+            /*resume_at_ms*/ None,
+            /*now_ms*/ 101,
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        store
+            .set_enabled(
+                task.task_id,
+                /*enabled*/ true,
+                Some(102),
+                /*now_ms*/ 102
+            )
+            .await,
+        Err(AutomationError::Conflict)
+    );
+    assert_eq!(store.task(task.task_id).await.unwrap(), Some(disabled));
+    assert_eq!(
+        scheduler.tick(/*now_ms*/ 102).await.unwrap(),
+        AutomationTick::Idle
+    );
+
+    // Disabling a provider-proven-absent queued intent must settle its old
+    // local lifecycle so it cannot freeze future schedule policy revisions.
+    let absent = draft(
+        "019153a4-3088-7000-a56a-9b1964f75116",
+        AutomationSchedule::FixedInterval { interval_ms: 1_000 },
+        /*due*/ 103,
+    );
+    store.create_task(&absent).await.unwrap();
+    store
+        .set_schedule_policy(
+            absent.task_id,
+            /*expected_revision*/ 1,
+            AutomationMissedRunPolicy::Skip,
+            AutomationOverlapPolicy::Forbid,
+            /*now_ms*/ 102,
+        )
+        .await
+        .unwrap();
+    let unknown = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(UnknownQueue),
+        /*generation*/ 1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .unwrap();
+    unknown.tick(/*now_ms*/ 103).await.unwrap();
+    let claimed = store
+        .automation_occurrence(absent.task_id, /*occurrence*/ 1)
+        .await
+        .unwrap()
+        .unwrap();
+    store
+        .reconcile_uncertain_occurrence_absent(
+            absent.task_id,
+            /*occurrence*/ 1,
+            &claimed.client_user_message_id,
+            &Sha256Digest::for_bytes(b"resume after provider absence"),
+            /*observed_at_ms*/ 104,
+        )
+        .await
+        .unwrap();
+    store
+        .set_enabled(
+            absent.task_id,
+            /*enabled*/ false,
+            /*resume_at_ms*/ None,
+            /*now_ms*/ 105,
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        store
+            .automation_occurrence(absent.task_id, /*occurrence*/ 1)
+            .await
+            .unwrap()
+            .unwrap()
+            .state,
+        AutomationOccurrenceState::Cancelled
+    );
+    assert_eq!(
+        store
+            .taskflow_run(&claimed.taskflow_run_id)
+            .await
+            .unwrap()
+            .unwrap()
+            .state,
+        TaskFlowRunState::Cancelled
+    );
+    let resumed = store
+        .set_enabled(
+            absent.task_id,
+            /*enabled*/ true,
+            Some(107),
+            /*now_ms*/ 106,
+        )
+        .await
+        .unwrap();
+    assert_eq!(resumed.next_run_at_ms, Some(107));
+    assert!(
+        matches!(scheduler.tick(/*now_ms*/ 107).await.unwrap(), AutomationTick::Submitted { task_id, occurrence: 2, .. } if task_id == absent.task_id)
+    );
+    let work = store
+        .pending_occurrence_work(/*limit*/ 1_024)
+        .await
+        .unwrap()
+        .into_iter()
+        .find(|work| work.occurrence.task_id == absent.task_id && work.occurrence.occurrence == 2)
+        .unwrap();
+    let terminal = Sha256Digest::for_bytes(b"resumed occurrence terminal success");
+    store
+        .reconcile_occurrence_taskflow_terminal(
+            &work,
+            AutomationOccurrenceTerminalState::Succeeded,
+            &terminal,
+            /*now_ms*/ 108,
+        )
+        .await
+        .unwrap();
+    store
+        .complete_occurrence(
+            absent.task_id,
+            /*occurrence*/ 2,
+            AutomationOccurrenceTerminalState::Succeeded,
+            &terminal,
+            /*completed_at_ms*/ 108,
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        store
+            .set_schedule_policy(
+                absent.task_id,
+                /*expected_revision*/ 2,
+                AutomationMissedRunPolicy::Coalesce,
+                AutomationOverlapPolicy::Allow,
+                /*now_ms*/ 109,
+            )
+            .await
+            .unwrap()
+            .revision,
+        3
+    );
+
+    let unresolved = draft(
+        "019153a4-3088-7000-a56a-9b1964f75127",
+        AutomationSchedule::Once,
+        /*due*/ 200,
+    );
+    store.create_task(&unresolved).await.unwrap();
+    unknown.tick(/*now_ms*/ 200).await.unwrap();
+    store
+        .set_enabled(
+            unresolved.task_id,
+            /*enabled*/ false,
+            /*resume_at_ms*/ None,
+            /*now_ms*/ 201,
+        )
+        .await
+        .unwrap();
+    assert_eq!(
+        store
+            .set_schedule_policy(
+                unresolved.task_id,
+                /*expected_revision*/ 1,
+                AutomationMissedRunPolicy::Coalesce,
+                AutomationOverlapPolicy::Allow,
+                /*now_ms*/ 202,
+            )
+            .await,
+        Err(AutomationError::Conflict)
+    );
+    assert_eq!(
+        store
+            .automation_occurrence(unresolved.task_id, /*occurrence*/ 1)
+            .await
+            .unwrap()
+            .unwrap()
+            .state,
+        AutomationOccurrenceState::Claimed
+    );
+    store.close().await;
 }
 
 #[tokio::test]
@@ -866,4 +1401,290 @@ async fn reopen_rejects_tampered_canonical_occurrence_identity() {
         AutomationStore::open(&fixture.layout).await,
         Err(AutomationError::Corrupt)
     ));
+}
+
+#[tokio::test]
+async fn preparation_rejects_payload_mutated_after_materialization() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75120",
+        AutomationSchedule::Once,
+        /*due*/ 100,
+    );
+    store.create_task(&task).await.expect("task");
+    let lease = store
+        .claim_due(
+            /*now_ms*/ 100, /*generation*/ 1, /*lease_duration_ms*/ 30_000,
+        )
+        .await
+        .expect("claim")
+        .unwrap();
+    let occurrence = store
+        .materialize_occurrence(&lease, /*now_ms*/ 100)
+        .await
+        .expect("occurrence");
+    let mut forged = lease.clone();
+    forged.task.prompt = "altered after materialization".to_string();
+    assert!(matches!(
+        store
+            .prepare_occurrence_taskflow(
+                &occurrence,
+                &forged,
+                /*now_ms*/ 101,
+                /*lease_duration_ms*/ 30_000
+            )
+            .await,
+        Err(codex_hepta_automation::TaskFlowError::Conflict(_))
+    ));
+    assert_eq!(
+        store
+            .taskflow_run(&occurrence.taskflow_run_id)
+            .await
+            .expect("run"),
+        None
+    );
+    store
+        .prepare_occurrence_taskflow(
+            &occurrence,
+            &lease,
+            /*now_ms*/ 101,
+            /*lease_duration_ms*/ 30_000,
+        )
+        .await
+        .expect("canonical preparation");
+    store
+        .record_dispatch_uncertain(&lease, /*observed_at_ms*/ 102)
+        .await
+        .expect("canonical boundary");
+    store.close().await;
+}
+
+#[tokio::test]
+async fn terminal_recovery_cannot_rewrite_a_settled_historical_step() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75121",
+        AutomationSchedule::Once,
+        /*due*/ 100,
+    );
+    store.create_task(&task).await.expect("task");
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        /*generation*/ 1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("scheduler");
+    scheduler.tick(/*now_ms*/ 100).await.expect("tick");
+    let work = store
+        .pending_occurrence_work(/*limit*/ 1)
+        .await
+        .expect("work")
+        .pop()
+        .unwrap();
+    let run = store
+        .taskflow_run(&work.occurrence.taskflow_run_id)
+        .await
+        .expect("run")
+        .unwrap();
+    let fence = TaskFlowFence::new(
+        run.owner_agent_id.clone(),
+        run.owner_id.unwrap(),
+        run.owner_epoch.unwrap(),
+        run.generation.unwrap(),
+        run.fencing_token.unwrap(),
+    )
+    .expect("fence");
+    let step = store
+        .read_taskflow_step(&run.run_id, "codex_turn", /*attempt*/ 1, &fence)
+        .await
+        .expect("step")
+        .unwrap();
+    let terminal = Sha256Digest::for_bytes(b"immutable terminal receipt");
+    store
+        .reconcile_taskflow_step(
+            &run.run_id,
+            "codex_turn",
+            /*attempt*/ 1,
+            &fence,
+            &step.intent_digest,
+            &step.payload_digest,
+            "step-only-terminal",
+            &terminal,
+            TaskFlowReconcileOutcome::Succeeded,
+            /*now_ms*/ 101,
+        )
+        .await
+        .expect("step settles before crash");
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen after crash");
+    for (state, receipt) in [
+        (AutomationOccurrenceTerminalState::Failed, terminal.clone()),
+        (
+            AutomationOccurrenceTerminalState::Succeeded,
+            Sha256Digest::for_bytes(b"changed receipt"),
+        ),
+    ] {
+        assert!(matches!(
+            reopened
+                .reconcile_occurrence_taskflow_terminal_with_recovery(
+                    &work, state, &receipt, /*now_ms*/ 102,
+                    /*recovery_generation*/ 100_000, /*recovery_lease_ms*/ 30_000
+                )
+                .await,
+            Err(codex_hepta_automation::TaskFlowError::InvalidTransition(_))
+        ));
+    }
+    assert_eq!(
+        reopened
+            .taskflow_run(&run.run_id)
+            .await
+            .expect("run")
+            .unwrap()
+            .state,
+        TaskFlowRunState::Indeterminate
+    );
+    reopened
+        .reconcile_occurrence_taskflow_terminal_with_recovery(
+            &work,
+            AutomationOccurrenceTerminalState::Succeeded,
+            &terminal,
+            /*now_ms*/ 102,
+            /*recovery_generation*/ 100_000,
+            /*recovery_lease_ms*/ 30_000,
+        )
+        .await
+        .expect("exact terminal history recovers");
+    assert_eq!(
+        reopened
+            .taskflow_run(&run.run_id)
+            .await
+            .expect("run")
+            .unwrap()
+            .state,
+        TaskFlowRunState::Succeeded
+    );
+    reopened.close().await;
+}
+
+#[tokio::test]
+async fn pre_step_crash_reclaims_using_taskflow_generation_units() {
+    let fixture = Fixture::new();
+    let store = AutomationStore::open(&fixture.layout).await.expect("store");
+    let template = draft(
+        "019153a4-3088-7000-a56a-9b1964f75122",
+        AutomationSchedule::Once,
+        /*due*/ 100,
+    );
+    store.create_task(&template).await.expect("template task");
+    let scheduler = AutomationScheduler::new(
+        store.clone(),
+        Arc::new(SuccessQueue),
+        /*generation*/ 1,
+        Duration::from_secs(30),
+        Duration::from_secs(2),
+    )
+    .expect("scheduler");
+    scheduler
+        .tick(/*now_ms*/ 100)
+        .await
+        .expect("register canonical automation definition");
+    let definition = store
+        .taskflow_definition("hepta.automation.codex-turn", /*version*/ 1)
+        .await
+        .expect("definition")
+        .unwrap();
+    let task = draft(
+        "019153a4-3088-7000-a56a-9b1964f75123",
+        AutomationSchedule::Once,
+        /*due*/ 200,
+    );
+    store.create_task(&task).await.expect("task");
+    let old = store
+        .claim_due(
+            /*now_ms*/ 200, /*generation*/ 2, /*lease_duration_ms*/ 10,
+        )
+        .await
+        .expect("claim")
+        .unwrap();
+    let occurrence = store
+        .materialize_occurrence(&old, /*now_ms*/ 200)
+        .await
+        .expect("occurrence");
+    let fence = TaskFlowFence::new(
+        old.task.owner_agent_id.clone(),
+        format!("automation.scheduler:{}", task.task_id),
+        old.lease_generation,
+        /*generation*/ 1_000_001,
+        old.lease_token.clone(),
+    )
+    .expect("historical taskflow fence");
+    store
+        .create_taskflow_run(
+            &occurrence.taskflow_run_id,
+            &definition.workflow_id,
+            definition.version,
+            definition.definition_digest(),
+            THREAD_ID,
+            /*created_at_ms*/ 200,
+        )
+        .await
+        .expect("run");
+    let claimed = store
+        .claim_taskflow_run(
+            &occurrence.taskflow_run_id,
+            &fence,
+            /*now_ms*/ 200,
+            /*lease_duration_ms*/ 10,
+        )
+        .await
+        .expect("run claim");
+    store
+        .apply_taskflow_command(
+            &codex_hepta_automation::TaskFlowCommand::new(
+                &occurrence.taskflow_run_id,
+                "pre-step-start",
+                fence,
+                claimed.revision,
+                codex_hepta_automation::TaskFlowTransition::Start,
+                /*now_ms*/ 200,
+            )
+            .expect("start"),
+        )
+        .await
+        .expect("durable prefix before step crash");
+    store.close().await;
+    let reopened = AutomationStore::open(&fixture.layout)
+        .await
+        .expect("reopen crash");
+    let successor = reopened
+        .claim_due(
+            /*now_ms*/ 210, /*generation*/ 3, /*lease_duration_ms*/ 100,
+        )
+        .await
+        .expect("reclaim")
+        .unwrap();
+    let reclaimed = reopened
+        .materialize_occurrence(&successor, /*now_ms*/ 210)
+        .await
+        .expect("same occurrence");
+    assert_eq!(reclaimed.occurrence_id, occurrence.occurrence_id);
+    let dispatch = reopened
+        .prepare_occurrence_taskflow(
+            &reclaimed, &successor, /*now_ms*/ 210, /*lease_duration_ms*/ 100,
+        )
+        .await
+        .expect("reclaim uses TaskFlow units instead of raw scheduler epoch");
+    assert_eq!(dispatch.step_attempt, 1);
+    assert_eq!(dispatch.fence.generation, 2_000_001);
+    reopened
+        .record_dispatch_uncertain(&successor, /*observed_at_ms*/ 211)
+        .await
+        .expect("dispatch boundary");
+    reopened.close().await;
 }

@@ -9,7 +9,9 @@
 
 use std::future::Future;
 use std::pin::Pin;
+use std::time::Instant;
 
+use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::FinalUseAuthority;
 use codex_hepta_contracts::FinalUseBinding;
 use codex_hepta_contracts::FinalUseError;
@@ -22,7 +24,6 @@ use codex_hepta_contracts::ProviderEffectIntent;
 use codex_hepta_contracts::ProviderEffectKey;
 use codex_hepta_contracts::ProviderEffectLookup;
 use codex_hepta_contracts::Sha256Digest;
-use codex_hepta_contracts::SignedFinalUseGrant;
 use codex_hepta_operations::OperationIntentV1;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
@@ -31,6 +32,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use thiserror::Error;
 
+use crate::AuthorizedEffectDispatchRequest;
 use crate::AutomationStore;
 use crate::TaskFlowCommand;
 use crate::TaskFlowError;
@@ -44,6 +46,7 @@ use crate::TaskFlowTransition;
 use crate::effect_dispatch_ledger::EffectDispatchAttempt;
 use crate::effect_dispatch_ledger::EffectDispatchObservationKind;
 use crate::effect_dispatch_ledger::EffectDispatchStart;
+use crate::effect_dispatch_ledger::EffectProviderObservation;
 
 const MAX_AUTHORIZED_EFFECT_DEPENDENCIES: usize = 128;
 const MAX_EFFECT_ID_BYTES: usize = 256;
@@ -202,6 +205,16 @@ impl AuthorizedEffectIntent {
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub struct AuthorizedEffectPending {
+    pub owner_agent_id: AgentId,
+    /// Version 1 preserves historical provider keys during recovery; new
+    /// attempts use owner-scoped, unambiguously framed version 2 identities.
+    pub provider_key_version: u32,
+    /// Immutable optional adapter configuration identity, recorded before
+    /// contact. Legacy and configuration-independent drivers leave it absent.
+    pub provider_contract_binding: Option<Sha256Digest>,
+    /// Initial typed dispatch status, upgraded permanently when a later
+    /// provider lookup durably proves admission. Absence is legacy ambiguity.
+    pub provider_dispatch_status: Option<AuthorizedProviderDispatchStatus>,
     pub run_id: String,
     pub step_id: String,
     pub attempt: u32,
@@ -217,6 +230,10 @@ pub struct AuthorizedEffectPending {
 impl From<EffectDispatchAttempt> for AuthorizedEffectPending {
     fn from(value: EffectDispatchAttempt) -> Self {
         Self {
+            owner_agent_id: value.owner_agent_id,
+            provider_key_version: value.provider_key_version,
+            provider_contract_binding: value.provider_contract_binding,
+            provider_dispatch_status: value.provider_dispatch_status,
             run_id: value.run_id,
             step_id: value.step_id,
             attempt: value.attempt,
@@ -236,6 +253,57 @@ pub enum AuthorizedEffectOutcome {
     Succeeded,
     Failed,
     Indeterminate,
+}
+
+/// Provider facts admitted by the registered adapter. `Unknown` records an
+/// explicit uncertain dispatch; an absent witness records no such fact.
+#[derive(Clone, Copy, Debug, Eq, PartialEq)]
+pub enum AuthorizedProviderDispatchStatus {
+    Unknown,
+    Accepted,
+    Completed,
+    Rejected,
+}
+
+impl AuthorizedProviderDispatchStatus {
+    pub(crate) fn as_str(self) -> &'static str {
+        match self {
+            Self::Unknown => "unknown",
+            Self::Accepted => "accepted",
+            Self::Completed => "completed",
+            Self::Rejected => "rejected",
+        }
+    }
+
+    pub(crate) fn parse(value: &str) -> Result<Self, TaskFlowError> {
+        match value {
+            "unknown" => Ok(Self::Unknown),
+            "accepted" => Ok(Self::Accepted),
+            "completed" => Ok(Self::Completed),
+            "rejected" => Ok(Self::Rejected),
+            _ => Err(TaskFlowError::Corrupt(
+                "unknown provider dispatch status".to_string(),
+            )),
+        }
+    }
+
+    fn outcome(self) -> AuthorizedEffectOutcome {
+        match self {
+            Self::Unknown | Self::Accepted => AuthorizedEffectOutcome::Indeterminate,
+            Self::Completed => AuthorizedEffectOutcome::Succeeded,
+            Self::Rejected => AuthorizedEffectOutcome::Failed,
+        }
+    }
+}
+
+impl From<ProviderEffectAckStatus> for AuthorizedProviderDispatchStatus {
+    fn from(value: ProviderEffectAckStatus) -> Self {
+        match value {
+            ProviderEffectAckStatus::Accepted => Self::Accepted,
+            ProviderEffectAckStatus::Completed => Self::Completed,
+            ProviderEffectAckStatus::Rejected => Self::Rejected,
+        }
+    }
 }
 
 impl AuthorizedEffectOutcome {
@@ -285,8 +353,8 @@ pub struct AuthorizedEffectRequest<'a> {
 }
 
 /// Registered effect-owner adapter. This synchronous boundary is intentional:
-/// `FinalUseAuthority::with_verified_use` holds the current revocation fence
-/// through the final check and the actual dispatch call. Drivers must impose
+/// The prepared final-use boundary holds the current revocation fence through
+/// owner preparation, the fresh final check and dispatch. Drivers must impose
 /// their own bounded I/O deadline and return `Indeterminate` after ambiguous
 /// provider contact.
 pub trait AuthorizedEffectDriver {
@@ -297,6 +365,7 @@ pub trait AuthorizedEffectDriver {
 }
 
 pub struct AuthorizedProviderEffectRequest<'a> {
+    pub owner_agent_id: &'a AgentId,
     pub operation_intent: &'a OperationIntentV1,
     pub intent: &'a AuthorizedEffectIntent,
     pub intent_digest: &'a Sha256Digest,
@@ -317,6 +386,18 @@ pub type AuthorizedEffectFuture<'a> = Pin<
 /// boundary synchronously. The caller supplies no provider key: automation
 /// derives the key and payload binding from the durable TaskFlow intent.
 pub trait AsyncAuthorizedEffectDriver {
+    /// Bind recovery to the exact registered provider configuration used for
+    /// dispatch. The digest supplies identity, not trust or effect authority.
+    fn provider_contract_binding(&self) -> Option<Sha256Digest> {
+        None
+    }
+
+    /// Consume the registered adapter's typed fact from this dispatch only.
+    /// Drivers reset it before dispatch and retain no witness after this call.
+    fn take_provider_dispatch_status(&mut self) -> Option<AuthorizedProviderDispatchStatus> {
+        None
+    }
+
     fn dispatch<'a>(
         &'a mut self,
         request: AuthorizedProviderEffectRequest<'a>,
@@ -337,6 +418,7 @@ pub enum AuthorizedProviderEffectLookup {
 pub struct ProviderEffectTaskFlowDriver<A> {
     provider_scope: String,
     adapter: A,
+    dispatch_status: Option<AuthorizedProviderDispatchStatus>,
 }
 
 impl<A> ProviderEffectTaskFlowDriver<A>
@@ -349,6 +431,7 @@ where
         Ok(Self {
             provider_scope,
             adapter,
+            dispatch_status: None,
         })
     }
 
@@ -360,38 +443,80 @@ where
         &mut self.adapter
     }
 
+    /// Observe through the owning store and persist admission/terminal facts
+    /// before returning. This consumes no grant and never dispatches an effect.
     pub async fn lookup(
         &self,
+        store: &AutomationStore,
         pending: &AuthorizedEffectPending,
-    ) -> AuthorizedProviderEffectLookup {
+        fence: &TaskFlowFence,
+        observed_at_ms: u64,
+    ) -> Result<AuthorizedProviderEffectLookup, AuthorizedEffectError> {
         if pending.destination_id != self.provider_scope
+            || pending.provider_contract_binding != self.provider_contract_binding()
             || self.adapter.capability() != ProviderEffectIdempotencyCapability::KeyAndStatusLookup
         {
-            return AuthorizedProviderEffectLookup::Unresolved;
+            return Ok(AuthorizedProviderEffectLookup::Unresolved);
         }
-        let logical_effect_id = format!("taskflow:{}:{}", pending.run_id, pending.step_id);
-        let Ok(key) =
-            ProviderEffectKey::for_logical_effect(&pending.destination_id, &logical_effect_id)
+        let Some(durable) = store
+            .authorized_taskflow_effect_attempt(&pending.run_id, &pending.step_id, pending.attempt)
+            .await?
         else {
-            return AuthorizedProviderEffectLookup::Unresolved;
+            return Ok(AuthorizedProviderEffectLookup::Unresolved);
+        };
+        // Admission may have advanced since the caller's scan. All provider
+        // identity and payload bytes must still match the owning store.
+        let mut provided = pending.clone();
+        provided.provider_dispatch_status = durable.provider_dispatch_status;
+        if durable != provided {
+            return Ok(AuthorizedProviderEffectLookup::Unresolved);
+        }
+        let Ok(key) = taskflow_provider_key(
+            &pending.owner_agent_id,
+            &pending.destination_id,
+            &pending.run_id,
+            &pending.step_id,
+            pending.provider_key_version,
+        ) else {
+            return Ok(AuthorizedProviderEffectLookup::Unresolved);
         };
         let provider_intent = ProviderEffectIntent::new(key, pending.payload_digest.clone());
         match self.adapter.lookup_for_intent(&provider_intent).await {
             ProviderEffectLookup::Ack(ack) => {
                 if ack.validate_for(&provider_intent).is_err() {
-                    return AuthorizedProviderEffectLookup::Unresolved;
+                    return Ok(AuthorizedProviderEffectLookup::Unresolved);
                 }
-                match provider_receipt_from_ack(&ack) {
-                    Some(receipt) => AuthorizedProviderEffectLookup::Observed(receipt),
-                    None => AuthorizedProviderEffectLookup::Unresolved,
+                let receipt = provider_receipt_from_ack(&ack);
+                let recovered = store
+                    .recover_authorized_taskflow_effect(
+                        &pending.run_id,
+                        &pending.step_id,
+                        pending.attempt,
+                        fence,
+                        AuthorizedEffectRecovery::ProviderObserved {
+                            receipt: receipt.clone(),
+                            status: ack.status,
+                        },
+                        observed_at_ms,
+                    )
+                    .await;
+                match recovered {
+                    Ok(_) if ack.status == ProviderEffectAckStatus::Accepted => {
+                        Ok(AuthorizedProviderEffectLookup::Unresolved)
+                    }
+                    Ok(_) => Ok(AuthorizedProviderEffectLookup::Observed(receipt)),
+                    Err(AuthorizedEffectError::TaskFlow(TaskFlowError::Conflict(_))) => {
+                        Ok(AuthorizedProviderEffectLookup::Unresolved)
+                    }
+                    Err(error) => Err(error),
                 }
             }
-            ProviderEffectLookup::NotFound => AuthorizedProviderEffectLookup::ProvenAbsent {
-                proof_digest: provider_lookup_digest(&provider_intent, b"not_found"),
-            },
-            ProviderEffectLookup::Conflict { .. } | ProviderEffectLookup::Unknown => {
-                AuthorizedProviderEffectLookup::Unresolved
-            }
+            // Status absence cannot prove that an earlier send will never
+            // arrive. Only an explicit provider-owner absence proof can
+            // authorize a new TaskFlow attempt.
+            ProviderEffectLookup::NotFound
+            | ProviderEffectLookup::Conflict { .. }
+            | ProviderEffectLookup::Unknown => Ok(AuthorizedProviderEffectLookup::Unresolved),
         }
     }
 }
@@ -400,11 +525,16 @@ impl<A> AsyncAuthorizedEffectDriver for ProviderEffectTaskFlowDriver<A>
 where
     A: ProviderEffectAdapter,
 {
+    fn take_provider_dispatch_status(&mut self) -> Option<AuthorizedProviderDispatchStatus> {
+        self.dispatch_status.take()
+    }
+
     fn dispatch<'a>(
         &'a mut self,
         request: AuthorizedProviderEffectRequest<'a>,
     ) -> AuthorizedEffectFuture<'a> {
         Box::pin(async move {
+            self.dispatch_status = None;
             if request.intent.destination_id != self.provider_scope
                 || self.adapter.capability()
                     != ProviderEffectIdempotencyCapability::KeyAndStatusLookup
@@ -417,12 +547,53 @@ where
                 .adapter
                 .dispatch_with_payload(&provider_intent, wire_payload)
                 .await;
+            self.dispatch_status = match &dispatch {
+                ProviderEffectDispatch::Ack(ack) if ack.validate_for(&provider_intent).is_ok() => {
+                    Some(ack.status.into())
+                }
+                ProviderEffectDispatch::Unknown => Some(AuthorizedProviderDispatchStatus::Unknown),
+                ProviderEffectDispatch::Ack(_)
+                | ProviderEffectDispatch::Rejected { .. }
+                | ProviderEffectDispatch::NotDispatched { .. } => None,
+            };
             provider_dispatch_receipt(&provider_intent, dispatch)
         })
     }
 }
 
+// Admission refusal is a TaskFlow error, distinct from the driver's own
+// before-contact rejection. Neither branch invokes the provider.
+enum EffectConsumerError {
+    Admission(TaskFlowError),
+    Preparation(AuthorizedEffectError),
+    Driver(AuthorizedEffectDriverError),
+}
+
+fn check_effect_consumer_clock(
+    now_ms: u64,
+    started_at: Instant,
+    lease_expires_at_ms: u64,
+) -> Result<(), EffectConsumerError> {
+    let now_ms = effect_now_ms(now_ms, started_at).map_err(EffectConsumerError::Admission)?;
+    if now_ms >= lease_expires_at_ms {
+        return Err(EffectConsumerError::Admission(TaskFlowError::StaleFence));
+    }
+    Ok(())
+}
+
+fn effect_now_ms(now_ms: u64, started_at: Instant) -> Result<u64, TaskFlowError> {
+    let elapsed = u64::try_from(started_at.elapsed().as_millis())
+        .map_err(|_| TaskFlowError::Invalid("effect admission clock overflow".to_string()))?;
+    let refreshed = now_ms
+        .checked_add(elapsed)
+        .ok_or_else(|| TaskFlowError::Invalid("effect admission clock overflow".to_string()))?;
+    i64::try_from(refreshed)
+        .map_err(|_| TaskFlowError::Invalid("effect admission clock overflow".to_string()))?;
+    Ok(refreshed)
+}
+
 fn provider_effect_intent(
+    owner_agent_id: &AgentId,
     intent: &AuthorizedEffectIntent,
     wire_payload: &[u8],
 ) -> Result<ProviderEffectIntent, AuthorizedEffectError> {
@@ -430,10 +601,36 @@ fn provider_effect_intent(
     if payload_digest != intent.payload_digest {
         return Err(AuthorizedEffectError::BindingMismatch);
     }
-    let logical_effect_id = format!("taskflow:{}:{}", intent.run_id, intent.step_id);
-    let key = ProviderEffectKey::for_logical_effect(&intent.destination_id, &logical_effect_id)
-        .map_err(|_| AuthorizedEffectError::BindingMismatch)?;
+    let key = taskflow_provider_key(
+        owner_agent_id,
+        &intent.destination_id,
+        &intent.run_id,
+        &intent.step_id,
+        /*version*/ 2,
+    )?;
     Ok(ProviderEffectIntent::new(key, payload_digest))
+}
+
+fn taskflow_provider_key(
+    owner_agent_id: &AgentId,
+    destination_id: &str,
+    run_id: &str,
+    step_id: &str,
+    version: u32,
+) -> Result<ProviderEffectKey, AuthorizedEffectError> {
+    let logical_effect_id = match version {
+        1 => format!("taskflow:{run_id}:{step_id}"),
+        2 => {
+            let mut bytes = b"hepta.automation.provider-identity.v2\0".to_vec();
+            for part in [owner_agent_id.as_str(), run_id, step_id] {
+                push_text(&mut bytes, part);
+            }
+            format!("taskflow:v2:{}", Sha256Digest::for_bytes(&bytes).as_str())
+        }
+        _ => return Err(TaskFlowError::Corrupt("unknown provider key version".to_string()).into()),
+    };
+    ProviderEffectKey::for_logical_effect(destination_id, &logical_effect_id)
+        .map_err(|_| AuthorizedEffectError::BindingMismatch)
 }
 
 fn provider_dispatch_receipt(
@@ -476,16 +673,16 @@ fn provider_dispatch_receipt(
     }
 }
 
-fn provider_receipt_from_ack(ack: &ProviderEffectAck) -> Option<AuthorizedEffectProviderReceipt> {
+fn provider_receipt_from_ack(ack: &ProviderEffectAck) -> AuthorizedEffectProviderReceipt {
     let outcome = match ack.status {
-        ProviderEffectAckStatus::Accepted => return None,
+        ProviderEffectAckStatus::Accepted => AuthorizedEffectOutcome::Indeterminate,
         ProviderEffectAckStatus::Completed => AuthorizedEffectOutcome::Succeeded,
         ProviderEffectAckStatus::Rejected => AuthorizedEffectOutcome::Failed,
     };
-    Some(AuthorizedEffectProviderReceipt {
+    AuthorizedEffectProviderReceipt {
         outcome,
         receipt_digest: provider_ack_digest(ack),
-    })
+    }
 }
 
 fn provider_ack_digest(ack: &ProviderEffectAck) -> Sha256Digest {
@@ -534,12 +731,18 @@ pub enum AuthorizedEffectRecovery {
     /// The provider owner reports the already-observed outcome. This never
     /// dispatches; it only appends evidence and repairs TaskFlow projection.
     Observed(AuthorizedEffectProviderReceipt),
+    /// Validated provider-protocol status. Admission is retained separately
+    /// from generic execution failure, which need not imply provider rejection.
+    ProviderObserved {
+        receipt: AuthorizedEffectProviderReceipt,
+        status: ProviderEffectAckStatus,
+    },
 }
 
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum AuthorizedEffectRecoveryResult {
     ProvenAbsent,
-    Observed(TaskFlowStepReceipt),
+    Observed(Box<TaskFlowStepReceipt>),
 }
 
 #[derive(Debug, Error)]
@@ -563,7 +766,7 @@ impl AutomationStore {
     /// boundary. Exact intent, payload, binding, command and terminal evidence
     /// must match. No lease is renewed, grant consumed or provider contacted.
     /// In-flight/indeterminate observations return None and still require the
-    /// ordinary current-fence reconciliation path.
+    /// exact historical-owner reconciliation path.
     pub async fn read_authorized_taskflow_effect_receipt(
         &self,
         intent: &AuthorizedEffectIntent,
@@ -645,14 +848,18 @@ impl AutomationStore {
         &self,
         authority: &FinalUseAuthority,
         driver: &mut D,
-        intent: &AuthorizedEffectIntent,
-        wire_payload: &[u8],
-        fence: &TaskFlowFence,
-        signed_grant: &SignedFinalUseGrant,
-        expected_binding: &FinalUseBinding,
-        command_id: &str,
-        now_ms: u64,
+        request: AuthorizedEffectDispatchRequest<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
+        let AuthorizedEffectDispatchRequest {
+            intent,
+            wire_payload,
+            fence,
+            signed_grant,
+            expected_binding,
+            command_id,
+            now_ms,
+        } = request;
+        let started_at = Instant::now();
         let operation_intent = intent.operation_intent_v1()?;
         if Sha256Digest::for_bytes(wire_payload) != intent.payload_digest {
             return Err(AuthorizedEffectError::BindingMismatch);
@@ -705,13 +912,15 @@ impl AutomationStore {
                 .settle_effect_dispatch_attempt(&existing, fence)
                 .await?
             {
-                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                 }
             };
         }
 
+        self.check_effect_admission(intent, fence, command_id, now_ms, started_at)
+            .await?;
         let token = authority
             .claim(signed_grant, expected_binding)
             .map_err(AuthorizedEffectError::FinalUse)?;
@@ -729,7 +938,9 @@ impl AutomationStore {
                 &signed_grant.grant.grant_id,
                 &nonce_digest,
                 command_id,
-                now_ms,
+                || effect_now_ms(now_ms, started_at),
+                fence,
+                /*provider_contract_binding*/ None,
             )
             .await?;
         let durable = match start {
@@ -744,13 +955,18 @@ impl AutomationStore {
                     command_id,
                 )?;
                 return match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => {
                         Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                     }
                 };
             }
         };
+
+        self.check_admitted_effect_before_contact(
+            &durable, intent, fence, command_id, now_ms, started_at,
+        )
+        .await?;
 
         let request = AuthorizedEffectRequest {
             operation_intent: &operation_intent,
@@ -760,10 +976,54 @@ impl AutomationStore {
             binding: expected_binding,
         };
         let provider = match authority
-            .with_verified_effect(token, expected_binding, || driver.dispatch(&request))
+            .with_prepared_verified_use_async(
+                token,
+                expected_binding,
+                |evidence| {
+                    let durable = &durable;
+                    async move {
+                        self.record_effect_preparation_witness(durable, fence, &evidence)
+                            .await
+                            .map_err(AuthorizedEffectError::from)
+                            .map_err(EffectConsumerError::Preparation)?;
+                        self.check_admitted_effect_before_contact(
+                            durable, intent, fence, command_id, now_ms, started_at,
+                        )
+                        .await
+                        .map_err(EffectConsumerError::Preparation)
+                    }
+                },
+                |lease_expires_at_ms| {
+                    let driver = &mut *driver;
+                    async move {
+                        check_effect_consumer_clock(now_ms, started_at, lease_expires_at_ms)?;
+                        driver
+                            .dispatch(&request)
+                            .map_err(EffectConsumerError::Driver)
+                    }
+                },
+            )
+            .await
         {
             Ok(Ok(receipt)) => receipt,
-            Ok(Err(error)) => {
+            Ok(Err(EffectConsumerError::Preparation(error))) => return Err(error),
+            Ok(Err(EffectConsumerError::Admission(error))) => {
+                let proof = no_contact_digest(&durable, "lease_expired_in_authorized_consumer");
+                let durable = self
+                    .record_effect_dispatch_observation(
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt,
+                        EffectDispatchObservationKind::ProvenAbsent,
+                        &proof,
+                        effect_now_ms(now_ms, started_at)?,
+                        /*provider*/ None,
+                    )
+                    .await?;
+                self.settle_effect_dispatch_attempt(&durable, fence).await?;
+                return Err(error.into());
+            }
+            Ok(Err(EffectConsumerError::Driver(error))) => {
                 let proof = no_contact_digest(&durable, "driver_before_provider_contact");
                 let durable = self
                     .record_effect_dispatch_observation(
@@ -772,15 +1032,16 @@ impl AutomationStore {
                         intent.attempt,
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
-                        now_ms,
+                        effect_now_ms(now_ms, started_at)?,
+                        /*provider*/ None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
                 return Err(AuthorizedEffectError::Driver(error));
             }
             Err(error) => {
-                // `with_verified_use` invokes the consumer only after its
-                // final revocation/epoch check succeeds, so this path is a
+                // The prepared boundary invokes the consumer only after its
+                // fresh current-time check succeeds, so this path is a
                 // local proof that the provider driver was not called.
                 let proof = no_contact_digest(&durable, "final_use_pre_dispatch_rejection");
                 let durable = self
@@ -790,13 +1051,15 @@ impl AutomationStore {
                         intent.attempt,
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
-                        now_ms,
+                        effect_now_ms(now_ms, started_at)?,
+                        /*provider*/ None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
                 return Err(AuthorizedEffectError::FinalUse(error));
             }
         };
+        let now_ms = effect_now_ms(now_ms, started_at)?;
         validate_receipt_digest(&provider.receipt_digest)?;
         let durable = self
             .record_effect_dispatch_observation(
@@ -806,10 +1069,11 @@ impl AutomationStore {
                 provider.outcome.ledger_kind(),
                 &provider.receipt_digest,
                 now_ms,
+                /*provider*/ None,
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
             AuthorizedEffectRecoveryResult::ProvenAbsent => {
                 Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
             }
@@ -829,6 +1093,68 @@ impl AutomationStore {
             .effect_dispatch_attempt(run_id, step_id, attempt)
             .await?
             .map(AuthorizedEffectPending::from))
+    }
+
+    /// Recover the exact fence that authored an owned durable effect attempt.
+    /// Completed effects and committed provider-absence requeues use verified
+    /// immutable step history after live lease fields clear or a successor is
+    /// claimed. Unsettled effects retain the ordinary current run/step fence
+    /// checks. This read never authorizes provider dispatch.
+    pub async fn authorized_taskflow_effect_fence(
+        &self,
+        run_id: &str,
+        step_id: &str,
+        attempt: u32,
+    ) -> Result<Option<TaskFlowFence>, AuthorizedEffectError> {
+        let Some(durable) = self
+            .effect_dispatch_attempt(run_id, step_id, attempt)
+            .await?
+        else {
+            return Ok(None);
+        };
+        let historical = if let Some(observation) = durable.observation.as_ref()
+            && observation.kind == EffectDispatchObservationKind::ProvenAbsent
+        {
+            self.read_absent_taskflow_step(
+                run_id,
+                step_id,
+                attempt,
+                &observation.evidence_digest,
+                &effect_command_id("requeue-absent", &durable),
+            )
+            .await?
+        } else {
+            self.read_terminal_taskflow_step(run_id, step_id, attempt)
+                .await?
+        };
+        let step = if let Some(historical) = historical {
+            historical
+        } else {
+            let run = self
+                .taskflow_run(run_id)
+                .await?
+                .ok_or(AuthorizedEffectError::RecoveryRequired)?;
+            let fence = TaskFlowFence::new(
+                run.owner_agent_id,
+                run.owner_id.ok_or(TaskFlowError::StaleFence)?,
+                run.owner_epoch.ok_or(TaskFlowError::StaleFence)?,
+                run.generation.ok_or(TaskFlowError::StaleFence)?,
+                run.fencing_token.ok_or(TaskFlowError::StaleFence)?,
+            )?;
+            self.read_taskflow_step(run_id, step_id, attempt, &fence)
+                .await?
+                .ok_or(AuthorizedEffectError::RecoveryRequired)?
+        };
+        if step.owner_agent_id != durable.owner_agent_id
+            || step.intent_digest != durable.intent_digest
+            || step.payload_digest != durable.payload_digest
+        {
+            return Err(TaskFlowError::Conflict(
+                "effect fence history differs from durable provider attempt".to_string(),
+            )
+            .into());
+        }
+        Ok(Some(step.fence))
     }
 
     /// Settle already-durable local provider evidence into TaskFlow before a
@@ -860,22 +1186,28 @@ impl AutomationStore {
     ///
     /// The wire payload is hashed inside automation and must equal the durable
     /// TaskFlow payload digest before a final-use nonce is consumed.  A
-    /// provider-stable logical key is then derived from destination + run +
-    /// step, deliberately excluding the local attempt so a safely retried
-    /// attempt reuses the same provider occurrence identity.
+    /// provider-stable logical key is then derived from owner + destination +
+    /// run + step, deliberately excluding the local attempt so a safely
+    /// retried attempt reuses the same provider occurrence identity. Historical
+    /// version-one attempts retain their original provider keys for recovery.
     pub async fn execute_authorized_taskflow_effect_async<D: AsyncAuthorizedEffectDriver>(
         &self,
         authority: &FinalUseAuthority,
         driver: &mut D,
-        intent: &AuthorizedEffectIntent,
-        wire_payload: &[u8],
-        fence: &TaskFlowFence,
-        signed_grant: &SignedFinalUseGrant,
-        expected_binding: &FinalUseBinding,
-        command_id: &str,
-        now_ms: u64,
+        request: AuthorizedEffectDispatchRequest<'_>,
     ) -> Result<TaskFlowStepReceipt, AuthorizedEffectError> {
-        let provider_intent = provider_effect_intent(intent, wire_payload)?;
+        let AuthorizedEffectDispatchRequest {
+            intent,
+            wire_payload,
+            fence,
+            signed_grant,
+            expected_binding,
+            command_id,
+            now_ms,
+        } = request;
+        let started_at = Instant::now();
+        let provider_intent =
+            provider_effect_intent(self.taskflow_owner_agent_id(), intent, wire_payload)?;
         let operation_intent = intent.operation_intent_v1()?;
         let intent_digest = intent.digest()?;
         let payload_digest = &intent.payload_digest;
@@ -922,13 +1254,19 @@ impl AutomationStore {
                 .settle_effect_dispatch_attempt(&existing, fence)
                 .await?
             {
-                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                 AuthorizedEffectRecoveryResult::ProvenAbsent => {
                     Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                 }
             };
         }
 
+        let provider_contract_binding = driver.provider_contract_binding();
+        if let Some(digest) = &provider_contract_binding {
+            validate_nonzero_digest(digest, "provider_contract_binding")?;
+        }
+        self.check_effect_admission(intent, fence, command_id, now_ms, started_at)
+            .await?;
         let token = authority
             .claim(signed_grant, expected_binding)
             .map_err(AuthorizedEffectError::FinalUse)?;
@@ -946,7 +1284,9 @@ impl AutomationStore {
                 &signed_grant.grant.grant_id,
                 &nonce_digest,
                 command_id,
-                now_ms,
+                || effect_now_ms(now_ms, started_at),
+                fence,
+                provider_contract_binding.as_ref(),
             )
             .await?;
         let durable = match start {
@@ -961,7 +1301,7 @@ impl AutomationStore {
                     command_id,
                 )?;
                 return match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+                    AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
                     AuthorizedEffectRecoveryResult::ProvenAbsent => {
                         Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
                     }
@@ -969,7 +1309,13 @@ impl AutomationStore {
             }
         };
 
+        self.check_admitted_effect_before_contact(
+            &durable, intent, fence, command_id, now_ms, started_at,
+        )
+        .await?;
+
         let request = AuthorizedProviderEffectRequest {
+            owner_agent_id: self.taskflow_owner_agent_id(),
             operation_intent: &operation_intent,
             intent,
             intent_digest: &intent_digest,
@@ -978,11 +1324,55 @@ impl AutomationStore {
             wire_payload,
         };
         let provider = match authority
-            .with_verified_use_async(token, expected_binding, || driver.dispatch(request))
+            .with_prepared_verified_use_async(
+                token,
+                expected_binding,
+                |evidence| {
+                    let durable = &durable;
+                    async move {
+                        self.record_effect_preparation_witness(durable, fence, &evidence)
+                            .await
+                            .map_err(AuthorizedEffectError::from)
+                            .map_err(EffectConsumerError::Preparation)?;
+                        self.check_admitted_effect_before_contact(
+                            durable, intent, fence, command_id, now_ms, started_at,
+                        )
+                        .await
+                        .map_err(EffectConsumerError::Preparation)
+                    }
+                },
+                |lease_expires_at_ms| {
+                    let driver = &mut *driver;
+                    async move {
+                        check_effect_consumer_clock(now_ms, started_at, lease_expires_at_ms)?;
+                        driver
+                            .dispatch(request)
+                            .await
+                            .map_err(EffectConsumerError::Driver)
+                    }
+                },
+            )
             .await
         {
             Ok(Ok(receipt)) => receipt,
-            Ok(Err(error)) => {
+            Ok(Err(EffectConsumerError::Preparation(error))) => return Err(error),
+            Ok(Err(EffectConsumerError::Admission(error))) => {
+                let proof = no_contact_digest(&durable, "lease_expired_in_authorized_consumer");
+                let durable = self
+                    .record_effect_dispatch_observation(
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt,
+                        EffectDispatchObservationKind::ProvenAbsent,
+                        &proof,
+                        effect_now_ms(now_ms, started_at)?,
+                        /*provider*/ None,
+                    )
+                    .await?;
+                self.settle_effect_dispatch_attempt(&durable, fence).await?;
+                return Err(error.into());
+            }
+            Ok(Err(EffectConsumerError::Driver(error))) => {
                 let proof = no_contact_digest(&durable, "driver_before_provider_contact");
                 let durable = self
                     .record_effect_dispatch_observation(
@@ -991,7 +1381,8 @@ impl AutomationStore {
                         intent.attempt,
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
-                        now_ms,
+                        effect_now_ms(now_ms, started_at)?,
+                        /*provider*/ None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
@@ -1006,14 +1397,35 @@ impl AutomationStore {
                         intent.attempt,
                         EffectDispatchObservationKind::ProvenAbsent,
                         &proof,
-                        now_ms,
+                        effect_now_ms(now_ms, started_at)?,
+                        /*provider*/ None,
                     )
                     .await?;
                 self.settle_effect_dispatch_attempt(&durable, fence).await?;
                 return Err(AuthorizedEffectError::FinalUse(error));
             }
         };
+        let now_ms = effect_now_ms(now_ms, started_at)?;
         validate_receipt_digest(&provider.receipt_digest)?;
+        let provider_status = driver.take_provider_dispatch_status();
+        if provider_status.is_some_and(|status| status.outcome() != provider.outcome) {
+            return Err(TaskFlowError::Conflict(
+                "provider dispatch status differs from its receipt".to_string(),
+            )
+            .into());
+        }
+        if provider_status == Some(AuthorizedProviderDispatchStatus::Accepted) {
+            // Keep admission even if another recovery observer has already
+            // appended a different indeterminate dispatch receipt.
+            self.record_effect_provider_acceptance(
+                &intent.run_id,
+                &intent.step_id,
+                intent.attempt,
+                &provider.receipt_digest,
+                now_ms,
+            )
+            .await?;
+        }
         let durable = self
             .record_effect_dispatch_observation(
                 &intent.run_id,
@@ -1022,31 +1434,128 @@ impl AutomationStore {
                 provider.outcome.ledger_kind(),
                 &provider.receipt_digest,
                 now_ms,
+                provider_status.map(EffectProviderObservation::Dispatch),
             )
             .await?;
         match self.settle_effect_dispatch_attempt(&durable, fence).await? {
-            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(receipt),
+            AuthorizedEffectRecoveryResult::Observed(receipt) => Ok(*receipt),
             AuthorizedEffectRecoveryResult::ProvenAbsent => {
                 Err(AuthorizedEffectError::ProvenAbsentNeedsNewAttempt)
             }
         }
     }
 
-    /// Return bounded provider-contact attempts that have no durable provider
-    /// observation yet. A restart reconciler must hand these immutable
-    /// identities to the registered downstream effect owner; this scan never
-    /// redispatches and never interprets absence of a local row as provider
-    /// absence.
-    pub async fn pending_authorized_taskflow_effects(
+    async fn check_effect_admission(
         &self,
-        limit: usize,
-    ) -> Result<Vec<AuthorizedEffectPending>, AuthorizedEffectError> {
-        Ok(self
-            .pending_effect_dispatch_attempts(limit)
+        intent: &AuthorizedEffectIntent,
+        fence: &TaskFlowFence,
+        command_id: &str,
+        now_ms: u64,
+        started_at: Instant,
+    ) -> Result<u64, AuthorizedEffectError> {
+        // The projection consumes this exact command after provider contact.
+        // Reject bytes its outbox cannot record before burning authority or
+        // entering the irreversible provider boundary.
+        if command_id.is_empty()
+            || command_id.len() > MAX_EFFECT_ID_BYTES
+            || command_id.bytes().any(|byte| byte < 0x20)
+            || i64::try_from(now_ms).is_err()
+        {
+            return Err(
+                TaskFlowError::Invalid("invalid effect recording command".to_string()).into(),
+            );
+        }
+        let command_exists: bool = sqlx::query_scalar(
+            "SELECT EXISTS (
+                SELECT 1 FROM taskflow_step_outbox
+                WHERE owner_agent_id = ? AND run_id = ? AND step_id = ?
+                  AND attempt = ? AND command_id = ?
+            )",
+        )
+        .bind(self.taskflow_owner_agent_id().as_str())
+        .bind(&intent.run_id)
+        .bind(&intent.step_id)
+        .bind(i64::from(intent.attempt))
+        .bind(command_id)
+        .fetch_one(self.taskflow_pool())
+        .await
+        .map_err(|_| TaskFlowError::Unavailable)?;
+        if command_exists {
+            return Err(TaskFlowError::Conflict(
+                "effect recording command is already bound in step outbox".to_string(),
+            )
+            .into());
+        }
+        let step = self
+            .read_taskflow_step(&intent.run_id, &intent.step_id, intent.attempt, fence)
             .await?
-            .into_iter()
-            .map(AuthorizedEffectPending::from)
-            .collect())
+            .ok_or_else(|| TaskFlowError::Conflict("effect step is missing".into()))?;
+        if step.state != TaskFlowStepState::Claimed
+            || step.intent_digest != intent.digest()?
+            || step.payload_digest != intent.payload_digest
+        {
+            return Err(TaskFlowError::Conflict(
+                "effect step no longer matches claimed admission".into(),
+            )
+            .into());
+        }
+        let run = self
+            .taskflow_run(&intent.run_id)
+            .await?
+            .ok_or_else(|| TaskFlowError::Conflict("effect run is missing".to_string()))?;
+        let now_ms = effect_now_ms(now_ms, started_at)?;
+        let lease_expires_at_ms = run.lease_expires_at_ms.ok_or(TaskFlowError::StaleFence)?;
+        if run.state != TaskFlowRunState::Running
+            || run.owner_id.as_deref() != Some(fence.owner_id.as_str())
+            || run.owner_epoch != Some(fence.owner_epoch)
+            || run.generation != Some(fence.generation)
+            || run.fencing_token.as_deref() != Some(fence.fencing_token.as_str())
+            || lease_expires_at_ms <= now_ms
+        {
+            return Err(TaskFlowError::StaleFence.into());
+        }
+        Ok(lease_expires_at_ms)
+    }
+
+    async fn check_admitted_effect_before_contact(
+        &self,
+        durable: &EffectDispatchAttempt,
+        intent: &AuthorizedEffectIntent,
+        fence: &TaskFlowFence,
+        command_id: &str,
+        now_ms: u64,
+        started_at: Instant,
+    ) -> Result<u64, AuthorizedEffectError> {
+        let current = self
+            .effect_dispatch_attempt(&durable.run_id, &durable.step_id, durable.attempt)
+            .await?
+            .ok_or(AuthorizedEffectError::RecoveryRequired)?;
+        if current.observation.is_some() || current.provider_dispatch_status.is_some() {
+            return Err(AuthorizedEffectError::RecoveryRequired);
+        }
+        match self
+            .check_effect_admission(intent, fence, command_id, now_ms, started_at)
+            .await
+        {
+            Ok(lease_expires_at_ms) => Ok(lease_expires_at_ms),
+            Err(error @ AuthorizedEffectError::TaskFlow(TaskFlowError::StaleFence)) => {
+                let proof = no_contact_digest(durable, "lease_expired_before_provider_contact");
+                let durable = self
+                    .record_effect_dispatch_observation(
+                        &intent.run_id,
+                        &intent.step_id,
+                        intent.attempt,
+                        EffectDispatchObservationKind::ProvenAbsent,
+                        &proof,
+                        effect_now_ms(now_ms, started_at)?,
+                        /*provider*/ None,
+                    )
+                    .await?;
+                self.settle_effect_dispatch_attempt(&durable, fence).await?;
+                Err(error)
+            }
+            Err(error) => Err(error),
+        }
     }
 
     /// Append provider-owned recovery evidence for an already-started durable
@@ -1061,17 +1570,66 @@ impl AutomationStore {
         recovery: AuthorizedEffectRecovery,
         observed_at_ms: u64,
     ) -> Result<AuthorizedEffectRecoveryResult, AuthorizedEffectError> {
-        self.effect_dispatch_attempt(run_id, step_id, attempt)
+        let durable = self
+            .effect_dispatch_attempt(run_id, step_id, attempt)
             .await?
             .ok_or(AuthorizedEffectError::RecoveryRequired)?;
-        let (kind, evidence) = match recovery {
+        // Recovery evidence is immutable. Check the historical owner before
+        // appending it so a rejected stale caller cannot poison later repair.
+        let step = self
+            .read_taskflow_step(run_id, step_id, attempt, fence)
+            .await?
+            .ok_or(AuthorizedEffectError::RecoveryRequired)?;
+        if step.intent_digest != durable.intent_digest
+            || step.payload_digest != durable.payload_digest
+        {
+            return Err(TaskFlowError::Conflict(
+                "effect recovery differs from durable step".to_string(),
+            )
+            .into());
+        }
+        let (kind, evidence, provider) = match recovery {
             AuthorizedEffectRecovery::ProvenAbsent { proof_digest } => {
                 validate_receipt_digest(&proof_digest)?;
-                (EffectDispatchObservationKind::ProvenAbsent, proof_digest)
+                (
+                    EffectDispatchObservationKind::ProvenAbsent,
+                    proof_digest,
+                    None,
+                )
             }
             AuthorizedEffectRecovery::Observed(receipt) => {
                 validate_receipt_digest(&receipt.receipt_digest)?;
-                (receipt.outcome.ledger_kind(), receipt.receipt_digest)
+                (receipt.outcome.ledger_kind(), receipt.receipt_digest, None)
+            }
+            AuthorizedEffectRecovery::ProviderObserved { receipt, status } => {
+                validate_receipt_digest(&receipt.receipt_digest)?;
+                if AuthorizedProviderDispatchStatus::from(status).outcome() != receipt.outcome {
+                    return Err(TaskFlowError::Invalid(
+                        "provider lookup status differs from its receipt".to_string(),
+                    )
+                    .into());
+                }
+                if status == ProviderEffectAckStatus::Accepted {
+                    let admitted = self
+                        .record_effect_provider_acceptance(
+                            run_id,
+                            step_id,
+                            attempt,
+                            &receipt.receipt_digest,
+                            observed_at_ms,
+                        )
+                        .await?;
+                    // Preserve the original dispatch evidence while retaining
+                    // the separately discovered admission across restarts.
+                    if admitted.observation.is_some() {
+                        return self.settle_effect_dispatch_attempt(&admitted, fence).await;
+                    }
+                }
+                (
+                    receipt.outcome.ledger_kind(),
+                    receipt.receipt_digest,
+                    Some(EffectProviderObservation::Lookup(status)),
+                )
             }
         };
         let durable = self
@@ -1082,6 +1640,7 @@ impl AutomationStore {
                 kind,
                 &evidence,
                 observed_at_ms,
+                provider,
             )
             .await?;
         self.settle_effect_dispatch_attempt(&durable, fence).await
@@ -1196,7 +1755,7 @@ impl AutomationStore {
             self.reconcile_effect_run(durable, fence, observation, terminal)
                 .await?;
         }
-        Ok(AuthorizedEffectRecoveryResult::Observed(step))
+        Ok(AuthorizedEffectRecoveryResult::Observed(Box::new(step)))
     }
 
     async fn quarantine_effect_run(
@@ -1285,6 +1844,31 @@ impl AutomationStore {
         fence: &TaskFlowFence,
         observation: &crate::effect_dispatch_ledger::EffectDispatchObservation,
     ) -> Result<(), AuthorizedEffectError> {
+        if let Some(settled) = self
+            .read_absent_taskflow_step(
+                &durable.run_id,
+                &durable.step_id,
+                durable.attempt,
+                &observation.evidence_digest,
+                &effect_command_id("requeue-absent", durable),
+            )
+            .await?
+        {
+            if settled.fence != *fence {
+                return Err(TaskFlowError::StaleFence.into());
+            }
+            if settled.intent_digest != durable.intent_digest
+                || settled.payload_digest != durable.payload_digest
+            {
+                return Err(TaskFlowError::Conflict(
+                    "settled provider absence differs from durable step".to_string(),
+                )
+                .into());
+            }
+            // The exact attempt already requeued. Historical observation must
+            // not mutate a successor's run or step, even under the same owner.
+            return Ok(());
+        }
         let run = self
             .taskflow_run(&durable.run_id)
             .await?
@@ -1439,7 +2023,7 @@ fn final_use_binding_digest(
     Ok(Sha256Digest::for_bytes(&bytes))
 }
 
-fn effect_command_id(phase: &str, durable: &EffectDispatchAttempt) -> String {
+pub(super) fn effect_command_id(phase: &str, durable: &EffectDispatchAttempt) -> String {
     let mut bytes = b"hepta.automation.effect.command.v1\0".to_vec();
     bytes.extend_from_slice(phase.as_bytes());
     bytes.push(0);
@@ -1485,7 +2069,7 @@ fn digest32(digest: &Sha256Digest) -> Result<Digest32, TaskFlowError> {
         .map_err(|_| TaskFlowError::Invalid("non-canonical sha256 digest".to_string()))
 }
 
-fn digest_bytes(digest: &Sha256Digest) -> Result<[u8; 32], AuthorizedEffectError> {
+pub(super) fn digest_bytes(digest: &Sha256Digest) -> Result<[u8; 32], AuthorizedEffectError> {
     let value = digest.as_str().as_bytes();
     if value.len() != 64 {
         return Err(AuthorizedEffectError::BindingMismatch);
@@ -1606,5 +2190,27 @@ mod intent_tests {
         let mut value = intent();
         value.dependencies = vec![dependency("step.2", b"self")];
         assert!(matches!(value.digest(), Err(TaskFlowError::Invalid(_))));
+    }
+    #[test]
+    fn provider_keys_frame_components_scope_agents_and_preserve_version_one() {
+        let owner = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner");
+        let other = AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c13").expect("other owner");
+        let first =
+            taskflow_provider_key(&owner, "provider:test", "a:b", "c", /*version*/ 2).expect("key");
+        assert_ne!(
+            first,
+            taskflow_provider_key(&owner, "provider:test", "a", "b:c", /*version*/ 2).expect("key")
+        );
+        assert_ne!(
+            first,
+            taskflow_provider_key(&other, "provider:test", "a:b", "c", /*version*/ 2).expect("key")
+        );
+        assert_eq!(
+            taskflow_provider_key(&owner, "provider:test", "a:b", "c", /*version*/ 1)
+                .expect("legacy key"),
+            ProviderEffectKey::for_logical_effect("provider:test", "taskflow:a:b:c")
+                .expect("legacy contract")
+        );
+        assert!(taskflow_provider_key(&owner, "provider:test", "a:b", "c", /*version*/ 3).is_err());
     }
 }

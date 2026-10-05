@@ -4,6 +4,7 @@ use std::time::SystemTime;
 use std::time::UNIX_EPOCH;
 
 use codex_hepta_automation::AutomationError;
+use codex_hepta_automation::TaskFlowReconcileOutcome;
 use codex_hepta_automation::TaskFlowStepObservation;
 use codex_hepta_fleet::AgentLifecycle;
 use codex_hepta_memory::CognitiveAccess;
@@ -634,16 +635,27 @@ impl AgentdState {
                 step_id,
                 attempt,
             } => {
-                require_automation_ready(
-                    lifecycle,
-                    app_server_ready,
-                    critical_stores_ready,
-                    revocation_ready,
-                    required_ports_ready,
-                    admission_open,
-                    fenced,
-                )?;
-                let Some(store) = automation.as_ref() else {
+                // Draining closes new admission and App Server ports; historical
+                // provider observation remains safe under the current generation.
+                let historical_drain = lifecycle == AgentLifecycle::Draining
+                    && critical_stores_ready
+                    && revocation_ready
+                    && !fenced;
+                if !historical_drain {
+                    require_automation_ready(
+                        lifecycle,
+                        app_server_ready,
+                        critical_stores_ready,
+                        revocation_ready,
+                        required_ports_ready,
+                        admission_open,
+                        fenced,
+                    )?;
+                }
+                let Some(store) = automation
+                    .as_ref()
+                    .or_else(|| self.automation_recovery_store())
+                else {
                     return self.response_with_payload(
                         request_id,
                         current_generation,
@@ -666,7 +678,7 @@ impl AgentdState {
                         receipt,
                     ) => crate::AutomationEffectReconcileSnapshot {
                         state: crate::AutomationEffectReconcileState::Terminal,
-                        effect: Some(effect_snapshot(receipt)?),
+                        effect: Some(effect_snapshot(*receipt)?),
                     },
                     crate::automation_effect_host::AgentdAutomationEffectReconcileOutcome::Indeterminate => {
                         crate::AutomationEffectReconcileSnapshot {
@@ -1075,15 +1087,21 @@ fn automation_effect_unavailable() -> AgentdPayload {
 fn effect_snapshot(
     receipt: codex_hepta_automation::TaskFlowStepReceipt,
 ) -> Result<crate::AutomationEffectSnapshot, AgentdError> {
-    let observation = match receipt.observation {
-        Some(TaskFlowStepObservation::Succeeded) => crate::AutomationEffectObservation::Succeeded,
-        Some(TaskFlowStepObservation::Failed) => crate::AutomationEffectObservation::Failed,
-        Some(TaskFlowStepObservation::Indeterminate) => {
+    let observation = match (receipt.final_outcome, receipt.observation) {
+        (Some(TaskFlowReconcileOutcome::Succeeded), _)
+        | (None, Some(TaskFlowStepObservation::Succeeded)) => {
+            crate::AutomationEffectObservation::Succeeded
+        }
+        (Some(TaskFlowReconcileOutcome::Failed), _)
+        | (None, Some(TaskFlowStepObservation::Failed)) => {
+            crate::AutomationEffectObservation::Failed
+        }
+        (None, Some(TaskFlowStepObservation::Indeterminate)) => {
             crate::AutomationEffectObservation::Indeterminate
         }
-        None => {
+        (Some(TaskFlowReconcileOutcome::Cancelled), _) | (None, None) => {
             return Err(AgentdError::Protocol(
-                "automation effect receipt has no provider observation".to_string(),
+                "automation effect receipt has no usable provider observation".to_string(),
             ));
         }
     };
