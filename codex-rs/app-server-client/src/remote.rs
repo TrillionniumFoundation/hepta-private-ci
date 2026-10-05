@@ -365,6 +365,45 @@ pub struct RemoteAppServerClient {
     worker_handle: tokio::task::JoinHandle<()>,
 }
 
+/// Opt-in lifecycle ownership for a connection whose traffic belongs to one
+/// task. Dropping this value, including while `shutdown` awaits, aborts its
+/// worker. Do not use this wrapper for a client whose independent consumers
+/// must survive the owning task. The ordinary shared-client behavior is unchanged.
+pub struct AbortOnDropRemoteAppServerClient {
+    abort_guard: RemoteWorkerAbortGuard,
+    client: RemoteAppServerClient,
+}
+
+struct RemoteWorkerAbortGuard(tokio::task::AbortHandle);
+
+impl Drop for RemoteWorkerAbortGuard {
+    fn drop(&mut self) {
+        self.0.abort();
+    }
+}
+
+impl std::ops::Deref for AbortOnDropRemoteAppServerClient {
+    type Target = RemoteAppServerClient;
+
+    fn deref(&self) -> &Self::Target {
+        &self.client
+    }
+}
+
+impl AbortOnDropRemoteAppServerClient {
+    pub async fn shutdown(self) -> IoResult<()> {
+        let Self {
+            abort_guard,
+            client,
+        } = self;
+        let result = client.shutdown().await;
+        // Keep the guard in the future until graceful cleanup is finished.
+        // A shorter parent-task grace can otherwise detach the worker.
+        drop(abort_guard);
+        result
+    }
+}
+
 #[derive(Clone, Copy)]
 enum RemoteEventMode {
     Unbounded,
@@ -479,6 +518,15 @@ impl RemoteAppServerRequestHandle {
 }
 
 impl RemoteAppServerClient {
+    /// Bind this connection's worker lifetime to its exclusive owning task.
+    /// Existing request handles also stop when the returned guard is dropped.
+    pub fn into_abort_on_drop(self) -> AbortOnDropRemoteAppServerClient {
+        AbortOnDropRemoteAppServerClient {
+            abort_guard: RemoteWorkerAbortGuard(self.worker_handle.abort_handle()),
+            client: self,
+        }
+    }
+
     pub async fn connect(args: RemoteAppServerConnectArgs) -> IoResult<Self> {
         Self::connect_with_event_mode(args, RemoteEventMode::Unbounded).await
     }
@@ -1530,3 +1578,7 @@ mod tests {
             .expect("shutdown should complete when worker exits first");
     }
 }
+
+#[cfg(test)]
+#[path = "remote_shutdown_lifetime_tests.rs"]
+mod shutdown_lifetime_tests;

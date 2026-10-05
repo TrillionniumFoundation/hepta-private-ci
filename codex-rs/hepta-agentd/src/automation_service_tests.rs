@@ -421,3 +421,7 @@ async fn production_constructor_never_resumes_a_draining_owner() {
     assert!(!fixture.state.is_fenced().expect("host fence"));
     fixture.store.close().await;
 }
+
+#[cfg(unix)]
+#[path = "automation_product_observation_tests.rs"]
+mod observation_stall_tests;

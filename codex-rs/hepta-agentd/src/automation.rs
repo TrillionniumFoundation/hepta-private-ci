@@ -250,6 +250,20 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
     cancellation: CancellationToken,
     tick_interval: Duration,
 ) -> Result<(), AgentdError> {
+    run_scheduler_loop_with_clock(scheduler, state, cancellation, tick_interval, unix_time_ms).await
+}
+
+async fn run_scheduler_loop_with_clock<Q, C>(
+    scheduler: AutomationScheduler<Q>,
+    state: Arc<AgentdState>,
+    cancellation: CancellationToken,
+    tick_interval: Duration,
+    clock: C,
+) -> Result<(), AgentdError>
+where
+    Q: AutomationTurnQueue,
+    C: Fn() -> Result<u64, AutomationError> + Send + Sync + 'static,
+{
     let mut retry_budget = DispatchRetryBudget::default();
     let mut uncertainty_scan = scheduler.store().uncertain_dispatch_scan();
     loop {
@@ -272,7 +286,7 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         if !ready {
             continue;
         }
-        let now_ms = match unix_time_ms() {
+        let now_ms = match clock() {
             Ok(now_ms) => now_ms,
             Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
         };
@@ -280,21 +294,34 @@ async fn run_scheduler_loop<Q: AutomationTurnQueue>(
         // Reconcile one durable historical occurrence before admitting new
         // work. This is bounded to one item/turn-page chain per tick and does
         // not prevent an overlap-allowed scheduler from also making progress.
-        if let Err(error) = automation_recovery::reconcile_one(
+        match automation_recovery::reconcile_one(
             scheduler.store(),
             &state,
             state.identity(),
             now_ms,
             &mut uncertainty_scan,
+            &cancellation,
+            &clock,
         )
         .await
         {
-            return stop_after_recovery_error(error, &state, &cancellation).await;
+            Ok(automation_recovery::RecoveryPass::Cancelled) => return Ok(()),
+            Ok(_) => {}
+            Err(error) => {
+                return stop_after_recovery_error(error, &state, &cancellation).await;
+            }
         }
 
         if cancellation.is_cancelled() {
             return Ok(());
         }
+        // Recovery can include connect, observation and cleanup waits. Start
+        // the new admission's lease from a fresh sample of the same host clock.
+        // Database waits can still erode that lease; this is not an I/O deadline.
+        let now_ms = match clock() {
+            Ok(now_ms) => now_ms,
+            Err(error) => return stop_after_automation_error(error, &state, &cancellation).await,
+        };
         // Once admitted, the tick must record the queue outcome. Dropping this
         // future on cancellation could lose an acknowledgement after dispatch.
         match scheduler.tick(now_ms).await {
