@@ -428,30 +428,24 @@ fn ledger_conflict_capacity_and_io_uncertainty_cannot_report_learning_recorded()
     assert_eq!(after_witness, before_witness);
 
     let path = temp.path().join("faulted-ledger");
-    let ledger = ledger_at(&path, &fixture);
-    let external = OpenOptions::new().write(true).open(&path).unwrap();
-    #[cfg(windows)]
-    {
-        let error = external.set_len(/*size*/ 0).unwrap_err();
-        assert_eq!(error.raw_os_error(), Some(33));
-        assert!(ledger.records().unwrap().is_empty());
-    }
-    #[cfg(not(windows))]
-    {
-        let mut ledger = ledger;
-        external.set_len(/*size*/ 0).unwrap();
-        let mut ports = Ports::new(&fixture);
-        assert!(matches!(
-            run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50),
-            Err(EvaluatedShadowError::Ledger(
-                ProductionLedgerError::Durable(DurableLedgerError::Corrupt)
-            ))
-        ));
-        assert!(matches!(
-            ledger.records(),
-            Err(ProductionLedgerError::Durable(DurableLedgerError::Poisoned))
-        ));
-    }
+    let mut ledger = ledger_at(&path, &fixture);
+    OpenOptions::new()
+        .write(true)
+        .open(&path)
+        .unwrap()
+        .set_len(/*size*/ 0)
+        .unwrap();
+    let mut ports = Ports::new(&fixture);
+    assert!(matches!(
+        run_evaluated_shadow_v1(fixture.request(), &mut ledger, &mut ports, /*now*/ 50),
+        Err(EvaluatedShadowError::Ledger(
+            ProductionLedgerError::Durable(DurableLedgerError::Corrupt)
+        ))
+    ));
+    assert!(matches!(
+        ledger.records(),
+        Err(ProductionLedgerError::Durable(DurableLedgerError::Poisoned))
+    ));
 }
 
 #[test]

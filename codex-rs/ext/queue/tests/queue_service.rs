@@ -156,17 +156,14 @@ fn install_registered_queue(
 fn python_hook_command(script_path: &Path) -> String {
     #[cfg(windows)]
     {
-        let launcher_path = script_path.with_extension("cmd");
-        let script_name = script_path
-            .file_name()
-            .unwrap_or_else(|| panic!("hook script has no file name: {}", script_path.display()));
-        let launcher = format!(
-            "@echo off\r\npython \"%~dp0{}\"\r\nexit /b %ERRORLEVEL%\r\n",
-            script_name.to_string_lossy()
-        );
-        std::fs::write(&launcher_path, launcher)
-            .unwrap_or_else(|error| panic!("write queue hook launcher: {error}"));
-        return format!("\"{}\"", launcher_path.display());
+        let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+            .into_iter()
+            .chain(std::env::var_os("PATH"))
+            .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
+            .map(|directory| directory.join("python.exe"))
+            .find(|candidate| candidate.is_file())
+            .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
+        return format!("\"{}\" \"{}\"", python.display(), script_path.display());
     }
 
     #[cfg(not(windows))]
