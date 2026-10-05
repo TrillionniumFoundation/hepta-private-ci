@@ -119,5 +119,48 @@ class ProductContractTests(unittest.TestCase):
                 self.check("agentd_signed_text", source + f"\n// {forbidden}\n")
 
 
+class WorkflowSourceTruthTests(unittest.TestCase):
+    def check(self, text):
+        spec = importlib.util.spec_from_file_location(
+            "authbus_source_truth", ROOT / "scripts/check-authbus-source-truth.py"
+        )
+        checker = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(checker)
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            workflows = root / ".github/workflows"
+            workflows.mkdir(parents=True)
+            path = workflows / "authbus-regression.yml"
+            path.write_text(text)
+            with (
+                patch.object(checker, "ROOT", root),
+                patch.object(checker, "WORKFLOW_ROOT", workflows),
+            ):
+                return checker.verify_workflow_immutability(
+                    {path.relative_to(root).as_posix()}
+                )
+
+    def test_read_only_formatting_remains_allowed(self):
+        workflow = (ROOT / ".github/workflows/authbus-authoring-format.yml").read_text()
+        self.assertEqual(self.check(workflow), [])
+
+    def test_reintroduced_authoring_mutations_remain_rejected(self):
+        for mutation in [
+            "permissions:\n  contents: write",
+            "run: git add source",
+            "run: git commit -m generated",
+            "run: git push origin HEAD",
+        ]:
+            with self.subTest(mutation=mutation):
+                self.assertTrue(
+                    any(
+                        "must be read-only" in error
+                        for error in self.check(
+                            "name: AuthBus authoring\n" + mutation + "\n"
+                        )
+                    )
+                )
+
+
 if __name__ == "__main__":
     unittest.main()
