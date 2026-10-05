@@ -69,19 +69,28 @@ impl AuthBusAuthorityStore {
             pool.close().await;
             return Err(error);
         }
-        sqlx::query(
-            "UPDATE authbus_recovery_state
-             SET recovery_required = (
-                 SELECT EXISTS(
-                     SELECT 1 FROM authbus_quota_reservation
-                     WHERE state = 'dispatch_attempted'
+        let recovery = async {
+            let mut tx = begin(&pool).await?;
+            sqlx::query(
+                "UPDATE authbus_recovery_state
+                 SET recovery_required = (
+                     SELECT EXISTS(
+                         SELECT 1 FROM authbus_quota_reservation
+                         WHERE state = 'dispatch_attempted'
+                     )
                  )
-             )
-             WHERE singleton = 1",
-        )
-        .execute(&pool)
-        .await
-        .map_err(storage)?;
+                 WHERE singleton = 1",
+            )
+            .execute(&mut *tx)
+            .await
+            .map_err(storage)?;
+            tx.commit().await.map_err(storage)
+        }
+        .await;
+        if let Err(error) = recovery {
+            pool.close().await;
+            return Err(error);
+        }
         Ok(Self { pool })
     }
 
@@ -338,7 +347,12 @@ impl AuthBusAuthorityStore {
 pub(crate) async fn begin(
     pool: &SqlitePool,
 ) -> Result<Transaction<'static, Sqlite>, AuthBusAuthorityError> {
-    pool.begin_with("BEGIN IMMEDIATE").await.map_err(storage)
+    let mut tx = pool.begin_with("BEGIN IMMEDIATE").await.map_err(storage)?;
+    if let Err(error) = crate::frontier_sequence::validate(&mut tx).await {
+        tx.rollback().await.map_err(storage)?;
+        return Err(error);
+    }
+    Ok(tx)
 }
 
 pub(crate) async fn advance_time(
