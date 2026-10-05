@@ -16,7 +16,9 @@ SHA = re.compile(r"[0-9a-f]{40}\Z")
 
 
 class UiNativeProductClosureTests(unittest.TestCase):
-    def test_candidate_identity_and_runtime_input_inventory_remain_exact(self) -> None:
+    def test_historical_identity_and_current_runtime_input_inventory_remain_exact(
+        self,
+    ) -> None:
         state = json.loads(
             (ROOT / "apps/hepta-native/CANDIDATE.json").read_text(encoding="utf-8")
         )
@@ -30,9 +32,13 @@ class UiNativeProductClosureTests(unittest.TestCase):
             text=True,
         ).strip()
         self.assertEqual(observed_tree, tree)
-        # Keep the production input/checkout proof, without freezing every
-        # development helper added under the broad tools directory.
-        native.check_frozen_implementation(implementation)
+        # The stored candidate remains historical evidence. Ordinary source
+        # development must not claim or require that historical qualification.
+        evidence = native.check_repository(profile="development")
+        self.assertEqual(
+            evidence["historicalQualificationSource"],
+            {"commit": implementation, "tree": tree},
+        )
         paths = native.implementation_paths()
         self.assertIn("apps/hepta-native/tools/package_unsigned.py", paths)
         self.assertIn("apps/hepta-native/tools/archive_safety.py", paths)

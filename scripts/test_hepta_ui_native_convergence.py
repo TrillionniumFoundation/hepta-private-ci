@@ -21,15 +21,17 @@ SPEC.loader.exec_module(MODULE)
 
 
 class UiNativeConvergenceTests(unittest.TestCase):
-    def test_exact_source_contract_is_fail_closed(self) -> None:
-        evidence = MODULE.check_repository()
-        self.assertEqual(evidence["status"], "structural-pass")
-        self.assertRegex(evidence["implementationSourceSha"], r"^[0-9a-f]{40}$")
+    def test_development_source_contract_is_fail_closed(self) -> None:
+        evidence = MODULE.check_repository(profile="development")
+        self.assertEqual(evidence["status"], "development-structural-pass")
+        self.assertRegex(
+            evidence["historicalQualificationSource"]["commit"], r"^[0-9a-f]{40}$"
+        )
         self.assertEqual(evidence["workflow"], "ui-native-qualification.yml")
         self.assertGreaterEqual(evidence["retiredWorkflowCount"], 16)
 
     def test_release_claims_remain_independently_gated(self) -> None:
-        evidence = MODULE.check_repository()
+        evidence = MODULE.check_repository(profile="development")
         self.assertIn(
             "release flags remain false pending independent review",
             evidence["limitations"],
