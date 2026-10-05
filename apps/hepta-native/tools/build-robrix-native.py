@@ -132,8 +132,15 @@ def prepare_assets(
     root: Path, out: Path, target: Path, font_source: Path, offline: bool
 ):
     sdk, robrix = metadata(root, target, offline)
-    subprocess.run(["python3", str(root / "apps/hepta-control-ui/tools/prepare-fonts.py"),
-                    *(["--offline"] if offline else [])], check=True, stdout=subprocess.PIPE)
+    subprocess.run(
+        [
+            "python3",
+            str(root / "apps/hepta-control-ui/tools/prepare-fonts.py"),
+            *(["--offline"] if offline else []),
+        ],
+        check=True,
+        stdout=subprocess.PIPE,
+    )
 
     generator = root / NATIVE / "tools/generate-native-assets.py"
     subprocess.run(
@@ -192,9 +199,15 @@ def verify_assets(
             (root / NATIVE / "tools/generate-native-assets.py").read_bytes()
         ),
         "helperSha256": sha(Path(__file__).read_bytes()),
-        "cjkPreparationSha256": sha((root / "apps/hepta-control-ui/tools/prepare-fonts.py").read_bytes()),
-        "cjkManifestSha256": sha((root / ROBRIX / "resources/fonts/MANIFEST.json").read_bytes()),
-        "cjkLicenseSha256": sha((root / ROBRIX / "resources/fonts/OFL.txt").read_bytes()),
+        "cjkPreparationSha256": sha(
+            (root / "apps/hepta-control-ui/tools/prepare-fonts.py").read_bytes()
+        ),
+        "cjkManifestSha256": sha(
+            (root / ROBRIX / "resources/fonts/MANIFEST.json").read_bytes()
+        ),
+        "cjkLicenseSha256": sha(
+            (root / ROBRIX / "resources/fonts/OFL.txt").read_bytes()
+        ),
         "assetRustSha256": sha((out / "native-assets.rs").read_bytes()),
         "assetInputJsonSha256": sha((out / "native-assets-input.json").read_bytes()),
         "liberationSourceSha256": sha(font_source.read_bytes()),
@@ -423,6 +436,20 @@ def prepare_preview(root: Path, out: Path, font_source: Path, offline: bool):
     return checkout, native_manifest, asset_input
 
 
+def cjk_font_cache(requested: Path | None = None) -> Path:
+    """Keep build and verification cache identity independent of --source-root.
+
+    The verified source may be the generated checkout, while this same wrapper
+    remains the caller. Explicit CLI/environment cache configuration wins.
+    Never infer a cache from the previous asset receipt being verified.
+    """
+    configured = requested or os.environ.get("HEPTA_CJK_FONT_CACHE")
+    if configured is not None:
+        return Path(configured).resolve()
+    wrapper_root = Path(__file__).resolve().parents[3]
+    return wrapper_root / "apps/hepta-control-ui/rust/target/font-assets"
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument(
@@ -448,7 +475,7 @@ def main():
     if sys.platform != "linux":
         parser.error("This developer preview is currently Linux-only")
     root = args.source_root.resolve(strict=True)
-    os.environ["HEPTA_CJK_FONT_CACHE"] = str((args.cjk_font_cache or root / "apps/hepta-control-ui/rust/target/font-assets").resolve())
+    os.environ["HEPTA_CJK_FONT_CACHE"] = str(cjk_font_cache(args.cjk_font_cache))
     out = args.out.resolve()
     out.mkdir(parents=True, exist_ok=True)
     font_source = checked_font_source(

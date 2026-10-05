@@ -133,3 +133,11 @@ resolver, preflight or unrelated compiler failures cannot qualify the check.
 The source seal requires all three compiler observations on the same source and
 lock. Registering read-only workflows or passing structural navigation checks
 never establishes these executed observations by itself.
+
+CJK cache identity belongs to the invoked wrapper, not to the selected
+`--source-root`: switching to the generated checkout for `verify-assets` must
+retain the same include-bytes paths. `--cjk-font-cache` overrides
+`HEPTA_CJK_FONT_CACHE`; otherwise the wrapper's canonical UI target cache is used.
+When invoking a different copied wrapper, supply the original explicit cache.
+Verification still regenerates from current sources and requires exact Rust/JSON
+byte equality; it never trusts a previous receipt to select input paths.

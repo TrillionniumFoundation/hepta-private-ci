@@ -131,9 +131,16 @@ class BuildInputsTests(unittest.TestCase):
 
     def test_current_preview_caller_binds_same_repository_head_and_merge(self):
         workflow = (ROOT / ".github/workflows/ui-native-robrix-preview.yml").read_text()
-        self.assertIn("branches: [work/ui-rust-scifi-audit-20261002, dot/ui-ime-routing-20261005]", workflow)
+        self.assertIn(
+            "branches: [work/ui-rust-scifi-audit-20261002, dot/ui-ime-routing-20261005]",
+            workflow,
+        )
         self.assertEqual(
-            [line.strip() for line in workflow.splitlines() if line.startswith("    if: ")],
+            [
+                line.strip()
+                for line in workflow.splitlines()
+                if line.startswith("    if: ")
+            ],
             ["if: github.event.pull_request.head.repo.full_name == github.repository"],
         )
         self.assertIn("pr-number: ${{ github.event.pull_request.number }}", workflow)
@@ -147,9 +154,19 @@ class BuildInputsTests(unittest.TestCase):
         self.assertIn("runs-on: ubuntu-24.04", workflow)
         self.assertIn("permissions:\n  contents: read", workflow)
         self.assertIn("persist-credentials: false", workflow)
-        for forbidden in ("self-hosted", "secrets.", "contents: write", "write-all", "id-token: write"):
+        for forbidden in (
+            "self-hosted",
+            "secrets.",
+            "contents: write",
+            "write-all",
+            "id-token: write",
+        ):
             self.assertNotIn(forbidden, workflow)
-        paths = [line.strip()[2:] for line in workflow.splitlines() if line.startswith("      - ")]
+        paths = [
+            line.strip()[2:]
+            for line in workflow.splitlines()
+            if line.startswith("      - ")
+        ]
         for changed in (
             "apps/hepta-control-ui/rust/Cargo.lock",
             "apps/hepta-control-ui/rust/robrix-ui/build.rs",
@@ -158,7 +175,9 @@ class BuildInputsTests(unittest.TestCase):
             "apps/hepta-control-ui/tools/run-desktop.py",
             "scripts/test_hepta_native_robrix_build.py",
         ):
-            self.assertTrue(any(fnmatch.fnmatchcase(changed, pattern) for pattern in paths), changed)
+            self.assertTrue(
+                any(fnmatch.fnmatchcase(changed, pattern) for pattern in paths), changed
+            )
 
     def test_toml_platform_path_roundtrips_unicode_and_controls(self):
         for value in [
@@ -214,6 +233,93 @@ class BuildInputsTests(unittest.TestCase):
             module.checked_font_source(wrong, self.root, False)
         with self.assertRaisesRegex(ValueError, "explicitly permit"):
             module.checked_font_source(None, self.root, False)
+
+    def test_cjk_cache_default_is_wrapper_owned_across_source_root_switch(self):
+        wrapper = self.root / "canonical/apps/hepta-native/tools/build-robrix-native.py"
+        expected = self.root / "canonical/apps/hepta-control-ui/rust/target/font-assets"
+        with (
+            patch.object(module, "__file__", str(wrapper)),
+            patch.dict(os.environ, {}, clear=True),
+        ):
+            first = module.cjk_font_cache()
+            # Verification runs against a generated checkout, but must not move
+            # the compiler input cache along with that selected source root.
+            generated = self.root / "preview/source"
+            generated.mkdir(parents=True)
+            previous = Path.cwd()
+            try:
+                os.chdir(generated)
+                self.assertEqual(module.cjk_font_cache(), first)
+            finally:
+                os.chdir(previous)
+            self.assertEqual(first, expected)
+            self.assertNotEqual(
+                first, generated / "apps/hepta-control-ui/rust/target/font-assets"
+            )
+
+    def test_cjk_cache_cli_keeps_build_and_generated_verification_inputs_identical(
+        self,
+    ):
+        wrapper = self.root / "canonical/apps/hepta-native/tools/build-robrix-native.py"
+        source = self.root / "canonical"
+        generated = self.root / "preview/source"
+        source.mkdir(parents=True)
+        generated.mkdir(parents=True)
+        seen = []
+
+        def observe(*args, **kwargs):
+            seen.append(os.environ["HEPTA_CJK_FONT_CACHE"])
+            return generated, generated / "Cargo.toml", generated / "native-assets.rs"
+
+        for mode, selected in (
+            ("prepare-preview", source),
+            ("verify-assets", generated),
+        ):
+            args = [
+                str(wrapper),
+                mode,
+                "--source-root",
+                str(selected),
+                "--out",
+                str(self.root / "output"),
+                "--receipt",
+                str(self.root / "receipt.json"),
+            ]
+            with (
+                patch.object(module, "__file__", str(wrapper)),
+                patch.object(module.sys, "argv", args),
+                patch.object(module.sys, "platform", "linux"),
+                patch.dict(os.environ, {}, clear=True),
+                patch.object(
+                    module,
+                    "checked_font_source",
+                    return_value=self.root / "license.tar.gz",
+                ),
+                patch.object(module, "prepare_preview", side_effect=observe),
+                patch.object(module, "verify_assets", side_effect=observe),
+            ):
+                module.main()
+        self.assertEqual(len(seen), 2)
+        self.assertEqual(seen[0], seen[1])
+        self.assertEqual(
+            Path(seen[0]), source / "apps/hepta-control-ui/rust/target/font-assets"
+        )
+
+    def test_cjk_cache_preserves_explicit_environment_across_invocations(self):
+        cache = self.root / "shared-font-cache"
+        with patch.dict(os.environ, {"HEPTA_CJK_FONT_CACHE": str(cache)}):
+            self.assertEqual(module.cjk_font_cache(), cache)
+            with patch.object(
+                module,
+                "__file__",
+                str(self.root / "other/apps/hepta-native/tools/build.py"),
+            ):
+                self.assertEqual(module.cjk_font_cache(), cache)
+
+    def test_cjk_cache_cli_override_wins_without_reading_prior_receipt(self):
+        cache = self.root / "explicit-font-cache"
+        with patch.dict(os.environ, {"HEPTA_CJK_FONT_CACHE": str(self.root / "other")}):
+            self.assertEqual(module.cjk_font_cache(cache), cache)
 
     def test_regeneration_rejects_changed_rust_or_json_and_never_qualifies_renderer(
         self,
