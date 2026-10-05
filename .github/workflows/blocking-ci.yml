@@ -165,7 +165,7 @@ jobs:
         run: >-
           python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/impact-test.json" --
           python3 scripts/hepta_ci_dependencies.py --base "$BASE_SHA" --tested "$TESTED_SHA"
-          --output "$RUNNER_TEMP/cargo-impact.json" --run
+          --output "$RUNNER_TEMP/cargo-impact.json" --run --fail-fast
 
       - name: Retain dependency plan and real command output
         if: always()

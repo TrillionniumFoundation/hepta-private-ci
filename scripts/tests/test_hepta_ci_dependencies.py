@@ -18,6 +18,68 @@ sys.modules[spec.name] = ci
 spec.loader.exec_module(ci)
 
 
+class TestFailurePolicyTests(unittest.TestCase):
+    def test_fast_failure_preserves_the_entire_selected_package_set(self):
+        selected = {"packages": ["owner", "reverse-consumer"], "full_workspace": False}
+        ordinary = ci.execution_command(selected, "test")
+        fast = ci.execution_command(selected, "test", fail_fast=True)
+        self.assertEqual(
+            fast,
+            [
+                "just",
+                "test",
+                "--locked",
+                "--fail-fast",
+                "-p",
+                "owner",
+                "-p",
+                "reverse-consumer",
+            ],
+        )
+        self.assertEqual([arg for arg in fast if arg != "--fail-fast"], ordinary)
+        self.assertEqual(
+            selected,
+            {"packages": ["owner", "reverse-consumer"], "full_workspace": False},
+        )
+
+    def test_full_diagnostics_and_empty_selection_keep_existing_semantics(self):
+        selected = {"packages": ["owner"], "full_workspace": True}
+        self.assertEqual(
+            ci.execution_command(selected, "test"),
+            ["just", "test", "--locked", "--workspace"],
+        )
+        self.assertEqual(
+            ci.execution_command(selected, "test", fail_fast=True),
+            ["just", "test", "--locked", "--fail-fast", "--workspace"],
+        )
+        self.assertIsNone(
+            ci.execution_command(
+                {"packages": [], "full_workspace": False}, "test", fail_fast=True
+            )
+        )
+
+    def test_cli_rejects_test_failure_policy_for_non_test_actions(self):
+        for action in ("plan", "fmt", "clippy"):
+            with self.subTest(action=action):
+                result = subprocess.run(
+                    [
+                        sys.executable,
+                        str(SCRIPT),
+                        "--tested",
+                        "a" * 40,
+                        "--action",
+                        action,
+                        "--fail-fast",
+                    ],
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(result.returncode, 2)
+                self.assertIn(
+                    "--fail-fast requires --run or --action test", result.stderr
+                )
+
+
 class SelectionTests(unittest.TestCase):
     def setUp(self):
         self.graph = ci.Graph(
