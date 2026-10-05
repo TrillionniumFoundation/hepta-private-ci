@@ -5,7 +5,7 @@
 diff --git a/runtimes/mingw/BUILD.bazel b/runtimes/mingw/BUILD.bazel
 --- a/runtimes/mingw/BUILD.bazel
 +++ b/runtimes/mingw/BUILD.bazel
-@@ -386,14 +386,42 @@ stub_library(
+@@ -330,14 +330,42 @@ stub_library(
      name = "stdc++",
  )
  
@@ -48,3 +48,20 @@ diff --git a/runtimes/mingw/BUILD.bazel b/runtimes/mingw/BUILD.bazel
          ":stdc++",
          ":uuid",
          ":winpthread",
+@@ -372,6 +400,16 @@
++# Rust Windows GNU links request the mixed-case -lDnsapi name.
++# Preserve the real DNS import library on case-sensitive execution hosts.
++copy_file(
++    name = "dnsapi_case_compat",
++    src = "@mingw//:import_lib_dnsapi",
++    out = "libDnsapi.a",
++    visibility = ["//visibility:public"],
++)
++
+ copy_to_directory(
+     name = "mingw_import_libraries_directory",
+     srcs = [
++        ":dnsapi_case_compat",
+         ":libkernel32.a",
+         ":libsynchronization.a",
+         ":libws2_32.a",
