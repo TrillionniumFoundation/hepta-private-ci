@@ -2875,3 +2875,79 @@ async fn sqlite_full_aborts_operation_event_and_outbox_atomically_and_reopens_cl
         .expect("quick check");
     assert_eq!(integrity, "ok");
 }
+
+#[tokio::test]
+async fn lease_history_read_accepts_limit_and_rejects_overflow() {
+    // Assert the existing public behavior at its documented 4096-row boundary.
+    const MAX_LEASE_ROWS: usize = 4_096;
+    use crate::local_lease_outbox::append_lease;
+    use crate::local_lease_outbox::load_lease_chain;
+
+    let temp = TempDir::new().expect("temp dir");
+    let store = opened_store(&temp, 111).await;
+    let lease_id = "lease:bounded-history";
+    let mut transaction = store.pool.begin().await.expect("begin fixture");
+    let mut previous = None;
+    for index in 0..MAX_LEASE_ROWS {
+        let generation = u64::try_from(index / 2 + 1).expect("fixture generation");
+        let state = if index % 2 == 0 {
+            LocalLeaseState::Active
+        } else {
+            LocalLeaseState::Released
+        };
+        previous = Some(
+            append_lease(
+                &mut transaction,
+                lease_id,
+                store.owner_agent_id(),
+                generation,
+                &format!("fence:{generation}"),
+                state,
+                previous.as_ref(),
+                None,
+            )
+            .await
+            .expect("append authentic lease history"),
+        );
+    }
+    transaction.commit().await.expect("commit at limit");
+    let observation = store
+        .inspect_local_lease_head(lease_id)
+        .await
+        .expect("at-limit history");
+    assert_eq!(observation.disposition, LocalLeaseHeadDisposition::Released);
+    assert_eq!(observation.head, previous);
+
+    let generation = u64::try_from(MAX_LEASE_ROWS / 2 + 1).expect("overflow generation");
+    for state in [LocalLeaseState::Active, LocalLeaseState::Released] {
+        let mut transaction = store.pool.begin().await.expect("begin overflow fixture");
+        previous = Some(
+            append_lease(
+                &mut transaction,
+                lease_id,
+                store.owner_agent_id(),
+                generation,
+                &format!("fence:{generation}"),
+                state,
+                previous.as_ref(),
+                None,
+            )
+            .await
+            .expect("append valid overflow rows"),
+        );
+        transaction.commit().await.expect("commit overflow");
+        let error = store
+            .inspect_local_lease_head(lease_id)
+            .await
+            .expect_err("oversized history rejected at 4097 and 4098 rows");
+        assert!(matches!(error, LocalLeaseOutboxError::Corrupt(message)
+            if message == format!("lease journal exceeds {MAX_LEASE_ROWS} rows")));
+    }
+    let mut transaction = store.pool.begin().await.expect("begin shared loader check");
+    let error = load_lease_chain(&mut transaction, lease_id, store.owner_agent_id())
+        .await
+        .expect_err("shared mutation/reopen loader rejects overflow");
+    assert!(matches!(error, LocalLeaseOutboxError::Corrupt(message)
+        if message == format!("lease journal exceeds {MAX_LEASE_ROWS} rows")));
+    transaction.rollback().await.expect("rollback read");
+}

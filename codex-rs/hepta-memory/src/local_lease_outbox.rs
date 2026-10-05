@@ -3487,9 +3487,13 @@ pub(crate) async fn load_lease_chain(
                 lease_expires_at_unix_seconds, previous_sha256, lease_sha256
          FROM cognitive_local_leases
          WHERE lease_id = ?
-         ORDER BY lease_sequence",
+         ORDER BY lease_sequence
+         LIMIT ?",
     )
     .bind(lease_id)
+    // Read one sentinel row beyond the accepted history, never an unbounded
+    // corrupt journal. The overflow check below runs before chain validation.
+    .bind(i64::try_from(MAX_LEASE_ROWS + 1).map_err(|_| corrupt("lease row limit overflow"))?)
     .fetch_all(&mut **transaction)
     .await
     .map_err(crate::cognitive_store::unavailable)?;
