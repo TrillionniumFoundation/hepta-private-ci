@@ -219,7 +219,7 @@ pub fn decide_calibrated_v3(
     Ok(receipt)
 }
 
-fn validate_profile_for_request(
+pub(crate) fn validate_profile_for_request(
     request: &CalibratedDecisionRequestV1,
     profile: &CanonicalPolicyProfileV1,
 ) -> Result<(), QualifiedCalibratedError> {
