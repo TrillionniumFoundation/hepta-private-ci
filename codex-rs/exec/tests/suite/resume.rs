@@ -270,6 +270,7 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
         .codex_home(test.home_path().to_path_buf())
         .build()
         .await?;
+    // Simulate a lost index without invoking hard deletion, whose seal must prevent resurrection.
     let state_db_path = config.sqlite.state_db_path();
     std::fs::remove_file(&state_db_path)?;
     let state_db = init_state_db(&config)
