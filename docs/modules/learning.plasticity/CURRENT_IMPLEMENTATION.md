@@ -128,8 +128,18 @@ the current Running/ready Agentd generation before it reaches the parameter or t
 host entrypoint. There is no public Agentd wire method and no ambient/default writer:
 if the owner is not explicitly attached to `AgentdConfig`, plasticity remains absent.
 
-Immediately before admission, Agentd recomputes the current `ArtifactRegistry` and
-durable learning-ledger heads. Every owner-evidence query binds those heads, the exact
+Immediately before each parameter or topology admission, Agentd authenticates an
+independently supplied artifact CURRENT view and requires its complete snapshot
+receipt to match the frozen generation. `PlasticityCurrentArtifactsV1` is injected
+through `with_current_artifacts`; the native file adapter reads the signed owner
+format using public trust. A changed, unavailable or invalid view permanently
+fences that owner before evidence resolution or proposal writes; rebootstrap with
+a new frozen view is required. The process descriptor requires `artifacts.current`
+with `current_head_path`, registry/scope identity, generation/epoch floors and
+public writer/head signer sets. Legacy descriptors without that independent
+configuration fail with a migration error before creating proposal writers.
+Agentd then computes the frozen `ArtifactRegistry` and durable learning-ledger
+heads from the same generation for evidence resolution. Every owner-evidence query binds those heads, the exact
 artifact/window/dataset context and, for `ParameterSignal`, the actual eligibility,
 modulator, learning-rate and bound values consumed by the generator. The concrete
 resolver verifies `DatasetSnapshotReceiptV3` against the live DurableLedger head and

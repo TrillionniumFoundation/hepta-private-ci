@@ -163,11 +163,12 @@ impl PinnedCognitiveRanker {
             || body_generation == 0
             || selected.manifest.content_digest != model_pin.payload_digest
             || selected.manifest.objective_digest != model_pin.objective_digest
-            || selected.manifest.support_digest != model_pin.dataset_digest
             || selected.manifest.generation != model_pin.generation
         {
             return Err("ranker owner/model pin binding mismatch".to_string());
         }
+        let initial_current = current.current()?;
+        validate_current_dataset_binding(&selected, &model_pin, &initial_current)?;
         let candidate = load_pinned_candidate(snapshot, payload, selected)
             .map_err(|error| error.to_string())?;
         let model = LoadedTabularOperatorV1::from_pinned_payload(candidate.bytes(), &model_pin)
@@ -175,15 +176,18 @@ impl PinnedCognitiveRanker {
         if model.artifact_id() != &candidate.spec().manifest.artifact_id {
             return Err("model identity differs from selected registry artifact".to_string());
         }
+        let mut candidate = RevalidatingCandidate::new(candidate);
+        candidate
+            .with_current(initial_current, |_| ())
+            .map_err(|error| error.to_string())?;
         let value = Self {
             owner,
             body_generation,
             policy_digest: model_pin.payload_digest,
             model,
             current,
-            cache: Mutex::new(Some(RevalidatingCandidate::new(candidate))),
+            cache: Mutex::new(Some(candidate)),
         };
-        value.revalidate()?;
         Ok(value)
     }
 
@@ -207,7 +211,7 @@ impl PinnedCognitiveRanker {
             || selected.manifest.generation != receipt.candidate_generation
             || selected.manifest.content_digest != receipt.candidate_artifact_digest
             || selected.manifest.objective_digest != receipt.objective_digest
-            || selected.manifest.support_digest != receipt.dataset_digest
+            || model_pin.dataset_digest != receipt.dataset_digest
         {
             return Err(
                 "selected ranker does not match independently admitted candidate".to_string(),
@@ -334,6 +338,36 @@ impl PinnedCognitiveRanker {
     }
 }
 
+/// A V1 support digest remains a direct dataset binding. Owner-published V2
+/// indexes instead bind the complete manifest digest, so their real dataset and
+/// sensor provenance must come from the authenticated current admission join.
+fn validate_current_dataset_binding(
+    selected: &PinnedCandidateSpec,
+    model: &TabularPayloadPinV1,
+    current: &VerifiedCurrentRegistryViewV1,
+) -> Result<(), String> {
+    if !current.is_eligible(&selected.manifest.artifact_id) {
+        return Err("ranking artifact is unavailable in the current owner view".to_string());
+    }
+    if let Some(admission) = current.full_admission(&selected.manifest.artifact_id) {
+        let full = &admission.validated_manifest.manifest;
+        if selected.manifest.support_digest != admission.validated_manifest.manifest_digest
+            || !full.source_dataset_digests.contains(&model.dataset_digest)
+            || !full.lineage_digests.contains(&model.sensor_core_digest)
+            || full.compatibility_digest != model.training_profile_digest
+        {
+            return Err("ranking model differs from its authenticated V2 provenance".to_string());
+        }
+    } else if selected.manifest.support_digest != model.dataset_digest {
+        return Err("ranking model has no authenticated V2 dataset admission".to_string());
+    }
+    Ok(())
+}
+
 #[cfg(test)]
 #[path = "cognitive_ranker_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "cognitive_ranker_v2_tests.rs"]
+mod v2_tests;

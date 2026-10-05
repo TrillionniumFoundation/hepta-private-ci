@@ -15,6 +15,9 @@ required_boundary_ids = [
   "agentd_production_operation_runtime",
   "learning_artifact_owner_bootstrap",
   "learning_artifact_owner_restart",
+  "learning_artifact_owner_state_publication",
+  "learning_artifact_owner_withdrawal_bootstrap",
+  "learning_artifact_owner_admission_backfill",
   "learning_artifact_verified_current_view",
   "provider_effect_coordinator",
   "http_provider_effect_adapter",
@@ -520,3 +523,33 @@ definition_path = "codex-rs/hepta-contracts/src/final_use.rs"
 definition_markers = ["pub fn with_verified_effect", "enter_verified_effect", "active_dispatches"]
 product_callers = ["codex-rs/hepta-automation/src/authorized_effect.rs"]
 caller_markers = ["with_verified_effect"]
+
+[[boundary]]
+id = "learning_artifact_owner_state_publication"
+symbol = "LearningArtifactOwnerHost::publish_state_snapshots"
+receiver_type = "LearningArtifactOwnerHost"
+receiver_methods = ["publish_state_snapshots"]
+definition_path = "codex-rs/hepta-learning-artifacts/src/owner_state_publication.rs"
+definition_markers = ["pub(crate) fn publish_state_snapshots", "authenticate_state_checkpoint", "persist_state_witness"]
+product_callers = ["codex-rs/hepta-learning-artifacts/src/owner_state_service.rs"]
+caller_markers = ["pub fn publish_state", "publish_state_snapshots"]
+
+[[boundary]]
+id = "learning_artifact_owner_admission_backfill"
+symbol = "LearningArtifactOwnerHost::backfill_artifact_admission"
+receiver_type = "LearningArtifactOwnerHost"
+receiver_methods = ["backfill_artifact_admission"]
+definition_path = "codex-rs/hepta-learning-artifacts/src/owner_artifact_io.rs"
+definition_markers = ["pub fn backfill_artifact_admission", "recover_registry_by_head", "RegistryDurable"]
+product_callers = ["codex-rs/hepta-learning-artifacts/src/owner_state_service.rs"]
+caller_markers = ["pub fn backfill_artifact_admission", "self.host.backfill_artifact_admission"]
+
+[[boundary]]
+id = "learning_artifact_owner_withdrawal_bootstrap"
+symbol = "LearningArtifactOwnerHost::publish_bootstrap_withdrawal"
+receiver_type = "LearningArtifactOwnerHost"
+receiver_methods = ["publish_bootstrap_withdrawal"]
+definition_path = "codex-rs/hepta-learning-artifacts/src/owner_withdrawal_bootstrap.rs"
+definition_markers = ["pub(crate) fn publish_bootstrap_withdrawal", "verify_bootstrap_authorization", "write_create_only_or_exact"]
+product_callers = ["codex-rs/hepta-learning-artifacts/src/owner_withdrawal_bootstrap_service.rs"]
+caller_markers = ["pub fn publish_withdrawal_bootstrap", "publish_bootstrap_withdrawal"]

@@ -5,16 +5,23 @@
 //! prove that the supplied snapshot is the latest revocation view. See
 //! `../PINNED_LOAD.md` for the host obligations.
 
+use std::collections::BTreeMap;
+use std::collections::BTreeSet;
 use std::error::Error;
 use std::fmt;
 use std::fs::File;
 
 use codex_hepta_types::Digest32;
+use codex_hepta_types::StableId;
 
 use crate::ArtifactManifest;
 use crate::ArtifactRegistry;
 use crate::ArtifactStorageError;
+use crate::DatasetWithdrawalRegistry;
 use crate::RegistrySnapshotReceipt;
+use crate::WithdrawalBoundArtifactAdmissionV3;
+use crate::admission_closure::ArtifactAdmissionClosureError;
+use crate::admission_closure::eligible_admission_closure;
 use crate::read_candidate_payload;
 use crate::read_registry_snapshot;
 
@@ -139,6 +146,9 @@ pub struct VerifiedCurrentRegistryViewV1 {
     registry: ArtifactRegistry,
     witness_digest: Digest32,
     trust_digest: Digest32,
+    admissions: Option<BTreeMap<StableId, WithdrawalBoundArtifactAdmissionV3>>,
+    eligible: Option<BTreeSet<StableId>>,
+    verified_at: Option<u64>,
 }
 
 impl VerifiedCurrentRegistryViewV1 {
@@ -153,7 +163,80 @@ impl VerifiedCurrentRegistryViewV1 {
             registry,
             witness_digest,
             trust_digest,
+            admissions: None,
+            eligible: None,
+            verified_at: None,
         }
+    }
+
+    pub(crate) fn with_admission_closure(
+        mut self,
+        admissions: Vec<WithdrawalBoundArtifactAdmissionV3>,
+        withdrawals: &DatasetWithdrawalRegistry,
+        now: u64,
+    ) -> Result<Self, ArtifactAdmissionClosureError> {
+        self.eligible = Some(eligible_admission_closure(
+            &self.registry,
+            &admissions,
+            withdrawals,
+            now,
+        )?);
+        self.verified_at = Some(now);
+        self.admissions = Some(
+            admissions
+                .into_iter()
+                .map(|admission| {
+                    (
+                        admission.validated_manifest.manifest.artifact_id.clone(),
+                        admission,
+                    )
+                })
+                .collect(),
+        );
+        Ok(self)
+    }
+
+    /// Full provenance is available only when the owner joined independently
+    /// bound V3 sidecars. Compatibility snapshot verification alone supplies no
+    /// source-dataset or expiry evidence.
+    #[must_use]
+    pub fn full_admission(
+        &self,
+        artifact_id: &StableId,
+    ) -> Option<&WithdrawalBoundArtifactAdmissionV3> {
+        self.admissions.as_ref()?.get(artifact_id)
+    }
+
+    /// Logical time used for the full closure join. APIs accepting a separate
+    /// use time must require an exact match before relying on ancestor expiry.
+    #[must_use]
+    pub const fn verified_at(&self) -> Option<u64> {
+        self.verified_at
+    }
+
+    /// Check scope and the actual chain prefix of a previously accepted,
+    /// nonempty snapshot. A newer record count alone does not exclude a fork.
+    #[must_use]
+    pub fn extends(&self, previous: RegistrySnapshotReceipt) -> bool {
+        self.receipt.binding == previous.binding
+            && self.receipt.records >= previous.records
+            && previous.records > 0
+            && self
+                .registry
+                .records()
+                .get(previous.records - 1)
+                .is_some_and(|record| record.chain_digest == previous.head_digest)
+    }
+
+    /// Eligibility includes full V2 sources, all parents and expiry when the
+    /// owner attached the durable admission closure.
+    #[must_use]
+    pub fn is_eligible(&self, artifact_id: &StableId) -> bool {
+        self.registry.is_eligible(artifact_id)
+            && self
+                .eligible
+                .as_ref()
+                .is_none_or(|eligible| eligible.contains(artifact_id))
     }
 
     #[must_use]
@@ -191,12 +274,15 @@ impl fmt::Debug for VerifiedCurrentRegistryViewV1 {
 /// registry views. This is not selection authority. A trusted artifact CURRENT
 /// service must issue a verified view before *each* use.
 ///
-/// Any refresh failure permanently closes this consumer, including I/O errors.
-/// The host must explicitly reload; an old backup cannot revive the cache.
+/// Any rejected `with_current` refresh permanently closes this consumer.
+/// If obtaining an authenticated view fails before that call, the host must
+/// discard this consumer too; an old backup cannot revive a closed cache.
 #[derive(Debug)]
 pub struct RevalidatingCandidate {
     candidate: LoadedPinnedCandidate,
     unavailable: bool,
+    owner_trust_digest: Option<Digest32>,
+    requires_full_admission: bool,
 }
 
 impl RevalidatingCandidate {
@@ -205,7 +291,26 @@ impl RevalidatingCandidate {
         Self {
             candidate,
             unavailable: false,
+            owner_trust_digest: None,
+            requires_full_admission: false,
         }
+    }
+
+    pub(crate) const fn new_with_trust(
+        candidate: LoadedPinnedCandidate,
+        owner_trust_digest: Digest32,
+    ) -> Self {
+        Self {
+            candidate,
+            unavailable: false,
+            owner_trust_digest: Some(owner_trust_digest),
+            requires_full_admission: false,
+        }
+    }
+
+    pub(crate) const fn require_full_admission(mut self) -> Self {
+        self.requires_full_admission = true;
+        self
     }
 
     #[must_use]
@@ -223,6 +328,29 @@ impl RevalidatingCandidate {
         current: VerifiedCurrentRegistryViewV1,
         consume: impl FnOnce(&[u8]) -> T,
     ) -> Result<T, PinnedCandidateLoadError> {
+        if self.unavailable {
+            return Err(PinnedCandidateLoadError::Unavailable);
+        }
+        if self
+            .owner_trust_digest
+            .is_some_and(|trust| trust != current.trust_digest)
+        {
+            self.unavailable = true;
+            return Err(PinnedCandidateLoadError::FrontierMismatch);
+        }
+        let has_full_admission = current
+            .full_admission(&self.candidate.spec.manifest.artifact_id)
+            .is_some();
+        if self.requires_full_admission && !has_full_admission {
+            self.unavailable = true;
+            return Err(PinnedCandidateLoadError::Ineligible);
+        }
+        if !current.is_eligible(&self.candidate.spec.manifest.artifact_id) {
+            self.unavailable = true;
+            return Err(PinnedCandidateLoadError::Ineligible);
+        }
+        self.owner_trust_digest = Some(current.trust_digest);
+        self.requires_full_admission |= has_full_admission;
         self.with_verified_registry(current.receipt, current.registry, consume)
     }
 
@@ -276,15 +404,8 @@ impl RevalidatingCandidate {
         if self.unavailable {
             return Err(PinnedCandidateLoadError::Unavailable);
         }
-        // Mirror a host that removes its cache before acquiring the verified
-        // current view: acquisition errors must not leave a usable backup.
-        let registry = match read_registry_snapshot(snapshot, current) {
-            Ok(registry) => registry,
-            Err(error) => {
-                self.unavailable = true;
-                return Err(error.into());
-            }
-        };
+        let registry =
+            read_registry_snapshot(snapshot, current).inspect_err(|_| self.unavailable = true)?;
         self.with_verified_registry(current, registry, consume)
     }
 }

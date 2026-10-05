@@ -8,9 +8,10 @@ promotion or release authority.
 ## Compatibility and authority boundary
 
 The stable V1 `ArtifactRegistry`, payload files, registry snapshots and pinned
-loader remain readable. The additive V2/V3 layers make complete provenance,
-withdrawal scope and publication ordering explicit without reinterpreting
-historical V1 files.
+loader remain readable through explicit compatibility APIs. The additive V2/V3
+layers persist complete provenance and join it to strict CURRENT reads without
+reinterpreting historical V1 files. Missing sidecars require exact backfill; they
+never imply dataset independence or an empty parent set.
 
 The crate owns no product signing key, selector private key, sandbox executor,
 merge authority or release authority. It does own bounded verification of an
@@ -41,7 +42,14 @@ flattened into one V1 predecessor.
 | read exact pinned candidate | `load_pinned_candidate` | `src/pinned.rs` | retained |
 | revalidate cached consumer at a newer head | `RevalidatingCandidate::with_current` | `src/pinned.rs` | retained |
 | issue opaque authenticated CURRENT registry view | `ArtifactOwnerVerifierV1::verify_current_registry_view` / `LearningArtifactOwnerHost::current_registry_view` | `src/owner_host.rs` | implemented |
+| issue strict CURRENT with complete source/parent/expiry closure | `ArtifactOwnerVerifierV1::verify_current_registry_view_with_admission_closure` | `src/verified_admissions.rs` / `src/admission_closure.rs` | implemented source |
+| persist/read complete V3 admission sidecar | `write_artifact_admission_snapshot_beneath` / `read_artifact_admission_snapshot_bound` | `src/admission_storage.rs` | implemented source |
+| join original checkpoints and exact V1 projection to sidecars | `LearningArtifactOwnerHost::load_admissions_for_registry` | `src/owner_artifact_io.rs` | implemented source |
+| exact historical admission backfill | `LearningArtifactOwnerHost::backfill_artifact_admission` | `src/owner_artifact_io.rs` | implemented source |
 | named product CURRENT/publication service | `LearningArtifactOwnerService::current_registry_view` / `publish` | `src/owner_service.rs` | product-composed source |
+| independent CURRENT and withdrawal restart floors | `LearningArtifactOwnerService::open_v2` / `LearningArtifactOwnerServiceConfigV2` | `src/owner_state_service.rs` | product-composed source |
+| durably publish withdrawal, revoke and quarantine | `LearningArtifactOwnerService::prepare_state_registry` / `publish_state` | `src/owner_state_service.rs` / `src/owner_state_publication.rs` | product-composed source |
+| publish fenced withdrawal/revoke/quarantine state | `LearningArtifactStatePublishRequestV1` / `ArtifactOwnerStateTransitionV1` | `src/owner_state.rs` / `src/owner_state_storage.rs` | implemented source saga |
 | verify selector trust independently of artifact-owner keys | `ArtifactSelectionVerifierV1::verify` | `src/selection.rs` | implemented |
 | bind verified selector evidence to selected lifecycle transition | `record_verified_selection` | `src/selection.rs` | implemented |
 | load exact independently selected immutable candidate | `load_selected_candidate` | `src/selection.rs` | qualification-composed source |
@@ -92,11 +100,15 @@ not own private signing keys.
 
 `Prepared -> PayloadDurable -> RegistryDurable -> WitnessDurable -> Acknowledged`.
 
-It stores the complete V3 admission as the authoritative V2 sidecar. When the
-V1 registry becomes durable, the transaction verifies only fields that V1 can
-faithfully represent: artifact identity, kind, generation, payload digest,
-producer, compatibility digest and exact byte count. Multiple V2 datasets,
-lineage digests and predecessor IDs are **not** collapsed into V1 fields.
+The owner stores the complete V3 admission as an immutable `HEPTAA03` file at
+`admissions/{manifest_digest}.admission`. Its storage binding, withdrawal scope,
+manifest and admission digests independently pin every canonical field. The
+original publication checkpoint supplies the admission pin matched to the
+registration intent; `support_digest` supplies the manifest pin. The owner's
+strict projection check covers artifact identity, kind, generation, parent
+projection, payload/objective/support digests, producer, compatibility and exact
+byte count. Multiple V2 datasets, lineage digests and predecessor IDs remain in
+the complete sidecar.
 
 The exact V1 registry snapshot receipt and independently validated head-witness
 receipt are then bound into the transaction state digest. Registry durability,
@@ -109,6 +121,34 @@ state as a deny-all observation surface for service/admin tooling.
 The host must durably persist each transaction snapshot under its writer fence
 before treating that phase as durable. This is an ordered crash-recovery
 protocol, not a claim of a cross-file atomic filesystem transaction.
+
+`owner_state.rs` and `owner_state_storage.rs` apply the additive restriction saga
+`Prepared -> SnapshotsDurable -> WitnessDurable -> Acknowledged`. The request
+binds both predecessor frontiers and the signed successor head. Durable registry
+and withdrawal snapshots precede CURRENT and acknowledgement, with exact retry
+and restart recovery under the original operation. The service fences unrelated
+operations during recovery instead of reclassifying a partial write as success.
+
+## Strict read and compatibility migration
+
+`verified_admissions.rs` composes authenticated CURRENT with every durable V3
+admission and an independently authenticated withdrawal frontier.
+`admission_closure.rs` verifies earlier compatible parents, increasing generations,
+matching kind/objective and complete sidecar coverage. It computes eligibility
+from current candidate state, manifest expiry, every dataset source and all parents.
+Historical sidecars are checked at admission time; expiry at use time makes the
+candidate unavailable without destroying its readable evidence.
+
+The opaque current view exposes `full_admission`, `is_eligible` and strict
+`verified_at`. Cached consumers retain exact chain-prefix continuity and cannot
+downgrade from a complete-provenance view to a V1-only view. The selected loader
+also preserves its owner trust and original strictness. A V1-only view remains an
+explicit compatibility surface with narrower evidence.
+
+Legacy owner stores must supply the original exact admission to
+`backfill_artifact_admission`; the owner matches its checkpoint, scope/head and
+projection before creating immutable bytes. No migration may guess missing
+datasets, remove parents or relabel an expired/revoked artifact as current.
 
 ## Lifecycle recovery
 
@@ -145,15 +185,20 @@ Artifact-registry, withdrawal and lifecycle state machines share
 `MAX_DURABLE_ARTIFACT_RECORDS = 4096`. This aligns logical record acceptance
 with the supported bounded snapshot adapters. Candidate payloads remain bounded
 at 64 MiB; the V1 registry and auxiliary canonical snapshots are bounded.
+Complete admission sidecars have a 128 KiB ceiling, 128-byte field lines and the
+same V2 64/1,024/64 collection limits checked before allocation.
 
 The contained writer APIs reject absolute paths, `..`, non-normal components
 and symlink ancestors below a canonical host-designated trusted root. They also
 perform semantic validation before final-path creation, preventing ordinary
 validation failures from leaving zero-length final-path orphans.
 
-The owner host now performs bounded signed CURRENT discovery and exclusive writer
-fencing. The deployment host still owns concurrent hostile ancestor protection,
-parent-directory sync, external newest-head distribution, retention, backup
+The owner host performs bounded signed CURRENT discovery, exclusive writer
+fencing and Unix file/containing-directory synchronization, including the startup
+directory layout. Direct low-level adapters retain caller directory durability;
+other platforms require target-host composition and qualification. The deployment
+host still owns concurrent hostile ancestor protection, external newest-head
+distribution, retention, backup
 restore policy, indeterminate-write reconciliation and actual process loading.
 Standard-library path checks are not an `openat2` directory capability.
 
@@ -167,6 +212,7 @@ Focused coverage includes:
 - `src/dataset_revocation_tests.rs`;
 - `src/closure_v2_tests.rs`;
 - `src/admission_v3.rs` tests;
+- `src/admission_storage_tests.rs`, `src/admission_closure_tests.rs` and strict-view consumer regressions;
 - `src/lifecycle_journal.rs` tests;
 - `src/durable_snapshots.rs` tests;
 - `src/publication.rs` tests;
