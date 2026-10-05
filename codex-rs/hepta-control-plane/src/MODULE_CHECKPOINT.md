@@ -48,6 +48,15 @@ stateful restoration retains its original bytes and generations, while rollback
 still requires the current owner's real state-preserving handoff. The stateless
 emergency rollback and its full-capacity checkpoint remain supported.
 
+The `fixtures/legacy_*_predecessor_no_handoff_v1.bin` negative fixtures were
+captured through the public registry API from checkpoint tree
+`de89aebb9ee9d4fd4ffaf112df3900004a4c7916` (published `e76b8977`, local
+`555dfd4a`). Its successor-only validation genuinely admitted these invalid
+histories. Fixed original roots exercise structural rejection for stateful,
+externally stateful, domain-owning and effectful predecessors retired by empty
+stateless successors without handoff evidence. They do not authenticate a
+caller's root. The byte schema and original PR1303 fixtures remain unchanged.
+
 The preimage starts with ASCII `hepta.runtime-module-registry-checkpoint.v1` and
 NUL. Counts, UTF-8 ID byte lengths and generations are big-endian u64. Digests
 are 32 raw bytes; option tags are 0/1 followed by the value when present. Each

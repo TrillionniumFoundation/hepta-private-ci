@@ -298,3 +298,6 @@ mod wire_tests;
 
 #[path = "module_runtime_checkpoint_handoff_tests.rs"]
 mod handoff_tests;
+
+#[path = "module_runtime_checkpoint_legacy_tests.rs"]
+mod legacy_tests;
