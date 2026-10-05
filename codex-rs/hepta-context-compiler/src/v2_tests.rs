@@ -833,8 +833,10 @@ fn provider_receipt_bound_to_exact_payload_and_pre_dispatch_witness_creates_deli
 
     let delivery = observe_delivery(
         &preparation,
-        &attachment,
-        &serialization,
+        ContextDeliveryArtifactsV2 {
+            attachment: &attachment,
+            serialization: &serialization,
+        },
         &profile(),
         id("delivery:1"),
         &provider,
@@ -926,8 +928,10 @@ fn provider_owned_attempt_witness_is_authenticated_by_delivery_verifier() {
 
     let delivery = observe_delivery(
         &preparation,
-        &attachment,
-        &serialization,
+        ContextDeliveryArtifactsV2 {
+            attachment: &attachment,
+            serialization: &serialization,
+        },
         &profile(),
         id("delivery:1"),
         &provider,
@@ -993,8 +997,10 @@ fn provider_payload_binding_must_match_exact_serialized_payload() {
     assert_eq!(
         observe_delivery(
             &preparation,
-            &attachment,
-            &serialization,
+            ContextDeliveryArtifactsV2 {
+                attachment: &attachment,
+                serialization: &serialization
+            },
             &profile(),
             id("delivery:1"),
             &provider,
@@ -1056,8 +1062,10 @@ fn provider_input_witness_must_bind_current_pre_dispatch_revalidation() {
     assert_eq!(
         observe_delivery(
             &preparation,
-            &attachment,
-            &serialization,
+            ContextDeliveryArtifactsV2 {
+                attachment: &attachment,
+                serialization: &serialization
+            },
             &profile(),
             id("delivery:1"),
             &provider,
@@ -1121,8 +1129,10 @@ fn provider_and_model_identity_must_match_exact_model_profile() {
     assert_eq!(
         observe_delivery(
             &preparation,
-            &attachment,
-            &serialization,
+            ContextDeliveryArtifactsV2 {
+                attachment: &attachment,
+                serialization: &serialization
+            },
             &profile(),
             id("delivery:1"),
             &provider,
@@ -1189,8 +1199,10 @@ fn independent_provider_evidence_verifier_is_required() {
     assert!(matches!(
         observe_delivery(
             &preparation,
-            &attachment,
-            &serialization,
+            ContextDeliveryArtifactsV2 {
+                attachment: &attachment,
+                serialization: &serialization
+            },
             &profile(),
             id("delivery:1"),
             &provider,
@@ -1346,8 +1358,10 @@ fn indeterminate_provider_terminal_remains_indeterminate() {
 
     let delivery = observe_delivery(
         &preparation,
-        &attachment,
-        &serialization,
+        ContextDeliveryArtifactsV2 {
+            attachment: &attachment,
+            serialization: &serialization,
+        },
         &profile(),
         id("delivery:1"),
         &provider,

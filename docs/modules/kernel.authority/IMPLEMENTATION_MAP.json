@@ -2,9 +2,11 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "05b8bcdc02919ce10a8451d6402de8dd29d6e9ff",
-    "tree": "f9737e2d6c420d94b14aa3dcdb021e58d49ecfe7"
+    "commit": "5992ae29f355454c1a17ce6428d536b186fe6902",
+    "tree": "f3824d4f38193ed84c6d1f98104cba1a33a4091e"
   },
+  "mappingSourceIdentityMode": "path_only",
+  "exactSourceEvidenceMode": "lane_a_runtime_wiring_only_no_product_execution_claim",
   "laneId": "LANE-A-FOUNDATION",
   "module": "kernel.authority",
   "owner": "security-authority",
@@ -18,163 +20,280 @@
   ],
   "sourceRootPresent": true,
   "productionImplementation": false,
-  "productCallerState": "source_composed_runtime_fleet_registered_bao_host_and_agentd_browser_not_product_activated",
-  "productionWriterState": "authority_owner_source_implemented_not_activated",
+  "productCallerState": "fleet-browser-agentd-bao-source-composition-not-qualified-or-activated",
+  "productionWriterState": "existing-authority-and-taskflow-owners-no-replacement-owner",
   "operations": [
     {
-      "operation": "finaluseauthority",
-      "nativeSymbol": "FinalUseAuthority",
-      "sourcePath": "codex-rs/hepta-contracts/src/final_use.rs",
-      "state": "source_implemented_registered_host_not_product_activated",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-contracts/src/final_use_tests.rs",
-        "codex-rs/hepta-contracts/tests/final_use_linearization.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "claim_deliver_dispatch_external_trust_and_epoch_issuer_rotation",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "store",
-      "nativeSymbol": "Store",
-      "sourcePath": "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "state": "source_implemented_not_product_activated",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-contracts/src/final_use_tests.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "store",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
       "operation": "authority_lease_registry",
-      "nativeSymbol": "AuthorityLeaseRegistry / AuthorityLeaseVerifier",
+      "nativeSymbol": "AuthorityLeaseRegistry::put_lease",
       "sourcePath": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "state": "source_implemented_least_authority_handles_retired_revision_lineage_not_product_activated",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-contracts/src/authority_lease.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "put_verify_revoke_prune_with_retired_revision_lineage_epoch_authority_lease",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "final_use_approval_verifier",
-      "nativeSymbol": "FinalUseApprovalVerifier",
-      "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "state": "source_implemented_registered_host_not_product_activated",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-contracts/src/final_use_control.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "independent_final_use_approval_with_epoch_key_rotation",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "final_use_revocation_feed_verifier",
-      "nativeSymbol": "FinalUseRevocationFeedVerifier",
-      "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "state": "source_implemented_registered_host_not_product_activated",
-      "authority": "none",
-      "tests": [
-        "codex-rs/hepta-contracts/src/final_use_control.rs"
-      ],
-      "sourcePathExists": true,
-      "designOperation": "authenticated_fresh_revocation_ingestion_with_epoch_key_rotation",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
-    },
-    {
-      "operation": "authority_external_trust",
-      "nativeSymbol": "AuthorityClock / AuthorityFrontierStore",
-      "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
-      "state": "source_interface_implemented_external_backend_not_selected",
-      "authority": "none",
+      "state": "source_implemented_native_execution_pending_not_product_activated",
+      "authority": "security-authority",
       "tests": [
         "codex-rs/hepta-contracts/src/authority_lease.rs",
-        "codex-rs/hepta-contracts/src/final_use_tests.rs"
+        "codex-rs/hepta-fleet/src/authority_port.rs"
       ],
-      "sourcePathExists": true,
-      "designOperation": "trusted_time_and_external_anti_rollback_frontier",
-      "mappingClass": "owner_native_interface",
-      "delegatedCallees": []
+      "designOperation": "put_verify_revoke_prune_advance_epoch_with_interval_time_and_retired_identity_lineage",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
-      "operation": "final_use_revocation_convergence",
-      "nativeSymbol": "FinalUseRevocationConvergenceVerifier",
-      "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "state": "source_implemented_transport_external",
-      "authority": "none",
+      "operation": "authority_dispatch_binding",
+      "nativeSymbol": "AuthorityLeaseVerifier::bind_dispatch",
+      "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "state": "source_implemented_native_execution_pending_not_product_activated",
+      "authority": "security-authority",
       "tests": [
-        "codex-rs/hepta-contracts/src/final_use_control.rs"
+        "qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json",
+        "qa/b4-no-bypass/test_kernel_authority_extension_api.py",
+        "codex-rs/hepta-fleet/src/authority_port.rs"
       ],
-      "sourcePathExists": true,
-      "designOperation": "verify_enrolled_node_revocation_convergence",
-      "mappingClass": "owner_native_verifier",
-      "delegatedCallees": []
+      "designOperation": "bind_exact_lease_and_consume_at_irreversible_boundary",
+      "mappingClass": "owner_native_capability",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
-      "operation": "verified_use_witness_v1",
-      "nativeSymbol": "VerifiedUseTokenWitnessV1",
+      "operation": "final_use_authority",
+      "nativeSymbol": "FinalUseAuthority::with_verified_use",
+      "sourcePath": "codex-rs/hepta-contracts/src/final_use.rs",
+      "state": "source_implemented_native_execution_pending_not_product_activated",
+      "authority": "security-authority",
+      "tests": [
+        "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "codex-rs/hepta-contracts/src/final_use_time_tests.rs",
+        "codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+        "codex-rs/hepta-contracts/src/authority_trust_tests.rs",
+        "codex-rs/hepta-contracts/tests/final_use_linearization.rs",
+        "codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs"
+      ],
+      "designOperation": "claim_interval_final_entry_durable_pending_v4_exact_frontier_recovery",
+      "mappingClass": "owner_native",
+      "delegatedCallees": [
+        "codex-rs/hepta-contracts/src/final_use_store.rs",
+        "codex-rs/hepta-contracts/src/authority_trust.rs"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "final_use_control",
+      "nativeSymbol": "FinalUseRevocationConvergenceVerifier::verify",
+      "sourcePath": "codex-rs/hepta-contracts/src/final_use_control.rs",
+      "state": "source_implemented_native_execution_pending_not_product_activated",
+      "authority": "security-authority",
+      "tests": [
+        "codex-rs/hepta-contracts/src/final_use_control.rs",
+        "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "codex-rs/hepta-contracts/src/authority_trust_tests.rs"
+      ],
+      "designOperation": "verify_independent_approval_signed_feed_and_receipt_bound_convergence",
+      "mappingClass": "owner_native_verifier",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "production_trust_bundle",
+      "nativeSymbol": "ProductionAuthorityTrustBundle::new",
+      "sourcePath": "codex-rs/hepta-contracts/src/authority_trust.rs",
+      "state": "source_implemented_native_execution_pending_not_product_activated",
+      "authority": "security-authority",
+      "tests": [
+        "codex-rs/hepta-contracts/src/authority_trust_tests.rs",
+        "codex-rs/hepta-contracts/src/authority_runtime_clock.rs",
+        "codex-rs/hepta-agentd/src/authority_trust_host.rs"
+      ],
+      "designOperation": "retain_live_custody_generation_and_clock_uncertainty_after_production_open",
+      "mappingClass": "owner_native_trust_contract",
+      "delegatedCallees": [
+        "codex-rs/hepta-contracts/src/authority_runtime_clock.rs"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "verified_use_witness",
+      "nativeSymbol": "VerifiedUseTokenWitnessV1::validate",
       "sourcePath": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
-      "state": "source_implemented_non_authorizing_evidence_not_product_consumed",
+      "state": "source_implemented_native_execution_pending_not_product_activated",
       "authority": "none",
       "tests": [
         "codex-rs/hepta-contracts/src/final_use_tests.rs",
-        "codex-rs/hepta-contracts/src/authority_lease.rs"
+        "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+        "codex-rs/hepta-automation/tests/authorized_effect.rs"
       ],
-      "sourcePathExists": true,
-      "designOperation": "serialize_consumer_entry_or_dispatch_linearization_evidence",
+      "designOperation": "serialize_non_authorizing_entry_evidence_before_provider_contact",
       "mappingClass": "owner_native_evidence",
-      "delegatedCallees": []
+      "delegatedCallees": [],
+      "sourcePathExists": true
     },
     {
-      "operation": "verified_use_token_witness_v1",
-      "nativeSymbol": "VerifiedUseTokenWitnessV1",
-      "sourcePath": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
-      "state": "source_implemented_evidence_projection_not_authorization",
+      "operation": "agentd_external_trust_host",
+      "nativeSymbol": "AgentdFinalUseTrustStore::open",
+      "sourcePath": "codex-rs/hepta-agentd/src/authority_trust_host.rs",
+      "state": "local_host_source_implemented_not_independently_attested",
+      "authority": "automation.taskflow",
+      "tests": [
+        "codex-rs/hepta-agentd/src/authority_trust_host.rs"
+      ],
+      "designOperation": "persist_clock_floor_and_local_external_to_agent_home_frontier",
+      "mappingClass": "product_host_adapter",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "agentd_effect_owner",
+      "nativeSymbol": "AgentdAutomationEffectHost::execute",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "state": "source_implemented_native_execution_pending_not_product_activated",
+      "authority": "automation.taskflow",
+      "tests": [
+        "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
+        "codex-rs/hepta-agentd/src/authority_feed_clock.rs",
+        "codex-rs/hepta-agentd/src/authority_effect_tasks.rs",
+        "codex-rs/hepta-automation/tests/authorized_effect.rs",
+        "qualification/kernel-authority/owner_runtime_qualification.py",
+        "qualification/kernel-authority/test_owner_runtime_qualification.py"
+      ],
+      "designOperation": "bounded_owned_async_tasks_fresh_feed_historical_provider_keys_reserve_shutdown_and_reconciliation",
+      "mappingClass": "product_effect_owner",
+      "delegatedCallees": [
+        "codex-rs/hepta-agentd/src/authority_feed_clock.rs",
+        "codex-rs/hepta-agentd/src/authority_effect_tasks.rs",
+        "codex-rs/hepta-automation/src/authorized_effect.rs"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "candidate_product_pilot",
+      "nativeSymbol": "pilot",
+      "sourcePath": "qualification/kernel-authority/runtime_qualification.py",
+      "state": "source_implemented_native_execution_pending_not_product_activated",
       "authority": "none",
       "tests": [
-        "codex-rs/hepta-contracts/src/verified_use_witness.rs"
+        "codex-rs/hepta-fleet/src/authority_port.rs",
+        "codex-rs/hepta-agentd/src/browser_servo.rs",
+        "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
+        "codex-rs/hepta-agentd/src/authority_trust_host.rs",
+        "codex-rs/hepta-contracts/src/final_use_tests.rs",
+        "codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs",
+        "qualification/kernel-authority/test_runtime_qualification.py",
+        "qualification/kernel-authority/test_pilot_execution.py"
       ],
-      "sourcePathExists": true,
-      "designOperation": "decision_and_audit_projection",
-      "mappingClass": "owner_native",
-      "delegatedCallees": []
+      "designOperation": "require_exact_executed_product_case_identities_not_exit_code_only",
+      "mappingClass": "qualification_harness",
+      "delegatedCallees": [
+        "qualification/kernel-authority/pilot_execution.py"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "owned_effect_runtime_qualification",
+      "nativeSymbol": "main",
+      "sourcePath": "qualification/kernel-authority/owner_runtime_qualification.py",
+      "state": "source_implemented_native_execution_pending_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "codex-rs/hepta-agentd/src/authority_effect_tasks.rs",
+        "qualification/kernel-authority/test_owner_runtime_qualification.py"
+      ],
+      "designOperation": "require_exact_bounded_owner_cancellation_progress_panic_and_shutdown_test_identities",
+      "mappingClass": "qualification_harness",
+      "delegatedCallees": [
+        "qualification/kernel-authority/pilot_execution.py",
+        "qualification/kernel-authority/runtime_qualification.py"
+      ],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "performance_qualification",
+      "nativeSymbol": "qualification_benchmark_emits_machine_receipt",
+      "sourcePath": "codex-rs/hepta-contracts/tests/kernel_authority_benchmark.rs",
+      "state": "limited_repository_benchmark_defined_full_target_matrix_execution_open",
+      "authority": "none",
+      "tests": [
+        "qualification/kernel-authority/runtime_qualification.py",
+        "qualification/kernel-authority/test_runtime_qualification.py"
+      ],
+      "designOperation": "measure_existing_four_operation_source_benchmark_not_target_55_row_matrix",
+      "mappingClass": "qualification_benchmark",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "capacity_matrix_collection",
+      "nativeSymbol": "main",
+      "sourcePath": "qualification/kernel-authority/capacity_matrix.py",
+      "state": "strict_target_collector_source_implemented_real_target_execution_pending",
+      "authority": "none",
+      "tests": [
+        "qualification/kernel-authority/test_capacity_matrix.py",
+        "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md"
+      ],
+      "designOperation": "collect_exact_5x11_fault_reserve_and_history_diagnostics_without_self_grant",
+      "mappingClass": "qualification_collector",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "storage_scaling_model",
+      "nativeSymbol": "main",
+      "sourcePath": "qualification/kernel-authority/storage_model.py",
+      "state": "executable_reference_model_only_not_runtime_implementation",
+      "authority": "none",
+      "tests": [
+        "qualification/kernel-authority/runtime_qualification.py",
+        "qualification/kernel-authority/test_runtime_qualification.py",
+        "qualification/kernel-authority/test_storage_model.py"
+      ],
+      "designOperation": "model_hash_chained_wal_checkpoint_sharding_and_lifetime",
+      "mappingClass": "non_authorizing_reference_model",
+      "delegatedCallees": [],
+      "sourcePathExists": true
+    },
+    {
+      "operation": "native_quality_evidence",
+      "nativeSymbol": "main",
+      "sourcePath": "qualification/kernel-authority/run_native_checks.py",
+      "state": "source_implemented_native_execution_pending_not_product_activated",
+      "authority": "none",
+      "tests": [
+        "qualification/kernel-authority/test_native_checks.py",
+        "qualification/kernel-authority/test_workflow_coverage.py"
+      ],
+      "designOperation": "retain_all_target_checks_tests_lint_format_and_source_drift_logs_for_one_candidate",
+      "mappingClass": "qualification_harness",
+      "delegatedCallees": [],
+      "sourcePathExists": true
     }
   ],
   "repositoryControlledGaps": [
-    "Select and qualify a named product-process caller for the registered Bao final-use host before activation.",
-    "Retain current exact-head and deterministic synthetic-merge execution receipts after the hardened authority changes.",
-    "Compose remaining target-only ModulePorts only when their real owner exposes one canonical authority reference/revision; do not create ad-hoc double-authority wrappers.",
-    "Obtain exact-head and deterministic synthetic-merge execution receipts for the current-main closure candidate.",
-    "Compose each remaining target kernel.authority ModulePort only at its real owner boundary; runtime.fleet is now source-composed, while the remaining target-only ports are enumerated in TRACEABILITY.md."
+    "Obtain successful exact-candidate formatting, all-target compilation, package tests, strict Clippy and two-product-process recovery after the clock/evidence changes in REMEDIATION_20260929.md; Python parser success is not native execution.",
+    "Wire selected real production trust providers into normal Agentd and Fleet bootstrap without falling back to local compatibility trust.",
+    "Execute normal two-process cold-start recovery and preserve nonce, pending revocation, attempt identity and provider-owned terminal evidence.",
+    "Execute the complete 55-row target-host matrix, eight fault cuts, reserve observation and history-sensitive diagnostics through a selected real driver; the collector self-test is synthetic only.",
+    "Use measured frontier hashing, lease image clone/serialization, clock-floor persistence and restart costs before adopting an incremental digest/checkpoint runtime design.",
+    "Complete the remaining target-only generic-authority consumer ports without relabelling independent owner protocols.",
+    "Retain exact candidate, commands, logs, artifacts and the complete executed test set; queued, missing, ignored and zero-test runs are not success."
   ],
   "externalEvidenceGates": [
-    "deployed fleet revocation wire fanout and measured convergence/freshness latency qualification; repository admission/convergence semantics are implemented in runtime.fleet",
-    "protected production AuthorityFrontierStore backend qualification",
-    "attested or otherwise independently protected AuthorityClock qualification",
-    "HSM/KMS key custody, staged rotation and compromise-response ceremony",
-    "independent semantic review",
-    "operator acceptance, canary, promotion and release"
+    "independently protected or attested time source and measured maximum uncertainty",
+    "rollback-independent linearizable frontier backend plus snapshot and disaster-recovery drill",
+    "KMS or HSM custody for issuer approval and revocation roles with real rotation and compromise-response evidence",
+    "deployed revocation fanout under delay partition restart and recovery",
+    "target filesystem mount backup boot rollback and provider failure qualification",
+    "approved target-host performance budgets and complete real capacity measurements",
+    "independent semantic/operator acceptance and verifier-only topology evidence",
+    "operator canary promotion and release authorization"
   ],
   "claimBoundary": {
     "nativeSourceMappingComplete": true,
     "sourceRootPresent": true,
+    "implementedOperationMappingComplete": true,
     "productionImplementation": false,
     "productExecutionProved": false,
     "independentAcceptance": false,
     "activation": false,
-    "release": false,
-    "implementedOperationMappingComplete": true
+    "release": false
   },
   "sourceRoot": [
     "codex-rs/hepta-contracts"
@@ -183,15 +302,40 @@
   "trustDecision": "docs/modules/kernel.authority/ADR-0001-LEASE-TRUST-MODEL.md",
   "linearizationContract": "docs/modules/kernel.authority/LINEARIZATION.md",
   "productionTrustProfile": "docs/modules/kernel.authority/PRODUCTION_TRUST_PROFILE.md",
+  "productionClosure": "docs/modules/kernel.authority/PRODUCTION_CLOSURE.md",
   "capacityQualification": "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md",
+  "statusManifest": "qualification/kernel-authority/status_manifest.json",
+  "statusGenerator": "qualification/kernel-authority/generate_status.py",
   "productCallers": [
     {
       "id": "runtime.fleet.issue",
-      "nativeSymbol": "FleetAuthorityPort::issue",
+      "nativeSymbol": "FleetAuthorityPort::issue_with_witness",
       "sourcePath": "codex-rs/hepta-fleet/src/authority_port.rs",
-      "state": "source_composed_owner_boundary_not_product_process_activated",
+      "state": "source_composed_exact_binding_owner_reopen_not_deployed",
       "tests": [
         "codex-rs/hepta-fleet/src/authority_port.rs"
+      ]
+    },
+    {
+      "id": "browser.servo.agentd",
+      "nativeSymbol": "BrowserServoPort::call",
+      "sourcePath": "codex-rs/hepta-agentd/src/browser_servo.rs",
+      "state": "source_composed_local_dispatch_boundary_not_deployed",
+      "tests": [
+        "codex-rs/hepta-agentd/src/browser_servo.rs"
+      ]
+    },
+    {
+      "id": "automation.taskflow.agentd",
+      "nativeSymbol": "AgentdAutomationEffectHost::execute",
+      "sourcePath": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "state": "source_composed_owned_async_effects_live_feed_historical_keys_shutdown_not_native_validated",
+      "tests": [
+        "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
+        "codex-rs/hepta-agentd/src/authority_feed_clock.rs",
+        "codex-rs/hepta-agentd/src/authority_effect_tasks.rs",
+        "codex-rs/hepta-automation/tests/authorized_effect.rs",
+        "qualification/kernel-authority/owner_runtime_qualification.py"
       ]
     },
     {
@@ -202,63 +346,111 @@
       "tests": [
         "codex-rs/hepta-bao-adapter/tests/final_use_host.rs"
       ]
+    }
+  ],
+  "evidencePrograms": [
+    {
+      "id": "kernel-authority-production-closure",
+      "path": ".github/workflows/kernel-authority-production-closure.yml",
+      "modes": [
+        "exact-head",
+        "synthetic-merge"
+      ],
+      "state": "read_only_native_product_owner_task_source_benchmark_capacity_self_test_and_post_main_exact_head_execution_pending"
     },
     {
-      "id": "browser.servo.agentd",
-      "nativeSymbol": "BrowserServoPort::call",
-      "sourcePath": "codex-rs/hepta-agentd/src/browser_servo.rs",
-      "state": "named_product_source_path_composed_not_activated",
-      "tests": [
-        "codex-rs/hepta-agentd/src/browser_servo.rs",
-        "apps/hepta-browser/test/agentd-service.test.js",
-        "apps/hepta-browser/test/runtime.test.js"
-      ]
+      "id": "kernel-authority-evidence-integrity",
+      "path": ".github/workflows/kernel-authority-evidence-gate.yml",
+      "modes": [
+        "exact-head"
+      ],
+      "state": "parser_and_source_integrity_only_not_native_or_production_acceptance"
     }
   ],
   "sourceObjects": [
     {
-      "path": "apps/hepta-browser/src/runtime-host.js",
-      "object": "543407f89cd69f00804136ef8ba9f8cc2d0540f4"
+      "path": "codex-rs/hepta-agentd/src/authority_effect_tasks.rs",
+      "object": "9dc2ae3debbff26dc48b7ed00b85dd3462641a34"
     },
     {
-      "path": "codex-rs/hepta-agentd/src/bin/hepta-agentd-browser.rs",
-      "object": "fdea3a28f6c97ea94085ff24bf81dd27aed3e36f"
+      "path": "codex-rs/hepta-agentd/src/authority_feed_clock.rs",
+      "object": "4bb054fa114d4e7569f4cda220cbcb19bfb57fb6"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/authority_trust_host.rs",
+      "object": "d1d8d563230e8dd87475604585c22352c3ce93a4"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host.rs",
+      "object": "44f054f0c983aaeb4f0c57cd21cb269c41b3e2b1"
+    },
+    {
+      "path": "codex-rs/hepta-agentd/src/automation_effect_host_tests.rs",
+      "object": "6cfb9f835bdd8efee8b8e98dda14c82c957d9562"
     },
     {
       "path": "codex-rs/hepta-agentd/src/browser_servo.rs",
-      "object": "89bf62c8da8808a59047718313b43ed74bcf5ac5"
+      "object": "d6232415313fa47c332a309c9c377aad8d6e6278"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/authorized_effect.rs",
+      "object": "f2dee71f01019b0397b40acd298a16deaa344ae2"
+    },
+    {
+      "path": "codex-rs/hepta-automation/src/effect_dispatch_ledger.rs",
+      "object": "f68ff6f7f05e54195df149bd2f92ddffb325b314"
+    },
+    {
+      "path": "codex-rs/hepta-automation/tests/authorized_effect.rs",
+      "object": "aa44a2e53eff984f92f839d6b0a2cf0457dcf1ac"
     },
     {
       "path": "codex-rs/hepta-bao-adapter/src/final_use_host.rs",
-      "object": "7840a3aab99080c99849c04553611fd728df1332"
+      "object": "1dad0bfe911f2afb1755dfd400e0c1c55628c605"
     },
     {
       "path": "codex-rs/hepta-contracts",
-      "object": "ed5cc643157e33a323693954aab0cdc784be19ec"
+      "object": "322ede44b49c7869655d82b0e6dd6769b0217d84"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_lease.rs",
-      "object": "bf09734f8900c1e95dfc550bf8766b0667a875c9"
+      "object": "cb8cf2839a6b9113df050a705d34ef8b38d4d541"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_runtime_clock.rs",
+      "object": "59e2caf5c56c5ebd293b7fa4ab5a4c6645bde343"
     },
     {
       "path": "codex-rs/hepta-contracts/src/authority_trust.rs",
-      "object": "043ffd75a20c42935959a98d37f40e3d7229c407"
+      "object": "17b1c2584086da8359cd4124c38db5ed31711c10"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/authority_trust_tests.rs",
+      "object": "e9d0570e5a9430ead48cafbc8942c6e5873e1ad3"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use.rs",
-      "object": "3cc75fab4185789514e4ecc7522e52f1ca59249f"
+      "object": "e579caffb5becc9d1c4a5c07e7b7abea9bbaba3a"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_control.rs",
-      "object": "15e3add3fa51932d7a2e243efd09982f27c9d4b8"
+      "object": "8c74246abcd485d7cbcac7b1bb640511b38dff91"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_store.rs",
-      "object": "3e5b562ce2ccb12cfff3023e16530c03ec0e8836"
+      "object": "f279710b3c47101d8df51a5f71c2f5825d07c260"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_store_tests.rs",
+      "object": "469130ffc98e8bc20ff50095b8ff9a3aed18ff96"
     },
     {
       "path": "codex-rs/hepta-contracts/src/final_use_tests.rs",
-      "object": "924fc00d4cb7404e2361222000caa04a57d33cd5"
+      "object": "242a8524f23d411ff40e1402b2d61487531e41d3"
+    },
+    {
+      "path": "codex-rs/hepta-contracts/src/final_use_time_tests.rs",
+      "object": "f2f51026260e08e5eebf7d706af6f451f7575ac2"
     },
     {
       "path": "codex-rs/hepta-contracts/src/verified_use_witness.rs",
@@ -269,16 +461,84 @@
       "object": "5088cb4bdf8a7a09a64c4d100f36a0b5c05e89a7"
     },
     {
-      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
-      "object": "55e117dafe84709451a638bb8f6bafa41c38bd5a"
+      "path": "codex-rs/hepta-contracts/tests/final_use_pending_recovery.rs",
+      "object": "241166b82c40e27a301cb2d18ed533438536dc69"
     },
     {
-      "path": "codex-rs/hepta-fleet/src/revocation_control.rs",
-      "object": "44e0abe36d58ca68a3cc9d5eec381cd077cb3789"
+      "path": "codex-rs/hepta-contracts/tests/kernel_authority_benchmark.rs",
+      "object": "a4fe68567ace1abad696ec52c27880ca7406f30e"
+    },
+    {
+      "path": "codex-rs/hepta-fleet/src/authority_port.rs",
+      "object": "f52a447cc82c1b5c4679662c3edbd98dcb6a1ec7"
+    },
+    {
+      "path": "docs/modules/kernel.authority/CAPACITY_QUALIFICATION.md",
+      "object": "6199ce0027528f3a9a0402b4e8e3c870c5b84617"
     },
     {
       "path": "docs/modules/kernel.authority/TECHNICAL.md",
-      "object": "26694ea19236ed2260858c9c8ddd2bab8c420934"
+      "object": "58d7c58b3ef65281e73096897052d8ce6bc9ab91"
+    },
+    {
+      "path": "qa/b4-no-bypass/KERNEL_AUTHORITY_EXTENSION_API.json",
+      "object": "ad2d72035c7303eda27326aab22465be3bddda23"
+    },
+    {
+      "path": "qa/b4-no-bypass/test_kernel_authority_extension_api.py",
+      "object": "8e1977d5a7139875ac8f56ffae04aea4104ee2c2"
+    },
+    {
+      "path": "qualification/kernel-authority/capacity_matrix.py",
+      "object": "2c2ed25f3bf7e617d7822fbb63e2487eb90d61a8"
+    },
+    {
+      "path": "qualification/kernel-authority/owner_runtime_qualification.py",
+      "object": "ac64f3cd16f14c7ec05eb06c111e7cb2b6bcdfb7"
+    },
+    {
+      "path": "qualification/kernel-authority/pilot_execution.py",
+      "object": "79ebe92c8dd1bc302e04a844c9e642688bfb0305"
+    },
+    {
+      "path": "qualification/kernel-authority/run_native_checks.py",
+      "object": "325571df517367a7dd55bebdf6950ee5d40ef6df"
+    },
+    {
+      "path": "qualification/kernel-authority/runtime_qualification.py",
+      "object": "bc9ad7c5d6057bd656aaeefffa59110f187e6601"
+    },
+    {
+      "path": "qualification/kernel-authority/storage_model.py",
+      "object": "b732369a1b2a337c91141c26d396b2f76e2e9fff"
+    },
+    {
+      "path": "qualification/kernel-authority/test_capacity_matrix.py",
+      "object": "c5602bd39ada0c6ee8504ef16bb0125532be089c"
+    },
+    {
+      "path": "qualification/kernel-authority/test_native_checks.py",
+      "object": "758ec4f4e9a78f2f8d9edcbff98f0fd2d17ebf47"
+    },
+    {
+      "path": "qualification/kernel-authority/test_owner_runtime_qualification.py",
+      "object": "24dcb203ccca9ddc82a252bc434387460a3357cd"
+    },
+    {
+      "path": "qualification/kernel-authority/test_pilot_execution.py",
+      "object": "2e8820d0cf96b4f9ce07008ef7cbb2a78db07e5a"
+    },
+    {
+      "path": "qualification/kernel-authority/test_runtime_qualification.py",
+      "object": "bb9a2c9fafef64bf238b4724e5f3efc47f202039"
+    },
+    {
+      "path": "qualification/kernel-authority/test_storage_model.py",
+      "object": "c206abba9042a282d26c0b4976707fe3b7c5212f"
+    },
+    {
+      "path": "qualification/kernel-authority/test_workflow_coverage.py",
+      "object": "0ca7dfd28662862242985d00e52d62c98b95f7a7"
     }
   ]
 }

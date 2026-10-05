@@ -1,6 +1,7 @@
 #![allow(
+    clippy::unwrap_used,
     clippy::expect_used,
-    reason = "integration assertions and fixture setup must fail the test immediately"
+    reason = "test fixture setup must fail immediately on invalid input; production code retains these lints"
 )]
 
 use codex_hepta_agentd::AgentdIntuitionPolicyError;

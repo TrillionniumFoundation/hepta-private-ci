@@ -1,0 +1,101 @@
+name: Kernel authority evidence integrity
+
+on:
+  push:
+    branches: [main, work/kernel-authority-convergence-20260925]
+    paths:
+      - "codex-rs/**"
+      - "scripts/**"
+      - "qualification/kernel-authority/**"
+      - "docs/modules/**"
+      - "qa/b4-no-bypass/**"
+      - "CALLERS.toml"
+      - "justfile"
+      - "MODULE.bazel"
+      - "MODULE.bazel.lock"
+      - "defs.bzl"
+      - ".github/workflows/kernel-authority-*.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+      - ".github/actionlint.yaml"
+  pull_request:
+    paths:
+      - "codex-rs/**"
+      - "scripts/**"
+      - "qualification/kernel-authority/**"
+      - "docs/modules/**"
+      - "qa/b4-no-bypass/**"
+      - "CALLERS.toml"
+      - "justfile"
+      - "MODULE.bazel"
+      - "MODULE.bazel.lock"
+      - "defs.bzl"
+      - ".github/workflows/kernel-authority-*.yml"
+      - ".github/actions/hepta-synthetic-merge/**"
+      - ".github/actionlint.yaml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-authority-evidence-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  integrity:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    env:
+      PYTHONDONTWRITEBYTECODE: 1
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Verify authority workflow syntax and expression contexts
+        shell: bash
+        run: |
+          set -euo pipefail
+          archive="$RUNNER_TEMP/kernel-authority-actionlint.tar.gz"
+          curl --fail --silent --show-error --location \
+            https://github.com/rhysd/actionlint/releases/download/v1.7.12/actionlint_1.7.12_linux_amd64.tar.gz \
+            --output "$archive"
+          printf '8aca8db96f1b94770f1b0d72b6dddcb1ebb8123cb3712530b08cc387b349a3d8  %s\n' "$archive" | sha256sum --check
+          tar --no-same-owner -xzf "$archive" -C "$RUNNER_TEMP" actionlint
+          "$RUNNER_TEMP/actionlint" -shellcheck= -pyflakes= \
+            -config-file .github/actionlint.yaml .github/workflows/kernel-authority-*.yml
+      - name: Bind source identity without executing a native pilot
+        shell: bash
+        env:
+          EXPECTED_SOURCE: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$EXPECTED_SOURCE"
+          test -z "$(git status --porcelain)"
+          mkdir -p "$RUNNER_TEMP/authority-integrity"
+          python3 -B qualification/kernel-authority/prepare_candidate.py \
+            --mode exact-head --base-sha "$EXPECTED_SOURCE" \
+            --output "$RUNNER_TEMP/authority-integrity/identity.json"
+      - name: Run all evidence parser and workflow regression tests
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B -m unittest discover -s qualification/kernel-authority -p 'test_*.py' \
+            2>&1 | tee "$RUNNER_TEMP/authority-integrity/python-tests.log"
+      - name: Verify generated state and project unproved port obligations
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 -B qualification/kernel-authority/generate_status.py --check
+          python3 -B qualification/kernel-authority/port_acceptance.py \
+            --identity "$RUNNER_TEMP/authority-integrity/identity.json" \
+            --output "$RUNNER_TEMP/authority-integrity/port-acceptance.json"
+          test -z "$(git status --porcelain)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
+        if: always()
+        with:
+          name: kernel-authority-evidence-${{ github.run_id }}-${{ github.run_attempt }}-${{ github.event.pull_request.head.sha || github.sha }}
+          path: ${{ runner.temp }}/authority-integrity
+          if-no-files-found: error
+          retention-days: 14

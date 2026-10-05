@@ -25,6 +25,46 @@ LANES = (
 )
 
 
+def terminal_needs(job: str) -> set[str]:
+    """Read the existing flow-list form across whitespace-only formatting changes."""
+    declarations = re.findall(r"(?m)^    needs:\s*(\[[^\]]*\])", job)
+    if len(declarations) != 1:
+        raise ValueError("expected one explicit terminal needs list")
+    values = declarations[0][1:-1].strip().removesuffix(",").strip()
+    lanes = [value.strip() for value in values.split(",")]
+    if any(re.fullmatch(r"[a-z][a-z0-9-]*", lane) is None for lane in lanes):
+        raise ValueError("unsupported terminal needs entry")
+    if len(lanes) != len(set(lanes)):
+        raise ValueError("duplicate terminal needs entry")
+    return set(lanes)
+
+
+class TerminalNeedsFormatTests(unittest.TestCase):
+    def test_flow_list_formatting_preserves_the_exact_lane_set(self):
+        for value in (
+            "[" + ", ".join(LANES) + "]",
+            "\n      [\n        " + ",\n        ".join(LANES) + ",\n      ]",
+        ):
+            with self.subTest(value=value):
+                self.assertEqual(terminal_needs("    needs: " + value), set(LANES))
+
+    def test_missing_or_extra_lane_cannot_match_the_required_set(self):
+        for lanes in (LANES[:-1], (*LANES, "unexpected-lane")):
+            self.assertNotEqual(
+                terminal_needs("    needs: [" + ", ".join(lanes) + "]"),
+                set(LANES),
+            )
+
+    def test_duplicate_or_unsupported_entries_are_rejected(self):
+        for value in (
+            "[owner-formatting, owner-formatting]",
+            "[${{ inputs.lane }}]",
+            "[]",
+        ):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                terminal_needs("    needs: " + value)
+
+
 class TerminalGateTests(unittest.TestCase):
     def run_gate(self, needs, *, expected=LANES, allowed=()):
         env = os.environ.copy()
@@ -130,11 +170,7 @@ class WorkflowDependencyTests(unittest.TestCase):
     def test_terminal_gate_is_always_run_and_binds_all_lanes(self):
         job = self.jobs["qualification-result"]
         self.assertIn("if: ${{ always() }}", job)
-        matched = re.search(r"(?m)^    needs: \[([^\]]+)\]$", job)
-        self.assertIsNotNone(matched)
-        self.assertEqual(
-            {name.strip() for name in matched.group(1).split(",")}, set(LANES)
-        )
+        self.assertEqual(terminal_needs(job), set(LANES))
         self.assertIn("EXPECTED_NEEDS:", job)
         self.assertNotIn("ALLOWED_SKIPPED", job)
         self.assertIn("python3 .github/scripts/check_ci_results.py", job)
@@ -185,7 +221,7 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.assertIn("args+=(--lane source-head)", process)
         self.assertIn("steps.execution.outputs.run_native == 'true'", process)
         terminal = self.jobs["qualification-result"]
-        self.assertIn("process-qualification]", terminal)
+        self.assertIn("process-qualification", terminal_needs(terminal))
         self.assertIn(
             "scripts.tests.test_hepta_ci_candidate", self.jobs["derived-projections"]
         )

@@ -311,6 +311,21 @@ impl SqliteConfig {
             .await
     }
 
+    /// Open a transient reference with exactly one in-memory connection.
+    /// Schema comparisons and migration fixtures use this private image; it
+    /// is never a persistent authority owner or durable evidence. One connection
+    /// keeps all queries on the same image instead of separate memory databases.
+    pub async fn open_transient_reference_pool() -> Result<SqlitePool, Error> {
+        SqlitePoolOptions::new()
+            .max_connections(1)
+            .connect_with(
+                SqliteConnectOptions::new()
+                    .in_memory(true)
+                    .foreign_keys(true),
+            )
+            .await
+    }
+
     /// Checkpoint a private recovery candidate after all validation handles close.
     ///
     /// The owner must hold its recovery fence and pass a newly materialized copy,

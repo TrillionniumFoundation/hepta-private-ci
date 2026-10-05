@@ -334,7 +334,6 @@ impl<D: ProcessDriver> Supervisor<D> {
                     fenced: false,
                 });
                 slot.matrix.degraded = false;
-                slot.matrix.restart_exhausted = false;
                 slot.event(
                     record.lifecycle.generation,
                     SupervisorEventKind::MatrixOrphanAdopted,
@@ -712,7 +711,7 @@ impl<D: ProcessDriver> Supervisor<D> {
     }
 }
 
-fn reset_matrix_restart_budget<P>(slot: &mut AgentSlot<P>) {
+pub(crate) fn reset_matrix_restart_budget<P>(slot: &mut AgentSlot<P>) {
     clear_restart_budget(
         &mut slot.matrix.restart_attempt,
         &mut slot.matrix.restart_window_started_at,

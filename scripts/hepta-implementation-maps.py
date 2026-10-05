@@ -1132,12 +1132,13 @@ def verify_plasticity_test_references(row: dict, failures: list[str]) -> None:
                 )
 
 
-def top_level_rust_source(text: str) -> str:
+def top_level_rust_source(text: str, *, mask_nested: bool = True) -> str:
     """Mask comments/literals and nested items for the bounded source inventory.
 
     This is navigation, not compiler qualification. Unlike a raw pub-fn search,
     impl methods, test modules, doc strings and braces in literals cannot claim
     to be crate-root free-function exports.
+    With mask_nested=False, keep balanced item bodies for associated declarations.
     """
     output = list(text)
     i = depth = 0
@@ -1191,7 +1192,7 @@ def top_level_rust_source(text: str) -> str:
             continue
         if text[i] == "{":
             depth += 1
-        if depth:
+        if depth and mask_nested:
             output[i] = "\n" if text[i] == "\n" else " "
         if text[i] == "}":
             depth -= 1
@@ -1201,6 +1202,46 @@ def top_level_rust_source(text: str) -> str:
     if depth:
         raise ValueError("unbalanced Rust item braces")
     return "".join(output)
+
+
+def rust_associated_function_present(text: str, symbol: str) -> bool:
+    """Locate a declaration in the named impl, never a comment or callsite.
+
+    This bounded source check is navigation evidence, not Rust compilation.
+    Keep the complete owner identity when resolving a two-part method anchor.
+    """
+    identity = re.fullmatch(
+        r"([A-Za-z_][A-Za-z0-9_]*)::([A-Za-z_][A-Za-z0-9_]*)", symbol
+    )
+    if identity is None:
+        return False
+    owner, method = identity.groups()
+    code = top_level_rust_source(text, mask_nested=False)
+    for declaration in re.finditer(r"\bimpl\b([^{};]*)\{", code):
+        prefix = code[: declaration.start()]
+        if prefix.count("{") != prefix.count("}"):
+            continue
+        if (
+            re.fullmatch(
+                rf"\s*(?:<[^{{}}]*>\s*)?(?:[^{{}}]*\bfor\s+)?"
+                rf"(?:[A-Za-z_][A-Za-z0-9_]*::)*{re.escape(owner)}"
+                rf"(?:\s*<[^{{}}]*>)?(?:\s+where\b[^{{}}]*)?\s*",
+                declaration.group(1),
+            )
+            is None
+        ):
+            continue
+        depth, end = 1, declaration.end()
+        while end < len(code) and depth:
+            if code[end] == "{":
+                depth += 1
+            elif code[end] == "}":
+                depth -= 1
+            end += 1
+        body = top_level_rust_source(code[declaration.end() : end - 1])
+        if re.search(rf"\bfn\s+{re.escape(method)}\b\s*(?:<[^{{}};]*>)?\s*\(", body):
+            return True
+    return False
 
 
 def public_rust_functions(root: str) -> set[str]:
