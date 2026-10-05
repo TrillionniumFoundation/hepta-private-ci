@@ -410,9 +410,9 @@ pub use cpu_generation_material::decode_cpu_neuron_generation_material_v2;
 #[cfg(feature = "fixed-initial-cpu-host")]
 pub use cpu_generation_material::encode_cpu_neuron_generation_material_v2;
 
-#[cfg(feature = "fixed-initial-cpu-host")]
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 mod local_cpu_parameter_root_materials_v2;
-#[cfg(feature = "fixed-initial-cpu-host")]
+#[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]
 pub use local_cpu_parameter_root_materials_v2::CpuNeuronParameterRootMaterialsV2;
 
 #[cfg(all(target_os = "linux", feature = "fixed-initial-cpu-host"))]

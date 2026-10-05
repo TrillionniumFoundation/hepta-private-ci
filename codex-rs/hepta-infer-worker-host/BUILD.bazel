@@ -8,6 +8,14 @@ codex_rust_crate(
         "fixed-initial-cpu-host",
     ],
     crate_name = "codex_hepta_infer_worker_host",
+    # Keep optional host externs explicit when Cargo's resolved graph omits them.
+    deps_extra = select({
+        "@platforms//os:linux": [],
+        "//conditions:default": [
+            "//codex-rs/hepta-agent-components",
+            "//codex-rs/hepta-neuron",
+        ],
+    }),
     extra_binaries = ["//codex-rs/hepta-agentd:codex-hepta-agentd"],
     unit_test_dependency_replacements = {
         "//codex-rs/hepta-agentd": "//codex-rs/hepta-agentd:hepta-agentd-test-lib",
@@ -15,5 +23,13 @@ codex_rust_crate(
         "//codex-rs/app-server-client": "//codex-rs/app-server-client:app-server-client-test-lib",
         "//codex-rs/hepta-codex-adapter": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-test-lib",
     },
+    # Match Agentd's test facade instead of mixing ordinary and test crate types.
+    unit_test_deps_extra = select({
+        "@platforms//os:linux": [],
+        "//conditions:default": [
+            "//codex-rs/hepta-agent-components:hepta-agent-components-test-lib",
+            "//codex-rs/hepta-neuron",
+        ],
+    }),
     unit_test_features = ["test-support"],
 )
