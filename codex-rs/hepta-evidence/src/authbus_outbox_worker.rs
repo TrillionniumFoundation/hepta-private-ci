@@ -23,7 +23,13 @@ impl HeptaEvidenceStore {
         request: AuthBusClaimRequest<'_>,
     ) -> Result<AuthBusDelivery, AuthBusOutboxError> {
         validate_duration(request.lease_ms)?;
-        let (mut tx, record, now) = current(self, request.delivery_id, issuer, /*require_checkpoint_clear*/ true).await?;
+        let (mut tx, record, now) = current(
+            self,
+            request.delivery_id,
+            issuer,
+            /*require_checkpoint_clear*/ true,
+        )
+        .await?;
         if &record.message.claims.subject_id != request.subject_id
             || record.message.claims.scope_digest != request.scope_digest
         {
@@ -75,7 +81,13 @@ impl HeptaEvidenceStore {
         lease_ms: i64,
     ) -> Result<AuthBusLease, AuthBusOutboxError> {
         validate_duration(lease_ms)?;
-        let (mut tx, record, now) = current(self, lease.delivery_id, issuer, /*require_checkpoint_clear*/ false).await?;
+        let (mut tx, record, now) = current(
+            self,
+            lease.delivery_id,
+            issuer,
+            /*require_checkpoint_clear*/ false,
+        )
+        .await?;
         require_lease(&record, lease, now)?;
         let until = lease_end(&record, now, lease_ms)?;
         sqlx::query(
@@ -110,7 +122,13 @@ impl HeptaEvidenceStore {
                 "retry delay must be 0..=60000 ms",
             ));
         }
-        let (mut tx, record, now) = current(self, lease.delivery_id, issuer, /*require_checkpoint_clear*/ false).await?;
+        let (mut tx, record, now) = current(
+            self,
+            lease.delivery_id,
+            issuer,
+            /*require_checkpoint_clear*/ false,
+        )
+        .await?;
         require_lease(&record, lease, now)?;
         let available = now
             .checked_add(delay_ms)
@@ -144,7 +162,13 @@ impl HeptaEvidenceStore {
         issuer: &IssuerRegistration,
         lease: &AuthBusLease,
     ) -> Result<(), AuthBusOutboxError> {
-        let (mut tx, record, now) = current(self, lease.delivery_id, issuer, /*require_checkpoint_clear*/ false).await?;
+        let (mut tx, record, now) = current(
+            self,
+            lease.delivery_id,
+            issuer,
+            /*require_checkpoint_clear*/ false,
+        )
+        .await?;
         require_lease(&record, lease, now)?;
         terminalize(&mut tx, lease.delivery_id, "quarantined", now).await?;
         tx.commit().await.map_err(classify_sqlx_error)?;
@@ -165,7 +189,13 @@ impl HeptaEvidenceStore {
                 "empty acknowledgement digest",
             ));
         }
-        let (mut tx, record, now) = current(self, lease.delivery_id, issuer, /*require_checkpoint_clear*/ false).await?;
+        let (mut tx, record, now) = current(
+            self,
+            lease.delivery_id,
+            issuer,
+            /*require_checkpoint_clear*/ false,
+        )
+        .await?;
         require_lease(&record, lease, now)?;
         sqlx::query(
             "UPDATE authbus_outbox SET state = 'acked', fence = fence + 1,

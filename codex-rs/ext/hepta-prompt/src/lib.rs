@@ -774,7 +774,8 @@ impl PromptRuntimeAttemptLease {
     ) -> Result<MappedPromptTerminal, PromptRuntimeError> {
         match terminal {
             ModelProviderTerminal::Completed { end_turn, .. } => {
-                let observation = self.delivery_observation(/*delivered*/ true, /*rejected_reason*/ None)?;
+                let observation = self
+                    .delivery_observation(/*delivered*/ true, /*rejected_reason*/ None)?;
                 Ok(MappedPromptTerminal {
                     outcome: PromptRuntimeTerminalOutcomeV1::Delivered,
                     terminal_reason_code: None,
@@ -784,7 +785,8 @@ impl PromptRuntimeAttemptLease {
             }
             ModelProviderTerminal::Rejected { reason_code } => {
                 let rejection_reason = rejection_reason(&reason_code)?;
-                let observation = self.delivery_observation(/*delivered*/ false, Some(rejection_reason))?;
+                let observation =
+                    self.delivery_observation(/*delivered*/ false, Some(rejection_reason))?;
                 Ok(MappedPromptTerminal {
                     outcome: PromptRuntimeTerminalOutcomeV1::Rejected,
                     terminal_reason_code: Some(reason_code),

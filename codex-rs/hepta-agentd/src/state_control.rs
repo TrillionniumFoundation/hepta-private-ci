@@ -105,8 +105,12 @@ impl AgentdState {
                 }
                 if self.evidence.get().is_some() {
                     capabilities.push(
-                        crate::AgentdCapability::new("kernel.evidence", /*major*/ 1, /*minor*/ 0)
-                            .map_err(AgentdError::Protocol)?,
+                        crate::AgentdCapability::new(
+                            "kernel.evidence",
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
                     );
                 }
                 capabilities.push(
@@ -127,8 +131,12 @@ impl AgentdState {
                 );
                 if self.objective_runtime.get().is_some() {
                     capabilities.push(
-                        crate::AgentdCapability::new("objective.start", /*major*/ 1, /*minor*/ 0)
-                            .map_err(AgentdError::Protocol)?,
+                        crate::AgentdCapability::new(
+                            "objective.start",
+                            /*major*/ 1,
+                            /*minor*/ 0,
+                        )
+                        .map_err(AgentdError::Protocol)?,
                     );
                 }
                 if self.canonical_intelligence_enabled() {

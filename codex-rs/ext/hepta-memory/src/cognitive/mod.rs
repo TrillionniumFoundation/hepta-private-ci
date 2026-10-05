@@ -272,7 +272,9 @@ pub(crate) struct CognitiveExtension {
 
 impl CognitiveExtension {
     pub(crate) fn new(runtime: CognitiveRuntime) -> Self {
-        Self::new_with_mutation(runtime, /*production_mutation*/ None, /*qualification_write_enabled*/ false)
+        Self::new_with_mutation(
+            runtime, /*production_mutation*/ None, /*qualification_write_enabled*/ false,
+        )
     }
 
     pub(crate) fn new_with_mutation(

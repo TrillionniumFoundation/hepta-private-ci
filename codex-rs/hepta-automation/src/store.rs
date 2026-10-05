@@ -470,9 +470,14 @@ impl AutomationStore {
                             && value.generation.is_none()
                             && value.fencing_token.is_none()
                     }) {
-                        self.prepare_occurrence_taskflow(&occurrence, &lease, now_ms, /*lease_duration_ms*/ 1)
-                            .await
-                            .map_err(map_taskflow_mutation_error)?;
+                        self.prepare_occurrence_taskflow(
+                            &occurrence,
+                            &lease,
+                            now_ms,
+                            /*lease_duration_ms*/ 1,
+                        )
+                        .await
+                        .map_err(map_taskflow_mutation_error)?;
                         run = self
                             .taskflow_run(&occurrence.taskflow_run_id)
                             .await

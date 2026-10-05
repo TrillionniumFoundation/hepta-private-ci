@@ -1462,8 +1462,15 @@ async fn advance_schedule(
                         reset_catch_up(tx, store, task_id, observed_at_ms).await?;
                         first_after(baseline, interval, observed_at_ms)?
                     } else {
-                        set_catch_up_state(tx, store, task_id, /*active*/ true, remaining - 1, observed_at_ms)
-                            .await?;
+                        set_catch_up_state(
+                            tx,
+                            store,
+                            task_id,
+                            /*active*/ true,
+                            remaining - 1,
+                            observed_at_ms,
+                        )
+                        .await?;
                         baseline
                     }
                 } else {
@@ -1477,7 +1484,15 @@ async fn advance_schedule(
                     let allowed = overdue_count.min(u64::from(max_occurrences));
                     let remaining = u16::try_from(allowed.saturating_sub(1))
                         .map_err(|_| AutomationError::Invalid)?;
-                    set_catch_up_state(tx, store, task_id, /*active*/ true, remaining, observed_at_ms).await?;
+                    set_catch_up_state(
+                        tx,
+                        store,
+                        task_id,
+                        /*active*/ true,
+                        remaining,
+                        observed_at_ms,
+                    )
+                    .await?;
                     baseline
                 }
             }
@@ -1594,7 +1609,10 @@ async fn reset_catch_up(
     task_id: AutomationTaskId,
     now_ms: u64,
 ) -> Result<(), AutomationError> {
-    set_catch_up_state(tx, store, task_id, /*active*/ false, /*remaining*/ 0, now_ms).await
+    set_catch_up_state(
+        tx, store, task_id, /*active*/ false, /*remaining*/ 0, now_ms,
+    )
+    .await
 }
 
 fn digest_suffix(value: &str) -> String {

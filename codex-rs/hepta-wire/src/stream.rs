@@ -164,8 +164,8 @@ fn inspect_header(header: &[u8]) -> Result<FrameHeader, StreamDecodeError> {
     if read_u64(header, /*start*/ 10)? == 0 {
         return Err(StreamDecodeError::Generation);
     }
-    let payload_length =
-        usize::try_from(read_u32(header, /*start*/ 50)?).map_err(|_| StreamDecodeError::PayloadLength)?;
+    let payload_length = usize::try_from(read_u32(header, /*start*/ 50)?)
+        .map_err(|_| StreamDecodeError::PayloadLength)?;
     if payload_length == 0 || payload_length > MAX_WIRE_PAYLOAD_BYTES {
         return Err(StreamDecodeError::PayloadLength);
     }

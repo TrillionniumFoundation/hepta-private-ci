@@ -102,8 +102,8 @@ impl WireEnvelopeV2 {
         {
             return Err(WireV2Error::IdentityLength);
         }
-        let generation =
-            Generation::new(read_u64(encoded, /*start*/ 10)?).map_err(|_| WireV2Error::Generation)?;
+        let generation = Generation::new(read_u64(encoded, /*start*/ 10)?)
+            .map_err(|_| WireV2Error::Generation)?;
         let digest_start = 18;
         let digest_end = digest_start + 32;
         let mut digest = [0_u8; 32];
