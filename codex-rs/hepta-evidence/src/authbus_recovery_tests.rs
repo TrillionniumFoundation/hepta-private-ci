@@ -171,9 +171,22 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
         .unwrap();
     external = pending;
 
+    // AuthBus requires a private owner directory and an independent private
+    // checkpoint parent; the Evidence fixture home uses a different policy.
+    let authority_root = TempDir::new().unwrap();
+    let checkpoint_root = TempDir::new().unwrap();
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::PermissionsExt;
+        for root in [authority_root.path(), checkpoint_root.path()] {
+            std::fs::set_permissions(root, std::fs::Permissions::from_mode(0o700)).unwrap();
+        }
+    }
     let authority = bootstrap_retryable(
-        &temp.path().join("authbus-authority.sqlite"),
-        temp.path().join("authbus-authority.checkpoint.json"),
+        &authority_root.path().join("authbus-authority.sqlite"),
+        checkpoint_root
+            .path()
+            .join("authbus-authority.checkpoint.json"),
         "evidence-recovery-test-owner",
     )
     .await
