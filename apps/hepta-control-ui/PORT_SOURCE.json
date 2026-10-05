@@ -1123,5 +1123,15 @@
       "bytes": 4301,
       "group": "shared-font-contract-fixture-no-native-host"
     }
+  ],
+  "postImportDispositions": [
+    {
+      "path": "apps/hepta-control-ui/rust/robrix-ui/resources/lunar-titanium.png",
+      "sourceBlob": "d09dca150163ef3266dfce00148184a0d8cd88d1",
+      "sourceBytes": 1136722,
+      "disposition": "Historical unused art excluded from the product tree and package; original provenance retained in resources/ASSETS.json. Rust views, shaders, fonts and interactions are unchanged.",
+      "previousPackagedAliases": 2,
+      "removedPackagedPayloadBytes": 2273444
+    }
   ]
 }

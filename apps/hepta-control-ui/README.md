@@ -87,3 +87,26 @@ Existing `src/*.js` files are authority-free legacy protocol/test oracles with
 no package exports. They are not used by the Rust builder or default preview.
 Their removal/deprecation and the old gateway UI entry must be handled with the
 production entry slice, preserving read-only API compatibility tests.
+
+## Build and preview lifetime
+
+The owned browser build/preview wrappers currently require POSIX `flock` and
+Python 3. The kernel lock descriptor is inherited by mutating compiler children;
+parent interruption cannot permit a second writer while a child is still alive.
+The last descriptor closing releases ownership automatically. The persistent
+lock file is not an ownership sentinel and must never be removed to unlock it.
+
+Preview startup recovers any interrupted publication, briefly holds a shared
+lock while checking every manifest hash and loading bounded immutable buffers,
+then releases the lock before listening. Existing previews keep their selected
+snapshot through rebuilds; a second preview may start on another port. Restart a
+preview to display a newly built version.
+
+Builds clear only their internal generated package under exclusive ownership,
+then verify unique same-filesystem staging against `patches/web-asset-paths.json`.
+An fsynced journal pins the new and previous manifests before either rename.
+Startup recovery verifies retained resources and completes only recognized
+publication states; unknown paths, symlinks or changed pins fail closed.
+Interrupted cleanup may leave an inert owned backup, without blocking later
+builds. Journal initialization failure leaves the previous artifact usable.
+The unused Lunar archive retains immutable provenance but is not packaged.

@@ -7,6 +7,7 @@ on:
       - apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt
       - .github/workflows/ui-product-foundation.yml
       - .github/actions/hepta-synthetic-merge/**
+      - scripts/test_ui_product_foundation_ci.py
 permissions:
   contents: read
 concurrency:
@@ -33,6 +34,7 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           persist-credentials: false
+          fetch-depth: 0
       - name: Construct separately identified product merge
         if: matrix.lane == 'base-merge'
         uses: ./.github/actions/hepta-synthetic-merge
@@ -50,6 +52,8 @@ jobs:
           echo "SOURCE_SHA=$(git rev-parse HEAD)" >> "$GITHUB_ENV"
           echo "PR_SOURCE_SHA=${{ github.event.pull_request.head.sha }}" >> "$GITHUB_ENV"
           grep -F 'channel = "1.96.0"' codex-rs/rust-toolchain.toml
+      - name: Verify immutable merge checkout regression
+        run: python3 -m unittest discover -s scripts -p test_ui_product_foundation_ci.py -v
       - uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f
         with:
           node-version: 22
@@ -106,12 +110,14 @@ jobs:
           cargo fmt --manifest-path apps/hepta-control-ui/rust/Cargo.toml --all -- --check
           just test --manifest-path ../apps/hepta-control-ui/rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features
           cargo clippy --manifest-path apps/hepta-control-ui/rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings
+          node --test apps/hepta-control-ui/test/artifact-lifetime.test.mjs
           node --test apps/hepta-control-ui/test/static-makepad-bridge.test.mjs apps/hepta-control-ui/test/makepad-dsl.test.mjs apps/hepta-control-ui/test/visual-theme-contract.test.mjs apps/hepta-control-ui/test/robrix-font-readiness.test.mjs
       - id: default_build
         name: Build canonical strict-CSP no-threads artifact
         run: |
           npm ci --prefix apps/hepta-control-ui --ignore-scripts --no-audit --no-fund
           npm run build --prefix apps/hepta-control-ui
+          node --test apps/hepta-control-ui/test/packaged-resource-set.test.mjs
           node --test apps/hepta-control-ui/test/makepad-font-patch.test.mjs apps/hepta-control-ui/test/makepad-instance-layout.test.mjs apps/hepta-control-ui/test/makepad-ime-bridge.test.mjs apps/hepta-control-ui/test/makepad-network-memory.test.mjs apps/hepta-control-ui/test/makepad-widget-borrow.test.mjs apps/hepta-control-ui/test/makepad-ime-router.test.mjs apps/hepta-control-ui/test/makepad-cjk-font.test.mjs
           python3 apps/hepta-control-ui/test/check-makepad-ime-dto.py
           cd apps/hepta-control-ui
@@ -147,8 +153,8 @@ jobs:
         if: always() && steps.fixture_build.outcome == 'success'
         working-directory: apps/hepta-control-ui
         env:
-          HEPTA_ROBRIX_DIAGNOSTICS: '1'
-          HEPTA_ROBRIX_FIXTURES: '1'
+          HEPTA_ROBRIX_DIAGNOSTICS: "1"
+          HEPTA_ROBRIX_FIXTURES: "1"
         run: xvfb-run -a npm run test:robrix -- --project=webkit --output=test-results/robrix-buffer-diagnostic
       - if: always() && steps.default_build.outcome == 'success'
         name: Confirm exact source after build and browser checks

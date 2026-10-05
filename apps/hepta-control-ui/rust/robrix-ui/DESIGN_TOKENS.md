@@ -31,11 +31,12 @@ highlights. Both materials are drawn by the existing shared Rust widgets.
 The prior diagonal sidebar decoration is retained only in Obsidian; the other
 two themes use their local edge and surface shading.
 
-The previously generated landscape `resources/lunar-titanium.png` is retained
-with its original bytes and provenance in `resources/ASSETS.json`. It is still
-packaged by the unchanged asset copier, but has no rendered Image layer in this
-candidate. The original C reference has no landscape backdrop. Original design
-mockups are never used as application backgrounds.
+The previously generated landscape is not used by any current Rust Image layer.
+The product port excludes its unused PNG and both packaged aliases. Original
+bytes/hash/blob/commit provenance remains in `resources/ASSETS.json` and the
+immutable source branch; no displayed pixels were re-encoded or substituted.
+The original C reference has no landscape backdrop. Original design mockups
+are never used as application backgrounds.
 
 The common desktop structure uses a 64 px navigation rail, the conversation
 column, and the existing Dock. Below the existing 760 px breakpoint, the same

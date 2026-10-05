@@ -1,5 +1,5 @@
 // Reproducible generated build overlay; never edits the Cargo Git cache.
-import {execFileSync} from 'node:child_process';
+import {execOwned as execFileSync} from './owned-artifact-lease.mjs';
 import {createHash} from 'node:crypto';
 import {cp,mkdir,readFile,rm,writeFile} from 'node:fs/promises';
 import {join} from 'node:path';

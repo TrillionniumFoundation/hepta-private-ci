@@ -1,24 +1,37 @@
 // Development static-file server, not an owner/API/chat transport.
 import { createServer } from 'node:http';
-import { readFile, stat } from 'node:fs/promises';
-import { extname, resolve, sep } from 'node:path';
+import { extname } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import {robrixSourceIdentity} from './robrix-source-identity.mjs';
-const root=fileURLToPath(new URL(process.env.HEPTA_ROBRIX_FIXTURES==='1'?'../dist-robrix-fixtures/':'../dist/',import.meta.url));
-const port=Number(process.env.PORT ?? 4175);
-if (!Number.isInteger(port)||port<1024||port>65535) throw new Error('Invalid local development port');
-const manifest=JSON.parse(await readFile(resolve(root,'build-manifest.json'),'utf8'));
+import {withArtifactLease,loadArtifactSnapshot} from './owned-artifact-lease.mjs';
 const sourceRoot=fileURLToPath(new URL('..',import.meta.url));
+const snapshot=await withArtifactLease(sourceRoot,'preview',async()=>{
+const root=fileURLToPath(new URL(process.env.HEPTA_ROBRIX_FIXTURES==='1'?'../dist-robrix-fixtures/':'../dist/',import.meta.url));
+const snapshot=await loadArtifactSnapshot(root);
+const {manifest}=snapshot;
 if((await robrixSourceIdentity(sourceRoot)).sha256!==manifest.sourceIdentity?.sha256) throw new Error('Built artifact is stale; rebuild current UI source');
 if (manifest.browserRuntime!=='rust-makepad-wasm') throw new Error('Build the canonical Robrix UI first');
+return snapshot;
+});
+const port=Number(process.env.PORT ?? 4175);
+if (!Number.isInteger(port)||port<1024||port>65535) throw new Error('Invalid local development port');
 const mime={'.html':'text/html; charset=utf-8','.js':'text/javascript; charset=utf-8','.css':'text/css; charset=utf-8','.wasm':'application/wasm','.ttf':'font/ttf','.otf':'font/otf','.png':'image/png','.svg':'image/svg+xml','.json':'application/json'};
-createServer(async(req,res)=>{
+const server=createServer(async(req,res)=>{
  try {
   if(req.method!=='GET'&&req.method!=='HEAD'){res.writeHead(405);res.end();return;}
   const pathname=decodeURIComponent(new URL(req.url,'http://localhost').pathname);
-  const path=resolve(root,'.'+(pathname==='/'?'/index.html':pathname));
-  if(!path.startsWith(root.endsWith(sep)?root:root+sep)||!(await stat(path)).isFile()){res.writeHead(404);res.end();return;}
-  res.writeHead(200,{'Content-Type':mime[extname(path)]??'application/octet-stream','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"});
-  res.end(req.method==='HEAD'?undefined:await readFile(path));
+  const path=pathname==='/'?'index.html':pathname.slice(1);
+  const body=snapshot.buffers.get(path);
+  if(!body){res.writeHead(404);res.end();return;}
+  res.writeHead(200,{'Content-Length':body.length,'Content-Type':mime[extname(path)]??'application/octet-stream','X-Content-Type-Options':'nosniff','Referrer-Policy':'no-referrer','Content-Security-Policy':"default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'"});
+  res.end(req.method==='HEAD'?undefined:body);
  }catch{res.writeHead(404);res.end();}
-}).listen(port,'127.0.0.1',()=>console.log(`Robrix-derived UI development artifact: http://127.0.0.1:${port}`));
+});
+await new Promise((done,fail)=>{
+ let closing=false;
+ const stop=()=>{if(!closing){closing=true;server.close();}};
+ const release=()=>{process.off('SIGINT',stop);process.off('SIGTERM',stop);done();};
+ server.once('error',fail);server.once('close',release);
+ process.once('SIGINT',stop);process.once('SIGTERM',stop);
+ server.listen(port,'127.0.0.1',()=>console.log(`Robrix-derived UI development artifact: http://127.0.0.1:${port}`));
+});

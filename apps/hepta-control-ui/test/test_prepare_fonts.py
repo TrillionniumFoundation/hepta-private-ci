@@ -78,7 +78,7 @@ class FontPreparationTests(unittest.TestCase):
         self.assertEqual(actual, expected)
         self.assertEqual(sum(a["bytes"] for a in actual), 16_874_504)
         self.assertLessEqual(sum(a["bytes"] for a in actual), 17_000_000)
-        self.assertEqual(len(native["assets"]), 30)
+        self.assertEqual(len(native["assets"]), 29)
         styles = (ROOT / "rust/robrix-ui/src/robrix/styles.rs").read_text()
         for weight in ("Regular", "Bold"):
             self.assertIn("resources/fonts/NotoSansSC-" + weight + ".otf", styles)

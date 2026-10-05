@@ -1,5 +1,5 @@
 // Build/packaging tooling only. Product UI and event handling live in Rust/Makepad.
-import { execFileSync } from 'node:child_process';
+import {execOwned as execFileSync} from './owned-artifact-lease.mjs';
 import { createHash } from 'node:crypto';
 import { cp, mkdir, readFile, readdir, rm, writeFile } from 'node:fs/promises';
 import { dirname, join, relative } from 'node:path';
@@ -8,11 +8,12 @@ import {preparePlatform} from './prepare-makepad-platform.mjs';
 import {robrixSourceIdentity} from './robrix-source-identity.mjs';
 import {emitStaticBridge} from './emit-static-makepad-bridge.mjs';
 import {verifyImageFitApi} from './check-makepad-dsl.mjs';
+import {withArtifactLease,withStagedArtifact} from './owned-artifact-lease.mjs';
 const root = fileURLToPath(new URL('..', import.meta.url));
 const workspace = join(root, 'rust');
 let source;
 const fixtures=process.argv.includes('--fixtures');
-const output = join(root, fixtures?'dist-robrix-fixtures':'dist');
+await withArtifactLease(root,'build',async lease=>withStagedArtifact(lease,fixtures?'dist-robrix-fixtures':'dist',async output=>{
 const sha = bytes => createHash('sha256').update(bytes).digest('hex');
 const provenance = JSON.parse(await readFile(join(workspace, 'robrix-ui/UPSTREAM.json'), 'utf8'));
 const sourceIdentity=await robrixSourceIdentity(root);
@@ -54,6 +55,9 @@ if(sha(await readFile(join(toolSource,'Cargo.lock')))!==sha(packagerLock)) throw
 const packager=join(toolTarget,'debug',process.platform==='win32'?'cargo-makepad.exe':'cargo-makepad');
 const overlay=await preparePlatform(workspace,makepadRoot,provenance.makepad.revision);
 source=join(overlay.workspace,'target/makepad-wasm-app/release/hepta-robrix-ui');
+// The upstream packager overlays files; remove only its prior generated package
+// so resources deleted from current source cannot survive through Cargo cache reuse.
+await rm(source,{recursive:true,force:true});
 const packageEnv={...process.env,CARGO_TARGET_DIR:join(overlay.workspace,'target'),CARGO_BUILD_JOBS:'1',CARGO_INCREMENTAL:'0',CARGO_PROFILE_RELEASE_DEBUG:'0'};
 delete packageEnv.CARGO_ENCODED_RUSTFLAGS;
 delete packageEnv.RUSTFLAGS;
@@ -78,16 +82,9 @@ if (!wasmName) throw new Error('Unexpected pinned Makepad bootstrap; refusing to
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 await cp(source, output, { recursive: true });
-// The app entry is a bin backed by a Rust library. Bind the library resource
-// alias explicitly instead of depending on the packager's bin-only alias.
+// Keep archived art provenance in the build receipt without packaging unused bytes.
 const art=JSON.parse(await readFile(join(workspace,'robrix-ui/resources/ASSETS.json'),'utf8'));
-for(const asset of art.assets){
- if(asset.path!=='lunar-titanium.png')throw new Error('Unexpected UI art asset');
- const bytes=await readFile(join(workspace,'robrix-ui/resources',asset.path));
- if(bytes.length!==asset.bytes||sha(bytes)!==asset.sha256)throw new Error('UI art source identity drift');
- const destination=join(output,'hepta_robrix_ui/resources',asset.path);
- await mkdir(dirname(destination),{recursive:true});await writeFile(destination,bytes);
-}
+if(art.assets.length!==0)throw new Error('Current Rust renderer declares no art resources; review any new asset binding');
 
 // Bind the same verified cache bytes used by native compile-time assets.
 for(const asset of cjkFonts.assets){
@@ -133,9 +130,14 @@ async function inventory(dir) {
  for (const entry of (await readdir(dir, {withFileTypes:true})).sort((a,b)=>a.name.localeCompare(b.name))) {
   const path=join(dir,entry.name);
   if (entry.isDirectory()) await inventory(path);
-  else {const bytes=await readFile(path);files[relative(output,path).replaceAll('\\','/')]={bytes:bytes.length,sha256:sha(bytes)};}
+  else {if(!entry.isFile())throw new Error('Only regular packaged resources are allowed');const bytes=await readFile(path);files[relative(output,path).replaceAll('\\','/')]={bytes:bytes.length,sha256:sha(bytes)};}
  }
 }
 await inventory(output);
+const expectedResources=JSON.parse(await readFile(join(workspace,'robrix-ui/patches/web-asset-paths.json'),'utf8'));
+const expectedPaths=[...expectedResources.files,wasmName].sort();
+if(JSON.stringify(Object.keys(files).sort())!==JSON.stringify(expectedPaths))throw new Error('Generated package resource set differs from the reviewed SDK/resource catalog');
 await writeFile(join(output,'build-manifest.json'),JSON.stringify({schema:'hepta.robrix-ui.build.v1',browserRuntime:'rust-makepad-wasm',fixtures,sourceIdentity,staticBridge,upstream:provenance,artAssets:art,cjkFonts:{manifestSha256:cjkFonts.manifestSha256,bytes:cjkFonts.bytes,assets:cjkFonts.assets.map(({inputPath,...asset})=>asset)},nightly,platformPatch:overlay.identity,instanceLayoutPatch:overlay.layoutIdentity,webImePatch:overlay.imeIdentity,drawPatch:overlay.drawIdentity,drawManifestSha256:overlay.drawManifestSha256,platformManifestSha256:overlay.platformManifestSha256,canonicalLockSha256:sha(canonicalLock),generatedLockSha256:sha(await readFile(join(overlay.workspace,'Cargo.lock'))),packagerSource:provenance.makepad.revision,packagerToolchainPatch:toolchainPatch,packagerLockSha256:sha(packagerLock),packagerSha256:sha(await readFile(packager)),threads:false,webglContext:{preserveDrawingBuffer:true,reason:'verified-visible-resize-loss-with-discarded-buffer'},automaticCrashUpload:false,viewportZoomRestrictionRemoved:true,originalFrameworkSha256,packagedFrameworkSha256:sha(framework),files},null,2)+'\n');
 console.log(`Packaged Robrix-derived Rust UI (${Object.keys(files).length} assets); rendering still requires host acceptance`);
+
+}));

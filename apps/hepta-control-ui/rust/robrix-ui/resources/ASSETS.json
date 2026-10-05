@@ -1,6 +1,7 @@
 {
   "schema": "hepta.ui-art-assets.v1",
-  "assets": [
+  "assets": [],
+  "archivedAssets": [
     {
       "path": "lunar-titanium.png",
       "sha256": "a4ce44f7dbe73c072e8b762370843f7d291db0505e897ed7473bccb6cb6def35",
@@ -9,7 +10,13 @@
       "created": "2026-10-03",
       "purpose": "Retained prior Lunar Titanium landscape provenance; not displayed by the current ceramic theme",
       "source": "User-requested original image generation; not a UI screenshot",
-      "runtime": "Local packaged archive asset; no current Image layer and no remote fetch"
+      "runtime": "Not packaged or displayed by the product renderer; no fetch or build dependency.",
+      "disposition": "Excluded from product runtime package: historical archive with no current Rust Image/resource use.",
+      "sourceCommit": "768c52943abbf473c96ec72d4b30de1f57c4e824",
+      "sourceBlob": "d09dca150163ef3266dfce00148184a0d8cd88d1",
+      "sourcePath": "apps/hepta-control-ui/rust/robrix-ui/resources/lunar-titanium.png",
+      "sourceUrl": "https://github.com/TrillionniumFoundation/hepta-private-ci/blob/768c52943abbf473c96ec72d4b30de1f57c4e824/apps/hepta-control-ui/rust/robrix-ui/resources/lunar-titanium.png",
+      "originalRuntimeDisposition": "Local packaged archive asset; no current Image layer and no remote fetch"
     }
   ]
 }
