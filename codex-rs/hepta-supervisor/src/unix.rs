@@ -48,6 +48,12 @@ use crate::ProcessStream;
 use crate::SpawnSpec;
 use crate::driver::SpawnedProcess;
 
+#[path = "unix_peer.rs"]
+mod peer;
+
+#[path = "unix_drain_transport.rs"]
+mod drain_transport;
+
 const LOG_CHUNK_BYTES: usize = 4_096;
 const HEALTH_PROBE_INTERVAL: Duration = Duration::from_millis(50);
 const HEALTH_PROBE_IO_TIMEOUT: Duration = Duration::from_millis(200);
@@ -560,6 +566,7 @@ fn query_agent_health_once(
     }
 
     let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    peer::ensure_process_owner(&stream, identity.process_id)?;
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.write_all(&bytes)?;
@@ -620,6 +627,7 @@ fn read_agent_drain_frame(
     request: &[u8],
 ) -> std::io::Result<Vec<u8>> {
     let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    peer::ensure_process_owner(&stream, identity.process_id)?;
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.write_all(request)?;
@@ -644,20 +652,7 @@ fn query_agent_drain_once(
     }
     let response_bytes = match read_agent_drain_frame(identity, &bytes) {
         Ok(response) => response,
-        Err(error)
-            if matches!(
-                error.kind(),
-                std::io::ErrorKind::NotFound
-                    | std::io::ErrorKind::ConnectionRefused
-                    | std::io::ErrorKind::ConnectionReset
-                    | std::io::ErrorKind::ConnectionAborted
-                    | std::io::ErrorKind::BrokenPipe
-                    | std::io::ErrorKind::TimedOut
-                    | std::io::ErrorKind::WouldBlock
-                    | std::io::ErrorKind::UnexpectedEof
-                    | std::io::ErrorKind::Interrupted
-            ) =>
-        {
+        Err(error) if drain_transport::is_unavailable(&error) => {
             // Shutdown can remove the control socket before waitpid sees exit.
             // No response is NOT a drain acknowledgement. Preserve the existing
             // deadline/escalation path instead of aborting lifecycle observation.
@@ -720,6 +715,7 @@ fn query_matrix_health_once(
     }
 
     let mut stream = std::os::unix::net::UnixStream::connect(&identity.control_socket)?;
+    peer::ensure_process_owner(&stream, identity.process_id)?;
     stream.set_read_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.set_write_timeout(Some(HEALTH_PROBE_IO_TIMEOUT))?;
     stream.write_all(&bytes)?;
@@ -867,3 +863,17 @@ mod tests;
 #[cfg(test)]
 #[path = "unix_drain_tests.rs"]
 mod drain_tests;
+
+#[cfg(all(
+    test,
+    any(target_os = "linux", target_os = "android", target_vendor = "apple")
+))]
+#[path = "unix_matrix_peer_tests.rs"]
+mod matrix_peer_tests;
+
+#[cfg(all(
+    test,
+    any(target_os = "linux", target_os = "android", target_vendor = "apple")
+))]
+#[path = "unix_agent_peer_tests.rs"]
+mod agent_peer_tests;

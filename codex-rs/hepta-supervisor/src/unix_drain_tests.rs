@@ -9,6 +9,7 @@ use codex_hepta_agent_protocol::AgentdResponse;
 use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_fleet::AgentLifecycle;
+use pretty_assertions::assert_eq;
 
 use super::AgentHealthProbeIdentity;
 use super::query_agent_drain_once;
@@ -39,7 +40,7 @@ fn exchange(
         BufReader::new(&mut stream).read_line(&mut request)?;
         stream.write_all(&bytes)
     });
-    let observed = query_agent_drain_once(identity, 17);
+    let observed = query_agent_drain_once(identity, /*request_id*/ 17);
     let completion = server
         .join()
         .map_err(|_| std::io::Error::other("test server panic"))?;
@@ -75,9 +76,9 @@ fn frame(response: &AgentdResponse) -> TestResult<Vec<u8>> {
 fn missing_or_closed_socket_never_becomes_a_drain_acknowledgement() -> TestResult {
     let temp = tempfile::tempdir()?;
     let identity = identity(&temp)?;
-    assert!(!query_agent_drain_once(&identity, 17)?);
+    assert!(!query_agent_drain_once(&identity, /*request_id*/ 17)?);
     assert!(!exchange(&identity, Vec::new())??);
-    assert!(!query_agent_drain_once(&identity, 18)?);
+    assert!(!query_agent_drain_once(&identity, /*request_id*/ 18)?);
     Ok(())
 }
 
@@ -113,4 +114,21 @@ fn only_exact_closed_admission_with_no_running_turns_is_drained() -> TestResult 
     }
     assert!(exchange(&identity, frame(&fenced)?)?.is_err());
     Ok(())
+}
+
+#[test]
+fn disconnected_peer_is_unavailable_but_identity_failures_remain_hard_errors() {
+    // macOS LOCAL_PEERPID can return ENOTCONN if the connected peer just closed.
+    // Classify the real OS error deterministically, without racing a server.
+    let error = std::io::Error::from_raw_os_error(libc::ENOTCONN);
+    assert_eq!(error.kind(), std::io::ErrorKind::NotConnected);
+    assert!(super::drain_transport::is_unavailable(&error));
+    for kind in [
+        std::io::ErrorKind::PermissionDenied,
+        std::io::ErrorKind::Unsupported,
+        std::io::ErrorKind::InvalidData,
+    ] {
+        let error = std::io::Error::new(kind, "peer authentication failed");
+        assert!(!super::drain_transport::is_unavailable(&error));
+    }
 }
