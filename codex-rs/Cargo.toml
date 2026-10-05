@@ -631,6 +631,14 @@ ignored = [
 # across local dev builds.
 debug = "limited"
 
+# Fleet admission rehashes complete release programs, including real process
+# test fixtures. Keep SHA-2 compression optimized in dev/test builds so those
+# checks measure lifecycle behavior, not an unoptimized cryptographic kernel.
+# This preserves full-byte verification, debug assertions and test deadlines;
+# all workspace code stays at the ordinary development optimization level.
+[profile.dev.package.sha2]
+opt-level = 3
+
 [profile.dev-small]
 inherits = "dev"
 opt-level = 0
