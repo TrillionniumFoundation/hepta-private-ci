@@ -5,7 +5,16 @@ export const MAX_BROWSER_WORKER_FRAME_BYTES = 1_048_576;
 
 const SCHEMA = "hepta.browser.worker-frame.v1";
 const STABLE_ID = /^[A-Za-z0-9._:-]{1,128}$/;
-const KINDS = new Set(["start", "observe", "dispatch", "reconcile", "stop", "response", "event"]);
+const KINDS = new Set([
+  "start",
+  "observe",
+  "dispatch",
+  "reconcile",
+  "stop",
+  "response",
+  "event",
+]);
+const UTF8_DECODER = new TextDecoder("utf-8", { fatal: true, ignoreBOM: true });
 
 function requireRecord(value, name) {
   if (
@@ -35,26 +44,72 @@ function positiveInteger(value, name) {
 
 function canonicalValue(value, depth = 0) {
   if (depth > 32) throw new TypeError("worker frame nesting exceeds limit");
-  if (value === null || typeof value === "boolean" || typeof value === "string") return value;
-  if (typeof value === "number") {
-    if (!Number.isSafeInteger(value)) throw new TypeError("worker frame numbers must be safe integers");
+  if (value === null || typeof value === "boolean") return value;
+  if (typeof value === "string") {
+    for (let index = 0; index < value.length; index += 1) {
+      const unit = value.charCodeAt(index);
+      if (unit >= 0xd800 && unit <= 0xdbff) {
+        const next = value.charCodeAt(index + 1);
+        if (!(next >= 0xdc00 && next <= 0xdfff)) {
+          throw new TypeError(
+            "worker frame strings must contain well-formed Unicode",
+          );
+        }
+        index += 1;
+      } else if (unit >= 0xdc00 && unit <= 0xdfff) {
+        throw new TypeError(
+          "worker frame strings must contain well-formed Unicode",
+        );
+      }
+    }
     return value;
   }
-  if (Array.isArray(value)) return value.map((item) => canonicalValue(item, depth + 1));
+  if (typeof value === "number") {
+    if (!Number.isSafeInteger(value))
+      throw new TypeError("worker frame numbers must be safe integers");
+    return value === 0 ? 0 : value;
+  }
+  if (Array.isArray(value))
+    return Array.from(value, (item) => canonicalValue(item, depth + 1));
   const record = requireRecord(value, "worker frame value");
   return Object.fromEntries(
     Object.keys(record)
       .sort()
-      .map((key) => [key, canonicalValue(record[key], depth + 1)]),
+      .map((key) => [
+        canonicalValue(key, depth + 1),
+        canonicalValue(record[key], depth + 1),
+      ]),
   );
 }
 
 export function canonicalWorkerJson(value) {
-  return JSON.stringify(canonicalValue(value));
+  return writeCanonical(canonicalValue(value));
+}
+
+// v1 orders object keys by UTF-8 bytes, matching the Rust serializers.
+// Writing fields directly avoids JSON.stringify's numeric-property reordering.
+function writeCanonical(value) {
+  if (value === null || typeof value !== "object") return JSON.stringify(value);
+  if (Array.isArray(value))
+    return "[" + value.map(writeCanonical).join(",") + "]";
+  const keys = Object.keys(value).map((key) => ({
+    key,
+    bytes: Buffer.from(key, "utf8"),
+  }));
+  keys.sort((left, right) => Buffer.compare(left.bytes, right.bytes));
+  return (
+    "{" +
+    keys
+      .map(({ key }) => JSON.stringify(key) + ":" + writeCanonical(value[key]))
+      .join(",") +
+    "}"
+  );
 }
 
 export function workerPayloadDigest(payload) {
-  return createHash("sha256").update(canonicalWorkerJson(payload)).digest("hex");
+  return createHash("sha256")
+    .update(canonicalWorkerJson(payload))
+    .digest("hex");
 }
 
 export function buildWorkerFrame({
@@ -68,7 +123,8 @@ export function buildWorkerFrame({
   stableId(sessionId, "sessionId");
   positiveInteger(generation, "generation");
   positiveInteger(sequence, "sequence");
-  if (!KINDS.has(kind)) throw new TypeError("worker frame kind is not registered");
+  if (!KINDS.has(kind))
+    throw new TypeError("worker frame kind is not registered");
   stableId(requestId, "requestId");
   const canonicalPayload = canonicalValue(requireRecord(payload, "payload"));
   return Object.freeze({
@@ -98,10 +154,16 @@ export function normalizeWorkerFrame(value) {
     "sequence",
     "sessionId",
   ].sort();
-  if (keys.length !== expected.length || keys.some((key, index) => key !== expected[index])) {
+  if (
+    keys.length !== expected.length ||
+    keys.some((key, index) => key !== expected[index])
+  ) {
     throw new TypeError("worker frame contains missing or unknown fields");
   }
-  if (frame.schema !== SCHEMA || frame.protocolVersion !== BROWSER_WORKER_PROTOCOL_VERSION) {
+  if (
+    frame.schema !== SCHEMA ||
+    frame.protocolVersion !== BROWSER_WORKER_PROTOCOL_VERSION
+  ) {
     throw new TypeError("worker frame protocol is unsupported");
   }
   const normalized = buildWorkerFrame(frame);
@@ -129,9 +191,13 @@ export class WorkerFrameDecoder {
     if (!(chunk instanceof Uint8Array)) {
       throw new TypeError("worker frame chunk must be bytes");
     }
+    if (chunk.byteLength > MAX_BROWSER_WORKER_FRAME_BYTES + 4) {
+      throw new TypeError("worker frame chunk exceeds byte limit");
+    }
     this.#buffer = Buffer.concat([this.#buffer, Buffer.from(chunk)]);
     if (this.#buffer.length > MAX_BROWSER_WORKER_FRAME_BYTES + 4) {
-      const announced = this.#buffer.length >= 4 ? this.#buffer.readUInt32BE(0) : 0;
+      const announced =
+        this.#buffer.length >= 4 ? this.#buffer.readUInt32BE(0) : 0;
       if (announced === 0 || announced > MAX_BROWSER_WORKER_FRAME_BYTES) {
         throw new TypeError("worker frame announced length is invalid");
       }
@@ -143,7 +209,12 @@ export class WorkerFrameDecoder {
         throw new TypeError("worker frame announced length is invalid");
       }
       if (this.#buffer.length < 4 + length) break;
-      const body = this.#buffer.subarray(4, 4 + length).toString("utf8");
+      let body;
+      try {
+        body = UTF8_DECODER.decode(this.#buffer.subarray(4, 4 + length));
+      } catch {
+        throw new TypeError("worker frame body is not valid UTF-8");
+      }
       this.#buffer = this.#buffer.subarray(4 + length);
       let parsed;
       try {

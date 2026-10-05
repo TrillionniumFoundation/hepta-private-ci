@@ -488,6 +488,16 @@ def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
         if presentation_input(path):
             continue
         owned = bool(consumers)
+        # The named Agentd caller starts this runtime package over private IPC.
+        # Cargo cannot discover a process-level dependency from Rust includes.
+        # Keep both exact revisions' caller owners and their reverse consumers;
+        # absent ownership still takes the conservative unowned-input fallback.
+        if path.startswith("apps/hepta-browser/"):
+            for mapping in (before.owners, after.owners):
+                caller = mapping.get("codex-rs/hepta-agentd")
+                if caller == "codex-hepta-agentd":
+                    changed.add(caller)
+                    owned = True
         for mapping in (before.owners, after.owners):
             # Walking ancestors costs path depth, not a scan of every package
             # for every changed file. Only the deepest owner in each tree counts.
