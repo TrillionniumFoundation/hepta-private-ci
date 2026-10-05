@@ -95,6 +95,9 @@ pub enum PrivateFileAccess {
 /// Creates or opens a retained private-state directory.
 pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
     let path = wide_path(root)?;
+    // Creation, ancestry validation, and the retained open must use the same
+    // absolute/verbatim spelling, including when callers supply a relative root.
+    let root = PathBuf::from(std::ffi::OsString::from_wide(&path[..path.len() - 1]));
     with_private_security(|security| {
         if unsafe { CreateDirectoryW(path.as_ptr(), security) } == 0 {
             let error = io::Error::last_os_error();
@@ -104,7 +107,7 @@ pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
         }
         Ok(())
     })?;
-    reject_reparse_ancestry(root)?;
+    reject_reparse_ancestry(&root)?;
     let mut options = OpenOptions::new();
     options.read(true).write(true);
     let directory = options
@@ -113,7 +116,7 @@ pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
         // Windows also refuses renaming an ancestor with an open descendant.
         .share_mode(FILE_SHARE_READ | FILE_SHARE_WRITE)
         .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
-        .open(root)?;
+        .open(&root)?;
     validate_handle(&directory, HandleKind::Directory)?;
     Ok(directory)
 }

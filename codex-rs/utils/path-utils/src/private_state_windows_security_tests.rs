@@ -197,3 +197,20 @@ fn native_creation_rejects_nul_without_creating_a_prefix_path() {
     assert_eq!(error.kind(), io::ErrorKind::InvalidInput);
     assert!(!private_state_child_exists(&directory, "prefix").expect("prefix absent"));
 }
+
+#[test]
+fn relative_root_uses_one_absolute_spelling_for_create_and_open() {
+    let current_directory = std::env::current_dir().expect("current directory");
+    let temporary = tempfile::Builder::new()
+        .prefix("private-owner-relative-")
+        .tempdir_in(&current_directory)
+        .expect("temporary root in current directory");
+    let relative =
+        Path::new(temporary.path().file_name().expect("temporary basename")).join("owner");
+    let directory = open_private_state_directory(&relative).expect("relative private root");
+    let child = open_private_state_child(&directory, "state", PrivateFileAccess::Create)
+        .expect("relative root child");
+    assert!(temporary.path().join("owner").join("state").is_file());
+    validate_private_owner_and_dacl(&directory).expect("private directory ownership");
+    validate_private_owner_and_dacl(&child).expect("private child ownership");
+}
