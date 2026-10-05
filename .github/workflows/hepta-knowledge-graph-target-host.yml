@@ -1,0 +1,123 @@
+name: Hepta knowledge.graph target-host qualification
+
+on:
+  workflow_dispatch:
+    inputs:
+      host_profile_id:
+        description: Stable identifier of the reviewed target-host profile
+        required: true
+        type: string
+      storage_identity:
+        description: Stable identifier of the reviewed storage device/profile
+        required: true
+        type: string
+      budget_profile_path:
+        description: Committed budget profile under qualification/knowledge-graph/budgets
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: hepta-knowledge-graph-target-host
+  cancel-in-progress: false
+
+jobs:
+  target-host:
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'
+    runs-on:
+      group: trillionnium-android-gpu
+      labels: [self-hosted, linux, x64]
+    timeout-minutes: 180
+    env:
+      SOURCE_SHA: ${{ github.sha }}
+      HOST_PROFILE_ID: ${{ inputs.host_profile_id }}
+      STORAGE_IDENTITY: ${{ inputs.storage_identity }}
+      BUDGET_PROFILE_PATH: ${{ inputs.budget_profile_path }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          fetch-depth: 1
+          persist-credentials: false
+
+      - name: Bind trusted default-branch request and host profile
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$GITHUB_EVENT_NAME" = workflow_dispatch
+          test "$GITHUB_REF" = refs/heads/main
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          [[ "$HOST_PROFILE_ID" =~ ^[A-Za-z0-9._:-]{1,128}$ ]]
+          [[ "$STORAGE_IDENTITY" =~ ^[A-Za-z0-9._:-]{1,128}$ ]]
+          [[ "$BUDGET_PROFILE_PATH" =~ ^qualification/knowledge-graph/budgets/[A-Za-z0-9._-]+\.json$ ]]
+          test -f "$BUDGET_PROFILE_PATH"
+          git diff --quiet
+          git diff --cached --quiet
+          test -z "$(git status --porcelain --untracked-files=no)"
+          mkdir -p target-evidence
+          git rev-parse HEAD HEAD^{tree} > target-evidence/source-identity.txt
+          uname -a > target-evidence/uname.txt
+          rustc --version > target-evidence/rustc-version.txt
+          cargo --version > target-evidence/cargo-version.txt
+          cp "$BUDGET_PROFILE_PATH" target-evidence/budget-profile.json
+
+      - name: Install pinned repository test tools
+        uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,nextest@0.9.103
+
+      - name: Measure exact product workload on target host
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-knowledge-graph-target-measure.py \
+            --expected-sha "$SOURCE_SHA" \
+            --host-profile-id "$HOST_PROFILE_ID" \
+            --storage-identity "$STORAGE_IDENTITY" \
+            --target-dir "/tmp/hepta-knowledge-graph-target-$GITHUB_RUN_ID" \
+            --output target-evidence/target-host-evidence.json \
+            --raw-output target-evidence/target-host-raw.log \
+            2>&1 | tee target-evidence/measurement.log
+
+      - name: Enforce committed target-host budget
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 scripts/hepta-knowledge-graph-budget-check.py \
+            --evidence target-evidence/target-host-evidence.json \
+            --profile "$BUDGET_PROFILE_PATH" \
+            --expected-sha "$SOURCE_SHA" \
+            --output target-evidence/budget-evaluation.json
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          value = json.loads(Path('target-evidence/budget-evaluation.json').read_text())
+          assert value['budgetPassed'] is True
+          assert value['purpose'] == 'target-host-measurement'
+          assert value['sourceCommit'] == __import__('os').environ['SOURCE_SHA']
+          assert value['independentAcceptance'] is False
+          assert value['activation'] is False
+          assert value['release'] is False
+          PY
+          sha256sum target-evidence/*.json > target-evidence/json-sha256.txt
+
+      - name: Preserve target-host evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: knowledge-graph-target-host-${{ github.sha }}-${{ github.run_id }}
+          path: target-evidence
+          if-no-files-found: warn
+          retention-days: 30
+
+      - name: Verify source remained read-only
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          git diff --check
+          git diff --exit-code
+          test -z "$(git status --porcelain --untracked-files=no)"

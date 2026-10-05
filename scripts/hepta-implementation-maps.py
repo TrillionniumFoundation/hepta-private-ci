@@ -1229,6 +1229,7 @@ def public_rust_functions(root: str) -> set[str]:
 
 def verify(
     *,
+    selected_modules: list[str] | None = None,
     require_current_source: bool = True,
     expected_sha: str | None = None,
     expected_tree: str | None = None,
@@ -1239,6 +1240,7 @@ def verify(
     Exact-blob maps may retain an immutable provenance anchor only when their
     mapped HEAD blobs and explicit current-source observation both verify. No
     provenance record alone establishes currentness or execution qualification.
+    Module selection narrows map inventories, never global checkout safety.
     """
     candidate = current_source_base()
     try:
@@ -1268,6 +1270,19 @@ def verify(
         ids = [module["id"] for module in modules]
         if len(set(ids)) != len(ids):
             raise ValueError("duplicate module identity")
+        registered_count = len(modules)
+        if selected_modules is not None:
+            if (
+                not isinstance(selected_modules, list)
+                or not selected_modules
+                or any(not isinstance(mid, str) or not mid.strip() for mid in selected_modules)
+            ):
+                raise ValueError("empty or invalid module selection")
+            selected = set(selected_modules)
+            unknown = selected - set(ids)
+            if unknown:
+                raise ValueError("unknown modules: " + ", ".join(sorted(unknown)))
+            modules = [module for module in modules if module["id"] in selected]
         lanes = lane_by_module()
     except (ValueError, OSError, subprocess.CalledProcessError) as exc:
         raise SystemExit(f"FAIL_HEPTA_IMPLEMENTATION_MAPS: {exc}") from exc
@@ -1509,6 +1524,8 @@ def verify(
                 "status": "PASS_HEPTA_IMPLEMENTATION_MAPS",
                 "modules": len(modules),
                 "maps": len(modules),
+                "registeredModules": registered_count,
+                "selectedModules": sorted(module["id"] for module in modules),
                 "productionImplementationProved": False,
                 "candidateSource": candidate,
                 "verificationProfile": profile,
@@ -1536,7 +1553,7 @@ def main():
         "--module",
         action="append",
         dest="modules",
-        help="rebind only this module (repeatable; migrate only)",
+        help="select this module for migration or verification (repeatable)",
     )
     parser.add_argument(
         "--require-current-source",
@@ -1562,8 +1579,8 @@ def main():
         parser.error("--require-current-source requires the qualification profile")
     if args.require_current_source and args.command != "verify":
         parser.error("--require-current-source applies only to verify")
-    if args.modules is not None and args.command != "migrate":
-        parser.error("--module applies only to migrate")
+    if args.modules is not None and args.command not in {"migrate", "verify"}:
+        parser.error("--module applies only to migrate or verify")
     if (
         args.expected_sha is not None or args.expected_tree is not None
     ) and args.command != "verify":
@@ -1574,6 +1591,7 @@ def main():
         {
             "generate": generate,
             "verify": lambda: verify(
+                selected_modules=args.modules,
                 expected_sha=args.expected_sha,
                 expected_tree=args.expected_tree,
                 profile=args.profile,
