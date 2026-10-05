@@ -140,6 +140,36 @@ class ProductGatewayWorkflowTests(unittest.TestCase):
         self.assertIn("contents: read", self.workflow)
         self.assertNotIn("contents: write", self.workflow)
 
+    def test_gateway_dependency_closure_and_embedded_inputs_have_triggers(self):
+        from hepta_ci_dependencies import graph, matches
+
+        revision = subprocess.check_output(
+            ["git", "--no-replace-objects", "rev-parse", "HEAD"], cwd=ROOT, text=True
+        ).strip()
+        dependency_graph = graph(ROOT, revision)
+        self.assertFalse(dependency_graph.conservative)
+        gateway = "codex-hepta-native-gateway"
+        closure = {gateway}
+        while True:
+            expanded = closure | {
+                dependency
+                for dependency, consumer, dev_only in dependency_graph.edges
+                if consumer in closure and (not dev_only or consumer == gateway)
+            }
+            if expanded == closure:
+                break
+            closure = expanded
+        self.assertFalse(closure & dependency_graph.opaque_input_consumers)
+        patterns = re.findall(r"^      - ([^\n]+)$", self.workflow, re.MULTILINE)
+        for directory, owner in dependency_graph.owners.items():
+            if owner in closure:
+                self.assertIn(directory + "/**", patterns, owner)
+        for path, owner in dependency_graph.external_inputs:
+            if owner in closure:
+                self.assertTrue(
+                    any(matches(path, pattern) for pattern in patterns), path
+                )
+
     def test_gateway_changes_trigger_source_and_merge_evidence(self):
         for path in (
             "codex-rs/hepta-native-gateway/**",

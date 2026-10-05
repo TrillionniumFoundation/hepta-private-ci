@@ -3,10 +3,29 @@ on:
   pull_request:
     paths:
       - apps/hepta-control-ui/**
+      # Conservative gateway Cargo closure; drift-checked against the shared graph.
+      - codex-rs/hepta-contracts/**
+      - codex-rs/hepta-control-plane/**
       - codex-rs/hepta-native-gateway/**
+      - codex-rs/hepta-ndu/**
+      - codex-rs/hepta-paths/**
+      - codex-rs/hepta-plasticity/**
+      - codex-rs/hepta-runtime/**
+      - codex-rs/hepta-types/**
+      - codex-rs/hepta-wire/**
+      - codex-rs/utils/absolute-path/**
+      - codex-rs/utils/path-utils/**
       - codex-rs/Cargo.toml
       - codex-rs/Cargo.lock
       - codex-rs/rust-toolchain.toml
+      - codex-rs/.cargo/**
+      - codex-rs/.config/nextest.toml
+      - justfile
+      - scripts/run-nextest.py
+      - scripts/just-shell.py
+      - scripts/hepta_ci_dependencies.py
+      - scripts/hepta_ci_git_objects.py
+      - scripts/hepta_ci_module_paths.py
       - apps/hepta-native/resources/NATIVE-ASSETS.json
       - apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt
       - .github/workflows/ui-product-foundation.yml
