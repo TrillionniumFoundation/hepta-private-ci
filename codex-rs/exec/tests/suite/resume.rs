@@ -270,10 +270,12 @@ async fn exec_resume_last_repairs_rollout_missing_from_state_db() -> anyhow::Res
         .codex_home(test.home_path().to_path_buf())
         .build()
         .await?;
+    let state_db_path = config.sqlite.state_db_path();
+    std::fs::remove_file(&state_db_path)?;
     let state_db = init_state_db(&config)
         .await
         .expect("state DB should initialize");
-    assert_eq!(state_db.delete_thread(thread_id).await?, 1);
+    assert_eq!(state_db.get_thread(thread_id).await?, None);
     state_db
         .mark_backfill_complete(/*last_watermark*/ None)
         .await?;
