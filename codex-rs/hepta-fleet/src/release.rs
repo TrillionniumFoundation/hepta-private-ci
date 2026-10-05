@@ -294,7 +294,13 @@ impl FleetRegistry {
             sync_directory(&bin_root)?;
             sync_directory(&staging)?;
             set_mode(&staging, /*mode*/ 0o555)?;
-            std::fs::rename(&staging, &final_root)?;
+            std::fs::rename(&staging, &final_root).inspect_err(|error| {
+                if cfg!(debug_assertions) {
+                    eprintln!(
+                        "fleet release publication failed at staged-directory rename: {error}"
+                    );
+                }
+            })?;
             sync_directory(self.layout().releases_root())?;
             Ok(())
         })();

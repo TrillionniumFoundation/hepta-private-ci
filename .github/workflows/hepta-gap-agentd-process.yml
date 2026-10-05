@@ -172,7 +172,8 @@ jobs:
             --test cognitive_product_e2e --test plasticity_process_e2e \
             --test runtime_codex_product_e2e --test supervised_two_agents \
             --test supervisord_product_e2e --test queue_capacity_product \
-            --test production_reconcile_host --test-threads=1
+            --test production_reconcile_host --test five_agent_rolling_upgrade \
+            --test-threads=1
       - name: Strict owner lint
         if: steps.execution.outputs.run_native == 'true'
         working-directory: codex-rs

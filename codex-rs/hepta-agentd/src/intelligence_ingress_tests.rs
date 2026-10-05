@@ -275,7 +275,10 @@ async fn authenticated_current_run_start_reaches_the_invocation_provider_once() 
     .await?;
     let frontier = evidence.authbus_replay_frontier_digest().await?;
     drop(evidence);
-    let checkpoint_file = directory.path().join("run-start-replay-checkpoint.json");
+    let checkpoint_file = directory
+        .path()
+        .canonicalize()?
+        .join("run-start-replay-checkpoint.json");
     let checkpoint = serde_json::json!({
         "schema_version": 1,
         "agent_id": state.identity().agent_id.as_str(),
