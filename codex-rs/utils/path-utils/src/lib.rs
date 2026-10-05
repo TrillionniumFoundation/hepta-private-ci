@@ -15,6 +15,16 @@ pub use private_state_windows::open_private_state_directory;
 pub use private_state_windows::private_state_child_exists;
 #[cfg(windows)]
 pub use private_state_windows::replace_private_state_child;
+#[cfg(windows)]
+pub use private_state_windows::retained::PrivateDirectoryMode;
+#[cfg(windows)]
+pub use private_state_windows::retained::PrivateFileMode;
+#[cfg(windows)]
+pub use private_state_windows::retained::PrivateObjectSnapshot;
+#[cfg(windows)]
+pub use private_state_windows::retained::RetainedPrivateDirectory;
+#[cfg(windows)]
+pub use private_state_windows::retained::RetainedPrivateFile;
 
 use codex_utils_absolute_path::AbsolutePathBuf;
 use std::collections::HashSet;
