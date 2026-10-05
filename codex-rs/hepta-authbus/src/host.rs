@@ -192,8 +192,12 @@ impl AuthBusAuthorityHost {
 
     /// Reconcile the independently retained checkpoint while excluding every
     /// mutation and safety-relevant read from the authority frontier.
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "checkpoint reconciliation must exclude concurrent authority mutations and reads through SQLite and external checkpoint awaits"
+    )]
     pub(crate) async fn sync_checkpoint(&self) -> Result<(), AuthBusAuthorityError> {
-        let _guard = self.mutation_gate.lock().await;
+        let _serialization_guard = self.mutation_gate.lock().await;
         self.sync_checkpoint_locked().await
     }
 
@@ -215,12 +219,16 @@ impl AuthBusAuthorityHost {
         result
     }
 
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "authority mutation and its before/after checkpoint publication must remain one serialized host operation"
+    )]
     async fn mutate<T, F>(&self, operation: F) -> Result<T, AuthBusAuthorityError>
     where
         F: Future<Output = Result<T, AuthBusAuthorityError>>,
     {
         let started = Instant::now();
-        let _guard = self.mutation_gate.lock().await;
+        let _serialization_guard = self.mutation_gate.lock().await;
         let result = match self.sync_checkpoint_locked().await {
             Ok(()) => self.finish_locked(operation.await).await,
             Err(error) => Err(AuthBusAuthorityError::AuthorityUseBlocked(
@@ -231,11 +239,15 @@ impl AuthBusAuthorityHost {
         result
     }
 
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "authoritative reads must remain excluded from concurrent mutation after checkpoint reconciliation"
+    )]
     async fn read_authoritative<T, F>(&self, operation: F) -> Result<T, AuthBusAuthorityError>
     where
         F: Future<Output = Result<T, AuthBusAuthorityError>>,
     {
-        let _guard = self.mutation_gate.lock().await;
+        let _serialization_guard = self.mutation_gate.lock().await;
         if let Err(error) = self.sync_checkpoint_locked().await {
             self.metrics.record_authority_use_block();
             return Err(AuthBusAuthorityError::AuthorityUseBlocked(
@@ -270,13 +282,17 @@ impl AuthBusAuthorityHost {
         }
     }
 
+    #[expect(
+        clippy::await_holding_invalid_type,
+        reason = "bounded restart reconciliation and expiry sweep must remain serialized through checkpoint publication"
+    )]
     pub(crate) async fn run_maintenance_mutations(
         &self,
         time: TrustedTimeSample,
         limit: u32,
     ) -> Result<(bool, ExpiredReservationSweep), AuthBusAuthorityError> {
         let started = Instant::now();
-        let _guard = self.mutation_gate.lock().await;
+        let _serialization_guard = self.mutation_gate.lock().await;
         let result = match self.sync_checkpoint_locked().await {
             Err(error) => Err(AuthBusAuthorityError::AuthorityUseBlocked(
                 error.to_string(),
@@ -928,6 +944,7 @@ fn write_private_atomic(
     Err(AuthBusAuthorityError::UnsafeCheckpoint)
 }
 
-#[cfg(all(test, unix))]
+#[cfg(test)]
+#[cfg(unix)]
 #[path = "host_tests.rs"]
 mod tests;

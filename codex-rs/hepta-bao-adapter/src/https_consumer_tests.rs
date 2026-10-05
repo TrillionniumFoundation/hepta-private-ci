@@ -16,6 +16,7 @@ use codex_hepta_authbus::SettlementStatus;
 use codex_hepta_authbus::SignedSettlementEvidence;
 use codex_hepta_authbus::SignedTrustedTimeAttestation;
 use codex_hepta_authbus::TrustedTimeAttestationClaims;
+use codex_hepta_authbus::bootstrap_retryable;
 use codex_hepta_contracts::FinalUseGrant;
 use codex_hepta_contracts::FinalUseRevocations;
 use codex_hepta_types::Generation;
@@ -582,7 +583,7 @@ async fn authbus_host(
         .path()
         .join("authbus-authority-checkpoint.json");
 
-    let host = AuthBusAuthorityHost::bootstrap(&database, checkpoint, "bao-product-owner").await?;
+    let host = bootstrap_retryable(&database, checkpoint, "bao-product-owner").await?;
     let mut evidence = AuthBusEvidence::new(now);
     host.admin()
         .enroll_issuer(IssuerPurpose::TrustedTime, evidence.time_spec())

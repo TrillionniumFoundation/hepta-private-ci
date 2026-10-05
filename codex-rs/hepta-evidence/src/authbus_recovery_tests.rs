@@ -1,10 +1,10 @@
-use codex_hepta_authbus::AuthBusAuthorityHost;
 use codex_hepta_authbus::Error;
 use codex_hepta_authbus::IssuerPurpose;
 use codex_hepta_authbus::IssuerRegistration;
 use codex_hepta_authbus::IssuerSpec;
 use codex_hepta_authbus::SignedMessage;
 use codex_hepta_authbus::SignedMessageClaims;
+use codex_hepta_authbus::bootstrap_retryable;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
 use codex_state::SqliteConfig;
@@ -171,7 +171,7 @@ async fn issuer_retirement_proof_prunes_replay_rows_but_tombstone_prevents_resur
         .unwrap();
     external = pending;
 
-    let authority = AuthBusAuthorityHost::bootstrap(
+    let authority = bootstrap_retryable(
         &temp.path().join("authbus-authority.sqlite"),
         temp.path().join("authbus-authority.checkpoint.json"),
         "evidence-recovery-test-owner",

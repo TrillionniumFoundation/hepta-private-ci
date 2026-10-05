@@ -3,6 +3,7 @@ use std::time::Duration;
 
 use codex_hepta_types::Digest32;
 use codex_hepta_types::StableId;
+use sqlx::ConnectOptions;
 use sqlx::Row;
 use sqlx::Sqlite;
 use sqlx::SqlitePool;
@@ -35,7 +36,12 @@ impl AuthBusAuthorityStore {
             .journal_mode(SqliteJournalMode::Wal)
             .synchronous(SqliteSynchronous::Full)
             .foreign_keys(true)
-            .busy_timeout(Duration::from_secs(5));
+            .busy_timeout(Duration::from_secs(5))
+            .disable_statement_logging();
+        #[expect(
+            clippy::disallowed_methods,
+            reason = "independent AuthBus authority owner: fenced path, FULL/WAL, foreign keys, bounded pool; no rebuildable Codex state recovery"
+        )]
         let pool = SqlitePoolOptions::new()
             .max_connections(5)
             .connect_with(options)
@@ -79,6 +85,7 @@ impl AuthBusAuthorityStore {
         Ok(Self { pool })
     }
 
+    #[cfg(test)]
     pub(crate) async fn observe_time(
         &self,
         time: TrustedTimeSample,
@@ -527,7 +534,7 @@ pub(crate) fn u64_bytes(value: u64) -> [u8; 8] {
 fn is_unique_violation(error: &sqlx::Error) -> bool {
     error
         .as_database_error()
-        .is_some_and(|database| database.is_unique_violation())
+        .is_some_and(sqlx::error::DatabaseError::is_unique_violation)
 }
 
 pub(crate) fn storage(error: impl ToString) -> AuthBusAuthorityError {

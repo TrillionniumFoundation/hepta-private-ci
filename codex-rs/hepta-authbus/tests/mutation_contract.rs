@@ -1,10 +1,10 @@
+#![cfg(test)]
 #![cfg(all(unix, not(any(target_os = "illumos", target_os = "solaris"))))]
 
 use std::os::unix::fs::PermissionsExt;
 use std::path::PathBuf;
 
 use codex_hepta_authbus::AuthBusAuthorityError;
-use codex_hepta_authbus::AuthBusAuthorityHost;
 use codex_hepta_authbus::AuthBusMutationDisposition;
 use codex_hepta_authbus::IssuerPurpose;
 use codex_hepta_authbus::IssuerSpec;
@@ -12,6 +12,7 @@ use codex_hepta_authbus::PolicyEffect;
 use codex_hepta_authbus::PolicySpec;
 use codex_hepta_authbus::SignedTrustedTimeAttestation;
 use codex_hepta_authbus::TrustedTimeAttestationClaims;
+use codex_hepta_authbus::bootstrap_retryable;
 use codex_hepta_types::Digest32;
 use codex_hepta_types::Generation;
 use codex_hepta_types::StableId;
@@ -66,7 +67,7 @@ fn signed_time(
 #[tokio::test]
 async fn deterministic_rejection_does_not_claim_separately_observed_time_was_rolled_back() {
     let paths = private_paths();
-    let host = AuthBusAuthorityHost::bootstrap(
+    let host = bootstrap_retryable(
         &paths.database,
         paths.checkpoint.clone(),
         "mutation-contract-owner",

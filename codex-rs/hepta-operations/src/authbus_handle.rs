@@ -165,13 +165,7 @@ impl DurableOperationStore {
             return Err(DurableOperationError::Conflict(operation_id.clone()));
         }
         let Some(claim) = self
-            .claim_operation(
-                scope_id,
-                operation_id,
-                worker_id,
-                owner_generation,
-                lease,
-            )
+            .claim_operation(scope_id, operation_id, worker_id, owner_generation, lease)
             .await?
         else {
             return Ok(None);
@@ -253,7 +247,9 @@ impl DurableOperationStore {
             || current.intent.destination != handle.destination
             || current.intent.payload_digest != handle.payload_digest
         {
-            return Err(DurableOperationError::Conflict(handle.operation_id().clone()));
+            return Err(DurableOperationError::Conflict(
+                handle.operation_id().clone(),
+            ));
         }
         if current.intent.owner_generation != handle.owner_generation {
             return Err(DurableOperationError::StaleGeneration);
@@ -321,7 +317,9 @@ fn validate_claim_record(
         || current.intent.destination != *handle.destination()
         || current.intent.payload_digest != handle.payload_digest()
     {
-        return Err(DurableOperationError::Conflict(handle.operation_id().clone()));
+        return Err(DurableOperationError::Conflict(
+            handle.operation_id().clone(),
+        ));
     }
     if current.intent.owner_generation != handle.owner_generation() {
         return Err(DurableOperationError::StaleGeneration);

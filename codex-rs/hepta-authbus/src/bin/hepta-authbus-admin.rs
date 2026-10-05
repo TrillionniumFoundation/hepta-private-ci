@@ -28,6 +28,7 @@ use serde::Deserialize;
 use serde::Serialize;
 use sha2::Digest as ShaDigest;
 use sha2::Sha256;
+use sqlx::ConnectOptions;
 use sqlx::Row;
 use sqlx::sqlite::SqliteConnectOptions;
 use sqlx::sqlite::SqliteJournalMode;
@@ -393,7 +394,12 @@ async fn checkpoint_sqlite(database: &Path) -> Result<()> {
         .journal_mode(SqliteJournalMode::Wal)
         .synchronous(SqliteSynchronous::Full)
         .foreign_keys(true)
-        .busy_timeout(Duration::from_secs(30));
+        .busy_timeout(Duration::from_secs(30))
+        .disable_statement_logging();
+    #[expect(
+        clippy::disallowed_methods,
+        reason = "offline backup retains the live AuthBus owner fence; this non-creating FULL/WAL single-connection pool only checks and checkpoints that database"
+    )]
     let pool = SqlitePoolOptions::new()
         .max_connections(1)
         .connect_with(connect)

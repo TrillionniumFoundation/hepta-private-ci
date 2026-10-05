@@ -15,6 +15,10 @@ pub(crate) async fn verify_schema(
     pool: &SqlitePool,
     migrator: &Migrator,
 ) -> Result<(), AuthBusAuthorityError> {
+    #[expect(
+        clippy::disallowed_methods,
+        reason = "isolated single-connection in-memory migration oracle contains no authority rows and never opens a persistent database"
+    )]
     let reference = SqlitePoolOptions::new()
         .max_connections(1)
         .connect("sqlite::memory:")
