@@ -748,7 +748,17 @@ fn named_agentd_pipeline_stages_exact_registry_bytes_for_app_server_host() {
         .unwrap_or_else(|error| panic!("prepare staged product prompt: {error}"))
         .unwrap_or_else(|| panic!("staged attachment missing"));
     assert_eq!(staged.developer_fragments.len(), 1);
-    assert_eq!(staged.developer_fragments[0].text.as_bytes(), payload);
+    let bundle: serde_json::Value =
+        serde_json::from_str(&staged.developer_fragments[0].text).expect("canonical bundle");
+    assert_eq!(bundle["schema"], "hepta.context-bundle.v2");
+    let items = bundle["items"].as_array().expect("canonical bundle items");
+    assert_eq!(items.len(), 1);
+    assert_eq!(items[0]["item_id"], "realization:agentd-product");
+    assert_eq!(items[0]["role"], "trusted_instruction");
+    assert_eq!(
+        items[0]["content"],
+        std::str::from_utf8(payload).expect("fixture payload")
+    );
 }
 
 #[test]

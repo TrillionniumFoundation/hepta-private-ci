@@ -7,6 +7,7 @@
 #![forbid(unsafe_code)]
 
 mod admission;
+mod context_authority;
 mod delivery;
 mod durable;
 mod protocol;
@@ -33,6 +34,11 @@ pub use admission::final_use_admission_binding;
 pub use admission::final_use_realization_binding;
 pub use admission::final_use_retire_binding;
 pub use admission::final_use_revoke_binding;
+pub use context_authority::PromptContextAuthorityAdmissionV3;
+pub use context_authority::PromptContextAuthorityErrorV3;
+pub use context_authority::PromptContextAuthoritySnapshotV3;
+pub use context_authority::PromptContextAuthoritySuccessorV3;
+pub use context_authority::prompt_context_authority_verifier_digest_v3;
 pub use delivery::MAX_REALIZATION_PAYLOAD_BYTES;
 pub use delivery::RealizationDeliveryV2;
 pub use durable::DurablePromptRegistry;

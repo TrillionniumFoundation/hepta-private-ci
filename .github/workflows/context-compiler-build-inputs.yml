@@ -1,0 +1,117 @@
+name: context-compiler-build-inputs
+
+on:
+  push:
+    branches: [codex/context-compiler-v3-closure-20260928]
+    paths: [.github/workflows/context-compiler-build-inputs.yml]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# Developer inputs only. This read-only job exports pinned tooling for the exact candidate; it never repairs source or grants qualification.
+jobs:
+  source:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - name: Export immutable tracked source without Git credentials
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/context-source-inputs"
+          mkdir -p "$output"
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          git archive --format=tar HEAD | gzip -n > "$output/source.tar.gz"
+          git rev-parse HEAD > "$output/source-sha.txt"
+          git rev-parse HEAD^{tree} > "$output/source-tree.txt"
+          (cd "$output" && sha256sum source.tar.gz > SHA256SUMS)
+          git diff --exit-code
+          git diff --cached --exit-code
+          test -z "$(git ls-files --others --exclude-standard)"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: context-compiler-source-${{ github.sha }}
+          path: ${{ runner.temp }}/context-source-inputs/
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
+  compiler:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+          components: rustfmt,clippy
+      - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532
+        with:
+          tool: just@1.51.0,cargo-nextest@0.9.103
+      - name: Export pinned tools without credentials or configuration
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/context-compiler-inputs"
+          mkdir -p "$output/bin"
+          tar -C "$(rustc --print sysroot)" -czf "$output/compiler.tar.gz" .
+          install -m 0755 "$(command -v just)" "$output/bin/just"
+          install -m 0755 "$(command -v cargo-nextest)" "$output/bin/cargo-nextest"
+          tar -C "$output" -czf "$output/test-tools.tar.gz" bin
+          printf '%s\n' "$GITHUB_SHA" > "$output/source-sha.txt"
+          rustc -Vv > "$output/rustc.txt"
+          (cd "$output" && sha256sum compiler.tar.gz test-tools.tar.gz > SHA256SUMS)
+          git diff --exit-code
+          git diff --cached --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: context-compiler-tools-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/context-compiler-inputs/*.tar.gz
+            ${{ runner.temp }}/context-compiler-inputs/SHA256SUMS
+            ${{ runner.temp }}/context-compiler-inputs/source-sha.txt
+            ${{ runner.temp }}/context-compiler-inputs/rustc.txt
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error
+  dependencies:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582
+        with:
+          toolchain: 1.95.0
+      - name: Export only locked dependency sources
+        working-directory: codex-rs
+        shell: bash
+        run: |
+          set -euo pipefail
+          output="$RUNNER_TEMP/context-dependency-inputs"
+          mkdir -p "$output"
+          cargo vendor --locked --versioned-dirs "$output/vendor" > "$output/offline-config.toml"
+          sha256sum Cargo.lock > "$output/lock.sha256"
+          printf '%s\n' "$GITHUB_SHA" > "$output/source-sha.txt"
+          tar -C "$output" -czf "$output/dependencies.tar.gz" vendor offline-config.toml lock.sha256 source-sha.txt
+          (cd "$output" && sha256sum dependencies.tar.gz > SHA256SUMS)
+          git diff --exit-code
+          git diff --cached --exit-code
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: context-compiler-dependencies-${{ github.sha }}
+          path: |
+            ${{ runner.temp }}/context-dependency-inputs/dependencies.tar.gz
+            ${{ runner.temp }}/context-dependency-inputs/SHA256SUMS
+          retention-days: 3
+          compression-level: 0
+          if-no-files-found: error

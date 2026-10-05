@@ -2,8 +2,8 @@
   "schema": "hepta.module-implementation-map.v3",
   "schemaVersion": 3,
   "sourceBase": {
-    "commit": "a218f469530f9afc53fbd6758109f79a29912548",
-    "tree": "d3f608c46ac02909112609d7c065c0958200ad29"
+    "commit": "1b764eea5b326c10a54b4e7f5415d98062a2eb80",
+    "tree": "7957d082a0845ce0030aeb87fbefbd49fdf620d5"
   },
   "laneId": "LANE-B-RUNTIME",
   "module": "runtime.agentd",
@@ -344,7 +344,7 @@
   "sourceObjects": [
     {
       "path": "codex-rs/hepta-agentd",
-      "object": "2b8596e4410642981a52fc857c5eafa9ae692108"
+      "object": "3fcc8e4703d3745b5a9d4b3563eff724bb9d956a"
     },
     {
       "path": "codex-rs/hepta-agentd/src/lane_b_runtime.rs",
@@ -380,15 +380,15 @@
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_control.rs",
-      "object": "e7c2f88a5dd4c4414ce13a3060b7b8ccea934e28"
+      "object": "d861151acf005511e0362c8d69b2b17d01436316"
     },
     {
       "path": "codex-rs/hepta-agentd/src/state_isolation_tests.rs",
-      "object": "4abb3ded6c18ff0deb6bc3a2b8aa417c512be3d0"
+      "object": "ef90d7f993365627c4fcbc69d3b75b380958738d"
     },
     {
       "path": "codex-rs/hepta-agentd/tests/terminal_cell_owner.rs",
-      "object": "e6a6e032c59f36859327c08bbbcc0c0c7353b399"
+      "object": "dc06eca8abfc6c85e1f32ea0846c75dd9883d80e"
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start.rs",
@@ -405,6 +405,35 @@
     {
       "path": "docs/modules/runtime.agentd/TECHNICAL.md",
       "object": "cb5c75c1eb3abe1e402c26b011e51703f501ca67"
+    }
+  ],
+  "historicalNavigationAnchors": [
+    {
+      "sourceBase": {
+        "commit": "a1b12d46638ed6606f3f3536c72266ea8cff52ed",
+        "tree": "44f97a581e2b6cb85438354c7e8a6f0c60256b4f"
+      },
+      "observedAtHead": null,
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "e2d1c12855e7f598c317b83b76cecab79b6e1d4a",
+        "tree": "e93854c35e2deb4e7a8ef4c4b0d67574ceeeb33b"
+      },
+      "observedAtHead": null,
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
+    },
+    {
+      "sourceBase": {
+        "commit": "bf0941d1df7a86e0d72a21978ff07f998f67dfa4",
+        "tree": "11da89a244340ac4df2b835274c49cc2ac79a01a"
+      },
+      "observedAtHead": null,
+      "disposition": "historical_source_navigation_only",
+      "executionEvidenceTransferred": false
     }
   ]
 }

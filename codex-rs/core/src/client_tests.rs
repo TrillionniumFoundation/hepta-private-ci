@@ -17,6 +17,7 @@ use crate::GenerateAttestationFuture;
 use crate::config::Config;
 use crate::model_provider_policy::ModelProviderPolicyContext;
 use crate::responses_metadata::CodexResponsesMetadata;
+use crate::responses_metadata::CodexResponsesRequestKind;
 use crate::test_support::TestCodexResponsesRequestKind;
 use crate::test_support::responses_metadata as test_responses_metadata;
 use codex_api::AgentIdentityTelemetry;
@@ -330,10 +331,104 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         "window-a".to_string(),
     );
     metadata_a.sandbox_mode = Some("workspace-write".to_string());
+    metadata_a.request_kind = Some(CodexResponsesRequestKind::Turn);
+    metadata_a.root_turn_id = Some("root-turn-a".to_string());
     metadata_a.turn_started_at_unix_ms = Some(1);
     let identity_a =
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
             .expect("identity a");
+
+    let mut prewarm_metadata = metadata_a.clone();
+    prewarm_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
+    prewarm_metadata.root_turn_id = None;
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &prewarm_metadata,
+        )
+        .expect("prewarm connection identity")
+    );
+    let prewarm_recovery =
+        serde_json::to_value(prewarm_metadata.turn_recovery_compatibility_projection())
+            .expect("prewarm recovery identity");
+    let turn_recovery = serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+        .expect("turn recovery identity");
+    assert_ne!(prewarm_recovery, turn_recovery);
+    assert_eq!(prewarm_recovery["request_kind"], "prewarm");
+    let mut expected_connection = prewarm_recovery.clone();
+    expected_connection
+        .as_object_mut()
+        .expect("typed projection object")
+        .remove("request_kind");
+    assert_eq!(
+        serde_json::to_value(prewarm_metadata.websocket_connection_compatibility_projection())
+            .expect("connection projection"),
+        expected_connection,
+    );
+
+    assert!(prewarm_recovery.get("root_turn_id").is_none());
+    assert_eq!(turn_recovery["root_turn_id"], "root-turn-a");
+    assert!(
+        !prewarm_metadata
+            .client_metadata()
+            .contains_key("root_turn_id")
+    );
+    assert_eq!(
+        metadata_a
+            .client_metadata()
+            .get("root_turn_id")
+            .map(String::as_str),
+        Some("root-turn-a"),
+    );
+    let mut expected_turn_connection = turn_recovery.clone();
+    expected_turn_connection
+        .as_object_mut()
+        .expect("typed projection object")
+        .remove("root_turn_id");
+    assert_eq!(
+        serde_json::to_value(metadata_a.websocket_connection_compatibility_projection())
+            .expect("turn connection projection"),
+        expected_turn_connection,
+    );
+    let mut later_root = metadata_a.clone();
+    later_root.root_turn_id = Some("root-turn-b".to_string());
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &later_root)
+            .expect("root correlation does not change the connection"),
+    );
+    assert_ne!(
+        turn_recovery,
+        serde_json::to_value(later_root.turn_recovery_compatibility_projection())
+            .expect("later root recovery identity"),
+    );
+    assert_eq!(
+        later_root
+            .client_metadata()
+            .get("root_turn_id")
+            .map(String::as_str),
+        Some("root-turn-b"),
+    );
+
+    let mut other_kind = metadata_a.clone();
+    other_kind.request_kind = Some(CodexResponsesRequestKind::Memory);
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &other_kind)
+            .expect("memory connection identity"),
+    );
+    prewarm_metadata.sandbox_mode = Some("danger-full-access".to_string());
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &prewarm_metadata,
+        )
+        .expect("prewarm cannot bypass a changed sandbox boundary"),
+    );
 
     let mut volatile_metadata = metadata_a.clone();
     volatile_metadata.session_id = "session-after-restart".to_string();
@@ -365,6 +460,48 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-b"), &metadata_a,)
             .expect("changed beta identity")
     );
+
+    let mut changed_parent = metadata_a.clone();
+    changed_parent.parent_turn_id = Some("parent-turn-other".to_string());
+    let mut changed_agent = metadata_a.clone();
+    changed_agent.agent_name = Some("agent-other".to_string());
+    let mut changed_subagent = metadata_a.clone();
+    changed_subagent.subagent_header = Some("review".to_string());
+    let mut changed_extra = metadata_a.clone();
+    changed_extra
+        .extra
+        .insert("policy-context".to_string(), "other".to_string());
+    for changed in [
+        changed_parent,
+        changed_agent,
+        changed_subagent,
+        changed_extra,
+    ] {
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &changed)
+                .expect("changed compatibility metadata"),
+        );
+    }
+    let mut renamed_provider = provider.clone();
+    renamed_provider.name = "provider-other".to_string();
+    let mut changed_query = provider.clone();
+    changed_query.query_params = Some(HashMap::from([(
+        "api-version".to_string(),
+        "different".to_string(),
+    )]));
+    let mut changed_headers = provider.clone();
+    changed_headers.headers.insert(
+        http::header::AUTHORIZATION,
+        http::HeaderValue::from_static("Bearer different-test-credential"),
+    );
+    for changed in [renamed_provider, changed_query, changed_headers] {
+        assert_ne!(
+            identity_a,
+            WebsocketConnectionIdentity::from_provider(&changed, Some("feature-a"), &metadata_a)
+                .expect("changed provider setup"),
+        );
+    }
 
     let mut changed_provider = provider;
     changed_provider.base_url = "https://other.example.test/v1".to_string();
@@ -871,8 +1008,10 @@ async fn dropped_response_stream_traces_cancelled_partial_output() -> anyhow::Re
     let api_stream = futures::stream::iter([Ok(ResponseEvent::OutputItemDone(item))])
         .chain(futures::stream::pending());
     let (mut stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
-        api_stream,
+        super::UpstreamResponse {
+            upstream_request_id: None,
+            events: api_stream,
+        },
         test_session_telemetry(),
         attempt,
         test_model_provider(),
@@ -924,8 +1063,10 @@ async fn response_stream_records_last_model_feedback_ids() {
         }),
     ]);
     let (mut stream, _) = super::map_response_events(
-        Some("req-123".to_string()),
-        api_stream,
+        super::UpstreamResponse {
+            upstream_request_id: Some("req-123".to_string()),
+            events: api_stream,
+        },
         test_session_telemetry(),
         InferenceTraceAttempt::disabled(),
         test_model_provider(),
@@ -1060,8 +1201,10 @@ async fn ephemeral_unauthorized_and_stream_errors_are_redacted() -> anyhow::Resu
         message: SENTINEL.to_string(),
     })]);
     let (mut stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
-        api_stream,
+        super::UpstreamResponse {
+            upstream_request_id: None,
+            events: api_stream,
+        },
         test_session_telemetry(),
         attempt,
         provider,
@@ -1244,8 +1387,10 @@ async fn dropped_backpressured_response_stream_traces_cancelled_partial_output()
     };
 
     let (stream, _) = super::map_response_events(
-        /*upstream_request_id*/ None,
-        api_stream,
+        super::UpstreamResponse {
+            upstream_request_id: None,
+            events: api_stream,
+        },
         test_session_telemetry(),
         attempt,
         test_model_provider(),

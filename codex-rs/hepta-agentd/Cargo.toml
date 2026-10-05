@@ -14,12 +14,27 @@ doctest = false
 # Agentd is the named Hepta product host for scoped cognitive mutations. This
 # default is local to the Agentd crate; ordinary Codex/App Server binaries do
 # not enable HeptaCognitiveWrite by default.
-default = ["production-cognitive-write"]
+default = ["production-cognitive-write", "prompt-context-v3"]
 production-cognitive-write = []
+# The canonical V3 context path is the existing prompt_runtime plus
+# exact_context_delivery owner. This feature never registers the historical
+# alternate prompt_product_v3 owner.
+prompt-context-v3 = [
+    "codex-hepta-intelligence/prompt-context-v3",
+    "codex-hepta-prompt-registry/prompt-context-v3",
+]
+# Test-only fixtures may exercise signer/executor seams without exposing them
+# through the production product profile.
+qualification-context-fixtures = [
+    "prompt-context-v3",
+    "codex-hepta-intelligence/qualification-context-fixtures",
+    "codex-hepta-prompt-registry/qualification-context-fixtures",
+]
 # Adds the qualification-only turn-lifecycle witness seam on top of the real
 # product mutation profile. It never substitutes for production authority.
 qualification-cognitive-write = ["production-cognitive-write"]
 qualification-legacy-learning-write = ["codex-hepta-learning-ledger/qualification-legacy-write"]
+legacy-prompt-context-v1 = ["codex-hepta-intelligence/legacy-prompt-context-v1"]
 
 [[bin]]
 name = "codex-hepta-agentd"
@@ -50,14 +65,14 @@ codex-hepta-agent-protocol = { workspace = true }
 codex-hepta-automation = { workspace = true }
 codex-hepta-bellman-operator = { path = "../hepta-bellman-operator" }
 codex-hepta-learning-artifacts = { path = "../hepta-learning-artifacts" }
-codex-hepta-intelligence = { path = "../hepta-intelligence" }
+codex-hepta-intelligence = { path = "../hepta-intelligence", default-features = false }
 codex-hepta-intuition = { path = "../hepta-intuition" }
 codex-hepta-learning-ledger = { path = "../hepta-learning-ledger" }
 codex-hepta-authbus = { path = "../hepta-authbus" }
 codex-hepta-evidence = { workspace = true }
 codex-hepta-contracts = { workspace = true }
 codex-hepta-codex-adapter = { workspace = true }
-codex-hepta-prompt-registry = { path = "../hepta-prompt-registry" }
+codex-hepta-prompt-registry = { path = "../hepta-prompt-registry", default-features = false }
 codex-hepta-prompt-optimizer = { path = "../hepta-prompt-optimizer" }
 codex-hepta-cognitive-read = { path = "../hepta-cognitive-read" }
 codex-hepta-cognitive-store = { path = "../hepta-cognitive-store" }
@@ -83,6 +98,7 @@ codex-utils-home-dir = { workspace = true }
 codex-state = { workspace = true }
 ed25519-dalek = { workspace = true }
 http = { workspace = true }
+libc = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
 sha2 = { workspace = true }
@@ -91,6 +107,7 @@ tokio = { workspace = true, features = [
     "fs",
     "io-util",
     "macros",
+    "process",
     "rt-multi-thread",
     "signal",
     "sync",
