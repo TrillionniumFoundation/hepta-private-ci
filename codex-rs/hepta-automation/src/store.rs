@@ -2,6 +2,7 @@
 use std::fs;
 use std::path::Path;
 use std::path::PathBuf;
+use std::sync::Arc;
 
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -29,6 +30,10 @@ use crate::taskflow::verify_taskflow_store;
 mod store_path;
 use store_path::create_private_directory;
 
+#[path = "uncertain_dispatch_scan.rs"]
+mod uncertain_dispatch_scan;
+pub use uncertain_dispatch_scan::AutomationUncertainDispatchScan;
+
 const AUTOMATION_DB_FILENAME: &str = "automation_1.sqlite3";
 const MAX_TASK_PAGE: usize = 1_024;
 static MIGRATOR: sqlx::migrate::Migrator = sqlx::migrate!("./migrations");
@@ -39,6 +44,7 @@ pub struct AutomationStore {
     owner_agent_id: AgentId,
     path: PathBuf,
     timer_epoch: i64,
+    uncertainty_scan_identity: Arc<()>,
 }
 
 impl AutomationStore {
@@ -95,6 +101,7 @@ impl AutomationStore {
             owner_agent_id,
             path,
             timer_epoch,
+            uncertainty_scan_identity: Arc::new(()),
         })
     }
 
