@@ -1263,7 +1263,8 @@ url = "ws://127.0.0.1:8765"
         let snapshot_task = tokio::spawn({
             let environments = Arc::clone(&environments);
             async move { environments.snapshot().await }
-        });
+        }
+        .with_current_subscriber());
         tokio::task::yield_now().await;
         assert!(!snapshot_task.is_finished());
 

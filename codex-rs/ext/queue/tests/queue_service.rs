@@ -163,10 +163,10 @@ fn python_hook_command(script_path: &Path) -> String {
             .map(|directory| directory.join("python.exe"))
             .find(|candidate| candidate.is_file())
             .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
-        // Command hooks run through cmd.exe on Windows. Quote the resolved
-        // interpreter because Bazel's Python installation is not necessarily
-        // present on the hook subprocess PATH.
-        return format!("\"{}\" \"{}\"", python.display(), script_path.display());
+        // Windows test sessions use PowerShell. Its call operator is required
+        // when the resolved interpreter is quoted; without it, the command is
+        // parsed as string expressions and the hook never starts.
+        return format!("& \"{}\" \"{}\"", python.display(), script_path.display());
     }
 
     #[cfg(not(windows))]
