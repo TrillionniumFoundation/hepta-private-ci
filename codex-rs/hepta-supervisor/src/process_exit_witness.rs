@@ -72,6 +72,10 @@ pub enum ProcessExitWitnessError {
 }
 
 impl ProcessExitWitnessV1 {
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "keep the complete V1 exit witness inputs explicit"
+    )]
     fn new(
         agent_id: AgentId,
         lifecycle_generation: u64,
@@ -179,6 +183,10 @@ impl ProcessExitWitnessV1 {
     }
 }
 
+#[expect(
+    clippy::too_many_arguments,
+    reason = "preserve the V1 exact-process exit recording API"
+)]
 pub fn record_process_exit(
     run_root: &Path,
     agent_id: &AgentId,

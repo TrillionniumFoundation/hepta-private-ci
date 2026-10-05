@@ -132,7 +132,17 @@ async fn cancelled_daemon_never_submits_a_read() {
 #[tokio::test(flavor = "current_thread")]
 async fn lock_contention_consumes_the_original_wait_budget() {
     let (reader, receiver) = reader();
-    let held = reader.pending.lock().await;
+    let (locked, ready) = oneshot::channel();
+    let (release, resume) = mpsc::channel();
+    let contender = Arc::clone(&reader);
+    let holder = std::thread::spawn(move || {
+        let _held = contender.pending.blocking_lock();
+        locked.send(()).expect("notify pending lock is held");
+        resume
+            .recv_timeout(Duration::from_secs(5))
+            .expect("release pending lock");
+    });
+    ready.await.expect("pending lock acquired");
     let cancellation = CancellationToken::new();
     let result = tokio::time::timeout(
         Duration::from_millis(500),
@@ -146,7 +156,8 @@ async fn lock_contention_consumes_the_original_wait_budget() {
     .unwrap();
     assert!(matches!(result, ReadResult::Busy));
     assert!(receiver.try_recv().is_err());
-    drop(held);
+    release.send(()).expect("release pending lock holder");
+    holder.join().expect("pending lock holder stopped");
 }
 
 #[tokio::test(flavor = "current_thread")]

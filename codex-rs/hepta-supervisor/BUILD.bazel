@@ -20,6 +20,19 @@ codex_rust_crate(
             ],
         },
     },
+    # Mirror Cargo target eligibility without activating an unavailable profile.
+    binary_required_features = {
+        "hepta-authority-signer": ["offline-authority-tools"],
+        "hepta-final-use-approver": ["offline-authority-tools"],
+        "hepta-final-use-revocation-signer": ["offline-authority-tools"],
+        "hepta-final-use-signer": ["offline-authority-tools"],
+        "hepta-fleetctl": [],
+        "hepta-model-authority": ["local-model-authority"],
+        "hepta-supervisor-authority-bundle": ["offline-authority-tools"],
+        "hepta-supervisor-intent-recovery": [],
+        "hepta-supervisor-recovery-diagnose": [],
+        "hepta-supervisord": [],
+    },
     crate_name = "codex_hepta_supervisor",
     owner_test_dependency_replacements = {
         "//codex-rs/hepta-fleet": "//codex-rs/hepta-fleet:hepta-fleet-supervisor-owner-test-lib",

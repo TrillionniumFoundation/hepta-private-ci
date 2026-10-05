@@ -46,6 +46,13 @@ fn protected_directory(path: &Path) -> Result<(), SupervisorError> {
 }
 
 impl ControllerPeerGate {
+    #[cfg_attr(
+        not(any(test, feature = "local-host")),
+        expect(
+            dead_code,
+            reason = "gateway enrollment is opened only by local-host and tests"
+        )
+    )]
     pub(crate) fn open(
         principal: ControllerPrincipal,
         fleet_cgroup: &str,

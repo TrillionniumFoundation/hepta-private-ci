@@ -25,6 +25,10 @@ pub(crate) const PROCESS_PROOF_QUERY: &str = "SELECT context_json, boot_identity
 
 /// A prepared launch may execute its initialization before the parent commits
 /// the native PID binding. Only `Bound` establishes the enrolled main process.
+#[expect(
+    clippy::large_enum_variant,
+    reason = "preserve the public inline Bound payload without adding an allocation for verified bindings"
+)]
 #[derive(Clone, Debug, Eq, PartialEq)]
 pub enum FleetProcessBinding {
     PendingBinding,

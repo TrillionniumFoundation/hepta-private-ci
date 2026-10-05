@@ -554,6 +554,10 @@ impl AgentdRequest {
         }
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "preserve the public abort builder's generation, revision and proof fields"
+    )]
     pub fn run_abort_before_effect(
         request_id: u64,
         spawn_generation: u64,

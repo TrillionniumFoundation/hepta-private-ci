@@ -96,11 +96,11 @@ use crate::daemon_protocol::SupervisorEpoch;
 use crate::daemon_protocol::SupervisordAgentStatus;
 #[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordControlFence;
-#[cfg(unix)]
+#[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordHealth;
 #[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordMatrixStatus;
-#[cfg(unix)]
+#[cfg(any(unix, test))]
 use crate::daemon_protocol::SupervisordMethod;
 #[cfg(unix)]
 use crate::daemon_protocol::SupervisordMutation;
@@ -299,11 +299,19 @@ async fn run_supervisord_inner(
     .map_err(|error| {
         SupervisorError::Invalid(format!("open durable runtime-module supervisor: {error}"))
     })?;
-    let mut driver =
+    let driver =
         UnixProcessDriver::new(256).map_err(|error| SupervisorError::Invalid(error.to_string()))?;
-    let mut selection_uids = std::collections::BTreeSet::from([unsafe { libc::geteuid() }]);
-    let mut selection_gid = unsafe { libc::getegid() };
-    let mut observer_principal = None;
+    #[cfg(any(not(target_os = "linux"), feature = "local-host"))]
+    let mut driver = driver;
+    let selection_uids = std::collections::BTreeSet::from([unsafe { libc::geteuid() }]);
+    #[cfg(any(not(target_os = "linux"), feature = "local-host"))]
+    let mut selection_uids = selection_uids;
+    let selection_gid = unsafe { libc::getegid() };
+    #[cfg(any(not(target_os = "linux"), feature = "local-host"))]
+    let mut selection_gid = selection_gid;
+    let observer_principal = None;
+    #[cfg(any(not(target_os = "linux"), feature = "local-host"))]
+    let mut observer_principal = observer_principal;
     #[cfg(all(target_os = "linux", feature = "local-host"))]
     let mut controller_gate: Option<crate::controller_peer::ControllerPeerGate> = None;
     #[cfg(all(target_os = "linux", not(feature = "local-host")))]

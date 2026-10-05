@@ -254,6 +254,7 @@ fn decode_round(hex: &str) -> Result<Vec<u8>, AgentdError> {
         .collect()
 }
 
+#[cfg(unix)]
 pub(crate) fn protected_context_bytes(
     path: &Path,
     pin: Digest32,
@@ -310,6 +311,19 @@ pub(crate) fn protected_context_bytes(
     }
     Ok(bytes)
 }
+
+#[cfg(not(unix))]
+pub(crate) fn protected_context_bytes(
+    _path: &Path,
+    _pin: Digest32,
+    _max: u64,
+) -> Result<Vec<u8>, AgentdError> {
+    invalid("protected context requires Unix file identity and Root custody")
+}
+
+#[cfg(all(test, not(unix)))]
+#[path = "plasticity_input_context_v2_platform_tests.rs"]
+mod platform_tests;
 
 // Runtime model identity remains stable across sparse generations. The selected
 // artifact is independently versioned by the original CURRENT registry.

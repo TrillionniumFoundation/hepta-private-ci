@@ -5,6 +5,7 @@ use std::path::PathBuf;
 
 use codex_hepta_agent_components::learning_artifacts::ArtifactOwnerTrustV1;
 use codex_hepta_agent_components::learning_artifacts::DatasetWithdrawalRegistry;
+#[cfg(target_os = "linux")]
 use codex_hepta_agent_components::learning_artifacts::ReadOnlyArtifactCurrentOwnerV1;
 use codex_hepta_agent_components::learning_artifacts::VerifiedCurrentRegistryViewV1;
 
@@ -12,10 +13,15 @@ use codex_hepta_agent_components::learning_artifacts::VerifiedCurrentRegistryVie
 /// withdrawal changes require an explicit new composition; a changed frontier
 /// never falls back to a previously verified snapshot.
 pub struct CurrentArtifactRegistrySourceV1 {
+    #[cfg(any(target_os = "linux", test))]
     source: Source,
+    #[cfg(not(any(target_os = "linux", test)))]
+    _private: (),
 }
 
+#[cfg(any(target_os = "linux", test))]
 enum Source {
+    #[cfg(target_os = "linux")]
     Protected {
         root: PathBuf,
         trust: Box<ArtifactOwnerTrustV1>,
@@ -28,6 +34,7 @@ enum Source {
 }
 
 impl CurrentArtifactRegistrySourceV1 {
+    #[cfg(target_os = "linux")]
     pub fn open(
         root: PathBuf,
         trust: ArtifactOwnerTrustV1,
@@ -44,6 +51,15 @@ impl CurrentArtifactRegistrySourceV1 {
         Ok(source)
     }
 
+    #[cfg(not(target_os = "linux"))]
+    pub fn open(
+        _root: PathBuf,
+        _trust: ArtifactOwnerTrustV1,
+        _withdrawals: DatasetWithdrawalRegistry,
+    ) -> Result<Self, String> {
+        Err("protected artifact CURRENT owner requires Linux".to_string())
+    }
+
     /// The public consumer cannot supply an earlier verification time.
     pub fn current(&self) -> Result<VerifiedCurrentRegistryViewV1, String> {
         let now = crate::authbus_ingress::now_ms().map_err(|error| error.to_string())?;
@@ -51,8 +67,10 @@ impl CurrentArtifactRegistrySourceV1 {
     }
 
     // Only the daemon's private clock/final-admission guard calls this method.
+    #[cfg(any(target_os = "linux", test))]
     pub(crate) fn read_at(&self, now: u64) -> Result<VerifiedCurrentRegistryViewV1, String> {
         let current = match &self.source {
+            #[cfg(target_os = "linux")]
             Source::Protected {
                 root,
                 trust,
@@ -74,6 +92,11 @@ impl CurrentArtifactRegistrySourceV1 {
         Ok(current)
     }
 
+    #[cfg(not(any(target_os = "linux", test)))]
+    pub(crate) fn read_at(&self, _now: u64) -> Result<VerifiedCurrentRegistryViewV1, String> {
+        Err("protected artifact CURRENT owner requires Linux".to_string())
+    }
+
     #[cfg(test)]
     pub(crate) fn fixture(
         reader: impl Fn(u64) -> Result<VerifiedCurrentRegistryViewV1, String> + Send + Sync + 'static,
@@ -83,3 +106,7 @@ impl CurrentArtifactRegistrySourceV1 {
         }
     }
 }
+
+#[cfg(test)]
+#[path = "current_artifact_registry_tests.rs"]
+mod tests;

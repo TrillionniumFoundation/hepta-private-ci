@@ -34,8 +34,8 @@ impl FleetRegistry {
                 let Some(name_text) = name.to_str() else {
                     continue;
                 };
-                if !name_text.starts_with("supervisor-")
-                    && !(name_text.starts_with("lifecycle-") && name_text.ends_with(".json"))
+                if !(name_text.starts_with("supervisor-")
+                    || name_text.starts_with("lifecycle-") && name_text.ends_with(".json"))
                 {
                     continue;
                 }

@@ -132,6 +132,10 @@ impl DurableFleetStore {
         }
     }
 
+    #[expect(
+        clippy::too_many_arguments,
+        reason = "preserve the public mutation signature and keep authority and lease preconditions explicit"
+    )]
     pub async fn mutate_lease_authorized(
         &self,
         authority: &FleetAuthorityPort,

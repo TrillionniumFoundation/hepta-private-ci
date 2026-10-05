@@ -162,6 +162,30 @@ Repository-controlled verification for this change includes at least:
 
 These are test identities, not target-host deployment receipts. CI must pass on the final source commit, and the target-host matrix in section 4 remains required.
 
+### 7.1 Bazel binary eligibility and the pending local authority profile
+
+The ordinary Bazel configuration records Cargo `required-features` for every
+Supervisor binary. Eligibility uses the Rust features selected for that binary,
+including its existing private feature group, rather than the wider workspace
+resolution. A binary with unmet requirements is omitted from executable and
+binary-unit-test targets, integration-test data, and `CARGO_BIN_EXE` references.
+Cargo `test = false` alone is not used to remove a failing binary.
+
+The current broad CI runs the generated target graph through `//...` and Windows
+test shards. For this change, passing that CI establishes only the configured
+eligible graph. It does not establish compilation or execution of an omitted
+feature profile. The existing offline-authority group retains its declared
+features and qualification obligations.
+
+`hepta-model-authority` requires `local-model-authority`, which this ordinary
+configuration does not enable. Its explicit feature/dependency closure, native
+compilation, execution, and independently identified profile gate remain
+**pending**. A successful ordinary CI result must not mark that profile qualified
+or replace a required product gate. This source repair changes neither required
+CI declarations nor default authority or permissions, and does not lift any
+existing stop on that profile. Any future profile qualification remains separate
+from this default target-selection repair.
+
 ## 8. Current claim boundary
 
 This source change can close repository-controlled implementation gaps only after CI passes. It does not by itself close:
