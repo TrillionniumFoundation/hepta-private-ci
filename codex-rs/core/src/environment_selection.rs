@@ -1260,11 +1260,13 @@ url = "ws://127.0.0.1:8765"
         ));
         environments
             .update_selections(std::slice::from_ref(&selection), &test_environment_config());
-        let snapshot_task = tokio::spawn({
-            let environments = Arc::clone(&environments);
-            async move { environments.snapshot().await }
-        }
-        .with_current_subscriber());
+        let snapshot_task = tokio::spawn(
+            {
+                let environments = Arc::clone(&environments);
+                async move { environments.snapshot().await }
+            }
+            .with_current_subscriber(),
+        );
         tokio::task::yield_now().await;
         assert!(!snapshot_task.is_finished());
 
