@@ -112,23 +112,14 @@ script_mod! {
 pub struct MainConversationUI {
     #[deref]
     view: View,
+    #[rust]
+    owner_refresh_rendered: Option<(WidgetUid, bool)>,
 }
 impl Widget for MainConversationUI {
     fn handle_event(&mut self, cx: &mut Cx, event: &Event, scope: &mut Scope) {
         self.view.handle_event(cx, event, scope);
     }
     fn draw_walk(&mut self, cx: &mut Cx2d, scope: &mut Scope, walk: Walk) -> DrawStep {
-        let status = cx
-            .global::<crate::runtime_status::RuntimeDisplay>()
-            .text
-            .clone();
-        let busy = cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
-        self.view
-            .button(cx, ids!(owner_refresh))
-            .set_enabled(cx, cfg!(target_arch = "wasm32") && !busy);
-        self.view
-            .label(cx, ids!(console_status))
-            .set_text(cx, &status);
         // This child is created lazily by the outer layout Dock. Select here,
         // before its first draw, so a cached Console stays Console on resize.
         if let Some(workspace) = scope.data.get::<ChatWorkspace>() {
@@ -141,7 +132,27 @@ impl Widget for MainConversationUI {
                 },
             );
         }
-        self.view.draw_walk(cx, scope, walk)
+        let step = self.view.draw_walk(cx, scope, walk);
+        // Dock creates this child lazily during drawing. Apply only after it
+        // exists, and avoid ButtonRef::set_enabled's unconditional redraw loop.
+        let status = cx
+            .global::<crate::runtime_status::RuntimeDisplay>()
+            .text
+            .clone();
+        let enabled = cfg!(target_arch = "wasm32")
+            && !cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
+        let button = self.view.widget(cx, ids!(owner_refresh));
+        let key = (button.widget_uid(), enabled);
+        if !button.is_empty() && self.owner_refresh_rendered != Some(key) {
+            self.view
+                .button(cx, ids!(owner_refresh))
+                .set_enabled(cx, enabled);
+            self.owner_refresh_rendered = Some(key);
+        }
+        self.view
+            .label(cx, ids!(console_status))
+            .set_text(cx, &status);
+        step
     }
 }
 /// Only ordinary visible selection, used to invalidate retained draw lists.
@@ -157,6 +168,8 @@ pub struct HomeScreen {
     view: View,
     #[rust]
     mobile_page: Option<(LiveId, [WidgetUid; 3])>,
+    #[rust]
+    owner_refresh_rendered: Option<(WidgetUid, bool)>,
     #[rust]
     rendered: Option<RoomKey>,
     #[rust]
@@ -327,17 +340,6 @@ impl Widget for HomeScreen {
             } else {
                 id!(chat_page)
             };
-            let status = cx
-                .global::<crate::runtime_status::RuntimeDisplay>()
-                .text
-                .clone();
-            let busy = cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
-            self.view
-                .button(cx, ids!(mobile_owner_refresh))
-                .set_enabled(cx, cfg!(target_arch = "wasm32") && !busy);
-            self.view
-                .label(cx, ids!(mobile_console_status))
-                .set_text(cx, &status);
             self.view
                 .page_flip(cx, ids!(mobile_pages))
                 .set_active_page(cx, page);
@@ -367,7 +369,25 @@ impl Widget for HomeScreen {
                 .button(cx, ids!(mobile_theme_switch))
                 .set_enabled(cx, !workspace.composing);
         }
-        self.view.draw_walk(cx, scope, walk)
+        let step = self.view.draw_walk(cx, scope, walk);
+        let status = cx
+            .global::<crate::runtime_status::RuntimeDisplay>()
+            .text
+            .clone();
+        let enabled = cfg!(target_arch = "wasm32")
+            && !cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
+        let button = self.view.widget(cx, ids!(mobile_owner_refresh));
+        let key = (button.widget_uid(), enabled);
+        if !button.is_empty() && self.owner_refresh_rendered != Some(key) {
+            self.view
+                .button(cx, ids!(mobile_owner_refresh))
+                .set_enabled(cx, enabled);
+            self.owner_refresh_rendered = Some(key);
+        }
+        self.view
+            .label(cx, ids!(mobile_console_status))
+            .set_text(cx, &status);
+        step
     }
 }
 #[derive(Script, ScriptHook, Widget)]

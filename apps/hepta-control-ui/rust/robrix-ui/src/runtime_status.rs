@@ -9,6 +9,12 @@ pub(crate) struct RuntimeDisplay {
 }
 impl Default for RuntimeDisplay {
     fn default() -> Self {
+        if !cfg!(target_arch = "wasm32") {
+            return Self {
+                text: "Read-only metadata is unavailable in this native product port. No native owner bridge is installed; chat and commands remain unavailable.".to_owned(),
+                busy: false,
+            };
+        }
         Self {
             text: format!(
                 "{}\n\nLegacy runtime observation\n{}",
