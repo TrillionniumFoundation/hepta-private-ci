@@ -105,5 +105,51 @@ class ProductUiMergeCheckoutTests(unittest.TestCase):
         )
 
 
+class ProductGatewayWorkflowTests(unittest.TestCase):
+    def setUp(self):
+        self.workflow = (
+            ROOT / ".github/workflows/ui-product-foundation.yml"
+        ).read_text()
+
+    def test_actual_entry_runs_between_default_and_fixture_renderers(self):
+        steps = [
+            "- id: default_browser",
+            "- id: product_gateway_build",
+            "- id: product_gateway_browser",
+            "- id: fixture_build",
+        ]
+        positions = [self.workflow.index(step) for step in steps]
+        self.assertEqual(positions, sorted(positions))
+        self.assertIn("--config=playwright.product.config.mjs", self.workflow)
+        self.assertIn("product-status-results.json", self.workflow)
+        self.assertIn("ui_product_preview.hepta-build.json", self.workflow)
+
+    def test_backend_pin_is_command_scoped_and_event_pair_unchanged(self):
+        self.assertIn("RUSTUP_TOOLCHAIN: 1.95.0", self.workflow)
+        self.assertIn(
+            "RUSTUP_TOOLCHAIN=1.96.0 python3 apps/hepta-control-ui/tools/build-product-preview.py",
+            self.workflow,
+        )
+        self.assertNotIn('RUSTUP_TOOLCHAIN=1.96.0" >>', self.workflow)
+        self.assertIn(
+            "base-sha: ${{ github.event.pull_request.base.sha }}", self.workflow
+        )
+        self.assertIn(
+            "source-sha: ${{ github.event.pull_request.head.sha }}", self.workflow
+        )
+        self.assertIn("contents: read", self.workflow)
+        self.assertNotIn("contents: write", self.workflow)
+
+    def test_gateway_changes_trigger_source_and_merge_evidence(self):
+        for path in (
+            "codex-rs/hepta-native-gateway/**",
+            "codex-rs/Cargo.toml",
+            "codex-rs/Cargo.lock",
+            "codex-rs/rust-toolchain.toml",
+        ):
+            self.assertIn("      - " + path, self.workflow)
+        self.assertIn("lane: [source-head, base-merge]", self.workflow)
+
+
 if __name__ == "__main__":
     unittest.main()

@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - apps/hepta-control-ui/**
+      - codex-rs/hepta-native-gateway/**
+      - codex-rs/Cargo.toml
+      - codex-rs/Cargo.lock
+      - codex-rs/rust-toolchain.toml
       - apps/hepta-native/resources/NATIVE-ASSETS.json
       - apps/hepta-native/resources/notices/Noto-Sans-CJK-2.004-OFL.txt
       - .github/workflows/ui-product-foundation.yml
@@ -134,6 +138,27 @@ jobs:
         env:
           SOURCE_SHA: ${{ env.SOURCE_SHA }}
         run: node apps/hepta-control-ui/tools/verify-robrix-evidence.mjs apps/hepta-control-ui/test-results/robrix-default default
+      - id: product_gateway_build
+        name: Build source-bound actual gateway preview
+        run: |
+          rustup toolchain install 1.96.0 --profile minimal
+          RUSTUP_TOOLCHAIN=1.96.0 python3 apps/hepta-control-ui/tools/build-product-preview.py --target-dir "$RUNNER_TEMP/product-gateway-target"
+      - id: product_gateway_browser
+        name: Exercise real gateway unavailable status and cancellation
+        working-directory: apps/hepta-control-ui
+        env:
+          HEPTA_GATEWAY_EXAMPLE: ${{ runner.temp }}/product-gateway-target/debug/examples/ui_product_preview
+        run: xvfb-run -a npx playwright test --config=playwright.product.config.mjs
+      - name: Preserve actual gateway evidence separately
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: product-gateway-${{ matrix.lane }}-${{ env.SOURCE_SHA }}
+          path: |
+            apps/hepta-control-ui/test-results/product-status/
+            apps/hepta-control-ui/test-results/product-status-results.json
+            ${{ runner.temp }}/product-gateway-target/debug/examples/ui_product_preview.hepta-build.json
+          if-no-files-found: warn
       - id: fixture_build
         if: always() && steps.default_build.outcome == 'success'
         name: Build explicitly labeled owner-fixture through the same renderer
