@@ -97,6 +97,8 @@ PRESENTATION_INPUTS = frozenset(
     {
         "README.md",
         "CONTRIBUTING.md",
+        ".github/workflows/README.md",
+        "scripts/ENTRYPOINTS.md",
         "docs/modules/SOURCE_BINDINGS.json",
         "docs/modules/MODULE_DOCS.json",
     }
@@ -483,12 +485,12 @@ def select_packages(paths: Iterable[str], before: Graph, after: Graph) -> dict:
         if path in SHARED or path in {f"{WORKSPACE}/{p}" for p in SHARED}:
             reasons.add(f"shared build input: {path}")
             continue
-        if path.startswith((".cargo/", f"{WORKSPACE}/.cargo/", ".github/", "scripts/")):
-            reasons.add(f"shared CI input: {path}")
-            continue
         consumers = input_owners.get(path, set())
         changed.update(consumers)
         if presentation_input(path):
+            continue
+        if path.startswith((".cargo/", f"{WORKSPACE}/.cargo/", ".github/", "scripts/")):
+            reasons.add(f"shared CI input: {path}")
             continue
         owned = bool(consumers)
         for mapping in (before.owners, after.owners):
