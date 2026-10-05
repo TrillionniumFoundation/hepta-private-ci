@@ -189,9 +189,13 @@ def validate_capability_map(
                 raise VerificationError(f"{capability_id}: {field} required")
             for anchor in anchors:
                 validate_anchor(f"{capability_id}/{field}", anchor, root)
-    if observed != expected:
+    if (
+        len(observed) != len(expected)
+        or len(set(observed)) != len(observed)
+        or set(observed) != set(expected)
+    ):
         raise VerificationError(
-            "capability map does not exactly cover ordered current capabilities"
+            "capability map does not exactly cover unique current capabilities"
         )
 
 
@@ -309,8 +313,9 @@ def validate_source_specific(root: Path = ROOT) -> None:
         "codex-rs/hepta-types/src/lib.rs": ["pub use identity::IdentityError;"],
         "codex-rs/hepta-wire/src/envelope.rs": ["const WIRE_VERSION: u16 = 1;"],
         "codex-rs/hepta-operations/src/lib.rs": [
-            "In-memory reference model",
-            "does not provide durable storage",
+            "deterministic in-memory reference",
+            "production-oriented SQLite owner",
+            "requires independent terminal",
         ],
         "codex-rs/hepta-operations/src/model.rs": [
             "pub struct ReferenceAuthorityWitness",

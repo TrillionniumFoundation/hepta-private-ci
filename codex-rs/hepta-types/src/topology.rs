@@ -1,4 +1,8 @@
-//! Authority-free topology-candidate contract shared by proposal and runtime lanes.
+//! Frozen historical topology-candidate contract.
+//!
+//! V1 retains the exact legacy V3 proposal framing for read/audit compatibility.
+//! Current product admission uses RuntimeTopologyCandidateV2 and a fresh selection
+//! witness; validating historical bytes is not authority to apply them.
 
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
@@ -67,6 +71,9 @@ impl std::fmt::Display for RuntimeTopologyContractErrorV1 {
 impl std::error::Error for RuntimeTopologyContractErrorV1 {}
 
 impl RuntimeTopologyCandidateV1 {
+    /// Historical collection bound, also used by bounded read-only wrappers.
+    pub const MAX_DELTAS_V1: usize = MAX_RUNTIME_TOPOLOGY_DELTAS_V1;
+
     pub fn validate(&self) -> Result<(), RuntimeTopologyContractErrorV1> {
         for (name, digest) in [
             ("proposal", self.proposal_digest),

@@ -34,21 +34,25 @@ NUMERIC_PROFILES = MappingProxyType({{
 CANONICAL_DIGEST_V1 = MappingProxyType(dict(_SPEC["canonicalDigestV1"]))
 
 def numeric_profile(profile_id: str) -> dict:
+    if type(profile_id) is not str:
+        raise ValueError("unknown numeric profile")
     row = NUMERIC_PROFILES.get(profile_id)
     if row is None:
         raise ValueError("unknown numeric profile")
     return dict(row)
 
 def admit_authority_wire_v1(raw: bytes) -> None:
-    if len(raw) != AUTHORITY_WIRE_V1["encodedBytes"]:
+    if type(raw) not in (bytes, bytearray) or len(raw) != AUTHORITY_WIRE_V1["encodedBytes"]:
         raise ValueError("authority wire V1 must be exactly one byte")
     if raw[0] != AUTHORITY_WIRE_V1["trustedMask"]:
         raise ValueError("authority grant bits are not representable by platform.types")
 
 def validate_id_profile(value: str, variant: str) -> str:
-    encoded = value.encode("utf-8")
-    if not encoded or len(encoded) > STABLE_ID_MAX_BYTES or "\\0" in value:
+    # Every admitted profile is ASCII, so its character and UTF-8 byte bounds agree.
+    if type(value) is not str or not value or len(value) > STABLE_ID_MAX_BYTES or "\\0" in value:
         raise ValueError("identifier bound")
+    if type(variant) is not str:
+        raise ValueError("unknown identifier profile")
     row = ID_PROFILES.get(variant)
     if row is None:
         raise ValueError("unknown identifier profile")
@@ -81,7 +85,6 @@ def render_javascript(spec: dict) -> str:
     packed = min_json(spec)
     return f'''// GENERATED from bindings/PLATFORM_TYPES_BINDINGS_V1.json; DO NOT EDIT.
 const SPEC = {packed};
-const UTF8 = new TextEncoder();
 export const STABLE_ID_MAX_BYTES = SPEC.stableIdMaxBytes;
 export const ID_PROFILES = Object.freeze(Object.fromEntries(SPEC.idProfiles.map((row) => [row.variant, Object.freeze(row)])));
 export const AUTHORITY_WIRE_V1 = Object.freeze({{...SPEC.authorityWireV1, bits: Object.freeze({{...SPEC.authorityWireV1.bits}})}});
@@ -90,19 +93,20 @@ export const NUMERIC_PROFILES = Object.freeze(Object.fromEntries(SPEC.numericPro
 export const CANONICAL_DIGEST_V1 = Object.freeze(SPEC.canonicalDigestV1);
 
 export function numericProfile(profileId) {{
-  const row = NUMERIC_PROFILES[profileId];
-  if (!row) throw new Error("unknown numeric profile");
-  return row;
+  if (typeof profileId !== "string" || !Object.hasOwn(NUMERIC_PROFILES, profileId)) {{
+    throw new Error("unknown numeric profile");
+  }}
+  return NUMERIC_PROFILES[profileId];
 }}
 export function admitAuthorityWireV1(raw) {{
   if (!(raw instanceof Uint8Array) || raw.length !== AUTHORITY_WIRE_V1.encodedBytes) throw new Error("authority wire V1 must be exactly one byte");
   if (raw[0] !== AUTHORITY_WIRE_V1.trustedMask) throw new Error("authority grant bits are not representable by platform.types");
 }}
 export function validateIdProfile(value, variant) {{
-  const encoded = UTF8.encode(value);
-  if (encoded.length === 0 || encoded.length > STABLE_ID_MAX_BYTES || value.includes("\\0")) throw new Error("identifier bound");
+  // Every admitted profile is ASCII, so its character and UTF-8 byte bounds agree.
+  if (typeof value !== "string" || value.length === 0 || value.length > STABLE_ID_MAX_BYTES || value.includes("\\0")) throw new Error("identifier bound");
+  if (typeof variant !== "string" || !Object.hasOwn(ID_PROFILES, variant)) throw new Error("unknown identifier profile");
   const row = ID_PROFILES[variant];
-  if (!row) throw new Error("unknown identifier profile");
   if (variant === "Stable") {{
     if (!/^[A-Za-z0-9._:-]+$/.test(value)) throw new Error("stable identifier grammar");
     return value;
