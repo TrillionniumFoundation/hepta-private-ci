@@ -1,3 +1,7 @@
+use crate::suite::context_annotations::RequestInputProjection;
+use crate::suite::context_annotations::has_content_kinds;
+use crate::suite::context_annotations::local_input_for_request;
+use crate::suite::context_annotations::local_input_for_request_with_projection;
 use anyhow::Result;
 use codex_config::types::Personality;
 use codex_core::CodexThread;
@@ -345,8 +349,8 @@ async fn rollback_first_turn_model_change_removes_its_instructions(
 
     let request = &response_mock.requests()[1];
     assert_eq!(request.body_json()["model"], followup_model);
-    let misaligned_messages = request
-        .inputs_of_type("message")
+    let local_input = local_input_for_request(&test.codex, request).await;
+    let misaligned_messages = local_input
         .into_iter()
         .filter(|message| {
             message["internal_chat_message_metadata_passthrough"]["content_item_kinds"]
@@ -425,7 +429,11 @@ async fn model_change_appends_model_instructions_developer_message() -> Result<(
     assert_eq!(requests.len(), 2, "expected two model requests");
 
     let second_request = requests.last().expect("expected second request");
-    assert!(second_request.has_content_kinds(&["model_switch.instructions"]));
+    let local_input = local_input_for_request(&test.codex, second_request).await;
+    assert!(has_content_kinds(
+        &local_input,
+        &["model_switch.instructions"]
+    ));
     let developer_texts = second_request.message_input_texts("developer");
     let model_switch_text = developer_texts
         .iter()
@@ -992,7 +1000,11 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     assert_eq!(requests.len(), 2, "expected two model requests");
 
     let first_request = requests.first().expect("expected first request");
-    assert!(first_request.has_content_kinds(&["user.image", "user.audio", "user.text"]));
+    let local_input = local_input_for_request(&test.codex, first_request).await;
+    assert!(has_content_kinds(
+        &local_input,
+        &["user.image", "user.audio", "user.text"]
+    ));
     assert!(
         !first_request.message_input_image_urls("user").is_empty(),
         "first request should include the uploaded image"
@@ -1003,11 +1015,18 @@ async fn model_change_from_multimodal_to_text_strips_prior_media_content() -> Re
     );
 
     let second_request = requests.last().expect("expected second request");
-    assert!(second_request.has_content_kinds(&[
-        "images.unsupported",
-        "audio.unsupported",
-        "user.text",
-    ]));
+    // Bind the original local classifications to the exact text-only payload,
+    // allowing only the two production unsupported-media replacements.
+    let local_input = local_input_for_request_with_projection(
+        &test.codex,
+        second_request,
+        RequestInputProjection::TextOnlyMessageMedia,
+    )
+    .await;
+    assert!(has_content_kinds(
+        &local_input,
+        &["user.image", "user.audio", "user.text"]
+    ));
     assert!(
         second_request.message_input_image_urls("user").is_empty(),
         "second request should strip unsupported image content"

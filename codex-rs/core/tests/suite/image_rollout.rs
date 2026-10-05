@@ -1,3 +1,5 @@
+use crate::suite::context_annotations::has_content_kinds;
+use crate::suite::context_annotations::local_input_for_request;
 use anyhow::Context;
 use base64::Engine;
 use base64::engine::general_purpose::STANDARD as BASE64_STANDARD;
@@ -384,8 +386,9 @@ async fn resumed_history_only_emits_resize_notices_for_new_images() -> anyhow::R
     .await;
 
     let request = resumed_mock.single_request();
-    assert!(request.has_content_kinds(&["images.resize_notice"]));
-    assert!(request.has_content_kinds(&["user.image"]));
+    let local_input = local_input_for_request(&resumed.codex, &request).await;
+    assert!(has_content_kinds(&local_input, &["images.resize_notice"]));
+    assert!(has_content_kinds(&local_input, &["user.image"]));
     let input = request.input();
     let image_message_indices = input
         .iter()

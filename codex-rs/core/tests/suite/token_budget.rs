@@ -1,3 +1,5 @@
+use crate::suite::context_annotations::has_content_kinds;
+use crate::suite::context_annotations::local_input_for_request;
 use anyhow::Result;
 use codex_config::types::McpServerConfig;
 use codex_config::types::McpServerTransportConfig;
@@ -267,11 +269,18 @@ async fn token_budget_guidance_precedes_standalone_context_window() -> Result<()
     test.submit_turn("inspect context guidance").await?;
 
     let request = response.single_request();
-    assert!(request.has_content_kinds(&[
-        "token_budget.context_window_guidance",
-        "permissions.instructions",
-    ]));
-    assert!(request.has_content_kinds(&["token_budget.context_window"]));
+    let local_input = local_input_for_request(&test.codex, &request).await;
+    assert!(has_content_kinds(
+        &local_input,
+        &[
+            "token_budget.context_window_guidance",
+            "permissions.instructions",
+        ]
+    ));
+    assert!(has_content_kinds(
+        &local_input,
+        &["token_budget.context_window"]
+    ));
     let developer_texts = request.message_input_texts("developer");
     let context_window_index = developer_texts
         .iter()

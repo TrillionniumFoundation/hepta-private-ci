@@ -1,3 +1,5 @@
+use crate::suite::context_annotations::has_content_kinds;
+use crate::suite::context_annotations::local_input_for_request;
 use anyhow::Result;
 use codex_core::TurnInputRequest;
 use codex_core::config::RolloutBudgetConfig;
@@ -103,7 +105,11 @@ async fn adds_weighted_initial_and_threshold_reminders(
     test.submit_turn("second turn").await?;
 
     let requests = responses.requests();
-    assert!(requests[0].has_content_kinds(&["rollout_budget.remaining_tokens"]));
+    let local_input = local_input_for_request(&test.codex, &requests[0]).await;
+    assert!(has_content_kinds(
+        &local_input,
+        &["rollout_budget.remaining_tokens"]
+    ));
     assert_eq!(
         rollout_budget_texts(&requests[0]),
         vec![rollout_budget_message(/*remaining_tokens*/ 100)]

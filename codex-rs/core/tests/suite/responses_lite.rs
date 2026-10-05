@@ -1,3 +1,6 @@
+use crate::suite::context_annotations::RequestInputProjection;
+use crate::suite::context_annotations::has_content_kinds;
+use crate::suite::context_annotations::local_input_for_request_with_projection;
 use std::collections::HashMap;
 use std::sync::Arc;
 
@@ -133,9 +136,6 @@ async fn responses_lite_uses_input_items_for_instructions_and_tools() -> Result<
                 "type": "input_text",
                 "text": "test instructions",
             }],
-            "internal_chat_message_metadata_passthrough": {
-                "content_item_kinds": ["model.base_instructions"],
-            },
         })
     );
 
@@ -271,7 +271,16 @@ async fn responses_lite_prepares_images() -> Result<()> {
     .await;
 
     let request = response_mock.single_request();
-    assert!(request.has_content_kinds(&["user.image", "images.preparation_error"]));
+    let local_input = local_input_for_request_with_projection(
+        &test.codex,
+        &request,
+        RequestInputProjection::ResponsesLiteMessageImages,
+    )
+    .await;
+    assert!(has_content_kinds(
+        &local_input,
+        &["user.image", "images.preparation_error"]
+    ));
     let user_content = request
         .input()
         .into_iter()
