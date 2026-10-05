@@ -98,6 +98,11 @@ fn spawn_response(
                 Err(error) => panic!("HTTP listener should accept: {error}"),
             }
         };
+        // Accepted sockets inherit nonblocking mode on Windows. The fixture
+        // uses synchronous reads after polling the listener for a connection.
+        stream
+            .set_nonblocking(false)
+            .expect("accepted HTTP stream should become blocking");
         stream
             .set_read_timeout(Some(Duration::from_secs(2)))
             .expect("read timeout");
