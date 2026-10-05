@@ -25,18 +25,26 @@ use windows_sys::Win32::Foundation::LocalFree;
 use windows_sys::Win32::Security::ACCESS_ALLOWED_ACE;
 use windows_sys::Win32::Security::ACE_HEADER;
 use windows_sys::Win32::Security::ACL;
+use windows_sys::Win32::Security::ACL_REVISION;
 use windows_sys::Win32::Security::ACL_SIZE_INFORMATION;
 use windows_sys::Win32::Security::AclSizeInformation;
+use windows_sys::Win32::Security::AddAccessAllowedAceEx;
 use windows_sys::Win32::Security::Authorization::GetSecurityInfo;
+use windows_sys::Win32::Security::Authorization::SetSecurityInfo;
+use windows_sys::Win32::Security::CONTAINER_INHERIT_ACE;
 use windows_sys::Win32::Security::DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::EqualSid;
 use windows_sys::Win32::Security::GENERIC_MAPPING;
 use windows_sys::Win32::Security::GetAce;
 use windows_sys::Win32::Security::GetAclInformation;
+use windows_sys::Win32::Security::GetLengthSid;
 use windows_sys::Win32::Security::GetTokenInformation;
+use windows_sys::Win32::Security::InitializeAcl;
 use windows_sys::Win32::Security::IsWellKnownSid;
 use windows_sys::Win32::Security::MapGenericMask;
+use windows_sys::Win32::Security::OBJECT_INHERIT_ACE;
 use windows_sys::Win32::Security::OWNER_SECURITY_INFORMATION;
+use windows_sys::Win32::Security::PROTECTED_DACL_SECURITY_INFORMATION;
 use windows_sys::Win32::Security::TOKEN_QUERY;
 use windows_sys::Win32::Security::TOKEN_USER;
 use windows_sys::Win32::Security::TokenUser;
@@ -44,6 +52,7 @@ use windows_sys::Win32::Security::WinBuiltinAdministratorsSid;
 use windows_sys::Win32::Security::WinCreatorOwnerSid;
 use windows_sys::Win32::Security::WinLocalSystemSid;
 use windows_sys::Win32::Storage::FileSystem::DELETE;
+use windows_sys::Win32::Storage::FileSystem::FILE_ALL_ACCESS;
 use windows_sys::Win32::Storage::FileSystem::FILE_APPEND_DATA;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_DIRECTORY;
 use windows_sys::Win32::Storage::FileSystem::FILE_ATTRIBUTE_REPARSE_POINT;
@@ -80,19 +89,68 @@ pub enum PrivateFileAccess {
 
 /// Creates or opens a retained private-state directory.
 pub fn open_private_state_directory(root: &Path) -> io::Result<File> {
-    match std::fs::create_dir(root) {
-        Ok(()) => {}
-        Err(error) if error.kind() == io::ErrorKind::AlreadyExists => {}
+    let created = match std::fs::create_dir(root) {
+        Ok(()) => true,
+        Err(error) if error.kind() == io::ErrorKind::AlreadyExists => false,
         Err(error) => return Err(error),
-    }
+    };
     reject_reparse_ancestry(root)?;
-    let directory = OpenOptions::new()
-        .read(true)
-        .write(true)
+    let mut options = OpenOptions::new();
+    options.read(true).write(true);
+    if created {
+        options.access_mode(FILE_GENERIC_READ | FILE_GENERIC_WRITE | WRITE_DAC);
+    }
+    let directory = options
         .custom_flags(FILE_FLAG_BACKUP_SEMANTICS | FILE_FLAG_OPEN_REPARSE_POINT)
         .open(root)?;
+    if created {
+        install_private_dacl(&directory)?;
+    }
     validate_handle(&directory, HandleKind::Directory)?;
     Ok(directory)
+}
+
+fn install_private_dacl(directory: &File) -> io::Result<()> {
+    let current_user = CurrentUser::read()?;
+    let sid_length = unsafe { GetLengthSid(current_user.sid()) } as usize;
+    if sid_length == 0 {
+        return Err(io::Error::last_os_error());
+    }
+    let acl_bytes = std::mem::size_of::<ACL>() + std::mem::size_of::<ACCESS_ALLOWED_ACE>()
+        - std::mem::size_of::<u32>()
+        + sid_length;
+    let mut storage = vec![0_u32; acl_bytes.div_ceil(std::mem::size_of::<u32>())];
+    let dacl = storage.as_mut_ptr().cast::<ACL>();
+    if unsafe { InitializeAcl(dacl, acl_bytes as u32, ACL_REVISION) } == 0 {
+        return Err(io::Error::last_os_error());
+    }
+    if unsafe {
+        AddAccessAllowedAceEx(
+            dacl,
+            ACL_REVISION,
+            OBJECT_INHERIT_ACE | CONTAINER_INHERIT_ACE,
+            FILE_ALL_ACCESS,
+            current_user.sid(),
+        )
+    } == 0
+    {
+        return Err(io::Error::last_os_error());
+    }
+    let status = unsafe {
+        SetSecurityInfo(
+            directory.as_raw_handle() as HANDLE,
+            1, // SE_FILE_OBJECT
+            DACL_SECURITY_INFORMATION | PROTECTED_DACL_SECURITY_INFORMATION,
+            ptr::null_mut(),
+            ptr::null_mut(),
+            dacl,
+            ptr::null_mut(),
+        )
+    };
+    if status != ERROR_SUCCESS {
+        return Err(io::Error::from_raw_os_error(status as i32));
+    }
+    Ok(())
 }
 
 /// Opens one normal-name child relative to the retained private directory.
@@ -224,7 +282,7 @@ fn validate_private_owner_and_dacl(file: &File) -> io::Result<()> {
     }
     let valid = unsafe {
         EqualSid(owner, current_user.sid()) != 0
-            && !dacl_grants_untrusted_write(dacl, current_user.sid())
+            && !dacl_grants_untrusted_access(dacl, current_user.sid())
     };
     unsafe { LocalFree(descriptor as HLOCAL) };
     if !valid {
@@ -233,7 +291,7 @@ fn validate_private_owner_and_dacl(file: &File) -> io::Result<()> {
     Ok(())
 }
 
-unsafe fn dacl_grants_untrusted_write(dacl: *mut ACL, current_user: *mut c_void) -> bool {
+unsafe fn dacl_grants_untrusted_access(dacl: *mut ACL, current_user: *mut c_void) -> bool {
     let mut information: ACL_SIZE_INFORMATION = unsafe { std::mem::zeroed() };
     if unsafe {
         GetAclInformation(
@@ -252,7 +310,10 @@ unsafe fn dacl_grants_untrusted_write(dacl: *mut ACL, current_user: *mut c_void)
         GenericExecute: FILE_GENERIC_EXECUTE,
         GenericAll: u32::MAX,
     };
-    let write_mask = FILE_WRITE_DATA
+    let access_mask = FILE_GENERIC_READ
+        | FILE_GENERIC_WRITE
+        | FILE_GENERIC_EXECUTE
+        | FILE_WRITE_DATA
         | FILE_APPEND_DATA
         | FILE_WRITE_EA
         | FILE_WRITE_ATTRIBUTES
@@ -277,14 +338,14 @@ unsafe fn dacl_grants_untrusted_write(dacl: *mut ACL, current_user: *mut c_void)
             as *mut c_void;
         let mut mask = allowed.Mask;
         unsafe { MapGenericMask(&mut mask, &mapping) };
-        if mask & write_mask != 0 && !unsafe { trusted_writer_sid(sid, current_user) } {
+        if mask & access_mask != 0 && !unsafe { trusted_access_sid(sid, current_user) } {
             return true;
         }
     }
     false
 }
 
-unsafe fn trusted_writer_sid(sid: *mut c_void, current_user: *mut c_void) -> bool {
+unsafe fn trusted_access_sid(sid: *mut c_void, current_user: *mut c_void) -> bool {
     unsafe {
         EqualSid(sid, current_user) != 0
             || IsWellKnownSid(sid, WinLocalSystemSid) != 0
@@ -394,12 +455,74 @@ impl Drop for CurrentUser {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use windows_sys::Win32::Security::CreateWellKnownSid;
+    use windows_sys::Win32::Security::WinWorldSid;
+
+    fn world_sid() -> Vec<u32> {
+        let mut length = 0;
+        unsafe {
+            CreateWellKnownSid(WinWorldSid, ptr::null_mut(), ptr::null_mut(), &mut length);
+        }
+        assert!(length > 0);
+        let mut sid = vec![0_u32; (length as usize).div_ceil(std::mem::size_of::<u32>())];
+        assert_ne!(
+            unsafe {
+                CreateWellKnownSid(
+                    WinWorldSid,
+                    ptr::null_mut(),
+                    sid.as_mut_ptr().cast(),
+                    &mut length,
+                )
+            },
+            0
+        );
+        sid
+    }
+
+    #[test]
+    fn public_read_access_is_not_private() {
+        let current_user = CurrentUser::read().expect("current user");
+        let world = world_sid();
+        let current_user_length = unsafe { GetLengthSid(current_user.sid()) } as usize;
+        let world_length = unsafe { GetLengthSid(world.as_ptr().cast_mut().cast()) } as usize;
+        let acl_bytes = std::mem::size_of::<ACL>()
+            + 2 * (std::mem::size_of::<ACCESS_ALLOWED_ACE>() - std::mem::size_of::<u32>())
+            + current_user_length
+            + world_length;
+        let mut storage = vec![0_u32; acl_bytes.div_ceil(std::mem::size_of::<u32>())];
+        let dacl = storage.as_mut_ptr().cast::<ACL>();
+        assert_ne!(
+            unsafe { InitializeAcl(dacl, acl_bytes as u32, ACL_REVISION) },
+            0
+        );
+        assert_ne!(
+            unsafe {
+                AddAccessAllowedAceEx(dacl, ACL_REVISION, 0, FILE_ALL_ACCESS, current_user.sid())
+            },
+            0
+        );
+        assert_ne!(
+            unsafe {
+                AddAccessAllowedAceEx(
+                    dacl,
+                    ACL_REVISION,
+                    0,
+                    FILE_GENERIC_READ,
+                    world.as_ptr().cast_mut().cast(),
+                )
+            },
+            0
+        );
+        assert!(unsafe { dacl_grants_untrusted_access(dacl, current_user.sid()) });
+    }
 
     #[test]
     fn retained_directory_opens_private_single_link_children() {
         let temporary = tempfile::tempdir().expect("tempdir");
         let root = temporary.path().join("registry");
         let directory = open_private_state_directory(&root).expect("private directory");
+        drop(directory);
+        let directory = open_private_state_directory(&root).expect("reopen private directory");
         let file = open_private_state_child(&directory, "state.next", PrivateFileAccess::Create)
             .expect("private child");
         assert_eq!(
