@@ -398,6 +398,8 @@ pub use production_writer::ProductionDispatchReceipt;
 pub use production_writer::ProductionDispatchRequest;
 pub use production_writer::ProductionDurableWriter;
 pub use production_writer::ProductionFinalUseOutboxDispatcher;
+pub use production_writer::ProductionLeaseDisposition;
+pub use production_writer::ProductionLeaseHeadObservation;
 pub use production_writer::ProductionLeaseReceipt;
 pub use production_writer::ProductionOutboxTarget;
 pub use production_writer::ProductionOutcomeReceipt;

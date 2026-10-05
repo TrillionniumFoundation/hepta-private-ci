@@ -45,6 +45,8 @@ pub use codex_hepta_memory::ProductionDispatchReceipt;
 pub use codex_hepta_memory::ProductionDispatchRequest;
 pub use codex_hepta_memory::ProductionDurableWriter;
 pub use codex_hepta_memory::ProductionFinalUseOutboxDispatcher;
+pub use codex_hepta_memory::ProductionLeaseDisposition;
+pub use codex_hepta_memory::ProductionLeaseHeadObservation;
 pub use codex_hepta_memory::ProductionOutboxTarget;
 pub use codex_hepta_memory::ProductionQueuedReceipt;
 pub use codex_hepta_memory::ProductionWriterError;

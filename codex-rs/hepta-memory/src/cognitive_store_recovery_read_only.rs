@@ -52,8 +52,13 @@ impl CognitiveStore {
     /// Unused physical bytes are not authority and are not covered by that hash.
     /// A mismatch never falls back to an older cut or ordinary store opening.
     ///
-    /// This does NOT complete `open_with_recovery`: writer restoration still
-    /// requires a descriptor-backed VFS and an independently current writer fence.
+    /// This historical-image API grants no writer authority. Writable owner
+    /// recovery uses the separate `open_with_recovery` path: exclusive ownership,
+    /// an independently retained current-cut requirement, and externally verified
+    /// production authority precede activation of a fresh private generation.
+    /// The suspect source path is never opened as a writable SQLite database.
+    /// The retained-source identity and copy backend is currently Unix-only;
+    /// unsupported platforms fail closed before generation activation.
     pub async fn open_read_only_recovery(
         layout: &HeptaAgentLayout,
         requirement: CognitiveRecoveryRequirement<'_>,

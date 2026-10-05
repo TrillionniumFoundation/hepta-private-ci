@@ -25,8 +25,8 @@ use codex_hepta_cognitive_store::ProductionCognitiveMutationCapability;
 use codex_hepta_cognitive_store::ProductionCognitiveMutationReceiptV1;
 use codex_hepta_cognitive_store::ProductionDispatchReceipt;
 use codex_hepta_cognitive_store::ProductionDurableWriter;
+use codex_hepta_cognitive_store::ProductionLeaseHeadObservation;
 use codex_hepta_cognitive_store::ProductionQueuedReceipt;
-#[cfg(feature = "qualification-cognitive-write")]
 use codex_hepta_cognitive_store::ProductionWriterError;
 use codex_hepta_cognitive_store::SourceDraft;
 use codex_hepta_cognitive_store::StableMemoryId;
@@ -386,6 +386,15 @@ impl AgentdProductionWriterHost {
 
     pub fn writer(&self) -> Arc<ProductionDurableWriter> {
         Arc::clone(&self.writer)
+    }
+
+    /// Read token-free metadata from the already-attached owner. This neither
+    /// opens a store nor grants authority. The bounded full-history read may
+    /// be expensive; consumers must bound concurrent reads and their lifetime.
+    pub async fn inspect_lease_head(
+        &self,
+    ) -> Result<ProductionLeaseHeadObservation, ProductionWriterError> {
+        self.writer.inspect_lease_head().await
     }
 
     /// Reuse the exact recovered generation for Agentd's read side without
