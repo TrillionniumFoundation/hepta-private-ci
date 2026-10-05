@@ -1,5 +1,6 @@
 """Execute the real CI source guards against clean and mutated Git checkouts."""
 
+import glob
 import importlib.util
 import os
 from pathlib import Path
@@ -65,13 +66,6 @@ class RustSourceIntegrityTests(unittest.TestCase):
             if step.get("id") == identity
         )
 
-    def step(self, name):
-        return next(
-            step
-            for step in self.workflow["jobs"]["lint_build"]["steps"]
-            if step.get("name") == name
-        )
-
     def test_real_source_passes_before_and_after(self):
         for script in (
             self.guard("rust-source-before"),
@@ -93,23 +87,6 @@ class RustSourceIntegrityTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertTrue((self.root / "rust-ci-cargo-home/config.toml").is_file())
         self.assertEqual(self.execute(self.clean).returncode, 0)
-
-    def test_musl_zig_caches_are_outside_the_qualified_source(self):
-        result = self.execute(
-            self.step("Keep Zig caches outside the qualified checkout")["run"]
-        )
-        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
-        self.assertTrue((self.root / "rust-ci-zig-cache/global").is_dir())
-        self.assertTrue((self.root / "rust-ci-zig-cache/local").is_dir())
-        self.assertEqual(self.execute(self.clean).returncode, 0)
-
-    def test_windows_artifacts_use_separate_roots(self):
-        timings = self.step("Upload Cargo timings (clippy)")["with"]["path"]
-        identities = self.step("Upload qualified source identities")["with"]["path"]
-        self.assertIn("CARGO_TARGET_DIR", timings)
-        self.assertNotIn("runner.temp", timings)
-        self.assertIn("runner.temp", identities)
-        self.assertNotIn("CARGO_TARGET_DIR", identities)
 
     def test_untracked_product_source_cannot_qualify(self):
         self.assertEqual(self.execute(self.guard("rust-source-before")).returncode, 0)
@@ -134,6 +111,107 @@ class RustSourceIntegrityTests(unittest.TestCase):
         self.assertNotEqual(
             self.execute(self.guard("rust-source-before")).returncode, 0
         )
+
+    def test_musl_zig_cache_never_mutates_the_qualified_checkout(self):
+        for target in ("x86_64-unknown-linux-musl", "aarch64-unknown-linux-musl"):
+            with self.subTest(target=target):
+                tools = self.root / "fixture-tools"
+                tools.mkdir(exist_ok=True)
+                for name, body in {
+                    "sudo": "exit 0\n",
+                    "musl-gcc": "exit 99\n",
+                    "zig": (
+                        'cache="${ZIG_LOCAL_CACHE_DIR:-.zig-cache}"\n'
+                        'mkdir -p "$cache"\n'
+                        'printf "compiler cache\\n" > "$cache/used"\n'
+                    ),
+                }.items():
+                    executable = tools / name
+                    executable.write_text("#!/usr/bin/env bash\nset -eu\n" + body)
+                    executable.chmod(0o755)
+                tool_root = self.root / f"codex-musl-tools-{target}"
+                library = tool_root / "libcap-2.75/prefix/lib/libcap.a"
+                library.parent.mkdir(parents=True)
+                library.touch()  # Keep this fixture offline; no package installs or downloads.
+                Path(self.env["GITHUB_ENV"]).write_text("")
+                cache_setup = next(
+                    step["run"]
+                    for step in self.workflow["jobs"]["lint_build"]["steps"]
+                    if step.get("name")
+                    == "Keep Zig caches outside the qualified checkout"
+                )
+                setup = self.execute(cache_setup)
+                self.assertEqual(setup.returncode, 0, setup.stdout + setup.stderr)
+                job_environment = dict(
+                    line.split("=", 1)
+                    for line in Path(self.env["GITHUB_ENV"]).read_text().splitlines()
+                )
+                for key in ("ZIG_LOCAL_CACHE_DIR", "ZIG_GLOBAL_CACHE_DIR"):
+                    cache_path = Path(job_environment[key])
+                    self.assertTrue(cache_path.is_dir())
+                    self.assertTrue(cache_path.is_relative_to(self.root))
+                    self.assertFalse(cache_path.is_relative_to(self.repo))
+                env = {
+                    **self.env,
+                    **job_environment,
+                    "TARGET": target,
+                    "PATH": f"{tools}{os.pathsep}{os.environ['PATH']}",
+                }
+                result = subprocess.run(
+                    ["bash", str(ROOT / ".github/scripts/install-musl-build-tools.sh")],
+                    cwd=self.repo,
+                    env=env,
+                    capture_output=True,
+                    text=True,
+                )
+                self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+                environment = dict(
+                    line.split("=", 1)
+                    for line in Path(env["GITHUB_ENV"]).read_text().splitlines()
+                )
+                self.assertIn("ZIG_LOCAL_CACHE_DIR", environment)
+                cache = Path(environment["ZIG_LOCAL_CACHE_DIR"])
+                self.assertFalse(cache.is_relative_to(self.repo))
+                self.assertTrue((cache / "used").is_file())
+                # Exercise both generated compiler wrappers with the exported job environment.
+                for compiler in ("CC", "CXX"):
+                    result = subprocess.run(
+                        [environment[compiler], "-c", "example.c"],
+                        cwd=self.repo,
+                        env={**env, **environment},
+                        capture_output=True,
+                        text=True,
+                    )
+                    self.assertEqual(result.returncode, 0, result.stderr)
+                clean = self.execute(self.clean)
+                self.assertEqual(clean.returncode, 0, clean.stdout + clean.stderr)
+
+    def test_source_identity_and_timings_have_separate_artifact_roots(self):
+        target = self.root / "separate-cargo-target"
+        timing = target / "cargo-timings/cargo-timing.html"
+        timing.parent.mkdir(parents=True)
+        timing.write_text("actual compiler timing")
+        before = self.root / "rust-source-before.txt"
+        after = self.root / "rust-source-after.txt"
+        before.write_text("source before")
+        after.write_text("source after")
+        artifacts = []
+        for step in self.workflow["jobs"]["lint_build"]["steps"]:
+            if not step.get("uses", "").startswith("actions/upload-artifact@"):
+                continue
+            patterns = (
+                step["with"]["path"]
+                .replace("${{ env.CARGO_TARGET_DIR }}", str(target))
+                .replace("${{ runner.temp }}", str(self.root))
+            )
+            files = {
+                Path(path)
+                for pattern in patterns.splitlines()
+                for path in glob.glob(pattern, recursive=True)
+            }
+            if files:
+                artifacts.append(files)
+        self.assertCountEqual(artifacts, [{timing}, {before, after}])
 
 
 if __name__ == "__main__":

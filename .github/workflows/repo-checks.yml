@@ -26,6 +26,9 @@ jobs:
       - name: Test Cargo manifest migration boundaries
         run: python3 -m unittest discover -s .github/scripts -p 'test_verify_cargo_workspace_manifests.py'
 
+      - name: Test Rust qualification source and cache boundaries
+        run: python3 -m unittest discover -s .github/scripts -p 'test_rust_ci_source_integrity.py'
+
       - name: Verify Hepta privileged caller closed set
         run: |
           python3 scripts/verify_hepta_callers.py self-test
