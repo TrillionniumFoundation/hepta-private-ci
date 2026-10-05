@@ -85,7 +85,7 @@ def main():
         "--state-root",
         type=Path,
         required=True,
-        help="Existing read-only runtime state",
+        help="State directory; missing runtime contents are shown as unavailable",
     )
     parser.add_argument("--listen", default="127.0.0.1:7373")
     parser.add_argument(

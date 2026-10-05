@@ -17,3 +17,5 @@ pub mod theme;
 
 /// Read-only runtime status projection; no business authority.
 pub mod runtime_view;
+
+pub mod owner_view;

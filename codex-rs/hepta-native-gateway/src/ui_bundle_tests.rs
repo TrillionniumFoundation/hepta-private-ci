@@ -300,7 +300,13 @@ async fn exchange(
     ));
     let server = tokio::spawn(async move {
         let (stream, _) = listener.accept().await?;
-        crate::serve_connection(stream, runtime, ui).await
+        crate::serve_connection(
+            stream,
+            Some(runtime),
+            ui,
+            crate::OwnerStatusProvider::default(),
+        )
+        .await
     });
     let mut client = tokio::net::TcpStream::connect(address).await?;
     client.write_all(packet(address).as_bytes()).await?;
@@ -392,7 +398,13 @@ async fn real_ui_socket_serves_selected_bytes_and_preserves_read_only_apis() -> 
 async fn rebinding_and_cross_origin_are_denied_before_ui_or_runtime_dispatch() -> Result<()> {
     let fixture = Fixture::new()?;
     let ui = Arc::new(UiBundle::load(&fixture.bundle()?)?);
-    for path in ["/", "/app.wasm", "/healthz", "/api/hepta/runtime"] {
+    for path in [
+        "/",
+        "/app.wasm",
+        "/healthz",
+        "/api/hepta/runtime",
+        "/api/hepta/owner-status",
+    ] {
         let response = exchange(Some(Arc::clone(&ui)), |_| {
             format!("GET {path} HTTP/1.1\r\nHost: attacker.example\r\n\r\n")
         })
@@ -406,5 +418,87 @@ async fn rebinding_and_cross_origin_are_denied_before_ui_or_runtime_dispatch() -
         .await?;
         assert!(http_parts(&response)?.0.starts_with("HTTP/1.1 403"));
     }
+    Ok(())
+}
+
+#[cfg(unix)]
+#[tokio::test]
+async fn actual_entry_serves_verified_ui_and_not_attached_without_initializing_legacy_state()
+-> Result<()> {
+    let fixture = Fixture::new()?;
+    let bundle = fixture.bundle()?;
+    let missing_state = fixture.0.join("missing-owner-state");
+    let root = codex_hepta_paths::HeptaStateRoot::parse(&missing_state)?;
+    let reservation = std::net::TcpListener::bind("127.0.0.1:0")?;
+    let address = reservation.local_addr()?;
+    drop(reservation);
+    let server = tokio::spawn(crate::run_native_gateway(crate::NativeGatewayOptions {
+        listen_addr: address,
+        state_root: root.clone(),
+        ui_bundle: Some(bundle),
+    }));
+    struct Stop(tokio::task::JoinHandle<Result<()>>);
+    impl Drop for Stop {
+        fn drop(&mut self) {
+            self.0.abort();
+        }
+    }
+    let server = Stop(server);
+    tokio::time::timeout(std::time::Duration::from_secs(2), async {
+        loop {
+            if tokio::net::TcpStream::connect(address).await.is_ok() {
+                break;
+            }
+            assert!(!server.0.is_finished(), "actual gateway startup failed");
+            tokio::time::sleep(std::time::Duration::from_millis(10)).await;
+        }
+    })
+    .await?;
+    for (method, path, status) in [
+        ("GET", "/", "200"),
+        ("GET", "/api/hepta/owner-status", "200"),
+        ("GET", "/healthz", "503"),
+        ("GET", "/api/hepta/runtime", "503"),
+        ("POST", "/api/hepta/owner-status", "405"),
+    ] {
+        use tokio::io::AsyncReadExt;
+        use tokio::io::AsyncWriteExt;
+        let mut stream = tokio::net::TcpStream::connect(address).await?;
+        stream
+            .write_all(format!("{method} {path} HTTP/1.1\r\nHost: {address}\r\n\r\n").as_bytes())
+            .await?;
+        let mut bytes = Vec::new();
+        stream.read_to_end(&mut bytes).await?;
+        let (headers, body) = http_parts(&bytes)?;
+        assert!(headers.starts_with(&format!("HTTP/1.1 {status}")));
+        if path == "/" {
+            assert_eq!(body, b"<canvas></canvas>");
+        }
+        if method == "GET" && path == "/api/hepta/owner-status" {
+            assert_eq!(
+                serde_json::from_slice::<serde_json::Value>(body)?,
+                serde_json::json!({
+                    "schema":"hepta.owner-lease-observation.v1","observation":{"status":"not_attached"}
+                })
+            );
+        }
+        assert!(!String::from_utf8_lossy(body).contains("missing-owner-state"));
+    }
+    assert!(
+        !missing_state.exists(),
+        "UI inspection must not bootstrap state"
+    );
+    drop(server);
+    assert!(
+        crate::run_native_gateway(crate::NativeGatewayOptions {
+            listen_addr: address,
+            state_root: root,
+            ui_bundle: None,
+        })
+        .await
+        .is_err(),
+        "no-bundle legacy startup must still reject missing state"
+    );
+    assert!(!missing_state.exists());
     Ok(())
 }

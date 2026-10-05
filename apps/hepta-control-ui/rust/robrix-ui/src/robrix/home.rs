@@ -37,6 +37,7 @@ script_mod! {
    console_screen := ScrollYView {
     flow: Down padding: 24 spacing: 12
     Label {text: "Console" draw_text.color: COLOR_TEXT}
+    owner_refresh := mod.widgets.AuroraButton {text: "Refresh observations" enabled: false}
     console_status := Label {width: Fill flow: Flow.Right{wrap: true} text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable." draw_text.color: COLOR_TEXT}
    }
   }
@@ -96,7 +97,8 @@ script_mod! {
       back_to_chat := mod.widgets.AuroraButton {text: "Back to conversation"}
       CachedWidget {rooms_sidebar := mod.widgets.RoomsSideBar {}}
      }
-     console_page := ScrollYView {flow: Down padding: 16
+     console_page := ScrollYView {flow: Down padding: 16 spacing: 12
+      mobile_owner_refresh := mod.widgets.AuroraButton {text: "Refresh observations" enabled: false}
       mobile_console_status := Label {width: Fill flow: Flow.Right{wrap: true} draw_text.color: COLOR_TEXT text: "Read-only runtime unavailable. No current status is shown; commands remain unavailable."}
      }
     }
@@ -120,6 +122,10 @@ impl Widget for MainConversationUI {
             .global::<crate::runtime_status::RuntimeDisplay>()
             .text
             .clone();
+        let busy = cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
+        self.view
+            .button(cx, ids!(owner_refresh))
+            .set_enabled(cx, cfg!(target_arch = "wasm32") && !busy);
         self.view
             .label(cx, ids!(console_status))
             .set_text(cx, &status);
@@ -325,6 +331,10 @@ impl Widget for HomeScreen {
                 .global::<crate::runtime_status::RuntimeDisplay>()
                 .text
                 .clone();
+            let busy = cx.global::<crate::runtime_status::RuntimeDisplay>().busy;
+            self.view
+                .button(cx, ids!(mobile_owner_refresh))
+                .set_enabled(cx, cfg!(target_arch = "wasm32") && !busy);
             self.view
                 .label(cx, ids!(mobile_console_status))
                 .set_text(cx, &status);

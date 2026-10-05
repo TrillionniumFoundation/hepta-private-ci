@@ -21,8 +21,14 @@ use tokio::net::TcpListener;
 use tokio::net::TcpStream;
 
 mod http_origin;
+mod owner_status;
 mod ui_bundle;
 
+pub use owner_status::OwnerLeaseDisposition;
+pub use owner_status::OwnerLeaseObservation;
+pub use owner_status::OwnerObservationFuture;
+pub use owner_status::OwnerReadFailure;
+pub use owner_status::OwnerStatusProvider;
 use ui_bundle::UiBundle;
 pub use ui_bundle::UiBundleOptions;
 
@@ -170,6 +176,15 @@ pub fn run_serve_ui_if_requested(raw_args: &[String]) -> Result<bool> {
 }
 
 pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
+    run_native_gateway_with_owner_status(options, OwnerStatusProvider::default()).await
+}
+
+/// Attach only an already-owned, weak, read-only observation provider.
+/// The default CLI never constructs a production owner as a side effect.
+pub async fn run_native_gateway_with_owner_status(
+    options: NativeGatewayOptions,
+    owner_status: OwnerStatusProvider,
+) -> Result<()> {
     validate_closed_effect_environment()?;
     let ui = options
         .ui_bundle
@@ -180,7 +195,16 @@ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
     if let Some(ui) = &ui {
         eprintln!("Rust UI artifact source identity {}", ui.source_identity);
     }
-    let runtime = Arc::new(HeptaRuntime::open_existing(options.state_root).await?);
+    let runtime = match HeptaRuntime::open_existing(options.state_root).await {
+        Ok(runtime) => Some(Arc::new(runtime)),
+        Err(_) if ui.is_some() => {
+            eprintln!(
+                "Legacy runtime unavailable; serving verified UI with closed read-only status"
+            );
+            None
+        }
+        Err(error) => return Err(error),
+    };
     let listener = TcpListener::bind(options.listen_addr)
         .await
         .with_context(|| format!("bind Hepta gateway at {}", options.listen_addr))?;
@@ -197,10 +221,11 @@ pub async fn run_native_gateway(options: NativeGatewayOptions) -> Result<()> {
                 if !peer.ip().is_loopback() {
                     continue;
                 }
-                let runtime = Arc::clone(&runtime);
+                let runtime = runtime.clone();
                 let ui = ui.clone();
+                let owner_status = owner_status.clone();
                 tokio::spawn(async move {
-                    if let Err(error) = serve_connection(stream, runtime, ui).await {
+                    if let Err(error) = serve_connection(stream, runtime, ui, owner_status).await {
                         eprintln!("hepta loopback request failed: {error:#}");
                     }
                 });
@@ -275,8 +300,9 @@ fn runtime_representation(request: &str) -> RuntimeRepresentation {
 
 async fn serve_connection(
     mut stream: TcpStream,
-    runtime: Arc<HeptaRuntime>,
+    runtime: Option<Arc<HeptaRuntime>>,
     ui: Option<Arc<UiBundle>>,
+    owner_status: OwnerStatusProvider,
 ) -> Result<()> {
     let request = tokio::time::timeout(REQUEST_TIMEOUT, read_request(&mut stream))
         .await
@@ -300,7 +326,17 @@ async fn serve_connection(
         .context("UI response timed out")?
         .context("write UI response")?;
     } else {
-        let response = route_request(&request, &runtime)?;
+        let response = if request_target(&request) == Some(("GET", "/api/hepta/owner-status")) {
+            response(
+                "200 OK",
+                "application/json; charset=utf-8",
+                &owner_status.json().await?,
+            )
+        } else if let Some(runtime) = &runtime {
+            route_request(&request, runtime)?
+        } else {
+            route_unavailable(&request)
+        };
         tokio::time::timeout(RESPONSE_TIMEOUT, stream.write_all(&response))
             .await
             .context("loopback response timed out")?
@@ -310,6 +346,38 @@ async fn serve_connection(
         .await
         .context("loopback shutdown timed out")?
         .context("close loopback response")
+}
+
+fn request_target(request: &[u8]) -> Option<(&str, &str)> {
+    let text = std::str::from_utf8(request).ok()?;
+    let mut fields = text.lines().next()?.split_whitespace();
+    let method = fields.next()?;
+    let target = fields.next()?.split('?').next()?;
+    let version = fields.next()?;
+    if fields.next().is_some() || !matches!(version, "HTTP/1.0" | "HTTP/1.1") {
+        return None;
+    }
+    Some((method, target))
+}
+
+fn route_unavailable(request: &[u8]) -> Vec<u8> {
+    let (status, body): (&str, &[u8]) = match request_target(request) {
+        None => ("400 Bad Request", br#"{"error":"bad request"}"#),
+        Some((method, _)) if method != "GET" => (
+            "405 Method Not Allowed",
+            br#"{"error":"live shell is read-only"}"#,
+        ),
+        Some(("GET", "/healthz" | "/api/hepta/runtime")) => (
+            "503 Service Unavailable",
+            br#"{"product":"hepta","status":"unavailable","error":"legacy runtime unavailable"}"#,
+        ),
+        Some(("GET", "/")) => (
+            "503 Service Unavailable",
+            br#"{"error":"verified UI bundle unavailable"}"#,
+        ),
+        Some(_) => ("404 Not Found", br#"{"error":"not found"}"#),
+    };
+    response(status, "application/json; charset=utf-8", body)
 }
 
 fn ui_response(request: &[u8], ui: &UiBundle) -> Option<ui_bundle::UiResponse> {
@@ -562,7 +630,13 @@ mod tests {
         let server = tokio::spawn(async move {
             let (stream, peer) = listener.accept().await?;
             assert!(peer.ip().is_loopback());
-            serve_connection(stream, runtime, /*ui*/ None).await
+            serve_connection(
+                stream,
+                Some(runtime),
+                /*ui*/ None,
+                OwnerStatusProvider::default(),
+            )
+            .await
         });
 
         let mut client = TcpStream::connect(address).await?;
