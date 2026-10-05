@@ -24,6 +24,7 @@ on:
       - scripts/run-nextest.py
       - scripts/just-shell.py
       - scripts/hepta_ci_dependencies.py
+      - scripts/hepta_ci_exec.py
       - scripts/hepta_ci_git_objects.py
       - scripts/hepta_ci_module_paths.py
       - apps/hepta-native/resources/NATIVE-ASSETS.json
@@ -165,6 +166,17 @@ jobs:
         run: |
           rustup toolchain install 1.96.0 --profile minimal
           RUSTUP_TOOLCHAIN=1.96.0 python3 apps/hepta-control-ui/tools/build-product-preview.py --target-dir "$RUNNER_TEMP/product-gateway-target"
+      - id: product_gateway_transport_tests
+        name: Execute bounded gateway transport regressions
+        env:
+          RUSTUP_TOOLCHAIN: 1.96.0
+          CARGO_TARGET_DIR: ${{ runner.temp }}/product-gateway-target
+          CARGO_PROFILE_TEST_DEBUG: 0
+          SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+          BASE_SHA: ${{ github.event.pull_request.base.sha }}
+          HEPTA_CI_LANE: ${{ matrix.lane }}
+        run: |
+          TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py --output "$RUNNER_TEMP/gateway-transport-${{ matrix.lane }}.json" --minimum-tests 9 --timeout-seconds 600 -- just test --locked -p codex-hepta-native-gateway --lib -E 'test(http_transport::tests::)'
       - id: product_gateway_browser
         name: Exercise real gateway unavailable status and cancellation
         working-directory: apps/hepta-control-ui
@@ -180,6 +192,7 @@ jobs:
             apps/hepta-control-ui/test-results/product-status/
             apps/hepta-control-ui/test-results/product-status-results.json
             ${{ runner.temp }}/product-gateway-target/debug/examples/ui_product_preview.hepta-build.json
+            ${{ runner.temp }}/gateway-transport-${{ matrix.lane }}.json*
           if-no-files-found: warn
       - id: fixture_build
         if: always() && steps.default_build.outcome == 'success'

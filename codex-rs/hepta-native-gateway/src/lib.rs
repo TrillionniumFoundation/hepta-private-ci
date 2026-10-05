@@ -21,6 +21,7 @@ use tokio::net::TcpListener;
 use tokio::net::TcpStream;
 
 mod http_origin;
+mod http_transport;
 mod owner_status;
 mod ui_bundle;
 
@@ -214,6 +215,7 @@ pub async fn run_native_gateway_with_owner_status(
     validate_loopback(actual_addr)?;
     eprintln!("hepta live shell listening on http://{actual_addr}");
 
+    let mut connections = http_transport::ConnectionTasks::default();
     loop {
         tokio::select! {
             accepted = listener.accept() => {
@@ -224,14 +226,13 @@ pub async fn run_native_gateway_with_owner_status(
                 let runtime = runtime.clone();
                 let ui = ui.clone();
                 let owner_status = owner_status.clone();
-                tokio::spawn(async move {
-                    if let Err(error) = serve_connection(stream, runtime, ui, owner_status).await {
-                        eprintln!("hepta loopback request failed: {error:#}");
-                    }
+                let _ = connections.try_spawn(async move {
+                    serve_connection(stream, runtime, ui, owner_status).await
                 });
             }
             signal = tokio::signal::ctrl_c() => {
                 signal.context("wait for gateway shutdown signal")?;
+                connections.shutdown().await;
                 return Ok(());
             }
         }
@@ -318,13 +319,7 @@ async fn serve_connection(
             .context("rejected response timed out")?
             .context("write rejected response")?;
     } else if let Some(asset) = ui.as_ref().and_then(|ui| ui_response(&request, ui)) {
-        tokio::time::timeout(RESPONSE_TIMEOUT, async {
-            stream.write_all(&asset.headers).await?;
-            stream.write_all(&asset.body).await
-        })
-        .await
-        .context("UI response timed out")?
-        .context("write UI response")?;
+        http_transport::write_ui_response(&mut stream, &asset.headers, &asset.body).await?;
     } else {
         let response = if request_target(&request) == Some(("GET", "/api/hepta/owner-status")) {
             response(

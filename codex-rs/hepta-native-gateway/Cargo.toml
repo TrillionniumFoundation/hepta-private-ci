@@ -36,3 +36,4 @@ rustix = { workspace = true, features = ["fs"] }
 [dev-dependencies]
 codex-hepta-wire = { path = "../hepta-wire" }
 pretty_assertions = { workspace = true }
+tokio = { workspace = true, features = ["test-util"] }

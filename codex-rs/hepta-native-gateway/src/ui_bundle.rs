@@ -17,7 +17,7 @@ mod reader;
 
 const MAX_MANIFEST_BYTES: usize = 2 * 1024 * 1024;
 const MAX_ASSETS: usize = 128;
-const MAX_ASSET_BYTES: usize = 64 * 1024 * 1024;
+pub(crate) const MAX_ASSET_BYTES: usize = 64 * 1024 * 1024;
 const MAX_BUNDLE_BYTES: usize = 128 * 1024 * 1024;
 const CSP: &str = "default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; connect-src 'self'; img-src 'self' data:; font-src 'self'; worker-src 'self' blob:; object-src 'none'; base-uri 'none'; form-action 'none'; frame-ancestors 'none'";
 

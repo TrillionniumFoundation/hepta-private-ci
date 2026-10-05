@@ -115,6 +115,7 @@ class ProductGatewayWorkflowTests(unittest.TestCase):
         steps = [
             "- id: default_browser",
             "- id: product_gateway_build",
+            "- id: product_gateway_transport_tests",
             "- id: product_gateway_browser",
             "- id: fixture_build",
         ]
@@ -169,6 +170,33 @@ class ProductGatewayWorkflowTests(unittest.TestCase):
                 self.assertTrue(
                     any(matches(path, pattern) for pattern in patterns), path
                 )
+
+    def test_transport_command_executes_the_authored_module_with_bound_identity(self):
+        block = self.workflow.split("- id: product_gateway_transport_tests", 1)[
+            1
+        ].split("- id: product_gateway_browser", 1)[0]
+        for expected in (
+            "RUSTUP_TOOLCHAIN: 1.96.0",
+            "SOURCE_SHA: ${{ github.event.pull_request.head.sha }}",
+            "BASE_SHA: ${{ github.event.pull_request.base.sha }}",
+            'TESTED_SHA="$(git rev-parse HEAD)" python3 scripts/hepta_ci_exec.py',
+            "HEPTA_CI_LANE: ${{ matrix.lane }}",
+            "scripts/hepta_ci_exec.py",
+            "--minimum-tests 9",
+            "just test --locked -p codex-hepta-native-gateway --lib",
+            "test(http_transport::tests::)",
+        ):
+            self.assertIn(expected, block)
+        transport = (
+            ROOT / "codex-rs/hepta-native-gateway/src/http_transport.rs"
+        ).read_text()
+        self.assertEqual(
+            len(re.findall(r"#\[tokio::test(?:\([^\n]*\))?\]", transport)), 9
+        )
+        self.assertIn(
+            "mid_transfer_writer_error_reports_exact_accepted_bytes", transport
+        )
+        self.assertIn("gateway-transport-${{ matrix.lane }}.json*", self.workflow)
 
     def test_official_tools_do_not_dirty_the_source_checkout(self):
         self.assertNotIn(".tmp/ui-official-tools-robrix", self.workflow)
