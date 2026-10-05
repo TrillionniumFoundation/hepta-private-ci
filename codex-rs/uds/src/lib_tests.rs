@@ -42,7 +42,6 @@ async fn prepare_private_socket_directory_sets_existing_permissions_to_owner_onl
     }
 }
 
-#[cfg(unix)]
 #[tokio::test]
 async fn regular_file_path_is_not_stale_socket_path() {
     let temp_dir = tempfile::TempDir::new().expect("temp dir");
@@ -54,6 +53,45 @@ async fn regular_file_path_is_not_stale_socket_path() {
             .await
             .expect("stale socket check should succeed")
     );
+}
+
+#[tokio::test]
+async fn directory_path_is_not_stale_socket_path() -> std::io::Result<()> {
+    let temp_dir = tempfile::TempDir::new()?;
+    assert!(!is_stale_socket_path(temp_dir.path()).await?);
+    Ok(())
+}
+
+#[cfg(windows)]
+#[tokio::test]
+async fn junction_path_is_not_stale_socket_path() -> std::io::Result<()> {
+    let temp_dir = tempfile::TempDir::new()?;
+    let target = temp_dir.path().join("target");
+    let junction = temp_dir.path().join("junction");
+    std::fs::create_dir(&target)?;
+    std::fs::write(target.join("owner-state"), b"preserve target")?;
+    let output = std::process::Command::new("cmd")
+        .args(["/D", "/C", "mklink", "/J"])
+        .arg(&junction)
+        .arg(&target)
+        .output()?;
+    assert!(
+        output.status.success(),
+        "create junction: stdout={} stderr={}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!is_stale_socket_path(&junction).await?);
+    assert_eq!(
+        std::fs::read(target.join("owner-state"))?,
+        b"preserve target"
+    );
+    std::fs::remove_file(target.join("owner-state"))?;
+    std::fs::remove_dir(&target)?;
+    // A dangling junction is still inspected as its own reparse object.
+    assert!(!is_stale_socket_path(&junction).await?);
+    std::fs::remove_dir(&junction)?;
+    Ok(())
 }
 
 #[tokio::test]

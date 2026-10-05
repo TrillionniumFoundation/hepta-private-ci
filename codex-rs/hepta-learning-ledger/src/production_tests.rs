@@ -15,6 +15,7 @@ use ed25519_dalek::SigningKey;
 use crate::AppendDisposition;
 use crate::CreditAllocationV1;
 use crate::LearningEvidenceTrustV1;
+use crate::LearningTrustDistributionError;
 use crate::LearningTrustDistributionV1;
 use crate::LearningTrustRootV1;
 use crate::LedgerRecovery;
@@ -115,6 +116,10 @@ fn trust_root_key() -> SigningKey {
 }
 
 fn activated_trust() -> ActivatedLearningTrustV1 {
+    activated_trust_with_root_revocation(/*root_revoked_at*/ None)
+}
+
+fn activated_trust_with_root_revocation(root_revoked_at: Option<u64>) -> ActivatedLearningTrustV1 {
     let root_key = trust_root_key();
     let root = LearningTrustRootV1 {
         root_id: id("learning-root"),
@@ -122,7 +127,7 @@ fn activated_trust() -> ActivatedLearningTrustV1 {
         verifying_key: root_key.verifying_key().to_bytes(),
         valid_from: 1,
         expires_at: 200,
-        revoked_at: None,
+        revoked_at: root_revoked_at,
     };
     let mut signed = SignedLearningTrustDistributionV1 {
         distribution: LearningTrustDistributionV1 {
@@ -220,9 +225,12 @@ impl Fixture {
     }
 
     fn writer(&self) -> LedgerWriter {
+        self.writer_with_trust(activated_trust())
+    }
+
+    fn writer_with_trust(&self, trust: ActivatedLearningTrustV1) -> LedgerWriter {
         let ledger = DurableLedger::create(self.file("ledger"), binding(), 64).unwrap();
         let witness = LedgerWitnessStore::create(self.file("witness"), binding()).unwrap();
-        let trust = activated_trust();
         let ledger_directory = self.directory();
         let witness_directory = self.directory();
         LedgerWriter::from_durable(
@@ -233,6 +241,250 @@ impl Fixture {
             &witness_directory,
         )
         .unwrap()
+    }
+}
+
+fn sign_until_credentials_expire(
+    verifier: &LearningEvidenceVerifierV1,
+    name: &str,
+    role: LearningEvidenceRoleV1,
+    payload: &[u8],
+) -> SignedLearningEvidenceV1 {
+    let mut evidence = sign(verifier, name, role, payload);
+    evidence.expires_at = 100;
+    evidence.signature = SigningKey::from_bytes(&[seed(name); 32])
+        .sign(&evidence.signing_bytes())
+        .to_bytes();
+    // The signer and evidence remain valid after the distribution's lease or
+    // scheduled root revocation, so only the writer's trust check rejects them.
+    verifier
+        .verify(role, &evidence, payload, /*now*/ 91)
+        .unwrap();
+    evidence
+}
+
+fn writer_with_observed_outcome(
+    fixture: &Fixture,
+    trust: ActivatedLearningTrustV1,
+) -> (LedgerWriter, DatasetSnapshotReceiptV3) {
+    let mut writer = fixture.writer_with_trust(trust);
+    let request = decision();
+    let evidence = sign(
+        writer.verifier(),
+        "generator",
+        LearningEvidenceRoleV1::Generator,
+        &decision_signing_payload_v2(&request).unwrap(),
+    );
+    let decision_receipt = writer
+        .append_decision(Digest32::ZERO, request, &evidence, /*now*/ 50)
+        .unwrap();
+    let observed = outcome(
+        "outcome-record-2",
+        "outcome-2",
+        /*predecessor*/ None,
+        /*value*/ 120,
+    );
+    let evidence = sign(
+        writer.verifier(),
+        "observer",
+        LearningEvidenceRoleV1::Observer,
+        &outcome_signing_payload_v2(&observed),
+    );
+    writer
+        .append_outcome(
+            decision_receipt.chain_digest,
+            observed,
+            &evidence,
+            /*now*/ 50,
+        )
+        .unwrap();
+    let plan = DatasetFreezePlanV2 {
+        snapshot_id: id("trust-base-dataset"),
+        objective_digest: digest("objective"),
+        inclusion_policy_digest: digest("inclusion-policy"),
+    };
+    let evidence = sign(
+        writer.verifier(),
+        "evaluator",
+        LearningEvidenceRoleV1::Evaluator,
+        &dataset_freeze_signing_payload_v2(&writer.snapshot().unwrap(), &plan).unwrap(),
+    );
+    let dataset = writer.freeze_dataset(plan, &evidence, /*now*/ 50).unwrap();
+    (writer, dataset)
+}
+
+fn persisted_writer_state(
+    fixture: &Fixture,
+    writer: &LedgerWriter,
+) -> (LedgerSnapshot, LedgerWitnessFrontier, Vec<u8>, Vec<u8>) {
+    (
+        writer.snapshot().unwrap(),
+        writer.witness_frontier().unwrap(),
+        fs::read(fixture.root.join("ledger")).unwrap(),
+        fs::read(fixture.root.join("witness")).unwrap(),
+    )
+}
+
+#[test]
+fn production_admissions_recheck_trust_before_writes_and_after_recovery() {
+    use pretty_assertions::assert_eq;
+
+    type Admission =
+        fn(&mut LedgerWriter, &DatasetSnapshotReceiptV3, u64) -> Result<(), ProductionLedgerError>;
+    let admissions: [(&str, Admission); 5] = [
+        ("decision", |writer, _, now| {
+            let mut request = decision();
+            request.record_id = id("next-decision");
+            request.episode_id = id("next-episode");
+            let evidence = sign_until_credentials_expire(
+                writer.verifier(),
+                "generator",
+                LearningEvidenceRoleV1::Generator,
+                &decision_signing_payload_v2(&request).unwrap(),
+            );
+            writer
+                .append_decision(
+                    writer.witness_frontier()?.anchor.chain_digest,
+                    request,
+                    &evidence,
+                    now,
+                )
+                .map(drop)
+        }),
+        ("outcome", |writer, _, now| {
+            let request = outcome(
+                "outcome-record-3",
+                "outcome-3",
+                Some("outcome-2"),
+                /*value*/ 120,
+            );
+            let evidence = sign_until_credentials_expire(
+                writer.verifier(),
+                "observer",
+                LearningEvidenceRoleV1::Observer,
+                &outcome_signing_payload_v2(&request),
+            );
+            writer
+                .append_outcome(
+                    writer.witness_frontier()?.anchor.chain_digest,
+                    request,
+                    &evidence,
+                    now,
+                )
+                .map(drop)
+        }),
+        ("credit", |writer, _, now| {
+            let request = credit_batch();
+            let digest = finalize_credit_batch(request.clone(), now)
+                .unwrap()
+                .batch_digest;
+            let evidence = sign_until_credentials_expire(
+                writer.verifier(),
+                "allocator",
+                LearningEvidenceRoleV1::CreditAllocator,
+                &credit_batch_signing_payload_v2(&request, digest),
+            );
+            writer
+                .append_credit_batch(
+                    writer.witness_frontier()?.anchor.chain_digest,
+                    request,
+                    &evidence,
+                    now,
+                )
+                .map(drop)
+        }),
+        ("unlearning", |writer, dataset, now| {
+            let request = UnlearningLineageRequestV1 {
+                record_id: id("unlearning-record"),
+                lineage_id: id("unlearning-lineage"),
+                source_record_id: id("outcome-record-2"),
+                dataset_snapshot_id: dataset.snapshot.snapshot_id.clone(),
+                dataset_digest: dataset.snapshot.dataset_digest,
+                artifact_id: id("artifact-a"),
+                reason_digest: digest("withdrawal"),
+            };
+            let evidence = sign_until_credentials_expire(
+                writer.verifier(),
+                "privacy-owner",
+                LearningEvidenceRoleV1::UnlearningAuthority,
+                &unlearning_signing_payload_v1(&request),
+            );
+            writer
+                .append_unlearning(
+                    writer.witness_frontier()?.anchor.chain_digest,
+                    request,
+                    dataset,
+                    &evidence,
+                    now,
+                )
+                .map(drop)
+        }),
+        ("dataset", |writer, _, now| {
+            let plan = DatasetFreezePlanV2 {
+                snapshot_id: id("trust-next-dataset"),
+                objective_digest: digest("objective"),
+                inclusion_policy_digest: digest("inclusion-policy"),
+            };
+            let evidence = sign_until_credentials_expire(
+                writer.verifier(),
+                "evaluator",
+                LearningEvidenceRoleV1::Evaluator,
+                &dataset_freeze_signing_payload_v2(&writer.snapshot().unwrap(), &plan).unwrap(),
+            );
+            writer.freeze_dataset(plan, &evidence, now).map(drop)
+        }),
+    ];
+
+    for (root_revoked_at, last_valid, rejected_at) in [(None, 90, 91), (Some(80), 79, 80)] {
+        for (name, admit) in admissions {
+            let trust = activated_trust_with_root_revocation(root_revoked_at);
+            let valid_fixture = Fixture::new();
+            let (mut valid_writer, valid_dataset) =
+                writer_with_observed_outcome(&valid_fixture, trust.clone());
+            admit(&mut valid_writer, &valid_dataset, last_valid)
+                .unwrap_or_else(|error| panic!("{name} must be valid at {last_valid}: {error:?}"));
+            drop(valid_writer);
+
+            let fixture = Fixture::new();
+            let (mut writer, dataset) = writer_with_observed_outcome(&fixture, trust.clone());
+            let before = persisted_writer_state(&fixture, &writer);
+            let result = admit(&mut writer, &dataset, rejected_at);
+            assert!(
+                matches!(
+                    &result,
+                    Err(ProductionLedgerError::Trust(
+                        LearningTrustDistributionError::DistributionWindow
+                    ))
+                ),
+                "{name} must reject at {rejected_at}: {result:?}"
+            );
+            assert_eq!(persisted_writer_state(&fixture, &writer), before);
+            drop(writer);
+
+            let ledger = DurableLedger::recover(
+                fixture.file("ledger"),
+                binding(),
+                /*max_records*/ 64,
+                LedgerRecovery::Acknowledged(before.1.anchor),
+            )
+            .unwrap();
+            let witness = LedgerWitnessStore::recover(fixture.file("witness"), binding()).unwrap();
+            let directory = fixture.directory();
+            let mut recovered =
+                LedgerWriter::from_durable(ledger, witness, trust, &directory, &directory).unwrap();
+            assert_eq!(persisted_writer_state(&fixture, &recovered), before);
+            let result = admit(&mut recovered, &dataset, rejected_at);
+            assert!(
+                matches!(
+                    &result,
+                    Err(ProductionLedgerError::Trust(
+                        LearningTrustDistributionError::DistributionWindow
+                    ))
+                ),
+                "recovered {name} must reject at {rejected_at}: {result:?}"
+            );
+            assert_eq!(persisted_writer_state(&fixture, &recovered), before);
+        }
     }
 }
 
