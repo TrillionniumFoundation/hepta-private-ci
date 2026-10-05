@@ -10,7 +10,9 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
+  actions: read
   contents: read
+  pull-requests: read
 
 jobs:
   scope:
@@ -97,6 +99,11 @@ jobs:
   codespell:
     name: Codespell
     uses: ./.github/workflows/codespell.yml
+    secrets: inherit
+
+  control-engineering:
+    name: control.engineering
+    uses: ./.github/workflows/control-engineering-required.yml
     secrets: inherit
 
   repo-checks:
@@ -215,6 +222,7 @@ jobs:
       - blob-size-policy
       - cargo-deny
       - codespell
+      - control-engineering
       - repo-checks
       - rust-ci
       - sdk
