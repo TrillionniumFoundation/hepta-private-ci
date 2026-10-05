@@ -24,6 +24,13 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Iterable
 
+try:
+    from scripts.hepta_ci_module_paths import literal_module_paths
+except ModuleNotFoundError as error:
+    if error.name != "scripts":
+        raise
+    from hepta_ci_module_paths import literal_module_paths
+
 OID = re.compile(r"[0-9a-f]{40}\Z")
 WORKSPACE = "codex-rs"
 SHARED = {
@@ -99,9 +106,7 @@ INCLUDE_LITERAL = re.compile(
 )
 
 
-MODULE_PATH = re.compile(r"#\s*\[\s*path\s*=")
 OUTLINED_MODULE = re.compile(r"\bmod\s+(?:r#)?([A-Za-z_][A-Za-z0-9_]*)\s*;")
-INLINE_MODULE = re.compile(r"\bmod\s+(?:r#)?[A-Za-z_][A-Za-z0-9_]*\s*\{")
 
 
 def module_source_inputs(path: str, text: str, tracked: set[str]):
@@ -115,15 +120,11 @@ def module_source_inputs(path: str, text: str, tracked: set[str]):
     bounded discovery, not a replacement compiler or a proof of valid Rust.
     """
     targets = set()
-    opaque = bool(INLINE_MODULE.search(text)) and bool(MODULE_PATH.search(text))
-    opaque |= bool(re.search(r"#\s*\[\s*cfg_attr\b", text)) and bool(
-        re.search(r"\bpath\s*=", text)
-    )
+    literals, opaque = literal_module_paths(text)
     directory = posixpath.dirname(path)
-    for attribute in MODULE_PATH.finditer(text):
-        start = re.compile(r"\s*").match(text, attribute.end()).end()
-        literal = INCLUDE_LITERAL.match(text, start)
-        if literal is None or not re.match(r"\s*\]", text[literal.end() :]):
+    for spelling in literals:
+        literal = INCLUDE_LITERAL.fullmatch(spelling)
+        if literal is None:
             opaque = True
             continue
         try:

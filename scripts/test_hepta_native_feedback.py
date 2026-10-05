@@ -192,6 +192,10 @@ class NativeFeedbackExecutionTests(unittest.TestCase):
             ROOT / "scripts/hepta_ci_dependencies.py",
             self.repo / "scripts/hepta_ci_dependencies.py",
         )
+        shutil.copyfile(
+            ROOT / "scripts/hepta_ci_module_paths.py",
+            self.repo / "scripts/hepta_ci_module_paths.py",
+        )
         (self.repo / "scripts/hepta-gap-closure.py").write_text(
             'import os\nprint("document diagnostic sentinel")\nraise SystemExit(int(os.environ.get("DOC_RC", "0")))\n'
         )
