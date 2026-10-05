@@ -32,7 +32,12 @@ class SourceIdentityTests(unittest.TestCase):
         self.git("config", "user.email", "source-identity@example.invalid")
         self.git("config", "commit.gpgsign", "false")
         self.modules = [
-            {"id": mid, "rootBindings": [{"path": f"src/{mid}"}]}
+            {
+                "id": mid,
+                "rootBindings": [{"path": f"src/{mid}"}],
+                "source_root_present": True,
+                "production_implementation": False,
+            }
             for mid in ("alpha", "beta")
         ]
         self.write_json("docs/modules/MODULES.json", {"modules": self.modules})

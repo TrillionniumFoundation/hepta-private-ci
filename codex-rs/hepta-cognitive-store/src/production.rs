@@ -1,3 +1,7 @@
+//! Historical, uncompiled wrapper retained for reference only.
+//! This file is outside the crate module graph and is not a production API.
+//! Use DurableCognitiveStore and AgentdProductionWriterHost with live verification.
+
 //! Canonical production façade for authoritative cognitive persistence.
 //!
 //! `hepta-memory` remains the physical SQLite durability engine, but product

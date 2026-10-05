@@ -173,6 +173,27 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
         },
     );
 
+    let mut mismatched = expected.clone();
+    mismatched.state_digest = Sha256Digest::for_bytes(b"not-the-current-product-recovery-cut");
+    let rejected = AgentdProductionWriterHost::open_with_recovery(
+        &config,
+        CognitiveRecoveryRequirement::ExactCurrentCut(&mismatched),
+        authority.clone(),
+        Arc::clone(&verifier),
+        "agentd-product-recovery-test",
+        /*lease_generation*/ 1,
+    )
+    .await
+    .expect_err("a mismatched current cut must reject recovery before writer acquisition");
+    assert!(
+        rejected
+            .to_string()
+            .contains("recovery candidate differs from independently retained current cut")
+    );
+    let unchanged = DurableCognitiveStore::open(&config.identity().layout).await?;
+    assert_eq!(unchanged.recovery_anchor().await?, expected);
+    drop(unchanged);
+
     let host = AgentdProductionWriterHost::open_with_recovery(
         &config,
         CognitiveRecoveryRequirement::ExactCurrentCut(&expected),
@@ -183,7 +204,23 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     )
     .await?;
     let recovered_anchor = host.writer().recovery_anchor().await?;
-    assert_eq!(recovered_anchor, expected);
+    assert_eq!(
+        (
+            &recovered_anchor.profile,
+            &recovered_anchor.owner_agent_id,
+            &recovered_anchor.schema_digest,
+        ),
+        (
+            &expected.profile,
+            &expected.owner_agent_id,
+            &expected.schema_digest,
+        ),
+        "writer acquisition preserves the recovered owner, schema, and anchor profile"
+    );
+    assert_ne!(
+        recovered_anchor, expected,
+        "acquiring the recovered writer appends its fenced lease to the authenticated owner cut"
+    );
 
     let now = i64::try_from(now_unix_seconds()?)?;
     let access = CognitiveAccess::agent_private(owner.clone());
@@ -421,10 +458,12 @@ async fn agentd_product_host_recovers_exact_cut_into_fenced_writer_generation()
     );
     authority_live.store(true, Ordering::SeqCst);
     host.writer().release().await?;
+    let released_anchor = host.writer().recovery_anchor().await?;
     drop(host);
 
     let reopened = DurableCognitiveStore::open(&config.identity().layout).await?;
     let post_recovery_anchor = reopened.recovery_anchor().await?;
+    assert_eq!(post_recovery_anchor, released_anchor);
     assert_ne!(post_recovery_anchor, expected);
     Ok(())
 }

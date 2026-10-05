@@ -309,18 +309,25 @@ pub(crate) async fn load_canonical_generation_tx(
     // identity, select the latest trigger at or before the requested generation.
     // This replaces complete graph copies per generation while preserving exact
     // historical reconstruction from source-owned immutable revisions.
+    // Deduplicate identities before their indexed latest-trigger lookup, rather
+    // than repeating that lookup for every retained historical receipt.
     let node_rows = sqlx::query(
-        "WITH selected_heads AS (
+        "WITH selected_memories AS (
+             SELECT DISTINCT projection_scope, trigger_memory_id
+             FROM kg_projection_generation_receipts
+             WHERE projection_scope = ? AND generation <= ?
+         ), selected_heads AS (
              SELECT h.trigger_memory_id AS memory_id,
                     h.trigger_memory_revision AS memory_revision
-             FROM kg_projection_generation_receipts h
-             WHERE h.projection_scope = ?
-               AND h.generation <= ?
-               AND h.generation = (
+             FROM selected_memories m
+             JOIN kg_projection_generation_receipts h
+               ON h.projection_scope = m.projection_scope
+              AND h.trigger_memory_id = m.trigger_memory_id
+              AND h.generation = (
                    SELECT MAX(x.generation)
                    FROM kg_projection_generation_receipts x
-                   WHERE x.projection_scope = h.projection_scope
-                     AND x.trigger_memory_id = h.trigger_memory_id
+                   WHERE x.projection_scope = m.projection_scope
+                     AND x.trigger_memory_id = m.trigger_memory_id
                      AND x.generation <= ?
                )
          )
@@ -370,17 +377,22 @@ pub(crate) async fn load_canonical_generation_tx(
     }
 
     let edge_rows = sqlx::query(
-        "WITH selected_heads AS (
+        "WITH selected_memories AS (
+             SELECT DISTINCT projection_scope, trigger_memory_id
+             FROM kg_projection_generation_receipts
+             WHERE projection_scope = ? AND generation <= ?
+         ), selected_heads AS (
              SELECT h.trigger_memory_id AS memory_id,
                     h.trigger_memory_revision AS memory_revision
-             FROM kg_projection_generation_receipts h
-             WHERE h.projection_scope = ?
-               AND h.generation <= ?
-               AND h.generation = (
+             FROM selected_memories m
+             JOIN kg_projection_generation_receipts h
+               ON h.projection_scope = m.projection_scope
+              AND h.trigger_memory_id = m.trigger_memory_id
+              AND h.generation = (
                    SELECT MAX(x.generation)
                    FROM kg_projection_generation_receipts x
-                   WHERE x.projection_scope = h.projection_scope
-                     AND x.trigger_memory_id = h.trigger_memory_id
+                   WHERE x.projection_scope = m.projection_scope
+                     AND x.trigger_memory_id = m.trigger_memory_id
                      AND x.generation <= ?
                )
          )
@@ -628,16 +640,24 @@ pub(crate) async fn graph_source_vector_digest_tx(
     source_snapshot_digest: Digest32,
 ) -> Result<Digest32, CognitiveStoreError> {
     let (scope_kind, workspace_sha256) = scope.database_parts();
-    let memory_frontier: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM memory_revisions
-         WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?",
-    )
-    .bind(owner_agent_id)
-    .bind(scope_kind)
-    .bind(workspace_sha256)
-    .fetch_one(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
+    // The fact-set primary key permits at most one match per revision, so one
+    // scan computes all three history counts without multiplying memory rows.
+    let (memory_frontier, tombstone_frontier, knowledge_fact_frontier): (i64, i64, i64) =
+        sqlx::query_as(
+            "SELECT COUNT(*),
+                    COUNT(CASE WHEN r.lifecycle = 'tombstoned' THEN 1 END),
+                    COUNT(f.memory_id)
+             FROM memory_revisions r
+             LEFT JOIN kg_revision_fact_sets f
+               ON f.memory_id = r.memory_id AND f.memory_revision = r.revision
+             WHERE r.owner_agent_id = ? AND r.scope_kind = ? AND r.workspace_sha256 IS ?",
+        )
+        .bind(owner_agent_id)
+        .bind(scope_kind)
+        .bind(workspace_sha256)
+        .fetch_one(&mut **transaction)
+        .await
+        .map_err(unavailable)?;
     // The graph cut contains cited evidence. A standalone source append has
     // no graph facts and must not invalidate a previously published generation
     // when reopening the owner. The broader Lane C snapshot still fences all
@@ -647,30 +667,6 @@ pub(crate) async fn graph_source_vector_digest_tx(
          WHERE s.owner_agent_id = ? AND s.scope_kind = ? AND s.workspace_sha256 IS ?
            AND EXISTS (SELECT 1 FROM memory_citations c
                        WHERE c.source_id = s.source_id AND c.source_revision = s.source_revision)",
-    )
-    .bind(owner_agent_id)
-    .bind(scope_kind)
-    .bind(workspace_sha256)
-    .fetch_one(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
-    let tombstone_frontier: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*) FROM memory_revisions
-         WHERE owner_agent_id = ? AND scope_kind = ? AND workspace_sha256 IS ?
-           AND lifecycle = 'tombstoned'",
-    )
-    .bind(owner_agent_id)
-    .bind(scope_kind)
-    .bind(workspace_sha256)
-    .fetch_one(&mut **transaction)
-    .await
-    .map_err(unavailable)?;
-    let knowledge_fact_frontier: i64 = sqlx::query_scalar(
-        "SELECT COUNT(*)
-         FROM kg_revision_fact_sets f
-         JOIN memory_revisions r
-           ON r.memory_id = f.memory_id AND r.revision = f.memory_revision
-         WHERE r.owner_agent_id = ? AND r.scope_kind = ? AND r.workspace_sha256 IS ?",
     )
     .bind(owner_agent_id)
     .bind(scope_kind)
@@ -742,6 +738,10 @@ impl CognitiveStore {
         trigger_source: &SourceRevisionId,
         trigger_facts: &CanonicalFactSet,
     ) -> Result<CognitiveProjectionReceipt, CognitiveStoreError> {
+        #[cfg(feature = "cognitive-perf-observe")]
+        let observation = crate::cognitive_perf_observation::Guard::start(
+            crate::cognitive_perf_observation::Phase::Projection,
+        );
         let projection_scope = scope.projection_key();
         let projection_scope_exists: bool = sqlx::query_scalar(
             "SELECT EXISTS(
@@ -776,13 +776,13 @@ impl CognitiveStore {
                      WHERE q.memory_id = r.memory_id
                        AND q.memory_revision = r.revision) AS actual_relation_count
              FROM memory_heads h
-             JOIN memory_revisions r
+             CROSS JOIN memory_revisions r
                ON r.memory_id = h.memory_id AND r.revision = h.revision
              LEFT JOIN kg_revision_fact_sets s
                ON s.memory_id = r.memory_id AND s.memory_revision = r.revision
              WHERE r.owner_agent_id = ? AND r.scope_kind = ?
                AND r.workspace_sha256 IS ?
-             ORDER BY r.memory_id LIMIT ?",
+             ORDER BY h.memory_id LIMIT ?",
         )
         .bind(self.owner_agent_id.as_str())
         .bind(scope_kind)
@@ -796,37 +796,8 @@ impl CognitiveStore {
                 "KG projection exceeds the {MAX_SCOPE_HEADS}-head scope limit"
             )));
         }
-        let mut heads = Vec::with_capacity(head_rows.len());
-        for row in head_rows {
-            let fact_set_sha256: Option<String> =
-                row.try_get("fact_set_sha256").map_err(unavailable)?;
-            let Some(fact_set_sha256) = fact_set_sha256 else {
-                return Err(CognitiveStoreError::Corrupt(
-                    "current memory head has no immutable KG fact-set receipt".to_string(),
-                ));
-            };
-            let entity_count: i64 = row.try_get("entity_count").map_err(unavailable)?;
-            let relation_count: i64 = row.try_get("relation_count").map_err(unavailable)?;
-            let actual_entity_count: i64 =
-                row.try_get("actual_entity_count").map_err(unavailable)?;
-            let actual_relation_count: i64 =
-                row.try_get("actual_relation_count").map_err(unavailable)?;
-            if entity_count != actual_entity_count || relation_count != actual_relation_count {
-                return Err(CognitiveStoreError::Corrupt(
-                    "current memory head has an incomplete immutable KG fact set".to_string(),
-                ));
-            }
-            Sha256Digest::parse(fact_set_sha256.clone()).map_err(CognitiveStoreError::Corrupt)?;
-            heads.push(ProjectionHead {
-                memory_id: row.try_get("memory_id").map_err(unavailable)?,
-                revision: row.try_get("revision").map_err(unavailable)?,
-                content_sha256: row.try_get("content_sha256").map_err(unavailable)?,
-                verification: row.try_get("verification").map_err(unavailable)?,
-                lifecycle: row.try_get("lifecycle").map_err(unavailable)?,
-                fact_set_sha256,
-            });
-        }
-        let input_heads_sha256 = input_heads_digest(&projection_scope, &heads);
+        let input_heads_sha256 = input_head_rows_digest(&projection_scope, &head_rows)?;
+        drop(head_rows);
         let generation_vector_digest = graph_source_vector_digest_tx(
             transaction,
             self.owner_agent_id.as_str(),
@@ -1093,42 +1064,104 @@ impl CognitiveStore {
                 "projection trigger source is not the revision's exact citation".to_string(),
             ));
         }
-        Ok(CognitiveProjectionReceipt {
-            generation: ProjectionGeneration(
-                u64::try_from(next).map_err(|_| {
+        let receipt =
+            CognitiveProjectionReceipt {
+                generation: ProjectionGeneration(u64::try_from(next).map_err(|_| {
                     CognitiveStoreError::Corrupt("negative KG generation".to_string())
-                })?,
-            ),
-            fact_set_sha256: trigger_facts.digest.clone(),
-            input_heads_sha256,
-            output_sha256,
-            generation_sha256,
-            publication_sha256,
-            entity_count: u64::try_from(trigger_facts.entities.len()).unwrap_or(u64::MAX),
-            relation_count: u64::try_from(trigger_facts.relations.len()).unwrap_or(u64::MAX),
-            node_count: u64::try_from(nodes.len()).unwrap_or(u64::MAX),
-            edge_count: u64::try_from(edges.len()).unwrap_or(u64::MAX),
-        })
+                })?),
+                fact_set_sha256: trigger_facts.digest.clone(),
+                input_heads_sha256,
+                output_sha256,
+                generation_sha256,
+                publication_sha256,
+                entity_count: u64::try_from(trigger_facts.entities.len()).unwrap_or(u64::MAX),
+                relation_count: u64::try_from(trigger_facts.relations.len()).unwrap_or(u64::MAX),
+                node_count: u64::try_from(nodes.len()).unwrap_or(u64::MAX),
+                edge_count: u64::try_from(edges.len()).unwrap_or(u64::MAX),
+            };
+        #[cfg(feature = "cognitive-perf-observe")]
+        observation.finish();
+        Ok(receipt)
     }
 }
 
 pub(crate) fn input_heads_digest(scope: &str, heads: &[ProjectionHead]) -> Sha256Digest {
+    let mut hasher = input_heads_hasher(scope, heads.len());
+    for head in heads {
+        frame_input_head(
+            &mut hasher,
+            [
+                head.memory_id.as_bytes(),
+                &head.revision.to_be_bytes(),
+                head.content_sha256.as_bytes(),
+                head.verification.as_bytes(),
+                head.lifecycle.as_bytes(),
+                head.fact_set_sha256.as_bytes(),
+            ],
+        );
+    }
+    finish_digest(hasher)
+}
+
+fn input_head_rows_digest(
+    scope: &str,
+    rows: &[sqlx::sqlite::SqliteRow],
+) -> Result<Sha256Digest, CognitiveStoreError> {
+    let mut hasher = input_heads_hasher(scope, rows.len());
+    for row in rows {
+        // Ordinals follow the complete head query above. Checked borrowed
+        // decodes retain its actual SQLite type and UTF-8 validation.
+        let fact_set_sha256: Option<&str> = row.try_get(/*index*/ 5_usize).map_err(unavailable)?;
+        let Some(fact_set_sha256) = fact_set_sha256 else {
+            return Err(CognitiveStoreError::Corrupt(
+                "current memory head has no immutable KG fact-set receipt".to_string(),
+            ));
+        };
+        let entity_count: i64 = row.try_get(/*index*/ 6_usize).map_err(unavailable)?;
+        let relation_count: i64 = row.try_get(/*index*/ 7_usize).map_err(unavailable)?;
+        let actual_entity_count: i64 = row.try_get(/*index*/ 8_usize).map_err(unavailable)?;
+        let actual_relation_count: i64 = row.try_get(/*index*/ 9_usize).map_err(unavailable)?;
+        if entity_count != actual_entity_count || relation_count != actual_relation_count {
+            return Err(CognitiveStoreError::Corrupt(
+                "current memory head has an incomplete immutable KG fact set".to_string(),
+            ));
+        }
+        Sha256Digest::parse(fact_set_sha256).map_err(CognitiveStoreError::Corrupt)?;
+        let memory_id: &str = row.try_get(/*index*/ 0_usize).map_err(unavailable)?;
+        let revision: i64 = row.try_get(/*index*/ 1_usize).map_err(unavailable)?;
+        let content_sha256: &str = row.try_get(/*index*/ 2_usize).map_err(unavailable)?;
+        let verification: &str = row.try_get(/*index*/ 3_usize).map_err(unavailable)?;
+        let lifecycle: &str = row.try_get(/*index*/ 4_usize).map_err(unavailable)?;
+        frame_input_head(
+            &mut hasher,
+            [
+                memory_id.as_bytes(),
+                &revision.to_be_bytes(),
+                content_sha256.as_bytes(),
+                verification.as_bytes(),
+                lifecycle.as_bytes(),
+                fact_set_sha256.as_bytes(),
+            ],
+        );
+    }
+    Ok(finish_digest(hasher))
+}
+
+fn input_heads_hasher(scope: &str, head_count: usize) -> Sha256 {
     let mut hasher = Sha256::new();
     frame_part(&mut hasher, b"hepta:cognitive:kg-projection-input:v1");
     frame_part(&mut hasher, scope.as_bytes());
     frame_part(
         &mut hasher,
-        &u64::try_from(heads.len()).unwrap_or(u64::MAX).to_be_bytes(),
+        &u64::try_from(head_count).unwrap_or(u64::MAX).to_be_bytes(),
     );
-    for head in heads {
-        frame_part(&mut hasher, head.memory_id.as_bytes());
-        frame_part(&mut hasher, &head.revision.to_be_bytes());
-        frame_part(&mut hasher, head.content_sha256.as_bytes());
-        frame_part(&mut hasher, head.verification.as_bytes());
-        frame_part(&mut hasher, head.lifecycle.as_bytes());
-        frame_part(&mut hasher, head.fact_set_sha256.as_bytes());
+    hasher
+}
+
+fn frame_input_head(hasher: &mut Sha256, fields: [&[u8]; 6]) {
+    for field in fields {
+        frame_part(hasher, field);
     }
-    finish_digest(hasher)
 }
 
 pub(crate) fn output_digest(
@@ -1210,3 +1243,7 @@ pub(crate) fn canonical_relation_kind(
         &[relation.as_bytes()],
     )?))
 }
+
+#[cfg(test)]
+#[path = "cognitive_kg_head_digest_tests.rs"]
+mod head_digest_tests;

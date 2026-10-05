@@ -97,11 +97,17 @@ class CognitiveMigrationCheckoutTests(unittest.TestCase):
     def test_unpinned_windows_checkout_reproduces_the_native_ci_failure(self):
         with tempfile.TemporaryDirectory() as temporary:
             checkout = self.checkout(Path(temporary), "")
-            self.assertEqual(
-                schema_oracle(checkout),
-                "0d4c6e5e3e1c7f5cd356f779db66da8ab281525b4e7250455617d482d5ea6aa5",
+            migrations = list((checkout / MIGRATIONS).glob("*.sql"))
+            self.assertTrue(
+                any(b"\r\n" in migration.read_bytes() for migration in migrations)
             )
             self.assertNotEqual(schema_oracle(checkout), EXPECTED)
+            # Reproduce the current compiled schema, not one historical
+            # migration set's CRLF digest. Restoring only the checkout line
+            # endings must recover the exact current owner oracle.
+            for migration in migrations:
+                migration.write_bytes(migration.read_bytes().replace(b"\r\n", b"\n"))
+            self.assertEqual(schema_oracle(checkout), EXPECTED)
 
 
 if __name__ == "__main__":

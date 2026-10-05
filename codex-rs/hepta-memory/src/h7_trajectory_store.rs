@@ -482,6 +482,11 @@ pub async fn append_h7_trajectory_event_bound(
             "trajectory event replay changed its payload or binding".to_string(),
         ));
     }
+    if existing.len() >= MAX_TRAJECTORY_ROWS {
+        return Err(invalid(format!(
+            "trajectory append exceeds {MAX_TRAJECTORY_ROWS} event rows"
+        )));
+    }
     let expected_seq = existing
         .last()
         .map_or(1, |row| row.record.event_seq.saturating_add(1));
@@ -531,10 +536,7 @@ pub async fn append_h7_trajectory_event_bound(
         recorded_at,
     )
     .await?;
-    transaction
-        .commit()
-        .await
-        .map_err(crate::cognitive_store::unavailable)?;
+    crate::cognitive_store::commit_admitted(transaction).await?;
     Ok(H7TrajectoryAppend::Inserted {
         event_seq: record.event_seq,
         event_sha256,

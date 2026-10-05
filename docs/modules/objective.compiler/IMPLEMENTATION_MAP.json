@@ -349,8 +349,8 @@
     "implementedOperationMappingComplete": true
   },
   "sourceBase": {
-    "commit": "e8e81b7d541a81e75635cc1c0a713edaedb999d5",
-    "tree": "aaa6e4ecb7d45d01ea88f93b6a716e7dca3cf395"
+    "commit": "addae413d676a1e1914411a3f3fef9291ff65db9",
+    "tree": "9c5cfba5a56b7cdbbedd114a41c0f86246a7f098"
   },
   "repositoryControlledGaps": [
     "Obtain successful exact-head and deterministic synthetic-merge workflow receipts for one final canonical candidate checkout.",
@@ -361,7 +361,7 @@
     "product execution and target-host qualification",
     "operator acceptance, canary, promotion and release"
   ],
-  "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+  "sourceBaseRole": "current_source_navigation_anchor",
   "exactHeadQualificationPolicy": {
     "state": "external_exact_candidate_receipt_required",
     "verifier": "scripts/hepta-implementation-maps.py verify --expected-sha <checkout> --expected-tree <checkout-tree>",
@@ -440,11 +440,11 @@
     },
     {
       "path": "codex-rs/hepta-learning-ledger/src/run_start_tests.rs",
-      "object": "cfbb34705a6dee9a2b0c5afda76592109c83f86b"
+      "object": "2d45cdb87dbee3d10858f7ea6d61ac91b1efbd4c"
     },
     {
       "path": "codex-rs/hepta-objective",
-      "object": "e89450f622d12e85f516df691291e349f42cd8fc"
+      "object": "4fe20d6ca8de0e7ea61a5b633f49268c4af9f80a"
     },
     {
       "path": "codex-rs/hepta-objective/src/compiler.rs",
@@ -498,5 +498,17 @@
       "path": "docs/modules/objective.compiler/TECHNICAL.md",
       "object": "6c627878c86207f41091eb56fedf701b1e49ddd4"
     }
-  ]
+  ],
+  "historicalEvidence": {
+    "preRebind20261001": {
+      "sourceBase": {
+        "commit": "41b2da214f5541da09e0313e7b8576add6ed3839",
+        "tree": "40164d74489d479d4d3a17bb4f79bc7fdf83541c"
+      },
+      "observedAtHead": null,
+      "sourceBaseRole": "historical_mapping_baseline_not_exact_head_receipt",
+      "scope": "retained pre-rebind source provenance; not current-candidate execution evidence",
+      "currentCandidateQualificationTransferred": false
+    }
+  }
 }
