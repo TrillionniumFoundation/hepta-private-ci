@@ -387,8 +387,10 @@ mod platform {
         if result == SOCKET_ERROR {
             return Err(io::Error::from_raw_os_error(unsafe { WSAGetLastError() }));
         }
-        if bytes_returned != std::mem::size_of_val(&peer_process_id) as u32 || peer_process_id == 0
-        {
+        // Older Windows versions can return a valid peer PID while reporting
+        // zero output bytes for SIO_AF_UNIX_GETPEERPID. The PID itself remains
+        // the authority; fail closed only when the kernel did not provide one.
+        if peer_process_id == 0 {
             return Err(io::Error::new(
                 io::ErrorKind::InvalidData,
                 "Windows AF_UNIX peer did not return a valid process ID",

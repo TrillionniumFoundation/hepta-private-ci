@@ -156,18 +156,17 @@ fn install_registered_queue(
 fn python_hook_command(script_path: &Path) -> String {
     #[cfg(windows)]
     {
-        let _python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+        let python = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
             .into_iter()
             .chain(std::env::var_os("PATH"))
             .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
             .map(|directory| directory.join("python.exe"))
             .find(|candidate| candidate.is_file())
             .unwrap_or_else(|| panic!("queue hook tests require a real python.exe on PATH"));
-        // Command hooks run through cmd.exe on Windows. Resolve Python above so
-        // the fixture fails clearly when it is unavailable, but invoke it by
-        // name: cmd.exe misparses some absolute Bazel tool paths when the
-        // complete command line is wrapped for `/C`.
-        return format!("python.exe \"{}\"", script_path.display());
+        // Command hooks run through cmd.exe on Windows. Quote the resolved
+        // interpreter because Bazel's Python installation is not necessarily
+        // present on the hook subprocess PATH.
+        return format!("\"{}\" \"{}\"", python.display(), script_path.display());
     }
 
     #[cfg(not(windows))]
