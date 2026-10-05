@@ -5,6 +5,11 @@
 //! are checked before publication, and checkpoint publication is derived from
 //! committed owner state rather than caller-supplied semantic fields.
 
+#[path = "protocol_receipt_validation.rs"]
+mod receipt_validation;
+#[path = "protocol_timestamp.rs"]
+mod timestamp;
+
 use std::error::Error as StdError;
 use std::fmt;
 use std::str::FromStr;
@@ -26,6 +31,7 @@ const MAX_SIGNAL_FIELD_BYTES: usize = 32_768;
 const MAX_ACTIVATION_SUMMARY_BYTES: usize = 16_384;
 const MAX_SIGNAL_VALUES: usize = 4_096;
 const MAX_ACTIVE_INDICES: usize = 512;
+const MAX_ACTIVATION_DIMENSION: u32 = 512;
 const PPM: u32 = 1_000_000;
 const Q24_LIMIT: i64 = 8 * (1 << 24);
 const Q24_ONE: i64 = 1 << 24;
@@ -449,18 +455,34 @@ pub fn decode_neuron_runtime_config_v1(
     Ok(value)
 }
 
+/// Publish a summary only after verifying the native config and committed predecessor.
+/// The host authenticates the frozen encoder/model tuple in `config`; native journal
+/// identity alone does not authenticate model artifacts that the kernel does not own.
 pub fn canonical_checkpoint_v1(
     config: &NeuronRuntimeConfigV1,
+    native: &crate::SparseConfig,
     checkpoint: &SparseCheckpoint,
     tick: &NeuronTickReceiptV1,
     expires_unix_ms: u64,
 ) -> Result<NeuronCheckpointV1, NeuronProtocolError> {
+    config
+        .validate_native(native)
+        .map_err(|_| NeuronProtocolError::BindingMismatch("runtime config"))?;
+    if !checkpoint.matches_config_digest(config.native_config_digest) {
+        return Err(NeuronProtocolError::BindingMismatch("runtime config"));
+    }
+    if tick.checkpoint_before != checkpoint.predecessor_digest() {
+        return Err(NeuronProtocolError::BindingMismatch("predecessor"));
+    }
     if tick.checkpoint_after != checkpoint.digest()
         || tick.activation_digest != checkpoint.activation_digest()
         || tick.threshold_digest != checkpoint.threshold_digest()
         || tick.eligibility_digest != checkpoint.eligibility_digest()
     {
         return Err(NeuronProtocolError::BindingMismatch("checkpoint summaries"));
+    }
+    if tick.resource_receipt.saturation_count != checkpoint.projection_count() {
+        return Err(NeuronProtocolError::BindingMismatch("saturation count"));
     }
     let active_indices = committed_active_indices(checkpoint)?;
     let active_count = u64::try_from(active_indices.len())
@@ -564,6 +586,7 @@ pub fn decode_neuron_tick_input_v1(
 pub fn canonical_tick_receipt_v1(
     value: &NeuronTickReceiptV1,
 ) -> Result<NeuronTickReceiptProtocolV1, NeuronProtocolError> {
+    receipt_validation::validate_tick_receipt_fields(value.into())?;
     let projected = NeuronTickReceiptProtocolV1 {
         tick_id: value.tick_id.clone(),
         checkpoint_before: value.checkpoint_before,
@@ -583,7 +606,6 @@ pub fn canonical_tick_receipt_v1(
         saturation_count: value.resource_receipt.saturation_count,
         queue_age_micros: value.resource_receipt.queue_age_micros,
     };
-    validate_tick_receipt(&projected)?;
     Ok(projected)
 }
 
@@ -737,13 +759,14 @@ fn validate_runtime_config(
     if value.temporal_state_dimension == 0
         || value.temporal_state_dimension > 256
         || value.activation_dimension == 0
-        || value.activation_dimension > 512
+        || value.activation_dimension > MAX_ACTIVATION_DIMENSION
+        || value.inhibition_edges > 4_096
         || value.modulator_dimension == 0
         || value.modulator_dimension > 8
         || value.state_minimum_q24 != -Q24_LIMIT
         || value.state_maximum_q24 != Q24_LIMIT
         || !value.checked_wide_intermediates
-        || value.top_k_minimum_ratio_ppm == 0
+        || value.top_k_minimum_ratio_ppm < 10_000
         || value.top_k_minimum_ratio_ppm > value.top_k_maximum_ratio_ppm
         || value.top_k_maximum_ratio_ppm > 200_000
         || !value.per_population_first
@@ -754,10 +777,10 @@ fn validate_runtime_config(
         || value.threshold_minimum_q24 < -Q24_LIMIT
         || value.threshold_maximum_q24 > Q24_LIMIT
         || value.threshold_minimum_q24 > value.threshold_maximum_q24
-        || value.saturation_limit == 0
         || value.eligibility_trace_dimension == 0
         || value.eligibility_trace_dimension > 512
         || value.eligibility_maximum_norm_q24 <= 0
+        || value.eligibility_maximum_norm_q24 > ELIGIBILITY_L1_Q24
         || value.eligibility_decay_q24 < 0
         || value.eligibility_decay_q24 > Q24_ONE
         || value.p95_latency_micros == 0
@@ -765,10 +788,7 @@ fn validate_runtime_config(
         || value.transient_allocation_bytes == 0
         || value.checkpoint_bytes == 0
         || !(1_000_000..=4_000_000).contains(&value.write_amplification_ppm)
-        || value.expiry_utc.is_empty()
-        || value.expiry_utc.len() > 64
-        || !value.expiry_utc.contains('T')
-        || !value.expiry_utc.ends_with('Z')
+        || !timestamp::valid_utc_timestamp(&value.expiry_utc)
     {
         return Err(NeuronProtocolError::InvalidField("runtime config"));
     }
@@ -798,28 +818,7 @@ fn inhibition_digest_v1(native: &crate::SparseConfig) -> Result<Digest32, Neuron
 }
 
 fn validate_tick_receipt(value: &NeuronTickReceiptProtocolV1) -> Result<(), NeuronProtocolError> {
-    for (field, digest) in [
-        ("checkpointAfter", value.checkpoint_after),
-        ("activationDigest", value.activation_digest),
-        ("thresholdDigest", value.threshold_digest),
-        ("eligibilityDigest", value.eligibility_digest),
-    ] {
-        if digest.is_zero() {
-            return Err(NeuronProtocolError::InvalidDigest(field));
-        }
-    }
-    if value.active_indices.len() > MAX_ACTIVE_INDICES
-        || value
-            .active_indices
-            .windows(2)
-            .any(|pair| pair[0] >= pair[1])
-        || value.sparsity_ppm > PPM
-        || value.confidence_ppm > PPM
-        || value.ood_ppm > PPM
-    {
-        return Err(NeuronProtocolError::InvalidField("tick receipt"));
-    }
-    Ok(())
+    receipt_validation::validate_tick_receipt_fields(value.into())
 }
 
 fn validate_signal(value: &NeuronSignalReceiptV1) -> Result<(), NeuronProtocolError> {
@@ -863,8 +862,12 @@ fn validate_checkpoint(value: &NeuronCheckpointV1) -> Result<(), NeuronProtocolE
     if value.logical_sequence == 0
         || value.expires_unix_ms == 0
         || indices.len() > MAX_ACTIVE_INDICES
+        || indices
+            .iter()
+            .any(|index| *index >= MAX_ACTIVATION_DIMENSION)
         || indices.windows(2).any(|pair| pair[0] >= pair[1])
         || value.activation_summary.sparsity_ppm > PPM
+        || indices.is_empty() != (value.activation_summary.sparsity_ppm == 0)
         || (value.logical_sequence == 1) != value.predecessor_id.is_none()
     {
         return Err(NeuronProtocolError::InvalidField("checkpoint"));

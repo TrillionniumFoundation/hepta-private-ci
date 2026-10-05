@@ -39,6 +39,15 @@ impl<P: NeuronInferenceControlPort> NeuronModelPort for InferenceControlModelPor
         &mut self,
         request: &NeuronModelRequestV1,
     ) -> Result<NeuronModelOutputV1, NeuronModelError> {
+        NeuronFeatureRequestV1::validate_payload(
+            request.encoder_digest,
+            request.head_digest,
+            request.weights_digest,
+            request.input_digest,
+            &request.feature_vector_q24,
+            request.expected_output_width,
+        )
+        .map_err(|_| NeuronModelError::Rejected)?;
         let control_request = NeuronFeatureRequestV1 {
             request_id: request.request_id.clone(),
             generation: request.generation,

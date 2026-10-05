@@ -123,3 +123,80 @@ fn global_l1_trust_region_projects_without_changing_inputs() {
     );
     assert_eq!(history, original);
 }
+
+#[test]
+fn checked_modulator_can_be_used_by_public_plasticity_api() {
+    let receipt = Digest32::of_bytes(b"verified-independent-observation");
+    let modulator = checked(IndependentModulatorV1::new(receipt, vec![Q]));
+    assert_eq!(modulator.observation_receipt_digest(), receipt);
+    assert_eq!(modulator.values_q24(), &[Q]);
+    let groups = vec![group("group:a", vec![Q, 0, 0], vec![Q])];
+    let result = checked(accumulate_plasticity(
+        &history(),
+        &modulator,
+        &groups,
+        trust_region(),
+    ));
+    assert!(result.group_deltas[0].delta_q24 > 0);
+}
+
+#[test]
+fn checked_modulator_rejects_unbound_and_out_of_profile_signals() {
+    for (receipt, values, error) in [
+        (
+            Digest32::ZERO,
+            vec![0],
+            PlasticityError::EmptyObservationReceipt,
+        ),
+        (
+            Digest32::of_bytes(b"observation"),
+            Vec::new(),
+            PlasticityError::ModulatorDimensionOutOfRange,
+        ),
+        (
+            Digest32::of_bytes(b"observation"),
+            vec![0; MAX_MODULATORS + 1],
+            PlasticityError::ModulatorDimensionOutOfRange,
+        ),
+        (
+            Digest32::of_bytes(b"observation"),
+            vec![Q + 1],
+            PlasticityError::InvalidModulator,
+        ),
+        (
+            Digest32::of_bytes(b"observation"),
+            vec![i64::MIN],
+            PlasticityError::InvalidModulator,
+        ),
+    ] {
+        assert_eq!(IndependentModulatorV1::new(receipt, values), Err(error));
+    }
+}
+
+#[test]
+fn canonical_group_order_does_not_depend_on_caller_order() {
+    let modulator = checked(IndependentModulatorV1::new(
+        Digest32::of_bytes(b"observation"),
+        vec![Q],
+    ));
+    let mut groups = vec![
+        group("group:b", vec![0, Q, 0], vec![Q]),
+        group("group:a", vec![Q, 0, 0], vec![Q]),
+    ];
+    let result = checked(accumulate_plasticity(
+        &history(),
+        &modulator,
+        &groups,
+        trust_region(),
+    ));
+    groups.reverse();
+    assert_eq!(
+        checked(accumulate_plasticity(
+            &history(),
+            &modulator,
+            &groups,
+            trust_region(),
+        )),
+        result
+    );
+}
