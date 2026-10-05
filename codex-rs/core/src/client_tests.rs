@@ -17,6 +17,7 @@ use crate::GenerateAttestationFuture;
 use crate::config::Config;
 use crate::model_provider_policy::ModelProviderPolicyContext;
 use crate::responses_metadata::CodexResponsesMetadata;
+use crate::responses_metadata::CodexResponsesRequestKind;
 use crate::test_support::TestCodexResponsesRequestKind;
 use crate::test_support::responses_metadata as test_responses_metadata;
 use codex_api::AgentIdentityTelemetry;
@@ -154,6 +155,8 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
         phase: None,
         internal_chat_message_metadata_passthrough: Some(InternalChatMessageMetadataPassthrough {
             content_item_kinds: Some(vec![ContentItemKind("user.text".to_string())]),
+            create_time: Some(serde_json::Number::from(123)),
+            turn_id: Some("turn-1".to_string()),
             ..Default::default()
         }),
     };
@@ -164,10 +167,21 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
         &chatgpt_provider,
     );
     let chatgpt_wire = serde_json::to_value(&chatgpt_item).expect("item should serialize");
-    assert!(
+    assert_eq!(
+        chatgpt_wire.pointer("/internal_chat_message_metadata_passthrough/content_item_kinds"),
+        None
+    );
+    assert_eq!(
         chatgpt_wire
-            .get("internal_chat_message_metadata_passthrough")
-            .is_none()
+            .pointer("/internal_chat_message_metadata_passthrough/create_time")
+            .and_then(serde_json::Value::as_i64),
+        Some(123)
+    );
+    assert_eq!(
+        chatgpt_wire
+            .pointer("/internal_chat_message_metadata_passthrough/turn_id")
+            .and_then(serde_json::Value::as_str),
+        Some("turn-1")
     );
 
     let mut openai_item = item_with_metadata();
@@ -198,11 +212,13 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
         std::slice::from_mut(&mut custom_name_item),
         &custom_name_provider,
     );
-    assert!(
+    assert_eq!(
         serde_json::to_value(&custom_name_item)
             .expect("item should serialize")
-            .get("internal_chat_message_metadata_passthrough")
-            .is_some()
+            .pointer("/internal_chat_message_metadata_passthrough/content_item_kinds")
+            .and_then(serde_json::Value::as_array)
+            .map(Vec::len),
+        Some(1)
     );
 
     // Conversely, an `OpenAI`-named provider on a non-standard endpoint is
@@ -218,11 +234,16 @@ fn chatgpt_codex_wire_strips_local_content_metadata_but_openai_wire_keeps_it() {
         std::slice::from_mut(&mut nonstandard_item),
         &nonstandard_provider,
     );
-    assert!(
-        serde_json::to_value(&nonstandard_item)
-            .expect("item should serialize")
-            .get("internal_chat_message_metadata_passthrough")
-            .is_none()
+    let nonstandard_wire = serde_json::to_value(&nonstandard_item).expect("item should serialize");
+    assert_eq!(
+        nonstandard_wire.pointer("/internal_chat_message_metadata_passthrough/content_item_kinds"),
+        None
+    );
+    assert_eq!(
+        nonstandard_wire
+            .pointer("/internal_chat_message_metadata_passthrough/turn_id")
+            .and_then(serde_json::Value::as_str),
+        Some("turn-1")
     );
 }
 
@@ -329,11 +350,61 @@ fn websocket_connection_identity_binds_provider_and_stable_handshake_semantics()
         "thread-a".to_string(),
         "window-a".to_string(),
     );
+    metadata_a.request_kind = Some(CodexResponsesRequestKind::Turn);
     metadata_a.sandbox_mode = Some("workspace-write".to_string());
     metadata_a.turn_started_at_unix_ms = Some(1);
     let identity_a =
         WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &metadata_a)
             .expect("identity a");
+
+    let mut default_metadata = metadata_a.clone();
+    default_metadata.request_kind = None;
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &default_metadata,
+        )
+        .expect("default transport identity")
+    );
+
+    let mut prewarm_metadata = metadata_a.clone();
+    prewarm_metadata.request_kind = Some(CodexResponsesRequestKind::Prewarm);
+    assert_eq!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &prewarm_metadata,
+        )
+        .expect("prewarm transport identity")
+    );
+    // Reusing a socket must not make a prewarm equivalent to a turn for
+    // recovery, or mutate the caller's wire metadata.
+    assert_ne!(
+        serde_json::to_value(metadata_a.turn_recovery_compatibility_projection())
+            .expect("turn recovery identity"),
+        serde_json::to_value(prewarm_metadata.turn_recovery_compatibility_projection())
+            .expect("prewarm recovery identity"),
+    );
+    prewarm_metadata.sandbox_mode = Some("danger-full-access".to_string());
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(
+            &provider,
+            Some("feature-a"),
+            &prewarm_metadata,
+        )
+        .expect("changed prewarm sandbox identity")
+    );
+    let mut memory_metadata = metadata_a.clone();
+    memory_metadata.request_kind = Some(CodexResponsesRequestKind::Memory);
+    assert_ne!(
+        identity_a,
+        WebsocketConnectionIdentity::from_provider(&provider, Some("feature-a"), &memory_metadata,)
+            .expect("memory transport identity")
+    );
 
     let mut volatile_metadata = metadata_a.clone();
     volatile_metadata.session_id = "session-after-restart".to_string();

@@ -28,6 +28,7 @@ mod robrix_protocol;
 mod runtime;
 mod signed_authority;
 mod signed_intent;
+mod signed_intent_recovery;
 mod supervisor;
 mod supervisor_qualification;
 mod tick;

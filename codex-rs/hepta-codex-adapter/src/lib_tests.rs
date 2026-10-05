@@ -124,7 +124,7 @@ fn reconciliation_response(
             "updatedAt": 2,
             "recencyAt": 2,
             "status": {"type": "idle"},
-            "cwd": "/tmp",
+            "cwd": std::env::current_dir().expect("native absolute working directory"),
             "cliVersion": "test",
             "source": "exec",
             "turns": []

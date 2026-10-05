@@ -16,6 +16,8 @@ use codex_hepta_types::StableId;
 
 /// Concurrent selected modules, including draining/quarantined writer reservations.
 pub const MAX_RUNTIME_MODULES: usize = 128;
+/// Distinct identities retained permanently by anti-resurrection generation fences.
+pub const MAX_RUNTIME_MODULE_IDENTITIES: usize = 4096;
 /// Concurrent unselected candidates. Historical generations consume neither quota.
 const MAX_PENDING_RUNTIME_MODULES: usize = 128;
 pub const MAX_MODULE_PORTS: usize = 64;
@@ -179,6 +181,11 @@ pub enum RuntimeModuleRegistryError {
     AuthoritativeWriterConflict(StableId),
     ActiveGenerationConflict,
     RollbackGenerationNotAdvanced,
+    CheckpointDigestMismatch,
+    CheckpointNotCurrent,
+    CheckpointDuplicate,
+    CheckpointInvalid,
+    CheckpointEncoding,
 }
 
 impl fmt::Display for RuntimeModuleRegistryError {
@@ -199,6 +206,13 @@ pub struct RuntimeModuleRegistryV1 {
     // dispatch-only RuntimeTopologySnapshotV1 is NOT a recovery checkpoint.
     generation_fences: BTreeMap<StableId, (Generation, Generation)>,
 }
+
+#[path = "module_runtime_checkpoint.rs"]
+mod checkpoint;
+pub use checkpoint::MAX_RUNTIME_MODULE_CHECKPOINT_BYTES;
+pub use checkpoint::RuntimeModuleActiveReservationV1;
+pub use checkpoint::RuntimeModuleGenerationFenceV1;
+pub use checkpoint::RuntimeModuleRegistryCheckpointV1;
 
 impl RuntimeModuleRegistryV1 {
     pub fn new() -> Self {
@@ -240,7 +254,10 @@ impl RuntimeModuleRegistryV1 {
                 return Err(RuntimeModuleRegistryError::PredecessorDigestMismatch);
             }
         }
-        if self.pending_candidate_count() >= pending_limit {
+        if self.pending_candidate_count() >= pending_limit
+            || (!self.generation_fences.contains_key(&abi.module_id)
+                && self.generation_fences.len() >= MAX_RUNTIME_MODULE_IDENTITIES)
+        {
             return Err(RuntimeModuleRegistryError::Bounds);
         }
         self.generation_fences
@@ -338,6 +355,10 @@ impl RuntimeModuleRegistryV1 {
         Ok(())
     }
 
+    /// Validate handoff obligations on both sides of a replacement. Declaring
+    /// a stateless successor does not discharge the predecessor's durable state,
+    /// writer domains or external effects. The host still owns the real handoff;
+    /// this registry validates its witness before changing either generation.
     pub fn promote_after_handoff(
         &mut self,
         module_id: &StableId,
@@ -370,6 +391,7 @@ impl RuntimeModuleRegistryV1 {
             if predecessor.lifecycle != RuntimeModuleLifecycleV1::Active {
                 return Err(RuntimeModuleRegistryError::InvalidLifecycleTransition);
             }
+            witness.validate_for(&predecessor.abi)?;
             predecessor.lifecycle = RuntimeModuleLifecycleV1::Retired;
         } else if self.active.contains_key(module_id) {
             return Err(RuntimeModuleRegistryError::ActiveGenerationConflict);
@@ -435,8 +457,10 @@ impl RuntimeModuleRegistryV1 {
         Ok(self.snapshot())
     }
 
-    /// Restore predecessor content under a fresh generation. Old generations
-    /// are never resurrected.
+    /// Restore stateless, effect-free predecessor content under a fresh
+    /// generation. A regression observation is not a domain-state handoff:
+    /// stateful replacements must preserve successor writes and current fences
+    /// through the owning domain's independently admitted upgrade path.
     pub fn rollback_active_to_predecessor_content(
         &mut self,
         module_id: &StableId,
@@ -468,6 +492,18 @@ impl RuntimeModuleRegistryV1 {
             .get(&(module_id.clone(), predecessor_generation))
             .ok_or(RuntimeModuleRegistryError::UnknownPredecessor)?
             .clone();
+
+        // Check both sides: a stateless successor does not prove that the
+        // predecessor's retained domain or external effects are safe to reopen.
+        // Reject before staging anything, including a new generation fence.
+        for abi in [&active_record.abi, &predecessor.abi] {
+            if abi.state_class != RuntimeModuleStateClassV1::Stateless
+                || !abi.authoritative_domains.is_empty()
+                || !abi.effect_scope.is_empty()
+            {
+                return Err(RuntimeModuleRegistryError::MissingWriterHandoff);
+            }
+        }
 
         let rollback_abi = RuntimeModuleAbiV1 {
             module_id: module_id.clone(),
@@ -783,11 +819,17 @@ mod tests {
     #[test]
     fn rollback_uses_fresh_generation_instead_of_resurrection() {
         let mut registry = RuntimeModuleRegistryV1::new();
-        registry.register_candidate(abi(1, "v1", None)).expect("v1");
+        let mut first = abi(1, "v1", None);
+        first.state_class = RuntimeModuleStateClassV1::Stateless;
+        first.authoritative_domains.clear();
+        first.effect_scope.clear();
+        registry.register_candidate(first).expect("v1");
         promote(&mut registry, 1);
-        registry
-            .register_candidate(abi(2, "v2", Some((1, "v1"))))
-            .expect("v2");
+        let mut second = abi(2, "v2", Some((1, "v1")));
+        second.state_class = RuntimeModuleStateClassV1::Stateless;
+        second.authoritative_domains.clear();
+        second.effect_scope.clear();
+        registry.register_candidate(second).expect("v2");
         promote(&mut registry, 2);
 
         let snapshot = registry
@@ -840,3 +882,7 @@ mod safety_tests;
 #[cfg(test)]
 #[path = "module_runtime_retention_tests.rs"]
 mod retention_tests;
+
+#[cfg(test)]
+#[path = "module_runtime_predecessor_tests.rs"]
+mod predecessor_tests;

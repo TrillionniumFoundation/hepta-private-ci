@@ -49,6 +49,13 @@ impl<D: ProcessDriver> Supervisor<D> {
         slot: &mut AgentSlot<D::Process>,
         now: Instant,
     ) {
+        if slot
+            .signed_intent
+            .as_ref()
+            .is_some_and(|intent| intent.status == crate::SignedIntentStatus::RecoveryRequired)
+        {
+            return;
+        }
         let Some(release) = slot.active_release.clone() else {
             slot.matrix.configured = false;
             reset_matrix_restart_budget(slot);
@@ -340,11 +347,25 @@ impl<D: ProcessDriver> Supervisor<D> {
                     SupervisorEventKind::MatrixOrphanAdopted,
                 );
             }
-            Adoption::Adopted(mut process) => {
-                process
-                    .kill()
-                    .map_err(|error| driver_error(agent_id, error))?;
-                remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;
+            Adoption::Adopted(process) => {
+                // A successful kill request is not proof of exit. Retain the
+                // exact owner and lease until polling observes termination,
+                // including when signed-intent recovery is fencing the pair.
+                slot.matrix.configured = true;
+                slot.matrix.runtime = Some(MatrixRuntime {
+                    process,
+                    identity: lease.identity,
+                    attached_agent_generation: lease.attached_agent_generation,
+                    release_id: lease.release_id,
+                    binding_revision: lease.binding_revision,
+                    binding_digest: lease.binding_digest,
+                    process_incarnation: lease.process_incarnation,
+                    plane_epoch: lease.plane_epoch,
+                    phase: MatrixRuntimePhase::Stopping { deadline: now },
+                    healthy: false,
+                    fenced: false,
+                });
+                self.kill_matrix_now(agent_id, slot)?;
                 self.degrade_matrix(
                     agent_id,
                     slot,
@@ -372,7 +393,13 @@ impl<D: ProcessDriver> Supervisor<D> {
                 );
             }
             Adoption::Rejected => {
-                remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;
+                if slot
+                    .signed_intent
+                    .as_ref()
+                    .is_none_or(|intent| intent.status.terminal())
+                {
+                    remove_matrix_lease(record.layout.matrixd_process_lease(), &lease)?;
+                }
                 self.degrade_matrix(
                     agent_id,
                     slot,

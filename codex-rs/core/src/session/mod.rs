@@ -218,6 +218,7 @@ use codex_protocol::exec_output::StreamOutput;
 mod code_mode_warning;
 pub(crate) mod context_window;
 mod environment;
+mod event_delivery;
 pub(crate) mod extension_metrics;
 mod handlers;
 mod inject;
@@ -1213,7 +1214,7 @@ impl Session {
     pub(crate) async fn recovery_epoch_if_idle(&self, turn_id: &str) -> Option<u64> {
         if !self.enabled(Feature::HeptaTurnRecovery)
             || self.shutdown_started()
-            || self.has_pending_task_terminalization()
+            || self.has_task_terminalization_admission_fence()
         {
             return None;
         }
@@ -1292,12 +1293,12 @@ impl Session {
     pub(crate) async fn reserve_history_mutation_if_idle(
         &self,
     ) -> CodexResult<Option<Arc<Mutex<TurnState>>>> {
-        if self.shutdown_started() || self.has_pending_task_terminalization() {
+        if self.shutdown_started() || self.has_task_terminalization_admission_fence() {
             return Ok(None);
         }
         let mut active_turn = self.active_turn.lock().await;
         if self.shutdown_started()
-            || self.has_pending_task_terminalization()
+            || self.has_task_terminalization_admission_fence()
             || active_turn.is_some()
         {
             return Ok(None);
@@ -2172,6 +2173,17 @@ impl Session {
 
     /// Persist the event to rollout and send it to clients.
     pub(crate) async fn send_event(&self, turn_context: &TurnContext, msg: EventMsg) {
+        let _ = self
+            .send_event_with_delivery(turn_context, msg, event_delivery::EventDelivery::Immediate)
+            .await;
+    }
+
+    async fn send_event_with_delivery(
+        &self,
+        turn_context: &TurnContext,
+        msg: EventMsg,
+        delivery: event_delivery::EventDelivery,
+    ) -> Option<Event> {
         let legacy_source = msg.clone();
         if let EventMsg::Error(error) = &legacy_source
             && error
@@ -2195,7 +2207,17 @@ impl Session {
             id: turn_context.sub_id.clone(),
             msg,
         };
-        self.send_event_raw(event).await;
+        let deferred_event = match delivery {
+            event_delivery::EventDelivery::Immediate => {
+                self.send_event_raw(event).await;
+                None
+            }
+            event_delivery::EventDelivery::AfterTerminalization => {
+                self.record_event_raw(&event, /*persist*/ true).await;
+                self.record_agent_status(&event.msg);
+                Some(event)
+            }
+        };
         self.maybe_notify_parent_of_terminal_turn(turn_context, &legacy_source)
             .await;
         self.maybe_mirror_event_text_to_realtime(&legacy_source)
@@ -2214,6 +2236,7 @@ impl Session {
             };
             self.send_event_raw(legacy_event).await;
         }
+        deferred_event
     }
 
     /// Forwards terminal turn events from spawned MultiAgentV2 children to their direct parent.
@@ -2453,6 +2476,11 @@ impl Session {
     }
 
     async fn send_event_raw_with_persistence(&self, event: Event, persist: bool) {
+        self.record_event_raw(&event, persist).await;
+        self.deliver_event_raw(event).await;
+    }
+
+    async fn record_event_raw(&self, event: &Event, persist: bool) {
         self.services.mcp_runtime.observe_event(&event.msg);
         // Persist the event into rollout storage; the store applies its persistence policy.
         if persist {
@@ -2462,14 +2490,17 @@ impl Session {
         self.services
             .rollout_thread_trace
             .record_protocol_event(&event.msg);
-        self.deliver_event_raw(event).await;
+    }
+
+    fn record_agent_status(&self, msg: &EventMsg) {
+        // Record the last known agent status.
+        if let Some(status) = agent_status_from_event(msg) {
+            self.agent_status.send_replace(status);
+        }
     }
 
     async fn deliver_event_raw(&self, event: Event) {
-        // Record the last known agent status.
-        if let Some(status) = agent_status_from_event(&event.msg) {
-            self.agent_status.send_replace(status);
-        }
+        self.record_agent_status(&event.msg);
         if let Err(e) = self.tx_event.send(event).await {
             debug!("dropping event because channel is closed: {e}");
         }
@@ -2710,7 +2741,7 @@ impl Session {
         let (tx_approve, rx_approve) = oneshot::channel();
         let prev_entry = {
             let mut active = self.active_turn.lock().await;
-            if self.shutdown_started() || self.has_pending_task_terminalization() {
+            if self.shutdown_started() || self.has_task_terminalization_admission_fence() {
                 return ReviewDecision::Abort;
             }
             match active.as_mut() {
@@ -2795,7 +2826,7 @@ impl Session {
         let approval_id = call_id.clone();
         let prev_entry = {
             let mut active = self.active_turn.lock().await;
-            if self.shutdown_started() || self.has_pending_task_terminalization() {
+            if self.shutdown_started() || self.has_task_terminalization_admission_fence() {
                 return ReviewDecision::Abort;
             }
             match active.as_mut() {
@@ -2865,7 +2896,7 @@ impl Session {
         {
             let active = self.active_turn.lock().await;
             if self.shutdown_started()
-                || self.has_pending_task_terminalization()
+                || self.has_task_terminalization_admission_fence()
                 || active
                     .as_ref()
                     .is_none_or(|current| current.task_terminalization.is_some())
@@ -2890,7 +2921,7 @@ impl Session {
             let originating_turn_state = {
                 let active = self.active_turn.lock().await;
                 if self.shutdown_started()
-                    || self.has_pending_task_terminalization()
+                    || self.has_task_terminalization_admission_fence()
                     || active
                         .as_ref()
                         .is_none_or(|current| current.task_terminalization.is_some())
@@ -2962,7 +2993,7 @@ impl Session {
             let still_current = {
                 let active = self.active_turn.lock().await;
                 !self.shutdown_started()
-                    && !self.has_pending_task_terminalization()
+                    && !self.has_task_terminalization_admission_fence()
                     && originating_turn_state.as_ref().is_some_and(|state| {
                         active
                             .as_ref()
@@ -2977,7 +3008,7 @@ impl Session {
                 response,
                 native_environment_cwd.as_path(),
             );
-            if self.shutdown_started() || self.has_pending_task_terminalization() {
+            if self.shutdown_started() || self.has_task_terminalization_admission_fence() {
                 return None;
             }
             self.record_granted_request_permissions_for_turn(
@@ -2993,7 +3024,7 @@ impl Session {
         let (tx_response, rx_response) = oneshot::channel();
         let prev_entry = {
             let mut active = self.active_turn.lock().await;
-            if self.shutdown_started() || self.has_pending_task_terminalization() {
+            if self.shutdown_started() || self.has_task_terminalization_admission_fence() {
                 return None;
             }
             match active.as_mut() {
@@ -3058,7 +3089,7 @@ impl Session {
         let event_id = sub_id.clone();
         let prev_entry = {
             let mut active = self.active_turn.lock().await;
-            if self.shutdown_started() || self.has_pending_task_terminalization() {
+            if self.shutdown_started() || self.has_task_terminalization_admission_fence() {
                 return None;
             }
             match active.as_mut() {

@@ -2,6 +2,7 @@ use super::*;
 
 use ed25519_dalek::Signer;
 use ed25519_dalek::SigningKey;
+use pretty_assertions::assert_eq;
 
 use crate::AuthenticatedPrincipalV1;
 use crate::LearningEvidenceRoleV1;
@@ -106,6 +107,47 @@ fn trust_distribution_rotation_is_monotonic_and_content_addressed() {
     assert_ne!(first.root_digest(), Digest32::ZERO);
     assert_ne!(first.distribution_digest(), second.distribution_digest());
     assert_eq!(second.verifier().authority_epoch(), 8);
+}
+
+#[test]
+fn activated_trust_rechecks_distribution_lease_and_scheduled_root_revocation() {
+    let root_key = SigningKey::from_bytes(&[99; 32]);
+    for root_revoked_at in [None, Some(80)] {
+        let mut root = root(&root_key);
+        root.revoked_at = root_revoked_at;
+        let activated = activate_learning_trust(
+            &root,
+            signed_distribution(
+                &root_key,
+                LearningTrustDistributionV1 {
+                    distribution_id: id("trust-window"),
+                    generation: 1,
+                    effective_at: 20,
+                    trust: trust(/*epoch*/ 7, /*seed*/ 1),
+                },
+            ),
+            /*previous*/ None,
+            /*now*/ 50,
+        )
+        .unwrap();
+        assert_eq!(
+            activated.validate_current(/*now*/ 19),
+            Err(LearningTrustDistributionError::DistributionWindow)
+        );
+        assert_eq!(activated.validate_current(/*now*/ 79), Ok(()));
+        assert_eq!(
+            activated.validate_current(/*now*/ 91),
+            Err(LearningTrustDistributionError::DistributionWindow)
+        );
+        assert_eq!(
+            activated.validate_current(/*now*/ 80),
+            if root_revoked_at.is_some() {
+                Err(LearningTrustDistributionError::DistributionWindow)
+            } else {
+                Ok(())
+            },
+        );
+    }
 }
 
 #[test]

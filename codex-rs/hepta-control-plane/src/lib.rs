@@ -44,11 +44,16 @@ pub use module_runtime::MAX_MODULE_DEPENDENCIES;
 pub use module_runtime::MAX_MODULE_DOMAINS;
 pub use module_runtime::MAX_MODULE_EFFECTS;
 pub use module_runtime::MAX_MODULE_PORTS;
+pub use module_runtime::MAX_RUNTIME_MODULE_CHECKPOINT_BYTES;
+pub use module_runtime::MAX_RUNTIME_MODULE_IDENTITIES;
 pub use module_runtime::MAX_RUNTIME_MODULES;
 pub use module_runtime::RuntimeModuleAbiV1;
+pub use module_runtime::RuntimeModuleActiveReservationV1;
+pub use module_runtime::RuntimeModuleGenerationFenceV1;
 pub use module_runtime::RuntimeModuleLifecycleV1;
 pub use module_runtime::RuntimeModulePromotionWitnessV1;
 pub use module_runtime::RuntimeModuleRecordV1;
+pub use module_runtime::RuntimeModuleRegistryCheckpointV1;
 pub use module_runtime::RuntimeModuleRegistryError;
 pub use module_runtime::RuntimeModuleRegistryV1;
 pub use module_runtime::RuntimeModuleStateClassV1;
@@ -285,3 +290,7 @@ fn digest_state(state: &ControlState, intent: &ControlIntent) -> Digest32 {
 #[cfg(test)]
 #[path = "lib_tests.rs"]
 mod tests;
+
+#[cfg(test)]
+#[path = "organ_registry_lifecycle_tests.rs"]
+mod organ_registry_lifecycle_tests;
