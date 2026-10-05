@@ -739,7 +739,7 @@ async fn same_process_ephemeral_interrupted_turn_recovers_from_listener_state() 
 async fn configured_app(server: &MockServer) -> Result<(TestAppServer, TempDir)> {
     let codex_home = TempDir::new()?;
     MockResponsesConfig::new(&server.uri())
-        .with_approval_policy("untrusted")
+        .with_approval_policy("on-request")
         .enable_feature(Feature::HeptaTurnRecovery)
         .with_root_config(r#"approvals_reviewer = "user""#)
         .write(codex_home.path())?;
@@ -754,7 +754,7 @@ async fn configured_app(server: &MockServer) -> Result<(TestAppServer, TempDir)>
 async fn configured_app_with_resume_hook(server: &MockServer) -> Result<(TestAppServer, TempDir)> {
     let codex_home = TempDir::new()?;
     MockResponsesConfig::new(&server.uri())
-        .with_approval_policy("untrusted")
+        .with_approval_policy("on-request")
         .enable_feature(Feature::HeptaTurnRecovery)
         .with_root_config(r#"approvals_reviewer = "user""#)
         .write(codex_home.path())?;
