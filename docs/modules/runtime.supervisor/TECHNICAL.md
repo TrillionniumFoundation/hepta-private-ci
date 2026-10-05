@@ -192,6 +192,15 @@ Negative tests cover denied capabilities, cross-owner writes, stale or revoked g
 
 The [module-specific implementation design](../../../qualification/module-execution-dossiers/detail/runtime.supervisor.md) specifies this module's algorithm, pilot ceilings and capacity fixtures. Those target ceilings are not measurements and must not be reported as enforcement of an unimplemented API. Current native limits belong to [codex-rs/hepta-supervisor/src/supervisor.rs](../../../codex-rs/hepta-supervisor/src/supervisor.rs) and the linked implementation components.
 
+Development and test profiles optimize the SHA-2 dependency while retaining
+ordinary debug assertions and the existing test deadlines. Fleet still hashes
+the complete currently admitted program bytes at each required boundary; no
+cached success, skipped digest or lighter identity proof substitutes for that
+validation. The real-process pair tests include fixture installation in their
+elapsed time, so unoptimized hashing of a large test executable can otherwise
+consume the lifecycle test budget before the scenario starts. This build-profile
+choice is not an installed-release performance or production-qualification claim.
+
 [Shared performance and capacity requirements](../README.md#shared-performance-and-capacity) define the measurement/overload obligations for a selected host.
 
 ## 11. Observability and operations
