@@ -11,8 +11,9 @@ This matrix is the repository-side acceptance contract for the composed Codex Ap
 | Wrong thread / wrong turn terminal event | correlation error | none | durable state unchanged |
 | Wrong App Server connection, version, codex home, session, generation, protocol, payload or source-admission digest | correlation / binding error | none | no success receipt |
 | Missing product transport binding | `ProductBindingRequired` | none | no terminal receipt |
-| Exact App Server overload `-32001` before handler admission | `AdapterStatus::Overloaded` | `SafeBeforeAdmission` | durable rejection may release the slot |
-| Invalid request / method-not-found / invalid params (`-32600/-32601/-32602`) | `AdapterStatus::Rejected` | `Never` | durable rejection; do not reinterpret as execution |
+| Exact App Server overload `-32001` before handler admission | `AdapterStatus::Overloaded` | `SafeBeforeAdmission` | prepare exact local response evidence; terminally settle the exact Agentd dispatch; only then release local capacity |
+| Invalid request / method-not-found / invalid params (`-32600/-32601/-32602`) | `AdapterStatus::Rejected` | `Never` | prepare exact local response evidence; terminally settle the exact Agentd dispatch; release capacity without authorizing retry |
+| Agentd acknowledgement is lost while settling a typed pre-admission rejection | owner state reconciliation | never resend the original operation | retain the local slot and durable response evidence until exact Agentd terminal state is observed |
 | Internal or otherwise unclassified `turn/start` JSON-RPC error | `AdapterStatus::Indeterminate` | `ReconcileSameOperation` | hold/reconcile; no blind replay |
 | `turn/start` transport loss or timeout after write-ahead dispatch | native `Indeterminate` | reconcile same operation | hold the durable slot; same-connection reconciliation may recover an exact `turn/started` |
 | Same-connection reconciliation finds no exact started turn | native `Indeterminate` | reconcile same operation | no new `turn/start` |
