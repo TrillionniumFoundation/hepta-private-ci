@@ -1,0 +1,79 @@
+name: Kernel evidence readiness
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      base_sha:
+        description: Full immutable base commit for an explicit manual candidate
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: kernel-evidence-readiness-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  readiness:
+    name: Immutable candidate readiness
+    runs-on: ubuntu-24.04
+    timeout-minutes: 180
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha || inputs.base_sha || '' }}
+      GITHUB_SYNTHETIC_SHA: ${{ github.event_name == 'pull_request' && github.sha || '' }}
+      WORKFLOW_SHA: ${{ github.workflow_sha }}
+      FINAL_MERGE_SHA: ${{ github.ref == 'refs/heads/main' && github.sha || '' }}
+      PR_NUMBER: ${{ github.event.pull_request.number || '0' }}
+      IS_MAIN: ${{ github.ref == 'refs/heads/main' }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          ref: ${{ github.event.pull_request.head.sha || github.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: ./.github/actions/setup-ci
+      - uses: dtolnay/rust-toolchain@e081816240890017053eacbb1bdf337761dc5582 # 1.95.0
+      - name: Bind immutable identities
+        shell: bash
+        run: |
+          set -euo pipefail
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          if [[ -z "$BASE_SHA" ]]; then BASE_SHA="$(git rev-parse "$SOURCE_SHA^")"; fi
+          test "$(git cat-file -t "$BASE_SHA")" = commit
+          SOURCE_TREE="$(git rev-parse "$SOURCE_SHA^{tree}")"
+          TARGET_TRIPLE="$(rustc -vV | sed -n 's/^host: //p')"
+          RUNNER_IMAGE="${ImageOS:-ubuntu24}-${ImageVersion:-unknown}"
+          READINESS_RECORDS="$RUNNER_TEMP/kernel-evidence-readiness"
+          mkdir -p "$READINESS_RECORDS"
+          {
+            printf 'BASE_SHA=%s\n' "$BASE_SHA"
+            printf 'SOURCE_TREE=%s\n' "$SOURCE_TREE"
+            printf 'TARGET_TRIPLE=%s\n' "$TARGET_TRIPLE"
+            printf 'RUNNER_IMAGE=%s\n' "$RUNNER_IMAGE"
+            printf 'READINESS_RECORDS=%s\n' "$READINESS_RECORDS"
+          } >>"$GITHUB_ENV"
+      - name: Execute source, crash, metadata, and publication qualification
+        shell: bash
+        run: bash scripts/kernel_evidence_ci_source.sh
+      - name: Execute deterministic fixed-base merge qualification
+        if: always()
+        shell: bash
+        run: bash scripts/kernel_evidence_ci_merge.sh
+      - name: Build exact status and readiness manifest
+        if: always()
+        shell: bash
+        run: bash scripts/kernel_evidence_ci_finalize.sh
+      - name: Upload complete readiness evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4
+        with:
+          name: kernel-evidence-readiness-${{ env.SOURCE_SHA }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/kernel-evidence-readiness/
+          if-no-files-found: error
+          retention-days: 90

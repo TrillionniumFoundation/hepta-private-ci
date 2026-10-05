@@ -1,0 +1,84 @@
+name: Kernel evidence bounded core regression
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, ready_for_review]
+
+permissions:
+  contents: read
+
+jobs:
+  bounded-core:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        lane: [source-head, base-merge]
+    env:
+      SOURCE_SHA: ${{ github.event.pull_request.head.sha }}
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      LANE: ${{ matrix.lane }}
+    steps:
+      - name: Checkout exact source
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 0
+          persist-credentials: false
+      - name: Bind exact candidate
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/evidence-core"
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ && "$BASE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          test "$(git rev-parse HEAD)" = "$SOURCE_SHA"
+          test -z "$(git status --porcelain)"
+          test "$(git rev-parse "$BASE_SHA^{commit}")" = "$BASE_SHA"
+          if [ "$LANE" = base-merge ]; then
+            test "$BASE_SHA" != "$SOURCE_SHA"
+            git merge-tree --write-tree "$BASE_SHA" "$SOURCE_SHA" > "$RUNNER_TEMP/evidence-core/merge-tree.txt"
+            TREE=$(head -n 1 "$RUNNER_TEMP/evidence-core/merge-tree.txt")
+            export GIT_AUTHOR_NAME='Kernel evidence diagnostic'
+            export GIT_COMMITTER_NAME="$GIT_AUTHOR_NAME"
+            export GIT_AUTHOR_EMAIL='noreply@github.com'
+            export GIT_COMMITTER_EMAIL="$GIT_AUTHOR_EMAIL"
+            export GIT_AUTHOR_DATE="$(git show -s --format=%cI "$SOURCE_SHA")"
+            export GIT_COMMITTER_DATE="$GIT_AUTHOR_DATE"
+            CANDIDATE=$(printf '%s\n' 'kernel.evidence bounded-core deterministic merge' | git commit-tree "$TREE" -p "$BASE_SHA" -p "$SOURCE_SHA")
+            git checkout --detach "$CANDIDATE"
+          fi
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/evidence-core/candidate.txt"
+          printf '%s\n' "$SOURCE_SHA" "$BASE_SHA" "$LANE" >> "$RUNNER_TEMP/evidence-core/candidate.txt"
+      - name: Native assignment source and Cartesian oracle
+        shell: bash
+        run: |
+          set -euo pipefail
+          rustc --version | tee "$RUNNER_TEMP/evidence-core/rustc-version.txt"
+          rustc --edition=2024 --test codex-rs/hepta-evidence/src/identity_assignment.rs -o "$RUNNER_TEMP/evidence-core/identity-tests" 2>&1 | tee "$RUNNER_TEMP/evidence-core/compile.log"
+          "$RUNNER_TEMP/evidence-core/identity-tests" --nocapture 2>&1 | tee "$RUNNER_TEMP/evidence-core/native-tests.log"
+      - name: Independent SQLite protocol oracle
+        if: ${{ always() && !cancelled() }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 qualification/kernel-evidence/probes/test_recovery_protocol.py 2>&1 | tee "$RUNNER_TEMP/evidence-core/sqlite-protocol.log"
+      - name: Retain exact diagnostic identities
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          mkdir -p "$RUNNER_TEMP/evidence-core"
+          git status --porcelain > "$RUNNER_TEMP/evidence-core/source-after.txt"
+          git rev-parse HEAD HEAD^{tree} > "$RUNNER_TEMP/evidence-core/candidate-after.txt"
+          printf '%s\n' 'diagnostic only; not package qualification, independent acceptance, activation or release' > "$RUNNER_TEMP/evidence-core/claim-boundary.txt"
+          cd "$RUNNER_TEMP/evidence-core"
+          find . -maxdepth 1 -type f ! -name SHA256SUMS -print0 | sort -z | xargs -0 sha256sum > SHA256SUMS
+      - name: Upload diagnostics
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: kernel-evidence-core-${{ matrix.lane }}-${{ github.event.pull_request.head.sha }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/evidence-core/
+          if-no-files-found: error
