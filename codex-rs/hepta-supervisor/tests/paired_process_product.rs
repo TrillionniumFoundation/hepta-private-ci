@@ -13,9 +13,11 @@ use std::time::Instant;
 use anyhow::Context;
 use anyhow::Result;
 use codex_hepta_agent_protocol::AGENTD_CONTROL_SCHEMA_VERSION;
+use codex_hepta_agent_protocol::AgentdMethod;
 use codex_hepta_agent_protocol::AgentdPayload;
 use codex_hepta_agent_protocol::AgentdRequest;
 use codex_hepta_agent_protocol::AgentdResponse;
+use codex_hepta_agent_protocol::DrainSnapshot;
 use codex_hepta_agent_protocol::HealthSnapshot;
 use codex_hepta_contracts::AgentId;
 use codex_hepta_contracts::Sha256Digest;
@@ -551,16 +553,35 @@ fn run_agent_child() -> Result<()> {
             agent_id: agent_id.clone(),
             spawn_generation,
             current_generation: lifecycle.generation,
-            payload: AgentdPayload::Health(HealthSnapshot {
-                promotion_ready: true,
-                ready: running,
-                fenced: false,
-                lifecycle: lifecycle.lifecycle,
-                process_id: std::process::id(),
-                workspace,
-                home_root,
-                run_root,
-            }),
+            payload: match request.method {
+                AgentdMethod::Health => AgentdPayload::Health(HealthSnapshot {
+                    promotion_ready: true,
+                    ready: running,
+                    fenced: false,
+                    lifecycle: lifecycle.lifecycle,
+                    process_id: std::process::id(),
+                    workspace,
+                    home_root,
+                    run_root,
+                }),
+                // This controlled child has no turns or effect work. Report
+                // drain only after the real Supervisor's durable lifecycle has
+                // reached Draining; a health reply cannot acknowledge a drain.
+                AgentdMethod::Drain => {
+                    let draining = lifecycle.lifecycle == AgentLifecycle::Draining;
+                    AgentdPayload::Drain(DrainSnapshot {
+                        admission_closed: draining,
+                        running_turns: 0,
+                        drained: draining,
+                        lifecycle: lifecycle.lifecycle,
+                        fenced: false,
+                    })
+                }
+                _ => AgentdPayload::Error {
+                    code: "fixture_unsupported_method".to_string(),
+                    message: "controlled pair child implements health and drain only".to_string(),
+                },
+            },
         };
         let mut stream = reader.into_inner();
         serde_json::to_writer(&mut stream, &response)?;
