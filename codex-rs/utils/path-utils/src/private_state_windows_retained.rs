@@ -459,3 +459,6 @@ fn snapshot(file: &File, kind: HandleKind) -> io::Result<PrivateObjectSnapshot> 
     })
 }
 
+#[cfg(test)]
+#[path = "private_state_windows_retained_tests.rs"]
+mod tests;
