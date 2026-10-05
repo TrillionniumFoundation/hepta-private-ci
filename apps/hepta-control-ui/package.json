@@ -1,8 +1,32 @@
 {
   "name": "@hepta/control-ui",
+  "version": "0.2.0",
   "private": true,
+  "description": "Robrix-derived Rust/Makepad chat UI for Hepta",
   "type": "module",
+  "files": [
+    "dist/",
+    "README.md",
+    "rust/robrix-ui/UPSTREAM.json"
+  ],
+  "engines": {
+    "node": ">=22.0.0"
+  },
   "scripts": {
-    "test": "node --test"
-  }
+    "build": "node tools/build.mjs",
+    "check": "npm run lint && npm test && npm run build",
+    "lint": "cargo +1.95.0 clippy --manifest-path rust/Cargo.toml -p hepta-robrix-ui --target wasm32-unknown-unknown -- -D warnings",
+    "test": "cargo +1.95.0 nextest run --locked --manifest-path rust/Cargo.toml -p hepta-control-core -p hepta-robrix-ui --no-default-features --lib",
+    "test:e2e": "playwright test --config=playwright.robrix.config.mjs",
+    "dev": "node tools/build.mjs && node tools/serve-robrix.mjs",
+    "start": "node tools/serve-robrix.mjs",
+    "test:robrix": "playwright test --config=playwright.robrix.config.mjs",
+    "desktop": "python3 tools/run-desktop.py",
+    "prepare:fonts": "python3 tools/prepare-fonts.py"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.13.0",
+    "@playwright/test": "1.63.0"
+  },
+  "exports": {}
 }
