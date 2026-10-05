@@ -2,7 +2,6 @@ use std::fs::OpenOptions;
 use std::io::Write;
 use std::path::Path;
 use std::path::PathBuf;
-use std::process::Command;
 
 use base64::Engine as _;
 use base64::engine::general_purpose::STANDARD;
@@ -18,6 +17,7 @@ use super::validate_ed25519_blob;
 use crate::durable::canonical_json;
 use crate::durable::sha256;
 use crate::test_support::private_tempdir;
+use crate::test_support::ssh_keygen;
 
 #[test]
 fn sshsig_verifies_only_exact_namespace_against_pinned_policy() {
@@ -161,7 +161,7 @@ impl TrustFixture {
             .canonicalize()
             .expect("canonical trust root");
         let key = root.join("operator-key");
-        let generated = Command::new("/usr/bin/ssh-keygen")
+        let generated = ssh_keygen()
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
             .status()
@@ -178,7 +178,7 @@ impl TrustFixture {
             format!("operator@example {0} {1}\n", fields[0], fields[1]).as_bytes(),
         );
 
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
+        let fingerprint_output = ssh_keygen()
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
@@ -243,7 +243,7 @@ impl TrustFixture {
     fn sign(&self, statement: &[u8], namespace: &str, name: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
-        let signed = Command::new("/usr/bin/ssh-keygen")
+        let signed = ssh_keygen()
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", namespace])
