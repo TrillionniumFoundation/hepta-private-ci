@@ -91,6 +91,41 @@ class ScopeTests(unittest.TestCase):
         self.assertTrue(all(new_hepta[key] for key in GROUPS))
         self.assertFalse(new_hepta["full_repo"])
 
+    def test_native_verifier_uses_the_existing_derived_helper_boundary(self):
+        expected = {group: False for group in GROUPS}
+        expected.update(native=False, derived=True, full_repo=False)
+        for path in (
+            "scripts/check_hepta_ui_native_convergence.py",
+            "scripts/hepta_ui_native_map_adapter.py",
+            "scripts/test_hepta_ui_native_convergence.py",
+        ):
+            with self.subTest(path=path):
+                self.assertEqual(select([path]), expected)
+
+    def test_native_verifier_cannot_hide_runtime_or_unknown_inputs(self):
+        checker = "scripts/check_hepta_ui_native_convergence.py"
+        for path in (
+            "apps/hepta-native/src/runtime.rs",
+            "codex-rs/hepta-native-gateway/src/lib.rs",
+            "codex-rs/hepta-contracts/src/lib.rs",
+            "scripts/check_hepta_new.py",
+            "scripts/check_hepta_ui_native_convergence.py.extra",
+            "scripts/hepta_ci_scope.py",
+            ".github/workflows/hepta-development-docs.yml",
+        ):
+            with self.subTest(path=path):
+                expected = select([path])
+                self.assertTrue(expected["native"])
+                expected["derived"] = True
+                self.assertEqual(select([checker, path]), expected)
+        for path in (
+            "scripts/check_hepta_new.py",
+            "scripts/check_hepta_ui_native_convergence.py.extra",
+        ):
+            with self.subTest(unknown=path):
+                self.assertTrue(select([path])["full_repo"])
+        self.assertTrue(all(select([checker], force_full=True).values()))
+
     def test_code_owned_markdown_is_not_assumed_pure_prose(self):
         self.assertTrue(select(["codex-rs/core/prompt.md"])["native"])
 

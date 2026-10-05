@@ -149,7 +149,11 @@ def select(paths: Iterable[str], *, force_full: bool = False) -> dict[str, bool]
             derived = True
             continue
 
-        if path.startswith("scripts/hepta") or path.startswith("scripts/test_hepta"):
+        if (
+            path == "scripts/check_hepta_ui_native_convergence.py"
+            or path.startswith("scripts/hepta")
+            or path.startswith("scripts/test_hepta")
+        ):
             derived = True
             continue
 
