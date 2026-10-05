@@ -71,7 +71,7 @@ impl UnixStream {
     ///
     /// Owner-only socket permissions protect rendezvous by path; this check
     /// additionally binds accepted mutation authority to the kernel-reported
-    /// peer identity on Unix.
+    /// peer identity on supported Unix and Windows hosts.
     pub fn ensure_current_user_peer(&self) -> IoResult<()> {
         platform::ensure_current_user_peer(&self.inner)
     }
@@ -281,6 +281,7 @@ mod platform {
     use std::os::windows::io::BorrowedSocket;
     use std::path::Path;
     use std::pin::Pin;
+    use std::ptr;
     use std::task::Context;
     use std::task::Poll;
     use std::task::ready;
@@ -292,6 +293,24 @@ mod platform {
     use tokio::task;
     use tokio_util::compat::Compat;
     use tokio_util::compat::FuturesAsyncReadCompatExt;
+    use windows_sys::Win32::Foundation::CloseHandle;
+    use windows_sys::Win32::Foundation::HANDLE;
+    use windows_sys::Win32::Networking::WinSock::IOC_OUT;
+    use windows_sys::Win32::Networking::WinSock::IOC_VENDOR;
+    use windows_sys::Win32::Networking::WinSock::SOCKET_ERROR;
+    use windows_sys::Win32::Networking::WinSock::WSAGetLastError;
+    use windows_sys::Win32::Networking::WinSock::WSAIoctl;
+    use windows_sys::Win32::Security::EqualSid;
+    use windows_sys::Win32::Security::GetTokenInformation;
+    use windows_sys::Win32::Security::TOKEN_QUERY;
+    use windows_sys::Win32::Security::TOKEN_USER;
+    use windows_sys::Win32::Security::TokenUser;
+    use windows_sys::Win32::System::Threading::GetCurrentProcess;
+    use windows_sys::Win32::System::Threading::OpenProcess;
+    use windows_sys::Win32::System::Threading::OpenProcessToken;
+    use windows_sys::Win32::System::Threading::PROCESS_QUERY_LIMITED_INFORMATION;
+
+    const SIO_AF_UNIX_GETPEERPID: u32 = IOC_OUT | IOC_VENDOR | 256;
 
     pub(super) struct Stream(Compat<Async<WindowsUnixStream>>);
 
@@ -326,11 +345,133 @@ mod platform {
             .map(Stream)
     }
 
-    pub(super) fn ensure_current_user_peer(_stream: &Stream) -> IoResult<()> {
-        Err(io::Error::new(
-            io::ErrorKind::Unsupported,
-            "peer user identity is unavailable on this platform",
-        ))
+    pub(super) fn ensure_current_user_peer(stream: &Stream) -> IoResult<()> {
+        let peer_process_id = peer_process_id(stream)?;
+        let peer_process = unsafe {
+            OpenProcess(
+                PROCESS_QUERY_LIMITED_INFORMATION,
+                0,
+                peer_process_id,
+            )
+        };
+        if peer_process == 0 {
+            return Err(io::Error::last_os_error());
+        }
+        let peer_process = OwnedHandle(peer_process);
+        let peer_token = open_process_token(peer_process.raw())?;
+        let current_token = open_process_token(unsafe { GetCurrentProcess() })?;
+        let peer_user = token_user(peer_token.raw())?;
+        let current_user = token_user(current_token.raw())?;
+
+        if unsafe { EqualSid(peer_user.sid()?, current_user.sid()?) } == 0 {
+            return Err(io::Error::new(
+                io::ErrorKind::PermissionDenied,
+                "Unix socket peer is not owned by the current user",
+            ));
+        }
+
+        Ok(())
+    }
+
+    fn peer_process_id(stream: &Stream) -> IoResult<u32> {
+        let mut peer_process_id = 0_u32;
+        let mut bytes_returned = 0_u32;
+        let result = unsafe {
+            WSAIoctl(
+                stream.0.get_ref().get_ref().as_raw_socket() as _,
+                SIO_AF_UNIX_GETPEERPID,
+                ptr::null_mut(),
+                0,
+                ptr::addr_of_mut!(peer_process_id).cast(),
+                std::mem::size_of_val(&peer_process_id) as u32,
+                ptr::addr_of_mut!(bytes_returned),
+                ptr::null_mut(),
+                None,
+            )
+        };
+        if result == SOCKET_ERROR {
+            return Err(io::Error::from_raw_os_error(unsafe { WSAGetLastError() }));
+        }
+        if bytes_returned != std::mem::size_of_val(&peer_process_id) as u32
+            || peer_process_id == 0
+        {
+            return Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "Windows AF_UNIX peer did not return a valid process ID",
+            ));
+        }
+        Ok(peer_process_id)
+    }
+
+    struct OwnedHandle(HANDLE);
+
+    impl OwnedHandle {
+        fn raw(&self) -> HANDLE {
+            self.0
+        }
+    }
+
+    impl Drop for OwnedHandle {
+        fn drop(&mut self) {
+            if self.0 != 0 {
+                unsafe {
+                    CloseHandle(self.0);
+                }
+            }
+        }
+    }
+
+    struct TokenUserBuffer {
+        buffer: Vec<u8>,
+    }
+
+    impl TokenUserBuffer {
+        fn sid(&self) -> IoResult<windows_sys::Win32::Foundation::PSID> {
+            if self.buffer.len() < std::mem::size_of::<TOKEN_USER>() {
+                return Err(io::Error::new(
+                    io::ErrorKind::InvalidData,
+                    "token user buffer is too small",
+                ));
+            }
+            // GetTokenInformation writes TOKEN_USER into a byte buffer. Copy
+            // the fixed header because Vec<u8> has no TOKEN_USER alignment.
+            let token_user =
+                unsafe { ptr::read_unaligned(self.buffer.as_ptr().cast::<TOKEN_USER>()) };
+            Ok(token_user.User.Sid)
+        }
+    }
+
+    fn open_process_token(process: HANDLE) -> IoResult<OwnedHandle> {
+        let mut token = 0;
+        if unsafe { OpenProcessToken(process, TOKEN_QUERY, &mut token) } == 0 {
+            return Err(io::Error::last_os_error());
+        }
+        Ok(OwnedHandle(token))
+    }
+
+    fn token_user(token: HANDLE) -> IoResult<TokenUserBuffer> {
+        let mut return_length = 0;
+        unsafe {
+            GetTokenInformation(token, TokenUser, ptr::null_mut(), 0, &mut return_length);
+        }
+        if return_length == 0 {
+            return Err(io::Error::last_os_error());
+        }
+
+        let mut buffer = vec![0_u8; return_length as usize];
+        let result = unsafe {
+            GetTokenInformation(
+                token,
+                TokenUser,
+                buffer.as_mut_ptr().cast(),
+                return_length,
+                &mut return_length,
+            )
+        };
+        if result == 0 {
+            return Err(io::Error::last_os_error());
+        }
+        Ok(TokenUserBuffer { buffer })
     }
 
     pub(super) async fn is_stale_socket_path(socket_path: &Path) -> IoResult<bool> {

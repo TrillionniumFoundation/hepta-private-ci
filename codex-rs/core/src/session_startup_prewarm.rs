@@ -304,14 +304,12 @@ async fn schedule_startup_prewarm_inner(
         build_prompt_started_at.elapsed(),
         /*status*/ None,
     );
-    let window_id = session.current_window_id().await;
-    let responses_metadata = startup_turn_context
-        .turn_metadata_state
-        .to_responses_metadata(
-            session.installation_id.clone(),
-            window_id,
+    let responses_metadata = session
+        .responses_metadata(
+            startup_turn_context.as_ref(),
             CodexResponsesRequestKind::Prewarm,
-        );
+        )
+        .await;
     let mut client_session = session.services.model_client.new_session();
     let provider_policy_context = ModelProviderPolicyContext {
         registry: session.services.extensions.as_ref(),

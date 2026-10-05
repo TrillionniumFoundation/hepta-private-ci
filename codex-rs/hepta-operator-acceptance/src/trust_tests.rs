@@ -153,6 +153,24 @@ struct TrustFixture {
     root: PathBuf,
 }
 
+fn ssh_keygen_command() -> Command {
+    #[cfg(windows)]
+    {
+        let ssh_keygen = std::env::var_os("CODEX_BAZEL_WINDOWS_PATH")
+            .into_iter()
+            .chain(std::env::var_os("PATH"))
+            .flat_map(|paths| std::env::split_paths(&paths).collect::<Vec<_>>())
+            .map(|directory| directory.join("ssh-keygen.exe"))
+            .find(|candidate| candidate.is_file())
+            .unwrap_or_else(|| panic!("trust tests require a real ssh-keygen.exe on PATH"));
+        Command::new(ssh_keygen)
+    }
+    #[cfg(not(windows))]
+    {
+        Command::new("/usr/bin/ssh-keygen")
+    }
+}
+
 impl TrustFixture {
     fn new() -> Self {
         let temporary = private_tempdir("temporary trust directory");
@@ -161,7 +179,7 @@ impl TrustFixture {
             .canonicalize()
             .expect("canonical trust root");
         let key = root.join("operator-key");
-        let generated = Command::new("/usr/bin/ssh-keygen")
+        let generated = ssh_keygen_command()
             .args(["-q", "-t", "ed25519", "-N", "", "-f"])
             .arg(&key)
             .status()
@@ -178,7 +196,7 @@ impl TrustFixture {
             format!("operator@example {0} {1}\n", fields[0], fields[1]).as_bytes(),
         );
 
-        let fingerprint_output = Command::new("/usr/bin/ssh-keygen")
+        let fingerprint_output = ssh_keygen_command()
             .args(["-E", "sha256", "-lf"])
             .arg(key.with_extension("pub"))
             .output()
@@ -243,7 +261,7 @@ impl TrustFixture {
     fn sign(&self, statement: &[u8], namespace: &str, name: &str) -> PathBuf {
         let statement_path = self.root.join(name);
         write_private(&statement_path, statement);
-        let signed = Command::new("/usr/bin/ssh-keygen")
+        let signed = ssh_keygen_command()
             .args(["-Y", "sign", "-f"])
             .arg(&self.key)
             .args(["-n", namespace])

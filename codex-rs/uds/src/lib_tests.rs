@@ -175,7 +175,8 @@ async fn connected_streams() -> std::io::Result<(tempfile::TempDir, UnixStream, 
     target_os = "freebsd",
     target_os = "openbsd",
     target_os = "netbsd",
-    target_os = "dragonfly"
+    target_os = "dragonfly",
+    windows
 ))]
 #[tokio::test]
 async fn peer_identity_gate_accepts_same_user_on_supported_platforms() -> std::io::Result<()> {
@@ -193,7 +194,8 @@ async fn peer_identity_gate_accepts_same_user_on_supported_platforms() -> std::i
     target_os = "freebsd",
     target_os = "openbsd",
     target_os = "netbsd",
-    target_os = "dragonfly"
+    target_os = "dragonfly",
+    windows
 )))]
 #[tokio::test]
 async fn peer_identity_gate_rejects_on_unsupported_platforms() -> std::io::Result<()> {
