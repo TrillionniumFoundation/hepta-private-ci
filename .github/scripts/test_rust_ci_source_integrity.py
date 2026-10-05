@@ -65,6 +65,13 @@ class RustSourceIntegrityTests(unittest.TestCase):
             if step.get("id") == identity
         )
 
+    def step(self, name):
+        return next(
+            step
+            for step in self.workflow["jobs"]["lint_build"]["steps"]
+            if step.get("name") == name
+        )
+
     def test_real_source_passes_before_and_after(self):
         for script in (
             self.guard("rust-source-before"),
@@ -86,6 +93,23 @@ class RustSourceIntegrityTests(unittest.TestCase):
         self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
         self.assertTrue((self.root / "rust-ci-cargo-home/config.toml").is_file())
         self.assertEqual(self.execute(self.clean).returncode, 0)
+
+    def test_musl_zig_caches_are_outside_the_qualified_source(self):
+        result = self.execute(
+            self.step("Keep Zig caches outside the qualified checkout")["run"]
+        )
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        self.assertTrue((self.root / "rust-ci-zig-cache/global").is_dir())
+        self.assertTrue((self.root / "rust-ci-zig-cache/local").is_dir())
+        self.assertEqual(self.execute(self.clean).returncode, 0)
+
+    def test_windows_artifacts_do_not_cross_volume_roots(self):
+        timings = self.step("Upload Cargo timings (clippy)")["with"]["path"]
+        identities = self.step("Upload qualified source identities")["with"]["path"]
+        self.assertIn("CARGO_TARGET_DIR", timings)
+        self.assertNotIn("runner.temp", timings)
+        self.assertIn("runner.temp", identities)
+        self.assertNotIn("CARGO_TARGET_DIR", identities)
 
     def test_untracked_product_source_cannot_qualify(self):
         self.assertEqual(self.execute(self.guard("rust-source-before")).returncode, 0)

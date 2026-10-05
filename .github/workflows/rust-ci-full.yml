@@ -356,6 +356,16 @@ jobs:
           version: 0.14.0
 
       - if: ${{ matrix.target == 'x86_64-unknown-linux-musl' || matrix.target == 'aarch64-unknown-linux-musl'}}
+        name: Keep Zig caches outside the qualified checkout
+        shell: bash
+        run: |
+          set -euo pipefail
+          zig_cache_root="${RUNNER_TEMP}/rust-ci-zig-cache"
+          mkdir -p "${zig_cache_root}/global" "${zig_cache_root}/local"
+          echo "ZIG_GLOBAL_CACHE_DIR=${zig_cache_root}/global" >> "$GITHUB_ENV"
+          echo "ZIG_LOCAL_CACHE_DIR=${zig_cache_root}/local" >> "$GITHUB_ENV"
+
+      - if: ${{ matrix.target == 'x86_64-unknown-linux-musl' || matrix.target == 'aarch64-unknown-linux-musl'}}
         name: Install musl build tools
         env:
           DEBIAN_FRONTEND: noninteractive
@@ -405,8 +415,18 @@ jobs:
         uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
         with:
           name: cargo-timings-rust-ci-clippy-${{ matrix.target }}-${{ matrix.profile }}
+          path: ${{ env.CARGO_TARGET_DIR }}/**/cargo-timings/cargo-timing.html
+          if-no-files-found: warn
+
+      # On Windows CARGO_TARGET_DIR is on the Dev Drive while runner.temp is
+      # on the checkout drive. Upload them separately so artifact collection
+      # never has to construct an invalid cross-volume common root.
+      - name: Upload qualified source identities
+        if: always()
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f # v7.0.0
+        with:
+          name: rust-source-identity-${{ matrix.target }}-${{ matrix.profile }}
           path: |
-            ${{ env.CARGO_TARGET_DIR }}/**/cargo-timings/cargo-timing.html
             ${{ runner.temp }}/rust-source-before.txt
             ${{ runner.temp }}/rust-source-after.txt
           if-no-files-found: warn
