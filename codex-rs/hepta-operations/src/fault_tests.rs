@@ -59,12 +59,17 @@ async fn sqlite_full_never_leaves_half_of_the_ledger_outbox_transaction() {
         .clone()
         .pragma("max_page_count", pages.to_string());
     store.pool.close().await;
-    store.pool = sqlx::sqlite::SqlitePoolOptions::new()
+    #[expect(
+        clippy::disallowed_methods,
+        reason = "test-only connection hook injects SQLite disk-full on every reconnect; production uses the state shim"
+    )]
+    let reopened_pool = sqlx::sqlite::SqlitePoolOptions::new()
         .max_connections(4)
         .min_connections(4)
         .connect_with(options)
         .await
         .expect("reopen owner pool with per-connection fault");
+    store.pool = reopened_pool;
     let mut held = Vec::new();
     for _ in 0..4 {
         let mut connection = store.pool.acquire().await.expect("fault connection");

@@ -3,16 +3,106 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import sys
 import tempfile
 import unittest
 from pathlib import Path
 from unittest import mock
 
 SCRIPT = Path(__file__).with_name("hepta-lane-b-truth.py")
+if str(SCRIPT.parent) not in sys.path:
+    sys.path.insert(0, str(SCRIPT.parent))
 SPEC = importlib.util.spec_from_file_location("hepta_lane_b_truth", SCRIPT)
 assert SPEC and SPEC.loader
 MODULE = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(MODULE)
+
+
+class DelegatedOwnershipTests(unittest.TestCase):
+    def setUp(self):
+        self.temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temporary.cleanup)
+        self.root = Path(self.temporary.name)
+        self.agent_root = "codex-rs/hepta-agentd"
+        self.ledger_root = "codex-rs/hepta-learning-ledger"
+        self.write("codex-rs/Cargo.toml", "[workspace]\n")
+        self.write(f"{self.agent_root}/src/lib.rs", "pub fn run() {}\n")
+        self.write(f"{self.ledger_root}/src/lib.rs", "pub fn append() {}\n")
+        self.write(
+            "docs/modules/MODULES.json",
+            json.dumps(
+                {
+                    "modules": [
+                        {
+                            "id": "runtime.agentd",
+                            "rootBindings": [{"path": self.agent_root}],
+                        },
+                        {
+                            "id": "learning.ledger",
+                            "rootBindings": [{"path": self.ledger_root}],
+                        },
+                    ]
+                }
+            ),
+        )
+        self.direct_dependency(self.ledger_root, "codex-hepta-learning-ledger")
+        self.delegate = {
+            "role": "delegated_callee",
+            "ownerModule": "learning.ledger",
+            "path": f"{self.ledger_root}/src/lib.rs",
+            "symbol": "pub fn append(",
+            "buildTarget": "codex-hepta-learning-ledger",
+        }
+
+    def write(self, path, content):
+        target = self.root / path
+        target.parent.mkdir(parents=True, exist_ok=True)
+        target.write_text(content, encoding="utf-8")
+
+    def direct_dependency(self, dependency_root, package_name):
+        self.write(
+            f"{self.agent_root}/Cargo.toml",
+            '[package]\nname = "codex-hepta-agentd"\nversion = "0.0.0"\n'
+            f'[dependencies]\n{package_name} = {{path = "../{Path(dependency_root).name}"}}\n',
+        )
+        self.write(
+            f"{dependency_root}/Cargo.toml",
+            f'[package]\nname = "{package_name}"\nversion = "0.0.0"\n',
+        )
+
+    def test_actual_direct_dependency_cannot_relabel_registered_foreign_owner(self):
+        self.delegate["ownerModule"] = "runtime.agentd"
+        with mock.patch.object(MODULE, "ROOT", self.root):
+            self.assertFalse(
+                MODULE.delegate_matches_owner(
+                    "runtime.agentd", [self.agent_root], self.delegate
+                )
+            )
+
+    def test_actual_direct_dependency_preserves_registered_cross_lane_owner(self):
+        with mock.patch.object(MODULE, "ROOT", self.root):
+            self.assertTrue(
+                MODULE.delegate_matches_owner(
+                    "learning.ledger", [self.ledger_root], self.delegate
+                )
+            )
+
+    def test_actual_direct_dependency_can_navigate_unregistered_implementation(self):
+        implementation = "codex-rs/core"
+        self.write(f"{implementation}/src/lib.rs", "pub fn navigate() {}\n")
+        self.direct_dependency(implementation, "codex-core")
+        self.delegate.update(
+            ownerModule="runtime.agentd",
+            path=f"{implementation}/src/lib.rs",
+            symbol="pub fn navigate(",
+            buildTarget="codex-core",
+        )
+        with mock.patch.object(MODULE, "ROOT", self.root):
+            self.assertTrue(
+                MODULE.delegate_matches_owner(
+                    "runtime.agentd", [self.agent_root], self.delegate
+                )
+            )
 
 
 class LaneBTruthTests(unittest.TestCase):

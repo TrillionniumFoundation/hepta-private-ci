@@ -12,7 +12,10 @@ from pathlib import Path
 import re
 import subprocess
 import sys
+import tomllib
 import unittest
+
+from scripts.hepta_workflow_commands import load_workflow, workflow_needs
 
 ROOT = Path(__file__).resolve().parents[1]
 CHECKER = ROOT / ".github/scripts/check_ci_results.py"
@@ -130,11 +133,8 @@ class WorkflowDependencyTests(unittest.TestCase):
     def test_terminal_gate_is_always_run_and_binds_all_lanes(self):
         job = self.jobs["qualification-result"]
         self.assertIn("if: ${{ always() }}", job)
-        matched = re.search(r"(?m)^    needs: \[([^\]]+)\]$", job)
-        self.assertIsNotNone(matched)
-        self.assertEqual(
-            {name.strip() for name in matched.group(1).split(",")}, set(LANES)
-        )
+        parsed = load_workflow(self.text)["jobs"]["qualification-result"]
+        self.assertEqual(workflow_needs(parsed), set(LANES))
         self.assertIn("EXPECTED_NEEDS:", job)
         self.assertNotIn("ALLOWED_SKIPPED", job)
         self.assertIn("python3 .github/scripts/check_ci_results.py", job)
@@ -145,6 +145,10 @@ class WorkflowDependencyTests(unittest.TestCase):
         for target in (
             "optional_module_restart",
             "runtime_shutdown_outcomes",
+            "run_drain_product",
+            "helper_dispatch",
+            "--bin hepta-agentd-browser",
+            "supervised_two_agents",
             "retirement_recovery",
             "operation_timer_fence",
             "destination_recovery_binding",
@@ -155,6 +159,15 @@ class WorkflowDependencyTests(unittest.TestCase):
             with self.subTest(target=target):
                 self.assertIn(target, process)
         self.assertIn("just test --locked", self.jobs["catalog-admission"])
+        manifest = tomllib.loads(
+            (ROOT / "codex-rs/hepta-agentd/Cargo.toml").read_text()
+        )
+        browser = next(
+            target
+            for target in manifest["bin"]
+            if target["name"] == "hepta-agentd-browser"
+        )
+        self.assertTrue(browser.get("test", True))
         self.assertIn("refresh-derived --check", self.jobs["derived-projections"])
         self.assertIn("cargo fmt", self.jobs["owner-formatting"])
         self.assertIn("-- --check", self.jobs["owner-formatting"])
@@ -184,8 +197,8 @@ class WorkflowDependencyTests(unittest.TestCase):
         self.assertIn('--github-output "$GITHUB_OUTPUT"', process)
         self.assertIn("args+=(--lane source-head)", process)
         self.assertIn("steps.execution.outputs.run_native == 'true'", process)
-        terminal = self.jobs["qualification-result"]
-        self.assertIn("process-qualification]", terminal)
+        terminal = load_workflow(self.text)["jobs"]["qualification-result"]
+        self.assertIn("process-qualification", workflow_needs(terminal))
         self.assertIn(
             "scripts.tests.test_hepta_ci_candidate", self.jobs["derived-projections"]
         )

@@ -226,9 +226,22 @@ def test_root_format_driver_covers_all_formatter_groups(
         "third_party/v8/libcxx.BUILD.bazel",
     )
     assert formatters[3].commands[-1].args[-3:] == ("ruff", "format", "sdk/python")
-    assert formatters[4].commands[-1].args[-4:] == ("ruff", "format", "scripts", ".github")
     assert checks[3].commands[-1].args[-4:] == ("ruff", "format", "--check", "sdk/python")
-    assert checks[4].commands[-1].args[-5:] == ("ruff", "format", "--check", "scripts", ".github")
+    assert formatters[4].commands[-1].args == (
+        *scripts_uv_run_args,
+        "ruff",
+        "format",
+        "scripts",
+        ".github",
+    )
+    assert checks[4].commands[-1].args == (
+        *scripts_uv_run_args,
+        "ruff",
+        "format",
+        "--check",
+        "scripts",
+        ".github",
+    )
 
 
 def test_root_format_driver_discards_successful_command_output(
@@ -262,6 +275,9 @@ def test_root_format_driver_is_silent_when_all_formatters_succeed(
     groups = (script.FormatterGroup("Quiet", ()),)
     monkeypatch.setattr(script, "formatter_groups", lambda *, check: groups)
     monkeypatch.setattr(
+        script, "changed_paths", lambda base: pytest.fail("--all must not need Git")
+    )
+    monkeypatch.setattr(
         script,
         "run_formatter_group",
         lambda group: script.FormatterResult(group.name, "hidden output\n", 0),
@@ -283,6 +299,9 @@ def test_root_format_driver_reports_only_failed_formatters(
         script.FormatterGroup("Broken", ()),
     )
     monkeypatch.setattr(script, "formatter_groups", lambda *, check: groups)
+    monkeypatch.setattr(
+        script, "changed_paths", lambda base: pytest.fail("--all must not need Git")
+    )
 
     def fake_run(group):
         if group.name == "Broken":
@@ -298,6 +317,86 @@ def test_root_format_driver_reports_only_failed_formatters(
     assert captured.err == (
         "==> Broken formatter failed\n$ broken\nfailure output\nFormatting failed: Broken\n"
     )
+
+
+def test_root_format_driver_defaults_to_changed_sdk_files(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    script = _load_root_format_script_module()
+    source = "sdk/python/tests/test_artifact_workflow_and_binaries.py"
+    observed_bases = []
+    executed = []
+
+    def changed_paths(base):
+        observed_bases.append(base)
+        return [source]
+
+    def run(group):
+        executed.append(group)
+        return script.FormatterResult(group.name, "", 0)
+
+    monkeypatch.setattr(script, "changed_paths", changed_paths)
+    monkeypatch.setattr(
+        script,
+        "formatter_groups",
+        lambda *, check: pytest.fail("default mode must not select the full tree"),
+    )
+    monkeypatch.setattr(script, "run_formatter_group", run)
+    monkeypatch.setattr(sys, "argv", ["format.py"])
+
+    assert script.main() == 0
+    assert observed_bases == [None]
+    assert [group.name for group in executed] == ["Python SDK"]
+    commands = executed[0].commands
+    assert len(commands) == 2
+    assert commands[0].args[-5:] == ("ruff", "check", "--fix", "--fix-only", "./" + source)
+    assert commands[1].args[-3:] == ("ruff", "format", "./" + source)
+    captured = capsys.readouterr()
+    assert (captured.out, captured.err) == ("", "")
+
+
+def test_root_format_driver_base_checks_changed_rules_in_their_sdk_owner(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    script = _load_root_format_script_module()
+    baseline = "a" * 40
+    config = "sdk/python/pyproject.toml"
+    observed_bases = []
+    inspected = []
+    executed = []
+
+    def changed_paths(base):
+        observed_bases.append(base)
+        return [config]
+
+    def inspect(args, **kwargs):
+        inspected.append(args)
+        assert kwargs["cwd"] == script.REPO_ROOT
+        current = tomllib.loads((script.REPO_ROOT / config).read_text())
+        previous = f"[tool.ruff]\nline-length={current['tool']['ruff']['line-length'] + 1}\n"
+        return subprocess.CompletedProcess(args, 0, previous, "")
+
+    def run(group):
+        executed.append(group)
+        return script.FormatterResult(group.name, "", 0)
+
+    monkeypatch.setattr(script, "changed_paths", changed_paths)
+    monkeypatch.setattr(script.subprocess, "run", inspect)
+    monkeypatch.setattr(script, "run_formatter_group", run)
+    monkeypatch.setattr(sys, "argv", ["format.py", "--base", baseline, "--check"])
+
+    assert script.main() == 0
+    assert observed_bases == [baseline]
+    assert inspected == [["git", "show", f"{baseline}:{config}"]]
+    assert [group.name for group in executed] == ["Python SDK"]
+    commands = executed[0].commands
+    assert len(commands) == 2
+    assert commands[0].args[-4:] == ("ruff", "check", "--diff", "sdk/python")
+    assert commands[1].args[-4:] == ("ruff", "format", "--check", "sdk/python")
+    captured = capsys.readouterr()
+    assert (captured.out, captured.err) == ("", "")
 
 
 def test_generate_types_wires_all_generation_steps() -> None:

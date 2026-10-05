@@ -206,6 +206,10 @@ pub struct AgentdRequest {
     pub schema_version: u32,
     pub request_id: u64,
     pub spawn_generation: u64,
+    /// Intended owner, checked before dispatch when supplied. Legacy trusted
+    /// local callers may omit it; typed mutation clients must always bind it.
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub target_agent_id: Option<AgentId>,
     pub method: AgentdMethod,
 }
 
@@ -215,6 +219,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::Capabilities,
         }
     }
@@ -224,6 +229,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::Health,
         }
     }
@@ -233,6 +239,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::Lifecycle,
         }
     }
@@ -242,6 +249,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::Readiness,
         }
     }
@@ -251,6 +259,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::Drain,
         }
     }
@@ -260,6 +269,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::SessionIngress,
         }
     }
@@ -273,6 +283,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::ObjectiveStart { request },
         }
     }
@@ -282,6 +293,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::Events {
                 after_cursor,
                 limit,
@@ -298,6 +310,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::AutomationCreate { draft },
         }
     }
@@ -314,6 +327,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::AutomationCreateCalendarV2 {
                 draft,
                 schedule,
@@ -335,6 +349,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::AutomationExecuteEffect {
                 intent,
                 wire_payload_hex,
@@ -355,6 +370,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::AutomationReconcileEffect {
                 run_id,
                 step_id,
@@ -368,6 +384,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::AutomationList { limit },
         }
     }
@@ -381,6 +398,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::AutomationCancel { task_id },
         }
     }
@@ -396,6 +414,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::AutomationSetEnabled {
                 task_id,
                 enabled,
@@ -415,6 +434,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::MemoryFederationGrant {
                 consumer_agent_id,
                 owner_scope,
@@ -432,6 +452,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::MemoryFederationRevoke { capability_id },
         }
     }
@@ -441,6 +462,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::MemoryFederationList { limit },
         }
     }
@@ -454,6 +476,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::MemoryFederationStatus { capability_id },
         }
     }
@@ -463,6 +486,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::RunStart { snapshot },
         }
     }
@@ -477,6 +501,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::RunAttachContext {
                 expected_revision,
                 attachment,
@@ -494,6 +519,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::RunMarkDispatched {
                 run_id,
                 expected_revision,
@@ -512,6 +538,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::RunCancel {
                 run_id,
                 expected_revision,
@@ -532,6 +559,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::RunObserveTerminal {
                 run_id,
                 expected_revision,
@@ -546,6 +574,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::RunStatus { run_id },
         }
     }
@@ -560,6 +589,7 @@ impl AgentdRequest {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id,
             spawn_generation,
+            target_agent_id: None,
             method: AgentdMethod::RunReleaseClosed {
                 run_id,
                 expected_revision,
@@ -1028,6 +1058,28 @@ mod tests {
     use super::*;
 
     #[test]
+    fn target_binding_preserves_legacy_frames_and_rejects_unknown_critical_fields() {
+        let legacy = AgentdRequest::health(3, 1);
+        let wire = serde_json::to_value(&legacy).expect("legacy frame");
+        assert!(wire.get("target_agent_id").is_none());
+        assert_eq!(
+            serde_json::from_value::<AgentdRequest>(wire).expect("legacy decode"),
+            legacy
+        );
+
+        let mut targeted = legacy;
+        targeted.target_agent_id =
+            Some(AgentId::parse("018f4f72-5f8f-7cc1-8f55-df9fb3aa2c12").expect("owner"));
+        let mut wire = serde_json::to_value(&targeted).expect("targeted frame");
+        assert_eq!(
+            serde_json::from_value::<AgentdRequest>(wire.clone()).expect("targeted decode"),
+            targeted
+        );
+        wire["unchecked_authority"] = serde_json::json!(true);
+        assert!(serde_json::from_value::<AgentdRequest>(wire).is_err());
+    }
+
+    #[test]
     fn capabilities_endpoint_is_additive_and_bounded() {
         let request = AgentdRequest::capabilities(1, 1);
         let bytes = serde_json::to_vec(&request).expect("serialize capabilities request");
@@ -1067,12 +1119,13 @@ mod tests {
             schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
             request_id: 13,
             spawn_generation: 3,
+            target_agent_id: None,
             method: AgentdMethod::CognitiveContextRevalidate {
                 snapshot_digest: snapshot.snapshot_digest.clone(),
                 read_digest: snapshot.read_digest.clone(),
                 omitted_records: snapshot.omitted_records,
                 items: snapshot.items.clone(),
-                plan: snapshot.plan.clone(),
+                plan: snapshot.plan,
             },
         };
         let bytes = serde_json::to_vec(&request).expect("serialize revalidation request");
@@ -1318,13 +1371,8 @@ mod tests {
             attach
         );
 
-        let cancel = AgentdRequest::run_cancel(
-            14,
-            3,
-            snapshot.run_id.clone(),
-            2,
-            "operator_request".to_string(),
-        );
+        let cancel =
+            AgentdRequest::run_cancel(14, 3, snapshot.run_id, 2, "operator_request".to_string());
         let cancel_bytes = serde_json::to_vec(&cancel).expect("serialize cancellation");
         assert!(cancel_bytes.len() as u64 <= MAX_CONTROL_FRAME_BYTES);
         assert_eq!(

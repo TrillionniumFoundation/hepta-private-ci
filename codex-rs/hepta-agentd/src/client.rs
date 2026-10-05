@@ -169,6 +169,7 @@ impl AgentdClient {
                 schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
                 request_id: self.request_id(),
                 spawn_generation: self.spawn_generation,
+                target_agent_id: None,
                 method: crate::AgentdMethod::CognitiveContext { query, limit },
             })
             .await?
@@ -190,6 +191,7 @@ impl AgentdClient {
                 schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
                 request_id: self.request_id(),
                 spawn_generation: self.spawn_generation,
+                target_agent_id: None,
                 method: crate::AgentdMethod::CognitiveContextRevalidate {
                     snapshot_digest: snapshot.snapshot_digest.clone(),
                     read_digest: snapshot.read_digest.clone(),
@@ -216,6 +218,7 @@ impl AgentdClient {
                 schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
                 request_id: self.request_id(),
                 spawn_generation: self.spawn_generation,
+                target_agent_id: None,
                 method: crate::AgentdMethod::AuthBusText { request },
             })
             .await?
@@ -236,6 +239,7 @@ impl AgentdClient {
                 schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
                 request_id: self.request_id(),
                 spawn_generation: self.spawn_generation,
+                target_agent_id: None,
                 method: crate::AgentdMethod::AuthBusTextStatus { delivery_id },
             })
             .await?
@@ -255,6 +259,7 @@ impl AgentdClient {
                 schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
                 request_id: self.request_id(),
                 spawn_generation: self.spawn_generation,
+                target_agent_id: None,
                 method: crate::AgentdMethod::KernelEvidenceAppend { request },
             })
             .await?
@@ -275,6 +280,7 @@ impl AgentdClient {
                 schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
                 request_id: self.request_id(),
                 spawn_generation: self.spawn_generation,
+                target_agent_id: None,
                 method: crate::AgentdMethod::KernelEvidenceQuery { request },
             })
             .await?
@@ -295,6 +301,7 @@ impl AgentdClient {
                 schema_version: AGENTD_CONTROL_SCHEMA_VERSION,
                 request_id: self.request_id(),
                 spawn_generation: self.spawn_generation,
+                target_agent_id: None,
                 method: crate::AgentdMethod::KernelEvidenceVerify { request },
             })
             .await?
@@ -715,11 +722,15 @@ impl AgentdClient {
         }
     }
 
-    async fn send(&self, request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
+    async fn send(&self, mut request: AgentdRequest) -> Result<AgentdResponse, AgentdError> {
+        // The destination verifies this before any owner operation.
+        request.target_agent_id = Some(self.expected_agent_id.clone());
         let expected_request_id = request.request_id;
         let stream = timeout(self.timeout, UnixStream::connect(&self.socket_path))
             .await
             .map_err(|_| AgentdError::Protocol("agentd control connect timed out".to_string()))??;
+        #[cfg(unix)]
+        stream.ensure_current_user_peer()?;
         let (reader, mut writer) = tokio::io::split(stream);
         let mut bytes = serde_json::to_vec(&request)?;
         bytes.push(b'\n');

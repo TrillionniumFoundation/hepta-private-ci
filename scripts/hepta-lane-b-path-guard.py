@@ -10,7 +10,7 @@ import tomllib
 from pathlib import Path
 from typing import Any
 
-from hepta_module_source_roots import resolve_source_roots
+from hepta_module_source_roots import registered_source_roots
 
 ROOT = Path(__file__).resolve().parents[1]
 TRUTH = ROOT / "qualification/lane-b/LANE_B_IMPLEMENTATION_TRUTH.json"
@@ -137,23 +137,35 @@ def verify_anchor(
     need(set(anchor) >= {"role", "path", "symbol", "buildTarget"}, f"{module}: anchor")
     path = anchor["path"]
     source = canonical_path(root, path, f"{module}: source", require_file=True)
+    symbol = anchor["symbol"]
+    target = anchor["buildTarget"]
+    need(isinstance(symbol, str) and bool(symbol.strip()), f"{module}: invalid symbol")
+    need(isinstance(target, str) and bool(target.strip()), f"{module}: build target")
     if owner:
         need(inside(path, roots[module]), f"{module}: owner-root escape {path}")
     else:
         delegated_owner = anchor.get("ownerModule")
         need(
             isinstance(delegated_owner, str) and delegated_owner in roots,
-            f"{module}: delegated owner",
+            f"{module}: unregistered delegated owner",
+        )
+        canonical_owner = next(
+            (
+                owner
+                for owner, owner_roots in roots.items()
+                if inside(path, owner_roots)
+            ),
+            None,
+        )
+        need(
+            canonical_owner is None or canonical_owner == delegated_owner,
+            f"{module}: registered delegated owner mismatch for {path}: {canonical_owner}",
         )
         need(
             inside(path, roots[delegated_owner])
             or delegated_dependency_matches(root, roots[delegated_owner], anchor),
             f"{module}: delegate-root escape {path}",
         )
-    symbol = anchor["symbol"]
-    target = anchor["buildTarget"]
-    need(isinstance(symbol, str) and bool(symbol.strip()), f"{module}: invalid symbol")
-    need(isinstance(target, str) and bool(target.strip()), f"{module}: build target")
     need(
         symbol in source.read_text(encoding="utf-8"),
         f"{module}: missing symbol {symbol!r}",
@@ -169,13 +181,27 @@ def verify(root: Path = ROOT) -> int:
     entries = truth.get("modules")
     need(isinstance(entries, list) and entries, "module index")
 
+    # Repository ownership is global, including owners outside this lane. Map
+    # roots are a projection of that inventory and cannot expand its scope.
+    try:
+        roots = registered_source_roots(root)
+    except (OSError, ValueError, KeyError, TypeError) as exc:
+        diagnostic = str(exc)
+        if diagnostic == "duplicate or invalid registered module owner":
+            diagnostic = f"duplicate registered owner or invalid identity: {diagnostic}"
+        raise Invalid(f"registered owner inventory: {diagnostic}") from exc
+    for module, owner_roots in roots.items():
+        for owner_root in owner_roots:
+            canonical_path(root, owner_root, f"{module}: owner root", require_file=None)
+
     maps: dict[str, dict[str, Any]] = {}
-    roots: dict[str, list[str]] = {}
     for entry in entries:
         need(isinstance(entry, dict), "module index entry")
         module = entry.get("module")
         map_path = entry.get("mapPath")
         need(isinstance(module, str) and bool(module), "module identity")
+        need(module not in maps, f"duplicate module index: {module}")
+        need(module in roots, f"{module}: unregistered module owner")
         path = canonical_path(root, map_path, f"{module}: map", require_file=True)
         row = load(path)
         need(row.get("module") == module, f"{module}: map identity")
@@ -186,34 +212,11 @@ def verify(root: Path = ROOT) -> int:
             and all(isinstance(item, str) and item for item in resolved_roots),
             f"{module}: resolved roots",
         )
-        for owner_root in resolved_roots:
-            canonical_path(root, owner_root, f"{module}: owner root", require_file=None)
-        maps[module] = row
-        roots[module] = resolved_roots
-
-    # Lane membership is not repository ownership. Resolve only named owners
-    # through the same canonical registry used by source truth verification.
-    registered = load(root / "docs/modules/MODULES.json").get("modules")
-    need(isinstance(registered, list), "registered module index")
-    owners = {}
-    for entry in registered:
         need(
-            isinstance(entry, dict) and isinstance(entry.get("id"), str),
-            "registered module identity",
+            resolved_roots == roots[module],
+            f"{module}: registered owner roots mismatch",
         )
-        need(entry["id"] not in owners, "duplicate registered owner")
-        owners[entry["id"]] = entry
-    for module, row in maps.items():
-        for operation in row.get("operations", []):
-            for delegate in operation.get("delegatedCallees", []):
-                owner = delegate.get("ownerModule")
-                need(owner in owners, f"{module}: unregistered delegated owner")
-                if owner not in roots:
-                    roots[owner] = resolve_source_roots(root, owners[owner])
-                    need(
-                        bool(roots[owner]),
-                        f"{module}: delegated owner has no canonical source",
-                    )
+        maps[module] = row
 
     operations = tests = delegates = 0
     for module, row in maps.items():

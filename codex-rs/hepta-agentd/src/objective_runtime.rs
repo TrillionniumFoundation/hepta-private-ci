@@ -46,6 +46,12 @@ use crate::authbus_trust::hex_bytes;
 use crate::authbus_trust::invalid;
 use crate::authbus_trust::read_private_owner_file;
 
+#[path = "objective_runtime_directory.rs"]
+mod directory;
+
+use directory::prepare_private_directory;
+use directory::sync_run_start_directory;
+
 const PRODUCT_SOURCE_JSON_BYTES: usize = 32 * 1024;
 const PRODUCT_BODY_JSON_BYTES: usize = 48 * 1024;
 const MAX_RUN_START_RECORDS: usize = 4_096;
@@ -417,25 +423,76 @@ fn open_run_start_journal(
     profile_digest: Digest32,
 ) -> Result<DurableRunStartJournal, AgentdError> {
     let root = identity.home_root.join(RUN_START_DIRECTORY);
+    #[cfg(unix)]
+    let home_namespace = crate::operator_namespace::OperatorNamespace::capture(
+        &root,
+        &std::fs::metadata(&identity.home_root)?,
+    )?;
     prepare_private_directory(&root)?;
     let path = root.join(RUN_START_FILE);
-    if path.exists() {
-        let metadata = std::fs::symlink_metadata(&path)?;
+    #[cfg(unix)]
+    let home = std::fs::metadata(&identity.home_root)?;
+    #[cfg(unix)]
+    home_namespace.verify(&root, &home)?;
+    #[cfg(unix)]
+    let namespace = crate::operator_namespace::OperatorNamespace::capture(&path, &home)?;
+    let validate = |metadata: &std::fs::Metadata| -> Result<(), AgentdError> {
         if !metadata.is_file() || metadata.file_type().is_symlink() {
             return Err(invalid(
                 "objective run-start journal must be a regular file",
             ));
         }
-    }
+        #[cfg(unix)]
+        {
+            use std::os::unix::fs::MetadataExt;
+
+            if metadata.nlink() != 1 || metadata.uid() != home.uid() || metadata.mode() & 0o077 != 0
+            {
+                return Err(invalid(
+                    "objective run-start journal must be private and owner-controlled",
+                ));
+            }
+        }
+        Ok(())
+    };
+    // exists() follows links and hides dangling symlinks. Inspect the entry
+    // itself before opening, and create only an absent entry with create_new.
+    let before = match std::fs::symlink_metadata(&path) {
+        Ok(metadata) => {
+            validate(&metadata)?;
+            Some(metadata)
+        }
+        Err(error) if error.kind() == std::io::ErrorKind::NotFound => None,
+        Err(error) => return Err(error.into()),
+    };
     let mut options = OpenOptions::new();
-    options.read(true).write(true).create(true);
+    options.read(true).write(true).create_new(before.is_none());
     #[cfg(unix)]
     {
         use std::os::unix::fs::OpenOptionsExt;
         options.mode(0o600);
     }
-    let file = options.open(path)?;
-    if file.metadata()?.len() == 0 {
+    let file = options.open(&path)?;
+    let opened = file.metadata()?;
+    validate(&opened)?;
+    let after = std::fs::symlink_metadata(&path)?;
+    validate(&after)?;
+    #[cfg(unix)]
+    namespace.verify(&path, &after)?;
+    #[cfg(unix)]
+    {
+        use std::os::unix::fs::MetadataExt;
+
+        if after.dev() != opened.dev()
+            || after.ino() != opened.ino()
+            || before.is_some_and(|metadata| {
+                metadata.dev() != opened.dev() || metadata.ino() != opened.ino()
+            })
+        {
+            return Err(invalid("objective run-start journal changed while opening"));
+        }
+    }
+    if opened.len() == 0 {
         let journal = DurableRunStartJournal::create(
             file,
             run_start_binding(identity, profile_digest),
@@ -453,33 +510,6 @@ fn open_run_start_journal(
         )
         .map_err(store_error)
     }
-}
-
-#[cfg(unix)]
-fn sync_run_start_directory(path: &Path) -> Result<(), AgentdError> {
-    std::fs::File::open(path)?.sync_all()?;
-    Ok(())
-}
-
-#[cfg(not(unix))]
-fn sync_run_start_directory(_path: &Path) -> Result<(), AgentdError> {
-    // The selected non-Unix host profile must independently qualify directory-entry
-    // durability. The journal file itself is synchronized before this boundary.
-    Ok(())
-}
-
-fn prepare_private_directory(path: &Path) -> Result<(), AgentdError> {
-    std::fs::create_dir_all(path)?;
-    #[cfg(unix)]
-    {
-        use std::os::unix::fs::PermissionsExt;
-        std::fs::set_permissions(path, std::fs::Permissions::from_mode(0o700))?;
-    }
-    let metadata = std::fs::symlink_metadata(path)?;
-    if !metadata.is_dir() || metadata.file_type().is_symlink() {
-        return Err(invalid("objective run-start root must be a real directory"));
-    }
-    Ok(())
 }
 
 fn replay_frontier(
@@ -575,4 +605,4 @@ fn store_error(error: codex_hepta_learning_ledger::RunStartStoreError) -> Agentd
 
 #[cfg(test)]
 #[path = "objective_runtime_tests.rs"]
-mod tests;
+pub(crate) mod tests;

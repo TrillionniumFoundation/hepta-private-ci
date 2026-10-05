@@ -7,4 +7,7 @@ codex_rust_crate(
         "//codex-rs/app-server-client": "//codex-rs/app-server-client:app-server-client-test-lib",
         "//codex-rs/hepta-codex-adapter": "//codex-rs/hepta-codex-adapter:hepta-codex-adapter-test-lib",
     },
+    unit_test_runfile_env = {
+        "//codex-rs/hepta-agentd:codex-hepta-agentd": "CARGO_BIN_EXE_codex-hepta-agentd",
+    },
 )

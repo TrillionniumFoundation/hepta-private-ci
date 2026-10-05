@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "urn:hepta:module-implementation-profiles:v1",
+  "title": "Hepta implementation profile source state vocabulary V1",
+  "description": "Owner-defined source/documentation states. Every state is independent of product execution, deployment qualification and acceptance claims; those remain separately validated false in this document-delivery profile.",
+  "type": "object",
+  "properties": {
+    "schema": {
+      "const": "hepta.module-implementation-profiles.v1"
+    },
+    "schemaVersion": {
+      "const": 1
+    },
+    "modules": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "implementationState": {
+            "type": "string",
+            "enum": [
+              "specified_not_product_evidence",
+              "source_implemented_product_composed_requires_candidate_evidence",
+              "durable_source_implemented_product_execution_pending",
+              "source_owner_implemented_not_product_evidence"
+            ]
+          }
+        },
+        "required": [
+          "implementationState"
+        ]
+      }
+    }
+  },
+  "required": [
+    "schema",
+    "schemaVersion",
+    "modules"
+  ]
+}

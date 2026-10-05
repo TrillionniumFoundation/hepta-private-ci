@@ -11,6 +11,7 @@ use tokio::io::AsyncReadExt;
 use tokio::io::AsyncWriteExt;
 use tokio::io::BufReader;
 use tokio::sync::Semaphore;
+use tokio::task::JoinSet;
 use tokio::time::timeout;
 use tokio_util::sync::CancellationToken;
 
@@ -31,6 +32,8 @@ const OVERLOAD_WRITE_TIMEOUT: Duration = Duration::from_millis(50);
 pub(crate) struct AgentdControlServer {
     listener: UnixListener,
     socket_path: PathBuf,
+    #[cfg(unix)]
+    socket_identity: (u64, u64),
     state: Arc<AgentdState>,
     cancellation: CancellationToken,
     connections: Arc<Semaphore>,
@@ -42,14 +45,31 @@ impl AgentdControlServer {
         state: Arc<AgentdState>,
         cancellation: CancellationToken,
     ) -> Result<Self, AgentdError> {
+        if socket_path != state.identity().control_socket {
+            return Err(AgentdError::Invalid(
+                "agentd control socket does not match this owner's registered layout".to_string(),
+            ));
+        }
         prepare_socket(&socket_path).await?;
         let listener = UnixListener::bind(&socket_path)
             .await
             .map_err(|error| io_context("bind agentd control socket", &socket_path, error))?;
+        #[cfg(unix)]
+        let socket_identity = control_socket_identity(&socket_path)?.ok_or_else(|| {
+            AgentdError::Protocol("bound control socket was replaced".to_string())
+        })?;
         set_owner_only(&socket_path).await?;
+        #[cfg(unix)]
+        if control_socket_identity(&socket_path)? != Some(socket_identity) {
+            return Err(AgentdError::Protocol(
+                "bound control socket changed during permission setup".to_string(),
+            ));
+        }
         Ok(Self {
             listener,
             socket_path,
+            #[cfg(unix)]
+            socket_identity,
             state,
             cancellation,
             connections: Arc::new(Semaphore::new(CONNECTION_CAPACITY)),
@@ -57,11 +77,28 @@ impl AgentdControlServer {
     }
 
     pub(crate) async fn run(mut self) -> Result<(), AgentdError> {
-        loop {
+        let mut connections = JoinSet::new();
+        let result = loop {
             let stream = tokio::select! {
-                _ = self.cancellation.cancelled() => return Ok(()),
-                accepted = self.listener.accept() => accepted?,
+                biased;
+                _ = self.cancellation.cancelled() => break Ok(()),
+                _ = connections.join_next(), if !connections.is_empty() => continue,
+                accepted = self.listener.accept() => match accepted {
+                    Ok(stream) => stream,
+                    Err(error) => break Err(error.into()),
+                },
             };
+            if self.cancellation.is_cancelled() {
+                break Ok(());
+            }
+            // The Unix rendezvous permission check is not peer authentication.
+            // Bind every admitted connection to the kernel-reported owner.
+            // Windows retains its existing transport profile until codex-uds
+            // provides an equivalent peer identity implementation.
+            #[cfg(unix)]
+            if stream.ensure_current_user_peer().is_err() {
+                continue;
+            }
             let Ok(permit) = Arc::clone(&self.connections).try_acquire_owned() else {
                 let mut stream = stream;
                 let _ = timeout(OVERLOAD_WRITE_TIMEOUT, async {
@@ -72,16 +109,38 @@ impl AgentdControlServer {
                 continue;
             };
             let state = Arc::clone(&self.state);
-            tokio::spawn(async move {
+            connections.spawn(async move {
                 let _permit = permit;
                 let _ = timeout(IO_TIMEOUT, serve_connection(stream, state)).await;
             });
-        }
+        };
+        // No connection may keep daemon state or an owner mutation alive after
+        // this server has retired. Durable effect owners reconcile uncertainty;
+        // cancelling a connection does not imply an effect succeeded or failed.
+        connections.shutdown().await;
+        result
     }
 }
 
 impl Drop for AgentdControlServer {
     fn drop(&mut self) {
+        // A displaced predecessor must not unlink a successor's rendezvous or
+        // another replacement object. The private namespace still belongs to
+        // the trusted operator; this is not an atomic unlink against a hostile
+        // same-UID process changing the path between observation and removal.
+        #[cfg(unix)]
+        match control_socket_identity(&self.socket_path) {
+            Ok(Some(identity)) if identity == self.socket_identity => {}
+            Ok(_) => return,
+            Err(error) if error.kind() == ErrorKind::NotFound => return,
+            Err(error) => {
+                eprintln!(
+                    "failed to inspect owned agentd control socket {}: {error}",
+                    self.socket_path.display()
+                );
+                return;
+            }
+        }
         if let Err(error) = std::fs::remove_file(&self.socket_path)
             && error.kind() != ErrorKind::NotFound
         {
@@ -91,6 +150,18 @@ impl Drop for AgentdControlServer {
             );
         }
     }
+}
+
+#[cfg(unix)]
+fn control_socket_identity(path: &Path) -> std::io::Result<Option<(u64, u64)>> {
+    use std::os::unix::fs::FileTypeExt;
+    use std::os::unix::fs::MetadataExt;
+
+    let metadata = std::fs::symlink_metadata(path)?;
+    Ok(metadata
+        .file_type()
+        .is_socket()
+        .then_some((metadata.dev(), metadata.ino())))
 }
 
 async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result<(), AgentdError> {
@@ -108,9 +179,19 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
         error_response(
             &state,
             request.request_id,
-            request.spawn_generation,
             "unsupported_schema",
             "unsupported agentd control schema",
+        )
+    } else if request
+        .target_agent_id
+        .as_ref()
+        .is_some_and(|target| target != &state.identity().agent_id)
+    {
+        error_response(
+            &state,
+            request.request_id,
+            "target_agent_mismatch",
+            "agentd request target does not match this owner",
         )
     } else {
         match state
@@ -121,7 +202,6 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
             Err(error) => error_response(
                 &state,
                 request.request_id,
-                request.spawn_generation,
                 "request_rejected",
                 &error.to_string(),
             ),
@@ -142,7 +222,6 @@ async fn serve_connection(stream: UnixStream, state: Arc<AgentdState>) -> Result
 fn error_response(
     state: &AgentdState,
     request_id: u64,
-    spawn_generation: u64,
     code: &str,
     message: &str,
 ) -> AgentdResponse {
@@ -151,7 +230,9 @@ fn error_response(
         request_id,
         agent_id: state.identity().agent_id.clone(),
         spawn_generation: state.identity().spawn_generation,
-        current_generation: spawn_generation,
+        current_generation: state
+            .current_generation()
+            .unwrap_or(state.identity().spawn_generation),
         payload: AgentdPayload::Error {
             code: code.to_string(),
             message: bounded_message(message),
@@ -170,7 +251,11 @@ async fn prepare_socket(socket_path: &Path) -> Result<(), AgentdError> {
     codex_uds::prepare_private_socket_directory(parent)
         .await
         .map_err(|error| io_context("prepare agentd control socket directory", parent, error))?;
-    match UnixStream::connect(socket_path).await {
+    match timeout(IO_TIMEOUT, UnixStream::connect(socket_path))
+        .await
+        .map_err(|_| {
+            AgentdError::Protocol("agentd existing control socket probe timed out".to_string())
+        })? {
         Ok(_) => {
             return Err(AgentdError::Io(std::io::Error::new(
                 ErrorKind::AddrInUse,
@@ -230,3 +315,7 @@ async fn set_owner_only(path: &Path) -> Result<(), AgentdError> {
 async fn set_owner_only(_path: &Path) -> Result<(), AgentdError> {
     Ok(())
 }
+
+#[cfg(test)]
+#[path = "control_tests.rs"]
+mod tests;

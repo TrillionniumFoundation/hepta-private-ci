@@ -489,6 +489,7 @@ async fn start_uninitialized(args: InProcessStartArgs) -> IoResult<InProcessClie
                 remote_control_handle: None,
                 plugin_startup_tasks: crate::PluginStartupTasks::Start,
                 turn_queue_capacity: None,
+                graceful_drain: None,
                 hepta: HeptaExtensionBindings::absent(),
             }));
             let mut thread_created_rx = processor.thread_created_receiver();

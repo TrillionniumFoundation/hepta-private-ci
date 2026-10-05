@@ -1,3 +1,5 @@
+#[path = "plasticity_evaluation_test_support.rs"]
+mod product_fixture;
 use super::*;
 use codex_hepta_intelligence_eval::*;
 use codex_hepta_learning_ledger::*;
@@ -27,7 +29,7 @@ struct Fixture {
     profile: ParameterGeneratorProfileV3,
     generated: GeneratedParameterCandidateSetV3,
     admission: PlasticityAdmissionEvidenceV1,
-    bundle: IndependentEvaluationBundleV1,
+    plan: CrossFoldPlanV1,
     roles: Vec<MetricRoleContractV2>,
 }
 
@@ -156,79 +158,36 @@ impl Fixture {
                 minimum_improvement: FixedQ32::ZERO,
             },
         }];
-        let plan = freeze_cross_fold_plan_v2(
-            CrossFoldPlanV1 {
-                plan_id: id("plasticity-plan"),
-                claim_scope: EvaluationClaimScopeV1::Qualification,
-                candidate_id: update_id.clone(),
-                baseline_id: admission.baseline_id.clone(),
-                objective_digest: admission.objective_digest,
-                dataset_digest,
-                estimand_digest: digest("plasticity-estimand"),
-                metric_contracts: vec![MetricContractV1 {
-                    metric_id: id("plasticity-metric"),
-                    direction: EvaluationDirectionV1::Maximize,
-                    safety_floor: None,
-                }],
-                family_alpha_ppm: 50_000,
-                simultaneous_comparisons: 1,
-                folds: (0..2)
-                    .map(|index| CrossFoldPartitionV1 {
-                        fold_id: id(&format!("plasticity-fold-{index}")),
-                        training_principals: vec![id("training-principal")],
-                        training_episodes: vec![id("training-episode")],
-                        training_windows: vec![id("training-window")],
-                        holdout_principals: vec![id(&format!("holdout-principal-{index}"))],
-                        holdout_episodes: vec![id(&format!("holdout-episode-{index}"))],
-                        holdout_windows: vec![id(&format!("holdout-window-{index}"))],
-                        model_digest: digest("fold-model"),
-                        predictions_digest: digest("fold-predictions"),
-                    })
-                    .collect(),
-                final_holdout_window_id: id("holdout-window-1"),
-                final_holdout_digest: digest("final-holdout"),
-            },
-            roles.clone(),
-        )
-        .expect("freeze plan");
-        let holdout_use = FinalHoldoutRegistry::new()
-            .consume(&plan)
-            .expect("consume holdout");
-        let bundle = IndependentEvaluationBundleV1 {
-            evaluation_id: id("plasticity-evaluation"),
-            candidate_id: update_id,
-            baseline_id: admission.baseline_id.clone(),
+        let plan = CrossFoldPlanV1 {
+            plan_id: id("plasticity-plan"),
             claim_scope: EvaluationClaimScopeV1::Qualification,
-            generator: principals[0].clone(),
-            evaluator: principals[2].clone(),
-            frozen_plan: plan,
-            holdout_use,
+            candidate_id: update_id.clone(),
+            baseline_id: admission.baseline_id.clone(),
             objective_digest: admission.objective_digest,
             dataset_digest,
             estimand_digest: digest("plasticity-estimand"),
-            estimate_receipt_digest: digest("estimate-receipt"),
-            support_audit_digest: digest("support-audit"),
-            confidence_receipt_digest: digest("confidence-receipt"),
-            retention_receipt_digests: vec![],
-            unlearning_receipt_digest: Digest32::ZERO,
-            snapshot_ids: vec![id("plasticity-snapshot")],
-            future_window_ids: vec![id("holdout-window-1")],
-            family_alpha_ppm: 50_000,
-            simultaneous_comparisons: 1,
-            metrics: vec![MetricGateV1 {
+            metric_contracts: vec![MetricContractV1 {
                 metric_id: id("plasticity-metric"),
                 direction: EvaluationDirectionV1::Maximize,
-                candidate: EvaluationIntervalV1 {
-                    lower: FixedQ32::ONE,
-                    upper: FixedQ32::ONE,
-                },
-                baseline: EvaluationIntervalV1 {
-                    lower: FixedQ32::ZERO,
-                    upper: FixedQ32::ZERO,
-                },
                 safety_floor: None,
-                support_digest: digest("metric-support"),
             }],
+            family_alpha_ppm: 50_000,
+            simultaneous_comparisons: 1,
+            folds: (0..2)
+                .map(|index| CrossFoldPartitionV1 {
+                    fold_id: id(&format!("plasticity-fold-{index}")),
+                    training_principals: vec![id("training-principal")],
+                    training_episodes: vec![id("training-episode")],
+                    training_windows: vec![id("training-window")],
+                    holdout_principals: vec![id(&format!("holdout-principal-{index}"))],
+                    holdout_episodes: vec![id(&format!("holdout-episode-{index}"))],
+                    holdout_windows: vec![id(&format!("holdout-window-{index}"))],
+                    model_digest: digest("fold-model"),
+                    predictions_digest: digest("fold-predictions"),
+                })
+                .collect(),
+            final_holdout_window_id: id("holdout-window-1"),
+            final_holdout_digest: digest("final-holdout"),
         };
         Self {
             keys,
@@ -237,7 +196,7 @@ impl Fixture {
             profile,
             generated,
             admission,
-            bundle,
+            plan,
             roles,
         }
     }
@@ -266,6 +225,28 @@ impl Fixture {
         evidence
     }
 
+    fn qualification(&self) -> Result<ProductQualificationReceiptV1, ProductEvaluationError> {
+        product_fixture::qualify(
+            self.plan.clone(),
+            self.roles.clone(),
+            self.principals[0].clone(),
+            self.principals[2].clone(),
+            &self.verifier,
+            50,
+            |role, payload| {
+                let signer = match role {
+                    LearningEvidenceRoleV1::Generator => 0,
+                    LearningEvidenceRoleV1::Evaluator => 2,
+                    LearningEvidenceRoleV1::Observer
+                    | LearningEvidenceRoleV1::CreditAllocator
+                    | LearningEvidenceRoleV1::UnlearningAuthority
+                    | LearningEvidenceRoleV1::Selector => panic!("unexpected qualification role"),
+                };
+                self.sign(signer, role, payload)
+            },
+        )
+    }
+
     fn request(&self) -> ParameterPlasticityProductRequestV1 {
         let generator_attestation = self.sign(
             0,
@@ -277,15 +258,12 @@ impl Fixture {
             LearningEvidenceRoleV1::Observer,
             &plasticity_admission_signing_payload_v1(&self.admission),
         );
-        let generator_plan = self.sign(
-            0,
-            LearningEvidenceRoleV1::Generator,
-            self.bundle.frozen_plan.plan_digest.as_array(),
-        );
-        let evaluator_bundle = self.sign(
+        let qualification = self.qualification().expect("true product qualification");
+        let use_attestation = self.sign(
             2,
             LearningEvidenceRoleV1::Evaluator,
-            &evaluation_signing_payload_v2(&self.bundle, &self.roles).expect("evaluation payload"),
+            &plasticity_evaluation_signing_payload_v1(&qualification, &self.admission)
+                .expect("qualified use"),
         );
         ParameterPlasticityProductRequestV1 {
             proposal_id: id("plasticity-proposal:1"),
@@ -296,12 +274,8 @@ impl Fixture {
             admission_attestation,
             no_change_attestation: None,
             evaluations: vec![CandidateEvaluationAdmissionV1 {
-                bundle: self.bundle.clone(),
-                metric_roles: self.roles.clone(),
-                evidence: SignedEvaluationEvidenceV1 {
-                    generator_plan,
-                    evaluator_bundle,
-                },
+                qualification,
+                use_attestation,
             }],
             expected_registry_predecessor: Digest32::ZERO,
         }
@@ -488,6 +462,15 @@ fn durable_v2_evaluation_digest_binds_governed_admission_context() {
         LearningEvidenceRoleV1::Observer,
         &plasticity_admission_signing_payload_v1(&changed_request.admission),
     );
+    changed_request.evaluations[0].use_attestation = fixture.sign(
+        2,
+        LearningEvidenceRoleV1::Evaluator,
+        &plasticity_evaluation_signing_payload_v1(
+            &changed_request.evaluations[0].qualification,
+            &changed_request.admission,
+        )
+        .expect("changed qualified use"),
+    );
     let mut second_writer = writer();
     let mut second_anchor = AnchorCommitter {
         accept: true,
@@ -534,23 +517,12 @@ fn product_path_rejects_tampered_frontier_witness() {
 }
 
 #[test]
-fn product_path_rejects_generator_evaluator_controller_collision() {
+fn product_owner_refuses_qualification_with_generator_evaluator_controller_collision() {
     let fixture = Fixture::new(true);
-    let mut writer = writer();
-    let mut anchor_committer = AnchorCommitter {
-        accept: true,
-        ..AnchorCommitter::default()
-    };
-    let result = propose_authenticated_parameter_plasticity_v1(
-        fixture.request(),
-        &fixture.verifier,
-        &mut writer,
-        &mut anchor_committer,
-        50,
-    );
+    let writer = writer();
     assert!(matches!(
-        result,
-        Err(ParameterPlasticityProductErrorV1::Evaluation(
+        fixture.qualification(),
+        Err(ProductEvaluationError::Signed(
             SignedEvaluationError::Evidence(SignedEvidenceError::ControllerCollision)
         ))
     ));
@@ -601,4 +573,78 @@ fn anchor_commit_failure_poison_writer_after_durable_append() {
         writer.record_count(),
         Err(DurableProposalRegistryError::Poisoned)
     );
+}
+
+#[test]
+fn product_path_rejects_tampered_qualification_and_stale_evaluator_use_before_append() {
+    let fixture = Fixture::new(false);
+    for field in 0..5 {
+        let mut request = fixture.request();
+        match field {
+            0 => {
+                request.evaluations[0]
+                    .qualification
+                    .decision
+                    .decision
+                    .baseline_id = id("forged-baseline")
+            }
+            1 => {
+                request.evaluations[0]
+                    .qualification
+                    .decision
+                    .decision
+                    .disposition = IndependentEvaluationDispositionV1::Ineligible
+            }
+            2 => request.evaluations[0].qualification.publication_digest = Digest32::ZERO,
+            3 => request.evaluations[0].use_attestation.signature[0] ^= 1,
+            _ => {
+                request.admission.owner_evidence_set_digest = digest("different-owner-frontier");
+                request.admission_attestation = fixture.sign(
+                    1,
+                    LearningEvidenceRoleV1::Observer,
+                    &plasticity_admission_signing_payload_v1(&request.admission),
+                );
+            }
+        }
+        let mut writer = writer();
+        let mut anchor = AnchorCommitter {
+            accept: true,
+            ..AnchorCommitter::default()
+        };
+        assert!(
+            propose_authenticated_parameter_plasticity_v1(
+                request,
+                &fixture.verifier,
+                &mut writer,
+                &mut anchor,
+                50
+            )
+            .is_err()
+        );
+        assert_eq!(writer.record_count().expect("count"), 0);
+        assert_eq!(anchor.anchor, None);
+    }
+}
+
+#[test]
+fn product_path_rejects_changed_current_trust_before_append() {
+    let fixture = Fixture::new(false);
+    let changed = Fixture::new_with_evaluator_controller(Some(1));
+    let mut writer = writer();
+    let mut anchor = AnchorCommitter {
+        accept: true,
+        ..AnchorCommitter::default()
+    };
+    assert!(
+        propose_authenticated_parameter_plasticity_v1(
+            fixture.request(),
+            &changed.verifier,
+            &mut writer,
+            &mut anchor,
+            50
+        )
+        .is_err()
+    );
+    assert_eq!(writer.record_count().expect("count"), 0);
+    assert_eq!(anchor.anchor, None);
 }

@@ -1,11 +1,14 @@
 from __future__ import annotations
 
 import importlib.util
+import json
 import sys
 import tempfile
 import textwrap
+import tomllib
 import unittest
 from pathlib import Path
+from unittest import mock
 
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -169,6 +172,180 @@ class CallerProofTests(unittest.TestCase):
         (extra / "lib.rs").write_text("fn bypass() { Gate::enter(); }\n", encoding="utf-8")
         with self.assertRaises(MODULE.VerificationFailure):
             MODULE.verify(root, root / "CALLERS.toml")
+
+    def test_authority_receiver_renaming_cannot_escape_the_production_closed_set(self) -> None:
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        boundaries = {row.identifier: row for row in MODULE._boundary_rows(manifest)}
+        ignored = tuple(manifest["ignored_path_fragments"])
+        extra_path = "codex-rs/unregistered/src/lib.rs"
+        generic_methods = {
+            "final_use_delivery_raw",
+            "final_use_dispatch_raw",
+            "final_use_guarded_effect",
+            "final_use_async_dispatch_fence",
+            "bao_authbus_final_use_consumer",
+        }
+        for identifier in (
+            "final_use_claim_raw",
+            "final_use_delivery_raw",
+            "final_use_dispatch_raw",
+            "final_use_revocation_update",
+            "final_use_guarded_effect",
+            "final_use_async_dispatch_fence",
+            "final_use_async_entry",
+            "bao_final_use_consumer",
+            "bao_authbus_final_use_consumer",
+        ):
+            boundary = boundaries[identifier]
+            source_index = {
+                path: MODULE._strip_cfg_test_items(
+                    MODULE._strip_rust_non_code(
+                        (ROOT / path).read_text(encoding="utf-8")
+                    )
+                )
+                for path in boundary.product_callers
+            }
+            MODULE._verify_boundary(ROOT, boundary, source_index, ignored)
+            type_name, method_name = boundary.symbol.split("::")
+            crate_name = (
+                "codex_hepta_bao_adapter"
+                if type_name == "BaoClient"
+                else "codex_hepta_contracts"
+            )
+            calls = [
+                f"renamed.{method_name}()",
+                f"{type_name}::{method_name}(renamed)",
+            ]
+            if identifier in generic_methods:
+                calls.extend(
+                    (
+                        f"renamed.{method_name}::<Option<()>>()",
+                        f"{type_name}::{method_name}::<Option<()>>(renamed)",
+                    )
+                )
+            for call in calls:
+                with self.subTest(boundary=identifier, call=call):
+                    source_index[extra_path] = (
+                        f"use {crate_name}::{type_name};\n"
+                        f"fn leak(renamed: &{type_name}) {{ {call}; }}\n"
+                    )
+                    with self.assertRaisesRegex(
+                        MODULE.VerificationFailure,
+                        r"caller set mismatch; missing=\[\], unexpected=\['"
+                        + extra_path
+                        + r"'\]",
+                    ):
+                        MODULE._verify_boundary(ROOT, boundary, source_index, ignored)
+
+    def test_unique_methods_reject_cross_file_reexport_alias_callers(self) -> None:
+        import test_kernel_authority_closed_world as independent
+
+        manifest = tomllib.loads((ROOT / "CALLERS.toml").read_text(encoding="utf-8"))
+        boundaries = {row.identifier: row for row in MODULE._boundary_rows(manifest)}
+        inventory = json.loads(
+            (ROOT / "qa/b4-no-bypass/KERNEL_AUTHORITY_BOUNDARIES.json").read_text(
+                encoding="utf-8"
+            )
+        )
+        rows = {row["id"]: row for row in inventory["boundaries"]}
+        ignored = tuple(manifest["ignored_path_fragments"])
+        alias_path = "codex-rs/unregistered/src/alias.rs"
+        caller_path = "codex-rs/unregistered/src/lib.rs"
+        for identifier in (
+            "final_use_delivery_raw",
+            "final_use_dispatch_raw",
+            "final_use_revocation_update",
+            "final_use_guarded_effect",
+            "final_use_async_dispatch_fence",
+            "final_use_async_entry",
+            "bao_final_use_consumer",
+            "bao_authbus_final_use_consumer",
+        ):
+            boundary = boundaries[identifier]
+            source_index = {
+                path: MODULE._strip_cfg_test_items(
+                    MODULE._strip_rust_non_code(
+                        (ROOT / path).read_text(encoding="utf-8")
+                    )
+                )
+                for path in boundary.product_callers
+            }
+            MODULE._verify_boundary(ROOT, boundary, source_index, ignored)
+            type_name, method_name = boundary.symbol.split("::")
+            crate_name = (
+                "codex_hepta_bao_adapter"
+                if type_name == "BaoClient"
+                else "codex_hepta_contracts"
+            )
+            calls = [
+                f"renamed.{method_name}()",
+                f"Gate::{method_name}(renamed)",
+                f"<Gate>::{method_name}(renamed)",
+            ]
+            if identifier in (
+                "final_use_delivery_raw",
+                "final_use_dispatch_raw",
+                "final_use_guarded_effect",
+                "final_use_async_dispatch_fence",
+                "bao_authbus_final_use_consumer",
+            ):
+                calls.extend(
+                    (
+                        f"renamed.{method_name}::<Option<()>>()",
+                        f"Gate::{method_name}::<Option<()>>(renamed)",
+                    )
+                )
+            with tempfile.TemporaryDirectory() as directory:
+                fixture = Path(directory)
+                alias = fixture / alias_path
+                alias.parent.mkdir(parents=True)
+                alias.write_text(
+                    f"pub use {crate_name}::{type_name} as Gate;\n",
+                    encoding="utf-8",
+                )
+                caller = fixture / caller_path
+                for call in calls:
+                    with self.subTest(boundary=identifier, call=call):
+                        caller.write_text(
+                            "mod alias;\n"
+                            "use crate::alias::Gate;\n"
+                            f"fn leak(renamed: &Gate) {{ {call}; }}\n",
+                            encoding="utf-8",
+                        )
+                        for path in (alias_path, caller_path):
+                            source_index[path] = MODULE._strip_cfg_test_items(
+                                MODULE._strip_rust_non_code(
+                                    (fixture / path).read_text(encoding="utf-8")
+                                )
+                            )
+                        with self.assertRaisesRegex(
+                            MODULE.VerificationFailure,
+                            r"caller set mismatch; missing=\[\], unexpected=\['"
+                            + caller_path
+                            + r"'\]",
+                        ):
+                            MODULE._verify_boundary(ROOT, boundary, source_index, ignored)
+                        proof = independent.KernelAuthorityClosedWorldTests(
+                            "test_type_anchored_callers_match_independent_closed_set"
+                        )
+                        # The independent policy must see this alias caller even
+                        # though its file contains no original authority type name.
+                        with (
+                            mock.patch.object(independent, "ROOT", fixture),
+                            mock.patch.object(
+                                proof,
+                                "inventory",
+                                return_value=[{**rows[identifier], "allowedCallers": []}],
+                            ),
+                            mock.patch.object(
+                                proof, "rust_sources", return_value=[alias, caller]
+                            ),
+                            self.assertRaisesRegex(
+                                AssertionError,
+                                f"{identifier}: independent kernel.authority caller set drifted",
+                            ),
+                        ):
+                            proof.test_type_anchored_callers_match_independent_closed_set()
 
     def test_comment_and_string_do_not_manufacture_callers(self) -> None:
         root = self.make_fixture()

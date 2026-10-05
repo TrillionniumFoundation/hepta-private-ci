@@ -105,7 +105,7 @@ P_next = (1 - eta) * P_k + eta * P_candidate
 U_k = project(instant_utility + discount * continuation_utility)
 ```
 
-`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. If the registered residual tolerance is not reached inside that bound, the solver returns `PreferenceSolverUnavailable`; the last bounded numerical state is not exposed as a successful terminal state.
+`eta` is in `[1/16,1/4]`. The preference target solver emits immutable revisions and at most 64 local iteration receipts. Its termination maximum residual includes the initial state as well as all emitted iteration receipts. If the registered residual tolerance is not reached inside that bound, the solver returns `NduError::IterationExhausted { iterations, terminal_residual_raw }`; the last bounded numerical state is not exposed as a successful terminal state.
 
 Parent/child staging is scoped by an explicit stable hierarchy identity. Different subject levels within the same hierarchy cannot select new artifacts in one generation. Unrelated hierarchy roots may advance in the same generation; a global subject-class ban is not the intended invariant.
 

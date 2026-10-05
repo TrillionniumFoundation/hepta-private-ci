@@ -75,6 +75,7 @@ async fn fixture(
     let temp = tempfile::tempdir().unwrap();
     let fleet = temp.path().join("fleet");
     std::fs::create_dir_all(&fleet).unwrap();
+    let fleet = fleet.canonicalize().unwrap();
     let owner = AgentId::parse(format!("00000000-0000-4000-8000-{suffix:012}")).unwrap();
     let layout = HeptaFleetRoot::parse(fleet).unwrap().layout().agent(&owner);
     let store = CognitiveStore::open(&layout).await.unwrap();

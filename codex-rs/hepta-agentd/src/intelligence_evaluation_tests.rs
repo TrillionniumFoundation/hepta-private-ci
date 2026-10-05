@@ -1,17 +1,12 @@
+#[path = "intelligence_evaluation_product_test_support.rs"]
+mod product_fixture;
 use codex_hepta_intelligence_eval::CrossFoldPartitionV1;
 use codex_hepta_intelligence_eval::CrossFoldPlanV1;
 use codex_hepta_intelligence_eval::EvaluationClaimScopeV1;
 use codex_hepta_intelligence_eval::EvaluationDirectionV1;
-use codex_hepta_intelligence_eval::EvaluationIntervalV1;
-use codex_hepta_intelligence_eval::FinalHoldoutRegistry;
-use codex_hepta_intelligence_eval::IndependentEvaluationBundleV1;
 use codex_hepta_intelligence_eval::MetricContractV1;
-use codex_hepta_intelligence_eval::MetricGateV1;
 use codex_hepta_intelligence_eval::MetricRoleContractV2;
 use codex_hepta_intelligence_eval::MetricRoleV2;
-use codex_hepta_intelligence_eval::SignedEvaluationEvidenceV1;
-use codex_hepta_intelligence_eval::evaluation_signing_payload_v2;
-use codex_hepta_intelligence_eval::freeze_cross_fold_plan_v2;
 use codex_hepta_learning_ledger::AuthenticatedPrincipalV1;
 use codex_hepta_learning_ledger::LearningEvidenceRoleV1;
 use codex_hepta_learning_ledger::LearningEvidenceTrustV1;
@@ -132,7 +127,22 @@ fn activate(trust: LearningEvidenceTrustV1, now: u64) -> ActivatedLearningTrustV
 pub(super) fn evidence_fixture(
     binding: &AgentdEvaluationBindingV1,
     now: u64,
-) -> (ActivatedLearningTrustV1, AgentdSignedEvaluationV1) {
+) -> (ActivatedLearningTrustV1, AgentdQualifiedEvaluationV1) {
+    evidence_fixture_with_policy(binding, now, GeneratorEvidencePolicy::Current)
+}
+
+#[derive(Clone, Copy)]
+enum GeneratorEvidencePolicy {
+    Current,
+    ExpiresAt(u64),
+    RevokedAt(u64),
+}
+
+fn evidence_fixture_with_policy(
+    binding: &AgentdEvaluationBindingV1,
+    now: u64,
+    policy: GeneratorEvidencePolicy,
+) -> (ActivatedLearningTrustV1, AgentdQualifiedEvaluationV1) {
     let objective_digest = binding.objective_digest;
     let dataset_digest = digest("dataset");
     let estimand_digest = digest("qualification-estimand");
@@ -160,66 +170,24 @@ pub(super) fn evidence_fixture(
             minimum_improvement: FixedQ32::from_raw(5),
         },
     }];
-    let frozen_plan = freeze_cross_fold_plan_v2(
-        CrossFoldPlanV1 {
-            plan_id: id("qualification-plan"),
-            claim_scope: EvaluationClaimScopeV1::Qualification,
-            candidate_id: binding.selected_candidate_id.clone(),
-            baseline_id: id("baseline"),
-            objective_digest,
-            dataset_digest,
-            estimand_digest,
-            metric_contracts: vec![MetricContractV1 {
-                metric_id: id("task-utility"),
-                direction: EvaluationDirectionV1::Maximize,
-                safety_floor: Some(FixedQ32::from_raw(80)),
-            }],
-            family_alpha_ppm: 50_000,
-            simultaneous_comparisons: 1,
-            folds: vec![fold(1), fold(2)],
-            final_holdout_window_id: id("holdout-window-2"),
-            final_holdout_digest: digest("final-holdout"),
-        },
-        roles.clone(),
-    )
-    .unwrap();
-    let holdout_use = FinalHoldoutRegistry::new().consume(&frozen_plan).unwrap();
-
-    let bundle = IndependentEvaluationBundleV1 {
-        evaluation_id: id("evaluation"),
+    let plan = CrossFoldPlanV1 {
+        plan_id: id("qualification-plan"),
+        claim_scope: EvaluationClaimScopeV1::Qualification,
         candidate_id: binding.selected_candidate_id.clone(),
         baseline_id: id("baseline"),
-        claim_scope: EvaluationClaimScopeV1::Qualification,
-        generator: generator.clone(),
-        evaluator: evaluator.clone(),
-        frozen_plan,
-        holdout_use,
         objective_digest,
         dataset_digest,
         estimand_digest,
-        estimate_receipt_digest: digest("estimate"),
-        support_audit_digest: digest("support-audit"),
-        confidence_receipt_digest: digest("confidence"),
-        retention_receipt_digests: Vec::new(),
-        unlearning_receipt_digest: Digest32::ZERO,
-        snapshot_ids: vec![id("snapshot-1")],
-        future_window_ids: vec![id("future-window-1")],
-        family_alpha_ppm: 50_000,
-        simultaneous_comparisons: 1,
-        metrics: vec![MetricGateV1 {
+        metric_contracts: vec![MetricContractV1 {
             metric_id: id("task-utility"),
             direction: EvaluationDirectionV1::Maximize,
-            candidate: EvaluationIntervalV1 {
-                lower: FixedQ32::from_raw(100),
-                upper: FixedQ32::from_raw(110),
-            },
-            baseline: EvaluationIntervalV1 {
-                lower: FixedQ32::from_raw(80),
-                upper: FixedQ32::from_raw(90),
-            },
-            safety_floor: Some(FixedQ32::from_raw(80)),
-            support_digest: digest("metric-support"),
+            safety_floor: Some(FixedQ32::ZERO),
         }],
+        family_alpha_ppm: 50_000,
+        simultaneous_comparisons: 1,
+        folds: vec![fold(1), fold(2)],
+        final_holdout_window_id: id("holdout-window-2"),
+        final_holdout_digest: digest("final-holdout"),
     };
 
     let trust_definition = LearningEvidenceTrustV1 {
@@ -232,7 +200,12 @@ pub(super) fn evidence_fixture(
                 controller_id: generator.principal_id.clone(),
                 verifying_key: generator_key.verifying_key().to_bytes(),
                 roles: vec![LearningEvidenceRoleV1::Generator],
-                revoked_at: None,
+                revoked_at: match policy {
+                    GeneratorEvidencePolicy::RevokedAt(at) => Some(at),
+                    GeneratorEvidencePolicy::Current | GeneratorEvidencePolicy::ExpiresAt(_) => {
+                        None
+                    }
+                },
             },
             TrustedLearningSignerV1 {
                 principal: evaluator.clone(),
@@ -246,27 +219,34 @@ pub(super) fn evidence_fixture(
     let trust = activate(trust_definition, now);
     let verifier = trust.verifier();
 
-    let payload = evaluation_signing_payload_v2(&bundle, &roles).unwrap();
-    let evidence = SignedEvaluationEvidenceV1 {
-        generator_plan: sign(
-            verifier,
-            &generator,
-            &generator_key,
-            LearningEvidenceRoleV1::Generator,
-            objective_digest,
-            bundle.frozen_plan.plan_digest.as_array(),
-        ),
-        evaluator_bundle: sign(
-            verifier,
-            &evaluator,
-            &evaluator_key,
-            LearningEvidenceRoleV1::Evaluator,
-            objective_digest,
-            &payload,
-        ),
-    };
-
-    let payload = intelligence_evaluation_binding_payload_v1(binding, &evidence).unwrap();
+    let qualification = product_fixture::qualify(
+        plan,
+        roles,
+        generator.clone(),
+        evaluator.clone(),
+        verifier,
+        now,
+        |role, payload| {
+            let (principal, key) = match role {
+                LearningEvidenceRoleV1::Generator => (&generator, &generator_key),
+                LearningEvidenceRoleV1::Evaluator => (&evaluator, &evaluator_key),
+                LearningEvidenceRoleV1::Observer
+                | LearningEvidenceRoleV1::CreditAllocator
+                | LearningEvidenceRoleV1::UnlearningAuthority
+                | LearningEvidenceRoleV1::Selector => panic!("fixture has no other signer"),
+            };
+            let mut evidence = sign(verifier, principal, key, role, objective_digest, payload);
+            if role == LearningEvidenceRoleV1::Generator
+                && let GeneratorEvidencePolicy::ExpiresAt(at) = policy
+            {
+                evidence.expires_at = at;
+                evidence.signature = key.sign(&evidence.signing_bytes()).to_bytes();
+            }
+            evidence
+        },
+    )
+    .expect("true product qualification");
+    let payload = intelligence_evaluation_binding_payload_v2(binding, &qualification).unwrap();
     let use_attestation = sign(
         verifier,
         &evaluator,
@@ -277,10 +257,8 @@ pub(super) fn evidence_fixture(
     );
     (
         trust,
-        AgentdSignedEvaluationV1 {
-            bundle,
-            roles,
-            evidence,
+        AgentdQualifiedEvaluationV1 {
+            qualification,
             use_attestation,
         },
     )
@@ -317,7 +295,7 @@ fn session(binding: &AgentdEvaluationBindingV1, now: u64) -> AgentdEvaluationSes
             owner_id: id("learning.eval"),
             generation: Generation::new(7).unwrap(),
             implementation_digest: digest("eval-code"),
-            key_digest: signed.bundle.evaluator.signing_key_digest,
+            key_digest: signed.qualification.evaluator.signing_key_digest,
             key_epoch: 1,
             authority_epoch: 11,
             revocation_frontier_digest: digest("frontier"),
@@ -384,7 +362,7 @@ fn evaluator_key_epoch_expiry_and_signed_metrics_are_not_self_asserted() {
             .is_err()
     );
     let mut changed = session(&binding, 1_000);
-    changed.signed.bundle.metrics[0].candidate.lower = FixedQ32::ZERO;
+    changed.signed.qualification.publication_digest = Digest32::ZERO;
     assert!(
         changed
             .evaluate(&input(&binding), &binding.selected_candidate_id, 1_000)
@@ -397,4 +375,91 @@ fn evaluator_key_epoch_expiry_and_signed_metrics_are_not_self_asserted() {
             .evaluate(&input(&binding), &binding.selected_candidate_id, 1_000)
             .is_err()
     );
+}
+
+#[test]
+fn qualification_consumption_rejects_unsealed_decisions_and_changed_host_trust() {
+    let binding = binding();
+    for field in 0..4 {
+        let mut changed = session(&binding, 1_000);
+        match field {
+            0 => changed.signed.qualification.decision.decision.baseline_id = id("forged-baseline"),
+            1 => {
+                changed.signed.qualification.decision.decision.disposition =
+                    codex_hepta_intelligence_eval::IndependentEvaluationDispositionV1::Ineligible
+            }
+            2 => changed
+                .signed
+                .qualification
+                .decision
+                .decision
+                .failed_metrics
+                .push(id("forged-metric")),
+            _ => changed.trust = Arc::new(evidence_fixture(&binding, 1_001).0),
+        }
+        assert!(
+            changed
+                .evaluate(&input(&binding), &binding.selected_candidate_id, 1_000)
+                .is_err()
+        );
+    }
+}
+
+#[test]
+fn fresh_evaluator_use_cannot_extend_original_generator_evidence_or_scheduled_revocation() {
+    let binding = binding();
+    for policy in [
+        GeneratorEvidencePolicy::RevokedAt(1_500),
+        GeneratorEvidencePolicy::ExpiresAt(1_500),
+    ] {
+        let (trust, mut signed) = evidence_fixture_with_policy(&binding, 1_000, policy);
+        // The evaluator is live and explicitly authorizes this exact current use.
+        // The unchanged trust digest already includes the future revocation.
+        signed.use_attestation.issued_at = 1_990;
+        signed.use_attestation.signature = SigningKey::from_bytes(&[47; 32])
+            .sign(&signed.use_attestation.signing_bytes())
+            .to_bytes();
+        let payload = intelligence_evaluation_binding_payload_v2(&binding, &signed.qualification)
+            .expect("current-use payload");
+        trust
+            .verifier()
+            .verify(
+                LearningEvidenceRoleV1::Evaluator,
+                &signed.use_attestation,
+                &payload,
+                2_000,
+            )
+            .expect("fresh independent evaluator use remains valid");
+        let session = AgentdEvaluationSessionV1 {
+            run_id: binding.run_id.clone(),
+            current_owner: CurrentOwnerStateV1 {
+                owner_id: id("learning.eval"),
+                generation: Generation::new(7).unwrap(),
+                implementation_digest: digest("eval-code"),
+                key_digest: signed.qualification.evaluator.signing_key_digest,
+                key_epoch: 1,
+                authority_epoch: 11,
+                revocation_frontier_digest: digest("frontier"),
+            },
+            trust: Arc::new(trust),
+            signed,
+        };
+        let expected = match policy {
+            GeneratorEvidencePolicy::RevokedAt(_) => {
+                codex_hepta_learning_ledger::SignedEvidenceError::Revoked
+            }
+            GeneratorEvidencePolicy::ExpiresAt(_) => {
+                codex_hepta_learning_ledger::SignedEvidenceError::ValidityWindow
+            }
+            GeneratorEvidencePolicy::Current => panic!("negative fixture requires a boundary"),
+        };
+        assert!(matches!(
+            session.evaluate(&input(&binding), &binding.selected_candidate_id, 2_000),
+            Err(AgentdIntelligenceEvaluationError::Qualification(
+                codex_hepta_intelligence_eval::ProductEvaluationError::Signed(
+                    codex_hepta_intelligence_eval::SignedEvaluationError::Evidence(error)
+                )
+            )) if error == expected
+        ));
+    }
 }
