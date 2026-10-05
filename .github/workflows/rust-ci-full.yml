@@ -299,8 +299,7 @@ jobs:
         if: ${{ env.USE_SCCACHE == 'true' }}
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
-          tool: sccache
-          version: 0.7.5
+          tool: sccache@0.12.0
 
       - name: Configure sccache backend
         if: ${{ env.USE_SCCACHE == 'true' }}
@@ -396,7 +395,7 @@ jobs:
         uses: ./.github/actions/check-clean-worktree
 
       - name: cargo clippy
-        run: cargo clippy --target ${{ matrix.target }} --tests --profile ${{ matrix.profile }} --timings -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
+        run: cargo clippy --locked --target ${{ matrix.target }} --tests --profile ${{ matrix.profile }} --timings -- -D clippy::correctness -D clippy::await_holding_lock -D clippy::await_holding_invalid_type
 
       - name: Build the actual release sources
         if: ${{ matrix.profile == 'release' }}

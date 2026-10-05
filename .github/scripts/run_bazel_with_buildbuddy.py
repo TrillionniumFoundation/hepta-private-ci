@@ -163,6 +163,30 @@ def bazel_args_without_remote_execution(
     prefix = [arg for arg in prefix if arg not in REMOTE_EXECUTION_CONFIGS]
     suffix = list(args[separator_idx:])
     if env.get("RUNNER_OS") != "Windows":
+        # Dropping the platform-specific RBE configuration must not also drop
+        # the endpoint-free CI resource policy. Otherwise keyless jobs write
+        # Rust debug data and a second, unpersisted copy of outputs to disk.
+        if (
+            any(
+                arg in {"--config=ci-linux", "--config=ci-macos", "--config=ci-v8"}
+                for arg in args[:separator_idx]
+            )
+            and "--config=ci" not in prefix
+        ):
+            command_idx = next(
+                (idx for idx, arg in enumerate(prefix) if not arg.startswith("-")),
+                None,
+            )
+            if command_idx is not None and prefix[command_idx] in {
+                "build",
+                "test",
+                "run",
+                "coverage",
+                "cquery",
+                "aquery",
+                "info",
+            }:
+                prefix.insert(command_idx + 1, "--config=ci")
         return [*prefix, *suffix]
 
     command_idx = next(

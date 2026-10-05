@@ -68,7 +68,8 @@ jobs:
       CODEX_CI_PROFILE: ${{ inputs.profile }}
       CODEX_CI_TARGET: ${{ inputs.target }}
       CARGO_INCREMENTAL: "0"
-      SCCACHE_CACHE_SIZE: 10G
+      # Leave room for linked tests, the archive, and cache-upload staging.
+      SCCACHE_CACHE_SIZE: 2G
       NEXTEST_ARCHIVE_FILE: nextest-${{ inputs.artifact_id }}.tar.zst
       TEST_HELPERS_ARTIFACT: nextest-test-helpers-${{ inputs.artifact_id }}
     steps:
@@ -123,8 +124,7 @@ jobs:
         if: ${{ env.USE_SCCACHE == 'true' }}
         uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
-          tool: sccache
-          version: 0.7.5
+          tool: sccache@0.12.0
 
       - name: Configure sccache backend
         if: ${{ env.USE_SCCACHE == 'true' }}
@@ -158,28 +158,28 @@ jobs:
         uses: actions/cache/restore@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: ${{ env.SCCACHE_DIR }}
-          key: sccache-${{ env.ARCHIVE_CACHE_RUNNER }}-${{ inputs.target }}-${{ inputs.profile }}-${{ steps.lockhash.outputs.hash }}-${{ github.run_id }}
+          key: sccache-archive-v2-${{ env.ARCHIVE_CACHE_RUNNER }}-${{ inputs.target }}-${{ inputs.profile }}-${{ steps.lockhash.outputs.hash }}-${{ github.run_id }}
           restore-keys: |
-            sccache-${{ env.ARCHIVE_CACHE_RUNNER }}-${{ inputs.target }}-${{ inputs.profile }}-${{ steps.lockhash.outputs.hash }}-
-            sccache-${{ env.ARCHIVE_CACHE_RUNNER }}-${{ inputs.target }}-${{ inputs.profile }}-
+            sccache-archive-v2-${{ env.ARCHIVE_CACHE_RUNNER }}-${{ inputs.target }}-${{ inputs.profile }}-${{ steps.lockhash.outputs.hash }}-
+            sccache-archive-v2-${{ env.ARCHIVE_CACHE_RUNNER }}-${{ inputs.target }}-${{ inputs.profile }}-
 
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
-          tool: nextest
-          version: 0.9.103
+          tool: nextest@0.9.103
 
       - name: Configure verified sandbox V8 artifacts
         uses: ./.github/actions/setup-rusty-v8
         with:
           target: ${{ inputs.target }}
 
-      - name: Limit macOS test archive debug data
+      - name: Limit Unix test archive debug data
         shell: bash
         run: |
           set -euo pipefail
-          # The full test build and compressed archive share the hosted macOS disk.
-          # Debug information is independent of debug assertions and overflow checks.
-          if [[ "${RUNNER_OS}" == "macOS" && "${CODEX_CI_PROFILE}" == "ci-test" ]]; then
+          # Linked tests, the compressed archive and compiler caches share the
+          # hosted Unix disk. Keep assertions, overflow checks and test selection;
+          # only omit debugger data in this non-release archive profile.
+          if [[ "${CODEX_CI_PROFILE}" == "ci-test" && ( "${RUNNER_OS}" == "macOS" || "${RUNNER_OS}" == "Linux" ) ]]; then
             echo "CARGO_PROFILE_CI_TEST_DEBUG=0" >> "$GITHUB_ENV"
           fi
 
@@ -189,7 +189,7 @@ jobs:
           set -euo pipefail
           archive_dir="${RUNNER_TEMP}/nextest-archive"
           mkdir -p "${archive_dir}"
-          cargo nextest archive \
+          cargo nextest archive --locked \
             --target "${CODEX_CI_TARGET}" \
             --cargo-profile "${CODEX_CI_PROFILE}" \
             --timings \
@@ -204,14 +204,14 @@ jobs:
           mkdir -p "${helper_dir}"
 
           if [[ "${RUNNER_OS}" == "Linux" ]]; then
-            cargo build \
+            cargo build --locked \
               --target "${CODEX_CI_TARGET}" \
               --profile "${CODEX_CI_PROFILE}" \
               -p codex-linux-sandbox \
               --bin codex-linux-sandbox
             cp "${CARGO_TARGET_DIR}/${CODEX_CI_TARGET}/${CODEX_CI_PROFILE}/codex-linux-sandbox" "${helper_dir}/"
           else
-            cargo build \
+            cargo build --locked \
               --target "${CODEX_CI_TARGET}" \
               --profile "${CODEX_CI_PROFILE}" \
               -p codex-windows-sandbox \
@@ -264,7 +264,7 @@ jobs:
         uses: actions/cache/save@668228422ae6a00e4ad889ee87cd7109ec5666a7 # v5.0.4
         with:
           path: ${{ env.SCCACHE_DIR }}
-          key: sccache-${{ env.ARCHIVE_CACHE_RUNNER }}-${{ inputs.target }}-${{ inputs.profile }}-${{ steps.lockhash.outputs.hash }}-${{ github.run_id }}
+          key: sccache-archive-v2-${{ env.ARCHIVE_CACHE_RUNNER }}-${{ inputs.target }}-${{ inputs.profile }}-${{ steps.lockhash.outputs.hash }}-${{ github.run_id }}
 
       - name: sccache stats
         if: always() && env.USE_SCCACHE == 'true'
@@ -324,8 +324,7 @@ jobs:
 
       - uses: taiki-e/install-action@44c6d64aa62cd779e873306675c7a58e86d6d532 # v2.62.49
         with:
-          tool: nextest
-          version: 0.9.103
+          tool: nextest@0.9.103
 
       - name: Set up remote test env (Docker)
         if: ${{ runner.os == 'Linux' && inputs.remote_env }}
